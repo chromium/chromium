@@ -1893,6 +1893,8 @@ static_library("ui") {
       "app_list/arc/arc_vpn_provider_manager.h",
       "app_list/arc/arc_vpn_provider_manager_factory.cc",
       "app_list/arc/arc_vpn_provider_manager_factory.h",
+      "app_list/arc/intent.cc",
+      "app_list/arc/intent.h",
       "app_list/chrome_app_list_item.cc",
       "app_list/chrome_app_list_item.h",
       "app_list/chrome_app_list_item_manager.cc",

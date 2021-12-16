@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ui/app_list/arc/intent.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
 
 // ArcShelfSpinnerItemController displays the icon of the ARC app that
@@ -66,6 +67,9 @@ class ArcShelfSpinnerItemController : public ShelfSpinnerItemController,
 
   // Stores how this action was initiated.
   const arc::UserInteractionType user_interaction_type_;
+
+  // Time when this controller item was created.
+  base::TimeTicks request_time_;
 
   arc::mojom::WindowInfoPtr window_info_;
 

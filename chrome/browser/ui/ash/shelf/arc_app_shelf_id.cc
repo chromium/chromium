@@ -7,7 +7,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ui/app_list/arc/intent.h"
 #include "components/crx_file/id_util.h"
 
 namespace arc {
@@ -52,12 +52,12 @@ ArcAppShelfId ArcAppShelfId::FromIntentAndAppId(const std::string& intent,
   if (intent.empty())
     return ArcAppShelfId(std::string(), app_id);
 
-  Intent parsed_intent;
-  if (!ParseIntent(intent, &parsed_intent))
+  auto parsed_intent = Intent::Get(intent);
+  if (!parsed_intent)
     return ArcAppShelfId(std::string(), app_id);
 
   const std::string prefix(kShelfGroupIntentPrefix);
-  for (const auto& param : parsed_intent.extra_params()) {
+  for (const auto& param : parsed_intent->extra_params()) {
     if (base::StartsWith(param, prefix, base::CompareCase::SENSITIVE))
       return ArcAppShelfId(param.substr(prefix.length()), app_id);
   }

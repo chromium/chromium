@@ -27,7 +27,6 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
@@ -44,6 +43,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
+#include "chrome/browser/ui/app_list/arc/intent.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
@@ -91,8 +91,6 @@ constexpr char kIntentHelperClassName[] =
     "org.chromium.arc.intent_helper.SettingsReceiver";
 constexpr char kSetInTouchModeIntent[] =
     "org.chromium.arc.intent_helper.SET_IN_TOUCH_MODE";
-
-constexpr char kActionMain[] = "android.intent.action.MAIN";
 
 constexpr char kAndroidClockAppId[] = "ddmmnabaeomoacfpfjgghfpocfolhjlg";
 constexpr char kAndroidFilesAppId[] = "gmiohhmfhgfclpeacmdfancbipocempm";
@@ -219,20 +217,8 @@ std::string ConstructArcAppShortcutUrl(const std::string& app_id,
 }  // namespace
 
 // Package names, kept in sorted order.
-const char kInitialStartParam[] = "initialStart";
-const char kCategoryLauncher[] = "android.intent.category.LAUNCHER";
-const char kRequestStartTimeParamTemplate[] =
-    "S.org.chromium.arc.request.start=%" PRId64;
 const char kPlayStoreActivity[] = "com.android.vending.AssetBrowserActivity";
 const char kPlayStorePackage[] = "com.android.vending";
-
-// Intent labels, kept in sorted order.
-constexpr char kAction[] = "action";
-constexpr char kCategory[] = "category";
-constexpr char kComponent[] = "component";
-constexpr char kEndSuffix[] = "end";
-constexpr char kIntentPrefix[] = "#Intent";
-constexpr char kLaunchFlags[] = "launchFlags";
 
 // App IDs, kept in sorted order.
 const char kGmailAppId[] = "hhkfkjpmacfncmbapfohfocpjpdnobjg";
@@ -334,9 +320,9 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
   if (window_info)
     window_info->display_id = GetValidDisplayId(window_info->display_id);
 
-  ArcAppListPrefs* prefs = ArcAppListPrefs::Get(context);
+  ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(context);
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
-  absl::optional<std::string> launch_intent_to_send = std::move(launch_intent);
+  absl::optional<std::string> launch_intent_to_send = launch_intent;
   if (app_info && !app_info->ready) {
     if (!IsArcPlayStoreEnabledForProfile(profile)) {
       if (prefs->IsDefault(app_id)) {
@@ -400,14 +386,19 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     }
     prefs->SetLastLaunchTime(app_id);
     return true;
-  } else if (app_id == kPlayStoreAppId && !launch_intent_to_send) {
+  } else if (app_id == kPlayStoreAppId) {
     // Record launch request time in order to track Play Store default launch
     // performance.
-    launch_intent_to_send = GetLaunchIntent(
-        kPlayStorePackage, kPlayStoreActivity,
-        {base::StringPrintf(
-            kRequestStartTimeParamTemplate,
-            (base::TimeTicks::Now() - base::TimeTicks()).InMilliseconds())});
+    const std::vector<std::string> extra = {base::StringPrintf(
+        "%s=%" PRId64, kRequestStartTimeParamKey,
+        (base::TimeTicks::Now() - base::TimeTicks()).InMilliseconds())};
+    if (!launch_intent_to_send) {
+      launch_intent_to_send =
+          GetLaunchIntent(kPlayStorePackage, kPlayStoreActivity, extra);
+    } else {
+      launch_intent_to_send =
+          AppendLaunchIntent(launch_intent_to_send.value(), extra);
+    }
   }
 
   arc::ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMA(context);
@@ -587,89 +578,6 @@ bool IsArcItem(content::BrowserContext* context, const std::string& id) {
   return arc_prefs->IsRegistered(arc_app_shelf_id.app_id());
 }
 
-std::string GetLaunchIntent(const std::string& package_name,
-                            const std::string& activity,
-                            const std::vector<std::string>& extra_params) {
-  std::string extra_params_extracted;
-  for (const auto& extra_param : extra_params) {
-    extra_params_extracted += extra_param;
-    extra_params_extracted += ";";
-  }
-
-  // Remove the |package_name| prefix, if activity starts with it.
-  const char* activity_compact_name =
-      activity.find(package_name.c_str()) == 0
-          ? activity.c_str() + package_name.length()
-          : activity.c_str();
-
-  // Construct a string in format:
-  // #Intent;action=android.intent.action.MAIN;
-  //         category=android.intent.category.LAUNCHER;
-  //         launchFlags=0x10210000;
-  //         component=package_name/activity;
-  //         param1;param2;end
-  return base::StringPrintf(
-      "%s;%s=%s;%s=%s;%s=0x%x;%s=%s/%s;%s%s", kIntentPrefix, kAction,
-      kActionMain, kCategory, kCategoryLauncher, kLaunchFlags,
-      Intent::FLAG_ACTIVITY_NEW_TASK |
-          Intent::FLAG_ACTIVITY_RESET_TASK_IF_NEEDED,
-      kComponent, package_name.c_str(), activity_compact_name,
-      extra_params_extracted.c_str(), kEndSuffix);
-}
-
-bool ParseIntent(const std::string& intent_as_string, Intent* intent) {
-  DCHECK(intent);
-  const std::vector<base::StringPiece> parts = base::SplitStringPiece(
-      intent_as_string, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (parts.size() < 2 || parts.front() != kIntentPrefix ||
-      parts.back() != kEndSuffix) {
-    DVLOG(1) << "Failed to split intent " << intent_as_string << ".";
-    return false;
-  }
-
-  for (size_t i = 1; i < parts.size() - 1; ++i) {
-    const size_t separator = parts[i].find('=');
-    if (separator == std::string::npos) {
-      intent->AddExtraParam(std::string(parts[i]));
-      continue;
-    }
-    const base::StringPiece key = parts[i].substr(0, separator);
-    const base::StringPiece value = parts[i].substr(separator + 1);
-    if (key == kAction) {
-      intent->set_action(std::string(value));
-    } else if (key == kCategory) {
-      intent->set_category(std::string(value));
-    } else if (key == kLaunchFlags) {
-      uint32_t launch_flags;
-      const bool parsed = base::HexStringToUInt(value, &launch_flags);
-      if (!parsed) {
-        DVLOG(1) << "Failed to parse launchFlags: " << value << ".";
-        return false;
-      }
-      intent->set_launch_flags(launch_flags);
-    } else if (key == kComponent) {
-      const size_t component_separator = value.find('/');
-      if (component_separator == std::string::npos)
-        return false;
-      intent->set_package_name(
-          std::string(value.substr(0, component_separator)));
-      const base::StringPiece activity_compact_name =
-          value.substr(component_separator + 1);
-      if (!activity_compact_name.empty() && activity_compact_name[0] == '.') {
-        std::string activity(value.substr(0, component_separator));
-        activity += std::string(activity_compact_name);
-        intent->set_activity(activity);
-      } else {
-        intent->set_activity(std::string(activity_compact_name));
-      }
-    } else {
-      intent->AddExtraParam(std::string(parts[i]));
-    }
-  }
-
-  return true;
-}
-
 void GetLocaleAndPreferredLanguages(const Profile* profile,
                                     std::string* out_locale,
                                     std::string* out_preferred_languages) {
@@ -764,18 +672,6 @@ void RemoveAppLaunchObserver(content::BrowserContext* context,
   auto it = map->find(context);
   if (it != map->end())
     it->second.RemoveObserver(observer);
-}
-
-Intent::Intent() = default;
-
-Intent::~Intent() = default;
-
-void Intent::AddExtraParam(const std::string& extra_param) {
-  extra_params_.push_back(extra_param);
-}
-
-bool Intent::HasExtraParam(const std::string& extra_param) const {
-  return base::Contains(extra_params_, extra_param);
 }
 
 const std::string GetAppFromAppOrGroupId(content::BrowserContext* context,

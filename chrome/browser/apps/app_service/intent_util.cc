@@ -39,7 +39,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ui/app_list/arc/intent.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "components/arc/intent_helper/intent_constants.h"

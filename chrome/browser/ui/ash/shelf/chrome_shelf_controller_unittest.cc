@@ -2280,17 +2280,22 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcDeferredLaunch) {
   EXPECT_FALSE(shelf_controller_->GetItem(shelf_id_app_3));
   EXPECT_FALSE(shelf_controller_->GetItem(shelf_id_shortcut));
 
-  ASSERT_EQ(2U, arc_test_.app_instance()->launch_requests().size());
-  ASSERT_EQ(1U, arc_test_.app_instance()->launch_intents().size());
+  EXPECT_EQ(0U, arc_test_.app_instance()->launch_requests().size());
+  ASSERT_EQ(3U, arc_test_.app_instance()->launch_intents().size());
 
-  const arc::FakeAppInstance::Request* request1 =
-      arc_test_.app_instance()->launch_requests()[0].get();
-  const arc::FakeAppInstance::Request* request2 =
-      arc_test_.app_instance()->launch_requests()[1].get();
-
-  EXPECT_TRUE((request1->IsForApp(app2) && request2->IsForApp(gmail)) ||
-              (request1->IsForApp(gmail) && request2->IsForApp(app2)));
-  EXPECT_EQ(arc_test_.app_instance()->launch_intents()[0].c_str(),
+  EXPECT_GE(arc_test_.app_instance()->launch_intents()[0].find(
+                "component=fake.app.1/.activity;"),
+            0);
+  EXPECT_GE(arc_test_.app_instance()->launch_intents()[0].find(
+                "S.org.chromium.arc.request.deferred.start="),
+            0);
+  EXPECT_GE(arc_test_.app_instance()->launch_intents()[1].find(
+                "component=fake.app.2/.activity;"),
+            0);
+  EXPECT_GE(arc_test_.app_instance()->launch_intents()[1].find(
+                "S.org.chromium.arc.request.deferred.start="),
+            0);
+  EXPECT_EQ(arc_test_.app_instance()->launch_intents()[2].c_str(),
             shortcut.intent_uri);
 }
 
@@ -4607,6 +4612,47 @@ TEST_F(ChromeShelfControllerArcDefaultAppsTest, PlayStoreLaunchMetric) {
   // UMA is reported for app-ready launch. Note, previous call of SnapshotDelta
   // resets samples, so we expect here only one recorded.
   EXPECT_EQ(1, histogram->SnapshotDelta()->TotalCount());
+  play_store_window->Close();
+}
+
+TEST_F(ChromeShelfControllerArcDefaultAppsTest, DeferredLaunchMetric) {
+  extension_service_->AddExtension(arc_support_host_.get());
+  arc_test_.SetUp(profile());
+
+  InitShelfController();
+  EnablePlayStore(true);
+
+  constexpr char kHistogramName[] =
+      "Arc.FirstAppLaunchDelay.TimeDeltaUntilAppLaunch";
+
+  // Launch Play Store in deferred mode.
+  arc::LaunchApp(profile(), arc::kPlayStoreAppId, ui::EF_LEFT_MOUSE_BUTTON,
+                 arc::UserInteractionType::NOT_USER_INITIATED);
+
+  arc::mojom::AppInfo app;
+  app.activity = arc::kPlayStoreActivity;
+  app.package_name = arc::kPlayStorePackage;
+
+  EXPECT_FALSE(base::StatisticsRecorder::FindHistogram(kHistogramName));
+
+  arc_test_.app_instance()->SendRefreshAppList({app});
+
+  // No window attached at this time.
+  EXPECT_FALSE(base::StatisticsRecorder::FindHistogram(kHistogramName));
+
+  std::string play_store_window_id("org.chromium.arc.1");
+  views::Widget* const play_store_window =
+      CreateArcWindow(play_store_window_id);
+  ASSERT_EQ(1U, arc_test_.app_instance()->launch_intents().size());
+  arc_test_.app_instance()->SendTaskCreated(
+      1, app, arc_test_.app_instance()->launch_intents()[0]);
+
+  // UMA is reported since app becomes ready.
+  base::HistogramBase* const histogram =
+      base::StatisticsRecorder::FindHistogram(kHistogramName);
+  ASSERT_TRUE(histogram);
+  std::unique_ptr<base::HistogramSamples> samples = histogram->SnapshotDelta();
+  ASSERT_EQ(1, samples->TotalCount());
   play_store_window->Close();
 }
 

@@ -106,8 +106,11 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, GetPackageNameAndLaunchApp) {
   // successfully.
   CreateAppInstance(prefs);
   app_instance()->SendRefreshAppList({launchable_app});
-  ASSERT_EQ(1u, app_instance()->launch_requests().size());
-  EXPECT_TRUE(app_instance()->launch_requests()[0]->IsForApp(launchable_app));
+  EXPECT_EQ(0u, app_instance()->launch_requests().size());
+  ASSERT_EQ(1u, app_instance()->launch_intents().size());
+  EXPECT_NE(app_instance()->launch_intents()[0].find(
+                "component=Package_0/Dummy_activity_0;"),
+            std::string::npos);
 }
 
 IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, OnInstalled) {

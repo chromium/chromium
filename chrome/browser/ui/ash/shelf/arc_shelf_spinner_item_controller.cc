@@ -21,6 +21,7 @@ ArcShelfSpinnerItemController::ArcShelfSpinnerItemController(
     : ShelfSpinnerItemController(arc_app_id),
       event_flags_(event_flags),
       user_interaction_type_(user_interaction_type),
+      request_time_(base::TimeTicks::Now()),
       window_info_(std::move(window_info)) {
   arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
   // arc::ArcSessionManager might not be set in tests.
@@ -87,8 +88,21 @@ void ArcShelfSpinnerItemController::OnAppStatesChanged(
     return;
 
   // Close() destroys this object, so start launching the app first.
-  arc::LaunchApp(observed_profile_, arc_app_id, event_flags_,
-                 user_interaction_type_, std::move(window_info_));
+
+  // Embed deferred time only for app launches. Don't modify shortcuts.
+  // Shortcuts do not have activity so they are not compatible.
+  if (!app_info.shortcut) {
+    const std::string launch_intent = arc::GetLaunchIntent(
+        app_info.package_name, app_info.activity,
+        {arc::CreateIntentTicksExtraParam(
+            arc::kRequestDeferredStartTimeParamKey, request_time_)});
+    arc::LaunchAppWithIntent(observed_profile_, arc_app_id, launch_intent,
+                             event_flags_, user_interaction_type_,
+                             std::move(window_info_));
+  } else {
+    arc::LaunchApp(observed_profile_, arc_app_id, event_flags_,
+                   user_interaction_type_, std::move(window_info_));
+  }
   Close();
 }
 

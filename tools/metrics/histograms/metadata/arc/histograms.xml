@@ -848,18 +848,34 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.FirstAppLaunchDelay.TimeDelta" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2022-09-01">
   <owner>yusukes@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>
-    How long the user sees the spinning icon waiting for ARC container boot.
-    Zero when the container has already been up and running when the user
-    launches the ARC app.
+    Elapsed time from the when user requests app launch before ARC boot and ARC
+    is booted. Note, ARC booted does not mean app is actually shown. You may
+    consider Arc.FirstAppLaunchDelay.TimeDeltaUntilAppLaunch also. Unlike
+    Arc.FirstAppLaunchDelay.TimeDeltaUntilAppLaunch, this metric is recorded
+    only up to once a user session. Zero when the container has already been up
+    and running when the user launches the ARC app.
+  </summary>
+</histogram>
+
+<histogram name="Arc.FirstAppLaunchDelay.TimeDeltaUntilAppLaunch" units="ms"
+    expires_after="2022-09-01">
+  <owner>khmel@google.com</owner>
+  <owner>alanding@google.com</owner>
+  <summary>
+    How long the user sees the spinning icon waiting for ARC boot. This metric
+    is not recorded at all if the user launches apps only after ARC is booted.
+    Unlike Arc.FirstAppLaunchDelay.TimeDelta, this metric might be recorded
+    multiple times per a user session, for example when users starts multiple
+    ARC apps while ARC is booting.
   </summary>
 </histogram>
 
 <histogram name="Arc.FirstAppLaunchRequest.TimeDelta" units="ms"
-    expires_after="2021-03-11">
+    expires_after="2022-09-01">
   <owner>yusukes@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>
