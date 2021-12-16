@@ -352,29 +352,40 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
   // of the virtual memory cage, already use V8's random number generator.
   v8::V8::SetEntropySource(&GenerateEntropy);
 
-#if defined(V8_VIRTUAL_MEMORY_CAGE)
-  static_assert(ARCH_CPU_64_BITS,
-                "V8 virtual memory cage can only work in 64-bit builds");
-  // For now, creating the virtual memory cage is optional, and we only do it
-  // if the correpsonding feature is enabled. In the future, it will be
-  // mandatory when compiling with V8_VIRTUAL_MEMORY_CAGE.
-  bool v8_cage_is_initialized = false;
-  if (base::FeatureList::IsEnabled(features::kV8VirtualMemoryCage)) {
-    v8_cage_is_initialized = v8::V8::InitializeVirtualMemoryCage();
+#if defined(V8_SANDBOX)
+  static_assert(ARCH_CPU_64_BITS, "V8 sandbox can only work in 64-bit builds");
+  // For now, initializing the sandbox is optional, and we only do it if the
+  // correpsonding feature is enabled. In the future, it will be mandatory when
+  // compiling with V8_SANDBOX.
+  // However, if V8 uses sandboxed pointers, then the sandbox must be
+  // initialized as sandboxed pointers are simply offsets inside the sandbox.
+#if defined(V8_SANDBOXED_POINTERS)
+  bool must_initialize_sandbox = true;
+#else
+  bool must_initialize_sandbox = false;
+#endif
 
-    // Record the size of the virtual memory cage, in GB. The size will always
-    // be a power of two, so we use a sparse histogram to capture it.
-    // If the initialization failed, this API will return zero.
-    // The main reason for capturing this histogram here instead of having V8
-    // do it is that there are no Isolates available yet, which are required
-    // for recording histograms in V8.
-    size_t size = v8::V8::GetVirtualMemoryCageSizeInBytes();
+  bool v8_sandbox_is_initialized = false;
+  if (must_initialize_sandbox ||
+      base::FeatureList::IsEnabled(features::kV8VirtualMemoryCage)) {
+    v8_sandbox_is_initialized = v8::V8::InitializeSandbox();
+    CHECK(!must_initialize_sandbox || v8_sandbox_is_initialized);
+
+    // Record the size of the sandbox, in GB. The size will always be a power
+    // of two, so we use a sparse histogram to capture it. If the
+    // initialization failed, this API will return zero. The main reason for
+    // capturing this histogram here instead of having V8 do it is that there
+    // are no Isolates available yet, which are required for recording
+    // histograms in V8.
+    size_t size = v8::V8::GetSandboxSizeInBytes();
     int sizeInGB = size >> 30;
     DCHECK(base::bits::IsPowerOfTwo(size));
     DCHECK(size == 0 || sizeInGB > 0);
+    // This uses the term "cage" instead of "sandbox" for historical reasons.
+    // TODO(1218005) remove this once the finch trial has ended.
     base::UmaHistogramSparse("V8.VirtualMemoryCageSizeGB", sizeInGB);
   }
-#endif
+#endif  // V8_SANDBOX
 
   SetFlags(mode, js_command_line_flags);
 
@@ -390,27 +401,28 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
 
   v8_is_initialized = true;
 
-#if defined(V8_VIRTUAL_MEMORY_CAGE)
-  if (v8_cage_is_initialized) {
+#if defined(V8_SANDBOX)
+  if (v8_sandbox_is_initialized) {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused. This should match enum
     // V8VirtualMemoryCageMode in \tools\metrics\histograms\enums.xml
+    // This uses the term "cage" instead of "sandbox" for historical reasons.
+    // TODO(1218005) remove this once the finch trial has ended.
     enum class VirtualMemoryCageMode {
       kSecure = 0,
       kInsecure = 1,
       kMaxValue = kInsecure,
     };
     base::UmaHistogramEnumeration("V8.VirtualMemoryCageMode",
-                                  v8::V8::IsUsingSecureVirtualMemoryCage()
+                                  v8::V8::IsSandboxConfiguredSecurely()
                                       ? VirtualMemoryCageMode::kSecure
                                       : VirtualMemoryCageMode::kInsecure);
 
-    // When the virtual memory cage is enabled, ArrayBuffers must be located
-    // inside the cage. To achieve that, PA's ConfigurablePool is created inside
-    // the cage and Blink will create the ArrayBuffer partition inside that
-    // Pool if it is enabled.
-    v8::PageAllocator* cage_page_allocator =
-        v8::V8::GetVirtualMemoryCagePageAllocator();
+    // When the sandbox is enabled, ArrayBuffers must be allocated inside of
+    // it. To achieve that, PA's ConfigurablePool is created inside the sandbox
+    // and Blink then creates the ArrayBuffer partition in that Pool.
+    v8::VirtualAddressSpace* sandbox_address_space =
+        v8::V8::GetSandboxAddressSpace();
     const size_t max_pool_size =
         base::internal::PartitionAddressSpace::ConfigurablePoolMaxSize();
     const size_t min_pool_size =
@@ -421,7 +433,7 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
     // virtual memory is expensive on these OSes.
     if (base::win::GetVersion() < base::win::Version::WIN8_1) {
       // The size chosen here should be synchronized with the size of the
-      // virtual memory reservation for the V8 cage on these platforms.
+      // virtual memory reservation for the V8 sandbox on these platforms.
       // Currently, that is 8GB, of which 4GB are used for V8's pointer
       // compression region.
       // TODO(saelo) give this constant a proper name and maybe move it
@@ -436,19 +448,19 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
     // the size on failure until it succeeds.
     void* pool_base = nullptr;
     while (!pool_base && pool_size >= min_pool_size) {
-      pool_base = cage_page_allocator->AllocatePages(
-          nullptr, pool_size, pool_size, v8::PageAllocator::kNoAccess);
+      pool_base = reinterpret_cast<void*>(sandbox_address_space->AllocatePages(
+          0, pool_size, pool_size, v8::PagePermissions::kNoAccess));
       if (!pool_base) {
         pool_size /= 2;
       }
     }
-    // The V8 cage is guaranteed to be large enough to host the pool.
+    // The V8 sandbox is guaranteed to be large enough to host the pool.
     CHECK(pool_base);
     base::internal::PartitionAddressSpace::InitConfigurablePool(pool_base,
                                                                 pool_size);
     // TODO(saelo) maybe record the size of the Pool into UMA.
   }
-#endif
+#endif  // V8_SANDBOX
 }
 
 // static
