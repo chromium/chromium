@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.content_creation.reactions.LightweightReactio
 import org.chromium.chrome.browser.content_creation.reactions.ReactionGifDrawable;
 import org.chromium.chrome.browser.content_creation.reactions.internal.R;
 import org.chromium.chrome.browser.content_creation.reactions.toolbar.ToolbarReactionsDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.content_creation.reactions.ReactionMetadata;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -41,13 +42,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDelegate {
     private static final int DEFAULT_REACTION_SIZE_DP = 192;
     private static final int REACTION_OFFSET_DP = 45;
-    private static final int MAX_REACTION_COUNT = 10;
+    private static final int DEFAULT_MAX_REACTION_COUNT = 10;
+    private static final String MAX_REACTIONS_PARAM_NAME = "max_reactions";
 
     private final Activity mActivity;
     private final LightweightReactionsMediator mMediator;
     private final Set<ReactionLayout> mReactionLayouts;
     private final Map<ReactionLayout, Integer> mInitialPositionByReaction;
     private final List<Integer> mNumReactionsInPosition;
+    private final int mMaxReactionCount;
 
     private ReactionLayout mActiveReaction;
     private RelativeLayout mSceneBackground;
@@ -79,6 +82,10 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         mNbDuplicate = 0;
         mNbDelete = 0;
         mNbMove = 0;
+
+        mMaxReactionCount = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.LIGHTWEIGHT_REACTIONS, MAX_REACTIONS_PARAM_NAME,
+                DEFAULT_MAX_REACTION_COUNT);
     }
 
     public void setSceneBackground(RelativeLayout sceneBackground, ImageView screenshotView) {
@@ -272,7 +279,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
     // SceneEditorDelegate implementation.
     @Override
     public boolean canAddReaction() {
-        return mReactionLayouts.size() < MAX_REACTION_COUNT;
+        return mReactionLayouts.size() < mMaxReactionCount;
     }
 
     @Override
@@ -314,7 +321,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         }
         mToast = Toast.makeText(mActivity,
                 mActivity.getString(R.string.lightweight_reactions_error_max_reactions_reached,
-                        MAX_REACTION_COUNT),
+                        mMaxReactionCount),
                 Toast.LENGTH_SHORT);
         mToast.show();
     }
