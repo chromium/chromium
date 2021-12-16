@@ -12,8 +12,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.CachedFlagsSafeMode.Behavior;
 
@@ -28,9 +30,10 @@ import java.util.Map;
  * {@link CachedFlagsSafeMode}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowPostTask.class})
 public class CachedFeatureFlagsSafeModeUnitTest {
-    private static final String CRASHY_FEATURE = "FeatureA";
-    private static final String OK_FEATURE = "FeatureB";
+    private static final String CRASHY_FEATURE = "CrashyFeature";
+    private static final String OK_FEATURE = "OkFeature";
 
     Map<String, Boolean> mDefaultsSwapped;
 
@@ -324,7 +327,12 @@ public class CachedFeatureFlagsSafeModeUnitTest {
     private void endCleanRun(boolean crashyFeatureValue, boolean okFeatureValue) {
         FeatureList.setTestFeatures(makeFeatureMap(crashyFeatureValue, okFeatureValue));
         CachedFeatureFlags.cacheNativeFlags(Arrays.asList(CRASHY_FEATURE, OK_FEATURE));
+
         CachedFeatureFlags.onEndCheckpoint();
+        // Async task writing values should have run synchronously because of ShadowPostTask.
+        assertTrue(CachedFlagsSafeMode.getSafeValuePreferences().contains(
+                "Chrome.Flags.CachedFlag.CrashyFeature"));
+
         CachedFeatureFlags.resetFlagsForTesting();
     }
 
