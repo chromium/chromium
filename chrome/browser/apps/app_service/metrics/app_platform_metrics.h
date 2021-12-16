@@ -83,6 +83,17 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   AppPlatformMetrics& operator=(const AppPlatformMetrics&) = delete;
   ~AppPlatformMetrics() override;
 
+  // Returns the SourceId of UKM for `app_id`.
+  static ukm::SourceId GetSourceId(Profile* profile, const std::string& app_id);
+
+  // Returns the SourceId for a Borealis app_id.
+  static ukm::SourceId GetSourceIdForBorealis(Profile* profile,
+                                              const std::string& app_id);
+
+  // Gets the source id for a Crostini app_id.
+  static ukm::SourceId GetSourceIdForCrostini(Profile* profile,
+                                              const std::string& app_id);
+
   // UMA metrics name for installed apps count in Chrome OS.
   static std::string GetAppsCountHistogramNameForTest(
       AppTypeName app_type_name);
@@ -219,15 +230,6 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // Records the installed app in Chrome OS.
   void RecordAppsInstallUkm(const apps::AppUpdate& update,
                             InstallTime install_time);
-
-  // Returns the SourceId of UKM for `app_id`.
-  ukm::SourceId GetSourceId(const std::string& app_id);
-
-  // Returns the SourceId for a Borealis app_id.
-  ukm::SourceId GetSourceIdForBorealis(const std::string& app_id);
-
-  // Gets the source id for a Crostini app_id.
-  ukm::SourceId GetSourceIdForCrostini(const std::string& app_id);
 
   Profile* const profile_ = nullptr;
 

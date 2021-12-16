@@ -382,6 +382,136 @@ AppPlatformMetrics::~AppPlatformMetrics() {
 }
 
 // static
+ukm::SourceId AppPlatformMetrics::GetSourceId(Profile* profile,
+                                              const std::string& app_id) {
+  if (!AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return ukm::kInvalidSourceId;
+  }
+
+  ukm::SourceId source_id = ukm::kInvalidSourceId;
+  apps::mojom::AppType app_type = GetAppType(profile, app_id);
+  if (!ShouldRecordUkmForAppTypeName(ConvertMojomAppTypToAppType(app_type))) {
+    return ukm::kInvalidSourceId;
+  }
+
+  switch (app_type) {
+    case apps::mojom::AppType::kBuiltIn:
+    case apps::mojom::AppType::kChromeApp:
+    case apps::mojom::AppType::kExtension:
+      source_id = ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);
+      break;
+    case apps::mojom::AppType::kArc:
+    case apps::mojom::AppType::kWeb:
+    case apps::mojom::AppType::kSystemWeb: {
+      std::string publisher_id;
+      apps::mojom::InstallReason install_reason;
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->AppRegistryCache()
+          .ForOneApp(app_id, [&publisher_id,
+                              &install_reason](const apps::AppUpdate& update) {
+            publisher_id = update.PublisherId();
+            install_reason = update.InstallReason();
+          });
+      if (publisher_id.empty()) {
+        return ukm::kInvalidSourceId;
+      }
+      if (app_type == apps::mojom::AppType::kArc) {
+        source_id = ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(
+            publisher_id);
+        break;
+      }
+      if (app_type == apps::mojom::AppType::kSystemWeb ||
+          install_reason == apps::mojom::InstallReason::kSystem) {
+        // For system web apps, call GetSourceIdForChromeApp to record the app
+        // id because the url could be filtered by the server side.
+        source_id = ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);
+        break;
+      }
+      source_id =
+          ukm::AppSourceUrlRecorder::GetSourceIdForPWA(GURL(publisher_id));
+      break;
+    }
+    case apps::mojom::AppType::kCrostini:
+      source_id = GetSourceIdForCrostini(profile, app_id);
+      break;
+    case apps::mojom::AppType::kBorealis:
+      source_id = GetSourceIdForBorealis(profile, app_id);
+      break;
+    case apps::mojom::AppType::kUnknown:
+    case apps::mojom::AppType::kMacOs:
+    case apps::mojom::AppType::kPluginVm:
+    case apps::mojom::AppType::kStandaloneBrowser:
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+    case apps::mojom::AppType::kRemote:
+      return ukm::kInvalidSourceId;
+  }
+  return source_id;
+}
+
+// static
+ukm::SourceId AppPlatformMetrics::GetSourceIdForBorealis(
+    Profile* profile,
+    const std::string& app_id) {
+  // Most Borealis apps are identified by a numeric ID, except these.
+  if (app_id == borealis::kBorealisMainAppId) {
+    return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis("client");
+  } else if (app_id == borealis::kBorealisAppId) {
+    return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis("installer");
+  } else if (app_id.find(borealis::kIgnoredAppIdPrefix) != std::string::npos) {
+    // These are not real apps from a user's point of view,
+    // so it doesn't make sense to record metrics for them.
+    return ukm::kInvalidSourceId;
+  }
+
+  auto* registry =
+      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
+  auto registration = registry->GetRegistration(app_id);
+  if (!registration) {
+    // If there's no registration then we're not allowed to record anything that
+    // could identify the app (and we don't know the app name anyway), but
+    // recording every unregistered app in one big bucket is fine.
+    //
+    // In general all Borealis apps should be registered, so if we do see this
+    // Source ID being reported, that's a bug.
+    LOG(WARNING) << "Couldn't get Borealis ID for UNREGISTERED app " << app_id;
+    return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis("UNREGISTERED");
+  }
+  absl::optional<int> borealis_id =
+      borealis::GetBorealisAppId(registration->Exec());
+  if (!borealis_id)
+    LOG(WARNING) << "Couldn't get Borealis ID for registered app " << app_id;
+  return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis(
+      borealis_id ? base::NumberToString(borealis_id.value()) : "NoId");
+}
+
+// static
+ukm::SourceId AppPlatformMetrics::GetSourceIdForCrostini(
+    Profile* profile,
+    const std::string& app_id) {
+  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
+    // The terminal is special, since it's actually a web app (though one we
+    // count as Crostini) it doesn't have a desktop id, so give it a fake one.
+    return ukm::AppSourceUrlRecorder::GetSourceIdForCrostini("CrostiniTerminal",
+                                                             "Terminal");
+  }
+  auto* registry =
+      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
+  auto registration = registry->GetRegistration(app_id);
+  if (!registration) {
+    // If there's no registration then we're not allowed to record anything that
+    // could identify the app (and we don't know the app name anyway), but
+    // recording every unregistered app in one big bucket is fine.
+    return ukm::AppSourceUrlRecorder::GetSourceIdForCrostini("UNREGISTERED",
+                                                             "UNREGISTERED");
+  }
+  auto desktop_id = registration->DesktopFileId() == ""
+                        ? "NoId"
+                        : registration->DesktopFileId();
+  return ukm::AppSourceUrlRecorder::GetSourceIdForCrostini(
+      desktop_id, registration->Name());
+}
+
+// static
 std::string AppPlatformMetrics::GetAppsCountHistogramNameForTest(
     AppTypeName app_type_name) {
   return kAppsCountHistogramPrefix + GetAppTypeHistogramName(app_type_name);
@@ -477,7 +607,7 @@ void AppPlatformMetrics::RecordAppLaunchUkm(
   apps::AppTypeName app_type_name =
       GetAppTypeName(profile_, app_type, app_id, container);
 
-  ukm::SourceId source_id = GetSourceId(app_id);
+  ukm::SourceId source_id = GetSourceId(profile_, app_id);
   if (source_id == ukm::kInvalidSourceId) {
     return;
   }
@@ -498,7 +628,7 @@ void AppPlatformMetrics::RecordAppUninstallUkm(
       GetAppTypeName(profile_, app_type, app_id,
                      apps::mojom::LaunchContainer::kLaunchContainerNone);
 
-  ukm::SourceId source_id = GetSourceId(app_id);
+  ukm::SourceId source_id = GetSourceId(profile_, app_id);
   if (source_id == ukm::kInvalidSourceId) {
     return;
   }
@@ -755,7 +885,7 @@ void AppPlatformMetrics::SetWindowInActivated(
   app_type_v2_running_time_per_five_minutes_[app_type_name_v2] += running_time;
 
   if (usage_time_it == usage_time_per_five_minutes_.end()) {
-    auto source_id = GetSourceId(app_id);
+    auto source_id = GetSourceId(profile_, app_id);
     if (source_id != ukm::kInvalidSourceId) {
       usage_time_per_five_minutes_[it->first].source_id = source_id;
       usage_time_it = usage_time_per_five_minutes_.find(it->first);
@@ -897,7 +1027,7 @@ void AppPlatformMetrics::RecordAppsUsageTime() {
 
     auto usage_time_it = usage_time_per_five_minutes_.find(it.first);
     if (usage_time_it == usage_time_per_five_minutes_.end()) {
-      auto source_id = GetSourceId(it.second.app_id);
+      auto source_id = GetSourceId(profile_, it.second.app_id);
       if (source_id != ukm::kInvalidSourceId) {
         usage_time_per_five_minutes_[it.first].source_id = source_id;
         usage_time_it = usage_time_per_five_minutes_.find(it.first);
@@ -965,7 +1095,7 @@ void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
       GetAppTypeName(profile_, update.AppType(), update.AppId(),
                      apps::mojom::LaunchContainer::kLaunchContainerNone);
 
-  ukm::SourceId source_id = GetSourceId(update.AppId());
+  ukm::SourceId source_id = GetSourceId(profile_, update.AppId());
   if (source_id == ukm::kInvalidSourceId) {
     return;
   }
@@ -978,124 +1108,6 @@ void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
       .SetUserDeviceMatrix(user_type_by_device_type_)
       .Record(ukm::UkmRecorder::Get());
   ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
-}
-
-ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
-  ukm::SourceId source_id = ukm::kInvalidSourceId;
-  apps::mojom::AppType app_type = GetAppType(profile_, app_id);
-  if (!ShouldRecordUkmForAppTypeName(ConvertMojomAppTypToAppType(app_type))) {
-    return ukm::kInvalidSourceId;
-  }
-
-  switch (app_type) {
-    case apps::mojom::AppType::kBuiltIn:
-    case apps::mojom::AppType::kChromeApp:
-    case apps::mojom::AppType::kExtension:
-      source_id = ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);
-      break;
-    case apps::mojom::AppType::kArc:
-    case apps::mojom::AppType::kWeb:
-    case apps::mojom::AppType::kSystemWeb: {
-      std::string publisher_id;
-      apps::mojom::InstallReason install_reason;
-      app_registry_cache_.ForOneApp(app_id, [&publisher_id, &install_reason](
-                                                const apps::AppUpdate& update) {
-        publisher_id = update.PublisherId();
-        install_reason = update.InstallReason();
-      });
-      if (publisher_id.empty()) {
-        return ukm::kInvalidSourceId;
-      }
-      if (app_type == apps::mojom::AppType::kArc) {
-        source_id = ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(
-            publisher_id);
-        break;
-      }
-      if (app_type == apps::mojom::AppType::kSystemWeb ||
-          install_reason == apps::mojom::InstallReason::kSystem) {
-        // For system web apps, call GetSourceIdForChromeApp to record the app
-        // id because the url could be filtered by the server side.
-        source_id = ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);
-        break;
-      }
-      source_id =
-          ukm::AppSourceUrlRecorder::GetSourceIdForPWA(GURL(publisher_id));
-      break;
-    }
-    case apps::mojom::AppType::kCrostini:
-      source_id = GetSourceIdForCrostini(app_id);
-      break;
-    case apps::mojom::AppType::kBorealis:
-      source_id = GetSourceIdForBorealis(app_id);
-      break;
-    case apps::mojom::AppType::kUnknown:
-    case apps::mojom::AppType::kMacOs:
-    case apps::mojom::AppType::kPluginVm:
-    case apps::mojom::AppType::kStandaloneBrowser:
-    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
-    case apps::mojom::AppType::kRemote:
-      return ukm::kInvalidSourceId;
-  }
-  return source_id;
-}
-
-ukm::SourceId AppPlatformMetrics::GetSourceIdForBorealis(
-    const std::string& app_id) {
-  // Most Borealis apps are identified by a numeric ID, except these.
-  if (app_id == borealis::kBorealisMainAppId) {
-    return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis("client");
-  } else if (app_id == borealis::kBorealisAppId) {
-    return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis("installer");
-  } else if (app_id.find(borealis::kIgnoredAppIdPrefix) != std::string::npos) {
-    // These are not real apps from a user's point of view,
-    // so it doesn't make sense to record metrics for them.
-    return ukm::kInvalidSourceId;
-  }
-
-  auto* registry =
-      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
-  auto registration = registry->GetRegistration(app_id);
-  if (!registration) {
-    // If there's no registration then we're not allowed to record anything that
-    // could identify the app (and we don't know the app name anyway), but
-    // recording every unregistered app in one big bucket is fine.
-    //
-    // In general all Borealis apps should be registered, so if we do see this
-    // Source ID being reported, that's a bug.
-    LOG(WARNING) << "Couldn't get Borealis ID for UNREGISTERED app " << app_id;
-    return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis("UNREGISTERED");
-  }
-  absl::optional<int> borealis_id =
-      borealis::GetBorealisAppId(registration->Exec());
-  if (!borealis_id)
-    LOG(WARNING) << "Couldn't get Borealis ID for registered app " << app_id;
-  return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis(
-      borealis_id ? base::NumberToString(borealis_id.value()) : "NoId");
-}
-
-ukm::SourceId AppPlatformMetrics::GetSourceIdForCrostini(
-    const std::string& app_id) {
-  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
-    // The terminal is special, since it's actually a web app (though one we
-    // count as Crostini) it doesn't have a desktop id, so give it a fake one.
-    return ukm::AppSourceUrlRecorder::GetSourceIdForCrostini("CrostiniTerminal",
-                                                             "Terminal");
-  }
-  auto* registry =
-      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
-  auto registration = registry->GetRegistration(app_id);
-  if (!registration) {
-    // If there's no registration then we're not allowed to record anything that
-    // could identify the app (and we don't know the app name anyway), but
-    // recording every unregistered app in one big bucket is fine.
-    return ukm::AppSourceUrlRecorder::GetSourceIdForCrostini("UNREGISTERED",
-                                                             "UNREGISTERED");
-  }
-  auto desktop_id = registration->DesktopFileId() == ""
-                        ? "NoId"
-                        : registration->DesktopFileId();
-  return ukm::AppSourceUrlRecorder::GetSourceIdForCrostini(
-      desktop_id, registration->Name());
 }
 
 }  // namespace apps
