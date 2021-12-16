@@ -2321,8 +2321,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // Tests that the short vibration sequence on the page stops after it enters
 // bfcache.
+// http://crbug.com/1280741
+#if defined(OS_MAC)
+#define MAYBE_ShortVibrationSequenceStopsAfterEnteringCache \
+    DISABLED_ShortVibrationSequenceStopsAfterEnteringCache
+#else
+#define MAYBE_ShortVibrationSequenceStopsAfterEnteringCache \
+    ShortVibrationSequenceStopsAfterEnteringCache
+#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       ShortVibrationSequenceStopsAfterEnteringCache) {
+                       MAYBE_ShortVibrationSequenceStopsAfterEnteringCache) {
   ASSERT_TRUE(embedded_test_server()->Start());
   TestVibrationManager vibration_manager;
 
