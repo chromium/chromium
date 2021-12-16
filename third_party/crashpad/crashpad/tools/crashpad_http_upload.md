@@ -22,7 +22,7 @@ crashpad_http_upload—Send an HTTP POST request
 
 ## Synopsis
 
-**crashpad_http_uplaod** [_OPTION…_]
+**crashpad_http_upload** [_OPTION…_]
 
 ## Description
 
