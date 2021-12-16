@@ -582,7 +582,8 @@ export class PluginController {
             /** @type {!Point} */ (messageData));
         break;
       case 'ackScrollToRemote':
-        this.viewport_.ackScrollToRemote();
+        this.viewport_.ackScrollToRemote(
+            /** @type {!Point} */ (messageData));
         break;
       case 'saveData':
         this.saveData_(/** @type {!SaveDataMessageData} */ (messageData));

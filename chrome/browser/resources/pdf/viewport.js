@@ -82,11 +82,12 @@ export class Viewport {
     /** @private {!HTMLElement} */
     this.window_ = container;
 
-    /** @private {!ScrollContent} */
-    this.scrollContent_ = new ScrollContent(this.window_, sizer, content);
-
     /** @private {number} */
     this.scrollbarWidth_ = scrollbarWidth;
+
+    /** @private {!ScrollContent} */
+    this.scrollContent_ =
+        new ScrollContent(this.window_, sizer, content, this.scrollbarWidth_);
 
     /** @private {number} */
     this.defaultZoom_ = defaultZoom;
@@ -228,9 +229,10 @@ export class Viewport {
 
   /**
    * Receives acknowledgment of scroll position synchronized to remote content.
+   * @param {!Point} position
    */
-  ackScrollToRemote() {
-    this.scrollContent_.ackScrollToRemote();
+  ackScrollToRemote(position) {
+    this.scrollContent_.ackScrollToRemote(position);
   }
 
   /** @param {function():void} viewportChangedCallback */
@@ -1587,8 +1589,9 @@ class ScrollContent {
    *     scrollable content.
    * @param {!Element} content The element which is the parent of the scrollable
    *     content.
+   * @param {number} scrollbarWidth The width of any scrollbars.
    */
-  constructor(container, sizer, content) {
+  constructor(container, sizer, content, scrollbarWidth) {
     /** @private @const {!Element} */
     this.container_ = container;
 
@@ -1600,6 +1603,9 @@ class ScrollContent {
 
     /** @private @const {!Element} */
     this.content_ = content;
+
+    /** @private @const {number} */
+    this.scrollbarWidth_ = scrollbarWidth;
 
     /** @private {?UnseasonedPdfPluginElement} */
     this.unseasonedPlugin_ = null;
@@ -1718,10 +1724,17 @@ class ScrollContent {
 
   /**
    * Receives acknowledgment of scroll position synchronized to remote content.
+   * @param {!Point} position
    */
-  ackScrollToRemote() {
+  ackScrollToRemote(position) {
     assert(this.unackedScrollsToRemote_ > 0);
-    --this.unackedScrollsToRemote_;
+
+    if (--this.unackedScrollsToRemote_ === 0) {
+      // Accept remote adjustment when there are no pending scrolls-to-remote.
+      this.scrollLeft_ = position.x;
+      this.scrollTop_ = position.y;
+    }
+
     this.dispatchScroll_();
   }
 
@@ -1785,12 +1798,33 @@ class ScrollContent {
    */
   scrollTo(x, y) {
     if (this.unseasonedPlugin_) {
+      // TODO(crbug.com/1277228): Can get NaN if zoom calculations divide by 0.
+      x = Number.isNaN(x) ? 0 : x;
+      y = Number.isNaN(y) ? 0 : y;
+
+      // Clamp coordinates to scroll limits. Note that the order of min() and
+      // max() operations is significant, as each "maximum" can be negative.
+      const maxX = this.maxScroll_(
+          this.width_, this.container_.clientWidth,
+          this.height_ > this.container_.clientHeight);
+      const maxY = this.maxScroll_(
+          this.height_, this.container_.clientHeight,
+          this.width_ > this.container_.clientWidth);
+
+      if (this.container_.dir === 'rtl') {
+        // Right-to-left.
+        x = Math.min(Math.max(-maxX, x), 0);
+      } else {
+        // Left-to-right.
+        x = Math.max(0, Math.min(x, maxX));
+      }
+      y = Math.max(0, Math.min(y, maxY));
+
       // To match the DOM's scrollTo() behavior, update the scroll position
       // immediately, but fire the scroll event later (when the remote side
       // triggers `ackScrollToRemote()`).
-      // TODO(crbug.com/1277228): Can get NaN if zoom calculations divide by 0.
-      this.scrollLeft_ = Number.isNaN(x) ? 0 : x;
-      this.scrollTop_ = Number.isNaN(y) ? 0 : y;
+      this.scrollLeft_ = x;
+      this.scrollTop_ = y;
 
       ++this.unackedScrollsToRemote_;
       this.unseasonedPlugin_.postMessage({
@@ -1801,5 +1835,23 @@ class ScrollContent {
     } else {
       this.container_.scrollTo(x, y);
     }
+  }
+
+  /**
+   * Computes maximum scroll position.
+   * @param {number} maxContent The maximum content dimension.
+   * @param {number} maxContainer The maximum container dimension.
+   * @param {boolean} hasScrollbar Whether to compensate for a scrollbar.
+   * @return {number}
+   * @private
+   */
+  maxScroll_(maxContent, maxContainer, hasScrollbar) {
+    if (hasScrollbar) {
+      maxContainer -= this.scrollbarWidth_;
+    }
+
+    // This may return a negative value, which is fine because scroll positions
+    // are clamped to a minimum of 0.
+    return maxContent - maxContainer;
   }
 }

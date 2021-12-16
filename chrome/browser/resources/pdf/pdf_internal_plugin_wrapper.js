@@ -46,8 +46,12 @@ channel.port1.onmessage = e => {
       return;
 
     case 'syncScrollToRemote':
-      channel.port1.postMessage({type: 'ackScrollToRemote'});
       window.scrollTo(e.data.x, e.data.y);
+      channel.port1.postMessage({
+        type: 'ackScrollToRemote',
+        x: window.scrollX,
+        y: window.scrollY,
+      });
       return;
 
     case 'updateSize':
