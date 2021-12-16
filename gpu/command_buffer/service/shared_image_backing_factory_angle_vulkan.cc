@@ -162,6 +162,10 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
     }
     access_mode_ = kGLReadWrite;
 
+    // Need to submit recorded work in skia's command buffer to the GPU.
+    // TODO(penghuang): only call submit() if it is necessary.
+    context_state_->gr_context()->submit();
+
     gl::GLApi* api = gl::g_current_gl_context;
     GLuint texture = passthrough_texture_->service_id();
     // Acquire the texture, so ANGLE can access it.
