@@ -2897,8 +2897,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Hide the tab strip and take a snapshot of it for better animation. However,
   // this is not necessary to do if the thumb strip will never actually be
   // revealed.
-  if (currentViewRevealState != ViewRevealState::Hidden ||
-      nextViewRevealState != ViewRevealState::Hidden) {
+  if (currentViewRevealState != nextViewRevealState) {
     // If a snapshot of a hidden view is taken, the snapshot will be a blank
     // view. However, if the view's parent is hidden but the view itself is not,
     // the snapshot will not be a blank view.
