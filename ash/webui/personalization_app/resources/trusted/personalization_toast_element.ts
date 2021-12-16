@@ -47,8 +47,9 @@ export class PersonalizationToastElement extends WithPersonalizationStore {
     this.watch('error_', state => state.error);
     this.watch(
         'isLoading_',
-        state => state.loading.setImage > 0 || state.loading.selected ||
-            state.loading.refreshWallpaper);
+        state => state.wallpaper.loading.setImage > 0 ||
+            state.wallpaper.loading.selected ||
+            state.wallpaper.loading.refreshWallpaper);
   }
 
   private onDismissClicked_() {

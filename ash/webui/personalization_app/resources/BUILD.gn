@@ -29,9 +29,12 @@ static_js_files = [
   "trusted/personalization_store.ts",
   "trusted/personalization_test_api.ts",
   "trusted/utils.ts",
+  "trusted/wallpaper/wallpaper_actions.ts",
   "trusted/wallpaper/untrusted_message_handler.js",
   "trusted/wallpaper/wallpaper_controller.ts",
   "trusted/wallpaper/wallpaper_interface_provider.ts",
+  "trusted/wallpaper/wallpaper_reducers.ts",
+  "trusted/wallpaper/wallpaper_state.ts",
   "trusted/wallpaper/wallpaper_subpage.ts",
 
   "untrusted/iframe_api.ts",

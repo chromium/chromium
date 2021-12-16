@@ -84,7 +84,7 @@ export function PersonalizationBreadcrumbTest() {
         PersonalizationBreadcrumb.is,
         {'path': Paths.CollectionImages, 'collectionId': collection.id});
 
-    personalizationStore.data.backdrop.collections =
+    personalizationStore.data.wallpaper.backdrop.collections =
         wallpaperProvider.collections;
     personalizationStore.notifyObservers();
 
@@ -107,7 +107,8 @@ export function PersonalizationBreadcrumbTest() {
     googlePhotosAlbum.id = '9bd1d7a3-f995-4445-be47-53c5b58ce1cb';
     googlePhotosAlbum.name = 'Album 0';
 
-    personalizationStore.data.googlePhotos.albums = [googlePhotosAlbum];
+    personalizationStore.data.wallpaper.googlePhotos.albums =
+        [googlePhotosAlbum];
     personalizationStore.notifyObservers();
 
     breadcrumbElement = initElement(PersonalizationBreadcrumb.is, {
@@ -145,7 +146,8 @@ export function PersonalizationBreadcrumbTest() {
     breadcrumbElement = initElement(
         PersonalizationBreadcrumb.is, {'path': Paths.LocalCollection});
 
-    personalizationStore.data.local.images = wallpaperProvider.localImages;
+    personalizationStore.data.wallpaper.local.images =
+        wallpaperProvider.localImages;
     personalizationStore.notifyObservers();
 
     await waitAfterNextRender(breadcrumbElement);

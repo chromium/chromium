@@ -27,7 +27,7 @@ export function onMessageReceived(event) {
 
   switch (event.data.type) {
     case EventType.SELECT_COLLECTION:
-      const collections = store.data.backdrop.collections;
+      const collections = store.data.wallpaper.backdrop.collections;
 
       const selectedCollection = validateReceivedSelection(event, collections);
       PersonalizationRouter.instance().selectCollection(selectedCollection);
@@ -40,7 +40,7 @@ export function onMessageReceived(event) {
       break;
     case EventType.SELECT_IMAGE:
       const collectionId = PersonalizationRouter.instance().collectionId;
-      const images = store.data.backdrop.images[collectionId];
+      const images = store.data.wallpaper.backdrop.images[collectionId];
       const selectedImage = validateReceivedSelection(event, images);
       selectWallpaper(selectedImage, getWallpaperProvider(), store);
       break;

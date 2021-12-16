@@ -91,15 +91,16 @@ export function WallpaperFullscreenTest() {
         wallpaperFullscreenElement.shadowRoot.getElementById('container');
     assertTrue(container.hidden);
 
-    personalizationStore.data.fullscreen = true;
-    personalizationStore.data.currentSelected = currentSelectedCustomImage;
+    personalizationStore.data.wallpaper.fullscreen = true;
+    personalizationStore.data.wallpaper.currentSelected =
+        currentSelectedCustomImage;
     personalizationStore.notifyObservers();
 
     await requestFullscreenPromise;
 
     assertFalse(container.hidden);
 
-    personalizationStore.data.fullscreen = false;
+    personalizationStore.data.wallpaper.fullscreen = false;
     personalizationStore.notifyObservers();
 
     await exitFullscreenPromise;
@@ -115,8 +116,9 @@ export function WallpaperFullscreenTest() {
 
     assertEquals(null, wallpaperFullscreenElement.selectedLayout_);
 
-    personalizationStore.data.fullscreen = true;
-    personalizationStore.data.currentSelected = currentSelectedCustomImage;
+    personalizationStore.data.wallpaper.fullscreen = true;
+    personalizationStore.data.wallpaper.currentSelected =
+        currentSelectedCustomImage;
     personalizationStore.notifyObservers();
 
     await requestFullscreenPromise;
@@ -125,7 +127,7 @@ export function WallpaperFullscreenTest() {
         WallpaperLayout.kCenterCropped,
         wallpaperFullscreenElement.selectedLayout_);
 
-    personalizationStore.data.fullscreen = false;
+    personalizationStore.data.wallpaper.fullscreen = false;
     personalizationStore.notifyObservers();
 
     await exitFullscreenPromise;
@@ -141,8 +143,9 @@ export function WallpaperFullscreenTest() {
 
     assertEquals('', document.body.className);
 
-    personalizationStore.data.fullscreen = true;
-    personalizationStore.data.currentSelected = currentSelectedCustomImage;
+    personalizationStore.data.wallpaper.fullscreen = true;
+    personalizationStore.data.wallpaper.currentSelected =
+        currentSelectedCustomImage;
     personalizationStore.notifyObservers();
 
     await requestFullscreenPromise;
@@ -162,8 +165,9 @@ export function WallpaperFullscreenTest() {
         mockFullscreenApis();
     await waitAfterNextRender(wallpaperFullscreenElement);
 
-    personalizationStore.data.fullscreen = true;
-    personalizationStore.data.currentSelected = currentSelectedCustomImage;
+    personalizationStore.data.wallpaper.fullscreen = true;
+    personalizationStore.data.wallpaper.currentSelected =
+        currentSelectedCustomImage;
     personalizationStore.notifyObservers();
 
     await requestFullscreenPromise;
@@ -183,7 +187,8 @@ export function WallpaperFullscreenTest() {
         null,
         wallpaperFullscreenElement.shadowRoot.getElementById('layoutButtons'));
 
-    personalizationStore.data.pendingSelected = pendingSelectedCustomImage;
+    personalizationStore.data.wallpaper.pendingSelected =
+        pendingSelectedCustomImage;
     personalizationStore.notifyObservers();
 
     await waitAfterNextRender(wallpaperFullscreenElement);
@@ -197,9 +202,11 @@ export function WallpaperFullscreenTest() {
     const {requestFullscreenPromise} = mockFullscreenApis();
     await waitAfterNextRender(wallpaperFullscreenElement);
 
-    personalizationStore.data.currentSelected = currentSelectedCustomImage;
-    personalizationStore.data.pendingSelected = pendingSelectedCustomImage;
-    personalizationStore.data.fullscreen = true;
+    personalizationStore.data.wallpaper.currentSelected =
+        currentSelectedCustomImage;
+    personalizationStore.data.wallpaper.pendingSelected =
+        pendingSelectedCustomImage;
+    personalizationStore.data.wallpaper.fullscreen = true;
     personalizationStore.notifyObservers();
 
     await requestFullscreenPromise;
@@ -233,9 +240,11 @@ export function WallpaperFullscreenTest() {
     const {requestFullscreenPromise} = mockFullscreenApis();
     await waitAfterNextRender(wallpaperFullscreenElement);
 
-    personalizationStore.data.currentSelected = currentSelectedCustomImage;
-    personalizationStore.data.pendingSelected = pendingSelectedCustomImage;
-    personalizationStore.data.fullscreen = true;
+    personalizationStore.data.wallpaper.currentSelected =
+        currentSelectedCustomImage;
+    personalizationStore.data.wallpaper.pendingSelected =
+        pendingSelectedCustomImage;
+    personalizationStore.data.wallpaper.fullscreen = true;
     personalizationStore.notifyObservers();
 
     await requestFullscreenPromise;
@@ -243,7 +252,7 @@ export function WallpaperFullscreenTest() {
     // Current image is kCenter but initial state should reset to default.
     assertEquals(
         WallpaperLayout.kCenter,
-        personalizationStore.data.currentSelected.layout);
+        personalizationStore.data.wallpaper.currentSelected.layout);
 
     const center = wallpaperFullscreenElement.shadowRoot.querySelector(
         'cr-button[data-layout="CENTER"]');
@@ -265,14 +274,15 @@ export function WallpaperFullscreenTest() {
     const {requestFullscreenPromise} = mockFullscreenApis();
     await waitAfterNextRender(wallpaperFullscreenElement);
 
-    personalizationStore.data.fullscreen = true;
-    personalizationStore.data.currentSelected = {
-      ...personalizationStore.data.currentSelected,
+    personalizationStore.data.wallpaper.fullscreen = true;
+    personalizationStore.data.wallpaper.currentSelected = {
+      ...personalizationStore.data.wallpaper.currentSelected,
       type: WallpaperType.kDaily,
     };
-    personalizationStore.data.dailyRefresh.collectionId =
+    personalizationStore.data.wallpaper.dailyRefresh.collectionId =
         wallpaperProvider.collections[0].id;
-    personalizationStore.data.pendingSelected = wallpaperProvider.images[1];
+    personalizationStore.data.wallpaper.pendingSelected =
+        wallpaperProvider.images[1];
     personalizationStore.notifyObservers();
 
     await waitAfterNextRender(wallpaperFullscreenElement);

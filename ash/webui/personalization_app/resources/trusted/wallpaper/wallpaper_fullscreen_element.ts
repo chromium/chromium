@@ -16,12 +16,12 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {setFullscreenEnabledAction} from '../personalization_actions.js';
 import {CurrentWallpaper, WallpaperImage, WallpaperLayout, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getWallpaperLayoutEnum} from '../utils.js';
 import {isFilePath} from '../utils.js';
 
+import {setFullscreenEnabledAction} from './wallpaper_actions.js';
 import {cancelPreviewWallpaper, confirmPreviewWallpaper, selectWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
@@ -84,14 +84,14 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
         'fullscreenchange', this.onFullscreenChange_.bind(this));
 
     this.watch<WallpaperFullscreen['visible_']>(
-        'visible_', state => state.fullscreen);
+        'visible_', state => state.wallpaper.fullscreen);
     this.watch<WallpaperFullscreen['showLayoutOptions_']>(
         'showLayoutOptions_',
-        state => !!(state.pendingSelected?.hasOwnProperty('path')));
+        state => !!(state.wallpaper.pendingSelected?.hasOwnProperty('path')));
     this.watch<WallpaperFullscreen['currentSelected_']>(
-        'currentSelected_', state => state.currentSelected);
+        'currentSelected_', state => state.wallpaper.currentSelected);
     this.watch<WallpaperFullscreen['pendingSelected_']>(
-        'pendingSelected_', state => state.pendingSelected);
+        'pendingSelected_', state => state.wallpaper.pendingSelected);
 
     // Visibility change will fire in case of alt+tab, closing the window, or
     // anything else that exits out of full screen mode.

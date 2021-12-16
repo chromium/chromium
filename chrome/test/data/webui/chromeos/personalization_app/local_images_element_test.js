@@ -50,11 +50,14 @@ export function LocalImagesTest() {
   });
 
   test('displays a loading placeholder for unloaded local images', async () => {
-    personalizationStore.data.local = {
+    personalizationStore.data.wallpaper.local = {
       images: wallpaperProvider.localImages,
       data: wallpaperProvider.localImageData,
     };
-    personalizationStore.data.loading.local = {images: false, data: {}};
+    personalizationStore.data.wallpaper.loading.local = {
+      images: false,
+      data: {}
+    };
 
     localImagesElement = initElement(LocalImages.is, {hidden: false});
     await waitAfterNextRender(localImagesElement);
@@ -66,7 +69,7 @@ export function LocalImagesTest() {
     // entry for the image. Therefore should be 2 loading tiles.
     assertEquals(2, loadingPlaceholders.length);
 
-    personalizationStore.data.loading.local = {
+    personalizationStore.data.wallpaper.loading.local = {
       images: false,
       data: {'LocalImage0.png': true, 'LocalImage1.png': true},
     };
@@ -78,7 +81,7 @@ export function LocalImagesTest() {
     // Still 2 loading tiles.
     assertEquals(2, loadingPlaceholders.length);
 
-    personalizationStore.data.loading.local = {
+    personalizationStore.data.wallpaper.loading.local = {
       images: false,
       data: {'LocalImage0.png': false, 'LocalImage1.png': true},
     };
@@ -92,11 +95,14 @@ export function LocalImagesTest() {
   test(
       'displays images for current local images that have successfully loaded',
       async () => {
-        personalizationStore.data.local = {
+        personalizationStore.data.wallpaper.local = {
           images: wallpaperProvider.localImages,
           data: wallpaperProvider.localImageData,
         };
-        personalizationStore.data.loading.local = {images: false, data: {}};
+        personalizationStore.data.wallpaper.loading.local = {
+          images: false,
+          data: {}
+        };
 
         localImagesElement = initElement(LocalImages.is, {hidden: false});
 
@@ -110,7 +116,7 @@ export function LocalImagesTest() {
         assertEquals(0, ironList.shadowRoot.querySelectorAll('img').length);
 
         // Set loading finished for first thumbnail.
-        personalizationStore.data.loading.local.data = {
+        personalizationStore.data.wallpaper.loading.local.data = {
           'LocalImage0.png': false
         };
         personalizationStore.notifyObservers();
@@ -121,11 +127,11 @@ export function LocalImagesTest() {
         assertEquals('data://localimage0data', imgTags[0].src);
 
         // Set loading failed for second thumbnail.
-        personalizationStore.data.loading.local.data = {
+        personalizationStore.data.wallpaper.loading.local.data = {
           'LocalImage0.png': false,
           'LocalImage1.png': false
         };
-        personalizationStore.data.local.data = {
+        personalizationStore.data.wallpaper.local.data = {
           'LocalImage0.png': 'data://localimage0data',
           'LocalImage1.png': null
         };
@@ -140,12 +146,12 @@ export function LocalImagesTest() {
   test(
       'sets aria-selected attribute if image name matches currently selected',
       async () => {
-        personalizationStore.data.local = {
+        personalizationStore.data.wallpaper.local = {
           images: wallpaperProvider.localImages,
           data: wallpaperProvider.localImageData,
         };
         // Done loading.
-        personalizationStore.data.loading.local = {
+        personalizationStore.data.wallpaper.loading.local = {
           images: false,
           data: {'LocalImage0.png': false, 'LocalImage1.png': false},
         };
@@ -163,7 +169,9 @@ export function LocalImagesTest() {
         assertTrue(Array.from(images).every(
             image => image.getAttribute('aria-selected') === 'false'));
 
-        personalizationStore.data.currentSelected = {key: 'LocalImage1.png'};
+        personalizationStore.data.wallpaper.currentSelected = {
+          key: 'LocalImage1.png'
+        };
         personalizationStore.notifyObservers();
 
         assertEquals(2, images.length);
@@ -172,12 +180,12 @@ export function LocalImagesTest() {
       });
 
   test('images have proper aria label when loaded', async () => {
-    personalizationStore.data.local = {
+    personalizationStore.data.wallpaper.local = {
       images: wallpaperProvider.localImages,
       data: wallpaperProvider.localImageData,
     };
     // Done loading.
-    personalizationStore.data.loading.local = {
+    personalizationStore.data.wallpaper.loading.local = {
       images: false,
       data: {'LocalImage0.png': false, 'LocalImage1.png': false},
     };

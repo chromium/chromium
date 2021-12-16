@@ -110,10 +110,11 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
     super.connectedCallback();
 
     this.watch<GooglePhotosPhotosByAlbumId['photosByAlbumId_']>(
-        'photosByAlbumId_', state => state.googlePhotos.photosByAlbumId);
+        'photosByAlbumId_',
+        state => state.wallpaper.googlePhotos.photosByAlbumId);
     this.watch<GooglePhotosPhotosByAlbumId['photosByAlbumIdLoading_']>(
         'photosByAlbumIdLoading_',
-        state => state.loading.googlePhotos.photosByAlbumId);
+        state => state.wallpaper.loading.googlePhotos.photosByAlbumId);
 
     this.updateFromStore();
   }

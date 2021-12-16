@@ -257,12 +257,13 @@ export class WallpaperImages extends WithPersonalizationStore {
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-    this.watch('images_', state => state.backdrop.images);
-    this.watch('imagesLoading_', state => state.loading.images);
-    this.watch('collections_', state => state.backdrop.collections);
-    this.watch('collectionsLoading_', state => state.loading.collections);
-    this.watch('currentSelected_', state => state.currentSelected);
-    this.watch('pendingSelected_', state => state.pendingSelected);
+    this.watch('images_', state => state.wallpaper.backdrop.images);
+    this.watch('imagesLoading_', state => state.wallpaper.loading.images);
+    this.watch('collections_', state => state.wallpaper.backdrop.collections);
+    this.watch(
+        'collectionsLoading_', state => state.wallpaper.loading.collections);
+    this.watch('currentSelected_', state => state.wallpaper.currentSelected);
+    this.watch('pendingSelected_', state => state.wallpaper.pendingSelected);
     this.updateFromStore();
   }
 

@@ -39,11 +39,11 @@ export function WallpaperCollectionsTest() {
         promisifyIframeFunctionsForTesting();
     wallpaperCollectionsElement = initElement(WallpaperCollections.is);
 
-    personalizationStore.data.loading = {
-      ...personalizationStore.data.loading,
+    personalizationStore.data.wallpaper.loading = {
+      ...personalizationStore.data.wallpaper.loading,
       collections: false
     };
-    personalizationStore.data.backdrop.collections =
+    personalizationStore.data.wallpaper.backdrop.collections =
         wallpaperProvider.collections;
     personalizationStore.notifyObservers();
 
@@ -65,8 +65,8 @@ export function WallpaperCollectionsTest() {
 
     wallpaperCollectionsElement = initElement(WallpaperCollections.is);
 
-    personalizationStore.data.googlePhotos.count = 1234;
-    personalizationStore.data.loading.googlePhotos.count = false;
+    personalizationStore.data.wallpaper.googlePhotos.count = 1234;
+    personalizationStore.data.wallpaper.loading.googlePhotos.count = false;
     personalizationStore.notifyObservers();
 
     // Wait for |sendGooglePhotosCount| to be called.
@@ -78,7 +78,8 @@ export function WallpaperCollectionsTest() {
     assertFalse(iframe.hidden);
 
     assertWindowObjectsEqual(iframe.contentWindow, target);
-    assertDeepEquals(personalizationStore.data.googlePhotos.count, data);
+    assertDeepEquals(
+        personalizationStore.data.wallpaper.googlePhotos.count, data);
   });
 
   test('sends Google Photos photos when loaded', async () => {
@@ -87,8 +88,8 @@ export function WallpaperCollectionsTest() {
 
     wallpaperCollectionsElement = initElement(WallpaperCollections.is);
 
-    personalizationStore.data.googlePhotos.photos = [1, 2, 3, 4];
-    personalizationStore.data.loading.googlePhotos.photos = false;
+    personalizationStore.data.wallpaper.googlePhotos.photos = [1, 2, 3, 4];
+    personalizationStore.data.wallpaper.loading.googlePhotos.photos = false;
     personalizationStore.notifyObservers();
 
     // Wait for |sendGooglePhotosPhotos| to be called.
@@ -100,16 +101,17 @@ export function WallpaperCollectionsTest() {
     assertFalse(iframe.hidden);
 
     assertWindowObjectsEqual(iframe.contentWindow, target);
-    assertDeepEquals(personalizationStore.data.googlePhotos.photos, data);
+    assertDeepEquals(
+        personalizationStore.data.wallpaper.googlePhotos.photos, data);
   });
 
   test('sends image counts when a collection loads', async () => {
-    personalizationStore.data.backdrop = {
+    personalizationStore.data.wallpaper.backdrop = {
       collections: wallpaperProvider.collections,
       images: {},
     };
-    personalizationStore.data.loading = {
-      ...personalizationStore.data.loading,
+    personalizationStore.data.wallpaper.loading = {
+      ...personalizationStore.data.wallpaper.loading,
       collections: false,
       images: {},
     };
@@ -121,10 +123,10 @@ export function WallpaperCollectionsTest() {
     let {sendImageCounts: sendImageCountsPromise} =
         promisifyIframeFunctionsForTesting();
 
-    personalizationStore.data.backdrop.images = {
+    personalizationStore.data.wallpaper.backdrop.images = {
       'id_0': [wallpaperProvider.images[0]]
     };
-    personalizationStore.data.loading.images = {'id_0': false};
+    personalizationStore.data.wallpaper.loading.images = {'id_0': false};
     personalizationStore.notifyObservers();
 
     let counts = (await sendImageCountsPromise)[1];
@@ -133,14 +135,14 @@ export function WallpaperCollectionsTest() {
     // Load two collections in at once, and simulate one failure.
     sendImageCountsPromise =
         promisifyIframeFunctionsForTesting().sendImageCounts;
-    personalizationStore.data.backdrop.images = {
+    personalizationStore.data.wallpaper.backdrop.images = {
       'id_0': [wallpaperProvider.images[0]],
       'id_1': [wallpaperProvider.images[0], wallpaperProvider.images[1]],
       'id_2': [],
       'id_3': null,
       'id_4': [wallpaperProvider.images[0], wallpaperProvider.images[2]],
     };
-    personalizationStore.data.loading.images = {
+    personalizationStore.data.wallpaper.loading.images = {
       'id_0': false,
       'id_1': false,
       'id_2': false,
@@ -160,13 +162,14 @@ export function WallpaperCollectionsTest() {
 
     wallpaperCollectionsElement = initElement(WallpaperCollections.is);
 
-    personalizationStore.data.loading = {
-      ...personalizationStore.data.loading,
+    personalizationStore.data.wallpaper.loading = {
+      ...personalizationStore.data.wallpaper.loading,
       collections: false,
       local: {images: false}
     };
-    personalizationStore.data.local.images = wallpaperProvider.localImages;
-    personalizationStore.data.backdrop.collections =
+    personalizationStore.data.wallpaper.local.images =
+        wallpaperProvider.localImages;
+    personalizationStore.data.wallpaper.backdrop.collections =
         wallpaperProvider.collections;
     personalizationStore.notifyObservers();
 
@@ -190,14 +193,15 @@ export function WallpaperCollectionsTest() {
 
     wallpaperCollectionsElement = initElement(WallpaperCollections.is);
 
-    personalizationStore.data.loading = {
-      ...personalizationStore.data.loading,
+    personalizationStore.data.wallpaper.loading = {
+      ...personalizationStore.data.wallpaper.loading,
       collections: false,
       local: {images: false}
     };
-    personalizationStore.data.local.images = wallpaperProvider.localImages;
+    personalizationStore.data.wallpaper.local.images =
+        wallpaperProvider.localImages;
     // Simulate online collections failed to load when no internet connection.
-    personalizationStore.data.backdrop.collections = null;
+    personalizationStore.data.wallpaper.backdrop.collections = null;
     personalizationStore.notifyObservers();
 
     // Wait for |sendCollections| to be called.
@@ -229,13 +233,13 @@ export function WallpaperCollectionsTest() {
         wallpaperCollectionsElement.shadowRoot.querySelector('wallpaper-error');
     assertTrue(error === null);
 
-    personalizationStore.data.loading = {
-      ...personalizationStore.data.loading,
+    personalizationStore.data.wallpaper.loading = {
+      ...personalizationStore.data.wallpaper.loading,
       collections: false,
       local: {images: false},
     };
-    personalizationStore.data.backdrop.collections = null;
-    personalizationStore.data.local.images = null;
+    personalizationStore.data.wallpaper.backdrop.collections = null;
+    personalizationStore.data.wallpaper.local.images = null;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperCollectionsElement);
 
@@ -270,18 +274,18 @@ export function WallpaperCollectionsTest() {
             'id_1': wallpaperProvider.images,
           },
         },
-        personalizationStore.data.backdrop,
+        personalizationStore.data.wallpaper.backdrop,
     );
     assertDeepEquals(
         {
-          ...emptyState().loading,
+          ...emptyState().wallpaper.loading,
           collections: false,
           images: {
             'id_0': false,
             'id_1': false,
           },
         },
-        personalizationStore.data.loading,
+        personalizationStore.data.wallpaper.loading,
     );
   });
 
@@ -290,17 +294,17 @@ export function WallpaperCollectionsTest() {
       async () => {
         // Set up store data. Local image list is loaded, but thumbnails are
         // still loading in.
-        personalizationStore.data.loading.local.images = false;
-        personalizationStore.data.local.images = [];
+        personalizationStore.data.wallpaper.loading.local.images = false;
+        personalizationStore.data.wallpaper.local.images = [];
         for (let i = 0; i < kMaximumLocalImagePreviews; i++) {
           const path = `LocalImage${i}.png`;
-          personalizationStore.data.local.images.push({path});
-          personalizationStore.data.loading.local.data[path] = true;
+          personalizationStore.data.wallpaper.local.images.push({path});
+          personalizationStore.data.wallpaper.loading.local.data[path] = true;
         }
         // Collections are finished loading.
-        personalizationStore.data.backdrop.collections =
+        personalizationStore.data.wallpaper.backdrop.collections =
             wallpaperProvider.collections;
-        personalizationStore.data.loading.collections = false;
+        personalizationStore.data.wallpaper.loading.collections = false;
 
         const {sendLocalImages, sendLocalImageData} =
             promisifyIframeFunctionsForTesting();
@@ -313,10 +317,10 @@ export function WallpaperCollectionsTest() {
         assertFalse(wallpaperCollectionsElement.didSendLocalImageData_);
 
         // First thumbnail loads in.
-        personalizationStore.data.loading.local.data = {
+        personalizationStore.data.wallpaper.loading.local.data = {
           'LocalImage0.png': false
         };
-        personalizationStore.data.local.data = {
+        personalizationStore.data.wallpaper.local.data = {
           'LocalImage0.png': 'local_data_0'
         };
         personalizationStore.notifyObservers();
@@ -329,13 +333,13 @@ export function WallpaperCollectionsTest() {
         assertFalse(wallpaperCollectionsElement.didSendLocalImageData_);
 
         // Second thumbnail fails loading. Third succeeds.
-        personalizationStore.data.loading.local.data = {
-          ...personalizationStore.data.loading.local.data,
+        personalizationStore.data.wallpaper.loading.local.data = {
+          ...personalizationStore.data.wallpaper.loading.local.data,
           'LocalImage1.png': false,
           'LocalImage2.png': false,
         };
-        personalizationStore.data.local.data = {
-          ...personalizationStore.data.local.data,
+        personalizationStore.data.wallpaper.local.data = {
+          ...personalizationStore.data.wallpaper.local.data,
           'LocalImage1.png': '',
           'LocalImage2.png': 'local_data_2',
         };

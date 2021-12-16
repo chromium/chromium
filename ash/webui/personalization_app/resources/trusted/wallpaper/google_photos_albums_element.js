@@ -64,8 +64,9 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
   connectedCallback() {
     super.connectedCallback();
 
-    this.watch('albums_', state => state.googlePhotos.albums);
-    this.watch('albumsLoading_', state => state.loading.googlePhotos.albums);
+    this.watch('albums_', state => state.wallpaper.googlePhotos.albums);
+    this.watch(
+        'albumsLoading_', state => state.wallpaper.loading.googlePhotos.albums);
 
     this.updateFromStore();
   }

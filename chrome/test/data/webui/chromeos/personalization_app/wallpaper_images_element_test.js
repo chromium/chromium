@@ -41,7 +41,7 @@ export function WallpaperImagesTest() {
 
     // Set the current wallpaper as an online wallpaper.
     // The currentSelected asset id should be sent to iframe.
-    personalizationStore.data.currentSelected =
+    personalizationStore.data.wallpaper.currentSelected =
         wallpaperProvider.currentWallpaper;
 
     wallpaperImagesElement =
@@ -55,14 +55,14 @@ export function WallpaperImagesTest() {
 
     assertEquals(iframe.contentWindow, targetWindow);
     assertDeepEquals(
-        BigInt(personalizationStore.data.currentSelected.key), data);
+        BigInt(personalizationStore.data.wallpaper.currentSelected.key), data);
 
     sendCurrentWallpaperAssetIdPromise =
         promisifyImagesIframeFunctionsForTesting().sendCurrentWallpaperAssetId;
 
     // Set the current wallpaper as a daily refresh wallpaper.
     // The currentSelected asset id should be sent to iframe.
-    personalizationStore.data.currentSelected = {
+    personalizationStore.data.wallpaper.currentSelected = {
       attribution: ['Image 1'],
       layout: WallpaperLayout.kCenter,
       key: '2',
@@ -75,14 +75,14 @@ export function WallpaperImagesTest() {
     [targetWindow, data] = await sendCurrentWallpaperAssetIdPromise;
     assertEquals(iframe.contentWindow, targetWindow);
     assertDeepEquals(
-        BigInt(personalizationStore.data.currentSelected.key), data);
+        BigInt(personalizationStore.data.wallpaper.currentSelected.key), data);
 
     sendCurrentWallpaperAssetIdPromise =
         promisifyImagesIframeFunctionsForTesting().sendCurrentWallpaperAssetId;
 
     // Set the current wallpaper not as an online wallpaper.
     // No asset id is sent to iframe.
-    personalizationStore.data.currentSelected = {
+    personalizationStore.data.wallpaper.currentSelected = {
       attribution: ['Image 2'],
       layout: WallpaperLayout.kCenter,
       key: '3',
@@ -98,17 +98,20 @@ export function WallpaperImagesTest() {
   });
 
   test('displays images for current collection id', async () => {
-    personalizationStore.data.backdrop.images = {
+    personalizationStore.data.wallpaper.backdrop.images = {
       'id_0': wallpaperProvider.images,
       'id_1': [
         {assetId: BigInt(10), url: {url: 'https://id_1-0/'}},
         {assetId: BigInt(20), url: {url: 'https://id_1-1/'}},
       ],
     };
-    personalizationStore.data.backdrop.collections =
+    personalizationStore.data.wallpaper.backdrop.collections =
         wallpaperProvider.collections;
-    personalizationStore.data.loading.images = {'id_0': false, 'id_1': false};
-    personalizationStore.data.loading.collections = false;
+    personalizationStore.data.wallpaper.loading.images = {
+      'id_0': false,
+      'id_1': false
+    };
+    personalizationStore.data.wallpaper.loading.collections = false;
 
     let {sendImageTiles: sendImageTilesPromise} =
         promisifyImagesIframeFunctionsForTesting();
@@ -122,7 +125,8 @@ export function WallpaperImagesTest() {
     let [targetWindow, data] = await sendImageTilesPromise;
     assertEquals(iframe.contentWindow, targetWindow);
     assertDeepEquals(
-        getRegularImageTiles(personalizationStore.data.backdrop.images['id_0']),
+        getRegularImageTiles(
+            personalizationStore.data.wallpaper.backdrop.images['id_0']),
         data);
     // Wait for a render to happen.
     await waitAfterNextRender(wallpaperImagesElement);
@@ -141,23 +145,27 @@ export function WallpaperImagesTest() {
 
     assertWindowObjectsEqual(iframe.contentWindow, targetWindow);
     assertDeepEquals(
-        getRegularImageTiles(personalizationStore.data.backdrop.images['id_1']),
+        getRegularImageTiles(
+            personalizationStore.data.wallpaper.backdrop.images['id_1']),
         data);
   });
 
   test('display dark/light tile for personalization hub', async () => {
     loadTimeData.overrideValues({isDarkLightModeEnabled: true});
-    personalizationStore.data.backdrop.images = {
+    personalizationStore.data.wallpaper.backdrop.images = {
       'id_0': wallpaperProvider.images,
       'id_1': [
         {assetId: BigInt(10), url: {url: 'https://id_1-0/'}},
         {assetId: BigInt(20), url: {url: 'https://id_1-1/'}},
       ],
     };
-    personalizationStore.data.backdrop.collections =
+    personalizationStore.data.wallpaper.backdrop.collections =
         wallpaperProvider.collections;
-    personalizationStore.data.loading.images = {'id_0': false, 'id_1': false};
-    personalizationStore.data.loading.collections = false;
+    personalizationStore.data.wallpaper.loading.images = {
+      'id_0': false,
+      'id_1': false
+    };
+    personalizationStore.data.wallpaper.loading.collections = false;
 
     let {sendImageTiles: sendImageTilesPromise} =
         promisifyImagesIframeFunctionsForTesting();
@@ -171,7 +179,7 @@ export function WallpaperImagesTest() {
     let [targetWindow, data] = await sendImageTilesPromise;
     assertEquals(iframe.contentWindow, targetWindow);
     const tiles = getDarkLightImageTiles(
-        false, personalizationStore.data.backdrop.images['id_0']);
+        false, personalizationStore.data.wallpaper.backdrop.images['id_0']);
     assertDeepEquals(tiles, data);
     assertEquals(data[0].preview.length, 2);
     // Check that light variant comes before dark variant.
@@ -197,7 +205,7 @@ export function WallpaperImagesTest() {
     assertWindowObjectsEqual(iframe.contentWindow, targetWindow);
     assertDeepEquals(
         getDarkLightImageTiles(
-            false, personalizationStore.data.backdrop.images['id_1']),
+            false, personalizationStore.data.wallpaper.backdrop.images['id_1']),
         data);
   });
 
@@ -206,10 +214,10 @@ export function WallpaperImagesTest() {
       PersonalizationRouter.reloadAtWallpaper = resolve;
     });
 
-    personalizationStore.data.backdrop.collections =
+    personalizationStore.data.wallpaper.backdrop.collections =
         wallpaperProvider.collections;
-    personalizationStore.data.backdrop.images = {'id_0': null};
-    personalizationStore.data.loading = {
+    personalizationStore.data.wallpaper.backdrop.images = {'id_0': null};
+    personalizationStore.data.wallpaper.loading = {
       collections: false,
       images: {'id_0': true}
     };
@@ -219,7 +227,7 @@ export function WallpaperImagesTest() {
 
     // Simulate finish loading. Images still null. Should bail and reload
     // application.
-    personalizationStore.data.loading = {images: {'id_0': false}};
+    personalizationStore.data.wallpaper.loading = {images: {'id_0': false}};
     personalizationStore.notifyObservers();
 
     await reloadPromise;
@@ -230,12 +238,12 @@ export function WallpaperImagesTest() {
       PersonalizationRouter.reloadAtWallpaper = resolve;
     });
 
-    personalizationStore.data.backdrop.collections =
+    personalizationStore.data.wallpaper.backdrop.collections =
         wallpaperProvider.collections;
-    personalizationStore.data.backdrop.images = {
+    personalizationStore.data.wallpaper.backdrop.images = {
       'id_0': wallpaperProvider.images
     };
-    personalizationStore.data.loading = {
+    personalizationStore.data.wallpaper.loading = {
       collections: false,
       images: {'id_0': false},
     };

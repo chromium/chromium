@@ -17,12 +17,12 @@ import {isNonEmptyArray} from '/common/utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {beginLoadSelectedImageAction, setSelectedImageAction} from '../personalization_actions.js';
 import {WallpaperLayout, WallpaperObserverReceiver, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getWallpaperLayoutEnum} from '../utils.js';
 
+import {beginLoadSelectedImageAction, setSelectedImageAction} from './wallpaper_actions.js';
 import {getDailyRefreshCollectionId, setCustomWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
@@ -226,13 +226,15 @@ export class WallpaperSelected extends WithPersonalizationStore {
     this.wallpaperObserver_ =
         initWallpaperObserver(this.wallpaperProvider_, this);
     this.watch('error_', state => state.error);
-    this.watch('image_', state => state.currentSelected);
+    this.watch('image_', state => state.wallpaper.currentSelected);
     this.watch(
         'isLoading_',
-        state => state.loading.setImage > 0 || state.loading.selected ||
-            state.loading.refreshWallpaper);
+        state => state.wallpaper.loading.setImage > 0 ||
+            state.wallpaper.loading.selected ||
+            state.wallpaper.loading.refreshWallpaper);
     this.watch(
-        'dailyRefreshCollectionId_', state => state.dailyRefresh.collectionId);
+        'dailyRefreshCollectionId_',
+        state => state.wallpaper.dailyRefresh.collectionId);
     this.updateFromStore();
     getDailyRefreshCollectionId(this.wallpaperProvider_, this.getStore());
     /**

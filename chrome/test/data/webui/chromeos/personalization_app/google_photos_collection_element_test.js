@@ -49,10 +49,11 @@ export function GooglePhotosCollectionTest() {
 
   test('displays only photos content', async () => {
     // Tabs and albums content are not displayed if albums are absent.
-    personalizationStore.data.googlePhotos.albums = null;
-    personalizationStore.data.googlePhotos.photos = Array.from({length: 1});
-    personalizationStore.data.loading.googlePhotos.albums = false;
-    personalizationStore.data.loading.googlePhotos.photos = false;
+    personalizationStore.data.wallpaper.googlePhotos.albums = null;
+    personalizationStore.data.wallpaper.googlePhotos.photos =
+        Array.from({length: 1});
+    personalizationStore.data.wallpaper.loading.googlePhotos.albums = false;
+    personalizationStore.data.wallpaper.loading.googlePhotos.photos = false;
 
     googlePhotosCollectionElement =
         initElement(GooglePhotosCollection.is, {hidden: false});
@@ -78,10 +79,12 @@ export function GooglePhotosCollectionTest() {
 
   test('displays tabs and content for photos and albums', async () => {
     // Tabs and albums content are only displayed if albums are present.
-    personalizationStore.data.googlePhotos.albums = Array.from({length: 1});
-    personalizationStore.data.googlePhotos.photos = Array.from({length: 1});
-    personalizationStore.data.loading.googlePhotos.albums = false;
-    personalizationStore.data.loading.googlePhotos.photos = false;
+    personalizationStore.data.wallpaper.googlePhotos.albums =
+        Array.from({length: 1});
+    personalizationStore.data.wallpaper.googlePhotos.photos =
+        Array.from({length: 1});
+    personalizationStore.data.wallpaper.loading.googlePhotos.albums = false;
+    personalizationStore.data.wallpaper.loading.googlePhotos.photos = false;
 
     googlePhotosCollectionElement =
         initElement(GooglePhotosCollection.is, {hidden: false});
@@ -178,10 +181,10 @@ export function GooglePhotosCollectionTest() {
   });
 
   test('displays zero state when there is no content', async () => {
-    personalizationStore.data.googlePhotos.albums = [];
-    personalizationStore.data.googlePhotos.photos = [];
-    personalizationStore.data.loading.googlePhotos.albums = false;
-    personalizationStore.data.loading.googlePhotos.photos = false;
+    personalizationStore.data.wallpaper.googlePhotos.albums = [];
+    personalizationStore.data.wallpaper.googlePhotos.photos = [];
+    personalizationStore.data.wallpaper.loading.googlePhotos.albums = false;
+    personalizationStore.data.wallpaper.loading.googlePhotos.photos = false;
 
     googlePhotosCollectionElement =
         initElement(GooglePhotosCollection.is, {hidden: false});

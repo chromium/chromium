@@ -98,8 +98,9 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
     this.addEventListener('iron-resize', this.onResized_.bind(this));
 
-    this.watch('photos_', state => state.googlePhotos.photos);
-    this.watch('photosLoading_', state => state.loading.googlePhotos.photos);
+    this.watch('photos_', state => state.wallpaper.googlePhotos.photos);
+    this.watch(
+        'photosLoading_', state => state.wallpaper.loading.googlePhotos.photos);
 
     this.updateFromStore();
   }

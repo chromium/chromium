@@ -103,8 +103,8 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
   connectedCallback() {
     super.connectedCallback();
 
-    this.watch('albums_', state => state.googlePhotos.albums);
-    this.watch('photos_', state => state.googlePhotos.photos);
+    this.watch('albums_', state => state.wallpaper.googlePhotos.albums);
+    this.watch('photos_', state => state.wallpaper.googlePhotos.photos);
     this.updateFromStore();
 
     initializeGooglePhotosData(this.wallpaperProvider_, this.getStore());

@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {setFullscreenEnabledAction} from './personalization_actions.js';
+
 import {PersonalizationStore} from './personalization_store.js';
+import {setFullscreenEnabledAction} from './wallpaper/wallpaper_actions.js';
 
 /**
  * @fileoverview provides useful functions for e2e browsertests.

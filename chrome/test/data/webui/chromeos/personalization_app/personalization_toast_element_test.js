@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ActionName} from 'chrome://personalization/trusted/personalization_actions.js';
+import {PersonalizationActionName} from 'chrome://personalization/trusted/personalization_actions.js';
 import {PersonalizationToastElement} from 'chrome://personalization/trusted/personalization_toast_element.js';
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';
@@ -49,8 +49,9 @@ export function PersonalizationToastTest() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(personalizationToastElement);
 
-    personalizationStore.expectAction(ActionName.DISMISS_ERROR);
+    personalizationStore.expectAction(PersonalizationActionName.DISMISS_ERROR);
     personalizationToastElement.shadowRoot.querySelector('cr-button').click();
-    await personalizationStore.waitForAction(ActionName.DISMISS_ERROR);
+    await personalizationStore.waitForAction(
+        PersonalizationActionName.DISMISS_ERROR);
   });
 }

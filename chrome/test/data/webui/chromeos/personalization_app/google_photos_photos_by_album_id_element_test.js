@@ -50,8 +50,9 @@ export function GooglePhotosPhotosByAlbumIdTest() {
   });
 
   test('displays photos for the selected album id', async () => {
-    personalizationStore.data.googlePhotos.photosByAlbumId = {};
-    personalizationStore.data.loading.googlePhotos.photosByAlbumId = {};
+    personalizationStore.data.wallpaper.googlePhotos.photosByAlbumId = {};
+    personalizationStore.data.wallpaper.loading.googlePhotos
+        .photosByAlbumId = {};
 
     googlePhotosPhotosByAlbumIdElement =
         initElement(GooglePhotosPhotosByAlbumId.is, {hidden: false});
@@ -75,8 +76,9 @@ export function GooglePhotosPhotosByAlbumIdTest() {
 
     // Start loading photos for the selected album id. Photos should still be
     // absent since they are still not loaded.
-    personalizationStore.data.loading.googlePhotos.photosByAlbumId = {
-      ...personalizationStore.data.loading.googlePhotos.photosByAlbumId,
+    personalizationStore.data.wallpaper.loading.googlePhotos.photosByAlbumId = {
+      ...personalizationStore.data.wallpaper.loading.googlePhotos
+          .photosByAlbumId,
       '1': true,
     };
     personalizationStore.notifyObservers();
@@ -86,12 +88,13 @@ export function GooglePhotosPhotosByAlbumIdTest() {
     // Load photos for an album id other than that which is selected. Photos
     // should still be absent since they are still not loaded for the selected
     // album id.
-    personalizationStore.data.googlePhotos.photosByAlbumId = {
-      ...personalizationStore.data.googlePhotos.photosByAlbumId,
+    personalizationStore.data.wallpaper.googlePhotos.photosByAlbumId = {
+      ...personalizationStore.data.wallpaper.googlePhotos.photosByAlbumId,
       '2': Array.from({length: 50}),
     };
-    personalizationStore.data.loading.googlePhotos.photosByAlbumId = {
-      ...personalizationStore.data.loading.googlePhotos.photosByAlbumId,
+    personalizationStore.data.wallpaper.loading.googlePhotos.photosByAlbumId = {
+      ...personalizationStore.data.wallpaper.loading.googlePhotos
+          .photosByAlbumId,
       '2': false,
     };
     personalizationStore.notifyObservers();
@@ -100,12 +103,13 @@ export function GooglePhotosPhotosByAlbumIdTest() {
 
     // Finish loading photos for the selected album id. Photos should now be
     // present since they are finished loading for the selected album id.
-    personalizationStore.data.googlePhotos.photosByAlbumId = {
-      ...personalizationStore.data.googlePhotos.photosByAlbumId,
+    personalizationStore.data.wallpaper.googlePhotos.photosByAlbumId = {
+      ...personalizationStore.data.wallpaper.googlePhotos.photosByAlbumId,
       '1': Array.from({length: 100}),
     };
-    personalizationStore.data.loading.googlePhotos.photosByAlbumId = {
-      ...personalizationStore.data.loading.googlePhotos.photosByAlbumId,
+    personalizationStore.data.wallpaper.loading.googlePhotos.photosByAlbumId = {
+      ...personalizationStore.data.wallpaper.loading.googlePhotos
+          .photosByAlbumId,
       '1': false,
     };
     personalizationStore.notifyObservers();

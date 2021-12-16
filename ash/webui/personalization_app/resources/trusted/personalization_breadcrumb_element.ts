@@ -97,8 +97,9 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
 
   connectedCallback() {
     super.connectedCallback();
-    this.watch('collections_', state => state.backdrop.collections);
-    this.watch('googlePhotosAlbums_', state => state.googlePhotos.albums);
+    this.watch('collections_', state => state.wallpaper.backdrop.collections);
+    this.watch(
+        'googlePhotosAlbums_', state => state.wallpaper.googlePhotos.albums);
     this.updateFromStore();
   }
 

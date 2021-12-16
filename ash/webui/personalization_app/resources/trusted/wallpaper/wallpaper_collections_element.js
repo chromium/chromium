@@ -190,7 +190,8 @@ export class WallpaperCollections extends WithPersonalizationStore {
         type: Boolean,
         // Call computed functions with their dependencies as arguments so that
         // polymer knows when to re-run the computation.
-        computed: 'computeHasError_(collections_, collectionsLoading_, localImages_, localImagesLoading_)',
+        computed:
+            'computeHasError_(collections_, collectionsLoading_, localImages_, localImagesLoading_)',
       },
     };
   }
@@ -223,20 +224,26 @@ export class WallpaperCollections extends WithPersonalizationStore {
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-    this.watch('collections_', state => state.backdrop.collections);
-    this.watch('collectionsLoading_', state => state.loading.collections);
-    this.watch('googlePhotos_', state => state.googlePhotos.photos);
+    this.watch('collections_', state => state.wallpaper.backdrop.collections);
     this.watch(
-        'googlePhotosLoading_', state => state.loading.googlePhotos.photos);
-    this.watch('googlePhotosCount_', state => state.googlePhotos.count);
+        'collectionsLoading_', state => state.wallpaper.loading.collections);
+    this.watch('googlePhotos_', state => state.wallpaper.googlePhotos.photos);
     this.watch(
-        'googlePhotosCountLoading_', state => state.loading.googlePhotos.count);
-    this.watch('images_', state => state.backdrop.images);
-    this.watch('imagesLoading_', state => state.loading.images);
-    this.watch('localImages_', state => state.local.images);
-    this.watch('localImagesLoading_', state => state.loading.local.images);
-    this.watch('localImageData_', state => state.local.data);
-    this.watch('localImageDataLoading_', state => state.loading.local.data);
+        'googlePhotosLoading_',
+        state => state.wallpaper.loading.googlePhotos.photos);
+    this.watch(
+        'googlePhotosCount_', state => state.wallpaper.googlePhotos.count);
+    this.watch(
+        'googlePhotosCountLoading_',
+        state => state.wallpaper.loading.googlePhotos.count);
+    this.watch('images_', state => state.wallpaper.backdrop.images);
+    this.watch('imagesLoading_', state => state.wallpaper.loading.images);
+    this.watch('localImages_', state => state.wallpaper.local.images);
+    this.watch(
+        'localImagesLoading_', state => state.wallpaper.loading.local.images);
+    this.watch('localImageData_', state => state.wallpaper.local.data);
+    this.watch(
+        'localImageDataLoading_', state => state.wallpaper.loading.local.data);
     this.updateFromStore();
     initializeBackdropData(this.wallpaperProvider_, this.getStore());
   }

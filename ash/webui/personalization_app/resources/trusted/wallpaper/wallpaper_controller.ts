@@ -7,10 +7,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';
-import * as action from '../personalization_actions.js';
 import {WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 import {isFilePath, isWallpaperImage} from '../utils.js';
+
+import * as action from './wallpaper_actions.js';
 
 /**
  * @fileoverview contains all of the functions to interact with C++ side through
@@ -46,7 +47,7 @@ async function fetchAndDispatchCollectionImages(
 async function fetchAllImagesForCollections(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
-  const collections = store.data.backdrop.collections;
+  const collections = store.data.wallpaper.backdrop.collections;
   if (!Array.isArray(collections)) {
     console.warn(
         'Cannot fetch data for collections when it is not initialized');
@@ -151,7 +152,7 @@ const imageThumbnailsToFetch = new Set<FilePath['path']>();
 async function getMissingLocalImageThumbnails(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
-  if (!Array.isArray(store.data.local.images)) {
+  if (!Array.isArray(store.data.wallpaper.local.images)) {
     console.warn('Cannot fetch thumbnails with invalid image list');
     return;
   }
@@ -159,9 +160,9 @@ async function getMissingLocalImageThumbnails(
   // Set correct loading state for each image thumbnail. Do in a batch update to
   // reduce number of times that polymer must re-render.
   store.beginBatchUpdate();
-  for (const filePath of store.data.local.images) {
-    if (store.data.local.data[filePath.path] ||
-        store.data.loading.local.data[filePath.path] ||
+  for (const filePath of store.data.wallpaper.local.images) {
+    if (store.data.wallpaper.local.data[filePath.path] ||
+        store.data.wallpaper.loading.local.data[filePath.path] ||
         imageThumbnailsToFetch.has(filePath.path)) {
       // Do not re-load thumbnail if already present, or already loading.
       continue;
@@ -218,7 +219,8 @@ export async function selectWallpaper(
   }
   if (!success) {
     console.warn('Error setting wallpaper');
-    store.dispatch(action.setSelectedImageAction(store.data.currentSelected));
+    store.dispatch(
+        action.setSelectedImageAction(store.data.wallpaper.currentSelected));
   }
   store.endBatchUpdate();
 }
@@ -231,7 +233,7 @@ export async function selectWallpaper(
 export async function setCustomWallpaperLayout(
     layout: WallpaperLayout, provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
-  const image = store.data.currentSelected;
+  const image = store.data.wallpaper.currentSelected;
   assert(image && image.type === WallpaperType.kCustomized);
   assert(
       layout === WallpaperLayout.kCenter ||
@@ -308,7 +310,7 @@ export async function initializeGooglePhotosData(
 
   // If the count of Google Photos photos is zero or null, it's not necesssary
   // to query the server for the list of albums/photos.
-  const count = store.data.googlePhotos.count;
+  const count = store.data.wallpaper.googlePhotos.count;
   if (count === 0 || count === null) {
     const /** ?Array<undefined> */ result = count === 0 ? [] : null;
     store.beginBatchUpdate();
@@ -334,7 +336,7 @@ export async function fetchLocalData(
     provider: WallpaperProviderInterface,
     store: PersonalizationStore): Promise<void> {
   // Do not restart loading local image list if a load is already in progress.
-  if (!store.data.loading.local.images) {
+  if (!store.data.wallpaper.loading.local.images) {
     await getLocalImages(provider, store);
   }
   await getMissingLocalImageThumbnails(provider, store);
