@@ -122,8 +122,6 @@ class CORE_EXPORT SelectorChecker {
     bool in_nested_complex_selector = false;
     bool is_inside_visited_link = false;
     const ContainerNode* relative_leftmost_element = nullptr;
-    bool is_inside_has_pseudo_class = false;
-    bool pseudo_has_in_rightmost_compound = true;
   };
 
   struct MatchResult {

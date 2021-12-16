@@ -354,11 +354,6 @@ class CORE_EXPORT CSSSelector {
   const Vector<AtomicString>* PartNames() const {
     return has_rare_data_ ? data_.rare_data_->part_names_.get() : nullptr;
   }
-  bool ContainsPseudoInsideHasPseudoClass() const {
-    return has_rare_data_
-               ? data_.rare_data_->contains_pseudo_inside_has_pseudo_class_
-               : false;
-  }
 
 #ifndef NDEBUG
   void Show() const;
@@ -371,7 +366,6 @@ class CORE_EXPORT CSSSelector {
   void SetArgument(const AtomicString&);
   void SetSelectorList(std::unique_ptr<CSSSelectorList>);
   void SetPartNames(std::unique_ptr<Vector<AtomicString>>);
-  void SetContainsPseudoInsideHasPseudoClass();
 
   void SetNth(int a, int b);
   bool MatchNth(unsigned count) const;
@@ -492,7 +486,6 @@ class CORE_EXPORT CSSSelector {
         selector_list_;  // Used for :-webkit-any and :not
     std::unique_ptr<Vector<AtomicString>>
         part_names_;  // Used for ::part() selectors.
-    bool contains_pseudo_inside_has_pseudo_class_;  // Used for :has() selectors
 
    private:
     RareData(const AtomicString& value);

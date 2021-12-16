@@ -664,8 +664,6 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
   sub_context.scope = context.scope;
   // sub_context.is_inside_visited_link is false (by default) to disable
   // :visited matching when it is in the :has argument
-  sub_context.is_inside_has_pseudo_class = true;
-  sub_context.pseudo_has_in_rightmost_compound = context.in_rightmost_compound;
 
   DCHECK(context.selector->SelectorList());
   for (const CSSSelector* selector = context.selector->SelectorList()->First();
@@ -816,6 +814,69 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
   }
   return false;
 }
+
+namespace {
+
+struct HasPseudoClassArgumentInfo {
+  bool contains_pseudo = false;
+  bool contains_hover = false;
+  bool contains_active = false;
+  bool contains_focus = false;
+  bool contains_focus_visible = false;
+
+  explicit HasPseudoClassArgumentInfo(const CSSSelectorList* selector_list) {
+    DCHECK(selector_list);
+
+    for (const CSSSelector* relative_selector = selector_list->First();
+         relative_selector;
+         relative_selector = CSSSelectorList::Next(*relative_selector)) {
+      DCHECK(relative_selector);
+
+      for (const CSSSelector* simple = relative_selector;
+           simple &&
+           simple->GetPseudoType() != CSSSelector::kPseudoRelativeLeftmost;
+           simple = simple->TagHistory()) {
+        switch (simple->GetPseudoType()) {
+          case CSSSelector::kPseudoUnknown:
+            break;
+          case CSSSelector::kPseudoHover:
+            contains_pseudo = true;
+            contains_hover = true;
+            break;
+          case CSSSelector::kPseudoActive:
+            contains_pseudo = true;
+            contains_active = true;
+            break;
+          case CSSSelector::kPseudoFocus:
+          case CSSSelector::kPseudoFocusWithin:
+            contains_pseudo = true;
+            contains_focus = true;
+            break;
+          case CSSSelector::kPseudoFocusVisible:
+            contains_pseudo = true;
+            contains_focus_visible = true;
+            break;
+          default:
+            contains_pseudo = true;
+            break;
+        }
+      }
+    }
+  }
+
+  void SetDynamicRestyleFlagsForHas(ComputedStyle* style) {
+    if (contains_hover)
+      style->SetAncestorsAffectedByHoverInHas();
+    if (contains_active)
+      style->SetAncestorsAffectedByActiveInHas();
+    if (contains_focus)
+      style->SetAncestorsAffectedByFocusInHas();
+    if (contains_focus_visible)
+      style->SetAncestorsAffectedByFocusVisibleInHas();
+  }
+};
+
+}  // namespace
 
 bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
                                        MatchResult& result) const {
@@ -1012,38 +1073,19 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       return element.IsDragged();
     case CSSSelector::kPseudoFocus:
-      if (mode_ == kResolvingStyle) {
-        if (UNLIKELY(context.is_inside_has_pseudo_class)) {
-          if (context.pseudo_has_in_rightmost_compound)
-            element_style_->SetAncestorsAffectedByFocusInHas();
-        } else {
-          if (!context.in_rightmost_compound)
-            element.SetChildrenOrSiblingsAffectedByFocus();
-        }
-      }
+      if (mode_ == kResolvingStyle && !context.in_rightmost_compound)
+        element.SetChildrenOrSiblingsAffectedByFocus();
       return MatchesFocusPseudoClass(element);
     case CSSSelector::kPseudoFocusVisible:
-      if (mode_ == kResolvingStyle) {
-        if (UNLIKELY(context.is_inside_has_pseudo_class)) {
-          if (context.pseudo_has_in_rightmost_compound)
-            element_style_->SetAncestorsAffectedByFocusVisibleInHas();
-        } else {
-          if (!context.in_rightmost_compound)
-            element.SetChildrenOrSiblingsAffectedByFocusVisible();
-        }
-      }
+      if (mode_ == kResolvingStyle && !context.in_rightmost_compound)
+        element.SetChildrenOrSiblingsAffectedByFocusVisible();
       return MatchesFocusVisiblePseudoClass(element);
     case CSSSelector::kPseudoFocusWithin:
       if (mode_ == kResolvingStyle) {
-        if (UNLIKELY(context.is_inside_has_pseudo_class)) {
-          if (context.pseudo_has_in_rightmost_compound)
-            element_style_->SetAncestorsAffectedByFocusInHas();
-        } else {
-          if (context.in_rightmost_compound)
-            element_style_->SetAffectedByFocusWithin();
-          else
-            element.SetChildrenOrSiblingsAffectedByFocusWithin();
-        }
+        if (context.in_rightmost_compound)
+          element_style_->SetAffectedByFocusWithin();
+        else
+          element.SetChildrenOrSiblingsAffectedByFocusWithin();
       }
       probe::ForcePseudoState(&element, CSSSelector::kPseudoFocusWithin,
                               &force_pseudo_state);
@@ -1052,15 +1094,10 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return element.HasFocusWithin();
     case CSSSelector::kPseudoHover:
       if (mode_ == kResolvingStyle) {
-        if (UNLIKELY(context.is_inside_has_pseudo_class)) {
-          if (context.pseudo_has_in_rightmost_compound)
-            element_style_->SetAncestorsAffectedByHoverInHas();
-        } else {
-          if (context.in_rightmost_compound)
-            element_style_->SetAffectedByHover();
-          else
-            element.SetChildrenOrSiblingsAffectedByHover();
-        }
+        if (context.in_rightmost_compound)
+          element_style_->SetAffectedByHover();
+        else
+          element.SetChildrenOrSiblingsAffectedByHover();
       }
       if (!ShouldMatchHoverOrActive(context))
         return false;
@@ -1071,15 +1108,10 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return element.IsHovered();
     case CSSSelector::kPseudoActive:
       if (mode_ == kResolvingStyle) {
-        if (UNLIKELY(context.is_inside_has_pseudo_class)) {
-          if (context.pseudo_has_in_rightmost_compound)
-            element_style_->SetAncestorsAffectedByActiveInHas();
-        } else {
-          if (context.in_rightmost_compound)
-            element_style_->SetAffectedByActive();
-          else
-            element.SetChildrenOrSiblingsAffectedByActive();
-        }
+        if (context.in_rightmost_compound)
+          element_style_->SetAffectedByActive();
+        else
+          element.SetChildrenOrSiblingsAffectedByActive();
       }
       if (!ShouldMatchHoverOrActive(context))
         return false;
@@ -1289,8 +1321,14 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
           // ':has()' selector.
           element_style_->SetAffectedByHas();
           element_style_->SetAncestorsAffectedByHas();
-          if (selector.ContainsPseudoInsideHasPseudoClass())
+
+          // TODO(blee@igalia.com) Move the logic in HasPseudoClassArgumentInfo
+          // to HasArgumentMatchContext
+          HasPseudoClassArgumentInfo argument(selector.SelectorList());
+          if (argument.contains_pseudo)
             element_style_->SetAffectedByPseudoInHas();
+          if (context.in_rightmost_compound)
+            argument.SetDynamicRestyleFlagsForHas(element_style_);
         }
         // TODO(blee@igalia.com) non-terminal ':has() is not supported yet
       }
