@@ -963,6 +963,10 @@ const base::FeatureParam<int>
         3);
 
 // Zero Suggest
+const base::FeatureParam<bool> kZeroSuggestCacheCounterfactual(
+    &omnibox::kZeroSuggestPrefetching,
+    "ZeroSuggestCacheCounterfactual",
+    false);
 const base::FeatureParam<int> kZeroSuggestCacheDurationSec(
     &omnibox::kZeroSuggestPrefetching,
     "ZeroSuggestCacheDurationSec",

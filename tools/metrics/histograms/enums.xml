@@ -65035,6 +65035,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="responses loaded from HTTP cache">
     Subset of Suggest responses that were loaded from the HTTP cache.
   </int>
+  <int value="5" label="out-of-date responses loaded from HTTP cache">
+    Subset of Suggest responses that were loaded from the HTTP cache and were
+    out-of-date.
+  </int>
 </enum>
 
 <enum name="OnServiceConnectedTimedOutResult">

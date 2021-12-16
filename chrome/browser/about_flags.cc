@@ -1209,19 +1209,43 @@ const FeatureEntry::FeatureVariation kMaxZeroSuggestMatchesVariations[] = {
 
 constexpr FeatureEntry::FeatureParam kOmniboxZeroSuggestCacheDuration15Secs[] =
     {{"ZeroSuggestCacheDurationSec", "15"}};
+constexpr FeatureEntry::FeatureParam
+    kOmniboxZeroSuggestCacheDuration15SecsCounterfactual[] = {
+        {"ZeroSuggestCacheDurationSec", "15"},
+        {"ZeroSuggestCacheCounterfactual", "true"}};
 constexpr FeatureEntry::FeatureParam kOmniboxZeroSuggestCacheDuration30Secs[] =
     {{"ZeroSuggestCacheDurationSec", "30"}};
+constexpr FeatureEntry::FeatureParam
+    kOmniboxZeroSuggestCacheDuration30SecsCounterfactual[] = {
+        {"ZeroSuggestCacheDurationSec", "30"},
+        {"ZeroSuggestCacheCounterfactual", "true"}};
 constexpr FeatureEntry::FeatureParam kOmniboxZeroSuggestCacheDuration60Secs[] =
     {{"ZeroSuggestCacheDurationSec", "60"}};
+constexpr FeatureEntry::FeatureParam
+    kOmniboxZeroSuggestCacheDuration60SecsCounterfactual[] = {
+        {"ZeroSuggestCacheDurationSec", "60"},
+        {"ZeroSuggestCacheCounterfactual", "true"}};
 
 constexpr FeatureEntry::FeatureVariation
     kOmniboxZeroSuggestPrefetchingVariations[] = {
         {"15 seconds", kOmniboxZeroSuggestCacheDuration15Secs,
          base::size(kOmniboxZeroSuggestCacheDuration15Secs), nullptr},
+        {"15 seconds (counterfactual)",
+         kOmniboxZeroSuggestCacheDuration15SecsCounterfactual,
+         base::size(kOmniboxZeroSuggestCacheDuration15SecsCounterfactual),
+         nullptr},
         {"30 seconds", kOmniboxZeroSuggestCacheDuration30Secs,
          base::size(kOmniboxZeroSuggestCacheDuration30Secs), nullptr},
+        {"30 seconds (counterfactual)",
+         kOmniboxZeroSuggestCacheDuration30SecsCounterfactual,
+         base::size(kOmniboxZeroSuggestCacheDuration30SecsCounterfactual),
+         nullptr},
         {"60 seconds", kOmniboxZeroSuggestCacheDuration60Secs,
-         base::size(kOmniboxZeroSuggestCacheDuration60Secs), nullptr}};
+         base::size(kOmniboxZeroSuggestCacheDuration60Secs), nullptr},
+        {"60 seconds (counterfactual)",
+         kOmniboxZeroSuggestCacheDuration60SecsCounterfactual,
+         base::size(kOmniboxZeroSuggestCacheDuration60SecsCounterfactual),
+         nullptr}};
 
 const FeatureEntry::FeatureParam kOmniboxUIMaxAutocompleteMatches3[] = {
     {OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "3"}};

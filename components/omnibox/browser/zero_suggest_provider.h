@@ -130,10 +130,21 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // Called when the network request for suggestions has completed.
   // `is_prefetch` and `request_time` are bound to this callback and indicate if
   // the request is a prefetch one and the time it was issued respectively.
-  void OnURLLoadComplete(bool is_prefetch,
+  void OnURLLoadComplete(TemplateURLRef::SearchTermsArgs search_terms_args,
+                         bool is_prefetch,
                          base::TimeTicks request_time,
                          const network::SimpleURLLoader* source,
                          std::unique_ptr<std::string> response_body);
+
+  // Called when the counterfactual network request for suggestions has
+  // completed. `original_is_prefetch` and `original_response` are bound to this
+  // callback and indicate if the original request was a prefetch one and the
+  // original cached response received in OnURLLoadComplete() respectively.
+  void OnCounterfactualURLLoadComplete(
+      bool original_is_prefetch,
+      const std::string& original_response,
+      const network::SimpleURLLoader* source,
+      std::unique_ptr<std::string> response_body);
 
   // The function updates |results_| with data parsed from |json_data|.
   //
@@ -168,6 +179,11 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // stored in `is_prefetch_loader_` for the duration of the loader's lifetime.
   void OnRemoteSuggestionsLoaderAvailable(
       bool is_prefetch,
+      std::unique_ptr<network::SimpleURLLoader> loader);
+
+  // Serves the same purpose as OnRemoteSuggestionsLoaderAvailable for the
+  // counterfactual requests.
+  void OnRemoteSuggestionsCounterfactualLoaderAvailable(
       std::unique_ptr<network::SimpleURLLoader> loader);
 
   // Whether zero suggest suggestions are allowed in the given context.
@@ -219,6 +235,9 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // Indicate whether `loader_` is retrieving prefetch results. Used for metrics
   // when the provider is stopped.
   bool is_prefetch_loader_;
+
+  // Loader used to retrieve counterfactual results.
+  std::unique_ptr<network::SimpleURLLoader> counterfactual_loader_;
 
   // The verbatim match for the current text, which is always a URL.
   AutocompleteMatch current_text_match_;
