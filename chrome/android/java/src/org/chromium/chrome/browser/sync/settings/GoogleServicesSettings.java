@@ -222,7 +222,9 @@ public class GoogleServicesSettings
         mSearchSuggestions.setChecked(mPrefService.getBoolean(Pref.SEARCH_SUGGEST_ENABLED));
 
         mUsageAndCrashReporting.setChecked(
-                mPrivacyPrefManager.isUsageAndCrashReportingPermittedByUser());
+                mPrivacyPrefManager.isUsageAndCrashReportingPermittedByUser()
+                && !mPrivacyPrefManager.isMetricsReportingDisabledByPolicy());
+
         mUrlKeyedAnonymizedData.setChecked(
                 UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
                         Profile.getLastUsedRegularProfile()));
@@ -248,7 +250,8 @@ public class GoogleServicesSettings
                 return mPrefService.isManagedPreference(Pref.SEARCH_SUGGEST_ENABLED);
             }
             if (PREF_USAGE_AND_CRASH_REPORTING.equals(key)) {
-                return PrivacyPreferencesManagerImpl.getInstance().isMetricsReportingManaged();
+                return PrivacyPreferencesManagerImpl.getInstance()
+                        .isMetricsReportingDisabledByPolicy();
             }
             if (PREF_URL_KEYED_ANONYMIZED_DATA.equals(key)) {
                 return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionManaged(

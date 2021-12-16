@@ -123,14 +123,14 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     }
 
     @Override
-    public boolean isMetricsReportingManaged() {
-        return PrivacyPreferencesManagerImplJni.get().isMetricsReportingManaged();
+    public boolean isMetricsReportingDisabledByPolicy() {
+        return PrivacyPreferencesManagerImplJni.get().isMetricsReportingDisabledByPolicy();
     }
 
     @NativeMethods
     public interface Natives {
         boolean isMetricsReportingEnabled();
         void setMetricsReportingEnabled(boolean enabled);
-        boolean isMetricsReportingManaged();
+        boolean isMetricsReportingDisabledByPolicy();
     }
 }
