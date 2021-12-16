@@ -50,6 +50,18 @@ constexpr char kFastPairPairTimeMetricSubsequent[] =
 const char kPairingMethodMetric[] = "Bluetooth.ChromeOS.FastPair.PairingMethod";
 const char kRetroactivePairingResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.RetroactivePairing.Result";
+const char kFastPairPairFailureMetricInitial[] =
+    "Bluetooth.ChromeOS.FastPair.PairFailure.InitialPairingProtocol";
+const char kFastPairPairFailureMetricSubsequent[] =
+    "Bluetooth.ChromeOS.FastPair.PairFailure.SubsequentPairingProtocol";
+const char kFastPairPairFailureMetricRetroactive[] =
+    "Bluetooth.ChromeOS.FastPair.PairFailure.RetroactivePairingProtocol";
+const char kFastPairPairResultMetricInitial[] =
+    "Bluetooth.ChromeOS.FastPair.Pairing.Result.InitialPairingProtocol";
+const char kFastPairPairResultMetricSubsequent[] =
+    "Bluetooth.ChromeOS.FastPair.Pairing.Result.SubsequentPairingProtocol";
+const char kFastPairPairResultMetricRetroactive[] =
+    "Bluetooth.ChromeOS.FastPair.Pairing.Result.RetroactivePairingProtocol";
 
 constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
 constexpr char kTestBleDeviceName[] = "Test Device Name";
@@ -194,6 +206,9 @@ class QuickPairMetricsLoggerTest : public testing::Test {
             PairFailure::kKeyBasedPairingCharacteristicDiscovery);
         break;
       case Protocol::kFastPairRetroactive:
+        mock_pairer_broker_->NotifyPairFailure(
+            retroactive_device_,
+            PairFailure::kKeyBasedPairingCharacteristicDiscovery);
         break;
     }
   }
@@ -209,6 +224,8 @@ class QuickPairMetricsLoggerTest : public testing::Test {
         mock_pairer_broker_->NotifyDevicePaired(subsequent_device_);
         break;
       case Protocol::kFastPairRetroactive:
+        retroactive_device_->set_classic_address(kTestAddress);
+        mock_pairer_broker_->NotifyDevicePaired(retroactive_device_);
         break;
     }
   }
@@ -1548,6 +1565,114 @@ TEST_F(QuickPairMetricsLoggerTest, WriteAccountKeyFailure_Retroactive) {
   histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 0);
   SimulateAccountKeyFailure(Protocol::kFastPairRetroactive);
   histogram_tester().ExpectTotalCount(kRetroactivePairingResultMetric, 1);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogPairFailure_Initial) {
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 0);
+
+  SimulatePairingFailed(Protocol::kFastPairInitial);
+
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 1);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricInitial, 1);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogPairSuccess_Initial) {
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 0);
+
+  SimulatePairingSucceeded(Protocol::kFastPairInitial);
+
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricInitial, 1);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogPairFailure_Subsequent) {
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 0);
+
+  SimulatePairingFailed(Protocol::kFastPairSubsequent);
+
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 1);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricSubsequent, 1);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogPairSuccess_Subsequent) {
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 0);
+
+  SimulatePairingSucceeded(Protocol::kFastPairSubsequent);
+
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricSubsequent, 1);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 0);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogPairFailure_Retroactive) {
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 0);
+
+  SimulatePairingFailed(Protocol::kFastPairRetroactive);
+
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 1);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 1);
+}
+
+TEST_F(QuickPairMetricsLoggerTest, LogPairSuccess_Retroactive) {
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 0);
+
+  SimulatePairingSucceeded(Protocol::kFastPairRetroactive);
+
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairFailureMetricRetroactive, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricInitial, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricSubsequent, 0);
+  histogram_tester().ExpectTotalCount(kFastPairPairResultMetricRetroactive, 1);
 }
 
 }  // namespace quick_pair

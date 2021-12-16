@@ -62,6 +62,7 @@ void QuickPairMetricsLogger::DevicePairedChanged(
 void QuickPairMetricsLogger::OnDevicePaired(scoped_refptr<Device> device) {
   AttemptRecordingFastPairEngagementFlow(
       *device, FastPairEngagementFlowEvent::kPairingSucceeded);
+  RecordPairingResult(*device, /*success=*/true);
   feature_usage_metrics_logger_->RecordUsage(/*success=*/true);
 
   base::TimeDelta total_pair_time =
@@ -89,6 +90,8 @@ void QuickPairMetricsLogger::OnPairFailure(scoped_refptr<Device> device,
   AttemptRecordingTotalUxPairTime(*device, total_pair_time);
 
   feature_usage_metrics_logger_->RecordUsage(/*success=*/false);
+  RecordPairingFailureReason(*device, failure);
+  RecordPairingResult(*device, /*success=*/false);
 }
 
 void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,

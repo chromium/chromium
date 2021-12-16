@@ -5,8 +5,10 @@
 #ifndef ASH_QUICK_PAIR_COMMON_FAST_PAIR_FAST_PAIR_METRICS_H_
 #define ASH_QUICK_PAIR_COMMON_FAST_PAIR_FAST_PAIR_METRICS_H_
 
+#include "ash/quick_pair/common/pair_failure.h"
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace quick_pair {
@@ -77,6 +79,12 @@ void RecordRetroactivePairingResult(bool success);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordTotalGattConnectionTime(base::TimeDelta total_gatt_connection_time);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordPairingFailureReason(const Device& device, PairFailure failure);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordPairingResult(const Device& device, bool success);
 
 }  // namespace quick_pair
 }  // namespace ash

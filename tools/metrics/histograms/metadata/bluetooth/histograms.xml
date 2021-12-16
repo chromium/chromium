@@ -207,6 +207,47 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.PairFailure.{FastPairPairingProtocol}"
+    enum="FastPairPairFailure" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Breaks down why a pairing attempt to a device failed (see
+    'Bluetooth.ChromeOS.FastPair.Pairing.Result'). Suffixed by FastPair pairing
+    protocol type. Emitted on the OnPairFailure event in the Fast Pair flow.
+  </summary>
+  <token key="FastPairPairingProtocol">
+    <variant name="InitialPairingProtocol" summary="initial pairing protocol"/>
+    <variant name="RetroactivePairingProtocol"
+        summary="retroactive pairing protocol"/>
+    <variant name="SubsequentPairingProtocol"
+        summary="subsequent pairing protocol"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.Pairing.Result.{FastPairPairingProtocol}"
+    enum="BooleanSuccess" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records success or failure of a pairing attempt (initiated in the UI) to a
+    device after the user elects to begin the pairing process on the UI. Emitted
+    on the OnPairFailure event and the OnDevicePaired event in the Fast Pair
+    flow.
+  </summary>
+  <token key="FastPairPairingProtocol">
+    <variant name="InitialPairingProtocol" summary="initial pairing protocol"/>
+    <variant name="RetroactivePairingProtocol"
+        summary="retroactive pairing protocol"/>
+    <variant name="SubsequentPairingProtocol"
+        summary="subsequent pairing protocol"/>
+  </token>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.PairingMethod"
     enum="FastPairPairingMethod" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>

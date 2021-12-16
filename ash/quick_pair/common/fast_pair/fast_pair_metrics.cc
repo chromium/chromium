@@ -27,6 +27,18 @@ const char kRetroactivePairingResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.RetroactivePairing.Result";
 const char kTotalGattConnectionTimeMetric[] =
     "Bluetooth.ChromeOS.FastPair.TotalGattConnectionTime";
+const char kFastPairPairFailureInitialMetric[] =
+    "Bluetooth.ChromeOS.FastPair.PairFailure.InitialPairingProtocol";
+const char kFastPairPairFailureSubsequentMetric[] =
+    "Bluetooth.ChromeOS.FastPair.PairFailure.SubsequentPairingProtocol";
+const char kFastPairPairFailureRetroactiveMetric[] =
+    "Bluetooth.ChromeOS.FastPair.PairFailure.RetroactivePairingProtocol";
+const char kFastPairPairResultInitialMetric[] =
+    "Bluetooth.ChromeOS.FastPair.Pairing.Result.InitialPairingProtocol";
+const char kFastPairPairResultSubsequentMetric[] =
+    "Bluetooth.ChromeOS.FastPair.Pairing.Result.SubsequentPairingProtocol";
+const char kFastPairPairResultRetroactiveMetric[] =
+    "Bluetooth.ChromeOS.FastPair.Pairing.Result.RetroactivePairingProtocol";
 
 }  // namespace
 
@@ -89,6 +101,37 @@ void RecordRetroactivePairingResult(bool success) {
 void RecordTotalGattConnectionTime(base::TimeDelta total_gatt_connection_time) {
   base::UmaHistogramTimes(kTotalGattConnectionTimeMetric,
                           total_gatt_connection_time);
+}
+
+void RecordPairingResult(const Device& device, bool success) {
+  switch (device.protocol) {
+    case Protocol::kFastPairInitial:
+      base::UmaHistogramBoolean(kFastPairPairResultInitialMetric, success);
+      break;
+    case Protocol::kFastPairRetroactive:
+      base::UmaHistogramBoolean(kFastPairPairResultRetroactiveMetric, success);
+      break;
+    case Protocol::kFastPairSubsequent:
+      base::UmaHistogramBoolean(kFastPairPairResultSubsequentMetric, success);
+      break;
+  }
+}
+
+void RecordPairingFailureReason(const Device& device, PairFailure failure) {
+  switch (device.protocol) {
+    case Protocol::kFastPairInitial:
+      base::UmaHistogramSparse(kFastPairPairFailureInitialMetric,
+                               static_cast<int>(failure));
+      break;
+    case Protocol::kFastPairRetroactive:
+      base::UmaHistogramSparse(kFastPairPairFailureRetroactiveMetric,
+                               static_cast<int>(failure));
+      break;
+    case Protocol::kFastPairSubsequent:
+      base::UmaHistogramSparse(kFastPairPairFailureSubsequentMetric,
+                               static_cast<int>(failure));
+      break;
+  }
 }
 
 }  // namespace quick_pair

@@ -31462,6 +31462,44 @@ Called by update_extension_permission.py.-->
   <int value="1213" label="Pairing Failed: Error UI Dismissed By User"/>
 </enum>
 
+<enum name="FastPairPairFailure">
+  <int value="0" label="Failed to create a GATT connection to the device"/>
+  <int value="1" label="Failed to find the expected GATT service"/>
+  <int value="2" label="Timed out while starting discovery of GATT service"/>
+  <int value="3" label="Failed to retrieve the data encryptor"/>
+  <int value="4"
+      label="Failed to find the Key-based pairing GATT characteristic"/>
+  <int value="5" label="Failed to find the Passkey GATT characteristic"/>
+  <int value="6" label="Failed to find the Account Key GATT characteristic"/>
+  <int value="7"
+      label="Failed to start a notify session on the Key-based pairing GATT
+             characteristic"/>
+  <int value="8"
+      label="Failed to start a notify session on the Passkey GATT
+             characteristic"/>
+  <int value="9"
+      label="Timed out while waiting to start a notify session on the
+             Key-based pairing GATT characteristic"/>
+  <int value="10"
+      label="Timed out while waiting to start a notify session on the Passkey
+             pairing GATT characteristic"/>
+  <int value="11"
+      label="Failed to write to the Key-based pairing GATT characteristic"/>
+  <int value="12" label="Failed to write to the Passkey GATT characteristic"/>
+  <int value="13"
+      label="Timed out while waiting for the Key-based Pairing response"/>
+  <int value="14" label="Timed out while waiting for the Passkey response"/>
+  <int value="15" label="Failed to decrypt Key-based response message"/>
+  <int value="16" label="Incorrect Key-based response message type"/>
+  <int value="17" label="Failed to decrypt Passkey response message"/>
+  <int value="18" label="Incorrect Passkey response message type"/>
+  <int value="19" label="Passkeys did not match"/>
+  <int value="20"
+      label="Potential pairing device lost during Passkey exchange"/>
+  <int value="21" label="Failed to bond to discovered device"/>
+  <int value="22" label="Failed to bond to device via public address"/>
+</enum>
+
 <enum name="FastPairPairingMethod">
   <int value="0" label="Fast Pair Pairing"/>
   <int value="1" label="System UI Pairing"/>
