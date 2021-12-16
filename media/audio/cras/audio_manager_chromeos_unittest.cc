@@ -119,7 +119,7 @@ TEST_P(GetStreamParametersForSystem, BehaviorWithCrOSEnforceSystemAecNsAgc) {
 // CrOS and this test failed when tested on an experimental builder with
 // DCHECKs. Revert https://crrev.com/c/2959990 to re-enable it.
 // See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for more details.
-#if !DCHECK_IS_ON()
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_P(GetStreamParametersForSystem,
        BehaviorWithCrOSEnforceSystemAecNsAndAecAgc) {
   base::test::ScopedFeatureList feature_list;
@@ -146,7 +146,7 @@ TEST_P(GetStreamParametersForSystem,
 // CrOS and this test failed when tested on an experimental builder with
 // DCHECKs. Revert https://crrev.com/c/2959990 to re-enable it.
 // See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for more details.
-#if !DCHECK_IS_ON()
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_P(GetStreamParametersForSystem,
        BehaviorWithCrOSEnforceSystemAecNsAgcAndDisallowedSystemAec) {
   base::test::ScopedFeatureList feature_list;
