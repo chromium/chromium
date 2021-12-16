@@ -50,7 +50,6 @@ android_library("delegate_public_impl_java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/color/toolbar_icon_tint_dark.xml",
     "java/res/values/colors.xml",
     "java/res/values/values.xml",
   ]

@@ -77,7 +77,7 @@ public class MenuButtonCoordinator {
                                          new ShowBadgeProperty(false, false))
                                  .with(MenuButtonProperties.THEME,
                                          new ThemeProperty(themeColorProvider.getTint(),
-                                                 themeColorProvider.useLight()))
+                                                 themeColorProvider.getBrandedColorScheme()))
                                  .with(MenuButtonProperties.IS_VISIBLE, true)
                                  .with(MenuButtonProperties.STATE_SUPPLIER, menuButtonStateSupplier)
                                  .build();

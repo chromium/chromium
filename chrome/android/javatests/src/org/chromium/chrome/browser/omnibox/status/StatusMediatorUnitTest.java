@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -130,7 +131,7 @@ public final class StatusMediatorUnitTest {
         doAnswer(logoAnswer)
                 .when(mSearchEngineLogoUtils)
                 .getSearchEngineLogo(
-                        eq(mResources), /* inNightMode= */ eq(false), any(), any(), any());
+                        eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any(), any(), any());
 
         mBitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
         setupStatusMediator(/* isTablet= */ false);
@@ -434,21 +435,21 @@ public final class StatusMediatorUnitTest {
         Assert.assertEquals("Incorrect color for paint preview status text",
                 R.color.locationbar_status_preview_color_light,
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR_RES));
-        mMediator.setUseDarkColors(true);
+        mMediator.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         Assert.assertEquals("Incorrect color for paint preview status text",
                 R.color.locationbar_status_preview_color,
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR_RES));
 
         // When only offline is enabled, it should be shown.
         mMediator.setPageIsPaintPreview(false);
-        mMediator.setUseDarkColors(false);
+        mMediator.setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         Assert.assertEquals("Incorrect text for offline page status text",
                 R.string.location_bar_verbose_status_offline,
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_STRING_RES));
         Assert.assertEquals("Incorrect color for offline page status text",
                 R.color.locationbar_status_offline_color_light,
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR_RES));
-        mMediator.setUseDarkColors(true);
+        mMediator.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         Assert.assertEquals("Incorrect color for offline page status text",
                 R.color.locationbar_status_offline_color,
                 mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR_RES));
@@ -467,7 +468,7 @@ public final class StatusMediatorUnitTest {
         mMediator.onTemplateURLServiceChanged();
         verify(mSearchEngineLogoUtils, times(3))
                 .getSearchEngineLogo(
-                        eq(mResources), /* inNightMode= */ eq(false), any(), any(), any());
+                        eq(mResources), eq(BrandedColorScheme.APP_DEFAULT), any(), any(), any());
     }
 
     @Test

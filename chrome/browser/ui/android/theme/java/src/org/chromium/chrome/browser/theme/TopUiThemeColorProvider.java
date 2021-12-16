@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.theme;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.util.ColorUtils;
@@ -103,6 +105,21 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
     private void updateColor(Tab tab, int themeColor, boolean shouldAnimate) {
         updatePrimaryColor(calculateColor(tab, themeColor), shouldAnimate);
         mIsDefaultColorUsed = isUsingDefaultColor(tab, themeColor);
+        final @BrandedColorScheme int brandedColorScheme =
+                calculateBrandedColorScheme(tab.isIncognito(), mIsDefaultColorUsed);
+        final ColorStateList iconTint =
+                ThemeUtils.getThemedToolbarIconTint(mContext, brandedColorScheme);
+        updateTint(iconTint, brandedColorScheme);
+    }
+
+    private int calculateBrandedColorScheme(boolean isIncognito, boolean isDefaultColor) {
+        if (isIncognito) return BrandedColorScheme.INCOGNITO;
+        if (isDefaultColor) return BrandedColorScheme.APP_DEFAULT;
+
+        final boolean isDarkTheme =
+                ColorUtils.shouldUseLightForegroundOnBackground(getThemeColor());
+        return isDarkTheme ? BrandedColorScheme.DARK_BRANDED_THEME
+                           : BrandedColorScheme.LIGHT_BRANDED_THEME;
     }
 
     /**
