@@ -51,7 +51,7 @@ class InputMethodManagerImpl : public InputMethodManager,
               Profile* profile,
               const InputMethodDescriptor* initial_input_method = nullptr);
 
-    Profile* const GetProfile() const;
+    Profile* GetProfile() const;
 
     // Returns true if |input_method_id| is in |enabled_input_method_ids_|.
     bool InputMethodIsEnabled(const std::string& input_method_id) const;

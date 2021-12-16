@@ -928,7 +928,7 @@ InputMethodManagerImpl::StateImpl::LookupInputMethod(
   return descriptor;
 }
 
-Profile* const InputMethodManagerImpl::StateImpl::GetProfile() const {
+Profile* InputMethodManagerImpl::StateImpl::GetProfile() const {
   return profile_;
 }
 
