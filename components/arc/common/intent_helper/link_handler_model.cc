@@ -2,27 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/arc/intent_helper/link_handler_model.h"
+#include "components/arc/common/intent_helper/link_handler_model.h"
 
 #include <utility>
 
+#include "base/bind.h"
+#include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
+#include "components/google/core/common/google_util.h"
+#include "url/url_util.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
-#include "base/bind.h"
-#include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/google/core/common/google_util.h"
-#include "url/url_util.h"
+#endif
 
 namespace arc {
 
 namespace {
 
 constexpr int kMaxValueLen = 2048;
+
+// Not owned. Must outlive all LinkHandlerModel instances.
+LinkHandlerModelDelegate* g_link_handler_model_delegate = nullptr;
 
 bool GetQueryValue(const GURL& url,
                    const std::string& key_to_find,
@@ -69,6 +76,7 @@ void LinkHandlerModel::AddObserver(Observer* observer) {
 }
 
 void LinkHandlerModel::OpenLinkWithHandler(uint32_t handler_id) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* arc_service_manager = ArcServiceManager::Get();
   if (!arc_service_manager)
     return;
@@ -78,24 +86,29 @@ void LinkHandlerModel::OpenLinkWithHandler(uint32_t handler_id) {
     return;
   if (handler_id >= handlers_.size())
     return;
-  instance->HandleUrl(url_.spec(), handlers_[handler_id]->package_name);
+  instance->HandleUrl(url_.spec(), handlers_[handler_id].package_name);
 
   ArcMetricsService::RecordArcUserInteraction(
       context_, arc::UserInteractionType::APP_STARTED_FROM_LINK_CONTEXT_MENU);
+#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  NOTIMPLEMENTED();
+#endif
+}
+
+// static
+void LinkHandlerModel::SetDelegate(LinkHandlerModelDelegate* delegate) {
+  // SetDelegate should be called only when overwriting nullptr or unsetting to
+  // nullptr except for testing.
+  if (g_link_handler_model_delegate && delegate) {
+    LOG(ERROR) << "g_link_handler_model_delegate is modified. "
+               << "This should not happen except for testing.";
+  }
+  g_link_handler_model_delegate = delegate;
 }
 
 LinkHandlerModel::LinkHandlerModel() = default;
 
 bool LinkHandlerModel::Init(content::BrowserContext* context, const GURL& url) {
-  auto* arc_service_manager = ArcServiceManager::Get();
-  if (!arc_service_manager)
-    return false;
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_service_manager->arc_bridge_service()->intent_helper(),
-      RequestUrlHandlerList);
-  if (!instance)
-    return false;
-
   DCHECK(context);
   context_ = context;
 
@@ -104,32 +117,50 @@ bool LinkHandlerModel::Init(content::BrowserContext* context, const GURL& url) {
   // callback function, OnUrlHandlerList, is called within a few milliseconds
   // even on the slowest Chromebook we support.
   url_ = RewriteUrlFromQueryIfAvailable(url);
-  instance->RequestUrlHandlerList(
+
+  if (!g_link_handler_model_delegate) {
+    // g_link_handler_model_delegate should be already set on the product.
+    // It is not set for some tests such as browser_tests since crosapi is
+    // disabled.
+    LOG(ERROR) << "LinkHandlerModelDelegate is not set. "
+               << "This should not happen except for testing.";
+    return false;
+  }
+
+  return g_link_handler_model_delegate->RequestUrlHandlerList(
       url_.spec(), base::BindOnce(&LinkHandlerModel::OnUrlHandlerList,
                                   weak_ptr_factory_.GetWeakPtr()));
-  return true;
 }
 
 void LinkHandlerModel::OnUrlHandlerList(
-    std::vector<mojom::IntentHandlerInfoPtr> handlers) {
-  handlers_ = ArcIntentHelperBridge::FilterOutIntentHelper(std::move(handlers));
+    std::vector<LinkHandlerModelDelegate::IntentHandlerInfo> handlers) {
+  for (auto& handler : handlers) {
+    if (handler.package_name == "org.chromium.arc.intent_helper")
+      continue;
+    handlers_.push_back(std::move(handler));
+  }
 
   bool icon_info_notified = false;
-  auto* intent_helper_bridge =
-      ArcIntentHelperBridge::GetForBrowserContext(context_);
-  if (intent_helper_bridge) {
-    std::vector<ArcIntentHelperBridge::ActivityName> activities;
-    for (size_t i = 0; i < handlers_.size(); ++i) {
-      activities.emplace_back(handlers_[i]->package_name,
-                              handlers_[i]->activity_name);
-    }
-    const ArcIntentHelperBridge::GetResult result =
-        intent_helper_bridge->GetActivityIcons(
-            activities, base::BindOnce(&LinkHandlerModel::NotifyObserver,
-                                       weak_ptr_factory_.GetWeakPtr()));
-    icon_info_notified =
-        internal::ActivityIconLoader::HasIconsReadyCallbackRun(result);
+  if (!g_link_handler_model_delegate) {
+    // g_link_handler_model_delegate should be already set on the product.
+    // It is not set for some tests such as browser_tests since crosapi is
+    // disabled.
+    LOG(ERROR) << "LinkHandlerModelDelegate is not set. "
+               << "This should not happen except for testing.";
   }
+
+  std::vector<LinkHandlerModelDelegate::ActivityName> activities;
+  for (size_t i = 0; i < handlers_.size(); ++i) {
+    activities.emplace_back(handlers_[i].package_name,
+                            handlers_[i].activity_name);
+  }
+  const LinkHandlerModelDelegate::GetResult result =
+      g_link_handler_model_delegate->GetActivityIcons(
+          activities, base::BindOnce(&LinkHandlerModel::NotifyObserver,
+                                     weak_ptr_factory_.GetWeakPtr()));
+  icon_info_notified =
+      LinkHandlerModelDelegate::ActivityIconLoader::HasIconsReadyCallbackRun(
+          result);
 
   if (!icon_info_notified) {
     // Call NotifyObserver() without icon information, unless
@@ -140,7 +171,7 @@ void LinkHandlerModel::OnUrlHandlerList(
 }
 
 void LinkHandlerModel::NotifyObserver(
-    std::unique_ptr<ArcIntentHelperBridge::ActivityToIconsMap> icons) {
+    std::unique_ptr<LinkHandlerModelDelegate::ActivityToIconsMap> icons) {
   if (icons) {
     icons_.insert(icons->begin(), icons->end());
     icons.reset();
@@ -149,13 +180,13 @@ void LinkHandlerModel::NotifyObserver(
   std::vector<LinkHandlerInfo> handlers;
   for (size_t i = 0; i < handlers_.size(); ++i) {
     gfx::Image icon;
-    const ArcIntentHelperBridge::ActivityName activity(
-        handlers_[i]->package_name, handlers_[i]->activity_name);
+    const LinkHandlerModelDelegate::ActivityName activity(
+        handlers_[i].package_name, handlers_[i].activity_name);
     const auto it = icons_.find(activity);
     if (it != icons_.end())
       icon = it->second.icon16;
     // Use the handler's index as an ID.
-    LinkHandlerInfo handler = {base::UTF8ToUTF16(handlers_[i]->name), icon,
+    LinkHandlerInfo handler = {base::UTF8ToUTF16(handlers_[i].name), icon,
                                static_cast<uint32_t>(i)};
     handlers.push_back(handler);
   }

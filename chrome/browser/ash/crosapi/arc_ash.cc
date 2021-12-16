@@ -10,7 +10,6 @@
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
-#include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 
@@ -25,6 +24,31 @@ STATIC_ASSERT_SCALE_FACTOR(SCALE_FACTOR_200P);
 STATIC_ASSERT_SCALE_FACTOR(SCALE_FACTOR_300P);
 
 namespace crosapi {
+
+namespace {
+
+// Retrurns IntentHelperHolder for getting mojom API.
+// Return nullptr if not ready or supported.
+arc::ConnectionHolder<arc::mojom::IntentHelperInstance,
+                      arc::mojom::IntentHelperHost>*
+GetIntentHelperHolder() {
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+  if (!arc_service_manager) {
+    LOG(WARNING) << "ARC is not ready";
+    return nullptr;
+  }
+
+  auto* intent_helper_holder =
+      arc_service_manager->arc_bridge_service()->intent_helper();
+  if (!intent_helper_holder->IsConnected()) {
+    LOG(WARNING) << "ARC intent helper instance is not ready.";
+    return nullptr;
+  }
+
+  return intent_helper_holder;
+}
+
+}  // namespace
 
 ArcAsh::ArcAsh() = default;
 ArcAsh::~ArcAsh() = default;
@@ -72,18 +96,9 @@ void ArcAsh::RequestActivityIcons(
     std::vector<mojom::ActivityNamePtr> activities,
     mojom::ScaleFactor scale_factor,
     RequestActivityIconsCallback callback) {
-  auto* arc_service_manager = arc::ArcServiceManager::Get();
-  if (!arc_service_manager) {
-    LOG(WARNING) << "ARC is not ready";
+  auto* intent_helper_holder = GetIntentHelperHolder();
+  if (!intent_helper_holder)
     return;
-  }
-
-  auto* intent_helper_holder =
-      arc_service_manager->arc_bridge_service()->intent_helper();
-  if (!intent_helper_holder->IsConnected()) {
-    LOG(WARNING) << "ARC intent helper instance is not ready.";
-    return;
-  }
 
   auto* instance =
       ARC_GET_INSTANCE_FOR_METHOD(intent_helper_holder, RequestActivityIcons);
@@ -127,7 +142,34 @@ void ArcAsh::ConvertActivityIcons(
 
 void ArcAsh::RequestUrlHandlerList(const std::string& url,
                                    RequestUrlHandlerListCallback callback) {
-  NOTIMPLEMENTED();
+  auto* intent_helper_holder = GetIntentHelperHolder();
+  if (!intent_helper_holder)
+    return;
+
+  auto* instance =
+      ARC_GET_INSTANCE_FOR_METHOD(intent_helper_holder, RequestUrlHandlerList);
+  if (!instance) {
+    LOG(WARNING) << "RequestUrlHandlerList is not supported.";
+    return;
+  }
+
+  instance->RequestUrlHandlerList(
+      url, base::BindOnce(&ArcAsh::ConvertIntentHandlerInfo,
+                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ArcAsh::ConvertIntentHandlerInfo(
+    RequestUrlHandlerListCallback callback,
+    std::vector<arc::mojom::IntentHandlerInfoPtr> handlers) {
+  // Convert handlers to crosapi::mojom::IntentHandlerInfoPtr from
+  // arc::mojom::IntentHandlerInfoPtr.
+  std::vector<mojom::IntentHandlerInfoPtr> converted_handlers;
+  for (const auto& handler : handlers) {
+    mojom::IntentHandlerInfoPtr converted_handler(mojom::IntentHandlerInfo::New(
+        handler->name, handler->package_name, handler->activity_name));
+    converted_handlers.push_back(std::move(converted_handler));
+  }
+  std::move(callback).Run(std::move(converted_handlers));
 }
 
 void ArcAsh::OnIconInvalidated(const std::string& package_name) {

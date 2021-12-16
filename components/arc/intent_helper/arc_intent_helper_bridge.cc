@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "components/arc/common/intent_helper/link_handler_model.h"
 #include "components/arc/intent_helper/control_camera_app_delegate.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
@@ -160,11 +161,13 @@ ArcIntentHelperBridge::ArcIntentHelperBridge(content::BrowserContext* context,
       arc_bridge_service_(bridge_service),
       allowed_arc_schemes_(std::cbegin(kArcSchemes), std::cend(kArcSchemes)) {
   arc_bridge_service_->intent_helper()->SetHost(this);
+  LinkHandlerModel::SetDelegate(this);
 }
 
 ArcIntentHelperBridge::~ArcIntentHelperBridge() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   arc_bridge_service_->intent_helper()->SetHost(nullptr);
+  LinkHandlerModel::SetDelegate(nullptr);
   for (auto& observer : observer_list_)
     observer.OnArcIntentHelperBridgeDestruction();
 }
@@ -374,6 +377,39 @@ ArcIntentHelperBridge::GetResult ArcIntentHelperBridge::GetActivityIcons(
     OnIconsReadyCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return icon_loader_.GetActivityIcons(activities, std::move(callback));
+}
+
+bool ArcIntentHelperBridge::RequestUrlHandlerList(
+    const std::string& url,
+    RequestUrlHandlerListCallback callback) {
+  auto* arc_service_manager = ArcServiceManager::Get();
+  arc::mojom::IntentHelperInstance* instance = nullptr;
+
+  if (arc_service_manager) {
+    instance = ARC_GET_INSTANCE_FOR_METHOD(
+        arc_service_manager->arc_bridge_service()->intent_helper(),
+        RequestUrlHandlerList);
+  }
+  if (!instance) {
+    LOG(ERROR) << "Failed to get instance for RequestUrlHandlerList().";
+    return false;
+  }
+
+  instance->RequestUrlHandlerList(
+      url, base::BindOnce(&ArcIntentHelperBridge::OnRequestUrlHandlerList,
+                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  return true;
+}
+
+void ArcIntentHelperBridge::OnRequestUrlHandlerList(
+    RequestUrlHandlerListCallback callback,
+    std::vector<mojom::IntentHandlerInfoPtr> handlers) {
+  std::vector<IntentHandlerInfo> converted_handlers;
+  for (auto const& handler : handlers) {
+    converted_handlers.push_back(IntentHandlerInfo(
+        handler->name, handler->package_name, handler->activity_name));
+  }
+  std::move(callback).Run(std::move(converted_handlers));
 }
 
 bool ArcIntentHelperBridge::ShouldChromeHandleUrl(const GURL& url) {

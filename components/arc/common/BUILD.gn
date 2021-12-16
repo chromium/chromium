@@ -10,11 +10,15 @@ static_library("common") {
     "intent_helper/activity_icon_loader.cc",
     "intent_helper/activity_icon_loader.h",
     "intent_helper/adaptive_icon_delegate.h",
+    "intent_helper/link_handler_model.cc",
+    "intent_helper/link_handler_model.h",
+    "intent_helper/link_handler_model_delegate.h",
   ]
 
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//components/google/core/common",
     "//ui/base",
     "//ui/gfx",
     "//url:url",
@@ -22,7 +26,9 @@ static_library("common") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash/components/arc",
       "//ash/components/arc:arc_base_utils",
+      "//ash/components/arc:arc_metrics_constants",
       "//ash/components/arc/mojom",
       "//ash/components/arc/session",
     ]
@@ -38,12 +44,16 @@ static_library("common") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "intent_helper/activity_icon_loader_unittest.cc" ]
+  sources = [
+    "intent_helper/activity_icon_loader_unittest.cc",
+    "intent_helper/link_handler_model_unittest.cc",
+  ]
 
   deps = [
     ":common",
     "//base/test:test_support",
     "//testing/gtest",
     "//ui/gfx",
+    "//url:url",
   ]
 }

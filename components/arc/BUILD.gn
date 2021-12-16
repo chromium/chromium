@@ -17,8 +17,6 @@ static_library("arc") {
     "intent_helper/intent_constants.h",
     "intent_helper/intent_filter.cc",
     "intent_helper/intent_filter.h",
-    "intent_helper/link_handler_model.cc",
-    "intent_helper/link_handler_model.h",
     "intent_helper/open_url_delegate.h",
   ]
 
@@ -53,7 +51,6 @@ source_set("unit_tests") {
     "intent_helper/arc_intent_helper_bridge_unittest.cc",
     "intent_helper/custom_tab_unittest.cc",
     "intent_helper/intent_filter_unittest.cc",
-    "intent_helper/link_handler_model_unittest.cc",
   ]
 
   deps = [

@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "components/arc/intent_helper/link_handler_model.h"
+#include "components/arc/common/intent_helper/link_handler_model.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "url/gurl.h"

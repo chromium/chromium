@@ -49,6 +49,10 @@ class ArcAsh : public mojom::Arc, public arc::ArcIntentHelperObserver {
   // Called when activity icons are sent.
   void ConvertActivityIcons(RequestActivityIconsCallback callback,
                             std::vector<arc::mojom::ActivityIconPtr> icons);
+  // Called when intent handler list is sent.
+  void ConvertIntentHandlerInfo(
+      RequestUrlHandlerListCallback callback,
+      std::vector<arc::mojom::IntentHandlerInfoPtr> handlers);
 
   // This class supports any number of connections.
   mojo::ReceiverSet<mojom::Arc> receivers_;

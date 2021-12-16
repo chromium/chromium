@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ARC_INTENT_HELPER_LINK_HANDLER_MODEL_H_
-#define COMPONENTS_ARC_INTENT_HELPER_LINK_HANDLER_MODEL_H_
+#ifndef COMPONENTS_ARC_COMMON_INTENT_HELPER_LINK_HANDLER_MODEL_H_
+#define COMPONENTS_ARC_COMMON_INTENT_HELPER_LINK_HANDLER_MODEL_H_
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/arc/common/intent_helper/link_handler_model_delegate.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -52,6 +51,9 @@ class LinkHandlerModel {
 
   static GURL RewriteUrlFromQueryIfAvailableForTesting(const GURL& url);
 
+  // Sets the LinkHandlerModelDelegate instance.
+  static void SetDelegate(LinkHandlerModelDelegate* delegate);
+
  private:
   LinkHandlerModel();
 
@@ -60,9 +62,10 @@ class LinkHandlerModel {
   // the caller should delete |this| object.
   bool Init(content::BrowserContext* context, const GURL& url);
 
-  void OnUrlHandlerList(std::vector<mojom::IntentHandlerInfoPtr> handlers);
+  void OnUrlHandlerList(
+      std::vector<LinkHandlerModelDelegate::IntentHandlerInfo> handlers);
   void NotifyObserver(
-      std::unique_ptr<ArcIntentHelperBridge::ActivityToIconsMap> icons);
+      std::unique_ptr<LinkHandlerModelDelegate::ActivityToIconsMap> icons);
 
   // Checks if the |url| matches the following pattern:
   //   "http(s)://<valid_google_hostname>/url?...&url=<valid_url>&..."
@@ -77,13 +80,13 @@ class LinkHandlerModel {
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   // Url handler info passed from ARC.
-  std::vector<mojom::IntentHandlerInfoPtr> handlers_;
+  std::vector<LinkHandlerModelDelegate::IntentHandlerInfo> handlers_;
   // Activity icon info passed from ARC.
-  ArcIntentHelperBridge::ActivityToIconsMap icons_;
+  LinkHandlerModelDelegate::ActivityToIconsMap icons_;
 
   base::WeakPtrFactory<LinkHandlerModel> weak_ptr_factory_{this};
 };
 
 }  // namespace arc
 
-#endif  // COMPONENTS_ARC_INTENT_HELPER_LINK_HANDLER_MODEL_H_
+#endif  // COMPONENTS_ARC_COMMON_INTENT_HELPER_LINK_HANDLER_MODEL_H_
