@@ -8,29 +8,20 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/weak_ptr.h"
-#include "components/infobars/android/confirm_infobar.h"
-#include "components/infobars/core/infobar.h"
-#include "components/infobars/core/infobar_delegate.h"
-#include "components/infobars/core/infobar_manager.h"
+#include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webxr/android/ar_jni_headers/ArCoreInstallUtils_jni.h"
 #include "components/webxr/android/webxr_utils.h"
-#include "components/webxr/android/xr_install_helper_delegate.h"
-#include "components/webxr/android/xr_install_infobar.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using base::android::AttachCurrentThread;
 
 namespace webxr {
 
-ArCoreInstallHelper::ArCoreInstallHelper(
-    std::unique_ptr<XrInstallHelperDelegate> install_delegate)
-    : install_delegate_(std::move(install_delegate)) {
-  DCHECK(install_delegate_);
-
+ArCoreInstallHelper::ArCoreInstallHelper() {
   // As per documentation, it's recommended to issue a call to
   // ArCoreApk.checkAvailability() early in application lifecycle & ignore the
   // result so that subsequent calls can return cached result:
@@ -72,7 +63,7 @@ void ArCoreInstallHelper::EnsureInstalled(
   // ARCore is not installed or requires an update.
   if (Java_ArCoreInstallUtils_shouldRequestInstallSupportedArCore(
           AttachCurrentThread())) {
-    ShowInfoBar(render_process_id, render_frame_id);
+    ShowMessage(render_process_id, render_frame_id);
     return;
   }
 
@@ -81,25 +72,13 @@ void ArCoreInstallHelper::EnsureInstalled(
   OnRequestInstallSupportedArCoreResult(nullptr, true);
 }
 
-void ArCoreInstallHelper::ShowInfoBar(int render_process_id,
+void ArCoreInstallHelper::ShowMessage(int render_process_id,
                                       int render_frame_id) {
   DVLOG(1) << __func__;
 
-  infobars::InfoBarManager* infobar_manager =
-      install_delegate_->GetInfoBarManager(
-          GetWebContents(render_process_id, render_frame_id));
-
-  // We can't show an infobar without an |infobar_manager|, so if it's null,
-  // report that we are not installed and stop processing.
-  if (!infobar_manager) {
-    DVLOG(2) << __func__ << ": infobar_manager is null";
-    RunInstallFinishedCallback(false);
-    return;
-  }
-
   ArCoreAvailability availability = static_cast<ArCoreAvailability>(
       Java_ArCoreInstallUtils_getArCoreInstallStatus(AttachCurrentThread()));
-  int message_text = -1;
+  int message_title = -1;
   int button_text = -1;
   switch (availability) {
     case ArCoreAvailability::kUnsupportedDeviceNotCapable: {
@@ -110,12 +89,12 @@ void ArCoreInstallHelper::ShowInfoBar(int render_process_id,
     case ArCoreAvailability::kUnknownError:
     case ArCoreAvailability::kUnknownTimedOut:
     case ArCoreAvailability::kSupportedNotInstalled: {
-      message_text = IDS_AR_CORE_CHECK_INFOBAR_INSTALL_TEXT;
+      message_title = IDS_AR_CORE_CHECK_MESSAGE_INSTALL_TITLE;
       button_text = IDS_INSTALL;
       break;
     }
     case ArCoreAvailability::kSupportedApkTooOld: {
-      message_text = IDS_AR_CORE_CHECK_INFOBAR_UPDATE_TEXT;
+      message_title = IDS_AR_CORE_CHECK_MESSAGE_UPDATE_TITLE;
       button_text = IDS_UPDATE;
       break;
     }
@@ -124,33 +103,46 @@ void ArCoreInstallHelper::ShowInfoBar(int render_process_id,
       break;
   }
 
-  DCHECK_NE(-1, message_text);
+  DCHECK_NE(-1, message_title);
   DCHECK_NE(-1, button_text);
 
-  // Binding ourself as a weak ref is okay, since our destructor will still
-  // guarantee that the callback is run if we are destroyed while waiting for
-  // the callback from the infobar.
-  // TODO(ijamardo, https://crbug.com/838833): Add icon for AR info bar.
-  auto delegate = std::make_unique<XrInstallInfoBar>(
-      infobars::InfoBarDelegate::InfoBarIdentifier::AR_CORE_UPGRADE_ANDROID,
-      IDR_ANDROID_AR_CORE_INSALL_ICON, message_text, button_text,
-      base::BindOnce(&ArCoreInstallHelper::OnInfoBarResponse,
-                     weak_ptr_factory_.GetWeakPtr(), render_process_id,
-                     render_frame_id));
+  message_ = std::make_unique<messages::MessageWrapper>(
+      messages::MessageIdentifier::AR_CORE_UPGRADE,
+      base::BindOnce(&ArCoreInstallHelper::HandleMessagePrimaryAction,
+                     base::Unretained(this), render_process_id,
+                     render_frame_id),
+      base::BindOnce(&ArCoreInstallHelper::HandleMessageDismissed,
+                     base::Unretained(this)));
 
-  infobar_manager->AddInfoBar(
-      std::make_unique<infobars::ConfirmInfoBar>(std::move(delegate)));
+  message_->SetTitle(l10n_util::GetStringUTF16(message_title));
+  message_->SetDescription(
+      l10n_util::GetStringUTF16(IDS_AR_CORE_CHECK_MESSAGE_DESCRIPTION));
+  message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(button_text));
+  messages::MessageDispatcherBridge* message_dispatcher_bridge =
+      messages::MessageDispatcherBridge::Get();
+  message_->SetIconResourceId(message_dispatcher_bridge->MapToJavaDrawableId(
+      IDR_ANDROID_AR_CORE_INSALL_ICON));
+
+  message_dispatcher_bridge->EnqueueMessage(
+      message_.get(), GetWebContents(render_process_id, render_frame_id),
+      messages::MessageScopeType::NAVIGATION,
+      messages::MessagePriority::kNormal);
 }
 
-void ArCoreInstallHelper::OnInfoBarResponse(int render_process_id,
-                                            int render_frame_id,
-                                            bool try_install) {
-  DVLOG(1) << __func__ << ": try_install=" << try_install;
-  if (!try_install) {
+void ArCoreInstallHelper::HandleMessageDismissed(
+    messages::DismissReason dismiss_reason) {
+  // If the message is dismissed for any reason other than the primary action
+  // button click to install/update ARCore, indicate to the deferred callback
+  // that no installation/update was facilitated.
+  if (dismiss_reason != messages::DismissReason::PRIMARY_ACTION) {
     OnRequestInstallSupportedArCoreResult(nullptr, false);
-    return;
   }
+  DCHECK(message_);
+  message_.reset();
+}
 
+void ArCoreInstallHelper::HandleMessagePrimaryAction(int render_process_id,
+                                                     int render_frame_id) {
   // When completed, java will call: OnRequestInstallSupportedArCoreResult
   Java_ArCoreInstallUtils_requestInstallSupportedArCore(
       AttachCurrentThread(), java_install_utils_,

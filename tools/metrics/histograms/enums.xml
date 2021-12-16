@@ -58717,6 +58717,7 @@ Called by update_use_counter_css.py.-->
   <int value="22" label="TestMessage"/>
   <int value="23" label="TailoredSecurityEnabled"/>
   <int value="24" label="VrServicesUpgrade"/>
+  <int value="26" label="ArCoreUpgrade"/>
 </enum>
 
 <enum name="MessageLoopProblems">
