@@ -4904,6 +4904,7 @@ crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-033.htm
 crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-034.html [ Failure ]
 crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-037.html [ Failure ]
 crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-038.html [ Failure ]
+crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-039.html [ Failure ]
 crbug.com/1066629 external/wpt/css/css-break/hit-test-transformed.html [ Failure ]
 crbug.com/1058792 external/wpt/css/css-break/transform-007.html [ Failure ]
 crbug.com/1224888 external/wpt/css/css-break/transform-009.html [ Failure ]

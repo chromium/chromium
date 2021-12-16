@@ -3433,7 +3433,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   wtf_size_t breakpoint_row_set_index;
   bool has_subsequent_children;
 
-  const LayoutUnit fragmentainer_space =
+  LayoutUnit fragmentainer_space =
       FragmentainerSpaceAtBfcStart(ConstraintSpace());
   const LayoutUnit previous_consumed_block_size =
       BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
@@ -3633,12 +3633,20 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   auto ShiftBreakpointIntoNextFragmentainer = [&]() -> bool {
     if (breakpoint_row_set_index == kNotFound)
       return false;
-    DCHECK_NE(fragmentainer_space, kIndefiniteSize);
 
     const LayoutUnit fragment_relative_row_offset =
         grid_geometry->row_geometry.sets[breakpoint_row_set_index].offset +
         (*row_offset_adjustments)[breakpoint_row_set_index] -
         previous_consumed_block_size;
+
+    // We may be within the initial column-balancing pass (where we have an
+    // indefinite fragmentainer size). If we have a forced break, re-run
+    // |PlaceItems()| assuming the breakpoint offset is the fragmentainer size.
+    if (fragmentainer_space == kIndefiniteSize) {
+      fragmentainer_space = fragment_relative_row_offset;
+      return true;
+    }
+
     const LayoutUnit row_offset_delta =
         fragmentainer_space - fragment_relative_row_offset;
 
