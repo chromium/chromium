@@ -5,6 +5,9 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOC_SUPPORT_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOC_SUPPORT_H_
 
+#include <map>
+#include <string>
+
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/base_export.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,6 +25,9 @@ BASE_EXPORT void StartThreadCachePeriodicPurge();
 
 BASE_EXPORT void StartMemoryReclaimer(
     scoped_refptr<SequencedTaskRunner> task_runner);
+
+BASE_EXPORT std::map<std::string, std::string> ProposeSyntheticFinchTrials(
+    bool is_enterprise);
 
 }  // namespace allocator
 }  // namespace base

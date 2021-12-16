@@ -6,9 +6,12 @@
 
 #include <atomic>
 #include <cstddef>
+#include <map>
+#include <string>
 
 #include "base/allocator/allocator_shim_internals.h"
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
@@ -19,6 +22,7 @@
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/ignore_result.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/numerics/checked_math.h"

@@ -3749,7 +3749,10 @@ test("base_unittests") {
       sources += [ "allocator/winheap_stubs_win_unittest.cc" ]
     }
 
-    sources += [ "allocator/allocator_shim_default_dispatch_to_partition_alloc_unittest.cc" ]
+    sources += [
+      "allocator/allocator_shim_default_dispatch_to_partition_alloc_unittest.cc",
+      "allocator/partition_alloc_support_unittest.cc",
+    ]
   }
 
   if (enable_base_tracing) {
