@@ -48,6 +48,10 @@ class CORE_EXPORT AsyncTaskContext {
   absl::optional<uint64_t> GetTraceId() const { return trace_id_; }
   void SetTraceId(uint64_t trace_id) { trace_id_ = trace_id; }
 
+  // The Id uniquely identifies this task with the V8 debugger. The Id is
+  // calculated based on the address of `AsyncTaskContext`.
+  void* Id() const;
+
  private:
   friend class AsyncTask;
 

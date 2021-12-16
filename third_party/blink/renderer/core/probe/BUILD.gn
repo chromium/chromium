@@ -37,6 +37,7 @@ source_set("generated") {
 # Compiles the sources generated above.
 blink_core_sources("probe") {
   sources = [
+    "async_task_context.cc",
     "async_task_context.h",
     "core_probes.cc",
     "core_probes.h",
