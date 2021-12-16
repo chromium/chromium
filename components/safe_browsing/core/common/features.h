@@ -123,6 +123,10 @@ extern const base::Feature kSuspiciousSiteTriggerQuotaFeature;
 // enterprise.
 extern const base::Feature kRealTimeUrlLookupReferrerChainForEnterprise;
 
+// Controls whether to send sample pings of Protego allowlist domains on
+// the allowlist to Safe Browsing.
+extern const base::Feature kSendSampledPingsForProtegoAllowlistDomains;
+
 // Status of the SimplifiedUrlDisplay experiments. This does not control the
 // individual experiments, those are controlled by their own feature flags.
 // The feature is only set by Finch so that we can differentiate between

@@ -130,6 +130,10 @@ const base::Feature kSafeBrowsingRemoveCookiesInAuthRequests{
     "SafeBrowsingRemoveCookiesInAuthRequests",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSendSampledPingsForProtegoAllowlistDomains{
+    "SafeBrowsingSendSampledPingsForProtegoAllowlistDomains",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 constexpr base::FeatureParam<bool> kShouldFillOldPhishGuardProto{
     &kPasswordProtectionForSignedInUsers, "DeprecateOldProto", false};
 
@@ -177,6 +181,7 @@ constexpr struct {
     {&kSafeBrowsingPageLoadToken, true},
     {&kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
+    {&kSendSampledPingsForProtegoAllowlistDomains, true},
     {&kSuspiciousSiteTriggerQuotaFeature, true},
     {&kThreatDomDetailsTagAndAttributeFeature, false},
     {&kTriggerThrottlerDailyQuotaFeature, false},
