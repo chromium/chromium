@@ -46,16 +46,16 @@ bool HttpAuthPreferences::AllowGssapiLibraryLoad() const {
 #endif
 
 bool HttpAuthPreferences::CanUseDefaultCredentials(
-    const GURL& auth_origin) const {
+    const url::SchemeHostPort& auth_scheme_host_port) const {
   return allow_default_credentials_ == ALLOW_DEFAULT_CREDENTIALS &&
-         security_manager_->CanUseDefaultCredentials(auth_origin);
+         security_manager_->CanUseDefaultCredentials(auth_scheme_host_port);
 }
 
 using DelegationType = HttpAuth::DelegationType;
 
 DelegationType HttpAuthPreferences::GetDelegationType(
-    const GURL& auth_origin) const {
-  if (!security_manager_->CanDelegate(auth_origin))
+    const url::SchemeHostPort& auth_scheme_host_port) const {
+  if (!security_manager_->CanDelegate(auth_scheme_host_port))
     return DelegationType::kNone;
 
   if (delegate_by_kdc_policy())

@@ -11,13 +11,14 @@
 #include "net/http/http_auth_filter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
 namespace {
 
 struct TestData {
-  const char* const url;
+  const char* const scheme_host_port;
   bool succeds_in_windows_default;
   bool succeeds_in_allowlist;
 };
@@ -56,12 +57,14 @@ TEST(URLSecurityManager, UseDefaultCredentials) {
   ASSERT_TRUE(url_security_manager.get());
 
   for (size_t i = 0; i < base::size(kTestDataList); ++i) {
-    GURL gurl(kTestDataList[i].url);
+    url::SchemeHostPort scheme_host_port(
+        GURL(kTestDataList[i].scheme_host_port));
     bool can_use_default =
-        url_security_manager->CanUseDefaultCredentials(gurl);
+        url_security_manager->CanUseDefaultCredentials(scheme_host_port);
 
     EXPECT_EQ(kTestDataList[i].succeeds_in_allowlist, can_use_default)
-        << " Run: " << i << " URL: '" << gurl << "'";
+        << " Run: " << i << " scheme_host_port: '"
+        << scheme_host_port.Serialize() << "'";
   }
 }
 
@@ -76,10 +79,12 @@ TEST(URLSecurityManager, CanDelegate) {
   ASSERT_TRUE(url_security_manager.get());
 
   for (size_t i = 0; i < base::size(kTestDataList); ++i) {
-    GURL gurl(kTestDataList[i].url);
-    bool can_delegate = url_security_manager->CanDelegate(gurl);
+    url::SchemeHostPort scheme_host_port(
+        GURL(kTestDataList[i].scheme_host_port));
+    bool can_delegate = url_security_manager->CanDelegate(scheme_host_port);
     EXPECT_EQ(kTestDataList[i].succeeds_in_allowlist, can_delegate)
-        << " Run: " << i << " URL: '" << gurl << "'";
+        << " Run: " << i << " scheme_host_port: '"
+        << scheme_host_port.Serialize() << "'";
   }
 }
 
@@ -90,8 +95,9 @@ TEST(URLSecurityManager, CanDelegate_NoAllowlist) {
   ASSERT_TRUE(url_security_manager.get());
 
   for (size_t i = 0; i < base::size(kTestDataList); ++i) {
-    GURL gurl(kTestDataList[i].url);
-    bool can_delegate = url_security_manager->CanDelegate(gurl);
+    url::SchemeHostPort scheme_host_port(
+        GURL(kTestDataList[i].scheme_host_port));
+    bool can_delegate = url_security_manager->CanDelegate(scheme_host_port);
     EXPECT_FALSE(can_delegate);
   }
 }

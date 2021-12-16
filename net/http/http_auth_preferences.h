@@ -14,7 +14,10 @@
 #include "build/chromeos_buildflags.h"
 #include "net/base/net_export.h"
 #include "net/http/http_auth.h"
-#include "url/gurl.h"
+
+namespace url {
+class SchemeHostPort;
+}
 
 namespace net {
 
@@ -49,9 +52,10 @@ class NET_EXPORT HttpAuthPreferences {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   virtual bool AllowGssapiLibraryLoad() const;
 #endif
-  virtual bool CanUseDefaultCredentials(const GURL& auth_origin) const;
+  virtual bool CanUseDefaultCredentials(
+      const url::SchemeHostPort& auth_scheme_host_port) const;
   virtual HttpAuth::DelegationType GetDelegationType(
-      const GURL& auth_origin) const;
+      const url::SchemeHostPort& auth_scheme_host_port) const;
 
   void set_delegate_by_kdc_policy(bool delegate_by_kdc_policy) {
     delegate_by_kdc_policy_ = delegate_by_kdc_policy;

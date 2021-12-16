@@ -30,9 +30,9 @@ bool HttpAuthHandler::InitFromChallenge(
     HttpAuth::Target target,
     const SSLInfo& ssl_info,
     const NetworkIsolationKey& network_isolation_key,
-    const GURL& origin,
+    const url::SchemeHostPort& scheme_host_port,
     const NetLogWithSource& net_log) {
-  origin_ = origin;
+  scheme_host_port_ = scheme_host_port;
   target_ = target;
   score_ = -1;
   properties_ = -1;

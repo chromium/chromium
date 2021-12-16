@@ -12,19 +12,22 @@
 #include "net/http/http_auth.h"
 #include "net/proxy_resolution/proxy_bypass_rules.h"
 
-class GURL;
+namespace url {
+class SchemeHostPort;
+}
 
 namespace net {
 
-// |HttpAuthFilter|s determine whether an authentication scheme should be
+// HttpAuthFilters determine whether an authentication scheme should be
 // allowed for a particular peer.
 class NET_EXPORT_PRIVATE HttpAuthFilter {
  public:
   virtual ~HttpAuthFilter() {}
 
-  // Checks if (|url|, |target|) is supported by the authentication scheme.
-  // Only the host of |url| is examined.
-  virtual bool IsValid(const GURL& url, HttpAuth::Target target) const = 0;
+  // Checks if (`scheme_host_port`, `target`) is supported by the authentication
+  // scheme. Only the host of `scheme_host_port` is examined.
+  virtual bool IsValid(const url::SchemeHostPort& scheme_host_port,
+                       HttpAuth::Target target) const = 0;
 };
 
 // Allowlist HTTP authentication filter.
@@ -41,17 +44,18 @@ class NET_EXPORT HttpAuthFilterAllowlist : public HttpAuthFilter {
 
   ~HttpAuthFilterAllowlist() override;
 
-  // Adds an individual URL |filter| to the list, of the specified |target|.
+  // Adds an individual URL `filter` to the list, of the specified `target`.
   bool AddFilter(const std::string& filter, HttpAuth::Target target);
 
   const ProxyBypassRules& rules() const { return rules_; }
 
   // HttpAuthFilter methods:
-  bool IsValid(const GURL& url, HttpAuth::Target target) const override;
+  bool IsValid(const url::SchemeHostPort& scheme_host_port,
+               HttpAuth::Target target) const override;
 
  private:
   // Installs the allowlist.
-  // |server_allowlist| is parsed by ProxyBypassRules.
+  // `server_allowlist` is parsed by ProxyBypassRules.
   void SetAllowlist(const std::string& server_allowlist);
 
   // We are using ProxyBypassRules because they have the functionality that we

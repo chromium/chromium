@@ -30,6 +30,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -51,12 +53,12 @@ class HttpAuthHandlerNtlmPortableTest : public PlatformTest {
   }
 
   int CreateHandler() {
-    GURL gurl("https://foo.com");
+    url::SchemeHostPort scheme_host_port(GURL("https://foo.com"));
     SSLInfo null_ssl_info;
 
     return factory_->CreateAuthHandlerFromString(
         "NTLM", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
-        gurl, NetLogWithSource(), nullptr, &auth_handler_);
+        scheme_host_port, NetLogWithSource(), nullptr, &auth_handler_);
   }
 
   std::string CreateNtlmAuthHeader(base::span<const uint8_t> buffer) {

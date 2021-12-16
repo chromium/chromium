@@ -14,6 +14,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -63,29 +65,33 @@ TEST(HttpAuthPreferencesTest, AllowGssapiLibraryLoad) {
 TEST(HttpAuthPreferencesTest, AuthServerAllowlist) {
   HttpAuthPreferences http_auth_preferences;
   // Check initial value
-  EXPECT_FALSE(http_auth_preferences.CanUseDefaultCredentials(GURL("abc")));
+  EXPECT_FALSE(http_auth_preferences.CanUseDefaultCredentials(
+      url::SchemeHostPort(GURL("abc"))));
   http_auth_preferences.SetServerAllowlist("*");
-  EXPECT_TRUE(http_auth_preferences.CanUseDefaultCredentials(GURL("abc")));
+  EXPECT_TRUE(http_auth_preferences.CanUseDefaultCredentials(
+      url::SchemeHostPort(GURL("abc"))));
 }
 
 TEST(HttpAuthPreferencesTest, DelegationType) {
   using DelegationType = HttpAuth::DelegationType;
   HttpAuthPreferences http_auth_preferences;
   // Check initial value
-  EXPECT_EQ(DelegationType::kNone,
-            http_auth_preferences.GetDelegationType(GURL("abc")));
+  EXPECT_EQ(DelegationType::kNone, http_auth_preferences.GetDelegationType(
+                                       url::SchemeHostPort(GURL("abc"))));
 
   http_auth_preferences.SetDelegateAllowlist("*");
   EXPECT_EQ(DelegationType::kUnconstrained,
-            http_auth_preferences.GetDelegationType(GURL("abc")));
+            http_auth_preferences.GetDelegationType(
+                url::SchemeHostPort(GURL("abc"))));
 
   http_auth_preferences.set_delegate_by_kdc_policy(true);
   EXPECT_EQ(DelegationType::kByKdcPolicy,
-            http_auth_preferences.GetDelegationType(GURL("abc")));
+            http_auth_preferences.GetDelegationType(
+                url::SchemeHostPort(GURL("abc"))));
 
   http_auth_preferences.SetDelegateAllowlist("");
-  EXPECT_EQ(DelegationType::kNone,
-            http_auth_preferences.GetDelegationType(GURL("abc")));
+  EXPECT_EQ(DelegationType::kNone, http_auth_preferences.GetDelegationType(
+                                       url::SchemeHostPort(GURL("abc"))));
 }
 
 }  // namespace net

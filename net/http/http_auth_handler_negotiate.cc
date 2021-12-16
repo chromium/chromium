@@ -27,6 +27,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/ssl/ssl_info.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -87,7 +88,7 @@ int HttpAuthHandlerNegotiate::Factory::CreateAuthHandler(
     HttpAuth::Target target,
     const SSLInfo& ssl_info,
     const NetworkIsolationKey& network_isolation_key,
-    const GURL& origin,
+    const url::SchemeHostPort& scheme_host_port,
     CreateReason reason,
     int digest_nonce_count,
     const NetLogWithSource& net_log,
@@ -133,7 +134,8 @@ int HttpAuthHandlerNegotiate::Factory::CreateAuthHandler(
       http_auth_preferences(), host_resolver));
 #endif
   if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info,
-                                      network_isolation_key, origin, net_log)) {
+                                      network_isolation_key, scheme_host_port,
+                                      net_log)) {
     return ERR_INVALID_RESPONSE;
   }
   handler->swap(tmp_handler);
@@ -164,7 +166,7 @@ bool HttpAuthHandlerNegotiate::AllowsDefaultCredentials() {
     return true;
   if (!http_auth_preferences_)
     return false;
-  return http_auth_preferences_->CanUseDefaultCredentials(origin_);
+  return http_auth_preferences_->CanUseDefaultCredentials(scheme_host_port_);
 }
 
 bool HttpAuthHandlerNegotiate::AllowsExplicitCredentials() {
@@ -245,8 +247,9 @@ HttpAuthHandlerNegotiate::HandleAnotherChallengeImpl(
   return auth_system_->ParseChallenge(challenge);
 }
 
-std::string HttpAuthHandlerNegotiate::CreateSPN(const std::string& server,
-                                                const GURL& origin) {
+std::string HttpAuthHandlerNegotiate::CreateSPN(
+    const std::string& server,
+    const url::SchemeHostPort& scheme_host_port) {
   // Kerberos Web Server SPNs are in the form HTTP/<host>:<port> through SSPI,
   // and in the form HTTP@<host>:<port> through GSSAPI
   //   http://msdn.microsoft.com/en-us/library/ms677601%28VS.85%29.aspx
@@ -276,7 +279,7 @@ std::string HttpAuthHandlerNegotiate::CreateSPN(const std::string& server,
   // Without any command-line flags, Chrome matches the behavior of Firefox
   // and IE. Users can override the behavior so aliases are allowed and
   // non-standard ports are included.
-  int port = origin.EffectiveIntPort();
+  int port = scheme_host_port.port();
 #if defined(OS_WIN)
   static const char kSpnSeparator = '/';
 #elif defined(OS_POSIX)
@@ -346,16 +349,15 @@ int HttpAuthHandlerNegotiate::DoResolveCanonicalName() {
   // TODO(cbentzel): Add reverse DNS lookup for numeric addresses.
   HostResolver::ResolveHostParameters parameters;
   parameters.include_canonical_name = true;
-  resolve_host_request_ =
-      resolver_->CreateRequest(HostPortPair(origin_.host(), 0),
-                               network_isolation_key_, net_log(), parameters);
+  resolve_host_request_ = resolver_->CreateRequest(
+      scheme_host_port_, network_isolation_key_, net_log(), parameters);
   return resolve_host_request_->Start(base::BindOnce(
       &HttpAuthHandlerNegotiate::OnIOComplete, base::Unretained(this)));
 }
 
 int HttpAuthHandlerNegotiate::DoResolveCanonicalNameComplete(int rv) {
   DCHECK_NE(ERR_IO_PENDING, rv);
-  std::string server = origin_.host();
+  std::string server = scheme_host_port_.host();
   if (resolve_host_request_) {
     if (rv == OK) {
       DCHECK(resolve_host_request_->GetAddressResults());
@@ -367,13 +369,13 @@ int HttpAuthHandlerNegotiate::DoResolveCanonicalNameComplete(int rv) {
       // Even in the error case, try to use origin_.host instead of
       // passing the failure on to the caller.
       VLOG(1) << "Problem finding canonical name for SPN for host "
-              << origin_.host() << ": " << ErrorToString(rv);
+              << scheme_host_port_.host() << ": " << ErrorToString(rv);
       rv = OK;
     }
   }
 
   next_state_ = STATE_GENERATE_AUTH_TOKEN;
-  spn_ = CreateSPN(server, origin_);
+  spn_ = CreateSPN(server, scheme_host_port_);
   resolve_host_request_ = nullptr;
   return rv;
 }
@@ -401,7 +403,7 @@ DelegationType HttpAuthHandlerNegotiate::GetDelegationType() const {
   if (target_ == HttpAuth::AUTH_PROXY)
     return DelegationType::kNone;
 
-  return http_auth_preferences_->GetDelegationType(origin_);
+  return http_auth_preferences_->GetDelegationType(scheme_host_port_);
 }
 
 }  // namespace net

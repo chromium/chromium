@@ -21,6 +21,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 #include "url/url_canon.h"
 #include "url/url_canon_ip.h"
 #include "url/url_constants.h"
@@ -246,6 +247,18 @@ std::string GetHostAndOptionalPort(const GURL& url) {
   if (url.has_port())
     return base::StringPrintf("%s:%s", url.host().c_str(), url.port().c_str());
   return url.host();
+}
+
+NET_EXPORT std::string GetHostAndOptionalPort(
+    const url::SchemeHostPort& scheme_host_port) {
+  int default_port = url::DefaultPortForScheme(
+      scheme_host_port.scheme().data(),
+      static_cast<int>(scheme_host_port.scheme().length()));
+  if (default_port != scheme_host_port.port()) {
+    return base::StringPrintf("%s:%i", scheme_host_port.host().c_str(),
+                              scheme_host_port.port());
+  }
+  return scheme_host_port.host();
 }
 
 std::string TrimEndingDot(base::StringPiece host) {

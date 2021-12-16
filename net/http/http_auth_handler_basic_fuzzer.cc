@@ -12,6 +12,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/ssl/ssl_info.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string input(reinterpret_cast<const char*>(data), size);
@@ -19,14 +20,14 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Dummies
   net::SSLInfo null_ssl_info;
-  GURL origin("https://foo.test/");
+  url::SchemeHostPort scheme_host_port(GURL("https://foo.test/"));
   auto host_resolver = std::make_unique<net::MockHostResolver>();
   std::unique_ptr<net::HttpAuthHandler> basic;
 
   net::HttpAuthHandlerBasic::Factory factory;
   factory.CreateAuthHandlerFromString(challenge, net::HttpAuth::AUTH_SERVER,
                                       null_ssl_info, net::NetworkIsolationKey(),
-                                      origin, net::NetLogWithSource(),
+                                      scheme_host_port, net::NetLogWithSource(),
                                       host_resolver.get(), &basic);
   return 0;
 }

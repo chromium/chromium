@@ -27,6 +27,10 @@
 #include "net/http/http_auth_gssapi_posix.h"
 #endif
 
+namespace url {
+class SchemeHostPort;
+}
+
 namespace net {
 
 class HttpAuthPreferences;
@@ -66,7 +70,7 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
                           HttpAuth::Target target,
                           const SSLInfo& ssl_info,
                           const NetworkIsolationKey& network_isolation_key,
-                          const GURL& origin,
+                          const url::SchemeHostPort& scheme_host_port,
                           CreateReason reason,
                           int digest_nonce_count,
                           const NetLogWithSource& net_log,
@@ -115,7 +119,8 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNegotiate : public HttpAuthHandler {
     STATE_NONE,
   };
 
-  std::string CreateSPN(const std::string& server, const GURL& orign);
+  std::string CreateSPN(const std::string& server,
+                        const url::SchemeHostPort& scheme_host_port);
 
   void OnIOComplete(int result);
   void DoCallback(int result);

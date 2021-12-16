@@ -20,6 +20,7 @@ class GURL;
 
 namespace url {
 struct CanonHostInfo;
+class SchemeHostPort;
 }
 
 namespace net {
@@ -110,6 +111,10 @@ NET_EXPORT std::string GetHostAndPort(const GURL& url);
 // Returns a host[:port] string for the given URL, where the port is omitted
 // if it is the default for the URL's scheme.
 NET_EXPORT std::string GetHostAndOptionalPort(const GURL& url);
+
+// Just like above, but takes a SchemeHostPort.
+NET_EXPORT std::string GetHostAndOptionalPort(
+    const url::SchemeHostPort& scheme_host_port);
 
 // Returns the hostname by trimming the ending dot, if one exists.
 NET_EXPORT std::string TrimEndingDot(base::StringPiece host);

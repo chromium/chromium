@@ -18,7 +18,9 @@
 #include "net/http/url_security_manager.h"
 #include "net/net_buildflags.h"
 
-class GURL;
+namespace url {
+class SchemeHostPort;
+}
 
 namespace net {
 
@@ -100,7 +102,7 @@ class NET_EXPORT HttpAuthHandlerFactory {
       HttpAuth::Target target,
       const SSLInfo& ssl_info,
       const NetworkIsolationKey& network_isolation_key,
-      const GURL& origin,
+      const url::SchemeHostPort& scheme_host_port,
       CreateReason create_reason,
       int digest_nonce_count,
       const NetLogWithSource& net_log,
@@ -117,7 +119,7 @@ class NET_EXPORT HttpAuthHandlerFactory {
       HttpAuth::Target target,
       const SSLInfo& ssl_info,
       const NetworkIsolationKey& network_isolation_key,
-      const GURL& origin,
+      const url::SchemeHostPort& scheme_host_port,
       const NetLogWithSource& net_log,
       HostResolver* host_resolver,
       std::unique_ptr<HttpAuthHandler>* handler);
@@ -131,7 +133,7 @@ class NET_EXPORT HttpAuthHandlerFactory {
       const std::string& challenge,
       HttpAuth::Target target,
       const NetworkIsolationKey& network_isolation_key,
-      const GURL& origin,
+      const url::SchemeHostPort& scheme_host_port,
       int digest_nonce_count,
       const NetLogWithSource& net_log,
       HostResolver* host_resolver,
@@ -234,7 +236,7 @@ class NET_EXPORT HttpAuthHandlerRegistryFactory
                         HttpAuth::Target target,
                         const SSLInfo& ssl_info,
                         const NetworkIsolationKey& network_isolation_key,
-                        const GURL& origin,
+                        const url::SchemeHostPort& scheme_host_port,
                         CreateReason reason,
                         int digest_nonce_count,
                         const NetLogWithSource& net_log,

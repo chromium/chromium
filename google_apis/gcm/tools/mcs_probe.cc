@@ -60,6 +60,7 @@
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "url/scheme_host_port.h"
 
 #if defined(OS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
@@ -168,11 +169,12 @@ class MCSProbeAuthPreferences : public net::HttpAuthPreferences {
 
   bool NegotiateDisableCnameLookup() const override { return false; }
   bool NegotiateEnablePort() const override { return false; }
-  bool CanUseDefaultCredentials(const GURL& auth_origin) const override {
+  bool CanUseDefaultCredentials(
+      const url::SchemeHostPort& auth_scheme_host_port) const override {
     return false;
   }
   net::HttpAuth::DelegationType GetDelegationType(
-      const GURL& auth_origin) const override {
+      const url::SchemeHostPort& auth_scheme_host_port) const override {
     return net::HttpAuth::DelegationType::kNone;
   }
 };

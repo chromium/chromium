@@ -15809,12 +15809,12 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
       for (int n = 0; n < 3; n++) {
         HttpAuthHandlerMock* auth_handler(new HttpAuthHandlerMock());
         std::string auth_challenge = "Mock realm=proxy";
-        GURL origin(test_config.proxy_url);
+        url::SchemeHostPort scheme_host_port(GURL(test_config.proxy_url));
         HttpAuthChallengeTokenizer tokenizer(auth_challenge.begin(),
                                              auth_challenge.end());
         auth_handler->InitFromChallenge(&tokenizer, HttpAuth::AUTH_PROXY,
                                         empty_ssl_info, NetworkIsolationKey(),
-                                        origin, NetLogWithSource());
+                                        scheme_host_port, NetLogWithSource());
         auth_handler->SetGenerateExpectation(
             test_config.proxy_auth_timing == AUTH_ASYNC,
             n == 0 ? test_config.first_generate_proxy_token_rv : OK);
@@ -15824,12 +15824,12 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
     if (test_config.server_auth_timing != AUTH_NONE) {
       HttpAuthHandlerMock* auth_handler(new HttpAuthHandlerMock());
       std::string auth_challenge = "Mock realm=server";
-      GURL origin(test_config.server_url);
+      url::SchemeHostPort scheme_host_port(GURL(test_config.server_url));
       HttpAuthChallengeTokenizer tokenizer(auth_challenge.begin(),
                                            auth_challenge.end());
       auth_handler->InitFromChallenge(&tokenizer, HttpAuth::AUTH_SERVER,
                                       empty_ssl_info, NetworkIsolationKey(),
-                                      origin, NetLogWithSource());
+                                      scheme_host_port, NetLogWithSource());
       auth_handler->SetGenerateExpectation(
           test_config.server_auth_timing == AUTH_ASYNC,
           test_config.first_generate_server_token_rv);
@@ -15842,7 +15842,7 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
           std::make_unique<HttpAuthHandlerMock>();
       second_handler->InitFromChallenge(&tokenizer, HttpAuth::AUTH_SERVER,
                                         empty_ssl_info, NetworkIsolationKey(),
-                                        origin, NetLogWithSource());
+                                        scheme_host_port, NetLogWithSource());
       second_handler->SetGenerateExpectation(true, OK);
       auth_factory->AddMockHandler(second_handler.release(),
                                    HttpAuth::AUTH_SERVER);
@@ -15952,20 +15952,20 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
   HttpAuthHandlerMock* auth_handler(new HttpAuthHandlerMock());
   auth_handler->set_connection_based(true);
   std::string auth_challenge = "Mock realm=server";
-  GURL origin("http://www.example.com");
+  GURL url("http://www.example.com");
   HttpAuthChallengeTokenizer tokenizer(auth_challenge.begin(),
                                        auth_challenge.end());
   SSLInfo empty_ssl_info;
   auth_handler->InitFromChallenge(&tokenizer, HttpAuth::AUTH_SERVER,
-                                  empty_ssl_info, NetworkIsolationKey(), origin,
-                                  NetLogWithSource());
+                                  empty_ssl_info, NetworkIsolationKey(),
+                                  url::SchemeHostPort(url), NetLogWithSource());
   auth_factory->AddMockHandler(auth_handler, HttpAuth::AUTH_SERVER);
 
   int rv = OK;
   const HttpResponseInfo* response = nullptr;
   HttpRequestInfo request;
   request.method = "GET";
-  request.url = origin;
+  request.url = url;
   request.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 

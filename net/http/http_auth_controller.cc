@@ -49,12 +49,12 @@ enum AuthTarget {
 AuthTarget DetermineAuthTarget(const HttpAuthHandler* handler) {
   switch (handler->target()) {
     case HttpAuth::AUTH_PROXY:
-      if (handler->origin().SchemeIsCryptographic())
+      if (GURL::SchemeIsCryptographic(handler->scheme_host_port().scheme()))
         return AUTH_TARGET_SECURE_PROXY;
       else
         return AUTH_TARGET_PROXY;
     case HttpAuth::AUTH_SERVER:
-      if (handler->origin().SchemeIsCryptographic())
+      if (GURL::SchemeIsCryptographic(handler->scheme_host_port().scheme()))
         return AUTH_TARGET_SECURE_SERVER;
       else
         return AUTH_TARGET_SERVER;
@@ -234,8 +234,8 @@ bool HttpAuthController::SelectPreemptiveAuth(
   int rv_create =
       http_auth_handler_factory_->CreatePreemptiveAuthHandlerFromString(
           entry->auth_challenge(), target_, network_isolation_key_,
-          auth_scheme_host_port_.GetURL(), entry->IncrementNonceCount(),
-          net_log_, host_resolver_, &handler_preemptive);
+          auth_scheme_host_port_, entry->IncrementNonceCount(), net_log_,
+          host_resolver_, &handler_preemptive);
   if (rv_create != OK)
     return false;
 
@@ -330,10 +330,10 @@ int HttpAuthController::HandleAuthChallenge(
   do {
     if (!handler_.get() && can_send_auth) {
       // Find the best authentication challenge that we support.
-      HttpAuth::ChooseBestChallenge(
-          http_auth_handler_factory_, *headers, ssl_info,
-          network_isolation_key_, target_, auth_scheme_host_port_.GetURL(),
-          disabled_schemes_, net_log_, host_resolver_, &handler_);
+      HttpAuth::ChooseBestChallenge(http_auth_handler_factory_, *headers,
+                                    ssl_info, network_isolation_key_, target_,
+                                    auth_scheme_host_port_, disabled_schemes_,
+                                    net_log_, host_resolver_, &handler_);
       if (handler_.get())
         HistogramAuthEvent(handler_.get(), AUTH_EVENT_START);
     }

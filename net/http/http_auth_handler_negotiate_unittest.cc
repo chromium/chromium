@@ -31,6 +31,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 #if !BUILDFLAG(USE_KERBEROS)
 #error "use_kerberos should be true to use Negotiate authentication scheme."
@@ -227,7 +229,7 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
         disable_cname_lookup);
     http_auth_preferences_->set_negotiate_enable_port(use_port);
     resolver_->set_synchronous_mode(synchronous_resolve_mode);
-    GURL gurl(url_string);
+    url::SchemeHostPort scheme_host_port{GURL(url_string)};
 
     // Note: This is a little tricky because CreateAuthHandlerFromString
     // expects a std::unique_ptr<HttpAuthHandler>* rather than a
@@ -238,8 +240,8 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
     SSLInfo null_ssl_info;
     int rv = factory_->CreateAuthHandlerFromString(
         "Negotiate", HttpAuth::AUTH_SERVER, null_ssl_info,
-        network_isolation_key(), gurl, NetLogWithSource(), resolver_.get(),
-        &generic_handler);
+        network_isolation_key(), scheme_host_port, NetLogWithSource(),
+        resolver_.get(), &generic_handler);
     if (rv != OK)
       return rv;
     HttpAuthHandlerNegotiate* negotiate_handler =
@@ -349,12 +351,12 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameSync) {
 
   // Make sure a cache-only lookup with the wrong NetworkIsolationKey (an empty
   // one) fails, to make sure the right NetworkIsolationKey was used.
-  HostPortPair host_port_pair = HostPortPair::FromURL(GURL(url_string));
+  url::SchemeHostPort scheme_host_port{GURL(url_string)};
   HostResolver::ResolveHostParameters resolve_params;
   resolve_params.include_canonical_name = true;
   resolve_params.source = HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<HostResolver::ResolveHostRequest> host_request1 =
-      resolver()->CreateRequest(host_port_pair, NetworkIsolationKey(),
+      resolver()->CreateRequest(scheme_host_port, NetworkIsolationKey(),
                                 NetLogWithSource(), resolve_params);
   TestCompletionCallback callback2;
   int result = host_request1->Start(callback2.callback());
@@ -363,7 +365,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameSync) {
   // Make sure a cache-only lookup with the same NetworkIsolationKey succeeds,
   // to make sure the right NetworkIsolationKey was used.
   std::unique_ptr<HostResolver::ResolveHostRequest> host_request2 =
-      resolver()->CreateRequest(host_port_pair, network_isolation_key(),
+      resolver()->CreateRequest(scheme_host_port, network_isolation_key(),
                                 NetLogWithSource(), resolve_params);
   TestCompletionCallback callback3;
   result = host_request2->Start(callback3.callback());
@@ -391,12 +393,12 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameAsync) {
 
   // Make sure a cache-only lookup with the wrong NetworkIsolationKey (an empty
   // one) fails, to make sure the right NetworkIsolationKey was used.
-  HostPortPair host_port_pair = HostPortPair::FromURL(GURL(url_string));
+  url::SchemeHostPort scheme_host_port{GURL(url_string)};
   HostResolver::ResolveHostParameters resolve_params;
   resolve_params.include_canonical_name = true;
   resolve_params.source = HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<HostResolver::ResolveHostRequest> host_request1 =
-      resolver()->CreateRequest(host_port_pair, NetworkIsolationKey(),
+      resolver()->CreateRequest(scheme_host_port, NetworkIsolationKey(),
                                 NetLogWithSource(), resolve_params);
   TestCompletionCallback callback2;
   int result = host_request1->Start(callback2.callback());
@@ -405,7 +407,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameAsync) {
   // Make sure a cache-only lookup with the same NetworkIsolationKey succeeds,
   // to make sure the right NetworkIsolationKey was used.
   std::unique_ptr<HostResolver::ResolveHostRequest> host_request2 =
-      resolver()->CreateRequest(host_port_pair, network_isolation_key(),
+      resolver()->CreateRequest(scheme_host_port, network_isolation_key(),
                                 NetLogWithSource(), resolve_params);
   TestCompletionCallback callback3;
   result = host_request2->Start(callback3.callback());
@@ -457,11 +459,11 @@ TEST_F(HttpAuthHandlerNegotiateTest, MissingGSSAPI) {
   negotiate_factory->set_library(
       std::make_unique<GSSAPISharedLibrary>("/this/library/does/not/exist"));
 
-  GURL gurl("http://www.example.com");
+  url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
   std::unique_ptr<HttpAuthHandler> generic_handler;
   int rv = negotiate_factory->CreateAuthHandlerFromString(
       "Negotiate", HttpAuth::AUTH_SERVER, SSLInfo(), NetworkIsolationKey(),
-      gurl, NetLogWithSource(), resolver(), &generic_handler);
+      scheme_host_port, NetLogWithSource(), resolver(), &generic_handler);
   EXPECT_THAT(rv, IsError(ERR_UNSUPPORTED_AUTH_SCHEME));
   EXPECT_TRUE(generic_handler.get() == nullptr);
 }
@@ -530,12 +532,12 @@ TEST_F(HttpAuthHandlerNegotiateTest, OverrideAuthSystem) {
   negotiate_factory->set_library(std::make_unique<MockAuthLibrary>());
 #endif
 
-  GURL gurl("http://www.example.com");
+  url::SchemeHostPort scheme_host_port{GURL("http://www.example.com")};
   std::unique_ptr<HttpAuthHandler> handler;
   EXPECT_EQ(OK, negotiate_factory->CreateAuthHandlerFromString(
                     "Negotiate", HttpAuth::AUTH_SERVER, SSLInfo(),
-                    NetworkIsolationKey(), gurl, NetLogWithSource(), resolver(),
-                    &handler));
+                    NetworkIsolationKey(), scheme_host_port, NetLogWithSource(),
+                    resolver(), &handler));
   EXPECT_TRUE(handler);
 
   TestCompletionCallback callback;

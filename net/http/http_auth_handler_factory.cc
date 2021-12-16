@@ -22,6 +22,7 @@
 #include "net/log/net_log_values.h"
 #include "net/net_buildflags.h"
 #include "net/ssl/ssl_info.h"
+#include "url/scheme_host_port.h"
 
 #if BUILDFLAG(USE_KERBEROS)
 #include "net/http/http_auth_handler_negotiate.h"
@@ -33,14 +34,14 @@ base::Value NetLogParamsForCreateAuth(
     const std::string& scheme,
     const std::string& challenge,
     const int net_error,
-    const GURL& origin,
+    const url::SchemeHostPort& scheme_host_port,
     const absl::optional<bool>& allows_default_credentials,
     net::NetLogCaptureMode capture_mode) {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetKey("scheme", net::NetLogStringValue(scheme));
   if (net::NetLogCaptureIncludesSensitive(capture_mode))
     dict.SetKey("challenge", net::NetLogStringValue(challenge));
-  dict.SetStringKey("origin", origin.spec());
+  dict.SetStringKey("origin", scheme_host_port.Serialize());
   if (allows_default_credentials)
     dict.SetBoolKey("allows_default_credentials", *allows_default_credentials);
   if (net_error < 0)
@@ -57,21 +58,21 @@ int HttpAuthHandlerFactory::CreateAuthHandlerFromString(
     HttpAuth::Target target,
     const SSLInfo& ssl_info,
     const NetworkIsolationKey& network_isolation_key,
-    const GURL& origin,
+    const url::SchemeHostPort& scheme_host_port,
     const NetLogWithSource& net_log,
     HostResolver* host_resolver,
     std::unique_ptr<HttpAuthHandler>* handler) {
   HttpAuthChallengeTokenizer props(challenge.begin(), challenge.end());
   return CreateAuthHandler(&props, target, ssl_info, network_isolation_key,
-                           origin, CREATE_CHALLENGE, 1, net_log, host_resolver,
-                           handler);
+                           scheme_host_port, CREATE_CHALLENGE, 1, net_log,
+                           host_resolver, handler);
 }
 
 int HttpAuthHandlerFactory::CreatePreemptiveAuthHandlerFromString(
     const std::string& challenge,
     HttpAuth::Target target,
     const NetworkIsolationKey& network_isolation_key,
-    const GURL& origin,
+    const url::SchemeHostPort& scheme_host_port,
     int digest_nonce_count,
     const NetLogWithSource& net_log,
     HostResolver* host_resolver,
@@ -79,8 +80,8 @@ int HttpAuthHandlerFactory::CreatePreemptiveAuthHandlerFromString(
   HttpAuthChallengeTokenizer props(challenge.begin(), challenge.end());
   SSLInfo null_ssl_info;
   return CreateAuthHandler(&props, target, null_ssl_info, network_isolation_key,
-                           origin, CREATE_PREEMPTIVE, digest_nonce_count,
-                           net_log, host_resolver, handler);
+                           scheme_host_port, CREATE_PREEMPTIVE,
+                           digest_nonce_count, net_log, host_resolver, handler);
 }
 
 namespace {
@@ -223,7 +224,7 @@ int HttpAuthHandlerRegistryFactory::CreateAuthHandler(
     HttpAuth::Target target,
     const SSLInfo& ssl_info,
     const NetworkIsolationKey& network_isolation_key,
-    const GURL& origin,
+    const url::SchemeHostPort& scheme_host_port,
     CreateReason reason,
     int digest_nonce_count,
     const NetLogWithSource& net_log,
@@ -244,20 +245,21 @@ int HttpAuthHandlerRegistryFactory::CreateAuthHandler(
     } else {
       DCHECK(it->second);
       net_error = it->second->CreateAuthHandler(
-          challenge, target, ssl_info, network_isolation_key, origin, reason,
-          digest_nonce_count, net_log, host_resolver, handler);
+          challenge, target, ssl_info, network_isolation_key, scheme_host_port,
+          reason, digest_nonce_count, net_log, host_resolver, handler);
     }
   }
 
-  net_log.AddEvent(NetLogEventType::AUTH_HANDLER_CREATE_RESULT,
-                   [&](NetLogCaptureMode capture_mode) {
-                     return NetLogParamsForCreateAuth(
-                         scheme, challenge->challenge_text(), net_error, origin,
-                         *handler ? absl::make_optional(
-                                        (*handler)->AllowsDefaultCredentials())
-                                  : absl::nullopt,
-                         capture_mode);
-                   });
+  net_log.AddEvent(
+      NetLogEventType::AUTH_HANDLER_CREATE_RESULT,
+      [&](NetLogCaptureMode capture_mode) {
+        return NetLogParamsForCreateAuth(
+            scheme, challenge->challenge_text(), net_error, scheme_host_port,
+            *handler
+                ? absl::make_optional((*handler)->AllowsDefaultCredentials())
+                : absl::nullopt,
+            capture_mode);
+      });
   return net_error;
 }
 

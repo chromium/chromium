@@ -17,6 +17,10 @@
 #include "net/http/http_auth_handler_factory.h"
 #include "url/gurl.h"
 
+namespace url {
+class SchemeHostPort;
+}
+
 namespace net {
 
 // MockAuthHandler is used in tests to reliably trigger edge cases.
@@ -48,7 +52,7 @@ class HttpAuthHandlerMock : public HttpAuthHandler {
                           HttpAuth::Target target,
                           const SSLInfo& ssl_info,
                           const NetworkIsolationKey& network_isolation_key,
-                          const GURL& origin,
+                          const url::SchemeHostPort& scheme_host_port,
                           CreateReason reason,
                           int nonce_count,
                           const NetLogWithSource& net_log,

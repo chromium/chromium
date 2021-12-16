@@ -93,7 +93,7 @@ int HttpAuthHandlerDigest::Factory::CreateAuthHandler(
     HttpAuth::Target target,
     const SSLInfo& ssl_info,
     const NetworkIsolationKey& network_isolation_key,
-    const GURL& origin,
+    const url::SchemeHostPort& scheme_host_port,
     CreateReason reason,
     int digest_nonce_count,
     const NetLogWithSource& net_log,
@@ -104,7 +104,8 @@ int HttpAuthHandlerDigest::Factory::CreateAuthHandler(
   std::unique_ptr<HttpAuthHandler> tmp_handler(
       new HttpAuthHandlerDigest(digest_nonce_count, nonce_generator_.get()));
   if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info,
-                                      network_isolation_key, origin, net_log)) {
+                                      network_isolation_key, scheme_host_port,
+                                      net_log)) {
     return ERR_INVALID_RESPONSE;
   }
   handler->swap(tmp_handler);

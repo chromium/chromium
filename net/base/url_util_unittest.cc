@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 #include "url/url_util.h"
 
 using base::ASCIIToUTF16;
@@ -246,16 +247,22 @@ TEST(UrlUtilTest, GetHostAndOptionalPort) {
     GURL url;
     const char* const expected_host_and_port;
   } tests[] = {
-    { GURL("http://www.foo.com/x"), "www.foo.com"},
-    { GURL("http://www.foo.com:21/x"), "www.foo.com:21"},
+      {GURL("http://www.foo.com/x"), "www.foo.com"},
+      {GURL("http://www.foo.com:21/x"), "www.foo.com:21"},
+      {GURL("http://www.foo.com:443/x"), "www.foo.com:443"},
 
-    // For IPv6 literals should always include the brackets.
-    { GURL("http://[1::2]/x"), "[1::2]"},
-    { GURL("http://[::a]:33/x"), "[::a]:33"},
+      {GURL("https://www.foo.com/x"), "www.foo.com"},
+      {GURL("https://www.foo.com:80/x"), "www.foo.com:80"},
+
+      // For IPv6 literals should always include the brackets.
+      {GURL("http://[1::2]/x"), "[1::2]"},
+      {GURL("http://[::a]:33/x"), "[::a]:33"},
   };
   for (const auto& test : tests) {
-    std::string host_and_port = GetHostAndOptionalPort(test.url);
-    EXPECT_EQ(std::string(test.expected_host_and_port), host_and_port);
+    EXPECT_EQ(test.expected_host_and_port, GetHostAndOptionalPort(test.url));
+    // Also test the SchemeHostPort variant.
+    EXPECT_EQ(test.expected_host_and_port,
+              GetHostAndOptionalPort(url::SchemeHostPort(test.url)));
   }
 }
 

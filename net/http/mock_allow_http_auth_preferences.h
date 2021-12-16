@@ -7,6 +7,10 @@
 
 #include "net/http/http_auth_preferences.h"
 
+namespace url {
+class SchemeHostPort;
+}
+
 namespace net {
 
 // An HttpAuthPreferences class which allows all origins to use default
@@ -21,9 +25,10 @@ class MockAllowHttpAuthPreferences : public HttpAuthPreferences {
 
   ~MockAllowHttpAuthPreferences() override;
 
-  bool CanUseDefaultCredentials(const GURL& auth_origin) const override;
+  bool CanUseDefaultCredentials(
+      const url::SchemeHostPort& auth_scheme_host_port) const override;
   HttpAuth::DelegationType GetDelegationType(
-      const GURL& auth_origin) const override;
+      const url::SchemeHostPort& auth_scheme_host_port) const override;
 };
 
 }  // namespace net

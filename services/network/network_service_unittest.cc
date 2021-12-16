@@ -283,10 +283,10 @@ TEST_F(NetworkServiceTest, AuthServerAllowlist) {
   ASSERT_TRUE(auth_handler_factory->http_auth_preferences());
   EXPECT_TRUE(
       auth_handler_factory->http_auth_preferences()->CanUseDefaultCredentials(
-          GURL("https://server1/")));
+          url::SchemeHostPort(GURL("https://server1/"))));
   EXPECT_FALSE(
       auth_handler_factory->http_auth_preferences()->CanUseDefaultCredentials(
-          GURL("https://server2/")));
+          url::SchemeHostPort(GURL("https://server2/"))));
 
   // Change allowlist to only have a different server on it. The pre-existing
   // NetworkContext should be using the new list.
@@ -295,10 +295,10 @@ TEST_F(NetworkServiceTest, AuthServerAllowlist) {
   service()->ConfigureHttpAuthPrefs(std::move(auth_params));
   EXPECT_FALSE(
       auth_handler_factory->http_auth_preferences()->CanUseDefaultCredentials(
-          GURL("https://server1/")));
+          url::SchemeHostPort(GURL("https://server1/"))));
   EXPECT_TRUE(
       auth_handler_factory->http_auth_preferences()->CanUseDefaultCredentials(
-          GURL("https://server2/")));
+          url::SchemeHostPort(GURL("https://server2/"))));
 
   // Change allowlist to have multiple servers. The pre-existing NetworkContext
   // should be using the new list.
@@ -307,10 +307,10 @@ TEST_F(NetworkServiceTest, AuthServerAllowlist) {
   service()->ConfigureHttpAuthPrefs(std::move(auth_params));
   EXPECT_TRUE(
       auth_handler_factory->http_auth_preferences()->CanUseDefaultCredentials(
-          GURL("https://server1/")));
+          url::SchemeHostPort(GURL("https://server1/"))));
   EXPECT_TRUE(
       auth_handler_factory->http_auth_preferences()->CanUseDefaultCredentials(
-          GURL("https://server2/")));
+          url::SchemeHostPort(GURL("https://server2/"))));
 }
 
 TEST_F(NetworkServiceTest, AuthDelegateAllowlist) {
@@ -334,9 +334,11 @@ TEST_F(NetworkServiceTest, AuthDelegateAllowlist) {
       auth_handler_factory->http_auth_preferences();
   ASSERT_TRUE(auth_prefs);
   EXPECT_EQ(DelegationType::kUnconstrained,
-            auth_prefs->GetDelegationType(GURL("https://server1/")));
+            auth_prefs->GetDelegationType(
+                url::SchemeHostPort(GURL("https://server1/"))));
   EXPECT_EQ(DelegationType::kNone,
-            auth_prefs->GetDelegationType(GURL("https://server2/")));
+            auth_prefs->GetDelegationType(
+                url::SchemeHostPort(GURL("https://server2/"))));
 
   // Change allowlist to only have a different server on it. The pre-existing
   // NetworkContext should be using the new list.
@@ -344,9 +346,11 @@ TEST_F(NetworkServiceTest, AuthDelegateAllowlist) {
   auth_params->delegate_allowlist = "server2";
   service()->ConfigureHttpAuthPrefs(std::move(auth_params));
   EXPECT_EQ(DelegationType::kNone,
-            auth_prefs->GetDelegationType(GURL("https://server1/")));
+            auth_prefs->GetDelegationType(
+                url::SchemeHostPort(GURL("https://server1/"))));
   EXPECT_EQ(DelegationType::kUnconstrained,
-            auth_prefs->GetDelegationType(GURL("https://server2/")));
+            auth_prefs->GetDelegationType(
+                url::SchemeHostPort(GURL("https://server2/"))));
 
   // Change allowlist to have multiple servers. The pre-existing NetworkContext
   // should be using the new list.
@@ -354,9 +358,11 @@ TEST_F(NetworkServiceTest, AuthDelegateAllowlist) {
   auth_params->delegate_allowlist = "server1,server2";
   service()->ConfigureHttpAuthPrefs(std::move(auth_params));
   EXPECT_EQ(DelegationType::kUnconstrained,
-            auth_prefs->GetDelegationType(GURL("https://server1/")));
+            auth_prefs->GetDelegationType(
+                url::SchemeHostPort(GURL("https://server1/"))));
   EXPECT_EQ(DelegationType::kUnconstrained,
-            auth_prefs->GetDelegationType(GURL("https://server2/")));
+            auth_prefs->GetDelegationType(
+                url::SchemeHostPort(GURL("https://server2/"))));
 }
 
 TEST_F(NetworkServiceTest, DelegateByKdcPolicy) {
