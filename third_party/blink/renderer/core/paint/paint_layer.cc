@@ -1739,8 +1739,13 @@ static bool IsHitCandidateForDepthOrder(
     return true;
 
   // We need to look at z-depth to decide if this layer was hit.
-  if (z_offset) {
-    DCHECK(transform_state);
+  //
+  // See comment in PaintLayer::HitTestLayer regarding SVG
+  // foreignObject; if it weren't for that case we could test z_offset
+  // and then DCHECK(transform_state) inside of it.
+  DCHECK(!z_offset || transform_state ||
+         hit_layer->GetLayoutObject().IsSVGForeignObject());
+  if (z_offset && transform_state) {
     // This is actually computing our z, but that's OK because the hitLayer is
     // coplanar with us.
     double child_z_offset = ComputeZOffset(*transform_state);
