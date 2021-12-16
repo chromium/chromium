@@ -2623,7 +2623,8 @@ void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
 
     for (size_t i = 0; i < variants.size(); i++) {
       ImageDownloader::Get()->Download(
-          GURL(variants.at(i).url), NO_TRAFFIC_ANNOTATION_YET,
+          GURL(variants.at(i).url.spec() + GetBackdropWallpaperSuffix()),
+          NO_TRAFFIC_ANNOTATION_YET,
           base::BindOnce(
               &WallpaperControllerImpl::OnOnlineWallpaperVariantDownloaded,
               set_wallpaper_weak_factory_.GetWeakPtr(), params, on_done,
