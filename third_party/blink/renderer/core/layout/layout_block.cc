@@ -1134,18 +1134,6 @@ void LayoutBlock::ImageChanged(WrappedImagePtr image,
   }
 }
 
-static void ProcessPositionedObjectRemoval(
-    ContainingBlockState containing_block_state,
-    LayoutObject* positioned_object) {
-  if (containing_block_state == kNewContainingBlock)
-    positioned_object->SetChildNeedsLayout(kMarkOnlyThis);
-
-  // It is parent blocks job to add positioned child to positioned objects
-  // list of its containing block.
-  // Parent layout needs to be invalidated to ensure this happens.
-  positioned_object->MarkParentForOutOfFlowPositionedChange();
-}
-
 void LayoutBlock::RemovePositionedObjects(
     LayoutObject* stay_within,
     ContainingBlockState containing_block_state) {
@@ -1154,13 +1142,26 @@ void LayoutBlock::RemovePositionedObjects(
   if (!positioned_descendants)
     return;
 
+  auto ProcessPositionedObjectRemoval = [&](LayoutObject* positioned_object) {
+    if (stay_within && (!positioned_object->IsDescendantOf(stay_within) ||
+                        stay_within == positioned_object)) {
+      return false;
+    }
+
+    if (containing_block_state == kNewContainingBlock)
+      positioned_object->SetChildNeedsLayout(kMarkOnlyThis);
+
+    // It is parent blocks job to add positioned child to positioned objects
+    // list of its containing block.
+    // Parent layout needs to be invalidated to ensure this happens.
+    positioned_object->MarkParentForOutOfFlowPositionedChange();
+    return true;
+  };
+
   HeapVector<Member<LayoutBox>, 16> dead_objects;
   for (LayoutBox* positioned_object : *positioned_descendants) {
-    if (!stay_within || (positioned_object->IsDescendantOf(stay_within) &&
-                         stay_within != positioned_object)) {
-      ProcessPositionedObjectRemoval(containing_block_state, positioned_object);
+    if (ProcessPositionedObjectRemoval(positioned_object))
       dead_objects.push_back(positioned_object);
-    }
   }
 
   // Invalidate the nearest OOF container to ensure it is marked for layout.
