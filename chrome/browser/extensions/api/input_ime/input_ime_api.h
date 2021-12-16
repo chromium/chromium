@@ -15,7 +15,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/input_method/input_method_engine_base.h"
+#include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/input_ime.h"
 #include "components/keyed_service/core/keyed_service.h"

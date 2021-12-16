@@ -16,7 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
-#include "chrome/browser/ash/input_method/input_method_engine_base.h"
+#include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
 #include "chrome/browser/ash/input_method/stub_input_method_engine_observer.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
@@ -164,7 +164,7 @@ class InputMethodEngineTest : public testing::Test {
   void CreateEngine(bool allowlisted) {
     engine_ = std::make_unique<InputMethodEngine>();
     observer_ = new TestObserver();
-    std::unique_ptr<InputMethodEngineBaseObserver> observer_ptr(observer_);
+    std::unique_ptr<InputMethodEngineObserver> observer_ptr(observer_);
     engine_->Initialize(std::move(observer_ptr),
                         allowlisted ? kTestExtensionId : kTestExtensionId2,
                         nullptr);
@@ -299,7 +299,7 @@ TEST_F(InputMethodEngineTest, TestHistograms) {
   CreateEngine(true);
   FocusIn(ui::TEXT_INPUT_TYPE_TEXT);
   engine_->Enable(kTestImeComponentId);
-  std::vector<InputMethodEngineBase::SegmentInfo> segments;
+  std::vector<InputMethodEngine::SegmentInfo> segments;
   int context = engine_->GetContextIdForTesting();
   std::string error;
   base::HistogramTester histograms;
@@ -331,30 +331,30 @@ TEST_F(InputMethodEngineTest, TestSetSelectionRange) {
   CreateEngine(true);
   const int context = engine_->GetContextIdForTesting();
   std::string error;
-  engine_->InputMethodEngineBase::SetSelectionRange(context, /* start */ 0,
-                                                    /* end */ 0, &error);
+  engine_->InputMethodEngine::SetSelectionRange(context, /* start */ 0,
+                                                /* end */ 0, &error);
   EXPECT_EQ(kErrorNotActive, error);
   EXPECT_EQ(0,
             mock_ime_input_context_handler_->set_selection_range_call_count());
   error = "";
 
   engine_->Enable(kTestImeComponentId);
-  engine_->InputMethodEngineBase::SetSelectionRange(context, /* start */ 0,
-                                                    /* end */ 0, &error);
+  engine_->InputMethodEngine::SetSelectionRange(context, /* start */ 0,
+                                                /* end */ 0, &error);
   EXPECT_EQ("", error);
   EXPECT_EQ(1,
             mock_ime_input_context_handler_->set_selection_range_call_count());
   error = "";
 
-  engine_->InputMethodEngineBase::SetSelectionRange(context, /* start */ -1,
-                                                    /* end */ 0, &error);
+  engine_->InputMethodEngine::SetSelectionRange(context, /* start */ -1,
+                                                /* end */ 0, &error);
   EXPECT_EQ(base::StringPrintf(kErrorInvalidValue, "start", -1), error);
   EXPECT_EQ(1,
             mock_ime_input_context_handler_->set_selection_range_call_count());
   error = "";
 
-  engine_->InputMethodEngineBase::SetSelectionRange(context, /* start */ 0,
-                                                    /* end */ -1, &error);
+  engine_->InputMethodEngine::SetSelectionRange(context, /* start */ 0,
+                                                /* end */ -1, &error);
   EXPECT_EQ(base::StringPrintf(kErrorInvalidValue, "end", -1), error);
   EXPECT_EQ(1,
             mock_ime_input_context_handler_->set_selection_range_call_count());
@@ -375,8 +375,7 @@ TEST_F(InputMethodEngineTest, TestDisableAfterSetCompositionRange) {
   EXPECT_EQ(u"text", mock_ime_input_context_handler_->last_commit_text());
 
   // Change composition range to include "text".
-  engine_->InputMethodEngineBase::SetCompositionRange(context, 0, 4, {},
-                                                      &error);
+  engine_->InputMethodEngine::SetCompositionRange(context, 0, 4, {}, &error);
   EXPECT_EQ("", error);
 
   // Disable to commit

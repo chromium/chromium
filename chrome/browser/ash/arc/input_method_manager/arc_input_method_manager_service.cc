@@ -183,7 +183,7 @@ class ArcInputMethodManagerService::ArcInputMethodBoundsObserver
 };
 
 class ArcInputMethodManagerService::InputMethodEngineObserver
-    : public ash::input_method::InputMethodEngineBaseObserver {
+    : public ash::input_method::InputMethodEngineObserver {
  public:
   explicit InputMethodEngineObserver(ArcInputMethodManagerService* owner)
       : owner_(owner) {}
@@ -194,7 +194,7 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
 
   ~InputMethodEngineObserver() override = default;
 
-  // ash::input_method::InputMethodEngineBaseObserver overrides:
+  // ash::input_method::InputMethodEngineObserver overrides:
   void OnActivate(const std::string& engine_id) override {
     owner_->is_arc_ime_active_ = true;
     // TODO(yhanada): Remove this line after we migrate to SPM completely.

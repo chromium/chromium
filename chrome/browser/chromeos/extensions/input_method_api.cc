@@ -89,7 +89,6 @@ namespace GetTextFieldBounds =
     extensions::api::input_method_private::GetTextFieldBounds;
 
 using ::ash::input_method::InputMethodEngine;
-using ::ash::input_method::InputMethodEngineBase;
 
 // Prefix, which is used by XKB.
 const char kXkbPrefix[] = "xkb:";
@@ -424,23 +423,22 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
 
   const auto parent_params = SetCompositionRange::Params::Create(args());
   const auto& params = parent_params->parameters;
-  std::vector<InputMethodEngineBase::SegmentInfo> segments;
+  std::vector<InputMethodEngine::SegmentInfo> segments;
   if (params.segments) {
     for (const auto& segments_arg : *params.segments) {
-      InputMethodEngineBase::SegmentInfo segment_info;
+      InputMethodEngine::SegmentInfo segment_info;
       segment_info.start = segments_arg.start;
       segment_info.end = segments_arg.end;
       switch (segments_arg.style) {
         case input_method_private::UNDERLINE_STYLE_UNDERLINE:
-          segment_info.style = InputMethodEngineBase::SEGMENT_STYLE_UNDERLINE;
+          segment_info.style = InputMethodEngine::SEGMENT_STYLE_UNDERLINE;
           break;
         case input_method_private::UNDERLINE_STYLE_DOUBLEUNDERLINE:
           segment_info.style =
-              InputMethodEngineBase::SEGMENT_STYLE_DOUBLE_UNDERLINE;
+              InputMethodEngine::SEGMENT_STYLE_DOUBLE_UNDERLINE;
           break;
         case input_method_private::UNDERLINE_STYLE_NOUNDERLINE:
-          segment_info.style =
-              InputMethodEngineBase::SEGMENT_STYLE_NO_UNDERLINE;
+          segment_info.style = InputMethodEngine::SEGMENT_STYLE_NO_UNDERLINE;
           break;
         case input_method_private::UNDERLINE_STYLE_NONE:
           EXTENSION_FUNCTION_VALIDATE(false);
@@ -450,7 +448,7 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
     }
   }
 
-  if (!engine->InputMethodEngineBase::SetCompositionRange(
+  if (!engine->InputMethodEngine::SetCompositionRange(
           params.context_id, params.selection_before, params.selection_after,
           segments, &error)) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
@@ -468,23 +466,22 @@ InputMethodPrivateSetComposingRangeFunction::Run() {
 
   const auto parent_params = SetComposingRange::Params::Create(args());
   const auto& params = parent_params->parameters;
-  std::vector<InputMethodEngineBase::SegmentInfo> segments;
+  std::vector<InputMethodEngine::SegmentInfo> segments;
   if (params.segments) {
     for (const auto& segments_arg : *params.segments) {
-      InputMethodEngineBase::SegmentInfo segment_info;
+      InputMethodEngine::SegmentInfo segment_info;
       segment_info.start = segments_arg.start;
       segment_info.end = segments_arg.end;
       switch (segments_arg.style) {
         case input_method_private::UNDERLINE_STYLE_UNDERLINE:
-          segment_info.style = InputMethodEngineBase::SEGMENT_STYLE_UNDERLINE;
+          segment_info.style = InputMethodEngine::SEGMENT_STYLE_UNDERLINE;
           break;
         case input_method_private::UNDERLINE_STYLE_DOUBLEUNDERLINE:
           segment_info.style =
-              InputMethodEngineBase::SEGMENT_STYLE_DOUBLE_UNDERLINE;
+              InputMethodEngine::SEGMENT_STYLE_DOUBLE_UNDERLINE;
           break;
         case input_method_private::UNDERLINE_STYLE_NOUNDERLINE:
-          segment_info.style =
-              InputMethodEngineBase::SEGMENT_STYLE_NO_UNDERLINE;
+          segment_info.style = InputMethodEngine::SEGMENT_STYLE_NO_UNDERLINE;
           break;
         case input_method_private::UNDERLINE_STYLE_NONE:
           EXTENSION_FUNCTION_VALIDATE(false);
@@ -494,7 +491,7 @@ InputMethodPrivateSetComposingRangeFunction::Run() {
     }
   }
 
-  if (!engine->InputMethodEngineBase::SetComposingRange(
+  if (!engine->InputMethodEngine::SetComposingRange(
           params.context_id, params.start, params.end, segments, &error)) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
@@ -511,8 +508,8 @@ InputMethodPrivateGetAutocorrectRangeFunction::Run() {
 
   const auto parent_params = GetAutocorrectRange::Params::Create(args());
   const auto& params = parent_params->parameters;
-  const gfx::Range range = engine->InputMethodEngineBase::GetAutocorrectRange(
-      params.context_id, &error);
+  const gfx::Range range =
+      engine->InputMethodEngine::GetAutocorrectRange(params.context_id, &error);
   auto ret = std::make_unique<base::DictionaryValue>();
   ret->SetInteger("start", range.is_empty() ? 0 : range.start());
   ret->SetInteger("end", range.is_empty() ? 0 : range.end());
@@ -532,7 +529,7 @@ InputMethodPrivateGetAutocorrectCharacterBoundsFunction::Run() {
       GetAutocorrectCharacterBounds::Params::Create(args());
   const auto& params = parent_params->parameters;
   const gfx::Rect rect =
-      engine->InputMethodEngineBase::GetAutocorrectCharacterBounds(
+      engine->InputMethodEngine::GetAutocorrectCharacterBounds(
           params.context_id, &error);
   if (rect.IsEmpty()) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
@@ -556,8 +553,8 @@ InputMethodPrivateGetTextFieldBoundsFunction::Run() {
 
   const auto parent_params = GetTextFieldBounds::Params::Create(args());
   const auto& params = parent_params->parameters;
-  const gfx::Rect rect = engine->InputMethodEngineBase::GetTextFieldBounds(
-      params.context_id, &error);
+  const gfx::Rect rect =
+      engine->InputMethodEngine::GetTextFieldBounds(params.context_id, &error);
   if (rect.IsEmpty()) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
@@ -580,7 +577,7 @@ InputMethodPrivateSetAutocorrectRangeFunction::Run() {
 
   const auto parent_params = SetAutocorrectRange::Params::Create(args());
   const auto& params = parent_params->parameters;
-  if (!engine->InputMethodEngineBase::SetAutocorrectRange(
+  if (!engine->InputMethodEngine::SetAutocorrectRange(
           params.context_id,
           gfx::Range(params.selection_start, params.selection_end), &error)) {
     auto results = std::make_unique<base::ListValue>();
@@ -603,7 +600,7 @@ InputMethodPrivateSetSelectionRangeFunction::Run() {
   const SetSelectionRange::Params::Parameters& params =
       parent_params->parameters;
 
-  if (!engine->InputMethodEngineBase::SetSelectionRange(
+  if (!engine->InputMethodEngine::SetSelectionRange(
           params.context_id, *params.selection_start, *params.selection_end,
           &error)) {
     auto results = std::make_unique<base::ListValue>();

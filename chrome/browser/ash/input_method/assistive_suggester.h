@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/emoji_suggester.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
-#include "chrome/browser/ash/input_method/input_method_engine_base.h"
 #include "chrome/browser/ash/input_method/multi_word_suggester.h"
 #include "chrome/browser/ash/input_method/personal_info_suggester.h"
 #include "chrome/browser/ash/input_method/suggester.h"

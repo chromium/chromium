@@ -21,7 +21,7 @@ namespace arc {
 namespace {
 
 class DummyInputMethodEngineObserver
-    : public ash::input_method::InputMethodEngineBaseObserver {
+    : public ash::input_method::InputMethodEngineObserver {
  public:
   DummyInputMethodEngineObserver() = default;
 

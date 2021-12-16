@@ -7,12 +7,12 @@
 
 #include <vector>
 
-#include "chrome/browser/ash/input_method/input_method_engine_base_observer.h"
+#include "chrome/browser/ash/input_method/input_method_engine_observer.h"
 
 namespace ash {
 namespace input_method {
 
-class StubInputMethodEngineObserver : public InputMethodEngineBaseObserver {
+class StubInputMethodEngineObserver : public InputMethodEngineObserver {
  public:
   StubInputMethodEngineObserver() = default;
   ~StubInputMethodEngineObserver() override = default;

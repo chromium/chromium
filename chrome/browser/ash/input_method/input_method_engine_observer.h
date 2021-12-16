@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_ENGINE_BASE_OBSERVER_H_
-#define CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_ENGINE_BASE_OBSERVER_H_
+#ifndef CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_ENGINE_OBSERVER_H_
+#define CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_ENGINE_OBSERVER_H_
 
 #include <map>
 #include <memory>
@@ -34,9 +34,9 @@ enum MouseButtonEvent {
   MOUSE_BUTTON_MIDDLE,
 };
 
-class InputMethodEngineBaseObserver {
+class InputMethodEngineObserver {
  public:
-  virtual ~InputMethodEngineBaseObserver() = default;
+  virtual ~InputMethodEngineObserver() = default;
 
   // Called when the IME becomes the active IME.
   virtual void OnActivate(const std::string& engine_id) = 0;
@@ -105,4 +105,4 @@ class InputMethodEngineBaseObserver {
 }  // namespace input_method
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_ENGINE_BASE_OBSERVER_H_
+#endif  // CHROME_BROWSER_ASH_INPUT_METHOD_INPUT_METHOD_ENGINE_OBSERVER_H_

@@ -30,11 +30,11 @@ namespace input_method {
 // currently depends on the Chrome extension system, it will not need to in
 // the future after all the extensions code are migrated to the IME service.
 // The design of this class is not good, mainly because we are inheriting
-// from InputMethodEngineBase, which was designed for extension-based engines.
+// from InputMethodEngine, which was designed for extension-based engines.
 //
 // In the final design, there should be some common interface between
 // NativeInputMethodEngine and "ExtensionInputMethodEngine" (which is
-// InputMethodEngineBase in the current design). All extensions-related logic
+// InputMethodEngine in the current design). All extensions-related logic
 // will reside in the ExtensionInputMethodEngine inheritance tree. There will
 // be no "ImeObserver" for the native engine either, as it is only used as
 // a way for ExtensionInputMethodEngine to delegate to the extensions code,
@@ -51,7 +51,7 @@ class NativeInputMethodEngine
       std::unique_ptr<AssistiveSuggesterSwitch> suggester_switch);
 
   // InputMethodEngine:
-  void Initialize(std::unique_ptr<InputMethodEngineBaseObserver> observer,
+  void Initialize(std::unique_ptr<InputMethodEngineObserver> observer,
                   const char* extension_id,
                   Profile* profile) override;
   void CandidateClicked(uint32_t index) override;
@@ -88,22 +88,21 @@ class NativeInputMethodEngine
                      int start_index);
 
  private:
-  class ImeObserver : public InputMethodEngineBaseObserver,
+  class ImeObserver : public InputMethodEngineObserver,
                       public chromeos::ime::mojom::InputMethodHost {
    public:
     // |ime_base_observer| is to forward events to extension during this
     // migration. It will be removed when the official extension is completely
     // migrated.
-    ImeObserver(
-        PrefService* prefs,
-        std::unique_ptr<InputMethodEngineBaseObserver> ime_base_observer,
-        std::unique_ptr<AssistiveSuggester> assistive_suggester,
-        std::unique_ptr<AutocorrectManager> autocorrect_manager,
-        std::unique_ptr<SuggestionsCollector> suggestions_collector,
-        std::unique_ptr<GrammarManager> grammar_manager);
+    ImeObserver(PrefService* prefs,
+                std::unique_ptr<InputMethodEngineObserver> ime_base_observer,
+                std::unique_ptr<AssistiveSuggester> assistive_suggester,
+                std::unique_ptr<AutocorrectManager> autocorrect_manager,
+                std::unique_ptr<SuggestionsCollector> suggestions_collector,
+                std::unique_ptr<GrammarManager> grammar_manager);
     ~ImeObserver() override;
 
-    // InputMethodEngineBaseObserver:
+    // InputMethodEngineObserver:
     void OnActivate(const std::string& engine_id) override;
     void OnFocus(
         const std::string& engine_id,
@@ -191,7 +190,7 @@ class NativeInputMethodEngine
 
     PrefService* prefs_ = nullptr;
 
-    std::unique_ptr<InputMethodEngineBaseObserver> ime_base_observer_;
+    std::unique_ptr<InputMethodEngineObserver> ime_base_observer_;
     mojo::Remote<chromeos::ime::mojom::InputEngineManager> remote_manager_;
     mojo::Remote<chromeos::ime::mojom::InputMethod> input_method_;
     mojo::Receiver<chromeos::ime::mojom::InputMethodHost> host_receiver_{this};

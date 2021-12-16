@@ -28,7 +28,6 @@ const char kErrorRouterNotAvailable[] = "The router is not available.";
 const char kErrorSetKeyEventsFail[] = "Could not send key events.";
 
 using ::ash::input_method::InputMethodEngine;
-using ::ash::input_method::InputMethodEngineBase;
 
 InputMethodEngine* GetEngineIfActive(Profile* profile,
                                      const std::string& extension_id,
@@ -139,22 +138,21 @@ ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
   std::unique_ptr<SetComposition::Params> parent_params(
       SetComposition::Params::Create(args()));
   const SetComposition::Params::Parameters& params = parent_params->parameters;
-  std::vector<InputMethodEngineBase::SegmentInfo> segments;
+  std::vector<InputMethodEngine::SegmentInfo> segments;
   if (params.segments) {
     for (const auto& segments_arg : *params.segments) {
       EXTENSION_FUNCTION_VALIDATE(segments_arg.style !=
                                   input_ime::UNDERLINE_STYLE_NONE);
-      InputMethodEngineBase::SegmentInfo segment_info;
+      InputMethodEngine::SegmentInfo segment_info;
       segment_info.start = segments_arg.start;
       segment_info.end = segments_arg.end;
       if (segments_arg.style == input_ime::UNDERLINE_STYLE_UNDERLINE) {
-        segment_info.style = InputMethodEngineBase::SEGMENT_STYLE_UNDERLINE;
+        segment_info.style = InputMethodEngine::SEGMENT_STYLE_UNDERLINE;
       } else if (segments_arg.style ==
                  input_ime::UNDERLINE_STYLE_DOUBLEUNDERLINE) {
-        segment_info.style =
-            InputMethodEngineBase::SEGMENT_STYLE_DOUBLE_UNDERLINE;
+        segment_info.style = InputMethodEngine::SEGMENT_STYLE_DOUBLE_UNDERLINE;
       } else {
-        segment_info.style = InputMethodEngineBase::SEGMENT_STYLE_NO_UNDERLINE;
+        segment_info.style = InputMethodEngine::SEGMENT_STYLE_NO_UNDERLINE;
       }
       segments.push_back(segment_info);
     }

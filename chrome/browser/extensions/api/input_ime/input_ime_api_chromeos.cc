@@ -64,7 +64,6 @@ namespace FinishComposingText =
     extensions::api::input_method_private::FinishComposingText;
 
 using ::ash::input_method::InputMethodEngine;
-using ::ash::input_method::InputMethodEngineBase;
 using ::ui::IMEEngineHandlerInterface;
 
 const char kErrorEngineNotAvailable[] = "The engine is not available.";
@@ -228,7 +227,7 @@ InputMethodEngine* GetEngineIfActive(Profile* profile,
 }
 
 class ImeObserverChromeOS
-    : public ash::input_method::InputMethodEngineBaseObserver {
+    : public ash::input_method::InputMethodEngineObserver {
  public:
   ImeObserverChromeOS(const std::string& extension_id, Profile* profile)
       : extension_id_(extension_id), profile_(profile) {}

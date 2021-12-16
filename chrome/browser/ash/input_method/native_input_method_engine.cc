@@ -462,7 +462,7 @@ NativeInputMethodEngine::NativeInputMethodEngine(
     : suggester_switch_(std::move(suggester_switch)) {}
 
 void NativeInputMethodEngine::Initialize(
-    std::unique_ptr<InputMethodEngineBaseObserver> observer,
+    std::unique_ptr<InputMethodEngineObserver> observer,
     const char* extension_id,
     Profile* profile) {
   // TODO(crbug/1141231): refactor the mix of unique and raw ptr here.
@@ -549,7 +549,7 @@ NativeInputMethodEngine::GetNativeObserver() const {
 
 NativeInputMethodEngine::ImeObserver::ImeObserver(
     PrefService* prefs,
-    std::unique_ptr<InputMethodEngineBaseObserver> ime_base_observer,
+    std::unique_ptr<InputMethodEngineObserver> ime_base_observer,
     std::unique_ptr<AssistiveSuggester> assistive_suggester,
     std::unique_ptr<AutocorrectManager> autocorrect_manager,
     std::unique_ptr<SuggestionsCollector> suggestions_collector,
