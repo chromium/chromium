@@ -405,6 +405,8 @@ void ProxyMain::BeginMainFrame(
   layer_tree_host_->RecordEndOfFrameMetrics(
       begin_main_frame_start_time,
       begin_main_frame_state->active_sequence_trackers);
+  if (blocking)
+    commit_trace_.reset();
 }
 
 void ProxyMain::DidCompleteCommit(CommitTimestamps commit_timestamps) {
