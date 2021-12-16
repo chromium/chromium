@@ -37,6 +37,8 @@ const char kInspectorOpaqueOrigins[] =
     "Permission can't be granted to opaque origins.";
 const char kInspectorPushPermissionError[] =
     "Push Permission without userVisibleOnly:true isn't supported";
+const char kInspectorNoSuchFrameError[] =
+    "Frame with the given id was not found.";
 static constexpr int kInvalidParamsInspectorCode = -32602;
 
 class ScopedIncrementer {
@@ -729,6 +731,10 @@ Status ParseInspectorError(const std::string& error_json) {
     } else if (error_message == kInspectorPushPermissionError ||
                error_message == kInspectorOpaqueOrigins) {
       return Status(kInvalidArgument, error_message);
+    } else if (error_message == kInspectorNoSuchFrameError) {
+      // As the server returns the generic error code: SERVER_ERROR = -32000
+      // we have to rely on the error message content.
+      return Status(kNoSuchFrame, error_message);
     }
     absl::optional<int> error_code = error_dict->FindIntPath("code");
     if (error_code == kInvalidParamsInspectorCode)

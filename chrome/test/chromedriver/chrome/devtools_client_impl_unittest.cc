@@ -690,6 +690,22 @@ TEST(ParseInspectorError, CdpNotImplementedError) {
   ASSERT_EQ("unknown command: SOME MESSAGE", status.message());
 }
 
+TEST(ParseInspectorError, NoSuchFrameError) {
+  // As the server returns the generic error code: SERVER_ERROR = -32000
+  // we have to rely on the error message content.
+  // A real scenario where this error message occurs is WPT test:
+  // 'cookies/samesite/iframe-reload.https.html'
+  // The error is thrown by InspectorDOMAgent::getFrameOwner
+  // (inspector_dom_agent.cc).
+  const std::string error(
+      "{\"code\":-32000,"
+      "\"message\":\"Frame with the given id was not found.\"}");
+  Status status = internal::ParseInspectorError(error);
+  ASSERT_EQ(kNoSuchFrame, status.code());
+  ASSERT_EQ("no such frame: Frame with the given id was not found.",
+            status.message());
+}
+
 TEST_F(DevToolsClientImplTest, HandleEventsUntil) {
   MockListener listener;
   SyncWebSocketFactory factory =

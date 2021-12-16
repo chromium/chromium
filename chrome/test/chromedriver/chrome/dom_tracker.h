@@ -39,6 +39,7 @@ class DomTracker : public DevToolsEventListener {
  private:
   bool ProcessNodeList(const base::Value& nodes);
   bool ProcessNode(const base::Value& node);
+  Status RebuildMapping(DevToolsClient* client);
 
   std::map<int, std::string> node_to_frame_map_;
 };

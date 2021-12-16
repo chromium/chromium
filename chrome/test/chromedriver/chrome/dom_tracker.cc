@@ -19,35 +19,16 @@ DomTracker::DomTracker(DevToolsClient* client) {
 
 DomTracker::~DomTracker() {}
 
-Status DomTracker::GetFrameIdForNode(
-    int node_id, std::string* frame_id) {
-  if (node_to_frame_map_.count(node_id) == 0)
+Status DomTracker::GetFrameIdForNode(int node_id, std::string* frame_id) {
+  if (node_to_frame_map_.count(node_id) == 0) {
     return Status(kNoSuchFrame, "element is not a frame");
+  }
   *frame_id = node_to_frame_map_[node_id];
   return Status(kOk);
 }
 
 Status DomTracker::OnConnected(DevToolsClient* client) {
-  node_to_frame_map_.clear();
-  // Fetch the root document and traverse it populating node_to_frame_map_.
-  // The map will be updated later whenever Inspector pushes DOM node information to the client.
-  base::DictionaryValue params;
-  params.SetInteger("depth", -1);
-  std::unique_ptr<base::DictionaryValue> result;
-  auto status =
-      client->SendCommandAndGetResult("DOM.getDocument", params, &result);
-  if (status.IsError()) {
-    return status;
-  }
-
-  if (const base::Value* root = result->FindKey("root")) {
-    ProcessNode(*root);
-  } else {
-    status =
-        Status(kUnknownError, "DOM.getDocument missing 'root' in the response");
-  }
-
-  return status;
+  return RebuildMapping(client);
 }
 
 Status DomTracker::OnEvent(DevToolsClient* client,
@@ -66,8 +47,9 @@ Status DomTracker::OnEvent(DevToolsClient* client,
     }
   } else if (method == "DOM.childNodeInserted") {
     const base::Value* node = params.FindKey("node");
-    if (node == nullptr)
+    if (node == nullptr) {
       return Status(kUnknownError, "DOM.childNodeInserted missing 'node'");
+    }
 
     if (!ProcessNode(*node)) {
       std::string json;
@@ -75,10 +57,41 @@ Status DomTracker::OnEvent(DevToolsClient* client,
       return Status(kUnknownError,
                     "DOM.childNodeInserted has invalid 'node': " + json);
     }
+  } else if (method == "Page.frameAttached") {
+    const std::string* frame_id = params.FindStringKey("frameId");
+    if (frame_id == nullptr) {
+      return Status(kUnknownError,
+                    "Page.frameAttached missing 'frameId' in the event");
+    }
+
+    base::DictionaryValue params;
+    params.SetString("frameId", *frame_id);
+    std::unique_ptr<base::DictionaryValue> result;
+    auto status =
+        client->SendCommandAndGetResult("DOM.getFrameOwner", params, &result);
+    if (status.IsError()) {
+      if (status.code() == kNoSuchFrame) {
+        // Frame was deleted before DOM.getFrameOwner arrived to the browser.
+        return Status(kOk);
+      }
+      return status;
+    }
+    auto ownder_node_id = result->FindIntKey("nodeId");
+    if (ownder_node_id.has_value()) {
+      node_to_frame_map_.emplace(ownder_node_id.value(), *frame_id);
+    } else {
+      // NodeId is missing only if nodeId's have been invalidated between
+      // handling of event Page.frameAttached and receiving the response to
+      // DOM.getFrameOwner. In this case DOM.documentUpdated should have been
+      // sent to us in between and we should have requested for DOM.getDocument
+      // and received the response. This means that the mapping must have been
+      // updated accordingly.
+      // It is also possible that the frame in query was removed in between,
+      // therefore the corresponding entry might still be missing in
+      // node_to_frame_map_.
+    }
   } else if (method == "DOM.documentUpdated") {
-    node_to_frame_map_.clear();
-    // Calling DOM.getDocument is necessary to receive future DOM update events.
-    client->SendCommandAndIgnoreResponse("DOM.getDocument", {});
+    return RebuildMapping(client);
   }
   return Status(kOk);
 }
@@ -101,10 +114,34 @@ bool DomTracker::ProcessNode(const base::Value& node) {
   if (!dict->GetInteger("nodeId", &node_id))
     return false;
   std::string frame_id;
-  if (dict->GetString("frameId", &frame_id))
+  if (dict->GetString("frameId", &frame_id)) {
     node_to_frame_map_.insert(std::make_pair(node_id, frame_id));
+  }
 
   if (const base::Value* children = dict->FindKey("children"))
     return ProcessNodeList(*children);
   return true;
+}
+
+Status DomTracker::RebuildMapping(DevToolsClient* client) {
+  node_to_frame_map_.clear();
+  base::DictionaryValue params;
+  params.SetInteger("depth", -1);
+  std::unique_ptr<base::DictionaryValue> result;
+  // Fetch the root document and traverse it populating node_to_frame_map_.
+  // The map will be updated later whenever Inspector pushes DOM node
+  // information to the client.
+  auto status =
+      client->SendCommandAndGetResult("DOM.getDocument", params, &result);
+  if (status.IsError()) {
+    return status;
+  }
+
+  if (const base::Value* root = result->FindKey("root")) {
+    ProcessNode(*root);
+  } else {
+    status =
+        Status(kUnknownError, "DOM.getDocument missing 'root' in the response");
+  }
+  return status;
 }

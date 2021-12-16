@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <list>
+#include <memory>
 #include <string>
 
 #include "base/json/json_reader.h"
@@ -10,39 +11,27 @@
 #include "chrome/test/chromedriver/chrome/dom_tracker.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 #include "chrome/test/chromedriver/chrome/stub_devtools_client.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
 class FakeDevToolsClient : public StubDevToolsClient {
  public:
-  FakeDevToolsClient() {}
-  ~FakeDevToolsClient() override {}
+  FakeDevToolsClient() = default;
+  ~FakeDevToolsClient() override = default;
 
-  std::string PopSentCommand() {
-    std::string command;
-    if (!sent_command_queue_.empty()) {
-      command = sent_command_queue_.front();
-      sent_command_queue_.pop_front();
-    }
-    return command;
-  }
+  MOCK_METHOD(Status,
+              SendCommand,
+              (const std::string&, const base::DictionaryValue&),
+              (override));
 
-  // Overridden from DevToolsClient:
-  Status SendCommand(const std::string& method,
-                     const base::DictionaryValue& params) override {
-    sent_command_queue_.push_back(method);
-    return Status(kOk);
-  }
-  Status SendCommandAndGetResult(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      std::unique_ptr<base::DictionaryValue>* result) override {
-    return SendCommand(method, params);
-  }
-
- private:
-  std::list<std::string> sent_command_queue_;
+  MOCK_METHOD(Status,
+              SendCommandAndGetResult,
+              (const std::string&,
+               const base::DictionaryValue&,
+               std::unique_ptr<base::DictionaryValue>*),
+              (override));
 };
 
 }  // namespace
@@ -67,10 +56,20 @@ TEST(DomTracker, GetFrameIdForNode) {
   ASSERT_TRUE(tracker.GetFrameIdForNode(102, &frame_id).IsOk());
   ASSERT_STREQ("f", frame_id.c_str());
 
+  using ::testing::_;
+  EXPECT_CALL(client, SendCommandAndGetResult("DOM.getDocument", _, _))
+      .WillOnce([](const std::string& method,
+                   const base::DictionaryValue& params,
+                   std::unique_ptr<base::DictionaryValue>* result) {
+        *result = std::make_unique<base::DictionaryValue>();
+        result->get()->SetDictionary("root",
+                                     std::make_unique<base::DictionaryValue>());
+        return Status(kOk);
+      });
+
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "DOM.documentUpdated", params).code());
   ASSERT_TRUE(tracker.GetFrameIdForNode(102, &frame_id).IsError());
-  ASSERT_STREQ("DOM.getDocument", client.PopSentCommand().c_str());
 }
 
 TEST(DomTracker, ChildNodeInserted) {
