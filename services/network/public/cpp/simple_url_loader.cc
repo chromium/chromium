@@ -140,7 +140,7 @@ class StringUploadDataPipeGetter : public mojom::DataPipeGetter {
           std::min(static_cast<size_t>(32 * 1024),
                    upload_string_.length() - write_position_));
       if (write_size == 0) {
-        // Upload is done. Close the uplaod body pipe and wait for another call
+        // Upload is done. Close the upload body pipe and wait for another call
         // to Read().
         ResetBodyPipe();
         return;
@@ -253,7 +253,7 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   // Called by BodyHandler when the BodyHandler body handler is done. If |error|
   // is not net::OK, some error occurred reading or consuming the body. If it is
   // net::OK, the pipe was closed and all data received was successfully
-  // handled. This could indicate an error, concellation, or completion. To
+  // handled. This could indicate an error, cancellation, or completion. To
   // determine which case this is, the size will also be compared to the size
   // reported in URLLoaderCompletionStatus(), if
   // URLLoaderCompletionStatus indicates a success.
@@ -1031,7 +1031,7 @@ class SaveToFileBodyHandler : public BodyHandler {
       }
     }
 
-    // These are set on cosntruction and accessed on both task runners.
+    // These are set on construction and accessed on both task runners.
     const scoped_refptr<base::SequencedTaskRunner> body_handler_task_runner_;
     const scoped_refptr<base::SequencedTaskRunner> file_writer_task_runner_;
 
