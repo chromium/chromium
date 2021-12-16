@@ -253,6 +253,8 @@ We use several tools for static analysis.
   * In other words: Enforces that targets do not rely on indirect dependencies
     to populate their classpath.
 * Checks run on the entire codebase, not only on changed lines.
+* This is the only static analysis that runs on prebuilt .jar files.
+* The same tool is also used for [bytecode rewriting](/docs/ui/android/bytecode_rewriting.md).
 
 ### [PRESUBMIT.py](/PRESUBMIT.py):
 * Checks for banned patterns via `_BANNED_JAVA_FUNCTIONS`.
