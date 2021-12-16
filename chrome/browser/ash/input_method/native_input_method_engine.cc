@@ -43,18 +43,8 @@ namespace {
 
 namespace mojom = ::chromeos::ime::mojom;
 
-// Returns the current input context. This may change during the session, even
-// if the IME engine does not change.
-ui::IMEInputContextHandlerInterface* GetInputContext() {
-  return ui::IMEBridge::Get()->GetInputContextHandler();
-}
-
 bool ShouldRouteToRuleBasedEngine(const std::string& engine_id) {
   return base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE);
-}
-
-IMECandidateWindowHandlerInterface* GetCandidateWindowHandler() {
-  return ui::IMEBridge::Get()->GetCandidateWindowHandler();
 }
 
 bool IsFstEngine(const std::string& engine_id) {
@@ -920,7 +910,7 @@ void NativeInputMethodEngine::ImeObserver::OnInputMethodOptionsChanged(
 void NativeInputMethodEngine::ImeObserver::CommitText(
     const std::u16string& text,
     mojom::CommitTextCursorBehavior cursor_behavior) {
-  GetInputContext()->CommitText(
+  ui::IMEBridge::Get()->GetInputContextHandler()->CommitText(
       text,
       cursor_behavior == mojom::CommitTextCursorBehavior::kMoveCursorBeforeText
           ? ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorBeforeText
@@ -950,9 +940,10 @@ void NativeInputMethodEngine::ImeObserver::SetComposition(
     composition.ime_text_spans.push_back(CompositionSpanToImeTextSpan(*span));
   }
 
-  GetInputContext()->UpdateCompositionText(std::move(composition),
-                                           /*cursor_pos=*/new_cursor_position,
-                                           /*visible=*/true);
+  ui::IMEBridge::Get()->GetInputContextHandler()->UpdateCompositionText(
+      std::move(composition),
+      /*cursor_pos=*/new_cursor_position,
+      /*visible=*/true);
 }
 
 void NativeInputMethodEngine::ImeObserver::SetCompositionRange(
@@ -960,7 +951,7 @@ void NativeInputMethodEngine::ImeObserver::SetCompositionRange(
     uint32_t end_index) {
   const auto ordered_range = std::minmax(start_index, end_index);
   // TODO(b/151884011): Turn on underlining for composition-based languages.
-  GetInputContext()->SetComposingRange(
+  ui::IMEBridge::Get()->GetInputContextHandler()->SetComposingRange(
       ordered_range.first, ordered_range.second,
       {ui::ImeTextSpan(
           ui::ImeTextSpan::Type::kComposition, /*start_offset=*/0,
@@ -970,14 +961,15 @@ void NativeInputMethodEngine::ImeObserver::SetCompositionRange(
 }
 
 void NativeInputMethodEngine::ImeObserver::FinishComposition() {
-  GetInputContext()->ConfirmCompositionText(/*reset_engine=*/false,
-                                            /*keep_selection=*/true);
+  ui::IMEBridge::Get()->GetInputContextHandler()->ConfirmCompositionText(
+      /*reset_engine=*/false,
+      /*keep_selection=*/true);
 }
 
 void NativeInputMethodEngine::ImeObserver::DeleteSurroundingText(
     uint32_t num_before_cursor,
     uint32_t num_after_cursor) {
-  GetInputContext()->DeleteSurroundingText(
+  ui::IMEBridge::Get()->GetInputContextHandler()->DeleteSurroundingText(
       /*offset=*/-static_cast<int>(num_before_cursor),
       /*length=*/num_before_cursor + num_after_cursor);
 }
@@ -1006,14 +998,16 @@ void NativeInputMethodEngine::ImeObserver::DisplaySuggestions(
 
 void NativeInputMethodEngine::ImeObserver::UpdateCandidatesWindow(
     chromeos::ime::mojom::CandidatesWindowPtr window) {
-  if (!GetCandidateWindowHandler()) {
+  IMECandidateWindowHandlerInterface* candidate_window_handler =
+      ui::IMEBridge::Get()->GetCandidateWindowHandler();
+  if (!candidate_window_handler) {
     return;
   }
 
   ui::CandidateWindow candidate_window;
   if (!window) {
-    GetCandidateWindowHandler()->UpdateLookupTable(candidate_window,
-                                                   /*visible=*/false);
+    candidate_window_handler->UpdateLookupTable(candidate_window,
+                                                /*visible=*/false);
     return;
   }
 
@@ -1034,14 +1028,16 @@ void NativeInputMethodEngine::ImeObserver::UpdateCandidatesWindow(
   property.auxiliary_text = window->auxiliary_text.value_or("");
   candidate_window.SetProperty(property);
 
-  GetCandidateWindowHandler()->UpdateLookupTable(candidate_window,
-                                                 /*visible=*/true);
+  candidate_window_handler->UpdateLookupTable(candidate_window,
+                                              /*visible=*/true);
 }
 
 void NativeInputMethodEngine::ImeObserver::RecordUkm(mojom::UkmEntryPtr entry) {
   if (entry->is_non_compliant_api()) {
     ui::RecordUkmNonCompliantApi(
-        GetInputContext()->GetClientSourceForMetrics(),
+        ui::IMEBridge::Get()
+            ->GetInputContextHandler()
+            ->GetClientSourceForMetrics(),
         entry->get_non_compliant_api()->non_compliant_operation);
   }
 }
