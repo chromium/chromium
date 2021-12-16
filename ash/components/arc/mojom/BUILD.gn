@@ -262,7 +262,9 @@ mojom("media") {
     "video.mojom",
     "video_common.mojom",
     "video_decode_accelerator.mojom",
+    "video_decoder.mojom",
     "video_encode_accelerator.mojom",
+    "video_frame_pool.mojom",
     "video_protected_buffer_allocator.mojom",
   ]
 
@@ -320,6 +322,14 @@ mojom("media") {
         {
           mojom = "arc.mojom.VideoPixelFormat"
           cpp = "media::VideoPixelFormat"
+        },
+        {
+          mojom = "arc.mojom.DecodeStatus"
+          cpp = "media::DecodeStatus"
+        },
+        {
+          mojom = "arc.mojom.Status"
+          cpp = "media::Status"
         },
       ]
       traits_headers = [ "video_accelerator_mojom_traits.h" ]

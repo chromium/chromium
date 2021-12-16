@@ -12,6 +12,7 @@
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/mojom/protected_buffer_manager.mojom.h"
 #include "ash/components/arc/mojom/video_decode_accelerator.mojom.h"
+#include "ash/components/arc/mojom/video_decoder.mojom.h"
 #include "ash/components/arc/mojom/video_encode_accelerator.mojom.h"
 #include "ash/components/arc/mojom/video_protected_buffer_allocator.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
@@ -102,6 +103,11 @@ class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
       oop_video_factories_.Add(std::move(oop_video_factory));
       return;
     }
+    content::BindInterfaceInGpuProcess(std::move(receiver));
+  }
+
+  void CreateVideoDecoder(
+      mojo::PendingReceiver<mojom::VideoDecoder> receiver) override {
     content::BindInterfaceInGpuProcess(std::move(receiver));
   }
 

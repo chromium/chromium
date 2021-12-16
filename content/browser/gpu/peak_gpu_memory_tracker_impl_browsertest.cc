@@ -69,6 +69,8 @@ class TestGpuService : public viz::mojom::GpuService {
   void CreateArcVideoDecodeAccelerator(
       mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver)
       override {}
+  void CreateArcVideoDecoder(
+      mojo::PendingReceiver<arc::mojom::VideoDecoder> vd_receiver) override {}
   void CreateArcVideoEncodeAccelerator(
       mojo::PendingReceiver<arc::mojom::VideoEncodeAccelerator> vea_receiver)
       override {}

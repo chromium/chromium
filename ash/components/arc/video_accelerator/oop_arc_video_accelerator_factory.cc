@@ -6,6 +6,7 @@
 
 #include "ash/components/arc/mojom/protected_buffer_manager.mojom.h"
 #include "ash/components/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
+#include "ash/components/arc/video_accelerator/gpu_arc_video_decoder.h"
 #include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
@@ -124,6 +125,19 @@ void OOPArcVideoAcceleratorFactory::CreateDecodeAccelerator(
   auto decoder = std::make_unique<GpuArcVideoDecodeAccelerator>(
       gpu::GpuPreferences(), gpu::GpuDriverBugWorkarounds(),
       protected_buffer_manager_);
+  auto decoder_receiver =
+      mojo::MakeSelfOwnedReceiver(std::move(decoder), std::move(receiver));
+  CHECK(decoder_receiver);
+  decoder_receiver->set_connection_error_handler(
+      base::BindOnce(&OOPArcVideoAcceleratorFactory::OnDecoderDisconnected,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void OOPArcVideoAcceleratorFactory::CreateVideoDecoder(
+    mojo::PendingReceiver<mojom::VideoDecoder> receiver) {
+  // TODO(b/195769334): plumb a ProtectedBufferManager.
+  auto decoder = std::make_unique<GpuArcVideoDecoder>(
+      /*protected_buffer_manager=*/nullptr);
   auto decoder_receiver =
       mojo::MakeSelfOwnedReceiver(std::move(decoder), std::move(receiver));
   CHECK(decoder_receiver);

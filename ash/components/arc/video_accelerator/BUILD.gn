@@ -16,6 +16,8 @@ if (use_v4l2_codec || use_vaapi) {
       "gpu_arc_video_decoder.h",
       "gpu_arc_video_encode_accelerator.cc",
       "gpu_arc_video_encode_accelerator.h",
+      "gpu_arc_video_frame_pool.cc",
+      "gpu_arc_video_frame_pool.h",
       "gpu_arc_video_protected_buffer_allocator.cc",
       "gpu_arc_video_protected_buffer_allocator.h",
       "oop_arc_video_accelerator_factory.cc",

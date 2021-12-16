@@ -7,6 +7,7 @@
 
 #include "ash/components/arc/mojom/video.mojom.h"
 #include "ash/components/arc/mojom/video_decode_accelerator.mojom.h"
+#include "ash/components/arc/mojom/video_decoder.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -37,6 +38,8 @@ class OOPArcVideoAcceleratorFactory
       mojo::PendingReceiver<mojom::VideoDecodeAccelerator> receiver,
       mojo::PendingRemote<mojom::ProtectedBufferManager>
           protected_buffer_manager) override;
+  void CreateVideoDecoder(
+      mojo::PendingReceiver<mojom::VideoDecoder> receiver) override;
   void CreateEncodeAccelerator(
       mojo::PendingReceiver<mojom::VideoEncodeAccelerator> receiver) override;
   void CreateProtectedBufferAllocator(

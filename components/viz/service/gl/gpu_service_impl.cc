@@ -84,6 +84,9 @@
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 #include "ash/components/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
+#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
+#include "ash/components/arc/video_accelerator/gpu_arc_video_decoder.h"
+#endif
 #include "ash/components/arc/video_accelerator/gpu_arc_video_encode_accelerator.h"
 #include "ash/components/arc/video_accelerator/gpu_arc_video_protected_buffer_allocator.h"
 #include "ash/components/arc/video_accelerator/protected_buffer_manager.h"
@@ -685,6 +688,15 @@ void GpuServiceImpl::CreateArcVideoDecodeAccelerator(
           weak_ptr_, std::move(vda_receiver)));
 }
 
+void GpuServiceImpl::CreateArcVideoDecoder(
+    mojo::PendingReceiver<arc::mojom::VideoDecoder> vd_receiver) {
+  DCHECK(io_runner_->BelongsToCurrentThread());
+  main_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GpuServiceImpl::CreateArcVideoDecoderOnMainThread,
+                     weak_ptr_, std::move(vd_receiver)));
+}
+
 void GpuServiceImpl::CreateArcVideoEncodeAccelerator(
     mojo::PendingReceiver<arc::mojom::VideoEncodeAccelerator> vea_receiver) {
   DCHECK(io_runner_->BelongsToCurrentThread());
@@ -724,6 +736,16 @@ void GpuServiceImpl::CreateArcVideoDecodeAcceleratorOnMainThread(
           gpu_preferences_, gpu_channel_manager_->gpu_driver_bug_workarounds(),
           protected_buffer_manager_),
       std::move(vda_receiver));
+}
+
+void GpuServiceImpl::CreateArcVideoDecoderOnMainThread(
+    mojo::PendingReceiver<arc::mojom::VideoDecoder> vd_receiver) {
+  DCHECK(main_runner_->BelongsToCurrentThread());
+#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<arc::GpuArcVideoDecoder>(protected_buffer_manager_),
+      std::move(vd_receiver));
+#endif
 }
 
 void GpuServiceImpl::CreateArcVideoEncodeAcceleratorOnMainThread(

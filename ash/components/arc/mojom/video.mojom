@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 8
+// Next MinVersion: 9
 
 module arc.mojom;
 
 import "ash/components/arc/mojom/protected_buffer_manager.mojom";
 import "ash/components/arc/mojom/video_decode_accelerator.mojom";
+import "ash/components/arc/mojom/video_decoder.mojom";
 import "ash/components/arc/mojom/video_encode_accelerator.mojom";
 import "ash/components/arc/mojom/video_protected_buffer_allocator.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
@@ -47,7 +48,7 @@ interface VideoInstance {
 // out-of-process video encoding.
 //
 // Deprecated method IDs: 0
-// Next method ID: 4
+// Next method ID: 5
 [ServiceSandbox=sandbox.mojom.Sandbox.kHardwareVideoDecoding]
 interface VideoAcceleratorFactory {
   [MinVersion=1]
@@ -60,6 +61,12 @@ interface VideoAcceleratorFactory {
       [MinVersion=8] pending_remote<ProtectedBufferManager>?
            protected_buffer_manager);
 
+  // Create a new |video_decoder| instance.
+  [MinVersion=8]
+  CreateVideoDecoder@4(
+      pending_receiver<VideoDecoder> video_decoder);
+
+  // Create a new |video_protected_buffer_allocator| instance.
   [Minversion=7]
   CreateProtectedBufferAllocator@3(
       pending_receiver<VideoProtectedBufferAllocator>

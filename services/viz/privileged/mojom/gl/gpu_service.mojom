@@ -9,6 +9,8 @@ import "ash/components/arc/mojom/protected_buffer_manager.mojom";
 [EnableIf=is_chromeos_ash]
 import "ash/components/arc/mojom/video_decode_accelerator.mojom";
 [EnableIf=is_chromeos_ash]
+import "ash/components/arc/mojom/video_decoder.mojom";
+[EnableIf=is_chromeos_ash]
 import "ash/components/arc/mojom/video_encode_accelerator.mojom";
 [EnableIf=is_chromeos_ash]
 import "ash/components/arc/mojom/video_protected_buffer_allocator.mojom";
@@ -64,6 +66,11 @@ interface GpuService {
   [EnableIf=enable_arc_media]
   CreateArcVideoDecodeAccelerator(
       pending_receiver<arc.mojom.VideoDecodeAccelerator> vda);
+
+  // Create a new ARC VideoDecoder and binds it to |vd|.
+  [EnableIf=enable_arc_media]
+  CreateArcVideoDecoder(
+      pending_receiver<arc.mojom.VideoDecoder> vd);
 
   // Create a new ARC VideoEncodeAccelerator and binds it to |vea|.
   [EnableIf=enable_arc_media]
