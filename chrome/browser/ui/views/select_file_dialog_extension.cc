@@ -512,7 +512,7 @@ void SelectFileDialogExtension::SelectFileWithFileManagerParams(
         this, routing_id, file_manager_url, dialog_title);
     dialog_delegate->SetModal(owner.window != nullptr);
     dialog_delegate->set_can_resize(can_resize_);
-    dialog_delegate->ShowSystemDialog(parent_window);
+    dialog_delegate->ShowSystemDialogForBrowserContext(profile_, parent_window);
   } else {
     ExtensionDialog::InitParams dialog_params(
         {kFileManagerWidth, kFileManagerHeight});
