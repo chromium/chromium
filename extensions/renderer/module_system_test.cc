@@ -262,6 +262,14 @@ v8::Local<v8::Object> ModuleSystemTestEnvironment::CreateGlobal(
   return handle_scope.Escape(object);
 }
 
+void ModuleSystemTestEnvironment::SetLazyField(
+    v8::Local<v8::Object> object,
+    const std::string& field,
+    const std::string& module_name,
+    const std::string& module_field) {
+  module_system()->SetLazyField(object, field, module_name, module_field);
+}
+
 ModuleSystemTest::ModuleSystemTest()
     : isolate_holder_(task_environment_.GetMainThreadTaskRunner(),
                       gin::IsolateHolder::IsolateType::kTest),

@@ -58,6 +58,12 @@ class ModuleSystemTestEnvironment {
   // Create an empty object in the global scope with name |name|.
   v8::Local<v8::Object> CreateGlobal(const std::string& name);
 
+  // Registers a native field in the ModuleSystem.
+  void SetLazyField(v8::Local<v8::Object> object,
+                    const std::string& field,
+                    const std::string& module_name,
+                    const std::string& module_field);
+
   void ShutdownGin();
 
   void ShutdownModuleSystem();

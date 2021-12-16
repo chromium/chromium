@@ -375,25 +375,9 @@ void ModuleSystem::OverrideNativeHandlerForTest(const std::string& name) {
 }
 
 // static
-void ModuleSystem::NativeLazyFieldGetter(
-    v8::Local<v8::Name> property,
-    const v8::PropertyCallbackInfo<v8::Value>& info) {
-  LazyFieldGetterInner(property.As<v8::String>(), info,
-                       &ModuleSystem::RequireNativeFromString);
-}
-
-// static
 void ModuleSystem::LazyFieldGetter(
     v8::Local<v8::Name> property,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
-  LazyFieldGetterInner(property.As<v8::String>(), info, &ModuleSystem::Require);
-}
-
-// static
-void ModuleSystem::LazyFieldGetterInner(
-    v8::Local<v8::String> property,
-    const v8::PropertyCallbackInfo<v8::Value>& info,
-    RequireFunction require_function) {
   CHECK(!info.Data().IsEmpty());
   CHECK(info.Data()->IsObject());
   v8::Isolate* isolate = info.GetIsolate();
@@ -439,7 +423,7 @@ void ModuleSystem::LazyFieldGetterInner(
 
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::Value> module_value;
-  if (!(module_system->*require_function)(name).ToLocal(&module_value)) {
+  if (!module_system->Require(name).ToLocal(&module_value)) {
     module_system->HandleException(try_catch);
     return;
   }
@@ -505,15 +489,6 @@ void ModuleSystem::SetLazyField(v8::Local<v8::Object> object,
                                 const std::string& field,
                                 const std::string& module_name,
                                 const std::string& module_field) {
-  SetLazyField(
-      object, field, module_name, module_field, &ModuleSystem::LazyFieldGetter);
-}
-
-void ModuleSystem::SetLazyField(v8::Local<v8::Object> object,
-                                const std::string& field,
-                                const std::string& module_name,
-                                const std::string& module_field,
-                                v8::AccessorNameGetterCallback getter) {
   CHECK(field.size() < v8::String::kMaxLength);
   CHECK(module_name.size() < v8::String::kMaxLength);
   CHECK(module_field.size() < v8::String::kMaxLength);
@@ -528,20 +503,9 @@ void ModuleSystem::SetLazyField(v8::Local<v8::Object> object,
   SetPrivateProperty(context, parameters, kModuleField,
                      ToV8StringUnsafe(GetIsolate(), module_field.c_str()));
   auto maybe = object->SetAccessor(
-      context, ToV8StringUnsafe(GetIsolate(), field.c_str()), getter, NULL,
-      parameters);
+      context, ToV8StringUnsafe(GetIsolate(), field.c_str()),
+      &ModuleSystem::LazyFieldGetter, NULL, parameters);
   CHECK(v8_helpers::IsTrue(maybe));
-}
-
-void ModuleSystem::SetNativeLazyField(v8::Local<v8::Object> object,
-                                      const std::string& field,
-                                      const std::string& module_name,
-                                      const std::string& module_field) {
-  SetLazyField(object,
-               field,
-               module_name,
-               module_field,
-               &ModuleSystem::NativeLazyFieldGetter);
 }
 
 void ModuleSystem::OnNativeBindingCreated(
