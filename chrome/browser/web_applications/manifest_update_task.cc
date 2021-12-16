@@ -21,7 +21,6 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -87,19 +86,25 @@ void HaveIconContentsChanged(
         icon_diff->diff_results |= ONE_OR_MORE_ICONS_CHANGED;
         return;
       } else {
-        if (size == kInstallIconSize) {
-          icon_diff->diff_results |= INSTALL_ICON_CHANGED;
+        // Icons that are specified in new manifest are of special interest, the
+        // rest is auto-generated.
+        bool important_icon =
+            std::find(downloaded_sizes.begin(), downloaded_sizes.end(), size) !=
+            downloaded_sizes.end();
+        if (!important_icon) {
+          icon_diff->diff_results |= GENERATED_ICON_CHANGED;
+        } else if ((icon_diff->diff_results & SINGLE_ICON_CHANGED) == 0 &&
+                   (icon_diff->diff_results & MULTIPLE_ICONS_CHANGED) == 0) {
+          icon_diff->diff_results |= SINGLE_ICON_CHANGED;
           icon_diff->before = disk_bitmap;
           icon_diff->after = downloaded_bitmap;
-        } else if (size == kLauncherIconSize) {
-          icon_diff->diff_results |= LAUNCHER_ICON_CHANGED;
-          if (icon_diff->before.drawsNothing() &&
-              icon_diff->after.drawsNothing()) {
-            icon_diff->before = disk_bitmap;
-            icon_diff->after = downloaded_bitmap;
-          }
-        } else {
-          icon_diff->diff_results |= UNIMPORTANT_ICON_CHANGED;
+        } else if (icon_diff->diff_results & SINGLE_ICON_CHANGED) {
+          icon_diff->diff_results &= ~SINGLE_ICON_CHANGED;
+          icon_diff->diff_results |= MULTIPLE_ICONS_CHANGED;
+          // The UI can only handle showing one image at a time, at the moment.
+          icon_diff->before = SkBitmap();
+          icon_diff->after = SkBitmap();
+          return;
         }
       }
     }
@@ -484,8 +489,9 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
   stage_ = Stage::kPendingAppIdentityCheck;
 
   // These calls populate the |web_application_info_| with all icon bitmap
-  // data. If this data does not match what we already have on disk, then an
-  // update is necessary.
+  // data.
+  // If this data does not match what we already have on disk, then an update
+  // is necessary.
   PopulateOtherIcons(&web_application_info_.value(), downloaded_icons_map);
   PopulateProductIcons(&web_application_info_.value(), &downloaded_icons_map);
 
@@ -523,8 +529,8 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
     return;
   }
 
-  if (!title_change && !icon_diff.requires_app_identity_check()) {
-    OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kAllowed);
+  if (icon_change && !icon_diff.supported_for_app_identity_check()) {
+    OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
     return;
   }
 
