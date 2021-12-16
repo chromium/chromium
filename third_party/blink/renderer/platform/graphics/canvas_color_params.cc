@@ -78,17 +78,13 @@ CanvasColorParams::CanvasColorParams(PredefinedColorSpace color_space,
       pixel_format_(pixel_format),
       opacity_mode_(opacity_mode) {}
 
-CanvasColorParams::CanvasColorParams(const WTF::String& color_space,
-                                     const WTF::String& pixel_format,
-                                     bool has_alpha) {
-  base::IgnoreResult(ParsePredefinedColorSpace(color_space, color_space_));
-
-  if (pixel_format == kF16CanvasPixelFormatName)
-    pixel_format_ = CanvasPixelFormat::kF16;
-
-  if (!has_alpha)
-    opacity_mode_ = kOpaque;
-}
+CanvasColorParams::CanvasColorParams(PredefinedColorSpace color_space,
+                                     CanvasPixelFormat pixel_format,
+                                     bool has_alpha)
+    : color_space_(color_space),
+      pixel_format_(pixel_format),
+      opacity_mode_(has_alpha ? OpacityMode::kNonOpaque
+                              : OpacityMode::kOpaque) {}
 
 SkColorInfo CanvasColorParams::GetSkColorInfo() const {
   return SkColorInfo(
@@ -101,15 +97,8 @@ String CanvasColorParams::GetColorSpaceAsString() const {
   return PredefinedColorSpaceName(color_space_);
 }
 
-const char* CanvasColorParams::GetPixelFormatAsString() const {
-  switch (pixel_format_) {
-    case CanvasPixelFormat::kF16:
-      return kF16CanvasPixelFormatName;
-    case CanvasPixelFormat::kUint8:
-      return kUint8CanvasPixelFormatName;
-  };
-  CHECK(false);
-  return "";
+String CanvasColorParams::GetPixelFormatAsString() const {
+  return CanvasPixelFormatName(pixel_format_);
 }
 
 SkColorType CanvasColorParams::GetSkColorType() const {

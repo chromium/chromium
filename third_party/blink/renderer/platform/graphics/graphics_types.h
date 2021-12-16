@@ -52,9 +52,9 @@ enum class PredefinedColorSpace {
   kSRGBLinear,
 };
 
-enum DataU8ColorType {
-  kRGBAColorType,
-  kN32ColorType,
+enum class CanvasPixelFormat {
+  kUint8,
+  kF16,
 };
 
 enum class ImageDataStorageFormat {
@@ -231,9 +231,7 @@ PLATFORM_EXPORT bool ParseTextBaseline(const String&, TextBaseline&);
 
 PLATFORM_EXPORT String PredefinedColorSpaceName(PredefinedColorSpace);
 
-// TODO(https://crbug.com/1274220): Remove the need for this function.
-PLATFORM_EXPORT bool ParsePredefinedColorSpace(const String&,
-                                               PredefinedColorSpace&);
+PLATFORM_EXPORT String CanvasPixelFormatName(CanvasPixelFormat);
 
 PLATFORM_EXPORT String ImageDataStorageFormatName(ImageDataStorageFormat);
 

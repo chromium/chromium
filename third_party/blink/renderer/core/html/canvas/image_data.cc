@@ -58,10 +58,6 @@ ImageData* ImageData::ValidateAndCreate(
     exception_state.ThrowTypeError("Overload resolution failed.");
     return nullptr;
   }
-  if (settings && settings->hasColorSpace()) {
-    if (!ColorSpaceNameIsValid(settings->colorSpace(), exception_state))
-      return nullptr;
-  }
 
   if (!width) {
     exception_state.ThrowDOMException(
@@ -124,8 +120,11 @@ ImageData* ImageData::ValidateAndCreate(
   PredefinedColorSpace color_space = params.default_color_space;
   ImageDataStorageFormat storage_format = ImageDataStorageFormat::kUint8;
   if (settings) {
-    if (settings->hasColorSpace())
-      ParsePredefinedColorSpace(settings->colorSpace(), color_space);
+    if (settings->hasColorSpace() &&
+        !ValidateAndConvertColorSpace(settings->colorSpace(), color_space,
+                                      exception_state)) {
+      return nullptr;
+    }
     if (settings->hasStorageFormat()) {
       switch (settings->storageFormat().AsEnum()) {
         case V8ImageDataStorageFormat::Enum::kUint8:

@@ -250,32 +250,15 @@ String PredefinedColorSpaceName(PredefinedColorSpace color_space) {
   return String();
 }
 
-bool ParsePredefinedColorSpace(const String& s, PredefinedColorSpace& format) {
-  if (s == "srgb") {
-    format = PredefinedColorSpace::kSRGB;
-    return true;
+String CanvasPixelFormatName(CanvasPixelFormat pixel_format) {
+  switch (pixel_format) {
+    case CanvasPixelFormat::kUint8:
+      return "uint8";
+    case CanvasPixelFormat::kF16:
+      return "float16";
   }
-  if (s == "rec2020") {
-    format = PredefinedColorSpace::kRec2020;
-    return true;
-  }
-  if (s == "display-p3") {
-    format = PredefinedColorSpace::kP3;
-    return true;
-  }
-  if (s == "rec2100-hlg") {
-    format = PredefinedColorSpace::kRec2100HLG;
-    return true;
-  }
-  if (s == "rec2100-pq") {
-    format = PredefinedColorSpace::kRec2100PQ;
-    return true;
-  }
-  if (s == "srgb-linear") {
-    format = PredefinedColorSpace::kSRGBLinear;
-    return true;
-  }
-  return false;
+  NOTREACHED();
+  return String();
 }
 
 }  // namespace blink

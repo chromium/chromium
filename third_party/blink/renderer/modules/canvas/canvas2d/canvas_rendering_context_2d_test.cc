@@ -983,15 +983,15 @@ static void TestDrawSingleHighBitDepthPNGOnCanvas(
 }
 
 static void TestDrawHighBitDepthPNGsOnWideGamutCanvas(
-    String canvas_color_space,
+    PredefinedColorSpace color_space,
     Document& document,
     Persistent<HTMLCanvasElement> canvas,
     ScriptState* script_state) {
   // Prepare the wide gamut context with the given color space.
   CanvasContextCreationAttributesCore attributes;
   attributes.alpha = true;
-  attributes.color_space = canvas_color_space;
-  attributes.pixel_format = "float16";
+  attributes.color_space = color_space;
+  attributes.pixel_format = CanvasPixelFormat::kF16;
   CanvasRenderingContext2D* context = static_cast<CanvasRenderingContext2D*>(
       canvas->GetCanvasRenderingContext("2d", attributes));
 
@@ -1007,7 +1007,7 @@ static void TestDrawHighBitDepthPNGsOnWideGamutCanvas(
   ImageDataSettings* color_setting = ImageDataSettings::Create();
   color_setting->setStorageFormat(
       ImageDataStorageFormatName(ImageDataStorageFormat::kFloat32));
-  color_setting->setColorSpace(canvas_color_space);
+  color_setting->setColorSpace(PredefinedColorSpaceName(color_space));
   for (auto interlace : interlace_status) {
     for (auto color_profile : color_profiles) {
       for (auto alpha : alpha_status) {
@@ -1028,14 +1028,14 @@ static void TestDrawHighBitDepthPNGsOnWideGamutCanvas(
 
 TEST_P(CanvasRenderingContext2DTest, DrawHighBitDepthPngOnP3Canvas) {
   TestDrawHighBitDepthPNGsOnWideGamutCanvas(
-      "display-p3", GetDocument(),
+      PredefinedColorSpace::kP3, GetDocument(),
       Persistent<HTMLCanvasElement>(CanvasElement()), GetScriptState());
 }
 
 TEST_P(CanvasRenderingContext2DTest, DrawHighBitDepthPngOnRec2020Canvas) {
   TestDrawHighBitDepthPNGsOnWideGamutCanvas(
-      "rec2020", GetDocument(), Persistent<HTMLCanvasElement>(CanvasElement()),
-      GetScriptState());
+      PredefinedColorSpace::kRec2020, GetDocument(),
+      Persistent<HTMLCanvasElement>(CanvasElement()), GetScriptState());
 }
 
 // The color settings of the surface of the canvas always remaines loyal to the
@@ -1069,7 +1069,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
       ImageDataStorageFormat::kFloat32,
   };
 
-  PredefinedColorSpace canvas_color_spaces[] = {
+  PredefinedColorSpace predefined_color_spaces[] = {
       PredefinedColorSpace::kSRGB,
       PredefinedColorSpace::kSRGB,
       PredefinedColorSpace::kRec2020,
@@ -1082,11 +1082,6 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
       CanvasPixelFormat::kF16,
       CanvasPixelFormat::kF16,
   };
-
-  String canvas_pixel_format_names[] = {
-      kUint8CanvasPixelFormatName, kF16CanvasPixelFormatName,
-      kF16CanvasPixelFormatName, kF16CanvasPixelFormatName,
-      kF16CanvasPixelFormatName};
 
   // Source pixels in RGBA32
   uint8_t u8_pixels[] = {255, 0,   0,   255,  // Red
@@ -1148,7 +1143,7 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
       unsigned k = static_cast<unsigned>(canvas_colorspace_setting);
       ImageDataSettings* canvas_color_setting = ImageDataSettings::Create();
       canvas_color_setting->setColorSpace(
-          PredefinedColorSpaceName(canvas_color_spaces[k]));
+          PredefinedColorSpaceName(predefined_color_spaces[k]));
       switch (canvas_pixel_formats[k]) {
         case CanvasPixelFormat::kUint8:
           canvas_color_setting->setStorageFormat(
@@ -1169,15 +1164,15 @@ void TestPutImageDataOnCanvasWithColorSpaceSettings(
               ConvertPixelsToColorSpaceAndPixelFormatForTest(
                   data_array->BaseAddress(), data_length,
                   image_data_color_spaces[i], image_data_storage_formats[j],
-                  canvas_color_spaces[k], canvas_pixel_formats[k],
+                  predefined_color_spaces[k], canvas_pixel_formats[k],
                   pixels_converted_manually, kPixelFormat_ffff));
 
       // Create a canvas and call putImageData and getImageData to make sure
       // the conversion is done correctly.
       CanvasContextCreationAttributesCore attributes;
       attributes.alpha = true;
-      attributes.color_space = PredefinedColorSpaceName(canvas_color_spaces[k]);
-      attributes.pixel_format = canvas_pixel_format_names[k];
+      attributes.color_space = predefined_color_spaces[k];
+      attributes.pixel_format = canvas_pixel_formats[k];
       CanvasRenderingContext2D* context =
           static_cast<CanvasRenderingContext2D*>(
               canvas_element.GetCanvasRenderingContext("2d", attributes));

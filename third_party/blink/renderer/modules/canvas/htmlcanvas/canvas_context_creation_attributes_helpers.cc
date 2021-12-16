@@ -15,11 +15,12 @@ bool ToCanvasContextCreationAttributes(
     const CanvasContextCreationAttributesModule* attrs,
     CanvasContextCreationAttributesCore& result,
     ExceptionState& exception_state) {
-  if (!ColorSpaceNameIsValid(attrs->colorSpace(), exception_state))
-    return false;
   result.alpha = attrs->alpha();
   result.antialias = attrs->antialias();
-  result.color_space = attrs->colorSpace();
+  if (!ValidateAndConvertColorSpace(attrs->colorSpace(), result.color_space,
+                                    exception_state)) {
+    return false;
+  }
   result.depth = attrs->depth();
   result.fail_if_major_performance_caveat =
       attrs->failIfMajorPerformanceCaveat();
@@ -29,7 +30,14 @@ bool ToCanvasContextCreationAttributes(
 #else
   result.desynchronized = attrs->desynchronized();
 #endif
-  result.pixel_format = attrs->pixelFormat();
+  switch (attrs->pixelFormat().AsEnum()) {
+    case V8CanvasPixelFormat::Enum::kUint8:
+      result.pixel_format = CanvasPixelFormat::kUint8;
+      break;
+    case V8CanvasPixelFormat::Enum::kFloat16:
+      result.pixel_format = CanvasPixelFormat::kF16;
+      break;
+  }
   result.premultiplied_alpha = attrs->premultipliedAlpha();
   result.preserve_drawing_buffer = attrs->preserveDrawingBuffer();
   result.power_preference = attrs->powerPreference();

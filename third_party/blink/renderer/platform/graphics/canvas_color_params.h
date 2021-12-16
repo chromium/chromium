@@ -19,14 +19,6 @@ class ColorSpace;
 
 namespace blink {
 
-enum class CanvasPixelFormat {
-  kUint8,
-  kF16,
-};
-
-constexpr const char* kUint8CanvasPixelFormatName = "uint8";
-constexpr const char* kF16CanvasPixelFormatName = "float16";
-
 // Return the SkColorSpace for the specified |color_space|.
 sk_sp<SkColorSpace> PLATFORM_EXPORT
 PredefinedColorSpaceToSkColorSpace(PredefinedColorSpace color_space);
@@ -42,16 +34,14 @@ class PLATFORM_EXPORT CanvasColorParams {
   // The default constructor will create an output-blended 8-bit surface.
   CanvasColorParams();
   CanvasColorParams(PredefinedColorSpace, CanvasPixelFormat, OpacityMode);
-  CanvasColorParams(const WTF::String& color_space,
-                    const WTF::String& pixel_format,
-                    bool has_alpha);
+  CanvasColorParams(PredefinedColorSpace, CanvasPixelFormat, bool has_alpha);
 
   PredefinedColorSpace ColorSpace() const { return color_space_; }
   CanvasPixelFormat PixelFormat() const { return pixel_format_; }
   OpacityMode GetOpacityMode() const { return opacity_mode_; }
 
   String GetColorSpaceAsString() const;
-  const char* GetPixelFormatAsString() const;
+  String GetPixelFormatAsString() const;
 
   SkColorInfo GetSkColorInfo() const;
 
