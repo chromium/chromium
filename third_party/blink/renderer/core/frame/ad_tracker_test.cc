@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -352,35 +352,35 @@ TEST_F(AdTrackerTest, AsyncTagging) {
   EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
 
   // Create a fake task void*.
-  probe::AsyncTaskId async_task;
+  probe::AsyncTaskContext async_task_context;
 
   // Create an async task while ad script is running.
-  ad_tracker_->DidCreateAsyncTask(&async_task);
+  ad_tracker_->DidCreateAsyncTask(&async_task_context);
 
   // Finish executing the ad script.
   DidExecuteScript();
   EXPECT_FALSE(AnyExecutingScriptsTaggedAsAdResource());
 
   // Start and stop the async task created by the ad script.
-  ad_tracker_->DidStartAsyncTask(&async_task);
+  ad_tracker_->DidStartAsyncTask(&async_task_context);
   EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
-  ad_tracker_->DidFinishAsyncTask(&async_task);
+  ad_tracker_->DidFinishAsyncTask(&async_task_context);
   EXPECT_FALSE(AnyExecutingScriptsTaggedAsAdResource());
 
   // Do it again.
-  ad_tracker_->DidStartAsyncTask(&async_task);
+  ad_tracker_->DidStartAsyncTask(&async_task_context);
   EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
-  ad_tracker_->DidFinishAsyncTask(&async_task);
+  ad_tracker_->DidFinishAsyncTask(&async_task_context);
   EXPECT_FALSE(AnyExecutingScriptsTaggedAsAdResource());
 
   // Call the task recursively.
-  ad_tracker_->DidStartAsyncTask(&async_task);
+  ad_tracker_->DidStartAsyncTask(&async_task_context);
   EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
-  ad_tracker_->DidStartAsyncTask(&async_task);
+  ad_tracker_->DidStartAsyncTask(&async_task_context);
   EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
-  ad_tracker_->DidFinishAsyncTask(&async_task);
+  ad_tracker_->DidFinishAsyncTask(&async_task_context);
   EXPECT_TRUE(AnyExecutingScriptsTaggedAsAdResource());
-  ad_tracker_->DidFinishAsyncTask(&async_task);
+  ad_tracker_->DidFinishAsyncTask(&async_task_context);
   EXPECT_FALSE(AnyExecutingScriptsTaggedAsAdResource());
 }
 

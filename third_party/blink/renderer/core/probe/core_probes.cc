@@ -30,31 +30,25 @@
 
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 
+#include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
 namespace probe {
 
 namespace {
-void* AsyncId(AsyncTaskId* task) {
+void* AsyncId(AsyncTaskContext* task_context) {
   // Blink uses odd ids for network requests and even ids for everything else.
   // We should make all of them even before reporting to V8 to avoid collisions
   // with internal V8 async events.
-  return reinterpret_cast<void*>(reinterpret_cast<intptr_t>(task) << 1);
+  return reinterpret_cast<void*>(reinterpret_cast<intptr_t>(task_context) << 1);
 }
-
-void AsyncTaskCanceled(v8::Isolate* isolate, AsyncTaskId* task) {
-  if (ThreadDebugger* debugger = ThreadDebugger::From(isolate))
-    debugger->AsyncTaskCanceled(AsyncId(task));
-}
-
 }  // namespace
 
 base::TimeTicks ProbeBase::CaptureStartTime() const {
@@ -75,97 +69,48 @@ base::TimeDelta ProbeBase::Duration() const {
 }
 
 AsyncTask::AsyncTask(ExecutionContext* context,
-                     AsyncTaskId* task,
+                     AsyncTaskContext* task_context,
                      const char* step,
                      bool enabled,
                      AdTrackingType ad_tracking_type)
     : debugger_(enabled && context ? ThreadDebugger::From(context->GetIsolate())
                                    : nullptr),
-      task_(task),
+      task_context_(task_context),
       recurring_(step),
-      tracing_(!!task->GetTraceId()),
+      tracing_(!!task_context->GetTraceId()),
       ad_tracker_(enabled && ad_tracking_type == AdTrackingType::kReport
                       ? AdTracker::FromExecutionContext(context)
                       : nullptr) {
-  if (tracing_) {
-    TRACE_EVENT_BEGIN("blink", "AsyncTask Run",
-                      [&](perfetto::EventContext ctx) {
-                        ctx.event()->add_flow_ids(task->GetTraceId().value());
-                      });
-  }
-  if (debugger_)
-    debugger_->AsyncTaskStarted(AsyncId(task_));
-
-  if (ad_tracker_)
-    ad_tracker_->DidStartAsyncTask(task_);
-}
-
-AsyncTask::AsyncTask(ExecutionContext* execution_context,
-                     AsyncTaskContext* async_context,
-                     const char* step,
-                     bool enabled,
-                     AdTrackingType ad_tracking_type)
-    : AsyncTask(execution_context,
-                &async_context->async_task_id_,
-                step,
-                enabled,
-                ad_tracking_type) {
-  // TODO(crbug.com/1275875): Verify that `async_context` was scheduled, but
+  // TODO(crbug.com/1275875): Verify that `task_context` was scheduled, but
   // not yet canceled. Currently we don't have enough confidence that such
   // a CHECK wouldn't break blink.
+
+  if (tracing_) {
+    TRACE_EVENT_BEGIN(
+        "blink", "AsyncTask Run", [&](perfetto::EventContext ctx) {
+          ctx.event()->add_flow_ids(task_context->GetTraceId().value());
+        });
+  }
+  if (debugger_)
+    debugger_->AsyncTaskStarted(AsyncId(task_context));
+
+  if (ad_tracker_)
+    ad_tracker_->DidStartAsyncTask(task_context);
 }
 
 AsyncTask::~AsyncTask() {
   if (debugger_) {
-    debugger_->AsyncTaskFinished(AsyncId(task_));
+    debugger_->AsyncTaskFinished(AsyncId(task_context_));
     if (!recurring_)
-      debugger_->AsyncTaskCanceled(AsyncId(task_));
+      debugger_->AsyncTaskCanceled(AsyncId(task_context_));
   }
 
   if (ad_tracker_)
-    ad_tracker_->DidFinishAsyncTask(task_);
+    ad_tracker_->DidFinishAsyncTask(task_context_);
 
   if (tracing_) {
     TRACE_EVENT_END("blink");  // "AsyncTask Run"
   }
-}
-
-void AsyncTaskScheduled(ExecutionContext* context,
-                        const StringView& name,
-                        AsyncTaskId* task) {
-  uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
-  task->SetTraceId(trace_id);
-  TRACE_EVENT("blink", "AsyncTask Scheduled", [&](perfetto::EventContext ctx) {
-    ctx.event()->add_flow_ids(trace_id);
-  });
-
-  if (!context)
-    return;
-
-  if (ThreadDebugger* debugger = ThreadDebugger::From(context->GetIsolate()))
-    debugger->AsyncTaskScheduled(name, AsyncId(task), true);
-
-  blink::AdTracker* ad_tracker = AdTracker::FromExecutionContext(context);
-  if (ad_tracker)
-    ad_tracker->DidCreateAsyncTask(task);
-}
-
-void AsyncTaskScheduledBreakable(ExecutionContext* context,
-                                 const char* name,
-                                 AsyncTaskId* task) {
-  AsyncTaskScheduled(context, name, task);
-  BreakableLocation(context, name);
-}
-
-void AsyncTaskCanceled(ExecutionContext* context, AsyncTaskId* task) {
-  AsyncTaskCanceled(context ? context->GetIsolate() : nullptr, task);
-}
-
-void AsyncTaskCanceledBreakable(ExecutionContext* context,
-                                const char* name,
-                                AsyncTaskId* task) {
-  AsyncTaskCanceled(context, task);
-  BreakableLocation(context, name);
 }
 
 void AllAsyncTasksCanceled(ExecutionContext* context) {
@@ -185,12 +130,27 @@ void AsyncTaskContext::Schedule(ExecutionContext* context,
   // scheduled or has already been canceled. Currently we don't have enough
   // confidence that such a CHECK wouldn't break blink.
   isolate_ = context ? context->GetIsolate() : nullptr;
-  AsyncTaskScheduled(context, name, &async_task_id_);
+
+  uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
+  SetTraceId(trace_id);
+  TRACE_EVENT("blink", "AsyncTask Scheduled", [&](perfetto::EventContext ctx) {
+    ctx.event()->add_flow_ids(trace_id);
+  });
+
+  if (!context)
+    return;
+
+  if (ThreadDebugger* debugger = ThreadDebugger::From(context->GetIsolate()))
+    debugger->AsyncTaskScheduled(name, AsyncId(this), true);
+
+  blink::AdTracker* ad_tracker = AdTracker::FromExecutionContext(context);
+  if (ad_tracker)
+    ad_tracker->DidCreateAsyncTask(this);
 }
 
 void AsyncTaskContext::Cancel() {
   if (ThreadDebugger* debugger = ThreadDebugger::From(isolate_))
-    debugger->AsyncTaskCanceled(AsyncId(&async_task_id_));
+    debugger->AsyncTaskCanceled(AsyncId(this));
 }
 
 }  // namespace probe

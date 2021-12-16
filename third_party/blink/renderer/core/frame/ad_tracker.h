@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/feature_list.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
@@ -25,6 +25,7 @@ class LocalFrame;
 enum class ResourceType : uint8_t;
 
 namespace probe {
+class AsyncTaskContext;
 class CallFunction;
 class ExecuteScript;
 }  // namespace probe
@@ -69,13 +70,13 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
 
   // Called when an async task is created. Check at this point for ad script on
   // the stack and annotate the task if so.
-  void DidCreateAsyncTask(probe::AsyncTaskId* task);
+  void DidCreateAsyncTask(probe::AsyncTaskContext* task_context);
 
   // Called when an async task is eventually run.
-  void DidStartAsyncTask(probe::AsyncTaskId* task);
+  void DidStartAsyncTask(probe::AsyncTaskContext* task_context);
 
   // Called when the task has finished running.
-  void DidFinishAsyncTask(probe::AsyncTaskId* task);
+  void DidFinishAsyncTask(probe::AsyncTaskContext* task_context);
 
   // Returns true if any script in the pseudo call stack has previously been
   // identified as an ad resource, if the current ExecutionContext is a known ad

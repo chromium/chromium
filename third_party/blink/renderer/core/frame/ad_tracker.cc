@@ -228,30 +228,30 @@ bool AdTracker::CalculateIfAdSubresource(
   return known_ad;
 }
 
-void AdTracker::DidCreateAsyncTask(probe::AsyncTaskId* task) {
-  DCHECK(task);
+void AdTracker::DidCreateAsyncTask(probe::AsyncTaskContext* task_context) {
+  DCHECK(task_context);
   if (!async_stack_enabled_)
     return;
 
   if (IsAdScriptInStack(StackType::kBottomAndTop))
-    task->SetAdTask();
+    task_context->SetAdTask();
 }
 
-void AdTracker::DidStartAsyncTask(probe::AsyncTaskId* task) {
-  DCHECK(task);
+void AdTracker::DidStartAsyncTask(probe::AsyncTaskContext* task_context) {
+  DCHECK(task_context);
   if (!async_stack_enabled_)
     return;
 
-  if (task->IsAdTask())
+  if (task_context->IsAdTask())
     running_ad_async_tasks_ += 1;
 }
 
-void AdTracker::DidFinishAsyncTask(probe::AsyncTaskId* task) {
-  DCHECK(task);
+void AdTracker::DidFinishAsyncTask(probe::AsyncTaskContext* task_context) {
+  DCHECK(task_context);
   if (!async_stack_enabled_)
     return;
 
-  if (task->IsAdTask())
+  if (task_context->IsAdTask())
     running_ad_async_tasks_ -= 1;
 }
 

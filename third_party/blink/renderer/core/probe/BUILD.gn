@@ -38,7 +38,6 @@ source_set("generated") {
 blink_core_sources("probe") {
   sources = [
     "async_task_context.h",
-    "async_task_id.h",
     "core_probes.cc",
     "core_probes.h",
   ]
