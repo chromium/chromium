@@ -777,6 +777,102 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram base="true" name="CompositorLatency" units="microseconds"
+    expires_after="2022-05-22">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the duration of various stages in the pipeline as a single frame goes
+    through the various stages in the compositor. This is reported for frames
+    that went through all the compositor stages in chromium, and was presented
+    to the user.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram base="true" name="CompositorLatency.CompositorOnlyFrame"
+    units="microseconds" expires_after="2022-04-17">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the duration of various stages in the pipeline as a single frame goes
+    through the various stages in the compositor in the cases that there is no
+    damage from main thread.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram
+    name="CompositorLatency.Diagnostic.PresentationTimeDeltaFromDeadline"
+    units="ms" expires_after="M87">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
+  <owner>behdadb@chromium.org</owner>
+  <owner>sadrul@chromium.org</owner>
+  <summary>
+    For the compositor pipeline, measures how far the presentation time of a
+    compositor frame is from the frame deadline (i.e. vsync time).
+  </summary>
+</histogram>
+
+<histogram base="true" name="CompositorLatency.DroppedFrame"
+    units="microseconds" expires_after="2022-04-24">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the duration of various stages in the pipeline as a single frame goes
+    through the various stages in the compositor. This is reported for frames
+    that the user did not see: this includes frames that are dropped in various
+    stages inside chromium, or even frames that went through all stages in
+    chromium, but ultimately was not presented to the user.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram base="true" name="CompositorLatency.MissedDeadlineFrame"
+    units="microseconds" expires_after="2022-06-12">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the duration of various stages in the pipeline as a single frame goes
+    through the various stages in the compositor. This is reported for frames
+    that went through all the compositor stages in chromium, and was presented
+    to the user, but were delayed and missed their deadline.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="CompositorLatency.Type" enum="FrameReportType"
+    expires_after="2022-06-12">
+  <owner>sadrul@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Whether frame is dropped or presented meeting or missing the deadline or is
+    a compositor only frame.
+  </summary>
+</histogram>
+
 <histogram name="Graphics.PresentationTimestamp.InvalidBeforeSwap" units="ms"
     expires_after="2022-05-01">
   <owner>sadrul@chromium.org</owner>
