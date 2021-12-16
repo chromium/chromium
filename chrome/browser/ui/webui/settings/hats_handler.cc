@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -87,6 +88,15 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
         /*require_same_origin=*/true);
   } else if (interaction == TrustSafetyInteraction::RAN_SAFETY_CHECK ||
              interaction == TrustSafetyInteraction::USED_PRIVACY_CARD) {
+    // The control group for the Privacy guide HaTS experiment will need to see
+    // either safety check or the privacy page to be eligible and have never
+    // seen privacy guide.
+    if (features::kHappinessTrackingSurveysForDesktopSettingsPrivacyNoReview
+            .Get() &&
+        Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
+            prefs::kPrivacyGuideViewed)) {
+      return;
+    }
     // If the privacy settings survey is explicitly targeting users who have not
     // viewed the Privacy Sandbox page, and this user has viewed the page, do
     // not attempt to show the privacy settings survey.

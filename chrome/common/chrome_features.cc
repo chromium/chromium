@@ -527,6 +527,10 @@ const base::FeatureParam<bool>
     kHappinessTrackingSurveysForDesktopSettingsPrivacyNoSandbox{
         &kHappinessTrackingSurveysForDesktopSettingsPrivacy, "no-sandbox",
         false};
+const base::FeatureParam<bool>
+    kHappinessTrackingSurveysForDesktopSettingsPrivacyNoReview{
+        &kHappinessTrackingSurveysForDesktopSettingsPrivacy, "no-review",
+        false};
 const base::FeatureParam<base::TimeDelta>
     kHappinessTrackingSurveysForDesktopSettingsPrivacyTime{
         &kHappinessTrackingSurveysForDesktopSettingsPrivacy, "settings-time",
