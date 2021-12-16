@@ -9,32 +9,6 @@
 
 namespace web {
 
-class SerializableUserDataImpl : public SerializableUserData {
- public:
-  SerializableUserDataImpl();
-
-  SerializableUserDataImpl(const SerializableUserDataImpl&) = delete;
-  SerializableUserDataImpl& operator=(const SerializableUserDataImpl&) = delete;
-
-  ~SerializableUserDataImpl() override;
-
-  // Constructor taking the NSDictionary holding the serializable data.
-  explicit SerializableUserDataImpl(
-      NSDictionary<NSString*, id<NSCoding>>* data);
-
-  // SerializableUserData:
-  void Encode(NSCoder* coder) override;
-  void Decode(NSCoder* coder) override;
-
-  // Returns the serializable data.
-  NSDictionary<NSString*, id<NSCoding>>* data() { return data_; }
-
- private:
-  // The dictionary passed on initialization.  After calling Decode(), this will
-  // contain the data that is decoded from the NSCoder.
-  NSDictionary<NSString*, id<NSCoding>>* data_;
-};
-
 class SerializableUserDataManagerImpl : public SerializableUserDataManager {
  public:
   SerializableUserDataManagerImpl();
@@ -49,13 +23,12 @@ class SerializableUserDataManagerImpl : public SerializableUserDataManager {
   // SerializableUserDataManager:
   void AddSerializableData(id<NSCoding> data, NSString* key) override;
   id<NSCoding> GetValueForSerializationKey(NSString* key) override;
-  std::unique_ptr<SerializableUserData> CreateSerializableUserData()
-      const override;
-  void AddSerializableUserData(SerializableUserData* data) override;
+  CRWSessionUserData* GetUserDataForSession() const override;
+  void SetUserDataFromSession(CRWSessionUserData* data) override;
 
  private:
-  // The dictionary that stores serializable user data.
-  NSMutableDictionary<NSString*, id<NSCoding>>* data_;
+  // The object storing the user data.
+  __strong CRWSessionUserData* data_;
 };
 
 }  // namespace web

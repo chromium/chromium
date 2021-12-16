@@ -5,6 +5,7 @@
 #import "ios/web/public/session/serializable_user_data_manager.h"
 
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/session/crw_session_user_data.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 
@@ -39,13 +40,12 @@ TEST_F(SerializableUserDataManagerTest, SetAndReadData) {
 TEST_F(SerializableUserDataManagerTest, EncodeDecode) {
   // Create a SerializableUserData instance for the test data.
   manager()->AddSerializableData(kTestUserData, kTestUserDataKey);
-  std::unique_ptr<web::SerializableUserData> user_data =
-      manager()->CreateSerializableUserData();
+  CRWSessionUserData* user_data = manager()->GetUserDataForSession();
 
   // Archive the serializable user data.
   NSKeyedArchiver* archiver =
       [[NSKeyedArchiver alloc] initRequiringSecureCoding:NO];
-  user_data->Encode(archiver);
+  [archiver encodeObject:user_data forKey:NSKeyedArchiveRootObjectKey];
   [archiver finishEncoding];
   NSData* data = [archiver encodedData];
 
@@ -53,15 +53,14 @@ TEST_F(SerializableUserDataManagerTest, EncodeDecode) {
   NSKeyedUnarchiver* unarchiver =
       [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
   unarchiver.requiresSecureCoding = NO;
-  std::unique_ptr<web::SerializableUserData> decoded_data =
-      web::SerializableUserData::Create();
-  decoded_data->Decode(unarchiver);
+  CRWSessionUserData* decoded_data =
+      [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
 
   // Add the decoded user data to a new WebState and verify its contents.
   web::FakeWebState decoded_web_state;
   web::SerializableUserDataManager* decoded_manager =
       web::SerializableUserDataManager::FromWebState(&decoded_web_state);
-  decoded_manager->AddSerializableUserData(decoded_data.get());
+  decoded_manager->SetUserDataFromSession(decoded_data);
   id decoded_value =
       decoded_manager->GetValueForSerializationKey(kTestUserDataKey);
   EXPECT_NSEQ(decoded_value, kTestUserData);
@@ -76,18 +75,16 @@ TEST_F(SerializableUserDataManagerTest, DecodeNoData) {
   [archiver finishEncoding];
   NSData* data = [archiver encodedData];
 
-  std::unique_ptr<web::SerializableUserData> user_data =
-      web::SerializableUserData::Create();
-
   NSKeyedUnarchiver* unarchiver =
       [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
   unarchiver.requiresSecureCoding = NO;
-  user_data->Decode(unarchiver);
+  CRWSessionUserData* user_data =
+      [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
 
   web::FakeWebState web_state;
   web::SerializableUserDataManager* user_data_manager =
       web::SerializableUserDataManager::FromWebState(&web_state);
-  user_data_manager->AddSerializableUserData(user_data.get());
+  user_data_manager->SetUserDataFromSession(user_data);
 
   id value = user_data_manager->GetValueForSerializationKey(kTestUserDataKey);
   EXPECT_NSEQ(nil, value);

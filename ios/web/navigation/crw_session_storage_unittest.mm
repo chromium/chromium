@@ -14,6 +14,7 @@
 #import "ios/web/navigation/serializable_user_data_manager_impl.h"
 #include "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/session/crw_navigation_item_storage.h"
+#import "ios/web/session/crw_session_user_data.h"
 #import "net/base/mac/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -26,6 +27,7 @@
 #endif
 
 namespace {
+
 // Checks for equality between the item storages in |items1| and |items2|.
 BOOL ItemStorageListsAreEqual(NSArray* items1, NSArray* items2) {
   __block BOOL items_are_equal = items1.count == items2.count;
@@ -38,16 +40,7 @@ BOOL ItemStorageListsAreEqual(NSArray* items1, NSArray* items2) {
   }];
   return items_are_equal;
 }
-// Checks for equality between |user_data1| and |user_data2|.
-BOOL UserDataAreEqual(web::SerializableUserData* user_data1,
-                      web::SerializableUserData* user_data2) {
-  web::SerializableUserDataImpl* data1 =
-      static_cast<web::SerializableUserDataImpl*>(user_data1);
-  web::SerializableUserDataImpl* data2 =
-      static_cast<web::SerializableUserDataImpl*>(user_data2);
-  return (data1 == nullptr) == (data2 == nullptr) &&
-         (!data1 || [data1->data() isEqualToDictionary:data2->data()]);
-}
+
 // Checks for equality between |session1| and |session2|.
 BOOL SessionStoragesAreEqual(CRWSessionStorage* session1,
                              CRWSessionStorage* session2) {
@@ -57,9 +50,20 @@ BOOL SessionStoragesAreEqual(CRWSessionStorage* session1,
   return ItemStorageListsAreEqual(items1, items2) &&
          session1.hasOpener == session2.hasOpener &&
          session1.lastCommittedItemIndex == session2.lastCommittedItemIndex &&
-         UserDataAreEqual(session1.userData, session2.userData) &&
-         session1.userAgentType == session2.userAgentType;
+         session1.userAgentType == session2.userAgentType &&
+         [session1.userData isEqual:session2.userData];
 }
+
+// Creates a CRWSessionUserData from an NSDictionary.
+CRWSessionUserData* SessionUserDataFromDictionary(
+    NSDictionary<NSString*, id<NSCoding>>* dictionary) {
+  CRWSessionUserData* data = [[CRWSessionUserData alloc] init];
+  for (NSString* key in dictionary) {
+    [data setObject:dictionary[key] forKey:key];
+  }
+  return data;
+}
+
 }  // namespace
 
 class CRWSessionStorageTest : public PlatformTest {
@@ -70,6 +74,8 @@ class CRWSessionStorageTest : public PlatformTest {
     session_storage_.lastCommittedItemIndex = 4;
     session_storage_.userAgentType = web::UserAgentType::DESKTOP;
     session_storage_.stableIdentifier = [[NSUUID UUID] UUIDString];
+    session_storage_.userData =
+        SessionUserDataFromDictionary(@{@"key" : @"value"});
 
     // Create an item storage.
     CRWNavigationItemStorage* item_storage =
@@ -83,12 +89,6 @@ class CRWSessionStorageTest : public PlatformTest {
         web::PageDisplayState(CGPointZero, UIEdgeInsetsZero, 0.0, 0.0, 0.0);
     item_storage.HTTPRequestHeaders = @{@"HeaderKey" : @"HeaderValue"};
     session_storage_.itemStorages = @[ item_storage ];
-
-    // Create serializable user data.
-    std::unique_ptr<web::SerializableUserDataImpl> user_data(
-        new web::SerializableUserDataImpl(
-            @{ @"key" : @"value" }));
-    [session_storage_ setSerializableUserData:std::move(user_data)];
   }
 
  protected:
@@ -139,9 +139,7 @@ TEST_F(CRWSessionStorageTest, EncodeDecodeAutomatic) {
 // Tests that unarchiving CRWSessionStorage correctly creates a fresh
 // stable identifier if missing from the serialized data.
 TEST_F(CRWSessionStorageTest, DecodeStableIdentifierMissing) {
-  std::unique_ptr<web::SerializableUserDataImpl> user_data(
-      new web::SerializableUserDataImpl(@{}));
-  [session_storage_ setSerializableUserData:std::move(user_data)];
+  session_storage_.userData = SessionUserDataFromDictionary(@{});
   session_storage_.stableIdentifier = nil;
 
   CRWSessionStorage* decoded =
@@ -154,16 +152,13 @@ TEST_F(CRWSessionStorageTest, DecodeStableIdentifierMissing) {
 // present, and that the value is cleared from the decoded object user
 // data.
 TEST_F(CRWSessionStorageTest, DecodeStableIdentifierFromTabId) {
-  std::unique_ptr<web::SerializableUserDataImpl> user_data(
-      new web::SerializableUserDataImpl(@{@"TabId" : @"tabid-identifier"}));
-  [session_storage_ setSerializableUserData:std::move(user_data)];
+  session_storage_.userData =
+      SessionUserDataFromDictionary(@{@"TabId" : @"tabid-identifier"});
   session_storage_.stableIdentifier = nil;
 
   CRWSessionStorage* decoded =
       DecodeSessionStorage(EncodeSessionStorage(session_storage_));
   EXPECT_NSEQ(decoded.stableIdentifier, @"tabid-identifier");
 
-  web::SerializableUserDataImpl* decoded_user_data =
-      static_cast<web::SerializableUserDataImpl*>(decoded.userData);
-  EXPECT_FALSE([decoded_user_data->data() objectForKey:@"TabId"]);
+  EXPECT_FALSE([decoded.userData objectForKey:@"TabId"]);
 }

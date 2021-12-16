@@ -33,7 +33,7 @@ WebStateImpl::SerializedData::SerializedData(WebStateImpl* owner,
   // Restore the serializable user data as user code may depend on accessing
   // on those values even for an unrealized WebState.
   if (session_storage_.userData) {
-    SerializableUserDataManager::FromWebState(owner_)->AddSerializableUserData(
+    SerializableUserDataManager::FromWebState(owner_)->SetUserDataFromSession(
         session_storage_.userData);
   }
 }
@@ -63,9 +63,7 @@ CRWSessionStorage* WebStateImpl::SerializedData::GetSessionStorage() const {
           const_cast<const WebStateImpl*>(owner_));
 
   if (user_data_manager) {
-    std::unique_ptr<SerializableUserData> user_data =
-        user_data_manager->CreateSerializableUserData();
-    [session_storage_ setSerializableUserData:std::move(user_data)];
+    session_storage_.userData = user_data_manager->GetUserDataForSession();
   }
 
   return session_storage_;

@@ -9,8 +9,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "ios/web/common/features.h"
 #import "ios/web/navigation/nscoder_util.h"
-#import "ios/web/navigation/serializable_user_data_manager_impl.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
+#import "ios/web/session/crw_session_user_data.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,6 +27,7 @@ NSString* const kHasOpenerKey = @"openedByDOM";
 NSString* const kLastCommittedItemIndexKey = @"lastCommittedItemIndex";
 NSString* const kUserAgentKey = @"userAgentKey";
 NSString* const kStableIdentifierKey = @"stableIdentifier";
+NSString* const kSerializedUserDataKey = @"serializedUserData";
 
 // Deprecated, used for backward compatibility.
 // TODO(crbug.com/1278308): Remove this key.
@@ -40,25 +41,7 @@ NSString* const kLastCommittedItemIndexDeprecatedKey =
 NSString* const kTabIdKey = @"TabId";
 }
 
-@interface CRWSessionStorage () {
-  // Backing object for property of same name.
-  std::unique_ptr<web::SerializableUserData> _userData;
-}
-
-@end
-
 @implementation CRWSessionStorage
-
-#pragma mark - Accessors
-
-- (web::SerializableUserData*)userData {
-  return _userData.get();
-}
-
-- (void)setSerializableUserData:
-    (std::unique_ptr<web::SerializableUserData>)userData {
-  _userData = std::move(userData);
-}
 
 #pragma mark - NSCoding
 
@@ -91,8 +74,25 @@ NSString* const kTabIdKey = @"TabId";
       _certPolicyCacheStorage = [decoder
           decodeObjectForKey:kCertificatePolicyCacheStorageDeprecatedKey];
     }
-    _userData = web::SerializableUserData::Create();
-    _userData->Decode(decoder);
+
+    id<NSCoding, NSObject> userData =
+        [decoder decodeObjectForKey:kSerializedUserDataKey];
+    if ([userData isKindOfClass:[CRWSessionUserData class]]) {
+      _userData = base::mac::ObjCCastStrict<CRWSessionUserData>(userData);
+    } else if ([userData isKindOfClass:[NSDictionary class]]) {
+      // Before M99, the user data was serialized by a C++ class that did
+      // serialize a NSDictionary<NSString*, id<NSCoding>>* directly.
+      // TODO(crbug.com/1278308): Remove this deprecated logic when we remove
+      // support for loading legacy sessions.
+      NSDictionary<NSString*, id<NSCoding>>* dictionary =
+          base::mac::ObjCCastStrict<NSDictionary>(userData);
+
+      _userData = [[CRWSessionUserData alloc] init];
+      for (NSString* key in dictionary) {
+        [_userData setObject:dictionary[key] forKey:key];
+      }
+    }
+
     if ([decoder containsValueForKey:kUserAgentKey]) {
       std::string userAgentDescription =
           web::nscoder_util::DecodeString(decoder, kUserAgentKey);
@@ -110,26 +110,13 @@ NSString* const kTabIdKey = @"TabId";
       // Before M99, the stable identifier was managed by a tab helper and
       // saved as part of the serializable user data. To support migration
       // of pre M99 session, read the data from there if not found.
-      //
-      // TODO(crbug.com/1278306): remove this cast when SerializableUserData
-      // has been removed and a simpler alternative has been put in place.
-      // For the moment the cast is safe, since SerializableUserData only has
-      // one sub-class SerializableUserDataImpl.
-      web::SerializableUserDataImpl* userDataImpl =
-          static_cast<web::SerializableUserDataImpl*>(_userData.get());
-      NSDictionary<NSString*, id<NSCoding>>* data = userDataImpl->data();
 
       // If "TabId" is set, clear it and initialise the `stableIdentifier`
       // from it (if it is a NSString and non empty, otherwise a new value
       // will be created below).
-      id<NSCoding> tabIdValue = [data objectForKey:kTabIdKey];
+      id<NSCoding> tabIdValue = [_userData objectForKey:kTabIdKey];
       if (tabIdValue) {
-        NSMutableDictionary<NSString*, id<NSCoding>>* mutableData =
-            [data mutableCopy];
-        [mutableData removeObjectForKey:kTabIdKey];
-
-        _userData = base::WrapUnique(
-            new web::SerializableUserDataImpl([mutableData copy]));
+        [_userData removeObjectForKey:kTabIdKey];
 
         // If the value is not an NSString or is empty, a random identifier
         // will be generated below.
@@ -163,8 +150,11 @@ NSString* const kTabIdKey = @"TabId";
   base::UmaHistogramCounts100000(
       "Session.WebStates.SerializedCertPolicyCacheSize",
       web::GetCertPolicyBytesEncoded() - previous_cert_policy_bytes / 1024);
-  if (_userData)
-    _userData->Encode(coder);
+
+  if (_userData) {
+    [coder encodeObject:_userData forKey:kSerializedUserDataKey];
+  }
+
   web::UserAgentType userAgentType = _userAgentType;
   web::nscoder_util::EncodeString(
       coder, kUserAgentKey, web::GetUserAgentTypeDescription(userAgentType));

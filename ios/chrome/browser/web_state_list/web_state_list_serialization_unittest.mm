@@ -31,7 +31,7 @@ std::unique_ptr<web::WebState> CreateWebStateWithSessionStorage(
     CRWSessionStorage* session_storage) {
   std::unique_ptr<web::WebState> web_state = CreateWebState();
   web::SerializableUserDataManager::FromWebState(web_state.get())
-      ->AddSerializableUserData(session_storage.userData);
+      ->SetUserDataFromSession(session_storage.userData);
   return web_state;
 }
 

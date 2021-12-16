@@ -253,6 +253,7 @@ source_set("ios_web_navigation_unittests") {
     "//ios/web/public/session",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//ios/web/session",
     "//ios/web/test:mojo_bindings",
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",

@@ -6,32 +6,12 @@
 #define IOS_WEB_PUBLIC_SESSION_SERIALIZABLE_USER_DATA_MANAGER_H_
 
 #import <Foundation/Foundation.h>
-#include <memory>
+
+@class CRWSessionUserData;
 
 namespace web {
 
 class WebState;
-
-// Class used to serialize values added to SerializableUserDataManager.
-class SerializableUserData {
- public:
-  SerializableUserData(const SerializableUserData&) = delete;
-  SerializableUserData& operator=(const SerializableUserData&) = delete;
-
-  virtual ~SerializableUserData() = default;
-
-  // Factory method.
-  static std::unique_ptr<SerializableUserData> Create();
-
-  // Encodes the data with |coder|.
-  virtual void Encode(NSCoder* coder) = 0;
-
-  // Decodes the data from |coder|.
-  virtual void Decode(NSCoder* coder) = 0;
-
- protected:
-  SerializableUserData() = default;
-};
 
 // Class that can be used to add serializable user data to a WebState.
 class SerializableUserDataManager {
@@ -55,13 +35,12 @@ class SerializableUserDataManager {
   // Returns the value that has been stored under |key|.
   virtual id<NSCoding> GetValueForSerializationKey(NSString* key) = 0;
 
-  // Creates a SerializableUserData that can be used to encode the values added
-  // to the manager.
-  virtual std::unique_ptr<SerializableUserData> CreateSerializableUserData()
-      const = 0;
+  // Returns a representation of the user data that can be serialized as
+  // part of the session serialization.
+  virtual CRWSessionUserData* GetUserDataForSession() const = 0;
 
-  // Adds the values decoded from |data| to the manager.
-  virtual void AddSerializableUserData(SerializableUserData* data) = 0;
+  // Sets the user data the serialized object read from the session.
+  virtual void SetUserDataFromSession(CRWSessionUserData* data) = 0;
 
  protected:
   SerializableUserDataManager() = default;
