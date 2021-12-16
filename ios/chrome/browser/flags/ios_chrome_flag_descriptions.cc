@@ -106,6 +106,11 @@ const char kDefaultBrowserFullscreenPromoExperimentDescription[] =
     "When enabled, will show a modified default browser fullscreen modal promo "
     "UI.";
 
+const char kAddSettingForDefaultPageModeName[] = "Let user choose default mode";
+const char kAddSettingForDefaultPageModeDescription[] =
+    "When enabled, the user can choose if they want the page in Desktop or "
+    "Mobile mode.";
+
 const char kDefaultWebViewContextMenuName[] =
     "Use the default WebKit context menus";
 const char kDefaultWebViewContextMenuDescription[] =

@@ -71,6 +71,9 @@ const base::Feature kEnableShortenedPasswordAutoFillInstruction{
     "EnableShortenedPasswordAutoFillInstruction",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kAddSettingForDefaultPageMode{
+    "DefaultRequestedMode", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsContextMenuActionsRefreshEnabled() {
   return base::FeatureList::IsEnabled(kContextMenuActionsRefresh);
 }

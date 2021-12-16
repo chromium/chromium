@@ -1086,6 +1086,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "default-mode-ua",
+    "owners": [ "gambard", "bling-flags@google.com" ],
+    "expiry_milestone": 103
+  },
+  {
     "name": "default-wkwebview-context-menu",
     "owners": [ "gambard", "bling-flags@google.com" ],
     "expiry_milestone": 100

@@ -94,6 +94,11 @@ extern const char kDcheckIsFatalDescription[];
 extern const char kDefaultBrowserFullscreenPromoExperimentName[];
 extern const char kDefaultBrowserFullscreenPromoExperimentDescription[];
 
+// Title and description for the flag that is used to let the user choose the
+// default mode (Mobile/Desktop) they would like to use when requesting a page.
+extern const char kAddSettingForDefaultPageModeName[];
+extern const char kAddSettingForDefaultPageModeDescription[];
+
 // Title and description for the flag to use default WebKit context menu in web
 // content.
 extern const char kDefaultWebViewContextMenuName[];

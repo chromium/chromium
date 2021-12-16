@@ -762,6 +762,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)},
+    {"default-mode-ua", flag_descriptions::kAddSettingForDefaultPageModeName,
+     flag_descriptions::kAddSettingForDefaultPageModeDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAddSettingForDefaultPageMode)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
