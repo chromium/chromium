@@ -17,7 +17,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/data_decoder/public/mojom/json_parser.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -77,10 +76,6 @@ class EnhancedNetworkTtsImpl : public mojom::EnhancedNetworkTts {
   // List of ServerRequest.
   using ServerRequestList = std::list<ServerRequest>;
 
-  // Create or reuse a connection to the data decoder service for safe JSON
-  // parsing.
-  data_decoder::mojom::JsonParser* GetJsonParser();
-
   // Create a URL loader for a network request with an attached API key.
   std::unique_ptr<network::SimpleURLLoader> MakeRequestLoader();
 
@@ -101,8 +96,7 @@ class EnhancedNetworkTtsImpl : public mojom::EnhancedNetworkTts {
   // indicates if this is the last response we expect.
   void OnResponseJsonParsed(const int start_index,
                             const bool is_last_request,
-                            absl::optional<base::Value> json_data,
-                            const absl::optional<std::string>& error);
+                            data_decoder::DataDecoder::ValueOrError result);
 
   // Sends the response to the |mojom::AudioDataObserver|.
   void SendResponse(mojom::TtsResponsePtr response);
@@ -128,9 +122,6 @@ class EnhancedNetworkTtsImpl : public mojom::EnhancedNetworkTts {
 
   // Url loader factory to be loaded.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // Should not be used directly; GetJsonParser() should be called instead.
-  mojo::Remote<data_decoder::mojom::JsonParser> json_parser_;
 
   mojo::Receiver<mojom::EnhancedNetworkTts> receiver_{this};
 
