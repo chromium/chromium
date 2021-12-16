@@ -41,8 +41,11 @@ constexpr char kFingerprint[] = "pinky";
 void AuthenticateAndCheckThroughHistogram(
     base::HistogramTester& histogram_tester,
     FakeBiodClient* biod) {
-  biod->SendAuthScanDone(kFingerprint, biod::SCAN_RESULT_TOO_FAST);
-  biod->SendAuthScanDone(kFingerprint, biod::SCAN_RESULT_SUCCESS);
+  biod::FingerprintMessage msg;
+  msg.set_scan_result(biod::SCAN_RESULT_TOO_FAST);
+  biod->SendAuthScanDone(kFingerprint, msg);
+  msg.set_scan_result(biod::SCAN_RESULT_SUCCESS);
+  biod->SendAuthScanDone(kFingerprint, msg);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(histogram_tester.GetAllSamples("Fingerprint.Auth.ScanResult"),
@@ -105,7 +108,9 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
   }
 
   void AuthenticateWithFingerprint() {
-    biod_->SendAuthScanDone(kFingerprint, biod::SCAN_RESULT_SUCCESS);
+    biod::FingerprintMessage msg;
+    msg.set_scan_result(biod::SCAN_RESULT_SUCCESS);
+    biod_->SendAuthScanDone(kFingerprint, msg);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -304,6 +309,8 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, BiodFailsBeforeLockScreenReady) {
 IN_PROC_BROWSER_TEST_F(FingerprintUnlockEnrollTest,
                        ExceedAttemptsAndBiodRestart) {
   ScreenLockerTester tester;
+  biod::FingerprintMessage msg;
+
   tester.Lock();
 
   LockScreen::TestApi lock_screen_test(LockScreen::Get());
@@ -319,7 +326,8 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockEnrollTest,
         lock_contents_test.GetFingerPrintState(user_manager::StubAccountId());
     EXPECT_EQ(state, FingerprintState::AVAILABLE_DEFAULT);
     // Simulate bad attempt.
-    biod_->SendAuthScanDone(kFingerprint, biod::SCAN_RESULT_TOO_FAST);
+    msg.set_scan_result(biod::SCAN_RESULT_TOO_FAST);
+    biod_->SendAuthScanDone(kFingerprint, msg);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -432,10 +440,13 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockEnrollTest, FeatureUsageMetrics) {
   tester.Lock();
 
   base::HistogramTester histogram_tester;
+  biod::FingerprintMessage msg;
 
   EXPECT_TRUE(HasStrongAuth());
-  biod_->SendAuthScanDone(kFingerprint, biod::SCAN_RESULT_TOO_FAST);
-  biod_->SendAuthScanDone(kFingerprint, biod::SCAN_RESULT_SUCCESS);
+  msg.set_scan_result(biod::SCAN_RESULT_TOO_FAST);
+  biod_->SendAuthScanDone(kFingerprint, msg);
+  msg.set_scan_result(biod::SCAN_RESULT_SUCCESS);
+  biod_->SendAuthScanDone(kFingerprint, msg);
   tester.WaitForUnlock();
   histogram_tester.ExpectBucketCount(kFingerprintSuccessHistogramName,
                                      /*success=*/1, 1);

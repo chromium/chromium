@@ -82,8 +82,9 @@ class ScreenLockerTest : public InProcessBrowserTest {
   }
 
   void AuthenticateWithFingerprint() {
-    FakeBiodClient::Get()->SendAuthScanDone(kFingerprint,
-                                            biod::SCAN_RESULT_SUCCESS);
+    biod::FingerprintMessage msg;
+    msg.set_scan_result(biod::SCAN_RESULT_SUCCESS);
+    FakeBiodClient::Get()->SendAuthScanDone(kFingerprint, msg);
     base::RunLoop().RunUntilIdle();
   }
 

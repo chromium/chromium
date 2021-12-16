@@ -3736,6 +3736,7 @@ if (!is_android && !is_fuchsia) {
         "//chromeos/dbus/attestation:attestation_proto",
         "//chromeos/dbus/authpolicy",
         "//chromeos/dbus/biod",
+        "//chromeos/dbus/biod:biod_proto",
         "//chromeos/dbus/cros_disks",
         "//chromeos/dbus/cros_disks",
         "//chromeos/dbus/cros_healthd",

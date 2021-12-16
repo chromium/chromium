@@ -52,7 +52,7 @@ class COMPONENT_EXPORT(BIOD_CLIENT) FakeBiodClient : public BiodClient {
   // is a string which represents the finger, and will be compared with all the
   // stored fingerprints.
   void SendAuthScanDone(const std::string& fingerprint,
-                        biod::ScanResult type_result);
+                        const biod::FingerprintMessage& msg);
   void SendSessionFailed();
 
   // Clears all stored and current records from the fake storage.

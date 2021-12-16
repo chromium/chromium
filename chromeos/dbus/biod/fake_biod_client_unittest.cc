@@ -15,6 +15,7 @@
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using biod::ERROR_UNABLE_TO_PROCESS;
 using biod::SCAN_RESULT_SUCCESS;
 
 namespace chromeos {
@@ -158,10 +159,12 @@ TEST_F(FakeBiodClientTest, TestAuthSessionWorkflowSingleUser) {
   task_runner_->RunUntilIdle();
   EXPECT_NE(returned_path, dbus::ObjectPath());
 
+  biod::FingerprintMessage msg;
   // Verify that by sending two attempt signals of fingerprints that have been
   // enrolled, the observer should receive two matches and zero non-matches.
-  fake_biod_client_.SendAuthScanDone(kTestFingerprint1[0], SCAN_RESULT_SUCCESS);
-  fake_biod_client_.SendAuthScanDone(kTestFingerprint2[0], SCAN_RESULT_SUCCESS);
+  msg.set_scan_result(SCAN_RESULT_SUCCESS);
+  fake_biod_client_.SendAuthScanDone(kTestFingerprint1[0], msg);
+  fake_biod_client_.SendAuthScanDone(kTestFingerprint2[0], msg);
   EXPECT_EQ(2, observer.num_matched_auth_scans_received());
   EXPECT_EQ(0, observer.num_unmatched_auth_scans_received());
 
@@ -169,8 +172,21 @@ TEST_F(FakeBiodClientTest, TestAuthSessionWorkflowSingleUser) {
   // been enrolled, the observer should receive two non-matches and zero
   // matches.
   observer.ResetAllCounts();
-  fake_biod_client_.SendAuthScanDone(kTestFingerprint3[0], SCAN_RESULT_SUCCESS);
-  fake_biod_client_.SendAuthScanDone(kTestFingerprint4[0], SCAN_RESULT_SUCCESS);
+  fake_biod_client_.SendAuthScanDone(kTestFingerprint3[0], msg);
+  fake_biod_client_.SendAuthScanDone(kTestFingerprint4[0], msg);
+  EXPECT_EQ(0, observer.num_matched_auth_scans_received());
+  EXPECT_EQ(2, observer.num_unmatched_auth_scans_received());
+
+  // Verify that by sending two attempt signals of failure during match
+  // (with enrolled finger or not), the observer should receive two
+  // non-matches and zero matches.
+  observer.ResetAllCounts();
+  // Error and ScanResult are in oneof field, so setting Error member here
+  // will automatically clear ScanResult member. For more information please
+  // check https://developers.google.com/protocol-buffers/docs/proto3#oneof
+  msg.set_error(ERROR_UNABLE_TO_PROCESS);
+  fake_biod_client_.SendAuthScanDone(kTestFingerprint1[0], msg);
+  fake_biod_client_.SendAuthScanDone(kTestFingerprint3[0], msg);
   EXPECT_EQ(0, observer.num_matched_auth_scans_received());
   EXPECT_EQ(2, observer.num_unmatched_auth_scans_received());
 }
@@ -220,9 +236,11 @@ TEST_F(FakeBiodClientTest, TestAuthenticateWorkflowMultipleUsers) {
   EXPECT_EQ(3u, record_paths_user1.size());
 
   AuthScanMatches expected_auth_scans_matches;
+  biod::FingerprintMessage msg;
   expected_auth_scans_matches[kUserOne] = {record_paths_user1[1],
                                            record_paths_user1[2]};
-  fake_biod_client_.SendAuthScanDone(kUser1Finger2[0], SCAN_RESULT_SUCCESS);
+  msg.set_scan_result(SCAN_RESULT_SUCCESS);
+  fake_biod_client_.SendAuthScanDone(kUser1Finger2[0], msg);
   EXPECT_EQ(expected_auth_scans_matches, observer.last_auth_scan_matches());
 
   // Verify that a fingerprint associated with one user and one label returns a
@@ -233,7 +251,7 @@ TEST_F(FakeBiodClientTest, TestAuthenticateWorkflowMultipleUsers) {
 
   expected_auth_scans_matches.clear();
   expected_auth_scans_matches[kUserTwo] = {record_paths_user2[0]};
-  fake_biod_client_.SendAuthScanDone(kUser2Finger1[0], SCAN_RESULT_SUCCESS);
+  fake_biod_client_.SendAuthScanDone(kUser2Finger1[0], msg);
   EXPECT_EQ(expected_auth_scans_matches, observer.last_auth_scan_matches());
 
   // Verify if two users register the same fingerprint, the matches contain
@@ -241,12 +259,20 @@ TEST_F(FakeBiodClientTest, TestAuthenticateWorkflowMultipleUsers) {
   expected_auth_scans_matches.clear();
   expected_auth_scans_matches[kUserOne] = {record_paths_user1[0]};
   expected_auth_scans_matches[kUserTwo] = {record_paths_user2[2]};
-  fake_biod_client_.SendAuthScanDone(kUser1Finger1[0], SCAN_RESULT_SUCCESS);
+  fake_biod_client_.SendAuthScanDone(kUser1Finger1[0], msg);
   EXPECT_EQ(expected_auth_scans_matches, observer.last_auth_scan_matches());
 
   // Verify if a unregistered finger is scanned, the matches are empty.
   expected_auth_scans_matches.clear();
-  fake_biod_client_.SendAuthScanDone("Unregistered", SCAN_RESULT_SUCCESS);
+  fake_biod_client_.SendAuthScanDone("Unregistered", msg);
+  EXPECT_EQ(expected_auth_scans_matches, observer.last_auth_scan_matches());
+
+  // Verify if error is returned, the matches are empty.
+  // Error and ScanResult are in oneof field, so setting Error member here
+  // will automatically clear ScanResult member. For more information please
+  // check https://developers.google.com/protocol-buffers/docs/proto3#oneof
+  msg.set_error(ERROR_UNABLE_TO_PROCESS);
+  fake_biod_client_.SendAuthScanDone(kUser1Finger1[0], msg);
   EXPECT_EQ(expected_auth_scans_matches, observer.last_auth_scan_matches());
 }
 
