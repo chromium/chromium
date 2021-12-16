@@ -19,12 +19,28 @@ const NewWordState = {
   WORD_TOO_LONG: 3,
 };
 
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_input/cr_input.m.js';
+import '//resources/cr_elements/icons.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import '//resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import {recordSettingChange, recordSearch, setUserActionRecorderForTesting, recordPageFocus, recordPageBlur, recordClick, recordNavigation} from '../metrics_recorder.m.js';
+import {routes} from '../os_route.m.js';
+import {GlobalScrollTargetBehavior, setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
+import '../../settings_shared_css.js';
+import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-edit-dictionary-page',
 
   behaviors: [
     I18nBehavior,
-    settings.GlobalScrollTargetBehavior,
+    GlobalScrollTargetBehavior,
   ],
 
   properties: {
@@ -40,7 +56,7 @@ Polymer({
      */
     subpageRoute: {
       type: Object,
-      value: settings.routes.OS_LANGUAGES_EDIT_DICTIONARY,
+      value: routes.OS_LANGUAGES_EDIT_DICTIONARY,
     },
 
     /** @private {!Array<string>} */
@@ -77,8 +93,7 @@ Polymer({
   /** @override */
   created() {
     this.languageSettingsPrivate_ =
-        settings.LanguagesBrowserProxyImpl.getInstance()
-            .getLanguageSettingsPrivate();
+        LanguagesBrowserProxyImpl.getInstance().getLanguageSettingsPrivate();
   },
 
   /** @override */
@@ -112,7 +127,7 @@ Polymer({
     this.newWordValue_ = '';
     if (word) {
       this.languageSettingsPrivate_.addSpellcheckWord(word);
-      settings.recordSettingChange();
+      recordSettingChange();
     }
   },
 
@@ -222,6 +237,6 @@ Polymer({
    */
   onRemoveWordTap_(e) {
     this.languageSettingsPrivate_.removeSpellcheckWord(e.model.item);
-    settings.recordSettingChange();
+    recordSettingChange();
   }
 });

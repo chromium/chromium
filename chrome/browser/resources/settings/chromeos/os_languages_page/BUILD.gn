@@ -6,30 +6,29 @@
 # TODO(crbug.com/1226913): Add the missing deps.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
   closure_flags = os_settings_closure_flags
   is_polymer3 = true
   deps = [
-    ":add_input_methods_dialog.m",
+    ":add_input_methods_dialog",
     ":add_spellcheck_languages_dialog",
-    ":change_device_language_dialog.m",
+    ":change_device_language_dialog",
     ":cr_checkbox_with_policy",
-    ":input_method_options_page.m",
-    ":input_method_util.m",
-    ":input_page.m",
+    ":input_method_options_page",
+    ":input_method_util",
+    ":input_page",
     ":languages",
     ":languages_browser_proxy",
-    ":languages_metrics_proxy.m",
+    ":languages_metrics_proxy",
     ":languages_types",
-    ":os_add_languages_dialog.m",
-    ":os_edit_dictionary_page.m",
-    ":os_languages_page_v2.m",
-    ":os_languages_section.m",
-    ":smart_inputs_page.m",
+    ":os_add_languages_dialog",
+    ":os_edit_dictionary_page",
+    ":os_languages_page_v2",
+    ":os_languages_section",
+    ":smart_inputs_page",
   ]
 }
 
@@ -72,10 +71,8 @@ js_library("languages_browser_proxy") {
   ]
 }
 
-js_library("add_input_methods_dialog.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/add_input_methods_dialog.m.js" ]
+js_library("add_input_methods_dialog") {
   deps = [ ":cr_checkbox_with_policy" ]
-  extra_deps = [ ":add_input_methods_dialog_module" ]
 }
 
 js_library("add_spellcheck_languages_dialog") {
@@ -95,8 +92,7 @@ js_library("add_spellcheck_languages_dialog") {
   ]
 }
 
-js_library("change_device_language_dialog.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/change_device_language_dialog.m.js" ]
+js_library("change_device_language_dialog") {
   deps = [
     ":languages",
     "../..:lifetime_browser_proxy",
@@ -104,7 +100,6 @@ js_library("change_device_language_dialog.m") {
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
     "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
   ]
-  extra_deps = [ ":change_device_language_dialog_module" ]
 }
 
 js_library("cr_checkbox_with_policy") {
@@ -116,8 +111,7 @@ js_library("cr_checkbox_with_policy") {
   ]
 }
 
-js_library("input_method_util.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/input_method_util.m.js" ]
+js_library("input_method_util") {
   deps = [
     ":input_method_settings",
     "..:os_route.m",
@@ -125,30 +119,26 @@ js_library("input_method_util.m") {
     "../..:router",
     "//ui/webui/resources/js:cr.m",
   ]
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("input_method_settings") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
-js_library("input_method_options_page.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/input_method_options_page.m.js" ]
+js_library("input_method_options_page") {
   deps = [
-    ":input_method_util.m",
+    ":input_method_util",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  extra_deps = [ ":input_method_options_page_module" ]
 }
 
-js_library("input_page.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/input_page.m.js" ]
+js_library("input_page") {
   deps = [
-    ":add_input_methods_dialog.m",
+    ":add_input_methods_dialog",
     ":add_spellcheck_languages_dialog",
-    ":input_method_util.m",
-    ":languages_metrics_proxy.m",
-    ":os_edit_dictionary_page.m",
+    ":input_method_util",
+    ":languages_metrics_proxy",
+    ":os_edit_dictionary_page",
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "..:route_observer_behavior",
@@ -161,19 +151,15 @@ js_library("input_page.m") {
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
-  extra_deps = [ ":input_page_module" ]
   externs_list = [ "../settings_controls_types.js" ]
 }
 
-js_library("languages_metrics_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/languages_metrics_proxy.m.js" ]
+js_library("languages_metrics_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
-  extra_deps = [ ":modulize" ]
   externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
-js_library("os_add_languages_dialog.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/os_add_languages_dialog.m.js" ]
+js_library("os_add_languages_dialog") {
   deps = [
     ":languages",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -181,11 +167,9 @@ js_library("os_add_languages_dialog.m") {
     "//ui/webui/resources/cr_elements:find_shortcut_behavior",
     "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
   ]
-  extra_deps = [ ":os_add_languages_dialog_module" ]
 }
 
-js_library("os_edit_dictionary_page.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/os_edit_dictionary_page.m.js" ]
+js_library("os_edit_dictionary_page") {
   deps = [
     ":languages_browser_proxy",
     "..:global_scroll_target_behavior",
@@ -195,14 +179,12 @@ js_library("os_edit_dictionary_page.m") {
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
   ]
-  extra_deps = [ ":os_edit_dictionary_page_module" ]
 }
 
-js_library("os_languages_page_v2.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/os_languages_page_v2.m.js" ]
+js_library("os_languages_page_v2") {
   deps = [
-    ":input_method_util.m",
-    ":languages_metrics_proxy.m",
+    ":input_method_util",
+    ":languages_metrics_proxy",
     "..:deep_linking_behavior.m",
     "..:metrics_recorder.m",
     "..:os_route.m",
@@ -219,16 +201,14 @@ js_library("os_languages_page_v2.m") {
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
-  extra_deps = [ ":os_languages_page_v2_module" ]
 }
 
-js_library("os_languages_section.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/os_languages_section.m.js" ]
+js_library("os_languages_section") {
   deps = [
-    ":input_method_options_page.m",
-    ":input_page.m",
+    ":input_method_options_page",
+    ":input_page",
     ":languages",
-    ":os_languages_page_v2.m",
+    ":os_languages_page_v2",
     "..:os_route.m",
     "../..:router",
     "//ui/webui/resources/js:assert.m",
@@ -237,11 +217,9 @@ js_library("os_languages_section.m") {
     "//ui/webui/resources/js:load_time_data.m",
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
-  extra_deps = [ ":os_languages_section_module" ]
 }
 
-js_library("smart_inputs_page.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_languages_page/smart_inputs_page.m.js" ]
+js_library("smart_inputs_page") {
   deps = [
     "..:deep_linking_behavior.m",
     "..:os_route.m",
@@ -250,137 +228,22 @@ js_library("smart_inputs_page.m") {
     "../..:router",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":smart_inputs_page_module" ]
 }
 
-group("polymer3_elements") {
-  public_deps = [
-    ":add_input_methods_dialog_module",
-    ":add_spellcheck_languages_dialog_module",
-    ":change_device_language_dialog_module",
-    ":cr_checkbox_with_policy_module",
-    ":input_method_options_page_module",
-    ":input_page_module",
-    ":modulize",
-    ":os_add_languages_dialog_module",
-    ":os_edit_dictionary_page_module",
-    ":os_languages_page_v2_module",
-    ":os_languages_section_module",
-    ":shared_style_module",
-    ":shared_vars_module",
-    ":smart_inputs_page_module",
+html_to_js("web_components") {
+  js_files = [
+    "add_input_methods_dialog.js",
+    "add_spellcheck_languages_dialog.js",
+    "change_device_language_dialog.js",
+    "cr_checkbox_with_policy.js",
+    "input_method_options_page.js",
+    "input_page.js",
+    "os_add_languages_dialog.js",
+    "os_edit_dictionary_page.js",
+    "os_languages_page_v2.js",
+    "os_languages_section.js",
+    "shared_style.js",
+    "shared_vars.js",
+    "smart_inputs_page.js",
   ]
-}
-
-polymer_modulizer("add_input_methods_dialog") {
-  js_file = "add_input_methods_dialog.js"
-  html_file = "add_input_methods_dialog.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/chromeos/os_languages_page/languages_types.html|LanguageHelper,LanguagesModel" ]
-}
-
-polymer_modulizer("add_spellcheck_languages_dialog") {
-  js_file = "add_spellcheck_languages_dialog.js"
-  html_file = "add_spellcheck_languages_dialog.html"
-  html_type = "v3-ready"
-}
-
-polymer_modulizer("change_device_language_dialog") {
-  js_file = "change_device_language_dialog.js"
-  html_file = "change_device_language_dialog.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/chromeos/os_languages_page/languages_types.html|LanguageHelper,LanguagesModel" ]
-}
-
-polymer_modulizer("cr_checkbox_with_policy") {
-  js_file = "cr_checkbox_with_policy.js"
-  html_file = "cr_checkbox_with_policy.html"
-  html_type = "v3-ready"
-}
-
-polymer_modulizer("os_add_languages_dialog") {
-  js_file = "os_add_languages_dialog.js"
-  html_file = "os_add_languages_dialog.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/chromeos/os_languages_page/languages_types.html|LanguageHelper,LanguagesModel" ]
-}
-
-polymer_modulizer("os_edit_dictionary_page") {
-  js_file = "os_edit_dictionary_page.js"
-  html_file = "os_edit_dictionary_page.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("os_languages_page_v2") {
-  js_file = "os_languages_page_v2.js"
-  html_file = "os_languages_page_v2.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/chromeos/os_languages_page/languages_types.html|LanguageHelper,LanguagesModel,LanguageState" ]
-}
-
-polymer_modulizer("os_languages_section") {
-  js_file = "os_languages_section.js"
-  html_file = "os_languages_section.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/chromeos/os_languages_page/languages_types.html|LanguageHelper,LanguagesModel" ]
-}
-
-polymer_modulizer("input_method_options_page") {
-  js_file = "input_method_options_page.js"
-  html_file = "input_method_options_page.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/chromeos/os_languages_page/languages_types.html|LanguageHelper" ]
-}
-
-polymer_modulizer("input_page") {
-  js_file = "input_page.js"
-  html_file = "input_page.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/chromeos/os_languages_page/languages_types.html|LanguageHelper,LanguagesModel,LanguageState,SpellCheckLanguageState" ]
-}
-
-polymer_modulizer("shared_style") {
-  js_file = "shared_style.m.js"
-  html_file = "shared_style.html"
-  html_type = "style-module"
-}
-
-polymer_modulizer("shared_vars") {
-  js_file = "shared_vars.m.js"
-  html_file = "shared_vars.html"
-  html_type = "custom-style"
-}
-
-polymer_modulizer("smart_inputs_page") {
-  js_file = "smart_inputs_page.js"
-  html_file = "smart_inputs_page.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "input_method_util.js",
-    "languages_metrics_proxy.js",
-  ]
-  namespace_rewrites = os_settings_namespace_rewrites
 }

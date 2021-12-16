@@ -1,101 +1,82 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared md-select">
+  h2 {
+    padding-inline-start: var(--cr-section-padding);
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="input_method_util.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../route_observer_behavior.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../prefs_behavior.html">
-<link rel="import" href="languages_types.html">
+  .dependent {
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+</style>
 
-<dom-module id="settings-input-method-options-page">
-  <template>
-    <style include="settings-shared md-select">
-      h2 {
-        padding-inline-start: var(--cr-section-padding);
-      }
-
-      .dependent {
-        padding-inline-start: var(--cr-section-indent-padding);
-      }
-    </style>
-
-    <div route-path="default">
-      <template is="dom-repeat" items="[[optionSections_]]" as="section">
-        <h2>[[section.title]]</h2>
-        <div class="list-frame">
-          <template is="dom-repeat" items="[[section.options]]" as="option">
-            <div class="list-item" actionable>
-              <div class="start" id="option-label" aria-hidden="true">
-                [[option.label]]
-              </div>
-              <template is="dom-if" if="[[isToggleButton_(option.uiType)]]">
-                <cr-toggle checked="{{option.value}}"
-                    on-click="onToggleButtonOrDropdownChange_"
-                    aria-label="[[option.label]]">
-                </cr-toggle>
+<div route-path="default">
+  <template is="dom-repeat" items="[[optionSections_]]" as="section">
+    <h2>[[section.title]]</h2>
+    <div class="list-frame">
+      <template is="dom-repeat" items="[[section.options]]" as="option">
+        <div class="list-item" actionable>
+          <div class="start" id="option-label" aria-hidden="true">
+            [[option.label]]
+          </div>
+          <template is="dom-if" if="[[isToggleButton_(option.uiType)]]">
+            <cr-toggle checked="{{option.value}}"
+                on-click="onToggleButtonOrDropdownChange_"
+                aria-label="[[option.label]]">
+            </cr-toggle>
+          </template>
+          <template is="dom-if" if="[[isDropdown_(option.uiType)]]">
+            <select class="md-select" value="{{option.value::change}}"
+                on-change="onToggleButtonOrDropdownChange_"
+                aria-label="[[option.label]]">
+              <template is="dom-repeat" items="[[option.menuItems]]">
+                <option selected="[[item.selected]]" value="[[item.value]]">
+                  [[item.label]]
+                </option>
               </template>
-              <template is="dom-if" if="[[isDropdown_(option.uiType)]]">
-                <select class="md-select" value="{{option.value::change}}"
-                    on-change="onToggleButtonOrDropdownChange_"
-                    aria-label="[[option.label]]">
-                  <template is="dom-repeat" items="[[option.menuItems]]">
-                    <option selected="[[item.selected]]" value="[[item.value]]">
-                      [[item.label]]
-                    </option>
-                  </template>
-                </select>
-              </template>
-              <template is="dom-if" if="[[isLink_(option.uiType)]]">
-                <cr-icon-button iron-icon="cr:arrow-right"
-                    on-click="navigateToOtherPageInSettings_"
-                    aria-label="[[option.label]]" role="link">
-                </cr-icon-button>
-              </template>
-            </div>
-            <!--TODO(b/189280771): Reduce this duplication.-->
-            <template is="dom-repeat" items="[[option.dependentOptions]]"
-                as="dependant" id="dependent-settings">
-              <div class="list-item" actionable>
-                <div class="dependent start" aria-hidden="true">
-                  [[dependant.label]]
-                </div>
-                <template is="dom-if"
-                    if="[[isToggleButton_(dependant.uiType)]]">
-                  <cr-toggle checked="{{dependant.value}}"
-                      on-click="onToggleButtonOrDropdownChange_"
-                      aria-label="[[dependant.label]]"
-                      disabled="[[dependentOptionsDisabled_(option.value)]]">
-                  </cr-toggle>
-                </template>
-                <template is="dom-if" if="[[isDropdown_(dependant.uiType)]]">
-                  <select class="md-select" value="{{dependant.value::change}}"
-                      on-change="onToggleButtonOrDropdownChange_"
-                      aria-label="[[dependant.label]]"">
-                    <template is="dom-repeat" items="[[dependant.menuItems]]">
-                      <option selected="[[item.selected]]"
-                        value="[[item.value]]">
-                        [[item.label]]
-                      </option>
-                    </template>
-                  </select>
-                </template>
-                <template is="dom-if" if="[[isLink_(dependant.uiType)]]">
-                  <cr-icon-button class="icon-external"
-                      on-click="onExternalLinkClick_"
-                      aria-label="[[dependant.label]]">
-                  </cr-icon-button>
-                </template>
-              </div>
-            </template>
+            </select>
+          </template>
+          <template is="dom-if" if="[[isLink_(option.uiType)]]">
+            <cr-icon-button iron-icon="cr:arrow-right"
+                on-click="navigateToOtherPageInSettings_"
+                aria-label="[[option.label]]" role="link">
+            </cr-icon-button>
           </template>
         </div>
+        <!--TODO(b/189280771): Reduce this duplication.-->
+        <template is="dom-repeat" items="[[option.dependentOptions]]"
+            as="dependant" id="dependent-settings">
+          <div class="list-item" actionable>
+            <div class="dependent start" aria-hidden="true">
+              [[dependant.label]]
+            </div>
+            <template is="dom-if"
+                if="[[isToggleButton_(dependant.uiType)]]">
+              <cr-toggle checked="{{dependant.value}}"
+                  on-click="onToggleButtonOrDropdownChange_"
+                  aria-label="[[dependant.label]]"
+                  disabled="[[dependentOptionsDisabled_(option.value)]]">
+              </cr-toggle>
+            </template>
+            <template is="dom-if" if="[[isDropdown_(dependant.uiType)]]">
+              <select class="md-select" value="{{dependant.value::change}}"
+                  on-change="onToggleButtonOrDropdownChange_"
+                  aria-label="[[dependant.label]]"">
+                <template is="dom-repeat" items="[[dependant.menuItems]]">
+                  <option selected="[[item.selected]]"
+                    value="[[item.value]]">
+                    [[item.label]]
+                  </option>
+                </template>
+              </select>
+            </template>
+            <template is="dom-if" if="[[isLink_(dependant.uiType)]]">
+              <cr-icon-button class="icon-external"
+                  on-click="onExternalLinkClick_"
+                  aria-label="[[dependant.label]]">
+              </cr-icon-button>
+            </template>
+          </div>
+        </template>
       </template>
     </div>
   </template>
-  <script src="input_method_options_page.js"></script>
-</dom-module>
+</div>

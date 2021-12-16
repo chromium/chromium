@@ -6,7 +6,25 @@
  * @fileoverview 'os-settings-add-languages-dialog' is a dialog for enabling
  * languages.
  */
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import '//resources/cr_elements/cr_search_field/cr_search_field.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import './shared_style.js';
+import './languages.js';
+import '../../settings_shared_css.js';
+
+import {CrScrollableBehavior} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
+import {FindShortcutBehavior} from '//resources/cr_elements/find_shortcut_behavior.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LanguageHelper, LanguagesModel} from './languages_types.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-add-languages-dialog',
 
   behaviors: [
