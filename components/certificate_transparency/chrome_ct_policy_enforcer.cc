@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -20,6 +21,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/certificate_transparency/ct_features.h"
 #include "components/certificate_transparency/ct_known_logs.h"
 #include "crypto/sha2.h"
 #include "net/cert/ct_policy_status.h"
@@ -215,13 +217,33 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
     issuance_date = std::min(sct->timestamp, issuance_date);
   }
 
+  // Certificates issued after this date (February 1, 2022, OO:OO:OO GMT)
+  // will be subject to the new CT policy, which:
+  // -Removes the One Google log requirement.
+  // -Introduces a log operator diversity (at least 2 SCTs that come from
+  // different operators are required).
+  // -Uses days for certificate lifetime calculations instead of rounding to
+  // months.
+  // Increases the SCT requirements for certificates with a lifetime between
+  // 180 days and 15 months, from 2 to 3.
+  const base::Time kPolicyUpdateDate =
+      base::Time::UnixEpoch() + base::Seconds(1643673600);
+  bool use_2022_policy =
+      base::FeatureList::IsEnabled(
+          features::kCertificateTransparency2022PolicyAllCerts) ||
+      (base::FeatureList::IsEnabled(
+           features::kCertificateTransparency2022Policy) &&
+       issuance_date >= kPolicyUpdateDate);
+
   bool has_valid_google_sct = false;
   bool has_valid_nongoogle_sct = false;
   bool has_valid_embedded_sct = false;
   bool has_valid_nonembedded_sct = false;
   bool has_embedded_google_sct = false;
   bool has_embedded_nongoogle_sct = false;
+  bool has_diverse_log_operators = false;
   std::vector<base::StringPiece> embedded_log_ids;
+  std::string first_seen_operator;
   for (const auto& sct : verified_scts) {
     base::Time disqualification_date;
     bool is_disqualified =
@@ -233,14 +255,16 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
       continue;
     }
 
-    if (IsLogOperatedByGoogle(sct->log_id)) {
-      has_valid_google_sct |= !is_disqualified;
-      if (sct->origin == net::ct::SignedCertificateTimestamp::SCT_EMBEDDED)
-        has_embedded_google_sct = true;
-    } else {
-      has_valid_nongoogle_sct |= !is_disqualified;
-      if (sct->origin == net::ct::SignedCertificateTimestamp::SCT_EMBEDDED)
-        has_embedded_nongoogle_sct = true;
+    if (!use_2022_policy) {
+      if (IsLogOperatedByGoogle(sct->log_id)) {
+        has_valid_google_sct |= !is_disqualified;
+        if (sct->origin == net::ct::SignedCertificateTimestamp::SCT_EMBEDDED)
+          has_embedded_google_sct = true;
+      } else {
+        has_valid_nongoogle_sct |= !is_disqualified;
+        if (sct->origin == net::ct::SignedCertificateTimestamp::SCT_EMBEDDED)
+          has_embedded_nongoogle_sct = true;
+      }
     }
     if (sct->origin != net::ct::SignedCertificateTimestamp::SCT_EMBEDDED) {
       has_valid_nonembedded_sct = true;
@@ -254,22 +278,42 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
         embedded_log_ids.push_back(sct->log_id);
       }
     }
+
+    if (use_2022_policy && !has_diverse_log_operators) {
+      std::string sct_operator = GetOperatorForLog(sct->log_id, sct->timestamp);
+      if (first_seen_operator.empty()) {
+        first_seen_operator = sct_operator;
+      } else {
+        has_diverse_log_operators |= first_seen_operator != sct_operator;
+      }
+    }
   }
 
   // Option 1:
   // An SCT presented via the TLS extension OR embedded within a stapled OCSP
   //   response is from a log qualified at time of check;
-  // AND there is at least one SCT from a Google Log that is qualified at
-  //   time of check, presented via any method;
-  // AND there is at least one SCT from a non-Google Log that is qualified
-  //   at the time of check, presented via any method.
+  // With previous policy:
+  //   AND there is at least one SCT from a Google Log that is qualified at
+  //     time of check, presented via any method;
+  //   AND there is at least one SCT from a non-Google Log that is qualified
+  //     at the time of check, presented via any method.
+  // With new policy:
+  //   AND there are at least two SCTs from logs with different operators,
+  //   presented by any method.
   //
   // Note: Because SCTs embedded via TLS or OCSP can be updated on the fly,
   // the issuance date is irrelevant, as any policy changes can be
-  // accomodated.
-  if (has_valid_nonembedded_sct && has_valid_google_sct &&
-      has_valid_nongoogle_sct) {
-    return CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
+  // accommodated.
+  if (has_valid_nonembedded_sct) {
+    if (use_2022_policy) {
+      if (has_diverse_log_operators) {
+        return CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
+      }
+    } else {
+      if (has_valid_google_sct && has_valid_nongoogle_sct) {
+        return CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
+      }
+    }
   }
   // Note: If has_valid_nonembedded_sct was true, but Option 2 isn't met,
   // then the result will be that there weren't diverse enough SCTs, as that
@@ -289,44 +333,62 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
                : CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
   }
 
-  // ... AND there is at least one embedded SCT from a Google Log once or
-  //   currently qualified;
-  // AND there is at least one embedded SCT from a non-Google Log once or
-  //   currently qualified;
-  // ...
-  //
-  // Note: This policy language is only enforced after the below issuance
-  // date, as that's when the diversity policy first came into effect for
-  // SCTs embedded in certificates.
-  // The date when diverse SCTs requirement is effective from.
-  // 2015-07-01 00:00:00 UTC.
-  const base::Time kDiverseSCTRequirementStartDate =
-      base::Time::UnixEpoch() + base::Seconds(1435708800);
-  if (issuance_date >= kDiverseSCTRequirementStartDate &&
-      !(has_embedded_google_sct && has_embedded_nongoogle_sct)) {
-    // Note: This also covers the case for non-embedded SCTs, as it's only
-    // possible to reach here if both sets are not diverse enough.
-    return CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
-  }
-
-  size_t lifetime_in_months = 0;
-  bool has_partial_month = false;
-  RoundedDownMonthDifference(cert.valid_start(), cert.valid_expiry(),
-                             &lifetime_in_months, &has_partial_month);
-
-  // ... AND the certificate embeds SCTs from AT LEAST the number of logs
-  //   once or currently qualified shown in Table 1 of the CT Policy.
   size_t num_required_embedded_scts = 5;
-  if (lifetime_in_months > 39 ||
-      (lifetime_in_months == 39 && has_partial_month)) {
-    num_required_embedded_scts = 5;
-  } else if (lifetime_in_months > 27 ||
-             (lifetime_in_months == 27 && has_partial_month)) {
-    num_required_embedded_scts = 4;
-  } else if (lifetime_in_months >= 15) {
-    num_required_embedded_scts = 3;
+  if (use_2022_policy) {
+    // ... AND there are at least two SCTs from logs with different
+    // operators ...
+    if (!has_diverse_log_operators) {
+      return CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
+    }
+    // ... AND the certificate embeds SCTs from AT LEAST the number of logs
+    //   once or currently qualified shown in Table 1 of the CT Policy.
+    base::TimeDelta lifetime = cert.valid_expiry() - cert.valid_start();
+    if (lifetime >= base::Days(180)) {
+      num_required_embedded_scts = 3;
+    } else {
+      num_required_embedded_scts = 2;
+    }
   } else {
-    num_required_embedded_scts = 2;
+    // ... AND there is at least one embedded SCT from a Google Log once or
+    //   currently qualified;
+    // AND there is at least one embedded SCT from a non-Google Log once or
+    //   currently qualified;
+    // ...
+    //
+    // Note: This policy language is only enforced after the below issuance
+    // date, as that's when the diversity policy first came into effect for
+    // SCTs embedded in certificates.
+    // The date when diverse SCTs requirement is effective from.
+    // 2015-07-01 00:00:00 UTC.
+    // TODO(carlosil): There are no more valid certificates from before this
+    // date, so this date and the associated logic should be cleaned up.
+    const base::Time kDiverseSCTRequirementStartDate =
+        base::Time::UnixEpoch() + base::Seconds(1435708800);
+    if (issuance_date >= kDiverseSCTRequirementStartDate &&
+        !(has_embedded_google_sct && has_embedded_nongoogle_sct)) {
+      // Note: This also covers the case for non-embedded SCTs, as it's only
+      // possible to reach here if both sets are not diverse enough.
+      return CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
+    }
+
+    size_t lifetime_in_months = 0;
+    bool has_partial_month = false;
+    RoundedDownMonthDifference(cert.valid_start(), cert.valid_expiry(),
+                               &lifetime_in_months, &has_partial_month);
+
+    // ... AND the certificate embeds SCTs from AT LEAST the number of logs
+    //   once or currently qualified shown in Table 1 of the CT Policy.
+    if (lifetime_in_months > 39 ||
+        (lifetime_in_months == 39 && has_partial_month)) {
+      num_required_embedded_scts = 5;
+    } else if (lifetime_in_months > 27 ||
+               (lifetime_in_months == 27 && has_partial_month)) {
+      num_required_embedded_scts = 4;
+    } else if (lifetime_in_months >= 15) {
+      num_required_embedded_scts = 3;
+    } else {
+      num_required_embedded_scts = 2;
+    }
   }
 
   // Sort the embedded log IDs and remove duplicates, so that only a single
@@ -352,11 +414,11 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
 
 std::string ChromeCTPolicyEnforcer::GetOperatorForLog(
     std::string log_id,
-    base::TimeDelta timestamp) {
+    base::Time timestamp) const {
   DCHECK(log_operator_history_.find(log_id) != log_operator_history_.end());
-  OperatorHistoryEntry log_history = log_operator_history_[log_id];
+  OperatorHistoryEntry log_history = log_operator_history_.at(log_id);
   for (auto operator_entry : log_history.previous_operators_) {
-    if (timestamp < operator_entry.second)
+    if (timestamp - base::Time::UnixEpoch() < operator_entry.second)
       return operator_entry.first;
   }
   // Either the log has only ever had one operator, or the timestamp is after
