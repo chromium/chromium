@@ -32,7 +32,7 @@
       },
       'android-marshmallow-arm64-rel': {
         'swarming': {
-          'quickrun_shards': 2,
+          'quickrun_shards': 3,
         },
       },
       'android-marshmallow-arm64-rel-rts': {
@@ -43,7 +43,7 @@
       'android-marshmallow-x86-rel': {
         'swarming': {
           'shards': 2,
-          'quickrun_shards': 4,
+          'quickrun_shards': 6,
         },
       },
       'android-pie-arm64-rel': {
@@ -59,7 +59,7 @@
             },
           ],
           'shards': 2,
-          'quickrun_shards': 4,
+          'quickrun_shards': 6,
         },
       },
       'android-pie-x86-rel': {
@@ -678,6 +678,7 @@
           # This is for slow test execution that often becomes a critical path of
           # swarming jobs. crbug.com/868114
           'shards': 15,
+          'quickrun_shards': 30,
         }
       },
       'Win10 Tests x64 20h2': {
@@ -842,6 +843,11 @@
   },
   'chrome_all_tast_tests': {
     'modifications': {
+      'chromeos-amd64-generic-rel': {
+        'swarming': {
+          'quickrun_shards': 4,
+        },
+      },
       'chromeos-betty-pi-arc-cfi-thin-lto-chrome': {
         'args': [
           # This bot sets symbol_level=2, which doesn't fit inside a normal VM.
@@ -1302,7 +1308,7 @@
       },
       'android-pie-arm64-rel': {
         'swarming': {
-          'quickrun_shards': 30
+          'quickrun_shards': 40
         }
       },
       'android-pie-x86-rel': {
@@ -2308,6 +2314,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.net_unittests.filter',
         ],
       },
+      'chromeos-amd64-generic-rel': {
+        'swarming': {
+          'quickrun_shards': 6,
+        },
+      },
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 14,
@@ -2504,6 +2515,11 @@
           # See above.
           '--extra-browser-args=--disable-wcg-for-test',
         ],
+      },
+      'Win10 x64 Release (NVIDIA)': {
+        'swarming': {
+          'quickrun_shards': 2,
+        },
       },
     },
     'replacements': {

@@ -4472,6 +4472,7 @@
             }
           ],
           "idempotent": false,
+          "quickrun_shards": 2,
           "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"

@@ -247,6 +247,7 @@
               }
             ]
           },
+          "quickrun_shards": 4,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -714,6 +715,7 @@
               }
             ]
           },
+          "quickrun_shards": 6,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },

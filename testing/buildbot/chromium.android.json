@@ -24588,7 +24588,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "quickrun_shards": 2,
+          "quickrun_shards": 3,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "android_browsertests",
@@ -28438,7 +28438,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "quickrun_shards": 4,
+          "quickrun_shards": 6,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -37221,7 +37221,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "quickrun_shards": 4,
+          "quickrun_shards": 6,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -37646,7 +37646,7 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "quickrun_shards": 30,
+          "quickrun_shards": 40,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
