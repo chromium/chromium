@@ -1,0 +1,15 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+executable("ev_store_tool") {
+  sources = [ "ev_store_tool.cc" ]
+  deps = [
+    "//base",
+    "//crypto",
+    "//net/tools/root_store_tool:root_store_proto_full",
+    "//third_party/boringssl",
+  ]
+}
