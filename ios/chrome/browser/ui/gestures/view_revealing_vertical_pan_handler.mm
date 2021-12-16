@@ -211,6 +211,18 @@ enum class LayoutTransitionState {
   }
 }
 
+// Calls animatees who want to know when a web view drag starts and when it
+// ends (at the end of deceleration).
+- (void)webViewIsDragging:(BOOL)dragging
+          viewRevealState:(ViewRevealState)viewRevealState {
+  for (id<ViewRevealingAnimatee> animatee in self.animatees) {
+    if ([animatee respondsToSelector:@selector(webViewIsDragging:
+                                                 viewRevealState:)]) {
+      [animatee webViewIsDragging:dragging viewRevealState:viewRevealState];
+    }
+  }
+}
+
 // Creates the animation for the transition to the next view reveal state, if
 // different from the current state.
 - (void)createAnimatorIfNeeded {
@@ -544,6 +556,7 @@ enum class LayoutTransitionState {
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
   PanHandlerScrollView* view = [[PanHandlerScrollView alloc]
       initWithWebViewScrollViewProxy:webViewScrollViewProxy];
+  [self webViewIsDragging:YES viewRevealState:self.currentState];
   [self panHandlerScrollViewWillBeginDragging:view];
 }
 
@@ -563,6 +576,11 @@ enum class LayoutTransitionState {
   [self panHandlerScrollViewWillEndDragging:view
                                withVelocity:velocity
                         targetContentOffset:targetContentOffset];
+}
+
+- (void)webViewScrollViewDidEndDecelerating:
+    (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
+  [self webViewIsDragging:NO viewRevealState:self.currentState];
 }
 
 #pragma mark - UIScrollViewDelegate + CRWWebViewScrollViewProxyObserver

@@ -16,7 +16,7 @@ enum class ViewRevealState {
 
 // Protocol defining an interface to handle animations from the view revealing
 // pan gesture handler.
-@protocol ViewRevealingAnimatee
+@protocol ViewRevealingAnimatee <NSObject>
 
 // Called before a view reveal animation. Takes as argument both the state in
 // which the view revealer is before the animation and the state that the view
@@ -31,6 +31,13 @@ enum class ViewRevealState {
 // Called inside the completion block of a view reveal animation. Takes as
 // argument the state in which the view revealer is now.
 - (void)didAnimateViewReveal:(ViewRevealState)viewRevealState;
+
+@optional
+
+// Tells the animatee when a web view drag starts and when it ends (at the end
+// of deceleration).
+- (void)webViewIsDragging:(BOOL)dragging
+          viewRevealState:(ViewRevealState)viewRevealState;
 
 @end
 
