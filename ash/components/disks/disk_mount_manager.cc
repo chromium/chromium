@@ -101,14 +101,13 @@ class DiskMountManagerImpl : public DiskMountManager,
                  MountType type,
                  MountAccessMode access_mode,
                  MountPathCallback callback) override {
-    auto insert_result =
-        mount_callbacks_.insert({source_path, std::move(callback)});
-    if (!insert_result.second) {
+    if (mount_callbacks_.find(source_path) != mount_callbacks_.end()) {
       std::move(callback).Run(
           MOUNT_ERROR_PATH_ALREADY_MOUNTED,
           MountPointInfo(source_path, "", type, MOUNT_CONDITION_NONE));
       return;
     }
+    mount_callbacks_.insert({source_path, std::move(callback)});
     // Hidden and non-existent devices should not be mounted.
     if (type == MOUNT_TYPE_DEVICE) {
       DiskMap::const_iterator it = disks_.find(source_path);
