@@ -20,6 +20,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -36,7 +37,8 @@ namespace history_clusters {
 namespace {
 
 // Creates a `mojom::VisitPtr` from a `history_clusters::Visit`.
-mojom::URLVisitPtr VisitToMojom(Profile* profile, const Visit& visit) {
+mojom::URLVisitPtr VisitToMojom(Profile* profile,
+                                const history::ClusterVisit& visit) {
   auto visit_mojom = mojom::URLVisit::New();
   visit_mojom->normalized_url = visit.normalized_url;
 

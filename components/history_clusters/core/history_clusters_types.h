@@ -14,60 +14,13 @@
 
 namespace history_clusters {
 
-// Differs from history::ClusterVisit in that the duplicate visits are
-// collapsed inline with the metadata subsumed into the canonical visit.
-struct Visit {
-  Visit();
-  ~Visit();
-  Visit(const Visit&);
-  Visit(Visit&&);
-  Visit& operator=(const Visit&);
-  Visit& operator=(Visit&&);
-
-  history::AnnotatedVisit annotated_visit;
-
-  // A floating point score in the range [0, 1] describing how important this
-  // visit is to the containing cluster.
-  float score = 0.0;
-
-  // A list of visits that have been de-duplicated into this visit.
-  std::vector<Visit> duplicate_visits;
-
-  // The normalized URL for the visit (i.e. an SRP URL normalized based on the
-  // user's default search provider).
-  GURL normalized_url;
-};
-
-// Differs from history::Cluster in that the visits are de-duplicated and
-// metadata collapsed already.
-struct Cluster {
-  Cluster();
-  ~Cluster();
-  Cluster(const Cluster&);
-  Cluster(Cluster&&);
-  Cluster& operator=(const Cluster&);
-  Cluster& operator=(Cluster&&);
-
-  // An unique but opaque cluster ID.
-  int64_t cluster_id;
-
-  // The constituent already de-duplicated visits of this cluster.
-  std::vector<Visit> visits;
-
-  // The keywords associated with this cluster that should never be explicitly
-  // presented within the UI.
-  // TODO(tommycli): Eliminate this field after removing the usage in
-  //  `PopulateClusterKeywordCache()`.
-  std::vector<std::u16string> keywords;
-};
-
 // The result data returned by `QueryClusters()`.
 struct QueryClustersResult {
   QueryClustersResult();
   ~QueryClustersResult();
   QueryClustersResult(const QueryClustersResult&);
 
-  std::vector<Cluster> clusters;
+  std::vector<history::Cluster> clusters;
 
   // A nullopt `continuation_end_time` means we have exhausted History.
   // Note that this differs from History itself, which uses base::Time() as the

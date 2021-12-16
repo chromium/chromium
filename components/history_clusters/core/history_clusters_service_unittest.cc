@@ -297,29 +297,28 @@ TEST_F(HistoryClustersServiceTest, UnflattenDuplicatesIntegrationTest) {
 
 TEST_F(HistoryClustersServiceTest, UnflattenDuplicatesUnitTest) {
   // This tests the unflatten-duplicates method in more detail as a unit test.
-  history::Cluster raw_cluster;
-  auto& raw_visits = raw_cluster.visits;
+  std::vector<history::Cluster> clusters;
+  clusters.emplace_back(history::Cluster());
+  auto& visits = clusters[0].visits;
 
   // Add ten visits, numbered from 1 to 8. (1-based, just like History.)
   for (size_t i = 0; i < 8; ++i) {
-    raw_visits.emplace_back();
-    raw_visits[i].annotated_visit.visit_row.visit_id = i + 1;
+    visits.emplace_back();
+    visits[i].annotated_visit.visit_row.visit_id = i + 1;
   }
 
   // Collapse 1, 2, 3 into visit 4. Visits 1 and 2 have related searches.
   // Visit 3 had omnibox_url_copied == true.
-  ASSERT_EQ(raw_visits[3].annotated_visit.visit_row.visit_id, 4);
-  raw_visits[3].duplicate_visit_ids = {1, 2, 3};
+  ASSERT_EQ(visits[3].annotated_visit.visit_row.visit_id, 4);
+  visits[3].duplicate_visit_ids = {1, 2, 3};
 
   // Collapse 7 into visit 6.
-  ASSERT_EQ(raw_visits[5].annotated_visit.visit_row.visit_id, 6);
-  raw_visits[5].duplicate_visit_ids = {7};
+  ASSERT_EQ(visits[5].annotated_visit.visit_row.visit_id, 6);
+  visits[5].duplicate_visit_ids = {7};
 
   // Canonical visits should be {4, {1,2,3}}, {5, {}}, {6, {7}}, {8, {}}.
-  auto clusters =
-      history_clusters_service_->CollapseDuplicateVisits({raw_cluster});
+  history_clusters_service_->CollapseDuplicateVisits(&clusters);
   ASSERT_EQ(clusters.size(), 1u);
-  auto& visits = clusters[0].visits;
   ASSERT_EQ(visits.size(), 4u);
 
   // Visit 4 should have 1, 2, and 3 as duplicates.

@@ -413,6 +413,9 @@ AnnotatedVisit::~AnnotatedVisit() = default;
 ClusterVisit::ClusterVisit() = default;
 ClusterVisit::~ClusterVisit() = default;
 ClusterVisit::ClusterVisit(const ClusterVisit&) = default;
+ClusterVisit::ClusterVisit(ClusterVisit&&) = default;
+ClusterVisit& ClusterVisit::operator=(const ClusterVisit&) = default;
+ClusterVisit& ClusterVisit::operator=(ClusterVisit&&) = default;
 
 Cluster::Cluster() = default;
 Cluster::Cluster(int64_t cluster_id,

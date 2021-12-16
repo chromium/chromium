@@ -158,12 +158,10 @@ class HistoryClustersService : public KeyedService {
   // keystroke, the cache may be ready and return true then.
   bool DoesQueryMatchAnyCluster(const std::string& query);
 
-  // Converts the vector of history::Cluster types to history_clusters::Cluster
-  // by collapsing all the duplicate visits into the canonical visits, thereby
+  // Collapses all the duplicate visits into the canonical visits, thereby
   // "unflattening" the output of the backend. Public for testing purposes.
-  // `raw_clusters` will be cannibalized and should not be used again.
-  static std::vector<Cluster> CollapseDuplicateVisits(
-      std::vector<history::Cluster>&& raw_clusters);
+  // TODO(tommycli): Move into the backend.
+  static void CollapseDuplicateVisits(std::vector<history::Cluster>* clusters);
 
   // Clears `all_keywords_cache_` and cancels any pending tasks to populate it.
   void ClearKeywordCache();
