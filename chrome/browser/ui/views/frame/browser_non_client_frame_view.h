@@ -103,8 +103,7 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
 
   // Returns the color of the browser frame, which is also the color of the
   // tabstrip background.
-  SkColor GetFrameColor(BrowserFrameActiveState active_state =
-                            BrowserFrameActiveState::kUseCurrent) const;
+  virtual SkColor GetFrameColor(BrowserFrameActiveState active_state) const;
 
   // Called by BrowserView to signal the frame color has changed and needs
   // to be repainted.

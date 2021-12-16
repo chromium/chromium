@@ -3150,6 +3150,7 @@ static_library("ui") {
       "//chrome/app:generated_resources",
       "//chromeos/strings",
       "//components/account_manager_core:account_manager_core",
+      "//ui/chromeos/styles:cros_styles_views",
     ]
   }
 

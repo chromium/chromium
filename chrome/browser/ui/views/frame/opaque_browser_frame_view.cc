@@ -574,7 +574,7 @@ void OpaqueBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
     return;  // Nothing is visible, so don't bother to paint.
 
   const bool active = ShouldPaintAsActive();
-  SkColor frame_color = GetFrameColor();
+  SkColor frame_color = GetFrameColor(BrowserFrameActiveState::kUseCurrent);
   window_title_->SetEnabledColor(
       GetCaptionColor(BrowserFrameActiveState::kUseCurrent));
   window_title_->SetBackgroundColor(frame_color);
@@ -837,7 +837,8 @@ void OpaqueBrowserFrameView::
     UpdateCaptionButtonPlaceholderContainerBackground() {
   if (caption_button_placeholder_container_) {
     caption_button_placeholder_container_->SetBackground(
-        views::CreateSolidBackground(GetFrameColor()));
+        views::CreateSolidBackground(
+            GetFrameColor(BrowserFrameActiveState::kUseCurrent)));
   }
 }
 

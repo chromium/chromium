@@ -28,7 +28,7 @@
 #include "base/feature_list.h"
 #include "chromeos/grit/chromeos_resources.h"
 #include "chromeos/grit/chromeos_resources_map.h"
-#include "ui/chromeos/styles/cros_styles.h"
+#include "ui/chromeos/styles/cros_styles.h"  // nogncheck
 #endif
 
 namespace content {

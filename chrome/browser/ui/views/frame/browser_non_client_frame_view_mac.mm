@@ -384,7 +384,7 @@ void BrowserNonClientFrameViewMac::OnPaint(gfx::Canvas* canvas) {
     return;
   }
 
-  SkColor frame_color = GetFrameColor();
+  SkColor frame_color = GetFrameColor(BrowserFrameActiveState::kUseCurrent);
   canvas->DrawColor(frame_color);
 
   if (window_title_) {
@@ -586,7 +586,8 @@ void BrowserNonClientFrameViewMac::
     UpdateCaptionButtonPlaceholderContainerBackground() {
   if (caption_button_placeholder_container_) {
     caption_button_placeholder_container_->SetBackground(
-        views::CreateSolidBackground(GetFrameColor()));
+        views::CreateSolidBackground(
+            GetFrameColor(BrowserFrameActiveState::kUseCurrent)));
   }
 }
 

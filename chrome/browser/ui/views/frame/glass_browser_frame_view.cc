@@ -587,7 +587,7 @@ bool GlassBrowserFrameView::ShouldShowWindowTitle(TitlebarType type) const {
 }
 
 SkColor GlassBrowserFrameView::GetTitlebarColor() const {
-  return GetFrameColor();
+  return GetFrameColor(BrowserFrameActiveState::kUseCurrent);
 }
 
 void GlassBrowserFrameView::PaintTitlebar(gfx::Canvas* canvas) const {
