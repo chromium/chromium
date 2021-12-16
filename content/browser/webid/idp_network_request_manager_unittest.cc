@@ -120,7 +120,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountSingle) {
   const auto* test_single_account_json = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "sub" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example",
       "given_name": "Ken",
@@ -144,14 +144,14 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMultiple) {
   const auto* test_accounts_json = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "sub" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example",
       "given_name": "Ken",
       "picture": "https://idp.test/profile/1"
     },
     {
-      "account_id" : "5678",
+      "sub" : "5678",
       "email": "sam@idp.test",
       "name": "Sam G. Test",
       "given_name": "Sam",
@@ -176,7 +176,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountOptionalFields) {
   const auto* test_accounts_json = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "sub" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example"
     }
@@ -211,7 +211,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
   }
   {
     const auto* test_accounts_missing_email_json = R"({"accounts" : [{
-      "account_id" : "1234",
+      "sub" : "1234",
       "name": "Ken R. Example"
     }]})";
     AccountsResponse accounts_response;
@@ -225,7 +225,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
   }
   {
     const auto* test_accounts_missing_name_json = R"({"accounts" : [{
-      "account_id" : "1234",
+      "sub" : "1234",
       "email": "ken@idp.test"
     }]})";
     AccountsResponse accounts_response;
@@ -243,13 +243,13 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountPictureUrl) {
   const auto* test_accounts_json = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "sub" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example",
       "picture": "https://idp.test/profile/1234"
     },
     {
-      "account_id" : "567",
+      "sub" : "567",
       "email": "sam@idp.test",
       "name": "Sam R. Example",
       "picture": "invalid_url"
@@ -275,7 +275,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountUnicode) {
     const auto* json = R"({
      "accounts" : [
         {
-          "account_id" : "1234",
+          "sub" : "1234",
           "email": "ken@idp.test",
           "%s": "%s"
         }
@@ -330,7 +330,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountBranding) {
   const char test_accounts_json[] = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "sub" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example"
     }
@@ -358,7 +358,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountBrandingRemoveAlpha) {
   const char test_accounts_json[] = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "sub" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example"
     }
@@ -383,7 +383,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountBrandingInvalidColor) {
   const char test_accounts_json[] = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "sub" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example"
     }
@@ -408,7 +408,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   const char test_accounts_json[] = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "sub" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example"
     }
@@ -435,7 +435,7 @@ TEST_F(IdpNetworkRequestManagerTest,
   const char test_accounts_json[] = R"({
   "accounts" : [
     {
-      "account_id" : "1234",
+      "sub" : "1234",
       "email": "ken@idp.test",
       "name": "Ken R. Example"
     }
@@ -469,9 +469,8 @@ TEST_F(IdpNetworkRequestManagerTest, Revoke) {
         ASSERT_EQ(network::DataElement::Tag::kBytes, elem.type());
         const network::DataElementBytes& byte_elem =
             elem.As<network::DataElementBytes>();
-        EXPECT_EQ(
-            "{\"account_id\":\"yyy\",\"request\":{\"client_id\":\"xxx\"}}",
-            byte_elem.AsStringPiece());
+        EXPECT_EQ("{\"request\":{\"client_id\":\"xxx\"},\"sub\":\"yyy\"}",
+                  byte_elem.AsStringPiece());
       });
   test_url_loader_factory().SetInterceptor(interceptor);
   RevokeResponse status = SendRevokeRequestAndWaitForResponse("xxx", "yyy");

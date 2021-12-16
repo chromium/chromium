@@ -54,7 +54,7 @@ constexpr char kSigninUrlKey[] = "signin_url";
 constexpr char kIdTokenKey[] = "id_token";
 
 // Token request body keys
-constexpr char kAccountKey[] = "account_id";
+constexpr char kAccountKey[] = "sub";
 constexpr char kRequestKey[] = "request";
 
 // Revoke request body keys.
@@ -127,7 +127,9 @@ std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
 
 absl::optional<content::IdentityRequestAccount> ParseAccount(
     const base::Value& account) {
-  auto* account_id = account.FindStringKey("account_id");
+  // TODO(yigu): Per spec the account id field should be "account_id" instead of
+  // "sub". Using "sub" temporarily to unblock partner deployment.
+  auto* account_id = account.FindStringKey("sub");
   auto* email = account.FindStringKey("email");
   auto* name = account.FindStringKey("name");
   auto* given_name = account.FindStringKey("given_name");
