@@ -2293,6 +2293,10 @@ chromium-metrics-reviews@google.com.
     <variant name="GetLoginsAsync"
         summary="retrieve logins filtered by signon realm from"/>
     <variant name="RemoveLoginAsync" summary="remove a login from"/>
+    <variant name="RemoveLoginsByURLAndTimeAsync"
+        summary="remove logins filtered by URL and creation time from"/>
+    <variant name="RemoveLoginsCreatedBetweenAsync"
+        summary="remove logins filtered by creation time from"/>
     <variant name="UpdateLoginAsync" summary="update a login in"/>
   </token>
 </histogram>
@@ -2321,6 +2325,12 @@ chromium-metrics-reviews@google.com.
         summary="succeeded in retrieving logins filtered by signon realm from"/>
     <variant name="RemoveLoginAsync"
         summary="RemoveLoginAsync() succeeded in removing a login from"/>
+    <variant name="RemoveLoginsByURLAndTimeAsync"
+        summary="RemoveLoginsByURLAndTimeAsync() succeeded in removing logins
+                 filtered by URL and creation time from"/>
+    <variant name="RemoveLoginsCreatedBetweenAsync"
+        summary="RemoveLoginsCreatedBetweenAsync() succeeded in removing
+                 logins filtered by creation time from"/>
     <variant name="UpdateLoginAsync"
         summary="UpdateLoginAsync() succeeded in updating a login in"/>
   </token>
@@ -2338,9 +2348,9 @@ chromium-metrics-reviews@google.com.
   <token key="Function">
     <variant name=""/>
     <variant name=".AddLoginAsync" summary="for AddLoginAsync"/>
-    <variant name=".FillMatchingLoginsAsync"
-        summary="for FillMatchingLoginsAsync"/>
     <variant name=".GetAllLoginsAsync" summary="for GetAllLoginsAsync"/>
+    <variant name=".GetAutofillableLoginsAsync"
+        summary="for GetAutofillableLoginsAsync"/>
     <variant name=".GetLoginsAsync" summary="for GetLoginsAsync"/>
     <variant name=".RemoveLoginAsync" summary="for RemoveLoginAsync"/>
     <variant name=".UpdateLoginAsync" summary="for UpdateLoginAsync"/>
@@ -2360,9 +2370,9 @@ chromium-metrics-reviews@google.com.
     <variant name=""
         summary="retrieving/adding/updating or removing logins from"/>
     <variant name=".AddLoginAsync" summary="adding a login to"/>
-    <variant name=".FillMatchingLoginsAsync"
-        summary="filling matching logins from"/>
     <variant name=".GetAllLoginsAsync" summary="retrieving all logins from"/>
+    <variant name=".GetAutofillableLoginsAsync"
+        summary="retrieving autofillable logins from"/>
     <variant name=".GetLoginsAsync"
         summary="retrieving logins filtered by signon realm from"/>
     <variant name=".RemoveLoginAsync" summary="removing a login from"/>

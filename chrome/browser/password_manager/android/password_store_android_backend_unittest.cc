@@ -292,6 +292,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForRemoveLogin) {
 
 TEST_F(PasswordStoreAndroidBackendTest,
        CallsBridgeForRemoveLoginsByURLAndTime) {
+  base::HistogramTester histogram_tester;
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
   base::MockCallback<PasswordStoreChangeListReply> mock_deletion_reply;
@@ -299,6 +300,13 @@ TEST_F(PasswordStoreAndroidBackendTest,
       [](const GURL& url) { return url == GURL(kTestUrl); });
   base::Time delete_begin = base::Time::FromTimeT(1000);
   base::Time delete_end = base::Time::FromTimeT(2000);
+  constexpr auto kLatencyDelta = base::Milliseconds(123u);
+  const char kDurationMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend."
+      "RemoveLoginsByURLAndTimeAsync.Latency";
+  const char kSuccessMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend."
+      "RemoveLoginsByURLAndTimeAsync.Success";
 
   // Check that calling RemoveLoginsByURLAndTime triggers logins retrieval
   // first.
@@ -321,6 +329,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   consumer().OnCompleteWithLogins(kGetLoginsJobId,
                                   {form_to_delete, form_to_keep});
   RunUntilIdle();
+  task_environment_.FastForwardBy(kLatencyDelta);
 
   // Verify that the callback is called.
   PasswordStoreChangeList expected_changes;
@@ -329,15 +338,30 @@ TEST_F(PasswordStoreAndroidBackendTest,
   EXPECT_CALL(mock_deletion_reply, Run(expected_changes));
   consumer().OnLoginsChanged(kRemoveLoginJobId, expected_changes);
   RunUntilIdle();
+
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetric, 1, 1);
+
+  // Check that other values are not recorded.
+  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
+  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
 }
 
 TEST_F(PasswordStoreAndroidBackendTest,
        CallsBridgeForRemoveLoginsCreatedBetween) {
+  base::HistogramTester histogram_tester;
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
   base::MockCallback<PasswordStoreChangeListReply> mock_deletion_reply;
   base::Time delete_begin = base::Time::FromTimeT(1000);
   base::Time delete_end = base::Time::FromTimeT(2000);
+  constexpr auto kLatencyDelta = base::Milliseconds(123u);
+  const char kDurationMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend."
+      "RemoveLoginsCreatedBetweenAsync.Latency";
+  const char kSuccessMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend."
+      "RemoveLoginsCreatedBetweenAsync.Success";
 
   // Check that calling RemoveLoginsCreatedBetween triggers logins retrieval
   // first.
@@ -358,6 +382,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   consumer().OnCompleteWithLogins(kGetLoginsJobId,
                                   {form_to_delete, form_to_keep});
   RunUntilIdle();
+  task_environment_.FastForwardBy(kLatencyDelta);
 
   // Verify that the callback is called.
   PasswordStoreChangeList expected_changes;
@@ -366,6 +391,13 @@ TEST_F(PasswordStoreAndroidBackendTest,
   EXPECT_CALL(mock_deletion_reply, Run(expected_changes));
   consumer().OnLoginsChanged(kRemoveLoginJobId, expected_changes);
   RunUntilIdle();
+
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetric, 1, 1);
+
+  // Check that other values are not recorded.
+  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
+  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
 }
 
 TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAddLogin) {
@@ -598,6 +630,51 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, RemoveLoginAsyncMetrics) {
     consumer().OnError(
         kJobId, AndroidBackendError(AndroidBackendErrorType::kUncategorized));
   }
+  RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
+  histogram_tester.ExpectTotalCount(kSuccessMetric, 1);
+  histogram_tester.ExpectBucketCount(kSuccessMetric, true, ShouldSucceed());
+  histogram_tester.ExpectBucketCount(kSuccessMetric, false, !ShouldSucceed());
+  if (!ShouldSucceed()) {
+    histogram_tester.ExpectBucketCount(kErrorCodeMetric, 0, 1);
+    histogram_tester.ExpectBucketCount(kPerApiErrorCodeMetric, 0, 1);
+  }
+}
+
+TEST_P(PasswordStoreAndroidBackendTestForMetrics,
+       GetAutofillableLoginsAsyncMetrics) {
+  base::HistogramTester histogram_tester;
+  backend().InitBackend(
+      PasswordStoreAndroidBackend::RemoteChangesReceived(),
+      /*sync_enabled_or_disabled_cb=*/base::RepeatingClosure(),
+      /*completion=*/base::DoNothing());
+  constexpr auto kLatencyDelta = base::Milliseconds(123u);
+  constexpr JobId kJobId{1337};
+  const char kDurationMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.GetAutofillableLoginsAsync."
+      "Latency";
+  const char kSuccessMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.GetAutofillableLoginsAsync."
+      "Success";
+  const char kErrorCodeMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
+  const char kPerApiErrorCodeMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.GetAutofillableLoginsAsync."
+      "ErrorCode";
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+
+  EXPECT_CALL(*bridge(), GetAutofillableLogins).WillOnce(Return(kJobId));
+  backend().GetAutofillableLoginsAsync(mock_reply.Get());
+
+  EXPECT_CALL(mock_reply, Run(_)).Times(1);
+  task_environment_.FastForwardBy(kLatencyDelta);
+  if (ShouldSucceed())
+    consumer().OnCompleteWithLogins(kJobId, {});
+  else
+    consumer().OnError(
+        kJobId, AndroidBackendError(AndroidBackendErrorType::kUncategorized));
   RunUntilIdle();
 
   histogram_tester.ExpectTotalCount(kDurationMetric, 1);
