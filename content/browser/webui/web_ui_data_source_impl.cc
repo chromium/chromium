@@ -12,12 +12,15 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "content/grit/content_resources.h"
 #include "content/public/browser/content_browser_client.h"
@@ -51,6 +54,24 @@ void WebUIDataSource::Update(BrowserContext* browser_context,
 }
 
 namespace {
+
+void GetDataResourceBytesOnWorkerThread(
+    int resource_id,
+    URLDataSource::GotDataCallback callback) {
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](int resource_id, URLDataSource::GotDataCallback callback) {
+                ContentClient* content_client = GetContentClient();
+                DCHECK(content_client);
+                std::move(callback).Run(
+                    content_client->GetDataResourceBytes(resource_id));
+              },
+              resource_id, std::move(callback)));
+}
 
 std::string CleanUpPath(const std::string& path) {
   // Remove the query string for named resource lookups.
@@ -351,9 +372,7 @@ void WebUIDataSourceImpl::StartDataRequest(
   if (resource_id == kNonExistentResource) {
     std::move(callback).Run(nullptr);
   } else {
-    scoped_refptr<base::RefCountedMemory> response(
-        GetContentClient()->GetDataResourceBytes(resource_id));
-    std::move(callback).Run(response.get());
+    GetDataResourceBytesOnWorkerThread(resource_id, std::move(callback));
   }
 }
 
