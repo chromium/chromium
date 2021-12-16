@@ -4,13 +4,15 @@
 
 #include "ash/system/dark_mode/dark_mode_feature_pod_controller.h"
 
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/model/system_tray_model.h"
+#include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/feature_pod_button.h"
-#include "ash/system/unified/unified_system_tray_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -33,7 +35,6 @@ FeaturePodButton* DarkModeFeaturePodController::CreateButton() {
   button_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DARK_THEME));
   button_->SetLabelTooltip(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_DARK_THEME_SETTINGS_TOOLTIP));
-  button_->ShowDetailedViewArrow();
   // TODO(minch): Add the logic for login screen.
   // Disable dark mode feature pod in OOBE since only light mode should be
   // allowed there.
@@ -51,7 +52,10 @@ void DarkModeFeaturePodController::OnIconPressed() {
 }
 
 void DarkModeFeaturePodController::OnLabelPressed() {
-  tray_controller_->ShowDarkModeDetailedView();
+  // TODO(crbug.com/1279850): Link to Personalization Hub instead of Chrome
+  // settings page.
+  if (TrayPopupUtils::CanOpenWebUISettings())
+    Shell::Get()->system_tray_model()->client()->ShowDarkModeSettings();
 }
 
 SystemTrayItemUmaType DarkModeFeaturePodController::GetUmaType() const {

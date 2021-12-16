@@ -332,6 +332,11 @@ void SystemTrayClientImpl::ShowDisplaySettings() {
       chromeos::settings::mojom::kDisplaySubpagePath);
 }
 
+void SystemTrayClientImpl::ShowDarkModeSettings() {
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kDarkModeSubpagePath);
+}
+
 void SystemTrayClientImpl::ShowStorageSettings() {
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kStorageSubpagePath);

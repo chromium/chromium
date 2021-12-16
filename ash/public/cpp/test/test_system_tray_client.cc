@@ -32,6 +32,8 @@ void TestSystemTrayClient::ShowSetTimeDialog() {}
 
 void TestSystemTrayClient::ShowDisplaySettings() {}
 
+void TestSystemTrayClient::ShowDarkModeSettings() {}
+
 void TestSystemTrayClient::ShowStorageSettings() {}
 
 void TestSystemTrayClient::ShowPowerSettings() {}

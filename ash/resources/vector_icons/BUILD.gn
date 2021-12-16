@@ -62,7 +62,6 @@ aggregate_vector_icons("ash_vector_icons") {
     "clipboard_launcher_outer.icon",
     "clipboard_search.icon",
     "copy.icon",
-    "dark_theme_color_mode.icon",
     "delete.icon",
     "desks_new_desk_button.icon",
     "desks_templates.icon",

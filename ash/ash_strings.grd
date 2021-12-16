@@ -259,9 +259,6 @@ This file contains the strings for ash.
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_CAST_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for cast settings accessed through the cast feature pod.">
         Cast Settings
       </message>
-      <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_DARK_THEME_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for dark theme settings accessed through the dark theme feature pod.">
-        Dark Theme Settings
-      </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_IME_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for IME settings accessed through the IME feature pod.">
         Input Methods Settings
       </message>
@@ -429,21 +426,6 @@ This file contains the strings for ash.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_ON_STATE" desc="Button label for the Dark theme feature." meaning="Dark theme feature is on. [CHAR_LIMIT=14]">
         On
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_COLOR_MODE" desc="The title for the dark theme detailed view.">
-        Color mode
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_THEMED_TITLE" desc="The title for the dark theme detailed view.">
-        Themed (default)
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_THEMED_DESCRIPTION" desc="The description for the neutral color theme.">
-        The themed color mode uses colors extracted from your wallpaper to lightly colorize the interface.
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_NEUTRAL_TITLE" desc="The title for the dark theme detailed view.">
-        Neutral
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_MODE_NEUTRAL_DESCRIPTION" desc="The description for the neutral color mode.">
-        The neutral color mode does not use wallpaper extracted colors, replacing them by a set of neutrally toned light or dark hues.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_CAST_DESKTOP_ACCESSIBILITY_STOP" desc="Stop button accessibility label used in the tray popup to tell the user to stop a cast to the desktop.">
         Stop casting screen to <ph name="RECEIVER_NAME">$1<ex>Living Room</ex></ph>
