@@ -33,7 +33,7 @@ import sys
 import time
 import shutil
 
-from typing import Dict, Iterator, List, Tuple
+from typing import Dict, Callable, Iterator, List, Tuple
 
 USE_PYTHON_3 = f'{__file__} will only run under python3.'
 
@@ -50,7 +50,7 @@ _EMULATOR_AVD_DIR = _SRC_ROOT / 'tools' / 'android' / 'avd'
 _AVD_SCRIPT = _EMULATOR_AVD_DIR / 'avd.py'
 # Use API 28 as it's the highest API version that monochrome supports.
 _AVD_CONFIG = _EMULATOR_AVD_DIR / 'proto' / 'generic_android28.textpb'
-_SECONDS_TO_WAIT_FOR_EMULATOR_STARTUP = 30
+_SECONDS_TO_POLL_FOR_EMULATOR = 30
 
 _GN_ARGS = [
     'target_os="android"',
@@ -202,14 +202,32 @@ def _server():
         server_proc.wait()
 
 
-def _detect_emulators():
-    return [d for d in adb_wrapper.AdbWrapper.Devices() if d.is_emulator]
+def _detect_emulators() -> List[device_utils.DeviceUtils]:
+    return [
+        device_utils.DeviceUtils(d) for d in adb_wrapper.AdbWrapper.Devices()
+        if d.is_emulator
+    ]
+
+
+def _poll_for_emulators(
+        condition: Callable[[List[device_utils.DeviceUtils]], bool], *,
+        expected: str):
+    for sec in range(_SECONDS_TO_POLL_FOR_EMULATOR):
+        emulators = _detect_emulators()
+        if condition(emulators):
+            break
+        logging.debug(f'Waited {sec}s for emulator to become ready...')
+        time.sleep(1)
+    else:
+        raise Exception(
+            f'Emulator is not ready after {_SECONDS_TO_POLL_FOR_EMULATOR}s. '
+            f'Expected {expected}.')
 
 
 @contextlib.contextmanager
 def _emulator():
-    emulators = _detect_emulators()
-    assert len(emulators) == 0, 'There must be no existing emulators running.'
+    _poll_for_emulators(lambda emulators: len(emulators) == 0,
+                        expected='no running emulators')
     try:
         cmd = [_AVD_SCRIPT, 'start', '-q', '--avd-config', _AVD_CONFIG]
         subprocess.run(cmd, check=True, capture_output=True)
@@ -217,17 +235,9 @@ def _emulator():
         print('Unable to start the emulator. Perhaps you need to install it:')
         print(f'{_AVD_SCRIPT} install --avd-config {_AVD_CONFIG}')
         raise
-    for sec in range(_SECONDS_TO_WAIT_FOR_EMULATOR_STARTUP):
-        emulators = _detect_emulators()
-        if len(emulators) >= 1:
-            break
-        logging.debug(f'Waited {sec}s for emulator to become ready...')
-        time.sleep(1)
-    else:
-        raise Exception('Emulator does not seem to be ready after waiting '
-                        f'{_SECONDS_TO_WAIT_FOR_EMULATOR_STARTUP} seconds.')
-    assert len(emulators) == 1, 'There are too many emulators running.'
-    device = device_utils.DeviceUtils(emulators[0])
+    _poll_for_emulators(lambda emulators: len(emulators) == 1,
+                        expected='exactly one emulator started successfully')
+    device = _detect_emulators()[0]
     logging.debug(f'Started: {device.serial}.')
     try:
         # Ensure the emulator and its disk are fully set up.
@@ -237,6 +247,8 @@ def _emulator():
         yield
     finally:
         device.adb.Emu('kill')
+        _poll_for_emulators(lambda emulators: len(emulators) == 0,
+                            expected='no running emulators')
 
 
 def _run_and_time_cmd(cmd: List[str]) -> float:
@@ -274,12 +286,63 @@ def _run_install(out_dir: str, target: str) -> float:
     ])
 
 
+def _remove_deleted_files():
+    # This is necessary to terminate all non-chrome processes still holding
+    # file descriptors open for deleted chrome apk files. Otherwise the
+    # emulator will run out of space.
+    emulator = _detect_emulators()[0]
+    find_holders_of_deleted_fds_cmd = 'lsof | grep "(deleted)" | grep ".apk" | grep chrome | sed "s/  */ /g"'
+    # Example output:
+    # COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME
+    # gle.android.gms 2492 u0_a10 94r REG 252,1 652841428 172035 /data/app/org.chromium.chrome-UDsQx3j_rw_6nevertBVeQ==/base.apk (deleted)
+    # s.nexuslauncher 2679 u0_a7 64r REG 252,1 652841428 172035 /data/app/org.chromium.chrome-UDsQx3j_rw_6nevertBVeQ==/base.apk (deleted)
+    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes8.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes8.dex (deleted)
+    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes7.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes7.dex (deleted)
+    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes6.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes6.dex (deleted)
+    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes5.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes5.dex (deleted)
+    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes4.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes4.dex (deleted)
+    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes3.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes3.dex (deleted)
+    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes2.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes2.dex (deleted)
+    # chromium.chrome 7091 u0_a85 mem unknown /dev/ashmem/dalvik-classes.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk (deleted)
+    # dboxed_process0 7288 u0_i21 mem unknown /dev/ashmem/dalvik-classes2.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk!classes2.dex (deleted)
+    # dboxed_process0 7288 u0_i21 mem unknown /dev/ashmem/dalvik-classes.dex extracted in memory from /data/app/org.chromium.chrome-tFnAbRy3utLLuLwXxXYtxw==/base.apk (deleted)
+    output = emulator.RunShellCommand(find_holders_of_deleted_fds_cmd,
+                                      shell=True,
+                                      as_root=True,
+                                      check_return=True)
+    pids = set()
+    for line in output:
+        command, pid, user, *_ = line.split()
+        # Avoid killing chrome or system processes as that can lead to pm failures like:
+        # Unexpected pm path output: 'cmd: Failure calling service package: Broken pipe (32)'
+        if 'chrome' in command or 'boxed_process' in command:
+            continue
+        if user == 'system':
+            continue
+        if pid in pids:
+            continue
+        logging.debug('Terminating command=%s pid=%s user=%s', command, pid,
+                      user)
+        pids.add(pid)
+    if pids:
+        emulator.RunShellCommand('kill ' + ' '.join(pids),
+                                 shell=True,
+                                 as_root=True,
+                                 check_return=True)
+
+
 def _run_and_maybe_install(out_dir: str, target: str,
                            use_emulator: bool) -> float:
     total_time = _run_autoninja(out_dir, target)
     if use_emulator:
         total_time += _run_install(out_dir, target)
+        _remove_deleted_files()
     return total_time
+
+
+def _maybe_uninstall(out_dir: str, target: str, use_emulator: bool):
+    if use_emulator:
+        _run_and_time_cmd([os.path.join(out_dir, 'bin', target), 'uninstall'])
 
 
 def _run_incremental_benchmark(*, out_dir: str, target: str, from_string: str,
@@ -302,7 +365,11 @@ def _run_incremental_benchmark(*, out_dir: str, target: str, from_string: str,
     # change, just reversed, so do a second run to save on prep time. This
     # ensures a minimum of two runs.
     pathlib.Path(change_file_path).touch()
-    yield _run_and_maybe_install(out_dir, target, use_emulator)
+    second_run_time = _run_and_maybe_install(out_dir, target, use_emulator)
+    # Ensure that we clean-up before the last yield so that the emulator does
+    # not run out of space for the next benchmark.
+    _maybe_uninstall(out_dir, target, use_emulator)
+    yield second_run_time
 
 
 def _run_benchmark(*, kind: str, use_emulator: bool,
