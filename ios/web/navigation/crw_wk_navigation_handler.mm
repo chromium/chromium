@@ -82,6 +82,10 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
   // DownloadNativeTaskBridge objects will help provide a valid
   // |navigationAction| or |navigationResponse|.
   NSMutableSet<DownloadNativeTaskBridge*>* _nativeTaskBridges;
+
+  // Stores navigation policy state of download task to indicate if a download
+  // should be performed.
+  BOOL _shouldPerformDownload;
 }
 
 @property(nonatomic, weak) id<CRWWKNavigationHandlerDelegate> delegate;
@@ -116,6 +120,8 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
             kMaxCertErrorsCount);
 
     _nativeTaskBridges = [NSMutableSet new];
+
+    _shouldPerformDownload = NO;
 
     _delegate = delegate;
   }
@@ -340,10 +346,10 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
       requestURL.SchemeIs(url::kAboutScheme) ||
       requestURL.SchemeIs(url::kBlobScheme);
 
-  BOOL shouldPerformDownload = NO;
+  _shouldPerformDownload = NO;
   if (web::features::IsNewDownloadAPIEnabled()) {
     if (@available(iOS 15, *)) {
-      shouldPerformDownload = action.shouldPerformDownload;
+      _shouldPerformDownload = action.shouldPerformDownload;
     }
   }
 
@@ -365,8 +371,7 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
                       forNavigationAction:action
                        withPolicyDecision:policyDecision
                                   webView:webView
-                 forceBlockUniversalLinks:forceBlockUniversalLinks
-                    shouldPerformDownload:shouldPerformDownload];
+                 forceBlockUniversalLinks:forceBlockUniversalLinks];
       });
 
   if (!policyDecision.ShouldAllowNavigation()) {
@@ -1043,13 +1048,10 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
 - (void)webView:(WKWebView*)webView
      navigationAction:(WKNavigationAction*)navigationAction
     didBecomeDownload:(WKDownload*)WKDownload API_AVAILABLE(ios(15)) {
-  // Discard the pending item to ensure that the current URL is not different
-  // from what is displayed on the view.
-  self.navigationManagerImpl->DiscardNonCommittedItems();
-
-  [_nativeTaskBridges
-      addObject:[[DownloadNativeTaskBridge alloc] initWithDownload:WKDownload
-                                             downloadReadyDelegate:self]];
+  // As Chromium never return WKNavigationResponsePolicyDownload
+  // when deciding the policy for an action, WebKit should never
+  // invoke this delegate method.
+  NOTREACHED();
 }
 
 - (void)webView:(WKWebView*)webView
@@ -1350,6 +1352,11 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
 
 // Returns YES if response should be rendered in WKWebView.
 - (BOOL)shouldRenderResponse:(WKNavigationResponse*)WKResponse {
+  if (_shouldPerformDownload) {
+    DCHECK(web::features::IsNewDownloadAPIEnabled());
+    return NO;
+  }
+
   if (!WKResponse.canShowMIMEType) {
     return NO;
   }
@@ -1449,8 +1456,7 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
            withPolicyDecision:
                (web::WebStatePolicyDecider::PolicyDecision)policyDecision
                       webView:(WKWebView*)webView
-     forceBlockUniversalLinks:(BOOL)forceBlockUniversalLinks
-        shouldPerformDownload:(BOOL)shouldPerformDownload {
+     forceBlockUniversalLinks:(BOOL)forceBlockUniversalLinks {
   if (policyDecision.ShouldAllowNavigation()) {
     if ([[action.request HTTPMethod] isEqualToString:@"POST"]) {
       // Display the confirmation dialog if a form repost is detected.
@@ -1527,14 +1533,6 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
   if (policyDecision.ShouldCancelNavigation()) {
     decisionHandler(WKNavigationActionPolicyCancel);
     return;
-  }
-
-  if (shouldPerformDownload) {
-    DCHECK(web::features::IsNewDownloadAPIEnabled());
-    if (@available(iOS 15, *)) {
-      decisionHandler(WKNavigationActionPolicyDownload);
-      return;
-    }
   }
 
   BOOL isOffTheRecord = self.webStateImpl->GetBrowserState()->IsOffTheRecord();
