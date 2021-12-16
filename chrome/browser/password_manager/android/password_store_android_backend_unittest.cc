@@ -24,6 +24,7 @@ namespace {
 using testing::_;
 using testing::ElementsAre;
 using testing::Eq;
+using testing::Optional;
 using testing::Return;
 using testing::StrictMock;
 using testing::WithArg;
@@ -285,7 +286,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForRemoveLogin) {
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(
       PasswordStoreChange(PasswordStoreChange::REMOVE, form));
-  EXPECT_CALL(mock_reply, Run(expected_changes));
+  EXPECT_CALL(mock_reply, Run(Optional(expected_changes)));
   consumer().OnLoginsChanged(kJobId, expected_changes);
   RunUntilIdle();
 }
@@ -335,7 +336,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(
       PasswordStoreChange(PasswordStoreChange::REMOVE, form_to_delete));
-  EXPECT_CALL(mock_deletion_reply, Run(expected_changes));
+  EXPECT_CALL(mock_deletion_reply, Run(Optional(expected_changes)));
   consumer().OnLoginsChanged(kRemoveLoginJobId, expected_changes);
   RunUntilIdle();
 
@@ -388,7 +389,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(
       PasswordStoreChange(PasswordStoreChange::REMOVE, form_to_delete));
-  EXPECT_CALL(mock_deletion_reply, Run(expected_changes));
+  EXPECT_CALL(mock_deletion_reply, Run(Optional(expected_changes)));
   consumer().OnLoginsChanged(kRemoveLoginJobId, expected_changes);
   RunUntilIdle();
 
@@ -414,7 +415,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAddLogin) {
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(
       PasswordStoreChange(PasswordStoreChange::ADD, form));
-  EXPECT_CALL(mock_reply, Run(expected_changes));
+  EXPECT_CALL(mock_reply, Run(Optional(expected_changes)));
   consumer().OnLoginsChanged(kJobId, expected_changes);
   RunUntilIdle();
 }
@@ -433,7 +434,7 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForUpdateLogin) {
   PasswordStoreChangeList expected_changes;
   expected_changes.emplace_back(
       PasswordStoreChange(PasswordStoreChange::UPDATE, form));
-  EXPECT_CALL(mock_reply, Run(expected_changes));
+  EXPECT_CALL(mock_reply, Run(Optional(expected_changes)));
   consumer().OnLoginsChanged(kJobId, expected_changes);
   RunUntilIdle();
 }

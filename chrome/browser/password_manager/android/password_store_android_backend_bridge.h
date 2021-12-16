@@ -44,8 +44,9 @@ class PasswordStoreAndroidBackendBridge {
     // corresponding call to `PasswordStoreAndroidBackendBridge`, and with the
     // PasswordStoreChangeList.
     // Used in response to 'AddLogin', 'UpdateLogin' and `RemoveLogin`.
-    virtual void OnLoginsChanged(JobId job_id,
-                                 const PasswordStoreChangeList& changes) = 0;
+    virtual void OnLoginsChanged(
+        JobId job_id,
+        absl::optional<PasswordStoreChangeList> changes) = 0;
 
     // Asynchronous response called with the `job_id` which was passed to the
     // corresponding call to `PasswordStoreAndroidBackendBridge`.

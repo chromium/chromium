@@ -30,6 +30,7 @@ using testing::_;
 using testing::ElementsAre;
 using testing::ElementsAreArray;
 using testing::IsEmpty;
+using testing::Optional;
 
 namespace password_manager {
 
@@ -58,7 +59,7 @@ class MockPasswordStoreConsumer : public PasswordStoreConsumer {
 
 class MockPasswordStoreBackendTester {
  public:
-  MOCK_METHOD(void, HandleChanges, (PasswordStoreChangeList));
+  MOCK_METHOD(void, HandleChanges, (absl::optional<PasswordStoreChangeList>));
   MOCK_METHOD(void,
               LoginsReceivedConstRef,
               (const std::vector<std::unique_ptr<PasswordForm>>&));
@@ -202,7 +203,7 @@ TEST_F(PasswordStoreBuiltInBackendTest, TestAddLoginAsync) {
       PasswordStoreChange(PasswordStoreChange::ADD, form);
 
   testing::StrictMock<MockPasswordStoreBackendTester> tester;
-  EXPECT_CALL(tester, HandleChanges(ElementsAre(add_change)));
+  EXPECT_CALL(tester, HandleChanges(Optional(ElementsAre(add_change))));
   backend->AddLoginAsync(
       form, base::BindOnce(&MockPasswordStoreBackendTester::HandleChanges,
                            base::Unretained(&tester)));
@@ -221,7 +222,7 @@ TEST_F(PasswordStoreBuiltInBackendTest, TestUpdateLoginAsync) {
       PasswordStoreChange(PasswordStoreChange::UPDATE, form);
 
   testing::StrictMock<MockPasswordStoreBackendTester> tester;
-  EXPECT_CALL(tester, HandleChanges(ElementsAre(update_change)));
+  EXPECT_CALL(tester, HandleChanges(Optional(ElementsAre(update_change))));
   backend->UpdateLoginAsync(
       form, base::BindOnce(&MockPasswordStoreBackendTester::HandleChanges,
                            base::Unretained(&tester)));
@@ -239,7 +240,7 @@ TEST_F(PasswordStoreBuiltInBackendTest, TestRemoveLoginAsync) {
       PasswordStoreChange(PasswordStoreChange::REMOVE, form);
 
   testing::StrictMock<MockPasswordStoreBackendTester> tester;
-  EXPECT_CALL(tester, HandleChanges(ElementsAre(remove_change)));
+  EXPECT_CALL(tester, HandleChanges(Optional(ElementsAre(remove_change))));
   backend->RemoveLoginAsync(
       form, base::BindOnce(&MockPasswordStoreBackendTester::HandleChanges,
                            base::Unretained(&tester)));
@@ -265,9 +266,10 @@ TEST_F(PasswordStoreBuiltInBackendTest, OperationsOnABadDatabaseSilentlyFail) {
   blocked_form->action = GURL("http://foo.example.com/action");
   blocked_form->blocked_by_user = true;
 
-  base::RepeatingCallback<void(PasswordStoreChangeList)> handle_changes =
-      base::BindRepeating(&MockPasswordStoreBackendTester::HandleChanges,
-                          base::Unretained(&tester));
+  base::RepeatingCallback<void(absl::optional<PasswordStoreChangeList>)>
+      handle_changes =
+          base::BindRepeating(&MockPasswordStoreBackendTester::HandleChanges,
+                              base::Unretained(&tester));
   base::RepeatingCallback<void(LoginsResult)> handle_logins =
       base::BindRepeating(&MockPasswordStoreBackendTester::HandleLogins,
                           base::Unretained(&tester));
@@ -275,12 +277,12 @@ TEST_F(PasswordStoreBuiltInBackendTest, OperationsOnABadDatabaseSilentlyFail) {
       base::BindRepeating(&MockPasswordStoreBackendTester::HandleLoginsOrError,
                           base::Unretained(&tester));
 
-  EXPECT_CALL(tester, HandleChanges(IsEmpty()));
+  EXPECT_CALL(tester, HandleChanges(Optional(IsEmpty())));
   bad_backend->AddLoginAsync(*form, handle_changes);
   RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&tester);
 
-  EXPECT_CALL(tester, HandleChanges(IsEmpty()));
+  EXPECT_CALL(tester, HandleChanges(Optional(IsEmpty())));
   bad_backend->AddLoginAsync(*blocked_form, handle_changes);
   RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&tester);
@@ -305,7 +307,7 @@ TEST_F(PasswordStoreBuiltInBackendTest, OperationsOnABadDatabaseSilentlyFail) {
 
   testing::Mock::VerifyAndClearExpectations(&tester);
 
-  EXPECT_CALL(tester, HandleChanges(IsEmpty()));
+  EXPECT_CALL(tester, HandleChanges(Optional(IsEmpty())));
   bad_backend->RemoveLoginAsync(*form, handle_changes);
   RunUntilIdle();
 }

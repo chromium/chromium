@@ -412,9 +412,10 @@ void PasswordStoreAndroidBackend::FilterAndRemoveLogins(
 
   // Create a barrier callback that aggregates results of a multiple
   // calls to RemoveLoginAsync.
-  auto barrier_callback = base::BarrierCallback<PasswordStoreChangeList>(
-      logins_to_remove.size(),
-      base::BindOnce(&JoinPasswordStoreChanges).Then(std::move(reply)));
+  auto barrier_callback =
+      base::BarrierCallback<absl::optional<PasswordStoreChangeList>>(
+          logins_to_remove.size(),
+          base::BindOnce(&JoinPasswordStoreChanges).Then(std::move(reply)));
 
   // Create and run the callback chain that removes the logins.
   base::RepeatingClosure callbacks_chain = base::DoNothing();
@@ -509,7 +510,7 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
 
 void PasswordStoreAndroidBackend::OnLoginsChanged(
     JobId job_id,
-    const PasswordStoreChangeList& changes) {
+    absl::optional<PasswordStoreChangeList> changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   JobReturnHandler reply = GetAndEraseJob(job_id);
   reply.RecordMetrics(/*error=*/absl::nullopt);
@@ -599,7 +600,7 @@ PasswordStoreChangeListReply PasswordStoreAndroidBackend::
   return base::BindOnce(
       [](MetricsRecorder metrics_recorder,
          PasswordStoreChangeListReply callback,
-         PasswordStoreChangeList results) {
+         absl::optional<PasswordStoreChangeList> results) {
         // Errors are not recorded at the moment. This should be implemented
         // in the future, when actual store changes will be received from the
         // store modifying operations.

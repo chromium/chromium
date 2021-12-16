@@ -53,16 +53,23 @@ bool FormSupportsPSL(const PasswordFormDigest& digest) {
 
 // Helper function which invokes |notifying_callback| and |completion_callback|
 // when changes are received.
-void InvokeCallbackOnChanges(
-    base::OnceCallback<void(PasswordStoreChangeList changes)>
-        notifying_callback,
+void InvokeCallbacksForSuspectedChanges(
+    PasswordStoreChangeListReply notifying_callback,
     base::OnceCallback<void(bool)> completion_callback,
-    PasswordStoreChangeList changes) {
+    absl::optional<PasswordStoreChangeList> changes) {
   DCHECK(notifying_callback);
-  bool is_change_empty = changes.empty();
+  // Two cases *presumably* have changes that need to be reported:
+  // 1. `changes` contains a non-empty PasswordStoreChangeList.
+  // 2. `changes` contains no PasswordStoreChangeList at all because the
+  //    backend can't compute it. A full list will be requested instead.
+  // Only if `changes` contains an empty PasswordStoreChangeList, Chrome knows
+  // for certain that no changes have happened:
+  bool completed = !changes.has_value() || !changes->empty();
+
+  // In any case, we want to indicate the completed operation:
   std::move(notifying_callback).Run(std::move(changes));
   if (completion_callback)
-    std::move(completion_callback).Run(!is_change_empty);
+    std::move(completion_callback).Run(completed);
 }
 
 }  // namespace
@@ -131,10 +138,11 @@ void PasswordStore::UpdateLoginWithPrimaryKey(
         base::flat_map<InsecureType, InsecurityMetadata>();
   }
 
-  auto barrier_callback = base::BarrierCallback<PasswordStoreChangeList>(
-      2, base::BindOnce(&JoinPasswordStoreChanges)
-             .Then(base::BindOnce(
-                 &PasswordStore::NotifyLoginsChangedOnMainSequence, this)));
+  auto barrier_callback =
+      base::BarrierCallback<absl::optional<PasswordStoreChangeList>>(
+          2, base::BindOnce(&JoinPasswordStoreChanges)
+                 .Then(base::BindOnce(
+                     &PasswordStore::NotifyLoginsChangedOnMainSequence, this)));
 
   backend_->RemoveLoginAsync(old_primary_key, barrier_callback);
   backend_->AddLoginAsync(new_form_with_correct_password_issues,
@@ -180,7 +188,7 @@ void PasswordStore::RemoveLoginsCreatedBetween(
       base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this);
   backend_->RemoveLoginsCreatedBetweenAsync(
       delete_begin, delete_end,
-      base::BindOnce(&InvokeCallbackOnChanges, std::move(callback),
+      base::BindOnce(&InvokeCallbacksForSuspectedChanges, std::move(callback),
                      std::move(completion)));
 }
 
@@ -343,10 +351,12 @@ void PasswordStore::OnInitCompleted(bool success) {
 }
 
 void PasswordStore::NotifyLoginsChangedOnMainSequence(
-    PasswordStoreChangeList changes) {
+    absl::optional<PasswordStoreChangeList> changes) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
 
-  if (changes.empty())
+  // TODO(crbug.com/1267912): Rerequest full list if `!changes.has_value()`.
+
+  if (changes->empty())
     return;
 
   // Don't propagate reference to this store after its shutdown. No caller
@@ -355,7 +365,7 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
     return;
 
   for (auto& observer : observers_) {
-    observer.OnLoginsChanged(this, changes);
+    observer.OnLoginsChanged(this, changes.value());
   }
 }
 
@@ -385,9 +395,10 @@ void PasswordStore::UnblocklistInternal(
   if (completion)
     notify_callback = std::move(notify_callback).Then(std::move(completion));
 
-  auto barrier_callback = base::BarrierCallback<PasswordStoreChangeList>(
-      forms_to_remove.size(), base::BindOnce(&JoinPasswordStoreChanges)
-                                  .Then(std::move(notify_callback)));
+  auto barrier_callback =
+      base::BarrierCallback<absl::optional<PasswordStoreChangeList>>(
+          forms_to_remove.size(), base::BindOnce(&JoinPasswordStoreChanges)
+                                      .Then(std::move(notify_callback)));
 
   for (const auto& form : forms_to_remove) {
     backend_->RemoveLoginAsync(form, barrier_callback);

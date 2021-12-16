@@ -152,7 +152,8 @@ class PasswordStore : public PasswordStoreInterface {
   void OnInitCompleted(bool success);
 
   // Notifies observers that password store data may have been changed.
-  void NotifyLoginsChangedOnMainSequence(PasswordStoreChangeList changes);
+  void NotifyLoginsChangedOnMainSequence(
+      absl::optional<PasswordStoreChangeList> changes);
 
   // The following methods notify observers that the password store may have
   // been modified via NotifyLoginsChangedOnMainSequence(). Note that there is
