@@ -25,6 +25,10 @@ CastRuntimeContentBrowserClient::CastRuntimeContentBrowserClient(
 
 CastRuntimeContentBrowserClient::~CastRuntimeContentBrowserClient() = default;
 
+CastRuntimeService* CastRuntimeContentBrowserClient::GetCastRuntimeService() {
+  return cast_runtime_service_;
+}
+
 std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
     content::BrowserContext* browser_context,
     CastSystemMemoryPressureEvaluatorAdjuster* memory_pressure_adjuster,
@@ -41,9 +45,8 @@ std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
         return client->GetSystemNetworkContext();
       },
       this);
-  auto cast_runtime_service = CastRuntimeService::Create(
-      GetMediaTaskRunner(), web_service, media_pipeline_backend_manager(),
-      std::move(network_context_getter), pref_service, video_plane_controller);
+  auto cast_runtime_service = std::make_unique<CastRuntimeService>(
+      web_service, std::move(network_context_getter));
   cast_runtime_service_ = cast_runtime_service.get();
   return cast_runtime_service;
 }
@@ -108,9 +111,10 @@ CastRuntimeContentBrowserClient::CreateURLLoaderThrottles(
 std::unique_ptr<blink::URLLoaderThrottle>
 CastRuntimeContentBrowserClient::CreateUrlRewriteRulesThrottle(
     content::WebContents* web_contents) {
-  DCHECK(cast_runtime_service_);
+  CastRuntimeService* cast_runtime_service = GetCastRuntimeService();
+  DCHECK(cast_runtime_service);
 
-  RuntimeApplication* app = cast_runtime_service_->GetRuntimeApplication();
+  RuntimeApplication* app = cast_runtime_service->GetRuntimeApplication();
   DCHECK(app);
 
   url_rewrite::UrlRequestRewriteRulesManager* url_rewrite_rules_manager =

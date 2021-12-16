@@ -21,6 +21,9 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
       CastFeatureListCreator* feature_list_creator);
   ~CastRuntimeContentBrowserClient() override;
 
+  // Returns an instance of |CastRuntimeService|.
+  virtual CastRuntimeService* GetCastRuntimeService();
+
   // CastContentBrowserClient overrides:
   std::unique_ptr<CastService> CreateCastService(
       content::BrowserContext* browser_context,
@@ -30,7 +33,7 @@ class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
       CastWindowManager* window_manager,
       CastWebService* web_service,
       DisplaySettingsManager* display_settings_manager,
-      shell::AccessibilityServiceImpl* accessibility_service) final;
+      shell::AccessibilityServiceImpl* accessibility_service) override;
   void OverrideWebkitPrefs(content::WebContents* web_contents,
                            blink::web_pref::WebPreferences* prefs) override;
   std::unique_ptr<::media::CdmFactory> CreateCdmFactory(

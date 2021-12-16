@@ -8,14 +8,11 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "chromecast/cast_core/cast_runtime_metrics_recorder.h"
+#include "chromecast/cast_core/cast_runtime_service.h"
+#include "chromecast/cast_core/runtime_application_dispatcher.h"
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_endpoint_manager.h"
 #include "chromecast/service/cast_service.h"
-
-class PrefService;
-
-namespace base {
-class SingleThreadTaskRunner;
-}  // namespace base
 
 namespace network {
 namespace mojom {
@@ -29,11 +26,6 @@ class CastWebService;
 class WebCryptoServer;
 class RuntimeApplication;
 
-namespace media {
-class MediaPipelineBackendManager;
-class VideoPlaneController;
-}  // namespace media
-
 namespace receiver {
 class MediaManager;
 }  // namespace receiver
@@ -43,34 +35,40 @@ class MediaManager;
 // implementation.
 class CastRuntimeService
     : public CastService,
+      public CastRuntimeMetricsRecorder::EventBuilderFactory,
       public media::CastRuntimeAudioChannelEndpointManager {
  public:
   using NetworkContextGetter =
       base::RepeatingCallback<network::mojom::NetworkContext*()>;
 
-  // Creates an instance of |CastRuntimeService| interface.
-  static std::unique_ptr<CastRuntimeService> Create(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      CastWebService* web_service,
-      media::MediaPipelineBackendManager* media_pipeline_backend_manager,
-      NetworkContextGetter network_context_getter,
-      PrefService* pref_service,
-      media::VideoPlaneController* video_plane_controller);
-
+  CastRuntimeService(CastWebService* web_service,
+                     NetworkContextGetter network_context_getter);
   ~CastRuntimeService() override;
 
   // Returns WebCryptoServer.
-  virtual WebCryptoServer* GetWebCryptoServer() = 0;
+  virtual WebCryptoServer* GetWebCryptoServer();
 
   // Returns MediaManager.
-  virtual receiver::MediaManager* GetMediaManager() = 0;
-
-  // Returns a pointer to CastWebService object with lifespan
-  // equal to CastRuntimeService main object.
-  virtual CastWebService* GetCastWebService() = 0;
+  virtual receiver::MediaManager* GetMediaManager();
 
   // Returns a pointer to RuntimeApplication.
-  virtual RuntimeApplication* GetRuntimeApplication() = 0;
+  virtual RuntimeApplication* GetRuntimeApplication();
+
+ protected:
+  // CastService implementation:
+  void InitializeInternal() override;
+  void FinalizeInternal() override;
+  void StartInternal() override;
+  void StopInternal() override;
+
+  // CastRuntimeMetricsRecorder::EventBuilderFactory implementation:
+  std::unique_ptr<CastEventBuilder> CreateEventBuilder() override;
+
+  // CastRuntimeAudioChannelEndpointManager implementation:
+  const std::string& GetAudioChannelEndpoint() override;
+
+ private:
+  RuntimeApplicationDispatcher app_dispatcher_;
 };
 
 }  // namespace chromecast
