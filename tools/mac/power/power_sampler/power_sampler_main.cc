@@ -196,12 +196,12 @@ int main(int argc, char** argv) {
     }
   }
 
-  std::unique_ptr<power_sampler::SamplingEventSource> event_source;
+  std::unique_ptr<power_metrics::SamplingEventSource> event_source;
   if (command_line.HasSwitch(kSwitchSampleOnNotification)) {
     event_source =
-        std::make_unique<power_sampler::IOPMPowerSourceSamplingEventSource>();
+        std::make_unique<power_metrics::IOPMPowerSourceSamplingEventSource>();
   } else {
-    event_source = std::make_unique<power_sampler::TimerSamplingEventSource>(
+    event_source = std::make_unique<power_metrics::TimerSamplingEventSource>(
         sampling_interval);
   }
 

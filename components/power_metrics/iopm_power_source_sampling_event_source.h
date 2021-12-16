@@ -10,7 +10,7 @@
 #include "base/mac/scoped_ioobject.h"
 #include "components/power_metrics/sampling_event_source.h"
 
-namespace power_sampler {
+namespace power_metrics {
 
 // Generates a sampling event when a state change notification is dispatched by
 // the IOPMPowerSource service.
@@ -35,6 +35,6 @@ class IOPMPowerSourceSamplingEventSource : public SamplingEventSource {
   SamplingEventCallback callback_;
 };
 
-}  // namespace power_sampler
+}  // namespace power_metrics
 
 #endif  // COMPONENTS_POWER_METRICS_IOPM_POWER_SOURCE_SAMPLING_EVENT_SOURCE_H_

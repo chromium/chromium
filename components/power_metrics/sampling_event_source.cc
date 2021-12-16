@@ -4,8 +4,8 @@
 
 #include "components/power_metrics/sampling_event_source.h"
 
-namespace power_sampler {
+namespace power_metrics {
 
 SamplingEventSource::~SamplingEventSource() = default;
 
-}  // namespace power_sampler
+}  // namespace power_metrics

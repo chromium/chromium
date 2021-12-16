@@ -7,7 +7,7 @@
 
 #include "base/callback_forward.h"
 
-namespace power_sampler {
+namespace power_metrics {
 
 // Invokes a callback when a Sample should be requested from all Samplers.
 class SamplingEventSource {
@@ -21,6 +21,6 @@ class SamplingEventSource {
   virtual bool Start(SamplingEventCallback callback) = 0;
 };
 
-}  // namespace power_sampler
+}  // namespace power_metrics
 
 #endif  // COMPONENTS_POWER_METRICS_SAMPLING_EVENT_SOURCE_H_

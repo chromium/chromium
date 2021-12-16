@@ -9,7 +9,7 @@
 #include "base/timer/timer.h"
 #include "components/power_metrics/sampling_event_source.h"
 
-namespace power_sampler {
+namespace power_metrics {
 
 // Generates a sampling event at regular time intervals.
 class TimerSamplingEventSource : public SamplingEventSource {
@@ -27,6 +27,6 @@ class TimerSamplingEventSource : public SamplingEventSource {
   base::RepeatingTimer timer_;
 };
 
-}  // namespace power_sampler
+}  // namespace power_metrics
 
 #endif  // COMPONENTS_POWER_METRICS_TIMER_SAMPLING_EVENT_SOURCE_H_

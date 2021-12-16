@@ -10,7 +10,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 
-namespace power_sampler {
+namespace power_metrics {
 
 IOPMPowerSourceSamplingEventSource::IOPMPowerSourceSamplingEventSource() =
     default;
@@ -64,4 +64,4 @@ void IOPMPowerSourceSamplingEventSource::OnNotification(
   self->callback_.Run();
 }
 
-}  // namespace power_sampler
+}  // namespace power_metrics

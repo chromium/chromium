@@ -8,7 +8,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace power_sampler {
+namespace power_metrics {
 
 TEST(TimerSamplingEventSourceTest, Basic) {
   constexpr base::TimeDelta kDelay = base::Seconds(1);
@@ -28,4 +28,4 @@ TEST(TimerSamplingEventSourceTest, Basic) {
   EXPECT_EQ(11, num_callbacks);
 }
 
-}  // namespace power_sampler
+}  // namespace power_metrics

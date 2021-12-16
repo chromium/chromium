@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 
-namespace power_sampler {
+namespace power_metrics {
 
 TimerSamplingEventSource::TimerSamplingEventSource(base::TimeDelta interval)
     : interval_(interval) {}
@@ -19,4 +19,4 @@ bool TimerSamplingEventSource::Start(SamplingEventCallback callback) {
   return true;
 }
 
-}  // namespace power_sampler
+}  // namespace power_metrics
