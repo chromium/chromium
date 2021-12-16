@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import { PageStatus, StatusAction, StoredAccount, SyncBrowserProxy,SyncPrefs, SyncStatus} from 'chrome://settings/settings.js';
+import {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncPrefs, SyncStatus} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 // clang-format on
@@ -13,8 +13,8 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   private impressionCount_: number = 0;
 
   // Settable fake data.
-  private encryptionPassphraseSuccess: boolean = false;
-  private decryptionPassphraseSuccess: boolean = false;
+  encryptionPassphraseSuccess: boolean = false;
+  decryptionPassphraseSuccess: boolean = false;
   storedAccounts: StoredAccount[] = [];
   syncStatus: SyncStatus = {
     signedIn: true,

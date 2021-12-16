@@ -238,6 +238,12 @@ export class SettingsSyncEncryptionOptionsElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-sync-encryption-options': SettingsSyncEncryptionOptionsElement;
+  }
+}
+
 customElements.define(
     SettingsSyncEncryptionOptionsElement.is,
     SettingsSyncEncryptionOptionsElement);

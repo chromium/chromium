@@ -39,7 +39,8 @@ enum RadioButtonNames {
 
 const SettingsSyncControlsElementBase = WebUIListenerMixin(PolymerElement);
 
-class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
+export class SettingsSyncControlsElement extends
+    SettingsSyncControlsElementBase {
   static get is() {
     return 'settings-sync-controls';
   }
@@ -220,6 +221,12 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
         this.syncStatus.statusAction !== StatusAction.ENTER_PASSPHRASE &&
         this.syncStatus.statusAction !==
         StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-sync-controls': SettingsSyncControlsElement;
   }
 }
 

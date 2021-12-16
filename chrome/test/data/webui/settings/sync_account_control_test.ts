@@ -3,31 +3,37 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {MAX_SIGNIN_PROMO_IMPRESSION, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+
+// <if expr="not chromeos_ash">
+import {CrActionMenuElement} from 'chrome://settings/settings.js';
+// </if>
+
+import {MAX_SIGNIN_PROMO_IMPRESSION, Router, SettingsSyncAccountControlElement, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {setupRouterWithSyncRoutes, simulateStoredAccounts} from './sync_test_util.js';
+import {setupRouterWithSyncRoutes, simulateStoredAccounts, SyncRoutes} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 // clang-format on
 
 
 suite('SyncAccountControl', function() {
-  const peoplePage = null;
-  let browserProxy = null;
-  let testElement = null;
+  let browserProxy: TestSyncBrowserProxy;
+  let testElement: SettingsSyncAccountControlElement;
 
-  /**
-   * @param {number} count
-   * @param {boolean} signedIn
-   */
-  function forcePromoResetWithCount(count, signedIn) {
+  function forcePromoResetWithCount(count: number, signedIn: boolean) {
     browserProxy.setImpressionCount(count);
     // Flipping syncStatus.signedIn will force promo state to be reset.
-    testElement.syncStatus = {signedIn: !signedIn};
-    testElement.syncStatus = {signedIn: signedIn};
+    testElement.syncStatus = {
+      signedIn: !signedIn,
+      statusAction: StatusAction.NO_ACTION
+    };
+    testElement.syncStatus = {
+      signedIn: signedIn,
+      statusAction: StatusAction.NO_ACTION
+    };
   }
 
   setup(async function() {
@@ -35,9 +41,13 @@ suite('SyncAccountControl', function() {
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     testElement = document.createElement('settings-sync-account-control');
-    testElement.syncStatus = {signedIn: true, signedInUsername: 'foo@foo.com'};
+    testElement.syncStatus = {
+      signedIn: true,
+      signedInUsername: 'foo@foo.com',
+      statusAction: StatusAction.NO_ACTION
+    };
     testElement.prefs = {
       signin: {
         allowed_on_next_startup:
@@ -70,7 +80,7 @@ suite('SyncAccountControl', function() {
     // Not signed in, no accounts, will show banner.
     simulateStoredAccounts([]);
     forcePromoResetWithCount(0, false);
-    const banner = testElement.shadowRoot.querySelector('#banner');
+    const banner = testElement.shadowRoot!.querySelector('#banner');
     assertTrue(isVisible(banner));
     // Flipping signedIn in forcePromoResetWithCount should increment count.
     await browserProxy.whenCalled('incrementPromoImpressionCount');
@@ -93,7 +103,11 @@ suite('SyncAccountControl', function() {
   });
 
   test('promo header is visible', function() {
-    testElement.syncStatus = {signedIn: false, signedInUsername: ''};
+    testElement.syncStatus = {
+      signedIn: false,
+      signedInUsername: '',
+      statusAction: StatusAction.NO_ACTION
+    };
     testElement.promoLabelWithNoAccount = testElement.promoLabelWithAccount =
         'title';
     simulateStoredAccounts([]);
@@ -101,30 +115,37 @@ suite('SyncAccountControl', function() {
   });
 
   test('not signed in and no stored accounts', async function() {
-    testElement.syncStatus = {signedIn: false, signedInUsername: ''};
+    testElement.syncStatus = {
+      signedIn: false,
+      signedInUsername: '',
+      statusAction: StatusAction.NO_ACTION
+    };
     simulateStoredAccounts([]);
 
     assertTrue(isChildVisible(testElement, '#promo-header'));
     assertFalse(isChildVisible(testElement, '#avatar-row'));
-    // Chrome OS does not use the account switch menu.
-    if (!isChromeOS) {
-      assertFalse(isChildVisible(testElement, '#menu'));
-    }
-    assertTrue(isChildVisible(testElement, '#sign-in'));
 
-    testElement.shadowRoot.querySelector('#sign-in').click();
-    if (isChromeOS) {
-      await browserProxy.whenCalled('turnOnSync');
-    } else {
-      await browserProxy.whenCalled('startSignIn');
-    }
+    // <if expr="not chromeos_ash">
+    // Chrome OS does not use the account switch menu.
+    assertFalse(isChildVisible(testElement, '#menu'));
+    // </if>
+
+    assertTrue(isChildVisible(testElement, '#signIn'));
+
+    testElement.$.signIn.click();
+
+    // <if expr="chromeos_ash">
+    await browserProxy.whenCalled('turnOnSync');
+    // </if>
+
+    // <if expr="not chromeos_ash">
+    await browserProxy.whenCalled('startSignIn');
+    // </if>
   });
 
+  // <if expr="not chromeos_ash">
+  // Chrome OS users are always signed in.
   test('not signed in but has stored accounts', async function() {
-    // Chrome OS users are always signed in.
-    if (isChromeOS) {
-      return;
-    }
     testElement.syncStatus = {
       firstSetupInProgress: false,
       signedIn: false,
@@ -146,26 +167,31 @@ suite('SyncAccountControl', function() {
       },
     ]);
 
-    const userInfo = testElement.shadowRoot.querySelector('#user-info');
-    const syncButton = testElement.shadowRoot.querySelector('#sync-button');
+    const userInfo =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#user-info')!;
+    const syncButton =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#sync-button')!;
 
     // Avatar row shows the right account.
     assertTrue(isChildVisible(testElement, '#promo-header'));
     assertTrue(isChildVisible(testElement, '#avatar-row'));
-    assertTrue(userInfo.textContent.includes('fooName'));
-    assertTrue(userInfo.textContent.includes('foo@foo.com'));
-    assertFalse(userInfo.textContent.includes('barName'));
-    assertFalse(userInfo.textContent.includes('bar@bar.com'));
+    assertTrue(userInfo.textContent!.includes('fooName'));
+    assertTrue(userInfo.textContent!.includes('foo@foo.com'));
+    assertFalse(userInfo.textContent!.includes('barName'));
+    assertFalse(userInfo.textContent!.includes('bar@bar.com'));
 
     // Menu contains the right items.
-    assertTrue(!!testElement.shadowRoot.querySelector('#menu'));
-    assertFalse(testElement.shadowRoot.querySelector('#menu').open);
-    const items = testElement.root.querySelectorAll('.dropdown-item');
+    assertTrue(!!testElement.shadowRoot!.querySelector('#menu'));
+    assertFalse(
+        testElement.shadowRoot!.querySelector<CrActionMenuElement>(
+                                   '#menu')!.open);
+    const items =
+        testElement.shadowRoot!.querySelectorAll<HTMLElement>('.dropdown-item');
     assertEquals(4, items.length);
-    assertTrue(items[0].textContent.includes('foo@foo.com'));
-    assertTrue(items[1].textContent.includes('bar@bar.com'));
-    assertEquals(items[2].id, 'sign-in-item');
-    assertEquals(items[3].id, 'sign-out-item');
+    assertTrue(items[0]!.textContent!.includes('foo@foo.com'));
+    assertTrue(items[1]!.textContent!.includes('bar@bar.com'));
+    assertEquals(items[2]!.id, 'sign-in-item');
+    assertEquals(items[3]!.id, 'sign-out-item');
 
     // "sync to" button is showing the correct name and syncs with the
     // correct account when clicked.
@@ -180,21 +206,24 @@ suite('SyncAccountControl', function() {
     assertEquals(isDefaultPromoAccount, true);
 
     assertTrue(isChildVisible(testElement, 'cr-icon-button'));
-    assertTrue(
-        testElement.shadowRoot.querySelector('#sync-icon-container').hidden);
+    assertTrue(testElement.shadowRoot!
+                   .querySelector<HTMLElement>('#sync-icon-container')!.hidden);
 
-    testElement.shadowRoot.querySelector('#dropdown-arrow').click();
+    testElement.shadowRoot!.querySelector<HTMLElement>(
+                               '#dropdown-arrow')!.click();
     flush();
-    assertTrue(testElement.shadowRoot.querySelector('#menu').open);
+    assertTrue(
+        testElement.shadowRoot!.querySelector<CrActionMenuElement>(
+                                   '#menu')!.open);
 
     // Switching selected account will update UI with the right name and
     // email.
-    items[1].click();
+    items[1]!.click();
     flush();
-    assertFalse(userInfo.textContent.includes('fooName'));
-    assertFalse(userInfo.textContent.includes('foo@foo.com'));
-    assertTrue(userInfo.textContent.includes('barName'));
-    assertTrue(userInfo.textContent.includes('bar@bar.com'));
+    assertFalse(userInfo.textContent!.includes('fooName'));
+    assertFalse(userInfo.textContent!.includes('foo@foo.com'));
+    assertTrue(userInfo.textContent!.includes('barName'));
+    assertTrue(userInfo.textContent!.includes('bar@bar.com'));
     assertTrue(isVisible(syncButton));
 
     browserProxy.resetResolver('startSyncingWithEmail');
@@ -207,9 +236,10 @@ suite('SyncAccountControl', function() {
     assertEquals(isDefaultPromoAccount, false);
 
     // Tapping the last menu item will initiate sign-in.
-    items[2].click();
+    items[2]!.click();
     await browserProxy.whenCalled('startSignIn');
   });
+  // </if>
 
   test('signed in, no error', function() {
     testElement.syncStatus = {
@@ -226,30 +256,33 @@ suite('SyncAccountControl', function() {
     assertTrue(isChildVisible(testElement, '#avatar-row'));
     assertFalse(isChildVisible(testElement, '#promo-header'));
     assertFalse(
-        testElement.shadowRoot.querySelector('#sync-icon-container').hidden);
+        testElement.shadowRoot!
+            .querySelector<HTMLElement>('#sync-icon-container')!.hidden);
 
+    // <if expr="not chromeos_ash">
     // Chrome OS does not use the account switch menu.
-    if (!isChromeOS) {
-      assertFalse(isChildVisible(testElement, 'cr-icon-button'));
-      assertFalse(!!testElement.shadowRoot.querySelector('#menu'));
-    }
+    assertFalse(isChildVisible(testElement, 'cr-icon-button'));
+    assertFalse(!!testElement.shadowRoot!.querySelector('#menu'));
+    // </if>
 
-    const userInfo = testElement.shadowRoot.querySelector('#user-info');
-    assertTrue(userInfo.textContent.includes('barName'));
-    assertTrue(userInfo.textContent.includes('bar@bar.com'));
-    assertFalse(userInfo.textContent.includes('fooName'));
-    assertFalse(userInfo.textContent.includes('foo@foo.com'));
+    const userInfo =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#user-info')!;
+    assertTrue(userInfo.textContent!.includes('barName'));
+    assertTrue(userInfo.textContent!.includes('bar@bar.com'));
+    assertFalse(userInfo.textContent!.includes('fooName'));
+    assertFalse(userInfo.textContent!.includes('foo@foo.com'));
 
     assertFalse(isChildVisible(testElement, '#sync-button'));
     assertTrue(isChildVisible(testElement, '#turn-off'));
     assertFalse(isChildVisible(testElement, '#sync-error-button'));
 
-    testElement.shadowRoot.querySelector('#avatar-row #turn-off').click();
+    testElement.shadowRoot!.querySelector<HTMLElement>(
+                               '#avatar-row #turn-off')!.click();
     flush();
 
     assertEquals(
         Router.getInstance().getCurrentRoute(),
-        Router.getInstance().getRoutes().SIGN_OUT);
+        (Router.getInstance().getRoutes() as SyncRoutes).SIGN_OUT);
   });
 
   test('signed in, has error', function() {
@@ -263,13 +296,16 @@ suite('SyncAccountControl', function() {
       disabled: false,
     };
     flush();
-    const userInfo = testElement.shadowRoot.querySelector('#user-info');
+    const userInfo = testElement.shadowRoot!.querySelector('#user-info')!;
 
-    assertTrue(testElement.shadowRoot.querySelector('#sync-icon-container')
-                   .classList.contains('sync-problem'));
-    assertTrue(!!testElement.shadowRoot.querySelector(
+    assertTrue(
+        testElement.shadowRoot!
+            .querySelector<HTMLElement>(
+                '#sync-icon-container')!.classList.contains('sync-problem'));
+    assertTrue(!!testElement.shadowRoot!.querySelector(
         '[icon="settings:sync-problem"]'));
-    let displayedText = userInfo.querySelector('div:not([hidden])').textContent;
+    let displayedText =
+        userInfo.querySelector<HTMLElement>('div:not([hidden])')!.textContent!;
     assertFalse(displayedText.includes('barName'));
     assertFalse(displayedText.includes('fooName'));
     assertTrue(displayedText.includes('Sync isn\'t working'));
@@ -285,11 +321,14 @@ suite('SyncAccountControl', function() {
       statusAction: StatusAction.REAUTHENTICATE,
       disabled: false,
     };
-    assertTrue(testElement.shadowRoot.querySelector('#sync-icon-container')
-                   .classList.contains('sync-paused'));
-    assertTrue(!!testElement.shadowRoot.querySelector(
+    assertTrue(
+        testElement.shadowRoot!
+            .querySelector<HTMLElement>(
+                '#sync-icon-container')!.classList.contains('sync-paused'));
+    assertTrue(!!testElement.shadowRoot!.querySelector(
         '[icon=\'settings:sync-disabled\']'));
-    displayedText = userInfo.querySelector('div:not([hidden])').textContent;
+    displayedText =
+        userInfo.querySelector<HTMLElement>('div:not([hidden])')!.textContent!;
     assertFalse(displayedText.includes('barName'));
     assertFalse(displayedText.includes('fooName'));
     assertTrue(displayedText.includes('Sync is paused'));
@@ -306,10 +345,13 @@ suite('SyncAccountControl', function() {
       disabled: true,
     };
 
-    assertTrue(testElement.shadowRoot.querySelector('#sync-icon-container')
-                   .classList.contains('sync-disabled'));
-    assertTrue(!!testElement.shadowRoot.querySelector('[icon=\'cr:sync\']'));
-    displayedText = userInfo.querySelector('div:not([hidden])').textContent;
+    assertTrue(
+        testElement.shadowRoot!
+            .querySelector<HTMLElement>(
+                '#sync-icon-container')!.classList.contains('sync-disabled'));
+    assertTrue(!!testElement.shadowRoot!.querySelector('[icon=\'cr:sync\']'));
+    displayedText =
+        userInfo.querySelector<HTMLElement>('div:not([hidden])')!.textContent!;
     assertFalse(displayedText.includes('barName'));
     assertFalse(displayedText.includes('fooName'));
     assertTrue(displayedText.includes('Sync disabled'));
@@ -324,11 +366,14 @@ suite('SyncAccountControl', function() {
       hasUnrecoverableError: true,
       disabled: false,
     };
-    assertTrue(testElement.shadowRoot.querySelector('#sync-icon-container')
-                   .classList.contains('sync-problem'));
-    assertTrue(!!testElement.shadowRoot.querySelector(
+    assertTrue(
+        testElement.shadowRoot!
+            .querySelector<HTMLElement>(
+                '#sync-icon-container')!.classList.contains('sync-problem'));
+    assertTrue(!!testElement.shadowRoot!.querySelector(
         '[icon="settings:sync-problem"]'));
-    displayedText = userInfo.querySelector('div:not([hidden])').textContent;
+    displayedText =
+        userInfo.querySelector<HTMLElement>('div:not([hidden])')!.textContent!;
     assertFalse(displayedText.includes('barName'));
     assertFalse(displayedText.includes('fooName'));
     assertTrue(displayedText.includes('Sync isn\'t working'));
@@ -343,11 +388,14 @@ suite('SyncAccountControl', function() {
       hasUnrecoverableError: false,
       disabled: false,
     };
-    assertTrue(testElement.shadowRoot.querySelector('#sync-icon-container')
-                   .classList.contains('sync-problem'));
-    assertTrue(!!testElement.shadowRoot.querySelector(
+    assertTrue(
+        testElement.shadowRoot!
+            .querySelector<HTMLElement>(
+                '#sync-icon-container')!.classList.contains('sync-problem'));
+    assertTrue(!!testElement.shadowRoot!.querySelector(
         '[icon="settings:sync-problem"]'));
-    displayedText = userInfo.querySelector('div:not([hidden])').textContent;
+    displayedText =
+        userInfo.querySelector<HTMLElement>('div:not([hidden])')!.textContent!;
     assertFalse(displayedText.includes('barName'));
     assertFalse(displayedText.includes('fooName'));
     assertFalse(displayedText.includes('Sync isn\'t working'));
@@ -369,18 +417,19 @@ suite('SyncAccountControl', function() {
       disabled: false,
     };
     flush();
-    const userInfo = testElement.shadowRoot.querySelector('#user-info');
-    const setupButtons = testElement.shadowRoot.querySelector('#setup-buttons');
+    const userInfo = testElement.shadowRoot!.querySelector('#user-info')!;
+    const setupButtons =
+        testElement.shadowRoot!.querySelector('#setup-buttons');
 
-    assertTrue(userInfo.textContent.includes('barName'));
-    assertTrue(userInfo.textContent.includes('Setup in progress...'));
+    assertTrue(userInfo.textContent!.includes('barName'));
+    assertTrue(userInfo.textContent!.includes('Setup in progress...'));
     assertTrue(isVisible(setupButtons));
   });
 
   test('embedded in another page', function() {
     testElement.embeddedInSubpage = true;
     forcePromoResetWithCount(100, false);
-    const banner = testElement.shadowRoot.querySelector('#banner');
+    const banner = testElement.shadowRoot!.querySelector('#banner');
     assertTrue(isVisible(banner));
 
     testElement.syncStatus = {
@@ -492,9 +541,9 @@ suite('SyncAccountControl', function() {
 
   test('signinButtonDisabled', function() {
     // Ensure that the sync button is disabled when signin is disabled.
-    assertFalse(testElement.shadowRoot.querySelector('#sign-in').disabled);
+    assertFalse(testElement.$.signIn.disabled);
     testElement.setPrefValue('signin.allowed_on_next_startup', false);
     flush();
-    assertTrue(testElement.shadowRoot.querySelector('#sign-in').disabled);
+    assertTrue(testElement.$.signIn.disabled);
   });
 });

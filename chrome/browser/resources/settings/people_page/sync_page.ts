@@ -19,6 +19,7 @@ import './sync_encryption_options.js';
 import '../privacy_page/personalization_options.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
+
 // <if expr="not chromeos">
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 // </if>
@@ -28,11 +29,12 @@ import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.m.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from '//resources/js/web_ui_listener_mixin.js';
+
+import {IronCollapseElement} from '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {flush, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-
 // <if expr="chromeos">
 import {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
 // </if>
@@ -40,7 +42,6 @@ import {SettingsPersonalizationOptionsElement} from '../privacy_page/personaliza
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
-
 // <if expr="chromeos">
 import {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js';
 // </if>
@@ -61,6 +62,12 @@ function getSyncRoutes(): SyncRoutes {
 }
 
 type FocusConfig = Map<string, (string|(() => void))>;
+
+export interface SettingsSyncPageElement {
+  $: {
+    encryptionCollapse: IronCollapseElement,
+  };
+}
 
 /**
  * @fileoverview
@@ -200,6 +207,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     ];
   }
 
+  prefs: {[key: string]: any};
   focusConfig: FocusConfig;
   private pageStatus_: PageStatus
   syncPrefs?: SyncPrefs;
@@ -678,6 +686,12 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     if (passphraseInput && router.getCurrentRoute() === getSyncRoutes().SYNC) {
       passphraseInput.focus();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-sync-page': SettingsSyncPageElement;
   }
 }
 
