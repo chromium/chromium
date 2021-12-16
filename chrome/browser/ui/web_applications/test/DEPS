@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "system_web_app_interactive_uitest\.cc": [
+    "+ash/shell.h",
+    "+ash/wm/window_util.h",
+  ],
+}

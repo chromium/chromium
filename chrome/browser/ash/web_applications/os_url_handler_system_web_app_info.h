@@ -33,6 +33,9 @@ class OsUrlHandlerSystemWebAppDelegate : public web_app::SystemWebAppDelegate {
   bool ShouldShowInSearch() const override;
   bool ShouldReuseExistingWindow() const override;
   bool IsUrlInSystemAppScope(const GURL& url) const override;
+
+  // Can be called by a test to enforce the app to be enabled.
+  static void EnableDelegateForTesting(bool enable);
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_OS_URL_HANDLER_SYSTEM_WEB_APP_INFO_H_

@@ -64,6 +64,10 @@ void UrlHandlerAsh::BindReceiver(
 }
 
 void UrlHandlerAsh::OpenUrl(const GURL& url) {
+  OpenUrlInternal(url);
+}
+
+bool UrlHandlerAsh::OpenUrlInternal(const GURL& url) {
   GURL target_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
   // Settings will be handled.
   if (target_url == GURL(chrome::kChromeUIOSSettingsURL)) {
@@ -72,7 +76,7 @@ void UrlHandlerAsh::OpenUrl(const GURL& url) {
     settings_window_manager->ShowChromePageForProfile(
         ProfileManager::GetPrimaryUserProfile(), target_url,
         display::kInvalidDisplayId);
-    return;
+    return true;
   }
 
   web_app::SystemAppType app_id;
@@ -104,10 +108,11 @@ void UrlHandlerAsh::OpenUrl(const GURL& url) {
     }
   } else {
     LOG(ERROR) << "Invalid URL passed to UrlHandlerAsh::OpenUrl:" << url;
-    return;
+    return false;
   }
   ShowOsAppForProfile(ProfileManager::GetPrimaryUserProfile(), target_url,
                       app_id);
+  return true;
 }
 
 }  // namespace crosapi

@@ -8612,7 +8612,13 @@ if (!is_android && !is_fuchsia) {
           "../browser/ui/views/keyboard_access_browsertest.cc",
         ]
       }
-      if (!is_chromeos_ash) {
+      if (is_chromeos_ash) {
+        deps += [
+          "//ash:ash",
+          "//chrome/browser/ash/crosapi:crosapi",
+          "//ui/wm/public:public",
+        ]
+      } else {
         sources += [ "../browser/ui/views/global_media_controls/media_dialog_view_interactive_browsertest.cc" ]
         deps += [
           "../browser/media/router:test_support",
@@ -8623,7 +8629,6 @@ if (!is_android && !is_fuchsia) {
       if (!is_android) {
         sources += [ "../browser/ui/web_applications/test/system_web_app_interactive_uitest.cc" ]
       }
-
       if (use_aura) {
         sources += [ "../browser/ui/views/tooltip/tooltip_browsertest.cc" ]
       }
