@@ -152,11 +152,17 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseRead) {
     chunk3->Data()[2] = 0x49;
     chunk3->Data()[3] = 0x4a;
     underlying_source->Enqueue(
-        ScriptValue(script_state->GetIsolate(), ToV8(chunk1, script_state)));
+        ScriptValue(script_state->GetIsolate(),
+                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk1)
+                        .ToLocalChecked()));
     underlying_source->Enqueue(
-        ScriptValue(script_state->GetIsolate(), ToV8(chunk2, script_state)));
+        ScriptValue(script_state->GetIsolate(),
+                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk2)
+                        .ToLocalChecked()));
     underlying_source->Enqueue(
-        ScriptValue(script_state->GetIsolate(), ToV8(chunk3, script_state)));
+        ScriptValue(script_state->GetIsolate(),
+                    ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk3)
+                        .ToLocalChecked()));
     underlying_source->Close();
   }
 
@@ -253,8 +259,9 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedDuringRead) {
   chunk->Data()[1] = 0x44;
   chunk->Data()[2] = 0x45;
   chunk->Data()[3] = 0x46;
-  underlying_source->Enqueue(
-      ScriptValue(script_state->GetIsolate(), ToV8(chunk, script_state)));
+  underlying_source->Enqueue(ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk).ToLocalChecked()));
   underlying_source->Close();
 
   Persistent<BytesConsumer> consumer =
@@ -304,8 +311,9 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedBetweenReads) {
   chunk->Data()[1] = 0x44;
   chunk->Data()[2] = 0x45;
   chunk->Data()[3] = 0x46;
-  underlying_source->Enqueue(
-      ScriptValue(script_state->GetIsolate(), ToV8(chunk, script_state)));
+  underlying_source->Enqueue(ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk).ToLocalChecked()));
   underlying_source->Close();
 
   Persistent<BytesConsumer> consumer =

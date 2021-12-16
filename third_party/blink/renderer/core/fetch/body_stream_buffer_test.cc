@@ -178,10 +178,14 @@ TEST_F(BodyStreamBufferTest, TeeFromHandleMadeFromStream) {
       scope.GetScriptState(), underlying_source, 0);
   ASSERT_TRUE(stream);
 
-  underlying_source->Enqueue(
-      ScriptValue(scope.GetIsolate(), ToV8(chunk1, scope.GetScriptState())));
-  underlying_source->Enqueue(
-      ScriptValue(scope.GetIsolate(), ToV8(chunk2, scope.GetScriptState())));
+  underlying_source->Enqueue(ScriptValue(
+      scope.GetIsolate(),
+      ToV8Traits<DOMUint8Array>::ToV8(scope.GetScriptState(), chunk1)
+          .ToLocalChecked()));
+  underlying_source->Enqueue(ScriptValue(
+      scope.GetIsolate(),
+      ToV8Traits<DOMUint8Array>::ToV8(scope.GetScriptState(), chunk2)
+          .ToLocalChecked()));
   underlying_source->Close();
 
   Checkpoint checkpoint;
