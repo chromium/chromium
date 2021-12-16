@@ -1,0 +1,6 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View text:"An unnamed section element gets the section role." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="section"]
+++View text:"name" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="region", roleDescription="region"]
+++View text:"Named section element #2 gets the region role" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="region", roleDescription="region"]
+++++TextView text:"Named section element #2 gets the region role" viewIdResName:"section1" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
+++View text:"name" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="region", roleDescription="region"]

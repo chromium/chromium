@@ -1,0 +1,5 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++TextView text:"Heading 2, no tabIndex" CollectionItemInfo:[heading, rowIndex=0, rowSpan=0, colIndex=0, colSpan=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 2"]
+++TextView text:"Heading 1, tabIndex of negative 1" focusable CollectionItemInfo:[heading, rowIndex=0, rowSpan=0, colIndex=0, colSpan=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 1"]
+++TextView text:"Heading 3, tabIndex of 0" focusable CollectionItemInfo:[heading, rowIndex=0, rowSpan=0, colIndex=0, colSpan=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 3"]
+++TextView text:"Heading 4, tabIndex of 1" focusable CollectionItemInfo:[heading, rowIndex=0, rowSpan=0, colIndex=0, colSpan=0] actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 4"]
