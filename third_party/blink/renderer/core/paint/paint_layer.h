@@ -78,14 +78,7 @@ class PaintLayerScrollableArea;
 class ScrollingCoordinator;
 class TransformationMatrix;
 
-using PaintLayerId = uint64_t;
-
 enum IncludeSelfOrNot { kIncludeSelf, kExcludeSelf };
-
-enum CompositingQueryMode {
-  kCompositingQueriesAreAllowed,
-  kCompositingQueriesAreOnlyAllowedInCertainDocumentLifecyclePhases
-};
 
 // Used in PaintLayerPaintOrderIterator.
 enum PaintLayerIteration {
@@ -133,10 +126,6 @@ struct CORE_EXPORT PaintLayerRareData final
   Member<PaintLayer> enclosing_pagination_layer;
 
   Member<PaintLayerResourceInfo> resource_info;
-
-  // The accumulated subpixel offset of a composited layer's composited bounds
-  // compared to absolute coordinates.
-  PhysicalOffset subpixel_accumulation;
 };
 
 // PaintLayer is an old object that handles lots of unrelated operations.
@@ -481,8 +470,10 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return position;
   }
 
-  PhysicalOffset SubpixelAccumulation() const;
-  void SetSubpixelAccumulation(const PhysicalOffset&);
+  PhysicalOffset SubpixelAccumulation() const {
+    // TODO(pdr): Remove this.
+    return PhysicalOffset();
+  }
 
   bool HasTransformRelatedProperty() const {
     return GetLayoutObject().HasTransformRelatedProperty();
@@ -524,25 +515,10 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return kNotComposited;
   }
 
-  // This returns true if our document is in a phase of its lifestyle during
-  // which compositing state may legally be read.
-  bool IsAllowedToQueryCompositingState() const;
-
-  bool IsAllowedToQueryCompositingInputs() const;
-
   CompositedLayerMapping* GetCompositedLayerMapping() const {
     // TODO(pdr): Remove this.
     return nullptr;
   }
-
-  // Returns the GraphicsLayer owned by this PaintLayer's
-  // CompositedLayerMapping (or groupedMapping()'s, if squashed),
-  // into which the given LayoutObject paints. If null, assumes the
-  // LayoutObject is *not* layoutObject().
-  // Assumes that the given LayoutObject paints into one of the GraphicsLayers
-  // associated with this PaintLayer.
-  // Returns nullptr if this PaintLayer is not composited.
-  GraphicsLayer* GraphicsLayerBacking(const LayoutObject* = nullptr) const;
 
   bool HasCompositedLayerMapping() const {
     // TODO(pdr): Remove this.
@@ -674,15 +650,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // layer tree.
   void SetNeedsGraphicsLayerRebuild();
 
-  // Mark this PaintLayer as needing raster invalidation checking after the
-  // next compositing update step.
-  void SetNeedsCheckRasterInvalidation();
-  bool NeedsCheckRasterInvalidation() const {
-    return needs_check_raster_invalidation_;
-  }
-  void ClearNeedsCheckRasterInvalidation() {
-    needs_check_raster_invalidation_ = false;
-  }
   void UpdateAncestorScrollContainerLayer(
       const PaintLayer* ancestor_scroll_container_layer) {
     ancestor_scroll_container_layer_ = ancestor_scroll_container_layer;
@@ -749,12 +716,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     // TODO(pdr): Remove this.
     return SquashingDisallowedReason::kNone;
   }
-
-  bool ShouldIsolateCompositedDescendants() const {
-    DCHECK(IsAllowedToQueryCompositingState());
-    return should_isolate_composited_descendants_;
-  }
-  void SetShouldIsolateCompositedDescendants(bool);
 
   void UpdateDescendantDependentFlags();
 
@@ -849,13 +810,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     needs_paint_phase_float_ = true;
   }
 
-  bool DescendantHasDirectOrScrollingCompositingReason() const {
-    return descendant_has_direct_or_scrolling_compositing_reason_;
-  }
-  void SetDescendantHasDirectOrScrollingCompositingReason(bool value) {
-    descendant_has_direct_or_scrolling_compositing_reason_ = value;
-  }
-
   bool Has3DTransformedDescendant() const {
     DCHECK(!needs_descendant_dependent_flags_update_);
     return has3d_transformed_descendant_;
@@ -882,13 +836,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   void SetNeedsCompositingLayerAssignment();
   void ClearNeedsCompositingLayerAssignment();
   void PropagateDescendantNeedsCompositingLayerAssignment();
-
-  bool NeedsCompositingLayerAssignment() const {
-    return needs_compositing_layer_assignment_;
-  }
-  bool StackingDescendantNeedsCompositingLayerAssignment() const {
-    return descendant_needs_compositing_layer_assignment_;
-  }
 
   void DirtyStackingContextZOrderLists();
 
@@ -1087,9 +1034,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // in a preserves3D hierarchy. Hint to do 3D-aware hit testing.
   unsigned has3d_transformed_descendant_ : 1;
 
-  // Should be for stacking contexts having unisolated blending descendants.
-  unsigned should_isolate_composited_descendants_ : 1;
-
   unsigned self_needs_repaint_ : 1;
   unsigned descendant_needs_repaint_ : 1;
 
@@ -1127,18 +1071,11 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // ancestor.
   unsigned is_under_svg_hidden_container_ : 1;
 
-  unsigned descendant_has_direct_or_scrolling_compositing_reason_ : 1;
-
-  unsigned needs_compositing_layer_assignment_ : 1;
-  unsigned descendant_needs_compositing_layer_assignment_ : 1;
-
   unsigned has_self_painting_layer_descendant_ : 1;
 
   unsigned needs_reorder_overlay_overflow_controls_ : 1;
   unsigned static_inline_edge_ : 2;
   unsigned static_block_edge_ : 2;
-
-  unsigned needs_check_raster_invalidation_ : 1;
 
 #if DCHECK_IS_ON()
   mutable unsigned layer_list_mutation_allowed_ : 1;

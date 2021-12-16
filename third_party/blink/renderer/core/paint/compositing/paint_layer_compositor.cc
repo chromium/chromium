@@ -44,9 +44,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
-#include "third_party/blink/renderer/core/paint/compositing/compositing_inputs_updater.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_layer_assigner.h"
-#include "third_party/blink/renderer/core/paint/compositing/compositing_requirements_updater.h"
 #include "third_party/blink/renderer/core/paint/compositing/graphics_layer_tree_builder.h"
 #include "third_party/blink/renderer/core/paint/compositing/graphics_layer_updater.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
@@ -77,7 +75,6 @@ void PaintLayerCompositor::CleanUp() {
 bool PaintLayerCompositor::InCompositingMode() const {
   // FIXME: This should assert that lifecycle is >= CompositingClean since
   // the last step of updateIfNeeded can set this bit to false.
-  DCHECK(layout_view_->Layer()->IsAllowedToQueryCompositingState());
   return compositing_;
 }
 
@@ -145,17 +142,6 @@ void PaintLayerCompositor::UpdateInputsIfNeededRecursiveInternal(
 #endif
 
   layout_view_->CommitPendingSelection();
-
-  if (pending_update_type_ >= kCompositingUpdateAfterCompositingInputChange) {
-    CompositingInputsUpdater updater(RootLayer(), GetCompositingInputsRoot());
-    updater.Update();
-    // TODO(chrishtr): we should only need to do this if compositing state
-    // changed, but
-    // compositing/iframe-graphics-tree-changes-parents-does-not.html
-    // breaks otherwise.
-    if (updater.LayerOrDescendantShouldBeComposited(RootLayer()))
-      SetOwnerNeedsCompositingInputsUpdate();
-  }
 
   Lifecycle().AdvanceTo(DocumentLifecycle::kCompositingInputsClean);
 }
@@ -279,8 +265,6 @@ void PaintLayerCompositor::UpdateAssignmentsIfNeeded(
       &layers_needing_paint_invalidation);
 
   if (update_type >= kCompositingUpdateAfterCompositingInputChange) {
-    CompositingRequirementsUpdater(*layout_view_).Update(update_root);
-
     CompositingLayerAssigner layer_assigner(this);
     layer_assigner.Assign(update_root, layers_needing_paint_invalidation);
     // TODO(szager): Remove this after diagnosing crash.

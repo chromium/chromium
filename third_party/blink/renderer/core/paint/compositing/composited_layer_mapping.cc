@@ -407,10 +407,6 @@ void CompositedLayerMapping::ComputeBoundsOfOwningLayer(
       GetLayoutObject().SetShouldCheckForPaintInvalidation();
   }
 
-  // Otherwise discard the sub-pixel remainder because paint offset can't be
-  // transformed by a non-translation transform.
-  owning_layer_->SetSubpixelAccumulation(subpixel_accumulation);
-
   absl::optional<gfx::Rect> mask_bounding_box =
       CSSMaskPainter::MaskBoundingBox(GetLayoutObject(), subpixel_accumulation);
   absl::optional<gfx::RectF> clip_path_bounding_box =
@@ -526,16 +522,12 @@ void CompositedLayerMapping::UpdateSquashingLayerGeometry(
 
     gfx::Vector2d new_offset_from_layout_object =
         -ToRoundedVector2d(offset_from_squash_layer_origin);
-    PhysicalOffset subpixel_accumulation =
-        offset_from_squash_layer_origin +
-        PhysicalOffset(new_offset_from_layout_object);
     if (layer->offset_from_layout_object_set &&
         layer->offset_from_layout_object != new_offset_from_layout_object) {
       layers_needing_paint_invalidation.push_back(layer->paint_layer);
     }
     layer->offset_from_layout_object = new_offset_from_layout_object;
     layer->offset_from_layout_object_set = true;
-    layer->paint_layer->SetSubpixelAccumulation(subpixel_accumulation);
   }
 
   non_scrolling_squashing_layer_->SetSize(squash_layer_bounds.size());
@@ -686,9 +678,6 @@ void CompositedLayerMapping::UpdateScrollingContentsLayerGeometry(
         PhysicalOffset(scrolling_contents_layer_->OffsetFromLayoutObject());
     gfx::Vector2d new_offset_from_layout_object =
         -ToRoundedVector2d(offset_from_scrolling_contents_layer);
-    PhysicalOffset subpixel_accumulation =
-        offset_from_scrolling_contents_layer +
-        PhysicalOffset(new_offset_from_layout_object);
 
     if (layer->offset_from_layout_object_set &&
         layer->offset_from_layout_object != new_offset_from_layout_object) {
@@ -696,7 +685,6 @@ void CompositedLayerMapping::UpdateScrollingContentsLayerGeometry(
     }
     layer->offset_from_layout_object = new_offset_from_layout_object;
     layer->offset_from_layout_object_set = true;
-    layer->paint_layer->SetSubpixelAccumulation(subpixel_accumulation);
   }
   for (auto& layer : squashed_layers_in_scrolling_contents_) {
     UpdateLocalClipRectForSquashedLayer(

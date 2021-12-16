@@ -95,22 +95,7 @@ class PaintLayerScrollableAreaTest : public PaintControllerPaintTest {
       return false;
     }
 
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      DCHECK_EQ(composited, layer->NeedsCompositedScrolling());
-      DCHECK_EQ(composited, scrollable_area->NeedsCompositedScrolling());
-      if (composited)
-        DCHECK(layer->GraphicsLayerBacking());
-    }
     return composited;
-  }
-
-  bool GraphicsLayerContentsOpaque(const LayoutObject* scroller) {
-    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    return To<LayoutBoxModelObject>(scroller)
-        ->Layer()
-        ->GraphicsLayerBacking()
-        ->CcLayer()
-        .contents_opaque();
   }
 
  private:
@@ -137,8 +122,6 @@ TEST_P(PaintLayerScrollableAreaTest, OpaqueContainedLayersPromoted) {
 
   auto* scroller = GetLayoutObjectByElementId("scroller");
   EXPECT_TRUE(UsesCompositedScrolling(scroller));
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_TRUE(GraphicsLayerContentsOpaque(scroller));
 }
 
 TEST_P(PaintLayerScrollableAreaTest, NonStackingContextScrollerPromoted) {
@@ -212,8 +195,6 @@ TEST_P(PaintLayerScrollableAreaTest, OpaqueLayersPromotedOnStyleChange) {
                          "background: white local content-box;");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutObject()));
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_TRUE(GraphicsLayerContentsOpaque(scroller->GetLayoutObject()));
 }
 
 // Tests that a transform on the scroller or an ancestor doesn't prevent
@@ -234,8 +215,6 @@ TEST_P(PaintLayerScrollableAreaTest,
   Element* parent = GetDocument().getElementById("parent");
   Element* scroller = GetDocument().getElementById("scroller");
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutObject()));
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_TRUE(GraphicsLayerContentsOpaque(scroller->GetLayoutObject()));
 
   // Change the parent to have a transform.
   parent->setAttribute(html_names::kStyleAttr, "transform: translate(1px, 0);");
@@ -246,8 +225,6 @@ TEST_P(PaintLayerScrollableAreaTest,
   parent->removeAttribute(html_names::kStyleAttr);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutObject()));
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_TRUE(GraphicsLayerContentsOpaque(scroller->GetLayoutObject()));
 
   // Apply a transform to the scroller directly.
   scroller->setAttribute(html_names::kStyleAttr,
@@ -272,8 +249,6 @@ TEST_P(PaintLayerScrollableAreaTest,
   Element* parent = GetDocument().getElementById("parent");
   Element* scroller = GetDocument().getElementById("scroller");
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutObject()));
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_TRUE(GraphicsLayerContentsOpaque(scroller->GetLayoutObject()));
 
   // Change the parent to be partially translucent.
   parent->setAttribute(html_names::kStyleAttr, "opacity: 0.5;");
@@ -284,8 +259,6 @@ TEST_P(PaintLayerScrollableAreaTest,
   parent->setAttribute(html_names::kStyleAttr, "opacity: 1;");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(UsesCompositedScrolling(scroller->GetLayoutObject()));
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_TRUE(GraphicsLayerContentsOpaque(scroller->GetLayoutObject()));
 
   // Make the scroller translucent.
   scroller->setAttribute(html_names::kStyleAttr, "opacity: 0.5");

@@ -28,12 +28,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
  protected:
   LayoutView& GetLayoutView() const { return *GetDocument().GetLayoutView(); }
   PaintController& RootPaintController() const {
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-      return GetDocument().View()->GetPaintControllerForTesting();
-    return GetLayoutView()
-        .Layer()
-        ->GraphicsLayerBacking()
-        ->GetPaintController();
+    return GetDocument().View()->GetPaintControllerForTesting();
   }
 
   void SetUp() override {

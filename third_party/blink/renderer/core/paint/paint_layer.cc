@@ -109,9 +109,6 @@ namespace blink {
 
 namespace {
 
-static CompositingQueryMode g_compositing_query_mode =
-    kCompositingQueriesAreOnlyAllowedInCertainDocumentLifecyclePhases;
-
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 struct SameSizeAsPaintLayer : GarbageCollected<PaintLayer>, DisplayItemClient {
   // The bit fields may fit into the machine word of DisplayItemClient which
@@ -185,7 +182,6 @@ PaintLayer::PaintLayer(LayoutBoxModelObject* layout_object)
       needs_position_update_(!IsRootLayer()),
 #endif
       has3d_transformed_descendant_(false),
-      should_isolate_composited_descendants_(false),
       self_needs_repaint_(false),
       descendant_needs_repaint_(false),
       needs_cull_rect_update_(false),
@@ -203,14 +199,10 @@ PaintLayer::PaintLayer(LayoutBoxModelObject* layout_object)
       backdrop_filter_on_effect_node_dirty_(false),
       has_filter_that_moves_pixels_(false),
       is_under_svg_hidden_container_(false),
-      descendant_has_direct_or_scrolling_compositing_reason_(false),
-      needs_compositing_layer_assignment_(false),
-      descendant_needs_compositing_layer_assignment_(false),
       has_self_painting_layer_descendant_(false),
       needs_reorder_overlay_overflow_controls_(false),
       static_inline_edge_(InlineEdge::kInlineStart),
       static_block_edge_(BlockEdge::kBlockStart),
-      needs_check_raster_invalidation_(false),
 #if DCHECK_IS_ON()
       layer_list_mutation_allowed_(true),
 #endif
@@ -280,16 +272,6 @@ bool PaintLayer::PaintsWithFilters() const {
   if (!GetLayoutObject().HasFilterInducingProperty())
     return false;
   return true;
-}
-
-PhysicalOffset PaintLayer::SubpixelAccumulation() const {
-  return rare_data_ ? rare_data_->subpixel_accumulation : PhysicalOffset();
-}
-
-void PaintLayer::SetSubpixelAccumulation(const PhysicalOffset& accumulation) {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  if (rare_data_ || !accumulation.IsZero())
-    EnsureRareData().subpixel_accumulation = accumulation;
 }
 
 void PaintLayer::UpdateLayerPositionsAfterLayout() {
@@ -950,8 +932,6 @@ PaintLayer::EnclosingLayerForPaintInvalidationCrossingFrameBoundaries() const {
 }
 
 PaintLayer* PaintLayer::EnclosingLayerForPaintInvalidation() const {
-  DCHECK(IsAllowedToQueryCompositingState());
-
   if (IsPaintInvalidationContainer())
     return const_cast<PaintLayer*>(this);
 
@@ -1020,16 +1000,6 @@ void PaintLayer::SetNeedsGraphicsLayerRebuild() {
     Compositor()->SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
 }
 
-void PaintLayer::SetNeedsCheckRasterInvalidation() {
-  DCHECK_EQ(GetLayoutObject().GetDocument().Lifecycle().GetState(),
-            DocumentLifecycle::kInPrePaint);
-  needs_check_raster_invalidation_ = true;
-  // We need to mark |this| as needing layer assignment also, because
-  // CompositingLayerAssigner is where we transfer the raster invalidation
-  // checking bit from PaintLayer to GraphicsLayer.
-  SetNeedsCompositingLayerAssignment();
-}
-
 void PaintLayer::SetNeedsVisualOverflowRecalc() {
   DCHECK(IsSelfPaintingLayer());
 #if DCHECK_IS_ON()
@@ -1060,16 +1030,6 @@ bool PaintLayer::HasNonIsolatedDescendantWithBlendMode() const {
         .HasNonIsolatedBlendingDescendants();
   }
   return false;
-}
-
-void PaintLayer::SetShouldIsolateCompositedDescendants(
-    bool should_isolate_composited_descendants) {
-  if (should_isolate_composited_descendants_ ==
-      static_cast<unsigned>(should_isolate_composited_descendants))
-    return;
-
-  should_isolate_composited_descendants_ =
-      should_isolate_composited_descendants;
 }
 
 bool PaintLayer::HasAncestorWithFilterThatMovesPixels() const {
@@ -2312,24 +2272,6 @@ bool PaintLayer::IsReplacedNormalFlowStacking() const {
   return GetLayoutObject().IsSVGForeignObject();
 }
 
-void PaintLayer::SetNeedsCompositingLayerAssignment() {
-  needs_compositing_layer_assignment_ = true;
-  PropagateDescendantNeedsCompositingLayerAssignment();
-}
-
-void PaintLayer::PropagateDescendantNeedsCompositingLayerAssignment() {
-  for (PaintLayer* curr = CompositingContainer();
-       curr && !curr->StackingDescendantNeedsCompositingLayerAssignment();
-       curr = curr->CompositingContainer()) {
-    curr->descendant_needs_compositing_layer_assignment_ = true;
-  }
-}
-
-void PaintLayer::ClearNeedsCompositingLayerAssignment() {
-  needs_compositing_layer_assignment_ = false;
-  descendant_needs_compositing_layer_assignment_ = false;
-}
-
 PaintLayer* PaintLayer::HitTestChildren(
     PaintLayerIteration children_to_visit,
     const PaintLayer& transform_container,
@@ -2776,38 +2718,6 @@ PhysicalRect PaintLayer::BoundingBoxForCompositingInternal(
     result.Move(delta);
   }
   return result;
-}
-
-bool PaintLayer::IsAllowedToQueryCompositingState() const {
-  if (g_compositing_query_mode == kCompositingQueriesAreAllowed ||
-      RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return true;
-  if (!GetLayoutObject().GetFrameView()->IsUpdatingLifecycle())
-    return true;
-  return GetLayoutObject().GetDocument().Lifecycle().GetState() >=
-         DocumentLifecycle::kInCompositingAssignmentsUpdate;
-}
-
-bool PaintLayer::IsAllowedToQueryCompositingInputs() const {
-  if (g_compositing_query_mode == kCompositingQueriesAreAllowed ||
-      RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return true;
-  return GetLayoutObject().GetDocument().Lifecycle().GetState() >=
-         DocumentLifecycle::kCompositingInputsClean;
-}
-
-GraphicsLayer* PaintLayer::GraphicsLayerBacking(const LayoutObject* obj) const {
-  switch (GetCompositingState()) {
-    case kNotComposited:
-      return nullptr;
-    case kPaintsIntoGroupedBacking:
-      return GroupedMapping()->SquashingLayer(*this);
-    default:
-      return (obj != &GetLayoutObject() &&
-              GetCompositedLayerMapping()->ScrollingContentsLayer())
-                 ? GetCompositedLayerMapping()->ScrollingContentsLayer()
-                 : GetCompositedLayerMapping()->MainGraphicsLayer();
-  }
 }
 
 bool PaintLayer::NeedsCompositedScrolling() const {

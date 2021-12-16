@@ -23,13 +23,6 @@ class PaintLayerPainterTest : public PaintControllerPaintTest {
   USING_FAST_MALLOC(PaintLayerPainterTest);
 
  public:
-  PaintController& MainGraphicsLayerPaintController() {
-    return GetLayoutView()
-        .Layer()
-        ->GraphicsLayerBacking(&GetLayoutView())
-        ->GetPaintController();
-  }
-
   CullRect GetCullRect(const PaintLayer& layer) {
     if (RuntimeEnabledFeatures::CullRectUpdateEnabled())
       return layer.GetLayoutObject().FirstFragment().GetCullRect();
