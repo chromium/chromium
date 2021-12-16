@@ -64,9 +64,9 @@ MemoryEncryptionAlgorithm TranslateMemoryEncryptionAlgorithm(
 
 void HandleBusResult(MetricCallback callback,
                      CrosHealthdMetricSampler::MetricType metric_type,
+                     MetricData metric_data,
                      cros_healthd::TelemetryInfoPtr result) {
   bool anything_reported = false;
-  MetricData metric_data;
   const auto& bus_result = result->bus_result;
 
   if (!bus_result.is_null()) {
@@ -99,15 +99,15 @@ void HandleBusResult(MetricCallback callback,
   }
 
   if (anything_reported) {
-    std::move(callback).Run(metric_data);
+    std::move(callback).Run(std::move(metric_data));
   }
 }
 
 void HandleCpuResult(MetricCallback callback,
                      CrosHealthdMetricSampler::MetricType metric_type,
+                     MetricData metric_data,
                      cros_healthd::TelemetryInfoPtr result) {
   bool anything_reported = false;
-  MetricData metric_data;
   const auto& cpu_result = result->cpu_result;
 
   if (!cpu_result.is_null()) {
@@ -148,15 +148,15 @@ void HandleCpuResult(MetricCallback callback,
   }
 
   if (anything_reported) {
-    std::move(callback).Run(metric_data);
+    std::move(callback).Run(std::move(metric_data));
   }
 }
 
 void HandleAudioResult(MetricCallback callback,
                        CrosHealthdMetricSampler::MetricType metric_type,
+                       MetricData metric_data,
                        chromeos::cros_healthd::mojom::TelemetryInfoPtr result) {
   bool anything_reported = false;
-  MetricData metric_data;
   auto* const audio_info_out =
       metric_data.mutable_telemetry_data()->mutable_audio_telemetry();
   const auto& audio_result = result->audio_result;
@@ -192,15 +192,15 @@ void HandleAudioResult(MetricCallback callback,
   }
 
   if (anything_reported) {
-    std::move(callback).Run(metric_data);
+    std::move(callback).Run(std::move(metric_data));
   }
 }
 
 void HandleMemoryResult(MetricCallback callback,
                         CrosHealthdMetricSampler::MetricType metric_type,
+                        MetricData metric_data,
                         cros_healthd::TelemetryInfoPtr result) {
   bool anything_reported = false;
-  MetricData metric_data;
   const auto& memory_result = result->memory_result;
 
   if (!memory_result.is_null()) {
@@ -251,13 +251,14 @@ void HandleMemoryResult(MetricCallback callback,
   }
 
   if (anything_reported) {
-    std::move(callback).Run(metric_data);
+    std::move(callback).Run(std::move(metric_data));
   }
 }
 
 void OnHealthdInfoReceived(MetricCallback callback,
                            cros_healthd::ProbeCategoryEnum probe_category,
                            CrosHealthdMetricSampler::MetricType metric_type,
+                           MetricData metric_data,
                            cros_healthd::TelemetryInfoPtr result) {
   if (!result) {
     DVLOG(1) << "cros_healthd: null telemetry result";
@@ -266,19 +267,23 @@ void OnHealthdInfoReceived(MetricCallback callback,
 
   switch (probe_category) {
     case cros_healthd::ProbeCategoryEnum::kAudio: {
-      HandleAudioResult(std::move(callback), metric_type, std::move(result));
+      HandleAudioResult(std::move(callback), metric_type,
+                        std::move(metric_data), std::move(result));
       break;
     }
     case cros_healthd::ProbeCategoryEnum::kBus: {
-      HandleBusResult(std::move(callback), metric_type, std::move(result));
+      HandleBusResult(std::move(callback), metric_type, std::move(metric_data),
+                      std::move(result));
       break;
     }
     case cros_healthd::ProbeCategoryEnum::kCpu: {
-      HandleCpuResult(std::move(callback), metric_type, std::move(result));
+      HandleCpuResult(std::move(callback), metric_type, std::move(metric_data),
+                      std::move(result));
       break;
     }
     case cros_healthd::ProbeCategoryEnum::kMemory: {
-      HandleMemoryResult(std::move(callback), metric_type, std::move(result));
+      HandleMemoryResult(std::move(callback), metric_type,
+                         std::move(metric_data), std::move(result));
       break;
     }
     default: {
@@ -299,9 +304,14 @@ CrosHealthdMetricSampler::~CrosHealthdMetricSampler() = default;
 void CrosHealthdMetricSampler::Collect(MetricCallback callback) {
   auto healthd_callback =
       base::BindOnce(OnHealthdInfoReceived, std::move(callback),
-                     probe_category_, metric_type_);
+                     probe_category_, metric_type_, std::move(metric_data_));
+  metric_data_.Clear();
   chromeos::cros_healthd::ServiceConnection::GetInstance()->ProbeTelemetryInfo(
       std::vector<cros_healthd::ProbeCategoryEnum>{probe_category_},
       std::move(healthd_callback));
+}
+
+void CrosHealthdMetricSampler::SetMetricData(MetricData metric_data) {
+  metric_data_ = std::move(metric_data);
 }
 }  // namespace reporting
