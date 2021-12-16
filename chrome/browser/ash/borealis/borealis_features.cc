@@ -12,24 +12,44 @@
 #include "chromeos/tpm/install_attributes.h"
 #include "components/prefs/pref_service.h"
 
+using AllowStatus = borealis::BorealisFeatures::AllowStatus;
+
 namespace borealis {
 
-BorealisFeatures::BorealisFeatures(Profile* profile) : profile_(profile) {}
-
-bool BorealisFeatures::IsAllowed() {
+// static
+AllowStatus BorealisFeatures::GetAllowanceForProfile(Profile* profile) {
   if (!base::FeatureList::IsEnabled(features::kBorealis))
-    return false;
+    return AllowStatus::kFeatureDisabled;
 
   bool allowed_for_device;
   if (ash::CrosSettings::Get()->GetBoolean(ash::kBorealisAllowedForDevice,
                                            &allowed_for_device)) {
     if (!allowed_for_device)
-      return false;
+      return AllowStatus::kDevicePolicyBlocked;
   }
 
-  if (!profile_->GetPrefs()->GetBoolean(prefs::kBorealisAllowedForUser))
-    return false;
+  if (!profile->GetPrefs()->GetBoolean(prefs::kBorealisAllowedForUser))
+    return AllowStatus::kUserPrefBlocked;
 
+  return AllowStatus::kAllowed;
+}
+
+BorealisFeatures::BorealisFeatures(Profile* profile) : profile_(profile) {}
+
+namespace {
+
+bool g_should_show_reason = true;
+
+}  // namespace
+
+bool BorealisFeatures::IsAllowed() {
+  AllowStatus reason = GetAllowanceForProfile(profile_);
+  if (reason != AllowStatus::kAllowed) {
+    LOG_IF(ERROR, g_should_show_reason)
+        << "Borealis is not allowed: " << reason;
+    g_should_show_reason = false;
+    return false;
+  }
   return true;
 }
 
@@ -40,3 +60,16 @@ bool BorealisFeatures::IsEnabled() {
 }
 
 }  // namespace borealis
+
+std::ostream& operator<<(std::ostream& os, const AllowStatus& reason) {
+  switch (reason) {
+    case AllowStatus::kAllowed:
+      return os << "Borealis is allowed";
+    case AllowStatus::kFeatureDisabled:
+      return os << "Borealis feature is unavailable";
+    case AllowStatus::kDevicePolicyBlocked:
+      return os << "Device is enrolled and borealis is disabled by policy";
+    case AllowStatus::kUserPrefBlocked:
+      return os << "User profile preferences disallow borealis";
+  }
+}
