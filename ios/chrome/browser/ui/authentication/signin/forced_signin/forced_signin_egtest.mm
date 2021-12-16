@@ -7,6 +7,7 @@
 #import "base/test/ios/wait_util.h"
 #include "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
+#import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -149,15 +150,8 @@ void OpenAccountSettingsAndSignOut(BOOL syncEnabled) {
 
 // Sets up the sign-in policy value dynamically at runtime.
 void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
-  NSDictionary* policy = @{
-    base::SysUTF8ToNSString(policy::key::kBrowserSignin) :
-        [NSNumber numberWithInt:(int)signinMode]
-  };
-  [[NSUserDefaults standardUserDefaults]
-      setObject:policy
-         forKey:kPolicyLoaderIOSConfigurationKey];
-  [ChromeEarlGrey setIntegerValue:static_cast<int>(signinMode)
-                forLocalStatePref:prefs::kBrowserSigninPolicy];
+  policy_test_utils::SetPolicy(static_cast<int>(signinMode),
+                               policy::key::kBrowserSignin);
 }
 
 // Simulates opening |URL| from another application.
@@ -215,6 +209,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
       "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
   config.additional_args.push_back(
       "<dict><key>BrowserSignin</key><integer>2</integer></dict>");
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
   return config;
 }
