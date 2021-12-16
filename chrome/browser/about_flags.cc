@@ -7828,6 +7828,13 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // In order to be considered for Lacros, flags additionally need to be usable
+  // on Chrome OS.
+  if (!(entry.supported_platforms & (kOsCrOS | kOsCrOSOwnerOnly)))
+    return true;
+#endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
+
   // data-reduction-proxy-lo-fi and enable-data-reduction-proxy-lite-page
   // are only available for Chromium builds and the Canary/Dev/Beta channels.
   if ((!strcmp("data-reduction-proxy-lo-fi", entry.internal_name) ||

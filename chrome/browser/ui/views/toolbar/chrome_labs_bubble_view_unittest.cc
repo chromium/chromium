@@ -70,6 +70,15 @@ const flags_ui::FeatureEntry::FeatureParam kTestVariationOther2[] = {
 const flags_ui::FeatureEntry::FeatureVariation kTestVariations2[] = {
     {"Description", kTestVariationOther2, 1, nullptr}};
 
+// Experiment platform to use for feature flags.
+unsigned short GetPlatformToUse() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return flags_ui::FlagsState::GetCurrentPlatform() | flags_ui::kOsCrOS;
+#else
+  return flags_ui::FlagsState::GetCurrentPlatform();
+#endif
+}
+
 }  // namespace
 
 class ChromeLabsBubbleTest : public TestWithBrowserView {
@@ -82,11 +91,9 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
         user_manager_enabler_(base::WrapUnique(user_manager_)),
 #endif
         scoped_feature_entries_(
-            {{kFirstTestFeatureId, "", "",
-              flags_ui::FlagsState::GetCurrentPlatform(),
+            {{kFirstTestFeatureId, "", "", GetPlatformToUse(),
               FEATURE_VALUE_TYPE(kTestFeature1)},
-             {kTestFeatureWithVariationId, "", "",
-              flags_ui::FlagsState::GetCurrentPlatform(),
+             {kTestFeatureWithVariationId, "", "", GetPlatformToUse(),
               FEATURE_WITH_PARAMS_VALUE_TYPE(kTestFeature2,
                                              kTestVariations2,
                                              "TestTrial")},
@@ -94,8 +101,7 @@ class ChromeLabsBubbleTest : public TestWithBrowserView {
              // compatible with the current platform.
              {kThirdTestFeatureId, "", "", 0,
               FEATURE_VALUE_TYPE(kTestFeature3)},
-             {kExpiredFlagTestFeatureId, "", "",
-              flags_ui::FlagsState::GetCurrentPlatform(),
+             {kExpiredFlagTestFeatureId, "", "", GetPlatformToUse(),
               FEATURE_VALUE_TYPE(kExpiredFlagTestFeature)}}) {
     // Set expiration milestone such that the flag is expired.
     flags::testing::SetFlagExpiration(kExpiredFlagTestFeatureId, 0);
