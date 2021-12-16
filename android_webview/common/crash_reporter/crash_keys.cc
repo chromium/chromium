@@ -128,6 +128,12 @@ const char* const kWebViewCrashKeyAllowList[] = {
 
     "VerifyDidCommit-has_si_url",
 
+    "NoNode-ftn_is_main_frame",
+    "NoNode-ftn_child_count",
+    "NoNode-bfs_depth",
+    "NoFTN-is_main_frame",
+    "NoFTN-children_size",
+
     // services/network
     "network_deserialization",
 
