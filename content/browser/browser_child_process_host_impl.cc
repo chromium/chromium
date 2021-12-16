@@ -106,12 +106,6 @@ void NotifyProcessKilled(const ChildProcessData& data,
     observer.BrowserChildProcessKilled(data, info);
 }
 
-void NotifyProcessLaunchFailed(const ChildProcessData& data,
-                               const ChildProcessTerminationInfo& info) {
-  for (auto& observer : g_browser_child_process_observers.Get())
-    observer.BrowserChildProcessLaunchFailed(data, info);
-}
-
 memory_instrumentation::mojom::ProcessType GetCoordinatorClientProcessType(
     ProcessType process_type) {
   switch (process_type) {
@@ -507,29 +501,8 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
                                   PROCESS_TYPE_MAX);
         break;
       }
-      case base::TERMINATION_STATUS_LAUNCH_FAILED: {
-        // This is handled in OnProcessLaunchFailed.
-        NOTREACHED();
+      default:
         break;
-      }
-      case base::TERMINATION_STATUS_NORMAL_TERMINATION: {
-        // TODO(wfh): This should not be hit but is sometimes. Investigate.
-        break;
-      }
-      case base::TERMINATION_STATUS_OOM: {
-        // TODO(wfh): Decide to what to do with OOMs here.
-        break;
-      }
-#if defined(OS_WIN)
-      case base::TERMINATION_STATUS_INTEGRITY_FAILURE: {
-        // TODO(wfh): Decide to what to do with CIG failures here.
-        break;
-      }
-#endif  // OS_WIN
-      case base::TERMINATION_STATUS_MAX_ENUM: {
-        NOTREACHED();
-        break;
-      }
     }
 #endif  // OS_ANDROID
     UMA_HISTOGRAM_ENUMERATION("ChildProcess.Disconnected2",
@@ -593,6 +566,9 @@ void BrowserChildProcessHostImpl::CreateMetricsAllocator() {
       memory_size = 64 << 10;  // 64 KiB
       metrics_name = "PpapiBrokerMetrics";
       break;
+
+    default:
+      return;
   }
 
   // Create the shared memory segment and attach an allocator to it.
@@ -621,15 +597,7 @@ void BrowserChildProcessHostImpl::ShareMetricsAllocatorToProcess() {
 }
 
 void BrowserChildProcessHostImpl::OnProcessLaunchFailed(int error_code) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   delegate_->OnProcessLaunchFailed(error_code);
-  ChildProcessTerminationInfo info =
-      child_process_->GetChildTerminationInfo(/*known_dead=*/true);
-  DCHECK_EQ(info.status, base::TERMINATION_STATUS_LAUNCH_FAILED);
-
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&NotifyProcessLaunchFailed, data_.Duplicate(), info));
   notify_child_connection_status_ = false;
   delete delegate_;  // Will delete us
 }

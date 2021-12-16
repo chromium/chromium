@@ -29,7 +29,6 @@
 #endif
 
 #if defined(OS_WIN)
-#include "base/win/windows_types.h"
 #include "sandbox/win/src/sandbox_types.h"
 #else
 #include "content/public/browser/posix_file_descriptor_info.h"
@@ -160,9 +159,6 @@ class ChildProcessLauncherHelper :
 
   // Posted by PostLaunchOnLauncherThread onto the client thread.
   void PostLaunchOnClientThread(ChildProcessLauncherHelper::Process process,
-#if defined(OS_WIN)
-                                DWORD last_error,
-#endif
                                 int error_code);
 
   // See ChildProcessLauncher::GetChildTerminationInfo for more info.

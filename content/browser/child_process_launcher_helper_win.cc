@@ -4,7 +4,6 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
@@ -70,8 +69,6 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     win_options.start_hidden = true;
     ChildProcessLauncherHelper::Process process;
     process.process = base::LaunchElevatedProcess(*command_line(), win_options);
-    *launch_result = process.process.IsValid() ? LAUNCH_RESULT_SUCCESS
-                                               : LAUNCH_RESULT_FAILURE;
     return process;
   }
   ChildProcessLauncherHelper::Process process;
