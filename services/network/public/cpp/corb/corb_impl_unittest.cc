@@ -170,6 +170,7 @@ struct TestScenario {
   }
 
   return os << "\n  description           = " << scenario.description
+            << "\n  source_line           = " << scenario.source_line
             << "\n  target_url            = " << scenario.target_url
             << "\n  initiator_origin      = " << scenario.initiator_origin
             << "\n  response_headers      = " << response_headers_formatted
@@ -1885,10 +1886,11 @@ class ResponseAnalyzerTest : public testing::Test,
     return response;
   }
 
-  // Instantiate and run CORB analyzer on the current scenario. Allow the
-  // analyzer to sniff the response body if needed and confirm it correctly
-  // decides to block or allow.
-  void RunAnalyzerOnScenario(const mojom::URLResponseHead& response) {
+  // Take and run ResponseAnalyzer on the current scenario. Allow the analyzer
+  // to sniff the response body if needed and confirm it correctly decides to
+  // block or allow.
+  void RunAnalyzerOnScenario(const mojom::URLResponseHead& response,
+                             std::unique_ptr<ResponseAnalyzer> analyzer) {
     TestScenario scenario = GetParam();
     // Initialize |request| from the parameters.
     std::unique_ptr<net::URLRequest> request =
@@ -1904,23 +1906,13 @@ class ResponseAnalyzerTest : public testing::Test,
     auto request_mode = cors_header_value == "" ? mojom::RequestMode::kNoCors
                                                 : mojom::RequestMode::kCors;
 
-    // Create a ResponseAnalyzer to test.
+    // Initialize the `analyzer`.
     //
-    // The ResponseAnalyzer will be destructed when `analyzer` goes out of scope
-    // (the destructor triggers logging of UMAs that some callers of
+    // Note that the `analyzer` will be destructed when `analyzer` goes out of
+    // scope (the destructor may trigger logging of UMAs that some callers of
     // RunAnalyzerOnScenario attempt to verify).
-    auto analyzer = std::make_unique<CorbResponseAnalyzer>();
-    analyzer->Init(request->url(), request->initiator(), request_mode,
-                   response);
-
-    // Verify MIME type was classified correctly.
-    EXPECT_EQ(scenario.canonical_mime_type,
-              analyzer->canonical_mime_type_for_testing());
-
-    // Verify that the verdict packet is >= 0 if CORB expects to sniff.
-    bool expected_to_sniff =
-        scenario.verdict_packet != kVerdictPacketForHeadersBasedVerdict;
-    ASSERT_EQ(expected_to_sniff, analyzer->needs_sniffing());
+    ResponseAnalyzer::Decision decision = analyzer->Init(
+        request->url(), request->initiator(), request_mode, response);
 
     // This vector holds the packets to be delivered.
     std::vector<const char*> packets_vector(scenario.packets);
@@ -1931,84 +1923,78 @@ class ResponseAnalyzerTest : public testing::Test,
     // then the sniffing loop below will be skipped.
     EXPECT_LT(scenario.verdict_packet, static_cast<int>(packets_vector.size()));
 
-    // If we don't expect to sniff then CORB should have already made a blockng
-    // decision based on the headers.
-    if (!expected_to_sniff) {
-      EXPECT_FALSE(analyzer->needs_sniffing());
+    // Verify that the ResponseAnalyzer asks for sniffing if this is what the
+    // testcase expects.
+    bool expected_to_sniff =
+        scenario.verdict_packet != kVerdictPacketForHeadersBasedVerdict;
+    if (expected_to_sniff) {
+      EXPECT_EQ(decision, ResponseAnalyzer::Decision::kSniffMore);
+    } else {
+      // If we don't expect to sniff then ResponseAnalyzer should have already
+      // made a blockng decision based on the headers.
       if (scenario.verdict == Verdict::kBlock) {
-        ASSERT_FALSE(analyzer->ShouldAllow());
-        ASSERT_TRUE(analyzer->ShouldBlock());
+        EXPECT_EQ(decision, ResponseAnalyzer::Decision::kBlock);
       } else {
-        ASSERT_FALSE(analyzer->ShouldBlock());
-        ASSERT_TRUE(analyzer->ShouldAllow());
+        EXPECT_EQ(decision, ResponseAnalyzer::Decision::kAllow);
       }
-      return;
     }
 
     // Simulate the behaviour of the URLLoader by appending the packets into
     // |data_buffer| and feeding this to |analyzer|.
-    std::string data_buffer;
-    size_t data_offset = 0;
-    bool reached_final_packet = false;
-    for (int packet_index = 0; packet_index <= scenario.verdict_packet;
-         packet_index++) {
-      SCOPED_TRACE(testing::Message()
-                   << "While delivering packet #" << packet_index);
+    bool run_out_of_data_to_sniff = false;
+    if (decision == ResponseAnalyzer::Decision::kSniffMore) {
+      std::string data_buffer;
+      size_t data_offset = 0;
+      for (int packet_index = 0; packet_index <= scenario.verdict_packet;
+           packet_index++) {
+        SCOPED_TRACE(testing::Message()
+                     << "While delivering packet #" << packet_index);
 
-      // At each iteration of the loop we feed a new packet to |analyzer|,
-      // breaking at the |verdict_packet|. Since we haven't given the next
-      // packet to |analyzer| yet at this point in the loop, it shouldn't have
-      // made a decision yet.
-      EXPECT_TRUE(analyzer->needs_sniffing());
-      EXPECT_FALSE(analyzer->ShouldBlock());
-      EXPECT_FALSE(analyzer->ShouldAllow());
+        // At each iteration of the loop we feed a new packet to |analyzer|,
+        // breaking at the |verdict_packet|. Since we haven't given the next
+        // packet to |analyzer| yet at this point in the loop, it shouldn't have
+        // made a decision yet.
+        EXPECT_EQ(decision, ResponseAnalyzer::Decision::kSniffMore);
 
-      // Append the next packet of the response body. If appending the entire
-      // packet would exceed net::kMaxBytesToSniff we truncate the data.
-      size_t bytes_to_append = strlen(packets_vector[packet_index]);
-      if (data_offset + bytes_to_append > net::kMaxBytesToSniff)
-        bytes_to_append = net::kMaxBytesToSniff - data_offset;
-      data_buffer.append(packets_vector[packet_index], bytes_to_append);
+        // Append the next packet of the response body. If appending the entire
+        // packet would exceed net::kMaxBytesToSniff we truncate the data.
+        size_t bytes_to_append = strlen(packets_vector[packet_index]);
+        if (data_offset + bytes_to_append > net::kMaxBytesToSniff)
+          bytes_to_append = net::kMaxBytesToSniff - data_offset;
+        data_buffer.append(packets_vector[packet_index], bytes_to_append);
 
-      // Hand |analyzer_| the data to sniff.
-      analyzer->Sniff(data_buffer);
-      data_offset += bytes_to_append;
-
-      // If the latest packet was empty, or we reached net::kMaxBytesToSniff
-      // then sniffing should be over. Furthermore, if the |analyzer| hasn't
-      // decided to block or allow, then (in the real implementation) URLLoader
-      // will default to allowing. We check here that this occurs only when it
-      // is supposed to.
-      if ((bytes_to_append == 0 || data_offset == net::kMaxBytesToSniff)) {
-        reached_final_packet = true;
-        // Sanity check sniffing is over.
-        EXPECT_EQ(packet_index, scenario.verdict_packet);
-        // Check we have run out of data if and only if we expected to.
-        bool expected_to_run_out_of_data =
-            scenario.verdict == Verdict::kAllowBecauseOutOfData;
-        bool did_run_out_of_data =
-            !analyzer->ShouldAllow() && !analyzer->ShouldBlock();
-        EXPECT_EQ(expected_to_run_out_of_data, did_run_out_of_data);
+        // Hand |analyzer_| the data to sniff.
+        decision = analyzer->Sniff(data_buffer);
+        data_offset += bytes_to_append;
+        if (decision != ResponseAnalyzer::Decision::kSniffMore)
+          break;
       }
+    }
+
+    // Handle scenarios where no decision can be made before running out of data
+    // to sniff.
+    if (decision == ResponseAnalyzer::Decision::kSniffMore) {
+      run_out_of_data_to_sniff = true;
+      decision = analyzer->HandleEndOfSniffableResponseBody();
+
+      // HandleEndOfSniffableResponseBody should never return kSniffMore.
+      EXPECT_NE(decision, ResponseAnalyzer::Decision::kSniffMore);
     }
 
     // Confirm the analyzer is blocking or allowing correctly (now that we have
     // performed any needed sniffing).
     if (scenario.verdict == Verdict::kBlock) {
-      ASSERT_FALSE(analyzer->ShouldAllow());
-      ASSERT_TRUE(analyzer->ShouldBlock());
+      EXPECT_EQ(decision, ResponseAnalyzer::Decision::kBlock);
     } else {
+      EXPECT_EQ(decision, ResponseAnalyzer::Decision::kAllow);
+
       // In this case either the |analyzer| has decided to allow the response,
       // or run out of data and so the response will be allowed by default.
-      ASSERT_FALSE(analyzer->ShouldBlock());
       if (scenario.verdict == Verdict::kAllow) {
-        ASSERT_TRUE(analyzer->ShouldAllow());
+        EXPECT_FALSE(run_out_of_data_to_sniff);
       } else {
-        // In this case |scenario.verdict| == Verdict::kAllowBecauseOutOfData,
-        // so double-check that sniffing actually occurred and failed.
         EXPECT_EQ(Verdict::kAllowBecauseOutOfData, scenario.verdict);
-        ASSERT_FALSE(analyzer->ShouldAllow());
-        EXPECT_TRUE(reached_final_packet);
+        EXPECT_TRUE(run_out_of_data_to_sniff);
       }
     }
   }
@@ -2039,7 +2025,7 @@ TEST_P(ResponseAnalyzerTest, ResponseBlocking) {
                      scenario.initiator_origin);
 
   // Run the analyzer and confirm it allows/blocks correctly.
-  RunAnalyzerOnScenario(*response);
+  RunAnalyzerOnScenario(*response, std::make_unique<CorbResponseAnalyzer>());
 
   // Verify that histograms are correctly incremented.
   base::HistogramTester::CountsMap expected_counts;
@@ -2125,7 +2111,7 @@ TEST_P(ResponseAnalyzerTest, CORBProtectionLogging) {
   const bool expect_nosniff = CorbResponseAnalyzer::HasNoSniff(*response);
 
   // Run the analyzer and confirm it allows/blocks correctly.
-  RunAnalyzerOnScenario(*response);
+  RunAnalyzerOnScenario(*response, std::make_unique<CorbResponseAnalyzer>());
 
   base::HistogramTester::CountsMap expected_counts;
   expected_counts["SiteIsolation.CORBProtection.SensitiveResource"] = 1;

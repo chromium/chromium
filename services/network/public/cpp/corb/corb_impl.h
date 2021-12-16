@@ -119,6 +119,25 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
     Decision HandleEndOfSniffableResponseBody() override;
     bool ShouldReportBlockedResponse() const override;
 
+    class ConfirmationSniffer;
+    class SimpleConfirmationSniffer;
+
+    // Returns true if the response has a nosniff header.
+    static bool HasNoSniff(const network::mojom::URLResponseHead& response);
+
+   private:
+    FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
+                             SeemsSensitiveFromCORSHeuristic);
+    FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
+                             SeemsSensitiveFromCacheHeuristic);
+    FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
+                             SeemsSensitiveWithBothHeuristics);
+    FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
+                             SupportsRangeRequests);
+    FRIEND_TEST_ALL_PREFIXES(content::CrossSiteDocumentResourceHandlerTest,
+                             CORBProtectionLogging);
+    FRIEND_TEST_ALL_PREFIXES(ResponseAnalyzerTest, CORBProtectionLogging);
+
     // true if either 1) ShouldBlockBasedOnHeaders decided to allow the response
     // based on headers alone or 2) ShouldBlockBasedOnHeaders decided to sniff
     // the response body and SniffResponseBody decided to allow the response
@@ -141,31 +160,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) CrossOriginReadBlocking {
       return should_block_based_on_headers_ == Decision::kSniffMore ||
              corb_protection_logging_needs_sniffing_;
     }
-
-    // The MIME type determined by ShouldBlockBasedOnHeaders.
-    const CrossOriginReadBlocking::MimeType& canonical_mime_type_for_testing()
-        const {
-      return canonical_mime_type_;
-    }
-
-    class ConfirmationSniffer;
-    class SimpleConfirmationSniffer;
-
-    // Returns true if the response has a nosniff header.
-    static bool HasNoSniff(const network::mojom::URLResponseHead& response);
-
-   private:
-    FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
-                             SeemsSensitiveFromCORSHeuristic);
-    FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
-                             SeemsSensitiveFromCacheHeuristic);
-    FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
-                             SeemsSensitiveWithBothHeuristics);
-    FRIEND_TEST_ALL_PREFIXES(CrossOriginReadBlockingTest,
-                             SupportsRangeRequests);
-    FRIEND_TEST_ALL_PREFIXES(content::CrossSiteDocumentResourceHandlerTest,
-                             CORBProtectionLogging);
-    FRIEND_TEST_ALL_PREFIXES(ResponseAnalyzerTest, CORBProtectionLogging);
 
     // Helper for translating ShouldAllow(), ShouldBlock() and needs_sniffing()
     // into corb::Decision.
