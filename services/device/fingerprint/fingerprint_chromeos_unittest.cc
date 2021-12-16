@@ -295,4 +295,86 @@ TEST_F(FingerprintChromeOSTest, FingerprintScanResultConvertTest) {
 static_assert(device::mojom::ScanResult::kMaxValue ==
               device::mojom::ScanResult::NO_MATCH);
 
+TEST_F(FingerprintChromeOSTest, FingerprintErrorConvertTest) {
+  mojo::PendingRemote<mojom::FingerprintObserver> pending_observer;
+  FakeFingerprintObserver observer(
+      pending_observer.InitWithNewPipeAndPassReceiver());
+  fingerprint()->AddFingerprintObserver(std::move(pending_observer));
+
+  chromeos::FakeBiodClient::Get()->StartAuthSession(base::BindOnce(
+      &FingerprintChromeOSTest::onStartSession, base::Unretained(this)));
+  base::RunLoop().RunUntilIdle();
+
+  biod::FingerprintMessage msg;
+  msg.set_error(biod::ERROR_HW_UNAVAILABLE);
+  GenerateAuthScanDoneSignal(msg);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kFingerprintError);
+  EXPECT_EQ(observer.last_message().get_fingerprint_error(),
+            device::mojom::FingerprintError::HW_UNAVAILABLE);
+
+  msg.set_error(biod::ERROR_UNABLE_TO_PROCESS);
+  GenerateAuthScanDoneSignal(msg);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kFingerprintError);
+  EXPECT_EQ(observer.last_message().get_fingerprint_error(),
+            device::mojom::FingerprintError::UNABLE_TO_PROCESS);
+
+  msg.set_error(biod::ERROR_TIMEOUT);
+  GenerateAuthScanDoneSignal(msg);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kFingerprintError);
+  EXPECT_EQ(observer.last_message().get_fingerprint_error(),
+            device::mojom::FingerprintError::TIMEOUT);
+
+  msg.set_error(biod::ERROR_NO_SPACE);
+  GenerateAuthScanDoneSignal(msg);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kFingerprintError);
+  EXPECT_EQ(observer.last_message().get_fingerprint_error(),
+            device::mojom::FingerprintError::NO_SPACE);
+
+  msg.set_error(biod::ERROR_CANCELED);
+  GenerateAuthScanDoneSignal(msg);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kFingerprintError);
+  EXPECT_EQ(observer.last_message().get_fingerprint_error(),
+            device::mojom::FingerprintError::CANCELED);
+
+  msg.set_error(biod::ERROR_UNABLE_TO_REMOVE);
+  GenerateAuthScanDoneSignal(msg);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kFingerprintError);
+  EXPECT_EQ(observer.last_message().get_fingerprint_error(),
+            device::mojom::FingerprintError::UNABLE_TO_REMOVE);
+
+  msg.set_error(biod::ERROR_LOCKOUT);
+  GenerateAuthScanDoneSignal(msg);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kFingerprintError);
+  EXPECT_EQ(observer.last_message().get_fingerprint_error(),
+            device::mojom::FingerprintError::LOCKOUT);
+
+  msg.set_error(biod::ERROR_NO_TEMPLATES);
+  GenerateAuthScanDoneSignal(msg);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(observer.last_message().which(),
+            device::mojom::FingerprintMessage::Tag::kFingerprintError);
+  EXPECT_EQ(observer.last_message().get_fingerprint_error(),
+            device::mojom::FingerprintError::NO_TEMPLATES);
+}
+
+// Make sure that compilation fails if a new value is added and this assert is
+// not updated. When updating this, please extend unit tests to check newly
+// added value.
+static_assert(device::mojom::FingerprintError::kMaxValue ==
+              device::mojom::FingerprintError::NO_TEMPLATES);
+
 }  // namespace device
