@@ -81,6 +81,11 @@ class DesksTemplatesDialog : public views::DialogDelegateView {
     description_label_->SetText(text);
   }
 
+  void SetDescriptionAccessibleName(const std::u16string& accessible_name) {
+    DCHECK(description_label_);
+    description_label_->SetAccessibleName(accessible_name);
+  }
+
  private:
   views::Label* description_label_ = nullptr;
 };
@@ -91,6 +96,7 @@ BEGIN_VIEW_BUILDER(/* no export */,
 VIEW_BUILDER_PROPERTY(int, TitleText)
 VIEW_BUILDER_PROPERTY(int, ConfirmButtonText)
 VIEW_BUILDER_PROPERTY(std::u16string, DescriptionText)
+VIEW_BUILDER_PROPERTY(std::u16string, DescriptionAccessibleName)
 END_VIEW_BUILDER
 
 BEGIN_METADATA(DesksTemplatesDialog, views::DialogDelegateView)
@@ -178,6 +184,9 @@ void DesksTemplatesDialogController::ShowReplaceDialog(
                     .SetDescriptionText(l10n_util::GetStringFUTF16(
                         IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_DESCRIPTION,
                         GetStringWithQuotes(template_name)))
+                    .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
+                        IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_DESCRIPTION,
+                        template_name))
                     .Build();
   CreateDialogWidget(std::move(dialog), root_window);
 }
@@ -196,6 +205,8 @@ void DesksTemplatesDialogController::ShowDeleteDialog(
           .SetDescriptionText(l10n_util::GetStringFUTF16(
               IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION,
               GetStringWithQuotes(template_name)))
+          .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
+              IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION, template_name))
           .SetAcceptCallback(std::move(on_accept_callback))
           .Build();
 
