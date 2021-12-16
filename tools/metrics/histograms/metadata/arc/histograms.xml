@@ -715,6 +715,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.DataRestore.Duration" units="ms"
+    expires_after="2022-09-01">
+  <owner>khmel@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>The duration of the SELinux data restoration flow.</summary>
+</histogram>
+
+<histogram name="Arc.DataRestore.Status" enum="ArcDataRestoreStatus"
+    expires_after="2022-09-01">
+  <owner>khmel@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Tracks status of SELinux contexts restore flows of Android /data for ARC++ P
+    container. This also means ARC++ container boot delay.
+  </summary>
+</histogram>
+
 <histogram name="Arc.EngagementTime.ArcTotal" units="ms"
     expires_after="2022-04-24">
   <owner>maajid@google.com</owner>

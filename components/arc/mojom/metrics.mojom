@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 18
+// Next MinVersion: 21
 
 module arc.mojom;
 
@@ -242,6 +242,18 @@ enum ArcImageCopyPasteCompatAction {
   kDragFromBrowser = 3,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+[Extensible]
+enum DataRestoreStatus {
+  // Data restore was not needed.
+  kNotNeeded = 0,
+  // Data restore success.
+  kSuccess = 1,
+  // Data restore failed.
+  kFailed = 2,
+};
+
 // Enumerates variations of Low Latency Stylus Library.
 [Extensible]
 enum LowLatencyStylusLibraryType {
@@ -303,7 +315,7 @@ enum MainAccountHashMigrationStatus {
   // tools/metrics/histograms/enums.xml.
 };
 
-// Next method ID: 21
+// Next method ID: 23
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -388,6 +400,11 @@ interface MetricsHost {
 
   // Reports occurrence of one error in the ARC networking stack.
   [MinVersion=16] ReportArcNetworkError@20(ArcNetworkError error);
+
+  // Reports data restore status and duration in milliseconds. This applies only
+  // for ARC++ P container.
+  [MinVersion=20] ReportDataRestore@22(DataRestoreStatus status,
+                                       int64 duration_ms);
 };
 
 // Next method ID: 3

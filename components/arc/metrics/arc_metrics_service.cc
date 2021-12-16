@@ -515,6 +515,15 @@ void ArcMetricsService::ReportMainAccountHashMigrationMetrics(
   UMA_HISTOGRAM_ENUMERATION("Arc.Auth.MainAccountHashMigration.Status", status);
 }
 
+void ArcMetricsService::ReportDataRestore(mojom::DataRestoreStatus status,
+                                          int64_t duration_ms) {
+  base::UmaHistogramEnumeration("Arc.DataRestore.Status", status);
+  if (status == mojom::DataRestoreStatus::kNotNeeded)
+    return;
+  base::UmaHistogramMediumTimes("Arc.DataRestore.Duration",
+                                base::Milliseconds(duration_ms));
+}
+
 void ArcMetricsService::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,
