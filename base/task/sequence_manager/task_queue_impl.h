@@ -336,6 +336,12 @@ class BASE_EXPORT TaskQueueImpl {
     const scoped_refptr<GuardedTaskPoster> task_poster_;
     const scoped_refptr<AssociatedThreadId> associated_thread_;
     const TaskType task_type_;
+    // Caches whether kRemoveCanceledTasksInTaskQueue is enabled. FeatureList
+    // access is too expensive to be done for each task, costing >1% of total
+    // CPU on the main renderer thread, from field data.
+    // Using an optional since *this can be constructed before the feature
+    // system is initialized.
+    absl::optional<bool> remove_canceled_tasks_in_task_queue_;
   };
 
   // A queue for holding delayed tasks before their delay has expired.

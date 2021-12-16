@@ -117,7 +117,12 @@ DelayedTaskHandle TaskQueueImpl::TaskRunner::PostCancelableDelayedTask(
     const Location& location,
     OnceClosure callback,
     TimeDelta delay) {
-  if (!FeatureList::IsEnabled(kRemoveCanceledTasksInTaskQueue)) {
+  if (!remove_canceled_tasks_in_task_queue_.has_value()) {
+    remove_canceled_tasks_in_task_queue_ =
+        FeatureList::IsEnabled(kRemoveCanceledTasksInTaskQueue);
+  }
+
+  if (!remove_canceled_tasks_in_task_queue_.value()) {
     return SequencedTaskRunner::PostCancelableDelayedTask(
         location, std::move(callback), delay);
   }
