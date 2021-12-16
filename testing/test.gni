@@ -933,5 +933,11 @@ set_defaults("test") {
     configs += [ "//build/config/android:hide_all_but_jni" ]
   } else {
     configs = default_executable_configs
+    if (is_mac) {
+      # TODO(lgrey): Maybe restore this.
+      # Don't strip tests for visibility into test crashes/hangs.
+      # https://bugs.chromium.org/p/chromium/issues/detail?id=1244047#c49
+      configs -= [ "//build/config/mac:strip_all" ]
+    }
   }
 }
