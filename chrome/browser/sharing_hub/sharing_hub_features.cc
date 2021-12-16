@@ -20,9 +20,9 @@ namespace {
 bool SharingHubDisabledByPolicy(content::BrowserContext* context) {
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
   const PrefService* prefs = Profile::FromBrowserContext(context)->GetPrefs();
-  return prefs->GetBoolean(prefs::kDesktopSharingHubEnabled);
+  return !prefs->GetBoolean(prefs::kDesktopSharingHubEnabled);
 #else
-  return true;
+  return false;
 #endif
 }
 
