@@ -61,29 +61,29 @@ export class TabElement extends CustomElement {
     super();
 
     this.alertIndicatorsEl_ =
-        this.$('tabstrip-alert-indicators') as AlertIndicatorsElement;
-    // Normally, custom elements will get upgraded automatically once added to
-    // the DOM, but TabElement may need to update properties on
+        this.$<AlertIndicatorsElement>('tabstrip-alert-indicators')!;
+    // Normally, custom elements will get upgraded automatically once added
+    // to the DOM, but TabElement may need to update properties on
     // AlertIndicatorElement before this happens, so upgrade it manually.
     customElements.upgrade(this.alertIndicatorsEl_);
 
-    this.closeButtonEl_ = this.$('#close') as HTMLElement;
+    this.closeButtonEl_ = this.$<HTMLElement>('#close')!;
     this.closeButtonEl_.setAttribute(
         'aria-label', loadTimeData.getString('closeTab'));
 
-    this.dragImageEl_ = this.$('#dragImage') as HTMLElement;
+    this.dragImageEl_ = this.$<HTMLElement>('#dragImage')!;
 
-    this.tabEl_ = this.$('#tab') as HTMLElement;
+    this.tabEl_ = this.$<HTMLElement>('#tab')!;
 
-    this.faviconEl_ = this.$('#favicon') as HTMLElement;
+    this.faviconEl_ = this.$<HTMLElement>('#favicon')!;
 
-    this.thumbnailContainer_ = this.$('#thumbnail') as HTMLElement;
+    this.thumbnailContainer_ = this.$<HTMLElement>('#thumbnail')!;
 
-    this.thumbnail_ = this.$('#thumbnailImg') as HTMLImageElement;
+    this.thumbnail_ = this.$<HTMLImageElement>('#thumbnailImg')!;
 
     this.tabsApi_ = TabsApiProxyImpl.getInstance();
 
-    this.titleTextEl_ = this.$('#titleText') as HTMLElement;
+    this.titleTextEl_ = this.$<HTMLElement>('#titleText')!;
 
     /**
      * Flag indicating if this TabElement can accept dragover events. This

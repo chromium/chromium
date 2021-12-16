@@ -7,29 +7,27 @@
  * See the following file for usage:
  * chrome/test/data/webui/js/custom_element_test.js
  */
+
 export class CustomElement extends HTMLElement {
+  static get template(): string {
+    return '';
+  }
+
   constructor() {
     super();
 
     this.attachShadow({mode: 'open'});
     const template = document.createElement('template');
-    template.innerHTML = this.constructor.template || '';
-    this.shadowRoot.appendChild(template.content.cloneNode(true));
+    template.innerHTML =
+        (this.constructor as typeof CustomElement).template || '';
+    this.shadowRoot!.appendChild(template.content.cloneNode(true));
   }
 
-  /**
-   * @param {string} query
-   * @return {?Element}
-   */
-  $(query) {
-    return this.shadowRoot.querySelector(query);
+  $<E extends Element = Element>(query: string): E|null {
+    return this.shadowRoot!.querySelector<E>(query);
   }
 
-  /**
-   * @param {string} query
-   * @return {!NodeList<!Element>}
-   */
-  $all(query) {
-    return this.shadowRoot.querySelectorAll(query);
+  $all<E extends Element = Element>(query: string): NodeListOf<E> {
+    return this.shadowRoot!.querySelectorAll<E>(query);
   }
 }

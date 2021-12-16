@@ -388,13 +388,12 @@ export class TabListElement extends CustomElement implements
   }
 
   private findTabElement_(tabId: number): TabElement|null {
-    return this.$(`tabstrip-tab[data-tab-id="${tabId}"]`) as TabElement | null;
+    return this.$<TabElement>(`tabstrip-tab[data-tab-id="${tabId}"]`);
   }
 
   private findTabGroupElement_(groupId: string): TabGroupElement|null {
-    return this.$(`tabstrip-tab-group[data-group-id="${groupId}"]`) as
-        TabGroupElement |
-        null;
+    return this.$<TabGroupElement>(
+        `tabstrip-tab-group[data-group-id="${groupId}"]`);
   }
 
   private fetchAndUpdateColors_() {
@@ -403,8 +402,7 @@ export class TabListElement extends CustomElement implements
   }
 
   private fetchAndUpdateGroupData_() {
-    const tabGroupElements =
-        this.$all('tabstrip-tab-group') as NodeListOf<TabGroupElement>;
+    const tabGroupElements = this.$all<TabGroupElement>('tabstrip-tab-group');
     this.tabsApi_.getGroupVisualData().then(({data}) => {
       tabGroupElements.forEach(tabGroupElement => {
         tabGroupElement.updateVisuals(
@@ -420,7 +418,7 @@ export class TabListElement extends CustomElement implements
   }
 
   private getActiveTab_(): TabElement|null {
-    return this.$('tabstrip-tab[active]') as TabElement | null;
+    return this.$<TabElement>('tabstrip-tab[active]');
   }
 
   getIndexOfTab(tabElement: TabElement): number {
@@ -473,7 +471,7 @@ export class TabListElement extends CustomElement implements
     // document. When the tab strip first gains keyboard focus, no such event
     // exists yet, so the outline needs to be explicitly set to visible.
     this.focusOutlineManager_.visible = true;
-    (this.$('tabstrip-tab') as HTMLElement).focus();
+    this.$<TabElement>('tabstrip-tab')!.focus();
   }
 
   private onTabActivated_(tabId: number) {
@@ -488,7 +486,7 @@ export class TabListElement extends CustomElement implements
     // have updated a Tab to have an active state. For example, if a
     // tab is created with an already active state, there may be 2 active
     // TabElements: the newly created tab and the previously active tab.
-    (this.$all('tabstrip-tab[active]') as NodeListOf<TabElement>)
+    this.$all<TabElement>('tabstrip-tab[active]')
         .forEach((previouslyActiveTab) => {
           if (previouslyActiveTab.tab.id !== tabId) {
             previouslyActiveTab.tab = /** @type {!Tab} */ (
@@ -705,7 +703,7 @@ export class TabListElement extends CustomElement implements
       index++;
     }
 
-    let elementAtIndex = this.$all('tabstrip-tab')[index];
+    let elementAtIndex = this.$all('tabstrip-tab')[index]!;
     if (elementAtIndex && elementAtIndex.parentElement &&
         isTabGroupElement(elementAtIndex.parentElement)) {
       elementAtIndex = elementAtIndex.parentElement;
@@ -796,7 +794,8 @@ export class TabListElement extends CustomElement implements
           element, this.pinnedTabsElement_.childNodes[index]!);
     } else {
       let elementToInsert: TabElement|TabGroupElement = element;
-      let elementAtIndex = this.$all('tabstrip-tab').item(index);
+      let elementAtIndex: TabElement|TabGroupElement =
+          this.$all<TabElement>('tabstrip-tab').item(index);
       let parentElement = this.unpinnedTabsElement_;
 
       if (groupId) {
@@ -824,7 +823,7 @@ export class TabListElement extends CustomElement implements
         // TabElement is being sandwiched between two TabElements in a group, it
         // can be assumed that the tab will eventually be inserted into the
         // group as well.
-        elementAtIndex = elementAtIndex.parentElement;
+        elementAtIndex = elementAtIndex.parentElement as TabGroupElement;
       }
 
       if (elementAtIndex && elementAtIndex.parentElement === parentElement) {

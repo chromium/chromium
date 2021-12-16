@@ -20,7 +20,7 @@ export class AlertIndicatorsElement extends CustomElement {
   constructor() {
     super();
 
-    this.containerEl_ = this.$('#container') as HTMLElement;
+    this.containerEl_ = this.$<HTMLElement>('#container')!;
 
     const audioIndicator = new AlertIndicatorElement();
     const recordingIndicator = new AlertIndicatorElement();

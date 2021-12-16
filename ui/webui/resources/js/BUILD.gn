@@ -47,6 +47,7 @@ preprocess_if_expr("preprocess_src_ts") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   in_files = [
+    "custom_element.ts",
     "i18n_mixin.ts",
     "list_property_update_mixin.ts",
     "web_ui_listener_mixin.ts",
@@ -62,7 +63,6 @@ preprocess_if_expr("preprocess_src") {
     "assert.js",
     "color_utils.js",
     "cr.m.js",
-    "custom_element.js",
     "i18n_template_no_process.js",
     "icon.js",
     "load_time_data.m.js",
@@ -292,7 +292,6 @@ js_type_check("js_resources_modules") {
   deps = [
     ":assert.m",
     ":cr.m",
-    ":custom_element",
     ":event_tracker.m",
     ":i18n_behavior.m",
     ":icon",
@@ -326,9 +325,6 @@ js_library("cr.m") {
     ":promise_resolver.m",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("custom_element") {
 }
 
 js_library("event_tracker.m") {
