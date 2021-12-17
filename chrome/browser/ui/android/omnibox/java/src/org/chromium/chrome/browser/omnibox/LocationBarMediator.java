@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -73,6 +72,7 @@ import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -928,18 +928,22 @@ class LocationBarMediator
      */
     @VisibleForTesting
     /* package */ void updateBrandedColorScheme() {
+        // TODO(crbug.com/1114183): Unify light and dark color logic in chrome and make it clear
+        // whether the foreground or background color is dark.
+        final boolean useDarkForegroundColors =
+                !ColorUtils.shouldUseLightForegroundOnBackground(getPrimaryBackgroundColor());
         final @BrandedColorScheme int brandedColorScheme =
                 OmniboxResourceProvider.getBrandedColorScheme(mContext,
                         mLocationBarDataProvider.isIncognito(), getPrimaryBackgroundColor());
 
         mLocationBarLayout.setDeleteButtonTint(
-                ThemeUtils.getThemedToolbarIconTint(mContext, brandedColorScheme));
+                ChromeColors.getPrimaryIconTint(mContext, !useDarkForegroundColors));
         // If the URL changed colors and is not focused, update the URL to account for the new
         // color scheme.
         if (mUrlCoordinator.setBrandedColorScheme(brandedColorScheme) && !isUrlBarFocused()) {
             updateUrl();
         }
-        mStatusCoordinator.setBrandedColorScheme(brandedColorScheme);
+        mStatusCoordinator.setUseDarkForegroundColors(useDarkForegroundColors);
         if (mAutocompleteCoordinator != null) {
             mAutocompleteCoordinator.updateVisualsForState(brandedColorScheme);
         }

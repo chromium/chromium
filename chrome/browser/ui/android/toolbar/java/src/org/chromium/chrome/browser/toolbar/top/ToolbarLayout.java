@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 
@@ -207,8 +206,15 @@ public abstract class ToolbarLayout
         return mThemeColorProvider == null ? mDefaultTint : mThemeColorProvider.getTint();
     }
 
+    /**
+     * @return Whether to use light assets.
+     */
+    protected boolean useLight() {
+        return mThemeColorProvider != null && mThemeColorProvider.useLight();
+    }
+
     @Override
-    public void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {}
+    public void onTintChanged(ColorStateList tint, boolean useLight) {}
 
     @Override
     public void onThemeColorChanged(int color, boolean shouldAnimate) {}

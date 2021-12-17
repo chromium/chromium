@@ -8,11 +8,10 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.ui.util.ColorUtils;
 
 /**
  * An abstract class that provides the current theme color.
@@ -35,19 +34,25 @@ public abstract class ThemeColorProvider {
     public interface TintObserver {
         /**
          * @param tint The new tint the observer should use.
-         * @param brandedColorScheme The {@link BrandedColorScheme} the observer should use.
+         * @param useLight Whether the observer should use light mode.
          */
-        void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme);
+        void onTintChanged(ColorStateList tint, boolean useLight);
     }
+
+    /** Light mode tint (used when color is dark). */
+    private final ColorStateList mLightModeTint;
+
+    /** Dark mode tint (used when color is light). */
+    private final ColorStateList mDarkModeTint;
 
     /** Current primary color. */
     private int mPrimaryColor;
 
-    /** The current {@link BrandedColorScheme}. */
-    private @Nullable @BrandedColorScheme Integer mBrandedColorScheme;
-
-    /** The current tint. */
-    private ColorStateList mTint;
+    /**
+     * Whether should use light tint (corresponds to dark color). If null, the state is not
+     * initialized.
+     */
+    private @Nullable Boolean mUseLightTint;
 
     /** List of {@link ThemeColorObserver}s. These are used to broadcast events to listeners. */
     private final ObserverList<ThemeColorObserver> mThemeColorObservers;
@@ -61,7 +66,8 @@ public abstract class ThemeColorProvider {
     public ThemeColorProvider(Context context) {
         mThemeColorObservers = new ObserverList<ThemeColorObserver>();
         mTintObservers = new ObserverList<TintObserver>();
-        mTint = ThemeUtils.getThemedToolbarIconTint(context, BrandedColorScheme.APP_DEFAULT);
+        mLightModeTint = ThemeUtils.getThemedToolbarIconTint(context, true);
+        mDarkModeTint = ThemeUtils.getThemedToolbarIconTint(context, false);
     }
 
     /**
@@ -106,14 +112,14 @@ public abstract class ThemeColorProvider {
      * @return The current tint of this provider.
      */
     public ColorStateList getTint() {
-        return mTint;
+        return useLight() ? mLightModeTint : mDarkModeTint;
     }
 
     /**
-     * @return The current {@link BrandedColorScheme} of this provider.
+     * @return Whether or not this provider is using light tints.
      */
-    public @BrandedColorScheme int getBrandedColorScheme() {
-        return mBrandedColorScheme != null ? mBrandedColorScheme : BrandedColorScheme.APP_DEFAULT;
+    public boolean useLight() {
+        return mUseLightTint != null ? mUseLightTint : false;
     }
 
     /**
@@ -130,16 +136,16 @@ public abstract class ThemeColorProvider {
         for (ThemeColorObserver observer : mThemeColorObservers) {
             observer.onThemeColorChanged(color, shouldAnimate);
         }
+        updateTint();
     }
 
-    protected void updateTint(
-            @NonNull ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
-        if (tint == mTint) return;
-        mTint = tint;
-        mBrandedColorScheme = brandedColorScheme;
-
+    private void updateTint() {
+        final boolean useLight = ColorUtils.shouldUseLightForegroundOnBackground(mPrimaryColor);
+        if (mUseLightTint != null && useLight == mUseLightTint) return;
+        mUseLightTint = useLight;
+        final ColorStateList tint = useLight ? mLightModeTint : mDarkModeTint;
         for (TintObserver observer : mTintObservers) {
-            observer.onTintChanged(tint, brandedColorScheme);
+            observer.onTintChanged(tint, useLight);
         }
     }
 }

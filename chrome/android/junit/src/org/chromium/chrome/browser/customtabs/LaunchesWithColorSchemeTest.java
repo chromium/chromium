@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -29,7 +28,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.display.DisplayAndroidManager;
 
 /**
@@ -72,8 +70,7 @@ public class LaunchesWithColorSchemeTest {
             assertTrue(activity.getNightModeStateProviderForTesting().isInNightMode());
 
             MenuButton menuButtonView = activity.findViewById(R.id.menu_button_wrapper);
-            assertEquals(BrandedColorScheme.APP_DEFAULT,
-                    menuButtonView.getBrandedColorSchemeForTesting());
+            assertTrue(menuButtonView.getUseLightDrawablesForTesting());
         });
     }
 
@@ -88,8 +85,7 @@ public class LaunchesWithColorSchemeTest {
             assertFalse(activity.getNightModeStateProviderForTesting().isInNightMode());
 
             MenuButton menuButtonView = activity.findViewById(R.id.menu_button_wrapper);
-            assertEquals(BrandedColorScheme.APP_DEFAULT,
-                    menuButtonView.getBrandedColorSchemeForTesting());
+            assertFalse(menuButtonView.getUseLightDrawablesForTesting());
         });
     }
 

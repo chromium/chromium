@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -171,10 +170,11 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     }
 
     /**
-     * @param brandedColorScheme The {@link BrandedColorScheme} to use for the status icon and text.
+     * @param useDarkForegroundColors Whether dark foreground colors should be for the status icon
+     *                                and text.
      */
-    public void setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
-        mMediator.setBrandedColorScheme(brandedColorScheme);
+    public void setUseDarkForegroundColors(boolean useDarkForegroundColors) {
+        mMediator.setUseDarkColors(useDarkForegroundColors);
 
         // TODO(ender): remove this once icon selection has complete set of
         // corresponding properties (for tinting etc).

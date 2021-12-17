@@ -48,12 +48,10 @@ import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
@@ -380,12 +378,13 @@ public class ToolbarTablet extends ToolbarLayout
     }
 
     @Override
-    public void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
+    public void onTintChanged(ColorStateList tint, boolean useLight) {
         ApiCompatibilityUtils.setImageTintList(mHomeButton, tint);
         ApiCompatibilityUtils.setImageTintList(mBackButton, tint);
         ApiCompatibilityUtils.setImageTintList(mForwardButton, tint);
         ApiCompatibilityUtils.setImageTintList(mSaveOfflineButton, tint);
         ApiCompatibilityUtils.setImageTintList(mReloadButton, tint);
+        mAccessibilitySwitcherButton.setUseLightDrawables(useLight);
 
         if (mOptionalButton != null && mOptionalButtonUsesTint) {
             ApiCompatibilityUtils.setImageTintList(mOptionalButton, tint);
@@ -400,8 +399,6 @@ public class ToolbarTablet extends ToolbarLayout
         mLocationBar.getTabletCoordinator().getBackground().setTint(textBoxColor);
         mLocationBar.updateVisualsForState();
         setToolbarHairlineColor(color);
-        final boolean useLight = ColorUtils.shouldUseLightForegroundOnBackground(color);
-        mAccessibilitySwitcherButton.setUseLightDrawables(useLight);
     }
 
     /**

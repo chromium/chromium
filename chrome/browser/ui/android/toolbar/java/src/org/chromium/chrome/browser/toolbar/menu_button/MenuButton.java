@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
@@ -45,7 +44,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
 
     /** The view for the update badge. */
     private ImageView mUpdateBadgeView;
-    private @BrandedColorScheme int mBrandedColorScheme;
+    private boolean mUseLightDrawables;
 
     private AppMenuButtonHelper mAppMenuButtonHelper;
 
@@ -122,7 +121,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
                 mMenuImageButton.getWidth() - mMenuImageButton.getPaddingRight(),
                 mMenuImageButton.getHeight() - mMenuImageButton.getPaddingBottom());
         mMenuImageButtonAnimationDrawable.setGravity(Gravity.CENTER);
-        int color = ThemeUtils.getThemedToolbarIconTint(getContext(), mBrandedColorScheme)
+        int color = ThemeUtils.getThemedToolbarIconTint(getContext(), mUseLightDrawables)
                             .getDefaultColor();
         mMenuImageButtonAnimationDrawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
 
@@ -131,7 +130,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
         MenuButtonState buttonState = mStateSupplier.get();
         if (buttonState == null || mUpdateBadgeView == null) return;
         @DrawableRes
-        int drawable = getUpdateBadgeIcon(buttonState, mBrandedColorScheme);
+        int drawable = mUseLightDrawables ? buttonState.lightBadgeIcon : buttonState.darkBadgeIcon;
         mUpdateBadgeView.setImageDrawable(
                 ApiCompatibilityUtils.getDrawable(getResources(), drawable));
         mUpdateBadgeAnimationDrawable = (BitmapDrawable) mUpdateBadgeView.getDrawable()
@@ -143,19 +142,6 @@ public class MenuButton extends FrameLayout implements TintObserver {
                 mUpdateBadgeView.getWidth() - mUpdateBadgeView.getPaddingRight(),
                 mUpdateBadgeView.getHeight() - mUpdateBadgeView.getPaddingBottom());
         mUpdateBadgeAnimationDrawable.setGravity(Gravity.CENTER);
-    }
-
-    private @DrawableRes int getUpdateBadgeIcon(
-            MenuButtonState buttonState, @BrandedColorScheme int brandedColorScheme) {
-        @DrawableRes
-        int drawable = buttonState.adaptiveBadgeIcon;
-        if (brandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME
-                || brandedColorScheme == BrandedColorScheme.INCOGNITO) {
-            drawable = buttonState.lightBadgeIcon;
-        } else if (brandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME) {
-            drawable = buttonState.darkBadgeIcon;
-        }
-        return drawable;
     }
 
     /**
@@ -275,10 +261,7 @@ public class MenuButton extends FrameLayout implements TintObserver {
                         ViewCompat.getPaddingEnd(mMenuImageButton),
                         mMenuImageButton.getPaddingBottom());
             }
-            // TODO(https://crbug.com/1233703) This doesn't work well with website themes.
-            boolean isLightPulseColor = mBrandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME
-                    || mBrandedColorScheme == BrandedColorScheme.INCOGNITO;
-            mHighlightDrawable.setUseLightPulseColor(getContext(), isLightPulseColor);
+            mHighlightDrawable.setUseLightPulseColor(getContext(), mUseLightDrawables);
             setBackground(mHighlightDrawable);
             mHighlightDrawable.start();
         } else {
@@ -304,14 +287,14 @@ public class MenuButton extends FrameLayout implements TintObserver {
     }
 
     @VisibleForTesting
-    public @BrandedColorScheme int getBrandedColorSchemeForTesting() {
-        return mBrandedColorScheme;
+    public boolean getUseLightDrawablesForTesting() {
+        return mUseLightDrawables;
     }
 
     @Override
-    public void onTintChanged(ColorStateList tintList, @BrandedColorScheme int brandedColorScheme) {
+    public void onTintChanged(ColorStateList tintList, boolean useLight) {
         ApiCompatibilityUtils.setImageTintList(mMenuImageButton, tintList);
-        mBrandedColorScheme = brandedColorScheme;
+        mUseLightDrawables = useLight;
         updateImageResources();
         updateMenuButtonHighlightDrawable();
     }

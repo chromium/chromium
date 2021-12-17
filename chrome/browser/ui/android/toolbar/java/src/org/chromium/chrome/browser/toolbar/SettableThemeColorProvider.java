@@ -5,10 +5,8 @@
 package org.chromium.chrome.browser.toolbar;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /**
  * {@link ThemeColorProvider} that blindly tracks whatever primary color it's set to.
@@ -29,12 +27,5 @@ class SettableThemeColorProvider extends ThemeColorProvider {
      */
     public void setPrimaryColor(int color, boolean shouldAnimate) {
         updatePrimaryColor(color, shouldAnimate);
-    }
-
-    /**
-     * Sets the tint to the specified value.
-     */
-    public void setTint(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
-        updateTint(tint, brandedColorScheme);
     }
 }

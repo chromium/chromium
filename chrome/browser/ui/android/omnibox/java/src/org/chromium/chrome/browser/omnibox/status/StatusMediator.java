@@ -29,11 +29,9 @@ import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -63,6 +61,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
     private final Supplier<Profile> mProfileSupplier;
     private final Supplier<MerchantTrustSignalsCoordinator>
             mMerchantTrustSignalsCoordinatorSupplier;
+    private boolean mDarkTheme;
     private boolean mUrlHasFocus;
     private boolean mVerboseStatusSpaceAvailable;
     private boolean mPageIsPaintPreview;
@@ -79,7 +78,6 @@ public class StatusMediator implements PermissionDialogController.Observer,
 
     private @ConnectionSecurityLevel int mPageSecurityLevel;
 
-    private @BrandedColorScheme int mBrandedColorScheme;
     private @DrawableRes int mSecurityIconRes;
     private @DrawableRes int mSecurityIconTintRes;
     private @StringRes int mSecurityIconDescriptionRes;
@@ -391,11 +389,11 @@ public class StatusMediator implements PermissionDialogController.Observer,
     }
 
     /**
-     * Set the {@link BrandedColorScheme}.
+     * Toggle between dark and light UI color theme.
      */
-    void setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
-        if (mBrandedColorScheme != brandedColorScheme) {
-            mBrandedColorScheme = brandedColorScheme;
+    void setUseDarkColors(boolean useDarkColors) {
+        if (mDarkTheme != useDarkColors) {
+            mDarkTheme = useDarkColors;
             updateColorTheme();
         }
     }
@@ -437,24 +435,22 @@ public class StatusMediator implements PermissionDialogController.Observer,
      * Update color theme for all status components.
      */
     private void updateColorTheme() {
-        // TODO(https://crbug.com/1275726): Update the colors here once we have the specs.
-        final boolean isDark = !OmniboxResourceProvider.isDarkMode(mBrandedColorScheme);
         @ColorRes
-        int separatorColor =
-                isDark ? R.color.divider_line_bg_color_dark : R.color.divider_line_bg_color_light;
+        int separatorColor = mDarkTheme ? R.color.divider_line_bg_color_dark
+                                        : R.color.divider_line_bg_color_light;
 
         @ColorRes
         int textColor = 0;
         if (mPageIsPaintPreview) {
-            textColor = isDark ? R.color.locationbar_status_preview_color
-                               : R.color.locationbar_status_preview_color_light;
+            textColor = mDarkTheme ? R.color.locationbar_status_preview_color
+                                   : R.color.locationbar_status_preview_color_light;
         } else if (mPageIsOffline) {
-            textColor = isDark ? R.color.locationbar_status_offline_color
-                               : R.color.locationbar_status_offline_color_light;
+            textColor = mDarkTheme ? R.color.locationbar_status_offline_color
+                                   : R.color.locationbar_status_offline_color_light;
         }
 
         @ColorRes
-        int tintColor = ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme);
+        int tintColor = ThemeUtils.getThemedToolbarIconTintRes(!mDarkTheme);
 
         mModel.set(StatusProperties.SEPARATOR_COLOR_RES, separatorColor);
         mNavigationIconTintRes = tintColor;
@@ -581,9 +577,9 @@ public class StatusMediator implements PermissionDialogController.Observer,
         // If the current url text is a valid url, then swap the dse icon for a globe.
         if (!mUrlBarTextIsSearch) {
             resourceCallback.onResult(new StatusIconResource(R.drawable.ic_globe_24dp,
-                    ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme)));
+                    ThemeUtils.getThemedToolbarIconTintRes(/* useLight= */ !mDarkTheme)));
         } else {
-            mSearchEngineLogoUtils.getSearchEngineLogo(mResources, mBrandedColorScheme,
+            mSearchEngineLogoUtils.getSearchEngineLogo(mResources, mDarkTheme,
                     mProfileSupplier.get(), mTemplateUrlServiceSupplier.get(), resourceCallback);
         }
     }
