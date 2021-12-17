@@ -233,6 +233,11 @@
     <!-- Applied after the dynamic colors to override the undesired overrides done by the dynamic
          color overlay, e.g. android:textColorHighlight. -->
     <style name="ThemeOverlay.DynamicColorOverrides" parent="">
+        <!-- android:textColorHighlight applied by Material3 is too dark, so we override it with our
+             own color state list to specify a lower alpha. -->
         <item name="android:textColorHighlight">@color/text_highlight_color</item>
+        <!-- android:textColorHint applied by Material3 is too faint, so we override it with our own
+             color state list. -->
+        <item name="android:textColorHint">@color/default_text_color_hint_list</item>
     </style>
 </resources>
