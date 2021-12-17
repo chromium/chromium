@@ -1917,6 +1917,9 @@ void NGBlockNode::UpdateShapeOutsideInfoIfNeeded(
   if (!box_->IsFloating() || !box_->GetShapeOutsideInfo())
     return;
 
+  if (layout_result.Status() != NGLayoutResult::kSuccess)
+    return;
+
   // The box_ may not have a valid size yet (due to an intermediate layout),
   // use the fragment's size instead.
   LayoutSize box_size = layout_result.PhysicalFragment().Size().ToLayoutSize();
