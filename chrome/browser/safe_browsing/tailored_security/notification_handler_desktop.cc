@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/tailored_security/consented_notification_desktop.h"
+#include "chrome/browser/safe_browsing/tailored_security/notification_handler_desktop.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -38,13 +38,15 @@ const char kTailoredSecurityEnableNotificationId[] =
     "TailoredSecurityEnableNotification";
 const char kTailoredSecurityDisableNotificationId[] =
     "TailoredSecurityDisableNotification";
+const char kTailoredSecurityUnconsentedPromotionNotificationId[] =
+    "TailoredSecurityUnconsentedPromotionNotification";
 const char kTailoredSecurityNotifierId[] =
     "chrome://settings/security/notification/id-notifier";
 const char kTailoredSecurityNotificationOrigin[] =
     "chrome://settings/security?q=enhanced";
 
 // |is_esb_enabled_in_sync| records if ESB was enabled in sync with Account-ESB
-void TurnOnESBAndOpenSettings(Profile* profile, bool is_esb_enabled_in_sync) {
+void TurnOnEsbAndOpenSettings(Profile* profile, bool is_esb_enabled_in_sync) {
   SetSafeBrowsingState(profile->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION,
                        is_esb_enabled_in_sync);
@@ -52,7 +54,7 @@ void TurnOnESBAndOpenSettings(Profile* profile, bool is_esb_enabled_in_sync) {
   chrome::ShowSafeBrowsingEnhancedProtection(browser);
 }
 
-void LogOutcome(TailoredSecurityOutcome outcome, bool enable) {
+void LogConsentedOutcome(TailoredSecurityOutcome outcome, bool enable) {
   if (enable) {
     base::UmaHistogramEnumeration(
         "SafeBrowsing.TailoredSecurityConsentedEnabledNotificationOutcome",
@@ -64,51 +66,76 @@ void LogOutcome(TailoredSecurityOutcome outcome, bool enable) {
   }
 }
 
+void LogUnconsentedOutcome(TailoredSecurityOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.TailoredSecurityUnconsentedPromotionNotificationOutcome",
+      outcome);
+}
+
 }  // namespace
 
-TailoredSecurityConsentedNotificationHandler::
-    TailoredSecurityConsentedNotificationHandler() = default;
+TailoredSecurityNotificationHandler::TailoredSecurityNotificationHandler() =
+    default;
 
-TailoredSecurityConsentedNotificationHandler::
-    ~TailoredSecurityConsentedNotificationHandler() = default;
+TailoredSecurityNotificationHandler::~TailoredSecurityNotificationHandler() =
+    default;
 
-void TailoredSecurityConsentedNotificationHandler::OnClose(
+void TailoredSecurityNotificationHandler::OnClose(
     Profile* profile,
     const GURL& origin,
     const std::string& notification_id,
     bool by_user,
     base::OnceClosure completed_closure) {
-  bool is_enable = (notification_id == kTailoredSecurityEnableNotificationId);
-  LogOutcome(TailoredSecurityOutcome::kDismissed, is_enable);
+  if (notification_id == kTailoredSecurityUnconsentedPromotionNotificationId) {
+    LogUnconsentedOutcome(TailoredSecurityOutcome::kDismissed);
+  } else {
+    bool is_enable = (notification_id == kTailoredSecurityEnableNotificationId);
+    LogConsentedOutcome(TailoredSecurityOutcome::kDismissed, is_enable);
+  }
+
   std::move(completed_closure).Run();
 }
 
-void TailoredSecurityConsentedNotificationHandler::OnClick(
+void TailoredSecurityNotificationHandler::OnClick(
     Profile* profile,
     const GURL& origin,
     const std::string& notification_id,
     const absl::optional<int>& action_index,
     const absl::optional<std::u16string>& reply,
     base::OnceClosure completed_closure) {
-  bool is_enable = (notification_id == kTailoredSecurityEnableNotificationId);
-  if (action_index) {
+  if (!action_index) {
+    std::move(completed_closure).Run();
+    return;
+  }
+
+  if (notification_id == kTailoredSecurityUnconsentedPromotionNotificationId) {
+    if (*action_index == 0) {
+      LogUnconsentedOutcome(TailoredSecurityOutcome::kAccepted);
+      chrome::ShowSafeBrowsingEnhancedProtection(
+          chrome::ScopedTabbedBrowserDisplayer(profile).browser());
+    } else {
+      LogUnconsentedOutcome(TailoredSecurityOutcome::kRejected);
+    }
+  } else {
+    bool is_enable = (notification_id == kTailoredSecurityEnableNotificationId);
     if (*action_index == 0) {
       // Enable: Pressed Turn on is acceptance, Disable: Turn back on is
       // rejection
       TailoredSecurityOutcome outcome =
           is_enable ? TailoredSecurityOutcome::kAccepted
                     : TailoredSecurityOutcome::kRejected;
-      LogOutcome(outcome, is_enable);
-      TurnOnESBAndOpenSettings(profile, is_enable);
+      LogConsentedOutcome(outcome, is_enable);
+      TurnOnEsbAndOpenSettings(profile, is_enable);
     } else {
       // Enable: Pressed No Thanks is rejection, Disable: Pressed OK is
       // acceptance
       TailoredSecurityOutcome outcome =
           is_enable ? TailoredSecurityOutcome::kRejected
                     : TailoredSecurityOutcome::kAccepted;
-      LogOutcome(outcome, is_enable);
+      LogConsentedOutcome(outcome, is_enable);
     }
   }
+
   std::move(completed_closure).Run();
 }
 
@@ -151,7 +178,7 @@ void DisplayTailoredSecurityConsentedModalDesktop(Profile* profile,
     icon = gfx::Image(gfx::CreateVectorIcon(
         kShieldBadIcon, message_center::kNotificationIconSize, icon_color));
   }
-  LogOutcome(TailoredSecurityOutcome::kShown, enable);
+  LogConsentedOutcome(TailoredSecurityOutcome::kShown, enable);
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
       description, icon,
@@ -164,7 +191,47 @@ void DisplayTailoredSecurityConsentedModalDesktop(Profile* profile,
   notification.set_buttons({message_center::ButtonInfo(primary_button),
                             message_center::ButtonInfo(secondary_button)});
   NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TAILORED_SECURITY_CONSENTED, notification,
+      NotificationHandler::Type::TAILORED_SECURITY, notification,
+      /*metadata=*/nullptr);
+}
+
+void DisplayTailoredSecurityUnconsentedPromotionNotification(Profile* profile) {
+  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  if (!browser)
+    return;
+
+  const ui::ColorProvider* color_provider =
+      browser->window()->GetColorProvider();
+
+  std::string notification_id =
+      kTailoredSecurityUnconsentedPromotionNotificationId;
+  const std::u16string& title = l10n_util::GetStringUTF16(
+      IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_TITLE);
+  const std::u16string& description = l10n_util::GetStringUTF16(
+      IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_DESCRIPTION);
+  const std::u16string& primary_button = l10n_util::GetStringUTF16(
+      IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_ACCEPT);
+  const std::u16string& secondary_button =
+      l10n_util::GetStringUTF16(IDS_NO_THANKS);
+  // TODO(crbug/1257622): Confirm with UX that it's appropriate to use the
+  // blue color here.
+  SkColor icon_color = color_provider->GetColor(ui::kColorAccent);
+  gfx::Image icon = gfx::Image(gfx::CreateVectorIcon(
+      kSafetyCheckIcon, message_center::kNotificationIconSize, icon_color));
+  LogUnconsentedOutcome(TailoredSecurityOutcome::kShown);
+  message_center::Notification notification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
+      description, icon,
+      l10n_util::GetStringUTF16(IDS_TAILORED_SECURITY_DISPLAY_SOURCE),
+      GURL(kTailoredSecurityNotificationOrigin),
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 kTailoredSecurityNotifierId),
+      message_center::RichNotificationData(),
+      /*delegate=*/nullptr);
+  notification.set_buttons({message_center::ButtonInfo(primary_button),
+                            message_center::ButtonInfo(secondary_button)});
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
+      NotificationHandler::Type::TAILORED_SECURITY, notification,
       /*metadata=*/nullptr);
 }
 

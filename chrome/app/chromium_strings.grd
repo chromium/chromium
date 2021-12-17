@@ -1370,6 +1370,9 @@ Chromium is unable to recover your settings.
       </message>
 
       <!-- Tailored Security -->
+      <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_TITLE" desc="Title of notification prompting the user to enable Enhanced Safe Browsing after they have enabled account-level protections.">
+        Get Chromium's strongest security
+      </message>
       <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_TITLE" desc="Title shown in the message shown when a user changes their account-level tailored security setting encouraging them to enable Enhanced Safe Browsing">
         Get Chromium's strongest security
       </message>
