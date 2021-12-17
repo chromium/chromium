@@ -75,6 +75,13 @@ void ChromeTailoredSecurityService::ShowSyncNotification(bool is_enabled) {
   content::WebContents* web_contents = GetWebContentsForProfile(profile_);
   if (!web_contents)
     return;
+
+  // Since the Android UX is a notice, we simply enable Enhanced Protection
+  // here.
+  SetSafeBrowsingState(profile_->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION,
+                       /*is_esb_enabled_in_sync=*/true);
+
   message_ = std::make_unique<TailoredSecurityConsentedModalAndroid>();
   message_->DisplayMessage(
       web_contents, is_enabled,

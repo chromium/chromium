@@ -5,9 +5,13 @@
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_url_observer.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/tailored_security/notification_handler_desktop.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
 
 #if defined(OS_ANDROID)
@@ -57,9 +61,29 @@ void TailoredSecurityUrlObserver::OnTailoredSecurityBitChanged(
     base::Time previous_update) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  if (enabled && !IsEnhancedProtectionEnabled(*profile->GetPrefs())) {
-    if (base::Time::Now() - previous_update <=
-        base::Minutes(kThresholdForInFlowNotificationMinutes)) {
+  if (!enabled || IsEnhancedProtectionEnabled(*profile->GetPrefs()))
+    return;
+
+  // We should only trigger the unconsented UX if the user is not consented to
+  // sync. Syncing users have different UX, handled by the
+  // `ChromeTailoredSecurityService`.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager ||
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return;
+  }
+
+  if (profile->GetPrefs()->GetBoolean(
+          prefs::kAccountTailoredSecurityShownNotification)) {
+    return;
+  }
+
+  profile->GetPrefs()->SetBoolean(
+      prefs::kAccountTailoredSecurityShownNotification, true);
+
+  if (base::Time::Now() - previous_update <=
+      base::Minutes(kThresholdForInFlowNotificationMinutes)) {
 #if defined(OS_ANDROID)
       message_ = std::make_unique<TailoredSecurityUnconsentedMessageAndroid>(
           web_contents(),
@@ -70,9 +94,17 @@ void TailoredSecurityUrlObserver::OnTailoredSecurityBitChanged(
 #else
       TailoredSecurityUnconsentedModal::ShowForWebContents(web_contents());
 #endif
-    } else {
-      // TODO(drubery): Add out-of-flow UX here.
-    }
+  } else {
+#if defined(OS_ANDROID)
+    message_ = std::make_unique<TailoredSecurityUnconsentedMessageAndroid>(
+        web_contents(),
+        base::BindOnce(&TailoredSecurityUrlObserver::MessageDismissed,
+                       // Unretained is safe because |this| owns |message_|.
+                       base::Unretained(this)),
+        /*is_in_flow=*/false);
+#else
+    DisplayTailoredSecurityUnconsentedPromotionNotification(profile);
+#endif
   }
 }
 
