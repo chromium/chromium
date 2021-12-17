@@ -8,11 +8,10 @@
 
 #include "base/check.h"
 #include "content/public/renderer/render_frame.h"
+#include "fuchsia/engine/mojom/web_engine_media_resource_provider.mojom.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/fuchsia/audio/fuchsia_audio_capturer_source.h"
 #include "media/fuchsia/audio/fuchsia_audio_output_device.h"
-#include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
-#include "media/fuchsia/mojom/fuchsia_media_resource_provider_mojom_traits.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -81,8 +80,7 @@ WebEngineAudioDeviceFactory::CreateAudioRendererSink(
   CHECK(render_frame);
 
   // Connect FuchsiaMediaResourceProvider.
-  mojo::Remote<media::mojom::FuchsiaMediaResourceProvider>
-      media_resource_provider;
+  mojo::Remote<mojom::WebEngineMediaResourceProvider> media_resource_provider;
   render_frame->GetBrowserInterfaceBroker()->GetInterface(
       media_resource_provider.BindNewPipeAndPassReceiver());
 
@@ -122,9 +120,8 @@ WebEngineAudioDeviceFactory::CreateAudioCapturerSource(
   if (!render_frame)
     return nullptr;
 
-  // Connect FuchsiaMediaResourceProvider.
-  mojo::Remote<media::mojom::FuchsiaMediaResourceProvider>
-      media_resource_provider;
+  // Connect WebEngineMediaResourceProvider.
+  mojo::Remote<mojom::WebEngineMediaResourceProvider> media_resource_provider;
   render_frame->GetBrowserInterfaceBroker()->GetInterface(
       media_resource_provider.BindNewPipeAndPassReceiver());
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/engine/browser/fuchsia_media_resource_provider_impl.h"
+#include "fuchsia/engine/browser/web_engine_media_resource_provider_impl.h"
 
 #include <lib/fidl/cpp/interface_handle.h>
 #include <lib/sys/cpp/component_context.h>
@@ -17,29 +17,29 @@
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "media/base/media_switches.h"
 
-void FuchsiaMediaResourceProviderImpl::Bind(
+void WebEngineMediaResourceProviderImpl::Bind(
     content::RenderFrameHost* frame_host,
-    mojo::PendingReceiver<media::mojom::FuchsiaMediaResourceProvider>
-        receiver) {
+    mojo::PendingReceiver<mojom::WebEngineMediaResourceProvider> receiver) {
   // The object will delete itself when connection to the frame is broken.
-  new FuchsiaMediaResourceProviderImpl(frame_host, std::move(receiver));
+  new WebEngineMediaResourceProviderImpl(frame_host, std::move(receiver));
 }
 
-FuchsiaMediaResourceProviderImpl::FuchsiaMediaResourceProviderImpl(
+WebEngineMediaResourceProviderImpl::WebEngineMediaResourceProviderImpl(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<media::mojom::FuchsiaMediaResourceProvider> receiver)
+    mojo::PendingReceiver<mojom::WebEngineMediaResourceProvider> receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {}
 
-FuchsiaMediaResourceProviderImpl::~FuchsiaMediaResourceProviderImpl() = default;
+WebEngineMediaResourceProviderImpl::~WebEngineMediaResourceProviderImpl() =
+    default;
 
-void FuchsiaMediaResourceProviderImpl::ShouldUseAudioConsumer(
+void WebEngineMediaResourceProviderImpl::ShouldUseAudioConsumer(
     ShouldUseAudioConsumerCallback callback) {
   auto* frame_impl = FrameImpl::FromRenderFrameHost(render_frame_host());
   DCHECK(frame_impl);
   std::move(callback).Run(frame_impl->media_session_id().has_value());
 }
 
-void FuchsiaMediaResourceProviderImpl::CreateAudioConsumer(
+void WebEngineMediaResourceProviderImpl::CreateAudioConsumer(
     fidl::InterfaceRequest<fuchsia::media::AudioConsumer> request) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableAudioOutput)) {
@@ -65,7 +65,7 @@ void FuchsiaMediaResourceProviderImpl::CreateAudioConsumer(
                                std::move(request));
 }
 
-void FuchsiaMediaResourceProviderImpl::CreateAudioCapturer(
+void WebEngineMediaResourceProviderImpl::CreateAudioCapturer(
     fidl::InterfaceRequest<fuchsia::media::AudioCapturer> request) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableAudioInput)) {

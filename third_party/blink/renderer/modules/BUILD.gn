@@ -281,9 +281,6 @@ group("make_modules_generated") {
     "//ui/accessibility:ax_enums_mojo_blink_headers",
     "//ui/display/mojom:mojom_blink_headers",
   ]
-  if (is_fuchsia) {
-    public_deps += [ "//media/fuchsia/mojom:mojom_blink_headers" ]
-  }
 }
 
 # generate_event_interfaces ----------------------------------------------------

@@ -20,8 +20,7 @@ WebEngineMediaRendererFactory::WebEngineMediaRendererFactory(
     media::MediaLog* media_log,
     media::DecoderFactory* decoder_factory,
     GetGpuFactoriesCB get_gpu_factories_cb,
-    mojo::Remote<media::mojom::FuchsiaMediaResourceProvider>
-        media_resource_provider)
+    mojo::Remote<mojom::WebEngineMediaResourceProvider> media_resource_provider)
     : media_log_(media_log),
       decoder_factory_(decoder_factory),
       get_gpu_factories_cb_(std::move(get_gpu_factories_cb)),

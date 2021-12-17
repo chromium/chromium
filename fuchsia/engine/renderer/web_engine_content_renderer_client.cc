@@ -274,8 +274,7 @@ WebEngineContentRendererClient::GetBaseRendererFactory(
         get_gpu_factories_cb) {
   auto* interface_broker = render_frame->GetBrowserInterfaceBroker();
 
-  mojo::Remote<media::mojom::FuchsiaMediaResourceProvider>
-      media_resource_provider;
+  mojo::Remote<mojom::WebEngineMediaResourceProvider> media_resource_provider;
   interface_broker->GetInterface(
       media_resource_provider.BindNewPipeAndPassReceiver());
 

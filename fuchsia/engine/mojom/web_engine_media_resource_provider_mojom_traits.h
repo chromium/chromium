@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FUCHSIA_MOJOM_FUCHSIA_MEDIA_RESOURCE_PROVIDER_MOJOM_TRAITS_H_
-#define MEDIA_FUCHSIA_MOJOM_FUCHSIA_MEDIA_RESOURCE_PROVIDER_MOJOM_TRAITS_H_
+#ifndef FUCHSIA_ENGINE_MOJOM_WEB_ENGINE_MEDIA_RESOURCE_PROVIDER_MOJOM_TRAITS_H_
+#define FUCHSIA_ENGINE_MOJOM_WEB_ENGINE_MEDIA_RESOURCE_PROVIDER_MOJOM_TRAITS_H_
 
 #include <fuchsia/media/cpp/fidl.h>
 
@@ -12,19 +12,19 @@
 namespace mojo {
 
 template <>
-struct StructTraits<media::mojom::AudioConsumerRequestDataView,
+struct StructTraits<mojom::AudioConsumerRequestDataView,
                     fidl::InterfaceRequest<fuchsia::media::AudioConsumer>>
     : public FidlInterfaceRequestStructTraits<
-          media::mojom::AudioConsumerRequestDataView,
+          mojom::AudioConsumerRequestDataView,
           fuchsia::media::AudioConsumer> {};
 
 template <>
-struct StructTraits<media::mojom::AudioCapturerRequestDataView,
+struct StructTraits<mojom::AudioCapturerRequestDataView,
                     fidl::InterfaceRequest<fuchsia::media::AudioCapturer>>
     : public FidlInterfaceRequestStructTraits<
-          media::mojom::AudioCapturerRequestDataView,
+          mojom::AudioCapturerRequestDataView,
           fuchsia::media::AudioCapturer> {};
 
 }  // namespace mojo
 
-#endif  // MEDIA_FUCHSIA_MOJOM_FUCHSIA_MEDIA_RESOURCE_PROVIDER_MOJOM_TRAITS_H_
+#endif  // FUCHSIA_ENGINE_MOJOM_WEB_ENGINE_MEDIA_RESOURCE_PROVIDER_MOJOM_TRAITS_H_
