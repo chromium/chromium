@@ -144,6 +144,15 @@ const CLIENT_DELEGATE = {
     return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
         'setUserPref', [userPref, value]);
   },
+
+  /**
+   * Triggers the opening of the Chrome feedback dialog.
+   * @return {!Promise}
+   */
+  openFeedbackDialog() {
+    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+        'openFeedbackDialog', []);
+  },
 };
 
 /**

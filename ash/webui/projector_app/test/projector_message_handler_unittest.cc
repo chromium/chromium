@@ -51,6 +51,8 @@ const char kShouldDownloadSodaCallback[] = "shouldDownloadSodaCallbck";
 const char kInstallSodaCallback[] = "installSodaCallback";
 const char kGetPendingScreencastsCallback[] = "getPendingScreencastsCallback";
 
+const char kOpenFeedbackDialogCallback[] = "openFeedbackDialog";
+
 const char kSetUserPrefCallback[] = "setUserPrefCallback";
 const char kGetUserPrefCallback[] = "getUserPrefCallback";
 
@@ -438,6 +440,18 @@ TEST_F(ProjectorMessageHandlerUnitTest, SetCreationFlowEnabledInvalidValue) {
   EXPECT_EQ(*(rejected_args->FindStringPath(kRejectedRequestMessageKey)),
             kRejectedRequestMessage);
   EXPECT_EQ(*(rejected_args->FindPath(kRejectedRequestArgsKey)), func_args);
+}
+
+TEST_F(ProjectorMessageHandlerUnitTest, OpenFeedbackDialog) {
+  base::ListValue list_args;
+  list_args.Append(base::Value(kOpenFeedbackDialogCallback));
+
+  web_ui().HandleReceivedMessage("openFeedbackDialog", &list_args);
+  base::RunLoop().RunUntilIdle();
+
+  const content::TestWebUI::CallData& call_data = FetchCallData(0);
+  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
+  EXPECT_EQ(call_data.arg1()->GetString(), kOpenFeedbackDialogCallback);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, SetCreationFlowEnabledUnsupportedPref) {

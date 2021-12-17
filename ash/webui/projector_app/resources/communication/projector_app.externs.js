@@ -311,6 +311,13 @@ projectorApp.ClientDelegate.prototype.setUserPref = function(
     userPref, value) {};
 
 /**
+ * Opens the Chrome feedback dialog. If not successful, the promise will be
+ * rejected with an error string.
+ * @return {!Promise}
+ */
+projectorApp.ClientDelegate.prototype.openFeedbackDialog = function() {};
+
+/**
  * The client Api for interacting with the Projector app instance.
  * @record
  * @struct

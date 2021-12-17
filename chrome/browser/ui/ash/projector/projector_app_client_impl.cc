@@ -9,12 +9,14 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/soda/constants.h"
@@ -143,4 +145,17 @@ bool ProjectorAppClientImpl::IsSpeechRecognitionAvailable() {
   return soda_installation_controller_ &&
          soda_installation_controller_->IsSodaAvailable(
              GetLocaleLanguageCode());
+}
+
+void ProjectorAppClientImpl::OpenFeedbackDialog() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  constexpr char kProjectorAppFeedbackCategoryTag[] = "FromProjectorApp";
+  chrome::ShowFeedbackPage(GURL(ash::kChromeUITrustedProjectorUrl), profile,
+                           chrome::kFeedbackSourceProjectorApp,
+                           /*description_template=*/std::string(),
+                           /*description_placeholder_text=*/std::string(),
+                           kProjectorAppFeedbackCategoryTag,
+                           /*extra_diagnostics=*/std::string());
+  // TODO(crbug/1048368): Communicate the dialog failing to open by returning an
+  // error string. For now, assume that the dialog has opened successfully.
 }

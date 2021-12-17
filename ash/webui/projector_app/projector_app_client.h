@@ -117,6 +117,9 @@ class ProjectorAppClient {
   // language pack has finished.
   virtual void OnSodaInstalled() = 0;
 
+  // Triggers the opening of the Chrome feedback dialog.
+  virtual void OpenFeedbackDialog() = 0;
+
  protected:
   ProjectorAppClient();
   virtual ~ProjectorAppClient();

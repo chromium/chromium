@@ -53,6 +53,7 @@ class MockAppClient : public ProjectorAppClient {
   MOCK_METHOD1(OnSodaInstallProgress, void(int));
   MOCK_METHOD0(OnSodaInstallError, void());
   MOCK_METHOD0(OnSodaInstalled, void());
+  MOCK_METHOD0(OpenFeedbackDialog, void());
 
   void SetAutomaticIssueOfAccessTokens(bool success);
   void WaitForAccessRequest(const std::string& account_email);

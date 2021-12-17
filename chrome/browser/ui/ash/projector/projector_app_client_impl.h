@@ -49,6 +49,7 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
   void OnSodaInstallProgress(int combined_progress) override;
   void OnSodaInstallError() override;
   void OnSodaInstalled() override;
+  void OpenFeedbackDialog() override;
 
  private:
   void NotifyScreencastsPendingStatusChanged(

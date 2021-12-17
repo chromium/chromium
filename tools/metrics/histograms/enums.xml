@@ -36156,6 +36156,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="18" label="Bento Bar"/>
   <int value="19" label="Quick Answers"/>
   <int value="20" label="What's New"/>
+  <int value="21" label="Connectivity Diagnostics"/>
+  <int value="22" label="Projector App"/>
 </enum>
 
 <enum name="FeedContentOrder">

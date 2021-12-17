@@ -121,6 +121,9 @@ export class TrustedAppRequestHandler extends RequestHandler {
       }
       return this.browserProxy_.setUserPref(args[0], args[1]);
     });
+    this.registerMethod('openFeedbackDialog', (args) => {
+      return this.browserProxy_.openFeedbackDialog();
+    });
   }
 }
 

@@ -114,6 +114,13 @@ export class ProjectorBrowserProxy {
    * @return {!Promise} Promise resolved when the request was handled.
    */
   setUserPref(userPref, value) {}
+
+  /**
+   * Opens the Chrome feedback dialog. The returned promise will be rejected if
+   * the dialog open is not successful.
+   * @return {!Promise}
+   */
+  openFeedbackDialog() {}
 }
 
 /**
@@ -185,6 +192,11 @@ export class ProjectorBrowserProxyImpl {
   /** @override */
   setUserPref(userPref, value) {
     return sendWithPromise('setUserPref', [userPref, value]);
+  }
+
+  /** @override */
+  openFeedbackDialog() {
+    return sendWithPromise('openFeedbackDialog');
   }
 }
 

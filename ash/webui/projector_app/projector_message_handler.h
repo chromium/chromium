@@ -97,6 +97,9 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   // Requested by the Projector SWA to set the value of a user pref.
   void SetUserPref(const base::Value::ConstListView args);
 
+  // Requested by the Projector SWA to open the Chrome feedback dialog.
+  void OpenFeedbackDialog(const base::Value::ConstListView args);
+
   // Called when OAuth token fetch request is completed by
   // ProjectorOAuthTokenFetcher. Resolves the javascript promise created by
   // ProjectorBrowserProxy.getOAuthTokenForAccount by calling the

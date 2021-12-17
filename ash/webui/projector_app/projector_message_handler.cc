@@ -208,6 +208,10 @@ void ProjectorMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "setUserPref", base::BindRepeating(&ProjectorMessageHandler::SetUserPref,
                                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "openFeedbackDialog",
+      base::BindRepeating(&ProjectorMessageHandler::OpenFeedbackDialog,
+                          base::Unretained(this)));
 }
 
 void ProjectorMessageHandler::OnScreencastsPendingStatusChanged(
@@ -402,6 +406,13 @@ void ProjectorMessageHandler::SetUserPref(
   }
 
   pref_service_->Set(parsed_args.pref_name, parsed_args.value);
+  ResolveJavascriptCallback(args[0], base::Value());
+}
+
+void ProjectorMessageHandler::OpenFeedbackDialog(
+    const base::Value::ConstListView args) {
+  AllowJavascript();
+  ProjectorAppClient::Get()->OpenFeedbackDialog();
   ResolveJavascriptCallback(args[0], base::Value());
 }
 
