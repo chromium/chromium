@@ -40,6 +40,8 @@ using ErrorCallback =
 
 const char kTotalGattConnectionTime[] =
     "Bluetooth.ChromeOS.FastPair.TotalGattConnectionTime";
+const char kGattConnectionResult[] =
+    "Bluetooth.ChromeOS.FastPair.GattConnection.Result";
 
 constexpr base::TimeDelta kConnectingTestTimeout = base::Seconds(5);
 
@@ -537,6 +539,7 @@ class FastPairGattServiceClientTest : public testing::Test {
 
 TEST_F(FastPairGattServiceClientTest, GattServiceDiscoveryTimeout) {
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
+  histogram_tester().ExpectTotalCount(kGattConnectionResult, 0);
   SuccessfulGattConnectionSetUp();
   FastForwardTimeByConnetingTimeout();
   NotifyGattDiscoveryCompleteForService();
@@ -544,21 +547,26 @@ TEST_F(FastPairGattServiceClientTest, GattServiceDiscoveryTimeout) {
             PairFailure::kGattServiceDiscoveryTimeout);
   EXPECT_FALSE(ServiceIsSet());
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 1);
+  histogram_tester().ExpectTotalCount(kGattConnectionResult, 1);
 }
 
 TEST_F(FastPairGattServiceClientTest, FailedGattConnection) {
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
+  histogram_tester().ExpectTotalCount(kGattConnectionResult, 0);
   FailedGattConnectionSetUp();
   EXPECT_EQ(GetInitializedCallbackResult(), PairFailure::kCreateGattConnection);
   EXPECT_FALSE(ServiceIsSet());
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
+  histogram_tester().ExpectTotalCount(kGattConnectionResult, 1);
 }
 
 TEST_F(FastPairGattServiceClientTest, GattConnectionSuccess) {
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
+  histogram_tester().ExpectTotalCount(kGattConnectionResult, 0);
   SuccessfulGattConnectionSetUp();
   NotifyGattDiscoveryCompleteForService();
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 1);
+  histogram_tester().ExpectTotalCount(kGattConnectionResult, 1);
 }
 
 TEST_F(FastPairGattServiceClientTest, IgnoreNonFastPairServices) {

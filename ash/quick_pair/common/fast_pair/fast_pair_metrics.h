@@ -82,6 +82,9 @@ COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordTotalGattConnectionTime(base::TimeDelta total_gatt_connection_time);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordGattConnectionResult(bool success);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordPairingFailureReason(const Device& device, PairFailure failure);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

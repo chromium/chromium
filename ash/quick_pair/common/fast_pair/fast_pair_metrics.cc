@@ -27,6 +27,8 @@ const char kRetroactivePairingResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.RetroactivePairing.Result";
 const char kTotalGattConnectionTimeMetric[] =
     "Bluetooth.ChromeOS.FastPair.TotalGattConnectionTime";
+const char kGattConnectionResult[] =
+    "Bluetooth.ChromeOS.FastPair.GattConnection.Result";
 const char kFastPairPairFailureInitialMetric[] =
     "Bluetooth.ChromeOS.FastPair.PairFailure.InitialPairingProtocol";
 const char kFastPairPairFailureSubsequentMetric[] =
@@ -117,6 +119,10 @@ void RecordRetroactivePairingResult(bool success) {
 void RecordTotalGattConnectionTime(base::TimeDelta total_gatt_connection_time) {
   base::UmaHistogramTimes(kTotalGattConnectionTimeMetric,
                           total_gatt_connection_time);
+}
+
+void RecordGattConnectionResult(bool success) {
+  base::UmaHistogramBoolean(kGattConnectionResult, success);
 }
 
 void RecordPairingResult(const Device& device, bool success) {
