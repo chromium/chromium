@@ -347,15 +347,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // Returns true if this view's size have been initialized.
   virtual bool HasSize() const;
 
-  // Informs the view that the assocaited InterstitialPage was attached.
-  virtual void OnInterstitialPageAttached() {}
-
-  // Tells the view that the assocaited InterstitialPage will going away (but is
-  // not yet destroyed, as InterstitialPage destruction is asynchronous). The
-  // view may use this notification to clean up associated resources. This
-  // should be called before the WebContents is fully destroyed.
-  virtual void OnInterstitialPageGoingAway() {}
-
   // Returns true if the visual properties should be sent to the renderer at
   // this time. This function is intended for subclasses to suppress
   // synchronization, the default implementation returns true.
