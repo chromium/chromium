@@ -59,7 +59,7 @@ class TailoredSecurityUrlObserver
 #if defined(OS_ANDROID)
   void MessageDismissed();
 
-  std::unique_ptr<TailoredSecurityUnconsentedModalAndroid> message_;
+  std::unique_ptr<TailoredSecurityUnconsentedMessageAndroid> message_;
 #endif
 
   // Reference to the TailoredSecurityService for this profile.

@@ -24,7 +24,8 @@ ChromeSettingsPageHelper::CreateChromeSettingsPageHelper() {
 void ChromeSettingsPageHelper::OpenEnhancedProtectionSettings(
     content::WebContents* web_contents) const {
 #if defined(OS_ANDROID)
-  safe_browsing::ShowSafeBrowsingSettings(web_contents);
+  safe_browsing::ShowSafeBrowsingSettings(
+      web_contents, safe_browsing::SettingsAccessPoint::kSecurityInterstitial);
 #else
   // In rare circumstances, this happens outside of a Browser, better ignore
   // than crash.
