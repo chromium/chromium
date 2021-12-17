@@ -2216,10 +2216,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestClientAuthContinueWithoutCert) {
   EXPECT_EQ("", tab->GetLastCommittedURL().ref());
 }
 
-// TODO(https://crbug.com/1279930): disabled because of race in when certs
-// are incorporated.
-IN_PROC_BROWSER_TEST_F(SSLUITest,
-                       DISABLED_TestCertDBChangedFlushesClientAuthCache) {
+IN_PROC_BROWSER_TEST_F(SSLUITest, TestCertDBChangedFlushesClientAuthCache) {
   // Make the browser use the ClientCertStoreStub instead of the regular one.
   ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
       ->set_client_cert_store_factory_for_testing(
@@ -2275,6 +2272,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest,
 
   // Send a CertDBChanged notification.
   net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
+  content::FlushNetworkServiceInstanceForTesting();
 
   // Visiting the page which requires client certs should fail, as the socket
   // pool has been flushed and SSL client auth cache has been cleared due to
