@@ -1152,9 +1152,8 @@ TEST_P(MetadataDatabaseTest, DumpFiles) {
   TrackedFile folder_0(CreateTrackedFolder(app_root, "folder_0"));
   TrackedFile file_0(CreateTrackedFile(folder_0, "file_0"));
 
-  const TrackedFile* tracked_files[] = {
-    &sync_root, &app_root, &folder_0, &file_0
-  };
+  const TrackedFile* tracked_files[] = {&sync_root, &app_root, &folder_0,
+                                        &file_0};
 
   SetUpDatabaseByTrackedFiles(tracked_files, base::size(tracked_files));
   EXPECT_EQ(SYNC_STATUS_OK, InitializeMetadataDatabase());
@@ -1164,18 +1163,22 @@ TEST_P(MetadataDatabaseTest, DumpFiles) {
       metadata_database()->DumpFiles(app_root.tracker.app_id());
   ASSERT_EQ(2u, files->GetList().size());
 
-  base::DictionaryValue* file = nullptr;
-  std::string str;
+  const std::string* str;
+  const base::Value& folder = files->GetList()[0];
+  ASSERT_TRUE(folder.is_dict());
+  str = folder.FindStringKey("title");
+  EXPECT_TRUE(str && *str == "folder_0");
+  str = folder.FindStringKey("type");
+  EXPECT_TRUE(str && *str == "folder");
+  EXPECT_TRUE(folder.FindKey("details"));
 
-  ASSERT_TRUE(files->GetDictionary(0, &file));
-  EXPECT_TRUE(file->GetString("title", &str) && str == "folder_0");
-  EXPECT_TRUE(file->GetString("type", &str) && str == "folder");
-  EXPECT_TRUE(file->HasKey("details"));
-
-  ASSERT_TRUE(files->GetDictionary(1, &file));
-  EXPECT_TRUE(file->GetString("title", &str) && str == "file_0");
-  EXPECT_TRUE(file->GetString("type", &str) && str == "file");
-  EXPECT_TRUE(file->HasKey("details"));
+  const base::Value& file = files->GetList()[1];
+  ASSERT_TRUE(file.is_dict());
+  str = file.FindStringKey("title");
+  EXPECT_TRUE(str && *str == "file_0");
+  str = file.FindStringKey("type");
+  EXPECT_TRUE(str && *str == "file");
+  EXPECT_TRUE(file.FindKey("details"));
 }
 
 TEST_P(MetadataDatabaseTest, ClearDatabase) {
