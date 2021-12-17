@@ -696,12 +696,7 @@ void HTMLSelectMenuElement::OptionPartRemoved(HTMLOptionElement* option_part) {
   option_parts_.erase(option_part);
 
   if (selected_option_ == option_part) {
-    // TODO(crbug.com/1121840) We should match the behavior from
-    // https://html.spec.whatwg.org/C/#ask-for-a-reset
-    // If the currently selected option was removed change the
-    // selection to the first option part, if there is one.
-    auto* first_option_part = FirstOptionPart();
-    SetSelectedOption(first_option_part);
+    ResetToDefaultSelection();
   }
   SetNeedsValidityCheck();
 }
@@ -727,12 +722,7 @@ void HTMLSelectMenuElement::OptionSelectionStateChanged(
   if (option_is_selected) {
     SetSelectedOption(option);
   } else if (SelectedOption() == option) {
-    // TODO(crbug.com/1121840) We should match the behavior from
-    // https://html.spec.whatwg.org/C/#ask-for-a-reset
-    // If the currently selected option was removed change the
-    // selection to the first option part, if there is one.
-    auto* first_option_part = FirstOptionPart();
-    SetSelectedOption(first_option_part);
+    ResetToDefaultSelection();
   }
 }
 
@@ -948,6 +938,47 @@ bool HTMLSelectMenuElement::ValueMissing() const {
   }
 
   return true;
+}
+
+// https://html.spec.whatwg.org/C/#ask-for-a-reset
+void HTMLSelectMenuElement::ResetImpl() {
+  for (auto& option : option_parts_) {
+    option->SetSelectedState(
+        option->FastHasAttribute(html_names::kSelectedAttr));
+    option->SetDirty(false);
+  }
+  ResetToDefaultSelection();
+  SetNeedsValidityCheck();
+}
+
+void HTMLSelectMenuElement::ResetToDefaultSelection() {
+  HTMLOptionElement* first_enabled_option = nullptr;
+  HTMLOptionElement* last_selected_option = nullptr;
+
+  for (Node* node = SelectMenuPartTraversal::FirstChild(*this); node;
+       node = SelectMenuPartTraversal::Next(*node, this)) {
+    if (IsValidOptionPart(node, /*show_warning=*/false)) {
+      auto* option = DynamicTo<HTMLOptionElement>(node);
+      if (option->Selected()) {
+        if (last_selected_option) {
+          last_selected_option->SetSelectedState(false);
+        }
+        last_selected_option = option;
+      }
+      if (!first_enabled_option && !option->IsDisabledFormControl()) {
+        first_enabled_option = option;
+      }
+    }
+  }
+
+  // If no option is selected, set the selection to the first non-disabled
+  // option if it exists, or null otherwise. If two or more options are
+  // selected, set the selection to the last selected option.
+  if (last_selected_option) {
+    SetSelectedOption(last_selected_option);
+  } else {
+    SetSelectedOption(first_enabled_option);
+  }
 }
 
 String HTMLSelectMenuElement::validationMessage() const {

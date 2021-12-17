@@ -35,6 +35,8 @@ class CORE_EXPORT HTMLSelectMenuElement final
   String validationMessage() const override;
   bool ValueMissing() const override;
 
+  void ResetImpl() override;
+
   void Trace(Visitor*) const override;
 
   enum class PartType { kNone, kButton, kListBox, kOption };
@@ -86,6 +88,7 @@ class CORE_EXPORT HTMLSelectMenuElement final
   void OptionPartInserted(HTMLOptionElement*);
   void OptionPartRemoved(HTMLOptionElement*);
   void ResetOptionParts();
+  void ResetToDefaultSelection();
   void DispatchInputAndChangeEventsIfNeeded();
   void DispatchInputEvent();
   void DispatchChangeEvent();
