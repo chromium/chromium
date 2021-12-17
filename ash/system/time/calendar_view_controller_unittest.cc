@@ -207,7 +207,7 @@ class CalendarViewControllerEventsTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  bool IsDayWithEvents(const char* day, SingleDayEventList* events) {
+  int EventsNumberOfDay(const char* day, SingleDayEventList* events) {
     base::Time day_base;
 
     bool result = base::Time::FromString(day, &day_base);
@@ -216,11 +216,11 @@ class CalendarViewControllerEventsTest : public AshTestBase {
     if (events)
       DCHECK(events->empty());
 
-    return controller_->IsDayWithEvents(day_base, events);
+    return controller_->EventsNumberOfDay(day_base, events);
   }
 
-  bool IsDayWithEventsInternal(const char* day,
-                               SingleDayEventList* events) const {
+  int EventsNumberOfDayInternal(const char* day,
+                                SingleDayEventList* events) const {
     base::Time day_base;
 
     bool result = base::Time::FromString(day, &day_base);
@@ -229,7 +229,7 @@ class CalendarViewControllerEventsTest : public AshTestBase {
     if (events)
       DCHECK(events->empty());
 
-    return controller_->IsDayWithEventsInternal(day_base, events);
+    return controller_->EventsNumberOfDayInternal(day_base, events);
   }
 
   bool IsEventPresent(const char* event_id, SingleDayEventList& events) {
@@ -250,7 +250,7 @@ class CalendarViewControllerEventsTest : public AshTestBase {
 
 base::Time CalendarViewControllerEventsTest::fake_time_;
 
-TEST_F(CalendarViewControllerEventsTest, IsDayWithEvents_OneDay) {
+TEST_F(CalendarViewControllerEventsTest, DayWithEvents_OneDay) {
   const char* kStartTime = "23 Oct 2009 11:30 GMT";
   const char* kEndTime = "23 Oct 2009 12:30 GMT";
   const char* kId = "id_0";
@@ -277,7 +277,7 @@ TEST_F(CalendarViewControllerEventsTest, IsDayWithEvents_OneDay) {
 
   // Haven't injected anything yet, so no events on kStartTime0.
   events.clear();
-  EXPECT_FALSE(IsDayWithEvents(kStartTime, &events));
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime, &events));
   EXPECT_TRUE(events.empty());
 
   // Inject events (pretend the user just added them).
@@ -290,12 +290,12 @@ TEST_F(CalendarViewControllerEventsTest, IsDayWithEvents_OneDay) {
 
   // Now we have an event on kStartTime0.
   events.clear();
-  EXPECT_TRUE(IsDayWithEvents(kStartTime, &events));
+  EXPECT_EQ(1, EventsNumberOfDay(kStartTime, &events));
   EXPECT_FALSE(events.empty());
   EXPECT_TRUE(events.size() == 1);
 }
 
-TEST_F(CalendarViewControllerEventsTest, IsDayWithEvents_TwoDays) {
+TEST_F(CalendarViewControllerEventsTest, DayWithEvents_TwoDays) {
   const char* kStartTime0 = "23 Oct 2009 11:30 GMT";
   const char* kEndTime0 = "23 Oct 2009 12:30 GMT";
   const char* kId0 = "id_0";
@@ -328,10 +328,10 @@ TEST_F(CalendarViewControllerEventsTest, IsDayWithEvents_TwoDays) {
 
   // Haven't injected anything yet, so no events on kStartTime0 or kStartTime1.
   events.clear();
-  EXPECT_FALSE(IsDayWithEvents(kStartTime0, &events));
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime0, &events));
   EXPECT_TRUE(events.empty());
   events.clear();
-  EXPECT_FALSE(IsDayWithEvents(kStartTime1, &events));
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime1, &events));
   EXPECT_TRUE(events.empty());
 
   // Inject both events.
@@ -342,10 +342,10 @@ TEST_F(CalendarViewControllerEventsTest, IsDayWithEvents_TwoDays) {
 
   // Now both days should have events.
   events.clear();
-  EXPECT_TRUE(IsDayWithEvents(kStartTime0, &events));
+  EXPECT_EQ(1, EventsNumberOfDay(kStartTime0, &events));
   EXPECT_FALSE(events.empty());
   events.clear();
-  EXPECT_TRUE(IsDayWithEvents(kStartTime1, &events));
+  EXPECT_EQ(1, EventsNumberOfDay(kStartTime1, &events));
   EXPECT_FALSE(events.empty());
 }
 
@@ -384,7 +384,7 @@ TEST_F(CalendarViewControllerEventsTest, OnlyFetchOnce) {
 
   // No events at kStartTime0.
   events.clear();
-  EXPECT_FALSE(IsDayWithEvents(kStartTime0, &events));
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime0, &events));
   EXPECT_TRUE(events.empty());
 
   // Inject one event, pretend the user just added it somewhere else.
@@ -396,7 +396,7 @@ TEST_F(CalendarViewControllerEventsTest, OnlyFetchOnce) {
 
   // Confirm we have only event 0 and NOT events 1 or 2.
   events.clear();
-  EXPECT_TRUE(IsDayWithEvents(kStartTime0, &events));
+  EXPECT_EQ(1, EventsNumberOfDay(kStartTime0, &events));
   EXPECT_FALSE(events.empty());
   EXPECT_TRUE(events.size() == 1);
   EXPECT_TRUE(IsEventPresent(kId0, events));
@@ -423,7 +423,7 @@ TEST_F(CalendarViewControllerEventsTest, OnlyFetchOnce) {
   // because as far as the controller is concerned we've already fetched this
   // month.
   events.clear();
-  EXPECT_TRUE(IsDayWithEvents(kStartTime0, &events));
+  EXPECT_EQ(1, EventsNumberOfDay(kStartTime0, &events));
   EXPECT_FALSE(events.empty());
   EXPECT_TRUE(events.size() == 1);
   EXPECT_TRUE(IsEventPresent(kId0, events));
@@ -470,13 +470,13 @@ TEST_F(CalendarViewControllerEventsTest, EventsDifferentMonths) {
 
   // No events on any day.
   events.clear();
-  EXPECT_FALSE(IsDayWithEvents(kStartTime0, &events));
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime0, &events));
   EXPECT_TRUE(events.empty());
   events.clear();
-  EXPECT_FALSE(IsDayWithEvents(kStartTime1, &events));
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime1, &events));
   EXPECT_TRUE(events.empty());
   events.clear();
-  EXPECT_FALSE(IsDayWithEvents(kStartTime2, &events));
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime2, &events));
   EXPECT_TRUE(events.empty());
 
   // Inject events (user added them to their calendar).
@@ -490,17 +490,17 @@ TEST_F(CalendarViewControllerEventsTest, EventsDifferentMonths) {
 
   // Confirm we have all three events.
   events.clear();
-  EXPECT_TRUE(IsDayWithEvents(kStartTime0, &events));
+  EXPECT_EQ(1, EventsNumberOfDay(kStartTime0, &events));
   EXPECT_FALSE(events.empty());
   EXPECT_TRUE(events.size() == 1);
   EXPECT_TRUE(IsEventPresent(kId0, events));
   events.clear();
-  EXPECT_TRUE(IsDayWithEvents(kStartTime1, &events));
+  EXPECT_EQ(1, EventsNumberOfDay(kStartTime1, &events));
   EXPECT_FALSE(events.empty());
   EXPECT_TRUE(events.size() == 1);
   EXPECT_TRUE(IsEventPresent(kId1, events));
   events.clear();
-  EXPECT_TRUE(IsDayWithEvents(kStartTime2, &events));
+  EXPECT_EQ(1, EventsNumberOfDay(kStartTime2, &events));
   EXPECT_FALSE(events.empty());
   EXPECT_TRUE(events.size() == 1);
   EXPECT_TRUE(IsEventPresent(kId2, events));
@@ -606,13 +606,13 @@ TEST_F(CalendarViewControllerEventsTest, PruneEvents) {
 
   // Events 0, 1, and 2 should be cached, but not 3.
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime0, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime0, &events));
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime1, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime1, &events));
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime2, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime2, &events));
   events.clear();
-  EXPECT_FALSE(IsDayWithEventsInternal(kStartTime3, &events));
+  EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime3, &events));
 
   // Advance us to kStartTime2 and fetch again.
   result = base::Time::FromString(kStartTime2, &current_date);
@@ -622,7 +622,7 @@ TEST_F(CalendarViewControllerEventsTest, PruneEvents) {
 
   // Now kStartTime3 should be cached.
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime3, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime3, &events));
 
   // Keep advancing us one month at a time, right up to the point where we need
   // to prune.
@@ -631,77 +631,77 @@ TEST_F(CalendarViewControllerEventsTest, PruneEvents) {
   controller_->UpdateMonth(current_date);
   controller_->FetchEvents();
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime4, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime4, &events));
 
   result = base::Time::FromString(kStartTime4, &current_date);
   DCHECK(result);
   controller_->UpdateMonth(current_date);
   controller_->FetchEvents();
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime5, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime5, &events));
 
   // Now we're about to add a 7th month to the cache, so we're going to need to
   // prune the least-recently-used prunable month, which is kStartTime3.  So,
   // kStartTime3 should show up as a day with events before we advance, but not
   // after, which means we pruned as expected.
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime3, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime3, &events));
   result = base::Time::FromString(kStartTime5, &current_date);
   DCHECK(result);
   controller_->UpdateMonth(current_date);
   controller_->FetchEvents();
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime6, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime6, &events));
   events.clear();
-  EXPECT_FALSE(IsDayWithEventsInternal(kStartTime3, &events));
+  EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime3, &events));
 
   // Verify that our non-prunable months are still present.
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime0, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime0, &events));
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime1, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime1, &events));
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime2, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime2, &events));
 
   // If we advance again, kStartTime4 should be pruned.
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime4, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime4, &events));
   result = base::Time::FromString(kStartTime6, &current_date);
   DCHECK(result);
   controller_->UpdateMonth(current_date);
   controller_->FetchEvents();
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime7, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime7, &events));
   events.clear();
-  EXPECT_FALSE(IsDayWithEventsInternal(kStartTime4, &events));
+  EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime4, &events));
 
   // Verify that our non-prunable months are still present.
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime0, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime0, &events));
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime1, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime1, &events));
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime2, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime2, &events));
 
   // If we advance again, kStartTime5 should be pruned.
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime5, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime5, &events));
   result = base::Time::FromString(kStartTime7, &current_date);
   DCHECK(result);
   controller_->UpdateMonth(current_date);
   controller_->FetchEvents();
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime8, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime8, &events));
   events.clear();
-  EXPECT_FALSE(IsDayWithEventsInternal(kStartTime5, &events));
+  EXPECT_EQ(0, EventsNumberOfDayInternal(kStartTime5, &events));
 
   // Verify that our non-prunable months are still present.
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime0, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime0, &events));
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime1, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime1, &events));
   events.clear();
-  EXPECT_TRUE(IsDayWithEventsInternal(kStartTime2, &events));
+  EXPECT_EQ(1, EventsNumberOfDayInternal(kStartTime2, &events));
 }
 
 TEST_F(CalendarViewControllerEventsTest, RecordFetchResultHistogram_Success) {
@@ -732,7 +732,7 @@ TEST_F(CalendarViewControllerEventsTest, RecordFetchResultHistogram_Success) {
 
   // Haven't injected anything yet, so no events on kStartTime0.
   events.clear();
-  EXPECT_FALSE(IsDayWithEvents(kStartTime, &events));
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime, &events));
   EXPECT_TRUE(events.empty());
 
   // Inject events (pretend the user just added them).
@@ -778,7 +778,7 @@ TEST_F(CalendarViewControllerEventsTest, RecordFetchResultHistogram_Failure) {
 
   // Haven't injected anything yet, so no events on kStartTime0.
   events.clear();
-  EXPECT_FALSE(IsDayWithEvents(kStartTime, &events));
+  EXPECT_EQ(0, EventsNumberOfDay(kStartTime, &events));
   EXPECT_TRUE(events.empty());
 
   // Inject events (pretend the user just added them).

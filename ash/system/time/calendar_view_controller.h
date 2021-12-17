@@ -142,12 +142,10 @@ class ASH_EXPORT CalendarViewController {
   // The calendar events of the selected date.
   SingleDayEventList SelectedDateEvents();
 
-  // Same as `IsDayWithEventsInternal`, except that return of any events on
+  // Same as `EventsNumberOfDayInternal`, except that return of any events on
   // `day` constitutes "use" in the most-recently-used sense, so the month that
-  // includes day will then be promoted to most-recently-used status.  If you
-  // just want to know whether a day contains any events, use
-  // `IsDayWithEventsInternal`.
-  bool IsDayWithEvents(base::Time day, SingleDayEventList* events);
+  // includes day will then be promoted to most-recently-used status.
+  int EventsNumberOfDay(base::Time day, SingleDayEventList* events);
 
   // A callback passed into the`CalendarDateCellView`, which is called when the
   // cell is clicked to show the event list view.
@@ -216,12 +214,12 @@ class ASH_EXPORT CalendarViewController {
   // limit the amount we cache.
   void QueuePrunableMonth(base::Time start_of_month);
 
-  // Returns true if `day` contains any events we've previously fetched, false
-  // otherwise. If `events` is non-nullptr then we assign it to the EventList
-  // for `day`. Callers should NOT cache `events` themselves, and should
-  // instead just call this method again if they need to.
-  bool IsDayWithEventsInternal(base::Time day,
-                               SingleDayEventList* events) const;
+  // Returns the number of events that this `day` contains. If `events` is
+  // non-nullptr then we assign it to the EventList for `day`. Callers should
+  // NOT cache `events` themselves, and should instead just call this method
+  // again if they need to.
+  int EventsNumberOfDayInternal(base::Time day,
+                                SingleDayEventList* events) const;
 
   // The current date, which can be today or the first day of the current month
   // if current month is not today's month.

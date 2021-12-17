@@ -3365,11 +3365,15 @@ This file contains the strings for ash.
         Calendar
       </message>
 
-      <message name="IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar up button.">
+      <message name="IDS_ASH_CALENDAR_CONTENT_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar content view.">
+        Calendar, <ph name="current_month_year">$1<ex>August 2021</ex></ph>, currently <ph name="date">$2<ex>August 31, 2021</ex></ph> is selected.
+      </message>
+
+      <message name="IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION" desc="The accessible/tooltip description of the calendar up button.">
         Show previous month
       </message>
 
-      <message name="IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar down button.">
+      <message name="IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION" desc="The accessible/tooltip description of the calendar down button.">
         Show next month
       </message>
 
@@ -3381,8 +3385,36 @@ This file contains the strings for ash.
         Today
       </message>
 
+      <message name="IDS_ASH_CALENDA_TODAY_BUTTON_TOOLTIP" desc="The tooltip label for the calendar info button.">
+        Go back to today
+      </message>
+
       <message name="IDS_ASH_CALENDAR_SETTINGS" desc="The label used in the settings entry in the calendar view system settings.">
         Open settings
+      </message>
+
+      <message name="IDS_ASH_CALENDAR_SETTINGS_TOOLTIP" desc="The tooltip label used in the settings entry in the calendar view system settings.">
+        Date and time settings
+      </message>
+
+      <message name="IDS_ASH_CLOSE_BUTTON_ACCESSIBLE_DESCRIPTION" desc="The accessible label used in the close button in the calendar event list view.">
+        Close event panel
+      </message>
+
+      <message name="IDS_ASH_CLOSE_BUTTON_TOOLTIP" desc="The tooltip label used in the close button in the calendar event list view.">
+        Close detail information
+      </message>
+
+      <message name="IDS_ASH_CALENDAR_DATE_CELL_TOOLTIP" desc="The tooltip of a calendar date cell, which is with 0 or 1 event.">
+        <ph name="date">$1<ex>August 31, 2021</ex></ph>, <ph name="number">$2<ex>0</ex></ph> event
+      </message>
+
+      <message name="IDS_ASH_CALENDAR_DATE_CELL_PLURAL_EVENTS_TOOLTIP" desc="The tooltip of a calendar date cell, which is with more than 1 event.">
+        <ph name="date">$1<ex>August 31, 2021</ex></ph>, <ph name="number">$2<ex>8</ex></ph> events
+      </message>
+
+      <message name="IDS_ASH_CALENDAR_SELECTED_DATE_CELL_ACCESSIBLE_DESCRIPTION" desc="The accessible label of the selected calendar date cell.">
+        Calendar, week of <ph name="date">$1<ex>July 16th 2021,</ex></ph>, <ph name="selected_date">$2<ex>18</ex></ph> is currently selected.
       </message>
 
       <message name="IDS_ASH_CALENDAR_MON" desc="The single character designator for Monday, which is used in the calendar weekday label.">

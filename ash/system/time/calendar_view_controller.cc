@@ -262,12 +262,13 @@ SingleDayEventList CalendarViewController::SelectedDateEvents() {
   return FindEvents(date);
 }
 
-bool CalendarViewController::IsDayWithEventsInternal(
+int CalendarViewController::EventsNumberOfDayInternal(
     base::Time day,
     SingleDayEventList* events) const {
   const SingleDayEventList& list = FindEvents(day);
+
   if (list.empty())
-    return false;
+    return 0;
 
   // We have events, and we assume the destination is empty.
   if (events) {
@@ -275,16 +276,16 @@ bool CalendarViewController::IsDayWithEventsInternal(
     *events = list;
   }
 
-  return true;
+  return list.size();
 }
 
-bool CalendarViewController::IsDayWithEvents(base::Time day,
-                                             SingleDayEventList* events) {
-  bool has_events = IsDayWithEventsInternal(day, events);
-  if (has_events) {
+int CalendarViewController::EventsNumberOfDay(base::Time day,
+                                              SingleDayEventList* events) {
+  int event_number = EventsNumberOfDayInternal(day, events);
+  if (event_number != 0) {
     QueuePrunableMonth(calendar_utils::GetStartOfMonthUTC(day));
   }
-  return has_events;
+  return event_number;
 }
 
 void CalendarViewController::ShowEventListView(

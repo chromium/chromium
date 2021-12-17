@@ -306,7 +306,11 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
   scroll_view_->SetDrawOverflowIndicator(false);
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
-  scroll_view_->GetViewAccessibility().OverrideName(GetClassName());
+  scroll_view_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
+  scroll_view_->GetViewAccessibility().OverrideName(l10n_util::GetStringFUTF16(
+      IDS_ASH_CALENDAR_BUBBLE_ACCESSIBLE_DESCRIPTION,
+      base::TimeFormatWithPattern(calendar_view_controller_->current_date(),
+                                  "MMMM yyyy")));
   scroll_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
   on_contents_scrolled_subscription_ =
       scroll_view_->AddContentsScrolledCallback(base::BindRepeating(
@@ -350,6 +354,8 @@ void CalendarView::CreateExtraTitleRowButtons() {
   reset_to_today_button_ = CreateInfoButton(
       base::BindRepeating(&CalendarView::ResetToToday, base::Unretained(this)),
       IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION);
+  reset_to_today_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_CALENDA_TODAY_BUTTON_TOOLTIP));
   tri_view()->AddView(TriView::Container::END, reset_to_today_button_);
 
   DCHECK(!settings_button_);
@@ -358,6 +364,8 @@ void CalendarView::CreateExtraTitleRowButtons() {
           &UnifiedSystemTrayController::HandleOpenDateTimeSettingsAction,
           base::Unretained(controller_)),
       IDS_ASH_CALENDAR_SETTINGS);
+  settings_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_SETTINGS_TOOLTIP));
   tri_view()->AddView(TriView::Container::END, settings_button_);
 }
 
@@ -671,6 +679,22 @@ void CalendarView::OpenEventList() {
   if (event_list_container_)
     return;
 
+  // Updates `scroll_view_`'s accessible name with the selected date.
+  absl::optional<base::Time::Exploded> selected_date =
+      calendar_view_controller_->selected_date();
+  DCHECK(selected_date.has_value());
+  base::Time unexploded_selected_date;
+  bool result = base::Time::FromUTCExploded(selected_date.value(),
+                                            &unexploded_selected_date);
+  DCHECK(result);
+  scroll_view_->GetViewAccessibility().OverrideName(l10n_util::GetStringFUTF16(
+      IDS_ASH_CALENDAR_CONTENT_ACCESSIBLE_DESCRIPTION,
+      base::TimeFormatWithPattern(calendar_view_controller_->current_date(),
+                                  "MMMM yyyy"),
+      base::TimeFormatWithPattern(unexploded_selected_date, "MMMMdyyyy")));
+  scroll_view_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
+                                         /*send_native_event=*/true);
+
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
 
@@ -702,6 +726,13 @@ void CalendarView::OpenEventList() {
 }
 
 void CalendarView::CloseEventList() {
+  // Updates `scroll_view_`'s accessible name without the selected date.
+  scroll_view_->GetViewAccessibility().OverrideName(l10n_util::GetStringFUTF16(
+      IDS_ASH_CALENDAR_BUBBLE_ACCESSIBLE_DESCRIPTION,
+      base::TimeFormatWithPattern(calendar_view_controller_->current_date(),
+                                  "MMMM yyyy")));
+  scroll_view_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
+                                         /*send_native_event=*/true);
   scroll_view_->ClipHeightTo(0, INT_MAX);
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);

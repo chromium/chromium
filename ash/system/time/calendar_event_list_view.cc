@@ -4,12 +4,14 @@
 
 #include "ash/system/time/calendar_event_list_view.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "calendar_event_list_item_view.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -46,12 +48,12 @@ CalendarEventListView::CalendarEventListView(
                             calendar_utils::GetPrimaryTextColor()));
   close_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_RIGHT);
   close_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  close_button_->GetViewAccessibility().OverrideName(GetClassName());
   close_button_->SetBorder(views::CreateEmptyBorder(kContentInsets));
+  close_button_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_ASH_CLOSE_BUTTON_ACCESSIBLE_DESCRIPTION));
+  close_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_CLOSE_BUTTON_TOOLTIP));
   close_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
-  // TODO(https://crbug.com/1238927) set tool tip and accessible label
-  // close_button_->SetAccessibleName(close_button_label);
-  // close_button_->SetTooltipText(close_button_label);
 
   scroll_view_->SetAllowKeyboardScrolling(false);
   scroll_view_->SetBackgroundColor(absl::nullopt);
