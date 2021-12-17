@@ -8,7 +8,8 @@ import './styles.js';
 
 import {html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {EventType, ImageTile} from '../common/constants.js';
+import {assert, assertNotReached} from '../common/assert.m.js';
+import {Events, EventType, ImageTile} from '../common/constants.js';
 import {isSelectionEvent} from '../common/utils.js';
 import {selectImage, validateReceivedData} from '../untrusted/iframe_api.js';
 
@@ -28,28 +29,16 @@ class ImagesGrid extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * @type {!Array<!ImageTile>}
-       * @private
-       */
       tiles_: {
         type: Array,
         value: [],
       },
 
-      /**
-       * @type {?bigint}
-       * @private
-       */
       selectedAssetId_: {
         type: Object,
         value: null,
       },
 
-      /**
-       * @type {?bigint}
-       * @private
-       */
       pendingSelectedAssetId_: {
         type: Object,
         value: null,
@@ -57,18 +46,20 @@ class ImagesGrid extends PolymerElement {
     };
   }
 
+  private tiles_: ImageTile[];
+  private selectedAssetId_: bigint|undefined;
+  private pendingSelectedAssetId_: bigint|undefined;
+
   constructor() {
     super();
     this.onMessageReceived_ = this.onMessageReceived_.bind(this);
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener('message', this.onMessageReceived_);
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener('message', this.onMessageReceived_);
@@ -77,36 +68,36 @@ class ImagesGrid extends PolymerElement {
   /**
    * Handler for messages from trusted code. Expects only SendImagesEvent and
    * will error on any other event.
-   * @param {!Event} message
-   * @private
    */
-  onMessageReceived_(message) {
-    switch (message.data.type) {
+  private onMessageReceived_(message: MessageEvent) {
+    const event: Events = message.data;
+    switch (event.type) {
       case EventType.SEND_IMAGE_TILES:
-        try {
-          this.tiles_ =
-              validateReceivedData(message, EventType.SEND_IMAGE_TILES);
-        } catch (e) {
-          console.warn('Invalid images received', e);
-          this.tiles_ = [];
-        }
+        this.tiles_ =
+            validateReceivedData(event, message.origin) ? event.tiles : [];
         return;
       case EventType.SEND_CURRENT_WALLPAPER_ASSET_ID:
-        this.selectedAssetId_ = validateReceivedData(
-            message, EventType.SEND_CURRENT_WALLPAPER_ASSET_ID);
+        this.selectedAssetId_ = validateReceivedData(event, message.origin) ?
+            event.assetId :
+            undefined;
         return;
       case EventType.SEND_PENDING_WALLPAPER_ASSET_ID:
-        this.pendingSelectedAssetId_ = validateReceivedData(
-          message, EventType.SEND_PENDING_WALLPAPER_ASSET_ID);
+        this.pendingSelectedAssetId_ =
+            validateReceivedData(event, message.origin) ? event.assetId :
+                                                          undefined;
         return;
       case EventType.SEND_VISIBLE:
-        const visible = validateReceivedData(message, EventType.SEND_VISIBLE);
+        let visible = false;
+        if (validateReceivedData(event, message.origin)) {
+          visible = event.visible;
+        }
         if (!visible) {
           // When the iframe is hidden, do some dom magic to hide old image
           // content. This is in preparation for a user switching to a new
           // wallpaper collection and loading a new set of images.
-          const ironList = this.shadowRoot.querySelector('iron-list');
-          const images = ironList.querySelectorAll('.photo-container img');
+          const ironList = this.shadowRoot!.querySelector('iron-list');
+          const images: NodeListOf<HTMLImageElement> =
+              ironList!.querySelectorAll('.photo-container img');
           for (const image of images) {
             image.src = '';
           }
@@ -118,13 +109,9 @@ class ImagesGrid extends PolymerElement {
     }
   }
 
-  /**
-   * @param {ImageTile} tile
-   * @param {?bigint} selectedAssetId
-   * @param {?bigint} pendingSelectedAssetId
-   * @return {string}
-   */
-  getAriaSelected_(tile, selectedAssetId, pendingSelectedAssetId) {
+  private getAriaSelected_(
+      tile: ImageTile, selectedAssetId: bigint|undefined,
+      pendingSelectedAssetId: bigint|undefined): string {
     // Make sure that both are bigint (not undefined) and equal.
     return (typeof selectedAssetId === 'bigint' &&
                 tile?.assetId === selectedAssetId && !pendingSelectedAssetId ||
@@ -133,12 +120,7 @@ class ImagesGrid extends PolymerElement {
         .toString();
   }
 
-  /**
-   * @param {number} index
-   * @param {ImageTile} tile
-   * @return {string}
-   */
-  getClassForImg_(index, tile) {
+  private getClassForImg_(index: number, tile: ImageTile): string {
     if (tile.preview.length < 2) {
       return '';
     }
@@ -154,32 +136,25 @@ class ImagesGrid extends PolymerElement {
 
   /**
    * Notify trusted code that a user selected an image.
-   * @private
-   * @param {!Event} e
    */
-  onImageSelected_(e) {
+  private onImageSelected_(e: Event) {
     if (!isSelectionEvent(e)) {
       return;
     }
-    const assetId = BigInt(e.currentTarget.dataset['assetId']);
-    selectImage(window.parent, assetId);
+    const imgElement = e.currentTarget as HTMLImageElement;
+    const assetId = imgElement.dataset['assetId'];
+    if (assetId === undefined) {
+      assertNotReached('assetId not found');
+      return;
+    }
+    selectImage(window.parent, BigInt(assetId));
   }
 
-  /**
-   * @private
-   * @param {!ImageTile} tile
-   * @return {string}
-   */
-  getAriaLabel_(tile) {
+  private getAriaLabel_(tile: ImageTile): string {
     return tile.attribution.join(' ');
   }
 
-  /**
-   * @private
-   * @param {number} i
-   * @return {number}
-   */
-  getAriaIndex_(i) {
+  private getAriaIndex_(i: number): number {
     return i + 1;
   }
 }

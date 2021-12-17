@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from '../common/assert.m.js';
+import {assert} from '../common/assert.m.js';
 import * as constants from '../common/constants.js';
 import {isNonEmptyArray, isNullOrArray, isNullOrNumber} from '../common/utils.js';
 
@@ -59,54 +59,41 @@ export function selectImage(target: Window, assetId: bigint) {
  * expected type and contains the expected data.
  */
 export function validateReceivedData(
-    event: MessageEvent, expectedEventType: constants.EventType) {
+    event: constants.Events, origin: string): boolean {
   assert(
-      event.origin === constants.trustedOrigin,
+      origin === constants.trustedOrigin,
       'Message is not from the correct origin');
-  assert(
-      event.data.type === expectedEventType,
-      `Expected event type: ${expectedEventType}`);
 
-  const data: constants.Events = event.data;
-  switch (data.type) {
+  switch (event.type) {
     case constants.EventType.SEND_COLLECTIONS: {
-      assert(
-          isNullOrArray(data.collections),
-          'Expected collections array or null');
-      return data.collections ?? [];
+      return isNullOrArray(event.collections);
     }
     case constants.EventType.SEND_GOOGLE_PHOTOS_COUNT: {
-      assert(isNullOrNumber(data.count), 'Expected photos count');
-      return data.count;
+      return isNullOrNumber(event.count);
     }
     case constants.EventType.SEND_GOOGLE_PHOTOS_PHOTOS: {
-      assert(isNullOrArray(data.photos), 'Expected photos array');
-      return data.photos;
+      return isNullOrArray(event.photos);
     }
+    case constants.EventType.SEND_IMAGE_COUNTS:
+      return typeof event.counts === 'object';
     case constants.EventType.SEND_LOCAL_IMAGE_DATA: {
-      assert(typeof data.data === 'object', 'Expected data object');
-      return data.data;
+      return typeof event.data === 'object';
     }
     case constants.EventType.SEND_LOCAL_IMAGES:
       // Images array may be empty.
-      assert(Array.isArray(data.images), 'Expected images array');
-      return data.images;
+      return Array.isArray(event.images);
     case constants.EventType.SEND_IMAGE_TILES: {
       // Images array may be empty.
-      assert(Array.isArray(data.tiles), 'Expected images array');
-      return data.tiles;
+      return Array.isArray(event.tiles);
     }
     case constants.EventType.SEND_CURRENT_WALLPAPER_ASSET_ID:
     case constants.EventType.SEND_PENDING_WALLPAPER_ASSET_ID: {
-      assert(data.assetId === null || typeof data.assetId === 'bigint');
-      return data.assetId;
+      return event.assetId === null || typeof event.assetId === 'bigint';
     }
     case constants.EventType.SEND_VISIBLE: {
-      assert(typeof data.visible === 'boolean');
-      return data.visible;
+      return typeof event.visible === 'boolean';
     }
     default:
-      assertNotReached('Unknown event type');
+      return false;
   }
-  return null;
 }

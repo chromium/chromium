@@ -7,8 +7,9 @@ import './setup.js';
 import './styles.js';
 
 import {afterNextRender, html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.m.js';
 
-import {EventType, kMaximumLocalImagePreviews} from '../common/constants.js';
+import {Events, EventType, kMaximumLocalImagePreviews} from '../common/constants.js';
 import {getLoadingPlaceholderAnimationDelay, getNumberOfGridItemsPerRow, isNullOrArray, isNullOrNumber, isSelectionEvent} from '../common/utils.js';
 import {selectCollection, selectGooglePhotosCollection, selectLocalCollection, validateReceivedData} from '../untrusted/iframe_api.js';
 
@@ -23,61 +24,75 @@ const kLocalCollectionId = 'local_';
 /** Height in pixels of a tile. */
 const kTileHeightPx = 136;
 
-/** @enum {string} */
-const TileType = {
-  loading: 'loading',
-  image: 'image',
-  failure: 'failure',
+enum TileType {
+  LOADING = 'loading',
+  IMAGE = 'image',
+  FAILURE = 'failure',
+}
+
+/** mirror from mojom type, cannot use mojom type directly from untrusted. */
+type Url = {
+  url: string
 };
 
-/**
- * @typedef {{type: TileType}}
- */
-let LoadingTile;
+/** mirror from mojom type, cannot use mojom type directly from untrusted. */
+type FilePath = {
+  path: string
+};
+
+/** mirror from mojom type, cannot use mojom type directly from untrusted. */
+type WallpaperCollection = {
+  id: string,
+  name: string,
+  preview?: Url,
+};
+
+type LoadingTile = {
+  type: TileType.LOADING
+};
 
 /**
  * Type that represents a collection that failed to load. The preview image
  * is still displayed, but is grayed out and unclickable.
- * @typedef {{
- *   id: string,
- *   name: string,
- *   preview: !Array<!url.mojom.Url>,
- *   type: TileType,
- * }}
  */
-let FailureTile;
+type FailureTile = {
+  type: TileType.FAILURE,
+  id: string,
+  name: string,
+  preview: [],
+};
 
 /**
  * A displayable type constructed from up to three LocalImages or a
  * WallpaperCollection.
- * @typedef {{
- *   id: string,
- *   name: string,
- *   count: string,
- *   preview: !Array<!url.mojom.Url>,
- *   type: TileType,
- * }}
  */
-let ImageTile;
+type ImageTile = {
+  type: TileType.IMAGE,
+  id: string,
+  name: string,
+  count: string,
+  preview: Url[],
+};
 
-/** @typedef {LoadingTile|FailureTile|ImageTile} */
-let Tile;
+type Tile = LoadingTile|FailureTile|ImageTile;
+
+interface RepeaterEvent extends CustomEvent {
+  model: {
+    item: Tile,
+  };
+}
 
 /**
  * Get the text to display for number of images.
- * @param {?number|undefined} x
- * @return {string}
  */
-function getCountText(x) {
+function getCountText(x: number|null|undefined): string {
   switch (x) {
     case undefined:
     case null:
       return '';
     case 0:
-    case 0n:
       return loadTimeData.getString('zeroImages');
     case 1:
-    case 1n:
       return loadTimeData.getString('oneImage');
     default:
       if ('number' !== typeof x || x < 0) {
@@ -90,27 +105,20 @@ function getCountText(x) {
 
 /**
  * Returns the tile to display for the Google Photos collection.
- * @param {?Array<undefined>} googlePhotos
- * @param {?number} googlePhotosCount
- * @return {!ImageTile}
  */
-function getGooglePhotosTile(googlePhotos, googlePhotosCount) {
+function getGooglePhotosTile(
+    _: unknown[], googlePhotosCount: number|null): ImageTile {
   return {
     name: loadTimeData.getString('googlePhotosLabel'),
     id: kGooglePhotosCollectionId,
     count: getCountText(googlePhotosCount ?? 0),
     preview: [],
-    type: TileType.image,
+    type: TileType.IMAGE,
   };
 }
 
-/**
- *
- * @param {?Array<!mojoBase.mojom.FilePath>} localImages
- * @param {Object<string, string>} localImageData
- * @return {!Array<!url.mojom.Url>}
- */
-function getImages(localImages, localImageData) {
+function getImages(
+    localImages: FilePath[], localImageData: Record<string, string>): Url[] {
   if (!localImageData || !Array.isArray(localImages)) {
     return [];
   }
@@ -131,11 +139,10 @@ function getImages(localImages, localImageData) {
 /**
  * A common display format between local images and WallpaperCollection.
  * Get the first displayable image with data from the list of possible images.
- * @param {!Array<!mojoBase.mojom.FilePath>} localImages
- * @param {!Object<string, string>} localImageData
- * @return {!ImageTile|!LoadingTile}
  */
-function getLocalTile(localImages, localImageData) {
+function getLocalTile(
+    localImages: FilePath[],
+    localImageData: {[key: string]: string}): ImageTile|LoadingTile {
   const isMoreToLoad =
       localImages.some(({path}) => !localImageData.hasOwnProperty(path));
 
@@ -144,7 +151,7 @@ function getLocalTile(localImages, localImageData) {
   if (imagesToDisplay.length < kMaximumLocalImagePreviews && isMoreToLoad) {
     // If there are more images to attempt loading thumbnails for, wait until
     // those are done.
-    return {type: TileType.loading};
+    return {type: TileType.LOADING};
   }
 
   // Count all images that failed to load and subtract them from "My Images"
@@ -159,7 +166,7 @@ function getLocalTile(localImages, localImageData) {
     count: getCountText(
         Array.isArray(localImages) ? localImages.length - failureCount : 0),
     preview: imagesToDisplay,
-    type: TileType.image,
+    type: TileType.IMAGE,
   };
 }
 
@@ -174,63 +181,33 @@ export class CollectionsGrid extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * @type {Array<!WallpaperCollection>}
-       * @private
-       */
-      collections_: {
-        type: Array,
-      },
+      collections_: Array,
 
       /**
        * The list of Google Photos photos.
-       * @type {?Array<undefined>}
-       * @private
        */
-      googlePhotos_: {
-        type: Array,
-      },
+      googlePhotos_: Array,
 
       /**
        * The count of Google Photos photos.
-       * @type {?number}
-       * @private
        */
-      googlePhotosCount_: {
-        type: Number,
-      },
+      googlePhotosCount_: Number,
 
       /**
        * Mapping of collection id to number of images. Loads in progressively
        * after collections_.
-       * @type {Object<string, number>}
-       * @private
        */
-      imageCounts_: {
-        type: Object,
-      },
+      imageCounts_: Object,
 
-      /**
-       * @type {Array<!mojoBase.mojom.FilePath>}
-       * @private
-       */
-      localImages_: {
-        type: Array,
-      },
+      localImages_: Array,
 
       /**
        * Stores a mapping of local image id to thumbnail data.
-       * @type {Object<string, string>}
-       * @private
        */
-      localImageData_: {
-        type: Object,
-      },
+      localImageData_: Object,
 
       /**
        * List of tiles to be displayed to the user.
-       * @type {!Array<!Tile>}
-       * @private
        */
       tiles_: {
         type: Array,
@@ -239,11 +216,19 @@ export class CollectionsGrid extends PolymerElement {
           // number of tiles when collections are received.
           const x = getNumberOfGridItemsPerRow();
           const y = Math.floor(window.innerHeight / kTileHeightPx);
-          return Array.from({length: x * y}, () => ({type: TileType.loading}));
+          return Array.from({length: x * y}, () => ({type: TileType.LOADING}));
         }
       },
     };
   }
+
+  private collections_: WallpaperCollection[];
+  private googlePhotos_: unknown[]|null;
+  private googlePhotosCount_: number|null;
+  private imageCounts_: {[key: string]: number};
+  private localImages_: FilePath[];
+  private localImageData_: {[key: string]: string};
+  private tiles_: Tile[];
 
   static get observers() {
     return [
@@ -253,34 +238,33 @@ export class CollectionsGrid extends PolymerElement {
     ];
   }
 
-  /** @override */
   constructor() {
     super();
     this.onMessageReceived_ = this.onMessageReceived_.bind(this);
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     window.addEventListener('message', this.onMessageReceived_);
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener('message', this.onMessageReceived_);
+  }
+
+  getLoadingPlaceholderAnimationDelay(index: number): string {
+    return getLoadingPlaceholderAnimationDelay(index);
   }
 
   /**
    * Called each time a new collection finishes loading. |imageCounts| contains
    * a mapping of collection id to the number of images in that collection.
    * A value of null indicates that the given collection id has failed to load.
-   * @private
-   * @param {?Array<!WallpaperCollection>}
-   *     collections
-   * @param {?Object<string, ?number>} imageCounts
    */
-  onCollectionLoaded_(collections, imageCounts) {
+  private onCollectionLoaded_(
+      collections: WallpaperCollection[]|null,
+      imageCounts: {[key: string]: number|undefined}) {
     if (!Array.isArray(collections) || !imageCounts) {
       return;
     }
@@ -293,7 +277,7 @@ export class CollectionsGrid extends PolymerElement {
         loadTimeData.getBoolean('isGooglePhotosIntegrationEnabled') ? 2 : 1;
 
     while (this.tiles_.length < collections.length + offset) {
-      this.push('tiles_', {type: TileType.loading});
+      this.push('tiles_', {type: TileType.LOADING});
     }
     while (this.tiles_.length > collections.length + offset) {
       this.pop('tiles_');
@@ -309,7 +293,7 @@ export class CollectionsGrid extends PolymerElement {
           name: collection.name,
           count: '',
           preview: [collection.preview],
-          type: TileType.failure,
+          type: TileType.FAILURE,
         });
         return;
       }
@@ -321,7 +305,7 @@ export class CollectionsGrid extends PolymerElement {
           name: collection.name,
           count: getCountText(imageCounts[collection.id]),
           preview: [collection.preview],
-          type: TileType.image,
+          type: TileType.IMAGE,
         });
       }
     });
@@ -329,10 +313,9 @@ export class CollectionsGrid extends PolymerElement {
 
   /**
    * Invoked on changes to the list and count of Google Photos photos.
-   * @param {?Array<undefined>} googlePhotos
-   * @param {?number} googlePhotosCount
    */
-  onGooglePhotosLoaded_(googlePhotos, googlePhotosCount) {
+  private onGooglePhotosLoaded_(
+      googlePhotos: unknown[]|undefined, googlePhotosCount: number|undefined) {
     if (isNullOrArray(googlePhotos) && isNullOrNumber(googlePhotosCount)) {
       const tile = getGooglePhotosTile(googlePhotos, googlePhotosCount);
       this.set('tiles_.1', tile);
@@ -342,11 +325,10 @@ export class CollectionsGrid extends PolymerElement {
   /**
    * Called with updated local image list or local image thumbnail data when
    * either of those properties changes.
-   * @param {?Array<!mojoBase.mojom.FilePath>} localImages
-   * @param {Object<string, string>} localImageData
-   * @private
    */
-  onLocalImagesLoaded_(localImages, localImageData) {
+  private onLocalImagesLoaded_(
+      localImages: FilePath[]|undefined,
+      localImageData: {[key: string]: string}) {
     if (!Array.isArray(localImages) || !localImageData) {
       return;
     }
@@ -357,65 +339,59 @@ export class CollectionsGrid extends PolymerElement {
   /**
    * Handler for messages from trusted code. Expects only SendImagesEvent and
    * will error on any other event.
-   * @param {!Event} message
-   * @private
    */
-  onMessageReceived_(message) {
-    switch (message.data.type) {
+  private onMessageReceived_(message: MessageEvent) {
+    const event = message.data as Events;
+    const isValid = validateReceivedData(event, message.origin);
+    if (!isValid) {
+      console.warn('Invalid event message received, event type: ' + event.type);
+    }
+
+    switch (event.type) {
       case EventType.SEND_COLLECTIONS:
-        try {
-          this.collections_ =
-              validateReceivedData(message, EventType.SEND_COLLECTIONS);
-        } catch (e) {
-          console.warn('Invalid collections received', e);
-          this.collections_ = [];
-        }
+        this.collections_ = isValid ? event.collections : [];
         break;
       case EventType.SEND_GOOGLE_PHOTOS_COUNT:
-        try {
-          this.googlePhotosCount_ =
-              validateReceivedData(message, EventType.SEND_GOOGLE_PHOTOS_COUNT);
-        } catch (e) {
-          console.warn('Invalid Google Photos count received', e);
+        if (isValid) {
+          this.googlePhotosCount_ = event.count;
+        } else {
           this.googlePhotos_ = null;
           this.googlePhotosCount_ = null;
         }
         break;
       case EventType.SEND_GOOGLE_PHOTOS_PHOTOS:
-        try {
-          this.googlePhotos_ = validateReceivedData(
-              message, EventType.SEND_GOOGLE_PHOTOS_PHOTOS);
-        } catch (e) {
-          console.warn('Invalid Google Photos photos received', e);
+        if (isValid) {
+          this.googlePhotos_ = event.photos;
+        } else {
           this.googlePhotos_ = null;
           this.googlePhotosCount_ = null;
         }
         break;
       case EventType.SEND_IMAGE_COUNTS:
-        this.imageCounts_ = message.data.counts;
+        this.imageCounts_ = event.counts;
         break;
       case EventType.SEND_LOCAL_IMAGES:
-        try {
-          this.localImages_ =
-              validateReceivedData(message, EventType.SEND_LOCAL_IMAGES);
-        } catch (e) {
-          console.warn('Invalid local images received', e);
+        if (isValid) {
+          this.localImages_ = event.images;
+        } else {
           this.localImages_ = [];
           this.localImageData_ = {};
         }
         break;
       case EventType.SEND_LOCAL_IMAGE_DATA:
-        try {
-          this.localImageData_ =
-              validateReceivedData(message, EventType.SEND_LOCAL_IMAGE_DATA);
-        } catch (e) {
-          console.warn('Invalid local image data received', e);
+        if (isValid) {
+          this.localImageData_ = event.data;
+        } else {
           this.localImages_ = [];
           this.localImageData_ = {};
         }
         break;
       case EventType.SEND_VISIBLE:
-        const visible = validateReceivedData(message, EventType.SEND_VISIBLE);
+        if (!isValid) {
+          return;
+        }
+
+        const visible = event.visible;
         if (visible) {
           // If iron-list items were updated while this iron-list was hidden,
           // the layout will be incorrect. Trigger another layout when iron-list
@@ -423,7 +399,7 @@ export class CollectionsGrid extends PolymerElement {
           // otherwise iron-list width may still be 0.
           afterNextRender(this, () => {
             // Trigger a layout now that iron-list has the correct width.
-            this.shadowRoot.querySelector('iron-list').fire('iron-resize');
+            this.shadowRoot!.querySelector('iron-list')!.fire('iron-resize');
           });
         }
         return;
@@ -433,31 +409,19 @@ export class CollectionsGrid extends PolymerElement {
     }
   }
 
-  /**
-   * @param {!ImageTile} tile
-   * @return {string}
-   */
-  getClassForImagesContainer_(tile) {
+  private getClassForImagesContainer_(tile: ImageTile): string {
     const numImages = Array.isArray(tile?.preview) ? tile.preview.length : 0;
     return `photo-images-container photo-images-container-${
         Math.min(numImages, kMaximumLocalImagePreviews)}`;
   }
 
-  /**
-   * @param {!ImageTile} tile
-   * @return {string}
-   */
-  getClassForEmptyTile_(tile) {
+  getClassForEmptyTile_(tile: ImageTile): string {
     return `photo-inner-container ${
         (this.isGooglePhotosTile_(tile) ? 'google-photos-empty' :
                                           'photo-empty')}`;
   }
 
-  /**
-   * @param {!ImageTile} tile
-   * @return {string}
-   */
-  getImageUrlForEmptyTile_(tile) {
+  getImageUrlForEmptyTile_(tile: ImageTile): string {
     return `//personalization/common/${
         (this.isGooglePhotosTile_(tile) ? 'google_photos.svg' :
                                           'no_images.svg')}`;
@@ -465,10 +429,8 @@ export class CollectionsGrid extends PolymerElement {
 
   /**
    * Notify trusted code that a user selected a collection.
-   * @private
-   * @param {!Event} e
    */
-  onCollectionSelected_(e) {
+  private onCollectionSelected_(e: RepeaterEvent) {
     const tile = e.model.item;
     if (!isSelectionEvent(e) || !this.isSelectableTile_(tile)) {
       return;
@@ -488,85 +450,45 @@ export class CollectionsGrid extends PolymerElement {
 
   /**
    * Not using I18nBehavior because of chrome-untrusted:// incompatibility.
-   * @param {string} str
-   * @return {string}
    */
-  geti18n_(str) {
+  private geti18n_(str: string): string {
     return loadTimeData.getString(str);
   }
 
-  /**
-   * @private
-   * @param {?Tile} item
-   * @return {boolean}
-   */
-  isLoadingTile_(item) {
-    return item?.type === TileType.loading;
+  private isLoadingTile_(item: Tile|null): item is LoadingTile {
+    return item?.type === TileType.LOADING;
   }
 
-  /**
-   * @private
-   * @param {?Tile} item
-   * @return {boolean}
-   */
-  isFailureTile_(item) {
-    return item?.type === TileType.failure;
+  private isFailureTile_(item: Tile|null): item is FailureTile {
+    return item?.type === TileType.FAILURE;
   }
 
-  /**
-   * @param {?Tile} item
-   * @return {boolean}
-   * @private
-   */
-  isEmptyTile_(item) {
-    return !!item && item.type === TileType.image && item.preview.length === 0;
+  private isEmptyTile_(item: Tile|null): item is ImageTile {
+    return !!item && item.type === TileType.IMAGE && item.preview.length === 0;
   }
 
-  /**
-   * @param {?Tile} item
-   * @return {boolean}
-   * @private
-   */
-  isGooglePhotosTile_(item) {
-    return item?.id === kGooglePhotosCollectionId;
+  private isGooglePhotosTile_(item: Tile|null): item is ImageTile|FailureTile {
+    return !!item && (item.type !== TileType.LOADING) &&
+        (item?.id === kGooglePhotosCollectionId);
   }
 
-  /**
-   * @private
-   * @param {?Tile} item
-   * @return {boolean}
-   */
-  isImageTile_(item) {
-    return item?.type === TileType.image && !this.isEmptyTile_(item);
+  private isImageTile_(item: Tile|null): item is ImageTile {
+    return item?.type === TileType.IMAGE && !this.isEmptyTile_(item);
   }
 
-  /**
-   * @param {?Tile} item
-   * @return {boolean}
-   * @private
-   */
-  isSelectableTile_(item) {
+  private isSelectableTile_(item: Tile|null): item is ImageTile|FailureTile {
     return this.isGooglePhotosTile_(item) || this.isImageTile_(item);
-  }
-
-  /**
-   * @param {number} index
-   * @return {string}
-   */
-  getLoadingPlaceholderAnimationDelay(index) {
-    return getLoadingPlaceholderAnimationDelay(index);
   }
 
   /**
    * Make the text and background gradient visible again after the image has
    * finished loading. This is called for both on-load and on-error, as either
    * event should make the text visible again.
-   * @param {!Event} event
-   * @private
    */
-  onImgLoad_(event) {
-    const parent = event.currentTarget.closest('.photo-inner-container');
-    for (const elem of parent.querySelectorAll('[hidden]')) {
+  private onImgLoad_(event: Event) {
+    const self = event.currentTarget! as HTMLElement;
+    const parent = self.closest('.photo-inner-container');
+    for (const elem of parent!.querySelectorAll('[hidden]')) {
       elem.removeAttribute('hidden');
     }
   }
