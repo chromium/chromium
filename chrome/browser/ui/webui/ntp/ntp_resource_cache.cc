@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "chrome/browser/ui/cookie_controls/cookie_controls_service_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #include "chrome/browser/ui/webui/ntp/cookie_controls_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/buildflags.h"
@@ -58,6 +57,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#endif
+
+#if !defined(OS_CHROMEOS)
+#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #endif
 
 using content::BrowserThread;

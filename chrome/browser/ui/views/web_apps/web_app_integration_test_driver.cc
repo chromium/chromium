@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
-#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -77,6 +76,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
+#else
+#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -105,6 +106,7 @@ const base::flat_map<std::string, std::string> g_site_mode_to_path = {
     {"SiteAFoo", "site_a/foo"},
     {"SiteABar", "site_a/bar"}};
 
+#if !defined(OS_CHROMEOS)
 class TestAppLauncherHandler : public AppLauncherHandler {
  public:
   TestAppLauncherHandler(extensions::ExtensionService* extension_service,
@@ -116,6 +118,7 @@ class TestAppLauncherHandler : public AppLauncherHandler {
     set_web_ui(test_web_ui);
   }
 };
+#endif
 
 class BrowserAddedWaiter final : public BrowserListObserver {
  public:
@@ -460,6 +463,7 @@ void WebAppIntegrationTestDriver::InstallMenuOption(
   AfterStateChangeAction();
 }
 
+#if !defined(OS_CHROMEOS)
 void WebAppIntegrationTestDriver::InstallLocally(const std::string& site_mode) {
   BeforeStateChangeAction();
   absl::optional<AppState> app_state = GetAppBySiteMode(
@@ -481,6 +485,7 @@ void WebAppIntegrationTestDriver::InstallLocally(const std::string& site_mode) {
   observer.Wait();
   AfterStateChangeAction();
 }
+#endif
 
 void WebAppIntegrationTestDriver::InstallOmniboxIcon(
     const std::string& site_mode) {

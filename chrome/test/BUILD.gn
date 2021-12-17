@@ -5078,7 +5078,6 @@ test("unit_tests") {
       "../browser/ui/webui/discards/graph_dump_impl_unittest.cc",
       "../browser/ui/webui/favicon_source_unittest.cc",
       "../browser/ui/webui/history_clusters/history_clusters_handler_unittest.cc",
-      "../browser/ui/webui/ntp/app_launcher_handler_unittest.cc",
       "../browser/ui/webui/signin/sync_confirmation_handler_unittest.cc",
       "../browser/upgrade_detector/build_state_unittest.cc",
       "../browser/upgrade_detector/mock_build_state_observer.cc",
@@ -5111,6 +5110,10 @@ test("unit_tests") {
 
   if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
     sources += [ "../test/pixel/browser_skia_gold_pixel_diff_unittest.cc" ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    sources += [ "../browser/ui/webui/ntp/app_launcher_handler_unittest.cc" ]
   }
 
   if (enable_webui_tab_strip) {

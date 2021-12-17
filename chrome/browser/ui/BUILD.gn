@@ -1524,8 +1524,6 @@ static_library("ui") {
       "webui/new_tab_page_third_party/new_tab_page_third_party_ui.h",
       "webui/ntp/app_icon_webui_handler.cc",
       "webui/ntp/app_icon_webui_handler.h",
-      "webui/ntp/app_launcher_handler.cc",
-      "webui/ntp/app_launcher_handler.h",
       "webui/ntp/app_resource_cache_factory.cc",
       "webui/ntp/app_resource_cache_factory.h",
       "webui/ntp/cookie_controls_handler.cc",
@@ -3262,6 +3260,8 @@ static_library("ui") {
       "webui/app_launcher_page_ui.h",
       "webui/browser_switch/browser_switch_ui.cc",
       "webui/browser_switch/browser_switch_ui.h",
+      "webui/ntp/app_launcher_handler.cc",
+      "webui/ntp/app_launcher_handler.h",
     ]
   }
 
