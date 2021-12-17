@@ -326,6 +326,9 @@ void NGOutOfFlowLayoutPart::HandleFragmentation() {
       has_block_fragmentation_)
     return;
 
+  // Don't use the cache if we are handling fragmentation.
+  allow_first_tier_oof_cache_ = false;
+
   while (container_builder_->HasOutOfFlowFragmentainerDescendants() ||
          container_builder_->HasMulticolsWithPendingOOFs()) {
     HandleMulticolsWithPendingOOFs(container_builder_);
