@@ -8088,8 +8088,6 @@ crbug.com/894077 [ Linux ] virtual/android/fullscreen/video-fixed-background.htm
 crbug.com/1271336 external/wpt/native-io/detach_iframe_during_open.https.window.html [ Crash Pass ]
 crbug.com/1197465 virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Skip ]
 crbug.com/1272017 [ Mac11-arm64 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/sources/debugger-ui/reveal-not-skipped.js [ Skip ]
-crbug.com/1272058 [ Linux ] fast/animation/request-animation-frame-cancel2.html [ Failure Pass ]
-crbug.com/1272058 [ Linux ] fast/animation/request-animation-frame-cancel.html [ Failure Pass ]
 
 # Sheriff 2021-11-22
 crbug.com/1272352 virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-test.js [ Skip ]
