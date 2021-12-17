@@ -55,7 +55,7 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler,
   // Notifies the Projector SWA the pending screencasts' state change and
   // updates the pending list in Projector SWA.
   void OnScreencastsPendingStatusChanged(
-      const std::set<PendingScreencast>& pending_screencast) override;
+      const PendingScreencastSet& pending_screencast) override;
   void OnSodaProgress(int percentage) override;
   void OnSodaError() override;
   void OnSodaInstalled() override;

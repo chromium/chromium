@@ -34,9 +34,15 @@ constexpr char kTestScreencastPath[] = "/root/test_screencast";
 constexpr char kTestScreencastName[] = "test_screencast";
 constexpr char kTestMediaFile[] = "test_screencast.webm";
 constexpr char kTestMetadataFile[] = "test_screencast.projector";
+// constexpr char kTestDataToWrite[] = "Data size of 16.";
+// The test media file is 0.7 mb.
+constexpr int64_t kTestMediaFileBytes = 700 * 1024;
+// The test metadata file is 0.1 mb.
+constexpr int64_t kTestMetadataFileBytes = 100 * 1024;
 
 }  // namespace
 
+// TODO(b/211000693) Replace all RunAllTasksUntilIdle with a waiting condition.
 class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
  public:
   bool SetUpUserDataDirectory() override {
@@ -78,7 +84,15 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
     return integration_service;
   }
 
-  void CreateFile(const std::string& file_path) {
+  // Create a file for given `file_path`, which is a relative file path of
+  // drivefs. Write `total_bytes` to this file. Create a drivefs syncing event
+  // for this file with `transferred_bytes` transferred and add this event to
+  // `syncing_status`.
+  void CreateFileAndTransferItemEvent(
+      const std::string& file_path,
+      int64_t total_bytes,
+      int64_t transferred_bytes,
+      drivefs::mojom::SyncingStatus& syncing_status) {
     base::ScopedAllowBlockingForTesting allow_blocking;
 
     drive::DriveIntegrationService* service =
@@ -97,25 +111,34 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
     EXPECT_TRUE(base::CreateDirectory(folder_path));
 
     base::File file(folder_path.Append(path.BaseName()),
-                    base::File::FLAG_CREATE | base::File::FLAG_READ);
-
+                    base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    // Create a buffer whose size is `total_bytes`.
+    std::string buffer(total_bytes, 'a');
+    EXPECT_EQ(total_bytes,
+              file.Write(/*offset=*/0, buffer.data(), /*size=*/total_bytes));
     EXPECT_TRUE(file.IsValid());
     file.Close();
+
+    AddTransferItemEvent(syncing_status, file_path, total_bytes,
+                         transferred_bytes);
   }
 
   void AddTransferItemEvent(drivefs::mojom::SyncingStatus& syncing_status,
-                            bool completed,
-                            const std::string& path) {
+                            const std::string& path,
+                            int64_t total_bytes,
+                            int64_t transferred_bytes) {
     syncing_status.item_events.emplace_back(
-        base::in_place, /*stable_id*/ 1, /*group_id*/ 1, path,
-        completed ? drivefs::mojom::ItemEvent::State::kCompleted
-                  : drivefs::mojom::ItemEvent::State::kInProgress,
-        /*bytes_transferred*/ completed ? 100 : 50, /*bytes_to_transfer*/ 100,
+        base::in_place, /*stable_id=*/1, /*group_id=*/1, path,
+        total_bytes == transferred_bytes
+            ? drivefs::mojom::ItemEvent::State::kCompleted
+            : drivefs::mojom::ItemEvent::State::kInProgress,
+        /*bytes_transferred=*/transferred_bytes,
+        /*bytes_to_transfer=*/total_bytes,
         drivefs::mojom::ItemEventReason::kTransfer);
   }
 
   MOCK_METHOD1(PendingScreencastChangeCallback,
-               void(const std::set<ash::PendingScreencast>&));
+               void(const PendingScreencastSet&));
 
   PendingSreencastManager* pending_screencast_manager() {
     return pending_screencast_manager_.get();
@@ -136,20 +159,22 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, ValidScreencast) {
       base::StrCat({kTestScreencastPath, "/", kTestMediaFile});
   const std::string metadata_file =
       base::StrCat({kTestScreencastPath, "/", kTestMetadataFile});
+  drivefs::mojom::SyncingStatus syncing_status;
   {
     // Create a valid pending screencast.
-    CreateFile(media_file);
-    CreateFile(metadata_file);
+    CreateFileAndTransferItemEvent(media_file,
+                                   /*total_bytes=*/kTestMediaFileBytes,
+                                   /*transferred_bytes=*/0, syncing_status);
+    CreateFileAndTransferItemEvent(metadata_file,
+                                   /*total_bytes=*/kTestMetadataFileBytes,
+                                   /*transferred_bytes=*/0, syncing_status);
   }
-  drivefs::mojom::SyncingStatus syncing_status;
-  AddTransferItemEvent(syncing_status, /*completed*/ false,
-                       /*path*/ media_file);
 
   EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(1);
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
   content::RunAllTasksUntilIdle();
 
-  const std::set<ash::PendingScreencast> pending_screencasts =
+  const PendingScreencastSet pending_screencasts =
       pending_screencast_manager()->GetPendingScreencasts();
   EXPECT_EQ(pending_screencasts.size(), 1);
   ash::PendingScreencast ps = *(pending_screencasts.begin());
@@ -176,29 +201,27 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, InvalidScreencasts) {
   const std::string avi = "/root/non_screencast_files/example.avi";
   const std::string mov = "/root/non_screencast_files/example.mov";
   const std::string mp4 = "/root/non_screencast_files/example.mp4";
-
+  drivefs::mojom::SyncingStatus syncing_status;
   {
     // Create an invalid screencast that only has webm medida file.
-    CreateFile(media_only_path);
+    CreateFileAndTransferItemEvent(media_only_path,
+                                   /*total_bytes=*/kTestMediaFileBytes,
+                                   /*transferred_bytes=*/0, syncing_status);
 
     // Create an invalid screencast that only has metadata file.
-    CreateFile(metadata_only_path);
+    CreateFileAndTransferItemEvent(metadata_only_path,
+                                   /*total_bytes=*/kTestMetadataFileBytes,
+                                   /*transferred_bytes=*/0, syncing_status);
 
     // Create an invalid screencast that does not have webm media and metadata
     // files but have other media files.
-    CreateFile(avi);
-    CreateFile(mov);
-    CreateFile(mp4);
+    CreateFileAndTransferItemEvent(avi, /*total_bytes=*/kTestMediaFileBytes,
+                                   /*transferred_bytes=*/0, syncing_status);
+    CreateFileAndTransferItemEvent(mov, /*total_bytes=*/kTestMediaFileBytes,
+                                   /*transferred_bytes=*/0, syncing_status);
+    CreateFileAndTransferItemEvent(mp4, /*total_bytes=*/kTestMediaFileBytes,
+                                   /*transferred_bytes=*/0, syncing_status);
   }
-
-  drivefs::mojom::SyncingStatus syncing_status;
-  AddTransferItemEvent(syncing_status, /*completed*/ false,
-                       /*path*/ media_only_path);
-  AddTransferItemEvent(syncing_status, /*completed*/ false,
-                       /*path*/ metadata_only_path);
-  AddTransferItemEvent(syncing_status, /*completed*/ false, /*path*/ avi);
-  AddTransferItemEvent(syncing_status, /*completed*/ false, /*path*/ mov);
-  AddTransferItemEvent(syncing_status, /*completed*/ false, /*path*/ mp4);
 
   EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(0);
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
@@ -214,14 +237,16 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
       base::StrCat({kTestScreencastPath, "/", kTestMediaFile});
   const std::string metadata_file =
       base::StrCat({kTestScreencastPath, "/", kTestMetadataFile});
+  drivefs::mojom::SyncingStatus syncing_status;
   {
     // Create a valid uploaded screencast.
-    CreateFile(media_file);
-    CreateFile(metadata_file);
+    CreateFileAndTransferItemEvent(media_file,
+                                   /*total_bytes=*/kTestMediaFileBytes,
+                                   kTestMediaFileBytes, syncing_status);
+    CreateFileAndTransferItemEvent(metadata_file,
+                                   /*total_bytes=*/kTestMetadataFileBytes,
+                                   kTestMetadataFileBytes, syncing_status);
   }
-
-  drivefs::mojom::SyncingStatus syncing_status;
-  AddTransferItemEvent(syncing_status, /*completed*/ true, /*path*/ media_file);
 
   EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(0);
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
@@ -244,39 +269,37 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
           base::StrCat({test_screencast_path, "/", kTestMediaFile});
       const std::string metadata =
           base::StrCat({test_screencast_path, "/", kTestMetadataFile});
-      CreateFile(media);
-      CreateFile(metadata);
-
-      AddTransferItemEvent(syncing_status, /*completed*/ false, /*path*/ media);
-      AddTransferItemEvent(syncing_status, /*completed*/ false,
-                           /*path*/ metadata);
+      CreateFileAndTransferItemEvent(media, /*total_bytes=*/kTestMediaFileBytes,
+                                     /*transferred_bytes=*/0, syncing_status);
+      CreateFileAndTransferItemEvent(metadata,
+                                     /*total_bytes=*/kTestMetadataFileBytes,
+                                     /*transferred_bytes=*/0, syncing_status);
     }
 
     // Tests with a invalid screencast does not have metadata file.
     const std::string no_metadata_screencast = "/root/no_metadata/example.webm";
-    CreateFile(no_metadata_screencast);
-    AddTransferItemEvent(syncing_status, /*completed*/ false,
-                         /*path*/ no_metadata_screencast);
-
+    CreateFileAndTransferItemEvent(no_metadata_screencast,
+                                   /*total_bytes=*/kTestMediaFileBytes,
+                                   /*transferred_bytes=*/0, syncing_status);
     // Tests with a invalid screencast does not have media file.
     const std::string no_media_screencast = "/root/no_media/example.projector";
-    CreateFile(no_media_screencast);
-    AddTransferItemEvent(syncing_status, /*completed*/ false,
-                         /*path*/ no_media_screencast);
+    CreateFileAndTransferItemEvent(no_media_screencast,
+                                   /*total_bytes=*/kTestMediaFileBytes,
+                                   /*transferred_bytes=*/0, syncing_status);
 
     // Tests with a non-screencast file.
     const std::string non_screencast = "/root/non_screencast/example.txt";
-    CreateFile(non_screencast);
-    AddTransferItemEvent(syncing_status, /*completed*/ false,
-                         /*path*/ non_screencast);
+    CreateFileAndTransferItemEvent(non_screencast, /*total_bytes=*/100,
+                                   /*transferred_bytes=*/0, syncing_status);
   }
 
   EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(1);
   pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
 
   content::RunAllTasksUntilIdle();
-  const std::set<ash::PendingScreencast> pending_screencasts =
+  const PendingScreencastSet pending_screencasts =
       pending_screencast_manager()->GetPendingScreencasts();
+  int64_t total_size = kTestMediaFileBytes + kTestMetadataFileBytes;
 
   // Only valid screencasts could be processed.
   EXPECT_EQ(pending_screencasts.size(), num_of_screencasts);
@@ -285,9 +308,156 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
         base::StrCat({kTestScreencastPath, base::NumberToString(i)});
     const std::string name =
         base::StrCat({kTestScreencastName, base::NumberToString(i)});
-    ash::PendingScreencast ps{base::FilePath(container_dir), name};
+    ash::PendingScreencast ps{base::FilePath(container_dir), name, total_size,
+                              0};
     EXPECT_TRUE(pending_screencasts.find(ps) != pending_screencasts.end());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, UploadProgress) {
+  const std::string media_file_path =
+      base::StrCat({kTestScreencastPath, "/", kTestMediaFile});
+  const std::string metadata_file_path =
+      base::StrCat({kTestScreencastPath, "/", kTestMetadataFile});
+  drivefs::mojom::SyncingStatus syncing_status;
+  {
+    // Create a valid pending screencast.
+    CreateFileAndTransferItemEvent(media_file_path,
+                                   /*total_bytes=*/kTestMediaFileBytes,
+                                   /*transferred_bytes=*/0, syncing_status);
+    CreateFileAndTransferItemEvent(metadata_file_path,
+                                   /*total_bytes=*/kTestMetadataFileBytes,
+                                   /*transferred_bytes=*/0, syncing_status);
+  }
+
+  EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(1);
+  pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
+
+  content::RunAllTasksUntilIdle();
+
+  const PendingScreencastSet pending_screencasts_1 =
+      pending_screencast_manager()->GetPendingScreencasts();
+  EXPECT_EQ(pending_screencasts_1.size(), 1);
+  ash::PendingScreencast ps = *(pending_screencasts_1.begin());
+  const int total_size = kTestMediaFileBytes + kTestMetadataFileBytes;
+  EXPECT_EQ(total_size, ps.total_size_in_bytes);
+  EXPECT_EQ(0, ps.bytes_transferred);
+
+  // Tests the metadata file finished transferred.
+  // PendingScreencastChangeCallback won't be invoked if the difference is less
+  // than kPendingScreencastDiffThresholdInBytes.
+  EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(0);
+  syncing_status.item_events.clear();
+  int64_t media_transferred_1_bytes = 1;
+  int64_t metadata_transferred_bytes = kTestMetadataFileBytes;
+  AddTransferItemEvent(syncing_status, media_file_path,
+                       /*total_bytes=*/kTestMediaFileBytes,
+                       /*transferred_bytes=*/media_transferred_1_bytes);
+  // Create a completed transferred event for metadata.
+  AddTransferItemEvent(syncing_status, metadata_file_path,
+                       /*total_bytes=*/kTestMetadataFileBytes,
+                       /*transferred_bytes=*/metadata_transferred_bytes);
+  pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
+  content::RunAllTasksUntilIdle();
+  const PendingScreencastSet pending_screencasts_2 =
+      pending_screencast_manager()->GetPendingScreencasts();
+  ps = *(pending_screencasts_2.begin());
+  // The screencast status unchanged.
+  EXPECT_EQ(total_size, ps.total_size_in_bytes);
+  EXPECT_EQ(0, ps.bytes_transferred);
+
+  // Tests PendingScreencastChangeCallback will be invoked if the difference of
+  // transferred bytes is greater than kPendingScreencastDiffThresholdInBytes.
+  EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(1);
+  syncing_status.item_events.clear();
+  AddTransferItemEvent(syncing_status, media_file_path,
+                       /*total_bytes=*/kTestMediaFileBytes,
+                       /*transferred_bytes=*/kTestMediaFileBytes - 1);
+  // Create a completed transferred event for metadata.
+  AddTransferItemEvent(syncing_status, metadata_file_path,
+                       /*total_bytes=*/kTestMetadataFileBytes,
+                       /*transferred_bytes=*/metadata_transferred_bytes);
+  pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
+  content::RunAllTasksUntilIdle();
+  const PendingScreencastSet pending_screencasts_3 =
+      pending_screencast_manager()->GetPendingScreencasts();
+  ps = *(pending_screencasts_3.begin());
+  // The screencast status changed.
+  EXPECT_EQ(total_size, ps.total_size_in_bytes);
+
+  // TODO(b/209854146) After fix b/209854146, the `ps.bytes_transferred` is
+  // `total_size -1`.
+  EXPECT_EQ(kTestMediaFileBytes - 1, ps.bytes_transferred);
+
+  // Tests PendingScreencastChangeCallback will be invoked when all files
+  // finished transferred.
+  EXPECT_CALL(*this, PendingScreencastChangeCallback(testing::_)).Times(1);
+  syncing_status.item_events.clear();
+  // Create completed transferred events for both files.
+  AddTransferItemEvent(syncing_status, media_file_path,
+                       /*total_bytes=*/kTestMediaFileBytes,
+                       /*transferred_bytes=*/kTestMediaFileBytes);
+  AddTransferItemEvent(syncing_status, metadata_file_path,
+                       /*total_bytes=*/kTestMetadataFileBytes,
+                       /*transferred_bytes=*/kTestMetadataFileBytes);
+  pending_screencast_manager()->OnSyncingStatusUpdate(syncing_status);
+  content::RunAllTasksUntilIdle();
+  EXPECT_TRUE(pending_screencast_manager()->GetPendingScreencasts().empty());
+}
+
+// Test the comparison of pending screencast in a std::set.
+IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
+                       PendingScreencastSet) {
+  // The `name` and `total_size_in_bytes` of screencast will not be compare in a
+  // set.
+  const base::FilePath container_dir_a = base::FilePath("/root/a");
+  const std::string screencast_a_name = "a";
+  const int64_t screencast_a_total_bytes = 2 * 1024 * 1024;
+  ash::PendingScreencast screencast_a_1_byte_transferred{
+      container_dir_a, screencast_a_name, screencast_a_total_bytes,
+      /*bytes_transferred=*/1};
+  ash::PendingScreencast screencast_a_1kb_transferred{
+      container_dir_a, screencast_a_name, screencast_a_total_bytes,
+      /*bytes_transferred=*/1024};
+  ash::PendingScreencast screencast_a_700kb_transferred{
+      container_dir_a, screencast_a_name, screencast_a_total_bytes,
+      /*bytes_transferred=*/700 * 1024};
+
+  const base::FilePath container_dir_b = base::FilePath("/root/b");
+  const std::string screencast_b_name = "b";
+  const int64_t screencast_b_total_bytes = 2 * 1024 * 1024;
+  ash::PendingScreencast screencast_b_1_byte_transferred{
+      container_dir_b, screencast_b_name, screencast_b_total_bytes,
+      /*bytes_transferred=*/1};
+  ash::PendingScreencast screencast_b_1kb_transferred{
+      container_dir_b, screencast_b_name, screencast_b_total_bytes,
+      /*bytes_transferred=*/1024};
+  ash::PendingScreencast screencast_b_700kb_transferred{
+      container_dir_b, screencast_b_name, screencast_b_total_bytes,
+      /*bytes_transferred=*/700 * 1024};
+
+  PendingScreencastSet set1{screencast_a_1_byte_transferred,
+                            screencast_b_1_byte_transferred};
+  PendingScreencastSet set2{screencast_a_1_byte_transferred,
+                            screencast_b_1_byte_transferred};
+  PendingScreencastSet set3{screencast_a_1kb_transferred,
+                            screencast_b_1_byte_transferred};
+  PendingScreencastSet set4{screencast_a_700kb_transferred,
+                            screencast_b_1_byte_transferred};
+  PendingScreencastSet set5{screencast_a_1_byte_transferred,
+                            screencast_a_700kb_transferred};
+  PendingScreencastSet set6{screencast_a_700kb_transferred,
+                            screencast_a_1_byte_transferred};
+  PendingScreencastSet set7{screencast_a_1_byte_transferred,
+                            screencast_a_1kb_transferred};
+
+  EXPECT_EQ(set1, set2);
+  EXPECT_EQ(set1, set3);
+  EXPECT_NE(set1, set4);
+  EXPECT_NE(set1, set5);
+  EXPECT_EQ(set5, set6);
+  EXPECT_EQ(2, set5.size());
+  EXPECT_EQ(2, set7.size());
 }
 
 }  // namespace ash

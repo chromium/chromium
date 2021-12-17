@@ -338,10 +338,10 @@ TEST_F(ProjectorMessageHandlerUnitTest, InstallSoda) {
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, GetPendingScreencasts) {
-  const std::set<ash::PendingScreencast> expectedScreencasts{
-      ash::PendingScreencast{
-          /*container_dir*/ base::FilePath(kTestScreencastPath),
-          /*name*/ kTestScreencastName}};
+  const PendingScreencastSet expectedScreencasts{ash::PendingScreencast{
+      /*container_dir=*/base::FilePath(kTestScreencastPath),
+      /*name=*/kTestScreencastName, /*total_size_in_bytes=*/1,
+      /*bytes_untransferred=*/0}};
   ON_CALL(mock_app_client(), GetPendingScreencasts())
       .WillByDefault(testing::ReturnRef(expectedScreencasts));
 
@@ -371,8 +371,7 @@ TEST_F(ProjectorMessageHandlerUnitTest, GetPendingScreencasts) {
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, OnScreencastsStateChange) {
-  message_handler()->OnScreencastsPendingStatusChanged(
-      std::set<ash::PendingScreencast>());
+  message_handler()->OnScreencastsPendingStatusChanged(PendingScreencastSet());
   ExpectCallToWebUI(kWebUIListenerCall, "onScreencastsStateChange",
                     /*call_count=*/1u);
 }

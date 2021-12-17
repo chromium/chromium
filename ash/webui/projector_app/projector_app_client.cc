@@ -13,6 +13,7 @@ namespace {
 
 constexpr char kPendingScreencastName[] = "name";
 constexpr char kPendingScreencastUploadProgress[] = "uploadProgress";
+constexpr int64_t kPendingScreencastDiffThresholdInBytes = 600 * 1024;
 
 ProjectorAppClient* g_instance = nullptr;
 }  // namespace
@@ -20,21 +21,29 @@ ProjectorAppClient* g_instance = nullptr;
 base::Value PendingScreencast::ToValue() const {
   base::Value val(base::Value::Type::DICTIONARY);
   val.SetKey(kPendingScreencastName, base::Value(name));
-
-  // TODO(b/199421317): Show uploading progress of pending screencasts in
-  // gallery. Calculate and set the correct value here.
-  val.SetKey(kPendingScreencastUploadProgress, base::Value(0));
+  DCHECK_GT(total_size_in_bytes, 0);
+  const double upload_progress = static_cast<double>(bytes_transferred) /
+                                 static_cast<double>(total_size_in_bytes);
+  val.SetKey(kPendingScreencastUploadProgress,
+             base::Value(upload_progress * 100));
   return val;
 }
 
-// TODO(b/199421317): Add transferred bytes check and show uploading progress of
-// pending screencasts in gallery.
 bool PendingScreencast::operator==(const PendingScreencast& rhs) const {
-  return rhs.container_dir == container_dir;
+  // When the bytes of pending screencast didn't change a lot (less than
+  // kPendingScreencastDiffThresholdInBytes), we consider this pending
+  // screencast doesn't change. It helps to reduce the frequency of updating the
+  // pending screencast list.
+  return container_dir == rhs.container_dir &&
+         std::abs(bytes_transferred - rhs.bytes_transferred) <
+             kPendingScreencastDiffThresholdInBytes;
 }
 
-bool PendingScreencast::operator<(const PendingScreencast& rhs) const {
-  return rhs.container_dir < container_dir;
+bool PendingScreencastSetComparator::operator()(
+    const PendingScreencast& a,
+    const PendingScreencast& b) const {
+  return a.container_dir < b.container_dir ||
+         a.bytes_transferred < b.bytes_transferred;
 }
 
 // static

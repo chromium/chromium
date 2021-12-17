@@ -103,13 +103,13 @@ void ProjectorAppClientImpl::OnNewScreencastPreconditionChanged(
     observer.OnNewScreencastPreconditionChanged(precondition);
 }
 
-const std::set<ash::PendingScreencast>&
-ProjectorAppClientImpl::GetPendingScreencasts() const {
+const ash::PendingScreencastSet& ProjectorAppClientImpl::GetPendingScreencasts()
+    const {
   return pending_screencast_manager_.GetPendingScreencasts();
 }
 
 void ProjectorAppClientImpl::NotifyScreencastsPendingStatusChanged(
-    const std::set<ash::PendingScreencast>& pending_screencast) {
+    const ash::PendingScreencastSet& pending_screencast) {
   for (auto& observer : observers_)
     observer.OnScreencastsPendingStatusChanged(pending_screencast);
 }

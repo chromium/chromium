@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/ash/projector/pending_screencast_manager.h"
 
+#include <map>
+#include <vector>
+
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "ash/public/cpp/projector/projector_controller.h"
-#include "ash/webui/projector_app/projector_app_client.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -22,6 +24,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
+
+// Returned by GetScreencastContainerSize(const base::FilePath& relative_path)
+// when the given `relative_path` is an invalid screencast container.
+constexpr int64_t kScreencastSizeUnavailable = -1;
 
 constexpr base::FilePath::CharType kMediaExtension[] =
     FILE_PATH_LITERAL(".webm");
@@ -45,53 +51,61 @@ drivefs::DriveFsHost* GetDriveFsHostForActiveProfile() {
   return drivefs_integration ? drivefs_integration->GetDriveFsHost() : nullptr;
 }
 
-// Verifies whether `relative_path` is a valid screencast container. A valid
+// Return the size in bytes of screencast if `absolute_path` is a valid
+// screencast container, otherwise return kScreencastSizeUnavailable. A valid
 // screencast should have at least 1 media file and 1 metadata file. The
-// 'relative_path' looks like
-// "/{drivefs mounted point}/root/{folder path in drive}"
-bool IsScreencastContainer(const base::FilePath& relative_path) {
+// 'absolute_path' looks like
+// "/{drivefs mounted point}/root/{folder path in drive}".
+int64_t GetScreencastContainerSize(const base::FilePath& absolute_path) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  if (!base::PathExists(relative_path))
-    return false;
+  if (!base::PathExists(absolute_path))
+    return kScreencastSizeUnavailable;
 
-  int number_of_metadata_files = 0;
-  int number_of_media_files = 0;
-  base::FileEnumerator files(relative_path, /* recursive */ false,
+  int size_of_metadata_files = 0;
+  int size_of_media_files = 0;
+  base::FileEnumerator files(absolute_path, /*recursive=*/false,
                              base::FileEnumerator::FILES);
   const std::string metadata_extension = GetMetadataFileExtension();
   for (base::FilePath path = files.Next(); !path.empty(); path = files.Next()) {
-    if (path.MatchesExtension(metadata_extension))
-      number_of_metadata_files++;
-
-    if (path.MatchesExtension(kMediaExtension))
-      number_of_media_files++;
-
-    if (number_of_media_files > 0 && number_of_metadata_files > 0)
-      return true;
+    if (path.MatchesExtension(GetMetadataFileExtension()))
+      size_of_metadata_files += files.GetInfo().GetSize();
+    else if (path.MatchesExtension(kMediaExtension))
+      size_of_media_files += files.GetInfo().GetSize();
   }
 
-  return number_of_media_files > 0 && number_of_metadata_files > 0;
+  return size_of_media_files > 0 && size_of_metadata_files > 0
+             ? size_of_media_files + size_of_metadata_files
+             : kScreencastSizeUnavailable;
 }
 
-// The `pending_webm_or_projector_files` are new pending ".webm" or ".projector"
-// files. Checks whether these files are valid screencast files and returns
-// valid pending screencasts.
-std::set<ash::PendingScreencast> ProcessAndGenerateNewScreencasts(
-    const std::vector<base::FilePath>& pending_webm_or_projector_files,
-    const base::FilePath drivefs_mounted_point) {
+// The `pending_webm_or_projector_events` are new pending ".webm" or
+// ".projector" files' events. Checks whether these files are valid screencast
+// files, calculate the upload progress, and returns valid pending screencasts.
+ash::PendingScreencastSet ProcessAndGenerateNewScreencasts(
+    const std::vector<drivefs::mojom::ItemEvent>&
+        pending_webm_or_projector_events,
+    drive::DriveIntegrationService* drivefs_integration) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-
+  const base::FilePath drivefs_mounted_point =
+      drivefs_integration->GetMountPointPath();
   // The valid screencasts set.
-  std::set<ash::PendingScreencast> screencasts;
-  if (!base::PathExists(drivefs_mounted_point))
+  ash::PendingScreencastSet screencasts;
+  if (!drivefs_integration->IsMounted() ||
+      !base::PathExists(drivefs_mounted_point)) {
     return screencasts;
+  }
 
-  // `pending_file` is a relative path to DriveFs mounted folder. It looks like
+  // A map of container directory path to pending screencast. Each screencast
+  // has a unique container directory path in DriveFS.
+  std::map<base::FilePath, ash::PendingScreencast> container_to_screencasts;
+
+  // The `pending_event.path` is the file path in drive. It looks like
   // "/root/{folder path in drive}/{file name}".
-  for (const auto& pending_file : pending_webm_or_projector_files) {
-    // `container_dir` is the parent folder of `pending_file` in drive. It looks
-    // like "/root/{folder path in drive}".
-    const base::FilePath container_dir = pending_file.DirName();
+  for (const auto& pending_event : pending_webm_or_projector_events) {
+    // `container_dir` is the parent folder of `pending_event.path` in drive. It
+    // looks like "/root/{folder path in drive}".
+    const base::FilePath container_dir =
+        base::FilePath(pending_event.path).DirName();
     ash::PendingScreencast screencast;
     screencast.container_dir = container_dir;
     // The display name of the a pending screencast is the name of the container
@@ -99,16 +113,36 @@ std::set<ash::PendingScreencast> ProcessAndGenerateNewScreencasts(
     screencast.name = container_dir.BaseName().value();
 
     // During this loop, items of multiple events might be under the same
-    // folder. Skips folders that have been validated before.
-    if (screencasts.find(screencast) != screencasts.end())
+    // folder.
+    auto iter = container_to_screencasts.find(container_dir);
+    if (iter != container_to_screencasts.end()) {
+      // Calculates remaining untranferred bytes of a screencast by adding up
+      // its transferred bytes of its files. `pending_event.bytes_to_transfer`
+      // is the total bytes of current file.
+      // TODO(b/209854146) Not all files appear in
+      // `pending_webm_or_projector_events.bytes_transferred`. The missing files
+      // might be uploaded or not uploaded. To get an accurate
+      // `bytes_transferred`, use DriveIntegrationService::GetMetadata().
+      iter->second.bytes_transferred += pending_event.bytes_transferred;
+
+      // Skips getting the size of a folder if it has been validated before.
       continue;
+    }
 
     base::FilePath root("/");
     base::FilePath container_absolute_dir(drivefs_mounted_point);
     root.AppendRelativePath(container_dir, &container_absolute_dir);
-    if (IsScreencastContainer(container_absolute_dir))
-      screencasts.emplace(screencast);
+    const int64_t total_size_in_bytes =
+        GetScreencastContainerSize(container_absolute_dir);
+    if (total_size_in_bytes != -1) {
+      screencast.total_size_in_bytes = total_size_in_bytes;
+      screencast.bytes_transferred = pending_event.bytes_transferred;
+      container_to_screencasts[container_dir] = screencast;
+    }
   }
+
+  for (const auto& pair : container_to_screencasts)
+    screencasts.insert(pair.second);
 
   return screencasts;
 }
@@ -151,7 +185,7 @@ void PendingSreencastManager::OnUnmounted() {
 // download event. Find a way to filter out the upload event.
 void PendingSreencastManager::OnSyncingStatusUpdate(
     const drivefs::mojom::SyncingStatus& status) {
-  std::vector<base::FilePath> pending_webm_or_projector_files;
+  std::vector<drivefs::mojom::ItemEvent> pending_webm_or_projector_events;
 
   for (const auto& event : status.item_events) {
     base::FilePath pending_file = base::FilePath(event->path);
@@ -159,21 +193,20 @@ void PendingSreencastManager::OnSyncingStatusUpdate(
         event->state == drivefs::mojom::ItemEvent::State::kQueued ||
         event->state == drivefs::mojom::ItemEvent::State::kInProgress;
     // Filters pending ".webm" or ".projector".
-    if (!pending || !IsWebmOrProjectorFile(pending_file)) {
+    if (!pending || !IsWebmOrProjectorFile(pending_file))
       continue;
-    }
 
-    pending_webm_or_projector_files.push_back(pending_file);
+    pending_webm_or_projector_events.push_back(
+        drivefs::mojom::ItemEvent(*event.get()));
   }
 
   // The `task` is a blocking I/O operation while `reply` runs on current
   // thread.
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(
-          ProcessAndGenerateNewScreencasts,
-          std::move(pending_webm_or_projector_files),
-          GetDriveIntegrationServiceForActiveProfile()->GetMountPointPath()),
+      base::BindOnce(ProcessAndGenerateNewScreencasts,
+                     std::move(pending_webm_or_projector_events),
+                     GetDriveIntegrationServiceForActiveProfile()),
       base::BindOnce(
           &PendingSreencastManager::OnProcessAndGenerateNewScreencastsFinished,
           weak_ptr_factory_.GetWeakPtr()));
@@ -190,13 +223,13 @@ void PendingSreencastManager::OnUserSessionStarted(bool is_primary_user) {
     GetDriveFsHostForActiveProfile()->AddObserver(this);
 }
 
-const std::set<ash::PendingScreencast>&
+const ash::PendingScreencastSet&
 PendingSreencastManager::GetPendingScreencasts() const {
   return pending_screencast_cache_;
 }
 
 void PendingSreencastManager::OnProcessAndGenerateNewScreencastsFinished(
-    const std::set<ash::PendingScreencast>& screencasts) {
+    const ash::PendingScreencastSet& screencasts) {
   // Return if pending screencasts didn't change.
   if (screencasts == pending_screencast_cache_)
     return;
