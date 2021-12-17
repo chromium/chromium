@@ -345,6 +345,7 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="4272631900155121838">Per eseguire la scansione di un codice QR, attiva la videocamera dalle impostazioni</translation>
 <translation id="4277990410970811858">Navigazione sicura</translation>
 <translation id="4281844954008187215">Termini di servizio</translation>
+<translation id="4304713468139749426">Gestione password</translation>
 <translation id="430793432425771671">Sincronizza tutto</translation>
 <translation id="4309403553630140242">Tocca due volte per ulteriori informazioni</translation>
 <translation id="430967081421617822">Dall'inizio</translation>
@@ -356,6 +357,7 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="4389019817280890563">Tocca per modificare la lingua.</translation>
 <translation id="4442550905108052454">Apri <ph name="BEGIN_BOLD" />Impostazioni<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Aggiungi lingua</translation>
+<translation id="4462491365653392320">Monitora prezzi nelle schede</translation>
 <translation id="4469418912670346607">Continua configurazione</translation>
 <translation id="4474494258097106883">Realizzato per il tuo iPhone</translation>
 <translation id="4476574785019001431">Impostazioni</translation>
@@ -419,6 +421,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4944543191714094452">Trova nella pagina…</translation>
 <translation id="4945756290001680296">Accedi alle impostazioni della password</translation>
 <translation id="4979397965658815378">Accedi con il tuo Account Google per avere preferiti, password, cronologia e altre impostazioni su tutti i tuoi dispositivi</translation>
+<translation id="4986678885919050584">Rimuovi da questo dispositivo</translation>
 <translation id="5005498671520578047">Copia password</translation>
 <translation id="5017828934289857214">Ricordamelo dopo</translation>
 <translation id="5037676449506322593">Seleziona tutto</translation>
@@ -520,6 +523,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5979837087407522202">Cerca password</translation>
 <translation id="5982717868370722439">Aggiungi i dati esistenti a <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Visitati di recente</translation>
+<translation id="5988097621740394599">Visualizza i cali di prezzo nelle tue schede.</translation>
 <translation id="5988851877894965432">Apri URL in Chrome</translation>
 <translation id="6012140227487808125">Crittografia…</translation>
 <translation id="6021332621416007159">Apri in...</translation>

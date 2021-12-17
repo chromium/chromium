@@ -178,6 +178,7 @@
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="120937472976628837">Envía información de los ventiladores</translation>
+<translation id="1212233008927724662">Inhabilitar la carga diferida de la WebUI de acceso</translation>
 <translation id="1216919699175573511">Habilitar compatibilidad con intercambios HTTP firmados (SXG)</translation>
 <translation id="1219695476179627719">Especifica si el dispositivo debe volver a la versión que se establece en <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, si ya ejecuta una versión más reciente.
 
@@ -486,6 +487,23 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="159946228300522107">Si estableces la política como verdadera, Chrome maximizará la primera ventana que se muestre en la primera ejecución.
 
       Si la estableces como falsa o no la estableces, Chrome maximizará la primera ventana siempre que el tamaño de la pantalla lo permita.</translation>
+<translation id="1600107337865729434">Esta política permite el agrupamiento en clústeres de agentes con clave de origen de forma predeterminada.
+
+      El encabezado del HTTP Origin-Agent-Cluster controla si un documento está
+      aislado en un clúster de agentes con clave de origen o bien en un
+      clúster con clave de sitio. Esto tiene repercusiones en la seguridad ya que un
+      clúster de agentes con clave de origen permite el aislamiento de documentos por origen. La consecuencia
+      visible de esto para el desarrollador es que el descriptor de acceso de document.domain ya no podrá
+      establecerse.
+
+      El comportamiento predeterminado cuando no se establece un encabezado Origin-Agent-Cluster
+      cambia en M101 de clave de sitio a clave de origen. Si habilitas
+      o no estableces la política, el navegador seguirá la nueva configuración predeterminada
+      de esa versión en adelante. Si la inhabilitas, se revierte este cambio y
+      los documentos que no contengan encabezados Origin-Agent-Cluster se asignarán a
+      los clústeres de agentes con clave de sitio. Como consecuencia, el descriptor de acceso de document.domain
+      podrá establecerse de forma predeterminada. Esto coincide con el comportamiento heredado.
+      </translation>
 <translation id="1600340610556453828">Si inhabilitas la política, <ph name="PRODUCT_OS_NAME" /> desactivará la conexión Wi-Fi y los usuarios no podrán cambiar esta acción.
 
       Si la habilitas o no la estableces, los usuarios podrán activar o desactivar la conexión Wi-Fi.</translation>
@@ -635,6 +653,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Consulta también <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.
 
       Nota: Esta configuración anulará <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, si se aplica.</translation>
+<translation id="1721304336924950970">Cargar la WebUI de acceso solo cuando sea necesario</translation>
 <translation id="172374442286684480">Permitir a todos los sitios establecer datos locales</translation>
 <translation id="1729169799290004131">Si estableces la política, se especificará el porcentaje de brillo de la pantalla y se desactivarán las funciones de brillo automático. Se ajustará el brillo inicial de la pantalla conforme al valor de la política, pero los usuarios podrán cambiar este valor.
 
@@ -718,6 +737,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
           Esta política es opcional. Si no se establece, la solicitud de búsqueda instantánea se enviará mediante el método GET.
 
           Esta política solo se respeta si se habilita la política "DefaultSearchProviderEnabled".</translation>
+<translation id="1850439894606905202">De forma predeterminada, los documentos se ubican en clústeres de agentes con clave de sitio. document.domain aún puede establecerse.</translation>
 <translation id="1852294065645015766">Permitir la reproducción automática de contenido multimedia</translation>
 <translation id="1859859319036806634">Advertencia: El resguardo de la versión de TLS se quitará de <ph name="PRODUCT_NAME" /> después de la versión 52 (alrededor de septiembre de 2016), y esta política dejará de funcionar.
 
@@ -1864,6 +1884,15 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="3152425128389603870">Habilitar el modo de escritorio unificado y activarlo de forma predeterminada</translation>
 <translation id="3159375329008977062">El usuario está habilitado para exportar o importar contenedores de Crostini mediante la IU</translation>
 <translation id="3164531087779621747">Imprimir con el modo PostScript</translation>
+<translation id="3165468162820163252">Esta política controla si la parte WebUI de la pantalla de acceso cargará al inicio o solo antes de que se muestre. Esta política se aplica a la pantalla de acceso.
+
+      Si la habilitas, la parte WebUI de la IU de acceso cargará solo antes de que se muestre. Esto acelera el acceso.
+
+      Si la inhabilitas, la parte WebUI de la pantalla de acceso siempre cargará al inicio (comportamiento heredado).
+
+      Si no la estableces, la función kEnableLazyLoginWebUILoading controlará el comportamiento.
+
+      Se debe quitar esta política después del lanzamiento completo de kEnableLazyLoginWebUILoading.</translation>
 <translation id="3165808775394012744">Se incluyen estas políticas aquí para que sea más fácil quitarlas.</translation>
 <translation id="3166210414652928099">Permite que el usuario utilice apps para Android de fuentes no confiables</translation>
 <translation id="316778957754360075">Esta opción se eliminó a partir de la versión 29 de <ph name="PRODUCT_NAME" />. La forma recomendada de configurar colecciones de aplicaciones o extensiones alojadas por una organización es incluir el sitio que aloja los paquetes CRX en la política ExtensionInstallSources y colocar vínculos de descarga directa a los paquetes en una página web. Se puede crear un selector para esa página web con la política ExtensionInstallForcelist.</translation>
@@ -4011,6 +4040,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       Si se establece como falsa o no se establece, se inhabilitarán las funciones de Web Components v0 de forma predeterminada, a partir de la versión M80.
 
       Después de Chrome 84, se quitará esta política.</translation>
+<translation id="575647238840663288">De forma predeterminada, es posible que los documentos se ubiquen en clústeres de agentes con clave de origen . document.domain no puede establecerse para esos documentos.</translation>
 <translation id="5756680608782814094">Envía información sobre los VPD de un dispositivo.
 
       Si estableces el valor "False" para la política o no la estableces, no se enviará la información.
@@ -4788,6 +4818,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Para especificar un hash de <ph name="SUBJECT_PUBLIC_KEY_INFO" />, se debe vincular el nombre del algoritmo del hash, una barra y la codificación de Base64 de ese algoritmo aplicada al campo <ph name="SUBJECT_PUBLIC_KEY_INFO" /> codificado con DER del certificado específico. Esta codificación de Base64 tiene el mismo formato que una SPKI Fingerprint. El único algoritmo de hash compatible es sha256; se ignorarán los demás.
 
       Si no estableces esta política, <ph name="PRODUCT_NAME" /> considerará que no son de confianza los certificados que no se divulguen, a pesar de requerir divulgación mediante el Certificado de transparencia.</translation>
+<translation id="6704445641918520643">Habilitar la carga diferida de la WebUI de acceso</translation>
 <translation id="6704515759227307131">Esta política es obsoleta y se reemplazó por AdvancedProtectionAllowed.
 
       Esta política controla si los usuarios inscritos en el Programa de Protección Avanzada pueden enviar sus descargas a Google para comprobar que no incluyan software malicioso. Si se establece como verdadera o no se establece, se les pedirá a los usuarios inscritos que envíen sus archivos a Google para un análisis en profundidad. Si el usuario selecciona "Analizar", se enviará la descarga a Google. Si se establece como falsa, no se les pedirá a los usuarios que realicen ninguna acción y no se enviarán sus descargas a Google.</translation>
@@ -6528,6 +6559,11 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="8671119576957984818">Habilitar el centro para compartir el escritorio</translation>
+<translation id="8671314659400112135">Si habilitas la política o no la estableces, <ph name="PRODUCT_NAME" /> podrá aplicar la mitigación adicional de seguridad del punto de extensión para bloquear los puntos de extensión heredados en el proceso del navegador.
+
+      Si la inhabilitas, se reducirá la estabilidad y la seguridad de <ph name="PRODUCT_NAME" />, ya que se permitirá cargar código desconocido y potencialmente hostil en el proceso del navegador de <ph name="PRODUCT_NAME" />. Desactiva la política solo si hay problemas de compatibilidad con software de terceros que deba ejecutarse en el proceso del navegador de <ph name="PRODUCT_NAME" />.
+
+      Nota: Obtén más información sobre las políticas de mitigación de procesos ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="8672321184841719703">Versión de destino para las actualizaciones automáticas</translation>
 <translation id="867410340948518937">U2F (segundo factor universal)</translation>
 <translation id="8676959842615154675">Si habilitas la política, el host de acceso remoto comparará el nombre del usuario local con el que está asociado el host y el nombre de la Cuenta de Google registrado como el propietario del host ("juanperez" si el host le pertenece a "juanperez@ejemplo.com"). No se iniciará el host si el nombre del propietario del host es diferente del nombre del usuario local con el que está asociado el host. Para asociar de forma forzosa la Cuenta de Google del propietario con un dominio específico, utiliza la política con <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
@@ -6798,6 +6834,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8948062138228904066">Lista de servidores de autenticación habilitados</translation>
 <translation id="8951350807133946005">Configurar el directorio de caché de disco</translation>
 <translation id="8955719471735800169">Volver al principio</translation>
+<translation id="8956312248048980644">Permitir el agrupamiento en clústeres de agentes con clave de origen de forma predeterminada</translation>
 <translation id="8959992920425111821">Configuración predeterminada</translation>
 <translation id="8967125680876068695">Las Apps de Chrome dejaron de estar disponibles en Windows, Mac y Linux.
       Si se habilita esta política, <ph name="PRODUCT_NAME" /> seguirá permitiendo que se ejecuten las Apps de Chrome en estas plataformas hasta la fecha final en la que se quite su compatibilidad con todas las plataformas (junio de 2022).

@@ -242,6 +242,7 @@
 <translation id="7398801000654795464">‏התחברת ל-Chrome כ-<ph name="USER_EMAIL_ADDRESS" />. יש להשתמש באותו חשבון כדי להיכנס שוב.</translation>
 <translation id="7408085963519505752">‏תנאים עבור מערכת ההפעלה של Chrome</translation>
 <translation id="7419046106786626209">‏מערכת ההפעלה של Chrome לא הצליחה לסנכרן את הנתונים שלך מפני שהסנכרון אינו זמין עבור הדומיין שלך.</translation>
+<translation id="7481213027396403996">‏רוצה להשיג את רמת האבטחה הגבוהה ביותר של Chrome?</translation>
 <translation id="7486227612705979895">‏Chrome ייגש ל-Drive שלך כדי להציג הצעות בשורת כתובת האתר</translation>
 <translation id="7535429826459677826">‏גרסת הפיתוח של Google Chrome</translation>
 <translation id="7573289029918943991">‏כדי לראות אם המכשיר שלך מעודכן, יש לעבור אל <ph name="LINK_BEGIN" />הגדרות Chrome OS<ph name="LINK_END" /></translation>
@@ -300,6 +301,7 @@
 <translation id="8862326446509486874">אין לך זכויות שמתאימות להתקנה ברמת המערכת. יש לנסות להפעיל שוב את המתקין כמנהל מערכת.</translation>
 <translation id="8914504000324227558">‏הפעלה מחדש של Chrome</translation>
 <translation id="8922193594870374009">‏כדי לשלוח מספר מ-<ph name="ORIGIN" /> לטלפון Android, יש להיכנס אל Chrome בשני המכשירים.</translation>
+<translation id="8927704157641862988">‏התאמה אישית של העדפות הפרטיות הכי חשובות מבחינת Chrome. המדריך הזה לא כולל את כל ההגדרות והאפשרויות.</translation>
 <translation id="8986207147630327271">בחרת להוסיף פרופיל עבודה לדפדפן זה ולתת למנהל המערכת שליטה רק על פרופיל העבודה.</translation>
 <translation id="8999208279178790196">{0,plural, =0{‏יש עדכון זמין ל-Chrome}=1{‏יש עדכון זמין ל-Chrome}two{‏עדכון ל-Chrome זמין כבר # ימים}many{‏עדכון ל-Chrome זמין כבר # ימים}other{‏עדכון ל-Chrome זמין כבר # ימים}}</translation>
 <translation id="9026991721384951619">‏מערכת ההפעלה של Chrome לא הצליחה לסנכרן את הנתונים שלך מפני שפרטי הכניסה של חשבונך אינם מעודכנים.</translation>

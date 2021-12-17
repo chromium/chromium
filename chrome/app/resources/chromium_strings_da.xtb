@@ -109,6 +109,7 @@
 <translation id="4271805377592243930">Få hjælp til Chromium</translation>
 <translation id="4285930937574705105">Installationen mislykkedes på grund af en ikke-specificeret fejl. Hvis Chromium kører, skal du lukke programmet og prøve igen.</translation>
 <translation id="4407044323746248786">Vil du afslutte Chromium alligevel?</translation>
+<translation id="4414390922528416758">Tilpas de privatlivsindstillinger, som Chromium anser for at være de vigtigste. Denne vejledning gennemgår ikke alle indstillinger og valgmuligheder.</translation>
 <translation id="4415566066719264597">Lad Chromium køre i baggrunden</translation>
 <translation id="4423735387467980091">Tilpas og kontrollér Chromium</translation>
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
@@ -296,5 +297,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="9214764063801632699">Chromium OS-system</translation>
 <translation id="93478295209880648">Chromium fungerer muligvis ikke korrekt på grund af manglende understøttelse i Windows XP og Windows Vista</translation>
 <translation id="965162752251293939">Hvem bruger Chromium?</translation>
+<translation id="967427899662692980">Få Chromiums stærkeste beskyttelse</translation>
 <translation id="985602178874221306">Forfatterne til Chromium</translation>
 </translationbundle>

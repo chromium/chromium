@@ -178,6 +178,7 @@
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="120937472976628837">Melaporkan info kipas</translation>
+<translation id="1212233008927724662">Nonaktifkan pemuatan WebUI Login Lambat.</translation>
 <translation id="1216919699175573511">Aktifkan dukungan Signed HTTP Exchange (SXG)</translation>
 <translation id="1219695476179627719">Menentukan apakah perangkat harus di-rollback ke versi yang disetel oleh <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> jika telah menjalankan versi lebih baru.
 
@@ -485,6 +486,23 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="159946228300522107">Jika kebijakan ditetapkan ke Benar (True), Chrome akan memaksimalkan jendela pertama yang ditampilkan saat pertama kali dijalankan.
 
       Jika kebijakan ditetapkan ke Salah (False) atau tidak ditetapkan, Chrome mungkin akan memaksimalkan jendela pertama, tergantung ukuran layar.</translation>
+<translation id="1600107337865729434">Kebijakan ini mengizinkan pengelompokan cluster agen dengan kunci asal secara default.
+
+      Header HTTP Origin-Agent-Cluster: mengontrol apakah dokumen
+      diisolasi di cluster agen dengan kunci asal atau di cluster agen
+      dengan kunci situs. Hal ini berdampak pada keamanan karena cluster agen dengan kunci asal
+      memungkinkan isolasi dokumen menurut asal. Akibatnya,
+      developer tidak lagi dapat menyetel pengakses
+      document.domain.
+
+      Jika tidak ada header Origin-Agent-Cluster: yang disetel,
+      perilaku default akan berubah dari kunci situs ke kunci asal di M101. Jika kebijakan ini
+      disetel ke aktif atau tidak disetel, browser akan mengikuti perilaku default baru ini mulai versi
+      tersebut. Jika kebijakan ini disetel ke nonaktif, perubahan tersebut akan diurungkan dan
+      dokumen tanpa header Origin-Agent-Cluster: akan ditetapkan ke
+      cluster agen dengan kunci situs. Dengan begitu, pengakses document.domain
+      tetap dapat disetel secara default. Perilaku ini cocok dengan perilaku lama.
+      </translation>
 <translation id="1600340610556453828">Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_OS_NAME" /> akan menonaktifkan Wi-Fi, dan pengguna tidak dapat mengubahnya.
 
       Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan dapat mengaktifkan atau menonaktifkan Wi-Fi.</translation>
@@ -634,6 +652,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Lihat juga <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.
 
       Catatan: Setelan ini akan menggantikan <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, jika ada.</translation>
+<translation id="1721304336924950970">Memuat WebUI Login hanya jika diperlukan.</translation>
 <translation id="172374442286684480">Izinkan semua situs menyetel data lokal</translation>
 <translation id="1729169799290004131">Menyetel kebijakan akan menentukan persentase kecerahan layar dan menonaktifkan fitur kecerahan otomatis. Kecerahan layar awal akan disesuaikan dengan nilai kebijakan, tetapi pengguna tidak dapat mengubahnya.
 
@@ -717,6 +736,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
           Kebijakan ini bersifat opsional. Jika tidak disetel, permintaan penelusuran instan akan dikirim menggunakan metode GET.
 
           Kebijakan ini hanya dipatuhi jika kebijakan 'DefaultSearchProviderEnabled' diaktifkan.</translation>
+<translation id="1850439894606905202">Secara default, dokumen ditempatkan di cluster agen dengan kunci situs. document.domain tetap dapat disetel.</translation>
 <translation id="1852294065645015766">Izinkan pemutaran otomatis media</translation>
 <translation id="1859859319036806634">Peringatan: TLS versi pengganti akan dihapus dari <ph name="PRODUCT_NAME" /> setelah versi 52 (sekitar bulan September 2016) dan kebijakan ini tidak akan berlaku lagi.
 
@@ -1868,6 +1888,15 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3152425128389603870">Membuat Desktop Terpadu tersedia dan aktif secara default</translation>
 <translation id="3159375329008977062">Pengguna diaktifkan untuk mengekspor/mengimpor container Crostini melalui UI</translation>
 <translation id="3164531087779621747">Mode PostScript Cetak</translation>
+<translation id="3165468162820163252">Kebijakan ini mengontrol apakah bagian WebUI pada layar login akan selalu dimuat di awal atau hanya sebelum ditampilkan. Kebijakan ini berlaku untuk layar login.
+
+      Jika kebijakan ini disetel ke aktif, bagian WebUI pada UI login akan dimuat hanya sebelum ditampilkan. Hal ini akan mempercepat proses login.
+
+      Jika kebijakan ini disetel ke nonaktif, bagian WebUI pada layar login akan selalu dimuat saat booting (perilaku lama).
+
+      Jika kebijakan ini tidak disetel, perilaku akan dikontrol oleh fitur kEnableLazyLoginWebUILoading.
+
+      Kebijakan ini akan dihapus setelah kEnableLazyLoginWebUILoading diluncurkan sepenuhnya.</translation>
 <translation id="3165808775394012744">Kebijakan ini disertakan di sini untuk memudahkan penghapusannya.</translation>
 <translation id="3166210414652928099">Mengizinkan pengguna menggunakan aplikasi Android dari sumber yang tidak tepercaya</translation>
 <translation id="316778957754360075">Setelan ini tidak lagi digunakan sejak <ph name="PRODUCT_NAME" /> versi 29. Cara yang disarankan untuk menyiapkan koleksi aplikasi/ekstensi yang dihosting organisasi adalah dengan menyertakan situs yang menghosting paket CRX di ExtensionInstallSources dan meletakkan link download langsung di paket dalam halaman web. Peluncur untuk halaman web tersebut dapat dibuat menggunakan kebijakan ExtensionInstallForcelist.</translation>
@@ -4023,6 +4052,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan ini ditetapkan ke False atau tidak ditetapkan, fitur Web Components v0 akan dinonaktifkan secara default, mulai dari M80.
 
       Kebijakan ini akan dihapus setelah Chrome 84.</translation>
+<translation id="575647238840663288">Secara default, dokumen dapat ditempatkan di cluster agen dengan kunci asal. document.domain tidak dapat disetel untuk dokumen semacam ini.</translation>
 <translation id="5756680608782814094">Melaporkan informasi VPD perangkat.
 
       Jika kebijakan ditetapkan ke salah (false) atau tidak ditetapkan, informasi tidak akan dilaporkan.
@@ -4801,6 +4831,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Tentukan hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> dengan menggabungkan nama algoritme hash, garis miring, dan encoding Base64 dari algoritme hash yang diterapkan ke <ph name="SUBJECT_PUBLIC_KEY_INFO" /> yang dienkode DER dari sertifikat yang ditentukan. Format encoding Base64 cocok dengan Sidik Jari SPKI. Satu-satunya algoritme hash yang dikenali adalah sha256; selain itu diabaikan.
 
       Jika kebijakan tidak ditetapkan, itu berarti saat sertifikat yang memerlukan pengungkapan melalui Transparansi Sertifikat tidak diungkapkan, <ph name="PRODUCT_NAME" /> tidak akan memercayai sertifikat tersebut.</translation>
+<translation id="6704445641918520643">Aktifkan pemuatan WebUI Login Lambat.</translation>
 <translation id="6704515759227307131">Kebijakan ini tidak digunakan lagi, dan telah diganti dengan AdvancedProtectionAllowed.
 
       Kebijakan ini mengontrol apakah pengguna yang terdaftar dalam Program Perlindungan Lanjutan diizinkan mengirimkan hasil download mereka ke Google untuk pemindaian malware. Jika ditetapkan ke Benar atau tidak ditetapkan, pengguna terdaftar akan diminta mengirimkan file mereka ke Google untuk pemindaian mendalam. Jika pengguna memilih 'Pindai', hasil download mereka akan dikirim ke Google. Jika ditetapkan ke Salah, pengguna tidak akan diminta mengirimkan hasil download ke Google.</translation>
@@ -6521,6 +6552,11 @@ Kebijakan akan dihapus pada M75.</translation>
 
       Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="8671119576957984818">Aktifkan hub berbagi desktop</translation>
+<translation id="8671314659400112135">Jika kebijakan disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> akan diizinkan menerapkan mitigasi keamanan titik ekstensi tambahan untuk memblokir titik ekstensi lama dalam Proses browser.
+
+      Menyetel kebijakan ke Nonaktif akan merugikan keamanan dan stabilitas <ph name="PRODUCT_NAME" /> karena kode yang tidak dikenal dan berpotensi berbahaya dapat dimuat dalam proses browser <ph name="PRODUCT_NAME" />. Nonaktifkan kebijakan hanya jika terdapat masalah kompatibilitas dengan software pihak ketiga yang harus berjalan dalam proses browser <ph name="PRODUCT_NAME" />.
+
+      Catatan: Baca selengkapnya tentang Kebijakan mitigasi proses ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
 <translation id="8672321184841719703">Versi Update Otomatis Target</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
 <translation id="8676959842615154675">Jika kebijakan disetel ke Aktif, host akses jarak jauh akan membandingkan nama pengguna lokal yang dikaitkan dengan host dan nama Akun Google yang terdaftar sebagai pemilik host (misalnya, "johan" jika host dimiliki oleh "johan@example.com"). Host ini tidak akan dimulai jika nama pemilik host berbeda dengan nama pengguna lokal yang dikaitkan dengan host. Gunakan kebijakan dengan <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> untuk menegaskan bahwa Akun Google pemilik dikaitkan dengan domain tertentu.
@@ -6791,6 +6827,7 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8948062138228904066">Daftar server autentikasi yang diizinkan</translation>
 <translation id="8951350807133946005">Setel direktori cache disk</translation>
 <translation id="8955719471735800169">Kembali ke atas</translation>
+<translation id="8956312248048980644">Mengizinkan pengelompokan cluster agen dengan kunci asal secara default.</translation>
 <translation id="8959992920425111821">Konfigurasi default</translation>
 <translation id="8967125680876068695">Aplikasi Chrome tidak digunakan lagi di Windows, Mac, dan Linux.
       Jika kebijakan ini diaktifkan, <ph name="PRODUCT_NAME" /> akan terus mengizinkan Aplikasi Chrome dijalankan di platform berikut hingga tanggal akhir saat dukungan Aplikasi Chrome dihapus di semua platform, yakni Juni 2022.

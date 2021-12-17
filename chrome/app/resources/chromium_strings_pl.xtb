@@ -107,6 +107,7 @@
 <translation id="4271805377592243930">Pomoc do Chromium</translation>
 <translation id="4285930937574705105">Instalacja nie powiodła się z powodu nieokreślonego błędu. Jeśli Chromium jest aktualnie uruchomiony, zamknij go i spróbuj ponownie.</translation>
 <translation id="4407044323746248786">Zamknąć Chromium mimo to?</translation>
+<translation id="4414390922528416758">Dostosuj opcje prywatności, które Chromium uważa za najważniejsze. Ten przewodnik nie uwzględnia wszystkich ustawień ani opcji.</translation>
 <translation id="4415566066719264597">Zezwalaj Chromium na działanie w tle</translation>
 <translation id="4423735387467980091">Dostosowywanie i kontrolowanie Chromium</translation>
 <translation id="4427306783828095590">Silniejsza ochrona lepiej chroni przed phishingiem i złośliwym oprogramowaniem</translation>
@@ -233,6 +234,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7549178288319965365">System operacyjny Chromium – informacje</translation>
 <translation id="7561906087460245826">Wyczyść też dane z Chromium (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Jeśli ustawienia nie widać na tej stronie, zajrzyj do <ph name="LINK_BEGIN" />ustawień systemu operacyjnego Chromium<ph name="LINK_END" /></translation>
+<translation id="7597596667193879455">Na swoim koncie włączyłeś(-aś) Ulepszone Bezpieczne przeglądanie. Zacznij korzystać z tej funkcji w Chromium.</translation>
 <translation id="761356813943268536">Chromium używa Twojej kamery i mikrofonu.</translation>
 <translation id="7617377681829253106">Przeglądarka Chromium jest jeszcze lepsza</translation>
 <translation id="7686590090926151193">Chromium nie jest domyślną przeglądarką</translation>
@@ -292,5 +294,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="9214764063801632699">System operacyjny Chromium</translation>
 <translation id="93478295209880648">Chromium może działać nieprawidłowo, bo nie jest już zgodny z Windows XP ani Windows Vista</translation>
 <translation id="965162752251293939">Kto używa Chromium?</translation>
+<translation id="967427899662692980">Korzystaj z najlepszych zabezpieczeń Chromium</translation>
 <translation id="985602178874221306">Autorzy Chromium</translation>
 </translationbundle>

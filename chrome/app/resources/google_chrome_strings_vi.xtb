@@ -246,6 +246,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7398801000654795464">Bạn đã đăng nhập vào Chrome là <ph name="USER_EMAIL_ADDRESS" />. Vui lòng sử dụng cùng tài khoản để đăng nhập lại.</translation>
 <translation id="7408085963519505752">Điều khoản của Chrome OS</translation>
 <translation id="7419046106786626209">Chrome OS không thể đồng bộ hóa dữ liệu của bạn vì Đồng bộ hóa không khả dụng với miền của bạn.</translation>
+<translation id="7481213027396403996">Có được chế độ bảo mật mạnh nhất của Chrome</translation>
 <translation id="7486227612705979895">Chrome sẽ truy cập vào Drive của bạn để đưa ra đề xuất trên thanh địa chỉ</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Để kiểm tra xem thiết bị của bạn đã cập nhật hay chưa, hãy chuyển đến phần <ph name="LINK_BEGIN" />Cài đặt Chrome OS<ph name="LINK_END" /></translation>
@@ -304,6 +305,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8862326446509486874">Bạn không có quyền thích hợp để cài đặt cấp hệ thống. Thử chạy lại trình cài đặt với vai trò Quản trị viên.</translation>
 <translation id="8914504000324227558">Chạy lại Chrome</translation>
 <translation id="8922193594870374009">Để gửi số điện thoại từ <ph name="ORIGIN" /> đến điện thoại Android của bạn, hãy đăng nhập vào Chrome trên cả hai thiết bị.</translation>
+<translation id="8927704157641862988">Tuỳ chỉnh những lựa chọn về quyền riêng tư mà Chrome coi là quan trọng nhất. Hướng dẫn này không bao gồm mọi chế độ cài đặt và tuỳ chọn.</translation>
 <translation id="8986207147630327271">Bạn đang thêm một hồ sơ công việc vào trình duyệt này và chỉ quản trị viên của bạn mới có quyền kiểm soát hồ sơ công việc này.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Đã có bản cập nhật Chrome}=1{Đã có bản cập nhật Chrome}other{Đã có bản cập nhật Chrome từ # ngày trước}}</translation>
 <translation id="9026991721384951619">Chrome OS không thể đồng bộ hóa dữ liệu của bạn do chi tiết đăng nhập tài khoản của bạn đã lỗi thời.</translation>

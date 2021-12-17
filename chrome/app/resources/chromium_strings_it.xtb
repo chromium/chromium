@@ -109,6 +109,7 @@
 <translation id="4271805377592243930">Ricevi assistenza per Chromium</translation>
 <translation id="4285930937574705105">Installazione non riuscita a causa di un errore imprecisato. Se Chromium è in esecuzione, chiudilo e riprova.</translation>
 <translation id="4407044323746248786">Vuoi uscire comunque da Chromium?</translation>
+<translation id="4414390922528416758">Personalizza le opzioni relative alla privacy considerate più importanti da Chromium. Questa guida non include tutte le impostazioni e opzioni.</translation>
 <translation id="4415566066719264597">Lascia Chromium in esecuzione in background</translation>
 <translation id="4423735387467980091">Personalizza e controlla Chromium</translation>
 <translation id="4427306783828095590">La protezione avanzata blocca malware e tentativi di phishing con maggiore efficacia</translation>
@@ -235,6 +236,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7549178288319965365">Informazioni su Chromium OS</translation>
 <translation id="7561906087460245826">Cancella anche i dati di Chromium (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Se un'impostazione non viene mostrata in questa pagina, cercala nelle <ph name="LINK_BEGIN" />impostazioni del sistema operativo Chromium<ph name="LINK_END" />.</translation>
+<translation id="7597596667193879455">Hai attivato la Navigazione sicura avanzata nel tuo account. Ora attivala per Chromium.</translation>
 <translation id="761356813943268536">Chromium sta utilizzando videocamera e microfono.</translation>
 <translation id="7617377681829253106">Da oggi Chromium è ancora meglio</translation>
 <translation id="7686590090926151193">Chromium non è il browser predefinito</translation>
@@ -294,5 +296,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="9214764063801632699">Sistema Chromium OS</translation>
 <translation id="93478295209880648">Chromium potrebbe non funzionare correttamente perché non è più supportato su Windows XP o Windows Vista</translation>
 <translation id="965162752251293939">Chi usa Chromium?</translation>
+<translation id="967427899662692980">Usa la funzionalità di sicurezza più efficace di Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

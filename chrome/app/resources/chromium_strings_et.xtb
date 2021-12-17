@@ -109,6 +109,7 @@
 <translation id="4271805377592243930">Chromiumi puhul abi hankimine</translation>
 <translation id="4285930937574705105">Installimine ebaõnnestus tundmatu vea tõttu. Kui Chromium praegu töötab, siis sulgege see ja proovige uuesti.</translation>
 <translation id="4407044323746248786">Kas väljuda Chromiumist ikkagi?</translation>
+<translation id="4414390922528416758">Kohandage privaatsusvalikuid, mida Chromium peab kõige olulisemaks. See juhend ei hõlma igat seadet ja valikut.</translation>
 <translation id="4415566066719264597">Luba Chromiumil taustal töötada</translation>
 <translation id="4423735387467980091">Chromiumi kohandamine ja juhtimine</translation>
 <translation id="4427306783828095590">Täiustatud kaitse aitab andmepüüki ja pahavara paremini blokeerida</translation>
@@ -295,5 +296,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="9214764063801632699">Chromium OS-i süsteem</translation>
 <translation id="93478295209880648">Chromium ei pruugi õigesti töötada, kuna seda ei toetata enam Windows XP-s ega Windows Vistas</translation>
 <translation id="965162752251293939">Kes kasutab Chromiumi?</translation>
+<translation id="967427899662692980">Hankige Chromiumi parimad turbefunktsioonid</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

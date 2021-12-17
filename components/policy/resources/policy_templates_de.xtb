@@ -178,6 +178,7 @@
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
 <translation id="120937472976628837">Informationen zum Lüfter melden</translation>
+<translation id="1212233008927724662">Laden von Lazy Login WebUI deaktivieren.</translation>
 <translation id="1216919699175573511">Unterstützung für Signed HTTP Exchange (SXG) aktivieren</translation>
 <translation id="1219695476179627719">Gibt an, ob das Gerät auf die von <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> festgelegte Version zurückgesetzt werden soll, obwohl bereits eine neuere Version ausgeführt wird.
 
@@ -484,6 +485,23 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
 <translation id="159946228300522107">Wenn für diese Richtlinie "True" festgelegt ist, maximiert Chrome beim ersten Start das erste angezeigte Fenster.
 
       Ist sie auf "False" gesetzt oder nicht konfiguriert, kann das erste Fenster von Chrome maximiert werden. Das richtet sich nach der Displaygröße.</translation>
+<translation id="1600107337865729434">Diese Richtlinie erlaubt standardmäßig das an Ursprünge gebundene Agent-Clustering.
+
+      Der HTTP-Header „Origin-Agent-Cluster“ legt fest, ob ein Dokument
+      in einem an Ursprünge gebundenen Agent-Cluster oder einem an Websites gebundenen Agent-Cluster
+      isoliert wird. Dies hat Auswirkungen auf die Sicherheit, da an Ursprünge gebundene Agent-Cluster
+      die Isolation von Dokumenten nach dem Ursprung erlauben. Die Folge für Entwickler ist,
+      dass die Zugriffsfunktion „document.domain“ nicht mehr
+      festgelegt werden kann.
+
+      Das Standardverhalten – wenn der Header „Origin-Agent-Cluster“ nicht konfiguriert ist – 
+      ändert sich in M101 von „an Websites gebunden“ zu „an Ursprünge gebunden“. Wenn diese Richtlinie
+      aktiviert oder nicht konfiguriert ist, folgt der Browser ab dieser Version
+      dem neuen Standardverhalten. Wenn diese Richtlinie deaktiviert ist, wird die Änderung rückgängig gemacht und
+      Dokumente ohne den Header „Origin-Agent-Cluster“ werden
+      an Websites gebundene Agent-Clustern zugewiesen. Die Zugriffsfunktion „document.domain“
+      lässt sich dann standardmäßig konfigurieren. Dies entspricht dem Verhalten älterer Versionen.
+      </translation>
 <translation id="1600340610556453828">Wenn die Richtlinie deaktiviert ist, deaktiviert <ph name="PRODUCT_OS_NAME" /> das WLAN und Nutzer können dies nicht ändern.
 
       Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer das WLAN aktivieren und deaktivieren.</translation>
@@ -633,6 +651,7 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
       Siehe auch <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.
 
       Hinweis: Sofern vorhanden, wird <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> mit dieser Einstellung überschrieben.</translation>
+<translation id="1721304336924950970">Login WebUI nur bei Bedarf laden.</translation>
 <translation id="172374442286684480">Speichern von lokalen Daten für alle Websites zulassen</translation>
 <translation id="1729169799290004131">Wenn die Richtlinie konfiguriert ist, wird die Bildschirmhelligkeit in % festgelegt und Funktionen zur automatischen Anpassung der Bildschirmhelligkeit werden deaktiviert. Die Bildschirmhelligkeit wird anfangs an den Richtlinienwert angepasst, aber der Nutzer kann sie später ändern.
 
@@ -716,6 +735,7 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
           Diese Richtlinie ist optional. Wenn sie nicht festlegt ist, wird die Anfrage für die Suche im Voraus mithilfe der GET-Methode gesendet.
 
           Diese Richtlinie wird nur berücksichtigt, wenn die Richtlinie "DefaultSearchProviderEnabled" aktiviert ist.</translation>
+<translation id="1850439894606905202">Standardmäßig werden Dokumente zu an Websites gebundene Agent-Cluster hinzugefügt – die Zugriffsfunktion „document.domain“ kann weiterhin konfiguriert werden.</translation>
 <translation id="1852294065645015766">Autoplay von Medien erlauben</translation>
 <translation id="1859859319036806634">Achtung: Der TLS-Versions-Fallback wird nach Version 52 (ungefähr im September 2016) aus <ph name="PRODUCT_NAME" /> entfernt. Diese Richtlinie funktioniert dann nicht mehr.
 
@@ -1848,6 +1868,15 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="3152425128389603870">Unified Desktop verfügbar machen und standardmäßig aktivieren</translation>
 <translation id="3159375329008977062">Nutzer darf Crostini-Container über die Benutzeroberfläche exportieren/importieren</translation>
 <translation id="3164531087779621747">Im PostScript-Modus drucken</translation>
+<translation id="3165468162820163252">Mit dieser Richtlinie wird festgelegt, ob der WebUI-Abschnitt des Anmeldebildschirms immer beim Start geladen wird oder erst kurz bevor er eingeblendet wird. Diese Richtlinie gilt für den Anmeldebildschirm.
+
+      Wenn die Richtlinie aktiviert ist, wird der WebUI-Abschnitt des Anmeldebildschirms erst kurz vor dem Einblenden geladen. Dadurch lässt sich der Anmeldevorgang beschleunigen.
+
+      Wenn die Richtlinie deaktiviert ist, wird der WebUI-Abschnitt des Anmeldebildschirms immer beim Start geladen (altes Standardverhalten).
+
+      Ist die Richtlinie nicht konfiguriert, wird das Verhalten von der Funktion „kEnableLazyLoginWebUILoading“ gesteuert.
+
+      Diese Richtlinie sollte entfernt werden, nachdem „kEnableLazyLoginWebUILoading“ vollständig eingeführt ist.</translation>
 <translation id="3165808775394012744">Diese Richtlinien sind hier verfügbar, damit sie einfach entfernt werden können.</translation>
 <translation id="3166210414652928099">Zulassen, dass Nutzer Android-Apps aus nicht vertrauenswürdigen Quellen verwenden</translation>
 <translation id="316778957754360075">Diese Einstellung wird ab <ph name="PRODUCT_NAME" />-Version 29 nicht mehr verwendet. Zur Einrichtung einer Sammlung mit Erweiterungen oder Apps, die von der Organisation gehostet wird, empfehlen wir, die Host-Website der CRX-Pakete in "ExtensionInstallSources" einzufügen und auf einer Webseite direkte Downloadlinks zu den Paketen bereitzustellen. Ein Launcher für diese Webseite kann mithilfe der Richtlinie "ExtensionInstallForcelist" erstellt werden.</translation>
@@ -3985,6 +4014,7 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
       Ist sie auf "False" gesetzt oder nicht konfiguriert, sind die Funktionen von Web Components v0 ab M80 standardmäßig deaktiviert.
 
       Diese Richtlinie wird nach Chrome 84 entfernt.</translation>
+<translation id="575647238840663288">Standardmäßig werden Dokumente zu an Ursprüngen gebundene Agent-Cluster hinzugefügt – die Funktion „document.domain“ kann für solche Dokumente nicht konfiguriert werden.</translation>
 <translation id="5756680608782814094">VPD-Informationen zu einem Gerät melden.
 
       Wenn die Richtlinie auf "false" gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
@@ -4762,6 +4792,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Geben Sie einen <ph name="SUBJECT_PUBLIC_KEY_INFO" />-Hash an, indem Sie Folgendes verketten: den Hash-Algorithmusnamen, das Zeichen "/" sowie die Base64-Codierung dieses Hash-Algorithmus, die auf das DER-codierte <ph name="SUBJECT_PUBLIC_KEY_INFO" /> des angegebenen Zertifikats angewendet wird. Die Base64-Codierung hat dasselbe Format wie ein SPKI-Fingerabdruck. Der einzige erkannte Hash-Algorithmus ist "sha256". Alle anderen werden ignoriert.
 
       Wenn die Richtlinie nicht konfiguriert ist, werden alle Zertifikate, für die eine Certificate Transparency-Offenlegung erforderlich ist und die nicht offengelegt werden, von <ph name="PRODUCT_NAME" /> als nicht vertrauenswürdig behandelt.</translation>
+<translation id="6704445641918520643">Laden von Lazy Login WebUI aktivieren.</translation>
 <translation id="6704515759227307131">Diese Richtlinie ist veraltet und wurde durch "AdvancedProtectionAllowed" ersetzt.
 
       Mit dieser Richtlinie wird festgelegt, ob Nutzer, die am erweiterten Sicherheitsprogramm teilnehmen, ihre heruntergeladenen Dateien für einen Malware-Scan an Google senden können. Wird die Richtlinie auf "true" gesetzt oder nicht konfiguriert, werden Nutzer dazu aufgefordert, ihre heruntergeladenen Dateien für einen Tiefenscan an Google zu senden. Wenn der Nutzer die Option zum Scannen auswählt, wird der Download an Google gesendet. Wird diese Richtlinie auf "false" gesetzt, werden Nutzer nicht dazu aufgefordert, ihre heruntergeladenen Dateien an Google zu senden.</translation>
@@ -6495,6 +6526,11 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verwaltet werden. Unter <ph name="MAC_OS_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden oder per MCX mit einer Domain verbunden sind.</translation>
 <translation id="8671119576957984818">Desktop-Freigabe-Hub aktivieren</translation>
+<translation id="8671314659400112135">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, darf <ph name="PRODUCT_NAME" /> die zusätzliche Risikominderung für Erweiterungspunkte anwenden, um alte Erweiterungspunkte im Browserprozess zu blockieren.
+
+      Wird die Richtlinie deaktiviert, hat dies negative Auswirkungen auf die Sicherheit und Stabilität von <ph name="PRODUCT_NAME" />, da dann unbekannter und potenziell schädlicher Code in den Browserprozess von <ph name="PRODUCT_NAME" /> geladen werden kann. Die Richtlinie sollte nur deaktiviert werden, wenn Kompatibilitätsprobleme mit Drittanbieter-Software auftreten, die innerhalb des Browserprozesses von <ph name="PRODUCT_NAME" /> ausgeführt werden muss.
+
+      Hinweis: Weitere Informationen zu Prozessschutzrichtlinien finden Sie unter https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
 <translation id="8672321184841719703">Automatische Aktualisierung auf Zielversion</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
 <translation id="8676959842615154675">Wenn diese Richtlinie aktiviert ist, vergleicht der Host für den Remotezugriff den Namen des mit dem Host verknüpften lokalen Nutzers mit dem Namen des Google-Kontos, das als Hosteigentümer registriert ist (z. B. „maxmustermann“, wenn der Hosteigentümer das Google-Konto „maxmustermann@beispiel.de“ ist). Dieser Host wird nicht gestartet, wenn der Name des Hosteigentümers vom Namen des mit dem Host verknüpften lokalen Nutzers abweicht. Wenn Sie erzwingen möchten, dass das Google-Konto des Eigentümers mit einer bestimmten Domain verknüpft ist, verwenden Sie die Richtlinie mit <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
@@ -6765,6 +6801,7 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8948062138228904066">Zulassungsliste für Authentifizierungsserver</translation>
 <translation id="8951350807133946005">Datenträger-Cache-Verzeichnis festlegen</translation>
 <translation id="8955719471735800169">Zurück nach oben</translation>
+<translation id="8956312248048980644">Diese Richtlinie erlaubt standardmäßig das an Ursprünge gebundene Agent-Clustering.</translation>
 <translation id="8959992920425111821">Standardkonfiguration</translation>
 <translation id="8967125680876068695">Chrome-Apps wurden für Windows, Mac und Linux eingestellt.
       Wenn diese Richtlinie aktiviert wird, erlaubt <ph name="PRODUCT_NAME" /> es, dass Chrome-Apps bis zu dem Datum im Juni 2022, an dem die Unterstützung für Chrome-Apps auf allen Plattformen beendet wird, auf diesen Plattformen ausgeführt werden.

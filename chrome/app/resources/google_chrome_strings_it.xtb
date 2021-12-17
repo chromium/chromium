@@ -240,6 +240,7 @@
 <translation id="7398801000654795464">Hai eseguito l'accesso a Chrome come <ph name="USER_EMAIL_ADDRESS" />. Utilizza lo stesso account per eseguire di nuovo l'accesso.</translation>
 <translation id="7408085963519505752">Termini di Chrome OS</translation>
 <translation id="7419046106786626209">Impossibile sincronizzare i dati in Chrome OS perché la sincronizzazione non è disponibile per il tuo dominio.</translation>
+<translation id="7481213027396403996">Usa la funzionalità di sicurezza più efficace di Chrome</translation>
 <translation id="7486227612705979895">Chrome accederà al tuo Drive per inserire suggerimenti nella barra degli indirizzi</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Per controllare se il tuo dispositivo è aggiornato, vai alle <ph name="LINK_BEGIN" />Impostazioni di Chrome OS<ph name="LINK_END" /></translation>
@@ -298,6 +299,8 @@
 <translation id="8862326446509486874">Non disponi dei diritti appropriati per l'installazione a livello di sistema. Prova a eseguire nuovamente il programma di installazione come Amministratore.</translation>
 <translation id="8914504000324227558">Riavvia Chrome</translation>
 <translation id="8922193594870374009">Per inviare un numero da <ph name="ORIGIN" /> al tuo telefono Android, accedi a Chrome su entrambi i dispositivi.</translation>
+<translation id="8927704157641862988">Personalizza le opzioni relative alla privacy considerate più importanti da Chrome. Questa guida non include tutte le impostazioni e opzioni.</translation>
+<translation id="8983720963221508955">Hai attivato la Navigazione sicura avanzata nel tuo account. Ora attivala per Chrome.</translation>
 <translation id="8986207147630327271">Stai per aggiungere a questo browser un profilo di lavoro che sarà controllato dal tuo amministratore.</translation>
 <translation id="8999208279178790196">{0,plural, =0{È disponibile un aggiornamento di Chrome}=1{È disponibile un aggiornamento di Chrome}one{È disponibile un aggiornamento di Chrome da # giorni}other{È disponibile un aggiornamento di Chrome da # giorni}}</translation>
 <translation id="9026991721384951619">Impossibile sincronizzare i dati in Chrome OS perché i dati di accesso dell'account sono obsoleti.</translation>

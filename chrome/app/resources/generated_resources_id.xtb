@@ -2518,6 +2518,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3557101512409028104">Setel pembatasan situs dan batas waktu pemakaian perangkat dengan Family Link</translation>
 <translation id="3559262020195162408">Gagal menginstal kebijakan di perangkat.</translation>
 <translation id="3559533181353831840">Sekitar <ph name="TIME_LEFT" /> lagi</translation>
+<translation id="3559697822483154494">Terima konfirmasi lewat getaran untuk tindakan seperti layar terpisah dan berpindah desktop.</translation>
 <translation id="3560034655160545939">&amp;Periksa ejaan</translation>
 <translation id="3562423906127931518">Proses ini dapat memerlukan waktu beberapa menit. Menyiapkan container Linux.</translation>
 <translation id="3562655211539199254">Lihat tab Chrome terbaru dari ponsel</translation>
@@ -4918,6 +4919,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6112931163620622315">Periksa ponsel Anda</translation>
 <translation id="6113434369102685411">Setel mesin telusur default untuk browser Chrome dan Peluncur <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Untuk menggunakan Smart Lock, beralihlah ke profil pengguna utama di ponsel Anda</translation>
+<translation id="611684075852771314">Log ini telah disimpan di File Saya sebagai</translation>
 <translation id="6116921718742659598">Ubah setelan masukan dan bahasa</translation>
 <translation id="6119927814891883061">Beri nama perangkat untuk <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Pasang pin halaman ini ke layar Awal...</translation>
@@ -5694,6 +5696,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6930036377490597025">Kunci keamanan eksternal atau sensor dalam perangkat</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Ekstensi telah ditolak}other{# ekstensi telah ditolak}}</translation>
 <translation id="6930321203306643451">Upgrade selesai</translation>
+<translation id="6931690462168617033">Kekuatan klik</translation>
 <translation id="6935286146439255109">Baki kertas tidak ada</translation>
 <translation id="693807610556624488">Operasi menulis melebihi panjang maksimum atribut ke: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">Anda memiliki 1 printer tersimpan.</translation>
@@ -6824,6 +6827,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8064279191081105977">Grup <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Dialog Koneksi</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
+<translation id="8070662218171013510">Info via sentuhan</translation>
 <translation id="8071432093239591881">Cetak sebagai gambar</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Data aplikasi dapat berupa data apa pun yang telah disimpan oleh aplikasi (berdasarkan setelan developer), termasuk data seperti kontak, pesan, dan foto.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Data cadangan tidak akan mengurangi kuota penyimpanan Drive anak Anda.<ph name="END_PARAGRAPH2" />

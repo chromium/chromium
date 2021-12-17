@@ -412,6 +412,7 @@
            • Kukilər və digər müvəqqəti sayt datası silinəcək
             <ph name="LINE_BREAKS" />
            Əlfəcinlər, tarixçə və yadda saxlanılmış parollara heç bir təsir göstərilməyəcək.</translation>
+<translation id="1425233109861512854">Giriş kodu tanınmadı</translation>
 <translation id="1426410128494586442">Bəli</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> bloklanıb</translation>
 <translation id="1426870617281699524">Yenidən Cəhd Edin düyməsinə klikləyin və kompüterdə bildiriş əldə edin</translation>
@@ -576,6 +577,7 @@
 <translation id="1593926297800505364">Ödəniş üsulunu yadda saxlayın</translation>
 <translation id="1595492813686795610">Linux güncəllənir</translation>
 <translation id="1596286373007273895">Əlçatan</translation>
+<translation id="1596709061955594992">Bluetooth deaktivdir. Əlçatan cihazları görmək üçün Bluetooth'u aktiv edin.</translation>
 <translation id="1598233202702788831">Güncəlləmələr administratorunuz tərəfindən deaktiv edildi.</translation>
 <translation id="1600857548979126453">Səhifə debaqlayıcı bazasına daxil olun</translation>
 <translation id="1601560923496285236">Tətbiq edin</translation>
@@ -1128,6 +1130,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2148892889047469596">Yayım paneli</translation>
 <translation id="2149973817440762519">Əlfəcinə düzəliş edin</translation>
 <translation id="2150139952286079145">Axtarış istiqamətləri</translation>
+<translation id="2150491840563706000">Bu displeydə yayımlamaq icazəniz yoxdur</translation>
 <translation id="2150661552845026580">"<ph name="EXTENSION_NAME" />" əlavə edilsin?</translation>
 <translation id="2151576029659734873">Yanlış panel indeksi daxil edildi.</translation>
 <translation id="2152281589789213846">Prolfinizə printerlər əlavə edin</translation>
@@ -2595,6 +2598,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3654045516529121250">Əlçatımlılıq ayarlarını oxuyun</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Bir fayla daimi girişi var.}other{# fayla daimi girişi var.}}</translation>
 <translation id="3658871634334445293">TrackPoint sürətlənməsi</translation>
+<translation id="3659929705630080526">Giriş kodunu dəfələrlə yanlış daxil etmisiniz. Sonra cəhd edin</translation>
 <translation id="3660234220361471169">Güvənilməyən</translation>
 <translation id="3664511988987167893">Arıtırma İkonası</translation>
 <translation id="3665589677786828986">Chrome ayarlarınızdan bəzilərinin digər proqram tərəfindən xarab edildiyini aşkarladı və onları defolt vəziyyətinə sıfırladı.</translation>
@@ -2678,6 +2682,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3743842571276656710"><ph name="DEVICE_NAME" /> ilə birləşdirmək üçün PIN daxil edin</translation>
 <translation id="3747077776423672805">Tətbiqləri silmək üçün Ayarlar &gt; Google Play Market &gt; Android tərcihlərini idarə edin &gt; Tətbiqlər və ya Tətbiq meneceri bölməsinə daxil olun. Sonra quraşdırılmasını ləğv etmək istədiyiniz tətbiqə klikləyin (tətbiqi tapmaq üçün sağa və ya sola sürüşdürməlisiniz). Quraşdırılmanı Ləğv Edin və ya Deaktiv Edin seçiminə klikləyin.</translation>
 <translation id="3747220812138541072">Yazarkən görünən sətir içi yazı təkliflərini göstərin</translation>
+<translation id="3747603683749989726">Qabaqcıl güvənlik aktiv edilsin?</translation>
 <translation id="3748706263662799310">Baqı şikayət edin</translation>
 <translation id="3750562496035670393">Chrome parolunuzu bu cihazda saxlayıb, lakin siz onu Google Hesabınızda saxlaya bilərsiniz. Sonra, Google Hesabınızdakı bütün parollar da daxil olduğunuz halda əlçatan olacaq.</translation>
 <translation id="3752253558646317685">Övladınız barmaq izini yadda saxlamaq üçün barmağını qaldırmağa davam etməlidir</translation>
@@ -3191,6 +3196,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4279129444466079448">Bu cihazda maksimum <ph name="PROFILE_LIMIT" /> eSIM profili quraşdıra bilərsiniz. Başqa bir profil əlavə etmək üçün əvvəlcə mövcud profili silin.</translation>
 <translation id="4281844954008187215">Xidmət Şərtləri</translation>
 <translation id="4282196459431406533">Ağıllı Kilid aktiv edildi</translation>
+<translation id="4284755288573763878">Qabaqcıl güvənlik deaktiv edilsin?</translation>
 <translation id="4285418559658561636">Parolu Yeniləyin</translation>
 <translation id="4285498937028063278">Çıxarın</translation>
 <translation id="428565720843367874">Bu faylı skan edərkən antivirus dayandı.</translation>
@@ -4664,6 +4670,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> tezliklə dayanacaq</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> məhsulunu onun disk obrazindan işlədirsiniz. Onun kompüterə quraşdırılması disk obrazı olmadan işlətməyinizə imkan verəcək və həmişə güncəl qalmasını sağlayacaq.</translation>
 <translation id="5865733239029070421">İstifadə statistikası və qəza raportlarını avtomatik Google'a göndərir</translation>
+<translation id="5865848066829891215">Şəbəkə kommunikasiya problemləri</translation>
 <translation id="5867841422488265304">Veb ünvanı axtarın və yazın</translation>
 <translation id="5869029295770560994">Ok, Anladım</translation>
 <translation id="5869522115854928033">Saxlanılmış parollar</translation>
@@ -5956,6 +5963,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7243784282103630670">Linux'u güncəlləyərkən xəta baş verdi. Yedəyinizdən istifadə edərək konteyneri bərpa edəcəyik.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Ən yaxşı)</translation>
 <translation id="7246230585855757313">Güvənlik açarını yenidən daxil edib cəhd edin</translation>
+<translation id="7249197363678284330">Bu ayarı ünvan panelində dəyişdirin.</translation>
 <translation id="7250616558727237648">Paylaşım etdiyiniz cihaz cavab vermədi. Yenidən cəhd edin.</translation>
 <translation id="725109152065019550">Üzr istəyirik, administratorunuz hesabınızda xarici yaddaş ehtiyatını deaktiv edib.</translation>
 <translation id="7251346854160851420">Defolt divar kağızı</translation>
@@ -7707,6 +7715,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="9026731007018893674">endirmə</translation>
 <translation id="9026852570893462412">Bir az səbr edin; virtual maşın endirilir.</translation>
 <translation id="9027459031423301635">Linki yeni paneldə açın</translation>
+<translation id="9029667986262585240">Hesabınızda Qabaqcıl Güvənli Baxışı deaktiv etdiniz.</translation>
 <translation id="9030515284705930323">Təşkilatınız Google Play Mağazanı hesabınız üçün aktiv etməyib. Əlavə məlumat üçün administratorla əlaqə saxlayın.</translation>
 <translation id="9030754204056345429">Sürətli</translation>
 <translation id="9030785788945687215">Gmail</translation>

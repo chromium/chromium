@@ -107,6 +107,7 @@
 <translation id="4271805377592243930">Справка Chromium</translation>
 <translation id="4285930937574705105">Установка не удалась из-за неизвестной ошибки. Если Chromium продолжает работать, закройте его и повторите попытку.</translation>
 <translation id="4407044323746248786">Закрыть Chromium?</translation>
+<translation id="4414390922528416758">Настройте самые важные параметры конфиденциальности Chromium. В этом руководстве указаны не все настройки.</translation>
 <translation id="4415566066719264597">Разрешить Chromium работать в фоновом режиме</translation>
 <translation id="4423735387467980091">Настройка и управление Chromium</translation>
 <translation id="4427306783828095590">В режиме "Улучшенная защита" фишинговые атаки и вредоносное ПО блокируются ещё эффективнее.</translation>
@@ -290,5 +291,6 @@
 <translation id="9214764063801632699">Chromium OS</translation>
 <translation id="93478295209880648">В работе Chromium могут возникать сбои, так как браузер больше не поддерживает Windows XP и Windows Vista.</translation>
 <translation id="965162752251293939">Кто использует Chromium?</translation>
+<translation id="967427899662692980">Обеспечьте максимальную защиту в Chromium</translation>
 <translation id="985602178874221306">Авторы Chromium</translation>
 </translationbundle>

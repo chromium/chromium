@@ -240,6 +240,7 @@
 <translation id="7398801000654795464">Byłeś zalogowany w Chrome jako <ph name="USER_EMAIL_ADDRESS" />. Zaloguj się ponownie, korzystając z tego samego konta.</translation>
 <translation id="7408085963519505752">Warunki korzystania z Chrome OS</translation>
 <translation id="7419046106786626209">System operacyjny Chrome nie może zsynchronizować danych, ponieważ synchronizacja jest niedostępna w Twojej domenie.</translation>
+<translation id="7481213027396403996">Korzystaj z najlepszych zabezpieczeń Chrome</translation>
 <translation id="7486227612705979895">Chrome będzie mieć dostęp do Dysku, by wyświetlać podpowiedzi na pasku adresu</translation>
 <translation id="7535429826459677826">Wersja deweloperska Google Chrome</translation>
 <translation id="7573289029918943991">Aby sprawdzić, czy urządzenie jest zaktualizowane, otwórz <ph name="LINK_BEGIN" />ustawienia systemu operacyjnego Chrome<ph name="LINK_END" /></translation>
@@ -298,6 +299,8 @@
 <translation id="8862326446509486874">Nie masz odpowiednich uprawnień do przeprowadzenia instalacji na poziomie systemowym. Uruchom ponownie program instalacyjny jako administrator.</translation>
 <translation id="8914504000324227558">Uruchom Chrome ponownie</translation>
 <translation id="8922193594870374009">Aby wysłać numer z <ph name="ORIGIN" /> na swój telefon z Androidem, zaloguj się w Chrome na obu urządzeniach.</translation>
+<translation id="8927704157641862988">Dostosuj opcje prywatności, które Chrome uważa za najważniejsze. Ten przewodnik nie uwzględnia wszystkich ustawień ani opcji.</translation>
+<translation id="8983720963221508955">Na swoim koncie włączyłeś(-aś) Ulepszone Bezpieczne przeglądanie. Zacznij korzystać z tej funkcji w Chrome.</translation>
 <translation id="8986207147630327271">Dodajesz profil służbowy w tej przeglądarce i dajesz swojemu administratorowi kontrolę tylko nad tym profilem.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Dostępna jest aktualizacja Chrome}=1{Dostępna jest aktualizacja Chrome}few{Aktualizacja Chrome jest dostępna od # dni}many{Aktualizacja Chrome jest dostępna od # dni}other{Aktualizacja Chrome jest dostępna od # dnia}}</translation>
 <translation id="9026991721384951619">Google Chrome nie może zsynchronizować danych, ponieważ dane logowania na Twoje konto są nieaktualne.</translation>

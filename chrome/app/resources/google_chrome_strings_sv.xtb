@@ -308,6 +308,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8862326446509486874">Du har inte behörighet att göra en installation på systemnivå. Försök köra installationsprogrammet igen som administratör.</translation>
 <translation id="8914504000324227558">Starta om Chrome</translation>
 <translation id="8922193594870374009">Logga in på Chrome på båda enheterna om du vill skicka ett nummer från <ph name="ORIGIN" /> till Android-telefonen.</translation>
+<translation id="8983720963221508955">Du har aktiverat Förbättrad säker webbsökning i kontot. Skaffa funktionen även för Chrome.</translation>
 <translation id="8986207147630327271">Du lägger till en jobbprofil i den här webbläsaren och ger administratören kontrollen enbart över jobbprofilen.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Det finns en uppdatering för Chrome}=1{Det finns en uppdatering för Chrome}other{Det finns en uppdatering för Chrome sedan # dagar}}</translation>
 <translation id="9026991721384951619">Det gick inte att synkronisera data med Chrome OS eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>

@@ -416,6 +416,7 @@
            • ta bort cookies och tillfällig webbplatsdata.
             <ph name="LINE_BREAKS" />
            Bokmärken, historiken och sparade lösenord påverkas inte.</translation>
+<translation id="1425233109861512854">Åtkomstkoden känns inte igen</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> har blockerats</translation>
 <translation id="1426870617281699524">Klicka på Försök igen och godkänn frågan på datorn</translation>
@@ -583,6 +584,7 @@
 <translation id="1593926297800505364">Spara betalningsmetod</translation>
 <translation id="1595492813686795610">Linux uppgraderas</translation>
 <translation id="1596286373007273895">Tillgänglig</translation>
+<translation id="1596709061955594992">Bluetooth har inaktiverats. Aktivera Bluetooth om du vill se tillgängliga enheter.</translation>
 <translation id="1598233202702788831">Uppdateringar har inaktiverats av administratören.</translation>
 <translation id="1600857548979126453">Få åtkomst till serverdelen för felsökning av sida</translation>
 <translation id="1601560923496285236">Verkställ</translation>
@@ -1144,6 +1146,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2148892889047469596">Casta fliken</translation>
 <translation id="2149973817440762519">Redigera bokmärke</translation>
 <translation id="2150139952286079145">Sök platser</translation>
+<translation id="2150491840563706000">Du har inte behörighet att casta till den här skärmen</translation>
 <translation id="2150661552845026580">Vill du lägga till <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2151576029659734873">Du har angett ett ogiltigt flikindex.</translation>
 <translation id="2152281589789213846">Lägg till skrivare i din profil</translation>
@@ -2611,6 +2614,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3654045516529121250">Läsa tillgänglighetsinställningarna</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Den har permanent åtkomst till en fil.}other{Den har permanent åtkomst till # filer.}}</translation>
 <translation id="3658871634334445293">TrackPoint-acceleration</translation>
+<translation id="3659929705630080526">Du har angett fel åtkomstkod för många gånger. Försök igen senare</translation>
 <translation id="3660234220361471169">Opålitliga</translation>
 <translation id="3664511988987167893">Tilläggsikon</translation>
 <translation id="3665589677786828986">Chrome har upptäckt att visa av inställningarna har skadats av ett annat program och återställer dem till standardinställningarna.</translation>
@@ -2694,6 +2698,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3743842571276656710">Ange pinkod för att parkoppla med <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Om du vill ta bort appar öppnar du Inställningar &gt; Google Play Butik &gt; Hantera Android-inställningar &gt; Appar eller Apphanteraren. Tryck sedan på appen du vill avinstallera (du kanske måste svepa åt höger eller vänster för att hitta appen). Tryck sedan på Avinstallera eller Inaktivera.</translation>
 <translation id="3747220812138541072">Visa förslag som infogas medan du skriver</translation>
+<translation id="3747603683749989726">Vill du aktivera förbättrad säkerhet?</translation>
 <translation id="3748706263662799310">Rapportera ett fel</translation>
 <translation id="3750562496035670393">Chrome har sparat lösenordet på enheten, men du kan spara det i Google-kontot i stället. Alla lösenord som finns i Google-kontot är tillgängliga när du är inloggad.</translation>
 <translation id="3752253558646317685">Låt ditt barn trycka och lyfta på fingret upprepade gånger så att fingeravtrycket sparas</translation>
@@ -3209,6 +3214,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4279129444466079448">Du kan installera högst <ph name="PROFILE_LIMIT" /> eSIM-profiler på den här enheten. Om du vill lägga till en ny profil måste du först ta bort en av de gamla.</translation>
 <translation id="4281844954008187215">Användarvillkor</translation>
 <translation id="4282196459431406533">Smart Lock är aktiverat</translation>
+<translation id="4284755288573763878">Vill du inaktivera förbättrad säkerhet?</translation>
 <translation id="4285418559658561636">Uppdatera lösenordet</translation>
 <translation id="4285498937028063278">Lossa</translation>
 <translation id="428565720843367874">Ett oväntat fel uppstod i antivirusprogrammet när filen skulle genomsökas.</translation>
@@ -4683,6 +4689,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> pausas snart</translation>
 <translation id="586567932979200359">Du kör <ph name="PRODUCT_NAME" /> från diskavbildningen. Om du installerar programmet på din dator kan du köra det utan diskavbildningen och du kan vara säker på att det alltid är uppdaterat.</translation>
 <translation id="5865733239029070421">Skickar användningsstatistik och felrapporter till Google automatiskt</translation>
+<translation id="5865848066829891215">Problem med nätverkskommunikation</translation>
 <translation id="5867841422488265304">Skriv en sökning eller en webbadress</translation>
 <translation id="5869029295770560994">Ok, jag förstår</translation>
 <translation id="5869522115854928033">Sparade lösenord</translation>
@@ -5975,6 +5982,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7243784282103630670">Det gick inte att uppgradera Linux. Vi återställer behållaren med hjälp av säkerhetskopian.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (bäst)</translation>
 <translation id="7246230585855757313">Sätt i säkerhetsnyckeln en gång till och försök igen</translation>
+<translation id="7249197363678284330">Ändra inställningen i adressfältet.</translation>
 <translation id="7250616558727237648">Enheten som du delar med svarade inte. Försök igen.</translation>
 <translation id="725109152065019550">Administratören har inaktiverat extern lagring för ditt konto.</translation>
 <translation id="7251346854160851420">Standardbakgrund</translation>
@@ -7729,6 +7737,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9026731007018893674">nedladdning</translation>
 <translation id="9026852570893462412">Detta kan ta några minuter. Den virtuella maskinen laddas ned.</translation>
 <translation id="9027459031423301635">Öppna länk i ny &amp;flik</translation>
+<translation id="9029667986262585240">Du har inaktiverat Förbättrad säker webbsökning i kontot.</translation>
 <translation id="9030515284705930323">Organisationen har inte aktiverat Google Play Butik för ditt konto. Kontakta administratören om du vill veta mer.</translation>
 <translation id="9030754204056345429">Snabbare</translation>
 <translation id="9030785788945687215">Gmail</translation>

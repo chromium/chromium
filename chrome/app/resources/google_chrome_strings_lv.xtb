@@ -245,6 +245,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7398801000654795464">Pārlūkā Chrome iepriekš pierakstījāties kā lietotājs <ph name="USER_EMAIL_ADDRESS" />. Lai pierakstītos vēlreiz, lūdzu, izmantojiet to pašu kontu.</translation>
 <translation id="7408085963519505752">Chrome OS noteikumi</translation>
 <translation id="7419046106786626209">Chrome OS nevarēja sinhronizēt jūsu datus, jo sinhronizācija jūsu domēnā nav pieejama.</translation>
+<translation id="7481213027396403996">Visaugstākais Chrome drošības līmenis</translation>
 <translation id="7486227612705979895">Pārlūkā Chrome tiks izmantota Diskā pieejamā informācija, lai adrešu joslā piedāvātu ieteikumus</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Lai pārbaudītu, vai ierīce ir atjaunināta, pārejiet uz sadaļu <ph name="LINK_BEGIN" />Chrome OS iestatījumi<ph name="LINK_END" />.</translation>
@@ -303,6 +304,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="8862326446509486874">Jums nav vajadzīgo tiesību, lai instalētu sistēmas līmenī. Mēģiniet vēlreiz palaist instalēšanas programmu kā administrators.</translation>
 <translation id="8914504000324227558">Atkārtoti palaist pārlūkprogrammu Chrome</translation>
 <translation id="8922193594870374009">Lai nosūtītu numuru no vietnes <ph name="ORIGIN" /> uz savu Android tālruni, abās ierīcēs pierakstieties pārlūkā Chrome.</translation>
+<translation id="8927704157641862988">Pielāgojiet Chrome vissvarīgākos konfidencialitātes iestatījumus. Šajā ceļvedī nav iekļauti visi iestatījumi un opcijas.</translation>
 <translation id="8986207147630327271">Jūs pievienosiet šai pārlūkprogrammai darba profilu un piešķirsiet administratoram kontroli tikai pār darba profilu.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ir pieejams Chrome atjauninājums}=1{Ir pieejams Chrome atjauninājums}zero{Chrome atjauninājums ir pieejams jau # dienu}one{Chrome atjauninājums ir pieejams jau # dienu}other{Chrome atjauninājums ir pieejams jau # dienas}}</translation>
 <translation id="9026991721384951619">Chrome OS nevarēja sinhronizēt jūsu datus, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>

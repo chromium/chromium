@@ -111,6 +111,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4271805377592243930">Obtener ayuda de Chromium</translation>
 <translation id="4285930937574705105">La instalación ha fallado debido a un error no especificado. Si Chromium se está ejecutando, ciérralo y vuelve a intentarlo.</translation>
 <translation id="4407044323746248786">¿Quieres salir de Chromium de todas formas?</translation>
+<translation id="4414390922528416758">Personaliza las opciones de privacidad que Chromium considera más importantes. En esta guía, no se incluyen todos los ajustes y opciones.</translation>
 <translation id="4415566066719264597">Permitir que Chromium se ejecute en segundo plano</translation>
 <translation id="4423735387467980091">Personaliza y controla Chromium</translation>
 <translation id="4427306783828095590">La protección mejorada es más eficaz para bloquear ataques de suplantación de identidad y software malicioso.</translation>
@@ -298,5 +299,6 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="9214764063801632699">Sistema Chromium OS</translation>
 <translation id="93478295209880648">Es posible que Chromium no funcione correctamente porque ya no es compatible con Windows XP ni Windows Vista</translation>
 <translation id="965162752251293939">¿Quién usa Chromium?</translation>
+<translation id="967427899662692980">Consigue la seguridad más potente de Chromium</translation>
 <translation id="985602178874221306">Los creadores de Chromium</translation>
 </translationbundle>

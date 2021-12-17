@@ -3815,6 +3815,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4943691134276646401">« <ph name="CHROME_EXTENSION_NAME" /> » veut se connecter à un port de série</translation>
 <translation id="4944310289250773232">Ce service d'authentification est hébergé par <ph name="SAML_DOMAIN" /></translation>
 <translation id="4945439665401275950">Pour configurer une empreinte digitale, demandez à votre enfant de toucher l'interrupteur. Les données liées à l'empreinte digitale de votre enfant sont stockées de façon sécurisée et ne quittent jamais cet appareil : <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4946459324029651239">Vous profitez d'une protection standard</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{un fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="495170559598752135">Actions</translation>
 <translation id="4953808748584563296">Avatar orange par défaut</translation>
@@ -4398,6 +4399,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5575528586625653441">Un problème avec la demande d'enregistrement du mode démo s'est produit.</translation>
 <translation id="557722062034137776">La réinitialisation de votre appareil n'a aucune incidence sur vos comptes Google ni sur leurs données synchronisées. Toutefois, tous les fichiers enregistrés localement sur votre appareil vont être supprimés.</translation>
 <translation id="5578059481725149024">Connexion automatique</translation>
+<translation id="5581134892342029705">Traduction dans la langue suivante terminée : <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Vérification de pilote matériel Microsoft Windows</translation>
 <translation id="5581972110672966454">Impossible d'associer l'appareil au domaine. Veuillez réessayer ou communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Menu principal</translation>
@@ -7219,6 +7221,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8528074251912154910">Ajouter des langues</translation>
 <translation id="8528962588711550376">En cours de connexion.</translation>
 <translation id="8529925957403338845">Échec du partage de connexion instantané</translation>
+<translation id="8531701051932785007">La navigation sécurisée améliorée est désactivée</translation>
 <translation id="8534656636775144800">Oups! Une erreur s'est produite lorsque vous avez tenté de vous joindre au domaine. Veuillez réessayer.</translation>
 <translation id="8535005006684281994">URL de renouvellement du certificat Netscape</translation>
 <translation id="8536956381488731905">Son à chaque touche</translation>

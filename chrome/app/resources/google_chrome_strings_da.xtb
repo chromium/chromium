@@ -242,6 +242,7 @@
 <translation id="7398801000654795464">Du loggede ind i Chrome som <ph name="USER_EMAIL_ADDRESS" />. Brug den samme konto til at logge ind igen.</translation>
 <translation id="7408085963519505752">Vilkår for Chrome OS</translation>
 <translation id="7419046106786626209">Chrome OS kunne ikke synkronisere dine data, fordi synkronisering ikke er tilgængelig for dit domæne.</translation>
+<translation id="7481213027396403996">Få Chromes stærkeste beskyttelse</translation>
 <translation id="7486227612705979895">Chrome har adgang til Drev, så der kan vises forslag i adresselinjen</translation>
 <translation id="7535429826459677826">Udviklerversionen af Chrome</translation>
 <translation id="7573289029918943991">Du kan se, om en enhed er opdateret, ved at gå til <ph name="LINK_BEGIN" />indstillingerne for Chrome OS<ph name="LINK_END" /></translation>
@@ -300,6 +301,7 @@
 <translation id="8862326446509486874">Du har ikke de nødvendige rettigheder til en installation på systemniveau. Prøv at køre installationsprogrammet igen som administrator.</translation>
 <translation id="8914504000324227558">Genstart Chrome</translation>
 <translation id="8922193594870374009">Hvis du vil sende et nummer fra <ph name="ORIGIN" /> til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>
+<translation id="8927704157641862988">Tilpas de privatlivsindstillinger, som Chrome anser for at være de vigtigste. Denne vejledning gennemgår ikke alle indstillinger og valgmuligheder.</translation>
 <translation id="8986207147630327271">Du er ved at føje en arbejdsprofil til denne browser, og du giver kun din administrator kontrol over arbejdsprofilen.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Der er en tilgængelig Chrome-opdatering}=1{Der er en tilgængelig Chrome-opdatering}one{En Chrome-opdatering har været tilgængelig i # dag}other{En Chrome-opdatering har været tilgængelig i # dage}}</translation>
 <translation id="9026991721384951619">Chrome OS kunne ikke synkronisere dine data, fordi loginoplysningerne til din konto er forældede.</translation>

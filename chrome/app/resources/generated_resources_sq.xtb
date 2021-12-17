@@ -2500,6 +2500,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3557101512409028104">Cakto kufizimet e sajteve të uebit dhe kufijtë për kohën para ekranit me Family Link</translation>
 <translation id="3559262020195162408">Dështoi instalimi i politikës në pajisje.</translation>
 <translation id="3559533181353831840">Mbeten rreth <ph name="TIME_LEFT" /></translation>
+<translation id="3559697822483154494">Merr konfirmim me dridhje për veprimet si ekrani i ndarë dhe ndryshimi i tavolinave të punës.</translation>
 <translation id="3560034655160545939">&amp;Kontrolli drejtshkrimor</translation>
 <translation id="3562423906127931518">Ky proces mund të zgjasë disa minuta. Kontejneri i Linux po konfigurohet.</translation>
 <translation id="3562655211539199254">Vizito skedat e fundit të Chrome nga telefoni yt</translation>
@@ -4899,6 +4900,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6112931163620622315">Kontrollo telefonin</translation>
 <translation id="6113434369102685411">Cakto motorin tënd të parazgjedhur të kërkimit për shfletuesin e Chrome dhe nisësin e <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Për të përdorur Smart Lock, kalo te profili parësor i përdoruesit në telefonin tënd</translation>
+<translation id="611684075852771314">Këto evidenca janë ruajtur në "Skedarët e mi" si</translation>
 <translation id="6116921718742659598">Ndrysho cilësimet e gjuhës dhe të hyrjes</translation>
 <translation id="6119927814891883061">Emërtoje pajisjen në <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Gozhdoje këtë faqe tek ekrani i Nisjes...</translation>
@@ -5675,6 +5677,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6930036377490597025">Çelësi i jashtëm i sigurisë ose sensori i integruar</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Një shtesë është refuzuar}other{# shtesa janë refuzuar}}</translation>
 <translation id="6930321203306643451">Përmirësimi përfundoi</translation>
+<translation id="6931690462168617033">Fortësia e klikimit</translation>
 <translation id="6935286146439255109">Mungon një tabaka letre</translation>
 <translation id="693807610556624488">Veprimi i shkrimit e kalon gjatësinë maksimale të atributit te: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">Ke 1 printer të ruajtur.</translation>
@@ -6802,6 +6805,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8064279191081105977">Grupi <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Dialogu i lidhjes</translation>
 <translation id="8069615408251337349">Printimi në renë kompjuterike i Google</translation>
+<translation id="8070662218171013510">Reagimi me prekje</translation>
 <translation id="8071432093239591881">Printo si imazh</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Të dhënat e aplikacioneve mund të jenë çdo e dhënë që ka ruajtur një aplikacion (bazuar në cilësimet e zhvilluesit), duke përfshirë të dhëna si kontaktet, mesazhet dhe fotografitë.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Të dhënat e rezervimit nuk do të llogariten në kuotën e hapësirës ruajtëse të "Diskut" të fëmijës tënd.<ph name="END_PARAGRAPH2" />

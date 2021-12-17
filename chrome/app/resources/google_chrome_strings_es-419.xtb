@@ -242,6 +242,7 @@
 <translation id="7398801000654795464">Accediste a Google Chrome con <ph name="USER_EMAIL_ADDRESS" />. Usa la misma cuenta para volver a acceder.</translation>
 <translation id="7408085963519505752">Condiciones del Chrome OS</translation>
 <translation id="7419046106786626209">El Chrome OS no pudo sincronizar los datos porque la sincronización no está disponible para el dominio.</translation>
+<translation id="7481213027396403996">Obtén la seguridad más sólida de Chrome</translation>
 <translation id="7486227612705979895">Chrome accederá a tus datos de Drive para hacer sugerencias en la barra de direcciones</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Para saber si tu dispositivo está actualizado, ve a la <ph name="LINK_BEGIN" />configuración del Sistema operativo Chrome<ph name="LINK_END" /></translation>
@@ -300,6 +301,7 @@
 <translation id="8862326446509486874">No tienes los derechos que se requieren para realizar la instalación al nivel del sistema. Intenta ejecutar el instalador nuevamente como Administrador.</translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número de <ph name="ORIGIN" /> a tu teléfono Android, accede a Chrome en ambos dispositivos.</translation>
+<translation id="8927704157641862988">Personaliza las opciones de privacidad más importantes de Chrome. Esta guía no incluye todas las opciones ni los parámetros de configuración.</translation>
 <translation id="8986207147630327271">Estás agregando un perfil de trabajo a este navegador y dándole a tu administrador el control únicamente del perfil de trabajo.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hay una actualización de Chrome disponible}=1{Hay una actualización de Chrome disponible}other{Hay una actualización de Chrome disponible hace # días}}</translation>
 <translation id="9026991721384951619">El Chrome OS no pudo sincronizar los datos porque la información de acceso de la cuenta está desactualizada.</translation>

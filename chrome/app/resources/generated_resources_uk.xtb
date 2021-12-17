@@ -2521,6 +2521,7 @@
 <translation id="3557101512409028104">Установіть обмеження для веб-сайтів і часу використання пристрою в додатку Family Link</translation>
 <translation id="3559262020195162408">Не вдалося встановити політику на пристрій.</translation>
 <translation id="3559533181353831840">Залишилося приблизно <ph name="TIME_LEFT" /></translation>
+<translation id="3559697822483154494">Отримуйте вібропідтвердження для різних дій, наприклад розділення екрана й переходу між робочими столами.</translation>
 <translation id="3560034655160545939">&amp;Перевірка орфографії</translation>
 <translation id="3562423906127931518">Це може тривати кілька хвилин. Налаштовується контейнер Linux.</translation>
 <translation id="3562655211539199254">Переглядайте останні вкладки Chrome із телефона</translation>
@@ -4921,6 +4922,7 @@
 <translation id="6112931163620622315">Перевірте телефон</translation>
 <translation id="6113434369102685411">Налаштуйте пошукову систему за умовчанням для веб-переглядача Chrome і Панелі запуску <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Щоб користуватися Smart Lock, перейдіть у профіль основного користувача на телефоні</translation>
+<translation id="611684075852771314">Ці журнали збережено в папці "Мої файли" як</translation>
 <translation id="6116921718742659598">Змінити налаштування мови та введення</translation>
 <translation id="6119927814891883061">Зберегти назву "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6120205520491252677">Закріпити цю сторінку на екрані запуску...</translation>
@@ -5697,6 +5699,7 @@
 <translation id="6930036377490597025">Внутрішній ключ безпеки або вбудований датчик</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Розширення відхилено}one{# розширення відхилено}few{# розширення відхилено}many{# розширень відхилено}other{# розширення відхилено}}</translation>
 <translation id="6930321203306643451">Оновлення завершено</translation>
+<translation id="6931690462168617033">Сила натиску</translation>
 <translation id="6935286146439255109">Немає лотка для паперу</translation>
 <translation id="693807610556624488">Операція внесення змін перевищує максимальну довжину атрибута пристрою <ph name="DEVICE_NAME" />.</translation>
 <translation id="6938386202199793006">У вас є 1 збережений принтер.</translation>
@@ -6827,6 +6830,7 @@
 <translation id="8064279191081105977">Група <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Діалогове вікно з’єднання</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
+<translation id="8070662218171013510">Вібровідгук</translation>
 <translation id="8071432093239591881">Друкувати як зображення</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Дані додатків – це будь-яка інформація, яку вони зберігають (залежно від налаштувань розробника), зокрема контакти, повідомлення та фотографії.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Резервні копії даних не займають місця на Диску дитини.<ph name="END_PARAGRAPH2" />

@@ -2518,6 +2518,7 @@
 <translation id="3557101512409028104">Family Link ਨਾਲ ਵੈੱਬਸਾਈਟ ਪਾਬੰਦੀਆਂ ਅਤੇ ਸਕ੍ਰੀਨ ਸਮੇਂ ਦੀਆਂ ਸੀਮਾਵਾਂ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="3559262020195162408">ਡੀਵਾਈਸ 'ਤੇ ਨੀਤੀ ਨੂੰ ਸਥਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="3559533181353831840">ਲਗਭਗ <ph name="TIME_LEFT" /> ਬਾਕੀ</translation>
+<translation id="3559697822483154494">ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਅਤੇ ਸਵਿਚਿੰਗ ਡੈਸਕਾਂ ਵਰਗੀਆਂ ਕਾਰਵਾਈਆਂ ਲਈ ਥਰਥਰਾਹਟ ਤਸਦੀਕ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
 <translation id="3560034655160545939">&amp;ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ</translation>
 <translation id="3562423906127931518">ਇਸ ਪ੍ਰਕਿਰਿਆ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ। Linux ਕੰਟੇਨਰ ਦਾ ਸੈੱਟਅੱਪ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="3562655211539199254">ਆਪਣੇ ਫ਼ੋਨ ਤੋਂ ਹਾਲੀਆ Chrome ਟੈਬਾਂ ਦੇਖੋ</translation>
@@ -4918,6 +4919,7 @@
 <translation id="6112931163620622315">ਆਪਣੇ ਫ਼ੋਨ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="6113434369102685411">Chrome ਬ੍ਰਾਊਜ਼ਰ ਅਤੇ <ph name="DEVICE_TYPE" /> ਲਾਂਚਰ ਲਈ ਆਪਣੀ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਖੋਜ ਇੰਜਣ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="6113942107547980621">ਸਮਾਰਟ ਲਾਕ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ, ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ ਪ੍ਰਾਇਮਰੀ ਵਰਤੋਂਕਾਰ ਪ੍ਰੋਫਾਈਲ 'ਤੇ ਅਦਲਾ-ਬਦਲੀ ਕਰੋ</translation>
+<translation id="611684075852771314">ਇਨ੍ਹਾਂ ਲੌਗਾਂ ਨੂੰ ਮੇਰੀਆਂ ਫ਼ਾਈਲਾਂ ਵਿੱਚ ਇਸ ਵਜੋਂ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="6116921718742659598">ਭਾਸ਼ਾ ਅਤੇ ਇਨਪੁੱਟ ਸੈਟਿੰਗਾਂ ਬਦਲੋ</translation>
 <translation id="6119927814891883061"><ph name="DEVICE_NAME" /> ਡੀਵਾਈਸ ਨੂੰ ਨਾਮ ਦਿਓ</translation>
 <translation id="6120205520491252677">ਸਟਾਰਟ ਸਕ੍ਰੀਨ ਲਈ ਇਹ ਸਫ਼ਾ ਪਿਨ ਕਰੋ...</translation>
@@ -5695,6 +5697,7 @@
 <translation id="6930036377490597025">ਬਾਹਰੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਜਾਂ ਬਿਲਟ-ਇਨ ਸੈਂਸਰ</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਅਸਵੀਕਾਰ ਕੀਤਾ ਗਿਆ}one{# ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਅਸਵੀਕਾਰ ਕੀਤਾ ਗਿਆ}other{# ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਅਸਵੀਕਾਰ ਕੀਤਾ ਗਿਆ}}</translation>
 <translation id="6930321203306643451">ਅੱਪਗ੍ਰੇਡ ਪੂਰਾ ਹੋਇਆ</translation>
+<translation id="6931690462168617033">ਤਾਕਤ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="6935286146439255109">ਪੇਪਰ ਟ੍ਰੇਅ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
 <translation id="693807610556624488">ਲਿਖਣ ਦੀ ਕਿਰਿਆ ਇਸ 'ਤੇ ਐਟਰੀਬਿਊਟਾਂ ਦੀ ਅਧਿਕਤਮ ਲੰਬਾਈ ਤੋਂ ਅੱਗੇ ਵਧੀ: "<ph name="DEVICE_NAME" />"।</translation>
 <translation id="6938386202199793006">ਤੁਹਾਡੇ ਕੋਲ ਰੱਖਿਅਤ ਕੀਤਾ 1 ਪ੍ਰਿੰਟਰ ਹੈ।</translation>
@@ -6823,6 +6826,7 @@
 <translation id="8064279191081105977"><ph name="GROUP_NAME" /> ਗਰੁੱਪ - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">ਕਨੈਕਸ਼ਨ ਵਿੰਡੋ</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
+<translation id="8070662218171013510">ਛੋਹ ਪ੍ਰਤੀਕਰਮ</translation>
 <translation id="8071432093239591881">ਚਿੱਤਰ ਵਜੋਂ ਪ੍ਰਿੰਟ ਕਰੋ</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />ਐਪ ਡਾਟਾ ਕਿਸੇ ਐਪ ਵੱਲੋਂ (ਵਿਕਾਸਕਾਰ ਸੈਟਿੰਗਾਂ 'ਤੇ ਅਧਾਰਿਤ) ਰੱਖਿਅਤ ਕੀਤਾ ਕੋਈ ਵੀ ਡਾਟਾ ਹੋ ਸਕਦਾ ਹੈ, ਜਿਸ ਵਿੱਚ ਸੰਪਰਕਾਂ, ਸੁਨੇਹਿਆਂ ਅਤੇ ਫ਼ੋਟੋਆਂ ਵਰਗਾ ਡਾਟਾ ਸ਼ਾਮਲ ਹੈ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ਬੈਕਅੱਪ ਡਾਟੇ ਨੂੰ ਤੁਹਾਡੇ ਬੱਚੇ ਦੇ 'ਡਰਾਈਵ' ਸਟੋਰੇਜ ਕੋਟੇ ਵਿੱਚ ਨਹੀਂ ਗਿਣਿਆ ਜਾਵੇਗਾ।<ph name="END_PARAGRAPH2" />

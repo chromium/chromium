@@ -241,6 +241,7 @@
 <translation id="7398801000654795464">Sie waren in Chrome als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Melden Sie sich bitte wieder mit demselben Konto an.</translation>
 <translation id="7408085963519505752">Chrome OS-Nutzungsbedingungen</translation>
 <translation id="7419046106786626209">Chrome OS konnte Ihre Daten nicht synchronisieren, da die Synchronisierung für Ihre Domain nicht verfügbar ist.</translation>
+<translation id="7481213027396403996">Höchste Sicherheit in Chrome erhalten</translation>
 <translation id="7486227612705979895">Chrome greift auf Google Drive zu, um in der Adressleiste Vorschläge zu machen</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Sie können anhand der <ph name="LINK_BEGIN" />Einstellungen von Chrome OS<ph name="LINK_END" /> sehen, ob Ihr Gerät auf dem neuesten Stand ist</translation>
@@ -299,6 +300,7 @@
 <translation id="8862326446509486874">Sie verfügen nicht über die erforderlichen Rechte für eine systemweite Installation. Starten Sie das Installationsprogramm als Administrator.</translation>
 <translation id="8914504000324227558">Chrome neu starten</translation>
 <translation id="8922193594870374009">Wenn Sie eine Nummer von <ph name="ORIGIN" /> an Ihr Android-Smartphone senden möchten, müssen Sie sich auf beiden Geräten in Chrome anmelden.</translation>
+<translation id="8927704157641862988">Sie können die wichtigsten Datenschutzeinstellungen von Chrome anpassen. In dieser Anleitung werden nicht alle Einstellungen und Optionen behandelt.</translation>
 <translation id="8986207147630327271">Sie fügen diesem Browser ein Arbeitsprofil hinzu und erteilen Ihrem Administrator nur Rechte für das Arbeitsprofil.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ein Chrome-Update ist verfügbar}=1{Ein Chrome-Update ist verfügbar}other{Ein Chrome-Update ist seit # Tagen verfügbar}}</translation>
 <translation id="9026991721384951619">Chrome OS konnte Ihre Daten nicht synchronisieren, da die Anmeldedaten Ihres Kontos veraltet sind.</translation>

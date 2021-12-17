@@ -2504,6 +2504,7 @@
 <translation id="3557101512409028104">С помощью Family Link вы можете ограничивать доступ к сайтам и время использования устройства.</translation>
 <translation id="3559262020195162408">Не удалось применить политику к устройству.</translation>
 <translation id="3559533181353831840">Осталось: <ph name="TIME_LEFT" /></translation>
+<translation id="3559697822483154494">Виброотклик используется для подтверждения таких действий, как разделение экрана и переключение между рабочими столами.</translation>
 <translation id="3560034655160545939">&amp;Проверка правописания</translation>
 <translation id="3562423906127931518">Выполняется настройка контейнера Linux. Это может занять несколько минут.</translation>
 <translation id="3562655211539199254">Просматривайте последние вкладки, открытые на телефоне</translation>
@@ -2619,7 +2620,7 @@
 <translation id="3686786761304157917">Устройство <ph name="DEVICE_INDEX" /> из <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, клавиатура, уровень заряда батареи: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="368789413795732264">Произошла ошибка при записи файла: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">Запись данных в файлы и каталоги, открытые в приложении</translation>
-<translation id="3688526734140524629">Выбрать другую версию</translation>
+<translation id="3688526734140524629">Выбрать другой канал</translation>
 <translation id="3688578402379768763">Обновление не требуется</translation>
 <translation id="3688794912214798596">Настройки перевода…</translation>
 <translation id="3690369331356918524">Сообщает, если пароли были раскрыты в результате утечки данных.</translation>
@@ -3196,7 +3197,7 @@
 <translation id="4281844954008187215">Условия использования</translation>
 <translation id="4282196459431406533">Функция Smart Lock включена</translation>
 <translation id="4285418559658561636">Обновить пароль</translation>
-<translation id="4285498937028063278">Открепить из Быстрого запуска</translation>
+<translation id="4285498937028063278">Открепить</translation>
 <translation id="428565720843367874">При сканировании этого файла произошел сбой антивирусного ПО.</translation>
 <translation id="4287099557599763816">Программа чтения с экрана</translation>
 <translation id="428715201724021596">Выполняется подключение к профилю. Это может занять несколько минут.</translation>
@@ -4558,7 +4559,7 @@
 <translation id="574209121243317957">Высота звука</translation>
 <translation id="5746169159649715125">Сохранить как PDF</translation>
 <translation id="5747552184818312860">Срок действия</translation>
-<translation id="5747785204778348146">Нестабильная</translation>
+<translation id="5747785204778348146">Для разработчиков (нестабильная)</translation>
 <translation id="5747809636523347288">Вс&amp;тавить и перейти на страницу <ph name="URL" /></translation>
 <translation id="5755022574660047665">воспоминания из Google Фото</translation>
 <translation id="5756163054456765343">Справочный &amp;центр</translation>
@@ -4903,6 +4904,7 @@
 <translation id="6112931163620622315">Проверьте телефон</translation>
 <translation id="6113434369102685411">Выберите поисковую систему по умолчанию для браузера Chrome и панели запуска на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6113942107547980621">Чтобы использовать Smart Lock, включите основной профиль</translation>
+<translation id="611684075852771314">Эти журналы сохранены в папке "Мои файлы" как</translation>
 <translation id="6116921718742659598">Изменение настроек языка и метода ввода</translation>
 <translation id="6119927814891883061">Присвоить название "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6120205520491252677">Прикрепить эту страницу к экрану запуска…</translation>
@@ -5679,6 +5681,7 @@
 <translation id="6930036377490597025">Внешний электронный ключ или встроенный датчик</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Расширение отклонено}one{# расширение отклонено}few{# расширения отклонено}many{# расширений отклонено}other{# расширения отклонено}}</translation>
 <translation id="6930321203306643451">Обновление завершено</translation>
+<translation id="6931690462168617033">Сила нажатия</translation>
 <translation id="6935286146439255109">Отсутствует лоток для бумаги</translation>
 <translation id="693807610556624488">При записи данных на устройстве <ph name="DEVICE_NAME" /> превышена максимальная длина атрибута.</translation>
 <translation id="6938386202199793006">У вас 1 сохраненный принтер.</translation>
@@ -6808,6 +6811,7 @@
 <translation id="8064279191081105977">Группа <ph name="GROUP_NAME" />: <ph name="GROUP_CONTENTS" />, <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Диалоговое окно подключения</translation>
 <translation id="8069615408251337349">Виртуальный принтер Google</translation>
+<translation id="8070662218171013510">Виброотклик</translation>
 <translation id="8071432093239591881">Печатать как изображение</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Данные приложений – это любая информация, которую приложения сохраняют в соответствии с настройками разработчика. Она может включать контакты, сообщения, фотографии и многое другое.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Данные резервных копий не занимают место в хранилище Google Диска.<ph name="END_PARAGRAPH2" />

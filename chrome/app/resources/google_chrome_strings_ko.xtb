@@ -250,6 +250,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7398801000654795464"><ph name="USER_EMAIL_ADDRESS" />(으)로 Chrome에 로그인되어 있습니다. 같은 계정으로 다시 로그인해 주세요.</translation>
 <translation id="7408085963519505752">Chrome OS 이용약관</translation>
 <translation id="7419046106786626209">내 도메인에서 동기화를 사용할 수 없으므로 Chrome OS에서 데이터를 동기화하지 못했습니다.</translation>
+<translation id="7481213027396403996">Chrome의 가장 강력한 보안 기능을 이용하세요</translation>
 <translation id="7486227612705979895">Chrome에서 내 드라이브에 액세스하여 주소 표시줄에 추천 검색어를 표시합니다.</translation>
 <translation id="7535429826459677826">Chrome 개발자</translation>
 <translation id="7573289029918943991">기기가 최신 버전인지 확인하려면 <ph name="LINK_BEGIN" />Chrome OS 설정<ph name="LINK_END" />으로 이동하세요.</translation>
@@ -308,6 +309,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8862326446509486874">시스템 수준의 설치 권한이 없습니다. 관리자 권한으로 설치 프로그램을 다시 실행해 보세요.</translation>
 <translation id="8914504000324227558">Chrome 다시 시작</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
+<translation id="8927704157641862988">Chrome에서 가장 중요하게 간주되는 개인 정보 보호 항목을 맞춤설정합니다. 이 가이드에서 다루지 않는 설정과 옵션도 있습니다.</translation>
 <translation id="8986207147630327271">직장 프로필을 이 브라우저에 추가하고 직장 프로필 제어 권한을 관리자에게 부여합니다.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome 업데이트 출시}=1{Chrome 업데이트 출시}other{Chrome 업데이트가 출시된 지 #일 지남}}</translation>
 <translation id="9026991721384951619">계정의 로그인 세부정보가 오래되어 Chrome OS에서 데이터를 동기화하지 못했습니다.</translation>

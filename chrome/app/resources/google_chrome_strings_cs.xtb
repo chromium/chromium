@@ -249,6 +249,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7398801000654795464">K prohlížeči Chrome jste byli přihlášeni pomocí účtu <ph name="USER_EMAIL_ADDRESS" />. Přihlaste se prosím znovu pomocí stejného účtu.</translation>
 <translation id="7408085963519505752">Smluvní podmínky systému Chrome OS</translation>
 <translation id="7419046106786626209">Chrome OS nemohl synchronizovat vaše data, protože Synchronizace ve vaší doméně není k dispozici.</translation>
+<translation id="7481213027396403996">Aktivujte si v Chromu maximální zabezpečení</translation>
 <translation id="7486227612705979895">Chrome bude za účelem zobrazování návrhů v adresním řádku číst váš obsah na Disku</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Chcete-li se podívat, zda je zařízení aktualizované, přejděte do <ph name="LINK_BEGIN" />Nastavení operačního systému Chrome<ph name="LINK_END" /></translation>
@@ -307,6 +308,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="8862326446509486874">Nemáte práva nutná k provádění instalací na úrovni systému. Zkuste spustit instalační program jako správce.</translation>
 <translation id="8914504000324227558">Znovu spustit Chrome</translation>
 <translation id="8922193594870374009">Chcete-li poslat číslo z webu <ph name="ORIGIN" /> na svůj telefon Android, v obou zařízeních se přihlaste do Chromu.</translation>
+<translation id="8927704157641862988">Přizpůsobte si nastavení ochrany soukromí, která jsou v prohlížeči Chrome nejdůležitější. Tento průvodce nezahrnuje všechna nastavení a možnosti.</translation>
 <translation id="8986207147630327271">Přidáváte do tohoto prohlížeče pracovní profil a povolujete administrátorovi ovládat pouze pracovní profil.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Je k dispozici aktualizace Chromu}=1{Je k dispozici aktualizace Chromu}few{Již # dny je k dispozici aktualizace Chromu}many{Již # dne je k dispozici aktualizace Chromu}other{Již # dní je k dispozici aktualizace Chromu}}</translation>
 <translation id="9026991721384951619">Chrome OS vaše data nemohl synchronizovat, protože vaše přihlašovací údaje nejsou aktuální.</translation>

@@ -179,6 +179,7 @@
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
 <translation id="120937472976628837">Segnala informazioni sulla ventola</translation>
+<translation id="1212233008927724662">Disattiva il caricamento lento di WebUI di accesso.</translation>
 <translation id="1216919699175573511">Attiva il supporto per Signed HTTP Exchange (SXG)</translation>
 <translation id="1219695476179627719">Consente di specificare se il dispositivo deve eseguire il rollback alla versione impostata da <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> nel caso in cui sia già in esecuzione una versione successiva.
 
@@ -486,6 +487,12 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="159946228300522107">Se il criterio è impostato su True, Chrome ingrandisce la prima finestra mostrata alla prima esecuzione.
 
       Se il criterio è impostato su False o se non viene configurato, Chrome potrebbe ingrandire la prima finestra in base alle dimensioni dello schermo.</translation>
+<translation id="1600107337865729434">Questo criterio consente per impostazione predefinita il clustering di agenti in base all'origine.
+
+      L'intestazione HTTP Origin-Agent-Cluster consente di stabilire se un documento viene isolato in un cluster di agenti in base all'origine o in un cluster di agenti in base al sito. Questo comporta implicazioni relative alla sicurezza perché un cluster di agenti in base all'origine consente di isolare i documenti per origine. La conseguenza evidente di questo comportamento per gli sviluppatori è che non è più possibile impostare la funzione di accesso document.domain.
+
+      Il comportamento predefinito (se non è stata impostata alcuna intestazione Origin-Agent-Cluster) cambia in M101 da in base al sito a in base all'origine. Se questo criterio viene attivato o se non viene configurato, il browser seguirà questo nuovo comportamento predefinito a partire dalla versione indicata. Se il criterio viene disattivato, questa modifica viene annullata e i documenti senza intestazioni Origin-Agent-Cluster verranno assegnati a cluster di agenti in base al sito. Di conseguenza, la funzione di accesso document.domain rimane configurabile per impostazione predefinita (comportamento precedente).
+      </translation>
 <translation id="1600340610556453828">Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva la rete Wi-Fi e gli utenti non possono modificarlo.
 
       Se viene impostato su Attivato o se non viene configurato, gli utenti possono attivare o disattivare la rete Wi-Fi.</translation>
@@ -631,6 +638,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Vedi anche il criterio <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.
 
       Nota: questa impostazione sostituirà <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, se presente.</translation>
+<translation id="1721304336924950970">Carica WebUI di accesso soltanto quando necessario.</translation>
 <translation id="172374442286684480">Consenti a tutti i siti di impostare i dati locali</translation>
 <translation id="1729169799290004131">La configurazione del criterio consente di specificare la percentuale di luminosità dello schermo, che comporta la disattivazione delle funzionalità di luminosità automatica. Il valore iniziale di luminosità dello schermo viene regolato il base al valore del criterio, ma gli utenti possono modificarlo.
 
@@ -714,6 +722,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 Questa norma è facoltativa. Se non viene impostata, la richiesta di ricerca istantanea verrà inviata utilizzando il metodo GET.
 
 Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled" è attiva.</translation>
+<translation id="1850439894606905202">Per impostazione predefinita, i documenti vengono inseriti in cluster di agenti in base al sito. La funzione di accesso document.domain rimane configurabile.</translation>
 <translation id="1852294065645015766">Consenti la riproduzione automatica dei contenuti multimediali</translation>
 <translation id="1859859319036806634">Avviso. Il fallback della versione TLS sarà rimosso da <ph name="PRODUCT_NAME" /> dopo la versione 52 (nel periodo settembre 2016), dopodiché questa norma non sarà più attiva.
 
@@ -1863,6 +1872,15 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3152425128389603870">Rendi disponibile la modalità Desktop unificato e attivala per impostazione predefinita</translation>
 <translation id="3159375329008977062">L'utente è abilitato a importare/esportare contenitori Crostini tramite l'interfaccia</translation>
 <translation id="3164531087779621747">Modalità di stampa PostScript</translation>
+<translation id="3165468162820163252">Questo criterio consente di stabilire se la parte WebUI della schermata di accesso verrà sempre caricata all'inizio o soltanto prima di essere mostrata. Questo criterio si applica alla schermata di accesso.
+
+      Se questo criterio viene attivato, la parte WebUI dell'interfaccia utente di accesso verrà caricata soltanto prima di essere mostrata. In questo modo la procedura di accesso diventa più veloce.
+
+      Se questo criterio viene disattivato, la parte WebUI della schermata di accesso verrà caricata sempre all'avvio (comportamento precedente).
+
+      Se il criterio non viene configurato, il comportamento sarà gestito tramite la funzionalità kEnableLazyLoginWebUILoading.
+
+      Questo criterio sarà rimosso dopo l'implementazione completa della funzionalità kEnableLazyLoginWebUILoading.</translation>
 <translation id="3165808775394012744">Queste norme sono incluse qui in modo che sia più facile rimuoverle.</translation>
 <translation id="3166210414652928099">Consenti all'utente di usare app Android di fonti non attendibili</translation>
 <translation id="316778957754360075">Questa impostazione non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_NAME" />. Il metodo consigliato per la configurazione di raccolte di estensioni/app ospitate dall'organizzazione consiste nell'includere il sito che ospita i pacchetti CRX in ExtensionInstallSources e inserire link di download diretti per i pacchetti in una pagina web. È possibile creare una funzione Avvio applicazioni per la pagina web utilizzando la norma ExtensionInstallForcelist.</translation>
@@ -4003,6 +4021,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Se questo criterio viene impostato su False o non viene impostato, le funzionalità Web Components v0 verranno disattivate per impostazione predefinita a partire dalla versione M80.
 
       Questo criterio verrà rimosso nelle versioni successive alla versione 84 di Chrome.</translation>
+<translation id="575647238840663288">Per impostazione predefinita, i documenti potrebbero essere inseriti in cluster di agenti in base all'origine. La funzione di accesso document.domain non è configurabile per questi documenti.</translation>
 <translation id="5756680608782814094">Segnala informazioni sui VPD di un dispositivo.
 
       Se il criterio è impostato su False o non è configurato, le informazioni non vengono segnalate.
@@ -4779,6 +4798,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Specifica un hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> collegandolo al nome dell'algoritmo di hash, una barra e la codifica Base64 di tale algoritmo di hash applicato al <ph name="SUBJECT_PUBLIC_KEY_INFO" /> con codifica DER del certificato specificato. Il formato della codifica Base64 è nello stesso formato di un'impronta SPKI. L'unico algoritmo di hash riconosciuto è sha256; gli altri vengono ignorati.
 
       Se il criterio non è configurato e se i certificati che richiedono la divulgazione tramite Certificate Transparency non vengono divulgati, <ph name="PRODUCT_NAME" /> non ritiene attendibili gli altri certificati.</translation>
+<translation id="6704445641918520643">Attiva il caricamento lento di WebUI di accesso.</translation>
 <translation id="6704515759227307131">Questo criterio è obsoleto ed è stato sostituito dal criterio AdvancedProtectionAllowed.
 
       Questo criterio consente di stabilire se gli utenti iscritti al programma di protezione avanzata possono inviare o meno i propri download a Google per verificare l'eventuale presenza di malware. Se il criterio viene impostato su True o non viene impostato, agli utenti iscritti al programma verrà chiesto di inviare i propri file a Google per una scansione approfondita. Se l'utente seleziona "Scansiona", il download verrà inviato a Google. Se il criterio viene impostato su False, agli utenti non verrà chiesto di inviare i propri download a Google.</translation>
@@ -6495,6 +6515,11 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto nelle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="8671119576957984818">Attiva hub di condivisione desktop</translation>
+<translation id="8671314659400112135">Se il criterio viene impostato su Attivato o se non viene configurato, <ph name="PRODUCT_NAME" /> potrà applicare la riduzione dei rischi di sicurezza dei punti di estensioni aggiuntivi per bloccare i punti di estensioni precedenti nel processo del browser.
+
+      Se il criterio viene impostato su Disattivato, la sicurezza e la stabilità di <ph name="PRODUCT_NAME" /> diminuiranno, perché sarà possibile caricare codice sconosciuto e potenzialmente dannoso all'interno del processo del browser di <ph name="PRODUCT_NAME" />. Disattiva il criterio soltanto se si verificano problemi di compatibilità con software di terze parti che devono essere eseguiti all'interno del processo del browser di <ph name="PRODUCT_NAME" />.
+
+      Nota: scopri di più sui criteri relativi alla mitigazione dei processi (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="8672321184841719703">Scegli versione target dell'aggiornamento automatico</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
 <translation id="8676959842615154675">Se il criterio viene impostato su Attivato, l'host di accesso remoto confronta il nome dell'utente locale a cui è associato l'host con il nome dell'Account Google registrato come proprietario dell'host ("mariorossi" se l'host è di proprietà dell'Account Google "mariorossi@example.com"). Questo host non viene avviato se il nome del proprietario dell'host non coincide con quello dell'utente locale a cui è associato l'host. Per forzare l'associazione dell'Account Google del proprietario con un dominio specifico, usa il criterio insieme a <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
@@ -6763,6 +6788,7 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 <translation id="8948062138228904066">Lista consentita di server di autenticazione</translation>
 <translation id="8951350807133946005">Impostazione directory della cache su disco</translation>
 <translation id="8955719471735800169">Torna all'inizio</translation>
+<translation id="8956312248048980644">Consente per impostazione predefinita il clustering di agenti in base all'origine.</translation>
 <translation id="8959992920425111821">Configurazione predefinita</translation>
 <translation id="8967125680876068695">Le app di Chrome sono state ritirate su Windows, Mac e Linux.
       Se questo criterio viene attivato, <ph name="PRODUCT_NAME" /> continuerà a consentire l'esecuzione delle app di Chrome su queste piattaforme fino alla data ultima del ritiro del supporto di queste app su tutte le piattaforme, vale a dire giugno 2022.

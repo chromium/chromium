@@ -1466,7 +1466,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2471506181342525583">Piekļuve atrašanās vietai atļauta</translation>
 <translation id="2473195200299095979">Tulkot šo lapu</translation>
 <translation id="2475982808118771221">Radās kļūda</translation>
-<translation id="2476578072172137802">Vietnes iestatījumi</translation>
+<translation id="2476578072172137802">Vietņu iestatījumi</translation>
 <translation id="2476974672882258506">Lai atinstalētu <ph name="PARALLELS_DESKTOP" />, izslēdziet Windows datoru.</translation>
 <translation id="2477065602824695373">Tā kā iestatījāt vairākus slēdžus, automātiskā pārlūkošana ir izslēgta.</translation>
 <translation id="2478176599153288112">Multivides faila atļaujas paplašinājumam “<ph name="EXTENSION" />”</translation>
@@ -2505,6 +2505,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3557101512409028104">Iestatīt vietņu ierobežojumus un izmantošanas ilguma ierobežojumus, izmantojot Family Link</translation>
 <translation id="3559262020195162408">Neizdevās ierīcē instalēt politiku.</translation>
 <translation id="3559533181353831840">Aptuvenais atlikušais laiks: <ph name="TIME_LEFT" /></translation>
+<translation id="3559697822483154494">Saņemiet apstiprinājumu ar vibrāciju tādām darbībām kā ekrāna sadalīšana un darbvietu pārslēgšana.</translation>
 <translation id="3560034655160545939">&amp;Pareizrakstības pārbaude</translation>
 <translation id="3562423906127931518">Šis process var ilgt dažas minūtes. Notiek Linux konteinera iestatīšana.</translation>
 <translation id="3562655211539199254">Skatiet nesen atvērtās Chrome cilnes no sava tālruņa.</translation>
@@ -4904,6 +4905,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6112931163620622315">Pārbaudiet savu tālruni</translation>
 <translation id="6113434369102685411">Iestatiet noklusējuma meklētājprogrammu pārlūkam Chrome un <ph name="DEVICE_TYPE" /> palaidējam.</translation>
 <translation id="6113942107547980621">Lai izmantotu Smart Lock, pārslēdzieties uz tālruņa primāro lietotāja profilu</translation>
+<translation id="611684075852771314">Šie žurnāli ir saglabāti mapē “Mani faili” kā</translation>
 <translation id="6116921718742659598">Mainīt valodas un ievades iestatījumus</translation>
 <translation id="6119927814891883061">Piešķirt ierīcei nosaukumu <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Piespraust šo lapu sākuma ekrānam...</translation>
@@ -5680,6 +5682,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6930036377490597025">Ārējā drošības atslēga vai iebūvēts sensors</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Paplašinājums ir noraidīts}zero{# paplašinājumi ir noraidīti}one{# paplašinājums ir noraidīts}other{# paplašinājumi ir noraidīti}}</translation>
 <translation id="6930321203306643451">Jaunināšana pabeigta</translation>
+<translation id="6931690462168617033">Klikšķa stiprums</translation>
 <translation id="6935286146439255109">Nav papīra trauka</translation>
 <translation id="693807610556624488">Rakstīšanas darbība pārsniedz atribūta maksimālo garumu šajā ierīcē: “<ph name="DEVICE_NAME" />”.</translation>
 <translation id="6938386202199793006">Jums ir viens saglabāts printeris.</translation>
@@ -6809,6 +6812,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8064279191081105977">Grupas <ph name="GROUP_NAME" /> (<ph name="GROUP_CONTENTS" />) statuss: <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Savienojuma dialoglodziņš</translation>
 <translation id="8069615408251337349">Google mākoņdruka</translation>
+<translation id="8070662218171013510">Vibrācija</translation>
 <translation id="8071432093239591881">Drukāt kā attēlu</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Lietotņu dati var būt jebkādi lietotņu saglabātie dati (atkarībā no izstrādātāja iestatījumiem), tostarp tādi dati kā kontaktpersonas, ziņojumi un fotoattēli.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Dublētie dati netiek ieskaitīti jūsu bērna Diska krātuves kvotā.<ph name="END_PARAGRAPH2" />
@@ -7021,7 +7025,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8281886186245836920">Izlaist</translation>
 <translation id="8283475148136688298">Veidojot savienojumu ar ierīci <ph name="DEVICE_NAME" />, autentifikācijas kods tika noraidīts.</translation>
 <translation id="8284279544186306258">visās <ph name="WEBSITE_1" /> vietnēs</translation>
-<translation id="8284326494547611709">Paraksti</translation>
+<translation id="8284326494547611709">Subtitri</translation>
 <translation id="8286036467436129157">Pierakstīties</translation>
 <translation id="8287902281644548111">Meklēt pēc API izsaukuma/URL</translation>
 <translation id="8288032458496410887">Vai atinstalēt lietotni <ph name="APP" />?</translation>

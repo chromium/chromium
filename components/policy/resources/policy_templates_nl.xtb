@@ -178,6 +178,7 @@
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen.  <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="120937472976628837">Ventilatorgegevens rapporteren</translation>
+<translation id="1212233008927724662">Lazy loading van WebUI voor inloggen uitzetten.</translation>
 <translation id="1216919699175573511">Signed HTTP Exchange-ondersteuning (SXG) aanzetten</translation>
 <translation id="1219695476179627719">Geeft aan of het apparaat moet terugkeren naar de versie die is ingesteld met <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> als er al een latere versie is geïnstalleerd.
 
@@ -486,6 +487,12 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 <translation id="159946228300522107">Als je het beleid instelt op True, maximaliseert Chrome het eerste venster tijdens de eerste uitvoering.
 
       Als je het beleid instelt op False of niet instelt, kan Chrome het eerste venster mogelijk maximaliseren, afhankelijk van de schermgrootte.</translation>
+<translation id="1600107337865729434">Dit beleid staat origin-keyed agentclustering standaard toe.
+
+      De HTTP-header Origin-Agent-Cluster: bepaalt of een document wordt geïsoleerd in een origin-keyed agentcluster of in een site-keyed agentcluster. Dit heeft beveiligingsimplicaties omdat een origin-keyed agentcluster isolatie van documenten op basis van oorsprong toestaat. Het voor de ontwikkelaar zichtbare gevolg hiervan is dat de accessor document.domain niet meer kan worden ingesteld.
+
+      Het standaardgedrag (wanneer er geen header Origin-Agent-Cluster: is ingesteld) verandert in M101 van site-keyed naar origin-keyed. Als je dit beleid toepast of niet instelt, volgt de browser deze nieuwe standaardwaarde vanaf die versie. Als je dit beleid niet toepast, wordt deze wijziging teruggedraaid en worden documenten zonder een header Origin-Agent-Cluster: toegewezen aan site-keyed agentclusters. Als gevolg hiervan blijft de accessor document.domain standaard instelbaar. Dit komt overeen met het verouderde gedrag.
+      </translation>
 <translation id="1600340610556453828">Als je het beleid niet toepast, zet <ph name="PRODUCT_OS_NAME" /> wifi uit en kunnen gebruikers dit niet wijzigen.
 
       Als je het beleid niet toepast of niet instelt, kunnen gebruikers wifi aan- of uitzetten.</translation>
@@ -636,6 +643,7 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
       Zie ook <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.
 
       Opmerking: Deze instelling overschrijft <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> (indien aanwezig).</translation>
+<translation id="1721304336924950970">WebUI voor inloggen alleen laden indien nodig.</translation>
 <translation id="172374442286684480">Alle sites toestaan lokale gegevens in te stellen</translation>
 <translation id="1729169799290004131">Als je het beleid instelt, wordt de helderheid van het scherm als percentage ingesteld en worden de functies voor automatische helderheid uitgezet. Het scherm heeft aanvankelijk de helderheid van de beleidswaarde, maar gebruikers kunnen deze aanpassen.
 
@@ -719,6 +727,7 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
           Dit beleid is optioneel. Als het beleid niet is ingesteld, wordt de instantzoekopdracht verstuurd met de GET-methode.
 
           Dit beleid wordt alleen gerespecteerd als het beleid DefaultSearchProviderEnabled is toegepast.</translation>
+<translation id="1850439894606905202">Standaard worden documenten in site-keyed agentclusters geplaatst. document.domain blijft instelbaar.</translation>
 <translation id="1852294065645015766">Automatisch afspelen van media toestaan</translation>
 <translation id="1859859319036806634">Waarschuwing: De TLS-fallbackversie wordt na de lancering van versie 52 (rond september 2016) uit <ph name="PRODUCT_NAME" /> verwijderd. Vanaf dat moment werkt dit beleid niet meer.
 
@@ -1850,6 +1859,15 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
 <translation id="3152425128389603870">Maak Samengestelde desktop beschikbaar en zet deze standaard aan</translation>
 <translation id="3159375329008977062">Gebruiker kan Crostini-containers exporteren/importeren via de gebruikersinterface</translation>
 <translation id="3164531087779621747">Modus voor PostScript-afdrukken</translation>
+<translation id="3165468162820163252">Dit beleid bepaalt of het WebUI-gedeelte van het inlogscherm altijd wordt geladen bij het opstarten of alleen voordat het wordt getoond. Dit beleid is van toepassing op het inlogscherm.
+
+      Als je dit beleid toepast, wordt het WebUI-gedeelte van de inlog-UI alleen geladen voordat het wordt getoond. Dit versnelt het inlogproces.
+
+      Als je dit beleid niet toepast, wordt het WebUI-gedeelte van het inlogscherm altijd geladen bij het opstarten (verouderd gedrag).
+
+      Als je dit beleid niet instelt, wordt het gedrag bepaald door de functie kEnableLazyLoginWebUILoading.
+
+      Dit beleid moet worden verwijderd nadat kEnableLazyLoginWebUILoading helemaal is uitgerold.</translation>
 <translation id="3165808775394012744">Deze beleidsregels zijn hier opgenomen zodat je ze makkelijk kunt verwijderen.</translation>
 <translation id="3166210414652928099">Toestaan dat de gebruiker Android-apps van niet-vertrouwde bronnen gebruikt</translation>
 <translation id="316778957754360075">Deze instelling wordt niet meer gebruikt sinds <ph name="PRODUCT_NAME" /> versie 29. De aanbevolen manier om verzamelingen van extensies/apps die door de organisatie worden gehost in te stellen, is het opnemen van de site die de CRX-pakketten in ExtensionInstallSources host en het plaatsen van rechtstreekse downloadlinks naar de pakketten op een webpagina. Je kunt voor die webpagina een startprogramma maken met het beleid ExtensionInstallForcelist.</translation>
@@ -3978,6 +3996,7 @@ Als je dit beleid instelt, kun je bepalen of een gebruiker mag inloggen bij <ph 
       Als dit beleid is ingesteld op False of niet is ingesteld, worden de functies van Web Components v0 standaard uitgezet, vanaf M80.
 
       Dit beleid wordt na Chrome 84 verwijderd.</translation>
+<translation id="575647238840663288">Documenten kunnen standaard in origin-keyed agentclusters worden geplaatst. document.domain is niet instelbaar voor dergelijke documenten.</translation>
 <translation id="5756680608782814094">Rapporteer de VPD-gegevens van een apparaat.
 
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
@@ -4729,6 +4748,7 @@ Als je ervoor kiest het volgende te gebruiken:
       Geef een <ph name="SUBJECT_PUBLIC_KEY_INFO" />-hash op door de naam van het hash-algoritme, een slash en de Base64-codering van het betreffende toegepaste hash-algoritme te koppelen aan de <ph name="SUBJECT_PUBLIC_KEY_INFO" /> met DER-codering van het opgegeven certificaat. Een indeling met Base64-codering komt overeen met die van een SPKI-vingerafdruk. Het enige herkende hash-algoritme is sha256. Andere algoritmen worden genegeerd.
 
       Als je het beleid niet instelt, betekent dit dat als certificaten die openbaar moeten worden gemaakt via Certificaattransparantie niet openbaar worden gemaakt, de betreffende certificaten niet door <ph name="PRODUCT_NAME" /> worden vertrouwd.</translation>
+<translation id="6704445641918520643">Lazy loading van WebUI voor inloggen aanzetten.</translation>
 <translation id="6704515759227307131">Dit beleid is beëindigd en is vervangen door AdvancedProtectionAllowed.
 
       Met dit beleid wordt bepaald of gebruikers die zijn ingeschreven bij 'Geavanceerde beveiliging' hun downloads naar Google mogen sturen om ze te laten scannen. Als dit beleid is ingesteld op True of niet is ingesteld, wordt ingeschreven gebruikers gevraagd hun bestanden naar Google te sturen voor een uitgebreide scan. Als gebruikers 'Scannen' selecteren, worden hun downloads naar Google gestuurd. Als dit beleid is ingesteld op False, ontvangen gebruikers geen melding en worden hun downloads niet naar Google gestuurd.</translation>
@@ -6446,6 +6466,11 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="8671119576957984818">Hub voor delen van bureaublad aanzetten</translation>
+<translation id="8671314659400112135">Als je het beleid toepast of niet instelt, kan <ph name="PRODUCT_NAME" /> de aanvullende beveiligingsbeperking voor extensiepunten toepassen om verouderde extensiepunten in het browserproces te blokkeren.
+
+      Als je dit beleid niet toepast, heeft dit een nadelige invloed op de beveiliging en stabiliteit van <ph name="PRODUCT_NAME" />, omdat onbekende en potentieel schadelijke code kan worden geladen in het browserproces van <ph name="PRODUCT_NAME" />. Pas het beleid alleen niet toe als er compatibiliteitsproblemen zijn met software van derden die in het browserproces van <ph name="PRODUCT_NAME" /> moet worden uitgevoerd.
+
+      Opmerking: Lees meer informatie over het beleid voor procesbeperking (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
 <translation id="8672321184841719703">Doelversie voor automatische updates</translation>
 <translation id="867410340948518937">U2F (Universal Second Factor)</translation>
 <translation id="8676959842615154675">Als je dit beleid toepast, vergelijkt de host voor externe toegang de naam van de lokale gebruiker waaraan de host is gekoppeld, met de naam van het Google-account dat is geregistreerd als eigenaar van de host (bijvoorbeeld 'jansmits' als de host eigendom is van het Google-account jansmits@example.com). Deze host wordt niet gestart als de naam van de hosteigenaar anders is dan de naam van de lokale gebruiker waaraan de host is gekoppeld. Als je wilt afdwingen dat het Google-account van de eigenaar wordt gekoppeld aan een specifiek domein, gebruik je het beleid met <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />.
@@ -6713,6 +6738,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8948062138228904066">Toelatingslijst voor verificatieserver</translation>
 <translation id="8951350807133946005">Directory voor schijfcache instellen</translation>
 <translation id="8955719471735800169">Bovenkant pagina</translation>
+<translation id="8956312248048980644">Staat origin-keyed agentclustering standaard toe.</translation>
 <translation id="8959992920425111821">Standaard configuratie</translation>
 <translation id="8967125680876068695">Chrome-apps worden beëindigd voor Windows, Mac en Linux.
       Als je dit beleid aanzet, staat <ph name="PRODUCT_NAME" /> nog steeds toe dat Chrome-apps worden uitgevoerd op deze platforms, tot de einddatum van juni 2022. Op dat moment wordt ondersteuning voor Chrome-apps op alle platforms verwijderd.

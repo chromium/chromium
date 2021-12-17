@@ -250,6 +250,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7398801000654795464">V Chrome ste bili prijavljeni kot <ph name="USER_EMAIL_ADDRESS" />. Pri vnovični prijavi uporabite isti račun.</translation>
 <translation id="7408085963519505752">Pogoji za Chrome OS</translation>
 <translation id="7419046106786626209">Chrome OS ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
+<translation id="7481213027396403996">Izberite Chromovo najmočnejšo varnost</translation>
 <translation id="7486227612705979895">Chrome bo dostopal do Googla Drive zaradi ponujanja predlogov v naslovni vrstici</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Če želite preveriti, ali je naprava posodobljena, odprite <ph name="LINK_BEGIN" />nastavitve sistema OS Chrome<ph name="LINK_END" /></translation>
@@ -308,6 +309,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="8862326446509486874">Nimate ustreznih pravic za namestitev na ravni sistema. Poskusite znova zagnati namestitveni program kot skrbnik.</translation>
 <translation id="8914504000324227558">Znova zaženi Chrome</translation>
 <translation id="8922193594870374009">Če želite telefonsko številko iz <ph name="ORIGIN" /> poslati v telefon Android, se prijavite v Chrome v obeh napravah.</translation>
+<translation id="8927704157641862988">Prilagodite izbire glede zasebnosti, ki jih Chrome obravnava kot najpomembnejše. V tem vodniku niso vse nastavitve in možnosti.</translation>
 <translation id="8986207147630327271">V ta brskalnik dodajate delovni profil in skrbniku omogočate nadzor samo nad delovnim profilom.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Posodobitev za Chrome je na voljo}=1{Posodobitev za Chrome je na voljo}one{Posodobitev za Chrome je na voljo že # dan}two{Posodobitev za Chrome je na voljo že # dneva}few{Posodobitev za Chrome je na voljo že # dni}other{Posodobitev za Chrome je na voljo že # dni}}</translation>
 <translation id="9026991721384951619">Chrome OS ni mogel sinhronizirati podatkov, ker so podatki za prijavo v račun zastareli.</translation>

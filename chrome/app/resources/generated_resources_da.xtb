@@ -2519,6 +2519,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3557101512409028104">Angiv websitebegrænsninger og grænser for skærmtid ved hjælp af Family Link</translation>
 <translation id="3559262020195162408">Politikken kunne ikke installeres på enheden.</translation>
 <translation id="3559533181353831840">Ca. <ph name="TIME_LEFT" /> tilbage</translation>
+<translation id="3559697822483154494">Få vibrationsfeedback ved handlinger, f.eks. opdeling af skærm og skift mellem skriveborde.</translation>
 <translation id="3560034655160545939">&amp;Stavekontrol</translation>
 <translation id="3562423906127931518">Denne proces kan tage et par minutter. Linux-containeren konfigureres.</translation>
 <translation id="3562655211539199254">Se de seneste Chrome-faner fra din telefon</translation>
@@ -4919,6 +4920,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6112931163620622315">Tjek din telefon</translation>
 <translation id="6113434369102685411">Angiv din standardsøgemaskine for Chrome-browseren og applisten på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Skift til den primære brugerprofil på din telefon for at bruge Smart Lock</translation>
+<translation id="611684075852771314">Disse logs er blevet gemt i Mine filer som</translation>
 <translation id="6116921718742659598">Rediger indstillingerne for sprog og indtastning</translation>
 <translation id="6119927814891883061">Navngiv enheden: <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Fastgør denne side til startskærmen...</translation>
@@ -5695,6 +5697,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6930036377490597025">Ekstern sikkerhedsnøgle eller indbygget sensor</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{En udvidelse blev afvist}one{# udvidelse blev afvist}other{# udvidelse blev afvist}}</translation>
 <translation id="6930321203306643451">Opgraderingen er fuldført</translation>
+<translation id="6931690462168617033">Klikstyrke</translation>
 <translation id="6935286146439255109">Der mangler en papirbakke</translation>
 <translation id="693807610556624488">Skrivehandlingen overskrider den maksimale længde af attributten på: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">Du har 1 gemt printer.</translation>
@@ -6824,6 +6827,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8064279191081105977">Gruppe <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Dialogboks for forbindelse</translation>
 <translation id="8069615408251337349">Google Cloudprinter</translation>
+<translation id="8070662218171013510">Feedback ved berøring</translation>
 <translation id="8071432093239591881">Udskriv i billedformat</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Appdata kan være alle former for data, som en app har gemt (baseret på udviklerens indstillinger), f.eks. kontakter, beskeder og billeder.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Sikkerhedskopierede data tæller ikke med i din kvote for Drev-lagerplads.<ph name="END_PARAGRAPH2" />

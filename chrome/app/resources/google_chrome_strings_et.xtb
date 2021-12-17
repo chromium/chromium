@@ -245,6 +245,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7398801000654795464">Olite Chrome'i sisse logitud kasutajana <ph name="USER_EMAIL_ADDRESS" />. Kasutage uuesti sisselogimiseks sama kontot.</translation>
 <translation id="7408085963519505752">Chrome OS-i tingimused</translation>
 <translation id="7419046106786626209">Google OS ei saanud teie andmeid sünkroonida, sest sünkroonimine pole teie domeenil saadaval.</translation>
+<translation id="7481213027396403996">Hankige Chrome'i parimad turbefunktsioonid</translation>
 <translation id="7486227612705979895">Chrome pääseb teie Drive'ile juurde, et aadressiribal soovitusi anda</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Kui soovite teada saada, kas teie seade on ajakohane, avage <ph name="LINK_BEGIN" />Chromium OS-i seaded<ph name="LINK_END" /></translation>
@@ -303,6 +304,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="8862326446509486874">Teil ei ole süsteemi tasemel installimiseks sobivaid õigusi. Proovige installijat administraatorina uuesti käivitada.</translation>
 <translation id="8914504000324227558">Käivita Chrome uuesti</translation>
 <translation id="8922193594870374009">Numbri saatmiseks asukohast <ph name="ORIGIN" /> Android-telefoni logige mõlemas seadmes Chrome'i sisse.</translation>
+<translation id="8927704157641862988">Kohandage privaatsusvalikuid, mida Chrome peab kõige olulisemaks. See juhend ei hõlma igat seadet ja valikut.</translation>
 <translation id="8986207147630327271">Lisate sellesse brauserisse tööprofiili ja annate administraatorile kontrolli vaid oma tööprofiili üle.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome'i värskendus on saadaval}=1{Chrome'i värskendus on saadaval}other{Chrome'i värskendus on # päeva saadaval olnud}}</translation>
 <translation id="9026991721384951619">Chrome OS ei saanud andmeid sünkroonida, sest teie konto sisselogimisandmed on aegunud.</translation>

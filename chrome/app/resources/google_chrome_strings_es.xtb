@@ -250,6 +250,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7398801000654795464">Habías iniciado sesión en Chrome como <ph name="USER_EMAIL_ADDRESS" />. Utiliza la misma cuenta para volver a iniciar sesión.</translation>
 <translation id="7408085963519505752">Condiciones de Chrome OS</translation>
 <translation id="7419046106786626209">Chrome OS no ha podido sincronizar los datos porque la función de sincronización no está disponible para tu dominio.</translation>
+<translation id="7481213027396403996">Consigue la seguridad más potente de Chrome</translation>
 <translation id="7486227612705979895">Chrome accederá a tu Drive para mostrarte sugerencias en la barra de direcciones</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Para comprobar si tu dispositivo está actualizado, ve a la <ph name="LINK_BEGIN" />configuración de Chrome OS<ph name="LINK_END" /></translation>
@@ -308,6 +309,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8862326446509486874">No dispones de los derechos necesarios para la instalación en el sistema. Intenta ejecutar de nuevo el programa de instalación como administrador.</translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> a tu teléfono Android, inicia sesión en Chrome con ambos dispositivos.</translation>
+<translation id="8927704157641862988">Personaliza las opciones de privacidad que Chrome considera más importantes. En esta guía, no se incluyen todos los ajustes y opciones.</translation>
 <translation id="8986207147630327271">Vas a añadir un perfil de trabajo a este navegador y le vas a dar a tu administrador el control únicamente sobre este perfil.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hay una actualización de Chrome disponible}=1{Hay una actualización de Chrome disponible}other{Hay una actualización de Chrome disponible desde hace # días}}</translation>
 <translation id="9026991721384951619">Chrome OS no ha podido sincronizar los datos porque la información de inicio de sesión de tu cuenta está obsoleta.</translation>

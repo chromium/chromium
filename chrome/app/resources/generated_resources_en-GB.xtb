@@ -416,6 +416,7 @@
            • Delete cookies and other temporary site data
             <ph name="LINE_BREAKS" />
            Bookmarks, history and saved passwords won't be affected.</translation>
+<translation id="1425233109861512854">Access code not recognised</translation>
 <translation id="1426410128494586442">Yes</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> is blocked</translation>
 <translation id="1426870617281699524">Click Try Again, and accept the prompt on your computer</translation>
@@ -583,6 +584,7 @@
 <translation id="1593926297800505364">Save payment method</translation>
 <translation id="1595492813686795610">Linux is upgrading</translation>
 <translation id="1596286373007273895">Available</translation>
+<translation id="1596709061955594992">Bluetooth is turned off. To see available devices, turn Bluetooth on.</translation>
 <translation id="1598233202702788831">Updates are disabled by your administrator.</translation>
 <translation id="1600857548979126453">Access the page debugger backend</translation>
 <translation id="1601560923496285236">Apply</translation>
@@ -1144,6 +1146,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2148892889047469596">Cast tab</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
 <translation id="2150139952286079145">Search destinations</translation>
+<translation id="2150491840563706000">You don't have permission to cast to this display</translation>
 <translation id="2150661552845026580">Add "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Invalid tab index entered.</translation>
 <translation id="2152281589789213846">Add printers to your profile</translation>
@@ -2612,6 +2615,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3654045516529121250">Read your accessibility settings</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{It has permanent access to one file.}other{It has permanent access to # files.}}</translation>
 <translation id="3658871634334445293">TrackPoint acceleration</translation>
+<translation id="3659929705630080526">You have entered an incorrect access code too many times. Try again later</translation>
 <translation id="3660234220361471169">Untrusted</translation>
 <translation id="3664511988987167893">Extension Icon</translation>
 <translation id="3665589677786828986">Chrome detected that some of your settings were corrupted by another program and reset them to their original defaults.</translation>
@@ -2695,6 +2699,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3743842571276656710">Enter PIN to pair with <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">To remove apps, go to Settings &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app that you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.</translation>
 <translation id="3747220812138541072">Show inline writing suggestions that appear as you type</translation>
+<translation id="3747603683749989726">Turn on enhanced security?</translation>
 <translation id="3748706263662799310">Report a bug</translation>
 <translation id="3750562496035670393">Chrome saved your password to this device, but you can save it to your Google Account instead. Then, all passwords in your Google Account will also be available while you're signed in.</translation>
 <translation id="3752253558646317685">Get your child to keep lifting their finger to save the fingerprint</translation>
@@ -3210,6 +3215,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4279129444466079448">You can install up to <ph name="PROFILE_LIMIT" /> eSIM profiles on this device. To add another profile, first remove an existing profile.</translation>
 <translation id="4281844954008187215">Terms of Service</translation>
 <translation id="4282196459431406533">Smart Lock is turned on</translation>
+<translation id="4284755288573763878">Turn off enhanced security?</translation>
 <translation id="4285418559658561636">Update Password</translation>
 <translation id="4285498937028063278">Unpin</translation>
 <translation id="428565720843367874">Anti-virus software failed unexpectedly while scanning this file.</translation>
@@ -4684,6 +4690,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> will pause soon</translation>
 <translation id="586567932979200359">You're running <ph name="PRODUCT_NAME" /> from its disk image. Installing it on your computer lets you run it without the disk image and ensures that it will be kept up to date.</translation>
 <translation id="5865733239029070421">Automatically sends usage statistics and crash reports to Google</translation>
+<translation id="5865848066829891215">Network communication issues</translation>
 <translation id="5867841422488265304">Search or type web address</translation>
 <translation id="5869029295770560994">OK, got it</translation>
 <translation id="5869522115854928033">Saved passwords</translation>
@@ -5978,6 +5985,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7243784282103630670">There was an error while upgrading Linux. We'll restore the container using your backup.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Best)</translation>
 <translation id="7246230585855757313">Reinsert your security key and try again</translation>
+<translation id="7249197363678284330">Change this setting in the address bar.</translation>
 <translation id="7250616558727237648">The device that you're sharing with didn't respond. Try again.</translation>
 <translation id="725109152065019550">Sorry, your administrator has disabled external storage on your account.</translation>
 <translation id="7251346854160851420">Default wallpaper</translation>
@@ -7733,6 +7741,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9026731007018893674">download</translation>
 <translation id="9026852570893462412">This process may take a few minutes. Downloading the virtual machine.</translation>
 <translation id="9027459031423301635">Open Link in New &amp;Tab</translation>
+<translation id="9029667986262585240">You turned off Enhanced Safe Browsing in your account.</translation>
 <translation id="9030515284705930323">Your organisation has not enabled Google Play Store for your account. Contact your administrator for more information.</translation>
 <translation id="9030754204056345429">Faster</translation>
 <translation id="9030785788945687215">Gmail</translation>

@@ -2505,6 +2505,7 @@
 <translation id="3557101512409028104">Наладжвайце доступ да вэб-сайтаў і абмяжоўвайце час карыстання прыладай праз Family Link</translation>
 <translation id="3559262020195162408">Не ўдалося ўсталяваць палітыку на прыладу.</translation>
 <translation id="3559533181353831840">Засталося: <ph name="TIME_LEFT" /></translation>
+<translation id="3559697822483154494">Пацвярджаць дзеянні вібрацыяй (напрыклад, падзел экрана або пераключэнне паміж працоўнымі сталамі).</translation>
 <translation id="3560034655160545939">&amp;Праверка правапісу</translation>
 <translation id="3562423906127931518">Гэты працэс можа заняць некалькі хвілін. Ідзе наладжванне кантэйнера Linux.</translation>
 <translation id="3562655211539199254">Праглядайце нядаўна адкрытыя ўкладкі Chrome з тэлефона</translation>
@@ -4902,6 +4903,7 @@
 <translation id="6112931163620622315">Праверце свой тэлефон</translation>
 <translation id="6113434369102685411">Задайце стандартную пошукавую сістэму для браўзера Chrome і Панэлі запуску на прыладзе <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">Каб выкарыстоўваць Smart Lock, пераключыцеся на асноўны карыстальніцкі профіль на тэлефоне</translation>
+<translation id="611684075852771314">Гэтыя журналы захаваны ў раздзеле "Мае файлы" пад назвай</translation>
 <translation id="6116921718742659598">Змяніць налады мовы і ўводу</translation>
 <translation id="6119927814891883061">Даць прыладзе назву "<ph name="DEVICE_NAME" />"</translation>
 <translation id="6120205520491252677">Замацаваць гэту старонку на пачатковым экране...</translation>
@@ -5678,6 +5680,7 @@
 <translation id="6930036377490597025">Знешні ключ бяспекі або ўбудаваны датчык</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Пашырэнне адхілена}one{# пашырэнне адхілена}few{# пашырэнні адхілена}many{# пашырэнняў адхілена}other{# пашырэння адхілена}}</translation>
 <translation id="6930321203306643451">Абнаўленне завершана</translation>
+<translation id="6931690462168617033">Сіла націскання</translation>
 <translation id="6935286146439255109">Адсутнічае латок для паперы</translation>
 <translation id="693807610556624488">Аперацыя запісу перавышае максімальную даўжыню атрыбута для прылады: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">У вас адзін захаваны прынтар.</translation>
@@ -6806,6 +6809,7 @@
 <translation id="8064279191081105977">Група "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Дыялогавае акно падключэння</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
+<translation id="8070662218171013510">Тактыльны водгук</translation>
 <translation id="8071432093239591881">Друкаваць як відарыс</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Даныя праграм – гэта любыя даныя, якія захоўваюцца праграмай (у залежнасці ад налад распрацоўшчыка), у тым ліку кантакты, паведамленні і фота.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Даныя рэзервовай копіі не будуць улічвацца ў квоце сховішча вашага дзіцяці на Дыску.<ph name="END_PARAGRAPH2" />

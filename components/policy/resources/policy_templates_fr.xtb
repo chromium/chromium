@@ -178,6 +178,7 @@
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="120937472976628837">Transmettre des infos sur le ventilateur</translation>
+<translation id="1212233008927724662">Désactiver le chargement différé du WebUI de connexion.</translation>
 <translation id="1216919699175573511">Activer la compatibilité avec la fonctionnalité Signed HTTP Exchange (SXG)</translation>
 <translation id="1219695476179627719">Spécifie si la version définie par <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> doit être rétablie sur l'appareil s'il exécute une version ultérieure.
 
@@ -486,6 +487,12 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="159946228300522107">Si cette règle est définie sur "True", Chrome agrandit la première fenêtre affichée à la première exécution.
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, Chrome peut agrandir la première fenêtre, selon la taille de l'écran.</translation>
+<translation id="1600107337865729434">Par défaut, cette règle autorise le clustering d'agents selon l'origine.
+
+      L'en-tête HTTP Origin-Agent-Cluster permet de spécifier si un document est isolé dans un cluster d'agents selon l'origine ou selon le site. Ce choix a des implications sur la sécurité, car le clustering d'agents selon l'origine permet d'isoler des documents en fonction de l'origine. Du point de vue du développeur, cela se traduit par l'impossibilité de configurer l'accesseur document.domain.
+
+      Le comportement par défaut (aucune configuration de l'en-tête Origin-Agent-Cluster) dans M101 n'est plus une isolation selon le site, mais selon l'origine. Si cette règle est activée ou qu'elle n'est pas configurée, le navigateur applique ce nouveau comportement par défaut à partir de cette version. Si cette règle est désactivée, ce changement est annulé et les documents sans en-têtes Origin-Agent-Cluster sont affectés aux clusters d'agents selon le site. L'accesseur document.domain reste donc configurable par défaut. Cela correspond à l'ancien comportement.
+      </translation>
 <translation id="1600340610556453828">Si cette règle est désactivée, <ph name="PRODUCT_OS_NAME" /> désactive le Wi-Fi. Les utilisateurs ne peuvent pas modifier ce paramètre.
 
       Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent activer ou désactiver le Wi-Fi.</translation>
@@ -636,6 +643,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Consultez également la règle "<ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />".
 
       Remarque : Ce paramètre ignore la règle "<ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />", le cas échéant.</translation>
+<translation id="1721304336924950970">Charger le WebUI de connexion uniquement si nécessaire.</translation>
 <translation id="172374442286684480">Autoriser tous les sites à définir des données locales</translation>
 <translation id="1729169799290004131">Cette règle permet de définir le niveau de luminosité de l'écran (en pourcentage), ce qui désactive les fonctionnalités de réglage automatique de la luminosité. En outre, le niveau initial de luminosité de l'écran est ajusté à la valeur définie dans cette règle. Toutefois, les utilisateurs peuvent modifier ce paramètre.
 
@@ -719,6 +727,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
           Cette règle est facultative. Si elle n'est pas définie, la requête de recherche instantanée sera envoyée à l'aide la méthode GET.
 
           Cette règle n'est respectée que si la règle "DefaultSearchProviderEnabled" est activée.</translation>
+<translation id="1850439894606905202">Par défaut, les documents sont placés dans des clusters d'agents selon le site, et l'accesseur document.domain reste configurable.</translation>
 <translation id="1852294065645015766">Autoriser la lecture automatique de contenus multimédias</translation>
 <translation id="1859859319036806634">Avertissement : Le traitement de secours de la version TLS sera supprimé de <ph name="PRODUCT_NAME" /> après la version 52 (vers le mois de septembre 2016), et cette règle ne sera alors plus applicable.
 
@@ -1865,6 +1874,15 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3152425128389603870">Rendre le mode bureau unifié disponible et l'activer par défaut</translation>
 <translation id="3159375329008977062">L'utilisateur est autorisé à exporter/importer des conteneurs Crostini via l'UI</translation>
 <translation id="3164531087779621747">Mode d'impression PostScript</translation>
+<translation id="3165468162820163252">Cette règle permet de définir si la partie WebUI de l'écran de connexion est systématiquement chargée au démarrage ou seulement avant de l'afficher. Cette règle s'applique à l'écran de connexion.
+
+      Si cette règle est activée, la partie WebUI de l'écran de connexion se charge uniquement avant d'être affichée. Cela accélère le processus de connexion.
+
+      Si cette règle est désactivée, la partie WebUI de l'écran de connexion est systématiquement chargée au démarrage (ancien comportement).
+
+      Si elle n'est pas configurée, le comportement est contrôlé par la fonctionnalité kEnableLazyLoginWebUILoading.
+
+      Cette règle devrait être supprimée une fois kEnableLazyLoginWebUILoading entièrement déployé.</translation>
 <translation id="3165808775394012744">Ces règles sont incluses ici pour faciliter leur suppression.</translation>
 <translation id="3166210414652928099">Autoriser l'utilisateur à se servir des applications Android provenant de sources non approuvées</translation>
 <translation id="316778957754360075">Ce paramètre a été supprimé à partir de la version 29 de <ph name="PRODUCT_NAME" />. Pour configurer des collections d'extensions et d'applications hébergées par l'organisation, il est recommandé d'inclure le site hébergeant les packages CRX dans ExtensionInstallSources et d'insérer des liens directs de téléchargement dans les packages sur une page Web. Il est possible de créer un lanceur d'applications pour cette page à l'aide de la règle ExtensionInstallForcelist.</translation>
@@ -4010,6 +4028,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si elle est définie sur "False" ou si elle n'est pas définie, les fonctionnalités de Web Components v0 seront désactivées par défaut à compter de la version M80.
 
       Cette règle sera supprimée après Chrome 84.</translation>
+<translation id="575647238840663288">Par défaut, les documents peuvent être placés dans des clusters d'agents selon l'origine. L'accesseur document.domain n'est pas configurable pour ces documents.</translation>
 <translation id="5756680608782814094">Transmet des informations sur les données VPD de l'appareil.
 
       Si la règle est définie sur "False" ou n'est pas définie, ces informations ne sont pas transmises.
@@ -4784,6 +4803,7 @@ Si vous sélectionnez les options suivantes :
       Spécifiez un hachage <ph name="SUBJECT_PUBLIC_KEY_INFO" /> en concaténant le nom de l'algorithme de hachage, une barre oblique et l'encodage Base64 de cet algorithme de hachage appliqué à l'élément <ph name="SUBJECT_PUBLIC_KEY_INFO" /> encodé en DER du certificat spécifié. Le format d'encodage Base64 correspond à celui d'une empreinte SPKI. SHA-256 est le seul algorithme de hachage reconnu (les autres sont ignorés).
 
       Si cette règle n'est pas configurée, cela signifie que si les certificats ne sont pas communiqués tel que le prévoient les règles de transparence des certificats, <ph name="PRODUCT_NAME" /> considère alors qu'ils ne sont pas fiables.</translation>
+<translation id="6704445641918520643">Activer le chargement différé du WebUI de connexion.</translation>
 <translation id="6704515759227307131">Cette règle est obsolète et a été remplacée par AdvancedProtectionAllowed.
 
       Elle permet de contrôler si les utilisateurs inscrits au Programme Protection Avancée sont autorisés à envoyer leurs téléchargements à Google pour les faire analyser afin de détecter d'éventuels logiciels malveillants. Si cette règle est définie sur "True" ou si elle n'est pas configurée, ces utilisateurs sont invités à envoyer leurs téléchargements à Google pour une analyse approfondie. Si ces utilisateurs sélectionnent l'option d'analyse, leurs téléchargements sont envoyés à Google. Si cette règle est définie sur "False", aucune invite ne s'affiche, et les téléchargements des utilisateurs ne sont pas envoyés à Google.</translation>
@@ -6509,6 +6529,11 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="8671119576957984818">Activer le hub de partage du bureau</translation>
+<translation id="8671314659400112135">Si cette règle est activée ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> peut appliquer l'atténuation supplémentaire de la sécurité du point d'extension pour bloquer les anciens points d'extension du processus du navigateur.
+
+      Si elle est désactivée, cela altère la sécurité et la stabilité de <ph name="PRODUCT_NAME" />, car des codes inconnus et potentiellement hostiles pourront être chargés dans les processus du navigateur <ph name="PRODUCT_NAME" />. Cette règle ne doit être désactivée qu'en cas de problèmes de compatibilité avec des logiciels tiers devant s'exécuter dans les processus du navigateur <ph name="PRODUCT_NAME" />.
+
+      Remarque : Consultez la page https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies pour en savoir plus sur les règles d'atténuation des risques liés aux processus.</translation>
 <translation id="8672321184841719703">Cibler une version pour les mises à jour automatiques</translation>
 <translation id="867410340948518937">U2F (Deuxième facteur universel)</translation>
 <translation id="8676959842615154675">Si cette règle est activée, l'hôte d'accès à distance compare le nom de l'utilisateur local auquel il est associé au nom du compte Google enregistré en tant que propriétaire de l'hôte (par exemple, "pierredupont" si l'hôte appartient à pierredupont@example.com). Cet hôte ne démarre pas si le nom de son propriétaire diffère de celui de l'utilisateur local auquel l'hôte est associé. Pour faire en sorte que le compte Google du propriétaire soit associé à un domaine spécifique, utilisez la règle avec "<ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />".
@@ -6776,6 +6801,7 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8948062138228904066">Liste d'autorisation des serveurs d'authentification</translation>
 <translation id="8951350807133946005">Définir le répertoire du cache disque</translation>
 <translation id="8955719471735800169">Haut de page</translation>
+<translation id="8956312248048980644">Autorise par défaut le clustering d'agents selon l'origine.</translation>
 <translation id="8959992920425111821">Configuration par défaut</translation>
 <translation id="8967125680876068695">Les applis Chrome sont obsolètes sur Windows, Mac et Linux.
       Si cette règle est activée, <ph name="PRODUCT_NAME" /> permettra toujours aux applis Chrome de s'exécuter sur ces plates-formes jusqu'en juin 2022, date à laquelle elles ne seront plus compatibles sur aucune plate-forme.

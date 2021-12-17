@@ -72,7 +72,7 @@
 <translation id="1302880136325416935">Показать настройки Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="1306549533752902673">РЕКОМЕНДУЕМЫЕ ПРИЛОЖЕНИЯ</translation>
 <translation id="1312604459020188865">Уровень сигнала – <ph name="SIGNAL_STRENGTH" /></translation>
-<translation id="1316069254387866896">Всегда показывать Временное хранилище</translation>
+<translation id="1316069254387866896">Всегда показывать панель запуска</translation>
 <translation id="1316811122439383437">Быстрый доступ: недавние скриншоты, а также скачанные и закрепленные файлы</translation>
 <translation id="1333308631814936910">Подключено устройство "<ph name="DISPLAY_NAME" />".</translation>
 <translation id="1341651618736211726">Открыть дополнительное меню</translation>
@@ -497,7 +497,7 @@
 <translation id="4274537685965975248">Функция сочетания клавиш Ctrl + Alt + Стрелка вниз изменилась. Чтобы выполнить действие клавиши End, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вправо.</translation>
 <translation id="4279490309300973883">Отражение</translation>
 <translation id="4283888303416325161">Для дополнительной безопасности введите пароль.</translation>
-<translation id="4285498937028063278">Открепить из Быстрого запуска</translation>
+<translation id="4285498937028063278">Открепить</translation>
 <translation id="429402653707266969">Изменить местоположение панели инструментов</translation>
 <translation id="4294319844246081198">Доброе утро, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Удалить все уведомления: <ph name="COUNT" /></translation>
@@ -623,6 +623,7 @@
 <translation id="5075554201838155866">Показать субтитры</translation>
 <translation id="5078796286268621944">Неверный PIN-код</translation>
 <translation id="5083553833479578423">Получите доступ к другим возможностям Ассистента.</translation>
+<translation id="5106223312672646208">Персонализировать</translation>
 <translation id="5117590920725113268">Показать следующий месяц</translation>
 <translation id="5136175204352732067">Подключена другая клавиатура</translation>
 <translation id="5147567197700016471">Устройство разблокировано.</translation>

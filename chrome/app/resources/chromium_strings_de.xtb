@@ -109,6 +109,7 @@
 <translation id="4271805377592243930">Hilfe für Chromium aufrufen</translation>
 <translation id="4285930937574705105">Die Installation konnte aufgrund eines undefinierten Fehlers nicht abgeschlossen werden. Falls Chromium derzeit ausgeführt wird, schließen Sie es bitte und versuchen Sie es erneut.</translation>
 <translation id="4407044323746248786">Chromium trotzdem beenden?</translation>
+<translation id="4414390922528416758">Sie können die wichtigsten Datenschutzeinstellungen von Chromium anpassen. In dieser Anleitung werden nicht alle Einstellungen und Optionen behandelt.</translation>
 <translation id="4415566066719264597">Chromium im Hintergrund ausführen</translation>
 <translation id="4423735387467980091">Chromium anpassen und einstellen</translation>
 <translation id="4427306783828095590">Besserer Schutz vor Phishing und Malware durch erweitertes Safe Browsing</translation>
@@ -294,5 +295,6 @@ Chromium kann Ihre Einstellungen nicht wiederherstellen.</translation>
 <translation id="9214764063801632699">Chromium OS-System</translation>
 <translation id="93478295209880648">Chromium funktioniert unter Umständen nicht ordnungsgemäß, da es unter Windows XP und Windows Vista nicht mehr unterstützt wird</translation>
 <translation id="965162752251293939">Wer verwendet gerade Chromium?</translation>
+<translation id="967427899662692980">Höchste Sicherheit in Chromium erhalten</translation>
 <translation id="985602178874221306">Die Chromium-Autoren</translation>
 </translationbundle>
