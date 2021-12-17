@@ -8,6 +8,6 @@ iframe-transform: layer(800x600) has hit test rect (34,207 320x23)
 
 iframe-fixed: layer(332x22) has hit test rect (0,0 332x22)
 
-iframe-doc: layer(800x600) has hit test rect (10,284 385x25)
+iframe-doc: layer(404x31) has hit test rect (2,2 385x25)
 
 

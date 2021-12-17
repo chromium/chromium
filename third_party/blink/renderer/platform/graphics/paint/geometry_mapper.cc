@@ -254,6 +254,10 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     if (has_fixed && expand == kExpandVisualRectForCompositingOverlap) {
       ExpandFixedBoundsInScroller(&local_state.Transform(),
                                   &ancestor_state.Transform(), rect_to_map);
+      // This early return skips the clipping below because the expansion for
+      // fixed-position is to avoid compositing update on viewport scroll, while
+      // the clips may depend on viewport scroll offset.
+      return !rect_to_map.Rect().IsEmpty();
     }
   }
 
