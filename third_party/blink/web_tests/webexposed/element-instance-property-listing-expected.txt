@@ -979,6 +979,7 @@ html element select
 html element selectmenu
     property checkValidity
     property form
+    property labels
     property name
     property open
     property reportValidity

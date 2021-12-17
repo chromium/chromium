@@ -22,4 +22,6 @@ interface HTMLSelectMenuElement : HTMLElement {
   boolean checkValidity();
   boolean reportValidity();
   void setCustomValidity(DOMString error);
+
+  readonly attribute NodeList labels;
 };

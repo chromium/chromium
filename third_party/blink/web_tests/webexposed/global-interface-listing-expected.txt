@@ -4258,6 +4258,7 @@ interface HTMLSelectElement : HTMLElement
 interface HTMLSelectMenuElement : HTMLElement
     attribute @@toStringTag
     getter form
+    getter labels
     getter name
     getter open
     getter required

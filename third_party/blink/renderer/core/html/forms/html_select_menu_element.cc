@@ -932,6 +932,10 @@ bool HTMLSelectMenuElement::IsOptionalFormControl() const {
   return !IsRequiredFormControl();
 }
 
+bool HTMLSelectMenuElement::IsLabelable() const {
+  return true;
+}
+
 bool HTMLSelectMenuElement::ValueMissing() const {
   if (!IsRequired())
     return false;

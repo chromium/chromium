@@ -100,6 +100,8 @@ class CORE_EXPORT HTMLSelectMenuElement final
   bool IsRequiredFormControl() const override;
   bool IsOptionalFormControl() const override;
 
+  bool IsLabelable() const override;
+
   // HTMLFormControlElementWithState overrides:
   const AtomicString& FormControlType() const override;
   bool MayTriggerVirtualKeyboard() const override;
