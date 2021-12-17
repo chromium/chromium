@@ -2629,7 +2629,7 @@
 <translation id="3686786761304157917">Устройство <ph name="DEVICE_INDEX" /> из <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" />, клавиатура, уровень заряда батареи: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="368789413795732264">Произошла ошибка при записи файла: <ph name="ERROR_TEXT" />.</translation>
 <translation id="3688507211863392146">Запись данных в файлы и каталоги, открытые в приложении</translation>
-<translation id="3688526734140524629">Выбрать другую версию</translation>
+<translation id="3688526734140524629">Выбрать другой канал</translation>
 <translation id="3688578402379768763">Обновление не требуется</translation>
 <translation id="3688794912214798596">Настройки перевода…</translation>
 <translation id="3690369331356918524">Сообщает, если пароли были раскрыты в результате утечки данных.</translation>
@@ -3206,7 +3206,7 @@
 <translation id="4281844954008187215">Условия использования</translation>
 <translation id="4282196459431406533">Функция Smart Lock включена</translation>
 <translation id="4285418559658561636">Обновить пароль</translation>
-<translation id="4285498937028063278">Открепить из Быстрого запуска</translation>
+<translation id="4285498937028063278">Открепить</translation>
 <translation id="428565720843367874">При сканировании этого файла произошел сбой антивирусного ПО.</translation>
 <translation id="4287099557599763816">Программа чтения с экрана</translation>
 <translation id="428715201724021596">Выполняется подключение к профилю. Это может занять несколько минут.</translation>
@@ -4573,7 +4573,7 @@
 <translation id="574209121243317957">Высота звука</translation>
 <translation id="5746169159649715125">Сохранить как PDF</translation>
 <translation id="5747552184818312860">Срок действия</translation>
-<translation id="5747785204778348146">Нестабильная</translation>
+<translation id="5747785204778348146">Для разработчиков (нестабильная)</translation>
 <translation id="5747809636523347288">Вс&amp;тавить и перейти на страницу <ph name="URL" /></translation>
 <translation id="5755022574660047665">воспоминания из Google Фото</translation>
 <translation id="5756163054456765343">Справочный &amp;центр</translation>
