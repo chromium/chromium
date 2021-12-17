@@ -7,7 +7,6 @@
 // NOTE: Keep this structure in sync with CopyConfig() defined in
 // audio_encoder.cc.
 dictionary AudioEncoderConfig {
-  // TODO(chcunningham): reference spec registry.
   required DOMString codec;
 
   // Rate of samples per second. 44100, 48000, etc.

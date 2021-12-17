@@ -6,4 +6,4 @@
 
 // Handles a new encoded video chunk on the consumer side of the video encoder.
 callback EncodedVideoChunkOutputCallback =
-  void (EncodedVideoChunk chunk, EncodedVideoChunkMetadata metadata);
+  void (EncodedVideoChunk chunk, optional EncodedVideoChunkMetadata metadata = {});
