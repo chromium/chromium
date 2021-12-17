@@ -45,8 +45,7 @@ constexpr uint32_t kCPBWindowSizeMs = 1500;
 
 // Subjectively chosen.
 // Generally use up to 2 reference frames.
-constexpr size_t kMaxNumReferenceFrames = 2;
-constexpr size_t kMaxRefIdxL0Size = kMaxNumReferenceFrames;
+constexpr size_t kMaxRefIdxL0Size = 2;
 
 // HRD parameters (ch. E.2.2 in H264 spec).
 constexpr int kBitRateScale = 0;  // bit_rate_scale for SPS HRD parameters.
@@ -209,7 +208,7 @@ H264VaapiVideoEncoderDelegate::EncodeParams::EncodeParams()
       initial_qp(kDefaultQP),
       min_qp(kMinQP),
       max_qp(kMaxQP),
-      max_num_ref_frames(kMaxNumReferenceFrames),
+      max_num_ref_frames(kMaxRefIdxL0Size),
       max_ref_pic_list0_size(kMaxRefIdxL0Size) {}
 
 H264VaapiVideoEncoderDelegate::H264VaapiVideoEncoderDelegate(
@@ -327,8 +326,7 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
       num_temporal_layers_ > 1u
           ? num_temporal_layers_ - 1
           : std::min(kMaxRefIdxL0Size, ave_config.max_num_ref_frames & 0xffff);
-  curr_params_.max_num_ref_frames =
-      std::min(kMaxNumReferenceFrames, curr_params_.max_ref_pic_list0_size);
+  curr_params_.max_num_ref_frames = curr_params_.max_ref_pic_list0_size;
 
   bool submit_packed_sps = false;
   bool submit_packed_pps = false;
@@ -454,10 +452,8 @@ bool H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   // below maximum size, dropping oldest references.
   if (pic->ref) {
     ref_pic_list0_.push_front(pic);
-    const size_t max_num_ref_frames =
-        base::checked_cast<size_t>(current_sps_.max_num_ref_frames);
-    while (ref_pic_list0_.size() > max_num_ref_frames)
-      ref_pic_list0_.pop_back();
+    ref_pic_list0_.resize(
+        std::min(curr_params_.max_ref_pic_list0_size, ref_pic_list0_.size()));
   }
 
   num_encoded_frames_++;
