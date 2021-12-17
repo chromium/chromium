@@ -73,6 +73,7 @@ template("core_impl_source_set") {
 
     sources = [
       "atomic_flag.h",
+      "atomic_flag.cc",
       "broker.h",
       "channel.cc",
       "configuration.cc",
