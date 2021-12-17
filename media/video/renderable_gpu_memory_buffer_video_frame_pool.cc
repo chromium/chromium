@@ -29,7 +29,7 @@ class InternalRefCountedPool;
 
 // The VideoFrame-backing resources that are reused by the pool, namely, a
 // GpuMemoryBuffer and a per-plane SharedImage. This retains a reference to
-// the InternalRefCountedPool that created it.
+// the InternalRefCountedPool that created it. Not safe for concurrent use.
 class FrameResources {
  public:
   FrameResources(scoped_refptr<InternalRefCountedPool> pool,
@@ -72,7 +72,13 @@ class FrameResources {
 // The owner of the RenderableGpuMemoryBufferVideoFramePool::Client needs to be
 // reference counted to ensure that not be destroyed while there still exist any
 // FrameResources.
-class InternalRefCountedPool : public base::RefCounted<InternalRefCountedPool> {
+// Although this class is not generally safe for concurrent use, it extends
+// RefCountedThreadSafe in order to allow destruction on a different thread.
+// Specifically, blink::WebRtcVideoFrameAdapter::SharedResources lazily creates
+// a RenderableGpuMemoryBufferVideoFramePool when it needs to convert a frame on
+// the IO thread, but ends up destroying the object on the main thread.
+class InternalRefCountedPool
+    : public base::RefCountedThreadSafe<InternalRefCountedPool> {
  public:
   explicit InternalRefCountedPool(
       std::unique_ptr<RenderableGpuMemoryBufferVideoFramePool::Context>
@@ -95,7 +101,7 @@ class InternalRefCountedPool : public base::RefCounted<InternalRefCountedPool> {
   RenderableGpuMemoryBufferVideoFramePool::Context* GetContext() const;
 
  private:
-  friend class base::RefCounted<InternalRefCountedPool>;
+  friend class base::RefCountedThreadSafe<InternalRefCountedPool>;
   ~InternalRefCountedPool();
 
   // Callback made whe a created VideoFrame is destroyed. Returns
