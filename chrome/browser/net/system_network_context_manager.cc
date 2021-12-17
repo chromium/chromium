@@ -573,27 +573,11 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   // NetworkContext is created, but before anything has the chance to use it.
   stub_resolver_config_reader_.UpdateNetworkService(true /* record_metrics */);
 
-#if defined(OS_LINUX)
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-
-  // Set up crypt config. This should be kept in sync with the OSCrypt parts of
-  // ChromeBrowserMainPartsLinux::PreProfileInit.
-  network::mojom::CryptConfigPtr config = network::mojom::CryptConfig::New();
-  config->store = command_line.GetSwitchValueASCII(switches::kPasswordStore);
-  config->product_name = l10n_util::GetStringUTF8(IDS_PRODUCT_NAME);
-  config->should_use_preference =
-      command_line.HasSwitch(switches::kEnableEncryptionSelection);
-  chrome::GetDefaultUserDataDirectory(&config->user_data_path);
-  network_service->SetCryptConfig(std::move(config));
-#endif
-#if defined(OS_WIN) || defined(OS_MAC)
   // The OSCrypt keys are process bound, so if network service is out of
   // process, send it the required key.
   if (content::IsOutOfProcessNetworkService()) {
     network_service->SetEncryptionKey(OSCrypt::GetRawEncryptionKey());
   }
-#endif
 
   // Asynchronously reapply the most recently received CRLSet (if any).
   component_updater::CRLSetPolicy::ReconfigureAfterNetworkRestart();

@@ -381,10 +381,6 @@ NetworkService::~NetworkService() {
     trace_net_log_observer_.StopWatchForTraceStart();
 }
 
-void NetworkService::set_os_crypt_is_configured() {
-  os_crypt_config_set_ = true;
-}
-
 std::unique_ptr<NetworkService> NetworkService::Create(
     mojo::PendingReceiver<mojom::NetworkService> receiver) {
   return std::make_unique<NetworkService>(nullptr, std::move(receiver));
@@ -617,28 +613,9 @@ void NetworkService::OnCertDBChanged() {
   net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
 }
 
-#if defined(OS_LINUX)
-void NetworkService::SetCryptConfig(mojom::CryptConfigPtr crypt_config) {
-#if !BUILDFLAG(IS_CHROMECAST)
-  DCHECK(!os_crypt_config_set_);
-  auto config = std::make_unique<os_crypt::Config>();
-  config->store = crypt_config->store;
-  config->product_name = crypt_config->product_name;
-  config->application_name = crypt_config->application_name;
-  config->main_thread_runner = base::ThreadTaskRunnerHandle::Get();
-  config->should_use_preference = crypt_config->should_use_preference;
-  config->user_data_path = crypt_config->user_data_path;
-  OSCrypt::SetConfig(std::move(config));
-  os_crypt_config_set_ = true;
-#endif
-}
-#endif
-
-#if defined(OS_WIN) || defined(OS_MAC)
 void NetworkService::SetEncryptionKey(const std::string& encryption_key) {
   OSCrypt::SetRawEncryptionKey(encryption_key);
 }
-#endif
 
 void NetworkService::AddAllowedRequestInitiatorForPlugin(
     int32_t process_id,

@@ -56,23 +56,23 @@ ChromeBrowserMainPartsLinux::ChromeBrowserMainPartsLinux(
 ChromeBrowserMainPartsLinux::~ChromeBrowserMainPartsLinux() {
 }
 
-void ChromeBrowserMainPartsLinux::PreProfileInit() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Needs to be called after we have chrome::DIR_USER_DATA and
-  // g_browser_process.  This happens in PreCreateThreads.
-  // base::GetLinuxDistro() will initialize its value if needed.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(base::IgnoreResult(&base::GetLinuxDistro)));
-#endif
+void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // No-op: Ash and Lacros Bluetooth DBusManager initialization depend on
+  // FeatureList, and is done elsewhere.
+#else
+  bluez::BluezDBusManager::Initialize(nullptr /* system_bus */);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !defined(OS_CHROMEOS)
-  // Set up crypt config. This should be kept in sync with the OSCrypt parts of
-  // SystemNetworkContextManager::OnNetworkServiceCreated.
+  // Set up crypt config. This needs to be done before anything starts the
+  // network service, as the raw encryption key needs to be shared with the
+  // network service for encrypted cookie storage.
   // Chrome OS does not need a crypt config as its user data directories are
   // already encrypted and none of the true encryption backends used by desktop
   // Linux are available on Chrome OS anyway.
-  std::unique_ptr<os_crypt::Config> config(new os_crypt::Config());
+  std::unique_ptr<os_crypt::Config> config =
+      std::make_unique<os_crypt::Config>();
   // Forward to os_crypt the flag to use a specific password store.
   config->store =
       parsed_command_line().GetSwitchValueASCII(switches::kPasswordStore);
@@ -85,20 +85,22 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
       parsed_command_line().HasSwitch(switches::kEnableEncryptionSelection);
   chrome::GetDefaultUserDataDirectory(&config->user_data_path);
   OSCrypt::SetConfig(std::move(config));
+#endif  // !defined(OS_CHROMEOS)
+
+  ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop();
+}
+
+void ChromeBrowserMainPartsLinux::PreProfileInit() {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // Needs to be called after we have chrome::DIR_USER_DATA and
+  // g_browser_process.  This happens in PreCreateThreads.
+  // base::GetLinuxDistro() will initialize its value if needed.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(base::IgnoreResult(&base::GetLinuxDistro)));
 #endif
 
   ChromeBrowserMainPartsPosix::PreProfileInit();
-}
-
-void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // No-op: Ash and Lacros Bluetooth DBusManager initialization depend on
-  // FeatureList, and is done elsewhere.
-#else
-  bluez::BluezDBusManager::Initialize(nullptr /* system_bus */);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop();
 }
 
 #if defined(USE_DBUS) && !defined(OS_CHROMEOS)

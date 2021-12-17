@@ -489,12 +489,6 @@ void ContentBrowserClientImpl::OnNetworkServiceCreated(
   if (!SystemNetworkContextManager::HasInstance())
     SystemNetworkContextManager::CreateInstance(
         embedder_support::GetUserAgent());
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  network::mojom::CryptConfigPtr config = network::mojom::CryptConfig::New();
-  content::GetNetworkService()->SetCryptConfig(std::move(config));
-#endif
   SystemNetworkContextManager::GetInstance()->OnNetworkServiceCreated(
       network_service);
 }

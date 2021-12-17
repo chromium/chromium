@@ -87,11 +87,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 
   ~NetworkService() override;
 
-  // Call to inform the NetworkService that OSCrypt::SetConfig() has already
-  // been invoked, so OSCrypt::SetConfig() does not need to be called before
-  // encrypted storage can be used.
-  void set_os_crypt_is_configured();
-
   // Allows late binding if the mojo receiver wasn't specified in the
   // constructor.
   void Bind(mojo::PendingReceiver<mojom::NetworkService> receiver);
@@ -164,12 +159,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       base::span<const uint8_t> crl_set,
       mojom::NetworkService::UpdateCRLSetCallback callback) override;
   void OnCertDBChanged() override;
-#if defined(OS_LINUX)
-  void SetCryptConfig(mojom::CryptConfigPtr crypt_config) override;
-#endif
-#if defined(OS_WIN) || defined(OS_MAC)
   void SetEncryptionKey(const std::string& encryption_key) override;
-#endif
   void AddAllowedRequestInitiatorForPlugin(
       int32_t process_id,
       const url::Origin& allowed_request_initiator) override;
@@ -250,8 +240,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 #endif
 
   FirstPartySets* first_party_sets() const { return first_party_sets_.get(); }
-
-  bool os_crypt_config_set() const { return os_crypt_config_set_; }
 
   void set_host_resolver_factory_for_testing(
       std::unique_ptr<net::HostResolver::Factory> host_resolver_factory) {
@@ -368,8 +356,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       raw_headers_access_origins_by_pid_;
 
   bool quic_disabled_ = false;
-
-  bool os_crypt_config_set_ = false;
 
   std::unique_ptr<CRLSetDistributor> crl_set_distributor_;
 

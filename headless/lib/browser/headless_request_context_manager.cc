@@ -33,10 +33,6 @@ namespace headless {
 
 namespace {
 
-#if defined(OS_LINUX)
-constexpr char kProductName[] = "HeadlessChrome";
-#endif
-
 net::NetworkTrafficAnnotationTag GetProxyConfigTrafficAnnotationTag() {
   static net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("proxy_config_headless", R"(
@@ -63,26 +59,16 @@ net::NetworkTrafficAnnotationTag GetProxyConfigTrafficAnnotationTag() {
   return traffic_annotation;
 }
 
-void SetCryptConfigOnce(const base::FilePath& user_data_path) {
+void SetCryptKeyOnce(const base::FilePath& user_data_path) {
   static bool done_once = false;
   if (done_once)
     return;
   done_once = true;
 
-#if defined(OS_LINUX)
-  ::network::mojom::CryptConfigPtr config =
-      ::network::mojom::CryptConfig::New();
-  config->store = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-      switches::kPasswordStore);
-  config->product_name = kProductName;
-  config->should_use_preference = false;
-  config->user_data_path = user_data_path;
-  content::GetNetworkService()->SetCryptConfig(std::move(config));
-#elif defined(OS_WIN) && defined(HEADLESS_USE_PREFS)
+#if (defined(OS_WIN) || defined(OS_LINUX)) && defined(HEADLESS_USE_PREFS)
   // The OSCrypt keys are process bound, so if network service is out of
   // process, send it the required key if it is available.
-  if (content::IsOutOfProcessNetworkService() &&
-      OSCrypt::IsEncryptionAvailable()) {
+  if (content::IsOutOfProcessNetworkService()) {
     content::GetNetworkService()->SetEncryptionKey(
         OSCrypt::GetRawEncryptionKey());
   }
@@ -239,7 +225,7 @@ HeadlessRequestContextManager::HeadlessRequestContextManager(
     }
   }
 
-  SetCryptConfigOnce(user_data_path_);
+  SetCryptKeyOnce(user_data_path_);
 }
 
 HeadlessRequestContextManager::~HeadlessRequestContextManager() {
