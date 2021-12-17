@@ -119,6 +119,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   currentRouteChanged(route) {
     if (route !== routes.BLUETOOTH_DEVICE_DETAIL) {
       this.deviceId_ = '';
+      this.pageState_ = PageState.DISCONNECTED;
       return;
     }
 
@@ -226,6 +227,12 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       return;
     }
     this.parentNode.pageTitle = getDeviceName(this.device_);
+
+    if (this.pageState_ === PageState.CONNECTION_FAILED &&
+        this.device_.deviceProperties.connectionState ===
+            mojom.DeviceConnectionState.kNotConnected) {
+      return;
+    }
 
     switch (this.device_.deviceProperties.connectionState) {
       case mojom.DeviceConnectionState.kConnected:
