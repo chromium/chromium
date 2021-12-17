@@ -19,7 +19,6 @@ export function DeserializeKeyEvent(dict) {
     altKey: dict.altKey,
     metaKey: dict.metaKey,
   });
-  e.fromScriptingAPI = true;
   return e;
 }
 

@@ -301,6 +301,7 @@ js_library("local_storage_proxy") {
 
 js_library("controller") {
   deps = [
+    ":gesture_detector",
     ":internal_plugin",
     ":viewport",
     "//ui/webui/resources/js:assert.m",
@@ -343,7 +344,6 @@ js_library("pdf_viewer") {
     ":browser_api",
     ":constants",
     ":controller",
-    ":gesture_detector",
     ":ink_controller",
     ":local_storage_proxy",
     ":metrics",

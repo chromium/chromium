@@ -1591,67 +1591,77 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
 #endif
 }
 
-using PDFExtensionKeyEventTest = PDFExtensionTest;
+class PDFExtensionKeyEventTest : public PDFExtensionTest {
+ protected:
+  class ScrollEventWaiter {
+   public:
+    explicit ScrollEventWaiter(WebContents* guest_contents)
+        : message_queue_(guest_contents) {
+      content::ExecuteScriptAsync(
+          guest_contents,
+          R"(viewer.shadowRoot.querySelector('#scroller').onscroll = () => {
+            window.domAutomationController.send('dispatchedScrollEvent');
+          })");
+    }
 
-namespace {
+    void Reset() { message_queue_.ClearQueue(); }
 
-class ScrollEventWaiter {
- public:
-  explicit ScrollEventWaiter(content::WebContents* guest_contents)
-      : message_queue_(guest_contents) {
-    content::ExecuteScriptAsync(
+    void Wait() {
+      std::string message;
+      ASSERT_TRUE(message_queue_.WaitForMessage(&message));
+      EXPECT_EQ("\"dispatchedScrollEvent\"", message);
+    }
+
+   private:
+    content::DOMMessageQueue message_queue_;
+  };
+
+  // Scroll increment in CSS pixels. Should match `SCROLL_INCREMENT` in
+  // //chrome/browser/resources/pdf/viewport.js.
+  static constexpr int kScrollIncrement = 40;
+
+  static int GetViewportHeight(WebContents* guest_contents) {
+    int viewport_height = 0;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
         guest_contents,
-        R"(viewer.shadowRoot.querySelector('#scroller').onscroll = () => {
-          window.domAutomationController.send('dispatchedScrollEvent');
-        })");
+        "window.domAutomationController.send(viewer.viewport.size.height);",
+        &viewport_height));
+    return viewport_height;
   }
 
-  void Reset() { message_queue_.ClearQueue(); }
-
-  void Wait() {
-    std::string message;
-    ASSERT_TRUE(message_queue_.WaitForMessage(&message));
-    EXPECT_EQ("\"dispatchedScrollEvent\"", message);
+  static int GetViewportScrollPositionX(WebContents* guest_contents) {
+    int position_x = 0;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
+        guest_contents,
+        "window.domAutomationController.send(viewer.viewport.position.x);",
+        &position_x));
+    return position_x;
   }
 
- private:
-  content::DOMMessageQueue message_queue_;
+  static int GetViewportScrollPositionY(WebContents* guest_contents) {
+    int position_y = 0;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
+        guest_contents,
+        "window.domAutomationController.send(viewer.viewport.position.y);",
+        &position_y));
+    return position_y;
+  }
 };
 
-int GetViewportHeight(content::WebContents* guest_contents) {
-  int viewport_height = 0;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      guest_contents,
-      "window.domAutomationController.send(viewer.viewport.size.height);",
-      &viewport_height));
-  return viewport_height;
-}
+// static
+constexpr int PDFExtensionKeyEventTest::kScrollIncrement;
 
-int GetViewportScrollPositionY(content::WebContents* guest_contents) {
-  int position_y = 0;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-      guest_contents,
-      "window.domAutomationController.send(viewer.viewport.position.y);",
-      &position_y));
-  return position_y;
-}
-
-}  // namespace
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, ScrollWithSpaceShortcut) {
-  content::WebContents* guest_contents = LoadPdfGetGuestContents(
+IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, ScrollWithSpace) {
+  WebContents* guest_contents = LoadPdfGetGuestContents(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   SetInputFocusOnPlugin(guest_contents);
+  ASSERT_EQ(0, GetViewportScrollPositionY(guest_contents));
 
-  // Get the viewport size first since the scroll distance is based on the
-  // viewport height.
-  int viewport_height = GetViewportHeight(guest_contents);
+  // Get the viewport height, since the scroll distance is based on it.
+  const int viewport_height = GetViewportHeight(guest_contents);
   ASSERT_GT(viewport_height, 0);
 
-  // The vertical scroll position is at 0 before scrolling.
-  EXPECT_EQ(0, GetViewportScrollPositionY(guest_contents));
-
-  // Press space key to scroll down.
+  // Press Space to scroll down.
   ScrollEventWaiter scroll_waiter(guest_contents);
   content::SimulateKeyPress(guest_contents, ui::DomKey::FromCharacter(' '),
                             ui::DomCode::SPACE, ui::VKEY_SPACE,
@@ -1660,14 +1670,137 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, ScrollWithSpaceShortcut) {
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
   EXPECT_EQ(viewport_height, GetViewportScrollPositionY(guest_contents));
 
-  // Press shift + space key to scroll back up to top.
+  // Press Space to scroll down again.
+  scroll_waiter.Reset();
+  content::SimulateKeyPress(guest_contents, ui::DomKey::FromCharacter(' '),
+                            ui::DomCode::SPACE, ui::VKEY_SPACE,
+                            /*control=*/false, /*shift=*/false, /*alt=*/false,
+                            /*command=*/false);
+  ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
+  EXPECT_EQ(viewport_height * 2, GetViewportScrollPositionY(guest_contents));
+
+  // Press Shift+Space to scroll up.
   scroll_waiter.Reset();
   content::SimulateKeyPress(guest_contents, ui::DomKey::FromCharacter(' '),
                             ui::DomCode::SPACE, ui::VKEY_SPACE,
                             /*control=*/false, /*shift=*/true, /*alt=*/false,
                             /*command=*/false);
   ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
-  EXPECT_EQ(0, GetViewportScrollPositionY(guest_contents));
+  EXPECT_EQ(viewport_height, GetViewportScrollPositionY(guest_contents));
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, ScrollWithPageDownUp) {
+  WebContents* guest_contents = LoadPdfGetGuestContents(
+      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
+  SetInputFocusOnPlugin(guest_contents);
+  ASSERT_EQ(0, GetViewportScrollPositionY(guest_contents));
+
+  // Get the viewport height, since the scroll distance is based on it.
+  const int viewport_height = GetViewportHeight(guest_contents);
+  ASSERT_GT(viewport_height, 0);
+
+  // Press PageDown to scroll down.
+  ScrollEventWaiter scroll_waiter(guest_contents);
+  content::SimulateKeyPressWithoutChar(guest_contents, ui::DomKey::PAGE_DOWN,
+                                       ui::DomCode::PAGE_DOWN, ui::VKEY_NEXT,
+                                       /*control=*/false, /*shift=*/false,
+                                       /*alt=*/false,
+                                       /*command=*/false);
+  ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
+  EXPECT_EQ(viewport_height, GetViewportScrollPositionY(guest_contents));
+
+  // Press PageDown to scroll down again.
+  scroll_waiter.Reset();
+  content::SimulateKeyPressWithoutChar(guest_contents, ui::DomKey::PAGE_DOWN,
+                                       ui::DomCode::PAGE_DOWN, ui::VKEY_NEXT,
+                                       /*control=*/false, /*shift=*/false,
+                                       /*alt=*/false,
+                                       /*command=*/false);
+  ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
+  EXPECT_EQ(viewport_height * 2, GetViewportScrollPositionY(guest_contents));
+
+  // Press PageUp to scroll up.
+  scroll_waiter.Reset();
+  content::SimulateKeyPressWithoutChar(
+      guest_contents, ui::DomKey::PAGE_UP, ui::DomCode::PAGE_UP, ui::VKEY_PRIOR,
+      /*control=*/false, /*shift=*/false, /*alt=*/false,
+      /*command=*/false);
+  ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
+  EXPECT_EQ(viewport_height, GetViewportScrollPositionY(guest_contents));
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, ScrollWithArrowLeftRight) {
+  WebContents* guest_contents = LoadPdfGetGuestContents(
+      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf#zoom=200"));
+  SetInputFocusOnPlugin(guest_contents);
+  ASSERT_EQ(0, GetViewportScrollPositionY(guest_contents));
+
+  // Press ArrowRight to scroll right.
+  ScrollEventWaiter scroll_waiter(guest_contents);
+  content::SimulateKeyPressWithoutChar(guest_contents, ui::DomKey::ARROW_RIGHT,
+                                       ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT,
+                                       /*control=*/false, /*shift=*/false,
+                                       /*alt=*/false,
+                                       /*command=*/false);
+  ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
+  EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionX(guest_contents));
+
+  // Press ArrowRight to scroll right again.
+  scroll_waiter.Reset();
+  content::SimulateKeyPressWithoutChar(guest_contents, ui::DomKey::ARROW_RIGHT,
+                                       ui::DomCode::ARROW_RIGHT, ui::VKEY_RIGHT,
+                                       /*control=*/false, /*shift=*/false,
+                                       /*alt=*/false,
+                                       /*command=*/false);
+  ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
+  EXPECT_EQ(kScrollIncrement * 2, GetViewportScrollPositionX(guest_contents));
+
+  // Press ArrowLeft to scroll left.
+  scroll_waiter.Reset();
+  content::SimulateKeyPressWithoutChar(guest_contents, ui::DomKey::ARROW_LEFT,
+                                       ui::DomCode::ARROW_LEFT, ui::VKEY_LEFT,
+                                       /*control=*/false, /*shift=*/false,
+                                       /*alt=*/false,
+                                       /*command=*/false);
+  ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
+  EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionX(guest_contents));
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, ScrollWithArrowDownUp) {
+  WebContents* guest_contents = LoadPdfGetGuestContents(
+      embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
+  SetInputFocusOnPlugin(guest_contents);
+  ASSERT_EQ(0, GetViewportScrollPositionY(guest_contents));
+
+  // Press ArrowDown to scroll down.
+  ScrollEventWaiter scroll_waiter(guest_contents);
+  content::SimulateKeyPressWithoutChar(guest_contents, ui::DomKey::ARROW_DOWN,
+                                       ui::DomCode::ARROW_DOWN, ui::VKEY_DOWN,
+                                       /*control=*/false, /*shift=*/false,
+                                       /*alt=*/false,
+                                       /*command=*/false);
+  ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
+  EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionY(guest_contents));
+
+  // Press ArrowDown to scroll down again.
+  scroll_waiter.Reset();
+  content::SimulateKeyPressWithoutChar(guest_contents, ui::DomKey::ARROW_DOWN,
+                                       ui::DomCode::ARROW_DOWN, ui::VKEY_DOWN,
+                                       /*control=*/false, /*shift=*/false,
+                                       /*alt=*/false,
+                                       /*command=*/false);
+  ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
+  EXPECT_EQ(kScrollIncrement * 2, GetViewportScrollPositionY(guest_contents));
+
+  // Press ArrowUp to scroll up.
+  scroll_waiter.Reset();
+  content::SimulateKeyPressWithoutChar(guest_contents, ui::DomKey::ARROW_UP,
+                                       ui::DomCode::ARROW_UP, ui::VKEY_UP,
+                                       /*control=*/false, /*shift=*/false,
+                                       /*alt=*/false,
+                                       /*command=*/false);
+  ASSERT_NO_FATAL_FAILURE(scroll_waiter.Wait());
+  EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionY(guest_contents));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFExtensionKeyEventTest, testing::Values(true));
