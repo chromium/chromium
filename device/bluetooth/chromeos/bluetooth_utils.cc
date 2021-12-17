@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "device/base/features.h"
@@ -160,6 +161,12 @@ device::BluetoothAdapter::DeviceList FilterBluetoothDeviceList(
 }
 
 bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
+  // With Floss, device list filtering is still unstable. We disable filtering
+  // first so that Floss testing of other features can be unblocked.
+  // TODO(b/202335393): Enable device filtering once it's stable with Floss.
+  if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled))
+    return false;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::switches::IsUnfilteredBluetoothDevicesEnabled())
     return false;
