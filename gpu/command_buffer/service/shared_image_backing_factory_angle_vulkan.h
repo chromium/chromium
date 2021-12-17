@@ -65,8 +65,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryAngleVulkan
                    bool is_pixel_used) override;
 
  private:
-  bool CanUseAngleVulkanBacking(uint32_t usage,
-                                GrContextType gr_context_type) const;
+  bool CanUseAngleVulkanBacking(uint32_t usage) const;
 
   raw_ptr<SharedContextState> context_state_;
 };

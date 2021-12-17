@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image_backing_factory_angle_vulkan.h"
 
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -13,6 +14,7 @@
 #include "gpu/command_buffer/service/shared_image_backing_gl_common.h"
 #include "gpu/command_buffer/service/shared_image_backing_gl_image.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
+#include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
@@ -82,7 +84,7 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
 
   bool Initialize(
       const SharedImageBackingFactoryAngleVulkan::FormatInfo& format_info,
-      const SharedImageBackingGLCommon::UnpackStateAttribs& attribs) {
+      const base::span<const uint8_t>& data) {
     auto* device_queue =
         context_state_->vk_context_provider()->GetDeviceQueue();
     VkFormat vk_format = ToVkFormat(format());
@@ -120,6 +122,30 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
 
     vulkan_image_ = std::move(vulkan_image);
     egl_image_ = std::move(egl_image);
+
+    if (!data.empty()) {
+      size_t stride = BitsPerPixel(format()) / 8 * size().width();
+      WritePixels(data, stride);
+      SetCleared();
+    }
+
+    return true;
+  }
+
+  bool InitializeFromGMB(
+      const SharedImageBackingFactoryAngleVulkan::FormatInfo& format_info,
+      gfx::GpuMemoryBufferHandle handle) {
+    SharedMemoryRegionWrapper shared_memory_wrapper;
+    if (!shared_memory_wrapper.Initialize(handle, size(), format()))
+      return false;
+
+    if (!Initialize(format_info, {}))
+      return false;
+
+    shared_memory_wrapper_ = std::move(shared_memory_wrapper);
+    Update(nullptr);
+    SetCleared();
+
     return true;
   }
 
@@ -131,7 +157,8 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
   }
 
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override {
-    NOTREACHED() << "Not supported.";
+    WritePixels(shared_memory_wrapper_.GetMemoryAsSpan(),
+                shared_memory_wrapper_.GetStride());
   }
 
   void OnMemoryDump(const std::string& dump_name,
@@ -250,6 +277,27 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
     return true;
   }
 
+  bool WritePixels(const base::span<const uint8_t>& pixel_data, size_t stride) {
+    if (!BeginAccessSkia(/*readonly=*/false))
+      return false;
+
+    auto* gr_context = context_state_->gr_context();
+
+    auto info = SkImageInfo::Make(size().width(), size().height(),
+                                  ResourceFormatToClosestSkColorType(
+                                      /*gpu_compositing=*/true, format()),
+                                  kOpaque_SkAlphaType);
+    SkPixmap pixmap(info, pixel_data.data(), stride);
+    if (!gr_context->updateBackendTexture(backend_texture_, &pixmap,
+                                          /*numLevels=*/1, nullptr, nullptr)) {
+      DLOG(ERROR) << "updateBackendTexture() failed.";
+    }
+
+    EndAccessSkia();
+
+    return true;
+  }
+
   raw_ptr<SharedContextState> context_state_;
   std::unique_ptr<VulkanImage> vulkan_image_;
   scoped_refptr<gl::GLImageEGLAngleVulkan> egl_image_;
@@ -263,6 +311,7 @@ class AngleVulkanBacking : public ClearTrackingSharedImageBacking,
     kGLReadWrite,
   };
   AccessMode access_mode_ = kNone;
+  SharedMemoryRegionWrapper shared_memory_wrapper_;
 };  // namespace
 
 class AngleVulkanBacking::SkiaRepresentation
@@ -372,6 +421,7 @@ SharedImageBackingFactoryAngleVulkan::SharedImageBackingFactoryAngleVulkan(
                                         gpu_feature_info,
                                         context_state->progress_reporter()),
       context_state_(context_state) {
+  DCHECK(context_state_->GrContextIsVulkan());
   DCHECK(gl::GLSurfaceEGL::IsANGLEVulkanImageSupported());
 }
 
@@ -399,7 +449,7 @@ SharedImageBackingFactoryAngleVulkan::CreateSharedImage(
       context_state_, mailbox, format, size, color_space, surface_origin,
       alpha_type, usage);
 
-  if (!result->Initialize(format_info, attribs_))
+  if (!result->Initialize(format_info, {}))
     return nullptr;
   return result;
 }
@@ -414,8 +464,19 @@ SharedImageBackingFactoryAngleVulkan::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> data) {
-  NOTREACHED() << "Not supported";
-  return nullptr;
+  const FormatInfo& format_info = format_info_[format];
+  if (!CanCreateSharedImage(size, /*pixel_data=*/{}, format_info,
+                            GL_TEXTURE_2D)) {
+    return nullptr;
+  }
+
+  auto result = std::make_unique<AngleVulkanBacking>(
+      context_state_, mailbox, format, size, color_space, surface_origin,
+      alpha_type, usage);
+
+  if (!result->Initialize(format_info, data))
+    return nullptr;
+  return result;
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -431,17 +492,45 @@ SharedImageBackingFactoryAngleVulkan::CreateSharedImage(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
-  NOTREACHED() << "Not supported";
-  return nullptr;
+  if (plane != gfx::BufferPlane::DEFAULT) {
+    LOG(DFATAL) << "Invalid plane";
+    return nullptr;
+  }
+
+  if (!gpu::IsImageSizeValidForGpuMemoryBufferFormat(size, buffer_format)) {
+    LOG(DFATAL) << "Invalid image size for format.";
+    return nullptr;
+  }
+
+  auto format = viz::GetResourceFormat(buffer_format);
+
+  const FormatInfo& format_info = format_info_[format];
+  if (!CanCreateSharedImage(size, /*pixel_data=*/{}, format_info,
+                            GL_TEXTURE_2D)) {
+    return nullptr;
+  }
+
+  auto result = std::make_unique<AngleVulkanBacking>(
+      context_state_, mailbox, format, size, color_space, surface_origin,
+      alpha_type, usage);
+
+  if (!result->InitializeFromGMB(format_info, std::move(handle)))
+    return nullptr;
+
+  return result;
 }
 
 bool SharedImageBackingFactoryAngleVulkan::CanUseAngleVulkanBacking(
-    uint32_t usage,
-    GrContextType gr_context_type) const {
+    uint32_t usage) const {
   // Ignore for mipmap usage.
   usage &= ~SHARED_IMAGE_USAGE_MIPMAP;
 
+  // TODO(penghuang): verify the scanout is the right usage for video playback.
+  // crbug.com/1280798
   constexpr auto kSupportedUsages =
+#if defined(OS_LINUX)
+      SHARED_IMAGE_USAGE_SCANOUT |
+#endif
       SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
       SHARED_IMAGE_USAGE_RASTER | SHARED_IMAGE_USAGE_DISPLAY |
       SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
@@ -463,16 +552,18 @@ bool SharedImageBackingFactoryAngleVulkan::IsSupported(
     bool* allow_legacy_mailbox,
     bool is_pixel_used) {
   DCHECK_EQ(gr_context_type, GrContextType::kVulkan);
-  if (!CanUseAngleVulkanBacking(usage, gr_context_type)) {
+  if (!CanUseAngleVulkanBacking(usage))
     return false;
-  }
 
-  if (is_pixel_used) {
+  if (thread_safe)
     return false;
-  }
 
-  if (gmb_type != gfx::EMPTY_BUFFER) {
-    return false;
+  switch (gmb_type) {
+    case gfx::EMPTY_BUFFER:
+    case gfx::SHARED_MEMORY_BUFFER:
+      break;
+    default:
+      return false;
   }
 
   *allow_legacy_mailbox = false;
