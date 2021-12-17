@@ -67,7 +67,7 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1302880136325416935">Показать настройки Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="1312604459020188865">Уровень сигнала – <ph name="SIGNAL_STRENGTH" /></translation>
-<translation id="1316069254387866896">Всегда показывать Временное хранилище</translation>
+<translation id="1316069254387866896">Всегда показывать панель запуска</translation>
 <translation id="1316811122439383437">Быстрый доступ: недавние скриншоты, а также скачанные и закрепленные файлы</translation>
 <translation id="1333308631814936910">Подключено устройство "<ph name="DISPLAY_NAME" />".</translation>
 <translation id="1341651618736211726">Открыть дополнительное меню</translation>
@@ -464,7 +464,7 @@
 <translation id="4269883910223712419">Администратор этого устройства имеет возможность:</translation>
 <translation id="4274537685965975248">Функция сочетания клавиш Ctrl + Alt + Стрелка вниз изменилась. Чтобы выполнить действие клавиши End, нажмите <ph name="LAUNCHER_KEY_NAME" /> + Стрелка вправо.</translation>
 <translation id="4279490309300973883">Отражение</translation>
-<translation id="4285498937028063278">Открепить из Быстрого запуска</translation>
+<translation id="4285498937028063278">Открепить</translation>
 <translation id="429402653707266969">Изменить местоположение панели инструментов</translation>
 <translation id="4294319844246081198">Доброе утро, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Удалить все уведомления: <ph name="COUNT" /></translation>
