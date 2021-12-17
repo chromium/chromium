@@ -2392,6 +2392,9 @@ extern const char kBluetoothRevampDescription[];
 extern const char kBluetoothWbsDogfoodName[];
 extern const char kBluetoothWbsDogfoodDescription[];
 
+extern const char kBluetoothUseFlossName[];
+extern const char kBluetoothUseFlossDescription[];
+
 extern const char kButtonARCNetworkDiagnosticsName[];
 extern const char kButtonARCNetworkDiagnosticsDescription[];
 

@@ -4151,6 +4151,12 @@ const char kBluetoothWbsDogfoodDescription[] =
     "or fully launched. Only on the few models that Bluetooth WBS is "
     "still stablizing this flag will take effect.";
 
+const char kBluetoothUseFlossName[] = "Use Floss instead of BlueZ";
+const char kBluetoothUseFlossDescription[] =
+    "Enables using Floss (also known as Fluoride, Android's Bluetooth stack) "
+    "instead of Bluez. This is meant to be used by developers and is not "
+    "guaranteed to be stable";
+
 const char kButtonARCNetworkDiagnosticsName[] = "ARC Network Tests Button";
 const char kButtonARCNetworkDiagnosticsDescription[] =
     "Enables the display of a button on the ARC Provisioning failure dialog "

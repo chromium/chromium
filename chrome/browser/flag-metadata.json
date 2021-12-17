@@ -568,6 +568,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "bluetooth-use-floss",
+    "owners": ["sonnysasaka", "abhishekpandit", "chromeos-bluetooth@google.com"],
+    "expiry_milestone": 111
+  },
+  {
     "name": "bluetooth-wbs-dogfood",
     "owners": [ "hychao" ],
     "expiry_milestone": 95
