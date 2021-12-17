@@ -382,6 +382,7 @@ void OpenH264VideoEncoder::ChangeOptions(const Options& options,
     h264_converter_ = std::make_unique<H264AnnexBToAvcBitstreamConverter>();
   }
 
+  options_ = options;
   if (!output_cb.is_null())
     output_cb_ = BindToCurrentLoop(std::move(output_cb));
   std::move(done_cb).Run(OkStatus());
