@@ -16,7 +16,7 @@
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
-#import "ios/chrome/browser/ui/toolbar/test/toolbar_test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/test_web_thread.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest_mac.h"
@@ -49,7 +49,7 @@ class BrowserViewControllerHelperTest : public PlatformTest {
         ios::BookmarkModelFactory::GetForBrowserState(
             chrome_browser_state_.get()));
 
-    web_state_ = std::make_unique<ToolbarTestWebState>();
+    web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(chrome_browser_state_.get());
 
     helper_ = [[BrowserViewControllerHelper alloc] init];
@@ -62,7 +62,7 @@ class BrowserViewControllerHelperTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  std::unique_ptr<ToolbarTestWebState> web_state_;
+  std::unique_ptr<web::FakeWebState> web_state_;
   BrowserViewControllerHelper* helper_;
 };
 

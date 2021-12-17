@@ -34,7 +34,6 @@
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_table_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
-#import "ios/chrome/browser/ui/toolbar/test/toolbar_test_web_state.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
@@ -184,8 +183,8 @@ class PopupMenuMediatorTest : public ChromeWebTest {
     navigation_item_->SetURL(GURL("http://chromium.org"));
     navigation_manager->SetVisibleItem(navigation_item_.get());
 
-    std::unique_ptr<ToolbarTestWebState> test_web_state =
-        std::make_unique<ToolbarTestWebState>();
+    std::unique_ptr<web::FakeWebState> test_web_state =
+        std::make_unique<web::FakeWebState>();
     test_web_state->SetNavigationManager(std::move(navigation_manager));
     test_web_state->SetLoading(true);
     web_state_ = test_web_state.get();
@@ -270,7 +269,7 @@ class PopupMenuMediatorTest : public ChromeWebTest {
   BookmarkModel* bookmark_model_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<ReadingListModelImpl> reading_list_model_;
-  ToolbarTestWebState* web_state_;
+  web::FakeWebState* web_state_;
   ToolbarTestNavigationManager* navigation_manager_;
   std::unique_ptr<web::NavigationItem> navigation_item_;
   id popup_menu_;

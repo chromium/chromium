@@ -12,7 +12,6 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
-#import "ios/chrome/browser/ui/toolbar/test/toolbar_test_web_state.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
 #include "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -56,7 +55,7 @@ class ToolbarMediatorTest : public PlatformTest {
     std::unique_ptr<ToolbarTestNavigationManager> navigation_manager =
         std::make_unique<ToolbarTestNavigationManager>();
     navigation_manager_ = navigation_manager.get();
-    test_web_state_ = std::make_unique<ToolbarTestWebState>();
+    test_web_state_ = std::make_unique<web::FakeWebState>();
     test_web_state_->SetBrowserState(chrome_browser_state_.get());
     test_web_state_->SetNavigationManager(std::move(navigation_manager));
     test_web_state_->SetLoading(true);
@@ -102,7 +101,7 @@ class ToolbarMediatorTest : public PlatformTest {
   void SetUpActiveWebState() { web_state_list_->ActivateWebStateAt(0); }
 
   TestToolbarMediator* mediator_;
-  ToolbarTestWebState* web_state_;
+  web::FakeWebState* web_state_;
   ToolbarTestNavigationManager* navigation_manager_;
   std::unique_ptr<WebStateList> web_state_list_;
   FakeWebStateListDelegate web_state_list_delegate_;
@@ -111,7 +110,7 @@ class ToolbarMediatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
 
  private:
-  std::unique_ptr<ToolbarTestWebState> test_web_state_;
+  std::unique_ptr<web::FakeWebState> test_web_state_;
 };
 
 
@@ -356,8 +355,8 @@ TEST_F(ToolbarMediatorTest, TestUpdateConsumerForWebState) {
   auto navigation_manager = std::make_unique<ToolbarTestNavigationManager>();
   navigation_manager->set_can_go_forward(true);
   navigation_manager->set_can_go_back(true);
-  std::unique_ptr<ToolbarTestWebState> test_web_state =
-      std::make_unique<ToolbarTestWebState>();
+  std::unique_ptr<web::FakeWebState> test_web_state =
+      std::make_unique<web::FakeWebState>();
   test_web_state->SetNavigationManager(std::move(navigation_manager));
   test_web_state->SetCurrentURL(GURL(kTestUrl));
   test_web_state->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);

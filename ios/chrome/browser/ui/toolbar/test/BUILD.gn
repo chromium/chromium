@@ -13,8 +13,6 @@ source_set("test") {
     "toolbar_broadcast_test_util.mm",
     "toolbar_test_navigation_manager.h",
     "toolbar_test_navigation_manager.mm",
-    "toolbar_test_web_state.h",
-    "toolbar_test_web_state.mm",
   ]
 
   deps = [
