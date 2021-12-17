@@ -196,6 +196,8 @@ class StartupBrowserCreator {
                            ValidNotificationLaunchId);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
                            InvalidNotificationLaunchId);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest, ListAppsForAllProfiles);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest, ListAppsForGivenProfile);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorChromeAppShortcutTest,
                            OpenAppShortcutNoPref);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorChromeAppShortcutTest,

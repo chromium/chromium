@@ -808,6 +808,18 @@ const char kEnableNewAppMenuIcon[] = "enable-new-app-menu-icon";
 const char kGuest[] = "guest";
 #endif
 
+#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+// Writes open and installed web apps for each profile to the specified file
+// without launching a new browser window or tab. Pass a absolute file path to
+// specify where to output the information. Can be used together with optional
+// --profile-base-name switch to only write information for a given profile.
+const char kListApps[] = "list-apps";
+
+// Pass the basename of the profile directory to specify which profile to get
+// information. Only relevant when used with --list-apps switch.
+const char kProfileBaseName[] = "profile-base-name";
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
 // Custom WebAPK server URL for the sake of testing.
 const char kWebApkServerUrl[] = "webapk-server-url";

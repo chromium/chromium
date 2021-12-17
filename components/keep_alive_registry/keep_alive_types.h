@@ -67,6 +67,7 @@ enum class KeepAliveOrigin {
   // c/b/web_applications
   APP_MANIFEST_UPDATE,
   APP_START_URL_MIGRATION,
+  APP_GET_INFO,
 
   // c/b/sessions
   SESSION_DATA_DELETER,

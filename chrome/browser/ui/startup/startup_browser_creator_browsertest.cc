@@ -128,6 +128,7 @@
 #include "components/policy/core/common/policy_types.h"
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#include "base/json/json_string_value_serializer.h"
 #include "chrome/browser/ui/views/web_apps/web_app_protocol_handler_intent_picker_dialog_view.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -1612,6 +1613,227 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   ASSERT_EQ(0u, chrome::GetBrowserCount(profile1));
   ASSERT_EQ(1u, chrome::GetBrowserCount(profile2));
 }
+
+#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+web_app::AppId InstallPWAWithName(Profile* profile,
+                                  const GURL& start_url,
+                                  const std::string& app_name) {
+  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  web_app_info->start_url = start_url;
+  web_app_info->scope = start_url.GetWithoutFilename();
+  web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+  web_app_info->title = base::UTF8ToUTF16(app_name);
+  return web_app::test::InstallWebApp(profile, std::move(web_app_info));
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ListAppsForAllProfiles) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath user_data_dir = profile_manager->user_data_dir();
+  Profile* profile1 = browser()->profile();
+
+  // Create a new profile.
+  Profile* profile2 = nullptr;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    profile2 = profile_manager->GetProfile(
+        user_data_dir.Append(FILE_PATH_LITERAL("New Profile 1")));
+  }
+  ASSERT_TRUE(profile2);
+
+  // Install web apps for the two profiles.
+  auto example_url1 = GURL("http://www.example_one.com");
+  std::string app_name1 = "A Test Web App1";
+  web_app::AppId app_id1 =
+      InstallPWAWithName(profile1, example_url1, app_name1);
+  auto example_url2 = GURL("http://www.example_two.com");
+  std::string app_name2 = "A Test Web App2";
+  web_app::AppId app_id2 =
+      InstallPWAWithName(profile1, example_url2, app_name2);
+  auto example_url3 = GURL("http://www.example_three.com");
+  std::string app_name3 = "A Test Web App3";
+  web_app::AppId app_id3 =
+      InstallPWAWithName(profile2, example_url3, app_name3);
+  auto example_url4 = GURL("http://www.example_four.com");
+  std::string app_name4 = "A Test Web App4";
+  web_app::AppId app_id4 =
+      InstallPWAWithName(profile2, example_url4, app_name4);
+
+  // Launch web apps for the two profiles.
+  Browser* app_browser1 =
+      web_app::LaunchWebAppBrowserAndWait(profile1, app_id1);
+  Browser* app_browser2 =
+      web_app::LaunchWebAppBrowserAndWait(profile2, app_id3);
+  ASSERT_NE(app_browser1, nullptr);
+  ASSERT_NE(app_browser2, nullptr);
+
+  // List web apps for all profiles.
+  std::vector<Profile*> expected_profiles = {profile2, profile1};
+  std::vector<web_app::AppId*> expected_installed_apps_id = {
+      &app_id4, &app_id3, &app_id2, &app_id1};
+  std::vector<std::string*> expected_installed_apps_name = {
+      &app_name4, &app_name3, &app_name2, &app_name1};
+  std::vector<web_app::AppId*> expected_open_apps_id = {&app_id1, &app_id3};
+  std::vector<std::string*> expected_open_apps_name = {&app_name1, &app_name3};
+  base::Value apps_for_all_profiles(base::Value::Type::DICTIONARY);
+  base::Value& installed_apps_for_all_profile = *apps_for_all_profiles.SetKey(
+      "installed_web_apps", base::Value(base::Value::Type::LIST));
+  base::Value& open_apps_for_all_profile = *apps_for_all_profiles.SetKey(
+      "open_web_apps", base::Value(base::Value::Type::LIST));
+  for (int i = 0; i < 2; i++) {
+    // Get installed web apps.
+    base::Value installed_item_info(base::Value::Type::DICTIONARY);
+    installed_item_info.SetStringKey(
+        "profile_id", expected_profiles[i]->GetBaseName().AsUTF8Unsafe());
+    base::Value& installed_apps_per_profile = *installed_item_info.SetKey(
+        "web_apps", base::Value(base::Value::Type::LIST));
+    for (int j = 0; j < 2; j++) {
+      base::Value web_app_info(base::Value::Type::DICTIONARY);
+      web_app_info.SetStringKey("id", *expected_installed_apps_id[i * 2 + j]);
+      web_app_info.SetStringKey("name",
+                                *expected_installed_apps_name[i * 2 + j]);
+      installed_apps_per_profile.Append(std::move(web_app_info));
+    }
+    installed_apps_for_all_profile.Append(std::move(installed_item_info));
+    // Get open web apps.
+    base::Value open_item_info(base::Value::Type::DICTIONARY);
+    open_item_info.SetStringKey(
+        "profile_id", expected_profiles[1 - i]->GetBaseName().AsUTF8Unsafe());
+    base::Value& open_apps_per_profile = *open_item_info.SetKey(
+        "web_apps", base::Value(base::Value::Type::LIST));
+    base::Value web_app_info(base::Value::Type::DICTIONARY);
+    web_app_info.SetStringKey("id", *expected_open_apps_id[i]);
+    web_app_info.SetStringKey("name", *expected_open_apps_name[i]);
+    open_apps_per_profile.Append(std::move(web_app_info));
+    open_apps_for_all_profile.Append(std::move(open_item_info));
+  }
+
+  std::string expected_info;
+  JSONStringValueSerializer serializer(&expected_info);
+  serializer.set_pretty_print(true);
+  EXPECT_TRUE(serializer.Serialize(apps_for_all_profiles));
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  base::FilePath output_path =
+      user_data_dir.Append(FILE_PATH_LITERAL("AppsForAllProfiles.json"));
+  command_line.AppendSwitchPath(switches::kListApps, output_path);
+  ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
+      browser()->profile(), {}));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    while (!base::PathExists(output_path))
+      base::RunLoop().RunUntilIdle();
+    std::string file_contents;
+    base::ReadFileToString(output_path, &file_contents);
+    ASSERT_EQ(expected_info, file_contents);
+  }
+
+  CloseBrowserSynchronously(app_browser1);
+  CloseBrowserSynchronously(app_browser2);
+}
+
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ListAppsForGivenProfile) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath user_data_dir = profile_manager->user_data_dir();
+  Profile* profile1 = browser()->profile();
+
+  // Create a new profile.
+  Profile* profile2 = nullptr;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    profile2 = profile_manager->GetProfile(
+        user_data_dir.Append(FILE_PATH_LITERAL("New Profile 1")));
+  }
+  ASSERT_TRUE(profile2);
+
+  // Install web apps for the two profiles.
+  auto example_url1 = GURL("http://www.example_one.com");
+  std::string app_name1 = "A Test Web App1";
+  web_app::AppId app_id1 =
+      InstallPWAWithName(profile1, example_url1, app_name1);
+  auto example_url2 = GURL("http://www.example_two.com");
+  std::string app_name2 = "A Test Web App2";
+  web_app::AppId app_id2 =
+      InstallPWAWithName(profile1, example_url2, app_name2);
+  auto example_url3 = GURL("http://www.example_three.com");
+  std::string app_name3 = "A Test Web App3";
+  web_app::AppId app_id3 =
+      InstallPWAWithName(profile2, example_url3, app_name3);
+  auto example_url4 = GURL("http://www.example_four.com");
+  std::string app_name4 = "A Test Web App4";
+  web_app::AppId app_id4 =
+      InstallPWAWithName(profile2, example_url4, app_name4);
+
+  // Launch web apps for the two profiles.
+  Browser* app_browser1 =
+      web_app::LaunchWebAppBrowserAndWait(profile1, app_id1);
+  Browser* app_browser2 =
+      web_app::LaunchWebAppBrowserAndWait(profile2, app_id3);
+  ASSERT_NE(app_browser1, nullptr);
+  ASSERT_NE(app_browser2, nullptr);
+
+  // List web apps for the given profile.
+  base::Value apps_for_given_profiles(base::Value::Type::DICTIONARY);
+  base::Value& installed_apps_for_given_profile =
+      *apps_for_given_profiles.SetKey("installed_web_apps",
+                                      base::Value(base::Value::Type::LIST));
+  base::Value& open_apps_for_given_profile = *apps_for_given_profiles.SetKey(
+      "open_web_apps", base::Value(base::Value::Type::LIST));
+  // Get installed web apps.
+  base::Value installed_item_info(base::Value::Type::DICTIONARY);
+  installed_item_info.SetStringKey("profile_id",
+                                   profile2->GetBaseName().AsUTF8Unsafe());
+  base::Value& installed_apps_per_profile = *installed_item_info.SetKey(
+      "web_apps", base::Value(base::Value::Type::LIST));
+  base::Value web_app_info1(base::Value::Type::DICTIONARY);
+  web_app_info1.SetStringKey("name", app_name4);
+  web_app_info1.SetStringKey("id", app_id4);
+  installed_apps_per_profile.Append(std::move(web_app_info1));
+  base::Value web_app_info2(base::Value::Type::DICTIONARY);
+  web_app_info2.SetStringKey("name", app_name3);
+  web_app_info2.SetStringKey("id", app_id3);
+  installed_apps_per_profile.Append(std::move(web_app_info2));
+  installed_apps_for_given_profile.Append(std::move(installed_item_info));
+  // Get open web apps.
+  base::Value open_item_info(base::Value::Type::DICTIONARY);
+  open_item_info.SetStringKey("profile_id",
+                              profile2->GetBaseName().AsUTF8Unsafe());
+  base::Value& open_apps_per_profile =
+      *open_item_info.SetKey("web_apps", base::Value(base::Value::Type::LIST));
+  base::Value web_app_info3(base::Value::Type::DICTIONARY);
+  web_app_info3.SetStringKey("name", app_name3);
+  web_app_info3.SetStringKey("id", app_id3);
+  open_apps_per_profile.Append(std::move(web_app_info3));
+  open_apps_for_given_profile.Append(std::move(open_item_info));
+
+  std::string expected_info;
+  JSONStringValueSerializer serializer(&expected_info);
+  serializer.set_pretty_print(true);
+  EXPECT_TRUE(serializer.Serialize(apps_for_given_profiles));
+
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  base::FilePath output_path =
+      user_data_dir.Append(FILE_PATH_LITERAL("AppsForGivenProfile.json"));
+  command_line.AppendSwitchPath(switches::kListApps, output_path);
+  command_line.AppendSwitchASCII(switches::kProfileBaseName, "New Profile 1");
+  ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
+      browser()->profile(), {}));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    while (!base::PathExists(output_path))
+      base::RunLoop().RunUntilIdle();
+    std::string file_contents;
+    base::ReadFileToString(output_path, &file_contents);
+    ASSERT_EQ(expected_info, file_contents);
+  }
+
+  CloseBrowserSynchronously(app_browser1);
+  CloseBrowserSynchronously(app_browser2);
+}
+#endif  // defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {

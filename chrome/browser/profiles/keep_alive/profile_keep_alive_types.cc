@@ -51,6 +51,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kFeedbackDialog";
     case ProfileKeepAliveOrigin::kWebAppUpdate:
       return out << "kWebAppUpdate";
+    case ProfileKeepAliveOrigin::kGettingWebAppInfo:
+      return out << "kGettingWebAppInfo";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);

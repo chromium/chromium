@@ -254,6 +254,11 @@ extern const char kEnableNewAppMenuIcon[];
 extern const char kGuest[];
 #endif
 
+#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+extern const char kListApps[];
+extern const char kProfileBaseName[];
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
 extern const char kWebApkServerUrl[];
 #endif

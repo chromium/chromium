@@ -129,6 +129,10 @@
 #include "chrome/browser/ui/startup/web_app_url_handling_startup_utils.h"
 #endif
 
+#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+#include "chrome/browser/ui/startup/web_app_info_recorder_utils.h"
+#endif
+
 using content::BrowserThread;
 using content::ChildProcessSecurityPolicy;
 
@@ -900,6 +904,21 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     }
     silent_launch = true;
   }
+
+#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+  // Writes open and installed web apps to the specified file without
+  // launching a new browser window or tab.
+  if (command_line.HasSwitch(switches::kListApps)) {
+    base::FilePath output_file(
+        command_line.GetSwitchValuePath(switches::kListApps));
+    if (!output_file.empty() && output_file.IsAbsolute()) {
+      base::FilePath profile_base_name(
+          command_line.GetSwitchValuePath(switches::kProfileBaseName));
+      chrome::startup::WriteWebAppsToFile(output_file, profile_base_name);
+    }
+    return true;
+  }
+#endif  //  defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (base::FeatureList::IsEnabled(features::kOnConnectNative) &&

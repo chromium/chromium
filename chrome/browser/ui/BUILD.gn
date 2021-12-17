@@ -3813,6 +3813,8 @@ static_library("ui") {
 
   if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
     sources += [
+      "startup/web_app_info_recorder_utils.cc",
+      "startup/web_app_info_recorder_utils.h",
       "startup/web_app_url_handling_startup_utils.cc",
       "startup/web_app_url_handling_startup_utils.h",
       "webui/settings/url_handlers_handler.cc",
