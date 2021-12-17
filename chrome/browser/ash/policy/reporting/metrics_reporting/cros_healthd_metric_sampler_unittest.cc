@@ -35,8 +35,20 @@ struct MemoryEncryptionTestCase {
 namespace reporting {
 namespace test {
 
+// Memory constants.
 constexpr uint32_t kTmeMaxKeys = 2;
 constexpr uint32_t kTmeKeysLength = 4;
+
+// Wifi constants.
+constexpr char kInterfaceName[] = "interface_name";
+constexpr char kAccessPointAddress[] = "access_point";
+constexpr bool kPowerManagementEnabled = true;
+constexpr bool kEncryptionOn = true;
+constexpr uint32_t kTxBitRateMbps = 8;
+constexpr uint32_t kRxBitRateMbps = 4;
+constexpr uint32_t kTxPowerDbm = 2;
+constexpr uint32_t kLinkQuality = 1;
+constexpr int kSignalLevelDbm = 10;
 
 cros_healthd::KeylockerInfoPtr CreateKeylockerInfo(bool configured) {
   return cros_healthd::KeylockerInfo::New(configured);
@@ -72,6 +84,36 @@ cros_healthd::TelemetryInfoPtr CreateBusResult(
 
   telemetry_info->bus_result =
       cros_healthd::BusResult::NewBusDevices(std::move(bus_devices));
+  return telemetry_info;
+}
+
+cros_healthd::TelemetryInfoPtr CreateWifiResult(
+    const std::string& interface_name,
+    bool power_management_enabled,
+    const std::string& access_point_address,
+    uint32_t tx_bit_rate_mbps,
+    uint32_t rx_bit_rate_mbps,
+    uint32_t tx_power_dbm,
+    bool encryption_on,
+    uint32_t link_quality,
+    int signal_level_dbm) {
+  auto telemetry_info = cros_healthd::TelemetryInfo::New();
+  std::vector<cros_healthd::NetworkInterfaceInfoPtr> network_interfaces;
+
+  auto wireless_link_info = cros_healthd::WirelessLinkInfo::New(
+      access_point_address, tx_bit_rate_mbps, rx_bit_rate_mbps, tx_power_dbm,
+      encryption_on, link_quality, signal_level_dbm);
+  auto wireless_interface_info = cros_healthd::WirelessInterfaceInfo::New(
+      interface_name, power_management_enabled, std::move(wireless_link_info));
+  network_interfaces.push_back(
+      cros_healthd::NetworkInterfaceInfo::NewWirelessInterfaceInfo(
+          std::move(wireless_interface_info)));
+  auto network_interface_result =
+      cros_healthd::NetworkInterfaceResult::NewNetworkInterfaceInfo(
+          std::move(network_interfaces));
+
+  telemetry_info->network_interface_result =
+      std::move(network_interface_result);
   return telemetry_info;
 }
 
@@ -229,6 +271,51 @@ TEST_F(CrosHealthdMetricSamplerTest, SetMetricData) {
             ::reporting::MEMORY_ENCRYPTION_STATE_DISABLED);
 }
 
+TEST_F(CrosHealthdMetricSamplerTest, TestWirelessTelemetry) {
+  // Provide some partially set network telemetry to verify the sampler
+  // properly builds upon it.
+  MetricData metric_data;
+  auto* const network_telemetry_out = metric_data.mutable_telemetry_data()
+                                          ->mutable_networks_telemetry()
+                                          ->add_network_telemetry();
+  network_telemetry_out->set_type(::reporting::NetworkType::WIFI);
+  network_telemetry_out->set_signal_strength(1);
+  MetricData result = CollectData(
+      CreateWifiResult(kInterfaceName, kPowerManagementEnabled,
+                       kAccessPointAddress, kTxBitRateMbps, kRxBitRateMbps,
+                       kTxPowerDbm, kEncryptionOn, kLinkQuality,
+                       kSignalLevelDbm),
+      cros_healthd::ProbeCategoryEnum::kNetworkInterface,
+      CrosHealthdMetricSampler::MetricType::kTelemetry, std::move(metric_data));
+
+  ASSERT_TRUE(result.has_telemetry_data());
+  ASSERT_TRUE(result.telemetry_data().has_networks_telemetry());
+  ASSERT_EQ(
+      result.telemetry_data().networks_telemetry().network_telemetry_size(), 1);
+
+  const auto& network_telemetry =
+      result.telemetry_data().networks_telemetry().network_telemetry(0);
+  EXPECT_EQ(network_telemetry.type(), ::reporting::NetworkType::WIFI);
+  EXPECT_EQ(network_telemetry.signal_strength(), 1);
+  ASSERT_EQ(network_telemetry.network_interface_telemetry_size(), 1);
+
+  const auto& network_interface =
+      network_telemetry.network_interface_telemetry(0);
+  EXPECT_EQ(network_interface.interface_name(), kInterfaceName);
+  ASSERT_TRUE(network_interface.has_wireless_interface());
+
+  const auto& wireless_interface = network_interface.wireless_interface();
+  EXPECT_EQ(wireless_interface.power_management_enabled(),
+            kPowerManagementEnabled);
+  EXPECT_EQ(wireless_interface.access_point_address(), kAccessPointAddress);
+  EXPECT_EQ(wireless_interface.tx_bit_rate_mbps(), kTxBitRateMbps);
+  EXPECT_EQ(wireless_interface.rx_bit_rate_mbps(), kRxBitRateMbps);
+  EXPECT_EQ(wireless_interface.tx_power_dbm(), kTxPowerDbm);
+  EXPECT_EQ(wireless_interface.encryption_on(), kEncryptionOn);
+  EXPECT_EQ(wireless_interface.link_quality(), kLinkQuality);
+  EXPECT_EQ(wireless_interface.signal_level_dbm(), kSignalLevelDbm);
+}
+
 TEST_F(CrosHealthdMetricSamplerTest, TestKeylockerConfigured) {
   MetricData result =
       CollectData(CreateCpuResult(CreateKeylockerInfo(true)),
@@ -295,6 +382,17 @@ TEST_F(CrosHealthdMetricSamplerTest, TestMojomError) {
       std::move(telemetry_info), cros_healthd::ProbeCategoryEnum::kAudio,
       CrosHealthdMetricSampler::MetricType::kTelemetry);
   ASSERT_FALSE(audio_data.has_telemetry_data());
+
+  telemetry_info = cros_healthd::TelemetryInfo::New();
+  telemetry_info->network_interface_result =
+      cros_healthd::NetworkInterfaceResult::NewError(
+          cros_healthd::ProbeError::New(cros_healthd::ErrorType::kFileReadError,
+                                        ""));
+  const auto& network_data =
+      CollectError(std::move(telemetry_info),
+                   cros_healthd::ProbeCategoryEnum::kNetworkInterface,
+                   CrosHealthdMetricSampler::MetricType::kTelemetry);
+  ASSERT_FALSE(network_data.has_telemetry_data());
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, TestAudioNormalTest) {

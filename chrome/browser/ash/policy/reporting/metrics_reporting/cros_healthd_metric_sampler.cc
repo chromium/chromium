@@ -255,15 +255,91 @@ void HandleMemoryResult(MetricCallback callback,
   }
 }
 
+void HandleNetworkResult(MetricCallback callback,
+                         CrosHealthdMetricSampler::MetricType metric_type,
+                         MetricData metric_data,
+                         cros_healthd::TelemetryInfoPtr result) {
+  const auto& network_result = result->network_interface_result;
+  if (network_result.is_null()) {
+    std::move(callback).Run(metric_data);
+    return;
+  }
+
+  switch (network_result->which()) {
+    case cros_healthd::NetworkInterfaceResult::Tag::ERROR: {
+      DVLOG(1) << "cros_healthd: Error getting network result: "
+               << network_result->get_error()->msg;
+      break;
+    }
+
+    case cros_healthd::NetworkInterfaceResult::Tag::NETWORK_INTERFACE_INFO: {
+      for (const auto& network_info :
+           network_result->get_network_interface_info()) {
+        // Handle wireless interface telemetry
+        if (network_info->is_wireless_interface_info() &&
+            metric_type == CrosHealthdMetricSampler::MetricType::kTelemetry) {
+          auto* network_telemetry_list = metric_data.mutable_telemetry_data()
+                                             ->mutable_networks_telemetry();
+          ::reporting::NetworkTelemetry* network_telemetry_out;
+
+          // Find if wireless telemetry already exists in metric data.
+          for (int i = 0; i < network_telemetry_list->network_telemetry_size();
+               i++) {
+            if (network_telemetry_list->network_telemetry(i).type() ==
+                ::reporting::NetworkType::WIFI) {
+              network_telemetry_out =
+                  network_telemetry_list->mutable_network_telemetry(i);
+            }
+          }
+          if (!network_telemetry_out) {
+            network_telemetry_out =
+                network_telemetry_list->add_network_telemetry();
+          }
+
+          // Set data.
+          auto* const interface_telemetry_out =
+              network_telemetry_out->add_network_interface_telemetry();
+          auto* const wireless_telemetry_out =
+              interface_telemetry_out->mutable_wireless_interface();
+          const auto& wireless_info =
+              network_info->get_wireless_interface_info();
+
+          interface_telemetry_out->set_interface_name(
+              wireless_info->interface_name);
+          wireless_telemetry_out->set_power_management_enabled(
+              wireless_info->power_management_on);
+
+          if (wireless_info->wireless_link_info) {
+            const auto& wireless_link_info = wireless_info->wireless_link_info;
+            wireless_telemetry_out->set_access_point_address(
+                wireless_link_info->access_point_address_str);
+            wireless_telemetry_out->set_tx_bit_rate_mbps(
+                wireless_link_info->tx_bit_rate_mbps);
+            wireless_telemetry_out->set_rx_bit_rate_mbps(
+                wireless_link_info->rx_bit_rate_mbps);
+            wireless_telemetry_out->set_tx_power_dbm(
+                wireless_link_info->tx_power_dBm);
+            wireless_telemetry_out->set_encryption_on(
+                wireless_link_info->encyption_on);
+            wireless_telemetry_out->set_link_quality(
+                wireless_link_info->link_quality);
+            wireless_telemetry_out->set_signal_level_dbm(
+                wireless_link_info->signal_level_dBm);
+          }
+        }
+      }
+    }
+  }
+
+  std::move(callback).Run(std::move(metric_data));
+}
+
 void OnHealthdInfoReceived(MetricCallback callback,
                            cros_healthd::ProbeCategoryEnum probe_category,
                            CrosHealthdMetricSampler::MetricType metric_type,
                            MetricData metric_data,
                            cros_healthd::TelemetryInfoPtr result) {
-  if (!result) {
-    DVLOG(1) << "cros_healthd: null telemetry result";
-    return;
-  }
+  DCHECK(result);
 
   switch (probe_category) {
     case cros_healthd::ProbeCategoryEnum::kAudio: {
@@ -284,6 +360,11 @@ void OnHealthdInfoReceived(MetricCallback callback,
     case cros_healthd::ProbeCategoryEnum::kMemory: {
       HandleMemoryResult(std::move(callback), metric_type,
                          std::move(metric_data), std::move(result));
+      break;
+    }
+    case cros_healthd::ProbeCategoryEnum::kNetworkInterface: {
+      HandleNetworkResult(std::move(callback), metric_type,
+                          std::move(metric_data), std::move(result));
       break;
     }
     default: {
