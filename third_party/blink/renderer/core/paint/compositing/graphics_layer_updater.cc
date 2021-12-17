@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_layer_property_updater.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -152,14 +151,6 @@ void GraphicsLayerUpdater::UpdateRecursive(
   if (first_child &&
       layer.GetLayoutObject().ChildPrePaintBlockedByDisplayLock()) {
     first_child = nullptr;
-
-    // If we have a forced update, we notify the display lock to ensure that the
-    // forced update resumes after the lock has been removed.
-    if (update_type == kForceUpdate) {
-      auto* child_context = layer.GetLayoutObject().GetDisplayLockContext();
-      DCHECK(child_context);
-      child_context->NotifyForcedGraphicsLayerUpdateBlocked();
-    }
   }
 
   UpdateContext child_context(context, layer);

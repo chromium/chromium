@@ -77,7 +77,6 @@
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/page/validation_message_client_impl.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
@@ -856,18 +855,13 @@ void Page::UpdateAcceleratedCompositingSettings() {
     auto* local_frame = DynamicTo<LocalFrame>(frame);
     if (!local_frame)
       continue;
-    LayoutView* layout_view = local_frame->ContentLayoutObject();
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      layout_view->Compositor()->UpdateAcceleratedCompositingSettings();
-    } else {
-      // Mark all scrollable areas as needing a paint property update because
-      // the compositing reasons may have changed.
-      if (const auto* areas = local_frame->View()->ScrollableAreas()) {
-        for (const auto& scrollable_area : *areas) {
-          if (scrollable_area->ScrollsOverflow()) {
-            if (auto* layout_box = scrollable_area->GetLayoutBox())
-              layout_box->SetNeedsPaintPropertyUpdate();
-          }
+    // Mark all scrollable areas as needing a paint property update because the
+    // compositing reasons may have changed.
+    if (const auto* areas = local_frame->View()->ScrollableAreas()) {
+      for (const auto& scrollable_area : *areas) {
+        if (scrollable_area->ScrollsOverflow()) {
+          if (auto* layout_box = scrollable_area->GetLayoutBox())
+            layout_box->SetNeedsPaintPropertyUpdate();
         }
       }
     }

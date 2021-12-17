@@ -94,7 +94,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
+#include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_fragment.h"
@@ -523,13 +523,9 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
       frame_view->SetNeedsUpdateGeometries();
   }
 
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    if (auto* scrolling_coordinator = GetScrollingCoordinator()) {
-      if (!scrolling_coordinator->UpdateCompositorScrollOffset(*frame, *this))
-        GetLayoutBox()->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
-    }
-  } else {
-    UpdateCompositingLayersAfterScroll();
+  if (auto* scrolling_coordinator = GetScrollingCoordinator()) {
+    if (!scrolling_coordinator->UpdateCompositorScrollOffset(*frame, *this))
+      GetLayoutBox()->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
   }
 
   // The ScrollOffsetTranslation paint property depends on the scroll offset.
@@ -2443,44 +2439,6 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
   GetLayoutBox()->SetBackgroundNeedsFullPaintInvalidation();
 
   layer_->DidUpdateScrollsOverflow();
-}
-
-void PaintLayerScrollableArea::UpdateCompositingLayersAfterScroll() {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-
-  PaintLayerCompositor* compositor = GetLayoutBox()->View()->Compositor();
-  if (!compositor || !compositor->InCompositingMode())
-    return;
-
-  if (UsesCompositedScrolling()) {
-    DCHECK(Layer()->HasCompositedLayerMapping());
-    ScrollingCoordinator* scrolling_coordinator = GetScrollingCoordinator();
-    bool handled_scroll = scrolling_coordinator &&
-                          scrolling_coordinator->UpdateCompositorScrollOffset(
-                              *GetLayoutBox()->GetFrame(), *this);
-
-    if (!handled_scroll) {
-      compositor->SetNeedsCompositingUpdate(
-          kCompositingUpdateAfterGeometryChange);
-    }
-
-    // If we have fixed elements and we scroll the root layer we might
-    // change compositing since the fixed elements might now overlap a
-    // composited layer.
-    if (Layer()->IsRootLayer()) {
-      LocalFrame* frame = GetLayoutBox()->GetFrame();
-      if (frame && frame->View()) {
-        LocalFrameView* view = frame->View();
-        // The maximum possible overlap (for all possible scroll offsets) of the
-        // fixed content has been included in the overlap test, so we can skip
-        // the compositing update on scroll changes for fixed content.
-        // Sticky-pos content still needs a compositing inputs update for
-        // overlap testing.
-        if (view->HasStickyViewportConstrainedObject())
-          Layer()->SetNeedsCompositingInputsUpdate();
-      }
-    }
-  }
 }
 
 ScrollingCoordinator* PaintLayerScrollableArea::GetScrollingCoordinator()

@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
@@ -92,16 +91,6 @@ void GraphicsLayerTreeBuilder::RebuildRecursive(
 
   bool recursion_blocked_by_display_lock =
       layer.GetLayoutObject().ChildPrePaintBlockedByDisplayLock();
-  // If the recursion is blocked meaningfully (i.e. we would have recursed,
-  // since the layer has children), then we should inform the display-lock
-  // context that we blocked a graphics layer recursion, so that we can ensure
-  // to rebuild the tree once we're unlocked.
-  if (recursion_blocked_by_display_lock && layer.FirstChild()) {
-    auto* context = layer.GetLayoutObject().GetDisplayLockContext();
-    DCHECK(context);
-    context->NotifyGraphicsLayerRebuildBlocked();
-  }
-
   if (layer.IsStackingContextWithNegativeZOrderChildren()) {
     if (!recursion_blocked_by_display_lock) {
       PaintLayerPaintOrderIterator iterator(&layer, kNegativeZOrderChildren);
@@ -126,23 +115,6 @@ void GraphicsLayerTreeBuilder::RebuildRecursive(
     while (PaintLayer* child_layer = iterator.Next()) {
       RebuildRecursive(*child_layer, *layer_vector_for_children,
                        *pending_reparents_for_children);
-    }
-
-    if (auto* embedded =
-            DynamicTo<LayoutEmbeddedContent>(layer.GetLayoutObject())) {
-      DCHECK(this_layer_children.IsEmpty());
-      PaintLayerCompositor* inner_compositor =
-          PaintLayerCompositor::FrameContentsCompositor(*embedded);
-      if (inner_compositor) {
-        if (GraphicsLayer* inner_root_graphics_layer =
-                inner_compositor->RootGraphicsLayer()) {
-          // TODO(szager); Remove this after diagnosing crash
-          CHECK_EQ(inner_compositor->InCompositingMode(),
-                   (bool)inner_root_graphics_layer);
-          layer_vector_for_children->push_back(inner_root_graphics_layer);
-        }
-        inner_compositor->ClearRootLayerAttachmentDirty();
-      }
     }
   }
 

@@ -130,7 +130,6 @@
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/paint/block_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/frame_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -277,7 +276,6 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
       target_state_(DocumentLifecycle::kUninitialized),
       suppress_adjust_view_size_(false),
       intersection_observation_state_(kNotNeeded),
-      needs_forced_compositing_update_(false),
       needs_focus_on_fragment_(false),
       main_thread_scrolling_reasons_(0),
       forced_layout_stack_depth_(0),
@@ -1377,24 +1375,6 @@ void LocalFrameView::SetLayoutSizeFixedToFrameSize(bool is_fixed) {
   layout_size_fixed_to_frame_size_ = is_fixed;
   if (is_fixed)
     SetLayoutSizeInternal(Size());
-}
-
-void LocalFrameView::SetNeedsCompositingUpdate(
-    CompositingUpdateType update_type) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-  if (!frame_->GetDocument() || !frame_->GetDocument()->IsActive())
-    return;
-  if (auto* layout_view = GetLayoutView()) {
-    auto* compositor = layout_view->Compositor();
-    compositor->SetNeedsCompositingUpdate(update_type);
-    // Even if the frame is throttlable, we may still need to decomposite it
-    // in response to a visibility change.
-    if (compositor->StaleInCompositingMode()) {
-      layout_view->Layer()->SetNeedsCompositingInputsUpdate();
-      needs_forced_compositing_update_ = true;
-    }
-  }
 }
 
 ChromeClient* LocalFrameView::GetChromeClient() const {
@@ -2578,29 +2558,25 @@ bool LocalFrameView::RunCompositingInputsLifecyclePhase(
 
   SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
                            LocalFrameUkmAggregator::kCompositingInputs);
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    layout_view->Compositor()->UpdateInputsIfNeededRecursive(target_state);
-  } else {
-    // TODO(pdr): This descendant dependent treewalk should be integrated into
-    // the prepaint tree walk.
-    {
+  // TODO(pdr): This descendant dependent treewalk should be integrated into
+  // the prepaint tree walk.
+  {
 #if DCHECK_IS_ON()
-      SetIsUpdatingDescendantDependentFlags(true);
+    SetIsUpdatingDescendantDependentFlags(true);
 #endif
-      ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-        frame_view.GetLayoutView()->Layer()->UpdateDescendantDependentFlags();
-        frame_view.GetLayoutView()->CommitPendingSelection();
-      });
-#if DCHECK_IS_ON()
-      SetIsUpdatingDescendantDependentFlags(false);
-#endif
-    }
-
     ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-      frame_view.Lifecycle().AdvanceTo(
-          DocumentLifecycle::kCompositingInputsClean);
+      frame_view.GetLayoutView()->Layer()->UpdateDescendantDependentFlags();
+      frame_view.GetLayoutView()->CommitPendingSelection();
     });
+#if DCHECK_IS_ON()
+    SetIsUpdatingDescendantDependentFlags(false);
+#endif
   }
+
+  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
+    frame_view.Lifecycle().AdvanceTo(
+        DocumentLifecycle::kCompositingInputsClean);
+  });
 
   return target_state > DocumentLifecycle::kCompositingInputsClean;
 }
@@ -2612,16 +2588,10 @@ bool LocalFrameView::RunCompositingAssignmentsLifecyclePhase(
   auto* layout_view = GetLayoutView();
   DCHECK(layout_view);
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
-                             LocalFrameUkmAggregator::kCompositingAssignments);
-    layout_view->Compositor()->UpdateAssignmentsIfNeededRecursive(target_state);
-  } else {
-    ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-      frame_view.Lifecycle().AdvanceTo(
-          DocumentLifecycle::kCompositingAssignmentsClean);
-    });
-  }
+  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
+    frame_view.Lifecycle().AdvanceTo(
+        DocumentLifecycle::kCompositingAssignmentsClean);
+  });
 
   frame_->GetPage()->GetValidationMessageClient().UpdatePrePaint();
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& view) {
@@ -3595,9 +3565,6 @@ void LocalFrameView::SetTracksRasterInvalidations(
         track_raster_invalidations);
   }
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() && GetLayoutView())
-    GetLayoutView()->Compositor()->UpdateTrackingRasterInvalidations();
-
   TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("blink.invalidation"),
                        "LocalFrameView::setTracksPaintInvalidations",
                        TRACE_EVENT_SCOPE_GLOBAL, "enabled",
@@ -4023,18 +3990,7 @@ static bool PaintOutsideOfLifecycleIsAllowed(GraphicsContext& context,
   // explicitly skip cache.
   if (context.GetPaintController().IsSkippingCache())
     return true;
-  // For CompositeAfterPaint, they always conflict because we always paint into
-  // paint_controller_ during lifecycle update.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return false;
-  // For pre-CompositeAfterPaint, they conflict if the local frame root has a
-  // a root graphics layer.
-  return !frame_view.GetFrame()
-              .LocalFrameRoot()
-              .View()
-              ->GetLayoutView()
-              ->Compositor()
-              ->PaintRootGraphicsLayer();
+  return false;
 }
 
 void LocalFrameView::PaintOutsideOfLifecycle(
@@ -4191,10 +4147,6 @@ gfx::PointF LocalFrameView::ConvertFromRootFrame(
 }
 
 void LocalFrameView::ParentVisibleChanged() {
-  // As parent visibility changes, we may need to recomposite this frame view
-  // and potentially child frame views.
-  SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
-
   if (!IsSelfVisible())
     return;
 
@@ -4215,7 +4167,6 @@ void LocalFrameView::SelfVisibleChanged() {
 void LocalFrameView::Show() {
   if (!IsSelfVisible()) {
     SetSelfVisible(true);
-    SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
     if (IsParentVisible()) {
       ForAllChildViewsAndPlugins(
           [](EmbeddedContentView& embedded_content_view) {
@@ -4234,7 +4185,6 @@ void LocalFrameView::Hide() {
           });
     }
     SetSelfVisible(false);
-    SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
   }
 }
 
@@ -4428,12 +4378,6 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
 #endif
 }
 
-void LocalFrameView::SetNeedsForcedCompositingUpdate() {
-  needs_forced_compositing_update_ = true;
-  if (LocalFrameView* parent = ParentFrameView())
-    parent->SetNeedsForcedCompositingUpdate();
-}
-
 void LocalFrameView::SetIntersectionObservationState(
     IntersectionObservationState state) {
   if (intersection_observation_state_ >= state)
@@ -4514,7 +4458,7 @@ bool LocalFrameView::ShouldThrottleRendering() const {
   bool throttled_for_global_reasons = LocalFrameTreeAllowsThrottling() &&
                                       CanThrottleRendering() &&
                                       frame_->GetDocument();
-  if (!throttled_for_global_reasons || needs_forced_compositing_update_)
+  if (!throttled_for_global_reasons)
     return false;
 
   // If we're currently running a lifecycle update, and we are required to run
@@ -4980,12 +4924,6 @@ void LocalFrameView::RunPaintBenchmark(int repeat_count,
   if (paint_artifact_compositor_) {
     result.painter_memory_usage +=
         paint_artifact_compositor_->ApproximateUnsharedMemoryUsage();
-  }
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    if (auto* root = GetLayoutView()->Compositor()->PaintRootGraphicsLayer()) {
-      result.painter_memory_usage +=
-          root->ApproximateUnsharedMemoryUsageRecursive();
-    }
   }
 }
 

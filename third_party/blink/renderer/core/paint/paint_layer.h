@@ -73,7 +73,6 @@ class FilterEffect;
 class FilterOperations;
 class HitTestResult;
 class HitTestingTransformState;
-class PaintLayerCompositor;
 class PaintLayerScrollableArea;
 class ScrollingCoordinator;
 class TransformationMatrix;
@@ -286,8 +285,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 #endif
 
   bool IsRootLayer() const { return is_root_layer_; }
-
-  PaintLayerCompositor* Compositor() const;
 
   bool UpdateSize();
   void UpdateSizeAndScrollingAfterLayout();
@@ -536,9 +533,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // any. Otherwise nullptr.
   ScrollingCoordinator* GetScrollingCoordinator();
 
-  // Returns true if the element or any ancestor is transformed.
-  bool CompositesWithTransform() const;
-
   bool PaintsWithTransform(GlobalPaintFlags) const;
   bool PaintsIntoOwnBacking(GlobalPaintFlags) const;
   bool PaintsIntoOwnOrGroupedBacking(GlobalPaintFlags) const;
@@ -646,10 +640,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   void SetNeedsVisualOverflowRecalc();
   void SetNeedsCompositingInputsUpdate(bool mark_ancestor_flags = true);
 
-  // Notifies the Compositor if one exists that it should rebuild the graphics
-  // layer tree.
-  void SetNeedsGraphicsLayerRebuild();
-
   void UpdateAncestorScrollContainerLayer(
       const PaintLayer* ancestor_scroll_container_layer) {
     ancestor_scroll_container_layer_ = ancestor_scroll_container_layer;
@@ -660,20 +650,14 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   const gfx::Rect ClippedAbsoluteBoundingBox() const;
   const gfx::Rect UnclippedAbsoluteBoundingBox() const;
 
-  const PaintLayer* OpacityAncestor() const { return nullptr; }
-  const PaintLayer* TransformAncestor() const { return nullptr; }
-  const PaintLayer* FilterAncestor() const { return nullptr; }
+  // TODO(pdr): Remove this.
   const LayoutBoxModelObject* ClippingContainer() const { return nullptr; }
   const PaintLayer* AncestorScrollContainerLayer() const {
     return ancestor_scroll_container_layer_;
   }
+  // TODO(pdr): Remove this.
   const PaintLayer* AncestorScrollingLayer() const { return nullptr; }
-  const PaintLayer* NearestFixedPositionLayer() const { return nullptr; }
   const PaintLayer* ScrollParent() const { return nullptr; }
-  const PaintLayer* ClipParent() const { return nullptr; }
-  const PaintLayer* NearestContainedLayoutLayer() const { return nullptr; }
-  const PaintLayer* ClipPathAncestor() const { return nullptr; }
-  const PaintLayer* MaskAncestor() const { return nullptr; }
 
   bool HasFixedPositionDescendant() const {
     DCHECK(!needs_descendant_dependent_flags_update_);

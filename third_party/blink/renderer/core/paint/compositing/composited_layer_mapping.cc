@@ -59,7 +59,6 @@
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/css_mask_painter.h"
 #include "third_party/blink/renderer/core/paint/frame_paint_timing.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
@@ -218,8 +217,6 @@ void CompositedLayerMapping::CreatePrimaryGraphicsLayer() {
 }
 
 void CompositedLayerMapping::UpdateCompositedBounds() {
-  DCHECK_EQ(owning_layer_->Compositor()->Lifecycle().GetState(),
-            DocumentLifecycle::kInCompositingAssignmentsUpdate);
   // FIXME: if this is really needed for performance, it would be better to
   // store it on Layer.
   composited_bounds_ = owning_layer_->BoundingBoxForCompositing();
@@ -227,23 +224,15 @@ void CompositedLayerMapping::UpdateCompositedBounds() {
 
 bool CompositedLayerMapping::UpdateGraphicsLayerConfiguration(
     const PaintLayer* compositing_container) {
-  DCHECK_EQ(owning_layer_->Compositor()->Lifecycle().GetState(),
-            DocumentLifecycle::kInCompositingAssignmentsUpdate);
-
   // Note carefully: here we assume that the compositing state of all
   // descendants have been updated already, so it is legitimate to compute and
   // cache the composited bounds for this layer.
   UpdateCompositedBounds();
 
-  PaintLayerCompositor* compositor = Compositor();
   LayoutObject& layout_object = GetLayoutObject();
   const ComputedStyle& style = layout_object.StyleRef();
 
   bool layer_config_changed = false;
-
-  if (UpdateForegroundLayer(
-          compositor->NeedsContentsCompositingLayer(owning_layer_)))
-    layer_config_changed = true;
 
   // If the outline needs to draw over the composited scrolling contents layer
   // or scrollbar layers (or video or webgl) it needs to be drawn into a
@@ -552,9 +541,6 @@ void CompositedLayerMapping::UpdateSquashingLayerGeometry(
 void CompositedLayerMapping::UpdateGraphicsLayerGeometry(
     const PaintLayer* compositing_container,
     HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation) {
-  DCHECK_EQ(owning_layer_->Compositor()->Lifecycle().GetState(),
-            DocumentLifecycle::kInCompositingAssignmentsUpdate);
-
   gfx::Rect local_compositing_bounds;
   gfx::Point snapped_offset_from_composited_ancestor;
   ComputeBoundsOfOwningLayer(compositing_container, local_compositing_bounds,
@@ -1196,9 +1182,6 @@ GraphicsLayerUpdater::UpdateType CompositedLayerMapping::UpdateTypeForChildren(
 
 GraphicsLayer* CompositedLayerMapping::SquashingLayer(
     const PaintLayer& squashed_layer) const {
-#if DCHECK_IS_ON()
-  AssertInSquashedLayersVector(squashed_layer);
-#endif
   DCHECK(NonScrollingSquashingLayer());
   return NonScrollingSquashingLayer();
 }
@@ -1609,8 +1592,6 @@ bool CompositedLayerMapping::UpdateSquashingLayerAssignmentInternal(
   } else {
     squashed_layers.push_back(paint_info);
   }
-  // Must invalidate before adding the squashed layer to the mapping.
-  Compositor()->PaintInvalidationOnCompositingChange(&squashed_layer);
   return true;
 }
 
@@ -1645,26 +1626,6 @@ void CompositedLayerMapping::RemoveLayerFromSquashingGraphicsLayer(
   NOTREACHED();
 }
 
-static bool LayerInSquashedLayersVector(
-    const HeapVector<Member<GraphicsLayerPaintInfo>>& squashed_layers,
-    const PaintLayer& layer) {
-  for (auto& squashed_layer : squashed_layers) {
-    if (squashed_layer->paint_layer == &layer)
-      return true;
-  }
-  return false;
-}
-
-#if DCHECK_IS_ON()
-void CompositedLayerMapping::AssertInSquashedLayersVector(
-    const PaintLayer& squashed_layer) const {
-  auto* in = &non_scrolling_squashed_layers_;
-  auto* out = &squashed_layers_in_scrolling_contents_;
-  DCHECK(LayerInSquashedLayersVector(*in, squashed_layer));
-  DCHECK(!LayerInSquashedLayersVector(*out, squashed_layer));
-}
-#endif
-
 static void RemoveExtraSquashedLayers(
     HeapVector<Member<GraphicsLayerPaintInfo>>& squashed_layers,
     wtf_size_t new_count,
@@ -1683,26 +1644,12 @@ void CompositedLayerMapping::FinishAccumulatingSquashingLayers(
     wtf_size_t new_non_scrolling_squashed_layer_count,
     wtf_size_t new_squashed_layer_in_scrolling_contents_count,
     HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation) {
-  wtf_size_t first_removed_layer = layers_needing_paint_invalidation.size();
   RemoveExtraSquashedLayers(non_scrolling_squashed_layers_,
                             new_non_scrolling_squashed_layer_count,
                             layers_needing_paint_invalidation);
   RemoveExtraSquashedLayers(squashed_layers_in_scrolling_contents_,
                             new_squashed_layer_in_scrolling_contents_count,
                             layers_needing_paint_invalidation);
-  for (auto i = first_removed_layer;
-       i < layers_needing_paint_invalidation.size(); i++) {
-    PaintLayer* layer = layers_needing_paint_invalidation[i];
-    // Deal with layers that are no longer squashed. Need to check both
-    // vectors to exclude the layers that are still squashed. A layer may
-    // change from scrolling to non-scrolling or vice versa and still be
-    // squashed.
-    if (!LayerInSquashedLayersVector(non_scrolling_squashed_layers_, *layer) &&
-        !LayerInSquashedLayersVector(squashed_layers_in_scrolling_contents_,
-                                     *layer)) {
-      Compositor()->PaintInvalidationOnCompositingChange(layer);
-    }
-  }
 }
 
 String CompositedLayerMapping::DebugName(

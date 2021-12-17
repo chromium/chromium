@@ -76,7 +76,7 @@
 #include "third_party/blink/renderer/core/paint/box_reflection_utils.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
+#include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
 #include "third_party/blink/renderer/core/paint/hit_testing_transform_state.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
@@ -260,12 +260,6 @@ String PaintLayer::DebugName() const {
 
 DOMNodeId PaintLayer::OwnerNodeId() const {
   return static_cast<const DisplayItemClient&>(GetLayoutObject()).OwnerNodeId();
-}
-
-PaintLayerCompositor* PaintLayer::Compositor() const {
-  if (!GetLayoutObject().View())
-    return nullptr;
-  return GetLayoutObject().View()->Compositor();
 }
 
 bool PaintLayer::PaintsWithFilters() const {
@@ -995,11 +989,6 @@ void PaintLayer::SetNeedsCompositingInputsUpdate(bool mark_ancestor_flags) {
     MarkAncestorChainForFlagsUpdate(kNeedsDescendantDependentUpdate);
 }
 
-void PaintLayer::SetNeedsGraphicsLayerRebuild() {
-  if (Compositor())
-    Compositor()->SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
-}
-
 void PaintLayer::SetNeedsVisualOverflowRecalc() {
   DCHECK(IsSelfPaintingLayer());
 #if DCHECK_IS_ON()
@@ -1071,12 +1060,6 @@ void PaintLayer::AddChild(PaintLayer* child, PaintLayer* before_child) {
 
   SetNeedsCompositingInputsUpdate();
 
-  if (Compositor()) {
-    if (!child->GetLayoutObject().IsStacked() &&
-        !GetLayoutObject().DocumentBeingDestroyed())
-      Compositor()->SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
-  }
-
   if (child->GetLayoutObject().IsStacked() || child->FirstChild()) {
     // Dirty the z-order list in which we are contained. The
     // ancestorStackingContextNode() can be null in the case where we're
@@ -1120,13 +1103,6 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
     last_ = old_child->PreviousSibling();
 
   if (!GetLayoutObject().DocumentBeingDestroyed()) {
-    if (Compositor()) {
-      if (!old_child->GetLayoutObject().IsStacked())
-        Compositor()->SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
-
-      if (Compositor()->GetCompositingInputsRoot() == old_child)
-        Compositor()->ClearCompositingInputsRoot();
-    }
     // Dirty the z-order list in which we are contained.
     old_child->DirtyStackingContextZOrderLists();
     SetNeedsCompositingInputsUpdate();
@@ -1171,27 +1147,7 @@ void PaintLayer::RemoveOnlyThisLayerAfterStyleChange(
     }
   }
 
-  bool did_set_paint_invalidation = false;
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // Destructing PaintLayer would cause CompositedLayerMapping and composited
-    // layers to be destructed and detach from layer tree immediately. Layers
-    // could have dangling scroll/clip parent if compositing update were
-    // omitted.
-    if (LocalFrameView* frame_view = layout_object_->GetDocument().View())
-      frame_view->SetNeedsForcedCompositingUpdate();
-
-    if (IsPaintInvalidationContainer()) {
-      // Our children will be reparented and contained by a new paint
-      // invalidation container, so need paint invalidation. CompositingUpdate
-      // can't see this layer (which has been removed) so won't do this for us.
-      ObjectPaintInvalidator(GetLayoutObject())
-          .InvalidatePaintIncludingNonCompositingDescendants();
-      GetLayoutObject().SetSubtreeShouldDoFullPaintInvalidation();
-      did_set_paint_invalidation = true;
-    }
-  }
-
-  if (!did_set_paint_invalidation && IsSelfPaintingLayer()) {
+  if (IsSelfPaintingLayer()) {
     if (PaintLayer* enclosing_self_painting_layer =
             parent_->EnclosingSelfPaintingLayer())
       enclosing_self_painting_layer->MergeNeedsPaintPhaseFlagsFrom(*this);
@@ -1401,8 +1357,6 @@ void PaintLayer::UpdateScrollableArea() {
   // To clear z-ordering information of overlay overflow controls.
   if (NeedsReorderOverlayOverflowControls())
     DirtyStackingContextZOrderLists();
-  if (auto* compositor = Compositor())
-    compositor->SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
 }
 
 bool PaintLayer::HasOverflowControls() const {
@@ -2774,10 +2728,6 @@ bool PaintLayer::SupportsSubsequenceCaching() const {
 ScrollingCoordinator* PaintLayer::GetScrollingCoordinator() {
   Page* page = GetLayoutObject().GetFrame()->GetPage();
   return (!page) ? nullptr : page->GetScrollingCoordinator();
-}
-
-bool PaintLayer::CompositesWithTransform() const {
-  return TransformAncestor() || Transform();
 }
 
 bool PaintLayer::ShouldBeSelfPaintingLayer() const {

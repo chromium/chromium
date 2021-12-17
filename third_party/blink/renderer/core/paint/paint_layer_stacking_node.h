@@ -54,7 +54,6 @@
 namespace blink {
 
 class PaintLayer;
-class PaintLayerCompositor;
 class ComputedStyle;
 
 // This class is only for PaintLayer, PaintLayerPaintOrderIterator and
@@ -137,8 +136,6 @@ class CORE_EXPORT PaintLayerStackingNode
 
   struct HighestLayers;
   void CollectLayers(PaintLayer&, HighestLayers*);
-
-  PaintLayerCompositor* Compositor() const;
 
   Member<PaintLayer> layer_;
 

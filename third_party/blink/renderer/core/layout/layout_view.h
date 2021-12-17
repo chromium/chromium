@@ -42,7 +42,6 @@ namespace blink {
 class LayoutQuote;
 class LocalFrameView;
 class NamedPagesMapper;
-class PaintLayerCompositor;
 class ViewFragmentationContext;
 
 // LayoutView is the root of the layout tree and the Document's LayoutObject.
@@ -68,10 +67,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   void Trace(Visitor*) const override;
 
   void WillBeDestroyed() override;
-
-  // Called when the Document is shutdown, to have the compositor clean up
-  // during frame detach, while pointers remain valid.
-  void CleanUpCompositor();
 
   // hitTest() will update layout, style and compositing first while
   // hitTestNoLifecycleUpdate() does not.
@@ -228,8 +223,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     NOT_DESTROYED();
     return named_pages_mapper_.get();
   }
-
-  PaintLayerCompositor* Compositor();
 
   PhysicalRect DocumentRect() const;
 
@@ -398,7 +391,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   Member<ViewFragmentationContext> fragmentation_context_;
   std::unique_ptr<NamedPagesMapper> named_pages_mapper_;
-  Member<PaintLayerCompositor> compositor_;
   scoped_refptr<IntervalArena> interval_arena_;
 
   Member<LayoutQuote> layout_quote_head_;

@@ -111,9 +111,6 @@ class SynthesizedClip : private cc::ContentLayerClient {
 //
 // Owns a subtree of the compositor layer tree, and updates it in response to
 // changes in the paint artifact.
-//
-// PaintArtifactCompositor is the successor to PaintLayerCompositor, reflecting
-// the new home of compositing decisions after paint with CompositeAfterPaint.
 class PLATFORM_EXPORT PaintArtifactCompositor final
     : private PropertyTreeManagerClient {
   USING_FAST_MALLOC(PaintArtifactCompositor);

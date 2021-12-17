@@ -700,8 +700,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void UpdateScrollableAreaSet();
 
-  void UpdateCompositingLayersAfterScroll();
-
   ScrollingCoordinator* GetScrollingCoordinator() const;
 
   PaintLayerScrollableAreaRareData* RareData() { return rare_data_; }

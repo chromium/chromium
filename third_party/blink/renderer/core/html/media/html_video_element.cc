@@ -86,7 +86,6 @@ HTMLVideoElement::HTMLVideoElement(Document& document)
       picture_in_picture_interstitial_(nullptr),
       is_persistent_(false),
       is_auto_picture_in_picture_(false),
-      in_overlay_fullscreen_video_(false),
       is_effectively_fullscreen_(false),
       is_default_overridden_intrinsic_size_(
           !document.IsMediaDocument() && GetExecutionContext() &&
@@ -448,15 +447,6 @@ void HTMLVideoElement::DidEnterFullscreen() {
       GetWebMediaPlayer()->EnteredFullscreen();
     GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
   }
-
-  // Cache this in case the player is destroyed before leaving fullscreen.
-  in_overlay_fullscreen_video_ = UsesOverlayFullscreenVideo();
-  if (in_overlay_fullscreen_video_) {
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      auto* compositor = GetDocument().GetLayoutView()->Compositor();
-      compositor->SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
-    }
-  }
 }
 
 void HTMLVideoElement::DidExitFullscreen() {
@@ -466,14 +456,6 @@ void HTMLVideoElement::DidExitFullscreen() {
     GetWebMediaPlayer()->ExitedFullscreen();
     GetWebMediaPlayer()->OnDisplayTypeChanged(GetDisplayType());
   }
-
-  if (in_overlay_fullscreen_video_) {
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      auto* compositor = GetDocument().GetLayoutView()->Compositor();
-      compositor->SetNeedsCompositingUpdate(kCompositingUpdateRebuildTree);
-    }
-  }
-  in_overlay_fullscreen_video_ = false;
 
   if (RuntimeEnabledFeatures::VideoAutoFullscreenEnabled() &&
       !FastHasAttribute(html_names::kPlaysinlineAttr)) {

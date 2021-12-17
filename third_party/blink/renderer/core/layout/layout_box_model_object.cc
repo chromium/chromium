@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -143,14 +142,6 @@ void LayoutBoxModelObject::WillBeDestroyed() {
 void LayoutBoxModelObject::StyleWillChange(StyleDifference diff,
                                            const ComputedStyle& new_style) {
   NOT_DESTROYED();
-  // SPv1:
-  // This object's layer may begin or cease to be stacked or stacking context,
-  // in which case the paint invalidation container of this object and
-  // descendants may change. Thus we need to invalidate paint eagerly for all
-  // such children. PaintLayerCompositor::paintInvalidationOnCompositingChange()
-  // doesn't work for the case because we can only see the new
-  // paintInvalidationContainer during compositing update.
-  // SPv1 and v2:
   // Change of stacked/stacking context status may cause change of this or
   // descendant PaintLayer's CompositingContainer, so we need to eagerly
   // invalidate the current compositing container chain which may have painted

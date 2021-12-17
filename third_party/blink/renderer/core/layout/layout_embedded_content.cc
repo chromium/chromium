@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/embedded_content_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -110,15 +109,6 @@ PaintLayerType LayoutEmbeddedContent::LayerTypeRequired() const {
   }
 
   return kForcedPaintLayer;
-}
-
-bool LayoutEmbeddedContent::ContentDocumentContainsGraphicsLayer() const {
-  NOT_DESTROYED();
-  if (PaintLayerCompositor* inner_compositor =
-          PaintLayerCompositor::FrameContentsCompositor(*this)) {
-    return inner_compositor->StaleInCompositingMode();
-  }
-  return false;
 }
 
 bool LayoutEmbeddedContent::NodeAtPointOverEmbeddedContentView(

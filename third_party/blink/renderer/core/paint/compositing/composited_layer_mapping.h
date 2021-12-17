@@ -40,8 +40,6 @@
 
 namespace blink {
 
-class PaintLayerCompositor;
-
 // A GraphicsLayerPaintInfo contains all the info needed to paint a partial
 // subtree of Layers into a GraphicsLayer.
 struct GraphicsLayerPaintInfo
@@ -297,9 +295,6 @@ class CORE_EXPORT CompositedLayerMapping final
 
   LayoutBoxModelObject& GetLayoutObject() const {
     return owning_layer_->GetLayoutObject();
-  }
-  PaintLayerCompositor* Compositor() const {
-    return owning_layer_->Compositor();
   }
 
   void UpdateInternalHierarchy();

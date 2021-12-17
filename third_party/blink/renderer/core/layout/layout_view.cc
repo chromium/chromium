@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/core/page/named_pages_mapper.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/view_painter.h"
@@ -102,9 +101,6 @@ LayoutView::LayoutView(ContainerNode* document)
     : LayoutBlockFlow(document),
       frame_view_(To<Document>(document)->View()),
       layout_state_(nullptr),
-      compositor_(RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
-                      ? nullptr
-                      : MakeGarbageCollected<PaintLayerCompositor>(*this)),
       layout_quote_head_(nullptr),
       layout_counter_count_(0),
       hit_test_count_(0),
@@ -132,7 +128,6 @@ LayoutView::~LayoutView() = default;
 void LayoutView::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
   visitor->Trace(fragmentation_context_);
-  visitor->Trace(compositor_);
   visitor->Trace(layout_quote_head_);
   visitor->Trace(hit_test_cache_);
   LayoutBlockFlow::Trace(visitor);
@@ -846,17 +841,6 @@ void LayoutView::UpdateHitTestResult(HitTestResult& result,
   }
 }
 
-PaintLayerCompositor* LayoutView::Compositor() {
-  NOT_DESTROYED();
-  return compositor_;
-}
-
-void LayoutView::CleanUpCompositor() {
-  NOT_DESTROYED();
-  DCHECK(compositor_);
-  compositor_->CleanUp();
-}
-
 IntervalArena* LayoutView::GetIntervalArena() {
   NOT_DESTROYED();
   if (!interval_arena_)
@@ -884,7 +868,6 @@ void LayoutView::WillBeDestroyed() {
   if (PaintLayer* layer = Layer())
     layer->SetNeedsRepaint();
   LayoutBlockFlow::WillBeDestroyed();
-  compositor_.Clear();
 }
 
 void LayoutView::UpdateFromStyle() {

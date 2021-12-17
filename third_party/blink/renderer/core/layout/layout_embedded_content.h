@@ -43,8 +43,6 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
  public:
   explicit LayoutEmbeddedContent(HTMLFrameOwnerElement*);
 
-  bool ContentDocumentContainsGraphicsLayer() const;
-
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
