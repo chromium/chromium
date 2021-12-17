@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import re
-import test_util
 import time
 from absl import app
-from selenium import webdriver
 from pywinauto.application import Application
+from selenium import webdriver
+
+import test_util
 
 UnsafePageLink = "http://testsafebrowsing.appspot.com/s/malware.html"
 UnsafeDownloadLink = "http://testsafebrowsing.appspot.com/s/badrep.exe"
