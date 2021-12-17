@@ -161,7 +161,7 @@ const base::Feature kUseDefaultBlockSize{"ArcVmUseDefaultBlockSize",
 // to delegate decoding tasks to VideoDecoder implementations, instead of using
 // VDA implementations created by GpuVideoDecodeAcceleratorFactory.
 const base::Feature kVideoDecoder{"ArcVideoDecoder",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether a custom memory size is used when creating ARCVM. When
 // enabled, ARCVM is sized with the following formula:
