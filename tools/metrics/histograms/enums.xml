@@ -36125,6 +36125,15 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="User clicks on the auto-play video."/>
 </enum>
 
+<!-- This must be kept current with feedback_uploader.cc's
+     FeedbackReportSendingResult -->
+
+<enum name="FeedbackReportSendingResult">
+  <int value="0" label="The report was uploaded successfully at first try"/>
+  <int value="1" label="The report was uploaded successfully after retry"/>
+  <int value="2" label="The report is corrupt or invalid and was dropped"/>
+</enum>
+
 <enum name="FeedbackSource">
   <int value="0" label="Arc App"/>
   <int value="1" label="Ash"/>

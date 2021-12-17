@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -152,6 +153,9 @@ void FeedbackService::OnAttachedFileAndScreenshotFetched(
   // True means report will be sent shortly.
   // False means report will be sent once the device is online.
   const bool status = !net::NetworkChangeNotifier::IsOffline();
+
+  UMA_HISTOGRAM_BOOLEAN("Feedback.ReportSending.Online", status);
+
   // Notify client that data submitted has been received successfully. The
   // report will be sent out once further processing is done.
   std::move(callback).Run(status);

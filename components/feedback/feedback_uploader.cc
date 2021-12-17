@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -22,6 +23,17 @@
 namespace feedback {
 
 namespace {
+
+constexpr char kReportSendingResultHistogramName[] =
+    "Feedback.ReportSending.Result";
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class FeedbackReportSendingResult {
+  kSuccessAtFirstTry = 0,  // The report was uploaded successfully without retry
+  kSuccessAfterRetry = 1,  // The report was uploaded successfully after retry
+  kDropped = 2,            // The report is corrupt or invalid and was dropped
+  kMaxValue = kDropped,
+};
 
 constexpr base::FilePath::CharType kFeedbackReportPath[] =
     FILE_PATH_LITERAL("Feedback Reports");
@@ -111,6 +123,13 @@ void FeedbackUploader::StartDispatchingReport() {
 }
 
 void FeedbackUploader::OnReportUploadSuccess() {
+  if (retry_delay_ == g_minimum_retry_delay) {
+    UMA_HISTOGRAM_ENUMERATION(kReportSendingResultHistogramName,
+                              FeedbackReportSendingResult::kSuccessAtFirstTry);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(kReportSendingResultHistogramName,
+                              FeedbackReportSendingResult::kSuccessAfterRetry);
+  }
   retry_delay_ = g_minimum_retry_delay;
   is_dispatching_ = false;
   // Explicitly release the successfully dispatched report.
@@ -128,6 +147,8 @@ void FeedbackUploader::OnReportUploadFailure(bool should_retry) {
   } else {
     // The report won't be retried, hence explicitly delete its file on disk.
     report_being_dispatched_->DeleteReportOnDisk();
+    UMA_HISTOGRAM_ENUMERATION(kReportSendingResultHistogramName,
+                              FeedbackReportSendingResult::kDropped);
   }
 
   // The report dispatching failed, and should either be retried or not. In all

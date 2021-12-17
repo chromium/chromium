@@ -6465,6 +6465,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.ReportSending.Online" units="boolean"
+    expires_after="2022-12-15">
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records whether the user is online when the feedback report was submitted.
+  </summary>
+</histogram>
+
+<histogram name="Feedback.ReportSending.Result"
+    enum="FeedbackReportSendingResult" expires_after="2022-12-15">
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records the feedback report sending states to help track the success rate of
+    feedback report offline submission.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.RequestSource" enum="FeedbackSource"
     expires_after="2022-06-05">
   <owner>afakhry@chromium.org</owner>
