@@ -122,6 +122,12 @@ void MaybeIncrementCrashStreak(bool did_previous_session_exit_cleanly,
                            base::clamp(num_crashes, 0, 100));
 }
 
+// Records |file_state| in a histogram.
+void RecordBeaconFileState(BeaconFileState file_state) {
+  base::UmaHistogramEnumeration(
+      "Variations.ExtendedSafeMode.BeaconFileStateAtStartup", file_state);
+}
+
 // Returns the contents of the file at |beacon_file_path| if the following
 // conditions are all true. Otherwise, returns nullptr.
 //
@@ -143,23 +149,34 @@ std::unique_ptr<base::Value> MaybeGetFileContents(
   if (beacon_file_path.empty())
     return nullptr;
 
+  int error_code;
   JSONFileValueDeserializer deserializer(beacon_file_path);
-  std::unique_ptr<base::Value> beacon_file_contents = deserializer.Deserialize(
-      /*error_code=*/nullptr, /*error_message=*/nullptr);
+  std::unique_ptr<base::Value> beacon_file_contents =
+      deserializer.Deserialize(&error_code, /*error_message=*/nullptr);
 
-  bool got_beacon_file_contents =
-      beacon_file_contents && beacon_file_contents->is_dict() &&
-      beacon_file_contents->FindKeyOfType(kVariationsCrashStreak,
-                                          base::Value::Type::INTEGER) &&
-      beacon_file_contents->FindKeyOfType(prefs::kStabilityExitedCleanly,
-                                          base::Value::Type::BOOLEAN);
-  base::UmaHistogramBoolean(
-      "Variations.ExtendedSafeMode.GotVariationsFileContents",
-      got_beacon_file_contents);
-
-  if (got_beacon_file_contents)
-    return beacon_file_contents;
-  return nullptr;
+  if (!beacon_file_contents) {
+    RecordBeaconFileState(BeaconFileState::kNotDeserializable);
+    base::UmaHistogramSparse(
+        "Variations.ExtendedSafeMode.BeaconFileDeserializationError",
+        error_code);
+    return nullptr;
+  }
+  if (!beacon_file_contents->is_dict() || beacon_file_contents->DictEmpty()) {
+    RecordBeaconFileState(BeaconFileState::kMissingDictionary);
+    return nullptr;
+  }
+  if (!beacon_file_contents->FindKeyOfType(kVariationsCrashStreak,
+                                           base::Value::Type::INTEGER)) {
+    RecordBeaconFileState(BeaconFileState::kMissingCrashStreak);
+    return nullptr;
+  }
+  if (!beacon_file_contents->FindKeyOfType(prefs::kStabilityExitedCleanly,
+                                           base::Value::Type::BOOLEAN)) {
+    RecordBeaconFileState(BeaconFileState::kMissingBeacon);
+    return nullptr;
+  }
+  RecordBeaconFileState(BeaconFileState::kReadable);
+  return beacon_file_contents;
 }
 
 // Returns the channel to use for setting up the Extended Variations Safe Mode

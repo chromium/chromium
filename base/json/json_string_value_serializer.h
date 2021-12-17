@@ -62,12 +62,14 @@ class BASE_EXPORT JSONStringValueDeserializer : public base::ValueDeserializer {
 
   ~JSONStringValueDeserializer() override;
 
-  // Attempt to deserialize the data structure encoded in the string passed
-  // in to the constructor into a structure of Value objects.  If the return
-  // value is null, and if |error_code| is non-null, |error_code| will
-  // contain an integer error code (a JsonParseError in this case).
-  // If |error_message| is non-null, it will be filled in with a formatted
-  // error message including the location of the error if appropriate.
+  // Attempts to deserialize |json_string_| into a structure of Value objects.
+  // If the return value is null, then
+  // (1) |error_code| will be filled with an integer error code
+  //     (base::ValueDeserializer::kErrorCodeInvalidFormat) if a non-null
+  //     |error_code| was given.
+  // (2) |error_message| will be filled with a formatted error message,
+  //     including the location of the error (if appropriate), if a non-null
+  //     |error_message| was given.
   // The caller takes ownership of the returned value.
   std::unique_ptr<base::Value> Deserialize(int* error_code,
                                            std::string* error_message) override;

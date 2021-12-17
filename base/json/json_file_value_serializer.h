@@ -65,17 +65,23 @@ class BASE_EXPORT JSONFileValueDeserializer : public base::ValueDeserializer {
 
   ~JSONFileValueDeserializer() override;
 
-  // Attempt to deserialize the data structure encoded in the file passed
-  // in to the constructor into a structure of Value objects.  If the return
-  // value is NULL, and if |error_code| is non-null, |error_code| will
-  // contain an integer error code (either JsonFileError or JsonParseError).
-  // If |error_message| is non-null, it will be filled in with a formatted
-  // error message including the location of the error if appropriate.
+  // Attempts to deserialize the data structure encoded in the file passed to
+  // the constructor into a structure of Value objects. If the return value is
+  // null, then
+  // (1) |error_code| will be filled with an integer error code (either a
+  //     JsonFileError or base::ValueDeserializer::kErrorCodeInvalidFormat) if a
+  //     non-null |error_code| was given.
+  // (2) |error_message| will be filled with a formatted error message,
+  //     including the location of the error (if appropriate), if a non-null
+  //     |error_message| was given.
   // The caller takes ownership of the returned value.
   std::unique_ptr<base::Value> Deserialize(int* error_code,
                                            std::string* error_message) override;
 
-  // This enum is designed to safely overlap with JSONReader::JsonParseError.
+  // This enum is designed to safely overlap with JSONParser::JsonParseError.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum JsonFileError {
     JSON_NO_ERROR = 0,
     JSON_ACCESS_DENIED = kErrorCodeFirstMetadataError,

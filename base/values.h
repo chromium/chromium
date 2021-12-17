@@ -863,6 +863,9 @@ class BASE_EXPORT ValueDeserializer {
   //  - Values 1000 and above mean an error in the metadata (i.e. context). The
   //    file could not be read, the network is down, etc.
   //  - Negative values are reserved.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum ErrorCode {
     kErrorCodeNoError = 0,
     // kErrorCodeInvalidFormat is a generic error code for "the data is not in

@@ -90,6 +90,7 @@ struct BadBeaconTestParams {
   const std::string test_name;
   bool beacon_file_exists;
   const std::string beacon_file_contents;
+  BeaconFileState beacon_file_state;
 };
 
 // Used for testing beacon files that are not well-formed, do not exist, etc.
@@ -182,7 +183,7 @@ TEST_F(CleanExitBeaconTest, InitWithoutUserDataDir) {
   EXPECT_FALSE(
       base::FieldTrialList::IsTrialActive(variations::kExtendedSafeModeTrial));
   histogram_tester_.ExpectTotalCount(
-      "Variations.ExtendedSafeMode.GotVariationsFileContents", 0);
+      "Variations.ExtendedSafeMode.BeaconFileStateAtStartup", 0);
 }
 
 // Verify that the beacon file is not read when the client is not in the
@@ -217,41 +218,51 @@ TEST_F(CleanExitBeaconTest, FileIgnoredByControlGroup) {
   EXPECT_EQ(prefs_.GetInteger(variations::prefs::kVariationsCrashStreak),
             expected_crash_streak);
   histogram_tester_.ExpectTotalCount(
-      "Variations.ExtendedSafeMode.GotVariationsFileContents", 0);
+      "Variations.ExtendedSafeMode.BeaconFileStateAtStartup", 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     BadBeaconFileTest,
     ::testing::Values(
-        BadBeaconTestParams{.test_name = "NoVariationsFile",
-                            .beacon_file_exists = false,
-                            .beacon_file_contents = ""},
-        BadBeaconTestParams{.test_name = "EmptyVariationsFile",
-                            .beacon_file_exists = true,
-                            .beacon_file_contents = ""},
-        BadBeaconTestParams{.test_name = "NotDictionary",
-                            .beacon_file_exists = true,
-                            .beacon_file_contents = "{abc123"},
-        BadBeaconTestParams{.test_name = "EmptyDictionary",
-                            .beacon_file_exists = true,
-                            .beacon_file_contents = "{}"},
+        BadBeaconTestParams{
+            .test_name = "NoVariationsFile",
+            .beacon_file_exists = false,
+            .beacon_file_contents = "",
+            .beacon_file_state = BeaconFileState::kNotDeserializable},
+        BadBeaconTestParams{
+            .test_name = "EmptyVariationsFile",
+            .beacon_file_exists = true,
+            .beacon_file_contents = "",
+            .beacon_file_state = BeaconFileState::kNotDeserializable},
+        BadBeaconTestParams{
+            .test_name = "NotDictionary",
+            .beacon_file_exists = true,
+            .beacon_file_contents = "{abc123",
+            .beacon_file_state = BeaconFileState::kNotDeserializable},
+        BadBeaconTestParams{
+            .test_name = "EmptyDictionary",
+            .beacon_file_exists = true,
+            .beacon_file_contents = "{}",
+            .beacon_file_state = BeaconFileState::kMissingDictionary},
         BadBeaconTestParams{
             .test_name = "MissingCrashStreak",
             .beacon_file_exists = true,
             .beacon_file_contents =
-                "{\"user_experience_metrics.stability.exited_cleanly\": true}"},
+                "{\"user_experience_metrics.stability.exited_cleanly\": true}",
+            .beacon_file_state = BeaconFileState::kMissingCrashStreak},
         BadBeaconTestParams{
             .test_name = "MissingBeacon",
             .beacon_file_exists = true,
-            .beacon_file_contents = "{\"variations_crash_streak\": 1}"}),
+            .beacon_file_contents = "{\"variations_crash_streak\": 1}",
+            .beacon_file_state = BeaconFileState::kMissingBeacon}),
     [](const ::testing::TestParamInfo<BadBeaconTestParams>& params) {
       return params.param.test_name;
     });
 
 // Verify that the inability to get the beacon file's contents for a plethora of
-// reasons (a) doesn't crash and (b) correctly records the
-// GotVariationsFileContents metric.
+// reasons (a) doesn't crash and (b) correctly records the  BeaconFileState
+// metric.
 TEST_P(BadBeaconFileTest, InitWithUnusableBeaconFile) {
   SetUpExtendedSafeModeExperiment(variations::kSignalAndWriteViaFileUtilGroup);
   BadBeaconTestParams params = GetParam();
@@ -266,7 +277,8 @@ TEST_P(BadBeaconFileTest, InitWithUnusableBeaconFile) {
 
   TestCleanExitBeacon beacon(&prefs_, user_data_dir_path);
   histogram_tester_.ExpectUniqueSample(
-      "Variations.ExtendedSafeMode.GotVariationsFileContents", false, 1);
+      "Variations.ExtendedSafeMode.BeaconFileStateAtStartup",
+      params.beacon_file_state, 1);
 }
 
 // TODO(crbug/1248239): Enable these tests on Android when the Extended
@@ -289,7 +301,8 @@ TEST_F(CleanExitBeaconTest, InitWithBeaconFile) {
 
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
   histogram_tester_.ExpectUniqueSample(
-      "Variations.ExtendedSafeMode.GotVariationsFileContents", true, 1);
+      "Variations.ExtendedSafeMode.BeaconFileStateAtStartup",
+      BeaconFileState::kReadable, 1);
   EXPECT_TRUE(clean_exit_beacon.exited_cleanly());
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes",
                                        num_crashes, 1);
@@ -313,7 +326,8 @@ TEST_F(CleanExitBeaconTest, InitWithCrashAndBeaconFile) {
   const int updated_num_crashes = last_session_num_crashes + 1;
   TestCleanExitBeacon clean_exit_beacon(&prefs_, user_data_dir_path);
   histogram_tester_.ExpectUniqueSample(
-      "Variations.ExtendedSafeMode.GotVariationsFileContents", true, 1);
+      "Variations.ExtendedSafeMode.BeaconFileStateAtStartup",
+      BeaconFileState::kReadable, 1);
   EXPECT_FALSE(clean_exit_beacon.exited_cleanly());
   histogram_tester_.ExpectUniqueSample("Variations.SafeMode.Streak.Crashes",
                                        updated_num_crashes, 1);

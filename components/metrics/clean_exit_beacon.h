@@ -22,6 +22,9 @@ namespace metrics {
 
 // Captures all possible beacon value permutations for two distinct beacons.
 // Exposed for testing.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class CleanExitBeaconConsistency {
   kCleanClean = 0,
   kCleanDirty = 1,
@@ -33,6 +36,19 @@ enum class CleanExitBeaconConsistency {
   kMissingDirty = 7,
   kMissingMissing = 8,
   kMaxValue = kMissingMissing,
+};
+
+// Denotes the state of the beacon file. Exposed for testing.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class BeaconFileState {
+  kReadable = 0,
+  kNotDeserializable = 1,
+  kMissingDictionary = 2,
+  kMissingCrashStreak = 3,
+  kMissingBeacon = 4,
+  kMaxValue = kMissingBeacon,
 };
 
 // Reads and updates a beacon used to detect whether the previous browser

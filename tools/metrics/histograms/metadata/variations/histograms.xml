@@ -76,8 +76,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.ExtendedSafeMode.BeaconFileDeserializationError"
+    enum="JsonDeserializationError" expires_after="2022-06-05">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <component>Internals&gt;Metrics&gt;Variations</component>
+  <summary>
+    The error code given by JSONFileValueDeserializer::Deserialize(). Emitted
+    during CleanExitBeacon initialization when the beacon file cannot be
+    deserialized. In other words, it is emitted whenever the &quot;Not
+    deserializable&quot; bucket of the BeaconFileStateAtStartup histogram is
+    emitted. Note that this file is used by only one branch of the Extended
+    Variations Safe Mode experiment.
+  </summary>
+</histogram>
+
+<histogram name="Variations.ExtendedSafeMode.BeaconFileStateAtStartup"
+    enum="BeaconFileState" expires_after="2022-06-05">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <component>Internals&gt;Metrics&gt;Variations</component>
+  <summary>
+    The state of the beacon file and its contents, e.g. readable or not
+    deserializable. See the BeaconFileDeserializationError histogram for more
+    details on why the file was not deserializable. Note that this file is used
+    by only one branch of the Extended Variations Safe Mode experiment. Recorded
+    when the CleanExitBeacon is initialized.
+  </summary>
+</histogram>
+
 <histogram name="Variations.ExtendedSafeMode.GotVariationsFileContents"
     enum="BooleanSuccess" expires_after="2022-06-05">
+  <obsolete>
+    Replaced with Variations.ExtendedSafeMode.BeaconFileState in M99.
+  </obsolete>
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>Internals&gt;Metrics&gt;Variations</component>
@@ -86,7 +118,7 @@ chromium-metrics-reviews@google.com.
     This is the case when the file exists, its contents are successfully read,
     and its contents are non-empty and in the expected format. Note that this
     file is used by only one branch of the Extended Variations Safe Mode
-    experiment. Recorded when the CleanExitBeacon is constructed.
+    experiment. Recorded when the CleanExitBeacon is initialized.
   </summary>
 </histogram>
 
