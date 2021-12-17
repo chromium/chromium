@@ -12,7 +12,7 @@ import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/gpu_fence_handle.mojom";
 import "ui/gfx/mojom/presentation_feedback.mojom";
 import "ui/gfx/mojom/swap_result.mojom";
-import "ui/ozone/public/mojom/wayland/wayland_overlay_config.mojom";
+import "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom";
 
 // Used by the GPU for communication with the WaylandBufferManagerHost in
 // the browser process.

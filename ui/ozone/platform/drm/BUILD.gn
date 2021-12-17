@@ -150,7 +150,7 @@ source_set("gbm") {
     "//ui/gl",
     "//ui/ozone:ozone_base",
     "//ui/ozone/common",
-    "//ui/ozone/public/mojom",
+    "//ui/ozone/platform/drm/mojom",
     "//ui/platform_window",
   ]
 

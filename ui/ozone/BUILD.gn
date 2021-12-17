@@ -159,7 +159,6 @@ component("ozone_base") {
     "//ui/events/ozone/*",
     "//ui/ozone/common/*",
     "//ui/ozone/platform/*",
-    "//ui/ozone/public/mojom",
   ]
 
   configs += [ "//third_party/khronos:khronos_headers" ]
@@ -233,7 +232,6 @@ component("ozone") {
   public_deps = [
     ":buildflags",
     ":platform",
-    "//ui/ozone/public/mojom",
   ]
 }
 

@@ -13,7 +13,7 @@ import "ui/display/mojom/display_snapshot.mojom";
 import "ui/display/mojom/gamma_ramp_rgb_entry.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/accelerated_widget.mojom";
-import "ui/ozone/public/mojom/device_cursor.mojom";
+import "ui/ozone/platform/drm/mojom/device_cursor.mojom";
 
 // The viz process on CrOS implements the DrmDevice
 // service to let the viz host and clients manage DRM displays.

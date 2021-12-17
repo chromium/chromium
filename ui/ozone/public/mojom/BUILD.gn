@@ -4,23 +4,6 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom("mojom") {
-  sources = [
-    "device_cursor.mojom",
-    "drm_device.mojom",
-    "scenic_gpu_host.mojom",
-    "scenic_gpu_service.mojom",
-  ]
-
-  public_deps = [
-    "//mojo/public/mojom/base",
-    "//skia/public/mojom",
-    "//ui/display/mojom",
-    "//ui/gfx/geometry/mojom",
-    "//ui/gfx/mojom",
-  ]
-}
-
 mojom("gesture_properties_service") {
   sources = [ "gesture_properties_service.mojom" ]
 

@@ -65,7 +65,7 @@ source_set("flatland") {
     "//ui/events/ozone/layout",
     "//ui/ozone:ozone_base",
     "//ui/ozone/common",
-    "//ui/ozone/public/mojom",
+    "//ui/ozone/platform/scenic/mojom",
   ]
 
   public_deps = [

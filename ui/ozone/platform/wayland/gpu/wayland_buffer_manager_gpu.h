@@ -18,7 +18,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
-#include "ui/ozone/public/mojom/wayland/wayland_buffer_manager.mojom.h"
+#include "ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom.h"
 
 namespace gfx {
 enum class SwapResult;
@@ -82,7 +82,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Methods, which can be used when in both in-process-gpu and out of process
   // modes. These calls are forwarded to the browser process through the
   // WaylandConnection mojo interface. See more in
-  // ui/ozone/public/mojom/wayland/wayland_connection.mojom.
+  // ui/ozone/platform/wayland/mojom/wayland_connection.mojom.
   //
   // Asks Wayland to create generic dmabuf-based wl_buffer.
   void CreateDmabufBasedBuffer(base::ScopedFD dmabuf_fd,

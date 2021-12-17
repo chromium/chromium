@@ -263,7 +263,7 @@ source_set("wayland") {
     "//ui/gfx/linux:drm",
     "//ui/ozone:ozone_base",
     "//ui/ozone/common",
-    "//ui/ozone/public/mojom/wayland:wayland_mojom",
+    "//ui/ozone/platform/wayland/mojom",
     "//ui/platform_window",
     "//ui/platform_window/common",
     "//ui/platform_window/wm",
@@ -522,7 +522,7 @@ source_set("wayland_unittests") {
     "//ui/ozone:platform",
     "//ui/ozone:test_support",
     "//ui/ozone/common",
-    "//ui/ozone/public/mojom/wayland:wayland_mojom",
+    "//ui/ozone/platform/wayland/mojom",
     "//ui/platform_window/wm",
   ]
 

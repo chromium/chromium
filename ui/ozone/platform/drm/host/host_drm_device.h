@@ -18,9 +18,9 @@
 #include "ui/ozone/platform/drm/common/display_types.h"
 #include "ui/ozone/platform/drm/host/drm_cursor.h"
 #include "ui/ozone/platform/drm/host/gpu_thread_adapter.h"
+#include "ui/ozone/platform/drm/mojom/device_cursor.mojom.h"
+#include "ui/ozone/platform/drm/mojom/drm_device.mojom.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
-#include "ui/ozone/public/mojom/device_cursor.mojom.h"
-#include "ui/ozone/public/mojom/drm_device.mojom.h"
 
 namespace ui {
 class DrmDisplayHostManager;

@@ -4,7 +4,7 @@
 
 module ui.mojom;
 
-import "ui/ozone/public/mojom/scenic_gpu_host.mojom";
+import "ui/ozone/platform/scenic/mojom/scenic_gpu_host.mojom";
 
 // GPU process service that enables presentation to Scenic.
 interface ScenicGpuService {
