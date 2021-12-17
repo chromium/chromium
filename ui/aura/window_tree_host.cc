@@ -22,6 +22,7 @@
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/env.h"
+#include "ui/aura/host_frame_rate_throttler.h"
 #include "ui/aura/native_window_occlusion_tracker.h"
 #include "ui/aura/scoped_keyboard_hook.h"
 #include "ui/aura/scoped_simple_keyboard_hook.h"
@@ -93,49 +94,6 @@ class ScopedLocalSurfaceIdValidator {
   ~ScopedLocalSurfaceIdValidator() {}
 };
 #endif
-
-// Used to throttle the frame rate of hosts that are occluded.
-class HostThrottler {
- public:
-  static HostThrottler& GetInstance() {
-    static base::NoDestructor<HostThrottler> instance;
-    return *instance;
-  }
-
-  void AddHost(WindowTreeHost* host) {
-    if (base::Contains(hosts_, host))
-      return;
-    hosts_.insert(host);
-    UpdateHostFrameSinkManager();
-  }
-
-  void RemoveHost(WindowTreeHost* host) {
-    if (!base::Contains(hosts_, host))
-      return;
-    hosts_.erase(host);
-    UpdateHostFrameSinkManager();
-  }
-
-  const base::flat_set<WindowTreeHost*>& hosts() const { return hosts_; }
-
- private:
-  friend class base::NoDestructor<HostThrottler>;
-
-  HostThrottler() = default;
-  ~HostThrottler() = default;
-
-  void UpdateHostFrameSinkManager() {
-    std::vector<viz::FrameSinkId> ids;
-    ids.reserve(hosts_.size());
-    for (WindowTreeHost* host : hosts_)
-      ids.push_back(host->compositor()->frame_sink_id());
-    Env::GetInstance()->context_factory()->GetHostFrameSinkManager()->Throttle(
-        ids, base::Seconds(1));
-  }
-
-  // Set of hosts that are currently throttled.
-  base::flat_set<WindowTreeHost*> hosts_;
-};
 
 }  // namespace
 
@@ -468,9 +426,9 @@ void WindowTreeHost::SetNativeWindowOcclusionState(
     if (ShouldThrottleWhenOccluded()) {
       // Throttling doesn't update the visibility.
       if (occlusion_state_ == Window::OcclusionState::OCCLUDED)
-        HostThrottler::GetInstance().AddHost(this);
+        HostFrameRateThrottler::GetInstance().AddHost(this);
       else
-        HostThrottler::GetInstance().RemoveHost(this);
+        HostFrameRateThrottler::GetInstance().RemoveHost(this);
     } else {
       const bool visible = CalculateCompositorVisibilityFromOcclusionState();
       // Transitioning to hidden means the compositor state hasn't been updated
@@ -570,7 +528,7 @@ void WindowTreeHost::UpdateCompositorVisibility(bool visible) {
     // disabled. For the most part, if ShouldThrottleWhenOccluded() is true,
     // the handling of occlusion changing is done in
     // SetNativeWindowOcclusionState().
-    HostThrottler::GetInstance().RemoveHost(this);
+    HostFrameRateThrottler::GetInstance().RemoveHost(this);
   }
 
   if (visible) {
@@ -593,7 +551,7 @@ void WindowTreeHost::DestroyCompositor() {
     return;
 
   if (ShouldThrottleWhenOccluded())
-    HostThrottler::GetInstance().RemoveHost(this);
+    HostFrameRateThrottler::GetInstance().RemoveHost(this);
 
   // Explicitly delete the HideHelper early as it makes use of `compositor_`
   // and `window_`.
@@ -859,7 +817,7 @@ void WindowTreeHost::FinishHideTransition() {
 // static
 const base::flat_set<WindowTreeHost*>&
 WindowTreeHost::GetThrottledHostsForTesting() {
-  return HostThrottler::GetInstance().hosts();
+  return HostFrameRateThrottler::GetInstance().hosts();
 }
 
 void WindowTreeHost::StartReleasingResourcesForHide() {
