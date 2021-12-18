@@ -107,6 +107,7 @@
 <translation id="4271805377592243930">Получаване на помощ за Chromium</translation>
 <translation id="4285930937574705105">Инсталирането не бе успешно поради неизвестна грешка. Ако Chromium понастоящем се изпълнява, моля, затворете го и опитайте отново.</translation>
 <translation id="4407044323746248786">Искате ли да излезете от Chromium въпреки това?</translation>
+<translation id="4414390922528416758">Персонализиране на възможностите за избор във връзка с поверителността, които Chromium смята за най-важни. Това ръководство не включва всяка настройка и опция.</translation>
 <translation id="4415566066719264597">Разрешаване на Chromium да се изпълнява на заден план</translation>
 <translation id="4423735387467980091">Персонализиране и контролиране на Chromium</translation>
 <translation id="4427306783828095590">Режимът за подобрена защита предприема повече действия за блокиране на фишинг атаки и злонамерен софтуер</translation>
@@ -289,5 +290,6 @@
 <translation id="9214764063801632699">Система Chromium OS</translation>
 <translation id="93478295209880648">Chromium може да не функционира правилно, тъй като вече не се поддържа под Windows XP и Windows Vista</translation>
 <translation id="965162752251293939">Кой използва Chromium?</translation>
+<translation id="967427899662692980">Получете най-високото ниво на сигурност на Chromium</translation>
 <translation id="985602178874221306">Авторите на Chromium</translation>
 </translationbundle>

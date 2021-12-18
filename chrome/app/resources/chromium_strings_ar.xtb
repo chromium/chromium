@@ -109,6 +109,7 @@
 <translation id="4271805377592243930">‏الحصول على مساعدة في Chromium</translation>
 <translation id="4285930937574705105">‏تعذّر إتمام عملية التثبيت بسبب خطأ غير محدد. إذا كان Chromium في حالة التشغيل حاليًا، يُرجى إغلاقه وإعادة المحاولة.</translation>
 <translation id="4407044323746248786">‏هل تريد الخروج من Chromium على أي حال؟</translation>
+<translation id="4414390922528416758">‏يمكنك تخصيص خيارات الخصوصية التي يوليها متصفِّح Chromium الأهمية الأكبر، علمًا بأنّ هذا الدليل لا يتضمّن كل الإعدادات والخيارات.</translation>
 <translation id="4415566066719264597">‏السماح بتشغيل Chromium في الخلفية</translation>
 <translation id="4423735387467980091">‏تخصيص Chromium والتحكم فيه</translation>
 <translation id="4427306783828095590">يؤدي تفعيل إعداد "الحماية المُحسَّنة" إلى حظر التصيّد الاحتيالي والبرامج الضارّة.</translation>
@@ -296,5 +297,6 @@
 <translation id="9214764063801632699">‏نظام التشغيل Chromium</translation>
 <translation id="93478295209880648">‏قد لا يعمل Chromium بشكل صحيح لأنه لم يعد مدعومًا على أنظمة التشغيل Windows XP أو Windows Vista.</translation>
 <translation id="965162752251293939">‏مَن يستخدم Chromium؟</translation>
+<translation id="967427899662692980">‏الحصول على أعلى مستوى من الأمان في متصفِّح Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

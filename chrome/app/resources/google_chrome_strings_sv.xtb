@@ -250,6 +250,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7398801000654795464">Du var inloggad i Chrome som <ph name="USER_EMAIL_ADDRESS" />. Använd samma konto när du loggar in igen.</translation>
 <translation id="7408085963519505752">Villkor för Chrome OS</translation>
 <translation id="7419046106786626209">Det gick inte att synkronisera data med Chrome OS eftersom synkronisering inte är tillgängligt för din domän.</translation>
+<translation id="7481213027396403996">Få det bästa skyddet i Chrome</translation>
 <translation id="7486227612705979895">Chrome får åtkomst till din Drive så att du kan få förslag därifrån i adressfältet</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Om du vill se om enheten är uppdaterad öppnar du <ph name="LINK_BEGIN" />inställningarna för Chrome OS<ph name="LINK_END" /></translation>
@@ -308,6 +309,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8862326446509486874">Du har inte behörighet att göra en installation på systemnivå. Försök köra installationsprogrammet igen som administratör.</translation>
 <translation id="8914504000324227558">Starta om Chrome</translation>
 <translation id="8922193594870374009">Logga in på Chrome på båda enheterna om du vill skicka ett nummer från <ph name="ORIGIN" /> till Android-telefonen.</translation>
+<translation id="8927704157641862988">Anpassa de viktigaste integritetsvalen i Chrome. Alla inställningar och alternativ som finns beskrivs inte i den här guiden.</translation>
 <translation id="8983720963221508955">Du har aktiverat Förbättrad säker webbsökning i kontot. Skaffa funktionen även för Chrome.</translation>
 <translation id="8986207147630327271">Du lägger till en jobbprofil i den här webbläsaren och ger administratören kontrollen enbart över jobbprofilen.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Det finns en uppdatering för Chrome}=1{Det finns en uppdatering för Chrome}other{Det finns en uppdatering för Chrome sedan # dagar}}</translation>

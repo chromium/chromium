@@ -111,6 +111,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4271805377592243930">Lortu Chromium erabiltzeko laguntza</translation>
 <translation id="4285930937574705105">Instalazioak huts egin du zehaztu gabeko errore batengatik. Chromium abian bada, itxi eta ireki berriro.</translation>
 <translation id="4407044323746248786">Chromium-etik irten nahi duzu hala ere?</translation>
+<translation id="4414390922528416758">Pertsonalizatu Chromium-en ustez garrantzitsuenak diren pribatutasun-aukerak. Gida honetan ez daude ezarpen eta aukera guztiak.</translation>
 <translation id="4415566066719264597">Onartu Chromium atzeko planoan abiaraztea</translation>
 <translation id="4423735387467980091">Pertsonalizatu eta kontrolatu Chromium</translation>
 <translation id="4427306783828095590">Babes handiagoa eskaintzen du phishingaren eta malwarearen aurka</translation>
@@ -238,6 +239,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="7561906087460245826">Halaber, garbitu Chromium-eko datuak (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Ezarpenen bat orri honetan agertzen ez bada, bila ezazu <ph name="LINK_BEGIN" />
       Chromium-en sistema eragilearen ezarpenetan.<ph name="LINK_END" /></translation>
+<translation id="7597596667193879455">Arakatze seguru hobetua aktibatu duzu kontuan. Orain, eskura ezazu Chromium-erako.</translation>
 <translation id="761356813943268536">Chromium kamera eta mikrofonoa erabiltzen ari da.</translation>
 <translation id="7617377681829253106">Chromium hobetu egin dugu</translation>
 <translation id="7686590090926151193">Chromium ez da zure arakatzaile lehenetsia</translation>
@@ -297,5 +299,6 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="9214764063801632699">Chromium OS</translation>
 <translation id="93478295209880648">Chromium-ek agian ez du behar bezala funtzionatuko, jada ez baita bateragarria Windows XP eta Windows Vista-rekin</translation>
 <translation id="965162752251293939">Nor erabiltzen ari da Chromium?</translation>
+<translation id="967427899662692980">Lortu Chromium-en segurtasun-aukerarik sendoena</translation>
 <translation id="985602178874221306">Chromium egileak</translation>
 </translationbundle>

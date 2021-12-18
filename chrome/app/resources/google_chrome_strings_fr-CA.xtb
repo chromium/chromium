@@ -248,6 +248,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7398801000654795464">Vous étiez connecté à Google Chrome en tant que <ph name="USER_EMAIL_ADDRESS" />. Veuillez utiliser le même compte pour vous reconnecter.</translation>
 <translation id="7408085963519505752">Conditions d'utilisation de Chrome OS</translation>
 <translation id="7419046106786626209">Chrome OS n'a pas pu synchroniser vos données, car la synchronisation n'est pas offerte pour votre nom de domaine.</translation>
+<translation id="7481213027396403996">Profitez de la sécurité la plus robuste de Chrome</translation>
 <translation id="7486227612705979895">Chrome accédera à votre Disque pour faire des suggestions dans la barre d'adresse</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Pour voir si votre appareil est à jour, sélectionnez les <ph name="LINK_BEGIN" />paramètres de Chrome OS<ph name="LINK_END" /></translation>
@@ -306,6 +307,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8862326446509486874">Vous ne disposez pas des droits requis pour faire une installation sur le système. Relancez l'installation une fois que vous serez connecté comme administrateur.</translation>
 <translation id="8914504000324227558">Relancer Google Chrome</translation>
 <translation id="8922193594870374009">Pour envoyer un numéro de <ph name="ORIGIN" /> vers votre téléphone Android, connectez-vous à Chrome sur les deux appareils.</translation>
+<translation id="8927704157641862988">Personnalisez les choix en matière de confidentialité considérés comme étant les plus importants par Chrome. Ce guide ne comprend pas tous les paramètres ni toutes les options.</translation>
 <translation id="8986207147630327271">Vous ajoutez un profil professionnel à ce navigateur et vous octroyez uniquement le contrôle de ce profil à votre administrateur.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Une mise à jour de Chrome est proposée}=1{Une mise à jour de Chrome est proposée}one{Une mise à jour de Chrome est proposée depuis # jour}other{Une mise à jour de Chrome est proposée depuis # jours}}</translation>
 <translation id="9026991721384951619">Chrome OS n'a pas pu synchroniser vos données, car vos renseignements de connexion ne sont plus à jour.</translation>

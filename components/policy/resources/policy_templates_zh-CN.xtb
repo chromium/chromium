@@ -177,6 +177,7 @@
 
       如需详细了解有效的 <ph name="URL_LABEL" /> 格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="120937472976628837">报告风扇信息</translation>
+<translation id="1212233008927724662">停用延迟的登录 WebUI 加载。</translation>
 <translation id="1216919699175573511">启用 Signed HTTP Exchange (SXG) 支持</translation>
 <translation id="1219695476179627719">指定是否要将已在运行较新版本的设备回滚到 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> 所设定的版本。
 
@@ -483,6 +484,13 @@
 <translation id="159946228300522107">如果此政策设为 True，Chrome 会在首次运行时将所显示的第一个窗口最大化。
 
       如果此政策设为 False 或未设置，Chrome 可能会将第一个窗口最大化，具体取决于屏幕尺寸。</translation>
+<translation id="1600107337865729434">此政策默认允许使用以源为键的代理集群。
+
+      Origin-Agent-Cluster: HTTP 标头可控制是将某个文档隔离在以源为键的代理集群中，还是隔离在以网站为键的代理集群中。这会对安全性造成影响，因为以源为键的代理集群允许按源隔离文档。开发者可看到的后果是：无法再设置 document.domain 这一访问函数。
+
+      默认行为 - 未设置 Origin-Agent-Cluster: 标头时
+      - 在 M101 中，从以网站为键改为以源为键。如果此政策已启用或未设置，从该版本开始，浏览器将遵循这一新的默认行为。如果此政策已停用，这项更改会反转，不带 Origin-Agent-Cluster: 标头的文档将被分配给以网站为键的代理集群。因此，document.domain 访问函数会默认处于可设置状态。这与旧版行为一致。
+      </translation>
 <translation id="1600340610556453828">如果此政策已停用，<ph name="PRODUCT_OS_NAME" />会关闭 Wi-Fi，而且用户无法更改相关设置。
 
       如果此政策已启用或未设置，系统会允许用户开启或关闭 Wi-Fi。</translation>
@@ -629,6 +637,7 @@
       另请参阅 <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />。
 
       注意：此设置会覆盖 <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />（若已设置）。</translation>
+<translation id="1721304336924950970">仅在需要时加载登录 WebUI。</translation>
 <translation id="172374442286684480">允许所有网站设置本地数据</translation>
 <translation id="1729169799290004131">通过设置此政策，您可以指定屏幕亮度百分比（关闭自动调节亮度功能）。系统会根据政策值调整初始屏幕亮度，但用户可以更改相关设置。
 
@@ -712,6 +721,7 @@
           此为可选政策。如果未设置此政策，系统将使用 GET 方法发送“即搜即得”搜索请求。
 
           此政策只在启用了“DefaultSearchProviderEnabled”政策的前提下才会生效。</translation>
+<translation id="1850439894606905202">默认情况下，文档会被放入以网站为键的代理集群中。document.domain 会处于可设置状态。</translation>
 <translation id="1852294065645015766">允许自动播放媒体内容</translation>
 <translation id="1859859319036806634">警告：从 52 版开始，<ph name="PRODUCT_NAME" /> 中将取消 TLS 版本回退功能（2016 年 9 月左右）。届时，此政策将不再有效。
 
@@ -1845,6 +1855,15 @@
 <translation id="3152425128389603870">使“统一桌面”功能可供用户使用，并使其在默认情况下处于启用状态</translation>
 <translation id="3159375329008977062">允许用户通过界面导出/导入 Crostini 容器</translation>
 <translation id="3164531087779621747">打印 PostScript 模式</translation>
+<translation id="3165468162820163252">此政策用于控制是让系统始终在启动时加载登录屏幕的 WebUI 部分，还是仅在显示该部分之前加载它。此政策适用于登录屏幕。
+
+      如果此政策已启用，系统将仅在显示登录界面的 WebUI 部分之前加载该部分。这可以加快登录流程。
+
+      如果此政策已停用，系统将始终在启动时加载登录屏幕的 WebUI 部分（旧版行为）。
+
+      如果此政策未设置，相应行为将由 kEnableLazyLoginWebUILoading 功能控制。
+
+      待 kEnableLazyLoginWebUILoading 全面推出后，此政策应该会被移除。</translation>
 <translation id="3165808775394012744">将这些政策列于此处是为了方便您移除它们。</translation>
 <translation id="3166210414652928099">允许用户使用来源不受信任的 Android 应用</translation>
 <translation id="316778957754360075">此设置从 <ph name="PRODUCT_NAME" />版本 29 起开始弃用。我们建议您将托管 CRX 软件包的网站包含在 ExtensionInstallSources 中，然后将上述软件包的直接下载链接放在某网页上，从而建立一个由企业托管的扩展程序/应用包。相关网页的启动器可使用 ExtensionInstallForcelist 政策创建。</translation>
@@ -3971,6 +3990,7 @@
       如果此政策设为 False 或未设置，那么从 M80 起，系统会默认停用 Web Components v0 功能。
 
       在 Chrome 84 之后，此政策将被移除。</translation>
+<translation id="575647238840663288">默认情况下，文档可能会被放入以源为键的代理集群中。无法为此类文档设置 document.domain。</translation>
 <translation id="5756680608782814094">报告设备的 VPD 信息。
 
       如果此政策设为 false 或未设置，系统将不会报告这些信息。
@@ -4729,6 +4749,7 @@
       您只需将以下各项连结起来即可指定 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 哈希：哈希算法名称、“/”字符，以及相应哈希算法（对所指定证书的 DER 编码 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 应用的哈希算法）的 Base64 编码。Base64 编码的格式与 SPKI 指纹的格式一致。唯一得到认可的哈希算法是 sha256，其他算法都会被忽略。
 
       如果您不设置此政策，<ph name="PRODUCT_NAME" /> 便会将那些应按照证书透明度要求进行披露但却未予披露的证书视为不可信证书。</translation>
+<translation id="6704445641918520643">启用延迟的登录 WebUI 加载。</translation>
 <translation id="6704515759227307131">此政策已被弃用，且已被 AdvancedProtectionAllowed 取代。
 
       此政策用于控制是否允许已加入“高级保护”计划的用户将他们的下载内容发送给 Google 进行恶意软件扫描。如果此政策设为 True 或未设置，系统会提示用户将下载的文件发送给 Google 进行深度扫描。如果用户选择“扫描”，系统便会将相应文件发送给 Google。如果此政策设为 False，系统不会提示用户，也不会将他们的下载内容发送给 Google。</translation>
@@ -6438,6 +6459,11 @@
 
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="8671119576957984818">启用桌面分享中心</translation>
+<translation id="8671314659400112135">如果此政策已启用或未设置，系统会允许 <ph name="PRODUCT_NAME" /> 采用额外的扩展点安全缓解措施，以屏蔽浏览器进程中的旧版扩展点。
+
+      停用此政策会对 <ph name="PRODUCT_NAME" /> 的安全性和稳定性产生不利影响，因为如果此政策已停用，不明的潜在恶意代码便可在 <ph name="PRODUCT_NAME" /> 的浏览器进程中加载。仅当那些必须在 <ph name="PRODUCT_NAME" /> 的浏览器进程中运行的第三方软件遇到兼容性问题时，才应停用此政策。
+
+      注意：不妨详细了解一下进程缓解政策 ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies )。</translation>
 <translation id="8672321184841719703">目标自动更新版本</translation>
 <translation id="867410340948518937">U2F（通用第二重因素）</translation>
 <translation id="8676959842615154675">如果此政策已启用，远程访问主机会对比这两个名称：与主机关联的本地用户的名称，以及注册为主机所有者的 Google 帐号的名称（如果主机归“johndoe@example.com”所有，Google 帐号的名称就是“johndoe”）。如果主机所有者的名称不同于与主机关联的本地用户的名称，该主机将不会启动。若要强制将所有者的 Google 帐号与特定网域关联，请将此政策与 <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> 搭配使用。
@@ -6705,6 +6731,7 @@
 <translation id="8948062138228904066">身份验证服务器许可名单</translation>
 <translation id="8951350807133946005">设置磁盘缓存目录</translation>
 <translation id="8955719471735800169">返回页首</translation>
+<translation id="8956312248048980644">默认允许使用以源为键的代理集群。</translation>
 <translation id="8959992920425111821">默认配置</translation>
 <translation id="8967125680876068695">在 Windows、Mac 和 Linux 上，Chrome 应用已被弃用。
       如果此政策已启用，<ph name="PRODUCT_NAME" /> 会允许 Chrome 应用在这些平台上继续运行，直到从所有平台上移除对 Chrome 应用的支持的截止日期（2022 年 6 月）来临为止。

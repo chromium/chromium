@@ -111,6 +111,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4271805377592243930">Obtenir de l'aide pour Chromium</translation>
 <translation id="4285930937574705105">Échec de l'installation suite à une erreur non spécifiée. Si Chromium est en cours d'exécution, veuillez le fermer, puis réessayer.</translation>
 <translation id="4407044323746248786">Quitter Chromium quand même?</translation>
+<translation id="4414390922528416758">Personnalisez les choix en matière de confidentialité considérés comme étant les plus importants par Chromium. Ce guide ne comprend pas tous les paramètres ni toutes les options.</translation>
 <translation id="4415566066719264597">Laisser Chromium s'exécuter en arrière-plan</translation>
 <translation id="4423735387467980091">Personnaliser et commander Chrome</translation>
 <translation id="4427306783828095590">La protection renforcée en fait plus pour bloquer l'hameçonnage et les logiciels nuisibles</translation>
@@ -296,5 +297,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="9214764063801632699">Système Chromium OS</translation>
 <translation id="93478295209880648">Il se peut que Chromium ne fonctionne pas correctement, car il n'est plus compatible avec Windows XP ni Windows Vista</translation>
 <translation id="965162752251293939">Qui utilise Chromium?</translation>
+<translation id="967427899662692980">Profiter de la sécurité la plus robuste de Chromium</translation>
 <translation id="985602178874221306">Les auteurs de Chrome</translation>
 </translationbundle>

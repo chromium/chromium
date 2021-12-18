@@ -241,6 +241,7 @@
 <translation id="7398801000654795464">您之前登录 Chrome 时使用的帐号为 <ph name="USER_EMAIL_ADDRESS" />，请使用同一帐号再次登录。</translation>
 <translation id="7408085963519505752">Chrome操作系统条款</translation>
 <translation id="7419046106786626209">由于您的网域停用了同步功能，Chrome操作系统无法同步您的数据。</translation>
+<translation id="7481213027396403996">获享 Chrome 的最强安全保护</translation>
 <translation id="7486227612705979895">Chrome 将访问您的云端硬盘，以在地址栏提供建议</translation>
 <translation id="7535429826459677826">Google Chrome 开发者版</translation>
 <translation id="7573289029918943991">若想确认您设备上的操作系统是否是最新版本，请前往 <ph name="LINK_BEGIN" />Chrome 操作系统设置<ph name="LINK_END" /></translation>
@@ -299,6 +300,7 @@
 <translation id="8862326446509486874">您的权限不足，无法进行系统级安装。请尝试以管理员身份再次运行安装程序。</translation>
 <translation id="8914504000324227558">重启 Chrome</translation>
 <translation id="8922193594870374009">若要从 <ph name="ORIGIN" /> 向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chrome。</translation>
+<translation id="8927704157641862988">自定义 Chrome 认为最重要的隐私权选项。本指南并未涵盖所有设置和选项。</translation>
 <translation id="8986207147630327271">您将要向此浏览器添加工作资料并允许您的管理员仅控制此工作资料。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有一项可用的 Chrome 更新}=1{有一项可用的 Chrome 更新}other{有一项可用的 Chrome 更新（已发布 # 天）}}</translation>
 <translation id="9026991721384951619">您的帐号登录详细信息已过期，Chrome操作系统无法同步您的数据。</translation>

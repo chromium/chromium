@@ -249,6 +249,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7398801000654795464">Iniciaches sesión en Chrome como <ph name="USER_EMAIL_ADDRESS" />. Utiliza a mesma conta para iniciar sesión de novo.</translation>
 <translation id="7408085963519505752">Condicións de Chrome OS</translation>
 <translation id="7419046106786626209">Chrome OS non puido sincronizar os teus datos porque a función de sincronización non está dispoñible para o teu dominio.</translation>
+<translation id="7481213027396403996">Goza da máxima seguranza de Chrome</translation>
 <translation id="7486227612705979895">Chrome accederá a Drive para facer suxestións na barra de enderezos</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Para ver ser o teu dispositivo está actualizado, accede á <ph name="LINK_BEGIN" />configuración de Chrome OS<ph name="LINK_END" /></translation>
@@ -307,6 +308,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8862326446509486874">Non tes os dereitos apropiados para efectuar a instalación a nivel do sistema. Tenta volver executar o instalador como administrador.</translation>
 <translation id="8914504000324227558">Reiniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> ao teu teléfono Android, inicia sesión en Chrome nos dous dispositivos.</translation>
+<translation id="8927704157641862988">Personaliza as opcións de privacidade que Chrome considera máis importantes. Nesta guía non se inclúen todas as opcións dispoñibles.</translation>
 <translation id="8986207147630327271">Estás a piques de engadir un perfil de traballo a este navegador e de permitir que o teu administrador controle só o perfil de traballo.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hai unha actualización de Chrome dispoñible}=1{Hai unha actualización de Chrome dispoñible}other{Hai unha actualización de Chrome que leva dispoñible # días}}</translation>
 <translation id="9026991721384951619">Chrome OS non puido sincronizar os teus datos debido a que a información de inicio de sesión na túa conta está caducada.</translation>

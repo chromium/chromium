@@ -109,6 +109,7 @@
 <translation id="4271805377592243930">获取有关 Chromium 的帮助</translation>
 <translation id="4285930937574705105">未知错误导致安装失败。如果 Chromium 正在运行，请将其关闭，然后重试。</translation>
 <translation id="4407044323746248786">仍要退出 Chromium？</translation>
+<translation id="4414390922528416758">自定义 Chromium 认为最重要的隐私权选项。本指南并未涵盖所有设置和选项。</translation>
 <translation id="4415566066719264597">让 Chromium 在后台运行</translation>
 <translation id="4423735387467980091">自定义及控制 Chromium</translation>
 <translation id="4427306783828095590">“增强型保护”选项在防范网上诱骗和恶意软件方面更高一筹</translation>
@@ -295,5 +296,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="9214764063801632699">Chromium 操作系统</translation>
 <translation id="93478295209880648">Chromium 可能无法正常运行，因为它不再支持 Windows XP 和 Windows Vista</translation>
 <translation id="965162752251293939">谁在使用 Chromium？</translation>
+<translation id="967427899662692980">获享 Chromium 的最强安全保护</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

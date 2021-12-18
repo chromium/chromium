@@ -111,6 +111,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4271805377592243930">Få hjälp med Chromium</translation>
 <translation id="4285930937574705105">Installationen misslyckades på grund av ett ospecificerat fel. Stäng Chromium om det är igång och försök sedan igen.</translation>
 <translation id="4407044323746248786">Vill du avsluta Chromium ändå?</translation>
+<translation id="4414390922528416758">Anpassa de viktigaste integritetsvalen i Chromium. Alla inställningar och alternativ som finns beskrivs inte i den här guiden.</translation>
 <translation id="4415566066719264597">Låt Chromium köras i bakgrunden</translation>
 <translation id="4423735387467980091">Anpassa och kontrollera Chromium</translation>
 <translation id="4427306783828095590">Förbättrat skydd är bättre på att blockera nätfiske och skadlig programvara</translation>
@@ -299,5 +300,6 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="9214764063801632699">Chromium OS-system</translation>
 <translation id="93478295209880648">Chromium kanske inte fungerar ordentligt eftersom den inte längre stöds på Windows XP och Windows Vista</translation>
 <translation id="965162752251293939">Vem ska använda Chromium?</translation>
+<translation id="967427899662692980">Få det bästa skyddet i Chromium</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

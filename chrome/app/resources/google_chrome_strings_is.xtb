@@ -249,6 +249,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7398801000654795464">Þú varst skráð(ur) inn á Chrome sem <ph name="USER_EMAIL_ADDRESS" />. Notaðu sama reikning til að skrá þig inn aftur.</translation>
 <translation id="7408085963519505752">Skilmálar Chrome OS</translation>
 <translation id="7419046106786626209">Chrome OS gat ekki samstillt gögnin þín vegna þess að samstilling er ekki í boði fyrir lénið þitt.</translation>
+<translation id="7481213027396403996">Njóttu hámarksöryggis Chrome</translation>
 <translation id="7486227612705979895">Chrome mun fá aðgang að svæðinu þínu á Drive til þess að bjóða upp á tillögur í veffangastikunni</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Opnaðu <ph name="LINK_BEGIN" />stillingar Chrome OS<ph name="LINK_END" /> til að sjá hvort tækið sé uppfært</translation>
@@ -307,6 +308,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8862326446509486874">Þú hefur ekki tilskilin réttindi til uppsetningar fyrir kerfið allt. Prófaðu að keyra uppsetningarforritið aftur sem stjórnandi.</translation>
 <translation id="8914504000324227558">Endurræsa Chrome</translation>
 <translation id="8922193594870374009">Til að senda númer úr <ph name="ORIGIN" /> í Android símann þinn skaltu skrá þig inn á Chrome í báðum tækjunum.</translation>
+<translation id="8927704157641862988">Sérsníða valkosti persónuverndar sem taldir eru mikilvægir í Chrome. Þessar leiðbeiningar innihalda ekki allar stillingar eða alla valkosti.</translation>
 <translation id="8986207147630327271">Þú ert að bæta vinnusniði við þennan vafra og veita stjórnanda þínum leyfi til að stjórna vinnusniðinu eingöngu.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Uppfærsla er í boði fyrir Chrome}=1{Uppfærsla er í boði fyrir Chrome}one{Uppfærsla hefur verið í boði fyrir Chrome í # dag}other{Uppfærsla hefur verið í boði fyrir Chrome í # daga}}</translation>
 <translation id="9026991721384951619">Chrome OS gat ekki samstillt gögnin þín vegna þess að innskráningarupplýsingar reikningsins eru úreltar.</translation>

@@ -2522,6 +2522,7 @@
 <translation id="3557101512409028104">Поставете ограничувања за веб-сајтови и за време поминато на уредот со Family Link</translation>
 <translation id="3559262020195162408">Не успеа да се инсталира правилото на уредот.</translation>
 <translation id="3559533181353831840">Уште околу <ph name="TIME_LEFT" /></translation>
+<translation id="3559697822483154494">Добивајте потврда преку вибрации за дејства, како поделен екран и префрлување работни површини.</translation>
 <translation id="3560034655160545939">&amp;Проверка на правопис</translation>
 <translation id="3562423906127931518">Процесов можеби ќе потрае неколку минути. Се поставува контејнерот на Linux.</translation>
 <translation id="3562655211539199254">Прегледувајте ги картичките на Chrome од телефонот</translation>
@@ -4926,6 +4927,7 @@
 <translation id="6112931163620622315">Проверете го телефонот</translation>
 <translation id="6113434369102685411">Поставете го стандардниот пребарувач за прелистувачот Chrome и стартерот на <ph name="DEVICE_TYPE" /></translation>
 <translation id="6113942107547980621">За да користите Smart Lock, префрлете се на примарниот кориснички профил на телефонот</translation>
+<translation id="611684075852771314">Евиденцииве се зачувани во „Мои датотеки“ како</translation>
 <translation id="6116921718742659598">Промени поставки за јазик и внесување...</translation>
 <translation id="6119927814891883061">Именувајте го уредот како <ph name="DEVICE_NAME" /></translation>
 <translation id="6120205520491252677">Прикачи ја оваа страница на Почетен екран...</translation>
@@ -5702,6 +5704,7 @@
 <translation id="6930036377490597025">Надворешен безбедносен клуч или вграден сензор</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Една екстензија е одбиена}one{# екстензија е одбиена}other{# екстензии се одбиени}}</translation>
 <translation id="6930321203306643451">Надградбата е завршена</translation>
+<translation id="6931690462168617033">Јачина на кликнување</translation>
 <translation id="6935286146439255109">Недостасува фиока за хартија</translation>
 <translation id="693807610556624488">Операцијата за пишување ја надминува максималната должина на атрибутот на: „<ph name="DEVICE_NAME" />".</translation>
 <translation id="6938386202199793006">Имате 1 зачуван печатач.</translation>
@@ -6832,6 +6835,7 @@
 <translation id="8064279191081105977">Група <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Прозорец за врската</translation>
 <translation id="8069615408251337349">Google Cloud Print</translation>
+<translation id="8070662218171013510">Повратни информации со допир</translation>
 <translation id="8071432093239591881">Отпечати како слика</translation>
 <translation id="8073499153683482226"><ph name="BEGIN_PARAGRAPH1" />Податоците за апликации може да се секакви податоци што ги зачувала одредена апликација (според поставките на програмерот), вклучувајќи податоци како што се контактите, пораките и фотографиите.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Податоците од бекапот не се земаат предвид во квотата за складирање во Drive на вашето дете.<ph name="END_PARAGRAPH2" />
