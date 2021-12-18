@@ -111,6 +111,7 @@
 <translation id="4271805377592243930">Chromium жөнінде анықтама алу</translation>
 <translation id="4285930937574705105">Орнату анықталмаған қате себебінен сәтсіз аяқталды. Ағымда Chromium жұмыс істеп тұрса, оны жауып, әрекетті қайталаңыз.</translation>
 <translation id="4407044323746248786">Chromium браузерінен бәрібір шығасыз ба?</translation>
+<translation id="4414390922528416758">Chromium үшін аса маңызды құпиялылық параметрлерін реттеңіз. Бұл нұсқаулықта барлық параметр мен опция қамтылмаған.</translation>
 <translation id="4415566066719264597">Chromium браузеріне фондық режимде жұмыс істеуге рұқсат беру</translation>
 <translation id="4423735387467980091">Chromium реттеу және басқару</translation>
 <translation id="4427306783828095590">Жақсартылған қорғаныс фишинг пен зиянды бағдарламаларды бөгеуде көбірек істейді.</translation>
@@ -297,5 +298,6 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="9214764063801632699">Chromium OS жүйесі</translation>
 <translation id="93478295209880648">Chromium дұрыс жұмыс істемеуі мүмкін, себебі оған Windows XP не Windows Vista жүйелерінде қолдау көрсетілмейді</translation>
 <translation id="965162752251293939">Chromium-ді кім пайдаланып жатыр?</translation>
+<translation id="967427899662692980">Chromium браузерінің ең күшті қорғанысын қолданыңыз</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
 </translationbundle>

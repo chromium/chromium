@@ -50,7 +50,6 @@
 <translation id="4214277427269650960">Inicia la sessió en aquest lloc web i a Chrome. Pots activar la sincronització més endavant.</translation>
 <translation id="424864128008805179">Vols tancar la sessió de Chrome?</translation>
 <translation id="4249068189593983585">Consell de Chrome. Per accedir a més opcions de pestanyes, mantén premut el botó Mostra pestanyes a la barra d'eines, que és a la part inferior o superior de la pantalla.</translation>
-<translation id="4267862249323750454">Les contrasenyes es desen al <ph name="BEGIN_LINK" />gestor de contrasenyes de Google<ph name="END_LINK" /> perquè puguis utilitzar-les en qualsevol dispositiu.</translation>
 <translation id="4523886039239821078">Alguns complements fan que Chrome falli. Desinstal·la'ls.</translation>
 <translation id="4633328489441962921">Chrome no pot cercar actualitzacions</translation>
 <translation id="4698415050768537821">Chrome no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
@@ -71,7 +70,6 @@
 <translation id="6063091872902370735">Permet l'inici de sessió a Chrome</translation>
 <translation id="6181930887571472871">Canvia a Chrome</translation>
 <translation id="6238746320622508509">Deixa que Chrome bloquegi les teves pestanyes d'incògnit.</translation>
-<translation id="6387994324662817823">Les contrasenyes es desen al gestor de contrasenyes de Google només en aquest dispositiu.</translation>
 <translation id="6427126399757991875">La teva organització està configurant Chrome...</translation>
 <translation id="6600954340915313787">Copiada de Chrome</translation>
 <translation id="6634107063912726160">Quan tanquis la sessió, Chrome no sincronitzarà cap dada nova amb el teu Compte de Google. Les dades sincronitzades prèviament romandran al compte.</translation>
