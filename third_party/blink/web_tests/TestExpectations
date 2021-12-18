@@ -2812,6 +2812,7 @@ crbug.com/626703 [ Mac ] external/wpt/css/css-text/line-breaking/segment-break-t
 crbug.com/626703 [ Fuchsia ] external/wpt/dom/historical.html [ Skip ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac10.15 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/hyphenate-character-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/hyphenate-character-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/hyphenate-character-003.html [ Failure ]
@@ -8031,7 +8032,14 @@ crbug.com/1259277 fast/events/message-port-multi.html [ Skip ]
 # Sheriff 2021-10-26
 crbug.com/1263349 [ Linux ] external/wpt/resource-timing/object-not-found-after-cross-origin-redirect.html [ Failure Pass ]
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-navigation.https.html [ Failure Pass ]
-crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass ]
+crbug.com/1249043 [ Fuchsia ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass ]
+crbug.com/1249043 [ Linux ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass ]
+crbug.com/1249043 [ Mac10.12 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass ]
+crbug.com/1249043 [ Mac10.13 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass ]
+crbug.com/1249043 [ Mac10.14 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass ]
+crbug.com/1249043 [ Mac11 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass ]
+crbug.com/1249043 [ Mac11-arm64 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass ]
+crbug.com/1249043 [ Win ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Pass ]
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-to-endpoint.https.html [ Failure Pass ]
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-to-frame-owner.html [ Failure Pass ]
 crbug.com/1249043 external/wpt/html/cross-origin-embedder-policy/reporting-to-worker-owner.html [ Failure Pass ]

@@ -275318,7 +275318,7 @@
      ]
     },
     "requirements.txt": [
-     "b6772bcd162716ac055bc138eabcb0ea69396a85",
+     "02241970be789090b72cde69a553ef2ea9227517",
      []
     ],
     "selectors": {
@@ -297237,18 +297237,6 @@
       ],
       "foreign_content_013.html": [
        "e88aae9e4db26e467cde9bd734f5ce4a81d48395",
-       []
-      ],
-      "html5lib_blocks_run_type=uri-expected.txt": [
-       "a4eda2b09c44669e4e19ae32d866b636490b8c98",
-       []
-      ],
-      "html5lib_blocks_run_type=write-expected.txt": [
-       "a4eda2b09c44669e4e19ae32d866b636490b8c98",
-       []
-      ],
-      "html5lib_blocks_run_type=write_single-expected.txt": [
-       "a4eda2b09c44669e4e19ae32d866b636490b8c98",
        []
       ],
       "html5lib_innerHTML_adoption01-expected.txt": [
@@ -452574,8 +452562,8 @@
          {}
         ]
        ],
-       "selectmenu-value.tentative.html": [
-        "efb71ed96282d6efcb5ce7284b7eccb7856ef3ac",
+       "selectmenu-value-selectedOption.tentative.html": [
+        "a2272b3087d7857edb89a6173da443b8f5a2f17c",
         [
          null,
          {}
