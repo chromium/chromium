@@ -599,19 +599,13 @@ absl::StatusOr<std::vector<T>> DistributedPointFunction::EvaluateUntil(
         "`hierarchy_level` must be non-negative and less than "
         "parameters_.size()");
   }
-  if (parameters_[hierarchy_level].has_value_type()) {
-    absl::StatusOr<bool> types_are_equal = dpf_internal::ValueTypesAreEqual(
-        ToValueType<T>(), parameters_[hierarchy_level].value_type());
-    if (!types_are_equal.ok()) {
-      return types_are_equal.status();
-    } else if (!*types_are_equal) {
-      return absl::InvalidArgumentError(
-          "Value type T doesn't match parameters at `hierarchy_level`");
-    }
-  } else if (sizeof(T) * 8 != parameters_[hierarchy_level].element_bitsize()) {
+  absl::StatusOr<bool> types_are_equal = dpf_internal::ValueTypesAreEqual(
+      ToValueType<T>(), parameters_[hierarchy_level].value_type());
+  if (!types_are_equal.ok()) {
+    return types_are_equal.status();
+  } else if (!*types_are_equal) {
     return absl::InvalidArgumentError(
-        "Size of template parameter T doesn't match the element size of "
-        "`hierarchy_level`");
+        "Value type T doesn't match parameters at `hierarchy_level`");
   }
   if (hierarchy_level <= ctx.previous_hierarchy_level()) {
     return absl::InvalidArgumentError(

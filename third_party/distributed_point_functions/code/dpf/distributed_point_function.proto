@@ -90,12 +90,9 @@ message Value {
 
 // Parameters of a single hierarchy level of a distributed point function (DPF).
 message DpfParameters {
+  reserved 2;
   // Base-2 logarithm of the number of elements.
   int32 log_domain_size = 1;
-  // Deprecated field for simple integers. `element_bitsize: x` is equivalent to
-  // `value_type { integer { bitsize: x } }`. If `value_type` is set,
-  // then `element_bitsize` is ignored.
-  int32 element_bitsize = 2 [deprecated = true];
   // Describes the type of output values at this hierarchy level.
   ValueType value_type = 3;
   // The negative logarithm of the total variation distance from uniform that an

@@ -67,14 +67,8 @@ class ProtoValidator {
 
   // Checks that `value` is valid for `parameters[i]` passed at construction.
   // Returns OK on success and INVALID_ARGUMENT otherwise.
-  absl::Status ValidateValue(const Value& value, int i) const {
-    ValueType type;
-    if (parameters_[i].has_value_type()) {
-      type = parameters_[i].value_type();
-    } else {
-      type.mutable_integer()->set_bitsize(parameters_[i].element_bitsize());
-    }
-    return ValidateValue(value, type);
+  inline absl::Status ValidateValue(const Value& value, int i) const {
+    return ValidateValue(value, parameters_[i].value_type());
   }
 
   // ProtoValidator is not copyable.

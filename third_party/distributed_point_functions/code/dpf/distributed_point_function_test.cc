@@ -74,6 +74,15 @@ TEST(DistributedPointFunction, CreateFailsForTupleTypesWithDifferentIntModN) {
                "All elements of type IntModN in a tuple must be the same"));
 }
 
+TEST(DistributedPointFunction, CreateFailsForMissingValueType) {
+  DpfParameters parameters;
+  parameters.set_log_domain_size(10);
+
+  EXPECT_THAT(
+      DistributedPointFunction::Create(parameters),
+      StatusIs(absl::StatusCode::kInvalidArgument, "`value_type` is required"));
+}
+
 TEST(DistributedPointFunction, CreateFailsForInvalidValueType) {
   DpfParameters parameters;
   parameters.set_log_domain_size(10);

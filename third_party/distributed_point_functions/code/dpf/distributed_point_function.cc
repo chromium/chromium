@@ -557,17 +557,9 @@ absl::StatusOr<DistributedPointFunction::ValueCorrectionFunction>
 DistributedPointFunction::GetValueCorrectionFunction(
     const DpfParameters& parameters) const {
   std::string serialized_value_type;
-  if (!parameters.has_value_type()) {
-    // Legacy support for DpfParameters with element_bitsize set directly.
-    ValueType value_type;
-    value_type.mutable_integer()->set_bitsize(parameters.element_bitsize());
-    DPF_ASSIGN_OR_RETURN(serialized_value_type,
-                         SerializeValueTypeDeterministically(value_type));
-  } else {
-    DPF_ASSIGN_OR_RETURN(
-        serialized_value_type,
-        SerializeValueTypeDeterministically(parameters.value_type()));
-  }
+  DPF_ASSIGN_OR_RETURN(
+      serialized_value_type,
+      SerializeValueTypeDeterministically(parameters.value_type()));
   auto it = value_correction_functions_.find(serialized_value_type);
   if (it == value_correction_functions_.end()) {
     return absl::FailedPreconditionError(absl::StrCat(
@@ -595,21 +587,11 @@ DistributedPointFunction::CreateIncremental(
   // level.
   std::vector<int> blocks_needed(parameters.size());
   for (int i = 0; i < static_cast<int>(parameters.size()); ++i) {
-    if (parameters[i].has_value_type()) {
-      DPF_ASSIGN_OR_RETURN(
-          int bits_needed,
-          dpf_internal::BitsNeeded(parameters[i].value_type(),
-                                   parameters[i].security_parameter()));
-      blocks_needed[i] = (bits_needed + 127) / 128;
-    } else {
-      ValueType value_type;
-      value_type.mutable_integer()->set_bitsize(
-          parameters[i].element_bitsize());
-      DPF_ASSIGN_OR_RETURN(int bits_needed,
-                           dpf_internal::BitsNeeded(
-                               value_type, parameters[i].security_parameter()));
-      blocks_needed[i] = (bits_needed + 127) / 128;
-    }
+    DPF_ASSIGN_OR_RETURN(
+        int bits_needed,
+        dpf_internal::BitsNeeded(parameters[i].value_type(),
+                                 parameters[i].security_parameter()));
+    blocks_needed[i] = (bits_needed + 127) / 128;
   }
 
   // Set up hash functions for PRG.
