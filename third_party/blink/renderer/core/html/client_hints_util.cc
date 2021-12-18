@@ -84,7 +84,9 @@ void UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
 void UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
     ParsedPermissionsPolicy& container_policy,
     LocalDOMWindow* local_dom_window) {
-  if (!RuntimeEnabledFeatures::ClientHintThirdPartyDelegationEnabled()) {
+  if (!RuntimeEnabledFeatures::ClientHintThirdPartyDelegationEnabled() ||
+      !local_dom_window ||
+      !local_dom_window->GetSecurityContext().GetPermissionsPolicy()) {
     return;
   }
 
