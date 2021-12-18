@@ -27,6 +27,11 @@ base::Value AXNSObjectToBaseValue(id value, const AXTreeIndexerMac* indexer) {
     return AXNSArrayToBaseValue((NSArray*)value, indexer);
   }
 
+  // NSDictionary
+  if ([value isKindOfClass:[NSDictionary class]]) {
+    return AXNSDictionaryToBaseValue((NSDictionary*)value, indexer);
+  }
+
   // NSNumber
   if ([value isKindOfClass:[NSNumber class]]) {
     return base::Value([value intValue]);
@@ -99,6 +104,16 @@ base::Value AXNSArrayToBaseValue(NSArray* node_array,
   for (NSUInteger i = 0; i < [node_array count]; i++)
     list.Append(AXNSObjectToBaseValue([node_array objectAtIndex:i], indexer));
   return list;
+}
+
+base::Value AXNSDictionaryToBaseValue(NSDictionary* dictionary_value,
+                                      const AXTreeIndexerMac* indexer) {
+  base::Value dictionary(base::Value::Type::DICTIONARY);
+  for (NSString* key in dictionary_value) {
+    dictionary.SetPath(base::SysNSStringToUTF8(key),
+                       AXNSObjectToBaseValue(dictionary_value[key], indexer));
+  }
+  return dictionary;
 }
 
 base::Value AXNSPointToBaseValue(NSPoint point_value) {

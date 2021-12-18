@@ -25,6 +25,10 @@ AX_EXPORT base::Value AXNilToBaseValue();
 // Returns the base::Value representation of NSArray.
 AX_EXPORT base::Value AXNSArrayToBaseValue(NSArray*, const AXTreeIndexerMac*);
 
+// Returns the base::Value representation of NSDictionary.
+AX_EXPORT base::Value AXNSDictionaryToBaseValue(NSDictionary*,
+                                                const AXTreeIndexerMac*);
+
 // Returns the base::Value representation of NSPoint.
 AX_EXPORT base::Value AXNSPointToBaseValue(NSPoint);
 
