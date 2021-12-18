@@ -4,12 +4,14 @@
 
 #include "ash/system/holding_space/holding_space_progress_indicator.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_progress_ring_indeterminate_animation.h"
 #include "base/scoped_observation.h"
@@ -21,14 +23,19 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 
 namespace ash {
 namespace {
 
 // Appearance.
-constexpr float kStrokeWidth = 2.f;
-constexpr float kTrackOpacity = 0.3f;
+constexpr float kInnerIconSizeScaleFactor = 14.f / 28.f;
+constexpr float kOuterRingOpacity = 0.6f;
+constexpr float kInnerRingStrokeWidthScaleFactor = 1.5f / 28.f;
+constexpr float kOuterRingStrokeWidth = 2.f;
+constexpr float kOuterRingStrokeWidthScaleFactor = 4.f / 28.f;
+constexpr float kOuterRingTrackOpacity = 0.3f;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -55,7 +62,7 @@ SkPath CreatePathSegment(const SkPath& path, float start, float end) {
 // the *top-center*. This is a subtle but important detail as calling
 // `CreatePathSegment()` with a path created from this method will treat
 // *top-center* as the start point, as is needed when painting progress.
-SkPath CreateRoundedRectPath(const gfx::Rect& rect, float corner_radius) {
+SkPath CreateRoundedRectPath(const gfx::RectF& rect, float corner_radius) {
   // Top center.
   SkPoint top_center(SkPoint::Make(rect.width() / 2.f, 0.f));
 
@@ -89,6 +96,51 @@ SkPath CreateRoundedRectPath(const gfx::Rect& rect, float corner_radius) {
       .close()
       .offset(rect.x(), rect.y())
       .detach();
+}
+
+// Returns the size for the inner icon given `layer` dimensions.
+// NOTE: this method should only be called when v2 animations are enabled.
+float GetInnerIconSize(const ui::Layer* layer) {
+  DCHECK(features::IsHoldingSpaceInProgressAnimationV2Enabled());
+  const gfx::Size& size = layer->size();
+  return kInnerIconSizeScaleFactor * std::min(size.width(), size.height());
+}
+
+// Returns the stroke width for the inner icon given `layer` dimensions.
+// NOTE: this method should only be called when v2 animations are enabled.
+float GetInnerRingStrokeWidth(const ui::Layer* layer) {
+  DCHECK(features::IsHoldingSpaceInProgressAnimationV2Enabled());
+  const gfx::Size& size = layer->size();
+  return kInnerRingStrokeWidthScaleFactor *
+         std::min(size.width(), size.height());
+}
+
+// Returns the opacity for the outer ring given the current `progress`.
+float GetOuterRingOpacity(const absl::optional<float>& progress) {
+  return features::IsHoldingSpaceInProgressAnimationV2Enabled() &&
+                 progress != HoldingSpaceProgressIndicator::kProgressComplete
+             ? kOuterRingOpacity
+             : 1.f;
+}
+
+// Returns the stroke width for the outer ring given `layer` dimensions and
+// the current `progress`.
+float GetOuterRingStrokeWidth(const ui::Layer* layer,
+                              const absl::optional<float>& progress) {
+  if (features::IsHoldingSpaceInProgressAnimationV2Enabled() &&
+      progress != HoldingSpaceProgressIndicator::kProgressComplete) {
+    const gfx::Size& size = layer->size();
+    return kOuterRingStrokeWidthScaleFactor *
+           std::min(size.width(), size.height());
+  }
+  return kOuterRingStrokeWidth;
+}
+
+// Returns the stroke cap.
+cc::PaintFlags::Cap GetStrokeCap() {
+  return features::IsHoldingSpaceInProgressAnimationV2Enabled()
+             ? cc::PaintFlags::Cap::kDefault_Cap
+             : cc::PaintFlags::Cap::kRound_Cap;
 }
 
 // HoldingSpaceControllerProgressIndicator -------------------------------------
@@ -333,27 +385,31 @@ void HoldingSpaceProgressIndicator::OnPaintLayer(
   gfx::ScopedCanvas scoped_canvas(recorder.canvas());
   scoped_canvas.FlipIfRTL(layer()->size().width());
 
-  gfx::Rect bounds(layer()->size());
-  bounds.Inset(gfx::Insets(std::ceil(kStrokeWidth / 2.f)));
-
-  float corner_radius = std::min(bounds.width(), bounds.height()) / 2.f;
-  SkPath path(CreateRoundedRectPath(bounds, corner_radius));
+  float outer_ring_stroke_width = GetOuterRingStrokeWidth(layer(), progress_);
+  gfx::RectF bounds(gfx::SizeF(layer()->size()));
+  bounds.Inset(gfx::InsetsF(outer_ring_stroke_width / 2.f));
+  SkPath path(CreateRoundedRectPath(
+      bounds, /*radius=*/std::min(bounds.width(), bounds.height()) / 2.f));
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setStrokeCap(cc::PaintFlags::Cap::kRound_Cap);
-  flags.setStrokeWidth(kStrokeWidth);
+  flags.setStrokeCap(GetStrokeCap());
+  flags.setStrokeWidth(outer_ring_stroke_width);
   flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
 
   const SkColor color = AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kFocusRingColor);
 
-  // Track.
-  flags.setColor(SkColorSetA(color, 0xFF * kTrackOpacity * opacity));
-  canvas->DrawPath(path, flags);
+  // Outer ring track.
+  if (!features::IsHoldingSpaceInProgressAnimationV2Enabled()) {
+    flags.setColor(
+        SkColorSetA(color, SK_AlphaOPAQUE * kOuterRingTrackOpacity * opacity));
+    canvas->DrawPath(path, flags);
+  }
 
-  // Ring.
-  flags.setColor(SkColorSetA(color, 0xFF * opacity));
+  // Outer ring.
+  flags.setColor(SkColorSetA(
+      color, SK_AlphaOPAQUE * GetOuterRingOpacity(progress_) * opacity));
   if (start <= end) {
     // If `start` <= `end`, only a single path segment is necessary.
     canvas->DrawPath(CreatePathSegment(path, start, end), flags);
@@ -364,6 +420,37 @@ void HoldingSpaceProgressIndicator::OnPaintLayer(
     canvas->DrawPath(CreatePathSegment(path, start, 1.f), flags);
     canvas->DrawPath(CreatePathSegment(path, 0.f, end), flags);
   }
+
+  // The inner ring and inner icon are only present in v2.
+  if (!features::IsHoldingSpaceInProgressAnimationV2Enabled())
+    return;
+
+  // The inner ring and inner icon should be absent once progress completes.
+  // This would occur if the progress ring is animating post completion.
+  if (progress_ == kProgressComplete)
+    return;
+
+  float inner_ring_stroke_width = GetInnerRingStrokeWidth(layer());
+  bounds.Inset(
+      gfx::InsetsF((outer_ring_stroke_width + inner_ring_stroke_width) / 2.f));
+  path = CreateRoundedRectPath(
+      bounds, /*radius=*/std::min(bounds.width(), bounds.height()) / 2.f);
+
+  // Inner ring.
+  flags.setColor(color);
+  flags.setStrokeWidth(inner_ring_stroke_width);
+  canvas->DrawPath(path, flags);
+
+  float inner_icon_size = GetInnerIconSize(layer());
+  gfx::Rect inner_icon_bounds(layer()->size());
+  inner_icon_bounds.ClampToCenteredSize(
+      gfx::Size(inner_icon_size, inner_icon_size));
+
+  // Inner icon.
+  canvas->Translate(
+      gfx::Vector2d(inner_icon_bounds.x(), inner_icon_bounds.y()));
+  gfx::PaintVectorIcon(canvas, kHoldingSpaceDownloadIcon, inner_icon_size,
+                       color);
 }
 
 void HoldingSpaceProgressIndicator::UpdateVisualState() {

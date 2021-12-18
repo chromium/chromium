@@ -685,6 +685,12 @@ const base::Feature kHideArcMediaNotifications{
 const base::Feature kHideShelfControlsInTabletMode{
     "HideShelfControlsInTabletMode", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables V2 implementation for visual representation of in-progress items in
+// Tote, the productivity feature that aims to reduce context switching by
+// enabling users to collect content and transfer or access it later.
+const base::Feature kHoldingSpaceInProgressAnimationV2{
+    "HoldingSpaceInProgressAnimationV2", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables in-progress downloads integration with the productivity feature that
 // aims to reduce context switching by enabling users to collect content and
 // transfer or access it later.
@@ -1532,6 +1538,10 @@ bool IsHideArcMediaNotificationsEnabled() {
 
 bool IsHideShelfControlsInTabletModeEnabled() {
   return base::FeatureList::IsEnabled(kHideShelfControlsInTabletMode);
+}
+
+bool IsHoldingSpaceInProgressAnimationV2Enabled() {
+  return base::FeatureList::IsEnabled(kHoldingSpaceInProgressAnimationV2);
 }
 
 bool IsHoldingSpaceInProgressDownloadsIntegrationEnabled() {
