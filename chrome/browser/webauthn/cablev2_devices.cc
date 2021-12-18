@@ -293,8 +293,10 @@ std::vector<std::unique_ptr<Pairing>> MergeDevices(
                    Pairing::CompareByLeastStableChannelFirst);
 
   // Last, sort by name while preserving the order of entries with the same
-  // name.
-  std::stable_sort(ret.begin(), ret.end(), Pairing::CompareByName(locale));
+  // name. Need to make a reference for Compare, because libstdc++ would
+  // need copy constructor otherwise.
+  Pairing::NameComparator comparator = Pairing::CompareByName(locale);
+  std::stable_sort(ret.begin(), ret.end(), std::ref(comparator));
 
   return ret;
 }
