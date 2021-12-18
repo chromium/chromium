@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL e.style['hyphenate-character'] = "auto" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['hyphenate-character'] = "\"=\"" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['hyphenate-character'] = "\"/-/\"" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['hyphenate-character'] = "\"\\1400\"" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['hyphenate-character'] = "\"\"" should set the property value assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+
