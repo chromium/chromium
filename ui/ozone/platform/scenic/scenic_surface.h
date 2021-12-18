@@ -141,6 +141,8 @@ class ScenicSurface : public PlatformWindowSurface {
   void OnPresentComplete(fuchsia::images::PresentationInfo presentation_info);
   void UpdateViewHolderScene();
 
+  void PresentEmptyImage();
+
   scenic::Session scenic_session_;
   std::unique_ptr<scenic::View> parent_;
 
