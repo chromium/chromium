@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
+#include "ui/gfx/gpu_fence_handle.h"
 
 #if defined(OS_POSIX)
 #include "base/files/scoped_file.h"
@@ -42,6 +43,7 @@ class COMPONENT_EXPORT(VULKAN) SemaphoreHandle {
   SemaphoreHandle();
   SemaphoreHandle(VkExternalSemaphoreHandleTypeFlagBits type,
                   PlatformHandle handle);
+  explicit SemaphoreHandle(gfx::GpuFenceHandle fence);
   SemaphoreHandle(SemaphoreHandle&&);
 
   SemaphoreHandle(const SemaphoreHandle&) = delete;
@@ -65,9 +67,14 @@ class COMPONENT_EXPORT(VULKAN) SemaphoreHandle {
   // becomes false after this function returns.
   PlatformHandle TakeHandle() { return std::move(handle_); }
 
+  // Moves platform specific instances to gfx::GpuFenceHandle.
+  gfx::GpuFenceHandle ToGpuFenceHandle() &&;
+
   SemaphoreHandle Duplicate() const;
 
  private:
+  void Init(VkExternalSemaphoreHandleTypeFlagBits type, PlatformHandle handle);
+
   VkExternalSemaphoreHandleTypeFlagBits type_;
   PlatformHandle handle_;
 };

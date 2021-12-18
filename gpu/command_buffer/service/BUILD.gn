@@ -391,6 +391,8 @@ target(link_target_type, "gles2_sources") {
         "shared_image_backing_ozone.h",
         "shared_image_representation_gl_ozone.cc",
         "shared_image_representation_gl_ozone.h",
+        "shared_image_representation_skia_vk_ozone.cc",
+        "shared_image_representation_skia_vk_ozone.h",
       ]
     }
 

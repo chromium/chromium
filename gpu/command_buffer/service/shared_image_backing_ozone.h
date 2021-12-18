@@ -91,6 +91,7 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
  private:
   friend class SharedImageRepresentationGLOzoneShared;
   friend class SharedImageRepresentationDawnOzone;
+  friend class SharedImageRepresentationSkiaVkOzone;
   class SharedImageRepresentationVaapiOzone;
   class SharedImageRepresentationOverlayOzone;
 

@@ -13,46 +13,6 @@
 
 namespace gpu {
 
-namespace {
-
-// Moves platform specific SemaphoreHandle instances to gfx::GpuFenceHandle.
-gfx::GpuFenceHandle SemaphoreHandleToGpuFenceHandle(SemaphoreHandle handle) {
-  gfx::GpuFenceHandle fence_handle;
-#if defined(OS_FUCHSIA)
-  // Fuchsia's Vulkan driver allows zx::event to be obtained from a
-  // VkSemaphore, which can then be used to submit present work, see
-  // https://fuchsia.dev/reference/fidl/fuchsia.ui.scenic.
-  fence_handle.owned_event = handle.TakeHandle();
-#elif defined(OS_POSIX)
-  fence_handle.owned_fd = handle.TakeHandle();
-#elif defined(OS_WIN)
-  fence_handle.owned_handle = handle.TakeHandle();
-#endif  // defined(OS_FUCHSIA)
-  return fence_handle;
-}
-
-SemaphoreHandle GpuFenceHandleToSemaphoreHandle(
-    gfx::GpuFenceHandle fence_handle) {
-#if defined(OS_FUCHSIA)
-  // Fuchsia's Vulkan driver allows zx::event to be obtained from a
-  // VkSemaphore, which can then be used to submit present work, see
-  // https://fuchsia.dev/reference/fidl/fuchsia.ui.scenic.
-  return SemaphoreHandle(
-      VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_ZIRCON_EVENT_BIT_FUCHSIA,
-      std::move(fence_handle.owned_event));
-#elif defined(OS_POSIX)
-  return SemaphoreHandle(VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT_KHR,
-                         std::move(fence_handle.owned_fd));
-#elif defined(OS_WIN)
-  return SemaphoreHandle(VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_WIN32_BIT,
-                         std::move(fence_handle.owned_handle));
-#else
-  return SemaphoreHandle();
-#endif  // defined(OS_FUCHSIA)
-}
-
-}  // namespace
-
 ExternalVkImageOverlayRepresentation::ExternalVkImageOverlayRepresentation(
     SharedImageManager* manager,
     ExternalVkImageBacking* backing,
@@ -86,7 +46,7 @@ void ExternalVkImageOverlayRepresentation::EndReadAccess(
   if (!release_fence.is_null()) {
     read_end_semaphore = ExternalSemaphore::CreateFromHandle(
         vk_image_backing_->context_provider(),
-        GpuFenceHandleToSemaphoreHandle(std::move(release_fence)));
+        SemaphoreHandle(std::move(release_fence)));
   }
 
   vk_image_backing_->EndAccess(/*readonly=*/true, std::move(read_end_semaphore),
@@ -119,9 +79,10 @@ void ExternalVkImageOverlayRepresentation::GetAcquireFences(
                                ->GetVulkanDevice();
   for (auto& semaphore : read_begin_semaphores_) {
     DCHECK(semaphore.is_valid());
-    fences->emplace_back(SemaphoreHandleToGpuFenceHandle(
-        vk_image_backing_->vulkan_implementation()->GetSemaphoreHandle(
-            device, semaphore.GetVkSemaphore())));
+    fences->emplace_back(
+        vk_image_backing_->vulkan_implementation()
+            ->GetSemaphoreHandle(device, semaphore.GetVkSemaphore())
+            .ToGpuFenceHandle());
   }
 }
 
