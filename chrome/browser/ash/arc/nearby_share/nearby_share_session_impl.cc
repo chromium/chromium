@@ -80,6 +80,12 @@ static int64_t CalculateRequiredSpace(const base::FilePath share_dir,
   return shared_files_size - free_disk_space;
 }
 
+base::FilePath GetUserCacheFilePath(Profile* const profile) {
+  DCHECK(profile);
+  base::FilePath file_path = file_manager::util::GetShareCacheFilePath(profile);
+  return file_path.Append(kArcNearbyShareDirname);
+}
+
 }  // namespace
 
 NearbyShareSessionImpl::NearbyShareSessionImpl(
@@ -124,12 +130,17 @@ NearbyShareSessionImpl::NearbyShareSessionImpl(
 NearbyShareSessionImpl::~NearbyShareSessionImpl() = default;
 
 // static
-base::FilePath NearbyShareSessionImpl::GetUserCacheFilePath(
-    const Profile* profile) {
+void NearbyShareSessionImpl::DeleteShareCacheFilePaths(Profile* const profile) {
   DCHECK(profile);
+
+  // Up until M99, shared files were stored in <user_cache_dir>/.NearbyShare.
+  // We should remove this obsolete directory path if it is still present.
   base::FilePath cache_base_path;
   chrome::GetUserCacheDirectory(profile->GetPath(), &cache_base_path);
-  return cache_base_path.Append(kArcNearbyShareDirname);
+  DeletePathAndFiles(cache_base_path.Append(kArcNearbyShareDirname));
+
+  // Delete the current user cache file path.
+  DeletePathAndFiles(GetUserCacheFilePath(profile));
 }
 
 void NearbyShareSessionImpl::OnNearbyShareClosed(

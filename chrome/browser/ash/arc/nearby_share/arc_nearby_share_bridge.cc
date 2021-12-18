@@ -45,16 +45,6 @@ class ArcNearbyShareBridgeFactory
   ~ArcNearbyShareBridgeFactory() override = default;
 };
 
-void DeleteArcNearbyShareCachePath(const Profile* profile) {
-  DCHECK(profile);
-  base::FilePath file_path =
-      arc::NearbyShareSessionImpl::GetUserCacheFilePath(profile);
-  if (base::PathExists(file_path)) {
-    DVLOG(1) << "Deleting path: " << file_path;
-    base::DeletePathRecursively(file_path);
-  }
-}
-
 }  // namespace
 
 // static
@@ -82,13 +72,19 @@ ArcNearbyShareBridge::ArcNearbyShareBridge(
   // On startup, delete the ARC Nearby Share cache path.
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&DeleteArcNearbyShareCachePath, profile_));
+      base::BindOnce(&ArcNearbyShareBridge::DeleteShareCacheFilePaths,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 ArcNearbyShareBridge::~ArcNearbyShareBridge() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   arc_bridge_service_->nearby_share()->SetHost(nullptr);
   session_map_.clear();
+}
+
+void ArcNearbyShareBridge::DeleteShareCacheFilePaths() {
+  DCHECK(profile_);
+  NearbyShareSessionImpl::DeleteShareCacheFilePaths(profile_);
 }
 
 void ArcNearbyShareBridge::OnNearbyShareSessionFinished(uint32_t task_id) {
