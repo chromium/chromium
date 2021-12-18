@@ -36,6 +36,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kStartDiscovery[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCancelDiscovery[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCreateBond[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCancelBondProcess[];
+extern DEVICE_BLUETOOTH_EXPORT const char kRemoveBond[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetConnectionState[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetBondState[];
 extern DEVICE_BLUETOOTH_EXPORT const char kConnectAllEnabledProfiles[];

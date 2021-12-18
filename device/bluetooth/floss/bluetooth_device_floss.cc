@@ -21,8 +21,12 @@ namespace floss {
 namespace {
 
 void OnCreateBond(BluetoothDeviceFloss::ConnectCallback callback,
-                  const absl::optional<Void>& ret,
+                  const absl::optional<bool>& ret,
                   const absl::optional<Error>& error) {
+  if (ret.has_value() && !*ret) {
+    BLUETOOTH_LOG(ERROR) << "CreateBond returned failure";
+  }
+
   if (error.has_value()) {
     BLUETOOTH_LOG(ERROR) << "Failed to create bond: " << error->name << ": "
                          << error->message;
@@ -38,6 +42,21 @@ void OnCreateBond(BluetoothDeviceFloss::ConnectCallback callback,
             : absl::nullopt;
 
   std::move(callback).Run(connect_error);
+}
+
+void OnRemoveBond(base::OnceClosure callback,
+                  const absl::optional<bool>& ret,
+                  const absl::optional<Error>& error) {
+  if (ret.has_value() && !*ret) {
+    BLUETOOTH_LOG(ERROR) << "RemoveBond returned failure";
+  }
+
+  if (error.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "Failed to remove bond: " << error->name << ": "
+                         << error->message;
+  }
+
+  std::move(callback).Run();
 }
 
 void OnConnectAllEnabledProfiles(const absl::optional<Void>& ret,
@@ -242,7 +261,8 @@ void BluetoothDeviceFloss::Disconnect(base::OnceClosure callback,
 
 void BluetoothDeviceFloss::Forget(base::OnceClosure callback,
                                   ErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  FlossDBusManager::Get()->GetAdapterClient()->RemoveBond(
+      base::BindOnce(&OnRemoveBond, std::move(callback)), AsFlossDeviceId());
 }
 
 void BluetoothDeviceFloss::ConnectToService(

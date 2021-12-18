@@ -46,17 +46,22 @@ void FlossAdapterClient::CancelDiscovery(ResponseCallback<Void> callback) {
   CallAdapterMethod0<Void>(std::move(callback), adapter::kCancelDiscovery);
 }
 
-void FlossAdapterClient::CreateBond(ResponseCallback<Void> callback,
+void FlossAdapterClient::CreateBond(ResponseCallback<bool> callback,
                                     FlossDeviceId device,
                                     BluetoothTransport transport) {
-  CallAdapterMethod2<Void>(std::move(callback), adapter::kCreateBond, device,
+  CallAdapterMethod2<bool>(std::move(callback), adapter::kCreateBond, device,
                            transport);
 }
 
-void FlossAdapterClient::CancelBondProcess(ResponseCallback<Void> callback,
+void FlossAdapterClient::CancelBondProcess(ResponseCallback<bool> callback,
                                            FlossDeviceId device) {
-  CallAdapterMethod1<Void>(std::move(callback), adapter::kCancelBondProcess,
+  CallAdapterMethod1<bool>(std::move(callback), adapter::kCancelBondProcess,
                            device);
+}
+
+void FlossAdapterClient::RemoveBond(ResponseCallback<bool> callback,
+                                    FlossDeviceId device) {
+  CallAdapterMethod1<bool>(std::move(callback), adapter::kRemoveBond, device);
 }
 
 void FlossAdapterClient::GetConnectionState(ResponseCallback<uint32_t> callback,

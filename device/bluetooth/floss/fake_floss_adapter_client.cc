@@ -51,7 +51,7 @@ void FakeFlossAdapterClient::CancelDiscovery(ResponseCallback<Void> callback) {
                                  /*err=*/absl::nullopt));
 }
 
-void FakeFlossAdapterClient::CreateBond(ResponseCallback<Void> callback,
+void FakeFlossAdapterClient::CreateBond(ResponseCallback<bool> callback,
                                         FlossDeviceId device,
                                         BluetoothTransport transport) {
   // TODO(b/202874707): Simulate pairing failures.
@@ -97,6 +97,17 @@ void FakeFlossAdapterClient::CreateBond(ResponseCallback<Void> callback,
   }
 }
 
+void FakeFlossAdapterClient::RemoveBond(ResponseCallback<bool> callback,
+                                        FlossDeviceId device) {
+  for (auto& observer : observers_) {
+    observer.DeviceBondStateChanged(device, /*status=*/0,
+                                    FlossAdapterClient::BondState::kNotBonded);
+  }
+
+  PostDelayedTask(base::BindOnce(std::move(callback), /*ret=*/absl::nullopt,
+                                 /*err=*/absl::nullopt));
+}
+
 void FakeFlossAdapterClient::GetConnectionState(
     ResponseCallback<uint32_t> callback,
     const FlossDeviceId& device) {
@@ -122,7 +133,7 @@ void FakeFlossAdapterClient::GetBondState(ResponseCallback<uint32_t> callback,
 void FakeFlossAdapterClient::ConnectAllEnabledProfiles(
     ResponseCallback<Void> callback,
     const FlossDeviceId& device) {
-  NOTIMPLEMENTED();
+  // No-op, there is no need for testing yet.
 }
 
 void FakeFlossAdapterClient::PostDelayedTask(base::OnceClosure callback) {

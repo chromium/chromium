@@ -20,6 +20,11 @@ template <typename T>
 bool ReadReturnFromResponse(dbus::MessageReader* reader, T* value);
 
 template <>
+bool ReadReturnFromResponse(dbus::MessageReader* reader, bool* value) {
+  return reader->PopBool(value);
+}
+
+template <>
 bool ReadReturnFromResponse(dbus::MessageReader* reader, uint8_t* value) {
   return reader->PopByte(value);
 }
@@ -76,6 +81,7 @@ const char kStartDiscovery[] = "StartDiscovery";
 const char kCancelDiscovery[] = "CancelDiscovery";
 const char kCreateBond[] = "CreateBond";
 const char kCancelBondProcess[] = "CancelBondProcess";
+const char kRemoveBond[] = "RemoveBond";
 const char kGetConnectionState[] = "GetConnectionState";
 const char kGetBondState[] = "GetBondState";
 const char kConnectAllEnabledProfiles[] = "ConnectAllEnabledProfiles";
@@ -201,6 +207,11 @@ void FlossDBusClient::DefaultResponseWithCallback(
       ErrorResponseToError(kErrorNoResponse, /*default_message=*/std::string(),
                            error_response));
 }
+
+template void FlossDBusClient::DefaultResponseWithCallback(
+    ResponseCallback<bool> callback,
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response);
 
 template void FlossDBusClient::DefaultResponseWithCallback(
     ResponseCallback<uint8_t> callback,

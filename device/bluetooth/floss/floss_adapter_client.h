@@ -125,13 +125,17 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   virtual void CancelDiscovery(ResponseCallback<Void> callback);
 
   // Create a bond with the given device and transport.
-  virtual void CreateBond(ResponseCallback<Void> callback,
+  virtual void CreateBond(ResponseCallback<bool> callback,
                           FlossDeviceId device,
                           BluetoothTransport transport);
 
   // Cancel a bond process.
-  virtual void CancelBondProcess(ResponseCallback<Void> callback,
+  virtual void CancelBondProcess(ResponseCallback<bool> callback,
                                  FlossDeviceId device);
+
+  // Removes bonding.
+  virtual void RemoveBond(ResponseCallback<bool> callback,
+                          FlossDeviceId device);
 
   // Get connection state of a device.
   // TODO(b/202334519): Change return type to enum instead of u32

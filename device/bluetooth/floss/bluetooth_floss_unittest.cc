@@ -219,6 +219,39 @@ TEST_F(BluetoothFlossTest, PairPasskeyEntry) {
   EXPECT_TRUE(device->IsPaired());
 }
 
+TEST_F(BluetoothFlossTest, RemoveBonding) {
+  InitializeAdapter();
+  DiscoverDevices();
+
+  BluetoothDevice* device =
+      adapter_->GetDevice(FakeFlossAdapterClient::kJustWorksAddress);
+  ASSERT_TRUE(device);
+  ASSERT_FALSE(device->IsPaired());
+
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_TRUE(device->IsPaired());
+
+  base::RunLoop run_loop2;
+  device->Forget(base::BindLambdaForTesting([&run_loop2]() {
+                   SUCCEED();
+                   run_loop2.Quit();
+                 }),
+                 base::BindLambdaForTesting([]() { FAIL(); }));
+  run_loop2.Run();
+
+  EXPECT_FALSE(device->IsPaired());
+}
+
 TEST_F(BluetoothFlossTest, UpdatesDeviceConnectionState) {
   InitializeAdapter();
   DiscoverDevices();
