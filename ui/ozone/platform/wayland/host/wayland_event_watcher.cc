@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -26,7 +27,16 @@ namespace ui {
 
 namespace {
 
-void DispatchPending(wl_display* display, wl_event_queue* event_queue) {
+// Signals |event| after dispatching the pending tasks.
+void DispatchPending(wl_display* display,
+                     wl_event_queue* event_queue,
+                     base::WaitableEvent* event) {
+  // wl_display_dispatch_queue_pending may block if dispatching events results
+  // in a tab dragging that spins a run loop, which doesn't return until it's
+  // over. Thus, signal before this function is called.
+  if (event)
+    event->Signal();
+
   wl_display_dispatch_queue_pending(display, event_queue);
 }
 
@@ -230,11 +240,19 @@ void WaylandEventWatcher::MaybePrepareReadQueue() {
 void WaylandEventWatcher::DispatchPendingQueue() {
   if (ui_thread_task_runner_->BelongsToCurrentThread()) {
     DCHECK(!use_dedicated_polling_thread_);
-    DispatchPending(display_, event_queue_);
+    DispatchPending(display_, event_queue_, nullptr);
   } else {
     DCHECK(use_dedicated_polling_thread_);
-    auto cb = base::BindOnce(&DispatchPending, display_, event_queue_);
+    base::WaitableEvent event;
+    auto cb = base::BindOnce(&DispatchPending, display_, event_queue_, &event);
     ui_thread_task_runner_->PostTask(FROM_HERE, std::move(cb));
+
+    // The point of the dedicated polling thread is to let the main thread know
+    // that there are events to be dispatched. Now that this has happened the
+    // polling thread should go to sleep until the main thread is finished
+    // dispatching those events, at which point the dedicated polling thread
+    // should resume.
+    event.Wait();
   }
 }
 
