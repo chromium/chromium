@@ -110,7 +110,8 @@ void AccessibilityEventRecorderMac::EventReceived(AXUIElementRef element,
   std::string notification_str = base::SysCFStringRefToUTF8(notification);
 
   auto formatter = AccessibilityTreeFormatterMac();
-  formatter.SetPropertyFilters({}, ui::AXTreeFormatter::kFiltersDefaultSet);
+  formatter.SetPropertyFilters(property_filters_,
+                               ui::AXTreeFormatter::kFiltersDefaultSet);
 
   std::string element_str =
       formatter.FormatTree(formatter.BuildNode(static_cast<id>(element)));
