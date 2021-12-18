@@ -24,6 +24,10 @@
 // Note: Don't include "media/base/video_frame.h" here without good reason,
 // since it includes a lot of non-blink types which can pollute the namespace.
 
+namespace base {
+struct Feature;
+}
+
 namespace media {
 class VideoFrame;
 }
@@ -40,6 +44,8 @@ class VideoColorSpace;
 class VideoFrameBufferInit;
 class VideoFrameCopyToOptions;
 class VideoFrameInit;
+
+extern const MODULES_EXPORT base::Feature kRemoveWebCodecsSpecViolations;
 
 class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                         public CanvasImageSource,
