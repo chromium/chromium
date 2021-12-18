@@ -1817,4 +1817,8 @@ bool BrowserAccessibilityManager::ShouldFireEventForNode(
   return true;
 }
 
+float BrowserAccessibilityManager::device_scale_factor() const {
+  return device_scale_factor_;
+}
+
 }  // namespace content

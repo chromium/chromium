@@ -43,6 +43,9 @@ class AX_EXPORT AccessibilityBridgeFuchsia {
   virtual void OnAccessibilityHitTestResult(int hit_test_request_id,
                                             uint32_t result) = 0;
 
+  // Returns the device scale factor.
+  virtual float GetDeviceScaleFactor() = 0;
+
   // Specifies the unique ID of the root platform node.
   virtual void SetRootID(uint32_t root_node_id) = 0;
 };

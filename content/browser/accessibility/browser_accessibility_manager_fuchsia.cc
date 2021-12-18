@@ -65,6 +65,15 @@ void BrowserAccessibilityManagerFuchsia::FireFocusEvent(
   }
 }
 
+float BrowserAccessibilityManagerFuchsia::device_scale_factor() const {
+  ui::AccessibilityBridgeFuchsia* accessibility_bridge =
+      GetAccessibilityBridge();
+  if (!accessibility_bridge)
+    return 1.f;
+
+  return accessibility_bridge->GetDeviceScaleFactor();
+}
+
 // static
 ui::AXTreeUpdate BrowserAccessibilityManagerFuchsia::GetEmptyDocument() {
   ui::AXNodeData empty_document;

@@ -51,6 +51,12 @@ class MockAccessibilityBridge : public ui::AccessibilityBridgeFuchsia {
     root_node_id_ = root_node_id;
   }
 
+  float GetDeviceScaleFactor() override { return device_scale_factor_; }
+
+  void SetDeviceScaleFactor(float device_scale_factor) {
+    device_scale_factor_ = device_scale_factor;
+  }
+
   const std::vector<fuchsia::accessibility::semantics::Node>& node_updates() {
     return node_updates_;
   }
@@ -70,6 +76,7 @@ class MockAccessibilityBridge : public ui::AccessibilityBridgeFuchsia {
   }
 
  private:
+  float device_scale_factor_ = 1.f;
   std::vector<fuchsia::accessibility::semantics::Node> node_updates_;
   std::vector<uint32_t> node_deletions_;
   std::map<int /* hit test request id */, uint32_t /* hit test result */>
@@ -357,6 +364,45 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestFocusChange) {
   ASSERT_TRUE(mock_accessibility_bridge_->new_focus());
   EXPECT_EQ(*mock_accessibility_bridge_->new_focus(),
             node_2->GetFuchsiaNodeID());
+}
+
+TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestDeviceScale) {
+  const float kScaleFactor = 0.8f;
+  mock_accessibility_bridge_->SetDeviceScaleFactor(kScaleFactor);
+
+  ui::AXTreeUpdate initial_state;
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  initial_state.tree_data.tree_id = tree_id;
+  initial_state.has_tree_data = true;
+  initial_state.tree_data.loaded = true;
+  initial_state.root_id = 1;
+  initial_state.nodes.resize(1);
+  initial_state.nodes[0].id = 1;
+
+  auto* registry = ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
+  registry->RegisterAccessibilityBridge(tree_id,
+                                        mock_accessibility_bridge_.get());
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          initial_state, test_browser_accessibility_delegate_.get()));
+  ASSERT_TRUE(manager);
+
+  {
+    const auto& node_updates = mock_accessibility_bridge_->node_updates();
+    ASSERT_EQ(node_updates.size(), 1u);
+
+    BrowserAccessibilityFuchsia* node_1 =
+        ToBrowserAccessibilityFuchsia(manager->GetFromID(1));
+    ASSERT_TRUE(node_1);
+
+    EXPECT_EQ(node_updates[0].node_id(), node_1->GetFuchsiaNodeID());
+
+    ASSERT_TRUE(node_updates[0].has_node_to_container_transform());
+    const auto& transform =
+        node_updates[0].node_to_container_transform().matrix;
+    EXPECT_EQ(transform[0], 1.f / kScaleFactor);
+    EXPECT_EQ(transform[5], 1.f / kScaleFactor);
+  }
 }
 
 }  // namespace

@@ -30,6 +30,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerFuchsia
 
   // BrowserAccessibilityManager overrides.
   void FireFocusEvent(BrowserAccessibility* node) override;
+  float device_scale_factor() const override;
 
  private:
   // Returns the accessibility bridge instance for this manager's WebContents.
