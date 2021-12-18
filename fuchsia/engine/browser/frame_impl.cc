@@ -326,8 +326,10 @@ FrameImpl::FrameImpl(std::unique_ptr<content::WebContents> web_contents,
 
   // TODO(http://crbug.com/1254073): Deprecate autoplay_policy in
   // CreateFrameParams.
-  if (params.has_autoplay_policy())
-    content_area_settings_.set_autoplay_policy(params.autoplay_policy());
+  if (params_for_popups_.has_autoplay_policy()) {
+    content_area_settings_.set_autoplay_policy(
+        params_for_popups_.autoplay_policy());
+  }
 }
 
 FrameImpl::~FrameImpl() {
