@@ -43,11 +43,9 @@ class MODULES_EXPORT CredentialManagerProxy
   explicit CredentialManagerProxy(LocalDOMWindow&);
   virtual ~CredentialManagerProxy();
 
-  mojom::blink::CredentialManager* CredentialManager() {
-    return credential_manager_.get();
-  }
+  mojom::blink::CredentialManager* CredentialManager();
 
-  mojom::blink::Authenticator* Authenticator() { return authenticator_.get(); }
+  mojom::blink::Authenticator* Authenticator();
 
   mojom::blink::WebOTPService* WebOTPService();
 

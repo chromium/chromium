@@ -18,18 +18,31 @@ CredentialManagerProxy::CredentialManagerProxy(LocalDOMWindow& window)
       webotp_service_(window.GetExecutionContext()),
       payment_credential_(window.GetExecutionContext()),
       fedcm_get_request_(window.GetExecutionContext()),
-      fedcm_logout_request_(window.GetExecutionContext()) {
-  LocalFrame* frame = window.GetFrame();
-  DCHECK(frame);
-  frame->GetBrowserInterfaceBroker().GetInterface(
-      credential_manager_.BindNewPipeAndPassReceiver(
-          frame->GetTaskRunner(TaskType::kUserInteraction)));
-  frame->GetBrowserInterfaceBroker().GetInterface(
-      authenticator_.BindNewPipeAndPassReceiver(
-          frame->GetTaskRunner(TaskType::kUserInteraction)));
-}
+      fedcm_logout_request_(window.GetExecutionContext()) {}
 
 CredentialManagerProxy::~CredentialManagerProxy() = default;
+
+mojom::blink::CredentialManager* CredentialManagerProxy::CredentialManager() {
+  if (!credential_manager_.is_bound()) {
+    LocalFrame* frame = GetSupplementable()->GetFrame();
+    DCHECK(frame);
+    frame->GetBrowserInterfaceBroker().GetInterface(
+        credential_manager_.BindNewPipeAndPassReceiver(
+            frame->GetTaskRunner(TaskType::kUserInteraction)));
+  }
+  return credential_manager_.get();
+}
+
+mojom::blink::Authenticator* CredentialManagerProxy::Authenticator() {
+  if (!authenticator_.is_bound()) {
+    LocalFrame* frame = GetSupplementable()->GetFrame();
+    DCHECK(frame);
+    frame->GetBrowserInterfaceBroker().GetInterface(
+        authenticator_.BindNewPipeAndPassReceiver(
+            frame->GetTaskRunner(TaskType::kUserInteraction)));
+  }
+  return authenticator_.get();
+}
 
 mojom::blink::WebOTPService* CredentialManagerProxy::WebOTPService() {
   if (!webotp_service_.is_bound()) {
