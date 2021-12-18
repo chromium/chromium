@@ -105,3 +105,13 @@ mac_toolchain("clang_x64_v8_mips64el") {
     }
   }
 }
+
+mac_toolchain("clang_arm64_v8_x64") {
+  toolchain_args = {
+    current_cpu = "arm64"
+
+    if (defined(v8_current_cpu)) {
+      v8_current_cpu = "x64"
+    }
+  }
+}
