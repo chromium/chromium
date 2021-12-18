@@ -118,10 +118,12 @@ void PasswordStoreAndroidBackendBridgeImpl::OnError(JNIEnv* env,
                      consumer_, JobId(job_id), std::move(error)));
 }
 
-JobId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins() {
+JobId PasswordStoreAndroidBackendBridgeImpl::GetAllLogins(
+    password_manager::PasswordStoreOperationTarget target) {
   JobId job_id = GetNextJobId();
   Java_PasswordStoreAndroidBackendBridgeImpl_getAllLogins(
-      base::android::AttachCurrentThread(), java_object_, job_id.value());
+      base::android::AttachCurrentThread(), java_object_, job_id.value(),
+      static_cast<int>(target));
   return job_id;
 }
 
@@ -165,13 +167,15 @@ JobId PasswordStoreAndroidBackendBridgeImpl::UpdateLogin(
 }
 
 JobId PasswordStoreAndroidBackendBridgeImpl::RemoveLogin(
-    const password_manager::PasswordForm& form) {
+    const password_manager::PasswordForm& form,
+    password_manager::PasswordStoreOperationTarget target) {
   JobId job_id = GetNextJobId();
   sync_pb::PasswordSpecificsData data = SpecificsDataFromPassword(form);
   Java_PasswordStoreAndroidBackendBridgeImpl_removeLogin(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       base::android::ToJavaByteArray(base::android::AttachCurrentThread(),
-                                     data.SerializeAsString()));
+                                     data.SerializeAsString()),
+      static_cast<int>(target));
   return job_id;
 }
 

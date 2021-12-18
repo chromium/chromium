@@ -79,12 +79,15 @@ class MockPasswordStoreAndroidBackendBridge
     : public PasswordStoreAndroidBackendBridge {
  public:
   MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
-  MOCK_METHOD(JobId, GetAllLogins, (), (override));
+  MOCK_METHOD(JobId, GetAllLogins, (PasswordStoreOperationTarget), (override));
   MOCK_METHOD(JobId, GetAutofillableLogins, (), (override));
   MOCK_METHOD(JobId, GetLoginsForSignonRealm, (const std::string&), (override));
   MOCK_METHOD(JobId, AddLogin, (const PasswordForm&), (override));
   MOCK_METHOD(JobId, UpdateLogin, (const PasswordForm&), (override));
-  MOCK_METHOD(JobId, RemoveLogin, (const PasswordForm&), (override));
+  MOCK_METHOD(JobId,
+              RemoveLogin,
+              (const PasswordForm&, PasswordStoreOperationTarget),
+              (override));
 };
 
 }  // namespace
@@ -134,7 +137,8 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForLogins) {
                         base::RepeatingClosure(), base::DoNothing());
   const JobId kJobId{1337};
   base::MockCallback<LoginsOrErrorReply> mock_reply;
-  EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
+  EXPECT_CALL(*bridge(), GetAllLogins(PasswordStoreOperationTarget::kDefault))
+      .WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
 
   std::vector<std::unique_ptr<PasswordForm>> expected_logins =
@@ -280,7 +284,9 @@ TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForRemoveLogin) {
 
   PasswordForm form =
       CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
-  EXPECT_CALL(*bridge(), RemoveLogin(form)).WillOnce(Return(kJobId));
+  EXPECT_CALL(*bridge(),
+              RemoveLogin(form, PasswordStoreOperationTarget::kDefault))
+      .WillOnce(Return(kJobId));
   backend().RemoveLoginAsync(form, mock_reply.Get());
 
   PasswordStoreChangeList expected_changes;

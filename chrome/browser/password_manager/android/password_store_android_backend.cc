@@ -18,6 +18,7 @@
 #include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
+#include "chrome/browser/password_manager/android/password_store_operation_target.h"
 #include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -316,7 +317,7 @@ void PasswordStoreAndroidBackend::Shutdown(
 
 void PasswordStoreAndroidBackend::GetAllLoginsAsync(
     LoginsOrErrorReply callback) {
-  JobId job_id = bridge_->GetAllLogins();
+  JobId job_id = bridge_->GetAllLogins(PasswordStoreOperationTarget::kDefault);
   QueueNewJob(job_id, JobReturnHandler(
                           std::move(callback),
                           MetricsRecorder(MetricInfix("GetAllLoginsAsync"))));
@@ -384,7 +385,8 @@ void PasswordStoreAndroidBackend::UpdateLoginAsync(
 void PasswordStoreAndroidBackend::RemoveLoginAsync(
     const PasswordForm& form,
     PasswordStoreChangeListReply callback) {
-  JobId job_id = bridge_->RemoveLogin(form);
+  JobId job_id =
+      bridge_->RemoveLogin(form, PasswordStoreOperationTarget::kDefault);
   QueueNewJob(job_id, JobReturnHandler(
                           std::move(callback),
                           MetricsRecorder(MetricInfix("RemoveLoginAsync"))));
@@ -439,7 +441,8 @@ void PasswordStoreAndroidBackend::RemoveLoginsByURLAndTimeAsync(
       ReportMetricsAndInvokeCallbackForStoreModifications(
           MetricInfix("RemoveLoginsByURLAndTimeAsync"), std::move(callback));
 
-  JobId get_logins_job_id = bridge_->GetAllLogins();
+  JobId get_logins_job_id =
+      bridge_->GetAllLogins(PasswordStoreOperationTarget::kDefault);
   QueueNewJob(
       get_logins_job_id,
       JobReturnHandler(
@@ -459,7 +462,8 @@ void PasswordStoreAndroidBackend::RemoveLoginsCreatedBetweenAsync(
       ReportMetricsAndInvokeCallbackForStoreModifications(
           MetricInfix("RemoveLoginsCreatedBetweenAsync"), std::move(callback));
 
-  JobId get_logins_job_id = bridge_->GetAllLogins();
+  JobId get_logins_job_id =
+      bridge_->GetAllLogins(PasswordStoreOperationTarget::kDefault);
   QueueNewJob(
       get_logins_job_id,
       JobReturnHandler(

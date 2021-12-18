@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/password_manager/android/android_backend_error.h"
+#include "chrome/browser/password_manager/android/password_store_operation_target.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 
@@ -61,7 +62,8 @@ class PasswordStoreAndroidBackendBridge {
   // Triggers an asynchronous request to retrieve all stored passwords. The
   // registered `Consumer` is notified with `OnCompleteWithLogins` when the
   // job with the returned JobId succeeds.
-  virtual JobId GetAllLogins() WARN_UNUSED_RESULT = 0;
+  virtual JobId GetAllLogins(PasswordStoreOperationTarget target)
+      WARN_UNUSED_RESULT = 0;
 
   // Triggers an asynchronous request to retrieve all autofillable
   // (non-blocklisted) passwords. The registered `Consumer` is notified with
@@ -89,7 +91,9 @@ class PasswordStoreAndroidBackendBridge {
   // Triggers an asynchronous request to remove |form| from store. The
   // registered `Consumer` is notified with `OnLoginsChanged` when the
   // job with the returned JobId succeeds.
-  virtual JobId RemoveLogin(const PasswordForm& form) WARN_UNUSED_RESULT = 0;
+  virtual JobId RemoveLogin(const PasswordForm& form,
+                            PasswordStoreOperationTarget target)
+      WARN_UNUSED_RESULT = 0;
 
   // Factory function for creating the bridge. Implementation is pulled in by
   // including an implementation or by defining it explicitly in tests.

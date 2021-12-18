@@ -47,8 +47,25 @@ public interface PasswordStoreAndroidBackend {
      * @param loginsReply Callback that is called on success with serialized {@link
      *         org.chromium.components.sync.protocol.ListPasswordsResult} data.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
+     *
+     * @deprecated use {@link #getAllLogins(@PasswordStoreOperationTarget int,
+            Callback<byte[]>, Callback<Exception>)}.
      */
-    void getAllLogins(Callback<byte[]> loginsReply, Callback<Exception> failureCallback);
+    @Deprecated
+    default void getAllLogins(Callback<byte[]> loginsReply, Callback<Exception> failureCallback) {
+        getAllLogins(PasswordStoreOperationTarget.DEFAULT, loginsReply, failureCallback);
+    };
+
+    /**
+     * Triggers an async list call to retrieve all logins.
+     *
+     * @param target enum {@link StoreOperationTarget} to decide which storage to use.
+     * @param loginsReply Callback that is called on success with serialized {@link
+     *         org.chromium.components.sync.protocol.ListPasswordsResult} data.
+     * @param failureCallback A callback that is called on failure for any reason. May return sync.
+     */
+    default void getAllLogins(@PasswordStoreOperationTarget int target,
+            Callback<byte[]> loginsReply, Callback<Exception> failureCallback){};
 
     /**
      * Triggers an async list call to retrieve autofillable logins.
@@ -97,7 +114,25 @@ public interface PasswordStoreAndroidBackend {
      * @param pwdSpecificsData Serialized PasswordSpecificsData identifying the login to be deleted.
      * @param successCallback Callback that is called on success.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
+     *
+     * * @deprecated use use {@link #removeLogin(byte[], @PasswordStoreOperationTarget int,
+            Runnable, Callback<Exception>)}.
      */
-    void removeLogin(
-            byte[] pwdSpecificsData, Runnable successCallback, Callback<Exception> failureCallback);
+    @Deprecated
+    default void removeLogin(byte[] pwdSpecificsData, Runnable successCallback,
+            Callback<Exception> failureCallback) {
+        removeLogin(pwdSpecificsData, PasswordStoreOperationTarget.DEFAULT, successCallback,
+                failureCallback);
+    };
+
+    /**
+     * Triggers an async call to remove a login from store.
+     *
+     * @param pwdSpecificsData Serialized PasswordSpecificsData identifying the login to be deleted.
+     * @param target enum {@link StoreOperationTarget} to decide which storage to use.
+     * @param successCallback Callback that is called on success.
+     * @param failureCallback A callback that is called on failure for any reason. May return sync.
+     */
+    default void removeLogin(byte[] pwdSpecificsData, @PasswordStoreOperationTarget int target,
+            Runnable successCallback, Callback<Exception> failureCallback){};
 }

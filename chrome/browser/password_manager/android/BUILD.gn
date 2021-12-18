@@ -5,7 +5,10 @@
 import("//build/config/android/rules.gni")
 
 java_cpp_enum("android_backend_java_enums_srcjar") {
-  sources = [ "android_backend_error.h" ]
+  sources = [
+    "android_backend_error.h",
+    "password_store_operation_target.h",
+  ]
 }
 
 # Wrap the java_cpp_enum in android_library so it can be used by both
@@ -29,6 +32,7 @@ source_set("backend") {
     "password_store_android_backend_bridge.h",
     "password_store_android_backend_bridge_impl.cc",
     "password_store_android_backend_bridge_impl.h",
+    "password_store_operation_target.h",
   ]
 
   public_deps = [ "//base" ]
