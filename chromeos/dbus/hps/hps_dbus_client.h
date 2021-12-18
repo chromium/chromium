@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(HPS) HpsDBusClient {
 
     // Called when the presence of a "snooper" looking over the user's shoulder
     // starts or stops being detected.
-    virtual void OnHpsNotifyChanged(bool state) = 0;
+    virtual void OnHpsNotifyChanged(hps::HpsResult state) = 0;
 
     // Called when the service starts or restarts.
     virtual void OnRestart() = 0;
@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(HPS) HpsDBusClient {
   };
 
   using GetResultHpsNotifyCallback =
-      base::OnceCallback<void(absl::optional<bool>)>;
+      base::OnceCallback<void(absl::optional<hps::HpsResult>)>;
 
   HpsDBusClient(const HpsDBusClient&) = delete;
   HpsDBusClient& operator=(const HpsDBusClient&) = delete;

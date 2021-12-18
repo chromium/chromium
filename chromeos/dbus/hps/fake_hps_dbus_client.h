@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(HPS) FakeHpsDBusClient : public HpsDBusClient {
 
   // Methods for co-ordinating GetResultHpsNotify calls in tests.
 
-  void set_hps_notify_result(absl::optional<bool> result) {
+  void set_hps_notify_result(absl::optional<hps::HpsResult> result) {
     hps_notify_result_ = result;
   }
 
@@ -63,7 +63,7 @@ class COMPONENT_EXPORT(HPS) FakeHpsDBusClient : public HpsDBusClient {
   void Reset();
 
  private:
-  absl::optional<bool> hps_notify_result_;
+  absl::optional<hps::HpsResult> hps_notify_result_;
   int hps_notify_count_ = 0;
   int enable_hps_notify_count_ = 0;
   int disable_hps_notify_count_ = 0;

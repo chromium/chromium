@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/hps/fake_hps_dbus_client.h"
 #include "chromeos/dbus/hps/hps_dbus_client.h"
+#include "chromeos/dbus/hps/hps_service.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_type.h"
 
@@ -55,7 +56,8 @@ class HpsNotifyControllerTestBase : public NoSessionAshTestBase {
     chromeos::HpsDBusClient::InitializeFake();
     dbus_client_ = chromeos::FakeHpsDBusClient::Get();
     dbus_client_->set_hps_service_is_available(service_available_);
-    dbus_client_->set_hps_notify_result(service_state_);
+    dbus_client_->set_hps_notify_result(
+        service_state_ ? hps::HpsResult::POSITIVE : hps::HpsResult::NEGATIVE);
 
     AshTestBase::SetUp();
 
@@ -120,11 +122,11 @@ TEST_F(HpsNotifyControllerTestAbsent, HpsStateChange) {
 
   EXPECT_FALSE(controller_->IsIconVisible());
 
-  controller_->OnHpsNotifyChanged(true);
+  controller_->OnHpsNotifyChanged(hps::HpsResult::POSITIVE);
 
   EXPECT_TRUE(controller_->IsIconVisible());
 
-  controller_->OnHpsNotifyChanged(false);
+  controller_->OnHpsNotifyChanged(hps::HpsResult::NEGATIVE);
 
   EXPECT_FALSE(controller_->IsIconVisible());
 }

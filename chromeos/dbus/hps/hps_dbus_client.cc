@@ -25,19 +25,19 @@ namespace {
 HpsDBusClient* g_instance = nullptr;
 
 // Extracts snooping data out of a DBus response.
-absl::optional<bool> UnwrapHpsNotifyResult(dbus::Response* response) {
+absl::optional<hps::HpsResult> UnwrapHpsNotifyResult(dbus::Response* response) {
   if (response == nullptr) {
     return absl::nullopt;
   }
 
   dbus::MessageReader reader(response);
-  bool result = false;
-  if (!reader.PopBool(&result)) {
+  hps::HpsResultProto result;
+  if (!reader.PopArrayOfBytesAsProto(&result)) {
     LOG(ERROR) << "Invalid DBus response data";
     return absl::nullopt;
   }
 
-  return result;
+  return result.value();
 }
 
 class HpsDBusClientImpl : public HpsDBusClient {
@@ -67,15 +67,15 @@ class HpsDBusClientImpl : public HpsDBusClient {
   // Called when snooping signal is received.
   void HpsNotifyChangedReceived(dbus::Signal* signal) {
     dbus::MessageReader reader(signal);
-    bool state = false;
-    if (!reader.PopBool(&state)) {
+    hps::HpsResultProto result;
+    if (!reader.PopArrayOfBytesAsProto(&result)) {
       LOG(ERROR) << "Invalid HpsNotifyChanged signal: " << signal->ToString();
       return;
     }
 
     // Notify observers of state changed.
     for (auto& observer : observers_) {
-      observer.OnHpsNotifyChanged(state);
+      observer.OnHpsNotifyChanged(result.value());
     }
   }
 

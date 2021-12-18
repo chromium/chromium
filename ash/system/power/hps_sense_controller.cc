@@ -38,7 +38,7 @@ void HpsSenseController::DisableHpsSense() {
   is_hps_sense_enabled = false;
 }
 
-void HpsSenseController::OnHpsNotifyChanged(const bool state) {}
+void HpsSenseController::OnHpsNotifyChanged(hps::HpsResult state) {}
 
 void HpsSenseController::OnRestart() {
   // Only Re-enable HpsSense if it was enabled before restarted.

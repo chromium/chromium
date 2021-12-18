@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/dbus/hps/hps_dbus_client.h"
+#include "chromeos/dbus/hps/hps_service.pb.h"
 
 namespace ash {
 
@@ -30,7 +31,7 @@ class ASH_EXPORT HpsSenseController : public chromeos::HpsDBusClient::Observer {
   void DisableHpsSense();
 
   // chromeos::HpsDBusClient::Observer:
-  void OnHpsNotifyChanged(bool state) override;
+  void OnHpsNotifyChanged(hps::HpsResult state) override;
   // Re-enables HpsSense on restart if it was enabled before.
   void OnRestart() override;
   void OnShutdown() override;

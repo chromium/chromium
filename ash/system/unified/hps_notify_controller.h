@@ -12,6 +12,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "chromeos/dbus/hps/hps_dbus_client.h"
+#include "chromeos/dbus/hps/hps_service.pb.h"
 #include "components/session_manager/session_manager_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -48,7 +49,7 @@ class ASH_EXPORT HpsNotifyController
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // chromeos::HpsDBusClient::Observer:
-  void OnHpsNotifyChanged(bool state) override;
+  void OnHpsNotifyChanged(hps::HpsResult state) override;
   void OnRestart() override;
   void OnShutdown() override;
 
@@ -77,7 +78,7 @@ class ASH_EXPORT HpsNotifyController
   void StartHpsObservation(bool service_is_available);
 
   // Performs the state update from the daemon response.
-  void UpdateHpsState(absl::optional<bool> result);
+  void UpdateHpsState(absl::optional<hps::HpsResult> result);
 
   // A callback to update visibility when the user enables or disables the
   // feature.

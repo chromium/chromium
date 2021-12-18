@@ -89,8 +89,10 @@ void HpsNotifyController::OnActiveUserPrefServiceChanged(
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void HpsNotifyController::OnHpsNotifyChanged(bool hps_state) {
-  UpdateIconVisibility(session_active_, hps_state, pref_enabled_);
+void HpsNotifyController::OnHpsNotifyChanged(hps::HpsResult hps_state) {
+  UpdateIconVisibility(session_active_,
+                       /*hps_state=*/hps_state == hps::HpsResult::POSITIVE,
+                       pref_enabled_);
 }
 
 void HpsNotifyController::OnRestart() {
@@ -204,11 +206,15 @@ void HpsNotifyController::StartHpsObservation(bool service_is_available) {
   ReconfigureHps(/*hps_available_=*/true, session_active_, pref_enabled_);
 }
 
-void HpsNotifyController::UpdateHpsState(absl::optional<bool> response) {
+void HpsNotifyController::UpdateHpsState(
+    absl::optional<hps::HpsResult> response) {
   LOG_IF(WARNING, !response.has_value())
       << "Polling the presence daemon failed";
-  UpdateIconVisibility(session_active_, response.value_or(false),
-                       pref_enabled_);
+
+  UpdateIconVisibility(
+      session_active_,
+      response.value_or(hps::HpsResult::NEGATIVE) == hps::HpsResult::POSITIVE,
+      pref_enabled_);
 }
 
 void HpsNotifyController::UpdatePrefState() {
