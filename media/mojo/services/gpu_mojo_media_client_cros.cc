@@ -5,6 +5,7 @@
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
@@ -79,6 +80,11 @@ VideoDecoderType GetPlatformDecoderImplementationType(
 #elif BUILDFLAG(ENABLE_VULKAN)
   if (!base::FeatureList::IsEnabled(kVaapiVideoDecodeLinux))
     return VideoDecoderType::kUnknown;
+  if (!base::FeatureList::IsEnabled(kUseChromeOSDirectVideoDecoder)) {
+    return gpu_preferences.gr_context_type == gpu::GrContextType::kGL
+               ? VideoDecoderType::kVda
+               : VideoDecoderType::kUnknown;
+  }
   if (gpu_preferences.gr_context_type != gpu::GrContextType::kVulkan)
     return VideoDecoderType::kUnknown;
   if (gpu_info.vulkan_info->physical_devices.empty())
