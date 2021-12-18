@@ -32,6 +32,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
@@ -258,6 +259,18 @@ class CORE_EXPORT FrameSelection final
                          HandleVisibility handle_visibility,
                          ContextMenuVisibility context_menu_visibility);
 
+  // Returns the range corresponding to a word selection around the caret.
+  // Returns a null range if the selection failed, either because the current
+  // selection was not a caret or if a word selection could not be made.
+  EphemeralRange GetWordSelectionRangeAroundCaret() const;
+
+  // Returns the range corresponding to a |text_granularity| selection around
+  // the caret. Returns a null range if the selection failed, either because
+  // the current selection was not a caret or if a |text_granularity| selection
+  // could not be made.
+  EphemeralRange GetSelectionRangeAroundCaretForTesting(
+      TextGranularity text_granularity) const;
+
 #if DCHECK_IS_ON()
   void ShowTreeForThis() const;
 #endif
@@ -326,6 +339,13 @@ class CORE_EXPORT FrameSelection final
   void ContextDestroyed() final;
   void NodeChildrenWillBeRemoved(ContainerNode&) final;
   void NodeWillBeRemoved(Node&) final;
+
+  // Returns the range corresponding to a |text_granularity| selection around
+  // the caret. Returns a null range if the selection failed, either because
+  // the current selection was not a caret or if a |text_granularity| selection
+  // could not be made.
+  EphemeralRange GetSelectionRangeAroundCaret(
+      TextGranularity text_granularity) const;
 
   Member<LocalFrame> frame_;
   const Member<LayoutSelection> layout_selection_;
