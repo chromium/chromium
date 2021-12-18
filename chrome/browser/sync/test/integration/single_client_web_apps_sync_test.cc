@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
@@ -19,6 +20,7 @@
 #include "components/sync/protocol/extension_specifics.pb.h"
 #include "components/sync/test/fake_server/fake_server_verifier.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -90,6 +92,12 @@ class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
   void AwaitWebAppQuiescence() {
     ASSERT_TRUE(AwaitQuiescence());
     apps_helper::AwaitWebAppQuiescence(GetAllProfiles());
+    content::RunAllTasksUntilIdle();
+    base::RunLoop run_loop;
+    internals::GetShortcutIOTaskRunner()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&] { run_loop.Quit(); }));
+    run_loop.Run();
+    content::RunAllTasksUntilIdle();
   }
 
   void InjectWebAppEntityToFakeServer(

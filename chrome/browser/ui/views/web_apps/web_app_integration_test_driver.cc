@@ -1136,6 +1136,12 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
     }
   }
 #endif
+  content::RunAllTasksUntilIdle();
+  base::RunLoop run_loop;
+  internals::GetShortcutIOTaskRunner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&] { run_loop.Quit(); }));
+  run_loop.Run();
+  content::RunAllTasksUntilIdle();
   after_state_change_action_state_ = ConstructStateSnapshot();
   MaybeWaitForManifestUpdates();
 }
