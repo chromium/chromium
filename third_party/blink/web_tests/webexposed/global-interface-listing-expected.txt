@@ -4262,6 +4262,7 @@ interface HTMLSelectMenuElement : HTMLElement
     getter name
     getter open
     getter required
+    getter selectedOption
     getter type
     getter validationMessage
     getter validity

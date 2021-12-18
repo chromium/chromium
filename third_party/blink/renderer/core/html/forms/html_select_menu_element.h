@@ -27,6 +27,7 @@ class CORE_EXPORT HTMLSelectMenuElement final
  public:
   explicit HTMLSelectMenuElement(Document&);
 
+  HTMLOptionElement* selectedOption() const;
   String value() const;
   void setValue(const String&, bool send_events = false);
   bool open() const;
@@ -70,7 +71,6 @@ class CORE_EXPORT HTMLSelectMenuElement final
   void EnsureButtonPartIsValid();
   void EnsureSelectedValuePartIsValid();
   void EnsureListboxPartIsValid();
-  HTMLOptionElement* SelectedOption() const;
   void SetSelectedOption(HTMLOptionElement* selected_option);
   void SelectNextOption();
   void SelectPreviousOption();

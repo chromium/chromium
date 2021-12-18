@@ -984,6 +984,7 @@ html element selectmenu
     property open
     property reportValidity
     property required
+    property selectedOption
     property setCustomValidity
     property type
     property validationMessage

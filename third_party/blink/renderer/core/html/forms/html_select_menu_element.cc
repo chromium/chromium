@@ -305,7 +305,7 @@ void HTMLSelectMenuElement::DidMoveToNewDocument(Document& old_document) {
 }
 
 String HTMLSelectMenuElement::value() const {
-  if (HTMLOptionElement* option = SelectedOption()) {
+  if (HTMLOptionElement* option = selectedOption()) {
     return option->value();
   }
   return "";
@@ -335,10 +335,10 @@ void HTMLSelectMenuElement::OpenListbox() {
   if (listbox_part_ && !open()) {
     listbox_part_->SetNeedsRepositioningForSelectMenu(true);
     listbox_part_->show();
-    if (SelectedOption()) {
-      SelectedOption()->focus();
+    if (selectedOption()) {
+      selectedOption()->focus();
     }
-    selected_option_when_listbox_opened_ = SelectedOption();
+    selected_option_when_listbox_opened_ = selectedOption();
   }
 }
 
@@ -349,7 +349,7 @@ void HTMLSelectMenuElement::CloseListbox() {
     }
     listbox_part_->hide();
 
-    if (SelectedOption() != selected_option_when_listbox_opened_)
+    if (selectedOption() != selected_option_when_listbox_opened_)
       DispatchChangeEvent();
   }
 }
@@ -721,12 +721,12 @@ void HTMLSelectMenuElement::OptionSelectionStateChanged(
   DCHECK(option_parts_.Contains(option));
   if (option_is_selected) {
     SetSelectedOption(option);
-  } else if (SelectedOption() == option) {
+  } else if (selectedOption() == option) {
     ResetToDefaultSelection();
   }
 }
 
-HTMLOptionElement* HTMLSelectMenuElement::SelectedOption() const {
+HTMLOptionElement* HTMLSelectMenuElement::selectedOption() const {
   DCHECK(!selected_option_ ||
          IsValidOptionPart(selected_option_, /*show_warning=*/false));
   return selected_option_;
@@ -768,7 +768,7 @@ void HTMLSelectMenuElement::OptionElementValueChanged(
 }
 
 void HTMLSelectMenuElement::SelectNextOption() {
-  for (Node* node = SelectMenuPartTraversal::Next(*SelectedOption(), this);
+  for (Node* node = SelectMenuPartTraversal::Next(*selectedOption(), this);
        node; node = SelectMenuPartTraversal::Next(*node, this)) {
     if (IsValidOptionPart(node, /*show_warning=*/false)) {
       auto* element = DynamicTo<HTMLOptionElement>(node);
@@ -781,7 +781,7 @@ void HTMLSelectMenuElement::SelectNextOption() {
 }
 
 void HTMLSelectMenuElement::SelectPreviousOption() {
-  for (Node* node = SelectMenuPartTraversal::Previous(*SelectedOption(), this);
+  for (Node* node = SelectMenuPartTraversal::Previous(*selectedOption(), this);
        node; node = SelectMenuPartTraversal::Previous(*node, this)) {
     if (IsValidOptionPart(node, /*show_warning=*/false)) {
       auto* element = DynamicTo<HTMLOptionElement>(node);
@@ -843,7 +843,7 @@ void HTMLSelectMenuElement::OptionPartEventListener::Invoke(ExecutionContext*,
         DynamicTo<HTMLOptionElement>(event->currentTarget()->ToNode());
     DCHECK(target_element);
     DCHECK(select_menu_element_->option_parts_.Contains(target_element));
-    if (target_element != select_menu_element_->SelectedOption()) {
+    if (target_element != select_menu_element_->selectedOption()) {
       select_menu_element_->SetSelectedOption(target_element);
       select_menu_element_->DispatchInputEvent();
     }
@@ -859,7 +859,7 @@ void HTMLSelectMenuElement::OptionPartEventListener::Invoke(ExecutionContext*,
             DynamicTo<HTMLOptionElement>(event->currentTarget()->ToNode());
         DCHECK(target_element);
         DCHECK(select_menu_element_->option_parts_.Contains(target_element));
-        if (target_element != select_menu_element_->SelectedOption()) {
+        if (target_element != select_menu_element_->selectedOption()) {
           select_menu_element_->SetSelectedOption(target_element);
           select_menu_element_->DispatchInputEvent();
         }
@@ -930,7 +930,7 @@ bool HTMLSelectMenuElement::ValueMissing() const {
   if (!IsRequired())
     return false;
 
-  if (auto* selected_option = SelectedOption()) {
+  if (auto* selected_option = selectedOption()) {
     // If a non-placeholder label option is selected, it's not value-missing.
     // https://html.spec.whatwg.org/multipage/form-elements.html#placeholder-label-option
     return selected_option == FirstOptionPart() &&
