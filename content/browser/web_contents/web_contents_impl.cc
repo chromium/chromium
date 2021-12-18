@@ -7469,13 +7469,23 @@ void WebContentsImpl::UpdateTitle(RenderFrameHostImpl* render_frame_host,
       render_frame_host->frame_tree()->controller().GetEntryWithUniqueID(
           render_frame_host->nav_entry_id());
 
-  // We can handle title updates when we don't have an entry in
-  // UpdateTitleForEntry, but only if the update is from the current RFH.
   if (!entry) {
-    if (render_frame_host != GetMainFrame())
+    // We can handle title updates with no matching NavigationEntry, but only if
+    // the update is for the initial NavigationEntry. In that case the initial
+    // empty document RFH wouldn't have a `nav_entry_id` set because it hasn't
+    // committed any navigation. Note that if the title update came from the
+    // initial empty document but the WebContents is doing a session restore,
+    // we will ignore the title update (because GetLastCommittedEntry() would
+    // return the non-initial restored entry), which avoids accidental
+    // overwriting of the restored entry's title.
+    if (render_frame_host->GetParent() || !render_frame_host->frame_tree()
+                                               ->controller()
+                                               .GetLastCommittedEntry()
+                                               ->IsInitialEntry()) {
       return;
-    // Use the last committed entry to attach the title to.
-    entry = GetController().GetLastCommittedEntry();
+    }
+    entry =
+        render_frame_host->frame_tree()->controller().GetLastCommittedEntry();
   }
 
   // TODO(evan): make use of title_direction.

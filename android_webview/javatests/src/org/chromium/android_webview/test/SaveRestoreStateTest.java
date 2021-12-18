@@ -4,7 +4,6 @@
 
 package org.chromium.android_webview.test;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 
@@ -19,7 +18,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.util.CommonResources;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHistory;
@@ -145,17 +143,10 @@ public class SaveRestoreStateTest {
 
     @Test
     @SmallTest
-    @DisableIf.
-    Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "https://crbug.com/1275392")
     @Feature({"AndroidWebView"})
     public void testSaveRestoreStateWithHistoryItemList() throws Throwable {
         setServerResponseAndLoad(mVars, NUM_NAVIGATIONS);
         TestVars restoredVars = saveAndRestoreStateOnUiThread(mVars);
-        mActivityTestRule.pollUiThread(
-                ()
-                        -> TITLES[NUM_NAVIGATIONS - 1].equals(restoredVars.awContents.getTitle())
-                        && TITLES[NUM_NAVIGATIONS - 1].equals(
-                                restoredVars.contentsClient.getUpdatedTitle()));
         checkHistoryItemList(restoredVars);
     }
 
