@@ -692,10 +692,6 @@ void AXNode::SwapChildren(std::vector<AXNode*>* children) {
   children->swap(children_);
 }
 
-void AXNode::Destroy() {
-  delete this;
-}
-
 bool AXNode::IsDescendantOf(const AXNode* ancestor) const {
   if (!ancestor)
     return false;

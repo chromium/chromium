@@ -280,13 +280,6 @@ class AX_EXPORT AXNode final {
   // now owns all of the passed children.
   void SwapChildren(std::vector<AXNode*>* children);
 
-  // This is called when the AXTree no longer includes this node in the
-  // tree. Reference counting is used on some platforms because the
-  // operating system may hold onto a reference to an AXNode
-  // object even after we're through with it, so this may decrement the
-  // reference count and clear out the object's data.
-  void Destroy();
-
   // Returns true if this node is equal to or a descendant of |ancestor|.
   bool IsDescendantOf(const AXNode* ancestor) const;
   bool IsDescendantOfCrossingTreeBoundary(const AXNode* ancestor) const;

@@ -782,7 +782,7 @@ const AXTreeData& AXTree::data() const {
 
 AXNode* AXTree::GetFromId(AXNodeID id) const {
   auto iter = id_map_.find(id);
-  return iter != id_map_.end() ? iter->second : nullptr;
+  return iter != id_map_.end() ? iter->second.get() : nullptr;
 }
 
 void AXTree::Destroy() {
@@ -1374,10 +1374,12 @@ AXNode* AXTree::CreateNode(AXNode* parent,
   update_state->new_node_ids.insert(id);
   // If this node is the root, use the given index_in_parent as the unignored
   // index in parent to provide consistency with index_in_parent.
-  AXNode* new_node = new AXNode(this, parent, id, index_in_parent,
-                                parent ? 0 : index_in_parent);
-  id_map_[new_node->id()] = new_node;
-  return new_node;
+  auto node = std::make_unique<AXNode>(this, parent, id, index_in_parent,
+                                       parent ? 0 : index_in_parent);
+  auto emplaced = id_map_.emplace(id, std::move(node));
+  // There should not have been a node already in the map with the same id.
+  DCHECK(emplaced.second);
+  return emplaced.first->second.get();
 }
 
 bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
@@ -2071,21 +2073,25 @@ void AXTree::DestroyNodeAndSubtree(AXNode* node,
   empty_data.id = node->id();
   UpdateReverseRelations(node, empty_data);
 
-  id_map_.erase(node->id());
-  for (auto* child : node->children())
+  AXNodeID id = node->id();
+  auto iter = id_map_.find(id);
+  std::unique_ptr<AXNode> node_to_delete = std::move(iter->second);
+  id_map_.erase(iter);
+  node = nullptr;
+
+  for (auto* child : node_to_delete->children())
     DestroyNodeAndSubtree(child, update_state);
   if (update_state) {
-    update_state->pending_node_ids.erase(node->id());
-    update_state->DecrementPendingDestroyNodeCount(node->id());
-    update_state->removed_node_ids.insert(node->id());
-    update_state->new_node_ids.erase(node->id());
-    update_state->node_data_changed_ids.erase(node->id());
-    if (update_state->IsReparentedNode(node)) {
+    update_state->pending_node_ids.erase(id);
+    update_state->DecrementPendingDestroyNodeCount(id);
+    update_state->removed_node_ids.insert(id);
+    update_state->new_node_ids.erase(id);
+    update_state->node_data_changed_ids.erase(id);
+    if (update_state->IsReparentedNode(node_to_delete.get())) {
       update_state->old_node_id_to_data.insert(
-          std::make_pair(node->id(), node->TakeData()));
+          std::make_pair(id, node_to_delete->TakeData()));
     }
   }
-  node->Destroy();
 }
 
 void AXTree::DeleteOldChildren(AXNode* node,
