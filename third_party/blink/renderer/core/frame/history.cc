@@ -62,7 +62,7 @@ unsigned History::length(ExceptionState& exception_state) const {
     return 0;
   }
 
-  // TODO(crbug.com/1277593): Remove this condition when Fenced Frames
+  // TODO(crbug.com/1262022): Remove this condition when Fenced Frames
   // transition to MPArch completely
   if (DomWindow()->GetFrame()->IsInFencedFrameTree()) {
     return 1;
