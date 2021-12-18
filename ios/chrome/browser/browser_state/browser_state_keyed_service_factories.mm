@@ -46,7 +46,6 @@
 #import "ios/chrome/browser/safe_browsing/real_time_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 #include "ios/chrome/browser/screen_time/screen_time_buildflags.h"
-#include "ios/chrome/browser/search/search_service_factory.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/signin/about_signin_internals_factory.h"
 #include "ios/chrome/browser/signin/account_consistency_service_factory.h"
@@ -62,6 +61,7 @@
 #include "ios/chrome/browser/sync/model_type_store_service_factory.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
+#include "ios/chrome/browser/tabs_search/tabs_search_service_factory.h"
 #include "ios/chrome/browser/translate/translate_accept_languages_factory.h"
 #include "ios/chrome/browser/translate/translate_ranker_factory.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
@@ -139,7 +139,7 @@ void EnsureBrowserStateKeyedServiceFactoriesBuilt() {
   ManagedBookmarkServiceFactory::GetInstance();
   ModelTypeStoreServiceFactory::GetInstance();
   OptimizationGuideServiceFactory::GetInstance();
-  SearchServiceFactory::GetInstance();
+  TabsSearchServiceFactory::GetInstance();
   SyncServiceFactory::GetInstance();
   ReadingListModelFactory::GetInstance();
   RealTimeUrlLookupServiceFactory::GetInstance();
