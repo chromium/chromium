@@ -220,11 +220,6 @@ void LayoutNGMixin<Base>::RecalcVisualOverflow() {
 }
 
 template <typename Base>
-bool LayoutNGMixin<Base>::IsOfType(LayoutObject::LayoutObjectType type) const {
-  return type == LayoutObject::kLayoutObjectNGMixin || Base::IsOfType(type);
-}
-
-template <typename Base>
 MinMaxSizes LayoutNGMixin<Base>::ComputeIntrinsicLogicalWidths() const {
   DCHECK(!Base::IsTableCell());
 

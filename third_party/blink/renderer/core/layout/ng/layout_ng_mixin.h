@@ -44,8 +44,6 @@ class LayoutNGMixin : public Base {
   bool IsLayoutNGObject() const final { return true; }
 
  protected:
-  bool IsOfType(LayoutObject::LayoutObjectType) const override;
-
   MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
   NGConstraintSpace ConstraintSpaceForMinMaxSizes() const;
 
