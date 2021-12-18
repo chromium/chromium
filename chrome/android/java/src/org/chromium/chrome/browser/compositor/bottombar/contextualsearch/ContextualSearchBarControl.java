@@ -232,6 +232,15 @@ public class ContextualSearchBarControl {
     }
 
     /**
+     * Updates this bar when in transition between expanded and maximized states.
+     * @param percentage The percentage to the more opened state.
+     */
+    public void onUpdateFromExpandToMaximize(float percentage) {
+        getImageControl().onUpdateFromExpandToMaximize(percentage);
+        mCaptionControl.onUpdateFromExpandToMaximize(percentage);
+    }
+
+    /**
      * Sets the details of the context to display in the control.
      * @param selection The portion of the context that represents the user's selection.
      * @param end The portion of the context after the selection.
@@ -594,7 +603,13 @@ public class ContextualSearchBarControl {
     private void updateInBarRelatedSearchesSize(float percentage) {
         mInBarRelatedSearchesAnimatedHeightDps =
                 getInBarRelatedSearchesMaximumHeight() * percentage;
-        mContextualSearchPanel.setClampedPanelHeight(mInBarRelatedSearchesAnimatedHeightDps);
+        if (mContextualSearchPanel.isDelayedIntelligenceActive()) {
+            mContextualSearchPanel.setClampedPanelHeight(
+                    mContextualSearchPanel.getPanelHeightFromState(
+                            mContextualSearchPanel.getPanelState()));
+        } else {
+            mContextualSearchPanel.setClampedPanelHeight(mInBarRelatedSearchesAnimatedHeightDps);
+        }
         if (mInBarRelatedSearchesAnimation == null || mInBarRelatedSearchesAnimation.hasEnded()) {
             clearCacheMaxHeightForShrinkAnimation();
         }

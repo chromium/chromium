@@ -880,6 +880,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         getRelatedSearchesInBarControl().onUpdateFromExpandToMaximize(percentage);
         getRelatedSearchesInContentControl().onUpdateFromExpandToMaximize(percentage);
         getBarBannerControl().onUpdateFromExpandToMaximize(percentage);
+        getSearchBarControl().onUpdateFromExpandToMaximize(percentage);
     }
 
     @Override
@@ -1205,6 +1206,18 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
             };
         }
         return mHelpSectionHost;
+    }
+
+    // ============================================================================================
+    // The Delayed Intelligence Feature support
+    // ============================================================================================
+
+    /**
+     * Returns whether the Delayed Intelligence Feature is currently active for the current user.
+     * A user must be in the undecided privacy state for Delayed Intelligence to take affect.
+     */
+    boolean isDelayedIntelligenceActive() {
+        return mManagementDelegate.isDelayedIntelligenceActive();
     }
 
     // ============================================================================================

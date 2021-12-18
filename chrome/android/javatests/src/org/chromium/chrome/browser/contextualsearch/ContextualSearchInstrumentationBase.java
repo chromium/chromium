@@ -95,6 +95,7 @@ public class ContextualSearchInstrumentationBase {
     }
 
     protected static final String SEARCH_NODE = "search";
+    protected static final String SEARCH_NODE_TERM = "Search";
 
     private static final String TAG = "CSIBase";
     private static final int TEST_TIMEOUT = 15000;
@@ -136,10 +137,21 @@ public class ContextualSearchInstrumentationBase {
 
     /**
      * This is the privacy-neutral-engagement feature set.
-     * Currently only one Feature but we'd like to add another.
      */
     private static final ImmutableMap<String, Boolean> ENABLE_PRIVACY_NEUTRAL =
-            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true);
+            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true,
+                    ChromeFeatureList.CONTEXTUAL_SEARCH_DELAYED_INTELLIGENCE, true);
+
+    /**
+     * This is the privacy-neutral-engagement feature set that include Related Searches.
+     */
+    private static final ImmutableMap<String, Boolean>
+            ENABLE_PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES =
+                    ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true,
+                            ChromeFeatureList.CONTEXTUAL_SEARCH_DELAYED_INTELLIGENCE, true,
+                            ChromeFeatureList.RELATED_SEARCHES, true,
+                            ChromeFeatureList.RELATED_SEARCHES_IN_BAR, true,
+                            ChromeFeatureList.RELATED_SEARCHES_UI, true);
 
     /**
      * This is the contextual triggers feature set that alters tap selection.
@@ -175,14 +187,16 @@ public class ContextualSearchInstrumentationBase {
     private FakeSlowResolveSearch mLatestSlowResolveSearch;
 
     @IntDef({EnabledFeature.NONE, EnabledFeature.LONGPRESS, EnabledFeature.TRANSLATIONS,
-            EnabledFeature.PRIVACY_NEUTRAL, EnabledFeature.CONTEXTUAL_TRIGGERS})
+            EnabledFeature.PRIVACY_NEUTRAL, EnabledFeature.PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES,
+            EnabledFeature.CONTEXTUAL_TRIGGERS})
     @Retention(RetentionPolicy.SOURCE)
     @interface EnabledFeature {
         int NONE = 0;
         int LONGPRESS = 1;
         int TRANSLATIONS = 2;
         int PRIVACY_NEUTRAL = 3;
-        int CONTEXTUAL_TRIGGERS = 4;
+        int PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES = 4;
+        int CONTEXTUAL_TRIGGERS = 5;
     }
 
     // Tracks whether a long-press triggering experiment is active.
@@ -255,6 +269,9 @@ public class ContextualSearchInstrumentationBase {
             case EnabledFeature.PRIVACY_NEUTRAL:
                 whichFeature = ENABLE_PRIVACY_NEUTRAL;
                 break;
+            case EnabledFeature.PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES:
+                whichFeature = ENABLE_PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES;
+                break;
             case EnabledFeature.CONTEXTUAL_TRIGGERS:
                 whichFeature = ENABLE_CONTEXTUAL_TRIGGERS;
                 break;
@@ -262,6 +279,11 @@ public class ContextualSearchInstrumentationBase {
         Assert.assertNotNull(
                 "Did you change test Features without setting the correct Map?", whichFeature);
         FeatureList.setTestFeatures(whichFeature);
+        // If Related Searches is enabled we need to also set that it's OK to send page content.
+        // TODO(donnd): Find a better way to discern if we need to establish sendingUrlOK is needed.
+        if (mEnabledFeature == EnabledFeature.PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES) {
+            mPolicy.overrideAllowSendingPageUrlForTesting(true);
+        }
     }
 
     @After
@@ -273,6 +295,7 @@ public class ContextualSearchInstrumentationBase {
         InstrumentationRegistry.getInstrumentation().removeMonitor(mActivityMonitor);
         mActivityMonitor = null;
         mLatestSlowResolveSearch = null;
+        mPolicy.overrideAllowSendingPageUrlForTesting(false);
     }
 
     private class ContextualSearchInstrumentationTestHost implements ContextualSearchTestHost {
@@ -624,7 +647,7 @@ public class ContextualSearchInstrumentationBase {
      * Fakes a server response with the parameters given and startAdjust and endAdjust equal to 0.
      * {@See ContextualSearchManager#handleSearchTermResolutionResponse}.
      */
-    private void fakeResponse(boolean isNetworkUnavailable, int responseCode, String searchTerm,
+    protected void fakeResponse(boolean isNetworkUnavailable, int responseCode, String searchTerm,
             String displayText, String alternateTerm, boolean doPreventPreload) {
         fakeResponse(new ResolvedSearchTerm
                              .Builder(isNetworkUnavailable, responseCode, searchTerm, displayText,
@@ -689,12 +712,20 @@ public class ContextualSearchInstrumentationBase {
     void assertPeekingPanelNonResolve() {
         assertLoadedNoUrl();
     }
+    // TODO(donnd): flesh out the assertions below.
     void assertClosedPanelNonResolve() {}
     void assertPanelNeverOpened() {
         // Check that we recorded a histogram entry for not-seen.
     }
     void assertPeekingPanelResolve() {
         assertLoadedLowPriorityUrl();
+    }
+    /** Asserts that the expanded panel did a resolve for the given {@code searchTerm}. */
+    void assertExpandedPanelResolve(String searchTerm) {
+        assertLoadedSearchTermMatches(searchTerm);
+    }
+    void assertExpandedPanelNonResolve() {
+        assertSearchTermNotRequested();
     }
     void assertClosedPanelResolve() {}
 
@@ -751,7 +782,7 @@ public class ContextualSearchInstrumentationBase {
      *
      * @param searchTerm The provided search term.
      */
-    private void assertLoadedSearchTermMatches(String searchTerm) {
+    protected void assertLoadedSearchTermMatches(String searchTerm) {
         boolean doesMatch = false;
         String loadedUrl = mFakeServer.getLoadedUrl();
         doesMatch = loadedUrl != null && loadedUrl.contains("q=" + searchTerm);

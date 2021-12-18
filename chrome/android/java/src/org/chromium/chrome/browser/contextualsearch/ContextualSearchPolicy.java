@@ -179,6 +179,20 @@ class ContextualSearchPolicy {
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS);
     }
 
+    /** Returns whether the Delayed Intelligence Feature is currently enabled or not. */
+    boolean isDelayedIntelligenceEnabled() {
+        return ChromeFeatureList.isEnabled(
+                ChromeFeatureList.CONTEXTUAL_SEARCH_DELAYED_INTELLIGENCE);
+    }
+
+    /**
+     * Returns whether the Delayed Intelligence Feature is currently active for the current user.
+     * A user must be in the undecided privacy state for Delayed Intelligence to take affect.
+     */
+    boolean isDelayedIntelligenceActive() {
+        return isDelayedIntelligenceEnabled() && !isContextualSearchFullyEnabled();
+    }
+
     /**
      * Returns whether surrounding context can be accessed by other systems or not.
      * @return Whether surroundings are available.
@@ -374,7 +388,7 @@ class ContextualSearchPolicy {
      * @return {@code true} if the URL should be sent.
      */
     boolean doSendBasePageUrl() {
-        if (!isContextualSearchFullyEnabled()) return false;
+        if (!isContextualSearchFullyEnabled() && !isDelayedIntelligenceActive()) return false;
 
         // Check whether there is a Field Trial setting preventing us from sending the page URL.
         if (ContextualSearchFieldTrial.getSwitch(

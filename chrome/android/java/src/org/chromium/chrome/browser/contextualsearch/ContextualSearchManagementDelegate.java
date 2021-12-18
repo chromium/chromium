@@ -117,4 +117,10 @@ public interface ContextualSearchManagementDelegate {
      * @return A {@link ScrimCoordinator} to fade the status bar in and out.
      */
     ScrimCoordinator getScrimCoordinator();
+
+    /**
+     * Returns whether the Delayed Intelligence Feature is currently active for the current user.
+     * A user must be in the undecided privacy state for Delayed Intelligence to take affect.
+     */
+    boolean isDelayedIntelligenceActive();
 }
