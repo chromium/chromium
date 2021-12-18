@@ -1501,11 +1501,10 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     @CalledByNative
-    private void onSelectAroundCaretSuccess(int extendedStartAdjust, int extendedEndAdjust,
-            int wordStartAdjust, int wordEndAdjust) {
+    private void onSelectAroundCaretSuccess(int extendedStartAdjust, int extendedEndAdjust) {
         if (mSelectionClient != null) {
-            SelectAroundCaretResult result = new SelectAroundCaretResult(
-                    extendedStartAdjust, extendedEndAdjust, wordStartAdjust, wordEndAdjust);
+            SelectAroundCaretResult result =
+                    new SelectAroundCaretResult(extendedStartAdjust, extendedEndAdjust);
             mSelectionClient.selectAroundCaretAck(result);
         }
     }
