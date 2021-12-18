@@ -1926,8 +1926,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return preferred_color_scheme_;
   }
 
-  const std::string& GetEncoding() const { return canonical_encoding_; }
-
   // Returns a base salt used to generate frame-specific IDs for media-device
   // enumerations.
   const std::string& GetMediaDeviceIDSaltBase() const {
@@ -3841,12 +3839,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Whether the currently committed document is overriding the user agent or
   // not.
   bool is_overriding_user_agent_ = false;
-
-  // The last reported character encoding, not canonicalized.
-  std::string last_reported_encoding_;
-
-  // The canonicalized character encoding.
-  std::string canonical_encoding_;
 
   // Used to intercept DidCommit* calls in tests.
   raw_ptr<CommitCallbackInterceptor> commit_callback_interceptor_ = nullptr;

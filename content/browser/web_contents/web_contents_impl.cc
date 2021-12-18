@@ -1965,7 +1965,7 @@ uint64_t WebContentsImpl::GetUploadPosition() {
 }
 
 const std::string& WebContentsImpl::GetEncoding() {
-  return GetMainFrame()->GetEncoding();
+  return GetPrimaryPage().GetEncoding();
 }
 
 bool WebContentsImpl::WasDiscarded() {

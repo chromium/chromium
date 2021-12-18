@@ -17,7 +17,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
-#include "base/i18n/character_encoding.h"
 #include "base/ignore_result.h"
 #include "base/lazy_instance.h"
 #include "base/memory/memory_pressure_monitor.h"
@@ -5390,14 +5389,12 @@ void RenderFrameHostImpl::DidInferColorScheme(
 }
 
 void RenderFrameHostImpl::UpdateEncoding(const std::string& encoding_name) {
-  // This message is only sent for top-level frames. TODO(avi): when frame tree
-  // mirroring works correctly, add a check here to enforce it.
-  if (encoding_name == last_reported_encoding_)
+  if (!is_main_frame()) {
+    mojo::ReportBadMessage("Renderer sent updated encoding for a subframe.");
     return;
-  last_reported_encoding_ = encoding_name;
+  }
 
-  canonical_encoding_ =
-      base::GetCanonicalEncodingNameByAliasName(encoding_name);
+  GetPage().UpdateEncoding(encoding_name);
 }
 
 void RenderFrameHostImpl::FullscreenStateChanged(

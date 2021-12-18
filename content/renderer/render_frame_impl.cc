@@ -5631,8 +5631,15 @@ RenderFrameImpl::CreateLoaderFactoryBundle(
 void RenderFrameImpl::UpdateEncoding(WebFrame* frame,
                                      const std::string& encoding_name) {
   // Only update main frame's encoding_name.
-  if (!frame->Parent())
+  if (!frame->Parent()) {
+    // TODO(crbug.com/1225366): Move `UpdateEncoding()` to the
+    // `LocalMainFrameHost` interface where it makes sense. That is not a simple
+    // as just migrating the method, since upon main frame creation we attempt
+    // to send the encoding information before
+    // `WebViewImpl::local_main_frame_host_remote_` is set-up, which breaks
+    // things.`
     GetFrameHost()->UpdateEncoding(encoding_name);
+  }
 }
 
 void RenderFrameImpl::SyncSelectionIfRequired(blink::SyncCondition force_sync) {

@@ -168,6 +168,9 @@ class CONTENT_EXPORT PageImpl : public Page {
     return virtual_keyboard_overlays_content_;
   }
 
+  const std::string& GetEncoding() { return canonical_encoding_; }
+  void UpdateEncoding(const std::string& encoding_name);
+
  private:
   void DidActivateAllRenderViewsForPrerendering();
 
@@ -272,6 +275,11 @@ class CONTENT_EXPORT PageImpl : public Page {
   // event notifying the web authors that Virtual keyboard has occluded the
   // content.
   bool virtual_keyboard_overlays_content_ = false;
+
+  // The last reported character encoding, not canonicalized.
+  std::string last_reported_encoding_;
+  // The canonicalized character encoding.
+  std::string canonical_encoding_;
 
   base::WeakPtrFactory<PageImpl> weak_factory_{this};
 };
