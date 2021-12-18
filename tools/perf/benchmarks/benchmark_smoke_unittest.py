@@ -89,6 +89,11 @@ def SmokeTestGenerator(benchmark_class, num_pages=1, story_tag_filter=None):
           return_code, 0,
           msg='Result processing failed: %s' % benchmark_class.Name())
 
+  # Set real_test_func as benchmark_class to make typ
+  # write benchmark_class source filepath to trace instead of
+  # path to this file
+  BenchmarkSmokeTest.real_test_func = benchmark_class
+
   return BenchmarkSmokeTest
 
 
