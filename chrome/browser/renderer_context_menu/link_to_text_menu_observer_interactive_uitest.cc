@@ -23,6 +23,57 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 
+class MockLinkToTextMenuObserver : public LinkToTextMenuObserver {
+ public:
+  static std::unique_ptr<MockLinkToTextMenuObserver> Create(
+      RenderViewContextMenuProxy* proxy,
+      content::RenderFrameHost* render_frame_host) {
+    // WebContents can be null in tests.
+    content::WebContents* web_contents = proxy->GetWebContents();
+    if (web_contents && extensions::ProcessManager::Get(
+                            proxy->GetWebContents()->GetBrowserContext())
+                            ->GetExtensionForWebContents(web_contents)) {
+      // Do not show menu item for extensions, such as the PDF viewer.
+      return nullptr;
+    }
+
+    DCHECK(render_frame_host);
+    return base::WrapUnique(
+        new MockLinkToTextMenuObserver(proxy, render_frame_host));
+  }
+  MockLinkToTextMenuObserver(RenderViewContextMenuProxy* proxy,
+                             content::RenderFrameHost* render_frame_host)
+      : LinkToTextMenuObserver(proxy, render_frame_host) {}
+
+  void SetGenerationResults(
+      std::string selector,
+      shared_highlighting::LinkGenerationError error,
+      shared_highlighting::LinkGenerationReadyStatus ready_status) {
+    selector_ = selector;
+    error_ = error;
+    ready_status_ = ready_status;
+  }
+
+  void SetReshareSelector(std::string selectors) {
+    reshare_selectors_.push_back(selectors);
+  }
+
+ private:
+  std::string selector_;
+  shared_highlighting::LinkGenerationError error_;
+  shared_highlighting::LinkGenerationReadyStatus ready_status_;
+
+  std::vector<std::string> reshare_selectors_;
+
+  void StartLinkGenerationRequestWithTimeout() override {
+    OnRequestLinkGenerationCompleted(selector_, error_, ready_status_);
+  }
+
+  void ReshareLink() override {
+    OnGetExistingSelectorsComplete(reshare_selectors_);
+  }
+};
+
 namespace {
 
 class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
@@ -53,7 +104,7 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
   void Reset(bool incognito) {
     menu_ = std::make_unique<MockRenderViewContextMenu>(incognito);
     observer_ =
-        LinkToTextMenuObserver::Create(menu_.get(), getRenderFrameHost());
+        MockLinkToTextMenuObserver::Create(menu_.get(), getRenderFrameHost());
     menu_->SetObserver(observer_.get());
   }
 
@@ -67,7 +118,7 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
 
   ~LinkToTextMenuObserverTest() override;
   MockRenderViewContextMenu* menu() { return menu_.get(); }
-  LinkToTextMenuObserver* observer() { return observer_.get(); }
+  MockLinkToTextMenuObserver* observer() { return observer_.get(); }
 
   content::RenderFrameHost* getRenderFrameHost() {
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -75,7 +126,7 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
   }
 
  private:
-  std::unique_ptr<LinkToTextMenuObserver> observer_;
+  std::unique_ptr<MockLinkToTextMenuObserver> observer_;
   std::unique_ptr<MockRenderViewContextMenu> menu_;
 };
 
@@ -88,7 +139,9 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, AddsCopyMenuItem) {
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
   params.selection_text = u"hello world";
-  observer()->OverrideGeneratedSelectorForTesting(std::string());
+  observer()->SetGenerationResults(
+      std::string(), shared_highlighting::LinkGenerationError::kEmptySelection,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
   InitMenu(params);
   EXPECT_EQ(1u, menu()->GetMenuSize());
   MockRenderViewContextMenu::MockMenuItem item;
@@ -103,7 +156,9 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, AddsCopyAndRemoveMenuItems) {
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
   params.opened_from_highlight = true;
-  observer()->OverrideGeneratedSelectorForTesting(std::string());
+  observer()->SetGenerationResults(
+      std::string(), shared_highlighting::LinkGenerationError::kEmptySelection,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
   InitMenu(params);
   EXPECT_EQ(2u, menu()->GetMenuSize());
   MockRenderViewContextMenu::MockMenuItem item;
@@ -128,7 +183,9 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, CopiesLinkToText) {
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
   params.selection_text = u"hello world";
-  observer()->OverrideGeneratedSelectorForTesting("hello%20world");
+  observer()->SetGenerationResults(
+      "hello%20world", shared_highlighting::LinkGenerationError::kNone,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
   InitMenu(params);
   menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
 
@@ -143,7 +200,9 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, CopiesLinkForEmptySelector) {
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
   params.selection_text = u"hello world";
-  observer()->OverrideGeneratedSelectorForTesting(std::string());
+  observer()->SetGenerationResults(
+      std::string(), shared_highlighting::LinkGenerationError::kEmptySelection,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
   InitMenu(params);
 
   EXPECT_FALSE(menu()->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT));
@@ -154,7 +213,9 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, ReplacesRefInURL) {
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/#:~:text=hello%20world");
   params.selection_text = u"hello world";
-  observer()->OverrideGeneratedSelectorForTesting("hello");
+  observer()->SetGenerationResults(
+      "hello", shared_highlighting::LinkGenerationError::kNone,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
   InitMenu(params);
   menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
 
@@ -205,8 +266,8 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, HiddenForExtensions) {
       browser()->tab_strip_model()->GetActiveWebContents();
   menu()->set_web_contents(web_contents);
 
-  std::unique_ptr<LinkToTextMenuObserver> observer =
-      LinkToTextMenuObserver::Create(menu(), getRenderFrameHost());
+  std::unique_ptr<MockLinkToTextMenuObserver> observer =
+      MockLinkToTextMenuObserver::Create(menu(), getRenderFrameHost());
   EXPECT_EQ(nullptr, observer);
 }
 
@@ -227,7 +288,9 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
   params.page_url = GURL("http://foo.com/");
   params.selection_text = u"hello world";
   params.opened_from_highlight = true;
-  observer()->OverrideGeneratedSelectorForTesting("hello%20world");
+  observer()->SetGenerationResults(
+      "hello%20world", shared_highlighting::LinkGenerationError::kNone,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
   InitMenu(params);
   menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
 
@@ -245,7 +308,9 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
   params.selection_text = u"hello world";
-  observer()->OverrideGeneratedSelectorForTesting("hello%20world");
+  observer()->SetGenerationResults(
+      "hello%20world", shared_highlighting::LinkGenerationError::kNone,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
   InitMenu(params);
   menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
 
@@ -268,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
   params.page_url = GURL("http://foo.com/#:~:text=hello%20world");
   params.selection_text = u"";
   params.opened_from_highlight = true;
-  observer()->OverrideGeneratedSelectorForTesting("hello%20world");
+  observer()->SetReshareSelector("hello%20world");
   InitMenu(params);
   menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
 
@@ -280,4 +345,108 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
       shared_highlighting::LinkGenerationCopiedLinkType::
           kCopiedFromExistingHighlight,
       1);
+}
+
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
+                       LinkGenerationRequestedMetric_Success_NoDelay) {
+  base::HistogramTester histogram_tester;
+
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/");
+  params.selection_text = u"hello world";
+  observer()->SetGenerationResults(
+      "hello%20world", shared_highlighting::LinkGenerationError::kNone,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
+  InitMenu(params);
+
+  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Requested",
+                                     true, 1);
+  histogram_tester.ExpectTotalCount("SharedHighlights.LinkGenerated.Requested",
+                                    1);
+
+  histogram_tester.ExpectBucketCount(
+      "SharedHighlights.LinkGenerated.RequestedAfterReady", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.RequestedAfterReady", 1);
+  histogram_tester.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.RequestedBeforeReady", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
+                       LinkGenerationRequestedMetric_Success_WithDelay) {
+  base::HistogramTester histogram_tester;
+
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/");
+  params.selection_text = u"hello world";
+  observer()->SetGenerationResults(
+      "hello%20world", shared_highlighting::LinkGenerationError::kNone,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedBeforeReady);
+  InitMenu(params);
+
+  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Requested",
+                                     true, 1);
+  histogram_tester.ExpectTotalCount("SharedHighlights.LinkGenerated.Requested",
+                                    1);
+
+  histogram_tester.ExpectBucketCount(
+      "SharedHighlights.LinkGenerated.RequestedBeforeReady", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.RequestedBeforeReady", 1);
+  histogram_tester.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.RequestedAfterReady", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
+                       LinkGenerationRequestedMetric_Failure_NoDelay) {
+  base::HistogramTester histogram_tester;
+
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/");
+  params.selection_text = u"hello world";
+  observer()->SetGenerationResults(
+      "", shared_highlighting::LinkGenerationError::kEmptySelection,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
+  InitMenu(params);
+
+  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Requested",
+                                     false, 1);
+  histogram_tester.ExpectTotalCount("SharedHighlights.LinkGenerated.Requested",
+                                    1);
+
+  histogram_tester.ExpectBucketCount(
+      "SharedHighlights.LinkGenerated.RequestedAfterReady", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.RequestedAfterReady", 1);
+  histogram_tester.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.RequestedBeforeReady", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
+                       LinkGenerationRequestedMetric_Failure_WithDelay) {
+  base::HistogramTester histogram_tester;
+
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/");
+  params.selection_text = u"hello world";
+  observer()->SetGenerationResults(
+      "", shared_highlighting::LinkGenerationError::kEmptySelection,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedBeforeReady);
+  InitMenu(params);
+
+  histogram_tester.ExpectBucketCount("SharedHighlights.LinkGenerated.Requested",
+                                     false, 1);
+  histogram_tester.ExpectTotalCount("SharedHighlights.LinkGenerated.Requested",
+                                    1);
+
+  histogram_tester.ExpectBucketCount(
+      "SharedHighlights.LinkGenerated.RequestedBeforeReady", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.RequestedBeforeReady", 1);
+  histogram_tester.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.RequestedAfterReady", 0);
 }

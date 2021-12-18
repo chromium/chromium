@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
@@ -32,35 +33,41 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   bool IsCommandIdEnabled(int command_id) override;
   void ExecuteCommand(int command_id) override;
 
-  // Convenience method for overriding the generated selector to bypass making
-  // calls to the remote interface during tests.
-  void OverrideGeneratedSelectorForTesting(const std::string& selector);
-
   // Used in tests for waiting and receiving generation result.
   static void RegisterGenerationCompleteCallbackForTesting(
       base::OnceCallback<void(const std::string& selector)> cb);
 
  private:
+  friend class MockLinkToTextMenuObserver;
+
   explicit LinkToTextMenuObserver(RenderViewContextMenuProxy* proxy,
                                   content::RenderFrameHost* render_frame_host);
   // Returns true if the link should be generated from the constructor, vs
   // determined when executed.
   bool ShouldPreemptivelyGenerateLink();
 
-  // Make an async request to the renderer to generate the link to text.
+  // Requests link generation if needed.
   void RequestLinkGeneration();
+
+  // Make an async request to the renderer to generate the link to text.
+  // (virtual so it can be mocked in tests).
+  virtual void StartLinkGenerationRequestWithTimeout();
 
   // Callback after the request to generate the selector has completed. This is
   // called with an empty selector if the generation failed or was called on
   // an invalid selection.
-  void OnRequestLinkGenerationCompleted(const std::string& selector);
+  void OnRequestLinkGenerationCompleted(
+      const std::string& selector,
+      shared_highlighting::LinkGenerationError error,
+      shared_highlighting::LinkGenerationReadyStatus ready_status);
 
   // Copies the generated link to the user's clipboard.
   void CopyLinkToClipboard();
 
   // Make a request to the renderer to retrieve the selector for an
   // existing highlight.
-  void ReshareLink();
+  // (virtual so it can be mocked in tests).
+  virtual void ReshareLink();
 
   // Callback after the request to retrieve an existing selector
   // is complete.
@@ -72,6 +79,10 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
 
   // Cancels link generation if we are still waiting for it.
   void Timeout();
+
+  // Completes necessary tasks when link to text was not generated or generation
+  // was unsuccessful.
+  void CompleteWithError(shared_highlighting::LinkGenerationError error);
 
   // Returns |remote_|, for the frame in which the context menu was opened.
   mojo::Remote<blink::mojom::TextFragmentReceiver>& GetRemote();
@@ -86,7 +97,6 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   bool link_needs_generation_ = false;
 
   absl::optional<std::string> generated_link_;
-  absl::optional<std::string> generated_selector_for_testing_;
 
   // True when generation is completed.
   bool is_generation_complete_ = false;

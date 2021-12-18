@@ -101,11 +101,11 @@ RangeInFlatTree* TextFragmentGenerationNavigationTest::GetSelectionRange(
 String TextFragmentGenerationNavigationTest::GenerateSelector(
     const RangeInFlatTree& selection_range) {
   String selector;
-  auto lambda =
-      [](String& selector, const TextFragmentSelector& generated_selector,
-         absl::optional<shared_highlighting::LinkGenerationError> error) {
-        selector = generated_selector.ToString();
-      };
+  auto lambda = [](String& selector,
+                   const TextFragmentSelector& generated_selector,
+                   shared_highlighting::LinkGenerationError error) {
+    selector = generated_selector.ToString();
+  };
   auto callback = WTF::Bind(lambda, std::ref(selector));
   GetDocument()
       .GetFrame()

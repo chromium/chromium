@@ -6,12 +6,15 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "components/search_engines/search_engine_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace shared_highlighting {
 
 namespace {
+
+constexpr char kUmaPrefix[] = "SharedHighlights.LinkGenerated";
 
 TextFragmentLinkOpenSource GetLinkSource(const GURL& referrer) {
   bool from_search_engine =
@@ -28,11 +31,33 @@ void LogDesktopLinkGenerationCopiedLinkType(LinkGenerationCopiedLinkType type) {
 }
 
 void LogLinkGenerationErrorReason(LinkGenerationError reason) {
+  DCHECK_NE(reason, LinkGenerationError::kNone);
   base::UmaHistogramEnumeration("SharedHighlights.LinkGenerated.Error", reason);
 }
 
-void LogLinkGenerationStatus(bool link_generated) {
-  base::UmaHistogramBoolean("SharedHighlights.LinkGenerated", link_generated);
+void LogLinkRequestedErrorReason(LinkGenerationError reason) {
+  DCHECK_NE(reason, LinkGenerationError::kNone);
+  base::UmaHistogramEnumeration(
+      "SharedHighlights.LinkGenerated.Error.Requested", reason);
+}
+
+void LogLinkGenerationStatus(LinkGenerationStatus status) {
+  base::UmaHistogramBoolean("SharedHighlights.LinkGenerated",
+                            status == LinkGenerationStatus::kSuccess);
+}
+
+void LogLinkRequestedStatus(LinkGenerationStatus status) {
+  base::UmaHistogramBoolean("SharedHighlights.LinkGenerated.Requested",
+                            status == LinkGenerationStatus::kSuccess);
+}
+
+void LogRequestedSuccessMetrics() {
+  LogLinkRequestedStatus(LinkGenerationStatus::kSuccess);
+}
+
+void LogRequestedFailureMetrics(LinkGenerationError error) {
+  LogLinkRequestedStatus(LinkGenerationStatus::kFailure);
+  LogLinkRequestedErrorReason(error);
 }
 
 void LogTextFragmentAmbiguousMatch(bool ambiguous_match) {
@@ -59,31 +84,6 @@ void LogTextFragmentMatchRate(int matches, int text_fragments) {
 
 void LogTextFragmentSelectorCount(int count) {
   base::UmaHistogramCounts100("TextFragmentAnchor.SelectorCount", count);
-}
-
-// TODO(gayane): Replace by one function LogGenerateError(Error).
-void LogGenerateErrorTabHidden() {
-  LogLinkGenerationErrorReason(LinkGenerationError::kTabHidden);
-}
-
-void LogGenerateErrorOmniboxNavigation() {
-  LogLinkGenerationErrorReason(LinkGenerationError::kOmniboxNavigation);
-}
-
-void LogGenerateErrorTabCrash() {
-  LogLinkGenerationErrorReason(LinkGenerationError::kTabCrash);
-}
-
-void LogGenerateErrorIFrame() {
-  LogLinkGenerationErrorReason(LinkGenerationError::kIFrame);
-}
-
-void LogGenerateErrorBlockList() {
-  LogLinkGenerationErrorReason(LinkGenerationError::kBlockList);
-}
-
-void LogGenerateErrorTimeout() {
-  LogLinkGenerationErrorReason(LinkGenerationError::kTimeout);
 }
 
 void LogGenerateSuccessLatency(base::TimeDelta latency) {
@@ -144,6 +144,18 @@ void LogLinkGeneratedErrorUkmEvent(ukm::UkmRecorder* recorder,
         .SetError(static_cast<int64_t>(reason))
         .Record(recorder);
   }
+}
+
+void LogLinkRequestedBeforeStatus(LinkGenerationStatus status,
+                                  LinkGenerationReadyStatus ready_status) {
+  std::string uma_name;
+  if (ready_status == LinkGenerationReadyStatus::kRequestedBeforeReady) {
+    uma_name = base::StrCat({kUmaPrefix, ".RequestedBeforeReady"});
+  } else {
+    uma_name = base::StrCat({kUmaPrefix, ".RequestedAfterReady"});
+  }
+  bool success = status == LinkGenerationStatus::kSuccess;
+  base::UmaHistogramBoolean(uma_name, success);
 }
 
 }  // namespace shared_highlighting

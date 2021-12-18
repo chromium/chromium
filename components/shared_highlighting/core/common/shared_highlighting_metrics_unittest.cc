@@ -104,11 +104,11 @@ TEST_F(SharedHighlightingMetricsTest, LogTextFragmentSelectorCount) {
 }
 
 TEST_F(SharedHighlightingMetricsTest, LogLinkGenerationStatus) {
-  LogLinkGenerationStatus(true);
+  LogLinkGenerationStatus(LinkGenerationStatus::kSuccess);
   histogram_tester_.ExpectUniqueSample("SharedHighlights.LinkGenerated", true,
                                        1);
 
-  LogLinkGenerationStatus(false);
+  LogLinkGenerationStatus(LinkGenerationStatus::kFailure);
   histogram_tester_.ExpectBucketCount("SharedHighlights.LinkGenerated", false,
                                       1);
   histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated", 2);
@@ -124,22 +124,6 @@ TEST_F(SharedHighlightingMetricsTest, LogLinkGenerationErrorReason) {
   histogram_tester_.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
                                       LinkGenerationError::kEmptySelection, 1);
   histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated.Error", 2);
-}
-
-TEST_F(SharedHighlightingMetricsTest, LogAndroidLinkGenerationErrorReason) {
-  LogGenerateErrorTabHidden();
-  histogram_tester_.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
-                                      LinkGenerationError::kTabHidden, 1);
-
-  LogGenerateErrorOmniboxNavigation();
-  histogram_tester_.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
-                                      LinkGenerationError::kOmniboxNavigation,
-                                      1);
-
-  LogGenerateErrorTabCrash();
-  histogram_tester_.ExpectBucketCount("SharedHighlights.LinkGenerated.Error",
-                                      LinkGenerationError::kTabCrash, 1);
-  histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated.Error", 3);
 }
 
 TEST_F(SharedHighlightingMetricsTest, LinkOpenedUkmSuccessSearchEngine) {
@@ -296,6 +280,73 @@ TEST_F(SharedHighlightingMetricsTest, LinkGeneratedErrorLatency) {
 
   histogram_tester_.ExpectTimeBucketCount(
       "SharedHighlights.LinkGenerated.Error.TimeToGenerate", test_delta, 1);
+}
+
+// Tests all the metrics that need to be recorded in case of a failure.
+TEST_F(SharedHighlightingMetricsTest, LogRequestedFailureMetrics) {
+  LogRequestedFailureMetrics(LinkGenerationError::kEmptySelection);
+
+  histogram_tester_.ExpectBucketCount(
+      "SharedHighlights.LinkGenerated.Requested", false, 1);
+  histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated.Requested",
+                                     1);
+  histogram_tester_.ExpectBucketCount(
+      "SharedHighlights.LinkGenerated.Error.Requested",
+      LinkGenerationError::kEmptySelection, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.Error.Requested", 1);
+}
+
+// Tests all the metrics that need to be recorded in case of a success.
+TEST_F(SharedHighlightingMetricsTest, LogRequestedSuccessMetrics) {
+  LogRequestedSuccessMetrics();
+
+  histogram_tester_.ExpectBucketCount(
+      "SharedHighlights.LinkGenerated.Requested", true, 1);
+  histogram_tester_.ExpectTotalCount("SharedHighlights.LinkGenerated.Requested",
+                                     1);
+}
+
+// Tests that requested before or after histogram is correctly recorded.
+TEST_F(SharedHighlightingMetricsTest, LogLinkRequestedBeforeStatus) {
+  LogLinkRequestedBeforeStatus(
+      LinkGenerationStatus::kSuccess,
+      LinkGenerationReadyStatus::kRequestedBeforeReady);
+
+  histogram_tester_.ExpectBucketCount(
+      "SharedHighlights.LinkGenerated.RequestedBeforeReady", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.RequestedBeforeReady", 1);
+  histogram_tester_.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.RequestedAfterReady", 0);
+
+  LogLinkRequestedBeforeStatus(
+      LinkGenerationStatus::kFailure,
+      LinkGenerationReadyStatus::kRequestedBeforeReady);
+  histogram_tester_.ExpectBucketCount(
+      "SharedHighlights.LinkGenerated.RequestedBeforeReady", false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.RequestedBeforeReady", 2);
+  histogram_tester_.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.RequestedAfterReady", 0);
+
+  LogLinkRequestedBeforeStatus(LinkGenerationStatus::kSuccess,
+                               LinkGenerationReadyStatus::kRequestedAfterReady);
+  histogram_tester_.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.RequestedBeforeReady", 2);
+  histogram_tester_.ExpectBucketCount(
+      "SharedHighlights.LinkGenerated.RequestedAfterReady", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.RequestedAfterReady", 1);
+
+  LogLinkRequestedBeforeStatus(LinkGenerationStatus::kFailure,
+                               LinkGenerationReadyStatus::kRequestedAfterReady);
+  histogram_tester_.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.RequestedBeforeReady", 2);
+  histogram_tester_.ExpectBucketCount(
+      "SharedHighlights.LinkGenerated.RequestedAfterReady", false, 1);
+  histogram_tester_.ExpectTotalCount(
+      "SharedHighlights.LinkGenerated.RequestedAfterReady", 2);
 }
 
 }  // namespace

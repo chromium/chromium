@@ -12,6 +12,19 @@
 
 namespace shared_highlighting {
 
+// Used to indicate whether link generation complited successfully.
+// Java counterpart will be auto-generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.share.link_to_text
+enum class LinkGenerationStatus { kSuccess = 0, kFailure = 1 };
+
+// Used to indicate whether generated link was ready at the time of the request.
+// Java counterpart will be auto-generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.share.link_to_text
+enum class LinkGenerationReadyStatus {
+  kRequestedBeforeReady = 0,
+  kRequestedAfterReady = 1
+};
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // The type of copied Shared Highlighting Link on Desktop.
@@ -26,7 +39,11 @@ enum class LinkGenerationCopiedLinkType {
 // numeric values should never be reused.
 // The type of errors that can happen during link generation.
 // Update corresponding |LinkGenerationError| in enums.xml.
+// Java counterpart will be auto-generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.share.link_to_text
 enum class LinkGenerationError {
+  kNone = -1,
+
   kIncorrectSelector = 0,
   kNoRange = 1,
   kNoContext = 2,
@@ -52,7 +69,11 @@ enum class LinkGenerationError {
   // Recorded on Android/Desktop.
   kBlockList = 12,
 
-  kMaxValue = kBlockList
+  // Link to text cannot be requested because connection with the renderer side
+  // cannot be established. Android only.
+  kNoRemoteConnection = 13,
+
+  kMaxValue = kNoRemoteConnection
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -71,8 +92,21 @@ void LogDesktopLinkGenerationCopiedLinkType(LinkGenerationCopiedLinkType type);
 // Records the reason why the link generation failed.
 void LogLinkGenerationErrorReason(LinkGenerationError reason);
 
+// Records the reason why the link to text was not available for the user.
+void LogLinkRequestedErrorReason(LinkGenerationError reason);
+
 // Records whether the link generation attempt was successful or not.
-void LogLinkGenerationStatus(bool link_generated);
+void LogLinkGenerationStatus(LinkGenerationStatus status);
+
+// Records whether the generated link to text was available for the user.
+void LogLinkRequestedStatus(LinkGenerationStatus status);
+
+// Records metrics when successfully generated link to text was available for
+// the user.
+void LogRequestedSuccessMetrics();
+
+// Records metrics when link to text was not available for the user.
+void LogRequestedFailureMetrics(LinkGenerationError error);
 
 // Records whether an individual text fragment could not be scrolled to because
 // there was an |ambiguous_match| (generally because more than one matching
@@ -89,27 +123,6 @@ void LogTextFragmentMatchRate(int matches, int text_fragments);
 
 // Records the total |count| of text fragment selectors in the URL param.
 void LogTextFragmentSelectorCount(int count);
-
-// Records when tab is hidden before generation is complete.
-void LogGenerateErrorTabHidden();
-
-// Records when new navigation happens on the tab by user typing in the omnibox.
-void LogGenerateErrorOmniboxNavigation();
-
-// Records when tab crashes before generation is complete.
-void LogGenerateErrorTabCrash();
-
-// Records when link generation was not completed because selection happened on
-// iframe.
-void LogGenerateErrorIFrame();
-
-// Records when link generation was not triggered because selection happened on
-// a blocklisted page.
-void LogGenerateErrorBlockList();
-
-// Records when link generation was not triggered because selection happened on
-// a blocklisted page.
-void LogGenerateErrorTimeout();
 
 // Records the latency for successfully generating a link.
 void LogGenerateSuccessLatency(base::TimeDelta latency);
@@ -167,6 +180,11 @@ void LogLinkGeneratedErrorUkmEvent(ukm::SourceId source_id,
 void LogLinkGeneratedErrorUkmEvent(ukm::UkmRecorder* recorder,
                                    ukm::SourceId source_id,
                                    LinkGenerationError reason);
+
+// Records whether link to text was requested before or after link generation
+// was complete with corresponding success status.
+void LogLinkRequestedBeforeStatus(LinkGenerationStatus status,
+                                  LinkGenerationReadyStatus ready_status);
 
 }  // namespace shared_highlighting
 

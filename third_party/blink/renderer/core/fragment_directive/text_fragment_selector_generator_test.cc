@@ -90,13 +90,12 @@ class TextFragmentSelectorGeneratorTest : public SimTest {
 
     bool callback_called = false;
     String selector;
-    auto lambda =
-        [](bool& callback_called, String& selector,
-           const TextFragmentSelector& generated_selector,
-           absl::optional<shared_highlighting::LinkGenerationError> error) {
-          selector = generated_selector.ToString();
-          callback_called = true;
-        };
+    auto lambda = [](bool& callback_called, String& selector,
+                     const TextFragmentSelector& generated_selector,
+                     shared_highlighting::LinkGenerationError error) {
+      selector = generated_selector.ToString();
+      callback_called = true;
+    };
     auto callback =
         WTF::Bind(lambda, std::ref(callback_called), std::ref(selector));
     GetTextFragmentSelectorGenerator()->Generate(

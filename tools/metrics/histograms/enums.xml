@@ -48819,6 +48819,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 </enum>
 
 <enum name="LinkGenerationError">
+  <int value="-1" label="no error"/>
   <int value="0" label="Incorrect selector"/>
   <int value="1" label="No range available"/>
   <int value="2" label="No context available"/>
@@ -48832,6 +48833,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="10" label="Iframe"/>
   <int value="11" label="Timeout"/>
   <int value="12" label="BlockList"/>
+  <int value="13" label="NoRemoteConnection"/>
 </enum>
 
 <enum name="LinkGenerationSharedStatus">

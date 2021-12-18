@@ -18,7 +18,6 @@
 #include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
-#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_view_host.h"
@@ -27,6 +26,10 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
+
+using shared_highlighting::LinkGenerationError;
+using shared_highlighting::LinkGenerationReadyStatus;
+using shared_highlighting::LinkGenerationStatus;
 
 namespace {
 constexpr char kTextFragmentUrlClassifier[] = "#:~:text=";
@@ -137,14 +140,26 @@ void LinkToTextMenuObserver::ExecuteCommand(int command_id) {
 }
 
 void LinkToTextMenuObserver::OnRequestLinkGenerationCompleted(
-    const std::string& selector) {
+    const std::string& selector,
+    LinkGenerationError error,
+    LinkGenerationReadyStatus ready_status) {
   is_generation_complete_ = true;
+  LinkGenerationStatus status = selector.empty()
+                                    ? LinkGenerationStatus::kFailure
+                                    : LinkGenerationStatus::kSuccess;
+  shared_highlighting::LogLinkRequestedBeforeStatus(status, ready_status);
+  if (status == LinkGenerationStatus::kSuccess) {
+    DCHECK_EQ(error, LinkGenerationError::kNone);
+    shared_highlighting::LogRequestedSuccessMetrics();
+  } else {
+    DCHECK_NE(error, LinkGenerationError::kNone);
+    shared_highlighting::LogRequestedFailureMetrics(error);
 
-  if (selector.empty()) {
-    // If there is no valid selector, leave the item disabled.
+    // If there is no valid selector, leave the menu item disabled.
     return;
   }
 
+  // Enable the menu option.
   generated_link_ = url_.spec() + kTextFragmentUrlClassifier + selector;
   proxy_->UpdateMenuItem(
       IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, true, false,
@@ -154,11 +169,6 @@ void LinkToTextMenuObserver::OnRequestLinkGenerationCompleted(
   auto* cb = GetGenerationCompleteCallbackForTesting();
   if (!cb->is_null())
     std::move(*cb).Run(selector);
-}
-
-void LinkToTextMenuObserver::OverrideGeneratedSelectorForTesting(
-    const std::string& selector) {
-  generated_selector_for_testing_ = url_.spec() + selector;
 }
 
 // static
@@ -177,30 +187,29 @@ void LinkToTextMenuObserver::RequestLinkGeneration() {
   // check should happen before iframe check so that if both conditions are
   // present then blocklist error is logged.
   if (!shared_highlighting::ShouldOfferLinkToText(url_)) {
-    shared_highlighting::LogGenerateErrorBlockList();
-    OnRequestLinkGenerationCompleted(std::string());
+    CompleteWithError(LinkGenerationError::kBlockList);
     return;
   }
 
   // Check whether the selected text is in an iframe.
   if (main_frame != proxy_->GetWebContents()->GetFocusedFrame()) {
-    shared_highlighting::LogGenerateErrorIFrame();
-    OnRequestLinkGenerationCompleted(std::string());
+    CompleteWithError(LinkGenerationError::kIFrame);
     return;
   }
 
-  if (generated_selector_for_testing_.has_value()) {
-    OnRequestLinkGenerationCompleted(generated_selector_for_testing_.value());
-    return;
-  }
+  StartLinkGenerationRequestWithTimeout();
+}
 
+void LinkToTextMenuObserver::StartLinkGenerationRequestWithTimeout() {
   base::TimeDelta timeout_length_ms = base::Milliseconds(
       shared_highlighting::GetPreemptiveLinkGenTimeoutLengthMs());
 
   // Make a call to the renderer to generate a string that uniquely represents
   // the selected text and any context around the text to distinguish it from
-  // the rest of the contents. Get will call a callback with
-  // the generated string if it succeeds or an empty string if it fails.
+  // the rest of the contents. |RequestSelector| will call a
+  // |OnRequestLinkGenerationCompleted| callback with the generated string if it
+  // succeeds or an empty string if it fails, along with error code and whether
+  // the generation was completed at the time of the request.
   GetRemote()->RequestSelector(
       base::BindOnce(&LinkToTextMenuObserver::OnRequestLinkGenerationCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -226,7 +235,7 @@ void LinkToTextMenuObserver::CopyLinkToClipboard() {
       shared_highlighting::LinkGenerationCopiedLinkType::
           kCopiedFromNewGeneration);
 
-  // Record usage for Shared Highlighting promo.
+  // Log usage for Shared Highlighting promo.
   feature_engagement::TrackerFactory::GetForBrowserContext(
       proxy_->GetWebContents()->GetBrowserContext())
       ->NotifyEvent("iph_desktop_shared_highlighting_used");
@@ -239,18 +248,15 @@ void LinkToTextMenuObserver::Timeout() {
     return;
   remote_->Cancel();
   remote_.reset();
-  shared_highlighting::LogGenerateErrorTimeout();
-  OnRequestLinkGenerationCompleted(std::string());
+  CompleteWithError(LinkGenerationError::kTimeout);
+}
+
+void LinkToTextMenuObserver::CompleteWithError(LinkGenerationError error) {
+  is_generation_complete_ = true;
+  shared_highlighting::LogRequestedFailureMetrics(error);
 }
 
 void LinkToTextMenuObserver::ReshareLink() {
-  if (generated_selector_for_testing_.has_value()) {
-    std::vector<std::string> test_selectors{
-        generated_selector_for_testing_.value()};
-    OnGetExistingSelectorsComplete(test_selectors);
-    return;
-  }
-
   GetRemote()->GetExistingSelectors(
       base::BindOnce(&LinkToTextMenuObserver::OnGetExistingSelectorsComplete,
                      weak_ptr_factory_.GetWeakPtr()));

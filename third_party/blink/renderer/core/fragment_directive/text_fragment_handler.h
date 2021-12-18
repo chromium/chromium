@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAGMENT_DIRECTIVE_TEXT_FRAGMENT_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAGMENT_DIRECTIVE_TEXT_FRAGMENT_HANDLER_H_
 
+#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector_generator.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -64,20 +65,15 @@ class CORE_EXPORT TextFragmentHandler final
   // result.
   void DidFinishSelectorGeneration(
       const TextFragmentSelector& selector,
-      absl::optional<shared_highlighting::LinkGenerationError> error);
+      shared_highlighting::LinkGenerationError error);
 
   // This starts running the generator over the current selection.
   // The result will be returned by invoking DidFinishSelectorGeneration().
   void StartGeneratingForCurrentSelection();
 
-  void RecordPreemptiveGenerationMetrics(
-      const TextFragmentSelector& selector,
-      absl::optional<shared_highlighting::LinkGenerationError> error);
-
   // Called to reply to the client's RequestSelector call with the result.
-  void InvokeReplyCallback(
-      const TextFragmentSelector& selector,
-      absl::optional<shared_highlighting::LinkGenerationError> error);
+  void InvokeReplyCallback(const TextFragmentSelector& selector,
+                           shared_highlighting::LinkGenerationError error);
 
   TextFragmentAnchor* GetTextFragmentAnchor();
 
@@ -94,13 +90,14 @@ class CORE_EXPORT TextFragmentHandler final
   // mode.
   absl::optional<TextFragmentSelector> preemptive_generation_result_;
 
-  // If generation failed, contains the reason that generation failed, otherwise
-  // contains an empty optional.
-  absl::optional<shared_highlighting::LinkGenerationError> error_;
+  // If generation failed, contains the reason that generation failed. Default
+  // value is kNone.
+  shared_highlighting::LinkGenerationError error_;
 
   // Reports whether |RequestSelector| was called before or after selector was
   // ready. Used only in preemptive link generation mode.
-  absl::optional<bool> selector_requested_before_ready_;
+  absl::optional<shared_highlighting::LinkGenerationReadyStatus>
+      selector_ready_status_;
 
   // This will hold the reply callback to the RequestSelector mojo call. This
   // will be invoked in InvokeReplyCallback to send the reply back to the

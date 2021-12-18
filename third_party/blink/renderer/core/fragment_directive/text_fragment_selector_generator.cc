@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
-#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/interface_registry.h"
@@ -23,6 +22,7 @@
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 
 using LinkGenerationError = shared_highlighting::LinkGenerationError;
+using LinkGenerationStatus = shared_highlighting::LinkGenerationStatus;
 
 namespace blink {
 
@@ -210,7 +210,7 @@ void TextFragmentSelectorGenerator::Reset() {
 
   generation_start_time_ = base::DefaultTickClock::GetInstance()->NowTicks();
   state_ = kNotStarted;
-  error_.reset();
+  error_ = LinkGenerationError::kNone;
   step_ = kExact;
   max_available_prefix_ = "";
   max_available_suffix_ = "";
@@ -652,9 +652,11 @@ void TextFragmentSelectorGenerator::ExtendContext() {
 
 void TextFragmentSelectorGenerator::RecordAllMetrics(
     const TextFragmentSelector& selector) {
-  UMA_HISTOGRAM_BOOLEAN(
-      "SharedHighlights.LinkGenerated",
-      selector.Type() != TextFragmentSelector::SelectorType::kInvalid);
+  LinkGenerationStatus status =
+      selector.Type() == TextFragmentSelector::SelectorType::kInvalid
+          ? LinkGenerationStatus::kFailure
+          : LinkGenerationStatus::kSuccess;
+  shared_highlighting::LogLinkGenerationStatus(status);
 
   ukm::UkmRecorder* recorder = frame_->GetDocument()->UkmRecorder();
   ukm::SourceId source_id = frame_->GetDocument()->UkmSourceID();
@@ -680,12 +682,11 @@ void TextFragmentSelectorGenerator::RecordAllMetrics(
     UMA_HISTOGRAM_TIMES("SharedHighlights.LinkGenerated.Error.TimeToGenerate",
                         base::DefaultTickClock::GetInstance()->NowTicks() -
                             generation_start_time_);
-
-    LinkGenerationError error =
-        error_.has_value() ? error_.value() : LinkGenerationError::kUnknown;
-    shared_highlighting::LogLinkGenerationErrorReason(error);
+    if (error_ == LinkGenerationError::kNone)
+      error_ = LinkGenerationError::kUnknown;
+    shared_highlighting::LogLinkGenerationErrorReason(error_);
     shared_highlighting::LogLinkGeneratedErrorUkmEvent(recorder, source_id,
-                                                       error);
+                                                       error_);
   }
 }
 

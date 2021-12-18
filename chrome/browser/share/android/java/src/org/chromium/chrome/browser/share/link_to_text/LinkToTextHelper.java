@@ -27,6 +27,10 @@ public class LinkToTextHelper {
     public static final String TEXT_FRAGMENT_PREFIX = ":~:text=";
     public static final String ADDITIONAL_TEXT_FRAGMENT_SELECTOR = "&text=";
 
+    interface RequestSelectorCallback {
+        void apply(String selector, Integer errorCode, Integer readyStatus);
+    }
+
     /**
      * Removes highlights from all frames in the page.
      *
@@ -179,16 +183,17 @@ public class LinkToTextHelper {
      *         frame.
      * @param callback The {@link Callback} to handle the generated selector.
      */
-    public static void requestSelector(TextFragmentReceiver producer, Callback<String> callback) {
+    public static void requestSelector(
+            TextFragmentReceiver producer, RequestSelectorCallback callback) {
         producer.requestSelector(new TextFragmentReceiver.RequestSelector_Response() {
             @Override
-            public void call(String selector) {
+            public void call(String selector, Integer error, Integer readyStatus) {
                 if (ChromeFeatureList.isEnabled(
                             ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
                     LinkToTextMetricsHelper.recordLinkToTextDiagnoseStatus(
                             LinkToTextMetricsHelper.LinkToTextDiagnoseStatus.SELECTOR_RECEIVED);
                 }
-                callback.onResult(selector);
+                callback.apply(selector, error, readyStatus);
             }
         });
     }

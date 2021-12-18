@@ -11,44 +11,31 @@ import org.chromium.url.GURL;
  * A Java API for connecting to shared_highlighting component.
  */
 public class LinkToTextBridge {
-    public static void logGenerateErrorTabHidden() {
-        LinkToTextBridgeJni.get().logGenerateErrorTabHidden();
-    }
-
-    public static void logGenerateErrorOmniboxNavigation() {
-        LinkToTextBridgeJni.get().logGenerateErrorOmniboxNavigation();
-    }
-
-    public static void logGenerateErrorTabCrash() {
-        LinkToTextBridgeJni.get().logGenerateErrorTabCrash();
-    }
-
-    public static void logGenerateErrorIFrame() {
-        LinkToTextBridgeJni.get().logGenerateErrorIFrame();
-    }
-
-    public static void logGenerateErrorBlockList() {
-        LinkToTextBridgeJni.get().logGenerateErrorBlockList();
-    }
-
-    public static void logGenerateErrorTimeout() {
-        LinkToTextBridgeJni.get().logGenerateErrorTimeout();
-    }
-
     // TODO(gayane): Update the name whenever |shared_highlighting::ShouldOfferLinkToText| updated
-    // to moredescriptive name.
+    // to more descriptive name.
     public static boolean shouldOfferLinkToText(GURL url) {
         return LinkToTextBridgeJni.get().shouldOfferLinkToText(url);
     }
 
+    public static void logFailureMetrics(@LinkGenerationError int error) {
+        LinkToTextBridgeJni.get().logFailureMetrics(error);
+    }
+
+    public static void logSuccessMetrics() {
+        LinkToTextBridgeJni.get().logSuccessMetrics();
+    }
+
+    public static void logLinkRequestedBeforeStatus(
+            @LinkGenerationStatus int status, @LinkGenerationReadyStatus int readyStatus) {
+        LinkToTextBridgeJni.get().logLinkRequestedBeforeStatus(status, readyStatus);
+    }
+
     @NativeMethods
     interface Natives {
-        void logGenerateErrorTabHidden();
-        void logGenerateErrorOmniboxNavigation();
-        void logGenerateErrorTabCrash();
-        void logGenerateErrorIFrame();
-        void logGenerateErrorBlockList();
-        void logGenerateErrorTimeout();
         boolean shouldOfferLinkToText(GURL url);
+        void logFailureMetrics(@LinkGenerationError int error);
+        void logSuccessMetrics();
+        void logLinkRequestedBeforeStatus(
+                @LinkGenerationStatus int status, @LinkGenerationReadyStatus int readyStatus);
     }
 }

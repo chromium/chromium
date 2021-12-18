@@ -436,7 +436,9 @@ chromium-metrics-reviews@google.com.
     {Requested}.
   </summary>
   <token key="Requested">
-    <variant name="" summary="all cases"/>
+    <variant name="" summary="all generation cases"/>
+    <variant name=".Requested"
+        summary="all cases when generated selector is requested."/>
     <variant name=".RequestedAfterReady"
         summary="cases when selector is requested after its ready."/>
     <variant name=".RequestedBeforeReady"

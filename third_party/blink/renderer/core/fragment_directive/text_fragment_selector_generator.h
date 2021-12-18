@@ -32,9 +32,9 @@ class TextFragmentSelector;
 class CORE_EXPORT TextFragmentSelectorGenerator final
     : public GarbageCollected<TextFragmentSelectorGenerator>,
       public TextFragmentFinder::Client {
-  using GenerateCallback = base::OnceCallback<void(
-      const TextFragmentSelector&,
-      absl::optional<shared_highlighting::LinkGenerationError>)>;
+  using GenerateCallback =
+      base::OnceCallback<void(const TextFragmentSelector&,
+                              shared_highlighting::LinkGenerationError)>;
 
  public:
   explicit TextFragmentSelectorGenerator(LocalFrame* main_frame);
@@ -147,7 +147,7 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   GenerationStep step_ = kExact;
   SelectorState state_ = kNeedsNewCandidate;
 
-  absl::optional<shared_highlighting::LinkGenerationError> error_;
+  shared_highlighting::LinkGenerationError error_;
 
   // Fields used for keeping track of context.
 

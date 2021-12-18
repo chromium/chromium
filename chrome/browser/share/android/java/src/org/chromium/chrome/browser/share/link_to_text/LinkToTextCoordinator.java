@@ -130,8 +130,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
     private void startRequestSelector() {
         if (!LinkToTextBridge.shouldOfferLinkToText(new GURL(mShareUrl))) {
-            LinkToTextBridge.logGenerateErrorBlockList();
-            onSelectorReady(INVALID_SELECTOR);
+            completeRequestWithFailure(LinkGenerationError.BLOCK_LIST);
             return;
         }
 
@@ -144,8 +143,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                 return;
             }
 
-            LinkToTextBridge.logGenerateErrorIFrame();
-            onSelectorReady(INVALID_SELECTOR);
+            completeRequestWithFailure(LinkGenerationError.I_FRAME);
             return;
         }
 
@@ -172,21 +170,21 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     // Discard results if tab is not on foreground anymore.
     @Override
     public void onHidden(Tab tab, @TabHidingType int type) {
-        LinkToTextBridge.logGenerateErrorTabHidden();
+        completeRequestWithFailure(LinkGenerationError.TAB_HIDDEN);
         cleanup();
     }
 
     // Discard results if tab content is changed by typing new URL in omnibox.
     @Override
     public void onUpdateUrl(Tab tab, GURL url) {
-        LinkToTextBridge.logGenerateErrorOmniboxNavigation();
+        completeRequestWithFailure(LinkGenerationError.OMNIBOX_NAVIGATION);
         cleanup();
     }
 
     // Discard results if tab content crashes.
     @Override
     public void onCrash(Tab tab) {
-        LinkToTextBridge.logGenerateErrorTabCrash();
+        completeRequestWithFailure(LinkGenerationError.TAB_CRASH);
         cleanup();
     }
 
@@ -199,11 +197,28 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         setTextFragmentReceiver();
 
         if (mProducer == null) {
-            onSelectorReady(INVALID_SELECTOR);
+            completeRequestWithFailure(LinkGenerationError.NO_REMOTE_CONNECTION);
             return;
         }
 
-        LinkToTextHelper.requestSelector(mProducer, (selector) -> { onSelectorReady(selector); });
+        LinkToTextHelper.requestSelector(mProducer, (selector, error, readyStatus) -> {
+            boolean success = !selector.isEmpty();
+            assert error != null;
+
+            if (success) {
+                assert error == LinkGenerationError.NONE;
+                completeRequestWithSuccess(selector);
+            } else {
+                assert error != LinkGenerationError.NONE;
+                completeRequestWithFailure(error.intValue());
+            }
+
+            assert readyStatus != null;
+
+            @LinkGenerationStatus
+            int status = success ? LinkGenerationStatus.FAILURE : LinkGenerationStatus.SUCCESS;
+            LinkToTextBridge.logLinkRequestedBeforeStatus(status, readyStatus.intValue());
+        });
     }
 
     public boolean isAmpUrl(String url) {
@@ -269,10 +284,21 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mTab.removeObserver(this);
     }
 
+    // TODO(crbug.com/1275264): This function is called for AMP with different timeout as well as
+    // for reshare. We should distinguish these cases for metrics purposes.
     private void timeout() {
         if (!mCancelRequest) {
-            LinkToTextBridge.logGenerateErrorTimeout();
-            onSelectorReady(INVALID_SELECTOR);
+            completeRequestWithFailure(LinkGenerationError.TIMEOUT);
         }
+    }
+
+    private void completeRequestWithFailure(@LinkGenerationError int error) {
+        LinkToTextBridge.logFailureMetrics(error);
+        onSelectorReady(INVALID_SELECTOR);
+    }
+
+    private void completeRequestWithSuccess(String selector) {
+        LinkToTextBridge.logSuccessMetrics();
+        onSelectorReady(selector);
     }
 }
