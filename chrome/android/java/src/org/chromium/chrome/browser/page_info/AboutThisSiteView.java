@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatTextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
@@ -40,13 +41,13 @@ public class AboutThisSiteView extends LinearLayout {
                 org.chromium.components.page_info.R.dimen.page_info_popup_padding_vertical);
         setPadding(paddingSides, paddingVertical, paddingSides, paddingVertical);
 
-        mDescriptionView = new TextView(context);
+        mDescriptionView = new AppCompatTextView(context);
         mDescriptionView.setPadding(0, 0, 0, paddingSides);
         ApiCompatibilityUtils.setTextAppearance(
                 mDescriptionView, R.style.TextAppearance_TextMedium_Secondary);
         addView(mDescriptionView);
 
-        mSourceView = new TextView(context);
+        mSourceView = new AppCompatTextView(context);
         mSourceView.setMovementMethod(LinkMovementMethod.getInstance());
         ApiCompatibilityUtils.setTextAppearance(
                 mSourceView, R.style.TextAppearance_TextMedium_Secondary);
