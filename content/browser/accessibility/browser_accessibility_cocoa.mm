@@ -1932,6 +1932,17 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   return [NSValue valueWithRange:NSMakeRange(selStart, selLength)];
 }
 
+- (void)setAccessibilitySelectedTextRange:(NSRange)range {
+  if (![self instanceActive])
+    return;
+
+  BrowserAccessibilityManager* manager = _owner->manager();
+  manager->SetSelection(BrowserAccessibility::AXRange(
+      _owner->CreateTextPositionAt(range.location)->AsTextSelectionPosition(),
+      _owner->CreateTextPositionAt(NSMaxRange(range))
+          ->AsTextSelectionPosition()));
+}
+
 - (id)selectedTextMarkerRange {
   if (![self instanceActive])
     return nil;
@@ -2795,16 +2806,18 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     return CGRectIsNull(rect) ? nil : [NSValue valueWithRect:rect];
   }
 
-  if ([attribute isEqualToString:
-                   NSAccessibilityUIElementCountForSearchPredicateParameterizedAttribute]) {
+  if ([attribute
+          isEqualToString:
+              NSAccessibilityUIElementCountForSearchPredicateParameterizedAttribute]) {
     OneShotAccessibilityTreeSearch search(_owner);
     if (InitializeAccessibilityTreeSearch(&search, parameter))
       return @(search.CountMatches());
     return nil;
   }
 
-  if ([attribute isEqualToString:
-                     NSAccessibilityUIElementsForSearchPredicateParameterizedAttribute]) {
+  if ([attribute
+          isEqualToString:
+              NSAccessibilityUIElementsForSearchPredicateParameterizedAttribute]) {
     OneShotAccessibilityTreeSearch search(_owner);
     if (InitializeAccessibilityTreeSearch(&search, parameter)) {
       size_t count = search.CountMatches();
@@ -3446,13 +3459,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   }
   if ([attribute isEqualToString:NSAccessibilitySelectedTextRangeAttribute]) {
     if (content::IsNSRange(value)) {
-      NSRange range = [(NSValue*)value rangeValue];
-      BrowserAccessibilityManager* manager = _owner->manager();
-      manager->SetSelection(BrowserAccessibility::AXRange(
-          _owner->CreateTextPositionAt(range.location)
-              ->AsTextSelectionPosition(),
-          _owner->CreateTextPositionAt(NSMaxRange(range))
-              ->AsTextSelectionPosition()));
+      [self setAccessibilitySelectedTextRange:[(NSValue*)value rangeValue]];
     }
   }
   if ([attribute
