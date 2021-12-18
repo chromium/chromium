@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
 
   const std::u16string embedded_character(
       1, ui::AXPlatformNodeAuraLinux::kEmbeddedCharacter);
-  const std::vector<const std::string> expected_hypertext = {
+  const std::vector<std::string> expected_hypertext = {
       "B", "e", "f", "o", "r", "e", base::UTF16ToUTF8(embedded_character),
       "a", "f", "t", "e", "r", "."};
 
