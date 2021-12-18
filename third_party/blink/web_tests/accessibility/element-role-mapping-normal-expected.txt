@@ -45,6 +45,7 @@ Visit us at:www.chromium.org
 
 
 January
+
 This is an open dialog window
 
 Caption
@@ -197,9 +198,10 @@ element
     AXRole: AXParagraph
         AXRole: AXStaticText "January"
             AXRole: AXInlineTextBox "January"
-        AXRole: AXDialog
-            AXRole: AXStaticText "This is an open dialog window"
-                AXRole: AXInlineTextBox "This is an open dialog window"
+    AXRole: AXDialog
+        AXRole: AXStaticText "This is an open dialog window"
+            AXRole: AXInlineTextBox "This is an open dialog window"
+    AXRole: AXParagraph
     AXRole: AXTable "Caption"
         AXRole: AXCaption
             AXRole: AXStaticText "Caption"

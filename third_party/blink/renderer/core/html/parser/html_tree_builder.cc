@@ -618,12 +618,15 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
     SetInsertionMode(kInFramesetMode);
     return;
   }
+  // Spec:
+  // https://html.spec.whatwg.org/multipage/parsing.html#:~:text=A%20start%20tag%20whose%20tag%20name%20is%20one%20of%3A%20%22address%22%2C
   if (token->GetName() == html_names::kAddressTag ||
       token->GetName() == html_names::kArticleTag ||
       token->GetName() == html_names::kAsideTag ||
       token->GetName() == html_names::kBlockquoteTag ||
       token->GetName() == html_names::kCenterTag ||
       token->GetName() == html_names::kDetailsTag ||
+      token->GetName() == html_names::kDialogTag ||
       token->GetName() == html_names::kDirTag ||
       token->GetName() == html_names::kDivTag ||
       token->GetName() == html_names::kDlTag ||
@@ -1865,6 +1868,8 @@ void HTMLTreeBuilder::ProcessEndTagForInBody(AtomicHTMLToken* token) {
       ProcessEndTag(token);
     return;
   }
+  // Spec:
+  // https://html.spec.whatwg.org/multipage/parsing.html#:~:text=An%20end%20tag%20whose%20tag%20name%20is%20one%20of%3A%20%22address%22%2C
   if (token->GetName() == html_names::kAddressTag ||
       token->GetName() == html_names::kArticleTag ||
       token->GetName() == html_names::kAsideTag ||
@@ -1872,6 +1877,7 @@ void HTMLTreeBuilder::ProcessEndTagForInBody(AtomicHTMLToken* token) {
       token->GetName() == html_names::kButtonTag ||
       token->GetName() == html_names::kCenterTag ||
       token->GetName() == html_names::kDetailsTag ||
+      token->GetName() == html_names::kDialogTag ||
       token->GetName() == html_names::kDirTag ||
       token->GetName() == html_names::kDivTag ||
       token->GetName() == html_names::kDlTag ||
