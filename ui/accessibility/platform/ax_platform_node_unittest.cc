@@ -5,6 +5,7 @@
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
 
 #include "ui/accessibility/ax_constants.mojom.h"
+#include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 
 namespace ui {
@@ -12,6 +13,18 @@ namespace ui {
 AXPlatformNodeTest::AXPlatformNodeTest() = default;
 
 AXPlatformNodeTest::~AXPlatformNodeTest() = default;
+
+void AXPlatformNodeTest::TearDown() {
+  // Destroy the tree and make sure we're not leaking any objects.
+  DestroyTree();
+
+#if BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
+  TestAXNodeWrapper::SetGlobalIsWebContent(false);
+  TestAXNodeWrapper::ResetGlobalState();
+#endif  // BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
+
+  ASSERT_EQ(0U, AXPlatformNodeBase::GetInstanceCountForTesting());
+}
 
 void AXPlatformNodeTest::Init(const AXTreeUpdate& initial_state) {
   SetTree(std::make_unique<AXTree>(initial_state));

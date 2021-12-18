@@ -33,18 +33,18 @@ class AtkUtilAuraLinuxTest : public AXPlatformNodeTest {
     AtkUtilAuraLinux::GetInstance()->InitializeForTesting();
   }
 
-  ~AtkUtilAuraLinuxTest() override {
-    TestAXNodeWrapper* wrapper =
-        TestAXNodeWrapper::GetOrCreate(GetTree(), GetRootAsAXNode());
-    if (!wrapper)
-      NOTREACHED();
-    g_object_unref(wrapper->ax_platform_node()->GetNativeViewAccessible());
-  }
+  ~AtkUtilAuraLinuxTest() override = default;
 
   AtkUtilAuraLinuxTest(const AtkUtilAuraLinuxTest&) = delete;
   AtkUtilAuraLinuxTest& operator=(const AtkUtilAuraLinuxTest&) = delete;
 
   void TearDown() override {
+    TestAXNodeWrapper* wrapper =
+        TestAXNodeWrapper::GetOrCreate(GetTree(), GetRootAsAXNode());
+    if (!wrapper)
+      NOTREACHED();
+    g_object_unref(wrapper->ax_platform_node()->GetNativeViewAccessible());
+
     AXPlatformNodeTest::TearDown();
     // These tests set AtSpiReady to true. Reset to initial state.
     AtkUtilAuraLinux::GetInstance()->SetAtSpiReady(false);

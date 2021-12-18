@@ -23,6 +23,8 @@ class AXPlatformNodeTest : public ::testing::Test, public TestAXTreeManager {
   AXPlatformNodeTest& operator=(const AXPlatformNodeTest&) = delete;
 
  protected:
+  void TearDown() override;
+
   // Initialize given an AXTreeUpdate.
   void Init(const AXTreeUpdate& initial_state);
 
