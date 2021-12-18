@@ -61,7 +61,8 @@ DataDevice::DataDevice(DataDeviceDelegate* delegate, Seat* seat)
 
   seat_->AddObserver(this, kDataDeviceSeatObserverPriority);
 
-  OnSurfaceFocused(seat_->GetFocusedSurface());
+  OnSurfaceFocused(seat_->GetFocusedSurface(), nullptr,
+                   !!seat_->GetFocusedSurface());
 }
 
 DataDevice::~DataDevice() {
@@ -209,10 +210,13 @@ void DataDevice::OnClipboardDataChanged() {
   SetSelectionToCurrentClipboardData();
 }
 
-void DataDevice::OnSurfaceFocused(Surface* surface) {
+void DataDevice::OnSurfaceFocused(Surface* gained_surface,
+                                  Surface* lost_focused,
+                                  bool has_focused_surface) {
   Surface* next_focused_surface =
-      surface && delegate_->CanAcceptDataEventsForSurface(surface) ? surface
-                                                                   : nullptr;
+      gained_surface && delegate_->CanAcceptDataEventsForSurface(gained_surface)
+          ? gained_surface
+          : nullptr;
   // Check if focused surface is not changed.
   if (focused_surface_ && focused_surface_->get() == next_focused_surface)
     return;

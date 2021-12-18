@@ -62,8 +62,6 @@ class Seat : public aura::client::FocusChangeObserver,
   using FocusChangedCallback =
       base::RepeatingCallback<void(Surface*, Surface*, bool)>;
 
-  void SetFocusChangedCallback(FocusChangedCallback callback);
-
   void Shutdown();
 
   // Registers the observer with the given priority.
@@ -221,8 +219,6 @@ class Seat : public aura::client::FocusChangeObserver,
   bool changing_clipboard_data_to_selection_source_;
 
   gfx::PointF last_pointer_location_;
-
-  std::vector<FocusChangedCallback> focus_changed_callbacks_;
 
   bool was_shutdown_ = false;
 
