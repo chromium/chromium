@@ -144,7 +144,6 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
                                       can_use_warm_up_connection_,
 #endif
                                       &is_synchronous_launch, &launch_result);
-
     AfterLaunchOnLauncherThread(process, options);
   }
 
@@ -156,6 +155,11 @@ void ChildProcessLauncherHelper::LaunchOnLauncherThread() {
 void ChildProcessLauncherHelper::PostLaunchOnLauncherThread(
     ChildProcessLauncherHelper::Process process,
     int launch_result) {
+#if defined(OS_WIN)
+  // The LastError is set on the launcher thread, but needs to be transferred to
+  // the Client thread.
+  DWORD last_error = ::GetLastError();
+#endif
   if (mojo_channel_)
     mojo_channel_->RemoteProcessLaunchAttempted();
 
@@ -189,14 +193,25 @@ void ChildProcessLauncherHelper::PostLaunchOnLauncherThread(
   client_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&ChildProcessLauncherHelper::PostLaunchOnClientThread,
-                     this, std::move(process), launch_result));
+                     this, std::move(process),
+#if defined(OS_WIN)
+                     last_error,
+#endif
+                     launch_result));
 }
 
 void ChildProcessLauncherHelper::PostLaunchOnClientThread(
     ChildProcessLauncherHelper::Process process,
+#if defined(OS_WIN)
+    DWORD last_error,
+#endif
     int error_code) {
   if (child_process_launcher_) {
-    child_process_launcher_->Notify(std::move(process), error_code);
+    child_process_launcher_->Notify(std::move(process),
+#if defined(OS_WIN)
+                                    last_error,
+#endif
+                                    error_code);
   } else if (process.process.IsValid() && terminate_on_shutdown_) {
     // Client is gone, terminate the process.
     ForceNormalProcessTerminationAsync(std::move(process));

@@ -111,9 +111,11 @@ void ChildProcessLauncher::SetProcessPriority(
           helper_, std::move(to_pass), priority));
 }
 
-void ChildProcessLauncher::Notify(
-    ChildProcessLauncherHelper::Process process,
-    int error_code) {
+void ChildProcessLauncher::Notify(ChildProcessLauncherHelper::Process process,
+#if defined(OS_WIN)
+                                  DWORD last_error,
+#endif
+                                  int error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   starting_ = false;
   process_ = std::move(process);
@@ -123,6 +125,10 @@ void ChildProcessLauncher::Notify(
     client_->OnProcessLaunched();
   } else {
     termination_info_.status = base::TERMINATION_STATUS_LAUNCH_FAILED;
+    termination_info_.exit_code = error_code;
+#if defined(OS_WIN)
+    termination_info_.last_error = last_error;
+#endif
 
     // NOTE: May delete |this|.
     client_->OnProcessLaunchFailed(error_code);

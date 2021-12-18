@@ -29,6 +29,10 @@
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
+#if defined(OS_WIN)
+#include "base/win/windows_types.h"
+#endif
+
 namespace base {
 class CommandLine;
 }
@@ -241,6 +245,9 @@ class CONTENT_EXPORT ChildProcessLauncher {
 
   // Notifies the client about the result of the operation.
   void Notify(internal::ChildProcessLauncherHelper::Process process,
+#if defined(OS_WIN)
+              DWORD last_error,
+#endif
               int error_code);
 
   raw_ptr<Client> client_;

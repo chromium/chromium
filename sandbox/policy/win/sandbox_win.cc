@@ -25,6 +25,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -805,6 +806,8 @@ ResultCode LaunchWithoutSandbox(
   }
 
   *process = base::LaunchProcess(cmd_line, options);
+  if (!process->IsValid())
+    return SBOX_ERROR_CANNOT_LAUNCH_UNSANDBOXED_PROCESS;
   return SBOX_ALL_OK;
 }
 
