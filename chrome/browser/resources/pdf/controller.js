@@ -8,6 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {NamedDestinationMessageData, Point, SaveRequestType} from './constants.js';
+import {Gesture} from './gesture_detector.js';
 import {UnseasonedPdfPluginElement} from './internal_plugin.js';
 import {PartialPoint, PinchPhase, Viewport} from './viewport.js';
 
@@ -567,6 +568,10 @@ export class PluginController {
     }
 
     switch (messageData.type) {
+      case 'gesture':
+        this.viewport_.dispatchGesture(
+            /** @type {{ gesture: !Gesture }} */ (messageData).gesture);
+        break;
       case 'goToPage':
         this.viewport_.goToPage(
             /** @type {{type: string, page: number}} */ (messageData).page);

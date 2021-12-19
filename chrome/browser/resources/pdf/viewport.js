@@ -1093,9 +1093,7 @@ export class Viewport {
       isDown ? this.goToNextPage() : this.goToPreviousPage();
       // Since we do the movement of the page.
       e.preventDefault();
-    } else if (
-        /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
-            .fromScriptingAPI) {
+    } else if (isCrossFrameKeyEvent(e)) {
       const scrollOffset = (isDown ? 1 : -1) * this.size.height;
       this.setPosition({
         x: this.position.x,
@@ -1122,9 +1120,7 @@ export class Viewport {
       isRight ? this.goToNextPage() : this.goToPreviousPage();
       // Since we do the movement of the page.
       e.preventDefault();
-    } else if (
-        /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
-            .fromScriptingAPI) {
+    } else if (isCrossFrameKeyEvent(e)) {
       const scrollOffset = (isRight ? 1 : -1) * SCROLL_INCREMENT;
       this.setPosition({
         x: this.position.x + scrollOffset,
@@ -1148,9 +1144,7 @@ export class Viewport {
     if (document.fullscreenElement !== null) {
       isDown ? this.goToNextPage() : this.goToPreviousPage();
       e.preventDefault();
-    } else if (
-        /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
-            .fromScriptingAPI) {
+    } else if (isCrossFrameKeyEvent(e)) {
       const scrollOffset = (isDown ? 1 : -1) * SCROLL_INCREMENT;
       this.setPosition({
         x: this.position.x,
@@ -1565,6 +1559,25 @@ export const PinchPhase = {
  * @type {number}
  */
 const SCROLL_INCREMENT = 40;
+
+/**
+ * Returns whether a keyboard event came from another frame.
+ * @param {!KeyboardEvent} keyEvent
+ * @return {boolean}
+ */
+function isCrossFrameKeyEvent(keyEvent) {
+  // TODO(crbug.com/1279516): Consider moving these properties to a custom
+  // KeyboardEvent subtype, if it doesn't become obsolete entirely.
+  const custom =
+      /**
+       * @type {!{
+       *   fromPlugin: (boolean|undefined),
+       *   fromScriptingAPI: (boolean|undefined),
+       * }}
+       */
+      (keyEvent);
+  return !!custom.fromPlugin || !!custom.fromScriptingAPI;
+}
 
 /**
  * The width of the page shadow around pages in pixels.

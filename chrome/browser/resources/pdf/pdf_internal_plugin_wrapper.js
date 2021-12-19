@@ -121,13 +121,25 @@ document.addEventListener('keydown', e => {
     case ' ':
       // Preventing Space happens in the "keypress" event handler.
       break;
+    case 'PageDown':
+    case 'PageUp':
+      // Always prevent PageDown/PageUp.
+      e.preventDefault();
+      break;
 
+    case 'ArrowDown':
     case 'ArrowLeft':
     case 'ArrowRight':
-      // Don't prevent ArrowLeft/ArrowRight in form fields.
-      if (!isFormFieldFocused) {
+    case 'ArrowUp':
+      // Don't prevent arrow navigation in form fields, or if modified.
+      if (!isFormFieldFocused && !hasKeyModifiers(e)) {
         e.preventDefault();
       }
+      break;
+
+    case 'Escape':
+    case 'Tab':
+      // Print Preview is interested in Escape and Tab.
       break;
 
     default:
@@ -168,3 +180,12 @@ document.addEventListener('keypress', e => {
       break;
   }
 });
+
+// TODO(crbug.com/1252096): Load from chrome://resources/js/util.m.js instead.
+/**
+ * @param {!Event} e
+ * @return {boolean}
+ */
+function hasKeyModifiers(e) {
+  return !!(e.altKey || e.ctrlKey || e.metaKey || e.shiftKey);
+}
