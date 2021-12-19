@@ -235,6 +235,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3157387275655328056">Add to Reading List</translation>
 <translation id="3157684681743766797">Mark All…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">You can also use saved passwords on your other devices.</translation>
 <translation id="3175081911749765310">Web Services</translation>
 <translation id="3178650076442119961">Active today</translation>
 <translation id="3181825792072797598">Turn on Sync</translation>
@@ -436,6 +437,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5118764316110575523">Off</translation>
 <translation id="5127805178023152808">Sync is off</translation>
 <translation id="5132942445612118989">Sync your passwords, history and more on all devices</translation>
+<translation id="51339916068413997">You can auto-fill saved passwords in other apps on your iPad.</translation>
 <translation id="5140288047769711648">Chrome will remember this password for you. You don't have to remember it.</translation>
 <translation id="5150492518600715772">Send to your device</translation>
 <translation id="5168414296986405587">Built for iPadOS</translation>
@@ -474,6 +476,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 Handoff must also be enabled in the General section of Settings, and your devices must use the same iCloud account.</translation>
 <translation id="5551897871312988470">Offer to translate</translation>
 <translation id="5556459405103347317">Reload</translation>
+<translation id="5557664881350188277">You can auto-fill saved passwords in other apps on your iPhone.</translation>
 <translation id="5580834567471114021">Add to reading list for later?</translation>
 <translation id="5592679540098330836">Turn on sync for <ph name="NAME" /></translation>
 <translation id="560322036295180549">Turned off by your organisation</translation>
@@ -768,6 +771,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8076014560081431679">Saved site settings will not be deleted and may reflect your browsing habits. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">This setting is managed; double-tap for more information</translation>
 <translation id="8080028325999236607">Close All Tabs</translation>
+<translation id="8101409298456377967">Create, save and manage your passwords so that you can easily sign in to sites and apps. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Turn Off</translation>
 <translation id="8114753159095730575">File download is available. Options available near bottom of screen.</translation>
 <translation id="8132598642024322408">Now <ph name="PRICE" />, was <ph name="PREVIOUS_PRICE" />.</translation>

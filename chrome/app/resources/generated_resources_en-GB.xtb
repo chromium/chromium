@@ -395,6 +395,7 @@
 <translation id="1408980562518920698">Manage personal information</translation>
 <translation id="1410197035576869800">App Icon</translation>
 <translation id="1410616244180625362">Continue allowing <ph name="HOST" /> to access your camera</translation>
+<translation id="1410797069449661718">Scroll towards the first tab</translation>
 <translation id="1410806973194718079">Unable to check policies</translation>
 <translation id="1412681350727866021">Additional extensions</translation>
 <translation id="1414315029670184034">Don't allow sites to use your camera</translation>
@@ -732,6 +733,7 @@
 <translation id="1725562816265788801">Tab scrolling</translation>
 <translation id="1729533290416704613">It also controls what page is shown when you search from the Omnibox.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />To remove apps, go to Settings &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app that you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.<ph name="END_PARAGRAPH1" /></translation>
+<translation id="1730989807608739928">Scroll towards the last tab</translation>
 <translation id="1731911755844941020">Sending request...</translation>
 <translation id="1733383495376208985">Encrypt synced data with your own <ph name="BEGIN_LINK" />sync passphrase<ph name="END_LINK" />. This doesn't include payment methods and addresses from Google Pay.</translation>
 <translation id="1734212868489994726">Light blue</translation>
@@ -3128,6 +3130,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> does not belong to a valid organization. Contact your administrator. If you are an administrator, you can set up your organisation by visiting: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4167686856635546851">Sites usually use Javascript to display interactive features, like video games or web forms</translation>
 <translation id="4168015872538332605">Some settings belonging to <ph name="PRIMARY_EMAIL" /> are being shared with you. These settings only affect your account when using multiple sign-in.</translation>
+<translation id="4168651806173792090"><ph name="NETWORK_NAME" /> ending in <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Don't allow</translation>
 <translation id="4170314459383239649">Clear On Exit</translation>
 <translation id="417096670996204801">Choose a profile</translation>
@@ -3358,6 +3361,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4432621511648257259">Password incorrect</translation>
 <translation id="443454694385851356">Legacy (insecure)</translation>
 <translation id="443475966875174318">Update or remove incompatible applications</translation>
+<translation id="4435634292635092844">View photos from your phone's camera roll on your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4438043733494739848">Transparent</translation>
 <translation id="4440097423000553826"><ph name="WEBSITE" /> sent a notification to your phone. To confirm that it's you, tap the '<ph name="NOTIFICATIONTITLE" />' notification and follow the steps.</translation>
 <translation id="4441124369922430666">Do you want to automatically start this app when the machine turns on?</translation>
@@ -4616,6 +4620,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Success</translation>
 <translation id="5790651917470750848">Port forward already exists</translation>
+<translation id="5792295754950501287">More actions for <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Please tap your power button</translation>
 <translation id="5793339252089865437">If you download the update over your mobile network, it could result in overage charges.</translation>
 <translation id="5794034487966529952">Desk <ph name="DESK_TITLE" /> has <ph name="NUM_BROWSERS" /> browser windows open</translation>
@@ -7027,6 +7032,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8264024885325823677">This setting is managed by your administrator.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" triggered full screen.</translation>
 <translation id="826511437356419340">Entered window overview mode. Swipe to navigate, or press tab if using a keyboard.</translation>
+<translation id="8265671588726449108">{COUNT,plural, =1{Your incognito window won't open after you relaunch}other{Your {COUNT} incognito windows won't reopen after you relaunch}}</translation>
 <translation id="8266947622852630193">All input methods</translation>
 <translation id="8267539814046467575">Add printer</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />This is general information about this device and how it's used (such as battery level, system and app activity and errors). The data will be used to improve Android, and some aggregated information will also help Google apps and partners, such as Android developers, make their apps and products better.<ph name="END_PARAGRAPH1" />

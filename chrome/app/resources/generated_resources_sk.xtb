@@ -415,6 +415,7 @@
            • odstráni súbory cookie a ostatné dočasné údaje webov.
             <ph name="LINE_BREAKS" />
            Záložky, história a uložené heslá nebudú ovplyvnené.</translation>
+<translation id="1425233109861512854">Prístupový kód nebol rozpoznaný</translation>
 <translation id="1426410128494586442">Áno</translation>
 <translation id="142655739075382478">Aplikácia <ph name="APP_NAME" /> je blokovaná</translation>
 <translation id="1426870617281699524">Kliknite na možnosť Skúsiť znova a potvrďte výzvu v počítači</translation>
@@ -581,6 +582,7 @@
 <translation id="1593926297800505364">Uložiť spôsob platby</translation>
 <translation id="1595492813686795610">Linux sa inovuje</translation>
 <translation id="1596286373007273895">K dispozícii</translation>
+<translation id="1596709061955594992">Rozhranie Bluetooth je vypnuté. Ak chcete zobraziť dostupné zariadenia, zapnite ho.</translation>
 <translation id="1598233202702788831">Aktualizácie zakázal váš správca.</translation>
 <translation id="1600857548979126453">Pristupovať k ladiacemu nástroju stránok na strane servera</translation>
 <translation id="1601560923496285236">Použiť</translation>
@@ -1133,6 +1135,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2148892889047469596">Prenášanie karty</translation>
 <translation id="2149973817440762519">Upraviť záložku</translation>
 <translation id="2150139952286079145">Hľadať ciele</translation>
+<translation id="2150491840563706000">Nemáte povolenie spustiť prenos na tejto obrazovke</translation>
 <translation id="2150661552845026580">Pridať rozšírenie <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2151576029659734873">Zadali ste neplatný index kariet.</translation>
 <translation id="2152281589789213846">Pridanie tlačiarní do vášho profilu</translation>
@@ -2598,6 +2601,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3654045516529121250">Čítať nastavenia dostupnosti</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Aplikácia má trvalý prístup k jednému súboru.}few{Aplikácia má trvalý prístup k # súborom.}many{Aplikácia má trvalý prístup k # súboru.}other{Aplikácia má trvalý prístup k # súborom.}}</translation>
 <translation id="3658871634334445293">Akcelerácia zariadenia TrackPoint</translation>
+<translation id="3659929705630080526">Príliš veľakrát ste zadali nesprávny prístupový kód. Skúste to neskôr</translation>
 <translation id="3660234220361471169">Nedôveryhodné</translation>
 <translation id="3664511988987167893">Ikona rozšírenia</translation>
 <translation id="3665589677786828986">Chrome zistil, že niektoré nastavenia boli poškodené iným programom, a preto obnovil pôvodné predvolené nastavenia.</translation>
@@ -2681,6 +2685,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3743842571276656710">Zadajte PIN na spárovanie so zariadením <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Ak chcete odstrániť aplikácie, prejdite do časti Nastavenia &gt; Obchod Google Play &gt; Spravovať predvoľby Androidu &gt; Aplikácie alebo Správca aplikácií. Potom klepnite na aplikáciu, ktorú chcete odinštalovať (možno budete musieť aplikáciu nájsť potiahnutím prstom doľava alebo doprava). Potom klepnite na možnosť Odinštalovať alebo Deaktivovať.</translation>
 <translation id="3747220812138541072">Zobrazovať v texte návrhy písania, kým píšete</translation>
+<translation id="3747603683749989726">Chcete zapnúť zlepšené zabezpečenie?</translation>
 <translation id="3748706263662799310">Nahlásiť chybu</translation>
 <translation id="3750562496035670393">Chrome uložil vaše heslo do tohto zariadenia, ale môžete si ho namiesto toho uložiť do účtu Google. Potom budete mať tiež k dispozícii všetky heslá zo svojho účtu Google, kým sa neodhlásite.</translation>
 <translation id="3752253558646317685">Vaše dieťa musí zdvíhať prst, aby sa odtlačok uložil</translation>
@@ -3196,6 +3201,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4279129444466079448">V tomto zariadení môžete nainštalovať maximálne tento počet profilov eSIM: <ph name="PROFILE_LIMIT" />. Ak chcete pridať ďalší profil, najprv odstráňte existujúci.</translation>
 <translation id="4281844954008187215">Zmluvné podmienky</translation>
 <translation id="4282196459431406533">Smart Lock je zapnutý</translation>
+<translation id="4284755288573763878">Chcete vypnúť zlepšené zabezpečenie?</translation>
 <translation id="4285418559658561636">Aktualizovať heslo</translation>
 <translation id="4285498937028063278">Odopnúť</translation>
 <translation id="428565720843367874">Antivírusový softvér pri skenovaní tohto súboru neočakávane zlyhal.</translation>
@@ -4668,6 +4674,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5865508026715185451">Aplikácia <ph name="APP_NAME" /> bude čoskoro pozastavená</translation>
 <translation id="586567932979200359">Prehliadač <ph name="PRODUCT_NAME" /> je spustený z jeho obrazu disku. Inštalácia do počítača vám umožní spustiť ho bez obrazu disku a zabezpečí jeho aktualizáciu.</translation>
 <translation id="5865733239029070421">Automaticky odosiela štatistiky o používaní a správy o zlyhaní Googlu</translation>
+<translation id="5865848066829891215">Problémy s komunikáciou v sieti</translation>
 <translation id="5867841422488265304">Zadajte dopyt alebo webovú adresu</translation>
 <translation id="5869029295770560994">Dobre</translation>
 <translation id="5869522115854928033">Uložené heslá</translation>
@@ -5961,6 +5968,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7243784282103630670">Počas inovácie systému Linux sa vyskytla chyba. Kontajner obnovíme pomocou vašej zálohy.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="7246230585855757313">Bezpečnostný kľúč opäť vložte a skúste to znova</translation>
+<translation id="7249197363678284330">Toto nastavenie môžete zmeniť na paneli s adresou.</translation>
 <translation id="7250616558727237648">Zariadenie, s ktorým položku zdieľate, neodpovedalo. Skúste to znova.</translation>
 <translation id="725109152065019550">Je nám ľúto, správca vo vašom účte zakázal používanie externých ukladacích priestorov.</translation>
 <translation id="7251346854160851420">Predvolená tapeta</translation>
@@ -7716,6 +7724,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="9026731007018893674">stiahnuť</translation>
 <translation id="9026852570893462412">Tento proces môže trvať niekoľko minút. Sťahuje sa virtuálny počítač.</translation>
 <translation id="9027459031423301635">Otvoriť odkaz na novej &amp;karte</translation>
+<translation id="9029667986262585240">V účte ste vypli Zlepšené bezpečné prehliadanie.</translation>
 <translation id="9030515284705930323">Vaša organizácia nepovoľuje vo vašom účte Obchod Google Play. Ak chcete získať ďalšie informácie, kontaktujte svojho správcu.</translation>
 <translation id="9030754204056345429">Rýchlejšia</translation>
 <translation id="9030785788945687215">Gmail</translation>

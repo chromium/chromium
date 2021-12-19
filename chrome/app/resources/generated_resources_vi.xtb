@@ -415,6 +415,7 @@
            • Xóa cookie và dữ liệu trang web tạm thời khác
             <ph name="LINE_BREAKS" />
            Dấu trang, lịch sử duyệt web và mật khẩu đã lưu sẽ không bị ảnh hưởng.</translation>
+<translation id="1425233109861512854">Không nhận dạng được mã truy cập</translation>
 <translation id="1426410128494586442">Có</translation>
 <translation id="142655739075382478">Đã chặn <ph name="APP_NAME" /></translation>
 <translation id="1426870617281699524">Hãy nhấp vào Thử lại rồi chấp nhận lời nhắc trên máy tính của bạn</translation>
@@ -582,6 +583,7 @@
 <translation id="1593926297800505364">Lưu phương thức thanh toán</translation>
 <translation id="1595492813686795610">Linux đang nâng cấp</translation>
 <translation id="1596286373007273895">Có sẵn</translation>
+<translation id="1596709061955594992">Bluetooth đang tắt. Để xem các thiết bị có thể ghép đôi, hãy bật Bluetooth.</translation>
 <translation id="1598233202702788831">Quản trị viên của bạn đã tắt bản cập nhật.</translation>
 <translation id="1600857548979126453">Truy cập chương trình phụ trợ trình gỡ lỗi trang</translation>
 <translation id="1601560923496285236">Áp dụng</translation>
@@ -1143,6 +1145,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2148892889047469596">Truyền thẻ</translation>
 <translation id="2149973817440762519">Chỉnh sửa dấu trang</translation>
 <translation id="2150139952286079145">Tìm kiếm máy in đích</translation>
+<translation id="2150491840563706000">Bạn không có quyền truyền cho màn hình này</translation>
 <translation id="2150661552845026580">Và "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Chỉ mục thẻ không hợp lệ được nhập.</translation>
 <translation id="2152281589789213846">Thêm máy in vào hồ sơ của bạn</translation>
@@ -2611,6 +2614,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3654045516529121250">Đọc cài đặt trợ năng của bạn</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Ứng dụng có quyền truy cập vĩnh viễn vào một tệp.}other{Ứng dụng có quyền truy cập vĩnh viễn vào # tệp.}}</translation>
 <translation id="3658871634334445293">Tăng tốc TrackPoint</translation>
+<translation id="3659929705630080526">Bạn đã nhập sai mã truy cập quá nhiều lần. Hãy thử lại sau</translation>
 <translation id="3660234220361471169">Không đáng tin cậy</translation>
 <translation id="3664511988987167893">Biểu tượng tiện ích</translation>
 <translation id="3665589677786828986">Chrome phát hiện thấy rằng một số cài đặt của bạn đã bị lỗi do một chương trình khác gây ra và đặt lại các cài đặt đó về giá trị mặc định ban đầu.</translation>
@@ -2694,6 +2698,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3743842571276656710">Nhập mã PIN để ghép nối thiết bị với <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Để xóa ứng dụng, hãy chuyển đến mục Cài đặt &gt; Cửa hàng Google Play &gt; Quản lý tùy chọn Android &gt; Ứng dụng hoặc Trình quản lý ứng dụng. Tiếp theo, hãy nhấn vào ứng dụng mà bạn muốn gỡ cài đặt (bạn có thể phải vuốt sang phải hoặc trái để tìm ứng dụng đó). Sau đó, hãy nhấn vào Gỡ cài đặt hoặc Tắt.</translation>
 <translation id="3747220812138541072">Khi bạn nhập dữ liệu, nội dung gợi ý khi viết sẽ xuất hiện cùng dòng</translation>
+<translation id="3747603683749989726">Bật tính năng bảo mật nâng cao?</translation>
 <translation id="3748706263662799310">Báo cáo lỗi</translation>
 <translation id="3750562496035670393">Chrome đã lưu mật khẩu của bạn trên thiết bị này, nhưng bạn cũng có thể chuyển sang lưu mật khẩu đó vào Tài khoản Google. Sau đó, tất cả mật khẩu trong Tài khoản Google của bạn đều sẽ có sẵn hiện khi bạn đăng nhập.</translation>
 <translation id="3752253558646317685">Yêu cầu con bạn liên tục nhấc ngón tay lên để lưu dấu vân tay</translation>
@@ -3209,6 +3214,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4279129444466079448">Bạn có thể cài đặt tối đa <ph name="PROFILE_LIMIT" /> hồ sơ eSIM trên thiết bị này. Để thêm một hồ sơ khác, trước tiên, hãy xóa một hồ sơ hiện có.</translation>
 <translation id="4281844954008187215">Điều khoản dịch vụ</translation>
 <translation id="4282196459431406533">Đã bật Smart Lock</translation>
+<translation id="4284755288573763878">Tắt tính năng bảo mật nâng cao?</translation>
 <translation id="4285418559658561636">Cập nhật mật khẩu</translation>
 <translation id="4285498937028063278">Bỏ ghim</translation>
 <translation id="428565720843367874">Phần mềm chống vi-rút bị lỗi bất ngờ khi đang quét tệp này.</translation>
@@ -4682,6 +4688,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> sắp tạm dừng</translation>
 <translation id="586567932979200359">Bạn đang chạy <ph name="PRODUCT_NAME" /> từ hình ảnh đĩa của nó. Cài đặt trình duyệt này trên máy tính cho phép bạn chạy trình duyệt mà không cần có hình ảnh đĩa và đảm bảo trình duyệt sẽ được cập nhật.</translation>
 <translation id="5865733239029070421">Tự động gửi số liệu thống kê sử dụng và báo cáo sự cố cho Google</translation>
+<translation id="5865848066829891215">Vấn đề về kết nối mạng</translation>
 <translation id="5867841422488265304">Tìm kiếm hoặc nhập địa chỉ web</translation>
 <translation id="5869029295770560994">OK</translation>
 <translation id="5869522115854928033">Mật khẩu đã lưu</translation>
@@ -5975,6 +5982,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7243784282103630670">Đã xảy ra lỗi khi nâng cấp Linux. Chúng tôi sẽ khôi phục vùng chứa bằng bản sao lưu của bạn.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Tốt nhất)</translation>
 <translation id="7246230585855757313">Cắm lại khóa bảo mật rồi thử lại lần nữa</translation>
+<translation id="7249197363678284330">Thay đổi chế độ cài đặt này trong thanh địa chỉ.</translation>
 <translation id="7250616558727237648">Thiết bị mà bạn đang chia sẻ tệp không phản hồi. Vui lòng thử lại.</translation>
 <translation id="725109152065019550">Rất tiếc, quản trị viên của bạn đã tắt bộ nhớ ngoài trên tài khoản của bạn.</translation>
 <translation id="7251346854160851420">Hình nền mặc định</translation>
@@ -7729,6 +7737,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9026731007018893674">tải xuống</translation>
 <translation id="9026852570893462412">Quá trình này có thể mất vài phút. Đang tải xuống máy ảo.</translation>
 <translation id="9027459031423301635">Mở Liên kết trong &amp;Tab Mới</translation>
+<translation id="9029667986262585240">Bạn đã tắt tính năng Duyệt web an toàn có tăng cường bảo vệ trong tài khoản.</translation>
 <translation id="9030515284705930323">Tổ chức chưa bật Cửa hàng Google Play cho tài khoản của bạn. Hãy liên hệ với quản trị viên để biết thêm thông tin.</translation>
 <translation id="9030754204056345429">Nhanh hơn</translation>
 <translation id="9030785788945687215">Gmail</translation>

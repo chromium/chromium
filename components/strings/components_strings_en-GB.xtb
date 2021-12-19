@@ -112,6 +112,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1308113895091915999">Offer available</translation>
 <translation id="1312803275555673949">What evidence supports it?</translation>
 <translation id="131405271941274527"><ph name="URL" /> wants to send and receive info when you tap your phone on an NFC device</translation>
+<translation id="1314311879718644478">View augmented reality content</translation>
 <translation id="1314509827145471431">Bind right</translation>
 <translation id="1318023360584041678">Saved in tab group</translation>
 <translation id="1319245136674974084">Don’t ask again for this app</translation>
@@ -215,6 +216,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1583429793053364125">Something went wrong while displaying this web page.</translation>
 <translation id="1586541204584340881">Which extensions you have installed</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1589050138437146318">Install ARCore?</translation>
 <translation id="1592005682883173041">Local Data Access</translation>
 <translation id="1594030484168838125">Choose</translation>
 <translation id="160851722280695521">Play the Dino Run game in Chrome</translation>
@@ -1391,6 +1393,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5333022057423422993">Chrome found the password that you just used in a data breach. To secure your accounts, we recommend checking your saved passwords.</translation>
 <translation id="5334013548165032829">Detailed system logs</translation>
 <translation id="5334145288572353250">Save address?</translation>
+<translation id="5335920952954443287">Beating heart</translation>
 <translation id="5340250774223869109">Application is blocked</translation>
 <translation id="534295439873310000">NFC devices</translation>
 <translation id="5344579389779391559">This page may try to charge you money</translation>
@@ -2063,6 +2066,7 @@ Additional details:
 <translation id="7654909834015434372">When you edit annotations, this document will return to its original rotation</translation>
 <translation id="765676359832457558">Hide advanced settings ...</translation>
 <translation id="7658239707568436148">Cancel</translation>
+<translation id="7659878911471462949">Tears of joy</translation>
 <translation id="7662298039739062396">Setting controlled by an extension</translation>
 <translation id="7663736086183791259">Certificate <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Not allowed in Incognito</translation>
@@ -2266,6 +2270,7 @@ Additional details:
 <translation id="830498451218851433">Fold half</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Apps installed and how often they are used</translation>
+<translation id="8317207217658302555">Update ARCore?</translation>
 <translation id="831997045666694187">Evening</translation>
 <translation id="8321476692217554900">notifications</translation>
 <translation id="8328484624016508118">After closing all Incognito tabs, Chrome clears:

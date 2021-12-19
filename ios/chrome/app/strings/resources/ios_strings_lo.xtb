@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">ເພີ່ມໃສ່ລາຍການທີ່ຈະອ່ານ</translation>
 <translation id="3157684681743766797">ໝາຍທັງໝົດ…</translation>
 <translation id="3169472444629675720">ຄົ້ນຫາ</translation>
+<translation id="3174662312949010067">ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຢູ່ອຸປະກອນອື່ນຂອງທ່ານໄດ້ນຳ.</translation>
 <translation id="3175081911749765310">ການ​ບໍ​ລິ​ການ​ເວັບ</translation>
 <translation id="3178650076442119961">ນຳໃຊ້ມື້ນີ້</translation>
 <translation id="3181825792072797598">ເປີດ Sync</translation>
@@ -357,6 +358,7 @@
 <translation id="4389019817280890563">ແຕະເພື່ອປ່ຽນພາສາ.</translation>
 <translation id="4442550905108052454">ເປີດ <ph name="BEGIN_BOLD" />ການຕັ້ງຄ່າ<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">ເພີ່ມພາສາ</translation>
+<translation id="4462491365653392320">ຕິດຕາມລາຄາຢູ່ແຖບຕ່າງໆ</translation>
 <translation id="4469418912670346607">ສືບຕໍ່ການຕັ້ງຄ່າ</translation>
 <translation id="4474494258097106883">ສ້າງມາສຳລັບ iPhone ຂອງທ່ານ</translation>
 <translation id="4476574785019001431">ການຕັ້ງຄ່າ</translation>
@@ -420,6 +422,7 @@
 <translation id="4944543191714094452">ຊອກຫາໃນໜ້າ…</translation>
 <translation id="4945756290001680296">ເຂົ້າເຖິງການຕັ້ງຄ່າລະຫັດຜ່ານ</translation>
 <translation id="4979397965658815378">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ຂອງທ່ານເພື່ອໃຊ້ບຸກມາກ, ລະຫັດຜ່ານ, ປະຫວັດ ແລະ ການຕັ້ງຄ່າອື່ນຢູ່ໃນທຸກອຸປະກອນຂອງທ່ານ</translation>
+<translation id="4986678885919050584">ລຶບອອກຈາກອຸປະກອນນີ້</translation>
 <translation id="5005498671520578047">ອັດ​ສຳ​ເນົາ​ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="5017828934289857214">ແຈ້ງເຕືອນຂ້ອຍພາຍຫຼັງ</translation>
 <translation id="5037676449506322593">ເລືອກ​ທັງ​ຫມົດ</translation>
@@ -434,6 +437,7 @@
 <translation id="5118764316110575523">ປິດ</translation>
 <translation id="5127805178023152808">ຊິງ​ຄ໌​ປິດ</translation>
 <translation id="5132942445612118989">ຊິ້ງຂໍ້ມູນລະຫັດຜ່ານ, ປະຫວັດຂອງທ່ານ ແລະ ອື່ນໆອີກຢູ່ໃນທຸກອຸປະກອນ</translation>
+<translation id="51339916068413997">ທ່ານສາມາດຕື່ມຂໍ້ມູນລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ອັດຕະໂນມັດໃນແອັບອື່ນໆຢູ່ iPad ຂອງທ່ານໄດ້.</translation>
 <translation id="5140288047769711648">Chrome ຈະຈື່ລະຫັດຜ່ານນີ້ສຳລັບທ່ານ. ທ່ານບໍ່ຈໍາເປັນຕ້ອງຈື່ມັນ.</translation>
 <translation id="5150492518600715772">ສົ່ງຫາອຸປະກອນຂອງທ່ານ</translation>
 <translation id="5168414296986405587">ສ້າງມາສຳລັບ iPadOS</translation>
@@ -472,6 +476,7 @@
 Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງານ​ຢູ່​ໃນ​ພາກ​ທົ່ວ​ໄປ​ຂອງ​ການ​ຕັ້ງ​ຄ່າ​ນຳ​ອີກ, ແລະ​ອຸ​ປະ​ກອນ​ຂອງ​ທ່ານ​ຕ້ອງ​ໃຊ້​ບັນ​ຊີ iCloud ດຽວ​ກັນ​ນຳ.</translation>
 <translation id="5551897871312988470">ໃຫ້ການແປພາສາ</translation>
 <translation id="5556459405103347317">ໂຫຼດຄືນໃໝ່</translation>
+<translation id="5557664881350188277">ທ່ານສາມາດຕື່ມຂໍ້ມູນລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ອັດຕະໂນມັດໃນແອັບອື່ນໆຢູ່ iPhone ຂອງທ່ານໄດ້.</translation>
 <translation id="5580834567471114021">ເພີ່ມໃສ່ລາຍຊື່ການອ່ານສຳລັບພາຍຫຼັງບໍ?</translation>
 <translation id="5592679540098330836">ເປີດການຊິ້ງຂໍ້ມູນສຳລັບ <ph name="NAME" /></translation>
 <translation id="560322036295180549">ຖືກປິດໄວ້ໂດຍອົງການຂອງທ່ານ</translation>
@@ -521,6 +526,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5979837087407522202">ຊອກຫາລະຫັດຜ່ານ</translation>
 <translation id="5982717868370722439">ເພີ່ມຂໍ້ມູນທີ່ມີຢູ່ໃສ່ <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">ເຂົ້າເບິ່ງບໍ່​ດົນ​ມາ​ນີ້</translation>
+<translation id="5988097621740394599">ເບິ່ງການຫຼຸດລາຄາຢູ່ແຖບຂອງທ່ານ.</translation>
 <translation id="5988851877894965432">ເປີດ URL ໃນ Chrome</translation>
 <translation id="6012140227487808125">ກຳລັງເຂົ້າລະຫັດ...</translation>
 <translation id="6021332621416007159">ເປີດ​ຢູ່​ໃນ...</translation>
@@ -765,6 +771,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8076014560081431679">ການຕັ້ງຄ່າເວັບໄຊທີ່ບັນທຶກໄວ້ຈະບໍ່ຖືກລຶບ ແລະ ອາດຈະສະທ້ອນເຖິງນິໄສການທ່ອງເວັບຂອງທ່ານ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">ການຕັ້ງຄ່ານີ້ໄດ້ຮັບການຈັດການ, ແຕະສອງຄັ້ງສຳລັບຂໍ້ມູນເພີ່ມເຕີມ</translation>
 <translation id="8080028325999236607">ປິດ​ທຸກແຖບ</translation>
+<translation id="8101409298456377967">ສ້າງ, ບັນທຶກ ແລະ ຈັດການລະຫັດຜ່ານຂອງທ່ານເພື່ອໃຫ້ທ່ານສາມາດເຂົ້າສູ່ລະບົບຫາເວັບໄຊ ແລະ ແອັບໄດ້ຢ່າງງ່າຍດາຍ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">ປິດ</translation>
 <translation id="8114753159095730575">ການດາວໂຫຼດໄຟລ໌ບໍ່ສາມາດໃຊ້ໄດ້. ມີຕົວເລືອກຕ່າງໆຢູ່ໃກ້ສ່ວນລຸ່ມຂອງໜ້າຈໍ.</translation>
 <translation id="8132598642024322408">ຕອນນີ້ <ph name="PRICE" /> ກ່ອນໜ້ານີ້ <ph name="PREVIOUS_PRICE" />.</translation>
