@@ -3720,6 +3720,11 @@
     "expiry_milestone": 104
   },
   {
+    "name": "link-capturing-ui-update",
+    "owners": ["tsergeant", "chromeos-apps-foundation-team@google.com"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "list-all-display-modes",
     "owners": [ "//ui/display/OWNERS" ],
     // This flag is used for debugging and development purposes to list all

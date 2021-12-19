@@ -7747,6 +7747,12 @@ const FeatureEntry kFeatureEntries[] = {
                                     "UseMultipleOverlays")},
 #endif
 
+#if defined(OS_CHROMEOS)
+    {"link-capturing-ui-update", flag_descriptions::kLinkCapturingUiUpdateName,
+     flag_descriptions::kLinkCapturingUiUpdateDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kLinkCapturingUiUpdate)}
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -5293,6 +5293,12 @@ const char kVaapiAV1DecoderDescription[] =
 const char kEnableTtsLacrosSupportName[] = "Enable tts lacros support";
 const char kEnableTtsLacrosSupportDescription[] =
     "Enable or disable lacros support for text to speech.";
+
+extern const char kLinkCapturingUiUpdateName[] =
+    "Enable updated link capturing UI";
+extern const char kLinkCapturingUiUpdateDescription[] =
+    "Enables updated UI for link capturing flows from the browser to apps, "
+    "including the intent picker and an in-app link capturing prompt.";
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)

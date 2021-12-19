@@ -669,6 +669,11 @@ const base::Feature kKernelnextVMs{"KernelnextVMs",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_CHROMEOS)
+const base::Feature kLinkCapturingUiUpdate{"LinkCapturingUiUpdate",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES)
 const base::Feature kLinuxLowMemoryMonitor{"LinuxLowMemoryMonitor",

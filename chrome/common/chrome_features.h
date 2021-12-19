@@ -448,6 +448,11 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kKernelnextVMs;
 #endif
 
+#if defined(OS_CHROMEOS)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kLinkCapturingUiUpdate;
+#endif
+
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kLinuxLowMemoryMonitor;
