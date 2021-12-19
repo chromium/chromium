@@ -415,6 +415,7 @@
            • Smažou se soubory cookie a jiná dočasná data webů.
             <ph name="LINE_BREAKS" />
            Záložky, historie ani uložená hesla nebudou dotčena.</translation>
+<translation id="1425233109861512854">Přístupový kód nebyl rozpoznán</translation>
 <translation id="1426410128494586442">Ano</translation>
 <translation id="142655739075382478">Aplikace <ph name="APP_NAME" /> je zablokována</translation>
 <translation id="1426870617281699524">Klikněte na Zkusit znovu a potvrďte výzvu na počítači</translation>
@@ -581,6 +582,7 @@
 <translation id="1593926297800505364">Uložit platební metodu</translation>
 <translation id="1595492813686795610">Linux se upgraduje</translation>
 <translation id="1596286373007273895">Dostupné</translation>
+<translation id="1596709061955594992">Bluetooth je vypnutý. Pokud chcete zobrazit dostupná zařízení, zapněte Bluetooth.</translation>
 <translation id="1598233202702788831">Administrátor aktualizace zakázal.</translation>
 <translation id="1600857548979126453">Získat přístup k ladicímu programu stránky na serveru</translation>
 <translation id="1601560923496285236">Použít</translation>
@@ -1133,6 +1135,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2148892889047469596">Odeslat kartu</translation>
 <translation id="2149973817440762519">Upravit záložku</translation>
 <translation id="2150139952286079145">Vyhledat cíle</translation>
+<translation id="2150491840563706000">K odeslání na tento displej nemáte oprávnění</translation>
 <translation id="2150661552845026580">Přidat rozšíření <ph name="EXTENSION_NAME" />?</translation>
 <translation id="2151576029659734873">Zadaný index karty je neplatný.</translation>
 <translation id="2152281589789213846">Přidat tiskárny do profilu</translation>
@@ -2597,6 +2600,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3654045516529121250">Čtení nastavení usnadnění přístupu</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Má trvalý přístup k jednomu souboru.}few{Má trvalý přístup ke # souborům.}many{Má trvalý přístup k # souboru.}other{Má trvalý přístup k # souborům.}}</translation>
 <translation id="3658871634334445293">Akcelerace TrackPointu</translation>
+<translation id="3659929705630080526">Zadali jste příliš mnohokrát nesprávný přístupový kód. Zkuste to znovu později</translation>
 <translation id="3660234220361471169">Nedůvěryhodný</translation>
 <translation id="3664511988987167893">Ikona rozšíření</translation>
 <translation id="3665589677786828986">Prohlížeč Chrome zjistil, že některá z vašich nastavení byla upravena jiným programem, a obnovil je na původní výchozí hodnoty.</translation>
@@ -2680,6 +2684,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3743842571276656710">Zadejte PIN pro spárování se zařízením <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Chcete-li odstranit aplikace, přejděte do Nastavení &gt; Obchod Google Play &gt; Spravovat nastavení aplikací Android &gt; Aplikace nebo Správce aplikací. Poté klepněte na aplikaci, kterou chcete odinstalovat (možná bude třeba aplikacemi listovat doprava či doleva). Následně klepněte na Odinstalovat nebo Deaktivovat.</translation>
 <translation id="3747220812138541072">Zobrazovat na řádku návrhy psaní, zatímco budete psát</translation>
+<translation id="3747603683749989726">Zapnout vylepšené zabezpečení?</translation>
 <translation id="3748706263662799310">Nahlásit chybu</translation>
 <translation id="3750562496035670393">Chrome heslo uložil do tohoto zařízení, ale můžete ho místo toho uložit do svého účtu Google. Když budete přihlášeni, budou pak k dispozici i všechna hesla ve vašem účtu Google.</translation>
 <translation id="3752253558646317685">Nechte dítě opakovaně přikládat a zvedat prst, aby se uložil celý otisk prstu</translation>
@@ -3194,6 +3199,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4279129444466079448">Do tohoto zařízení můžete nainstalovat nejvýše <ph name="PROFILE_LIMIT" /> profilů eSIM. Pokud chcete přidat další profil, nejdříve některý z existujících odstraňte.</translation>
 <translation id="4281844954008187215">Smluvní podmínky</translation>
 <translation id="4282196459431406533">Funkce Smart Lock je zapnutá</translation>
+<translation id="4284755288573763878">Vypnout vylepšené zabezpečení?</translation>
 <translation id="4285418559658561636">Aktualizovat heslo</translation>
 <translation id="4285498937028063278">Odepnout</translation>
 <translation id="428565720843367874">Při kontrole tohoto souboru došlo k neočekávané chybě antivirového softwaru.</translation>
@@ -4666,6 +4672,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5865508026715185451">Aplikace <ph name="APP_NAME" /> se brzy pozastaví</translation>
 <translation id="586567932979200359">Aplikaci <ph name="PRODUCT_NAME" /> spouštíte z bitové kopie disku. Pokud ji nainstalujte do svého počítače, můžete ji spouštět bez bitové kopie disku a umožníte její aktualizace.</translation>
 <translation id="5865733239029070421">Automaticky odesílá statistiky o využívání a zprávy o selhání do Googlu</translation>
+<translation id="5865848066829891215">Problémy se síťovou komunikací</translation>
 <translation id="5867841422488265304">Zadejte dotaz nebo webovou adresu</translation>
 <translation id="5869029295770560994">Dobře, rozumím</translation>
 <translation id="5869522115854928033">Uložená hesla</translation>
@@ -5959,6 +5966,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7243784282103630670">Při upgradování Linuxu došlo k chybě. Kontejner obnovíme z vaší zálohy.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (nejlepší)</translation>
 <translation id="7246230585855757313">Opět bezpečností klíč vložte a zkuste to znovu</translation>
+<translation id="7249197363678284330">Toto nastavení můžete změnit na adresním řádku.</translation>
 <translation id="7250616558727237648">Cílové zařízení neodpovědělo. Zkuste to znovu.</translation>
 <translation id="725109152065019550">Je nám líto, správce ve vašem účtu zakázal používání externích úložišť.</translation>
 <translation id="7251346854160851420">Výchozí tapeta</translation>
@@ -7714,6 +7722,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="9026731007018893674">stažený soubor</translation>
 <translation id="9026852570893462412">Tento proces může trvat několik minut. Probíhá stahování virtuálního počítače.</translation>
 <translation id="9027459031423301635">Otevří&amp;t odkaz v nové kartě</translation>
+<translation id="9029667986262585240">Ve svém účtu jste vypnuli Vylepšené Bezpečné prohlížení.</translation>
 <translation id="9030515284705930323">Vaše organizace pro váš účet Obchod Google Play nepovolila. Další informace získáte u svého administrátora.</translation>
 <translation id="9030754204056345429">Rychlejší</translation>
 <translation id="9030785788945687215">Gmail</translation>

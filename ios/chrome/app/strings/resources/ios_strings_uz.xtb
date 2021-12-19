@@ -235,6 +235,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3157387275655328056">Mutolaa ro‘yxatiga qo‘shish</translation>
 <translation id="3157684681743766797">Hammasini belgilash…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Boshqa qurilmalarda saqlangan parollardan ham foydalanish mumkin.</translation>
 <translation id="3175081911749765310">Veb-xizmatlar</translation>
 <translation id="3178650076442119961">Bugun onlayn edi</translation>
 <translation id="3181825792072797598">Sinxronizatsiyani yoqish</translation>
@@ -435,6 +436,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5118764316110575523">Yoqilmagan</translation>
 <translation id="5127805178023152808">Sinxronizatsiya o‘chiq</translation>
 <translation id="5132942445612118989">Parollar, tarix va boshqa sozlamalaringizni barcha qurilmalaringizda sinxronlang</translation>
+<translation id="51339916068413997">iPaddagi boshqa ilovalarda saqlangan parollarni ham avtomatik kiritish mumkin.</translation>
 <translation id="5140288047769711648">Chrome bu parolni eslab qoladi. Yodda tutishingiz shart emas.</translation>
 <translation id="5150492518600715772">Qurilmangizga yuborish</translation>
 <translation id="5168414296986405587">iPadOS uchun ishlab chiqilgan</translation>
@@ -473,6 +475,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamalarida (“Umumiy” bo‘limida) ham yoqish kerak. Barcha qurilmalaringiz umumiy iCloud hisobida sinxronlanishi zarur.</translation>
 <translation id="5551897871312988470">Tarjima qilishni taklif qilish</translation>
 <translation id="5556459405103347317">Qayta yuklash</translation>
+<translation id="5557664881350188277">iPhonedagi boshqa ilovalarda saqlangan parollarni ham avtomatik kiritish mumkin.</translation>
 <translation id="5580834567471114021">Keyinroq oʻqish uchun mutolaa roʻyxatiga kiritilsinmi?</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> hisobingizni sinxronlang</translation>
 <translation id="560322036295180549">Tashkilotingiz tomonidan faolsizlantirilgan</translation>
@@ -767,6 +770,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8076014560081431679">Saytlarda saqlangan ma’lumotlar tozalanmaydi va brauzer faoliyatiga ta’sir qilmaydi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Bu sozlama boshqariladi. Batafsil axborot olish uchun bosing</translation>
 <translation id="8080028325999236607">Barcha tablarni yopish</translation>
+<translation id="8101409298456377967">Sayt va ilovalarga osongina kirish uchun parollaringizni yarating, saqlang va boshqaring. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">O‘chirib qo‘yish</translation>
 <translation id="8114753159095730575">Faylni yuklab olish mumkin. Qo‘shimcha amallar ekranning pastki qismida.</translation>
 <translation id="8132598642024322408">Joriy narxi: <ph name="PRICE" />, eski narxi: <ph name="PREVIOUS_PRICE" />.</translation>

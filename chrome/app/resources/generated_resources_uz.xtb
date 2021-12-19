@@ -393,6 +393,7 @@
 <translation id="1408980562518920698">Shaxsiy axborotni boshqarish</translation>
 <translation id="1410197035576869800">Ilova ikonkasi</translation>
 <translation id="1410616244180625362"><ph name="HOST" /> saytiga kamerangizdan foydalanishga ruxsat berish</translation>
+<translation id="1410797069449661718">Birinchi varaq tomonga varaqlash</translation>
 <translation id="1410806973194718079">Qoidalar tekshirilmadi</translation>
 <translation id="1412681350727866021">Qoʻshimcha kengaytmalar</translation>
 <translation id="1414315029670184034">Saytlarga kameradan foydalanishni taqiqlash</translation>
@@ -719,6 +720,7 @@
 <translation id="1725562816265788801">Varaqni aylantirish</translation>
 <translation id="1729533290416704613">Bundan tashqari kengaytma Omniboksda so‘rovlar kiritishda foydalaniladigan birlamchi qidiruv tizimini o‘zgartirib qo‘ydi.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Ilovalarni olib tashlash uchun Sozlamalar &gt; Google Play Market &gt; Android sozlamalari boshqaruvi &gt; Ilovalar yoki Ilovalar menejeri menyusiga kiring. Kerakli ilovani tanlab (ilovani topish uchun ekranni oʻng yoki chapga suring), “Olib tashlash” yoki “Faolsizlantirish” parametrini bosing.<ph name="END_PARAGRAPH1" /></translation>
+<translation id="1730989807608739928">Oxirgi varaq tomonga varaqlash</translation>
 <translation id="1731911755844941020">So‘rov yuborilmoqda...</translation>
 <translation id="1733383495376208985">Sinxronlangan maʼlumotlarni <ph name="BEGIN_LINK" />kodli ibora bilan shifrlang<ph name="END_LINK" />. Google Pay manzillari va toʻlov usullari esa shifrlanmaydi.</translation>
 <translation id="1734212868489994726">Havorang</translation>
@@ -3113,6 +3115,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ishonchli tashkilotga tegishli emas. Administratorga murojaat qiling. Administrator boʻlsangiz, tashkilotingizni quyidagi sahifa orqali sozlang: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4167686856635546851">Saytlar odatda video oʻyinlar yoki veb shakllarni aks ettirish maqsadida JavaScript ishlatadi</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> foydalanuvchisining ba`zi sozlamalari multi-kirish (bir nechta hisobdan) vaqtida hisobingizga ta`sir qiladi.</translation>
+<translation id="4168651806173792090"><ph name="NETWORK_NAME" /> (oxirgi raqamlari <ph name="LAST_FOUR_DIGITS" />)</translation>
 <translation id="4169535189173047238">Rad etish</translation>
 <translation id="4170314459383239649">Chiqish vaqtida tozalansin</translation>
 <translation id="417096670996204801">Profilni tanlang</translation>
@@ -3343,6 +3346,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4432621511648257259">Parol xato kiritildi</translation>
 <translation id="443454694385851356">Eskirgan (himoyasizroq)</translation>
 <translation id="443475966875174318">Mos kelmaydigan ilovalarni yangilash yoki olib tashlash</translation>
+<translation id="4435634292635092844">Telefon kamerasidagi rasmlarni <ph name="DEVICE_TYPE" /> qurilmasida ochish. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="4438043733494739848">Shaffof</translation>
 <translation id="4440097423000553826"><ph name="WEBSITE" /> telefoningizga bildirishnoma yubordi. Shaxsingizni tasdiqlash uchun “<ph name="NOTIFICATIONTITLE" />” bildirishnomasini bosing va qadamlarni bajaring.</translation>
 <translation id="4441124369922430666">Qurilma yoqilganda bu ilova avtomatik ishga tushirilsinmi?</translation>
@@ -4601,6 +4605,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Bajarildi</translation>
 <translation id="5790651917470750848">Port allaqachon uzatilmoqda</translation>
+<translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" /> uchun boshqa amallar</translation>
 <translation id="5792728279623964091">Quvvat tugmasini bosing</translation>
 <translation id="5793339252089865437">Yangilanishlarni mobil tarmoq orqali amalga oshirsangiz, ancha pulingiz ketib qoladi.</translation>
 <translation id="5794034487966529952"><ph name="DESK_TITLE" /> ish stolida <ph name="NUM_BROWSERS" /> ta brauzer oynasi ochilgan</translation>
@@ -7009,6 +7014,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8264024885325823677">Bu sozlama administrator tomonidan boshqariladi.</translation>
 <translation id="8264718194193514834">“<ph name="EXTENSION_NAME" />” kengaytmasi kiosk rejimida ishga tushdi.</translation>
 <translation id="826511437356419340">Umumiy nazar rejimi yoqildi. Orqaga yoki oldinga oʻtkazish uchun suring yoki klaviatura bor boʻlsa, tab tugmasini bosing</translation>
+<translation id="8265671588726449108">{COUNT,plural, =1{Brauzer qayta ishga tushirilganda Inkognito oynasi qayta ochilmaydi}other{Brauzer qayta ishga tushirilganda {COUNT} ta Inkognito oynasi qayta ochilmaydi}}</translation>
 <translation id="8266947622852630193">Barcha matn kiritish usullari</translation>
 <translation id="8267539814046467575">Printer kiritish</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Bunga qurilma va undan qanday foydalanish haqidagi umumiy axborot, masalan, batareya quvvati darajasi, tizim va ilovalardan qanday foydalanishingiz, ishdan chiqish hisobotlari kiradi. Ba’zi to‘plangan ma’lumotlar Android dasturchilar kabi hamkorlarimizga ham o‘z ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi.<ph name="END_PARAGRAPH1" />

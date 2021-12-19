@@ -1450,6 +1450,7 @@
 <translation id="245322989586167203">ໂດຍປົກກະຕິເວັບໄຊຕ່າງໆຈະເຊື່ອມຕໍ່ຫາຜອດຊີຣຽວສຳລັບຄຸນສົມບັດການໂອນຂໍ້ມູນ ເຊັ່ນ: ການຕັ້ງຄ່າເຄືອຂ່າຍຂອງທ່ານ</translation>
 <translation id="2453706416476934374">ເພື່ອຮັບຄຳຕອບທີ່ປັບແຕ່ງມາເມື່ອ <ph name="SUPERVISED_USER_NAME" /> ຖາມຄຳຖາມ, ກະລຸນາເປີດໃຫ້ຜູ້ຊ່ວຍຂອງທ່ານເຂົ້າເຖິງຮູບໜ້າຈໍຂອງສິ່ງທີ່ຢູ່ເທິງໜ້າຈໍຂອງ <ph name="SUPERVISED_USER_NAME" /> ໄດ້. ນີ້ອາດຮວມຂໍ້ມູນກ່ຽວກັບເພງ ຫຼື ວິດີໂອທີ່ກຳລັງເປີດຢູ່ນຳ.</translation>
 <translation id="2453860139492968684">ສໍາ​ເລັດ​</translation>
+<translation id="2454206500483040640">ແບ່ງແລ້ວ</translation>
 <translation id="2454247629720664989">ຄໍາ​ສໍາຄັນ</translation>
 <translation id="2454264884354864965">ກ້ອງປິດຢູ່</translation>
 <translation id="2454524890947537054">ອະນຸມັດຄຳຮ້ອງຂໍເວັບໄຊບໍ?</translation>
@@ -1812,6 +1813,7 @@
 <translation id="2806891468525657116">ມີທາງລັດນັ້ນຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="2807517655263062534">ໄຟລ໌ທີ່ທ່ານດາວໂຫຼດປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="2809586584051668049">ແລະ <ph name="NUMBER_ADDITIONAL_DISABLED" /> ເພີ່ມອີກ</translation>
+<translation id="2810235462964014915">ຮ້ອງຂໍເພື່ອອ່ານ ແລະ ປ່ຽນແປງ <ph name="SITE_NAME" /> ແລ້ວ</translation>
 <translation id="2811205483104563968">ບັນຊີ</translation>
 <translation id="2812049959647166806">ບໍ່ຮອງຮັບ Thunderbolt</translation>
 <translation id="2812989263793994277">ຢ່າສະແດງຮູບໃດອີກ</translation>
@@ -5159,6 +5161,7 @@
 <translation id="6374469231428023295">ລອງໃໝ່ອີກ</translation>
 <translation id="6377268785556383139">1 ຜົນການຊອກຫາສຳລັບ '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380143666419481200">ຍອມ​ຮັບ​ ແລະ​ສືບ​ຕໍ່</translation>
+<translation id="6382616130475191723">ອະນຸຍາດໃຫ້ອ່ານ ແລະ ປ່ຽນແປງ <ph name="SITE_NAME" /> ແລ້ວ</translation>
 <translation id="6382958439467370461">ບໍ່ມີທາງລັດທີ່ບໍ່ເຮັດວຽກ</translation>
 <translation id="638418309848716977">ລິ້ງທີ່ຮອງຮັບ</translation>
 <translation id="6384275966486438344">ປ່ຽນການຕັ້ງຄ່າການຄົ້ນຫາຂອງທ່ານເປັນ​: <ph name="SEARCH_HOST" /></translation>
@@ -6989,6 +6992,7 @@
 <translation id="8244514732452879619">ໃກ້ຈະປິດໄຟແລ້ວ</translation>
 <translation id="8246776524656196770">ປົກປ້ອງກະແຈຄວາມປອດໄພຂອງທ່ານດ້ວຍ PIN (ລະຫັດລະບຸສ່ວນຕົວ)</translation>
 <translation id="8248050856337841185">ແປະໃສ່</translation>
+<translation id="8248381369318572865">ເຂົ້າເຖິງໄມໂຄຣໂຟນ ແລະ ວິເຄາະຄຳເວົ້າຂອງທ່ານ</translation>
 <translation id="8248887045858762645">ເຄັດລັບ Chrome</translation>
 <translation id="8249048954461686687">ໂຟລເດີ OEM</translation>
 <translation id="8249615410597138718">ສົ່ງຫາອຸປະກອນຂອງທ່ານ</translation>

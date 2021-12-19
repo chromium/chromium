@@ -131,6 +131,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Nuqta tezkor tugmasi oʻzgardi. Insert tugmasidan foydalanish uchun <ph name="LAUNCHER_KEY_NAME" /> tugmasi + Shift + Backspace tugmalarini bosing.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />-qator, <ph name="COLUMN_NUMBER" />-ustunga oʻtdi.</translation>
 <translation id="1771761307086386028">Oʻngga aylantirish</translation>
+<translation id="1774796056689732716">Taqvim, <ph name="CURRENT_MONTH_YEAR" />, hozir <ph name="DATE" /> tanlangan.</translation>
 <translation id="1787955149152357925">Yoqilmagan</translation>
 <translation id="1804572139604454141">Diskdan juda kam joy qolgani uchun yozib olish tugatildi</translation>
 <translation id="181103072419391116">Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
@@ -629,6 +630,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5168181903108465623">Translatsiya qurilmalari mavjud</translation>
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
 <translation id="5176318573511391780">Ekran qismini yozib olish</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ta tadbir</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> va <ph name="IN_PLACE_APP" /> ilovalari yangi jildga birlashtirildi.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Yana 1 ta bildirishnoma}other{Yana # ta bildirishnoma}}</translation>
@@ -802,6 +804,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="643147933154517414">Bajarildi</translation>
 <translation id="6431865393913628856">Ekran yozuvi</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> <ph name="RECEIVER_NAME" /> qurilmasiga translatsiya qilinmoqda</translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ta tadbir</translation>
 <translation id="6452181791372256707">Rad etish</translation>
 <translation id="6453179446719226835">Til sozlamalari o‘zgardi</translation>
 <translation id="6459472438155181876">Ekranni kengaytirish: <ph name="DISPLAY_NAME" /></translation>
@@ -865,6 +868,7 @@ yangi oʻrnatilgan</translation>
 <translation id="6811454077060061666">Kompyuter uchun Google Drive hozir ishlamaydi</translation>
 <translation id="6818242057446442178">Bitta soʻz orqaga</translation>
 <translation id="6820676911989879663">Tanaffus qiling</translation>
+<translation id="6827049576281411231">Tadbir panelini yopish</translation>
 <translation id="6836499262298959512">Xavfli fayl</translation>
 <translation id="6837064795450991317">Ish panelini yopish</translation>
 <translation id="6852052252232534364">Faollashtirish</translation>
@@ -872,6 +876,7 @@ yangi oʻrnatilgan</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bitta raqam kiritilmadi}other{# ta raqam kiritilmadi}}</translation>
 <translation id="6867938213751067702">Yuklab olish pauza qilindi: <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Yorliq yoqilmagan</translation>
+<translation id="6884665277231944629">Bugunga qaytish</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> ishlashi sekinlashishi mumkin. <ph name="PREFERRED_MINIMUM_POWER" />W sertifikatiga ega yoki kuchliroq USB-C quvvat adapteridan foydalaning.</translation>
 <translation id="688631446150864480">Oynalarni almashtirish uchun pastga strelkani bosing</translation>
 <translation id="6896758677409633944">Nusxa olish</translation>
@@ -958,6 +963,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7497767806359279797">Til va klaviaturani tanlang</translation>
 <translation id="7509246181739783082">Shaxsni tasdiqlash</translation>
 <translation id="7513622367902644023">Skrinshot rejimi tanlandi</translation>
+<translation id="7513922695575567867">Taqvim, <ph name="DATE" /> haftasi, hozir <ph name="SELECTED_DATE" /> tanlangan.</translation>
 <translation id="7514365320538308">Yuklab olish</translation>
 <translation id="7526573455193969409">Tarmoq kuzatilishi mumkin</translation>
 <translation id="7536035074519304529">IP manzil: <ph name="ADDRESS" /></translation>
@@ -1040,6 +1046,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8035152190676905274">Pero</translation>
 <translation id="8036504271468642248">Avvalgi gap</translation>
 <translation id="8042893070933512245">Maxsus imkoniyatlar sozlamalari menyusini ochish</translation>
+<translation id="8042925093898452104">Batafsil axborotni yopish</translation>
 <translation id="8048123526339889627">Bluetooth sozlamalari</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> nomli andoza bor</translation>
 <translation id="8052898407431791827">Vaqtinchalik xotiraga nusxalandi</translation>
