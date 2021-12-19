@@ -3384,7 +3384,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4534661889221639075">Inténtalo de nuevo.</translation>
 <translation id="4535127706710932914">Perfil predeterminado</translation>
 <translation id="4535767533210902251">El sensor de huellas digitales está en la tecla de arriba a la derecha de tu teclado. Tócalo ligeramente con un dedo.</translation>
-<translation id="4536140153723794651">Sitios web que pueden usar cookies siempre</translation>
+<translation id="4536140153723794651">Sitios que pueden usar cookies siempre</translation>
 <translation id="4538163005498287211">Según tu fondo de pantalla</translation>
 <translation id="4538417792467843292">Eliminar palabra</translation>
 <translation id="4538792345715658285">Instalada por una política empresarial</translation>
@@ -5979,7 +5979,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7364796246159120393">Seleccionar archivo</translation>
 <translation id="7365076891350562061">Tamaño del monitor</translation>
 <translation id="7366316827772164604">Buscando dispositivos cercanos...</translation>
-<translation id="7366415735885268578">Añadir un sitio web</translation>
+<translation id="7366415735885268578">Añadir un sitio</translation>
 <translation id="7366909168761621528">Datos de navegación</translation>
 <translation id="7367714965999718019">Generador de códigos QR</translation>
 <translation id="7367758267317684635">Verás tu historial de Chrome en todos tus dispositivos sincronizados</translation>
