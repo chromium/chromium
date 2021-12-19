@@ -7,6 +7,7 @@ include_rules = [
   "+services/device/public",
   "+ash/test",
   "+ash/constants",
+  "+third_party/cros_system_api/dbus/typecd",
 ]
 
 specific_include_rules = {

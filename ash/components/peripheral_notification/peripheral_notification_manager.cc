@@ -12,6 +12,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
+#include "third_party/cros_system_api/dbus/typecd/dbus-constants.h"
 
 namespace ash {
 
@@ -125,6 +126,18 @@ void PeripheralNotificationManager::OnBlockedThunderboltDeviceConnected(
   // Currently the device name is not shown in the notification.
   NotifyPeripheralBlockedReceived();
   RecordConnectivityMetric(PeripheralConnectivityResults::kPeripheralBlocked);
+}
+
+void PeripheralNotificationManager::OnCableWarning(
+    typecd::CableWarningType cable_warning_type) {
+  // Adding function as stub. Will be enabled with flag CL.
+  // TODO: Add a flag to block this function. And behind the flag, call
+  // NotifyInvalidDpCable if the kInvalidDpCable CableWarningType is received.
+}
+
+void PeripheralNotificationManager::NotifyInvalidDpCable() {
+  for (auto& observer : observer_list_)
+    observer.OnInvalidDpCableWarning();
 }
 
 void PeripheralNotificationManager::OnDeviceConnected(

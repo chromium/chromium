@@ -61,6 +61,9 @@ class ASH_EXPORT PciePeripheralNotificationController
   // is not supported by the board.
   void NotifyBillboardDevice();
 
+  // Stubs from usb peripheral notification controller
+  void OnInvalidDpCableWarning() override {}
+
  private:
   friend class PciePeripheralNotificationControllerTest;
 

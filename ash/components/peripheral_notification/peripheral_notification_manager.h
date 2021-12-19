@@ -13,6 +13,7 @@
 #include "base/observer_list_types.h"
 #include "chromeos/dbus/pciguard/pciguard_client.h"
 #include "chromeos/dbus/typecd/typecd_client.h"
+#include "third_party/cros_system_api/dbus/typecd/dbus-constants.h"
 
 namespace device {
 namespace mojom {
@@ -53,6 +54,11 @@ class COMPONENT_EXPORT(ASH_PERIPHERAL_NOTIFICATION)
     // recently plugged in Thunderbolt/USB4 device is a billboard device that is
     // not supported by the board.
     virtual void OnBillboardDeviceConnected() = 0;
+
+    // Called to notify user of possibly invalid dp cable. This signal will be
+    // sent by typecd when the partner meets the conditions for DP alternate
+    // mode, but the cable does not.
+    virtual void OnInvalidDpCableWarning() = 0;
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -65,7 +71,8 @@ class COMPONENT_EXPORT(ASH_PERIPHERAL_NOTIFICATION)
     kAltModeFallbackInGuestSession = 4,
     kPeripheralBlocked = 5,
     kBillboardDevice = 6,
-    kMaxValue = kBillboardDevice,
+    kInvalidDpCable = 7,
+    kMaxValue = kInvalidDpCable,
   };
 
   // Sets the global instance. Must be called before any calls to Get().
@@ -99,6 +106,7 @@ class COMPONENT_EXPORT(ASH_PERIPHERAL_NOTIFICATION)
 
   // TypecdClient::Observer:
   void OnThunderboltDeviceConnected(bool is_thunderbolt_only) override;
+  void OnCableWarning(typecd::CableWarningType cable_warning_type) override;
 
   // PciguardClient::Observer:
   void OnBlockedThunderboltDeviceConnected(
@@ -109,6 +117,7 @@ class COMPONENT_EXPORT(ASH_PERIPHERAL_NOTIFICATION)
   void NotifyGuestModeNotificationReceived(bool is_thunderbolt_only);
   void NotifyPeripheralBlockedReceived();
   void OnBillboardDeviceConnected(bool billboard_is_supported);
+  void NotifyInvalidDpCable();
 
   // Called by unit tests to set up root_prefix_ for simulating the existence
   // of a system folder.

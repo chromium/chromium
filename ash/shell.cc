@@ -139,6 +139,7 @@
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/unified/hps_notify_controller.h"
+#include "ash/system/usb_peripheral/usb_peripheral_notification_controller.h"
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/tray_action/tray_action.h"
@@ -898,6 +899,8 @@ Shell::~Shell() {
 
   pcie_peripheral_notification_controller_.reset();
 
+  usb_peripheral_notification_controller_.reset();
+
   message_center_ash_impl_.reset();
 
   // Destroys the MessageCenter singleton, so must happen late.
@@ -979,6 +982,10 @@ void Shell::Init(
 
   pcie_peripheral_notification_controller_ =
       std::make_unique<PciePeripheralNotificationController>(
+          message_center::MessageCenter::Get());
+
+  usb_peripheral_notification_controller_ =
+      std::make_unique<UsbPeripheralNotificationController>(
           message_center::MessageCenter::Get());
 
   accessibility_focus_ring_controller_ =

@@ -18,6 +18,7 @@
 #include "chromeos/dbus/typecd/typecd_client.h"
 #include "services/device/public/cpp/test/fake_usb_device_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/typecd/dbus-constants.h"
 
 namespace {
 const int kUsbConfigWithInterfaces = 1;
@@ -51,6 +52,10 @@ class FakeObserver : public PeripheralNotificationManager::Observer {
     return num_billboard_notification_calls_;
   }
 
+  size_t num_invalid_dp_cable_notification_calls() const {
+    return num_invalid_dp_cable_notification_calls_;
+  }
+
   bool is_current_guest_device_tbt_only() const {
     return is_current_guest_device_tbt_only_;
   }
@@ -73,11 +78,16 @@ class FakeObserver : public PeripheralNotificationManager::Observer {
     ++num_billboard_notification_calls_;
   }
 
+  void OnInvalidDpCableWarning() override {
+    ++num_invalid_dp_cable_notification_calls_;
+  }
+
  private:
   size_t num_limited_performance_notification_calls_ = 0u;
   size_t num_guest_notification_calls_ = 0u;
   size_t num_peripheral_blocked_notification_calls_ = 0u;
   size_t num_billboard_notification_calls_ = 0u;
+  size_t num_invalid_dp_cable_notification_calls_ = 0u;
   bool is_current_guest_device_tbt_only_ = false;
 };
 
@@ -147,6 +157,10 @@ class PeripheralNotificationManagerTest : public AshTestBase {
 
   size_t GetNumBillboardNotificationObserverCalls() {
     return fake_observer_.num_billboard_notification_calls();
+  }
+
+  size_t GetInvalidDpCableNotificationObserverCalls() {
+    return fake_observer_.num_invalid_dp_cable_notification_calls();
   }
 
   bool GetIsCurrentGuestDeviceTbtOnly() {

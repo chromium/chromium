@@ -163,6 +163,7 @@ class OverviewController;
 class ParentAccessController;
 class PartialMagnifierController;
 class PciePeripheralNotificationController;
+class UsbPeripheralNotificationController;
 class PeripheralBatteryListener;
 class PeripheralBatteryNotifier;
 class PersistentDesksBarController;
@@ -602,6 +603,12 @@ class ASH_EXPORT Shell : public SessionObserver,
   pcie_peripheral_notification_controller() {
     return pcie_peripheral_notification_controller_.get();
   }
+
+  UsbPeripheralNotificationController*
+  usb_peripheral_notification_controller() {
+    return usb_peripheral_notification_controller_.get();
+  }
+
   OcclusionTrackerPauser* occlusion_tracker_pauser() {
     return occlusion_tracker_pauser_.get();
   }
@@ -767,6 +774,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ParentAccessController> parent_access_controller_;
   std::unique_ptr<PciePeripheralNotificationController>
       pcie_peripheral_notification_controller_;
+  std::unique_ptr<UsbPeripheralNotificationController>
+      usb_peripheral_notification_controller_;
   std::unique_ptr<PersistentDesksBarController>
       persistent_desks_bar_controller_;
   std::unique_ptr<ResizeShadowController> resize_shadow_controller_;

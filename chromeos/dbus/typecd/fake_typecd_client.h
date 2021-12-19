@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "chromeos/dbus/typecd/typecd_client.h"
+#include "third_party/cros_system_api/dbus/typecd/dbus-constants.h"
 
 namespace chromeos {
 
@@ -20,6 +21,7 @@ class COMPONENT_EXPORT(TYPECD) FakeTypecdClient : public TypecdClient {
   // This is a simple fake to notify observers of a simulated D-Bus received
   // signal.
   void EmitThunderboltDeviceConnectedSignal(bool is_thunderbolt_only);
+  void EmitCableWarningSignal(typecd::CableWarningType type);
 };
 
 }  // namespace chromeos
