@@ -74,7 +74,8 @@ class MultiProfileSupport : public ash::MultiUserWindowManagerDelegate,
   // tests.
   static MultiProfileSupport* instance_;
 
-  using AccountIdToAppWindowObserver = std::map<AccountId, AppObserver*>;
+  using AccountIdToAppWindowObserver =
+      std::map<AccountId, std::unique_ptr<AppObserver>>;
 
   // A list of all known users and their app window observers.
   AccountIdToAppWindowObserver account_id_to_app_observer_;

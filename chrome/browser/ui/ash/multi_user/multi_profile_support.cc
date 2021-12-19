@@ -141,8 +141,7 @@ MultiProfileSupport::~MultiProfileSupport() {
         account_id_to_app_observer_.find(account_id);
     if (app_observer_iterator != account_id_to_app_observer_.end()) {
       extensions::AppWindowRegistry::Get(*it)->RemoveObserver(
-          app_observer_iterator->second);
-      delete app_observer_iterator->second;
+          app_observer_iterator->second.get());
       account_id_to_app_observer_.erase(app_observer_iterator);
     }
   }
@@ -173,9 +172,9 @@ void MultiProfileSupport::AddUser(content::BrowserContext* context) {
     return;
 
   account_id_to_app_observer_[account_id] =
-      new AppObserver(account_id.GetUserEmail());
+      std::make_unique<AppObserver>(account_id.GetUserEmail());
   extensions::AppWindowRegistry::Get(profile)->AddObserver(
-      account_id_to_app_observer_[account_id]);
+      account_id_to_app_observer_[account_id].get());
 
   // Account all existing application windows of this user accordingly.
   const extensions::AppWindowRegistry::AppWindowList& app_windows =
