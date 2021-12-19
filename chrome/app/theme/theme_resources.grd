@@ -367,6 +367,9 @@
           <structure type="chrome_scaled_image" name="IDR_TRANSLATE_BUTTON_WORDMARK" file="google_chrome/translate_button_wordmark.png" />
         </if>
       </if>
+      <if expr="not is_android">
+        <structure type="chrome_scaled_image" name="IDR_TAILORED_SECURITY_UNCONSENTED" file="common/tailored_security_unconsented.png" />
+      </if>
     </structures>
   </release>
 </grit>
