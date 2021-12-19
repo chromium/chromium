@@ -74900,7 +74900,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
              tag"/>
   <int value="13" label="Unsupported permanent folder server tag"/>
   <int value="14"
-      label="Node is descendant of root node, without permanent folder"/>
+      label="Node is descendant of root node, without permanent folder
+             (deprecated)"/>
 </enum>
 
 <enum name="RemoteCommandExecutionStatus">

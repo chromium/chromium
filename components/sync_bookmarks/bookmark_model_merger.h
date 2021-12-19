@@ -59,20 +59,23 @@ class BookmarkModelMerger {
   // Internal representation of a remote tree, composed of nodes.
   class RemoteTreeNode final {
    private:
-    using UpdatesPerParentId =
-        std::unordered_map<std::string, std::list<syncer::UpdateResponseData>>;
+    using UpdatesPerParentGUID =
+        std::unordered_map<base::GUID,
+                           std::list<syncer::UpdateResponseData>,
+                           base::GUIDHash>;
 
    public:
     // Constructs a tree given |update| as root and recursively all descendants
-    // by traversing |*updates_per_parent_id|. |update| and
-    // |updates_per_parent_id| must not be null. All updates
-    // |*updates_per_parent_id| must represent valid updates. Updates
+    // by traversing |*updates_per_parent_guid|. |update| and
+    // |updates_per_parent_guid| must not be null. All updates
+    // |*updates_per_parent_guid| must represent valid updates. Updates
     // corresponding from descendant nodes are moved away from
-    // |*updates_per_parent_id|. |max_depth| is the max tree depth to sync
+    // |*updates_per_parent_guid|. |max_depth| is the max tree depth to sync
     // after which content is silently ignored.
-    static RemoteTreeNode BuildTree(syncer::UpdateResponseData update,
-                                    size_t max_depth,
-                                    UpdatesPerParentId* updates_per_parent_id);
+    static RemoteTreeNode BuildTree(
+        syncer::UpdateResponseData update,
+        size_t max_depth,
+        UpdatesPerParentGUID* updates_per_parent_guid);
 
     ~RemoteTreeNode();
 
