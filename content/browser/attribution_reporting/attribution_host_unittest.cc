@@ -202,8 +202,8 @@ TEST_F(AttributionHostTest, ConversionInSubframeOnInsecurePage_BadMessage) {
       url::Origin::Create(GURL("https://secure.com"));
   conversion_host_mojom()->RegisterConversion(std::move(conversion));
   EXPECT_EQ(
-      "blink.mojom.ConversionHost can only be used in secure contexts with a "
-      "secure conversion registration origin.",
+      "blink.mojom.ConversionHost can only be used with a secure top-level "
+      "frame.",
       bad_message_observer.WaitForBadMessage());
 }
 
@@ -261,8 +261,7 @@ TEST_F(AttributionHostTest, ConversionOnInsecurePage_BadMessage) {
   // Message should be ignored because it was registered from an insecure page.
   conversion_host_mojom()->RegisterConversion(std::move(conversion));
   EXPECT_EQ(
-      "blink.mojom.ConversionHost can only be used in secure contexts with a "
-      "secure conversion registration origin.",
+      "blink.mojom.ConversionHost can only be used in secure contexts.",
       bad_message_observer.WaitForBadMessage());
 }
 
@@ -281,8 +280,8 @@ TEST_F(AttributionHostTest, ConversionWithInsecureReportingOrigin_BadMessage) {
   // redirect.
   conversion_host_mojom()->RegisterConversion(std::move(conversion));
   EXPECT_EQ(
-      "blink.mojom.ConversionHost can only be used in secure contexts with a "
-      "secure conversion registration origin.",
+      "blink.mojom.ConversionHost can only be used with a secure conversion "
+      "registration origin.",
       bad_message_observer.WaitForBadMessage());
 }
 
