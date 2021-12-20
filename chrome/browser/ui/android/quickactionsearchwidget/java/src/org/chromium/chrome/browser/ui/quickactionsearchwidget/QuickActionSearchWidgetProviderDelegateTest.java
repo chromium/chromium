@@ -4,16 +4,23 @@
 
 package org.chromium.chrome.browser.ui.quickactionsearchwidget;
 
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
+import android.util.Size;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.RemoteViews;
 
 import androidx.annotation.LayoutRes;
 import androidx.test.filters.SmallTest;
@@ -24,6 +31,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -42,6 +51,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.embedder_support.util.UrlConstants;
+
+import java.util.Locale;
 
 /**
  * Tests for the QuickActionSearchWidgetProviderDelegate.
@@ -62,9 +73,14 @@ public class QuickActionSearchWidgetProviderDelegateTest {
     private int mXSmallWidgetMinHeightDp;
     private int mSmallWidgetMinHeightDp;
     private int mMediumWidgetMinHeightDp;
+    private int mDinoWidgetEdgeSizeDp;
+
+    @Mock
+    RemoteViews mMockRemoteViews;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
         ChromeApplicationTestUtils.setUp(InstrumentationRegistry.getTargetContext());
         mContext = InstrumentationRegistry.getInstrumentation()
                            .getTargetContext()
@@ -91,6 +107,8 @@ public class QuickActionSearchWidgetProviderDelegateTest {
                         / density);
         mDefaultWidgetWidthDp =
                 (int) (res.getDimension(R.dimen.quick_action_search_widget_width) / density);
+        mDinoWidgetEdgeSizeDp =
+                (int) (res.getDimension(R.dimen.quick_action_search_widget_dino_size) / density);
 
         setUpViews();
     }
@@ -174,7 +192,10 @@ public class QuickActionSearchWidgetProviderDelegateTest {
                                       mDefaultWidgetWidthDp, mMediumWidgetMinHeightDp)
                               .apply(mContext, null);
         mDinoWidgetView =
-                mDelegate.createDinoWidgetRemoteViews(mContext, prefs).apply(mContext, null);
+                mDelegate
+                        .createDinoWidgetRemoteViews(mContext, prefs, mDinoWidgetEdgeSizeDp,
+                                mDinoWidgetEdgeSizeDp, mDinoWidgetEdgeSizeDp, mDinoWidgetEdgeSizeDp)
+                        .apply(mContext, null);
     }
 
     /**
@@ -457,5 +478,156 @@ public class QuickActionSearchWidgetProviderDelegateTest {
         Assert.assertFalse(settings.incognitoModeVisible);
         Assert.assertFalse(settings.googleLensVisible);
         Assert.assertFalse(settings.dinoGameVisible);
+    }
+
+    @Test
+    @SmallTest
+    public void computeWidgetAreaPaddingForDinoWidget_noPadding() {
+        // Dino widget has a square shape. When offered a square cell area - no cropping should be
+        // performed.
+        Size s = mDelegate.computeWidgetAreaPaddingForDinoWidgetPx(100, 100, 1.f);
+        Assert.assertEquals(0, s.getWidth());
+        Assert.assertEquals(0, s.getHeight());
+    }
+
+    @Test
+    @SmallTest
+    public void computeWidgetAreaPaddingForDinoWidget_horizontalPadding() {
+        // Dino widget has a square shape.
+        // When offered a wider area, we should crop the sides.
+        // Note that the input values are in DP, but result carries pixels.
+        Size s = mDelegate.computeWidgetAreaPaddingForDinoWidgetPx(100, 80, 2.f);
+        Assert.assertEquals(20, s.getWidth());
+        Assert.assertEquals(0, s.getHeight());
+    }
+
+    @Test
+    @SmallTest
+    public void computeWidgetAreaPaddingForDinoWidget_verticalPadding() {
+        // Dino widget has a square shape.
+        // When offered a taller area, we should crop the top and bottom.
+        // Note that the input values are in DP, but result carries pixels.
+        Size s = mDelegate.computeWidgetAreaPaddingForDinoWidgetPx(100, 120, 3.f);
+        Assert.assertEquals(0, s.getWidth());
+        Assert.assertEquals(30, s.getHeight());
+    }
+
+    @Test
+    @SmallTest
+    public void computeScaleFactorForDinoWidget() {
+        // The scale factor expresses how widget should grow or shrink to properly
+        // fill up the space. It is computed as a proportion:
+        //   scale factor = target size / reference size
+        // a scale factor of 1.0 means the area will host the widget as it was designed
+        // without any scaling.
+        Resources r = mContext.getResources();
+        Assert.assertEquals(1.f,
+                mDelegate.computeScaleFactorForDinoWidget(
+                        mDinoWidgetEdgeSizeDp, mDinoWidgetEdgeSizeDp),
+                0.001f);
+        Assert.assertEquals(1.f,
+                mDelegate.computeScaleFactorForDinoWidget(
+                        mDinoWidgetEdgeSizeDp, mDinoWidgetEdgeSizeDp * 2),
+                0.001f);
+        Assert.assertEquals(2.f,
+                mDelegate.computeScaleFactorForDinoWidget(
+                        mDinoWidgetEdgeSizeDp * 3, mDinoWidgetEdgeSizeDp * 2),
+                0.001f);
+        Assert.assertEquals(0.5f,
+                mDelegate.computeScaleFactorForDinoWidget(
+                        mDinoWidgetEdgeSizeDp, mDinoWidgetEdgeSizeDp / 2),
+                0.001f);
+    }
+
+    @Test
+    @SmallTest
+    public void resizeDinoWidgetToFillTargetCellArea_centerInWideArea() {
+        final Resources r = mContext.getResources();
+        final float density = r.getDisplayMetrics().density;
+
+        // Try to place the dino in the area that is half the reference size.
+        // We should see the widget centered and resized accordingly.
+        final int areaWidthDp = mDinoWidgetEdgeSizeDp;
+        final int areaHeightDp = mDinoWidgetEdgeSizeDp / 2;
+        mDelegate.resizeDinoWidgetToFillTargetCellArea(
+                r, mMockRemoteViews, areaWidthDp, areaHeightDp);
+
+        // The remaining area is half the size of the widget.
+        // We divide it further by two to apply the padding on each side.
+        int padSize = (int) (mDinoWidgetEdgeSizeDp * density / 2.f / 2.f);
+        verify(mMockRemoteViews)
+                .setViewPadding(R.id.dino_quick_action_area, padSize, 0, padSize, 0);
+    }
+
+    @Test
+    @SmallTest
+    public void resizeDinoWidgetToFillTargetCellArea_centerInTallArea() {
+        final Resources r = mContext.getResources();
+        final float density = r.getDisplayMetrics().density;
+
+        // Try to place the dino in the area that is half the reference size.
+        // We should see the widget centered and resized accordingly.
+        final int areaWidthDp = mDinoWidgetEdgeSizeDp / 2;
+        final int areaHeightDp = mDinoWidgetEdgeSizeDp;
+        mDelegate.resizeDinoWidgetToFillTargetCellArea(
+                r, mMockRemoteViews, areaWidthDp, areaHeightDp);
+
+        // The remaining area is half the size of the widget.
+        // We divide it further by two to apply the padding on each side.
+        int padSize = (int) (mDinoWidgetEdgeSizeDp * density / 2.f / 2.f);
+        verify(mMockRemoteViews)
+                .setViewPadding(R.id.dino_quick_action_area, 0, padSize, 0, padSize);
+    }
+
+    @Test
+    @SmallTest
+    public void resizeDinoWidgetToFillTargetCellArea_repositionContent() {
+        final Resources r = mContext.getResources();
+        final float density = r.getDisplayMetrics().density;
+
+        // Again, apply half the size of what the widget was designed for.
+        final int areaWidthDp = mDinoWidgetEdgeSizeDp / 2;
+        final int areaHeightDp = mDinoWidgetEdgeSizeDp;
+        mDelegate.resizeDinoWidgetToFillTargetCellArea(
+                r, mMockRemoteViews, areaWidthDp, areaHeightDp);
+
+        // Since widget is half the size, the button area paddings should be half the size too.
+        int imagePadLeft =
+                (int) (r.getDimension(R.dimen.quick_action_search_widget_dino_padding_start) / 2.f);
+        int imagePadVertical =
+                (int) (r.getDimension(R.dimen.quick_action_search_widget_dino_padding_vertical)
+                        / 2.f);
+
+        verify(mMockRemoteViews)
+                .setViewPadding(R.id.dino_quick_action_button, imagePadLeft, imagePadVertical, 0,
+                        imagePadVertical);
+    }
+
+    @Test
+    @SmallTest
+    public void resizeDinoWidgetToFillTargetCellArea_repositionContentRTL() {
+        final Configuration c = new Configuration(mContext.getResources().getConfiguration());
+        c.setLayoutDirection(Locale.forLanguageTag("ar")); // arabic
+
+        final Resources r = spy(mContext.getResources());
+        when(r.getConfiguration()).thenReturn(c);
+        final float density = r.getDisplayMetrics().density;
+
+        // Again, apply half the size of what the widget was designed for.
+        final int areaWidthDp = mDinoWidgetEdgeSizeDp / 4;
+        final int areaHeightDp = mDinoWidgetEdgeSizeDp;
+        mDelegate.resizeDinoWidgetToFillTargetCellArea(
+                r, mMockRemoteViews, areaWidthDp, areaHeightDp);
+
+        // Since widget is a fraction of the size, that fraction goes into appropriate paddings.
+        int imagePadRight =
+                (int) (r.getDimension(R.dimen.quick_action_search_widget_dino_padding_start) / 4.f);
+        int imagePadVertical =
+                (int) (r.getDimension(R.dimen.quick_action_search_widget_dino_padding_vertical)
+                        / 4.f);
+
+        verify(mMockRemoteViews)
+                .setViewPadding(R.id.dino_quick_action_button, 0, imagePadVertical, imagePadRight,
+                        imagePadVertical);
     }
 }

@@ -73,10 +73,10 @@
     <dimen name="quick_action_search_widget_xsmall_search_bar_text_size">11sp</dimen>
 
     <!-- Dino Widget Dimensions -->
-    <dimen name="quick_action_search_widget_dino_min_size">136dp</dimen>
+    <dimen name="quick_action_search_widget_dino_min_size">110dp</dimen>
     <dimen name="quick_action_search_widget_dino_size">136dp</dimen>
+    <dimen name="quick_action_search_widget_dino_text_size">13.5dp</dimen>
     <dimen name="quick_action_search_widget_dino_corner_radius">20dp</dimen>
-    <dimen name="quick_action_search_widget_dino_margin_start">12dp</dimen>
-    <dimen name="quick_action_search_widget_dino_margin_top">6dp</dimen>
-    <dimen name="quick_action_search_widget_dino_margin_text">10dp</dimen>
+    <dimen name="quick_action_search_widget_dino_padding_start">12dp</dimen>
+    <dimen name="quick_action_search_widget_dino_padding_vertical">18dp</dimen>
 </resources>
