@@ -601,7 +601,7 @@ void PreinstalledWebAppManager::Synchronize(
     std::vector<ExternalInstallOptions> desired_apps_install_options) {
   DCHECK(externally_managed_app_manager_);
 
-  std::map<GURL, std::vector<AppId>> desired_uninstalls;
+  std::map<InstallUrl, std::vector<AppId>> desired_uninstalls;
   for (const auto& entry : desired_apps_install_options) {
     if (!entry.uninstall_and_replace.empty())
       desired_uninstalls.emplace(entry.install_url,
@@ -617,9 +617,10 @@ void PreinstalledWebAppManager::Synchronize(
 
 void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
     ExternallyManagedAppManager::SynchronizeCallback callback,
-    std::map<GURL, std::vector<AppId>> desired_uninstalls,
-    std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results,
-    std::map<GURL, bool> uninstall_results) {
+    std::map<InstallUrl, std::vector<AppId>> desired_uninstalls,
+    std::map<InstallUrl, ExternallyManagedAppManager::InstallResult>
+        install_results,
+    std::map<InstallUrl, bool> uninstall_results) {
   // Note that we are storing the Chrome version (milestone number) instead of a
   // "has synchronised" bool in order to do version update specific logic.
   profile_->GetPrefs()->SetString(
@@ -652,7 +653,7 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
     if (iter == desired_uninstalls.end())
       continue;
 
-    for (const auto& replace_id : iter->second) {
+    for (const AppId& replace_id : iter->second) {
       // We mark the app as migrated to a web app as long as the
       // installation was successful, even if the previous app was not
       // installed. This ensures we properly re-install apps if the
@@ -714,8 +715,9 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
 }
 
 void PreinstalledWebAppManager::OnStartUpTaskCompleted(
-    std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results,
-    std::map<GURL, bool> uninstall_results) {
+    std::map<InstallUrl, ExternallyManagedAppManager::InstallResult>
+        install_results,
+    std::map<InstallUrl, bool> uninstall_results) {
   if (debug_info_) {
     debug_info_->is_start_up_task_complete = true;
     debug_info_->install_results = std::move(install_results);
