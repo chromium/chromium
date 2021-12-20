@@ -390,7 +390,7 @@ class AXPosition {
     const AXTreeManager* manager =
         AXTreeManagerMap::GetInstance().GetManager(tree_id());
     if (manager)
-      return manager->GetNodeFromTree(tree_id(), anchor_id());
+      return manager->GetNodeFromTree(anchor_id());
 
     return nullptr;
   }
