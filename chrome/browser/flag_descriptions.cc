@@ -4895,6 +4895,15 @@ const char kLacrosSupportDescription[] =
     "first restart can take some time to setup lacros-chrome. Please DO NOT "
     "attempt to turn off the device during the restart.";
 
+const char kLacrosProfileMigrationForAnyUserName[] =
+    "Lacros profile migration for any user";
+const char kLacrosProfileMigrationForAnyUserDescription[] =
+    "Enables lacros profile migration that are currently only enabled for "
+    "certain users. Please enable with CAUTION. Enabling profile migration "
+    "means that any pre-existing lacros data will be wiped and replaced with "
+    "data migrated from ash. It also has a side effect that lacros will be "
+    "disbled until profile migration is completed.";
+
 const char kLimitShelfItemsToActiveDeskName[] =
     "Limit Shelf items to active desk";
 const char kLimitShelfItemsToActiveDeskDescription[] =

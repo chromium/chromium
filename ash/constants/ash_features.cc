@@ -792,6 +792,11 @@ const base::Feature kLacrosSupport{"LacrosSupport",
 const base::Feature kForceProfileMigrationCompletion{
     "ForceProfileMigrationCompletion", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable this to turn on profile migration for non-googlers. Currently the
+// feature is only limited to googlers only.
+const base::Feature kLacrosProfileMigrationForAnyUser{
+    "LacrosProfileMigrationForAnyUser", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables Language Packs for Handwriting Recognition.
 // This feature turns on the download of language-specific Handwriting models
 // via DLC.

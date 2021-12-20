@@ -236,11 +236,6 @@ const base::Feature kLacrosDisableChromeApps{"LacrosDisableChromeApps",
 const base::Feature kLacrosGooglePolicyRollout{
     "LacrosGooglePolicyRollout", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable this to turn on profile migration for non-googlers. Currently the
-// feature is only limited to googlers only.
-const base::Feature kLacrosProfileMigrationForAnyUser{
-    "LacrosProfileMigrationForAnyUser", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Emergency switch to turn off profile migration via Finch.
 const base::Feature kLacrosProfileMigrationForceOff{
     "LacrosProfileMigrationForceOff", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -367,7 +362,8 @@ bool IsProfileMigrationEnabled(const AccountId& account_id) {
   //  `kLacrosProfileMigrationForAnyUser` can be enabled to allow testing with
   //  non-googler accounts.
   if (gaia::IsGoogleInternalAccountEmail(account_id.GetUserEmail()) ||
-      base::FeatureList::IsEnabled(kLacrosProfileMigrationForAnyUser))
+      base::FeatureList::IsEnabled(
+          ash::features::kLacrosProfileMigrationForAnyUser))
     return true;
 
   return false;

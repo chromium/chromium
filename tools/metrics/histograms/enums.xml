@@ -51746,6 +51746,7 @@ from previous Chrome versions.
   <int value="-787238455" label="OmniboxZeroSuggestionsOnSERP:disabled"/>
   <int value="-785528415" label="FedCm:disabled"/>
   <int value="-784199026" label="EnableFilesAppCopyImage:enabled"/>
+  <int value="-783890018" label="LacrosProfileMigrationForAnyUser:disabled"/>
   <int value="-780798969" label="disable-single-click-autofill"/>
   <int value="-778126349" label="DownloadsLocationChange:enabled"/>
   <int value="-778098896" label="EnableAggregatedMlSearchRanking:disabled"/>
@@ -52960,6 +52961,7 @@ from previous Chrome versions.
   <int value="132907995" label="DownloadProgressMessage:enabled"/>
   <int value="133482330" label="AppNotificationStatusMessaging:enabled"/>
   <int value="136924140" label="OfflineIndicatorV2:enabled"/>
+  <int value="138020994" label="LacrosProfileMigrationForAnyUser:enabled"/>
   <int value="138345654" label="enable-ambient-authentication-in-incognito"/>
   <int value="138598687"
       label="HappinessTrackingSurveysForDesktopDevToolsIssuesCookiesSameSite:enabled"/>
