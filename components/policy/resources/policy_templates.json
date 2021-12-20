@@ -13022,7 +13022,7 @@
           'type': 'string',
         },
       },
-      'supported_on': ['chrome_os:98-'],
+      'future_on': ['chrome_os'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
