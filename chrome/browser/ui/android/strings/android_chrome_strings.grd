@@ -5115,6 +5115,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Can’t take a screenshot. Try again.
       </message>
 
+      <message name="IDS_LIGHTWEIGHT_REACTIONS_ERROR_MAX_REACTIONS_REACHED" desc="Message displayed in a toast when the user tries to add more than the maximum allowed reactions to the scene.">
+        You can add up to <ph name="MAX_NUM_REACTIONS">%1$d<ex>10</ex></ph> reactions
+      </message>
+
       <!-- Share Screenshot strings -->
       <message name="IDS_SCREENSHOT_EDIT_TITLE" desc="The text shown on the share option for screenshots.">
         Edit
