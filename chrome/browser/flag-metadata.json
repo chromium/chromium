@@ -1067,7 +1067,7 @@
   },
   {
     "name": "default-browser-fullscreen-promo-cta-experiment",
-    "owners": [ "javierrobles", "bling-flags@google.com" ],
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 93
   },
   {
@@ -1077,12 +1077,12 @@
   },
   {
     "name": "default-browser-promo-non-modal",
-    "owners": [ "javierrobles", "rkgibson@google.com", "bling-flags@google.com" ],
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 97
   },
   {
     "name": "default-browser-promo-tailored",
-    "owners": [ "javierrobles", "bling-flags@google.com" ],
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 97
   },
   {

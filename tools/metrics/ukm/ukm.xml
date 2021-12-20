@@ -8889,7 +8889,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="IOS.IsDefaultBrowser">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
   <summary>
     As of iOS14, users will be able to set a default browser other than Safari.

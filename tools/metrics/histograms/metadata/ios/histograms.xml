@@ -358,8 +358,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoAllTabs"
     enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-06-05">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
   <summary>
     The action taken by the user in response to the &quot;All tabs&quot; default
     browser tailored promo.
@@ -368,8 +368,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoMadeForIOS"
     enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-06-05">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
   <summary>
     The action taken by the user in response to the &quot;Made for iOS&quot;
     default browser tailored promo.
@@ -378,8 +378,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.DefaultBrowserFullscreenTailoredPromoStaySafe"
     enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-06-05">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
   <summary>
     The action taken by the user in response to the &quot;Stay Safe&quot;
     default browser tailored promo.
@@ -388,8 +388,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.DefaultBrowserPromo.NonModal.OnScreenTime" units="ms"
     expires_after="2022-04-20">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
   <summary>
     Logs the time on screen for an impression of a non modal promo. iOS only.
   </summary>
@@ -397,8 +397,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.DefaultBrowserPromo.NonModal.{Impression}"
     enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2022-04-20">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
   <summary>
     Logged when an action happens on the {Impression} impression of a non modal
     promo. Records the action of the promo. iOS only.
@@ -411,8 +411,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.DefaultBrowserPromo.NonModal.{PromoType}"
     enum="IOSDefaultBrowserPromoNonModalAction" expires_after="2022-04-20">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
   <summary>
     Logged when an action happens on a non modal promo triggered by {PromoType}.
     Records the action of the promo. iOS only.
@@ -426,8 +426,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.DefaultBrowserPromo.TailoredFullscreen.{Action}"
     enum="IOSDefaultBrowserTailoredPromoType" expires_after="2022-04-20">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
   <summary>
     Logged when the {Action} action happens in a tailored default browser promo.
     Records the type of promo.
@@ -513,9 +513,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.FormInputAccessory.ExecuteFormAssistActionException"
-    enum="FormInputAccessoryAction" expires_after="2021-12-11">
-  <owner>javierrobles@chromium.org</owner>
+    enum="FormInputAccessoryAction" expires_after="2022-12-11">
   <owner>rohitrao@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
   <summary>
     Reports exceptions when trying to send a form input accessory action to the
     virtual keyboard.
@@ -681,7 +681,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.IsDefaultBrowser" enum="Boolean" expires_after="never">
 <!-- expires-never: used internally for filtering -->
 
-  <owner>javierrobles@chromium.org</owner>
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
@@ -701,7 +700,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="IOS.IsDefaultBrowser21" enum="Boolean" expires_after="never">
 <!-- expires-never: used internally for filtering -->
 
-  <owner>javierrobles@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>
@@ -980,7 +978,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MultiWindow.Configuration"
-    enum="IOSMultiWindowConfiguration" expires_after="2021-12-11">
+    enum="IOSMultiWindowConfiguration" expires_after="2022-12-11">
   <owner>marq@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>MultiWindow configuration sampled once per minute.</summary>
@@ -997,9 +995,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.NSString.stringByReplacingCharactersInRange.NilArgument"
-    enum="Boolean" expires_after="2021-12-11">
-  <owner>javierrobles@chromium.org</owner>
+    enum="Boolean" expires_after="2022-12-11">
   <owner>rohitrao@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
   <summary>
     NSString API: stringByReplacingCharactersInRange:withString: was invoked
     with a nil argument.
@@ -1149,8 +1147,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.Reauth.Password.Autofill" enum="ReauthenticationEvent"
     expires_after="2022-05-01">
-  <owner>javierrobles@chromium.org</owner>
   <owner>sarraf@google.com</owner>
+  <owner>djean@chromium.org</owner>
   <summary>
     Tracks the results and attempts of reauthentication when using password
     Autofill suggestions.
@@ -1159,8 +1157,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.Reauth.Password.ManualFallback"
     enum="ReauthenticationEvent" expires_after="2022-05-01">
-  <owner>javierrobles@chromium.org</owner>
   <owner>sarraf@google.com</owner>
+  <owner>djean@chromium.org</owner>
   <summary>
     Tracks the results and attempts of reauthentication when using a password in
     Manual Fallback.
@@ -1491,7 +1489,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.WidgetKit.Action" enum="IOSWidgetKitAction"
     expires_after="2022-06-05">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
   <owner>muradyan@google.com</owner>
   <summary>
     Measures UI interactions in WidgetKit extension. Recorded after a user taps
@@ -1500,8 +1498,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WidgetKit.{Status}" enum="IOSWidgetKitExtensionKind"
-    expires_after="2021-12-11">
-  <owner>javierrobles@chromium.org</owner>
+    expires_after="2022-12-11">
+  <owner>rkgibson@google.com</owner>
   <owner>muradyan@chromium.org</owner>
   <summary>
     Indicates the {Status} of an iOS 14 widget. Logged when the app goes to
@@ -1639,7 +1637,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UserInterfaceStyle.CurrentlyUsed" enum="IOSUserInterfaceStyle"
     expires_after="2021-12-11">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <owner>bling-team@google.com</owner>
   <summary>

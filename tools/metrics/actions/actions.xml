@@ -9782,8 +9782,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.DefaultBrowserPromo.NonModal.Accepted">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
+  <owner>djean@chromium.org</owner>
   <description>
     The user accepted a non modal promo. This will either take them to the
     settings instructions for default browser ot directly into settings. To
@@ -9793,32 +9793,32 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.DefaultBrowserPromo.NonModal.Appear">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
+  <owner>djean@chromium.org</owner>
   <description>
     The user triggered a non modal default promo, and it appeared. iOS only.
   </description>
 </action>
 
 <action name="IOS.DefaultBrowserPromo.NonModal.Dismiss">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
+  <owner>djean@chromium.org</owner>
   <description>
     The user dismissed explicitly a non modal promo. iOS only.
   </description>
 </action>
 
 <action name="IOS.DefaultBrowserPromo.NonModal.Timeout">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
+  <owner>djean@chromium.org</owner>
   <description>
     A non modal promo timed out and was dismissed. iOS only.
   </description>
 </action>
 
 <action name="IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
+  <owner>djean@chromium.org</owner>
   <description>
     The user accepted a tailored browser fullscreen promo modal, and was taken
     to the Settings app. iOS only.
@@ -9826,14 +9826,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.DefaultBrowserPromo.TailoredFullscreen.Appear">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
+  <owner>djean@chromium.org</owner>
   <description>A tailored fullscren promo appeared. iOS only.</description>
 </action>
 
 <action name="IOS.DefaultBrowserPromo.TailoredFullscreen.Dismiss">
-  <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
+  <owner>djean@chromium.org</owner>
   <description>
     The user dismissed a tailored browser fullscreen promo modal. iOS only.
   </description>
@@ -10145,7 +10145,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSOpenByViewIntent">
-  <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     User opened Chrome through a view intent, basically anything that opens
@@ -10155,7 +10154,6 @@ should be able to be added at any place in this file.
 
 <action name="IOSPasswordsSettingsCloseWithSwipe">
   <owner>djean@chromium.org</owner>
-  <owner>javierrobles@chromium.org</owner>
   <description>
     Reported when Passwords Settings UI was dismissed using swipe down gesture.
     iOS only.
@@ -14758,14 +14756,16 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Close">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user closed the Manual Fallback view by tapping the keyboard icon.
   </description>
 </action>
 
 <action name="ManualFallback_ClosePopover">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user closed the Manual Fallback Popover view. This happens when the user
     taps outside the popover.
@@ -14773,7 +14773,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_ClosePull">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user closed the Manual Fallback view by pulling. This happens when the
     user pulls enough to the right, similar to &quot;pull to refresh&quot;.
@@ -14781,7 +14782,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_CreditCard_OpenAddPaymentMethod">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on &quot;Add Payment Method...&quot; on the Password Manual
     Fallback view.
@@ -14789,7 +14791,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_CreditCard_OpenManageCreditCard">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on &quot;Manage credit cards&quot; on the Password Manual
     Fallback view.
@@ -14797,50 +14800,58 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_CreditCard_SelectCardholderName">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a cardholder name in the Credit Card Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_CreditCard_SelectCardNumber">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a credit card number in the Credit Card Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_CreditCard_SelectExpirationMonth">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on an expiration month in the Credit Card Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_CreditCard_SelectExpirationYear">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on an expiration year in the Credit Card Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_OpenCreditCard">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>The user opened Credit Card Manual Fallback view.</description>
 </action>
 
 <action name="ManualFallback_OpenPassword">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>The user opened the Password Manual Fallback view.</description>
 </action>
 
 <action name="ManualFallback_OpenProfile">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>The user opened the Profile Manual Fallback view.</description>
 </action>
 
 <action name="ManualFallback_Password_OpenManagePassword">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on &quot;Manage passwords&quot; on the Password Manual
     Fallback view.
@@ -14848,7 +14859,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Password_OpenOtherPassword">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on &quot;Use other password&quot; on the Password Manual
     Fallback view.
@@ -14856,63 +14868,72 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Password_SelectPassword">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a password in the Password Manual Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_Password_SelectUsername">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a username in the Password Manual Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_Profiles_Address1">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on line 1 in the Address Manual Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_Profiles_Address2">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on line 2 in the Address Manual Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_Profiles_City">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a city in the Address Manual Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_Profiles_Company">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a company name in the Address Manual Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_Profiles_Country">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a country in the Address Manual Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_Profiles_EmailAddress">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on an email address in the Address Manual Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_Profiles_OpenManageProfiles">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on &quot;Manage addresses&quot; on the Password Manual
     Fallback view.
@@ -14920,42 +14941,48 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManualFallback_Profiles_PhoneNumber">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a phone number in the Address Manual Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_Profiles_SelectFirstName">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a first name in the Address Manual Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_Profiles_SelectLastName">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a last name in the Address Manual Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_Profiles_SelectMiddleName">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a middle name in the Address Manual Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_Profiles_State">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a state / province in the Address Manual Fallback view.
   </description>
 </action>
 
 <action name="ManualFallback_Profiles_Zip">
-  <owner>javierrobles@chromium.org</owner>
+  <owner>djean@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <description>
     The user tapped on a zip code in the Address Manual Fallback view.
   </description>
@@ -16657,7 +16684,7 @@ should be able to be added at any place in this file.
 
 <action name="MobileLocationBarTapped">
   <owner>stkhapugin@chromium.org</owner>
-  <owner>rkgibson@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
   <description>
     The user has tapped location bar, which will focus the omnibox. iOS only.
   </description>
@@ -16856,7 +16883,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileMenuPasswords">
-  <owner>rkgibson@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
   <description>User pressed 'Passwords' in the app menu.</description>
 </action>
 
@@ -17505,7 +17532,8 @@ should be able to be added at any place in this file.
 
 <action name="MobilePasswordsSettingsClose">
   <owner>djean@chromium.org</owner>
-  <owner>javierrobles@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <owner>sczs@chromium.org</owner>
   <description>
     Reported when Passwords Settings UI was dismissed. iOS only.
   </description>
@@ -17568,7 +17596,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobilePullGestureCloseTab">
-  <owner>rkgibson@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Emitted on iOS when over-scroll action touch gesture closes current tab.
@@ -17578,7 +17606,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobilePullGestureNewTab">
-  <owner>rkgibson@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Emitted on iOS when over-scroll action touch gesture opens a new tab. This
@@ -17588,7 +17616,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobilePullGestureReload">
-  <owner>rkgibson@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
   <owner>tedchoc@chromium.org</owner>
   <description>
     Emitted on Android and iOS when a pull-to-refresh touch gesture initiates a
@@ -18611,7 +18639,7 @@ should be able to be added at any place in this file.
 <action name="MobileToolbarSearchButtonTapped">
   <obsolete>Deprecate as of 3/2020</obsolete>
   <owner>stkhapugin@chromium.org</owner>
-  <owner>rkgibson@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
   <description>
     The user has tapped on search bottom toolbar, which will focus the omnibox.
     iOS only.
@@ -22506,7 +22534,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="OverscrollActionCloseTab">
-  <owner>rkgibson@chromium.org</owner>
+  <owner>rkgibson@google.com</owner>
   <owner>kkhorimoto@chromium.org</owner>
   <description>
     Called when the user closes the tab using overscroll action.
@@ -28279,6 +28307,11 @@ should be able to be added at any place in this file.
     to&quot; status tray item and is now in the detail view to select a cast
     receiver.
   </description>
+</action>
+
+<action name="StatusArea_Cast_Detailed_Launch_AccesCastDialog">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of the metric.</description>
 </action>
 
 <action name="StatusArea_Cast_Detailed_Launch_Cast">
