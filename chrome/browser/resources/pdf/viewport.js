@@ -1825,12 +1825,13 @@ class ScrollContent {
           this.width_ > this.container_.clientWidth);
 
       if (this.container_.dir === 'rtl') {
-        // Right-to-left.
+        // Right-to-left. If `maxX` > 0, clamp to [-maxX, 0]. Else set to 0.
         x = Math.min(Math.max(-maxX, x), 0);
       } else {
-        // Left-to-right.
+        // Left-to-right. If `maxX` > 0, clamp to [0, maxX]. Else set to 0.
         x = Math.max(0, Math.min(x, maxX));
       }
+      // If `maxY` > 0, clamp to [0, maxY]. Else set to 0.
       y = Math.max(0, Math.min(y, maxY));
 
       // To match the DOM's scrollTo() behavior, update the scroll position
