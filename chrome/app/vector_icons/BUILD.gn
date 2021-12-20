@@ -43,6 +43,8 @@ aggregate_vector_icons("chrome_vector_icons") {
     "credit_card.icon",
     "default_touch_favicon.icon",
     "default_touch_favicon_mask.icon",
+    "download_in_progress.icon",
+    "download_toolbar_button.icon",
     "eol.icon",
     "extension_crashed.icon",
     "eye.icon",

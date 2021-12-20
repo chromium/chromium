@@ -6326,6 +6326,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCDESCRIPTION_FORWARD" desc="Help text that explains to keyboard users how to interact with the forward button, similar to the tooltip presented to mouse users.">
         Press to go forward, context menu to see history
       </message>
+      <message name="IDS_TOOLTIP_DOWNLOAD_ICON"
+          desc="The tooltip for download toolbar button icon">
+          Downloads
+      </message>
       <message name="IDS_TOOLTIP_HOME" desc="The tooltip for the home button">
         Open the home page
       </message>

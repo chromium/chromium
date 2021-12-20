@@ -4070,6 +4070,8 @@ static_library("ui") {
       "views/device_chooser_content_view.h",
       "views/devtools_process_observer.cc",
       "views/devtools_process_observer.h",
+      "views/download/bubble/download_toolbar_button_view.cc",
+      "views/download/bubble/download_toolbar_button_view.h",
       "views/download/download_danger_prompt_views.cc",
       "views/download/download_in_progress_dialog_view.cc",
       "views/download/download_in_progress_dialog_view.h",
