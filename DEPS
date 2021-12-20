@@ -1734,6 +1734,17 @@ deps = {
     'condition': 'checkout_src_internal',
   },
 
+  'src/ash/ambient/resources': {
+    'packages': [
+      {
+        'package': 'chromeos_internal/assistant/ambient',
+        'version': 'S8Sbm_BTIBcLqO_bt-UOT9sRnf1LLo9hTbqn5giOGsQC',
+      },
+    ],
+    'condition': 'checkout_chromeos and checkout_src_internal',
+    'dep_type': 'cipd',
+  },
+
   'src/ash/webui/eche_app_ui/resources/prod': {
     'packages': [
       {

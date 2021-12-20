@@ -1,0 +1,7 @@
+Contains ash resources for ambient mode. The main resources currently are Lottie
+animation files and their respective image assets for ash's animated
+screensaver. These resources reside in an internal CIPD package and are
+fetched via gclient only in chromium checkouts with chromeos/internal settings.
+
+The cipd.yaml file is not actually used at build time, but it is a checked in as
+a reference for when CIPD needs to be updated with new ambient resources.

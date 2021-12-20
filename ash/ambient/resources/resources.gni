@@ -1,0 +1,13 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # Temporary build flag to include resources for the animated screensaver in
+  # ash builds. The resources are still under development and there are plans to
+  # reduce their size since a few are pretty big. This flag prevents the main
+  # resource pak at HEAD from being impacted until the size issues are
+  # addressed, while still allowing developers to test this feature by
+  # overriding this flag to true.
+  include_ash_ambient_animation_resources = false
+}

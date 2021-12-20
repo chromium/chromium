@@ -421,6 +421,10 @@
     "META": {"align": 100},
     "messages": [2900],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ash/ambient/resources/lottie_resources.grd": {
+    "META": {"sizes": {"includes": [100],}},
+    "includes": [2910],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/camera_app_ui/ash_camera_app_resources.grd": {
     "META": {"sizes": {"includes": [300],}},
     "includes": [2920],

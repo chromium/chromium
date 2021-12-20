@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ash/ambient/resources/resources.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/locales.gni")
 import("//chrome/browser/buildflags.gni")
@@ -304,6 +305,11 @@ template("chrome_extra_paks") {
           "//ash/webui/resources:sample_system_web_app_resources",
           "//ash/webui/resources:sample_system_web_app_untrusted_resources",
         ]
+      }
+
+      if (include_ash_ambient_animation_resources) {
+        sources += [ "$root_gen_dir/ash/ambient/resources/ash_ambient_lottie_resources.pak" ]
+        deps += [ "//ash/ambient/resources:lottie_resources" ]
       }
     }
     if (is_linux || is_chromeos) {
