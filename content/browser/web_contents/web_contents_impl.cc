@@ -6757,7 +6757,7 @@ void WebContentsImpl::RunJavaScriptDialog(
     if (!render_frame_host->GetLastCommittedOrigin().opaque()) {
       bool is_different_origin_subframe =
           render_frame_host->GetLastCommittedOrigin() !=
-          url::Origin::Create(render_frame_host->GetMainFrame()
+          url::Origin::Create(render_frame_host->GetOutermostMainFrame()
                                   ->GetLastCommittedURL()
                                   .DeprecatedGetOriginAsURL());
       suppress_this_message |= is_different_origin_subframe;
