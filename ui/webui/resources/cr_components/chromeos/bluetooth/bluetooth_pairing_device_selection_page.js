@@ -78,7 +78,19 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
           cancel: ButtonState.ENABLED,
           pair: ButtonState.HIDDEN,
         },
-      }
+      },
+
+      /**
+       * Used by FocusRowBehavior to track the last focused element on a row.
+       * @private
+       */
+      lastFocused_: Object,
+
+      /**
+       * Used by FocusRowBehavior to track if the list has been blurred.
+       * @private
+       */
+      listBlurred_: Boolean,
     };
   }
 
@@ -107,11 +119,15 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties} device
+   * @param {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties} device
    * @return {!DeviceItemState}
    * @private
    */
   getDeviceItemState_(device) {
+    if (!device) {
+      return DeviceItemState.DEFAULT;
+    }
+
     if (device.id === this.failedPairingDeviceId) {
       return DeviceItemState.FAILED;
     }
