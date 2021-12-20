@@ -12,14 +12,8 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "components/feedback/pii_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-// PII (Personally Identifiable Information) types that can exist in the debug
-// data and logs DataCollector collects.
-enum class PIIType {
-  // Window titles that appear in UI hierarchy.
-  kUIHierarchyWindowTitles,
-};
 
 // The error code that a Support Tool component can return.
 enum class SupportToolError {
@@ -30,7 +24,7 @@ enum class SupportToolError {
   kDataExportCreateArchiveFailed,
 };
 
-using PIIMap = std::multimap<PIIType, std::string>;
+using PIIMap = std::multimap<feedback::PIIType, std::string>;
 
 // Returns a SupportToolError if an error occurs to the callback.
 using DataCollectorDoneCallback =
@@ -63,7 +57,7 @@ class DataCollector {
   // `on_exported_callback` when done. `on_exported_callback` won't be called
   // if the DataCollector instance is deleted.
   virtual void ExportCollectedDataWithPII(
-      std::set<PIIType> pii_types_to_keep,
+      std::set<feedback::PIIType> pii_types_to_keep,
       base::FilePath target_directory,
       DataCollectorDoneCallback on_exported_callback) = 0;
 };

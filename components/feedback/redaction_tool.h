@@ -7,12 +7,14 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/feedback/pii_types.h"
 
 namespace re2 {
 class RE2;
@@ -27,6 +29,8 @@ struct CustomPatternWithAlias {
   // A RE2 regexp used in the replacing logic. Matches will be replaced by the
   // alias reference described above.
   const char* pattern;
+  // PII category of the data that will be detected using this pattern.
+  PIIType pii_type;
 };
 
 // Formerly known as AnonymizerTool, RedactionTool provides functions for
@@ -52,21 +56,51 @@ class RedactionTool {
   // thread.
   std::string Redact(const std::string& input);
 
+  // Return a map of [PII-sensitive data type -> set of data] that are detected
+  // in |input|.
+  std::map<PIIType, std::set<std::string>> Detect(const std::string& input);
+
  private:
   friend class RedactionToolTest;
 
   re2::RE2* GetRegExp(const std::string& pattern);
 
-  std::string RedactMACAddresses(const std::string& input);
-  std::string RedactAndroidAppStoragePaths(const std::string& input);
-  std::string RedactHashes(const std::string& input);
+  // Redacts MAC addresses from |input| and returns the redacted string. Adds
+  // the redacted MAC addresses to |detected| if |detected| is not nullptr.
+  std::string RedactMACAddresses(
+      const std::string& input,
+      std::map<PIIType, std::set<std::string>>* detected);
+  // Redacts Android app storage paths from |input| and returns the redacted
+  // string. Adds the redacted app storage paths to |detected| if |detected| is
+  // not nullptr. This function returns meaningpul output only on Chrome OS.
+  std::string RedactAndroidAppStoragePaths(
+      const std::string& input,
+      std::map<PIIType, std::set<std::string>>* detected);
+  // Redacts hashes from |input| and returns the redacted string. Adds the
+  // redacted hashes to |detected| if |detected| is not nullptr.
+  std::string RedactHashes(const std::string& input,
+                           std::map<PIIType, std::set<std::string>>* detected);
   std::string RedactCustomPatterns(std::string input);
+
+  // Detects PII sensitive data in |input| using custom patterns. Adds the
+  // detected PII sensitive data to corresponding PII type key in |detected|.
+  void DetectWithCustomPatterns(
+      std::string input,
+      std::map<PIIType, std::set<std::string>>* detected);
+  // Redacts PII sensitive data that matches |pattern| from |input| and returns
+  // the redacted string. Adds the redacted PII sensitive data to |detected| if
+  // |detected| is not nullptr.
   std::string RedactCustomPatternWithContext(
       const std::string& input,
-      const CustomPatternWithAlias& pattern);
+      const CustomPatternWithAlias& pattern,
+      std::map<PIIType, std::set<std::string>>* detected);
+  // Redacts PII sensitive data that matches |pattern| from |input| and returns
+  // the redacted string. Adds the redacted PII sensitive data to |detected| if
+  // |detected| is not nullptr.
   std::string RedactCustomPatternWithoutContext(
       const std::string& input,
-      const CustomPatternWithAlias& pattern);
+      const CustomPatternWithAlias& pattern,
+      std::map<PIIType, std::set<std::string>>* detected);
 
   // Null-terminated list of first party extension IDs. We need to have this
   // passed into us because we can't refer to the code where these are defined.

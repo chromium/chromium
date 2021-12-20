@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/support_tool/data_collector.h"
+#include "components/feedback/pii_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 using SupportToolDataCollectedCallback =
@@ -79,7 +80,7 @@ class SupportToolHandler {
   // Exports collected data to the `target_path` and archives the file. This
   // function should be called only once on an instance of SupportToolHandler.
   void ExportCollectedData(
-      std::set<PIIType> pii_types_to_keep,
+      std::set<feedback::PIIType> pii_types_to_keep,
       base::FilePath target_path,
       SupportToolDataExportedCallback on_data_exported_callback);
 
@@ -99,7 +100,7 @@ class SupportToolHandler {
   // DataCollector with their name. The DataCollectors will export their output
   // to that path then the contents of the `tmp_path` will be put inside a zip
   // archive on `target_path`.
-  void ExportIntoTempDir(std::set<PIIType> pii_types_to_keep,
+  void ExportIntoTempDir(std::set<feedback::PIIType> pii_types_to_keep,
                          base::FilePath target_path,
                          base::FilePath tmp_path);
 

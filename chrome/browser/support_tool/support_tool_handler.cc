@@ -26,6 +26,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/support_tool/data_collector.h"
+#include "components/feedback/pii_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/zip.h"
 
@@ -123,7 +124,7 @@ void SupportToolHandler::OnAllDataCollected() {
 }
 
 void SupportToolHandler::ExportCollectedData(
-    std::set<PIIType> pii_types_to_keep,
+    std::set<feedback::PIIType> pii_types_to_keep,
     base::FilePath target_path,
     SupportToolDataExportedCallback on_data_exported_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -140,9 +141,10 @@ void SupportToolHandler::ExportCollectedData(
                      target_path));
 }
 
-void SupportToolHandler::ExportIntoTempDir(std::set<PIIType> pii_types_to_keep,
-                                           base::FilePath target_path,
-                                           base::FilePath tmp_path) {
+void SupportToolHandler::ExportIntoTempDir(
+    std::set<feedback::PIIType> pii_types_to_keep,
+    base::FilePath target_path,
+    base::FilePath tmp_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (tmp_path.empty()) {

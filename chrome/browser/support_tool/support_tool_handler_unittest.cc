@@ -25,6 +25,7 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/support_tool/data_collector.h"
+#include "components/feedback/pii_types.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -58,7 +59,7 @@ class TestDataCollector : public DataCollector {
   }
 
   void ExportCollectedDataWithPII(
-      std::set<PIIType> pii_types_to_keep,
+      std::set<feedback::PIIType> pii_types_to_keep,
       base::FilePath target_directory,
       DataCollectorDoneCallback on_exported_callback) override {
     on_exported_callback = base::BindPostTask(
@@ -78,8 +79,8 @@ class TestDataCollector : public DataCollector {
     if (error_) {
       std::move(callback).Run(SupportToolError::kTestDataCollectorError);
     } else {
-      pii_map_.insert(std::pair<PIIType, std::string>(
-          PIIType::kUIHierarchyWindowTitles, name_));
+      pii_map_.insert(std::pair<feedback::PIIType, std::string>(
+          feedback::PIIType::kUIHierarchyWindowTitles, name_));
       std::move(callback).Run(absl::nullopt);
     }
   }
@@ -208,7 +209,8 @@ TEST_F(SupportToolHandlerTest, ExportSupportDataTest) {
   base::FilePath target_path = GetPathForOutput().Append(
       FILE_PATH_LITERAL("support-tool-export-success"));
   base::test::TestFuture<std::set<SupportToolError>> test_future;
-  std::set<PIIType> pii_types{PIIType::kUIHierarchyWindowTitles};
+  std::set<feedback::PIIType> pii_types{
+      feedback::PIIType::kUIHierarchyWindowTitles};
   handler->ExportCollectedData(pii_types, target_path,
                                test_future.GetCallback());
   std::set<SupportToolError> errors = test_future.Get();
@@ -275,7 +277,8 @@ TEST_F(SupportToolHandlerTest, ErrorMessageOnExportSupportData) {
 
   // Export collected data into the target temporary directory.
   base::test::TestFuture<std::set<SupportToolError>> test_future;
-  std::set<PIIType> pii_types{PIIType::kUIHierarchyWindowTitles};
+  std::set<feedback::PIIType> pii_types{
+      feedback::PIIType::kUIHierarchyWindowTitles};
   handler->ExportCollectedData(pii_types, target_path,
                                test_future.GetCallback());
 

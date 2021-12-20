@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/support_tool/data_collector.h"
+#include "components/feedback/pii_types.h"
 
 struct UIHierarchyData {
   UIHierarchyData(std::vector<std::string> window_titles, std::string data);
@@ -45,7 +46,7 @@ class UiHierarchyDataCollector : public DataCollector {
       DataCollectorDoneCallback on_data_collected_callback) override;
 
   void ExportCollectedDataWithPII(
-      std::set<PIIType> pii_types_to_keep,
+      std::set<feedback::PIIType> pii_types_to_keep,
       base::FilePath target_directory,
       DataCollectorDoneCallback on_exported_callback) override;
 
