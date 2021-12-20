@@ -95,7 +95,12 @@ that `.gni` file.
 
 Rust supports unit tests within the primary source code files (e.g. see
 [an example here](https://doc.rust-lang.org/rust-by-example/testing/unit_testing.html)).
-With most of the templates above you'll get a bonus `gn` target called
+This section describes how to build and run such unit tests.
+
+## Automatically generated targets
+
+GN templates that work with Rust sources will automatically generate a bonus
+`gn` target called
 `<your target name>_unittests` (for pure-Rust targets like `cargo_crate`,
 `executable`, or `rust_source_set`) or `<your target name>_rs_unittests` (for
 mixed C++/Rust targets like (`mixed_component`, `mixed_executable`, or
@@ -105,13 +110,44 @@ mixed C++/Rust targets like (`mixed_component`, `mixed_executable`, or
 - An `out/Default/bin/run_<bonus target name>` script that enables running
   the tests on Chromium bots.
 
+## Explicitly defined groups of tests
+
+To group multiple Rust unit test executables into a single test step,
+please use the `rust_unit_tests_group("my_test_group")` template:
+
+```
+rust_unit_tests_group("my_group_of_rust_unit_tests") {
+  deps = [
+    "my_rust_source_set1",
+    "my_rust_source_set2",
+    "my_rust_executable",
+    # ...
+  ]
+}
+```
+
+The example above will build all the `deps`.  This will also generate a wrapper
+script that wraps all the Rust unit test executables from `deps` and their
+transitive dependencies.  In the example above, the script will be generated at
+`out/Default/bin/run_my_group_of_rust_unit_tests`.
+
+The generated script can be used for integration with Chromium bots, but can
+also be used as a convenience to manually/locally run all tests from the group.
+Run the script with the `--help` argument to see more details (e.g. how to
+filter which tests to run).
+
+## Configuring running Rust unit tests on bots
+
 To manually configure running Rust unit tests on bots, please follow the pattern
 from https://crrev.com/c/3322199:
 - Define a new isolate in `//testing/buildbot/gn_isolate_map.pyl`:
-    - Set `label` to the bonus target's name
+    - Set `label` to the fully qualified name of either
+      the implicit bonus target (e.g. `..._rs_unittests`)
+      or the explicit `rust_unit_tests_group` target.
     - Set `type` to `generated_script`
-    - There are no restrictions on the name of the new isolate,
-      but typically it will have the same name as the bonus target.
+    - There are no requirements on the name of the new isolate,
+      but typically it will have the same name as the target mentioned
+      in the `label`.
 - Define a new test step, or extend an existing test step in
   `//testing/buildbot/test_suites.pyl` (adding an entry referring to
   the new isolate above).  Note that the tests grouped under the test
@@ -122,9 +158,6 @@ from https://crrev.com/c/3322199:
 - Run `//testing/buildbot/generate_buildbot_json.py`.
 
 Future work:
-- At present, there is no way to group multiple Rust test executables
-  (e.g. all Rust unittests from a single top-level directory
-  into a single test suite.  This is something we're working on.
 - At present, there is no automatic integration of such unit tests into our
   existing test infrastructure, but this is something we're working on.
 - At present, the bot integration only supports reporting whether the tests

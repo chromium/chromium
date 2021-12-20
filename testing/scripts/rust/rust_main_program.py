@@ -124,6 +124,11 @@ class _TestExecutableWrapper:
         Returns:
             A list of test_results.TestResult objects.
         """
+        list_of_tests_to_run = _get_exe_specific_tests(
+            self._name_of_test_executable, list_of_tests_to_run)
+        if not list_of_tests_to_run:
+            return []
+
         # TODO(lukasza): Avoid passing all test names on the cmdline (might
         # require adding support to Rust test executables for reading cmdline
         # args from a file).
@@ -134,10 +139,14 @@ class _TestExecutableWrapper:
             self._path_to_test_executable, '--test', '--format=pretty',
             '--exact'
         ]
-        list_of_tests_to_run = _get_exe_specific_tests(
-            self._name_of_test_executable, list_of_tests_to_run)
         args.extend(list_of_tests_to_run)
+
+        print("Running tests from {}...".format(self._name_of_test_executable))
         output = exe_util.run_and_tee_output(args)
+        print("Running tests from {}... DONE.".format(
+            self._name_of_test_executable))
+        print()
+
         return _scrape_test_results(output, self._name_of_test_executable,
                                     list_of_tests_to_run)
 
@@ -152,7 +161,7 @@ def _parse_args(args):
                         action='append',
                         dest='rust_test_executables',
                         default=[],
-                        help='Paths to one or more executables to wrap.',
+                        help=argparse.SUPPRESS,
                         metavar='FILEPATH',
                         required=True)
 

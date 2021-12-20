@@ -32,19 +32,42 @@ def _parse_args(args):
                         metavar='PATH',
                         required=True)
 
-    parser.add_argument('--rust-test-executable',
-                        action='append',
+    parser.add_argument('--rust-test-executables',
                         dest='rust_test_executables',
-                        default=[],
-                        help='One or more executables to wrap. ' \
-                             '(basename - no extension or directory)',
-                        metavar='BASENAME',
+                        help='File listing one or more executables to wrap. ' \
+                             '(basenames - no .exe extension or directory)',
+                        metavar='FILEPATH',
                         required=True)
 
     return parser.parse_args(args=args)
 
 
-def _generate_script(args):
+def _find_test_executables(args):
+    exes = set()
+    input_filepath = args.rust_test_executables
+    with open(input_filepath) as f:
+        for line in f:
+            exe_name = line.strip()
+            # TODO(https://crbug.com/1271215): Append ".exe" extension when
+            # *targeting* Windows.  (The "targeting" part means that we can't
+            # just detect whether the build is *hosted* on Windows.)
+            if exe_name in exes:
+                raise ValueError("Duplicate entry ('{}') in {}".format(
+                    exe_name, input_filepath))
+            exes.add(exe_name)
+    if not exes:
+        raise ValueError("Unexpectedly empty file: {}".format(input_filepath))
+    exes = sorted(exes)  # For stable results in unit tests.
+    return exes
+
+
+def _validate_if_test_executables_exist(exes):
+    for exe in exes:
+        if not os.path.isfile(exe):
+            raise ValueError("File not found: {}".format(exe_path))
+
+
+def _generate_script(args, should_validate_if_exes_exist=True):
     res = '#!/bin/bash\n'
 
     script_dir = os.path.dirname(args.script_path)
@@ -59,8 +82,12 @@ def _generate_script(args):
     lib_dir = os.path.normpath(lib_dir)
     res += 'LIB_DIR="$SCRIPT_DIR/{}"\n'.format(lib_dir)
 
+    exes = _find_test_executables(args)
+    if should_validate_if_exes_exist:
+        _validate_if_test_executables_exist(exes)
+
     res += 'env vpython3 "$LIB_DIR/rust_main_program.py" \\\n'
-    for exe in args.rust_test_executables:
+    for exe in exes:
         res += '    "--rust-test-executable=$EXE_DIR/{}" \\\n'.format(exe)
     res += '    "$@"'
 

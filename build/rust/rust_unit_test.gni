@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/rust.gni")
+import("//build/rust/rust_unit_tests_group.gni")
 
 # Defines a Rust unit test.
 #
@@ -73,41 +74,9 @@ template("rust_unit_test") {
   # TODO(crbug.com/1256930) - verify this is correct
   assert(defined(invoker.sources), "sources must be listed")
 
-  _original_target_name = target_name
   _exe_target_name = target_name + "_exe"
-  _script_target_name = target_name + "_wrapper_script"
-  group(target_name) {
-    testonly = true
-    deps = [
-      ":$_exe_target_name",
-      ":$_script_target_name",
-    ]
-  }
-
-  # Note that the location/filename of the wrapper script has to follow the
-  # requirements of "generated_script" as outlined in the doc comment at the
-  # top of //testing/buildbot/gn_isolate_map.pyl
-  _script_filepath = "$root_out_dir/bin/run_${_original_target_name}"
-
-  # TODO(https://crbug.com/1271215): Also generate: bin/run_${target_name}.bat
-  # on Windows: if (is_win) { ... }.
-  action(_script_target_name) {
-    testonly = true
-    script = "//testing/scripts/rust/generate_bash_script.py"
-    outputs = [ _script_filepath ]
-    data = [ _script_filepath ]
-    data_deps = [
-      ":$_exe_target_name",
-      "//testing/scripts/rust",
-    ]
-    args = [
-      "--rust-test-executable",
-      _crate_name,
-      "--exe-dir",
-      rebase_path(root_out_dir, root_build_dir),
-      "--script-path",
-      rebase_path(_script_filepath, root_build_dir),
-    ]
+  rust_unit_tests_group(target_name) {
+    deps = [ ":$_exe_target_name" ]
   }
 
   # TODO(crbug.com/1229320): Arrange to run test executables on try bots.
@@ -138,6 +107,10 @@ template("rust_unit_test") {
     configs = _configs
     crate_name = _crate_name
     crate_root = _crate_root
+    metadata = {
+      # Consumed by "rust_unit_tests_group" gni template.
+      rust_unit_test_executables = [ _crate_name ]
+    }
   }
 }
 
