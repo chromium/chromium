@@ -294,12 +294,6 @@ class WindowRestoreControllerTest : public AshTestBase,
         ++restore_window_id;
       window->SetProperty(app_restore::kRestoreWindowIdKey, restore_window_id);
     }
-
-    // WindowRestoreController relies on getting OnWindowInitialized events from
-    // aura::Env via full_restore::FullRestoreInfo. That object does not exist
-    // for ash unit tests, so we will observe aura::Env ourselves and forward
-    // the event to WindowRestoreController.
-    WindowRestoreController::Get()->OnWindowInitialized(window);
   }
 
  private:
@@ -320,23 +314,6 @@ class WindowRestoreControllerTest : public AshTestBase,
 
     CopyWindowInfo(window_info,
                    fake_window_restore_file_[restore_window_id].info.get());
-  }
-
-  // Callback function that is run when WindowRestoreController tries to read
-  // window data from the file. Immediately reads from our fake file
-  // `fake_window_restore_file_`.
-  std::unique_ptr<app_restore::WindowInfo> OnGetWindowInfo(
-      aura::Window* window) {
-    DCHECK(window);
-    const int32_t restore_window_id =
-        window->GetProperty(app_restore::kRestoreWindowIdKey);
-    if (!fake_window_restore_file_.contains(restore_window_id))
-      return nullptr;
-
-    auto window_info = std::make_unique<app_restore::WindowInfo>();
-    CopyWindowInfo(*fake_window_restore_file_[restore_window_id].info,
-                   window_info.get());
-    return window_info;
   }
 
   // Copies the info from `src` to `out_dst` since `fullrestore::WindowInfo`
