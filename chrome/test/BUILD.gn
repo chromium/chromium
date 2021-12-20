@@ -3514,7 +3514,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/browser_navigator_browsertest_chromeos.cc",
         "../browser/ui/extensions/application_launch_browsertest.cc",
         "../browser/ui/settings_window_manager_browsertest_chromeos.cc",
-        "../browser/ui/sharing_hub/sharing_hub_bubble_controller_chromeos_browsertest.cc",
         "../browser/ui/views/apps/app_dialog/app_dialog_view_browsertest.cc",
         "../browser/ui/views/apps/app_dialog/app_uninstall_dialog_view_browsertest.cc",
         "../browser/ui/views/apps/chrome_native_app_window_views_aura_ash_browsertest.cc",
