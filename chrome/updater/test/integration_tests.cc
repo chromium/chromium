@@ -493,17 +493,22 @@ TEST_F(IntegrationTest, LegacyProcessLauncher) {
 TEST_F(IntegrationTest, UninstallCmdLine) {
   Install();
   ExpectInstalled();
+  ExpectVersionActive(kUpdaterVersion);
+  ExpectActiveUpdater();
+
+  // Running the uninstall command does not uninstall this instance of the
+  // updater right after installing it (not enough server starts).
+  RunUninstallCmdLine();
+  WaitForServerExit();
+  ExpectInstalled();
 
   // TODO(crbug.com/1270520) - use a switch that can uninstall immediately if
   // unused, instead of requiring server starts.
   SetServerStarts(24);
 
-  ExpectVersionActive(kUpdaterVersion);
-  ExpectActiveUpdater();
-
+  // Uninstall the idle updater.
   RunUninstallCmdLine();
   WaitForServerExit();
-  SleepFor(2);
   ExpectClean();
 }
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
