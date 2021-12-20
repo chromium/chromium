@@ -31,6 +31,8 @@ mac_app_bundle("updater_bundle") {
 
   sources = [ "main.cc" ]
   deps = [
+    ":keystone_agent_bundle_resource_executable",
+    ":keystone_agent_bundle_resource_plist",
     ":updater_bundle_keystone_executable",
     ":updater_bundle_keystone_helpers",
     ":updater_bundle_keystone_plist",
@@ -47,6 +49,8 @@ mac_app_bundle("updater_bundle_test") {
 
   sources = [ "main.cc" ]
   deps = [
+    ":keystone_agent_bundle_resource_executable",
+    ":keystone_agent_bundle_resource_plist",
     ":updater_bundle_keystone_executable",
     ":updater_bundle_keystone_helpers",
     ":updater_bundle_keystone_plist",
@@ -192,12 +196,40 @@ bundle_data("keystone_helpers") {
   ]
 }
 
+mac_app_bundle("keystone_agent_bundle") {
+  info_plist = "keystone/Info.plist"
+  sources = [ "keystone/agent_main.cc" ]
+  output_name = keystone_app_name + "Agent"
+  extra_substitutions = [
+    "MAC_BUNDLE_IDENTIFIER=${keystone_app_name}Agent",
+    "PACKAGE_TYPE=APPL",
+  ]
+}
+
+bundle_data("keystone_agent_bundle_resource_executable") {
+  sources = [ "$root_out_dir/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent" ]
+
+  outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/{{source_file_part}}" ]
+  public_deps = [ ":keystone_agent_bundle" ]
+}
+
+bundle_data("keystone_agent_bundle_resource_plist") {
+  sources =
+      [ "$root_out_dir/${keystone_app_name}Agent.app/Contents/Info.plist" ]
+
+  outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/{{source_file_part}}" ]
+  public_deps = [ ":keystone_agent_bundle" ]
+}
+
 mac_app_bundle("keystone_bundle") {
   info_plist = "keystone/Info.plist"
   sources = [ "keystone/keystone_main.cc" ]
   output_name = keystone_app_name
   package_type = "bundle"
-  extra_substitutions = [ "MAC_BUNDLE_IDENTIFIER=$keystone_app_name" ]
+  extra_substitutions = [
+    "MAC_BUNDLE_IDENTIFIER=$keystone_app_name",
+    "PACKAGE_TYPE=BNDL",
+  ]
   public_deps = [ ":keystone_helpers" ]
 }
 
