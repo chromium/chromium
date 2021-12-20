@@ -151,6 +151,10 @@ int AppListTestViewDelegate::AdjustAppListViewScrollOffset(int offset,
   return offset;
 }
 
+bool AppListTestViewDelegate::HasValidProfile() const {
+  return true;
+}
+
 void AppListTestViewDelegate::GetSearchResultContextMenuModel(
     const std::string& result_id,
     GetContextMenuModelCallback callback) {

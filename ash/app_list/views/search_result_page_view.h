@@ -177,6 +177,8 @@ class ASH_EXPORT SearchResultPageView
   void AddSearchResultContainerViewInternal(
       std::unique_ptr<SearchResultContainerView> result_container);
 
+  AppListViewDelegate* view_delegate_ = nullptr;
+
   // The SearchResultContainerViews that compose the search page. All owned by
   // the views hierarchy.
   std::vector<SearchResultContainerView*> result_container_views_;

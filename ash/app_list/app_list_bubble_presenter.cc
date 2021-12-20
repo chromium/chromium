@@ -171,6 +171,7 @@ void AppListBubblePresenter::Shutdown() {
 
 void AppListBubblePresenter::Show(int64_t display_id) {
   DVLOG(1) << __PRETTY_FUNCTION__;
+  DCHECK(features::IsProductivityLauncherEnabled());
   if (is_target_visibility_show_)
     return;
 
@@ -261,6 +262,7 @@ void AppListBubblePresenter::OnZeroStateSearchDone(int64_t display_id) {
 
 ShelfAction AppListBubblePresenter::Toggle(int64_t display_id) {
   DVLOG(1) << __PRETTY_FUNCTION__;
+  DCHECK(features::IsProductivityLauncherEnabled());
   if (is_target_visibility_show_) {
     Dismiss();
     return SHELF_ACTION_APP_LIST_DISMISSED;
@@ -271,6 +273,7 @@ ShelfAction AppListBubblePresenter::Toggle(int64_t display_id) {
 
 void AppListBubblePresenter::Dismiss() {
   DVLOG(1) << __PRETTY_FUNCTION__;
+  DCHECK(features::IsProductivityLauncherEnabled());
   if (!is_target_visibility_show_)
     return;
 

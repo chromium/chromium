@@ -121,6 +121,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   AppListNotifier* GetNotifier() override;
   int AdjustAppListViewScrollOffset(int offset, ui::EventType type) override;
   void LoadIcon(const std::string& app_id) override {}
+  bool HasValidProfile() const override;
 
   // Do a bulk replacement of the items in the model.
   void ReplaceTestModel(int item_count);

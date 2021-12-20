@@ -271,10 +271,8 @@ GetTransitionFromMetricsAnimationInfo(
 AppListControllerImpl::AppListControllerImpl()
     : model_provider_(std::make_unique<AppListModelProvider>()),
       fullscreen_presenter_(std::make_unique<AppListPresenterImpl>(this)),
+      bubble_presenter_(std::make_unique<AppListBubblePresenter>(this)),
       badge_controller_(std::make_unique<AppListBadgeController>()) {
-  if (features::IsProductivityLauncherEnabled())
-    bubble_presenter_ = std::make_unique<AppListBubblePresenter>(this);
-
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
   session_controller->AddObserver(this);
@@ -1083,8 +1081,10 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
   keyboard_traversal_engaged_ = engaged;
 
   // No need to schedule paint for bubble presenter.
-  if (bubble_presenter_ && bubble_presenter_->IsShowing())
+  if (features::IsProductivityLauncherEnabled() &&
+      bubble_presenter_->IsShowing()) {
     return;
+  }
 
   AppListView* app_list_view = fullscreen_presenter_->GetView();
   // May be null in tests of bubble presenter.
@@ -1115,8 +1115,10 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
 }
 
 bool AppListControllerImpl::IsShowingEmbeddedAssistantUI() const {
-  if (bubble_presenter_ && bubble_presenter_->IsShowingEmbeddedAssistantUI())
+  if (features::IsProductivityLauncherEnabled() &&
+      bubble_presenter_->IsShowingEmbeddedAssistantUI()) {
     return true;
+  }
   return fullscreen_presenter_->IsShowingEmbeddedAssistantUI();
 }
 
@@ -1549,6 +1551,10 @@ void AppListControllerImpl::LoadIcon(const std::string& app_id) {
     client_->LoadIcon(profile_id_, app_id);
 }
 
+bool AppListControllerImpl::HasValidProfile() const {
+  return profile_id_ != kAppListInvalidProfileID;
+}
+
 void AppListControllerImpl::GetAppLaunchedMetricParams(
     AppLaunchedMetricParams* metric_params) {
   metric_params->app_list_view_state = GetAppListViewState();
@@ -1950,8 +1956,10 @@ void AppListControllerImpl::Shutdown() {
   DCHECK(!is_shutdown_);
   is_shutdown_ = true;
 
-  if (bubble_presenter_)
-    bubble_presenter_->Shutdown();
+  // Always shutdown the bubble presenter, even if ProductivityLauncher is
+  // disabled, because tests might have temporarily enabled the feature and
+  // the widget needs to be closed.
+  bubble_presenter_->Shutdown();
 
   Shell* shell = Shell::Get();
   AssistantController::Get()->RemoveObserver(this);

@@ -1397,7 +1397,28 @@ TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleQuickSettings) {
   EXPECT_FALSE(tray->IsBubbleShown());
 }
 
+TEST_F(AcceleratorControllerTest,
+       GlobalAcceleratorsToggleProductivityLauncher) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kProductivityLauncher);
+
+  // Search key opens the launcher.
+  EXPECT_TRUE(ProcessInController(
+      ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_NONE)));
+  base::RunLoop().RunUntilIdle();
+  GetAppListTestHelper()->CheckVisibility(true);
+
+  // Search key again closes the launcher.
+  EXPECT_TRUE(ProcessInController(
+      ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_NONE)));
+  base::RunLoop().RunUntilIdle();
+  GetAppListTestHelper()->CheckVisibility(false);
+}
+
 TEST_F(AcceleratorControllerTest, GlobalAcceleratorsToggleAppListFullscreen) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+
   base::HistogramTester histogram_tester;
 
   int toggle_count_total = 0;

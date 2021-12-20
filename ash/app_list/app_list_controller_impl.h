@@ -196,6 +196,7 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
       bool was_animation_interrupted) override;
   int AdjustAppListViewScrollOffset(int offset, ui::EventType type) override;
   void LoadIcon(const std::string& app_id) override;
+  bool HasValidProfile() const override;
 
   void GetAppLaunchedMetricParams(
       AppLaunchedMetricParams* metric_params) override;
@@ -440,8 +441,9 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
   // prevent a crash in destruction.
   std::unique_ptr<AppListPresenterImpl> fullscreen_presenter_;
 
-  // Manages the clamshell launcher bubble. Null when the feature AppListBubble
-  // is disabled.
+  // Manages the clamshell launcher bubble. Always exists, even when feature
+  // ProductivityLauncher is disabled, to allow unit tests to turn the feature
+  // on and off within the test body.
   std::unique_ptr<AppListBubblePresenter> bubble_presenter_;
 
   // Tracks the current page shown in the app list view (tracked for the
