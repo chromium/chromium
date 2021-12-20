@@ -80,12 +80,20 @@ class LockScreenServiceImplBrowserTest : public ContentBrowserTest {
     return lock_screen_service_.get();
   }
 
-  void AwaitSetData(blink::mojom::LockScreenService* service,
-                    const std::string& key,
-                    const std::string& data) {
+  blink::mojom::LockScreenServiceStatus AwaitSetData(
+      blink::mojom::LockScreenService* service,
+      const std::string& key,
+      const std::string& data) {
     base::RunLoop run_loop;
-    service->SetData(key, data, run_loop.QuitClosure());
+    blink::mojom::LockScreenServiceStatus result;
+    service->SetData(key, data,
+                     base::BindLambdaForTesting(
+                         [&](blink::mojom::LockScreenServiceStatus status) {
+                           result = status;
+                           run_loop.Quit();
+                         }));
     run_loop.Run();
+    return result;
   }
 
   std::vector<std::string> AwaitGetKeys(
@@ -111,7 +119,9 @@ IN_PROC_BROWSER_TEST_F(LockScreenServiceImplBrowserTest,
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath expected_dir = GetStoragePath();
   EXPECT_FALSE(base::PathExists(expected_dir));
-  AwaitSetData(service(), "key1", "data1");
+  // TODO(crbug.com/1268227): Consider testing write failure case.
+  ASSERT_EQ(blink::mojom::LockScreenServiceStatus::kSuccess,
+            AwaitSetData(service(), "key1", "data1"));
   ASSERT_TRUE(base::PathExists(expected_dir));
 
   base::FileEnumerator e(expected_dir, false,
@@ -126,9 +136,11 @@ IN_PROC_BROWSER_TEST_F(LockScreenServiceImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(LockScreenServiceImplBrowserTest, SetDataOpaqueOrigin) {
   auto service = NavigateAndCreateService(GURL("about:blank"));
-  // TODO(crbug.com/1268227): Add a result code and check it here.
-  AwaitSetData(service.get(), "key1", "data1");
-  AwaitSetData(service.get(), "key2", "data2");
+  ASSERT_EQ(blink::mojom::LockScreenServiceStatus::kNotAllowedFromContext,
+            AwaitSetData(service.get(), "key1", "data1"));
+  ASSERT_EQ(blink::mojom::LockScreenServiceStatus::kNotAllowedFromContext,
+            AwaitSetData(service.get(), "key2", "data2"));
+
   std::vector<std::string> result = AwaitGetKeys(service.get());
   ASSERT_EQ(0u, result.size());
 }

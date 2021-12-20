@@ -178,15 +178,18 @@ void LockScreenStorageImpl::OnGetKeys(
 void LockScreenStorageImpl::OnSetData(
     blink::mojom::LockScreenService::SetDataCallback callback,
     bool success) {
-  // TODO(crbug.com/1268227): Propagate success value to blink.
-  std::move(callback).Run();
+  if (success) {
+    std::move(callback).Run(blink::mojom::LockScreenServiceStatus::kSuccess);
+  } else {
+    std::move(callback).Run(blink::mojom::LockScreenServiceStatus::kWriteError);
+  }
 }
 
 void LockScreenStorageImpl::InitForTesting(
     content::BrowserContext* browser_context,
     const base::FilePath& base_path) {
-  browser_context_ = browser_context;
-  helper_.AsyncCall(&LockScreenStorageHelper::Init).WithArgs(base_path);
+  browser_context_ = nullptr;
+  Init(browser_context, base_path);
 }
 
 }  // namespace content

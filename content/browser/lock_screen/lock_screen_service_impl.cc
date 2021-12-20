@@ -44,7 +44,8 @@ void LockScreenServiceImpl::SetData(const std::string& key,
                                     const std::string& data,
                                     SetDataCallback callback) {
   if (!IsAllowed()) {
-    std::move(callback).Run();
+    std::move(callback).Run(
+        blink::mojom::LockScreenServiceStatus::kNotAllowedFromContext);
     return;
   }
   lock_screen_storage_->SetData(origin(), key, data, std::move(callback));
