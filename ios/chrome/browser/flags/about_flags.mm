@@ -765,6 +765,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"default-mode-ua", flag_descriptions::kAddSettingForDefaultPageModeName,
      flag_descriptions::kAddSettingForDefaultPageModeDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAddSettingForDefaultPageMode)},
+    {"ios-media-permissions-control",
+     flag_descriptions::kMediaPermissionsControlName,
+     flag_descriptions::kMediaPermissionsControlDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(web::features::kMediaPermissionsControl)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -65,6 +65,9 @@ const base::Feature kSynthesizedRestoreSession{
 const base::Feature kEnableUnrealizedWebStates{
     "EnableUnrealizedWebStates", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kMediaPermissionsControl{"MediaPermissionsControl",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool UseWebViewNativeContextMenuWeb() {
   return base::FeatureList::IsEnabled(kDefaultWebViewContextMenu);
 }

@@ -75,6 +75,12 @@ extern const base::Feature kSynthesizedRestoreSession;
 // See //docs/ios/unrealized_web_state.md for more information.
 extern const base::Feature kEnableUnrealizedWebStates;
 
+// Enables user control for camera and/or microphone access for a specific site
+// through site settings during its lifespan. When enabled, each web state will
+// keep track of whether camera and/or microphone access is granted by the user
+// for its current site.
+extern const base::Feature kMediaPermissionsControl;
+
 // When true, the native context menu for the web content are used.
 bool UseWebViewNativeContextMenuWeb();
 

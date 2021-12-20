@@ -3608,6 +3608,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "ios-media-permissions-control",
+    "owners": ["ginnyhuang","bling-flags@google.com"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "ios-persist-crash-restore-infobar",
     "owners": [ "thegreenfrog", "bling-flags@google.com" ],
     "expiry_milestone": 98

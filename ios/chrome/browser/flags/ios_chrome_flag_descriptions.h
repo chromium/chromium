@@ -294,6 +294,11 @@ extern const char kLockBottomToolbarDescription[];
 extern const char kLogBreadcrumbsName[];
 extern const char kLogBreadcrumbsDescription[];
 
+// Title and description for the flag to control camera and/or microphone access
+// for a specific site through site settings during its lifespan.
+extern const char kMediaPermissionsControlName[];
+extern const char kMediaPermissionsControlDescription[];
+
 // Title and description for the flag that controls sending metrickit crash
 // reports.
 extern const char kMetrickitCrashReportName[];
