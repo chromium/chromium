@@ -37,17 +37,24 @@ class DriverContext:
     os.makedirs(f"{self._output_dir}", exist_ok=True)
 
   def __enter__(self):
+
     self._caffeinate_process = subprocess.Popen([
         "caffeinate",
         "-d",  # Prevent the display from sleeping.
-        "-i",  # Prevent the system from idle sleeping. This doesn't really take
-        # effect since the display is forced on.
-        "-u"  # Force user_idle_level to active.
+    ])
+    # Force user_idle_level to stay active by poking a key code. caffeinate -u
+    # declares that a user is active but this doesn't seem to have a lasting
+    # effect.
+    self._poke_user_process = subprocess.call([
+        "osascript",
+        os.path.join(os.path.dirname(__file__), "driver_scripts_templates",
+                     "poke_user.scpt")
     ])
     return self
 
   def __exit__(self, exc_type, exc_val, exc_tb):
     utils.TerminateProcess(self._caffeinate_process)
+    utils.TerminateProcess(self._poke_user_process)
 
   def SetMainDisplayBrightness(self, brightness_level: int):
     # This function imitates the open-source "brightness" tool at
