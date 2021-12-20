@@ -2048,6 +2048,7 @@ static_library("browser") {
     "//components/captive_portal/core:buildflags",
     "//components/certificate_matching",
     "//components/certificate_transparency",
+    "//components/certificate_transparency:proto",
     "//components/client_hints/browser",
     "//components/cloud_devices/common",
     "//components/component_updater",

@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -39,16 +40,18 @@ struct CTLogInfo {
 };
 
 // Returns the time at which the log list was last updated.
-base::Time GetLogListTimestamp();
+COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) base::Time GetLogListTimestamp();
 
 // Returns information about all known logs, which includes those that are
 // presently qualified for inclusion and logs which were previously qualified,
 // but have since been disqualified. To determine the status of a given log
 // (via its log ID), use |GetDisqualifiedLogs()|.
+COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY)
 std::vector<CTLogInfo> GetKnownLogs();
 
 // Returns the log IDs of all logs that are operated by Google, sorted.  The log
 // ID is the SHA-256 hash of the log's |log_key|.
+COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY)
 std::vector<std::string> GetLogsOperatedByGoogle();
 
 // Returns pairs of (log ID, disqualification date) for all disqualified logs,
@@ -59,6 +62,7 @@ std::vector<std::string> GetLogsOperatedByGoogle();
 // Any SCTs that are embedded in certificates issued after the disqualification
 // date should not be trusted, nor contribute to any uniqueness or freshness
 // requirements.
+COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY)
 std::vector<std::pair<std::string, base::TimeDelta>> GetDisqualifiedLogs();
 
 }  // namespace certificate_transparency

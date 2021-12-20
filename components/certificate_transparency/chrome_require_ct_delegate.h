@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "components/url_matcher/url_matcher.h"
 #include "net/base/hash_value.h"
@@ -32,7 +33,7 @@ namespace certificate_transparency {
 // To support Enterprise configuration, additional requirements or exceptions
 // can be provided via |UpdateCTPolicies()|, which uses the configuration
 // syntax documented in pref_names.h for each of the options.
-class ChromeRequireCTDelegate
+class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeRequireCTDelegate
     : public net::TransportSecurityState::RequireCTDelegate {
  public:
   explicit ChromeRequireCTDelegate();

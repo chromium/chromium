@@ -12,7 +12,7 @@ proto_library("proto") {
   ]
 }
 
-static_library("certificate_transparency") {
+component("certificate_transparency") {
   sources = [
     "chrome_ct_policy_enforcer.cc",
     "chrome_ct_policy_enforcer.h",
@@ -26,7 +26,10 @@ static_library("certificate_transparency") {
     "pref_names.h",
   ]
 
+  defines = [ "IS_CERTIFICATE_TRANSPARENCY_IMPL" ]
+
   deps = [
+    ":proto",
     "//base",
     "//components/base32",
     "//components/certificate_transparency/data:ct_log_list",
@@ -36,8 +39,6 @@ static_library("certificate_transparency") {
     "//net",
     "//url",
   ]
-
-  public_deps = [ ":proto" ]
 }
 
 source_set("unit_tests") {
