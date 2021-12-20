@@ -18,6 +18,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -28,7 +29,6 @@
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
 #include "components/policy/core/common/remote_commands/remote_commands_queue.h"
-#include "components/policy/core/common/remote_commands/test_support/blocking_queue.h"
 #include "components/policy/core/common/remote_commands/test_support/echo_remote_command_job.h"
 #include "components/policy/core/common/remote_commands/test_support/testing_remote_commands_server.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -282,7 +282,7 @@ class FakeJobFactory : public RemoteCommandsFactory {
 
   // Wait until a new job is constructed.
   FakeJob& WaitForJob() {
-    FakeJob* result = created_jobs_.Pop();
+    FakeJob* result = created_jobs_.Take();
     DCHECK_NE(result, nullptr);
     return *result;
   }
@@ -294,13 +294,13 @@ class FakeJobFactory : public RemoteCommandsFactory {
       RemoteCommandsService* service) override {
     auto result = std::make_unique<FakeJob>(type);
 
-    created_jobs_.Push(result.get());
+    created_jobs_.AddValue(result.get());
     return result;
   }
 
-  // Asynchronous queue, populated in BuildJobForType() and consumed in
+  // List of all jobs created in BuildJobForType() and consumed in
   // WaitForJob().
-  test::BlockingQueue<FakeJob*> created_jobs_;
+  base::test::RepeatingTestFuture<FakeJob*> created_jobs_;
 };
 
 // Mocked RemoteCommand factory.
