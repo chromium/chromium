@@ -90,6 +90,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LanguageSettings.AppLanguagePrompt.IsAccessibilityEnabled"
+    enum="BooleanEnabled" expires_after="2022-06-30">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether or not accessibility features are enabled when the App Language
+    Prompt should be shown. If accessibility features are enabled the prompt
+    will not be shown. This histogram will continue to log &quot;Enabled&quot;
+    for the user until Chrome is started with accessibility features disabled.
+
+    Reported each time all other conditions for showing the App Language Prompt
+    have been met.
+  </summary>
+</histogram>
+
 <histogram name="LanguageSettings.AppLanguagePrompt.IsOnline"
     enum="BooleanYesNo" expires_after="2022-06-30">
   <owner>perrier@chromium.org</owner>

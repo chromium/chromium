@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
 import org.chromium.chrome.browser.language.settings.LanguagesManager;
 import org.chromium.chrome.browser.translate.TranslateBridge;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.language.AndroidLanguageMetricsBridge;
 import org.chromium.components.language.GeoLanguageProviderBridge;
 import org.chromium.net.NetworkChangeNotifier;
@@ -504,21 +505,22 @@ public class AppLanguagePromoDialog {
      * @return Whether the app language prompt should be shown or not.
      */
     private static boolean shouldShowPrompt() {
-        boolean isOnline = NetworkChangeNotifier.isOnline();
-        // This switch is only used for testing so it is ok to override all other checks.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_APP_LANGUAGE_PROMPT)) {
-            // Even if feature is set don't show prompt if offline for testing.
-            recordOnlineStatus(isOnline);
-            return isOnline;
+        // Skip feature and preference checks if forced on for testing.
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_APP_LANGUAGE_PROMPT)) {
+            // Don't show the prompt if not enabled.
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LANGUAGE_PROMPT)) return false;
+            // Don't show the prompt if it has already been shown.
+            if (TranslateBridge.getAppLanguagePromptShown()) return false;
         }
 
-        // Don't show the prompt if not enabled or already shown.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LANGUAGE_PROMPT)) return false;
-        if (TranslateBridge.getAppLanguagePromptShown()) return false;
+        boolean isAccessibilityEnabled = ChromeAccessibilityUtil.get().isAccessibilityEnabled();
+        recordIsAccessibilityEnabled(isAccessibilityEnabled);
 
-        // Don't show the prompt if offline since a language pack download will fail.
+        boolean isOnline = NetworkChangeNotifier.isOnline();
         recordOnlineStatus(isOnline);
-        return isOnline;
+
+        // Only show the prompt if online and accessibility features are not enabled.
+        return isOnline && !isAccessibilityEnabled;
     }
 
     /**
@@ -550,6 +552,12 @@ public class AppLanguagePromoDialog {
     private static void recordOnlineStatus(boolean isOnline) {
         RecordHistogram.recordBooleanHistogram(
                 "LanguageSettings.AppLanguagePrompt.IsOnline", isOnline);
+    }
+
+    private static void recordIsAccessibilityEnabled(boolean isAccessibilityEnabled) {
+        RecordHistogram.recordBooleanHistogram(
+                "LanguageSettings.AppLanguagePrompt.IsAccessibilityEnabled",
+                isAccessibilityEnabled);
     }
 
     private static void recordOpenDuration(String type, long displayTime) {
