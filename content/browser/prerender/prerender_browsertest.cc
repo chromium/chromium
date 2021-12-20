@@ -89,6 +89,7 @@
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "url/gurl.h"
@@ -325,6 +326,11 @@ class PrerenderBrowserTest : public ContentBrowserTest {
     // Useful for testing CSP:prefetch-src
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
+    // The viewport meta tag is only enabled on Android.
+#if defined(OS_ANDROID)
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "DisplayCutoutAPI");
+#endif
   }
 
   void TestNavigationHistory(const GURL& expected_current_url,
@@ -2910,6 +2916,88 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   )";
   EXPECT_TRUE(ExecJs(web_contents()->GetMainFrame(), audio_script));
 }
+
+// The viewport meta tag is only enabled on Android.
+#if defined(OS_ANDROID)
+namespace {
+
+// Used to observe the viewport change in the WebContents.
+class TestViewportWebContentsObserver : public WebContentsObserver {
+ public:
+  TestViewportWebContentsObserver(WebContents* web_contents,
+                                  blink::mojom::ViewportFit wanted_value)
+      : WebContentsObserver(web_contents), wanted_value_(wanted_value) {}
+
+  TestViewportWebContentsObserver(const TestViewportWebContentsObserver&) =
+      delete;
+  TestViewportWebContentsObserver& operator=(
+      const TestViewportWebContentsObserver&) = delete;
+
+  // WebContentsObserver implementation.
+  void ViewportFitChanged(blink::mojom::ViewportFit value) override {
+    value_ = value;
+    if (waiting_for_wanted_value_ && value == wanted_value_) {
+      std::move(waiting_for_wanted_value_).Run();
+    }
+  }
+
+  void WaitForWantedValue() {
+    if (value_.has_value() && value_.value() == wanted_value_) {
+      return;
+    }
+    base::RunLoop loop;
+    waiting_for_wanted_value_ = loop.QuitClosure();
+    loop.Run();
+  }
+
+ private:
+  base::OnceClosure waiting_for_wanted_value_;
+  absl::optional<blink::mojom::ViewportFit> value_;
+  const blink::mojom::ViewportFit wanted_value_;
+};
+
+}  // namespace
+
+// Tests that the viewport-fit property works well on prerendering page:
+// * The property in prerendering page shouldn't affect the primary page.
+// * After activating the prerendered page, WebContents's viewport property can
+//   be updated.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ViewportFit) {
+  const GURL kInitialUrl = GetUrl("/prerender/viewport.html");
+  const GURL kPrerenderingUrl = GetUrl("/prerender/viewport.html?prerendering");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  int host_id = AddPrerender(kPrerenderingUrl);
+  test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  RenderFrameHostImpl* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
+  RenderFrameHostImpl* primary_rfh = web_contents_impl()->GetMainFrame();
+
+  {
+    // Set viewport-fit property in the primary page and the prerendering page.
+    // Prerendering shouldn't be cancelled, nor should its property affect the
+    // corresponding WebContents's property.
+    TestViewportWebContentsObserver observer(web_contents_impl(),
+                                             blink::mojom::ViewportFit::kCover);
+    EXPECT_TRUE(ExecJs(prerender_rfh, "setViewportFit('contain')"));
+    EXPECT_TRUE(ExecJs(primary_rfh, "setViewportFit('cover')"));
+    web_contents_impl()->FullscreenStateChanged(
+        primary_rfh, true, blink::mojom::FullscreenOptions::New());
+    observer.WaitForWantedValue();
+  }
+  {
+    // After the prerendering page is activated, the WebContents's property
+    // should be updated.
+    TestViewportWebContentsObserver observer(
+        web_contents_impl(), blink::mojom::ViewportFit::kContain);
+    prerender_helper()->NavigatePrimaryPage(kPrerenderingUrl);
+    web_contents_impl()->FullscreenStateChanged(
+        prerender_rfh, true, blink::mojom::FullscreenOptions::New());
+    observer.WaitForWantedValue();
+  }
+  EXPECT_TRUE(host_observer.was_activated());
+}
+#endif  // defined(OS_ANDROID)
 
 // End: Tests for feature restrictions in prerendered pages ====================
 
