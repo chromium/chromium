@@ -20,6 +20,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -93,40 +94,36 @@ bool URLBlocklistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 void URLBlocklistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                     PrefValueMap* prefs) {
   const base::Value* url_blocklist_policy = policies.GetValue(policy_name());
-  const base::ListValue* url_blocklist = nullptr;
-  if (url_blocklist_policy) {
-    url_blocklist_policy->GetAsList(&url_blocklist);
-  }
-
   const base::Value* disabled_schemes_policy =
       policies.GetValue(key::kDisabledSchemes);
-  const base::ListValue* disabled_schemes = nullptr;
-  if (disabled_schemes_policy)
-    disabled_schemes_policy->GetAsList(&disabled_schemes);
 
-  std::vector<base::Value> merged_url_blocklist;
+  absl::optional<std::vector<base::Value>> merged_url_blocklist;
 
   // We start with the DisabledSchemes because we have size limit when
   // handling URLBlocklists.
-  if (disabled_schemes) {
-    for (const auto& entry : disabled_schemes->GetList()) {
+  if (disabled_schemes_policy && disabled_schemes_policy->is_list()) {
+    merged_url_blocklist = std::vector<base::Value>();
+    for (const auto& entry : disabled_schemes_policy->GetList()) {
       if (entry.is_string()) {
-        merged_url_blocklist.emplace_back(
+        merged_url_blocklist->emplace_back(
             base::StrCat({entry.GetString(), "://*"}));
       }
     }
   }
 
-  if (url_blocklist) {
-    for (const auto& entry : url_blocklist->GetList()) {
+  if (url_blocklist_policy && url_blocklist_policy->is_list()) {
+    if (!merged_url_blocklist)
+      merged_url_blocklist = std::vector<base::Value>();
+
+    for (const auto& entry : url_blocklist_policy->GetList()) {
       if (entry.is_string())
-        merged_url_blocklist.push_back(entry.Clone());
+        merged_url_blocklist->push_back(entry.Clone());
     }
   }
 
-  if (disabled_schemes || url_blocklist) {
+  if (merged_url_blocklist) {
     prefs->SetValue(policy_prefs::kUrlBlocklist,
-                    base::Value(std::move(merged_url_blocklist)));
+                    base::Value(std::move(merged_url_blocklist.value())));
   }
 }
 
