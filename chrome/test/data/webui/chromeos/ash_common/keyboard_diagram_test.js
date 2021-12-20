@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MechanicalLayout, PhysicalLayout} from 'chrome://resources/ash/common/keyboard_diagram.js';
+import {MechanicalLayout, PhysicalLayout, TopRowKey} from 'chrome://resources/ash/common/keyboard_diagram.js';
 import {assertEquals, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.js';
 
@@ -70,7 +70,6 @@ export function keyboardDiagramTestSuite() {
   });
 
   test('dell-enterprise', async () => {
-    assertKeyHidden('dellDeleteKey');
     assertKeyHidden('dellPageDownKey');
     assertKeyHidden('dellPageUpKey');
     assertKeyHidden('fnKey');
@@ -79,7 +78,6 @@ export function keyboardDiagramTestSuite() {
     diagramElement.physicalLayout = PhysicalLayout.kChromeOSDellEnterprise;
     await flushTasks();
 
-    assertKeyVisible('dellDeleteKey');
     assertKeyVisible('dellPageDownKey');
     assertKeyVisible('dellPageUpKey');
     assertKeyVisible('fnKey');
@@ -110,5 +108,27 @@ export function keyboardDiagramTestSuite() {
     diagramElement.showNumberPad = true;
     await waitAfterNextRender(keyboardElement);
     assertEquals(290, keyboardElement.offsetHeight);
+  });
+
+  test('topRowKeys', async () => {
+    const topRowContainer = diagramElement.$.topRow;
+    const testKeySet = [
+      TopRowKey.kBack,
+      TopRowKey.kRefresh,
+      TopRowKey.kNone,
+      TopRowKey.kNone,
+      TopRowKey.kScreenMirror,
+      TopRowKey.kDelete,
+    ];
+
+    diagramElement.topRowKeys = testKeySet;
+    await flushTasks();
+
+    const keyElements = topRowContainer.getElementsByTagName('keyboard-key');
+    // Add 2 for the escape and power keys, which are in the same container.
+    assertEquals(testKeySet.length + 2, keyElements.length);
+
+    assertEquals('keyboard:back', keyElements[1].icon);
+    assertEquals('delete', keyElements[6].mainGlyph);
   });
 }

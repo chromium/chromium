@@ -34,6 +34,36 @@ export const PhysicalLayout = {
   kChromeOSDellEnterprise: 'dell-enterprise',
 };
 
+/**
+ * Enum of action keys to be shown on the top row.
+ * @enum {!Object<string, !{icon: ?string, text: ?string}>}
+ */
+export const TopRowKey = {
+  kNone: {},
+  kBack: {icon: 'keyboard:back'},
+  kForward: {icon: 'keyboard:forward'},
+  kRefresh: {icon: 'keyboard:refresh'},
+  kFullscreen: {icon: 'keyboard:fullscreen'},
+  kOverview: {icon: 'keyboard:overview'},
+  kScreenshot: {icon: 'keyboard:screenshot'},
+  kScreenBrightnessDown: {icon: 'keyboard:display-brightness-down'},
+  kScreenBrightnessUp: {icon: 'keyboard:display-brightness-up'},
+  kPrivacyScreenToggle: {icon: 'keyboard:electronic-privacy-screen'},
+  kVolumeMute: {icon: 'keyboard:volume-mute'},
+  kVolumeDown: {icon: 'keyboard:volume-down'},
+  kVolumeUp: {icon: 'keyboard:volume-up'},
+  kKeyboardBacklightDown: {icon: 'keyboard:keyboard-brightness-down'},
+  kKeyboardBacklightUp: {icon: 'keyboard:keyboard-brightness-up'},
+  kNextTrack: {icon: 'keyboard:next-track'},
+  kPreviousTrack: {icon: 'keyboard:last-track'},
+  kPlayPause: {icon: 'keyboard:play-pause'},
+  kScreenMirror: {icon: 'keyboard:screen-mirror'},
+  // TODO(crbug.com/1207678): work out the localization scheme for keys like
+  // delete and unknown.
+  kDelete: {text: 'delete'},
+  kUnknown: {text: 'unknown'},
+};
+
 export class KeyboardDiagramElement extends PolymerElement {
   static get is() {
     return 'keyboard-diagram';
@@ -65,6 +95,15 @@ export class KeyboardDiagramElement extends PolymerElement {
       showNumberPad: {
         type: Boolean,
         observer: 'updateHeight_',
+      },
+
+      /**
+       * The keys to display on the top row.
+       * @type {!Array<!TopRowKey>}
+       */
+      topRowKeys: {
+        type: Array,
+        value: [],
       },
     };
   }

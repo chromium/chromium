@@ -224,20 +224,11 @@
       data-show-assistant-key$="[[showAssistantKey]]">
     <div id="topRow">
       <keyboard-key main-glyph="esc"></keyboard-key>
-      <!-- TODO(crbug.com/1207678): Populate the top row from Vivaldi data. -->
-      <keyboard-key icon="keyboard:back"></keyboard-key>
-      <keyboard-key icon="keyboard:refresh"></keyboard-key>
-      <keyboard-key icon="keyboard:fullscreen"></keyboard-key>
-      <keyboard-key icon="keyboard:overview"></keyboard-key>
-      <keyboard-key icon="keyboard:screenshot"></keyboard-key>
-      <keyboard-key icon="keyboard:display-brightness-down"></keyboard-key>
-      <keyboard-key icon="keyboard:display-brightness-up"></keyboard-key>
-      <keyboard-key icon="keyboard:volume-mute"></keyboard-key>
-      <keyboard-key icon="keyboard:volume-down"></keyboard-key>
-      <keyboard-key icon="keyboard:volume-up"></keyboard-key>
-      <template is="dom-if" if="[[isEqual_(physicalLayout, 'dell-enterprise')]]">
-        <keyboard-key id="dellDeleteKey" main-glyph="delete"></keyboard-key>
-      </template>
+      <dom-repeat items="[[topRowKeys]]" as="key">
+        <template>
+          <keyboard-key icon="[[key.icon]]" main-glyph="[[key.text]]"></keyboard-key>
+        </template>
+      </dom-repeat>
       <keyboard-key icon="keyboard:power"></keyboard-key>
     </div>
 
