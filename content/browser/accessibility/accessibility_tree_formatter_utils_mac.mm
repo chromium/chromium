@@ -6,6 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility_mac.h"
+#include "ui/accessibility/platform/ax_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 
 using ui::AXPropertyNode;
@@ -189,7 +190,7 @@ OptionalNSObject AttributeInvoker::InvokeFor(
   if (IsNSAccessibilityElement(target) || IsAXUIElement(target))
     return InvokeForAXElement(target, property_node);
 
-  if (content::IsAXTextMarkerRange(target)) {
+  if (ui::IsAXTextMarkerRange(target)) {
     return InvokeForAXTextMarkerRange(target, property_node);
   }
 

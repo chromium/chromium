@@ -48,10 +48,6 @@ class BrowserAccessibilityManager;
 // Web.
 class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
  public:
-  using AXPosition = ui::AXNodePosition::AXPositionInstance;
-  using SerializedPosition = ui::AXNodePosition::SerializedPosition;
-  using AXRange = ui::AXRange<AXPosition::element_type>;
-
   // Creates a platform specific BrowserAccessibility. Ownership passes to the
   // caller.
   static std::unique_ptr<BrowserAccessibility> Create(

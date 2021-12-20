@@ -15,6 +15,7 @@
 #include "content/browser/accessibility/browser_accessibility_mac.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/public/browser/ax_inspect_factory.h"
+#include "ui/accessibility/platform/ax_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
@@ -276,13 +277,12 @@ base::Value AccessibilityTreeFormatterMac::PopulateObject(
   }
 
   // AXTextMarker
-  if (content::IsAXTextMarker(value)) {
-    return PopulateTextPosition(content::AXTextMarkerToAXPosition(value),
-                                indexer);
+  if (ui::IsAXTextMarker(value)) {
+    return PopulateTextPosition(ui::AXTextMarkerToAXPosition(value), indexer);
   }
 
   // AXTextMarkerRange
-  if (content::IsAXTextMarkerRange(value))
+  if (ui::IsAXTextMarkerRange(value))
     return PopulateTextMarkerRange(value, indexer);
 
   return AXNSObjectToBaseValue(value, indexer);
@@ -326,8 +326,8 @@ base::Value AccessibilityTreeFormatterMac::PopulateTextPosition(
 base::Value AccessibilityTreeFormatterMac::PopulateTextMarkerRange(
     id marker_range,
     const AXTreeIndexerMac* indexer) const {
-  BrowserAccessibility::AXRange ax_range =
-      content::AXTextMarkerRangeToAXRange(marker_range);
+  ui::AXPlatformNodeDelegate::AXRange ax_range =
+      ui::AXTextMarkerRangeToAXRange(marker_range);
   if (ax_range.IsNull())
     return AXNilToBaseValue();
 

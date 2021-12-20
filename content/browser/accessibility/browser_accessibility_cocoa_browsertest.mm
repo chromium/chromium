@@ -22,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
+#include "ui/accessibility/platform/ax_utils_mac.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -125,9 +126,10 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   AXTextEdit text_edit = [cocoa_text_field computeTextEdit];
   EXPECT_NE(text_edit.edit_text_marker, nil);
 
-  EXPECT_EQ(AXTextMarkerToAXPosition(text_edit.edit_text_marker)->ToString(),
-            "TextPosition anchor_id=4 text_offset=1 affinity=downstream "
-            "annotated_text=B<>");
+  EXPECT_EQ(
+      ui::AXTextMarkerToAXPosition(text_edit.edit_text_marker)->ToString(),
+      "TextPosition anchor_id=4 text_offset=1 affinity=downstream "
+      "annotated_text=B<>");
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,

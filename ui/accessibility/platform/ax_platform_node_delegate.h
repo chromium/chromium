@@ -70,6 +70,10 @@ using TextAttributeMap = std::map<int, TextAttributeList>;
 // otherwise.
 class AX_EXPORT AXPlatformNodeDelegate {
  public:
+  using AXPosition = ui::AXNodePosition::AXPositionInstance;
+  using SerializedPosition = ui::AXNodePosition::SerializedPosition;
+  using AXRange = ui::AXRange<AXPosition::element_type>;
+
   AXPlatformNodeDelegate(const AXPlatformNodeDelegate&) = delete;
   AXPlatformNodeDelegate& operator=(const AXPlatformNodeDelegate&) = delete;
 
