@@ -106,14 +106,17 @@ if you call IAccessible::get_accRole, it returns ROLE_SYSTEM_DOCUMENT,
 and if you call IAccessible::get_accName, it returns "How old are you?".
 Other methods let you walk the tree.
 
+The Linux accessibility API, (ATK)[https://gnome.pages.gitlab.gnome.org/atk/],
+is similar to (IAccessible2)[https://wiki.linuxfoundation.org/accessibility/iaccessible2/start],
+aka IA2. Historical note: IA2 was developed to extend MSAA/IAccessible to add
+richer document support, in a way that was harmonious with ATK, in order to
+simplify implementing them both within the same product. Both APIs are
+maintained by the Linux Foundation.
+
 On macOS, the root node implements the NSAccessibility protocol and
 if you call [NSAccessibility accessibilityRole], it returns @"AXWebArea",
 and if you call [NSAccessibility accessibilityLabel], it returns
 "How old are you?".
-
-The Linux accessibility API, ATK, is more similar to the Windows APIs;
-they were developed together. (Chrome's support for desktop Linux
-accessibility is unfinished.)
 
 The Android accessibility API is of course based on Java. The main
 data structure is AccessibilityNodeInfo. It doesn't have a role, but
@@ -209,6 +212,9 @@ then click again to refresh that tree.
 Automation API).
 * Installing the [https://github.com/google/automation-inspector](
 Automation Inspector Chrome extension).
+* Building and using [ax_dump_tree or ax_dump_events](tools/accessibility/inspect/README.md).
+These can be used to view accessibility trees and events from any application on
+Windows, Mac or Linux.
 * Or by using native tools:
 
   - Android: UIAutomatorViewer
