@@ -4,4 +4,4 @@
      found in the LICENSE file. -->
 
 <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-    android:src="@mipmap/app_icon_xxhdpi"/>
+    android:src="@mipmap/splash_icon_hdpi"/>
