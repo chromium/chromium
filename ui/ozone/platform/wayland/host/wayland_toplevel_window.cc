@@ -80,6 +80,7 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
   // NonClientView::GetWindowMask, since |non_client_view| is not created yet
   // during the call to WaylandWindow::Initialize().
   UpdateWindowMask();
+  root_surface()->Commit(true);
   return true;
 }
 

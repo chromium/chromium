@@ -110,8 +110,6 @@ bool XDGToplevelWrapperImpl::Initialize() {
 
   InitializeXdgDecoration();
 
-  wayland_window_->root_surface()->Commit();
-  connection_->ScheduleFlush();
   return true;
 }
 
