@@ -1117,14 +1117,15 @@ void WebTransport::Init(const String& url,
   bool had_csp_failure = false;
   if (!execution_context->GetContentSecurityPolicyForCurrentWorld()
            ->AllowConnectToSource(url_, url_, RedirectStatus::kNoRedirect)) {
-    auto dom_exception = V8ThrowDOMException::CreateOrEmpty(
-        script_state_->GetIsolate(), DOMExceptionCode::kSecurityError,
-        "Failed to connect to '" + url_.ElidedString() + "'",
+    v8::Local<v8::Value> error = WebTransportError::Create(
+        script_state_->GetIsolate(),
+        /*stream_error_code=*/absl::nullopt,
         "Refused to connect to '" + url_.ElidedString() +
-            "' because it violates the document's Content Security Policy");
+            "' because it violates the document's Content Security Policy",
+        WebTransportError::Source::kSession);
 
-    ready_resolver_->Reject(dom_exception);
-    closed_resolver_->Reject(dom_exception);
+    ready_resolver_->Reject(error);
+    closed_resolver_->Reject(error);
 
     had_csp_failure = true;
   }
