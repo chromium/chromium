@@ -84,6 +84,10 @@ using testing::UnorderedElementsAreArray;
 
 namespace content {
 
+using NotStoredReasons =
+    BackForwardCacheCanStoreDocumentResult::NotStoredReasons;
+using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
+
 namespace {
 
 class DOMContentLoadedObserver : public WebContentsObserver {
@@ -2471,6 +2475,114 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
+testing::Matcher<BackForwardCacheCanStoreTreeResult> MatchesTreeResult(
+    testing::Matcher<bool> same_origin,
+    GURL url) {
+  return testing::AllOf(
+      testing::Property("IsSameOrigin",
+                        &BackForwardCacheCanStoreTreeResult::IsSameOrigin,
+                        same_origin),
+      testing::Property("GetUrl", &BackForwardCacheCanStoreTreeResult::GetUrl,
+                        url));
+}
+
+RenderFrameHostImpl* ChildFrame(RenderFrameHostImpl* rfh, int child_index) {
+  return rfh->child_at(child_index)->current_frame_host();
+}
+
+// Verifies that the reasons match those given and no others.
+testing::Matcher<BackForwardCacheCanStoreDocumentResult> MatchesDocumentResult(
+    testing::Matcher<NotStoredReasons> not_stored,
+    BlockListedFeatures block_listed) {
+  return testing::AllOf(
+      testing::Property(
+          "not_stored_reasons",
+          &BackForwardCacheCanStoreDocumentResult::not_stored_reasons,
+          not_stored),
+      testing::Property(
+          "blocklisted_features",
+          &BackForwardCacheCanStoreDocumentResult::blocklisted_features,
+          block_listed),
+      testing::Property(
+          "disabled_reasons",
+          &BackForwardCacheCanStoreDocumentResult::disabled_reasons,
+          std::set<BackForwardCache::DisabledReason>()),
+      testing::Property(
+          "disallow_activation_reasons",
+          &BackForwardCacheCanStoreDocumentResult::disallow_activation_reasons,
+          std::set<uint64_t>()));
+}
+
+// Check the contents of the BackForwardCacheCanStoreTreeResult of a page.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TreeResult1) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a, b, c)"));
+
+  // 1) Navigate to a(a, b, c).
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh = current_frame_host();
+
+  // 2) Add a blocking feature to the main frame A and the sub frame B.
+  current_frame_host()
+      ->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
+  current_frame_host()
+      ->child_at(1)
+      ->current_frame_host()
+      ->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
+
+  // 3) Initialize the reasons tree.
+  BackForwardCacheCanStoreDocumentResultWithTree can_store_result =
+      web_contents()->GetController().GetBackForwardCache().CanStorePageNow(
+          rfh);
+
+  // 4) Check IsSameOrigin() and GetUrl().
+  // a
+  EXPECT_THAT(*can_store_result.tree_reasons,
+              MatchesTreeResult(/*same_origin=*/true,
+                                /*url=*/rfh->GetLastCommittedURL()));
+  // a->a
+  EXPECT_THAT(
+      *can_store_result.tree_reasons->GetChildren().at(0),
+      MatchesTreeResult(/*same_origin=*/true,
+                        /*url=*/ChildFrame(rfh, 0)->GetLastCommittedURL()));
+  // a->b
+  EXPECT_THAT(
+      *can_store_result.tree_reasons->GetChildren().at(1),
+      MatchesTreeResult(/*same_origin=*/false,
+                        /*url=*/ChildFrame(rfh, 1)->GetLastCommittedURL()));
+  // a->c
+  EXPECT_THAT(
+      *can_store_result.tree_reasons->GetChildren().at(2),
+      MatchesTreeResult(/*same_origin=*/false,
+                        /*url=*/ChildFrame(rfh, 2)->GetLastCommittedURL()));
+
+  // 5) Check that the blocking reasons match.
+  // a
+  EXPECT_THAT(can_store_result.tree_reasons->GetDocumentResult(),
+              MatchesDocumentResult(
+                  NotStoredReasons(NotRestoredReason::kBlocklistedFeatures),
+                  BlockListedFeatures(
+                      blink::scheduler::WebSchedulerTrackedFeature::kDummy)));
+  // a->a
+  EXPECT_THAT(
+      can_store_result.tree_reasons->GetChildren().at(0)->GetDocumentResult(),
+      MatchesDocumentResult(NotStoredReasons(),
+                            BlockListedFeatures(BlockListedFeatures())));
+  // a->b
+  EXPECT_THAT(
+      can_store_result.tree_reasons->GetChildren().at(1)->GetDocumentResult(),
+      MatchesDocumentResult(
+          NotStoredReasons(NotRestoredReason::kBlocklistedFeatures),
+          BlockListedFeatures(
+              blink::scheduler::WebSchedulerTrackedFeature::kDummy)));
+  // a->c
+  EXPECT_THAT(
+      can_store_result.tree_reasons->GetChildren().at(2)->GetDocumentResult(),
+      MatchesDocumentResult(NotStoredReasons(),
+                            BlockListedFeatures(BlockListedFeatures())));
+}
+
 class BackForwardCacheOptInBrowserTest : public BackForwardCacheBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -2753,12 +2865,12 @@ IN_PROC_BROWSER_TEST_P(
       base::BindLambdaForTesting([&](RenderFrameHost*) {
         // 5) Test that page cannot be stored in bfcache when subframe is
         // pending commit.
-        BackForwardCacheCanStoreDocumentResult can_store_result =
+        BackForwardCacheCanStoreDocumentResultWithTree can_store_result =
             web_contents()
                 ->GetController()
                 .GetBackForwardCache()
                 .CanStorePageNow(static_cast<RenderFrameHostImpl*>(main_frame));
-        EXPECT_TRUE(can_store_result.HasNotStoredReason(
+        EXPECT_TRUE(can_store_result.flattened_reasons.HasNotStoredReason(
             BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating));
       }));
 

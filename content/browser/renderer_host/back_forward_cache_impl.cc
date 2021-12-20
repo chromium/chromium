@@ -617,46 +617,45 @@ void BackForwardCacheImpl::UpdateCanStoreToIncludeCacheControlNoStore(
   }
 }
 
-BackForwardCacheCanStoreDocumentResult
-BackForwardCacheImpl::CanRestorePageNowForTesting(
-    RenderFrameHostImpl* render_frame_host) {
-  BackForwardCacheCanStoreDocumentResult can_store =
-      CanStorePageNow(render_frame_host);
-  UpdateCanStoreToIncludeCacheControlNoStore(can_store, render_frame_host);
-  return can_store;
-}
+BackForwardCacheCanStoreDocumentResultWithTree
+BackForwardCacheImpl::CanStorePageNow(RenderFrameHostImpl* rfh) {
+  BackForwardCacheCanStoreDocumentResult flattened_result;
+  std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree =
+      PopulateReasonsForDocumentAndDescendants(rfh, rfh->GetLastCommittedURL(),
+                                               flattened_result,
+                                               /*include_non_sticky=*/true,
+                                               /*create_tree=*/true);
 
-BackForwardCacheCanStoreDocumentResult BackForwardCacheImpl::CanStorePageNow(
-    RenderFrameHostImpl* rfh) {
-  BackForwardCacheCanStoreDocumentResult result;
-  PopulateReasonsForMainDocument(result, rfh);
-  PopulateReasonsForDocumentAndDescendants(result, rfh,
-                                           /*include_non_sticky=*/true);
+  // TODO(https://crbug.com/1280150): Call
+  // UpdateCanStoreToIncludeCacheControlNoStore() for tree structure.
 
   // With the flag on, |result| does not contain CacheControlNoStore, so it may
   // need to be updated.
   if (AllowStoringPagesWithCacheControlNoStore()) {
-    // If there are no reasons apart from CacheControlNoStore then allow the
-    // page to be stored. (Do not only report CacheControlNoStore as the
-    // page should enter bfcache in that case.)
-    if (!result.CanStore()) {
-      UpdateCanStoreToIncludeCacheControlNoStore(result, rfh);
+    if (!flattened_result.CanStore()) {
+      // If there are no reasons apart from CacheControlNoStore then allow the
+      // page to be stored. (Do not only report CacheControlNoStore as the
+      // page should enter bfcache in that case.)
+      UpdateCanStoreToIncludeCacheControlNoStore(flattened_result, rfh);
     }
   }
   DVLOG(1) << "CanStorePageNow: " << rfh->GetLastCommittedURL() << " : "
-           << result.ToString();
+           << flattened_result.ToString();
   TRACE_EVENT("navigation", "BackForwardCacheImpl::CanPotentiallyStorePageNow",
               ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult,
-              result);
-  return result;
+              flattened_result);
+
+  return BackForwardCacheCanStoreDocumentResultWithTree(flattened_result,
+                                                        std::move(tree));
 }
 
 BackForwardCacheCanStoreDocumentResult
 BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
   BackForwardCacheCanStoreDocumentResult result;
-  PopulateReasonsForMainDocument(result, rfh);
-  PopulateReasonsForDocumentAndDescendants(result, rfh,
-                                           /*include_non_sticky=*/false);
+  PopulateReasonsForDocumentAndDescendants(rfh, rfh->GetLastCommittedURL(),
+                                           result,
+                                           /*include_non_sticky = */ false,
+                                           /*create_tree = */ false);
   DVLOG(1) << "CanPotentiallyStorePageLater: " << rfh->GetLastCommittedURL()
            << " : " << result.ToString();
   TRACE_EVENT(
@@ -928,20 +927,53 @@ void BackForwardCacheImpl::PopulateReasonsForDocument(
   }
 }
 
-void BackForwardCacheImpl::PopulateReasonsForDocumentAndDescendants(
-    BackForwardCacheCanStoreDocumentResult& result,
+// TODO(https://crbug.com/1275977): Remove |first_call| and move
+// |PopulateReasonsForMainDocument| to |PopulateReasonsForDocument|.
+std::unique_ptr<BackForwardCacheCanStoreTreeResult>
+BackForwardCacheImpl::PopulateReasonsForDocumentAndDescendants(
     RenderFrameHostImpl* rfh,
-    bool include_non_sticky) {
-  PopulateReasonsForDocument(result, rfh, include_non_sticky);
-  for (size_t i = 0; i < rfh->child_count(); i++)
-    PopulateReasonsForDocumentAndDescendants(
-        result, rfh->child_at(i)->current_frame_host(), include_non_sticky);
+    const GURL main_url,
+    BackForwardCacheCanStoreDocumentResult& flattened_result,
+    bool include_non_sticky,
+    bool create_tree,
+    bool first_call) {
+  BackForwardCacheCanStoreDocumentResult result_for_this_document;
+  // Stores the reasons for flattened_result
+  if (first_call) {
+    PopulateReasonsForMainDocument(result_for_this_document, rfh);
+  }
+  PopulateReasonsForDocument(result_for_this_document, rfh, include_non_sticky);
+  flattened_result.AddReasonsFrom(result_for_this_document);
+
+  // Finds the reasons recursively and create the reason subtree for the
+  // children if needed.
+  BackForwardCacheCanStoreTreeResult::ChildrenVector children_result;
+  for (size_t i = 0; i < rfh->child_count(); i++) {
+    std::unique_ptr<BackForwardCacheCanStoreTreeResult> child =
+        PopulateReasonsForDocumentAndDescendants(
+            rfh->child_at(i)->current_frame_host(), main_url, flattened_result,
+            include_non_sticky, create_tree,
+            /*first_call=*/false);
+    if (create_tree) {
+      children_result.emplace_back(std::move(child));
+    }
+  }
+
+  if (!create_tree)
+    return nullptr;
+
+  std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree(
+      new BackForwardCacheCanStoreTreeResult(
+          rfh, main_url, result_for_this_document, std::move(children_result)));
+  return tree;
 }
 
 void BackForwardCacheImpl::StoreEntry(
     std::unique_ptr<BackForwardCacheImpl::Entry> entry) {
   TRACE_EVENT("navigation", "BackForwardCache::StoreEntry", "entry", entry);
-  DCHECK(CanStorePageNow(entry->render_frame_host()));
+  BackForwardCacheCanStoreDocumentResultWithTree result =
+      CanStorePageNow(entry->render_frame_host());
+  DCHECK(result);
 
 #if defined(OS_ANDROID)
   if (!IsProcessBindingEnabled()) {
@@ -1169,13 +1201,15 @@ BackForwardCacheImpl::Entry* BackForwardCacheImpl::GetEntry(
           .Has(WebSchedulerTrackedFeature::
                    kMainResourceHasCacheControlNoStore)) {
     auto* render_frame_host = (*matching_entry)->render_frame_host();
-    BackForwardCacheCanStoreDocumentResult can_store =
+    BackForwardCacheCanStoreDocumentResultWithTree can_store =
         CanStorePageNow(render_frame_host);
-    UpdateCanStoreToIncludeCacheControlNoStore(can_store, render_frame_host);
+    UpdateCanStoreToIncludeCacheControlNoStore(can_store.flattened_reasons,
+                                               render_frame_host);
     if (!can_store) {
       (*matching_entry)
           ->render_frame_host()
-          ->EvictFromBackForwardCacheWithReasons(can_store);
+          ->EvictFromBackForwardCacheWithReasons(
+              can_store.flattened_reasons, std::move(can_store.tree_reasons));
     }
   }
 
@@ -1354,5 +1388,29 @@ bool BackForwardCache::DisabledReason::operator!=(
     const DisabledReason& other) const {
   return !(*this == other);
 }
+
+BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(
+    RenderFrameHostImpl* rfh,
+    const GURL main_document_url,
+    BackForwardCacheCanStoreDocumentResult& result_for_this_document,
+    BackForwardCacheCanStoreTreeResult::ChildrenVector children)
+    : document_result_(std::move(result_for_this_document)),
+      children_(std::move(children)),
+      is_same_origin_(
+          url::IsSameOriginWith(rfh->GetLastCommittedURL(), main_document_url)),
+      url_(rfh->GetLastCommittedURL()) {}
+
+BackForwardCacheCanStoreTreeResult::~BackForwardCacheCanStoreTreeResult() =
+    default;
+
+BackForwardCacheCanStoreDocumentResultWithTree::
+    BackForwardCacheCanStoreDocumentResultWithTree(
+        BackForwardCacheCanStoreDocumentResult& flattened_reasons,
+        std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree_reasons)
+    : flattened_reasons(std::move(flattened_reasons)),
+      tree_reasons(std::move(tree_reasons)) {}
+
+BackForwardCacheCanStoreDocumentResultWithTree::
+    ~BackForwardCacheCanStoreDocumentResultWithTree() = default;
 
 }  // namespace content

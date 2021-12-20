@@ -24,6 +24,7 @@ class Origin;
 
 namespace content {
 class BackForwardCacheCanStoreDocumentResult;
+class BackForwardCacheCanStoreTreeResult;
 class NavigationEntryImpl;
 class NavigationRequest;
 class RenderFrameHostImpl;
@@ -219,6 +220,13 @@ class BackForwardCacheMetrics
   void MarkNotRestoredWithReason(
       const BackForwardCacheCanStoreDocumentResult& can_store);
 
+  // TODO: Take BackForwardCacheCanStoreDocumentResultWithTree as an argument
+  // instead of using BackForwardCacheCanStoreDocumentResult and
+  // BackForwardCacheCanStoreTreeResult as arguments.
+  void FinalizeNotRestoredReasons(
+      const BackForwardCacheCanStoreDocumentResult& can_store_flat,
+      std::unique_ptr<BackForwardCacheCanStoreTreeResult> can_store_tree);
+
   // Exported for testing.
   // The DisabledReason's source and id combined to give a unique uint64.
   CONTENT_EXPORT static uint64_t MetricValue(BackForwardCache::DisabledReason);
@@ -285,7 +293,11 @@ class BackForwardCacheMetrics
   absl::optional<base::TimeTicks> started_navigation_timestamp_;
   absl::optional<base::TimeTicks> navigated_away_from_main_document_timestamp_;
 
+  // TODO: Store BackForwardCacheCanStoreDocumentResultWithTree instead of
+  // storing unique_ptr of BackForwardCacheCanStoreDocumentResult and
+  // BackForwardCacheCanStoreTreeResult respectively.
   std::unique_ptr<BackForwardCacheCanStoreDocumentResult> page_store_result_;
+  std::unique_ptr<BackForwardCacheCanStoreTreeResult> page_store_tree_result_;
 
   // This value is updated only for navigations which are not same-document and
   // main-frame navigations.

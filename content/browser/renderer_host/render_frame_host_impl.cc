@@ -5853,21 +5853,24 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReason(
   // details.
   DCHECK_NE(reason,
             BackForwardCacheMetrics::NotRestoredReason::kIgnoreEventAndEvict);
-  auto can_store =
+  BackForwardCacheCanStoreDocumentResultWithTree can_store =
       frame_tree()->controller().GetBackForwardCache().CanStorePageNow(
           GetMainFrame());
-  can_store.No(reason);
-  EvictFromBackForwardCacheWithReasons(can_store);
+  can_store.flattened_reasons.No(reason);
+  EvictFromBackForwardCacheWithReasons(can_store.flattened_reasons,
+                                       std::move(can_store.tree_reasons));
 }
 
 void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
-    const BackForwardCacheCanStoreDocumentResult& can_store) {
+    const BackForwardCacheCanStoreDocumentResult& can_store_flattened,
+    std::unique_ptr<BackForwardCacheCanStoreTreeResult> can_store_tree) {
   TRACE_EVENT2("navigation", "RenderFrameHostImpl::EvictFromBackForwardCache",
-               "can_store", can_store.ToString(), "rfh",
+               "can_store", can_store_flattened.ToString(), "rfh",
                static_cast<void*>(this));
-  TRACE_EVENT(
-      "navigation", "RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons",
-      ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult, can_store);
+  TRACE_EVENT("navigation",
+              "RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons",
+              ChromeTrackEvent::kBackForwardCacheCanStoreDocumentResult,
+              can_store_flattened);
   DCHECK(IsBackForwardCacheEnabled());
 
   if (is_evicted_from_back_forward_cache_)
@@ -5884,8 +5887,10 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
   // TODO(hajimehoshi): Record the 'race condition' by JavaScript execution when
   // |in_back_forward_cache| is false.
   BackForwardCacheMetrics* metrics = top_document->GetBackForwardCacheMetrics();
-  if (in_back_forward_cache && metrics)
-    metrics->MarkNotRestoredWithReason(can_store);
+  if (in_back_forward_cache && metrics) {
+    metrics->FinalizeNotRestoredReasons(can_store_flattened,
+                                        std::move(can_store_tree));
+  }
 
   if (!in_back_forward_cache) {
     TRACE_EVENT0("navigation", "BackForwardCache_EvictAfterDocumentRestored");
@@ -12088,17 +12093,19 @@ void RenderFrameHostImpl::MaybeEvictFromBackForwardCache() {
   RenderFrameHostImpl* top_document = this;
   while (RenderFrameHostImpl* parent = top_document->GetParent())
     top_document = parent;
-  BackForwardCacheCanStoreDocumentResult can_store =
+  BackForwardCacheCanStoreDocumentResultWithTree can_store =
       frame_tree()->controller().GetBackForwardCache().CanStorePageNow(
           top_document);
 
   TRACE_EVENT("navigation",
               "RenderFrameHostImpl::MaybeEvictFromBackForwardCache",
-              "render_frame_host", this, "can_store", can_store.ToString());
+              "render_frame_host", this, "can_store",
+              can_store.flattened_reasons.ToString());
 
   if (can_store)
     return;
-  EvictFromBackForwardCacheWithReasons(can_store);
+  EvictFromBackForwardCacheWithReasons(can_store.flattened_reasons,
+                                       std::move(can_store.tree_reasons));
 }
 
 void RenderFrameHostImpl::LogCannotCommitOriginCrashKeys(

@@ -9,6 +9,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/sparse_histogram.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -297,6 +298,13 @@ void BackForwardCacheMetrics::CollectFeatureUsageFromSubtree(
     CollectFeatureUsageFromSubtree(rfh->child_at(i)->current_frame_host(),
                                    main_frame_origin);
   }
+}
+
+void BackForwardCacheMetrics::FinalizeNotRestoredReasons(
+    const BackForwardCacheCanStoreDocumentResult& can_store_flat,
+    std::unique_ptr<BackForwardCacheCanStoreTreeResult> can_store_tree) {
+  page_store_tree_result_ = std::move(can_store_tree);
+  MarkNotRestoredWithReason(can_store_flat);
 }
 
 void BackForwardCacheMetrics::MarkNotRestoredWithReason(

@@ -725,11 +725,11 @@ void RenderFrameHostManager::UnloadOldFrame(
     BackForwardCacheImpl& back_forward_cache =
         GetNavigationController().GetBackForwardCache();
 
-    auto can_store =
+    BackForwardCacheCanStoreDocumentResultWithTree can_store =
         back_forward_cache.CanStorePageNow(old_render_frame_host.get());
     TRACE_EVENT("navigation", "BackForwardCache_MaybeStorePage",
                 "old_render_frame_host", old_render_frame_host, "can_store",
-                can_store.ToString());
+                can_store.flattened_reasons.ToString());
     if (can_store) {
       auto stored_page = CollectPage(std::move(old_render_frame_host));
       auto entry =
@@ -742,8 +742,10 @@ void RenderFrameHostManager::UnloadOldFrame(
       return;
     }
 
-    if (old_page_back_forward_cache_metrics)
-      old_page_back_forward_cache_metrics->MarkNotRestoredWithReason(can_store);
+    if (old_page_back_forward_cache_metrics) {
+      old_page_back_forward_cache_metrics->FinalizeNotRestoredReasons(
+          can_store.flattened_reasons, std::move(can_store.tree_reasons));
+    }
   }
 
   // Create a replacement proxy for the old RenderFrameHost when we're switching
