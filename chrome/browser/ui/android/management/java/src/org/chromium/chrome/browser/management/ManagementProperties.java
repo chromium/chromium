@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.management;
 
+import android.text.SpannableString;
+
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -11,11 +13,15 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Associated properties for ManagementPage's view.
  */
 class ManagementProperties {
-    public static final PropertyModel.WritableBooleanPropertyKey BROWSER_IS_MANAGED =
-            new PropertyModel.WritableBooleanPropertyKey();
-
     public static final PropertyModel.WritableObjectPropertyKey<String> ACCOUNT_MANAGER_NAME =
             new PropertyModel.WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_KEYS = {BROWSER_IS_MANAGED, ACCOUNT_MANAGER_NAME};
+    public static final PropertyModel.WritableBooleanPropertyKey BROWSER_IS_MANAGED =
+            new PropertyModel.WritableBooleanPropertyKey();
+
+    public static final PropertyModel.WritableObjectPropertyKey<SpannableString> LEARN_MORE_TEXT =
+            new PropertyModel.WritableObjectPropertyKey<>();
+
+    public static final PropertyKey[] ALL_KEYS = {
+            ACCOUNT_MANAGER_NAME, BROWSER_IS_MANAGED, LEARN_MORE_TEXT};
 }

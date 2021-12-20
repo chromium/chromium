@@ -25,7 +25,7 @@ public class ManagementPage extends BasicNativePage {
         super(host);
 
         mTitle = host.getContext().getResources().getString(R.string.management);
-        mManagementCoordinator = new ManagementCoordinator(host.getContext(), profile);
+        mManagementCoordinator = new ManagementCoordinator(host, profile);
 
         initWithView(mManagementCoordinator.getView());
     }

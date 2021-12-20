@@ -18,10 +18,12 @@ class ManagementViewBinder {
      * @param propertyKey Specific model attribute that changed on this event.
      */
     public static void bind(PropertyModel model, ManagementView view, PropertyKey propertyKey) {
-        if (ManagementProperties.BROWSER_IS_MANAGED == propertyKey) {
+        if (propertyKey == ManagementProperties.BROWSER_IS_MANAGED) {
             view.setManaged(model.get(ManagementProperties.BROWSER_IS_MANAGED));
-        } else if (ManagementProperties.ACCOUNT_MANAGER_NAME == propertyKey) {
+        } else if (propertyKey == ManagementProperties.ACCOUNT_MANAGER_NAME) {
             view.setManagerName(model.get(ManagementProperties.ACCOUNT_MANAGER_NAME));
+        } else if (propertyKey == ManagementProperties.LEARN_MORE_TEXT) {
+            view.setLearnMoreText(model.get(ManagementProperties.LEARN_MORE_TEXT));
         }
     }
 }

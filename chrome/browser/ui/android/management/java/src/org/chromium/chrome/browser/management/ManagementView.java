@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.management;
 
 import android.content.Context;
-import android.text.Html;
+import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
@@ -26,9 +26,6 @@ public class ManagementView extends LinearLayout {
     private TextView mDescription;
     private TextView mLearnMore;
 
-    private static final String LEARN_MORE_URL =
-            "https://support.google.com/chrome/answer/9281740?p=is_chrome_managed&visit_id=637678488620233541-4078225067&rd=1";
-
     /** Constructor for inflating from XML. */
     public ManagementView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -41,13 +38,6 @@ public class ManagementView extends LinearLayout {
         mTitle = (TextView) findViewById(R.id.title_text);
         mDescription = (TextView) findViewById(R.id.description_text);
         mLearnMore = (TextView) findViewById(R.id.learn_more);
-
-        // Enable learn more link.
-        String learnMoreText =
-                getResources().getString(R.string.management_learn_more, LEARN_MORE_URL);
-
-        mLearnMore.setText(Html.fromHtml(learnMoreText));
-        mLearnMore.setMovementMethod(LinkMovementMethod.getInstance());
 
         // Set default management status
         mIsManaged = false;
@@ -85,6 +75,11 @@ public class ManagementView extends LinearLayout {
     /** Gets account manager name. */
     public @Nullable String getManagerName() {
         return mManagerName;
+    }
+
+    public void setLearnMoreText(SpannableString learnMoreText) {
+        mLearnMore.setText(learnMoreText);
+        mLearnMore.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     /**

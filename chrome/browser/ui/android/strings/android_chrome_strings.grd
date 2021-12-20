@@ -5435,7 +5435,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome.
       </message>
       <message name="IDS_MANAGEMENT_LEARN_MORE" desc="The learn more link on chrome://management page that provides more information about managed devices.">
-        <ph name="BEGIN_LINK">&lt;a href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn More<ph name="END_LINK">&lt;/a&gt;</ph>
+        <ph name="BEGIN_LINK">&lt;LINK&gt;</ph>Learn More<ph name="END_LINK">&lt;/LINK&gt;</ph>
       </message>
     </messages>
   </release>

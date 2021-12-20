@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/management/ManagementCoordinator.java",
+    "java/src/org/chromium/chrome/browser/management/ManagementMediator.java",
     "java/src/org/chromium/chrome/browser/management/ManagementPage.java",
     "java/src/org/chromium/chrome/browser/management/ManagementProperties.java",
     "java/src/org/chromium/chrome/browser/management/ManagementView.java",
@@ -20,6 +21,7 @@ android_library("java") {
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/native_page:java",
     "//components/embedder_support/android:util_java",
+    "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
