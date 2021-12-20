@@ -109,9 +109,11 @@ public class BookmarkSaveFlowCoordinator {
             @Nullable PowerBookmarkMeta meta) {
         mDestroyChecker.checkNotDestroyed();
         mBottomSheetContent = new BookmarkSaveFlowBottomSheetContent(mBookmarkSaveFlowView);
+        // Order matters here: Calling show on the mediator first allows the height to be fully
+        // determined before the sheet is shown.
+        mMediator.show(bookmarkId, meta, fromExplicitTrackUi, wasBookmarkMoved);
         boolean shown =
                 mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
-        mMediator.show(bookmarkId, meta, fromExplicitTrackUi, wasBookmarkMoved);
 
         AccessibilityManager am =
                 (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
