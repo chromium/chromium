@@ -21,6 +21,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
@@ -52,7 +53,6 @@ constexpr char kCommandRegister[] = "register";
 constexpr char kCommandSystemStore[] = "system-store";
 constexpr char kCommandUserInitiated[] = "user-initiated";
 constexpr char kCommandUserStore[] = "user-store";
-constexpr char kCommandStorePath[] = "store";
 constexpr char kCommandBrandKey[] = "brand-key";
 constexpr char kCommandBrandPath[] = "brand-path";
 constexpr char kCommandProductId[] = "productid";
@@ -127,7 +127,6 @@ std::string SwitchValue(
       {kCommandTagKey, "K"},      {kCommandTagPath, "H"},
       {kCommandVersion, "v"},     {kCommandVersionKey, "e"},
       {kCommandVersionPath, "a"}, {kCommandXCPath, "x"},
-      {kCommandStorePath, {"s"}},
   };
   if (!base::Contains(aliases, arg))
     return "";
@@ -139,7 +138,7 @@ std::string KeystoneTicketStorePath(UpdaterScope scope) {
   return GetKeystoneFolderPath(scope)
       ->Append(FILE_PATH_LITERAL("TicketStore"))
       .Append(FILE_PATH_LITERAL("Keystone.ticketstore"))
-      .AsUTF8Unsafe();
+      .value();
 }
 
 UpdaterScope Scope(const base::flat_map<std::string, std::string>& switches) {
@@ -148,8 +147,12 @@ UpdaterScope Scope(const base::flat_map<std::string, std::string>& switches) {
   if (HasSwitch(kCommandUserStore, switches))
     return UpdaterScope::kUser;
 
-  return SwitchValue(kCommandStorePath, switches) ==
-                 KeystoneTicketStorePath(UpdaterScope::kSystem)
+  base::FilePath executable_path;
+  if (!base::PathService::Get(base::FILE_EXE, &executable_path))
+    return UpdaterScope::kUser;
+
+  return base::StartsWith(executable_path.value(),
+                          GetKeystoneFolderPath(UpdaterScope::kSystem)->value())
              ? UpdaterScope::kSystem
              : UpdaterScope::kUser;
 }
@@ -173,7 +176,7 @@ class KSAdminApp : public App {
   void PrintUsage(const std::string& error_message);
   void PrintVersion();
   void PrintTickets();
-  void PrintKeystoneTickets();
+  void PrintKeystoneTickets(const std::string& app_id);
 
   UpdaterScope Scope() const;
   bool HasSwitch(const std::string& arg) const;
@@ -366,26 +369,43 @@ void KSAdminApp::PrintVersion() {
   Shutdown(0);
 }
 
-void KSAdminApp::PrintKeystoneTickets() {
+void KSAdminApp::PrintKeystoneTickets(const std::string& app_id) {
+  // Print all tickets if `app_id` is empty. Otherwise only print ticket for
+  // the given app id.
   @autoreleasepool {
     NSDictionary<NSString*, KSTicket*>* store = LoadTicketStore();
-    if (store.count > 0) {
-      for (NSString* key in store) {
-        printf("%s\n",
-               base::SysNSStringToUTF8([store[key] description]).c_str());
+    if (app_id.empty()) {
+      if (store.count > 0) {
+        for (NSString* key in store) {
+          printf("%s\n",
+                 base::SysNSStringToUTF8([store[key] description]).c_str());
+        }
+        return;
       }
     } else {
-      printf("No tickets\n");
+      KSTicket* ticket = [store
+          objectForKey:[base::SysUTF8ToNSString(app_id) lowercaseString]];
+      if (ticket) {
+        printf("%s\n", base::SysNSStringToUTF8([ticket description]).c_str());
+        return;
+      }
     }
+
+    printf("No tickets.\n");
   }
 }
 
 void KSAdminApp::PrintTickets() {
+  const std::string app_id = SwitchValue(kCommandProductId);
   service_proxy_->GetAppStates(base::BindOnce(
-      [](base::OnceCallback<void()> fallback_cb,
+      [](const std::string& app_id, base::OnceCallback<void()> fallback_cb,
          base::OnceCallback<void(int)> done_cb,
          const std::vector<updater::UpdateService::AppState>& states) {
         for (const updater::UpdateService::AppState& state : states) {
+          if (!app_id.empty() &&
+              !base::EqualsCaseInsensitiveASCII(app_id, state.app_id)) {
+            continue;
+          }
           KSTicket* ticket =
               [[[KSTicket alloc] initWithAppState:state] autorelease];
           printf("%s\n", base::SysNSStringToUTF8([ticket description]).c_str());
@@ -398,7 +418,7 @@ void KSAdminApp::PrintTickets() {
         }
         std::move(done_cb).Run(0);
       },
-      base::BindOnce(&KSAdminApp::PrintKeystoneTickets, this),
+      app_id, base::BindOnce(&KSAdminApp::PrintKeystoneTickets, this, app_id),
       base::BindOnce(&KSAdminApp::Shutdown, this)));
 }
 
