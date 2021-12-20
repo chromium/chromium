@@ -115,8 +115,10 @@ void SupportToolHandler::OnAllDataCollected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& data_collector : data_collectors_) {
     const PIIMap& collected = data_collector->GetDetectedPII();
-    // Use std::multipmap.merge() function after migration to C++17.
-    detected_pii_.insert(collected.begin(), collected.end());
+    for (auto& pii_data : collected) {
+      detected_pii_[pii_data.first].insert(pii_data.second.begin(),
+                                           pii_data.second.end());
+    }
   }
 
   std::move(on_data_collection_done_callback_)

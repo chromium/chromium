@@ -79,8 +79,7 @@ class TestDataCollector : public DataCollector {
     if (error_) {
       std::move(callback).Run(SupportToolError::kTestDataCollectorError);
     } else {
-      pii_map_.insert(std::pair<feedback::PIIType, std::string>(
-          feedback::PIIType::kUIHierarchyWindowTitles, name_));
+      pii_map_[feedback::PIIType::kUIHierarchyWindowTitles].insert(name_);
       std::move(callback).Run(absl::nullopt);
     }
   }

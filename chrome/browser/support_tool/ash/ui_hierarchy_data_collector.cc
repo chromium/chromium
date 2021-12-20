@@ -106,6 +106,8 @@ void UiHierarchyDataCollector::OnDataExportDone(
 
 void UiHierarchyDataCollector::InsertIntoPIIMap(
     const std::vector<std::string>& window_titles) {
+  std::set<std::string>& pii_window_titles =
+      pii_map_[feedback::PIIType::kUIHierarchyWindowTitles];
   for (auto const& title : window_titles)
-    pii_map_.emplace(feedback::PIIType::kUIHierarchyWindowTitles, title);
+    pii_window_titles.insert(title);
 }

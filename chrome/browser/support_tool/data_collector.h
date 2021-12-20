@@ -24,7 +24,7 @@ enum class SupportToolError {
   kDataExportCreateArchiveFailed,
 };
 
-using PIIMap = std::multimap<feedback::PIIType, std::string>;
+using PIIMap = std::map<feedback::PIIType, std::set<std::string>>;
 
 // Returns a SupportToolError if an error occurs to the callback.
 using DataCollectorDoneCallback =
