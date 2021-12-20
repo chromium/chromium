@@ -182,7 +182,8 @@ TEST_F(AuraDesktopCapturerTest, ShouldSendScreenshotRequestForPrimaryDisplay) {
   EXPECT_THAT(request.display, Eq(111));
 }
 
-TEST_F(AuraDesktopCapturerTest, ShouldSendScreenshotToCapturer) {
+// Disabled: This is causing ASan failures (https://crbug.com/1281670)
+TEST_F(AuraDesktopCapturerTest, DISABLED_ShouldSendScreenshotToCapturer) {
   capturer_.Start(&desktop_capturer_callback());
   capturer_.CaptureFrame();
 
