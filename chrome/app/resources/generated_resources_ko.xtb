@@ -2763,7 +2763,7 @@
 <translation id="383161972796689579">이 기기의 소유자가 새로운 사용자를 추가하지 못하도록 설정함</translation>
 <translation id="3834728400518755610">마이크 설정을 변경하려면 Linux를 종료해야 합니다. 계속하려면 Linux를 종료하세요.</translation>
 <translation id="3834775135533257713">애플리케이션 '<ph name="TO_INSTALL_APP_NAME" />'이(가) '<ph name="INSTALLED_APP_NAME" />'와(과) 충돌하기 때문에 추가하지 못했습니다.</translation>
-<translation id="3835522725882634757">이 서버가 <ph name="PRODUCT_NAME" />에서 이해할 수 없는 데이터를 전송합니다. <ph name="BEGIN_LINK" />버그를 신고<ph name="END_LINK" />하고 <ph name="BEGIN2_LINK" />원본 목록<ph name="END2_LINK" />을 포함하세요.</translation>
+<translation id="3835522725882634757">이 서버가 <ph name="PRODUCT_NAME" />에서 이해할 수 없는 데이터를 전송합니다. <ph name="BEGIN_LINK" />버그를 신고<ph name="END_LINK" />하고 <ph name="BEGIN2_LINK" />원본 등록정보<ph name="END2_LINK" />를 포함하세요.</translation>
 <translation id="383669374481694771">기기 및 기기 사용 방식에 관한 일반적인 정보(배터리 수준, 시스템 및 앱 활동, 오류 등)입니다. 데이터는 Android를 개선하는 데 사용되며 일부 수집 정보는 Google 앱과 파트너(Android 개발자 등)가 앱 및 제품을 개선하는 데도 도움이 됩니다.</translation>
 <translation id="3838085852053358637">확장 프로그램을 로드하지 못함</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> 더보기</translation>
