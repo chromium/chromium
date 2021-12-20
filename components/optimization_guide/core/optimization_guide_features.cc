@@ -230,6 +230,15 @@ base::TimeDelta GetActiveTabsStalenessTolerance() {
       "active_tabs_staleness_tolerance_in_days", 90));
 }
 
+size_t MaxConcurrentBatchUpdateFetches() {
+  // If overridden, this needs to be large enough where we do not thrash the
+  // inflight batch update fetches since if we approach the limit here, we will
+  // abort the oldest batch update fetch that is in flight.
+  return GetFieldTrialParamByFeatureAsInt(kRemoteOptimizationGuideFetching,
+                                          "max_concurrent_batch_update_fetches",
+                                          20);
+}
+
 size_t MaxConcurrentPageNavigationFetches() {
   // If overridden, this needs to be large enough where we do not thrash the
   // inflight page navigations since if we approach the limit here, we will

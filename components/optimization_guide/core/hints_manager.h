@@ -134,11 +134,6 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // and in memory ones.
   void ClearHostKeyedHints();
 
-  // Returns the current batch update hints fetcher.
-  HintsFetcher* batch_update_hints_fetcher() const {
-    return batch_update_hints_fetcher_.get();
-  }
-
   // Overrides |hints_fetcher_factory| for testing.
   void SetHintsFetcherFactoryForTesting(
       std::unique_ptr<HintsFetcherFactory> hints_fetcher_factory);
@@ -164,7 +159,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
   void OnDeferredStartup();
 
   // Fetch the hints for the given URLs with the provided |request_context|.
-  void FetchHintsForURLs(std::vector<GURL> target_urls,
+  void FetchHintsForURLs(const std::vector<GURL>& target_urls,
                          proto::RequestContext request_context);
 
   // PushNotificationManager::Delegate:
@@ -194,6 +189,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
 
  private:
   friend class ::OptimizationGuideTestAppInterfaceWrapper;
+  friend class HintsManagerTest;
 
   // Processes the optimization filters contained in the hints component.
   void ProcessOptimizationFilters(
@@ -249,10 +245,12 @@ class HintsManager : public OptimizationHintsComponentObserver,
       absl::optional<std::unique_ptr<proto::GetHintsResponse>>
           get_hints_response);
 
-  // Called when the on demand hints have been fetched from the remote
+  // Called when the batch update hints have been fetched from the remote
   // Optimization Guide Service and are ready for parsing. This is used when
-  // fetching hints on demand.
-  void OnOnDemandHintsFetched(
+  // fetching hints on demand or from SRP.
+  void OnBatchUpdateHintsFetched(
+      int32_t request_id,
+      proto::RequestContext request_context,
       const base::flat_set<std::string>& hosts_fetched,
       const base::flat_set<GURL>& urls_fetched,
       const base::flat_set<proto::OptimizationType>& optimization_types,
@@ -260,12 +258,25 @@ class HintsManager : public OptimizationHintsComponentObserver,
       absl::optional<std::unique_ptr<proto::GetHintsResponse>>
           get_hints_response);
 
-  // Called when information is ready such that we can invoke the on-demand
-  // hints callback.
-  void OnReadyToInvokeOnDemandHintsCallbackForURLs(
+  // Called when information is ready such that we can invoke any callbacks that
+  // require returning decisions to consumer features.
+  //
+  // TODO(crbug/1279536): Clean this up when we clean up some of the existing
+  // interfaces.
+  void OnBatchUpdateHintsStored(
       const base::flat_set<GURL>& urls_fetched,
       const base::flat_set<proto::OptimizationType>& optimization_types,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback);
+
+  // Creates a hints fetcher and stores it in |batch_update_hints_fetchers_| and
+  // returns the request ID associated with the fetch. It is expected to call
+  // `CleanUpBatchUpdateHintsFetcher` with the returned request ID once the
+  // fetch has finished.
+  std::pair<int32_t, HintsFetcher*> CreateAndTrackBatchUpdateHintsFetcher();
+
+  // Called to inform |this| that the batch fetcher with |request_id| is no
+  // longer needed removes the request from |batch_update_hints_fetchers_|
+  void CleanUpBatchUpdateHintsFetcher(int32_t request_id);
 
   // Returns decisions for |url| and |optimization_types| based on what's cached
   // locally.
@@ -366,6 +377,20 @@ class HintsManager : public OptimizationHintsComponentObserver,
 
   HintsFetcherFactory* GetHintsFetcherFactory();
 
+  // Returns the number of batch update hints fetches initiated.
+  //
+  // Exposed here for testing.
+  int32_t num_batch_update_hints_fetches_initiated() const {
+    return batch_update_hints_fetcher_request_id_;
+  }
+
+  // Returns the current active tabs batch update hints fetcher.
+  //
+  // Exposed here for testing.
+  HintsFetcher* active_tabs_batch_update_hints_fetcher() const {
+    return active_tabs_batch_update_hints_fetcher_.get();
+  }
+
   // The information of the latest component delivered by
   // |optimization_guide_service_|.
   absl::optional<HintsComponentInfo> hints_component_info_;
@@ -412,9 +437,15 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // fetched from the remote Optimization Guide Service.
   std::unique_ptr<HintCache> hint_cache_;
 
-  // The fetcher that handles making requests for hints for multiple hosts from
+  // The fetcher that handles making requests for hints for active tabs from
   // the remote Optimization Guide Service.
-  std::unique_ptr<HintsFetcher> batch_update_hints_fetcher_;
+  std::unique_ptr<HintsFetcher> active_tabs_batch_update_hints_fetcher_;
+
+  // A map from request ID to the fetcher that handles making requests for hints
+  // for multiple hosts from the remote Optimization Guide Service.
+  base::LRUCache<int32_t, std::unique_ptr<HintsFetcher>>
+      batch_update_hints_fetchers_;
+  int32_t batch_update_hints_fetcher_request_id_ = 0;
 
   // A cache keyed by navigation URL to the fetcher making a request for a hint
   // for that URL and/or host to the remote Optimization Guide Service that

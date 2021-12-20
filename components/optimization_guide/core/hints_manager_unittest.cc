@@ -453,9 +453,13 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
 
   HintsManager* hints_manager() const { return hints_manager_.get(); }
 
-  TestHintsFetcher* batch_update_hints_fetcher() const {
+  int32_t num_batch_update_hints_fetches_initiated() const {
+    return hints_manager()->num_batch_update_hints_fetches_initiated();
+  }
+
+  TestHintsFetcher* active_tabs_batch_update_hints_fetcher() const {
     return static_cast<TestHintsFetcher*>(
-        hints_manager()->batch_update_hints_fetcher());
+        hints_manager()->active_tabs_batch_update_hints_fetcher());
   }
 
   GURL url_with_hints() const {
@@ -1565,7 +1569,7 @@ TEST_F(HintsManagerFetchingDisabledTest,
   MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
   EXPECT_EQ(0, top_host_provider->get_num_top_hosts_called());
   // Hints fetcher should not even be created.
-  EXPECT_FALSE(batch_update_hints_fetcher());
+  EXPECT_FALSE(active_tabs_batch_update_hints_fetcher());
 }
 
 TEST_F(HintsManagerTest,
@@ -1794,7 +1798,8 @@ class HintsManagerFetchingTest : public HintsManagerTest {
         {
             {
                 features::kRemoteOptimizationGuideFetching,
-                {{"max_concurrent_page_navigation_fetches", "2"}},
+                {{"max_concurrent_page_navigation_fetches", "2"},
+                 {"max_concurrent_batch_update_fetches", "2"}},
             },
         },
         {features::kRemoteOptimizationGuideFetchingAnonymousDataConsent});
@@ -1820,7 +1825,7 @@ TEST_F(HintsManagerFetchingTest,
   // Force timer to expire and schedule a hints fetch.
   MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
   // Hints fetcher should not even be created.
-  EXPECT_FALSE(batch_update_hints_fetcher());
+  EXPECT_FALSE(active_tabs_batch_update_hints_fetcher());
 }
 
 TEST_F(HintsManagerFetchingTest,
@@ -1841,8 +1846,8 @@ TEST_F(HintsManagerFetchingTest,
   // Force timer to expire and schedule a hints fetch but the fetch is not made.
   MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
   EXPECT_EQ(0, top_host_provider->get_num_top_hosts_called());
-  // Hints fetcher should not be created.
-  EXPECT_FALSE(batch_update_hints_fetcher());
+  // Hints fetcher should not even be created.
+  EXPECT_FALSE(active_tabs_batch_update_hints_fetcher());
 }
 
 TEST_F(HintsManagerFetchingTest,
@@ -1873,8 +1878,8 @@ TEST_F(HintsManagerFetchingTest,
   // Force timer to expire after random delay and schedule a hints fetch.
   MoveClockForwardBy(base::Seconds(60 * 2));
   EXPECT_EQ(0, top_host_provider->get_num_top_hosts_called());
-  // Hints fetcher should not be created.
-  EXPECT_FALSE(batch_update_hints_fetcher());
+  // Hints fetcher should not even be created.
+  EXPECT_FALSE(active_tabs_batch_update_hints_fetcher());
 }
 
 TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsOrUrlsToFetch) {
@@ -1901,15 +1906,15 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsOrUrlsToFetch) {
   MoveClockForwardBy(base::Seconds(60 * 2));
   EXPECT_EQ(1, top_host_provider->get_num_top_hosts_called());
   EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
-  // Hints fetcher should not be even created.
-  EXPECT_FALSE(batch_update_hints_fetcher());
+  // Hints fetcher should not even be created.
+  EXPECT_FALSE(active_tabs_batch_update_hints_fetcher());
 
   // Move it forward again to make sure timer is scheduled.
   MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
   EXPECT_EQ(2, top_host_provider->get_num_top_hosts_called());
   EXPECT_EQ(2, tab_url_provider()->get_num_urls_called());
-  // Still no hosts or URLs, so hints fetcher should still not be even created.
-  EXPECT_FALSE(batch_update_hints_fetcher());
+  // Hints fetcher should not even be created.
+  EXPECT_FALSE(active_tabs_batch_update_hints_fetcher());
 }
 
 TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsButHasUrlsToFetch) {
@@ -1940,10 +1945,13 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsButHasUrlsToFetch) {
   MoveClockForwardBy(base::Seconds(60 * 2));
   EXPECT_EQ(1, top_host_provider->get_num_top_hosts_called());
   EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
-  EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
-  EXPECT_EQ("en-US", batch_update_hints_fetcher()->locale_requested());
-  EXPECT_EQ(proto::RequestContext::CONTEXT_BATCH_UPDATE_ACTIVE_TABS,
-            batch_update_hints_fetcher()->request_context_requested());
+  EXPECT_EQ(1,
+            active_tabs_batch_update_hints_fetcher()->num_fetches_requested());
+  EXPECT_EQ("en-US",
+            active_tabs_batch_update_hints_fetcher()->locale_requested());
+  EXPECT_EQ(
+      proto::RequestContext::CONTEXT_BATCH_UPDATE_ACTIVE_TABS,
+      active_tabs_batch_update_hints_fetcher()->request_context_requested());
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 2, 1);
 
@@ -1952,7 +1960,8 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherEnabledNoHostsButHasUrlsToFetch) {
   EXPECT_EQ(2, top_host_provider->get_num_top_hosts_called());
   EXPECT_EQ(2, tab_url_provider()->get_num_urls_called());
   // Urls didn't change and we have all URLs cached in store.
-  EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
+  EXPECT_EQ(1,
+            active_tabs_batch_update_hints_fetcher()->num_fetches_requested());
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 0, 1);
 }
@@ -1982,7 +1991,7 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherTimerFetchOnStartup) {
   RunUntilIdle();
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 0);
-  EXPECT_EQ(nullptr, batch_update_hints_fetcher());
+  EXPECT_FALSE(active_tabs_batch_update_hints_fetcher());
   EXPECT_EQ(0, tab_url_provider()->get_num_urls_called());
 
   // Force timer to expire after random delay and schedule a hints fetch that
@@ -1991,14 +2000,16 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherTimerFetchOnStartup) {
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 2, 1);
   EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
-  EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
+  EXPECT_EQ(1,
+            active_tabs_batch_update_hints_fetcher()->num_fetches_requested());
 
   // Move it forward again to make sure timer is scheduled.
   MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 0, 1);
   EXPECT_EQ(2, tab_url_provider()->get_num_urls_called());
-  EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
+  EXPECT_EQ(1,
+            active_tabs_batch_update_hints_fetcher()->num_fetches_requested());
 }
 
 // Verifies the deferred startup mode that fetches hints for active tab URLs on
@@ -2035,14 +2046,16 @@ TEST_F(HintsManagerFetchingTest, HintsFetcherDeferredStartup) {
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 2, 1);
   EXPECT_EQ(1, tab_url_provider()->get_num_urls_called());
-  EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
+  EXPECT_EQ(1,
+            active_tabs_batch_update_hints_fetcher()->num_fetches_requested());
 
   // Move it forward again to make sure timer is scheduled.
   MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
   histogram_tester.ExpectBucketCount(
       "OptimizationGuide.HintsManager.ActiveTabUrlsToFetchFor", 0, 1);
   EXPECT_EQ(2, tab_url_provider()->get_num_urls_called());
-  EXPECT_EQ(1, batch_update_hints_fetcher()->num_fetches_requested());
+  EXPECT_EQ(1,
+            active_tabs_batch_update_hints_fetcher()->num_fetches_requested());
 }
 
 TEST_F(HintsManagerFetchingTest,
@@ -3172,6 +3185,54 @@ TEST_F(HintsManagerFetchingTest,
           },
           run_loop.get()));
   run_loop->Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", 1, 1);
+}
+
+TEST_F(HintsManagerFetchingTest, BatchUpdateCalledMoreThanMaxConcurrent) {
+  base::HistogramTester histogram_tester;
+
+  hints_manager()->RegisterOptimizationTypes({proto::COMPRESS_PUBLIC_IMAGES});
+  InitializeWithDefaultConfig("1.0.0.0");
+
+  // Set to online so fetch is activated.
+  SetConnectionOnline();
+
+  hints_manager()->SetHintsFetcherFactoryForTesting(
+      BuildTestHintsFetcherFactory(
+          {HintsFetcherEndState::kFetchSuccessWithURLHints}));
+
+  // Call this over the max count.
+  hints_manager()->CanApplyOptimizationOnDemand(
+      {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
+      proto::RequestContext::CONTEXT_BOOKMARKS,
+      base::DoNothingAs<void(
+          const GURL&,
+          const base::flat_map<proto::OptimizationType,
+                               OptimizationGuideDecisionWithMetadata>&)>());
+  hints_manager()->CanApplyOptimizationOnDemand(
+      {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
+      proto::RequestContext::CONTEXT_BOOKMARKS,
+      base::DoNothingAs<void(
+          const GURL&,
+          const base::flat_map<proto::OptimizationType,
+                               OptimizationGuideDecisionWithMetadata>&)>());
+  hints_manager()->CanApplyOptimizationOnDemand(
+      {url_with_url_keyed_hint()}, {proto::COMPRESS_PUBLIC_IMAGES},
+      proto::RequestContext::CONTEXT_BOOKMARKS,
+      base::DoNothingAs<void(
+          const GURL&,
+          const base::flat_map<proto::OptimizationType,
+                               OptimizationGuideDecisionWithMetadata>&)>());
+
+  // The third one is over the max and should evict another one.
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", 3);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", 2, 2);
 }
 
 TEST_F(
@@ -3286,7 +3347,7 @@ TEST_F(HintsManagerFetchingNoBatchUpdateTest,
   // Force timer to expire and schedule a hints fetch.
   MoveClockForwardBy(base::Seconds(kUpdateFetchHintsTimeSecs));
   // Hints fetcher should not even be created.
-  EXPECT_FALSE(batch_update_hints_fetcher());
+  EXPECT_FALSE(active_tabs_batch_update_hints_fetcher());
 }
 
 }  // namespace optimization_guide

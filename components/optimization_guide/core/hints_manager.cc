@@ -302,6 +302,7 @@ HintsManager::HintsManager(
       hint_cache_(
           std::make_unique<HintCache>(hint_store,
                                       features::MaxHostKeyedHintCacheSize())),
+      batch_update_hints_fetchers_(features::MaxConcurrentBatchUpdateFetches()),
       page_navigation_hints_fetchers_(
           features::MaxConcurrentPageNavigationFetches()),
       hints_fetcher_factory_(std::make_unique<HintsFetcherFactory>(
@@ -671,11 +672,6 @@ void HintsManager::FetchHintsForActiveTabs() {
   if (top_hosts.empty() && active_tab_urls_to_refresh.empty())
     return;
 
-  if (!batch_update_hints_fetcher_) {
-    DCHECK(hints_fetcher_factory_);
-    batch_update_hints_fetcher_ = hints_fetcher_factory_->BuildInstance();
-  }
-
   // Add hosts of active tabs to list of hosts to fetch for. Since we are mainly
   // fetching for updated information on tabs, add those to the front of the
   // list.
@@ -695,7 +691,12 @@ void HintsManager::FetchHintsForActiveTabs() {
                              registered_optimization_types_,
                              active_tab_urls_to_refresh, top_hosts);
 
-  batch_update_hints_fetcher_->FetchOptimizationGuideServiceHints(
+  if (!active_tabs_batch_update_hints_fetcher_) {
+    DCHECK(hints_fetcher_factory_);
+    active_tabs_batch_update_hints_fetcher_ =
+        hints_fetcher_factory_->BuildInstance();
+  }
+  active_tabs_batch_update_hints_fetcher_->FetchOptimizationGuideServiceHints(
       top_hosts, active_tab_urls_to_refresh, registered_optimization_types_,
       proto::CONTEXT_BATCH_UPDATE_ACTIVE_TABS, application_locale_,
       base::BindOnce(&HintsManager::OnHintsForActiveTabsFetched,
@@ -729,9 +730,12 @@ void HintsManager::OnPageNavigationHintsFetched(
     const base::flat_set<std::string>& page_navigation_hosts_requested,
     absl::optional<std::unique_ptr<proto::GetHintsResponse>>
         get_hints_response) {
+  if (navigation_url) {
+    CleanUpFetcherForNavigation(*navigation_url);
+  }
+
   if (!get_hints_response.has_value() || !get_hints_response.value()) {
     if (navigation_url) {
-      CleanUpFetcherForNavigation(*navigation_url);
       PrepareToInvokeRegisteredCallbacks(*navigation_url);
     }
     return;
@@ -776,7 +780,6 @@ void HintsManager::OnFetchedPageNavigationHintsStored(
       navigation_data_weak_ptr.MaybeValid());
 
   if (navigation_url) {
-    CleanUpFetcherForNavigation(*navigation_url);
     PrepareToInvokeRegisteredCallbacks(*navigation_url);
   }
 }
@@ -809,7 +812,7 @@ void HintsManager::LoadHintForURL(const GURL& url, base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!url.has_host()) {
-    std::move(callback).Run();
+    MaybeRunUpdateClosure(std::move(callback));
     return;
   }
 
@@ -825,34 +828,44 @@ void HintsManager::LoadHintForHost(const std::string& host,
                                              std::move(callback)));
 }
 
-void HintsManager::FetchHintsForURLs(std::vector<GURL> target_urls,
+void HintsManager::FetchHintsForURLs(const std::vector<GURL>& urls,
                                      proto::RequestContext request_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Collect hosts, stripping duplicates, but preserving the ordering.
+  InsertionOrderedSet<GURL> target_urls;
   InsertionOrderedSet<std::string> target_hosts;
-  for (const auto& url : target_urls) {
+  for (const auto& url : urls) {
     target_hosts.insert(url.host());
+    target_urls.insert(url);
   }
 
   if (target_hosts.empty() && target_urls.empty())
     return;
 
-  if (!batch_update_hints_fetcher_) {
-    DCHECK(hints_fetcher_factory_);
-    batch_update_hints_fetcher_ = hints_fetcher_factory_->BuildInstance();
-  }
+  MaybeLogGetHintRequestInfo(request_context, registered_optimization_types_,
+                             target_urls.vector(), target_hosts.vector());
+
+  std::pair<int32_t, HintsFetcher*> request_id_and_fetcher =
+      CreateAndTrackBatchUpdateHintsFetcher();
 
   // Use the batch update hints fetcher for fetches off the SRP since we are
-  // not fetching for the current navigation, even though we are fetching using
-  // the page navigation context. However, since we do want to load the hints
-  // returned, we pass this through to the page navigation callback.
-  batch_update_hints_fetcher_->FetchOptimizationGuideServiceHints(
-      target_hosts.vector(), target_urls, registered_optimization_types_,
-      request_context, application_locale_,
-      base::BindOnce(&HintsManager::OnPageNavigationHintsFetched,
-                     weak_ptr_factory_.GetWeakPtr(), nullptr, absl::nullopt,
-                     target_urls, target_hosts.set()));
+  // not fetching for the current navigation.
+  //
+  // Caller does not expect to be notified when relevant hints have been fetched
+  // and stored.
+  request_id_and_fetcher.second->FetchOptimizationGuideServiceHints(
+      target_hosts.vector(), target_urls.vector(),
+      registered_optimization_types_, request_context, application_locale_,
+      base::BindOnce(
+          &HintsManager::OnBatchUpdateHintsFetched,
+          weak_ptr_factory_.GetWeakPtr(), request_id_and_fetcher.first,
+          request_context, target_hosts.set(), target_urls.set(),
+          registered_optimization_types_,
+          base::DoNothingAs<void(
+              const GURL&, const base::flat_map<
+                               proto::OptimizationType,
+                               OptimizationGuideDecisionWithMetadata>&)>()));
 }
 
 void HintsManager::OnHintLoaded(base::OnceClosure callback,
@@ -864,7 +877,7 @@ void HintsManager::OnHintLoaded(base::OnceClosure callback,
 
   // Run the callback now that the hint is loaded. This is used as a signal by
   // tests.
-  std::move(callback).Run();
+  MaybeRunUpdateClosure(std::move(callback));
 }
 
 void HintsManager::RegisterOptimizationTypes(
@@ -1015,46 +1028,51 @@ void HintsManager::CanApplyOptimizationOnDemand(
                              urls_to_fetch.vector(), hosts_to_fetch.vector());
 
   // Fetch the data for the entries we don't have all information for.
-  if (!batch_update_hints_fetcher_) {
-    DCHECK(hints_fetcher_factory_);
-    batch_update_hints_fetcher_ = hints_fetcher_factory_->BuildInstance();
-  }
-  batch_update_hints_fetcher_->FetchOptimizationGuideServiceHints(
+  std::pair<int32_t, HintsFetcher*> request_id_and_fetcher =
+      CreateAndTrackBatchUpdateHintsFetcher();
+  request_id_and_fetcher.second->FetchOptimizationGuideServiceHints(
       hosts_to_fetch.vector(), urls_to_fetch.vector(),
       registered_optimization_types_, request_context, application_locale_,
-      base::BindOnce(&HintsManager::OnOnDemandHintsFetched,
-                     weak_ptr_factory_.GetWeakPtr(), hosts_to_fetch.set(),
-                     urls_to_fetch.set(), optimization_types, callback));
+      base::BindOnce(&HintsManager::OnBatchUpdateHintsFetched,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     request_id_and_fetcher.first, request_context,
+                     hosts_to_fetch.set(), urls_to_fetch.set(),
+                     optimization_types, callback));
 }
 
-void HintsManager::OnOnDemandHintsFetched(
+void HintsManager::OnBatchUpdateHintsFetched(
+    int32_t request_id,
+    proto::RequestContext request_context,
     const base::flat_set<std::string>& hosts_requested,
     const base::flat_set<GURL>& urls_requested,
     const base::flat_set<proto::OptimizationType>& optimization_types,
     OnDemandOptimizationGuideDecisionRepeatingCallback callback,
     absl::optional<std::unique_ptr<proto::GetHintsResponse>>
         get_hints_response) {
+  CleanUpBatchUpdateHintsFetcher(request_id);
+
   if (!get_hints_response.has_value() || !get_hints_response.value()) {
-    OnReadyToInvokeOnDemandHintsCallbackForURLs(urls_requested,
-                                                optimization_types, callback);
+    OnBatchUpdateHintsStored(urls_requested, optimization_types, callback);
     return;
   }
 
-  // TODO(crbug/1278015: Figure out if the update time duration is the right
+  // TODO(crbug/1278015): Figure out if the update time duration is the right
   // one.
   hint_cache_->UpdateFetchedHints(
       std::move(*get_hints_response),
       clock_->Now() + features::GetActiveTabsFetchRefreshDuration(),
       hosts_requested, urls_requested,
-      base::BindOnce(&HintsManager::OnReadyToInvokeOnDemandHintsCallbackForURLs,
+      base::BindOnce(&HintsManager::OnBatchUpdateHintsStored,
                      weak_ptr_factory_.GetWeakPtr(), urls_requested,
                      optimization_types, callback));
 
-  if (switches::IsDebugLogsEnabled())
-    DVLOG(0) << "OptimizationGuide: OnOnDemandHintsFetched complete";
+  if (switches::IsDebugLogsEnabled()) {
+    DVLOG(0) << "OptimizationGuide: OnBatchUpdateHintsFetched for "
+             << proto::RequestContext_Name(request_context) << " complete";
+  }
 }
 
-void HintsManager::OnReadyToInvokeOnDemandHintsCallbackForURLs(
+void HintsManager::OnBatchUpdateHintsStored(
     const base::flat_set<GURL>& urls,
     const base::flat_set<proto::OptimizationType>& optimization_types,
     OnDemandOptimizationGuideDecisionRepeatingCallback callback) {
@@ -1069,6 +1087,27 @@ void HintsManager::OnReadyToInvokeOnDemandHintsCallbackForURLs(
                        weak_ptr_factory_.GetWeakPtr(), url, optimization_types,
                        callback));
   }
+}
+
+std::pair<int32_t, HintsFetcher*>
+HintsManager::CreateAndTrackBatchUpdateHintsFetcher() {
+  DCHECK(hints_fetcher_factory_);
+  std::unique_ptr<HintsFetcher> hints_fetcher =
+      hints_fetcher_factory_->BuildInstance();
+  HintsFetcher* hints_fetcher_ptr = hints_fetcher.get();
+  batch_update_hints_fetchers_.Put(batch_update_hints_fetcher_request_id_++,
+                                   std::move(hints_fetcher));
+  UMA_HISTOGRAM_COUNTS_100(
+      "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches",
+      batch_update_hints_fetchers_.size());
+  return std::make_pair(batch_update_hints_fetcher_request_id_,
+                        hints_fetcher_ptr);
+}
+
+void HintsManager::CleanUpBatchUpdateHintsFetcher(int32_t request_id) {
+  auto it = batch_update_hints_fetchers_.Peek(request_id);
+  if (it != batch_update_hints_fetchers_.end())
+    batch_update_hints_fetchers_.Erase(it);
 }
 
 void HintsManager::InvokeOnDemandHintsCallbackForURL(
