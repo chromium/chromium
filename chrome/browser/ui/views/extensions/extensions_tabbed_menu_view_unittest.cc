@@ -43,12 +43,12 @@ class AdditionalBrowser {
   BrowserView* browser_view_;
 };
 
-std::vector<std::string> GetNamesFromInstalledItems(
-    std::vector<ExtensionsMenuItemView*> installed_items) {
+std::vector<std::string> GetNamesFromMenuItems(
+    std::vector<ExtensionsMenuItemView*> item_views) {
   std::vector<std::string> names;
-  names.resize(installed_items.size());
+  names.resize(item_views.size());
   std::transform(
-      installed_items.begin(), installed_items.end(), names.begin(),
+      item_views.begin(), item_views.end(), names.begin(),
       [](ExtensionsMenuItemView* item) {
         return base::UTF16ToUTF8(item->primary_action_button_for_testing()
                                      ->label_text_for_testing());
@@ -287,7 +287,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   // Basic std::sort would do A,C,Z,b however we want A,b,C,Z
   std::vector<std::string> expected_items{kExtensionAName, kExtensionBName,
                                           kExtensionCName, kExtensionZName};
-  EXPECT_EQ(GetNamesFromInstalledItems(items), expected_items);
+  EXPECT_EQ(GetNamesFromMenuItems(items), expected_items);
 }
 
 TEST_F(ExtensionsTabbedMenuViewUnitTest,
@@ -333,7 +333,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
     EXPECT_EQ(items.size(), 3u);
     std::vector<std::string> expected_items{kExtensionA, kExtensionB,
                                             kExtensionC};
-    EXPECT_EQ(GetNamesFromInstalledItems(items), expected_items);
+    EXPECT_EQ(GetNamesFromMenuItems(items), expected_items);
   }
 
   // Pinning an extension should add it to the toolbar.
@@ -420,7 +420,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
     std::vector<ExtensionsMenuItemView*> items = installed_items();
     ASSERT_EQ(items.size(), 2u);
     std::vector<std::string> expected_names{kExtensionA, kExtensionC};
-    EXPECT_EQ(GetNamesFromInstalledItems(items), expected_names);
+    EXPECT_EQ(GetNamesFromMenuItems(items), expected_names);
   }
 
   // Add a new extension while the menu is open.
@@ -435,7 +435,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
     ASSERT_EQ(items.size(), 3u);
     std::vector<std::string> expected_names{kExtensionA, kExtensionB,
                                             kExtensionC};
-    EXPECT_EQ(GetNamesFromInstalledItems(items), expected_names);
+    EXPECT_EQ(GetNamesFromMenuItems(items), expected_names);
   }
 
   // Remove a extension while the menu is open
@@ -447,7 +447,7 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
     std::vector<ExtensionsMenuItemView*> items = installed_items();
     ASSERT_EQ(items.size(), 2u);
     std::vector<std::string> expected_names{kExtensionA, kExtensionC};
-    EXPECT_EQ(GetNamesFromInstalledItems(items), expected_names);
+    EXPECT_EQ(GetNamesFromMenuItems(items), expected_names);
   }
 }
 
@@ -581,6 +581,55 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   // Extension with no host permissions does not have site access, and it should
   // not be in any site access section.
   EXPECT_EQ(requests_access_items().size(), 0u);
+}
+
+TEST_F(ExtensionsTabbedMenuViewUnitTest,
+       SiteAccessTab_AddAndRemoveExtensionWhenMenuIsOpen) {
+  constexpr char kExtensionA[] = "A Extension";
+  constexpr char kExtensionC[] = "C Extension";
+  InstallExtensionWithHostPermissions(kExtensionA, {"<all_urls>"});
+  InstallExtensionWithHostPermissions(kExtensionC, {"<all_urls>"});
+
+  const GURL url_a("http://www.a.com");
+  web_contents_tester()->NavigateAndCommit(url_a);
+  ShowSiteAccessTabInMenu();
+
+  // Verify the order of the extensions is A,C under the has access section.
+  // Note that extensions installed with all urls permissions have access by
+  // default.
+  {
+    std::vector<ExtensionsMenuItemView*> has_acess_items = has_access_items();
+    ASSERT_EQ(has_acess_items.size(), 2u);
+    std::vector<std::string> expected_names{kExtensionA, kExtensionC};
+    EXPECT_EQ(GetNamesFromMenuItems(has_acess_items), expected_names);
+  }
+
+  // Add a new extension while the menu is open.
+  constexpr char kExtensionB[] = "B Extension";
+  auto extensionB =
+      InstallExtensionWithHostPermissions(kExtensionB, {"<all_urls>"});
+  LayoutMenuIfNecessary();
+
+  // Verify the new order is A,B,C under the has access section
+  {
+    std::vector<ExtensionsMenuItemView*> has_acess_items = has_access_items();
+    ASSERT_EQ(has_acess_items.size(), 3u);
+    std::vector<std::string> expected_names{kExtensionA, kExtensionB,
+                                            kExtensionC};
+    EXPECT_EQ(GetNamesFromMenuItems(has_acess_items), expected_names);
+  }
+
+  // Remove a extension while the menu is open
+  UninstallExtension(extensionB->id());
+  LayoutMenuIfNecessary();
+
+  // Verify the new order is A,C.
+  {
+    std::vector<ExtensionsMenuItemView*> has_acess_items = has_access_items();
+    ASSERT_EQ(has_acess_items.size(), 2u);
+    std::vector<std::string> expected_names{kExtensionA, kExtensionC};
+    EXPECT_EQ(GetNamesFromMenuItems(has_acess_items), expected_names);
+  }
 }
 
 // TODO(crbug.com/1263310): Verify menu gets updated after permission changes

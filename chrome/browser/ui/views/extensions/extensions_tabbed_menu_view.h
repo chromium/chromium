@@ -122,13 +122,22 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
   // Creates and returns the site access container with empty sections.
   std::unique_ptr<views::View> CreateSiteAccessContainer();
 
-  // Adds a menu item in the installed extensions for a newly-added extension.
+  // Creates and adds a menu item for `id` in the installed extensions for a
+  // newly-added extension.
   void CreateAndInsertInstalledExtension(
       const ToolbarActionsModel::ActionId& id,
       int index);
 
-  // Adds a menu item in the corresponding site access section.
+  // Creates and adds a menu item for `id` in its corresponding site access
+  // section.
   void CreateAndInsertSiteAccessItem(const ToolbarActionsModel::ActionId& id);
+
+  // Adds `item` in its corresponding site access section.
+  void InsertSiteAccessItem(std::unique_ptr<ExtensionsMenuItemView> item);
+
+  // Moves items between site access sections if their site access status
+  // changed. Called when one or more items are updated.
+  void MoveItemsBetweenSectionsIfNecessary();
 
   // Updates the visibility of the site access sections. A given section should
   // be visible if there are any extensions displayed in it.
