@@ -743,8 +743,13 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, CtrlEnterKey) {
 }
 
 // Tests that the tapping gesture with cntl/cmd key on a link open the
-// backgournd tab.
-IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, TapGestureWithCtrlKey) {
+// background tab.
+#if defined(OS_WIN)
+#define MAYBE_TapGestureWithCtrlKey DISABLED_TapGestureWithCtrlKey
+#else
+#define MAYBE_TapGestureWithCtrlKey TapGestureWithCtrlKey
+#endif
+IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_TapGestureWithCtrlKey) {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
   GURL url(embedded_test_server()->GetURL(
