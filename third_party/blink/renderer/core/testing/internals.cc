@@ -1743,8 +1743,14 @@ void Internals::setSuggestedValue(Element* element,
   if (auto* textarea = DynamicTo<HTMLTextAreaElement>(*element))
     textarea->SetSuggestedValue(value);
 
-  if (auto* select = DynamicTo<HTMLSelectElement>(*element))
-    select->SetSuggestedValue(value);
+  if (auto* select = DynamicTo<HTMLSelectElement>(*element)) {
+    // A Null string resets the suggested value.
+    select->SetSuggestedValue(value.IsEmpty() ? String() : value);
+  }
+
+  To<HTMLFormControlElement>(element)->SetAutofillState(
+      value.IsEmpty() ? WebAutofillState::kNotFilled
+                      : WebAutofillState::kPreviewed);
 }
 
 void Internals::setAutofilledValue(Element* element,
@@ -1773,11 +1779,16 @@ void Internals::setAutofilledValue(Element* element,
         *Event::CreateBubble(event_type_names::kKeyup));
   }
 
-  if (auto* select = DynamicTo<HTMLSelectElement>(*element))
-    select->setValue(value, true /* send_events */);
+  if (auto* select = DynamicTo<HTMLSelectElement>(*element)) {
+    select->setValue(value.IsEmpty()
+                         ? String()  // Null string resets the autofill state.
+                         : value,
+                     true /* send_events */);
+  }
 
   To<HTMLFormControlElement>(element)->SetAutofillState(
-      blink::WebAutofillState::kAutofilled);
+      value.IsEmpty() ? WebAutofillState::kNotFilled
+                      : blink::WebAutofillState::kAutofilled);
 }
 
 void Internals::setEditingValue(Element* element,
