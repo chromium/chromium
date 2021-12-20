@@ -40,6 +40,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/password_form_helper.h"
 #import "components/password_manager/ios/password_suggestion_helper.h"
@@ -63,6 +64,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/password_breach_commands.h"
 #import "ios/chrome/browser/ui/commands/password_protection_commands.h"
+#include "ios/chrome/grit/ios_google_chrome_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/web/common/url_scheme_util.h"
 #include "ios/web/public/js_messaging/web_frame.h"
@@ -108,6 +110,11 @@ enum class PasswordInfoBarType { SAVE, UPDATE };
 
 // Duration for notify user auto-sign in dialog being displayed.
 constexpr int kNotifyAutoSigninDuration = 3;  // seconds
+// Helper to check if password manager rebranding finch flag is enabled.
+BOOL isPasswordManagerBrandingUpdateEnabled() {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
+}
 }  // namespace
 
 @interface PasswordController () <SharedPasswordControllerDelegate>
@@ -357,6 +364,18 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
 #pragma mark - Private methods
 
+// Returns the user email.
+- (NSString*)userEmail {
+  DCHECK(self.browserState);
+
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(self.browserState);
+  ChromeIdentity* authenticatedIdentity =
+      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+
+  return [authenticatedIdentity userEmail];
+}
+
 // The dispatcher used for ApplicationCommands.
 - (id<ApplicationCommands>)applicationCommandsHandler {
   DCHECK(self.dispatcher);
@@ -494,9 +513,24 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 }
 
 - (void)updateGeneratePasswordStrings:(id)sender {
-  NSString* title = [NSString
-      stringWithFormat:@"%@\n%@\n ", GetNSString(IDS_IOS_SUGGESTED_PASSWORD),
-                       self.generatedPotentialPassword];
+  NSString* title;
+  NSString* message;
+
+  if (isPasswordManagerBrandingUpdateEnabled()) {
+    title = [NSString
+        stringWithFormat:@"%@\n%@\n ",
+                         GetNSString(IDS_IOS_SUGGESTED_STRONG_PASSWORD),
+                         self.generatedPotentialPassword];
+    message = l10n_util::GetNSStringF(
+        IDS_IOS_SUGGESTED_STRONG_PASSWORD_HINT_DISPLAYING_EMAIL,
+        base::SysNSStringToUTF16([self userEmail]));
+  } else {
+    title = [NSString stringWithFormat:@"%@\n%@\n ",
+                                       GetNSString(IDS_IOS_SUGGESTED_PASSWORD),
+                                       self.generatedPotentialPassword];
+    message = GetNSString(IDS_IOS_SUGGESTED_PASSWORD_HINT);
+  }
+
   self.actionSheetCoordinator.attributedTitle =
       [[NSMutableAttributedString alloc]
           initWithString:title
@@ -505,7 +539,6 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
                     [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
               }];
 
-  NSString* message = GetNSString(IDS_IOS_SUGGESTED_PASSWORD_HINT);
   self.actionSheetCoordinator.attributedMessage =
       [[NSMutableAttributedString alloc]
           initWithString:message
@@ -567,14 +600,20 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
     [handler closeKeyboardWithoutButtonPress];
   };
 
-  [self.actionSheetCoordinator
-      addItemWithTitle:GetNSString(IDS_IOS_USE_SUGGESTED_PASSWORD)
-                action:^{
-                  decisionHandler(YES);
-                  popupDismissed();
-                  closeKeyboard();
-                }
-                 style:UIAlertActionStyleDefault];
+  NSString* primaryActionString;
+  if (isPasswordManagerBrandingUpdateEnabled()) {
+    primaryActionString = GetNSString(IDS_IOS_USE_SUGGESTED_STRONG_PASSWORD);
+  } else {
+    primaryActionString = GetNSString(IDS_IOS_USE_SUGGESTED_PASSWORD);
+  }
+
+  [self.actionSheetCoordinator addItemWithTitle:primaryActionString
+                                         action:^{
+                                           decisionHandler(YES);
+                                           popupDismissed();
+                                           closeKeyboard();
+                                         }
+                                          style:UIAlertActionStyleDefault];
 
   [self.actionSheetCoordinator addItemWithTitle:GetNSString(IDS_CANCEL)
                                          action:^{
