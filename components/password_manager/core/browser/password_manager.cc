@@ -1148,6 +1148,12 @@ void PasswordManager::ProcessAutofillPredictions(
 
   for (auto& manager : form_managers_)
     manager->ProcessServerPredictions(predictions_);
+
+  PasswordGenerationFrameHelper* password_generation_manager =
+      driver ? driver->GetPasswordGenerationHelper() : nullptr;
+  if (password_generation_manager) {
+    password_generation_manager->ProcessPasswordRequirements(forms);
+  }
 }
 
 PasswordFormManager* PasswordManager::GetSubmittedManager() const {

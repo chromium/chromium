@@ -20,6 +20,7 @@ namespace password_manager {
 class PasswordGenerationFrameHelper;
 class PasswordManager;
 class PasswordManagerClient;
+class PasswordManagerDriver;
 }
 
 // Class binding a PasswordController to a WebState.
@@ -55,6 +56,9 @@ class PasswordTabHelper : public web::WebStateObserver,
 
   // Returns the PasswordManagerClient owned by the PasswordController.
   password_manager::PasswordManagerClient* GetPasswordManagerClient();
+
+  // Returns the PasswordManagerDriver owned by the PasswordController.
+  password_manager::PasswordManagerDriver* GetPasswordManagerDriver();
 
   // Returns an object that can provide password generation from the
   // PasswordController. May return nil.

@@ -383,12 +383,12 @@ bool ChromeAutofillClientIOS::IsAutocompleteEnabled() {
 void ChromeAutofillClientIOS::PropagateAutofillPredictions(
     content::RenderFrameHost* rfh,
     const std::vector<FormStructure*>& forms) {
-  password_manager_->ProcessAutofillPredictions(/*driver=*/nullptr, forms);
-  auto* generationHelper =
-      PasswordTabHelper::FromWebState(web_state_)->GetGenerationHelper();
-  if (generationHelper) {
-    generationHelper->ProcessPasswordRequirements(forms);
+  if (!PasswordTabHelper::FromWebState(web_state_)) {
+    return;
   }
+  password_manager_->ProcessAutofillPredictions(
+      PasswordTabHelper::FromWebState(web_state_)->GetPasswordManagerDriver(),
+      forms);
 }
 
 void ChromeAutofillClientIOS::DidFillOrPreviewField(
