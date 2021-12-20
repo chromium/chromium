@@ -16,6 +16,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
@@ -252,6 +254,11 @@ void OmniboxView::RevertAll() {
 void OmniboxView::CloseOmniboxPopup() {
   if (model_)
     model_->StopAutocomplete();
+}
+
+void OmniboxView::StartPrefetch(const AutocompleteInput& input) {
+  if (model_)
+    model_->autocomplete_controller()->StartPrefetch(input);
 }
 
 bool OmniboxView::IsImeShowingPopup() const {

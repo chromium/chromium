@@ -45,6 +45,11 @@ class OmniboxController : public AutocompleteController::Observer {
     return autocomplete_controller_.get();
   }
 
+  void set_autocomplete_controller(
+      std::unique_ptr<AutocompleteController> autocomplete_controller) {
+    autocomplete_controller_ = std::move(autocomplete_controller);
+  }
+
   // Set |current_match_| to an invalid value, indicating that we do not yet
   // have a valid match for the current text in the omnibox.
   void InvalidateCurrentMatch();

@@ -119,11 +119,13 @@ class AutocompleteController : public AutocompleteProviderListener,
   // result in changing the result set the observers is notified again. When the
   // controller is done the notification AUTOCOMPLETE_CONTROLLER_RESULT_READY is
   // sent.
-  void Start(const AutocompleteInput& input);
+  // Made virtual for mocking in tests.
+  virtual void Start(const AutocompleteInput& input);
 
   // Simply calls StartPrefetch() on all providers so those providers that
   // override it could perform a prefetch request and populate their caches.
-  void StartPrefetch(const AutocompleteInput& input);
+  // Made virtual for mocking in tests.
+  virtual void StartPrefetch(const AutocompleteInput& input);
 
   // Cancels the current query, ensuring there will be no future notifications
   // fired.  If new matches have come in since the most recent notification was
@@ -204,6 +206,7 @@ class AutocompleteController : public AutocompleteProviderListener,
  private:
   friend class AutocompleteProviderTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
+  friend class ZeroSuggestPrefetchTabHelperBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest,
                            RedundantKeywordsIgnoredInResult);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest, UpdateAssistedQueryStats);

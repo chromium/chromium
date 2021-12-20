@@ -227,7 +227,8 @@ bool BaseSearchProvider::IsNTPPage(
          (classification == OEP::NTP_REALBOX) ||
          (classification == OEP::START_SURFACE_HOMEPAGE) ||
          (classification == OEP::START_SURFACE_NEW_TAB) ||
-         (classification == OEP::ANDROID_SHORTCUTS_WIDGET);
+         (classification == OEP::ANDROID_SHORTCUTS_WIDGET) ||
+         (classification == OEP::NTP_ZPS_PREFETCH);
 }
 
 // static

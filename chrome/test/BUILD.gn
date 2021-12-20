@@ -1781,6 +1781,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/prefetch/prefetch_proxy/prefetch_proxy_test_utils.cc",
       "../browser/prefetch/prefetch_proxy/prefetch_proxy_test_utils.h",
       "../browser/prefetch/search_prefetch/search_prefetch_service_browsertest.cc",
+      "../browser/prefetch/zero_suggest_prefetch/zero_suggest_prefetch_tab_helper_browsertest.cc",
       "../browser/prefs/pref_functional_browsertest.cc",
       "../browser/prefs/pref_service_browsertest.cc",
       "../browser/prefs/tracked/pref_hash_browsertest.cc",

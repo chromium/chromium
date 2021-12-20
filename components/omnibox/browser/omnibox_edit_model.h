@@ -78,6 +78,12 @@ class OmniboxEditModel {
     return omnibox_controller_->autocomplete_controller();
   }
 
+  void set_autocomplete_controller(
+      std::unique_ptr<AutocompleteController> autocomplete_controller) {
+    omnibox_controller_->set_autocomplete_controller(
+        std::move(autocomplete_controller));
+  }
+
   void set_popup_view(OmniboxPopupView* popup_view);
   OmniboxPopupView* get_popup_view();
 
