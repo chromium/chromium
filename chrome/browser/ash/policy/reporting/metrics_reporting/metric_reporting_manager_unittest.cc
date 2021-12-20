@@ -11,17 +11,29 @@
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/settings/cros_settings_provider.h"
 #include "base/feature_list.h"
+#include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/reporting/metrics/fake_metric_report_queue.h"
+#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
+#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
+#include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/metrics/fake_sampler.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace reporting {
+namespace {
 
 class FakeDelegate : public MetricReportingManager::Delegate {
  public:
@@ -32,139 +44,316 @@ class FakeDelegate : public MetricReportingManager::Delegate {
 
   ~FakeDelegate() override = default;
 
-  std::unique_ptr<MetricReportQueue> CreateInfoReportQueue() override {
-    auto report_queue = std::make_unique<test::FakeMetricReportQueue>();
-    info_queue_ = report_queue.get();
-    return report_queue;
+  std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> CreateReportQueue(
+      Destination destination) override {
+    switch (destination) {
+      case INFO_METRIC:
+        return std::move(info_queue_);
+      case TELEMETRY_METRIC:
+        return std::move(telemetry_queue_);
+      case EVENT_METRIC:
+        return std::move(event_queue_);
+      default:
+        NOTREACHED();
+        return std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>(
+            nullptr,
+            base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+    }
   }
 
-  std::unique_ptr<MetricReportQueue> CreateEventReportQueue() override {
-    auto report_queue = std::make_unique<test::FakeMetricReportQueue>();
-    event_queue_ = report_queue.get();
-    return report_queue;
+  std::unique_ptr<Sampler> CreateHttpsLatencySampler() override {
+    if (!latency_sampler_) {
+      latency_sampler_ = std::make_unique<test::FakeSampler>();
+    }
+    return std::move(latency_sampler_);
   }
 
-  std::unique_ptr<MetricReportQueue> CreateTelemetryReportQueue(
-      ReportingSettings* reporting_settings,
-      const std::string& rate_setting_path,
-      base::TimeDelta default_rate) override {
-    auto report_queue = std::make_unique<test::FakeMetricReportQueue>(
-        Priority::MANUAL_BATCH, reporting_settings, rate_setting_path,
-        default_rate);
-    telemetry_queue_ = report_queue.get();
-    return report_queue;
-  }
-
-  Sampler* AddSampler(std::unique_ptr<Sampler>) override {
-    return Delegate::AddSampler(std::make_unique<test::FakeSampler>());
-  }
+  bool IsDeprovisioned() override { return is_deprovisioned_; }
 
   bool IsAffiliated(Profile* profile) override { return is_affiliated_; }
 
   void SetIsAffiliated(bool is_affiliated) { is_affiliated_ = is_affiliated; }
 
-  test::FakeMetricReportQueue* GetInfoQueue() { return info_queue_; }
+  void SetInfoQueue(
+      std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> info_queue) {
+    info_queue_ = std::move(info_queue);
+  }
 
-  test::FakeMetricReportQueue* GetEventQueue() { return event_queue_; }
+  void SetTelemetryQueue(
+      std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> telemetry_queue) {
+    telemetry_queue_ = std::move(telemetry_queue);
+  }
 
-  test::FakeMetricReportQueue* GetTelemetryQueue() { return telemetry_queue_; }
+  void SetEventQueue(
+      std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> event_queue) {
+    event_queue_ = std::move(event_queue);
+  }
+
+  void SetHttpsLatencySampler(
+      std::unique_ptr<test::FakeSampler> latency_sampler) {
+    latency_sampler_ = std::move(latency_sampler);
+  }
+
+  void SetIsDeprovisioned(bool is_deprovisioned) {
+    is_deprovisioned_ = is_deprovisioned;
+  }
 
  private:
   bool is_affiliated_ = true;
+  bool is_deprovisioned_ = false;
 
-  test::FakeMetricReportQueue* info_queue_;
-  test::FakeMetricReportQueue* event_queue_;
-  test::FakeMetricReportQueue* telemetry_queue_;
+  std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> info_queue_{
+      nullptr,
+      base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get())};
+  std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> telemetry_queue_{
+      nullptr,
+      base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get())};
+  std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter> event_queue_{
+      nullptr,
+      base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get())};
+
+  std::unique_ptr<test::FakeSampler> latency_sampler_;
 };
 
-void NetworkCollectorsTestHelper(
-    bool is_affiliated,
-    const std::vector<base::Feature>& enabled_features,
-    const std::vector<base::Feature>& disabled_features,
-    bool telemetry_policy_enabled,
-    int telemetry_collection_rate_ms,
-    const base::TimeDelta time_forward,
-    size_t expected_telemetry_reports_count) {
-  base::test::SingleThreadTaskEnvironment task_environment{
+struct NetworkHealthReportingTestCase {
+  std::string test_name;
+  bool is_feature_enabled;
+  bool is_deprovisioned;
+  bool is_affiliated;
+  bool info_policy_enabled;
+  bool telemetry_policy_enabled;
+  RoutineVerdict latency_verdict;
+  int expected_info_count;
+  int expected_telemetry_count;
+  int expected_event_count;
+  int expected_flush_per_period;
+};
+
+constexpr int kNetworkHealthRateMs = 60000;
+
+class NetworkHealthReportingTest
+    : public ::testing::TestWithParam<NetworkHealthReportingTestCase> {
+ protected:
+  NetworkHealthReportingTest() = default;
+
+  NetworkHealthReportingTest(const NetworkHealthReportingTest&) = delete;
+  NetworkHealthReportingTest& operator=(const NetworkHealthReportingTest&) =
+      delete;
+
+  ~NetworkHealthReportingTest() override = default;
+
+  void SetUp() override {
+    ::ash::CrosHealthdClient::InitializeFake();
+
+    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
+
+    scoped_testing_cros_settings_.device_settings()->SetInteger(
+        ::ash::kReportUploadFrequency, kNetworkHealthRateMs);
+    scoped_testing_cros_settings_.device_settings()->SetInteger(
+        ::ash::kReportDeviceNetworkTelemetryCollectionRateMs,
+        kNetworkHealthRateMs);
+    scoped_testing_cros_settings_.device_settings()->SetInteger(
+        ::ash::kReportDeviceNetworkTelemetryEventCheckingRateMs,
+        kNetworkHealthRateMs);
+
+    network_handler_test_helper_.device_test()->ClearDevices();
+    network_handler_test_helper_.device_test()->AddDevice(
+        "ethernet/path", shill::kTypeEthernet, "ethernet");
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void TearDown() override {
+    ::ash::CrosHealthdClient::Shutdown();
+    ::ash::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
+  }
+
+  void EmitSignalStrengthEvent() {
+    base::RunLoop run_loop;
+    ::ash::cros_healthd::FakeCrosHealthdClient::Get()
+        ->EmitSignalStrengthChangedEventForTesting(
+            "guid", ::chromeos::network_health::mojom::UInt32Value::New(50));
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  ash::ScopedTestingCrosSettings scoped_testing_cros_settings;
-  scoped_testing_cros_settings.device_settings()->SetInteger(
-      ash::kReportUploadFrequency, time_forward.InMilliseconds());
-  scoped_testing_cros_settings.device_settings()->SetBoolean(
-      ash::kReportDeviceNetworkStatus, telemetry_policy_enabled);
-  scoped_testing_cros_settings.device_settings()->SetInteger(
-      ash::kReportDeviceNetworkTelemetryCollectionRateMs,
-      telemetry_collection_rate_ms);
+  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+
+ private:
+  ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
+
+  ::ash::ScopedTestDeviceSettingsService test_device_settings_service_;
+};
+
+TEST_P(NetworkHealthReportingTest, Info_Telemetry_LatencyEvent) {
+  const NetworkHealthReportingTestCase& test_case = GetParam();
+
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ::ash::kReportDeviceNetworkConfiguration, test_case.info_policy_enabled);
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ::ash::kReportDeviceNetworkStatus, test_case.telemetry_policy_enabled);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureState(
+      MetricReportingManager::kEnableNetworkTelemetryReporting,
+      test_case.is_feature_enabled);
 
   auto fake_delegate = std::make_unique<FakeDelegate>();
-  fake_delegate->SetIsAffiliated(is_affiliated);
   auto* const fake_delegate_ptr = fake_delegate.get();
+
+  fake_delegate->SetIsAffiliated(test_case.is_affiliated);
+  fake_delegate->SetIsDeprovisioned(test_case.is_deprovisioned);
+  auto https_latency_sampler = std::make_unique<test::FakeSampler>();
+  MetricData https_latency_data;
+  https_latency_data.mutable_telemetry_data()
+      ->mutable_networks_telemetry()
+      ->mutable_https_latency_data()
+      ->set_verdict(test_case.latency_verdict);
+  https_latency_sampler->SetMetricData(std::move(https_latency_data));
+  fake_delegate->SetHttpsLatencySampler(std::move(https_latency_sampler));
+  auto info_queue = std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
+      new ::testing::NiceMock<MockReportQueue>(),
+      base::OnTaskRunnerDeleter(task_runner_));
+  auto telemetry_queue =
+      std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
+          new ::testing::NiceMock<MockReportQueue>(),
+          base::OnTaskRunnerDeleter(task_runner_));
+  auto event_queue =
+      std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
+          new ::testing::NiceMock<MockReportQueue>(),
+          base::OnTaskRunnerDeleter(task_runner_));
+  auto* const info_queue_ptr = info_queue.get();
+  auto* const telemetry_queue_ptr = telemetry_queue.get();
+  auto* const event_queue_ptr = event_queue.get();
+
+  fake_delegate->SetInfoQueue(std::move(info_queue));
+  fake_delegate->SetTelemetryQueue(std::move(telemetry_queue));
+  fake_delegate->SetEventQueue(std::move(event_queue));
+
+  EXPECT_CALL(*info_queue_ptr, AddRecord).Times(test_case.expected_info_count);
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(fake_delegate), nullptr);
 
-  task_environment.FastForwardBy(time_forward);
-  EXPECT_TRUE(
-      fake_delegate_ptr->GetTelemetryQueue()->GetMetricDataReported().empty());
+  EXPECT_CALL(*telemetry_queue_ptr, AddRecord).Times(0);
+  EXPECT_CALL(*telemetry_queue_ptr, Flush)
+      .Times(test_case.expected_flush_per_period);
+  EXPECT_CALL(*event_queue_ptr, AddRecord).Times(0);
+  task_environment_.FastForwardBy(base::Milliseconds(kNetworkHealthRateMs));
 
   metric_reporting_manager->OnLogin(nullptr);
 
-  task_environment.FastForwardBy(time_forward);
+  EXPECT_CALL(*telemetry_queue_ptr, AddRecord)
+      .Times(test_case.expected_telemetry_count);
+  EXPECT_CALL(*telemetry_queue_ptr, Flush)
+      .Times(test_case.expected_flush_per_period);
+  EXPECT_CALL(*event_queue_ptr, AddRecord)
+      .Times(test_case.expected_event_count);
+  task_environment_.FastForwardBy(base::Milliseconds(kNetworkHealthRateMs));
 
-  EXPECT_EQ(
-      fake_delegate_ptr->GetTelemetryQueue()->GetMetricDataReported().size(),
-      expected_telemetry_reports_count);
-  EXPECT_EQ(fake_delegate_ptr->GetTelemetryQueue()->GetNumFlush(), 2);
+  fake_delegate_ptr->SetIsDeprovisioned(true);
+  metric_reporting_manager->DeviceSettingsUpdated();
+
+  // Device is deprovisioned, so no reporting.
+  EXPECT_CALL(*telemetry_queue_ptr, AddRecord).Times(0);
+  EXPECT_CALL(*telemetry_queue_ptr, Flush).Times(0);
+  EXPECT_CALL(*event_queue_ptr, AddRecord).Times(0);
+  task_environment_.FastForwardBy(base::Milliseconds(kNetworkHealthRateMs));
 }
 
-TEST(MetricReportingManagerTest, NetworkCollectors_FeatureDisabled) {
-  NetworkCollectorsTestHelper(
-      /*is_affiliated=*/true,
-      /*enabled_features=*/{},
-      /*disabled_features=*/
-      {MetricReportingManager::kEnableNetworkTelemetryReporting},
-      /*telemetry_policy_enabled=*/true,
-      /*telemetry_collection_rate_ms=*/60000,
-      /*time_forward=*/base::Milliseconds(120000),
-      /*expected_telemetry_reports_count=*/0ul);
+TEST_F(NetworkHealthReportingTest, NetworkEventsOvserver) {
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ::ash::kReportDeviceNetworkStatus, true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureState(
+      MetricReportingManager::kEnableNetworkTelemetryReporting, true);
+
+  auto fake_delegate = std::make_unique<FakeDelegate>();
+  fake_delegate->SetIsAffiliated(true);
+  auto event_queue =
+      std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
+          new ::testing::NiceMock<MockReportQueue>(),
+          base::OnTaskRunnerDeleter(task_runner_));
+  auto* const event_queue_ptr = event_queue.get();
+  fake_delegate->SetEventQueue(std::move(event_queue));
+
+  auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
+      std::move(fake_delegate), nullptr);
+
+  metric_reporting_manager->OnLogin(nullptr);
+  EXPECT_CALL(*event_queue_ptr, AddRecord).Times(1);
+  base::RunLoop run_loop;
+  EmitSignalStrengthEvent();
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   run_loop.QuitClosure());
+  run_loop.Run();
 }
 
-TEST(MetricReportingManagerTest, NetworkCollectors_PolicyDisabled) {
-  NetworkCollectorsTestHelper(
-      /*is_affiliated=*/true,
-      /*enabled_features=*/
-      {MetricReportingManager::kEnableNetworkTelemetryReporting},
-      /*disabled_features=*/{},
-      /*telemetry_policy_enabled=*/false,
-      /*telemetry_collection_rate_ms=*/60000,
-      /*time_forward=*/base::Milliseconds(120000),
-      /*expected_telemetry_reports_count=*/0ul);
-}
+INSTANTIATE_TEST_SUITE_P(
+    NetworkHealthReportingTests,
+    NetworkHealthReportingTest,
+    ::testing::ValuesIn<NetworkHealthReportingTestCase>(
+        {{"FeatureDisabled", /*is_feature_enabled=*/false,
+          /*is_deprovisioned=*/false,
+          /*is_affiliated=*/true, /*info_policy_enabled=*/true,
+          /*telemetry_policy_enabled=*/true,
+          /*latency_verdict=*/RoutineVerdict::PROBLEM,
+          /*expected_info_count=*/0,
+          /*expected_telemetry_count=*/0, /*expected_event_count=*/0,
+          /*expected_flush_per_period=*/1},
+         {"Deprovisioned", /*is_feature_enabled=*/true,
+          /*is_deprovisioned=*/true,
+          /*is_affiliated=*/true, /*info_policy_enabled=*/true,
+          /*telemetry_policy_enabled=*/true,
+          /*latency_verdict=*/RoutineVerdict::PROBLEM,
+          /*expected_info_count=*/0,
+          /*expected_telemetry_count=*/0, /*expected_event_count=*/0,
+          /*expected_flush_per_period=*/0},
+         {"NotAffiliated", /*is_feature_enabled=*/true,
+          /*is_deprovisioned=*/false,
+          /*is_affiliated=*/false, /*info_policy_enabled=*/true,
+          /*telemetry_policy_enabled=*/true,
+          /*latency_verdict=*/RoutineVerdict::PROBLEM,
+          /*expected_info_count=*/1,
+          /*expected_telemetry_count=*/0, /*expected_event_count=*/0,
+          /*expected_flush_per_period=*/1},
+         {"InfoPolicyDisabled", /*is_feature_enabled=*/true,
+          /*is_deprovisioned=*/false,
+          /*is_affiliated=*/true, /*info_policy_enabled=*/false,
+          /*telemetry_policy_enabled=*/true,
+          /*latency_verdict=*/RoutineVerdict::PROBLEM,
+          /*expected_info_count=*/0,
+          /*expected_telemetry_count=*/1, /*expected_event_count=*/1,
+          /*expected_flush_per_period=*/1},
+         {"TelemetryPolicyDisabled", /*is_feature_enabled=*/true,
+          /*is_deprovisioned=*/false,
+          /*is_affiliated=*/true, /*info_policy_enabled=*/true,
+          /*telemetry_policy_enabled=*/false,
+          /*latency_verdict=*/RoutineVerdict::PROBLEM,
+          /*expected_info_count=*/1,
+          /*expected_telemetry_count=*/0, /*expected_event_count=*/0,
+          /*expected_flush_per_period=*/1},
+         {"LatencyVerdictNoProblem", /*is_feature_enabled=*/true,
+          /*is_deprovisioned=*/false,
+          /*is_affiliated=*/true, /*info_policy_enabled=*/true,
+          /*telemetry_policy_enabled=*/true,
+          /*latency_verdict=*/RoutineVerdict::NO_PROBLEM,
+          /*expected_info_count=*/1,
+          /*expected_telemetry_count=*/1, /*expected_event_count=*/0,
+          /*expected_flush_per_period=*/1},
+         {"Default", /*is_feature_enabled=*/true, /*is_deprovisioned=*/false,
+          /*is_affiliated=*/true, /*info_policy_enabled=*/true,
+          /*telemetry_policy_enabled=*/true,
+          /*latency_verdict=*/RoutineVerdict::PROBLEM,
+          /*expected_info_count=*/1,
+          /*expected_telemetry_count=*/1, /*expected_event_count=*/1,
+          /*expected_flush_per_period=*/1}}),
+    [](const testing::TestParamInfo<NetworkHealthReportingTest::ParamType>&
+           info) { return info.param.test_name; });
 
-TEST(MetricReportingManagerTest, NetworkCollectors_NotAffiliated) {
-  NetworkCollectorsTestHelper(
-      /*is_affiliated=*/false,
-      /*enabled_features=*/
-      {MetricReportingManager::kEnableNetworkTelemetryReporting},
-      /*disabled_features=*/{},
-      /*telemetry_policy_enabled=*/true,
-      /*telemetry_collection_rate_ms=*/60000,
-      /*time_forward=*/base::Milliseconds(120000),
-      /*expected_telemetry_reports_count=*/0ul);
-}
-
-TEST(MetricReportingManagerTest, NetworkCollectors_Default) {
-  NetworkCollectorsTestHelper(
-      /*is_affiliated=*/true,
-      /*enabled_features=*/
-      {MetricReportingManager::kEnableNetworkTelemetryReporting},
-      /*disabled_features=*/{},
-      /*telemetry_policy_enabled=*/true,
-      /*telemetry_collection_rate_ms=*/60000,
-      /*time_forward=*/base::Milliseconds(120000),
-      /*expected_telemetry_reports_count=*/2ul);
-}
+}  // namespace
 }  // namespace reporting

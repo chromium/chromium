@@ -16,7 +16,7 @@ namespace test {
 
 void FakeSampler::Collect(MetricCallback cb) {
   num_calls_++;
-  std::move(cb).Run(std::move(metric_data_));
+  std::move(cb).Run(metric_data_);
 }
 
 void FakeSampler::SetMetricData(MetricData metric_data) {
