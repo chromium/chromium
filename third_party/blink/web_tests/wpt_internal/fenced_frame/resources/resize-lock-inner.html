@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+  <script src="utils.js"></script>
+  <title>Fenced frame content to report any changes in inner dimensions</title>
+
+  <body>
+    <script>
+      async function init() {
+        const resize_lock_inner_page_is_ready_key =
+          KEYS["resize_lock_inner_page_is_ready"];
+        const resize_lock_resize_is_done_key =
+          KEYS["resize_lock_resize_is_done"];
+        const resize_lock_report_inner_dimensions_key =
+          KEYS["resize_lock_report_inner_dimensions"];
+
+        writeValueToServer(resize_lock_inner_page_is_ready_key, "ready");
+
+        await nextValueFromServer(resize_lock_resize_is_done_key);
+
+        const response = window.innerWidth + "x" + window.innerHeight;
+        writeValueToServer(resize_lock_report_inner_dimensions_key, response);
+      }
+
+      init();
+    </script>
+  </body>
+</html>

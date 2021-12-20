@@ -103,6 +103,10 @@ const KEYS = {
 
   "history_navigation_performed"                : "00000000-0000-0000-0000-000000000036",
   "outer_page_ready"                            : "00000000-0000-0000-0000-000000000037",
+
+  "resize_lock_inner_page_is_ready"             : "00000000-0000-0000-0000-000000000038",
+  "resize_lock_resize_is_done"                  : "00000000-0000-0000-0000-000000000039",
+  "resize_lock_report_inner_dimensions"         : "00000000-0000-0000-0000-00000000004A",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 
