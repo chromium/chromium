@@ -1061,7 +1061,8 @@ void SandboxedUnpacker::ParseJsonFile(
     return;
   }
 
-  GetJsonParserPtr()->Parse(contents, std::move(callback));
+  GetJsonParserPtr()->Parse(contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS,
+                            std::move(callback));
 }
 
 }  // namespace extensions

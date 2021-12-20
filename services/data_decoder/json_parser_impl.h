@@ -22,7 +22,9 @@ class JsonParserImpl : public mojom::JsonParser {
 
  private:
   // mojom::JsonParser implementation.
-  void Parse(const std::string& json, ParseCallback callback) override;
+  void Parse(const std::string& json,
+             uint32_t options,
+             ParseCallback callback) override;
 };
 
 }  // namespace data_decoder

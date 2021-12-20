@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -779,8 +780,9 @@ void Annotator::OnServerResponseReceived(
 
   // Send JSON string to a dedicated service for safe parsing.
   GetJsonParser()->Parse(
-      *json_response, base::BindOnce(&Annotator::OnResponseJsonParsed,
-                                     weak_factory_.GetWeakPtr(), request_keys));
+      *json_response, base::JSON_PARSE_RFC,
+      base::BindOnce(&Annotator::OnResponseJsonParsed,
+                     weak_factory_.GetWeakPtr(), request_keys));
 }
 
 void Annotator::OnResponseJsonParsed(
@@ -973,7 +975,7 @@ void Annotator::OnServerLangsResponseReceived(
   }
 
   GetJsonParser()->Parse(
-      *json_response,
+      *json_response, base::JSON_PARSE_RFC,
       base::BindOnce(&Annotator::OnServerLangsResponseJsonParsed,
                      weak_factory_.GetWeakPtr()));
 }

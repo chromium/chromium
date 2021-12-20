@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
@@ -18,6 +19,8 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/manifest.h"
 #include "extensions/strings/grit/extensions_strings.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
+#include "services/data_decoder/public/mojom/json_parser.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {
@@ -140,22 +143,43 @@ void ZipFileInstaller::ManifestRead(
     return;
   }
 
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      *manifest_content,
-      base::BindOnce(&ZipFileInstaller::ManifestParsed, this, unzip_dir));
+  // Create a DataDecoder to specify custom parse options to the JSON
+  // parser. The ownership of the |data_decoder| and |json_parser|
+  // transfer to the response callback and are deleted after it runs.
+  auto data_decoder = std::make_unique<data_decoder::DataDecoder>();
+  mojo::Remote<data_decoder::mojom::JsonParser> json_parser;
+  data_decoder->GetService()->BindJsonParser(
+      json_parser.BindNewPipeAndPassReceiver());
+  json_parser.set_disconnect_handler(
+      base::BindOnce(&ZipFileInstaller::ManifestParsed, this, unzip_dir,
+                     absl::nullopt, "Data Decoder terminated unexpectedly"));
+  auto* json_parser_ptr = json_parser.get();
+  json_parser_ptr->Parse(
+      *manifest_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS,
+      base::BindOnce(
+          [](std::unique_ptr<data_decoder::DataDecoder>,
+             mojo::Remote<data_decoder::mojom::JsonParser>,
+             scoped_refptr<ZipFileInstaller> installer,
+             const base::FilePath& unzip_dir, absl::optional<base::Value> value,
+             const absl::optional<std::string>& error) {
+            installer->ManifestParsed(unzip_dir, std::move(value), error);
+          },
+          std::move(data_decoder), std::move(json_parser),
+          base::WrapRefCounted(this), unzip_dir));
 }
 
 void ZipFileInstaller::ManifestParsed(
     const base::FilePath& unzip_dir,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.value) {
+    absl::optional<base::Value> result,
+    const absl::optional<std::string>& error) {
+  if (!result) {
     ReportFailure(std::string(kExtensionHandlerFileUnzipError));
     return;
   }
 
   std::unique_ptr<base::DictionaryValue> manifest_dictionary =
       base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(std::move(*result.value)));
+          base::Value::ToUniquePtrValue(std::move(*result)));
   if (!manifest_dictionary) {
     ReportFailure(std::string(kExtensionHandlerFileUnzipError));
     return;

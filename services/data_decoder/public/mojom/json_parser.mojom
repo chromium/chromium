@@ -6,6 +6,11 @@ module data_decoder.mojom;
 
 import "mojo/public/mojom/base/values.mojom";
 
+// Interface to parse JSON documents into a base::Value structure.
 interface JsonParser {
-  Parse(string json) => (mojo_base.mojom.Value? result, string? error);
+  // Parses the input |json| according to the base::JSONReader |options|
+  // bitmask. Returns the parsed |result| on success or a string
+  // |error| message on failure.
+  Parse(string json, uint32 options) =>
+      (mojo_base.mojom.Value? result, string? error);
 };

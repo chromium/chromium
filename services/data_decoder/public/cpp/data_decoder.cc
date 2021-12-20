@@ -5,6 +5,7 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 #include "base/callback.h"
+#include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
@@ -15,7 +16,6 @@
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 
 #if defined(OS_ANDROID)
-#include "base/json/json_reader.h"
 #include "services/data_decoder/public/cpp/json_sanitizer.h"
 #endif
 
@@ -188,7 +188,7 @@ void DataDecoder::ParseJson(const std::string& json,
           std::move(callback));
   GetService()->BindJsonParser(request->BindRemote());
   request->remote()->Parse(
-      json,
+      json, base::JSON_PARSE_RFC,
       base::BindOnce(&ValueParseRequest<mojom::JsonParser,
                                         base::Value>::OnServiceValueOrError,
                      request));

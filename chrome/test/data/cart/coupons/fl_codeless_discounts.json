@@ -1,9 +1,11 @@
 {
   "discounts": [
-    // Use case for:
-    //  * FetchFLCodelessDiscountWorkerBrowserTest.SimplePercentOffTest
-    //  * FetchFLCodelessDiscountWorkerBrowserTest.TwoCartsOneWithDiscountOneWithoutDiscount
     {
+      "_comment": [
+        "Use case for:",
+        "FetchFLCodelessDiscountWorkerBrowserTest.SimplePercentOffTest",
+        "FetchFLCodelessDiscountWorkerBrowserTest.TwoCartsOneWithDiscountOneWithoutDiscount"
+      ],
       "merchantIdentifier": {
         "cartUrl": "https://www.merchant1.com/cart",
         "merchantId": "10046"
@@ -16,8 +18,8 @@
         "languageCode": "en-US"
       }
     },
-    // Use case for FetchFLCodelessDiscountWorkerBrowserTest.SimpleDollarOffTest
     {
+      "_comment": "Use case for: FetchFLCodelessDiscountWorkerBrowserTest.SimpleDollarOffTest",
       "merchantIdentifier": {
         "cartUrl": "https://www.merchant2.com/cart",
         "merchantId": "10046"
@@ -30,6 +32,6 @@
         "languageCode": "en-US"
       }
     }
-    // cartUrl needs to be unique. Next cartUrl is https://www.merchant3.com/cart.
-  ]
+  ],
+  "_comment": "cartUrl needs to be unique. Next cartUrl is https://www.merchant3.com/cart."
 }

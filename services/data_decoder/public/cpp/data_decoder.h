@@ -95,7 +95,7 @@ class DataDecoder {
 
   // Parses the potentially unsafe JSON string in |json| using this
   // DataDecoder's service instance or some other platform-specific decoding
-  // facility.
+  // facility. The parser conforms to RFC 8259.
   //
   // Note that |callback| will only be called if the parsing operation succeeds
   // or fails before this DataDecoder is destroyed.

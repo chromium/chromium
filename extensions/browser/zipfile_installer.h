@@ -14,7 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
@@ -67,7 +67,8 @@ class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
   void ManifestRead(const base::FilePath& unzip_dir,
                     absl::optional<std::string> manifest_content);
   void ManifestParsed(const base::FilePath& unzip_dir,
-                      data_decoder::DataDecoder::ValueOrError result);
+                      absl::optional<base::Value> result,
+                      const absl::optional<std::string>& error);
   void UnzipDone(const base::FilePath& unzip_dir, bool success);
 
   // On failure, report the |error| reason.
