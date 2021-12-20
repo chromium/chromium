@@ -980,8 +980,16 @@ void ListBoxSelectType::DidBlur() {
 }
 
 void ListBoxSelectType::DidSetSuggestedOption(HTMLOptionElement* option) {
-  if (select_->GetLayoutObject())
-    ScrollToOption(option);
+  if (!select_->GetLayoutObject())
+    return;
+  // When ending preview state, don't leave the scroll position at the
+  // previewed element but return to the active selection end if it is
+  // defined or to the first selectable option. See crbug.com/1261689.
+  if (!option)
+    option = ActiveSelectionEnd();
+  if (!option)
+    option = FirstSelectableOption();
+  ScrollToOption(option);
 }
 
 void ListBoxSelectType::SaveLastSelection() {
