@@ -1578,6 +1578,11 @@ test("content_browsertests") {
         [ "../browser/media/media_keys_listener_manager_impl_browsertest.cc" ]
   }
 
+  if (is_chromeos) {
+    sources +=
+        [ "../browser/lock_screen/lock_screen_service_impl_browsertest.cc" ]
+  }
+
   if (is_win) {
     sources += [
       "../browser/accessibility/accessibility_browsertest.cc",

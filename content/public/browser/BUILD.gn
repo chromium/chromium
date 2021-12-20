@@ -571,6 +571,10 @@ source_set("browser_sources") {
     sources += [ "zygote_host/zygote_host_linux.h" ]
   }
 
+  if (is_chromeos) {
+    sources += [ "lock_screen_storage.h" ]
+  }
+
   if (!is_android) {
     sources += [
       # Some Web Authentication related targets only apply to desktop because

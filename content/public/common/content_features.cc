@@ -799,6 +799,13 @@ const base::Feature kWebOTP{"WebOTP", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kWebOTPAssertionFeaturePolicy{
     "WebOTPAssertionFeaturePolicy", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable the web lockscreen API implementation
+// (https://github.com/WICG/lock-screen) in Chrome.
+#if defined(OS_CHROMEOS)
+const base::Feature kWebLockScreenApi{"WebLockScreenApi",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Experiment allowing control over what requests are intercepted by Service
 // Worker fetch events. By setting a Service-Worker-Subresource-Filter HTTP
 // header on the document to some string, only requests which contain a fragment

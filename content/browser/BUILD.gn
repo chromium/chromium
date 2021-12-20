@@ -2321,11 +2321,16 @@ source_set("browser") {
   }
 
   if (is_chromeos) {
+    deps += [ "//components/value_store:value_store" ]
     sources += [
       "handwriting/handwriting_recognition_service_impl_cros.cc",
       "handwriting/handwriting_recognition_service_impl_cros.h",
       "handwriting/handwriting_recognizer_impl_cros.cc",
       "handwriting/handwriting_recognizer_impl_cros.h",
+      "lock_screen/lock_screen_service_impl.cc",
+      "lock_screen/lock_screen_service_impl.h",
+      "lock_screen/lock_screen_storage_impl.cc",
+      "lock_screen/lock_screen_storage_impl.h",
     ]
   }
 

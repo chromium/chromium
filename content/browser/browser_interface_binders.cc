@@ -188,6 +188,11 @@
 #include "third_party/blink/public/mojom/input/text_input_host.mojom.h"
 #endif
 
+#if defined(OS_CHROMEOS)
+#include "content/browser/lock_screen/lock_screen_service_impl.h"
+#include "third_party/blink/public/mojom/lock_screen/lock_screen.mojom.h"
+#endif  // defined(OS_CHROMEOS)
+
 namespace blink {
 class StorageKey;
 }  // namespace blink
@@ -1096,6 +1101,13 @@ void PopulateBinderMapWithContext(
       base::BindRepeating(&SpeculationHostImpl::Bind));
   GetContentClient()->browser()->RegisterBrowserInterfaceBindersForFrame(host,
                                                                          map);
+
+#if defined(OS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(features::kWebLockScreenApi)) {
+    map->Add<blink::mojom::LockScreenService>(
+        base::BindRepeating(&LockScreenServiceImpl::Create));
+  }
+#endif
 }
 
 void PopulateBinderMap(RenderFrameHostImpl* host, mojo::BinderMap* map) {

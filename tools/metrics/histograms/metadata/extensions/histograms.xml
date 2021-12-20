@@ -665,6 +665,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".Scripts" summary="Scripts backing stores"/>
     <variant name=".Settings" summary="Settings backing stores"/>
     <variant name=".State" summary="State backing stores"/>
+    <variant name=".WebAppsLockScreen" summary="Web apps lock screen stores"/>
   </token>
 </histogram>
 

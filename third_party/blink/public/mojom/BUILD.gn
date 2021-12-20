@@ -113,6 +113,7 @@ mojom("mojom_platform") {
     "loader/same_document_navigation_type.mojom",
     "loader/transferrable_url_loader.mojom",
     "loader/url_loader_factory_bundle.mojom",
+    "lock_screen/lock_screen.mojom",
     "locks/lock_manager.mojom",
     "manifest/capture_links.mojom",
     "manifest/display_mode.mojom",

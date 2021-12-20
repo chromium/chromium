@@ -116,6 +116,7 @@ const char* const kAllocatorDumpNameAllowlist[] = {
     "extensions/value_store/Extensions.Database.Open.Rules/0x?",
     "extensions/value_store/Extensions.Database.Open.State/0x?",
     "extensions/value_store/Extensions.Database.Open.Scripts/0x?",
+    "extensions/value_store/Extensions.Database.Open.WebAppsLockScreen/0x?",
     "extensions/value_store/Extensions.Database.Open/0x?",
     "extensions/value_store/Extensions.Database.Restore/0x?",
     "extensions/value_store/Extensions.Database.Value.Restore/0x?",
