@@ -31,6 +31,9 @@ bool IsIgnorableCharacter(char16_t c) {
 
 PDFiumRange::PDFiumRange(PDFiumPage* page, int char_index, int char_count)
     : page_(page), char_index_(char_index), char_count_(char_count) {
+  // TODO(crbug.com/1279497): Demote this CHECK to a DCHECK after the violating
+  // caller is caught.
+  CHECK(page_);
 #if DCHECK_IS_ON()
   AdjustForBackwardsRange(char_index, char_count);
   DCHECK_LE(char_count, FPDFText_CountChars(page_->GetTextPage()));

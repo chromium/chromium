@@ -49,6 +49,7 @@ class PDFiumRange {
   std::u16string GetText() const;
 
  private:
+  // The page containing the range. Must outlive `this`.
   raw_ptr<PDFiumPage> page_;
   // Index of first character.
   int char_index_;
