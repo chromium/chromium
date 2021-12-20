@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
@@ -27,27 +28,37 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Tests for the power bookmark experience.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 public class PowerBookmarkTest extends DummyUiActivityTestCase {
+    @ParameterAnnotations.ClassParameter
+    private static List<ParameterSet> sClassParams = new NightModeParams().getParameters();
+
     private static final long CURRENCY_MUTLIPLIER = 1000000;
+    private final @ColorInt int mFakeBgColor;
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -70,6 +81,13 @@ public class PowerBookmarkTest extends DummyUiActivityTestCase {
     private Bitmap mBitmap;
     private PowerBookmarkShoppingItemRow mPowerBookmarkShoppingItemRow;
     private ViewGroup mContentView;
+
+    public PowerBookmarkTest(boolean nightModeEnabled) {
+        // Sets a fake background color to make the screenshots easier to compare with bare eyes.
+        mFakeBgColor = nightModeEnabled ? Color.BLACK : Color.WHITE;
+        NightModeTestUtils.setUpNightModeForDummyUiActivity(nightModeEnabled);
+        mRenderTestRule.setNightModeEnabled(nightModeEnabled);
+    }
 
     public void setupFeatureOverrides() {
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
@@ -116,6 +134,7 @@ public class PowerBookmarkTest extends DummyUiActivityTestCase {
                             .getLayoutInflater()
                             .inflate(R.layout.power_bookmark_shopping_item_row, mContentView, true)
                             .findViewById(R.id.power_bookmark_shopping_row);
+            mPowerBookmarkShoppingItemRow.setBackgroundColor(mFakeBgColor);
             ((TextView) mPowerBookmarkShoppingItemRow.findViewById(R.id.title))
                     .setText("Test Bookmark");
             ((TextView) mPowerBookmarkShoppingItemRow.findViewById(R.id.description))
@@ -150,24 +169,12 @@ public class PowerBookmarkTest extends DummyUiActivityTestCase {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/1279804")
     public void testShoppingPriceDrop() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", false,
                     100 * CURRENCY_MUTLIPLIER, 50 * CURRENCY_MUTLIPLIER);
         });
         mRenderTestRule.render(mContentView, "shopping_price_drop");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    public void testShoppingPriceIncrease() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPowerBookmarkShoppingItemRow.initPriceTrackingUI("http://foo.com/img", false,
-                    50 * CURRENCY_MUTLIPLIER, 100 * CURRENCY_MUTLIPLIER);
-        });
-        mRenderTestRule.render(mContentView, "shopping_price_increase");
     }
 
     @Test

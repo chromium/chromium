@@ -29,6 +29,7 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.ui.widget.ChipView;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 /** A row view that shows shopping info in the bookmarks UI. */
@@ -74,16 +75,35 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
     BookmarkItem setBookmarkId(BookmarkId bookmarkId, @Location int location) {
         BookmarkItem bookmarkItem = super.setBookmarkId(bookmarkId, location);
         PowerBookmarkMeta meta = mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
+        assert meta != null;
+
         // TODO(crbug.com/1243383): Pull price updates once they're available.
-        ProductPrice currentPrice = meta.getShoppingSpecifics().getCurrentPrice();
+        ProductPrice originalPrice = meta.getShoppingSpecifics().getCurrentPrice();
         mSubscription = PowerBookmarkUtils.createCommerceSubscriptionForPowerBookmarkMeta(meta);
         mCurrencyFormatter =
-                new CurrencyFormatter(currentPrice.getCurrencyCode(), Locale.getDefault());
+                new CurrencyFormatter(originalPrice.getCurrencyCode(), Locale.getDefault());
 
         boolean mIsPriceTrackingEnabled =
                 meta != null && meta.getShoppingSpecifics().getIsPriceTracked();
         initPriceTrackingUI(meta.getLeadImage().getUrl(), mIsPriceTrackingEnabled,
-                currentPrice.getAmountMicros(), currentPrice.getAmountMicros());
+                originalPrice.getAmountMicros(), originalPrice.getAmountMicros());
+        // Request an updated price then push updates to the UI.
+        mBookmarkModel.getUpdatedProductPrices(
+                Arrays.asList(bookmarkId), (id, url, updatedPrice) -> {
+                    if (!mBookmarkId.equals(id)
+                            || !originalPrice.getCurrencyCode().equals(
+                                    updatedPrice.getCurrencyCode())) {
+                        return;
+                    }
+
+                    if (updatedPrice.getAmountMicros() > originalPrice.getAmountMicros()) {
+                        PowerBookmarkUtils.updatePriceForBookmarkId(
+                                mBookmarkModel, bookmarkId, updatedPrice);
+                    }
+
+                    setPriceInfoChip(
+                            originalPrice.getAmountMicros(), updatedPrice.getAmountMicros());
+                });
         return bookmarkItem;
     }
 
@@ -119,7 +139,8 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
     /** Sets up the chip that displays product price information. */
     private void setPriceInfoChip(long originalPrice, long currentPrice) {
         String formattedCurrentPrice = getFormattedCurrencyStringForPrice(currentPrice);
-        if (originalPrice == currentPrice) {
+        // Note: chips should only be shown for price drops
+        if (originalPrice <= currentPrice) {
             TextView textView = new TextView(getContext(), null);
             ApiCompatibilityUtils.setTextAppearance(
                     textView, R.styleable.ChipView_primaryTextAppearance);
@@ -128,16 +149,16 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
         } else {
             ChipView cv = new ChipView(getContext(), null);
             cv.setBorder(0, Color.TRANSPARENT);
-            cv.setBackgroundColor(ApiCompatibilityUtils.getColor(getResources(),
-                    originalPrice > currentPrice ? R.color.google_green_300
-                                                 : R.color.google_red_300));
+            cv.setBackgroundColor(ApiCompatibilityUtils.getColor(
+                    getResources(), R.color.price_drop_annotation_bg_color));
 
             // Primary text displays the current price.
             TextView primaryText = cv.getPrimaryTextView();
+            ApiCompatibilityUtils.setTextAppearance(
+                    primaryText, R.styleable.ChipView_primaryTextAppearance);
             primaryText.setText(formattedCurrentPrice);
-            primaryText.setTextColor(ApiCompatibilityUtils.getColor(getResources(),
-                    originalPrice > currentPrice ? R.color.google_green_600
-                                                 : R.color.google_red_600));
+            primaryText.setTextColor(
+                    ApiCompatibilityUtils.getColor(getResources(), R.color.default_green));
 
             // Secondary text displays the original price with a strikethrough.
             TextView secondaryText = cv.getSecondaryTextView();
@@ -145,7 +166,7 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
             secondaryText.setPaintFlags(
                     secondaryText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             ApiCompatibilityUtils.setTextAppearance(
-                    secondaryText, R.style.TextAppearance_TextSmall_Secondary);
+                    secondaryText, R.styleable.ChipView_primaryTextAppearance);
             setCustomContent(cv);
         }
     }
