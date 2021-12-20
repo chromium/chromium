@@ -1309,7 +1309,7 @@ TEST_F(PortsTest, MergePortWithClosedPeer2) {
   EXPECT_EQ(OK, node1.node().CreatePortPair(&C, &D));
 
   // Write a message on D and close it.
-  EXPECT_EQ(OK, node0.SendStringMessage(D, "hey"));
+  EXPECT_EQ(OK, node1.SendStringMessage(D, "hey"));
   EXPECT_EQ(OK, node1.node().ClosePort(D));
 
   // Initiate a merge between B and C.
