@@ -53,6 +53,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -311,6 +312,12 @@ class DesksTemplatesTest : public OverviewTestBase {
     scoped_feature_list_.InitAndEnableFeature(features::kDesksTemplates);
     OverviewTestBase::SetUp();
   }
+
+ protected:
+  // Tests should normally create a local `ScopedAnimationDurationScaleMode`.
+  // Create this object if a non zero scale mode needs to be used during test
+  // tear down.
+  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> animation_scale_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1814,6 +1821,36 @@ TEST_F(DesksTemplatesTest, EditTemplateNameWithKeyboardNoCrash) {
 
   // Verify that there is no crash after we tab again.
   SendKey(ui::VKEY_TAB);
+}
+
+// Tests that there is no crash when leaving the template name view focused with
+// a changed name during shutdown. Regression test for
+// https://crbug.com/1281422.
+TEST_F(DesksTemplatesTest, EditTemplateNameShutdownNoCrash) {
+  // The fade out animation of the desks templates grid must be enabled for this
+  // crash to have happened.
+  animation_scale_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  AddEntry(base::GUID::GenerateRandomV4(), "a", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "b", base::Time::Now());
+
+  OpenOverviewAndShowTemplatesGrid();
+  DesksTemplatesNameView* name_view =
+      GetItemViewFromTemplatesGrid(0)->name_view();
+
+  // Tab until we focus the name view of the first template item.
+  SendKey(ui::VKEY_TAB);
+  SendKey(ui::VKEY_TAB);
+  ASSERT_EQ(name_view, GetHighlightedView());
+
+  // Rename template "a" to template "ddd".
+  SendKey(ui::VKEY_RETURN);
+  SendKey(ui::VKEY_D);
+  SendKey(ui::VKEY_D);
+  SendKey(ui::VKEY_D);
+
+  // Verify that there is no crash while the test tears down.
 }
 
 // Tests that the hovering over the templates name shows the expected cursor.

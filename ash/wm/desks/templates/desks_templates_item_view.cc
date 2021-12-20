@@ -272,6 +272,20 @@ void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
   if (observed_view == this)
     return;
 
+  // If we exit overview while the `name_view_` is still focused, the shutdown
+  // sequence will reset the presenter before `OnViewBlurred` gets called. This
+  // checks and makes sure that we don't call the presenter while trying to
+  // shutdown the overview session.
+  // `overview_session` may also be null as `OnViewBlurred` may be called after
+  // the owning widget is no longer owned by the session for overview exit
+  // animation. See https://crbug.com/1281422.
+  // TODO(richui): Revisit this once the behavior of the template name when
+  // exiting overview is determined.
+  OverviewSession* overview_session =
+      Shell::Get()->overview_controller()->overview_session();
+  if (!overview_session || overview_session->is_shutting_down())
+    return;
+
   DCHECK_EQ(observed_view, name_view_);
   is_template_name_being_modified_ = false;
   defer_select_all_ = false;
@@ -296,16 +310,6 @@ void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
   auto updated_template = desk_template_->Clone();
   updated_template->set_template_name(name_view_->GetText());
   OnTemplateNameChanged(updated_template->template_name());
-
-  // If we exit overview while the `name_view_` is still focused, the shutdown
-  // sequence will reset the presenter before `OnViewBlurred` gets called. This
-  // checks and makes sure that we don't call the presenter while trying to
-  // shutdown the overview session.
-  OverviewSession* overview_session =
-      Shell::Get()->overview_controller()->overview_session();
-  DCHECK(overview_session);
-  if (overview_session->is_shutting_down())
-    return;
 
   DesksTemplatesPresenter::Get()->SaveOrUpdateDeskTemplate(
       /*is_update=*/false, std::move(updated_template));
