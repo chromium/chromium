@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "build/build_config.h"
 
 #if defined(__GNUC__) && !defined(__clang__) && __GNUC__ <= 7
 #include <vector>
