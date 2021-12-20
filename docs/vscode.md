@@ -338,6 +338,7 @@ Non-Googlers may follow may follow Microsoft's instructions for
 VSCode should work remotely after following this step.
 
 ### Snippets
+
 There are some useful snippets provided in
 [//tools/vscode/cpp.json5](/tools/vscode/cpp.json5).
 
@@ -347,11 +348,9 @@ platform):
 $ cp tools/vscode/cpp.json5 ~/.config/Code/User/snippets/cpp.json
 ```
 
-Or install them as project snippets after installing the [Project
-Snippets](https://marketplace.visualstudio.com/items?itemName=rebornix.project-snippets)
-extension:
+Or install them as project snippets:
 ```
-$ cp tools/vscode/cpp.json5 .vscode/snippets/cpp.json
+$ cp tools/vscode/cpp.json5 .vscode/cpp.code-snippets
 ```
 
 ### Tips
