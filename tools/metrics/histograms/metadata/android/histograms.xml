@@ -3436,13 +3436,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.AndroidX.ApiCall" enum="AndroidXWebkitApiCall"
-    expires_after="2022-01-31">
+    expires_after="2022-12-20">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records calls to WebView APIs from AndroidX. Some AndroidX-originating calls
-    will plumb through the framework, for example, if methods that are available
-    in the framework are called from the equivalent method in AndroidX.
+    may plumb through the corresponding platform (framework) API if the device
+    OS version supports the platform API. In this case the API call will be
+    logged by the &quot;Android.WebView.ApiCall&quot; histogram instead. This is
+    logged each time an AndroidX API is called through the &quot;boundary
+    interface&quot; code path (see //android_webview/support_library/README.md
+    for more details).
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.ApiCall" enum="WebViewApiCall"
+    expires_after="2022-12-20">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records calls to WebView APIs through the platform (framework) APIs. This
+    may include AndroidX API calls on OS versions where the AndroidX library
+    just calls through the platform API (see
+    &quot;Android.WebView.AndroidX.ApiCall&quot; for details). This is logged
+    each time an API is called.
+
+    For historical data (before M99), see &quot;WebView.ApiCall&quot;.
   </summary>
 </histogram>
 

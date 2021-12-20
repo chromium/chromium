@@ -17125,6 +17125,10 @@ regressions. -->
 
 <histogram name="WebView.ApiCall" enum="WebViewApiCall"
     expires_after="2022-01-31">
+  <obsolete>
+    Renamed in M99. Please see &quot;Android.WebView.ApiCall&quot; going
+    forward, which has the same logging behavior.
+  </obsolete>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>Records calls to WebView APIs in WebViewChromium.</summary>

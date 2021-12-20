@@ -239,7 +239,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
     }
 
     private static void recordWebViewApiCall(@ApiCall int sample) {
-        RecordHistogram.recordEnumeratedHistogram("WebView.ApiCall", sample, ApiCall.COUNT);
+        RecordHistogram.recordEnumeratedHistogram("Android.WebView.ApiCall", sample, ApiCall.COUNT);
     }
 
     // This does not touch any global / non-threadsafe state, but note that
