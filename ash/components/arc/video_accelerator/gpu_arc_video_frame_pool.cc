@@ -11,9 +11,12 @@
 #include "base/bind.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
+#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/decode_status.h"
+#include "media/base/format_utils.h"
 #include "media/base/video_types.h"
 #include "media/gpu/macros.h"
+#include "ui/gfx/buffer_format_util.h"
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
@@ -178,8 +181,9 @@ void GpuArcVideoFramePool::AddVideoFrame(mojom::VideoFramePtr video_frame,
     return;
   }
 
-  DmabufId dmabuf_id = media::DmabufVideoFramePool::GetDmabufId(*origin_frame);
-  auto it = dmabuf_to_video_frame_id_.emplace(dmabuf_id, video_frame->id);
+  const gfx::GpuMemoryBufferId buffer_id =
+      origin_frame->GetGpuMemoryBuffer()->GetId();
+  auto it = buffer_id_to_video_frame_id_.emplace(buffer_id, video_frame->id);
   DCHECK(it.second);
 
   // Wrap the video frame and attach a destruction observer so we're notified
@@ -227,9 +231,9 @@ void GpuArcVideoFramePool::RequestFrames(
 absl::optional<int32_t> GpuArcVideoFramePool::GetVideoFrameId(
     const media::VideoFrame* video_frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = dmabuf_to_video_frame_id_.find(
-      media::DmabufVideoFramePool::GetDmabufId(*video_frame));
-  return it != dmabuf_to_video_frame_id_.end()
+  auto it = buffer_id_to_video_frame_id_.find(
+      video_frame->GetGpuMemoryBuffer()->GetId());
+  return it != buffer_id_to_video_frame_id_.end()
              ? absl::optional<int32_t>(it->second)
              : absl::nullopt;
 }
@@ -239,10 +243,10 @@ void GpuArcVideoFramePool::OnFrameReleased(
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = dmabuf_to_video_frame_id_.find(
-      media::DmabufVideoFramePool::GetDmabufId(*origin_frame));
-  DCHECK(it != dmabuf_to_video_frame_id_.end());
-  dmabuf_to_video_frame_id_.erase(it);
+  auto it = buffer_id_to_video_frame_id_.find(
+      origin_frame->GetGpuMemoryBuffer()->GetId());
+  DCHECK(it != buffer_id_to_video_frame_id_.end());
+  buffer_id_to_video_frame_id_.erase(it);
 }
 
 gfx::GpuMemoryBufferHandle GpuArcVideoFramePool::CreateGpuMemoryHandle(
@@ -282,19 +286,34 @@ gfx::GpuMemoryBufferHandle GpuArcVideoFramePool::CreateGpuMemoryHandle(
     }
     gmb_handle = std::move(handle).value();
   }
+  gmb_handle.id = media::GetNextGpuMemoryBufferId();
+
   return gmb_handle;
 }
 
 scoped_refptr<media::VideoFrame> GpuArcVideoFramePool::CreateVideoFrame(
     gfx::GpuMemoryBufferHandle gmb_handle,
     media::VideoPixelFormat pixel_format) const {
-  std::vector<base::ScopedFD> fds;
-  for (auto& plane : gmb_handle.native_pixmap_handle.planes) {
-    fds.push_back(std::move(plane.fd));
+  auto buffer_format = media::VideoPixelFormatToGfxBufferFormat(pixel_format);
+  CHECK(buffer_format);
+  // Usage is SCANOUT_VDA_WRITE because we are just wrapping the dmabuf in a
+  // GpuMemoryBuffer. This buffer is just for decoding purposes, so having
+  // the dmabufs mmapped is not necessary.
+  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
+      gpu::GpuMemoryBufferSupport().CreateGpuMemoryBufferImplFromHandle(
+          std::move(gmb_handle), coded_size_, *buffer_format,
+          gfx::BufferUsage::SCANOUT_VDA_WRITE, base::NullCallback());
+  if (!gpu_memory_buffer) {
+    VLOGF(1) << "Failed to create GpuMemoryBuffer. format: "
+             << gfx::BufferFormatToString(*buffer_format)
+             << ", coded_size: " << coded_size_.ToString();
+    return nullptr;
   }
-  return media::VideoFrame::WrapExternalDmabufs(
-      *video_frame_layout_, gfx::Rect(coded_size_), coded_size_, std::move(fds),
-      base::TimeDelta());
+
+  const gpu::MailboxHolder mailbox_holder[media::VideoFrame::kMaxPlanes] = {};
+  return media::VideoFrame::WrapExternalGpuMemoryBuffer(
+      gfx::Rect(coded_size_), coded_size_, std::move(gpu_memory_buffer),
+      mailbox_holder, base::NullCallback(), base::TimeDelta());
 }
 
 }  // namespace arc

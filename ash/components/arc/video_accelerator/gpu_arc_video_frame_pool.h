@@ -76,8 +76,6 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
   base::WeakPtr<GpuArcVideoFramePool> WeakThis() { return weak_this_; }
 
  private:
-  using DmabufId = media::DmabufVideoFramePool::DmabufId;
-
   // Create a GPU memory handle from the specified |fd|.
   gfx::GpuMemoryBufferHandle CreateGpuMemoryHandle(
       base::ScopedFD fd,
@@ -111,8 +109,8 @@ class GpuArcVideoFramePool : public mojom::VideoFramePool,
   // The current video frame layout.
   absl::optional<media::VideoFrameLayout> video_frame_layout_;
 
-  // Map of video frame DmabufIds to the associated video frame ids.
-  std::map<DmabufId, int32_t> dmabuf_to_video_frame_id_;
+  // Map of video frame buffer ids to the associated video frame ids.
+  std::map<gfx::GpuMemoryBufferId, int32_t> buffer_id_to_video_frame_id_;
 
   // The protected buffer manager, used when decoding an encrypted video.
   scoped_refptr<ProtectedBufferManager> protected_buffer_manager_;
