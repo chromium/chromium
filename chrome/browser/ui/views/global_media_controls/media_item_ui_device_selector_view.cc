@@ -52,7 +52,7 @@ constexpr gfx::Insets kExpandButtonBorderInsets{4, 8};
 
 // Constant for DropdownButton
 const int kDropdownButtonIconSize = 15;
-const int kDropdownButtonBackgroundRadius = 10;
+const int kDropdownButtonBackgroundRadius = 15;
 constexpr gfx::Insets kDropdownButtonBorderInsets{4};
 
 // The maximum number of audio devices to count when recording the
@@ -505,6 +505,12 @@ void MediaItemUIDeviceSelectorView::OnDropdownButtonClicked() {
 
 bool MediaItemUIDeviceSelectorView::IsDeviceSelectorExpanded() {
   return is_expanded_;
+}
+
+bool MediaItemUIDeviceSelectorView::OnMousePressed(
+    const ui::MouseEvent& event) {
+  // Stop the mouse click event from bubbling to parent views.
+  return true;
 }
 
 void MediaItemUIDeviceSelectorView::AddObserver(
