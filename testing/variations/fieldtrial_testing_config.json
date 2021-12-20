@@ -3742,6 +3742,21 @@
             ]
         }
     ],
+    "FilesSystemWebApp": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220107",
+                    "enable_features": [
+                        "FilesSWA"
+                    ]
+                }
+            ]
+        }
+    ],
     "FillingAcrossAffiliatedWebsites": [
         {
             "platforms": [
