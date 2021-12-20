@@ -167,12 +167,13 @@ class ContentAutofillDriver : public AutofillDriver,
   // These events are forwarded to ContentAutofillRouter.
   // Their implementations (*Impl()) call into the renderer via
   // mojom::AutofillAgent.
-  void FillOrPreviewForm(int query_id,
-                         mojom::RendererFormDataAction action,
-                         const FormData& data,
-                         const url::Origin& triggered_origin,
-                         const base::flat_map<FieldGlobalId, ServerFieldType>&
-                             field_type_map) override;
+  base::flat_map<FieldGlobalId, ServerFieldType> FillOrPreviewForm(
+      int query_id,
+      mojom::RendererFormDataAction action,
+      const FormData& data,
+      const url::Origin& triggered_origin,
+      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
+      override;
   void SendAutofillTypePredictionsToRenderer(
       const std::vector<FormStructure*>& forms) override;
   void RendererShouldAcceptDataListSuggestion(

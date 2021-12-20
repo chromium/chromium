@@ -201,8 +201,11 @@ std::string AppendMeasurementTimeToMetricName(
     AutofillMetrics::MeasurementTime measurement_time) {
   base::StringPiece measurement_time_string;
   switch (measurement_time) {
-    case AutofillMetrics::MeasurementTime::kFillTime:
-      measurement_time_string = "AtFillTime";
+    case AutofillMetrics::MeasurementTime::kFillTimeBeforeSecurityPolicy:
+      measurement_time_string = "AtFillTimeBeforeSecurityPolicy";
+      break;
+    case AutofillMetrics::MeasurementTime::kFillTimeAfterSecurityPolicy:
+      measurement_time_string = "AtFillTimeAfterSecurityPolicy";
       break;
     case AutofillMetrics::MeasurementTime::kSubmissionTime:
       measurement_time_string = "AtSubmissionTime";
@@ -2445,7 +2448,8 @@ void AutofillMetrics::LogNumberOfFramesWithAutofilledCreditCardFields(
 }
 
 // static
-void AutofillMetrics::LogCreditCardSeamlessFills(
+absl::optional<AutofillMetrics::CreditCardSeamlessFillMetric>
+AutofillMetrics::LogCreditCardSeamlessFills(
     const ServerFieldTypeSet& autofilled_types,
     MeasurementTime measurement_time) {
   bool name = autofilled_types.contains(CREDIT_CARD_NAME_FULL) ||
@@ -2459,7 +2463,8 @@ void AutofillMetrics::LogCreditCardSeamlessFills(
                autofilled_types.contains(CREDIT_CARD_EXP_4_DIGIT_YEAR)));
   bool cvc = autofilled_types.contains(CREDIT_CARD_VERIFICATION_CODE);
   if (!name && !number && !exp && !cvc)
-    return;
+    return absl::nullopt;
+
   CreditCardSeamlessFillMetric emit;
   if (name && number && exp && cvc) {
     emit = CreditCardSeamlessFillMetric::kFullFill;
@@ -2474,10 +2479,12 @@ void AutofillMetrics::LogCreditCardSeamlessFills(
   } else {
     emit = CreditCardSeamlessFillMetric::kPartialFill;
   }
+
   base::UmaHistogramEnumeration(
       AppendMeasurementTimeToMetricName("Autofill.CreditCard.SeamlessFills",
                                         measurement_time),
       emit);
+  return emit;
 }
 
 // static

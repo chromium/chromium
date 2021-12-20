@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -91,11 +92,13 @@ FormData GetFormData(const TestFormAttributes& test_form_attributes) {
   form_data.url = GURL(test_form_attributes.url);
   form_data.action = GURL(test_form_attributes.action);
   form_data.name = test_form_attributes.name.data();
-  static int field_count = 0;
-  if (test_form_attributes.unique_renderer_id)
-    form_data.unique_renderer_id = *test_form_attributes.unique_renderer_id;
+  form_data.host_frame =
+      test_form_attributes.host_frame.value_or(GetLocalFrameToken());
+  form_data.unique_renderer_id =
+      test_form_attributes.unique_renderer_id.value_or(MakeFormRendererId());
   if (test_form_attributes.main_frame_origin)
     form_data.main_frame_origin = *test_form_attributes.main_frame_origin;
+
   for (const FieldDataDescription& field_description :
        test_form_attributes.fields) {
     FormFieldData field = CreateFieldByRole(field_description.role);
@@ -105,6 +108,10 @@ FormData GetFormData(const TestFormAttributes& test_form_attributes) {
         field_description.select_options.size() > 0) {
       field.options = field_description.select_options;
     }
+    field.host_frame =
+        field_description.host_frame.value_or(form_data.host_frame);
+    field.unique_renderer_id =
+        field_description.unique_renderer_id.value_or(MakeFieldRendererId());
     field.is_focusable = field_description.is_focusable;
     if (!field_description.autocomplete_attribute.empty()) {
       field.autocomplete_attribute =
@@ -118,7 +125,8 @@ FormData GetFormData(const TestFormAttributes& test_form_attributes) {
       field.value = *field_description.value;
     if (field_description.is_autofilled)
       field.is_autofilled = *field_description.is_autofilled;
-    field.unique_renderer_id = FieldRendererId(field_count++);
+    field.origin =
+        field_description.origin.value_or(form_data.main_frame_origin);
     field.should_autocomplete = field_description.should_autocomplete;
     form_data.fields.push_back(field);
   }

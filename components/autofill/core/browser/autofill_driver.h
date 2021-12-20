@@ -66,14 +66,25 @@ class AutofillDriver {
   GetOrCreateCreditCardInternalAuthenticator() = 0;
 #endif
 
-  // Forwards |data| to the renderer.
+  // Forwards |data| to the renderer which shall preview or fill the values of
+  // |data|'s fields into the relevant DOM elements.
+  //
   // |query_id| is the id of the renderer's original request for the data.
+  //
   // |action| is the action the renderer should perform with the |data|.
+  //
   // |triggered_origin| is the origin of the field on which Autofill was
-  // triggered, and |field_type_map| are the type predictions; these two
-  // parameters can be taken into account to decide which fields to fill across
-  // frames. This method is a no-op if the renderer is not currently available.
-  virtual void FillOrPreviewForm(
+  // triggered, and |field_type_map| contains the type predictions of the fields
+  // that may be previewed or filled; these two parameters can be taken into
+  // account to decide which fields to preview or fill across frames.
+  //
+  // Returns a map from actually previewed or filled fields to their type. This
+  // is a sub-map of |field_type_map|: it does not contain those fields from
+  // |field_type_map| which shall not be filled due to the security policy for
+  // cross-frame previewing and filling.
+  //
+  // This method is a no-op if the renderer is not currently available.
+  virtual base::flat_map<FieldGlobalId, ServerFieldType> FillOrPreviewForm(
       int query_id,
       mojom::RendererFormDataAction action,
       const FormData& data,

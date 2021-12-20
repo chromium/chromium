@@ -155,7 +155,12 @@ chromium-metrics-reviews@google.com.
       Base histogram. Use suffixes of this histogram instead.
     </obsolete>
   </variant>
-  <variant name=".AtFillTime" summary="Recorded at filling time."/>
+  <variant name=".AtFillTimeAfterSecurityPolicy"
+      summary="Recorded at filling time after applying restrictions due to
+               the cross-frame security policy."/>
+  <variant name=".AtFillTimeBeforeSecurityPolicy"
+      summary="Recorded at filling time before applying restrictions due to
+               the cross-frame security policy."/>
   <variant name=".AtSubmissionTime"
       summary="Recorded at submission time. May be missed due to submission
                detection problems."/>

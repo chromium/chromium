@@ -560,16 +560,17 @@ void ContentAutofillRouter::FillFormForAssistant(
 // The reason is that browser forms may be outdated and hence refer to frames
 // that do not exist anymore.
 
-void ContentAutofillRouter::FillOrPreviewForm(
+base::flat_map<FieldGlobalId, ServerFieldType>
+ContentAutofillRouter::FillOrPreviewForm(
     ContentAutofillDriver* source,
     int query_id,
     mojom::RendererFormDataAction action,
     const FormData& data,
     const url::Origin& triggered_origin,
-    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
+    base::flat_map<FieldGlobalId, ServerFieldType> field_type_map) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
     source->FillOrPreviewFormImpl(query_id, action, data);
-    return;
+    return field_type_map;
   }
 
   some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
@@ -578,6 +579,12 @@ void ContentAutofillRouter::FillOrPreviewForm(
       form_forest_.GetRendererFormsOfBrowserForm(data, triggered_origin,
                                                  field_type_map);
   for (const FormData& renderer_form : renderer_forms) {
+    // Erase fields that were not filled due to the security model from the
+    // to-be-returned |field_type_map|.
+    for (const FormFieldData& field : renderer_form.fields) {
+      if (field.value.empty())
+        field_type_map.erase(field.global_id());
+    }
     // Sending empty fill data to the renderer is semantically a no-op but
     // causes some further mojo calls.
     if (base::ranges::all_of(renderer_form.fields, &std::u16string::empty,
@@ -588,6 +595,7 @@ void ContentAutofillRouter::FillOrPreviewForm(
       target->FillOrPreviewFormImpl(kCrossFrameFill, action, renderer_form);
     }
   }
+  return field_type_map;
 }
 
 void ContentAutofillRouter::SendAutofillTypePredictionsToRenderer(
