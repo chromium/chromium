@@ -744,6 +744,28 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.IOSDeviceRestoreIdentityCountAfter" units="identities"
+    expires_after="2022-04-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the number of identities after iOS device restore. Recorded at cold
+    start when a device restore is detected, and only if the user was signed in
+    before the device backup.
+  </summary>
+</histogram>
+
+<histogram name="Signin.IOSDeviceRestoreIdentityCountBefore" units="identities"
+    expires_after="2022-04-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the number of identities before iOS device restore. Recorded at cold
+    start when a device restore is detected, and only if the user was signed in
+    before the device backup.
+  </summary>
+</histogram>
+
 <histogram name="Signin.IOSDeviceRestoreSentinelError"
     enum="SigninIOSDeviceRestoreSentinelError" expires_after="2022-04-01">
   <owner>jlebel@chromium.org</owner>
@@ -761,6 +783,16 @@ prefs when the profile is loaded.  -->
   <summary>
     Records if the path for a sentinel file (used to detect iOS restore) is
     generated successfully. Recorded on cold start.
+  </summary>
+</histogram>
+
+<histogram name="Signin.IOSDeviceRestoreSignedInState"
+    enum="IOSDeviceRestoreSignedinState" expires_after="2022-04-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether the user is signed in or signed out before and after a
+    device restore. Recorded at cold start when a device restore is detected.
   </summary>
 </histogram>
 

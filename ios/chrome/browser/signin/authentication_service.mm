@@ -7,6 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/location.h"
+#import "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -24,6 +25,7 @@
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service_delegate.h"
 #import "ios/chrome/browser/signin/authentication_service_observer.h"
+#import "ios/chrome/browser/signin/signin_util.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
@@ -48,6 +50,18 @@ enum LoginMethodAndSyncState {
   // line. Also, make sure the enum list in tools/histogram/histograms.xml is
   // updated with any change in here.
   LOGIN_METHOD_AND_SYNC_STATE_COUNT
+};
+
+// Enum for Signin.IOSDeviceRestoreSignedInState histogram.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class IOSDeviceRestoreSignedinState : int {
+  // Case when the user is not signed in before the device restore.
+  kUserNotSignedInBeforeDeviceRestore = 0,
+  // Case when the user is signed in before the device restore but not after.
+  kUserSignedInBeforeDeviceRestoreAndSignedOutAfterDeviceRestore = 1,
+  // Case when the user is signed in before and after the device restore.
+  kUserSignedInBeforeAndAfterDeviceRestore = 2,
+  kMaxValue = kUserSignedInBeforeAndAfterDeviceRestore,
 };
 
 // A fake account id used in the list of last signed in accounts when migrating
@@ -100,12 +114,18 @@ void AuthenticationService::Initialize(
     std::unique_ptr<AuthenticationServiceDelegate> delegate) {
   CHECK(delegate);
   CHECK(!initialized());
+  bool has_primary_account_before_initialize =
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  int account_count_before_initialize =
+      identity_manager_->GetAccountsWithRefreshTokens().size();
   delegate_ = std::move(delegate);
+  signin::Tribool device_restore_session = IsFirstSessionAfterDeviceRestore();
   initialized_ = true;
 
   MigrateAccountsStoredInPrefsIfNeeded();
 
-  HandleForgottenIdentity(nil, true /* should_prompt */);
+  HandleForgottenIdentity(nil, /*should_prompt=*/true,
+                          device_restore_session == signin::Tribool::kTrue);
 
   crash_keys::SetCurrentlySignedIn(
       HasPrimaryIdentity(signin::ConsentLevel::kSignin));
@@ -122,6 +142,33 @@ void AuthenticationService::Initialize(
 
   identity_manager_observation_.Observe(identity_manager_);
   OnApplicationWillEnterForeground();
+  bool has_primary_account_after_initialize =
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  DCHECK(!has_primary_account_after_initialize ||
+         has_primary_account_before_initialize);
+  if (device_restore_session == signin::Tribool::kTrue) {
+    // Records device restore histograms.
+    if (has_primary_account_before_initialize) {
+      base::UmaHistogramCounts100("Signin.IOSDeviceRestoreIdentityCountBefore",
+                                  account_count_before_initialize);
+      int account_count_after_initialize =
+          identity_manager_->GetAccountsWithRefreshTokens().size();
+      base::UmaHistogramCounts100("Signin.IOSDeviceRestoreIdentityCountAfter",
+                                  account_count_after_initialize);
+    }
+    IOSDeviceRestoreSignedinState signed_in_state =
+        IOSDeviceRestoreSignedinState::kUserNotSignedInBeforeDeviceRestore;
+    if (has_primary_account_before_initialize) {
+      signed_in_state =
+          has_primary_account_after_initialize
+              ? IOSDeviceRestoreSignedinState::
+                    kUserSignedInBeforeAndAfterDeviceRestore
+              : IOSDeviceRestoreSignedinState::
+                    kUserSignedInBeforeDeviceRestoreAndSignedOutAfterDeviceRestore;
+    }
+    base::UmaHistogramEnumeration("Signin.IOSDeviceRestoreSignedInState",
+                                  signed_in_state);
+  }
 }
 
 void AuthenticationService::Shutdown() {
@@ -528,8 +575,10 @@ void AuthenticationService::OnAccessTokenRefreshFailed(
   // might still be accessible in SSO, and |OnIdentityListChanged| will handle
   // this when |identity| will actually disappear from SSO.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&AuthenticationService::HandleForgottenIdentity,
-                                base::Unretained(this), identity, true));
+      FROM_HERE,
+      base::BindOnce(&AuthenticationService::HandleForgottenIdentity,
+                     base::Unretained(this), identity, /*should_prompt=*/true,
+                     /*device_restore=*/false));
 }
 
 void AuthenticationService::OnChromeIdentityServiceWillBeDestroyed() {
@@ -538,7 +587,8 @@ void AuthenticationService::OnChromeIdentityServiceWillBeDestroyed() {
 
 void AuthenticationService::HandleForgottenIdentity(
     ChromeIdentity* invalid_identity,
-    bool should_prompt) {
+    bool should_prompt,
+    bool device_restore) {
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // User is not signed in. Nothing to do here.
     return;
@@ -563,9 +613,19 @@ void AuthenticationService::HandleForgottenIdentity(
                                        signin::ConsentLevel::kSync);
 
   // Metrics.
-  signin_metrics::ProfileSignout signout_source =
-      account_filtered_out ? signin_metrics::SIGNOUT_PREF_CHANGED
-                           : signin_metrics::ACCOUNT_REMOVED_FROM_DEVICE;
+  signin_metrics::ProfileSignout signout_source;
+  if (account_filtered_out) {
+    // Account filtered out by enterprise policy.
+    signout_source = signin_metrics::SIGNOUT_PREF_CHANGED;
+  } else if (device_restore) {
+    // Account removed from the device after a device restore.
+    signout_source =
+        signin_metrics::IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE;
+  } else {
+    // Account removed from the device by another app or the token being
+    // invalid.
+    signout_source = signin_metrics::ACCOUNT_REMOVED_FROM_DEVICE;
+  }
 
   // Sign the user out.
   SignOut(signout_source, /*force_clear_browsing_data=*/false, nil);
@@ -584,7 +644,7 @@ void AuthenticationService::ReloadCredentialsFromIdentities(
 
   base::AutoReset<bool> auto_reset(&is_reloading_credentials_, true);
 
-  HandleForgottenIdentity(nil, keychain_reload);
+  HandleForgottenIdentity(nil, keychain_reload, /*device_restore=*/false);
   if (!HasPrimaryIdentity(signin::ConsentLevel::kSignin))
     return;
 

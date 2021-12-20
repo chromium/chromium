@@ -19,6 +19,7 @@
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
+#import "components/signin/public/identity_manager/tribool.h"
 #include "components/ukm/ios/ukm_reporting_ios_util.h"
 #import "ios/chrome/app/application_delegate/metric_kit_subscriber.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
@@ -29,6 +30,7 @@
 #include "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/metrics/first_user_action_recorder.h"
 #include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/signin/signin_util.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
@@ -76,6 +78,26 @@ const metrics_mediator::HistogramNameCountPair kHistogramsFromExtension[] = {
         @"IOS.CredentialExtension.NewCredentialUsername",
         static_cast<int>(CPENewCredentialUsername::kMaxValue) + 1,
     }};
+
+// Enum values for Startup.IOSColdStartType histogram.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class ColdStartType : int {
+  // Regular cold start.
+  kRegular = 0,
+  // Cold start with FRE.
+  kFirstRun = 1,
+  // Cold start after a device restore.
+  kAfterDeviceRestore = 2,
+  // Cold start after a Chrome upgrade.
+  kAfterChromeUpgrade = 3,
+  // Cold start after a device restore and Chrome upgrade.
+  kAfterDeviceRestoreAndChromeUpgrade = 4,
+  // Unknown device restore.
+  kUnknownDeviceRestore = 5,
+  // Unknown device restore and Chrome upgrade.
+  kUnknownDeviceRestoreAndChromeUpgrade = 6,
+  kMaxValue = kUnknownDeviceRestoreAndChromeUpgrade,
+};
 
 // Returns time delta since app launch as retrieved from kernel info about
 // the current process.
@@ -425,6 +447,34 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:kAppEnteredBackgroundDateKey];
   }
+  if (!startupInformation.isColdStart) {
+    return;
+  }
+  signin::Tribool device_restore = IsFirstSessionAfterDeviceRestore();
+  ColdStartType sessionType;
+  if (startupInformation.isFirstRun) {
+    sessionType = ColdStartType::kFirstRun;
+  } else {
+    bool afterUpgrade =
+        [PreviousSessionInfo sharedInstance].isFirstSessionAfterUpgrade;
+    switch (device_restore) {
+      case signin::Tribool::kUnknown:
+        sessionType = afterUpgrade
+                          ? ColdStartType::kUnknownDeviceRestoreAndChromeUpgrade
+                          : ColdStartType::kUnknownDeviceRestore;
+        break;
+      case signin::Tribool::kTrue:
+        sessionType = afterUpgrade
+                          ? ColdStartType::kAfterDeviceRestoreAndChromeUpgrade
+                          : ColdStartType::kAfterDeviceRestore;
+        break;
+      case signin::Tribool::kFalse:
+        sessionType = afterUpgrade ? ColdStartType::kAfterChromeUpgrade
+                                   : ColdStartType::kRegular;
+        break;
+    }
+  }
+  base::UmaHistogramEnumeration("Startup.IOSColdStartType", sessionType);
 }
 
 - (void)updateMetricsStateBasedOnPrefsUserTriggered:(BOOL)isUserTriggered {

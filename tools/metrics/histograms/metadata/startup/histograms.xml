@@ -773,6 +773,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.IOSColdStartType" enum="IOSColdStartType"
+    expires_after="2022-04-01">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@chromium.org</owner>
+  <summary>
+    Records session type for a cold start. It is recorded at cold start.
+    Histogram only for iOS.
+  </summary>
+</histogram>
+
 <histogram name="Startup.LoadTime.ApplicationStartToChromeMain" units="ms"
     expires_after="never">
 <!-- expires-never: used to diagnose regressions to Startup.FirstWebContents.NonEmptyPaint3 -->

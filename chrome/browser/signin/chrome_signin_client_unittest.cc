@@ -265,6 +265,8 @@ bool IsSignoutDisallowedByPolicy(
     case signin_metrics::ProfileSignout::USER_TUNED_OFF_SYNC_FROM_DICE_UI:
       return true;
     case signin_metrics::ProfileSignout::ACCOUNT_REMOVED_FROM_DEVICE:
+    case signin_metrics::ProfileSignout::
+        IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE:
       // TODO(msarda): Add more of the above cases to this "false" branch.
       // For now only ACCOUNT_REMOVED_FROM_DEVICE is here to preserve the status
       // quo. Additional internal sources of sign-out will be moved here in a
@@ -421,6 +423,8 @@ const signin_metrics::ProfileSignout kSignoutSources[] = {
     signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES,
     signin_metrics::ProfileSignout::MOBILE_IDENTITY_CONSISTENCY_ROLLBACK,
     signin_metrics::ProfileSignout::ACCOUNT_ID_MIGRATION,
+    signin_metrics::ProfileSignout::
+        IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE,
 };
 static_assert(base::size(kSignoutSources) ==
                   signin_metrics::ProfileSignout::NUM_PROFILE_SIGNOUT_METRICS,
