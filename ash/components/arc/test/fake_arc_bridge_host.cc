@@ -45,6 +45,7 @@
 #include "ash/components/arc/mojom/policy.mojom.h"
 #include "ash/components/arc/mojom/power.mojom.h"
 #include "ash/components/arc/mojom/print_spooler.mojom.h"
+#include "ash/components/arc/mojom/privacy_items.mojom.h"
 #include "ash/components/arc/mojom/process.mojom.h"
 #include "ash/components/arc/mojom/property.mojom.h"
 #include "ash/components/arc/mojom/rotation_lock.mojom.h"
@@ -204,6 +205,9 @@ void FakeArcBridgeHost::OnPowerInstanceReady(
 
 void FakeArcBridgeHost::OnPrintSpoolerInstanceReady(
     mojo::PendingRemote<mojom::PrintSpoolerInstance> print_spooler_remote) {}
+
+void FakeArcBridgeHost::OnPrivacyItemsInstanceReady(
+    mojo::PendingRemote<mojom::PrivacyItemsInstance> privacy_items_remote) {}
 
 void FakeArcBridgeHost::OnProcessInstanceReady(
     mojo::PendingRemote<mojom::ProcessInstance> process_remote) {}

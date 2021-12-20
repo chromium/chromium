@@ -18,6 +18,15 @@ enum AppPermission {
   STORAGE         = 5, // android.manifest.WRITE_EXTERNAL_STORAGE and android.manifest.READ_EXTERNAL_STORAGE
 };
 
+// These permissions map to ones listed at
+// https://developer.android.com/reference/android/Manifest.permission_group
+[Extensible]
+enum AppPermissionGroup {
+  CAMERA          = 0, // android.permission-group.CAMERA
+  MICROPHONE      = 1, // android.permission-group.MICROPHONE
+  LOCATION        = 2, // android.permission-group.LOCATION
+};
+
 struct PermissionState {
   bool granted;          // If the permission has been granted
   bool managed;          // If the permission is managed by an enterprise policy

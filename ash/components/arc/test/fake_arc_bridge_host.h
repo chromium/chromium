@@ -123,6 +123,9 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
   void OnPrintSpoolerInstanceReady(
       mojo::PendingRemote<mojom::PrintSpoolerInstance> print_spooler_remote)
       override;
+  void OnPrivacyItemsInstanceReady(
+      mojo::PendingRemote<mojom::PrivacyItemsInstance> privacy_items_remote)
+      override;
   void OnProcessInstanceReady(
       mojo::PendingRemote<mojom::ProcessInstance> process_remote) override;
   void OnPropertyInstanceReady(

@@ -47,6 +47,7 @@ import "ash/components/arc/mojom/pip.mojom";
 import "ash/components/arc/mojom/policy.mojom";
 import "ash/components/arc/mojom/power.mojom";
 import "ash/components/arc/mojom/print_spooler.mojom";
+import "ash/components/arc/mojom/privacy_items.mojom";
 import "ash/components/arc/mojom/process.mojom";
 import "ash/components/arc/mojom/property.mojom";
 import "ash/components/arc/mojom/rotation_lock.mojom";
@@ -64,9 +65,9 @@ import "ash/components/arc/mojom/wake_lock.mojom";
 import "ash/components/arc/mojom/wallpaper.mojom";
 import "ash/components/arc/mojom/webapk.mojom";
 
-// Next MinVersion: 61
+// Next MinVersion: 62
 // Deprecated method IDs: 101, 105, 121
-// Next method ID: 166
+// Next method ID: 167
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
   // compatibility with the ARC instance, explicitly assign each interface a
@@ -241,6 +242,10 @@ interface ArcBridgeHost {
   // Notifies Chrome that the PrintSpoolerInstance interface is ready.
   [MinVersion=45] OnPrintSpoolerInstanceReady@150(
       pending_remote<PrintSpoolerInstance> instance_remote);
+
+  // Notifies Chrome that the PrivacyItemsInstance interface is ready.
+  [MinVersion=61] OnPrivacyItemsInstanceReady@166(
+      pending_remote<PrivacyItemsInstance> instance_remote);
 
   // Notifies Chrome that the ProcessInstance interface is ready.
   OnProcessInstanceReady@104(pending_remote<ProcessInstance> instance_remote);

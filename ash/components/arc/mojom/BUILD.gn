@@ -54,6 +54,7 @@ mojom("mojom") {
     "power.mojom",
     "print_common.mojom",
     "print_spooler.mojom",
+    "privacy_items.mojom",
     "process.mojom",
     "property.mojom",
     "rotation_lock.mojom",
