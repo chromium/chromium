@@ -62,11 +62,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kLauncherSettingsSearch;
 // non empty queries.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAggregatedMlSearchRanking;
 
-// Enables the new app dragging in the launcher. When the users drags an app
-// within the launcher, this flag will enable the new cardified state, where
-// apps grid pages are scaled down and shown a background card.
-ASH_PUBLIC_EXPORT extern const base::Feature kNewDragSpecInLauncher;
-
 // Enables normalization of search results in the launcher.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableLauncherSearchNormalization;
 
@@ -91,7 +86,6 @@ ASH_PUBLIC_EXPORT bool IsExactMatchForNonLatinLocaleEnabled();
 ASH_PUBLIC_EXPORT bool IsForceShowContinueSectionEnabled();
 ASH_PUBLIC_EXPORT bool IsLauncherSettingsSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsAggregatedMlSearchRankingEnabled();
-ASH_PUBLIC_EXPORT bool IsNewDragSpecInLauncherEnabled();
 ASH_PUBLIC_EXPORT bool IsLauncherSearchNormalizationEnabled();
 ASH_PUBLIC_EXPORT bool IsCategoricalSearchEnabled();
 
