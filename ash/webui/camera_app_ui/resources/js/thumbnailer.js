@@ -130,7 +130,7 @@ async function scaleVideo(blob, width, height = undefined) {
  * @param {number=} height Target height. Preserve the aspect ratio if not set.
  * @return {!Promise<!Blob>} Promise of the thumbnail as a jpeg blob.
  */
-async function scaleImage(blob, width, height = undefined) {
+export async function scaleImage(blob, width, height = undefined) {
   const el = await loadImageBlob(blob);
   if (height === undefined) {
     height = Math.round(width * el.naturalHeight / el.naturalWidth);
@@ -215,18 +215,6 @@ async function getImageFromPdf(blob) {
 }
 
 /**
- * Creates a thumbnail of image in pdf by scaling it to the target size.
- * @param {!Blob} blob Blob of pdf.
- * @param {number} width Target width.
- * @param {number=} height Target height. Preserve the aspect ratio if not set.
- * @return {!Promise<!Blob>} Promise of the thumbnail as a jpeg blob.
- */
-async function scalePdfImage(blob, width, height = undefined) {
-  blob = await getImageFromPdf(blob);
-  return scaleImage(blob, width, height);
-}
-
-/**
  * Throws when the input blob type is not supported by thumbnailer.
  */
 class InvalidBlobTypeError extends Error {
@@ -241,22 +229,26 @@ class InvalidBlobTypeError extends Error {
 }
 
 /**
- * Creates a thumbnail from specific format blob by scaling it to the target
- * size.
- * @param {!Blob} blob
- * @param {number} width Target width.
- * @param {number=} height Target height. Preserve the aspect ratio if not set.
- * @return {!Promise<!Blob>} Promise of the thumbnail as a jpeg blob.
+ * For non-video type cover, keeps the original size as possible to support drag
+ * drop share. Scales video type which don't support drag drop share.
+ * @type {number}
  */
-export function scale(blob, width, height = undefined) {
+const VIDEO_COVER_WIDTH = 240;
+
+/**
+ * Extracts image blob from an arbitrary type of blob.
+ * @param {!Blob} blob
+ * @return {!Promise<!Blob>} Resolved to the image blob.
+ */
+export async function extractImageFromBlob(blob) {
   switch (blob.type) {
     case MimeType.GIF:
     case MimeType.JPEG:
-      return scaleImage(blob, width, height);
+      return blob;
     case MimeType.MP4:
-      return scaleVideo(blob, width, height);
+      return scaleVideo(blob, VIDEO_COVER_WIDTH);
     case MimeType.PDF:
-      return scalePdfImage(blob, width, height);
+      return getImageFromPdf(blob);
     default:
       throw new InvalidBlobTypeError(blob.type);
   }

@@ -610,9 +610,19 @@ body.mode-switching:not(.streaming) #camera-mode {
 
 #gallery-enter {
   background-color: rgba(24, 24, 24, 1);
-  background-size: cover;
   height: var(--big-icon);
+  overflow: hidden;
   width: var(--big-icon);
+}
+
+#gallery-enter>img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+#gallery-enter>img:not(.draggable) {
+  pointer-events: none;
 }
 
 body.should-handle-intent-result #gallery-enter {
