@@ -2527,16 +2527,17 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         }
 
         if (id == R.id.enable_price_tracking_menu_id) {
-            // TODO(crbug.com/1266881): Add event here to support IPH.
             // TODO(crbug.com/1268976): Extract this code into a one-liner.
             BookmarkId bookmarkId =
                     mBookmarkBridgeSupplier.get().getUserBookmarkIdForTab(currentTab);
             if (bookmarkId == null) {
                 addOrEditBookmark(currentTab, /* fromExplicitTrackUi=*/true);
             } else {
-                PowerBookmarkUtils.setPriceTrackingEnabled(mSubscriptionsManager,
-                        mBookmarkBridgeSupplier.get(), bookmarkId, /*enabled=*/true,
-                        (status) -> {});
+                // In the case where the bookmark exists, re-show the save flow with price-tracking
+                // enabled.
+                BookmarkUtils.showSaveFlow(/*activity=*/this,
+                        mRootUiCoordinator.getBottomSheetController(), /*fromExplicitTrackUi=*/true,
+                        bookmarkId, /*wasBookmarkMoved=*/false);
             }
             RecordUserAction.record("MobileMenuEnablePriceTracking");
             TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
@@ -2546,13 +2547,12 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (id == R.id.disable_price_tracking_menu_id) {
             // TODO(crbug.com/1266881): Add event here to support IPH.
-            // TODO(crbug.com/1266191): Add a snackbar for this case.
             // TODO(crbug.com/1268976): Extract this code into a one-liner.
             BookmarkId bookmarkId =
                     mBookmarkBridgeSupplier.get().getUserBookmarkIdForTab(currentTab);
-            PowerBookmarkUtils.setPriceTrackingEnabled(mSubscriptionsManager,
+            PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(mSubscriptionsManager,
                     mBookmarkBridgeSupplier.get(), bookmarkId,
-                    /*enabled=*/false, (status) -> {});
+                    /*enabled=*/false, mSnackbarManager, getResources(), (status) -> {});
             RecordUserAction.record("MobileMenuDisablePriceTracking");
             return true;
         }
