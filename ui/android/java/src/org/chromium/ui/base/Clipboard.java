@@ -49,6 +49,7 @@ import org.chromium.ui.R;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -68,6 +69,9 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
 
     // This mime type annotates that clipboard contains a text.
     private static final String TEXT_MIME_TYPE = "text/*";
+
+    // This mime type annotates that clipboard contains a PNG image.
+    private static final String PNG_MIME_TYPE = "image/png";
 
     @SuppressLint("StaticFieldLeak")
     private static Clipboard sInstance;
@@ -406,8 +410,27 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
 
         ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
         String mimeType = cr.getType(uri);
-        if (!"image/png".equalsIgnoreCase(mimeType)) return null;
+        if (!PNG_MIME_TYPE.equalsIgnoreCase(mimeType)) {
+            if (!hasImage()) return null;
 
+            // Android system clipboard contains an image, but it is not a PNG.
+            // Try reading it as a bitmap and encoding to a PNG.
+            try {
+                // TODO(crbug.com/1280468): This uses the unsafe ImageDecoder class.
+                Bitmap bitmap = ApiCompatibilityUtils.getBitmapByUri(cr, uri);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                // |quality| is ignored since PNG encoding is lossless. See
+                // https://developer.android.com/reference/android/graphics/Bitmap.CompressFormat#PNG.
+                bitmap.compress(Bitmap.CompressFormat.PNG, /*quality=*/100, baos);
+                if (baos.size() > MAX_ALLOWED_PNG_SIZE_BYTES) return null;
+
+                return baos.toByteArray();
+            } catch (IOException | OutOfMemoryError e) {
+                return null;
+            }
+        }
+
+        // The image is a PNG. Read and return the raw bytes.
         FileInputStream fileStream = null;
         try (AssetFileDescriptor afd = cr.openAssetFileDescriptor(uri, "r")) {
             if (afd == null || afd.getLength() > MAX_ALLOWED_PNG_SIZE_BYTES
@@ -720,16 +743,6 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         mContext.revokeUriPermission(imageMetadata.uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
         // Clear uri to avoid revoke over and over.
         mImageFileProvider.clearLastCopiedImageMetadata();
-    }
-
-    /**
-     * Check if |bitmap| is support by native side. gfx::CreateSkBitmapFromJavaBitmap only support
-     * ARGB_8888 and ALPHA_8.
-     */
-    private boolean bitmapSupportByGfx(Bitmap bitmap) {
-        return bitmap != null
-                && (bitmap.getConfig() == Bitmap.Config.ARGB_8888
-                        || bitmap.getConfig() == Bitmap.Config.ALPHA_8);
     }
 
     /**
