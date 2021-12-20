@@ -2818,6 +2818,7 @@ crbug.com/626703 [ Mac ] external/wpt/css/css-text/line-breaking/segment-break-t
 crbug.com/626703 [ Fuchsia ] external/wpt/dom/historical.html [ Skip ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-025.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/hyphenate-character-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/hyphenate-character-002.html [ Failure ]
