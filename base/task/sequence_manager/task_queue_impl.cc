@@ -16,6 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/common/scoped_defer_task_posting.h"
+#include "base/task/default_delayed_task_handle_delegate.h"
 #include "base/task/sequence_manager/delayed_task_handle_delegate.h"
 #include "base/task/sequence_manager/fence.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
@@ -113,16 +114,39 @@ bool TaskQueueImpl::TaskRunner::PostDelayedTask(const Location& location,
                                            task_type_));
 }
 
+bool TaskQueueImpl::TaskRunner::PostDelayedTaskAt(
+    subtle::PostDelayedTaskPassKey,
+    const Location& location,
+    OnceClosure callback,
+    TimeTicks delayed_run_time,
+    base::subtle::DelayPolicy delay_policy) {
+  return task_poster_->PostTask(PostedTask(this, std::move(callback), location,
+                                           delayed_run_time, delay_policy,
+                                           Nestable::kNestable, task_type_));
+}
+
+DelayedTaskHandle TaskQueueImpl::TaskRunner::PostCancelableDelayedTaskAt(
+    subtle::PostDelayedTaskPassKey pass_key,
+    const Location& location,
+    OnceClosure callback,
+    TimeTicks delayed_run_time,
+    base::subtle::DelayPolicy delay_policy) {
+  if (!IsRemoveCanceledTasksInTaskQueueFeatureEnabled()) {
+    // This will revert to PostDelayedTaskAt() with default DelayedTaskHandle.
+    return SequencedTaskRunner::PostCancelableDelayedTaskAt(
+        pass_key, location, std::move(callback), delayed_run_time,
+        delay_policy);
+  }
+  return task_poster_->PostCancelableTask(
+      PostedTask(this, std::move(callback), location, delayed_run_time,
+                 delay_policy, Nestable::kNestable, task_type_));
+}
+
 DelayedTaskHandle TaskQueueImpl::TaskRunner::PostCancelableDelayedTask(
     const Location& location,
     OnceClosure callback,
     TimeDelta delay) {
-  if (!remove_canceled_tasks_in_task_queue_.has_value()) {
-    remove_canceled_tasks_in_task_queue_ =
-        FeatureList::IsEnabled(kRemoveCanceledTasksInTaskQueue);
-  }
-
-  if (!remove_canceled_tasks_in_task_queue_.value()) {
+  if (!IsRemoveCanceledTasksInTaskQueueFeatureEnabled()) {
     return SequencedTaskRunner::PostCancelableDelayedTask(
         location, std::move(callback), delay);
   }
@@ -143,6 +167,15 @@ bool TaskQueueImpl::TaskRunner::PostNonNestableDelayedTask(
 
 bool TaskQueueImpl::TaskRunner::RunsTasksInCurrentSequence() const {
   return associated_thread_->IsBoundToCurrentThread();
+}
+
+bool TaskQueueImpl::TaskRunner::
+    IsRemoveCanceledTasksInTaskQueueFeatureEnabled() {
+  if (!remove_canceled_tasks_in_task_queue_.has_value()) {
+    remove_canceled_tasks_in_task_queue_ =
+        FeatureList::IsEnabled(kRemoveCanceledTasksInTaskQueue);
+  }
+  return remove_canceled_tasks_in_task_queue_.value();
 }
 
 TaskQueueImpl::TaskQueueImpl(SequenceManagerImpl* sequence_manager,

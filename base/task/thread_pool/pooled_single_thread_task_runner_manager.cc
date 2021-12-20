@@ -16,6 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/atomic_flag.h"
+#include "base/task/default_delayed_task_handle_delegate.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/delayed_task_manager.h"
@@ -412,23 +413,20 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
       return false;
 
     Task task(from_here, std::move(closure), TimeTicks::Now(), delay);
+    return PostTask(std::move(task));
+  }
 
-    if (!outer_->task_tracker_->WillPostTask(&task,
-                                             sequence_->shutdown_behavior())) {
+  bool PostDelayedTaskAt(subtle::PostDelayedTaskPassKey,
+                         const Location& from_here,
+                         OnceClosure closure,
+                         TimeTicks delayed_run_time,
+                         subtle::DelayPolicy delay_policy) override {
+    if (!g_manager_is_alive)
       return false;
-    }
 
-    if (task.delayed_run_time.is_null())
-      return GetDelegate()->PostTaskNow(sequence_, std::move(task));
-
-    // Unretained(GetDelegate()) is safe because this TaskRunner and its
-    // worker are kept alive as long as there are pending Tasks.
-    outer_->delayed_task_manager_->AddDelayedTask(
-        std::move(task),
-        BindOnce(IgnoreResult(&WorkerThreadDelegate::PostTaskNow),
-                 Unretained(GetDelegate()), sequence_),
-        this);
-    return true;
+    Task task(from_here, std::move(closure), TimeTicks::Now(),
+              delayed_run_time);
+    return PostTask(std::move(task));
   }
 
   bool PostNonNestableDelayedTask(const Location& from_here,
@@ -468,6 +466,25 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
         thread_mode_ == SingleThreadTaskRunnerThreadMode::DEDICATED) {
       outer_->UnregisterWorkerThread(worker_);
     }
+  }
+
+  bool PostTask(Task task) {
+    if (!outer_->task_tracker_->WillPostTask(&task,
+                                             sequence_->shutdown_behavior())) {
+      return false;
+    }
+
+    if (task.delayed_run_time.is_null())
+      return GetDelegate()->PostTaskNow(sequence_, std::move(task));
+
+    // Unretained(GetDelegate()) is safe because this TaskRunner and its
+    // worker are kept alive as long as there are pending Tasks.
+    outer_->delayed_task_manager_->AddDelayedTask(
+        std::move(task),
+        BindOnce(IgnoreResult(&WorkerThreadDelegate::PostTaskNow),
+                 Unretained(GetDelegate()), sequence_),
+        this);
+    return true;
   }
 
   WorkerThreadDelegate* GetDelegate() const {

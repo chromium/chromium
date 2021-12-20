@@ -35,6 +35,12 @@ class BASE_EXPORT PooledSequencedTaskRunner
                        OnceClosure closure,
                        TimeDelta delay) override;
 
+  bool PostDelayedTaskAt(subtle::PostDelayedTaskPassKey,
+                         const Location& from_here,
+                         OnceClosure closure,
+                         TimeTicks delayed_run_time,
+                         subtle::DelayPolicy delay_policy) override;
+
   bool PostNonNestableDelayedTask(const Location& from_here,
                                   OnceClosure closure,
                                   TimeDelta delay) override;

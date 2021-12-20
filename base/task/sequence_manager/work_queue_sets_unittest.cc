@@ -75,7 +75,8 @@ class WorkQueueSetsTest : public testing::Test {
 
   Task FakeTaskWithTaskOrder(TaskOrder task_order) {
     Task fake_task(PostedTask(nullptr, BindOnce([] {}), FROM_HERE,
-                              task_order.delayed_run_time()),
+                              task_order.delayed_run_time(),
+                              subtle::DelayPolicy::kFlexibleNoSooner),
                    EnqueueOrder::FromIntForTesting(task_order.sequence_num()),
                    task_order.enqueue_order());
     return fake_task;

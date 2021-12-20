@@ -5,6 +5,7 @@
 #include "base/task/thread_pool/pooled_sequenced_task_runner.h"
 
 #include "base/sequence_token.h"
+#include "base/task/default_delayed_task_handle_delegate.h"
 
 namespace base {
 namespace internal {
@@ -29,6 +30,24 @@ bool PooledSequencedTaskRunner::PostDelayedTask(const Location& from_here,
   }
 
   Task task(from_here, std::move(closure), TimeTicks::Now(), delay);
+
+  // Post the task as part of |sequence_|.
+  return pooled_task_runner_delegate_->PostTaskWithSequence(std::move(task),
+                                                            sequence_);
+}
+
+bool PooledSequencedTaskRunner::PostDelayedTaskAt(
+    subtle::PostDelayedTaskPassKey,
+    const Location& from_here,
+    OnceClosure closure,
+    TimeTicks delayed_run_time,
+    subtle::DelayPolicy delay_policy) {
+  if (!PooledTaskRunnerDelegate::MatchesCurrentDelegate(
+          pooled_task_runner_delegate_)) {
+    return false;
+  }
+
+  Task task(from_here, std::move(closure), TimeTicks::Now(), delayed_run_time);
 
   // Post the task as part of |sequence_|.
   return pooled_task_runner_delegate_->PostTaskWithSequence(std::move(task),

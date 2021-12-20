@@ -830,6 +830,29 @@ TEST_P(SequenceManagerTest, DelayedTaskPosting) {
   EXPECT_FALSE(queue->HasTaskToRunImmediatelyOrReadyDelayedTask());
 }
 
+TEST_P(SequenceManagerTest, DelayedTaskAtPosting) {
+  auto queue = CreateTaskQueue();
+
+  std::vector<EnqueueOrder> run_order;
+  constexpr TimeDelta kDelay(Milliseconds(10));
+  auto handle = queue->task_runner()->PostCancelableDelayedTaskAt(
+      subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+      BindOnce(&TestTask, 1, &run_order),
+      sequence_manager()->NowTicks() + kDelay);
+  EXPECT_EQ(kDelay, NextPendingTaskDelay());
+  EXPECT_FALSE(queue->HasTaskToRunImmediatelyOrReadyDelayedTask());
+  EXPECT_TRUE(run_order.empty());
+
+  // The task doesn't run before the delay has completed.
+  FastForwardBy(kDelay - Milliseconds(1));
+  EXPECT_TRUE(run_order.empty());
+
+  // After the delay has completed, the task runs normally.
+  FastForwardBy(Milliseconds(1));
+  EXPECT_THAT(run_order, ElementsAre(1u));
+  EXPECT_FALSE(queue->HasTaskToRunImmediatelyOrReadyDelayedTask());
+}
+
 TEST(SequenceManagerTestWithMockTaskRunner,
      DelayedTaskExecutedInOneMessageLoopTask) {
   FixtureWithMockTaskRunner fixture;
@@ -871,6 +894,38 @@ TEST_P(SequenceManagerTest, DelayedTaskPosting_MultipleTasks_DecendingOrder) {
   EXPECT_THAT(run_order, ElementsAre(3u, 2u, 1u));
 }
 
+TEST_P(SequenceManagerTest,
+       DelayedTaskAtPosting_MultipleTasks_DescendingOrder) {
+  auto queue = CreateTaskQueue();
+
+  std::vector<EnqueueOrder> run_order;
+  auto handle1 = queue->task_runner()->PostCancelableDelayedTaskAt(
+      subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+      BindOnce(&TestTask, 1, &run_order),
+      sequence_manager()->NowTicks() + Milliseconds(10));
+
+  queue->task_runner()->PostDelayedTask(
+      FROM_HERE, BindOnce(&TestTask, 2, &run_order), Milliseconds(8));
+
+  auto handle2 = queue->task_runner()->PostCancelableDelayedTaskAt(
+      subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+      BindOnce(&TestTask, 3, &run_order),
+      sequence_manager()->NowTicks() + Milliseconds(5));
+
+  EXPECT_EQ(Milliseconds(5), NextPendingTaskDelay());
+
+  FastForwardBy(Milliseconds(5));
+  EXPECT_THAT(run_order, ElementsAre(3u));
+  EXPECT_EQ(Milliseconds(3), NextPendingTaskDelay());
+
+  FastForwardBy(Milliseconds(3));
+  EXPECT_THAT(run_order, ElementsAre(3u, 2u));
+  EXPECT_EQ(Milliseconds(2), NextPendingTaskDelay());
+
+  FastForwardBy(Milliseconds(2));
+  EXPECT_THAT(run_order, ElementsAre(3u, 2u, 1u));
+}
+
 TEST_P(SequenceManagerTest, DelayedTaskPosting_MultipleTasks_AscendingOrder) {
   auto queue = CreateTaskQueue();
 
@@ -883,6 +938,37 @@ TEST_P(SequenceManagerTest, DelayedTaskPosting_MultipleTasks_AscendingOrder) {
 
   queue->task_runner()->PostDelayedTask(
       FROM_HERE, BindOnce(&TestTask, 3, &run_order), Milliseconds(10));
+
+  EXPECT_EQ(Milliseconds(1), NextPendingTaskDelay());
+
+  FastForwardBy(Milliseconds(1));
+  EXPECT_THAT(run_order, ElementsAre(1u));
+  EXPECT_EQ(Milliseconds(4), NextPendingTaskDelay());
+
+  FastForwardBy(Milliseconds(4));
+  EXPECT_THAT(run_order, ElementsAre(1u, 2u));
+  EXPECT_EQ(Milliseconds(5), NextPendingTaskDelay());
+
+  FastForwardBy(Milliseconds(5));
+  EXPECT_THAT(run_order, ElementsAre(1u, 2u, 3u));
+}
+
+TEST_P(SequenceManagerTest, DelayedTaskAtPosting_MultipleTasks_AscendingOrder) {
+  auto queue = CreateTaskQueue();
+
+  std::vector<EnqueueOrder> run_order;
+  auto handle1 = queue->task_runner()->PostCancelableDelayedTaskAt(
+      subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+      BindOnce(&TestTask, 1, &run_order),
+      sequence_manager()->NowTicks() + Milliseconds(1));
+
+  queue->task_runner()->PostDelayedTask(
+      FROM_HERE, BindOnce(&TestTask, 2, &run_order), Milliseconds(5));
+
+  auto handle2 = queue->task_runner()->PostCancelableDelayedTaskAt(
+      subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+      BindOnce(&TestTask, 3, &run_order),
+      sequence_manager()->NowTicks() + Milliseconds(10));
 
   EXPECT_EQ(Milliseconds(1), NextPendingTaskDelay());
 

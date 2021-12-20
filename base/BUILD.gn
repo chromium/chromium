@@ -665,6 +665,7 @@ component("base") {
     "task/default_delayed_task_handle_delegate.h",
     "task/deferred_sequenced_task_runner.cc",
     "task/deferred_sequenced_task_runner.h",
+    "task/delay_policy.h",
     "task/delayed_task_handle.cc",
     "task/delayed_task_handle.h",
     "task/lazy_thread_pool_task_runner.cc",

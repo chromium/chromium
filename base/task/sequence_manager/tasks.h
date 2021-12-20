@@ -7,9 +7,11 @@
 
 #include "base/containers/intrusive_heap.h"
 #include "base/pending_task.h"
+#include "base/task/delay_policy.h"
 #include "base/task/sequence_manager/delayed_task_handle_delegate.h"
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequenced_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
@@ -37,6 +39,7 @@ struct BASE_EXPORT PostedTask {
                       OnceClosure callback,
                       Location location,
                       TimeTicks delayed_run_time,
+                      subtle::DelayPolicy delay_policy,
                       Nestable nestable = Nestable::kNestable,
                       TaskType task_type = kTaskTypeNone,
                       WeakPtr<DelayedTaskHandleDelegate>
@@ -56,6 +59,7 @@ struct BASE_EXPORT PostedTask {
   Nestable nestable = Nestable::kNestable;
   TaskType task_type = kTaskTypeNone;
   absl::variant<TimeDelta, TimeTicks> delay_or_delayed_run_time;
+  absl::optional<subtle::DelayPolicy> delay_policy;
   // The task runner this task is running on. Can be used by task runners that
   // support posting back to the "current sequence".
   scoped_refptr<SequencedTaskRunner> task_runner;

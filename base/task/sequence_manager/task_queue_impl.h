@@ -322,6 +322,17 @@ class BASE_EXPORT TaskQueueImpl {
     bool PostDelayedTask(const Location& location,
                          OnceClosure callback,
                          TimeDelta delay) final;
+    bool PostDelayedTaskAt(subtle::PostDelayedTaskPassKey,
+                           const Location& location,
+                           OnceClosure callback,
+                           TimeTicks delayed_run_time,
+                           base::subtle::DelayPolicy delay_policy) final;
+    DelayedTaskHandle PostCancelableDelayedTaskAt(
+        subtle::PostDelayedTaskPassKey,
+        const Location& location,
+        OnceClosure callback,
+        TimeTicks delayed_run_time,
+        base::subtle::DelayPolicy delay_policy) final;
     DelayedTaskHandle PostCancelableDelayedTask(const Location& location,
                                                 OnceClosure callback,
                                                 TimeDelta delay) final;
@@ -332,6 +343,8 @@ class BASE_EXPORT TaskQueueImpl {
 
    private:
     ~TaskRunner() final;
+
+    bool IsRemoveCanceledTasksInTaskQueueFeatureEnabled();
 
     const scoped_refptr<GuardedTaskPoster> task_poster_;
     const scoped_refptr<AssociatedThreadId> associated_thread_;

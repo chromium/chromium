@@ -406,6 +406,50 @@ TEST_P(ThreadPoolImplTest_CoverAllSchedulingOptions, PostDelayedTaskWithDelay) {
   task_ran.Wait();
 }
 
+namespace {
+
+scoped_refptr<SequencedTaskRunner> CreateSequencedTaskRunnerAndExecutionMode(
+    ThreadPoolImpl* thread_pool,
+    const TaskTraits& traits,
+    TaskSourceExecutionMode execution_mode,
+    SingleThreadTaskRunnerThreadMode default_single_thread_task_runner_mode =
+        SingleThreadTaskRunnerThreadMode::SHARED) {
+  switch (execution_mode) {
+    case TaskSourceExecutionMode::kSequenced:
+      return thread_pool->CreateSequencedTaskRunner(traits);
+    case TaskSourceExecutionMode::kSingleThread: {
+      return thread_pool->CreateSingleThreadTaskRunner(
+          traits, default_single_thread_task_runner_mode);
+    }
+    case TaskSourceExecutionMode::kParallel:
+    case TaskSourceExecutionMode::kJob:
+      ADD_FAILURE() << "Tests below don't cover these modes";
+      return nullptr;
+  }
+  ADD_FAILURE() << "Unknown ExecutionMode";
+  return nullptr;
+}
+
+}  // namespace
+
+TEST_P(ThreadPoolImplTest_CoverAllSchedulingOptions,
+       PostDelayedTaskAtViaTaskRunner) {
+  StartThreadPool();
+  TestWaitableEvent task_ran;
+  // Only runs for kSequenced and kSingleThread.
+  auto handle =
+      CreateSequencedTaskRunnerAndExecutionMode(thread_pool_.get(), GetTraits(),
+                                                GetExecutionMode())
+          ->PostCancelableDelayedTaskAt(
+              subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+              BindOnce(&VerifyTimeAndTaskEnvironmentAndSignalEvent, GetTraits(),
+                       GetGroupTypes(),
+                       TimeTicks::Now() + TestTimeouts::tiny_timeout(),
+                       Unretained(&task_ran)),
+              TimeTicks::Now() + TestTimeouts::tiny_timeout());
+  task_ran.Wait();
+}
+
 // Verifies that Tasks posted via a TaskRunner with parameterized TaskTraits and
 // ExecutionMode run on a thread with the expected priority and I/O restrictions
 // and respect the characteristics of their ExecutionMode.

@@ -113,6 +113,7 @@ PostedTask::PostedTask(
     OnceClosure callback,
     Location location,
     TimeTicks delayed_run_time,
+    subtle::DelayPolicy delay_policy,
     Nestable nestable,
     TaskType task_type,
     WeakPtr<DelayedTaskHandleDelegate> delayed_task_handle_delegate)
@@ -121,6 +122,7 @@ PostedTask::PostedTask(
       nestable(nestable),
       task_type(task_type),
       delay_or_delayed_run_time(delayed_run_time),
+      delay_policy(delay_policy),
       task_runner(std::move(task_runner)),
       delayed_task_handle_delegate(std::move(delayed_task_handle_delegate)) {}
 

@@ -37,6 +37,37 @@ DelayedTaskHandle SequencedTaskRunner::PostCancelableDelayedTask(
   return delayed_task_handle;
 }
 
+DelayedTaskHandle SequencedTaskRunner::PostCancelableDelayedTaskAt(
+    subtle::PostDelayedTaskPassKey pass_key,
+    const Location& from_here,
+    OnceClosure task,
+    TimeTicks delayed_run_time,
+    subtle::DelayPolicy deadline_policy) {
+  auto delayed_task_handle_delegate =
+      std::make_unique<DefaultDelayedTaskHandleDelegate>();
+
+  task = delayed_task_handle_delegate->BindCallback(std::move(task));
+
+  DelayedTaskHandle delayed_task_handle(
+      std::move(delayed_task_handle_delegate));
+
+  if (!PostDelayedTaskAt(pass_key, from_here, std::move(task), delayed_run_time,
+                         deadline_policy)) {
+    DCHECK(!delayed_task_handle.IsValid());
+  }
+  return delayed_task_handle;
+}
+
+bool SequencedTaskRunner::PostDelayedTaskAt(
+    subtle::PostDelayedTaskPassKey,
+    const Location& from_here,
+    OnceClosure task,
+    TimeTicks delayed_run_time,
+    subtle::DelayPolicy deadline_policy) {
+  return PostDelayedTask(from_here, std::move(task),
+                         delayed_run_time - TimeTicks::Now());
+}
+
 bool SequencedTaskRunner::DeleteOrReleaseSoonInternal(
     const Location& from_here,
     void (*deleter)(const void*),
