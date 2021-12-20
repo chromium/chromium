@@ -28,9 +28,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
 
   MOCK_METHOD(Status,
               SendCommandAndGetResult,
-              (const std::string&,
-               const base::DictionaryValue&,
-               std::unique_ptr<base::DictionaryValue>*),
+              (const std::string&, const base::DictionaryValue&, base::Value*),
               (override));
 };
 
@@ -59,11 +57,9 @@ TEST(DomTracker, GetFrameIdForNode) {
   using ::testing::_;
   EXPECT_CALL(client, SendCommandAndGetResult("DOM.getDocument", _, _))
       .WillOnce([](const std::string& method,
-                   const base::DictionaryValue& params,
-                   std::unique_ptr<base::DictionaryValue>* result) {
-        *result = std::make_unique<base::DictionaryValue>();
-        result->get()->SetDictionary("root",
-                                     std::make_unique<base::DictionaryValue>());
+                   const base::DictionaryValue& params, base::Value* result) {
+        *result = base::Value(base::Value::Type::DICTIONARY);
+        result->SetKey("root", base::Value(base::Value::Type::DICTIONARY));
         return Status(kOk);
       });
 

@@ -173,11 +173,11 @@ TEST_F(DevToolsClientImplTest, SendCommandAndGetResult) {
   ASSERT_EQ(kOk, client.ConnectIfNecessary().code());
   base::DictionaryValue params;
   params.SetInteger("param", 1);
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value result;
   Status status = client.SendCommandAndGetResult("method", params, &result);
   ASSERT_EQ(kOk, status.code());
   std::string json;
-  base::JSONWriter::Write(*result, &json);
+  base::JSONWriter::Write(result, &json);
   ASSERT_STREQ("{\"param\":1}", json.c_str());
 }
 
@@ -543,12 +543,12 @@ TEST_F(DevToolsClientImplTest, SendCommandEventBeforeResponse) {
   client.SetParserFuncForTesting(
       base::BindRepeating(&ReturnEventThenResponse, &first));
   base::DictionaryValue params;
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value result;
   ASSERT_TRUE(client.SendCommandAndGetResult("method", params, &result).IsOk());
-  ASSERT_TRUE(result);
-  int key;
-  ASSERT_TRUE(result->GetInteger("key", &key));
-  ASSERT_EQ(2, key);
+  ASSERT_TRUE(result.is_dict());
+  absl::optional<int> key = result.FindIntKey("key");
+  ASSERT_TRUE(key);
+  ASSERT_EQ(2, key.value());
 }
 
 TEST(ParseInspectorMessage, NonJson) {
@@ -779,12 +779,12 @@ TEST_F(DevToolsClientImplTest, NestedCommandsWithOutOfOrderResults) {
       base::BindRepeating(&ReturnOutOfOrderResponses, &recurse_count, &client));
   base::DictionaryValue params;
   params.SetInteger("param", 1);
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value result;
   ASSERT_TRUE(client.SendCommandAndGetResult("method", params, &result).IsOk());
-  ASSERT_TRUE(result);
-  int key;
-  ASSERT_TRUE(result->GetInteger("key", &key));
-  ASSERT_EQ(2, key);
+  ASSERT_TRUE(result.is_dict());
+  absl::optional<int> key = result.FindIntKey("key");
+  ASSERT_TRUE(key);
+  ASSERT_EQ(2, key.value());
 }
 
 namespace {

@@ -61,11 +61,10 @@ Status NetworkConditionsOverrideManager::ApplyOverride(
   if (status.IsError())
     return status;
 
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value result;
   status = client_->SendCommandAndGetResult(
       "Network.canEmulateNetworkConditions", empty_params, &result);
-  absl::optional<bool> can =
-      result ? result->FindBoolKey("result") : absl::nullopt;
+  absl::optional<bool> can = result.FindBoolKey("result");
   if (status.IsError() || !can)
     return Status(kUnknownError,
         "unable to detect if chrome can emulate network conditions", status);

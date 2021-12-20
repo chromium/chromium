@@ -120,10 +120,9 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
   // (see crbug.com/524079).
   base::DictionaryValue params;
   params.SetString("expression", "1");
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value result;
   Status status = client_->SendCommandAndGetResultWithTimeout(
       "Runtime.evaluate", params, timeout, &result);
-  int value = 0;
   if (status.code() == kDisconnected) {
     // If we receive a kDisconnected status code from Runtime.evaluate, don't
     // wait for pending navigations to complete, since we won't see any more
@@ -139,8 +138,8 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
              status.message().find(kTargetClosedMessage) != std::string::npos) {
     *is_pending = true;
     return Status(kOk);
-  } else if (status.IsError() || !result->GetInteger("result.value", &value) ||
-             value != 1) {
+  } else if (status.IsError() ||
+             result.FindIntPath("result.value").value_or(0) != 1) {
     return MakeNavigationCheckFailedStatus(status);
   }
 
@@ -154,10 +153,11 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
     base::DictionaryValue empty_params;
     status = client_->SendCommandAndGetResultWithTimeout(
         "DOM.getDocument", empty_params, timeout, &result);
-    std::string base_url;
-    std::string doc_url;
-    if (status.IsError() || !result->GetString("root.baseURL", &base_url) ||
-        !result->GetString("root.documentURL", &doc_url))
+    if (status.IsError())
+      return MakeNavigationCheckFailedStatus(status);
+    std::string* base_url = result.FindStringPath("root.baseURL");
+    std::string* doc_url = result.FindStringPath("root.documentURL");
+    if (!base_url || !doc_url)
       return MakeNavigationCheckFailedStatus(status);
 
     // Need to check current frame valid again to avoid accessing invalid
@@ -168,7 +168,7 @@ Status NavigationTracker::IsPendingNavigation(const Timeout* timeout,
       return Status(kOk);
     }
 
-    if (doc_url != "about:blank" && base_url == "about:blank") {
+    if (*doc_url != "about:blank" && *base_url == "about:blank") {
       *is_pending = true;
       *loading_state_ = kLoading;
       return Status(kOk);
@@ -188,13 +188,15 @@ Status NavigationTracker::CheckFunctionExists(const Timeout* timeout,
                                               bool* exists) {
   base::DictionaryValue params;
   params.SetString("expression", "typeof(getWindowInfo)");
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value result;
   Status status = client_->SendCommandAndGetResultWithTimeout(
       "Runtime.evaluate", params, timeout, &result);
-  std::string type;
-  if (status.IsError() || !result->GetString("result.value", &type))
+  if (status.IsError())
     return MakeNavigationCheckFailedStatus(status);
-  *exists = type == "function";
+  std::string* type = result.FindStringPath("result.value");
+  if (!type)
+    return MakeNavigationCheckFailedStatus(status);
+  *exists = *type == "function";
   return Status(kOk);
 }
 
@@ -363,7 +365,7 @@ Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
     *loading_state_ = kUnknown;
     base::DictionaryValue params;
     params.SetString("expression", "document.URL");
-    std::unique_ptr<base::DictionaryValue> result_dict;
+    base::Value result_dict;
     Status status(kOk);
     for (int attempt = 0; attempt < 3; attempt++) {
       status = client_->SendCommandAndGetResultWithTimeout(
@@ -376,10 +378,12 @@ Status NavigationTracker::OnCommandSuccess(DevToolsClient* client,
       }
     }
 
-    std::string url;
-    if (status.IsError() || !result_dict->GetString("result.value", &url))
+    if (status.IsError())
       return MakeNavigationCheckFailedStatus(status);
-    if (loadingState() == kUnknown && url.empty())
+    std::string* url = result_dict.FindStringPath("result.value");
+    if (!url)
+      return MakeNavigationCheckFailedStatus(status);
+    if (loadingState() == kUnknown && url->empty())
       *loading_state_ = kLoading;
   }
   return Status(kOk);

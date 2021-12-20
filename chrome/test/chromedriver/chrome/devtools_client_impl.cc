@@ -245,21 +245,21 @@ Status DevToolsClientImpl::SendCommandWithTimeout(
     const std::string& method,
     const base::DictionaryValue& params,
     const Timeout* timeout) {
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value result;
   return SendCommandInternal(method, params, &result, true, true, 0, timeout);
 }
 
 Status DevToolsClientImpl::SendAsyncCommand(
     const std::string& method,
     const base::DictionaryValue& params) {
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value result;
   return SendCommandInternal(method, params, &result, false, false, 0, nullptr);
 }
 
 Status DevToolsClientImpl::SendCommandAndGetResult(
     const std::string& method,
     const base::DictionaryValue& params,
-    std::unique_ptr<base::DictionaryValue>* result) {
+    base::Value* result) {
   return SendCommandAndGetResultWithTimeout(method, params, nullptr, result);
 }
 
@@ -267,13 +267,13 @@ Status DevToolsClientImpl::SendCommandAndGetResultWithTimeout(
     const std::string& method,
     const base::DictionaryValue& params,
     const Timeout* timeout,
-    std::unique_ptr<base::DictionaryValue>* result) {
-  std::unique_ptr<base::DictionaryValue> intermediate_result;
+    base::Value* result) {
+  base::Value intermediate_result;
   Status status = SendCommandInternal(method, params, &intermediate_result,
                                       true, true, 0, timeout);
   if (status.IsError())
     return status;
-  if (!intermediate_result)
+  if (!intermediate_result.is_dict())
     return Status(kUnknownError, "inspector response missing result");
   *result = std::move(intermediate_result);
   return Status(kOk);
@@ -355,7 +355,7 @@ DevToolsClient* DevToolsClientImpl::GetRootClient() {
 Status DevToolsClientImpl::SendCommandInternal(
     const std::string& method,
     const base::DictionaryValue& params,
-    std::unique_ptr<base::DictionaryValue>* result,
+    base::Value* result,
     bool expect_response,
     bool wait_for_response,
     const int client_command_id,
@@ -422,10 +422,12 @@ Status DevToolsClientImpl::SendCommandInternal(
       if (!response.result) {
         return internal::ParseInspectorError(response.error);
       }
-      *result = std::move(response.result);
+      *result = std::move(*response.result);
     }
   } else {
     CHECK(!wait_for_response);
+    if (result)
+      *result = base::Value(base::Value::Type::DICTIONARY);
   }
   return Status(kOk);
 }

@@ -64,12 +64,12 @@ class FakeDevToolsClient : public StubDevToolsClient {
   // Overridden from DevToolsClient:
   Status ConnectIfNecessary() override { return listener_->OnConnected(this); }
 
-  Status SendCommandAndGetResult(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      std::unique_ptr<base::DictionaryValue>* result) override {
+  Status SendCommandAndGetResult(const std::string& method,
+                                 const base::DictionaryValue& params,
+                                 base::Value* result) override {
     sent_commands_.push_back(
         std::make_unique<DevToolsCommand>(method, params.DeepCopy()));
+    *result = base::Value(base::Value::Type::DICTIONARY);
     return Status(kOk);
   }
 

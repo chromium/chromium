@@ -105,15 +105,13 @@ class DevToolsClientImpl : public DevToolsClient {
   Status SendAsyncCommand(
       const std::string& method,
       const base::DictionaryValue& params) override;
-  Status SendCommandAndGetResult(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      std::unique_ptr<base::DictionaryValue>* result) override;
-  Status SendCommandAndGetResultWithTimeout(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      const Timeout* timeout,
-      std::unique_ptr<base::DictionaryValue>* result) override;
+  Status SendCommandAndGetResult(const std::string& method,
+                                 const base::DictionaryValue& params,
+                                 base::Value* result) override;
+  Status SendCommandAndGetResultWithTimeout(const std::string& method,
+                                            const base::DictionaryValue& params,
+                                            const Timeout* timeout,
+                                            base::Value* result) override;
   Status SendCommandAndIgnoreResponse(
       const std::string& method,
       const base::DictionaryValue& params) override;
@@ -153,7 +151,7 @@ class DevToolsClientImpl : public DevToolsClient {
   };
   Status SendCommandInternal(const std::string& method,
                              const base::DictionaryValue& params,
-                             std::unique_ptr<base::DictionaryValue>* result,
+                             base::Value* result,
                              bool expect_response,
                              bool wait_for_response,
                              int client_command_id,

@@ -95,10 +95,9 @@ class FakeDevToolsClient : public StubDevToolsClient {
   }
 
   // Overridden from StubDevToolsClient:
-  Status SendCommandAndGetResult(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      std::unique_ptr<base::DictionaryValue>* result) override {
+  Status SendCommandAndGetResult(const std::string& method,
+                                 const base::DictionaryValue& params,
+                                 base::Value* result) override {
     while (closing_count_ > 0) {
       base::DictionaryValue empty;
       Status status =
@@ -107,6 +106,7 @@ class FakeDevToolsClient : public StubDevToolsClient {
         return status;
       closing_count_--;
     }
+    *result = base::Value(base::Value::Type::DICTIONARY);
     return Status(kOk);
   }
   void AddListener(DevToolsEventListener* listener) override {

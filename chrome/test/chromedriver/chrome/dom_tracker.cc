@@ -66,7 +66,7 @@ Status DomTracker::OnEvent(DevToolsClient* client,
 
     base::DictionaryValue params;
     params.SetString("frameId", *frame_id);
-    std::unique_ptr<base::DictionaryValue> result;
+    base::Value result;
     auto status =
         client->SendCommandAndGetResult("DOM.getFrameOwner", params, &result);
     if (status.IsError()) {
@@ -76,7 +76,7 @@ Status DomTracker::OnEvent(DevToolsClient* client,
       }
       return status;
     }
-    auto ownder_node_id = result->FindIntKey("nodeId");
+    auto ownder_node_id = result.FindIntKey("nodeId");
     if (ownder_node_id.has_value()) {
       node_to_frame_map_.emplace(ownder_node_id.value(), *frame_id);
     } else {
@@ -127,7 +127,7 @@ Status DomTracker::RebuildMapping(DevToolsClient* client) {
   node_to_frame_map_.clear();
   base::DictionaryValue params;
   params.SetInteger("depth", -1);
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value result;
   // Fetch the root document and traverse it populating node_to_frame_map_.
   // The map will be updated later whenever Inspector pushes DOM node
   // information to the client.
@@ -137,7 +137,7 @@ Status DomTracker::RebuildMapping(DevToolsClient* client) {
     return status;
   }
 
-  if (const base::Value* root = result->FindKey("root")) {
+  if (const base::Value* root = result.FindKey("root")) {
     ProcessNode(*root);
   } else {
     status =

@@ -38,13 +38,12 @@ class FakeDevToolsClient : public StubDevToolsClient {
   }
 
   // Overridden from DevToolsClient:
-  Status SendCommandAndGetResult(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      std::unique_ptr<base::DictionaryValue>* result) override {
+  Status SendCommandAndGetResult(const std::string& method,
+                                 const base::DictionaryValue& params,
+                                 base::Value* result) override {
     if (status_.IsError())
       return status_;
-    result->reset(result_.DeepCopy());
+    *result = result_.Clone();
     return Status(kOk);
   }
 
