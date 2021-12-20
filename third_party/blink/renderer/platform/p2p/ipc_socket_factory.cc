@@ -121,9 +121,6 @@ class IpcPacketSocket : public rtc::AsyncPacketSocket,
   // P2PSocketClientDelegate implementation.
   void OnOpen(const net::IPEndPoint& local_address,
               const net::IPEndPoint& remote_address) override;
-  void OnIncomingTcpConnection(
-      const net::IPEndPoint& address,
-      std::unique_ptr<blink::P2PSocketClient> client) override;
   void OnSendComplete(
       const network::P2PSendPacketMetrics& send_metrics) override;
   void OnError() override;
@@ -564,22 +561,6 @@ void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
   }
 }
 
-void IpcPacketSocket::OnIncomingTcpConnection(
-    const net::IPEndPoint& address,
-    std::unique_ptr<blink::P2PSocketClient> client) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  std::unique_ptr<IpcPacketSocket> socket(new IpcPacketSocket());
-
-  rtc::SocketAddress remote_address;
-  if (!jingle_glue::IPEndPointToSocketAddress(address, &remote_address)) {
-    // Always expect correct IPv4 address to be allocated.
-    NOTREACHED();
-  }
-  socket->InitAcceptedTcp(std::move(client), local_address_, remote_address);
-  SignalNewConnection(this, socket.release());
-}
-
 void IpcPacketSocket::OnSendComplete(
     const network::P2PSendPacketMetrics& send_metrics) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -736,28 +717,13 @@ rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateUdpSocket(
   return socket.release();
 }
 
-rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateServerTcpSocket(
+rtc::AsyncListenSocket* IpcPacketSocketFactory::CreateServerTcpSocket(
     const rtc::SocketAddress& local_address,
     uint16_t min_port,
     uint16_t max_port,
     int opts) {
-  // TODO(sergeyu): Implement SSL support.
-  if (opts & rtc::PacketSocketFactory::OPT_SSLTCP)
-    return nullptr;
-
-  network::P2PSocketType type = (opts & rtc::PacketSocketFactory::OPT_STUN)
-                                    ? network::P2P_SOCKET_STUN_TCP_SERVER
-                                    : network::P2P_SOCKET_TCP_SERVER;
-  auto socket_dispatcher = socket_dispatcher_.Lock();
-  DCHECK(socket_dispatcher);
-  auto socket_client = std::make_unique<P2PSocketClientImpl>(
-      socket_dispatcher, traffic_annotation_);
-  std::unique_ptr<IpcPacketSocket> socket(new IpcPacketSocket());
-  if (!socket->Init(type, std::move(socket_client), local_address, min_port,
-                    max_port, rtc::SocketAddress())) {
-    return nullptr;
-  }
-  return socket.release();
+  NOTREACHED();
+  return nullptr;
 }
 
 rtc::AsyncPacketSocket* IpcPacketSocketFactory::CreateClientTcpSocket(

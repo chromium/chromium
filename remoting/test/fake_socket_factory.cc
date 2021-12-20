@@ -251,7 +251,7 @@ rtc::AsyncPacketSocket* FakePacketSocketFactory::CreateUdpSocket(
   return result;
 }
 
-rtc::AsyncPacketSocket* FakePacketSocketFactory::CreateServerTcpSocket(
+rtc::AsyncListenSocket* FakePacketSocketFactory::CreateServerTcpSocket(
     const rtc::SocketAddress& local_address,
     uint16_t min_port,
     uint16_t max_port,

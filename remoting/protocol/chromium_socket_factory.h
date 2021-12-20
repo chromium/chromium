@@ -32,7 +32,7 @@ class ChromiumPacketSocketFactory : public rtc::PacketSocketFactory {
       const rtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port) override;
-  rtc::AsyncPacketSocket* CreateServerTcpSocket(
+  rtc::AsyncListenSocket* CreateServerTcpSocket(
       const rtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port,
