@@ -29,7 +29,8 @@ public class PasswordManagerLauncher {
     public static void showPasswordSettings(
             Activity activity, @ManagePasswordsReferrer int referrer) {
         SyncService syncService = SyncService.get();
-        if (PasswordManagerHelper.hasChosenToSyncPasswordsWithNoCustomPassphrase(syncService)
+        if (syncService.isEngineInitialized()
+                && PasswordManagerHelper.hasChosenToSyncPasswordsWithNoCustomPassphrase(syncService)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.PASSWORD_SCRIPTS_FETCHING)) {
             PasswordScriptsFetcherBridge.prewarmCache();
         }

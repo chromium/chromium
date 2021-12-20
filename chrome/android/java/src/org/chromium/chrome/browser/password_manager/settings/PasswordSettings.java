@@ -574,6 +574,10 @@ public class PasswordSettings extends PreferenceFragmentCompat
     }
 
     private void displayManageAccountLink() {
+        SyncService syncService = SyncService.get();
+        if (syncService == null || !syncService.isEngineInitialized()) {
+            return;
+        }
         if (!PasswordManagerHelper.isSyncingPasswordsWithNoCustomPassphrase(SyncService.get())) {
             return;
         }
