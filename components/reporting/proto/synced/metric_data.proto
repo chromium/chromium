@@ -148,7 +148,7 @@ enum ThunderboltSecurityLevel {
   THUNDERBOLT_SECURITY_USB_ONLY_LEVEL = 5;
   // PCIE tunneling is disabled.
   THUNDERBOLT_SECURITY_NO_PCIE_LEVEL = 6;
-};
+}
 
 message ThunderboltInfo {
   optional ThunderboltSecurityLevel security_level = 1;
@@ -200,6 +200,50 @@ message MemoryInfo {
   optional TotalMemoryEncryptionInfo tme_info = 1;
 }
 
+enum NetworkDeviceType {
+  NETWORK_DEVICE_TYPE_UNSPECIFIED = 0;
+  CELLULAR_DEVICE = 1;
+  ETHERNET_DEVICE = 2;
+  WIFI_DEVICE = 5;
+}
+
+// Info details about network interface.
+message NetworkInterface {
+  // Network device type.
+  optional NetworkDeviceType type = 1;
+
+  // MAC address (if applicable) of the corresponding network device. This is
+  // formatted as an ASCII string with 12 hex digits. Example: A0B1C2D3E4F5.
+  optional string mac_address = 2;
+
+  // MEID (if applicable) of the corresponding network device. Formatted as
+  // ASCII string composed of 14 hex digits. Example: A10000009296F2.
+  optional string meid = 3;
+
+  // IMEI (if applicable) of the corresponding network device. 15-16 decimal
+  // digits encoded as ASCII string. Example: 355402040158759.
+  optional string imei = 4;
+
+  // The device path associated with this network interface.
+  optional string device_path = 5;
+
+  // The integrated circuit card ID associated with the device's sim card.
+  optional string iccid = 6;
+
+  // The mobile directory number associated with the device's sim card.
+  optional string mdn = 7;
+
+  // List of EID (EUICC Identifier) of all cellular EUICCs
+  // (Embedded Universal Integrated Circuit Cards) on the device.
+  // 32 decimal digits encoded as ASCII string.
+  repeated string eids = 8;
+}
+
+// Networks info data.
+message NetworksInfo {
+  repeated NetworkInterface network_interfaces = 1;
+}
+
 // Information about keylocker. This is supported on Intel CPUs.
 message KeylockerInfo {
   // If keylocker is supported on the devices CPUs.
@@ -222,6 +266,8 @@ message InfoData {
   optional BusDeviceInfo bus_device_info = 2;
   // Memory info for the device.
   optional MemoryInfo memory_info = 3;
+  // Network interfaces info.
+  optional NetworksInfo networks_info = 4;
 }
 
 // Audio telemetry data recorded intermittently

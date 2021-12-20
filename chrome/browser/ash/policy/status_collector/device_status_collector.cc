@@ -2334,6 +2334,7 @@ bool DeviceStatusCollector::GetWriteProtectSwitch(
 
 bool DeviceStatusCollector::GetNetworkConfiguration(
     em::DeviceStatusReportRequest* status) {
+  // Note: keep in sync with `::reporting::NetworkInfoSampler`
   static const struct {
     const char* type_string;
     em::NetworkInterface::NetworkDeviceType type_constant;
