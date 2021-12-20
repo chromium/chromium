@@ -32,9 +32,9 @@ namespace {
 // That is, the pattern must match the whole string in order to match.
 //
 // We can convert the given |robots_rule| to one that is compatible with
-// |base::MatchPattern| by taking care of optionally-present '$' character and
-// backslash-escaping any '?' characters, since they should be interpreted
-// literally .
+// |base::MatchPattern| by taking care of the optionally-present '$' character
+// at the end of the line and backslash-escaping any '?' characters, since they
+// should be interpreted literally.
 std::string ConvertRobotsRuleToGlob(const std::string& robots_rule) {
   if (robots_rule.empty())
     return "*";
@@ -137,6 +137,7 @@ absl::optional<RobotsRulesParser::CheckResult>
 RobotsRulesParser::CheckRobotsRules(int routing_id,
                                     const GURL& url,
                                     CheckResultCallback callback) {
+  DCHECK(url.is_valid());
   std::string path_with_query = url.path();
   if (url.has_query())
     base::StrAppend(&path_with_query, {"?", url.query()});

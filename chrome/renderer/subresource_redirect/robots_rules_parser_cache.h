@@ -44,7 +44,7 @@ class RobotsRulesParserCache {
   // rules parser for the url origin. When the determination can be made
   // immediately, the decision should be returned. Otherwise absl::nullopt
   // should be returned and the |callback| will be invoked when the decision was
-  // made.
+  // made. Note that |url| must be valid.
   absl::optional<RobotsRulesParser::CheckResult> CheckRobotsRules(
       int routing_id,
       const GURL& url,

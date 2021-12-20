@@ -80,12 +80,15 @@ class RobotsRulesParser {
 
   // Check whether the URL is allowed or disallowed by robots rules. When the
   // determination can be made immediately, the decision should be returned.
-  // Otherwise absl::nullopt should be returned and the |callback| will be
-  // added to |pending_check_requests_| and called when a decision can be made
-  // like when rules are retrieved, or rule fetch timeout, etc.
-  // The robots rules check will make use of the |url| path and query
-  // parameters.The |url| origin, ref fragment, etc are immaterial. |routing_id|
-  // is the render frame ID for which this URL is requested for.
+  // Otherwise, absl::nullopt should be returned and |callback| will be added to
+  // |pending_check_requests_| and called when a decision can be made, like when
+  // rules are retrieved, a rule fetch times out, etc.
+  //
+  // |routing_id| is the render frame ID for which this URL is requested for.
+  //
+  // The robots rules check will use the |url| path and query parameters, but
+  // the origin, ref fragment, etc are immaterial. Note that the |url| must be
+  // valid.
   absl::optional<CheckResult> CheckRobotsRules(int routing_id,
                                                const GURL& url,
                                                CheckResultCallback callback);

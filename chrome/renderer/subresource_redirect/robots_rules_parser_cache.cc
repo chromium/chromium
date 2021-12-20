@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/subresource_redirect/robots_rules_parser_cache.h"
 
+#include "base/check.h"
 #include "base/no_destructor.h"
 #include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
 
@@ -47,6 +48,7 @@ RobotsRulesParserCache::CheckRobotsRules(
     int routing_id,
     const GURL& url,
     RobotsRulesParser::CheckResultCallback callback) {
+  DCHECK(url.is_valid());
   auto it = parsers_cache_.Get(url::Origin::Create(url));
   if (it == parsers_cache_.end()) {
     return RobotsRulesParser::CheckResult::kEntryMissing;
