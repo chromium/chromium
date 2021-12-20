@@ -721,6 +721,8 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::ToMojom(
     case media::VideoCaptureError::kWinMediaFoundationSystemPermissionDenied:
       return media::mojom::VideoCaptureError::
           kWinMediaFoundationSystemPermissionDenied;
+    case media::VideoCaptureError::kVideoCaptureImplTimedOutOnStart:
+      return media::mojom::VideoCaptureError::kVideoCaptureImplTimedOutOnStart;
   }
   NOTREACHED();
   return media::mojom::VideoCaptureError::kNone;
@@ -1287,6 +1289,9 @@ bool EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::
         kWinMediaFoundationSystemPermissionDenied:
       *output =
           media::VideoCaptureError::kWinMediaFoundationSystemPermissionDenied;
+      return true;
+    case media::mojom::VideoCaptureError::kVideoCaptureImplTimedOutOnStart:
+      *output = media::VideoCaptureError::kVideoCaptureImplTimedOutOnStart;
       return true;
   }
   NOTREACHED();

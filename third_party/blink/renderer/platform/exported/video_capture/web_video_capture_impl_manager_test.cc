@@ -71,7 +71,8 @@ class MockVideoCaptureImpl : public VideoCaptureImpl,
     // For every Start(), expect a corresponding Stop() call.
     EXPECT_CALL(*this, Stop(_));
     // Simulate device started.
-    OnStateChanged(media::mojom::VideoCaptureState::STARTED);
+    OnStateChanged(media::mojom::blink::VideoCaptureResult::NewState(
+        media::mojom::VideoCaptureState::STARTED));
   }
 
   MOCK_METHOD1(Stop, void(const base::UnguessableToken&));

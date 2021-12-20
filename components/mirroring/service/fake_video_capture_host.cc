@@ -30,14 +30,16 @@ void FakeVideoCaptureHost::Start(
     mojo::PendingRemote<media::mojom::VideoCaptureObserver> observer) {
   ASSERT_TRUE(observer);
   observer_.Bind(std::move(observer));
-  observer_->OnStateChanged(media::mojom::VideoCaptureState::STARTED);
+  observer_->OnStateChanged(media::mojom::VideoCaptureResult::NewState(
+      media::mojom::VideoCaptureState::STARTED));
 }
 
 void FakeVideoCaptureHost::Stop(const base::UnguessableToken& device_id) {
   if (!observer_)
     return;
 
-  observer_->OnStateChanged(media::mojom::VideoCaptureState::ENDED);
+  observer_->OnStateChanged(media::mojom::VideoCaptureResult::NewState(
+      media::mojom::VideoCaptureState::ENDED));
   observer_.reset();
   OnStopped();
 }

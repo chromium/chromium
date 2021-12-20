@@ -149,7 +149,14 @@ class MockVideoCaptureObserver final
     OnBufferDestroyedCall(buffer_id);
   }
 
-  MOCK_METHOD1(OnStateChanged, void(media::mojom::VideoCaptureState state));
+  MOCK_METHOD1(OnStateChangedCall, void(media::mojom::VideoCaptureState state));
+  MOCK_METHOD1(OnVideoCaptureErrorCall, void(media::VideoCaptureError error));
+  void OnStateChanged(media::mojom::VideoCaptureResultPtr result) override {
+    if (result->which() == media::mojom::VideoCaptureResult::Tag::STATE)
+      OnStateChangedCall(result->get_state());
+    else
+      OnVideoCaptureErrorCall(result->get_error_code());
+  }
 
   void Start() {
     host_->Start(device_id_, session_id_, VideoCaptureParams(),
@@ -211,7 +218,7 @@ class SingleClientVideoCaptureHostTest : public ::testing::Test {
   ~SingleClientVideoCaptureHostTest() override {
     base::RunLoop run_loop;
     EXPECT_CALL(*consumer_,
-                OnStateChanged(media::mojom::VideoCaptureState::ENDED))
+                OnStateChangedCall(media::mojom::VideoCaptureState::ENDED))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
     consumer_->Stop();
     run_loop.Run();
