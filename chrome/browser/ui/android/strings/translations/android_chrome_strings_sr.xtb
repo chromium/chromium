@@ -604,7 +604,7 @@ Google налог можда има друге облике историје п�
 <translation id="4684427112815847243">Синхронизуј све</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 и још <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 и још <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 и још <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 и још <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4696983787092045100">Пошаљите SMS уређајима</translation>
-<translation id="4699172675775169585">Кеширане слике и датотеке</translation>
+<translation id="4699172675775169585">Кеширане слике и фајлови</translation>
 <translation id="4714588616299687897">Уштедите до 60% података</translation>
 <translation id="471759387343966120">Ако наставите, прихватате <ph name="BEGIN_TOS_LINK" />услове коришћења услуге<ph name="END_TOS_LINK" /> и <ph name="BEGIN_PRIVACY_LINK" />политику\u00A0приватности<ph name="END_PRIVACY_LINK" />.\nРади побољшања апликације Chrome Google-у шаље податке о коришћењу и отказивањима. <ph name="BEGIN_UMA_LINK" />Управљајте<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Понуди превод</translation>
