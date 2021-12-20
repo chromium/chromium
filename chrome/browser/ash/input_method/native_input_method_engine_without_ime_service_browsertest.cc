@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,6 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-#include "mojo/core/embedder/embedder.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/ime_engine_handler_interface.h"
@@ -87,9 +86,7 @@ class TestPersonalDataManagerObserver
   ~TestPersonalDataManagerObserver() override = default;
 
   // Waits for the PersonalDataManager's list of profiles to be updated.
-  void Wait() {
-    run_loop_.Run();
-  }
+  void Wait() { run_loop_.Run(); }
 
   // PersonalDataManagerObserver:
   void OnPersonalDataChanged() override { run_loop_.Quit(); }
@@ -122,10 +119,11 @@ class KeyProcessingWaiter {
 // to the environment, shadowing those created and managed by CrOS IMF (an
 // integral part of the "browser" environment set up by the browser test).
 // TODO(crbug/1197005): Migrate all these to unit tests.
-class NativeInputMethodEngineTest : public InProcessBrowserTest,
-                                    public ui::internal::InputMethodDelegate {
+class NativeInputMethodEngineWithoutImeServiceTest
+    : public InProcessBrowserTest,
+      public ui::internal::InputMethodDelegate {
  public:
-  NativeInputMethodEngineTest() : input_method_(this) {
+  NativeInputMethodEngineWithoutImeServiceTest() : input_method_(this) {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAssistPersonalInfo,
                               features::kAssistPersonalInfoEmail,
@@ -136,13 +134,15 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
   }
 
  protected:
-  void SetUp() override {
-    mojo::core::Init();
-    InProcessBrowserTest::SetUp();
-  }
+  void SetUp() override { InProcessBrowserTest::SetUp(); }
 
   void SetUpOnMainThread() override {
-    engine_ = std::make_unique<NativeInputMethodEngine>();
+    // Passing |false| for |use_ime_service| so NativeInputMethodEngine won't
+    // launch the IME Service which typically tries to load libimedecoder.so
+    // unsupported in browser tests. None of these tests require the IME Service
+    // so just avoid it outright instead of relying on implicit luck.
+    engine_ =
+        NativeInputMethodEngine::CreateForTesting(/*use_ime_service=*/false);
     ui::IMEBridge::Get()->SetInputContextHandler(&input_method_);
     ui::IMEBridge::Get()->SetCurrentEngineHandler(engine_.get());
 
@@ -239,100 +239,12 @@ class NativeInputMethodEngineTest : public InProcessBrowserTest,
 };
 
 // ID is specified in google_xkb_manifest.json.
-constexpr char kEngineIdArabic[] = "vkd_ar";
 constexpr char kEngineIdUs[] = "xkb:us::eng";
-constexpr char kEngineIdVietnameseTelex[] = "vkd_vi_telex";
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
-                       VietnameseTelex_SimpleTransform) {
-  engine_->Enable(kEngineIdVietnameseTelex);
-  engine_->FlushForTesting();
-  EXPECT_TRUE(engine_->IsConnectedForTesting());
-
-  // Create a fake text field.
-  ui::DummyTextInputClient text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
-  SetFocus(&text_input_client);
-
-  DispatchKeyPress(ui::VKEY_A, true, ui::EF_SHIFT_DOWN);
-  DispatchKeyPress(ui::VKEY_S, true);
-  DispatchKeyPress(ui::VKEY_SPACE, true);
-
-  // Expect to commit 'Á '.
-  ASSERT_EQ(text_input_client.composition_history().size(), 2U);
-  EXPECT_EQ(text_input_client.composition_history()[0].text, u"A");
-  EXPECT_EQ(text_input_client.composition_history()[1].text, u"\u00c1");
-  ASSERT_EQ(text_input_client.insert_text_history().size(), 1U);
-  EXPECT_EQ(text_input_client.insert_text_history()[0], u"\u00c1 ");
-
-  SetFocus(nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, VietnameseTelex_Reset) {
-  engine_->Enable(kEngineIdVietnameseTelex);
-  engine_->FlushForTesting();
-  EXPECT_TRUE(engine_->IsConnectedForTesting());
-
-  // Create a fake text field.
-  ui::DummyTextInputClient text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
-  SetFocus(&text_input_client);
-
-  DispatchKeyPress(ui::VKEY_A, true);
-  engine_->Reset();
-  DispatchKeyPress(ui::VKEY_S, true);
-
-  // Expect to commit 's'.
-  ASSERT_EQ(text_input_client.composition_history().size(), 1U);
-  EXPECT_EQ(text_input_client.composition_history()[0].text, u"a");
-  ASSERT_EQ(text_input_client.insert_text_history().size(), 1U);
-  EXPECT_EQ(text_input_client.insert_text_history()[0], u"s");
-
-  SetFocus(nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SwitchActiveController) {
-  // Swap between two controllers.
-  engine_->Enable(kEngineIdVietnameseTelex);
-  engine_->FlushForTesting();
-  engine_->Disable();
-  engine_->Enable(kEngineIdArabic);
-  engine_->FlushForTesting();
-
-  // Create a fake text field.
-  ui::DummyTextInputClient text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
-  SetFocus(&text_input_client);
-
-  DispatchKeyPress(ui::VKEY_A, true);
-
-  // Expect to commit 'ش'.
-  ASSERT_EQ(text_input_client.composition_history().size(), 0U);
-  ASSERT_EQ(text_input_client.insert_text_history().size(), 1U);
-  EXPECT_EQ(text_input_client.insert_text_history()[0], u"ش");
-
-  SetFocus(nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, NoActiveController) {
-  engine_->Enable(kEngineIdVietnameseTelex);
-  engine_->FlushForTesting();
-  engine_->Disable();
-
-  // Create a fake text field.
-  ui::DummyTextInputClient text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
-  SetFocus(&text_input_client);
-
-  DispatchKeyPress(ui::VKEY_A, true);
-  engine_->Reset();
-
-  // Expect no changes.
-  ASSERT_EQ(text_input_client.composition_history().size(), 0U);
-  ASSERT_EQ(text_input_client.insert_text_history().size(), 0U);
-
-  SetFocus(nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserEmail) {
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
+                       SuggestUserEmail) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
       "InputMethod.Assistive.TimeToAccept.PersonalInfo", 0);
@@ -374,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserEmail) {
   SetFocus(nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        DoesntSuggestWhenTheCursorIsWithinGrammarError) {
   ui::MockIMEInputContextHandler mock_ime_input_context_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
@@ -407,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   SetFocus(nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        SuggestsWhenTheCursorIsOutsideGrammarError) {
   ui::MockIMEInputContextHandler mock_ime_input_context_handler;
   ui::IMEBridge::Get()->SetInputContextHandler(&mock_ime_input_context_handler);
@@ -441,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   SetFocus(nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        DismissPersonalInfoSuggestion) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(
@@ -485,7 +397,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   SetFocus(nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserName) {
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
+                       SuggestUserName) {
   base::HistogramTester histogram_tester;
 
   TestPersonalDataManagerObserver personal_data_observer(profile_);
@@ -537,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestUserName) {
   SetFocus(nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        PersonalInfoDisabledReasonkUserSettingsOff) {
   base::HistogramTester histogram_tester;
   prefs_->SetBoolean(prefs::kAssistPersonalInfoEnabled, false);
@@ -551,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
       DisabledReason::kUserSettingsOff, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        PersonalInfoDisabledReasonkUrlOrAppNotAllowed) {
   base::HistogramTester histogram_tester;
 
@@ -572,7 +485,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
                                       AssistiveType::kPersonalName, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestEmoji) {
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
+                       SuggestEmoji) {
   base::HistogramTester histogram_tester;
   engine_->Enable(kEngineIdUs);
   TextInputTestHelper helper(GetBrowserInputMethod());
@@ -602,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, SuggestEmoji) {
   SetFocus(nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        DismissEmojiSuggestionWhenUsersContinueTyping) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("InputMethod.Assistive.TimeToDismiss.Emoji",
@@ -629,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   SetFocus(nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        EmojiSuggestionDisabledReasonkEnterpriseSettingsOff) {
   base::HistogramTester histogram_tester;
   prefs_->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed, false);
@@ -643,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
                                       1);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        EmojiSuggestionDisabledReasonkUserSettingsOff) {
   base::HistogramTester histogram_tester;
   prefs_->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
@@ -656,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
                                       DisabledReason::kUserSettingsOff, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        EmojiSuggestionDisabledReasonkUrlOrAppNotAllowed) {
   base::HistogramTester histogram_tester;
 
@@ -669,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    NativeInputMethodEngineTest,
+    NativeInputMethodEngineWithoutImeServiceTest,
     OnLearnMoreButtonClickedOpensEmojiSuggestionSettingsPage) {
   base::UserActionTester user_action_tester;
   ui::ime::AssistiveWindowButton button;
@@ -683,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    NativeInputMethodEngineTest,
+    NativeInputMethodEngineWithoutImeServiceTest,
     OnSettingLinkButtonClickedOpensPersonalInfoSuggestionSettingsPage) {
   base::UserActionTester user_action_tester;
   ui::ime::AssistiveWindowButton button;
@@ -696,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(
                 "ChromeOS.Settings.SmartInputs.PersonalInfoSuggestions.Open"));
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        FiresOnInputMethodOptionsChangedEvent) {
   base::DictionaryValue settings;
 
@@ -716,13 +630,14 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   EXPECT_EQ(observer_->changed_engine_id(), "pinyin");
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, DestroyProfile) {
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
+                       DestroyProfile) {
   EXPECT_NE(engine_->GetPrefChangeRegistrarForTesting(), nullptr);
   profile_->MaybeSendDestroyedNotification();
   EXPECT_EQ(engine_->GetPrefChangeRegistrarForTesting(), nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        HighlightsOnAutocorrectThenDismissesHighlight) {
   engine_->Enable(kEngineIdUs);
   ui::DummyTextInputClient text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
@@ -760,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   SetFocus(nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        ShowsAndHidesAutocorrectUndoWindow) {
   engine_->Enable(kEngineIdUs);
   TextInputTestHelper helper(GetBrowserInputMethod());
@@ -789,7 +704,8 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   SetFocus(nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, RevertsAutocorrect) {
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
+                       RevertsAutocorrect) {
   engine_->Enable(kEngineIdUs);
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
@@ -828,7 +744,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest, RevertsAutocorrect) {
   SetFocus(nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        RevertsAutocorrectWithKeyboard) {
   engine_->Enable(kEngineIdUs);
 
@@ -868,7 +784,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
   SetFocus(nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        SendsAutocorrectMetricsforUnderline) {
   base::HistogramTester histogram_tester;
   engine_->Enable(kEngineIdUs);
@@ -918,7 +834,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        SendsMetricsForExperimentalMultilingual) {
   base::HistogramTester histogram_tester;
 
@@ -1015,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        SendsDiacriticalMetricsForExperimentalMultilingual) {
   base::HistogramTester histogram_tester;
 
@@ -1117,18 +1033,24 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineTest,
 // to the environment, shadowing those created and managed by CrOS IMF (an
 // integral part of the "browser" environment set up by the browser test).
 // TODO(crbug/1197005): Migrate all these to unit tests.
-class NativeInputMethodEngineAssistiveOff : public InProcessBrowserTest {
+class NativeInputMethodEngineWithoutImeServiceAssistiveOff
+    : public InProcessBrowserTest {
  public:
-  NativeInputMethodEngineAssistiveOff() {
+  NativeInputMethodEngineWithoutImeServiceAssistiveOff() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAssistPersonalInfoName},
         /*disabled_features=*/{features::kAssistPersonalInfo});
   }
-  ~NativeInputMethodEngineAssistiveOff() override = default;
+  ~NativeInputMethodEngineWithoutImeServiceAssistiveOff() override = default;
 
  protected:
   void SetUpOnMainThread() override {
-    engine_ = std::make_unique<NativeInputMethodEngine>();
+    // Passing |false| for |use_ime_service| so NativeInputMethodEngine won't
+    // launch the IME Service which typically tries to load libimedecoder.so
+    // unsupported in browser tests. None of these tests require the IME Service
+    // so just avoid it outright instead of relying on implicit luck.
+    engine_ =
+        NativeInputMethodEngine::CreateForTesting(/*use_ime_service=*/false);
     ui::IMEBridge::Get()->SetCurrentEngineHandler(engine_.get());
 
     auto observer = std::make_unique<TestObserver>();
@@ -1157,7 +1079,7 @@ class NativeInputMethodEngineAssistiveOff : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineAssistiveOff,
+IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceAssistiveOff,
                        PersonalInfoSuggestionDisabledReasonkFeatureFlagOff) {
   base::HistogramTester histogram_tester;
 

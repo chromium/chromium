@@ -43,7 +43,7 @@ namespace {
 
 namespace mojom = ::chromeos::ime::mojom;
 
-bool ShouldRouteToRuleBasedEngine(const std::string& engine_id) {
+bool IsRuleBasedEngine(const std::string& engine_id) {
   return base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE);
 }
 
@@ -73,7 +73,7 @@ bool IsUsEnglishEngine(const std::string& engine_id) {
   return engine_id == "xkb:us::eng";
 }
 
-bool ShouldRouteToNativeMojoEngine(const std::string& engine_id) {
+bool CanRouteToNativeMojoEngine(const std::string& engine_id) {
   // To avoid handling tricky cases where the user types with both the virtual
   // and the physical keyboard, only run the native code path if the virtual
   // keyboard is disabled. Otherwise, just let the extension handle any physical
@@ -443,7 +443,18 @@ InputFieldContext CreateInputFieldContext(AssistiveSuggester* suggester) {
 
 }  // namespace
 
-NativeInputMethodEngine::NativeInputMethodEngine() = default;
+NativeInputMethodEngine::NativeInputMethodEngine()
+    : NativeInputMethodEngine(/*use_ime_service=*/true) {}
+
+NativeInputMethodEngine::NativeInputMethodEngine(bool use_ime_service)
+    : use_ime_service_(use_ime_service) {}
+
+// static
+std::unique_ptr<NativeInputMethodEngine>
+NativeInputMethodEngine::CreateForTesting(bool use_ime_service) {
+  return base::WrapUnique<NativeInputMethodEngine>(
+      new NativeInputMethodEngine(use_ime_service));
+}
 
 NativeInputMethodEngine::~NativeInputMethodEngine() = default;
 
@@ -487,9 +498,15 @@ void NativeInputMethodEngine::Initialize(
       profile->GetPrefs(), std::move(observer), std::move(assistive_suggester),
       std::move(autocorrect_manager), std::move(suggestions_collector),
       std::make_unique<GrammarManager>(
-          profile, std::make_unique<GrammarServiceClient>(), this));
+          profile, std::make_unique<GrammarServiceClient>(), this),
+      use_ime_service_);
   InputMethodEngine::Initialize(std::move(native_observer), extension_id,
                                 profile);
+}
+
+bool NativeInputMethodEngine::ShouldRouteToNativeMojoEngine(
+    const std::string& engine_id) const {
+  return use_ime_service_ && CanRouteToNativeMojoEngine(engine_id);
 }
 
 void NativeInputMethodEngine::CandidateClicked(uint32_t index) {
@@ -543,15 +560,27 @@ NativeInputMethodEngine::ImeObserver::ImeObserver(
     std::unique_ptr<AssistiveSuggester> assistive_suggester,
     std::unique_ptr<AutocorrectManager> autocorrect_manager,
     std::unique_ptr<SuggestionsCollector> suggestions_collector,
-    std::unique_ptr<GrammarManager> grammar_manager)
+    std::unique_ptr<GrammarManager> grammar_manager,
+    bool use_ime_service)
     : prefs_(prefs),
       ime_base_observer_(std::move(ime_base_observer)),
       assistive_suggester_(std::move(assistive_suggester)),
       autocorrect_manager_(std::move(autocorrect_manager)),
       suggestions_collector_(std::move(suggestions_collector)),
-      grammar_manager_(std::move(grammar_manager)) {}
+      grammar_manager_(std::move(grammar_manager)),
+      use_ime_service_(use_ime_service) {}
 
 NativeInputMethodEngine::ImeObserver::~ImeObserver() = default;
+
+bool NativeInputMethodEngine::ImeObserver::ShouldRouteToRuleBasedEngine(
+    const std::string& engine_id) const {
+  return use_ime_service_ && IsRuleBasedEngine(engine_id);
+}
+
+bool NativeInputMethodEngine::ImeObserver::ShouldRouteToNativeMojoEngine(
+    const std::string& engine_id) const {
+  return use_ime_service_ && CanRouteToNativeMojoEngine(engine_id);
+}
 
 void NativeInputMethodEngine::ImeObserver::OnActivate(
     const std::string& engine_id) {

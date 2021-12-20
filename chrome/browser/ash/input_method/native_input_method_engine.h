@@ -46,6 +46,13 @@ class NativeInputMethodEngine
   NativeInputMethodEngine();
   ~NativeInputMethodEngine() override;
 
+  // |use_ime_service| can be |false| in browser tests to avoid connecting to
+  // IME service which may try to load libimedecoder.so unsupported in tests.
+  // TODO(crbug/1197005): Migrate native_input_method_engine_browsertest suite
+  // to e2e Tast tests and unit tests, then dismantle this for-test-only flag.
+  static std::unique_ptr<NativeInputMethodEngine> CreateForTesting(
+      bool use_ime_service);
+
   // Used to override deps for testing.
   NativeInputMethodEngine(
       std::unique_ptr<AssistiveSuggesterSwitch> suggester_switch);
@@ -94,12 +101,18 @@ class NativeInputMethodEngine
     // |ime_base_observer| is to forward events to extension during this
     // migration. It will be removed when the official extension is completely
     // migrated.
+    // |use_ime_service| should always be |true| in prod code, and may only be
+    // |false| in browser tests that need to avoid connecting to the Mojo IME
+    // service which can involve loading libimedecoder.so unsupported in tests.
+    // TODO(crbug/1197005): Migrate native_input_method_engine_browsertest suite
+    // to e2e Tast tests and unit tests, then dismantle this for-test-only flag.
     ImeObserver(PrefService* prefs,
                 std::unique_ptr<InputMethodEngineObserver> ime_base_observer,
                 std::unique_ptr<AssistiveSuggester> assistive_suggester,
                 std::unique_ptr<AutocorrectManager> autocorrect_manager,
                 std::unique_ptr<SuggestionsCollector> suggestions_collector,
-                std::unique_ptr<GrammarManager> grammar_manager);
+                std::unique_ptr<GrammarManager> grammar_manager,
+                bool use_ime_service);
     ~ImeObserver() override;
 
     // InputMethodEngineObserver:
@@ -188,6 +201,9 @@ class NativeInputMethodEngine
     void SendSurroundingTextToNativeMojoEngine(
         const SurroundingText& surrounding_text);
 
+    bool ShouldRouteToRuleBasedEngine(const std::string& engine_id) const;
+    bool ShouldRouteToNativeMojoEngine(const std::string& engine_id) const;
+
     PrefService* prefs_ = nullptr;
 
     std::unique_ptr<InputMethodEngineObserver> ime_base_observer_;
@@ -203,11 +219,27 @@ class NativeInputMethodEngine
     ui::CharacterComposer character_composer_;
 
     SurroundingText last_surrounding_text_;
+
+    // |use_ime_service| should always be |true| in prod code, and may only be
+    // |false| in browser tests that need to avoid connecting to the Mojo IME
+    // service which can involve loading libimedecoder.so unsupported in tests.
+    // TODO(crbug/1197005): Migrate native_input_method_engine_browsertest suite
+    // to e2e Tast tests and unit tests, then dismantle this for-test-only flag.
+    bool use_ime_service_ = true;
   };
+
+  // |use_ime_service| should always be |true| in prod code, and may only be
+  // |false| in browser tests that need to avoid connecting to the Mojo IME
+  // service which can involve loading libimedecoder.so unsupported in tests.
+  // TODO(crbug/1197005): Migrate native_input_method_engine_browsertest suite
+  // to e2e Tast tests and unit tests, then dismantle this for-test-only flag.
+  explicit NativeInputMethodEngine(bool use_ime_service);
 
   ImeObserver* GetNativeObserver() const;
 
   void OnInputMethodOptionsChanged() override;
+
+  bool ShouldRouteToNativeMojoEngine(const std::string& engine_id) const;
 
   AssistiveSuggester* assistive_suggester_ = nullptr;
   AutocorrectManager* autocorrect_manager_ = nullptr;
@@ -217,6 +249,13 @@ class NativeInputMethodEngine
 
   // Optional dependency overrides used in testing.
   std::unique_ptr<AssistiveSuggesterSwitch> suggester_switch_;
+
+  // |use_ime_service| should always be |true| in prod code, and may only be
+  // |false| in browser tests that need to avoid connecting to the Mojo IME
+  // service (which can involve loading libimedecoder.so unsupported in tests).
+  // TODO(crbug/1197005): Migrate native_input_method_engine_browsertest suite
+  // to e2e Tast tests and unit tests, then dismantle this for-test-only flag.
+  bool use_ime_service_ = true;
 };
 
 }  // namespace input_method
