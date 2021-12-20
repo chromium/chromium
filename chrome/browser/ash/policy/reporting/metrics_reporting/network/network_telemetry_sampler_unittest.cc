@@ -13,19 +13,34 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/tether_constants.h"
+#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/metrics/fake_sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
+#include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace reporting {
 namespace {
+
+// Wifi constants.
+constexpr char kInterfaceName[] = "interface_name";
+constexpr char kAccessPointAddress[] = "access_point";
+constexpr bool kPowerManagementEnabled = true;
+constexpr bool kEncryptionOn = true;
+constexpr uint32_t kTxBitRateMbps = 8;
+constexpr uint32_t kRxBitRateMbps = 4;
+constexpr uint32_t kTxPowerDbm = 2;
+constexpr uint32_t kLinkQuality = 1;
+constexpr int kSignalLevelDbm = 10;
 
 struct FakeNetworkData {
   std::string guid;
@@ -42,8 +57,6 @@ struct FakeNetworkData {
 
 TelemetryData NetworkTelemetrySamplerTestHelper(
     const std::vector<FakeNetworkData>& networks_data) {
-  base::test::SingleThreadTaskEnvironment task_environment;
-
   MetricData metric_data;
   auto* latency_data = metric_data.mutable_telemetry_data()
                            ->mutable_networks_telemetry()
@@ -105,10 +118,9 @@ TelemetryData NetworkTelemetrySamplerTestHelper(
   TelemetryData result;
   NetworkTelemetrySampler network_telemetry_sampler(
       https_latency_sampler.get());
-  network_telemetry_sampler.Collect(
-      base::BindLambdaForTesting([&result](MetricData metric_data) {
-        result = std::move(metric_data.telemetry_data());
-      }));
+  test::TestEvent<MetricData> metric_collect_event;
+  network_telemetry_sampler.Collect(metric_collect_event.cb());
+  result = metric_collect_event.result().telemetry_data();
 
   EXPECT_EQ(result.networks_telemetry().https_latency_data().verdict(),
             latency_data->verdict());
@@ -119,7 +131,56 @@ TelemetryData NetworkTelemetrySamplerTestHelper(
   return result;
 }
 
-TEST(NetworkTelemetrySamplerTest, CellularConnecting) {
+chromeos::cros_healthd::mojom::TelemetryInfoPtr CreateWifiResult(
+    const std::string& interface_name,
+    bool power_management_enabled,
+    const std::string& access_point_address,
+    uint32_t tx_bit_rate_mbps,
+    uint32_t rx_bit_rate_mbps,
+    uint32_t tx_power_dbm,
+    bool encryption_on,
+    uint32_t link_quality,
+    int signal_level_dbm) {
+  auto telemetry_info = chromeos::cros_healthd::mojom::TelemetryInfo::New();
+  std::vector<chromeos::cros_healthd::mojom::NetworkInterfaceInfoPtr>
+      network_interfaces;
+
+  auto wireless_link_info =
+      chromeos::cros_healthd::mojom::WirelessLinkInfo::New(
+          access_point_address, tx_bit_rate_mbps, rx_bit_rate_mbps,
+          tx_power_dbm, encryption_on, link_quality, signal_level_dbm);
+  auto wireless_interface_info =
+      chromeos::cros_healthd::mojom::WirelessInterfaceInfo::New(
+          interface_name, power_management_enabled,
+          std::move(wireless_link_info));
+  network_interfaces.push_back(
+      chromeos::cros_healthd::mojom::NetworkInterfaceInfo::
+          NewWirelessInterfaceInfo(std::move(wireless_interface_info)));
+  auto network_interface_result =
+      chromeos::cros_healthd::mojom::NetworkInterfaceResult::
+          NewNetworkInterfaceInfo(std::move(network_interfaces));
+
+  telemetry_info->network_interface_result =
+      std::move(network_interface_result);
+  return telemetry_info;
+}
+
+class NetworkTelemetrySamplerTest : public testing::Test {
+ public:
+  NetworkTelemetrySamplerTest() {
+    chromeos::CrosHealthdClient::InitializeFake();
+  }
+
+  ~NetworkTelemetrySamplerTest() override {
+    chromeos::CrosHealthdClient::Shutdown();
+    chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
+  }
+
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+};
+
+TEST_F(NetworkTelemetrySamplerTest, CellularConnecting) {
   const std::vector<FakeNetworkData> networks_data = {
       {"guid1", shill::kStateConfiguration, shill::kTypeCellular,
        0 /* signal_strength */, "device/path", "192.168.86.25" /* ip_address */,
@@ -146,7 +207,7 @@ TEST(NetworkTelemetrySamplerTest, CellularConnecting) {
             NetworkType::CELLULAR);
 }
 
-TEST(NetworkTelemetrySamplerTest, VpnInvisibleNotConnected) {
+TEST_F(NetworkTelemetrySamplerTest, VpnInvisibleNotConnected) {
   const std::vector<FakeNetworkData> networks_data = {
       {"guid1", shill::kStateOffline, shill::kTypeVPN, 0 /* signal_strength */,
        "device/path", "192.168.86.25" /* ip_address */,
@@ -173,7 +234,7 @@ TEST(NetworkTelemetrySamplerTest, VpnInvisibleNotConnected) {
             NetworkType::VPN);
 }
 
-TEST(NetworkTelemetrySamplerTest, EthernetPortal) {
+TEST_F(NetworkTelemetrySamplerTest, EthernetPortal) {
   const std::vector<FakeNetworkData> networks_data = {
       {"guid1", shill::kStateRedirectFound, shill::kTypeEthernet,
        0 /* signal_strength */, "device/path", "192.168.86.25" /* ip_address */,
@@ -200,7 +261,7 @@ TEST(NetworkTelemetrySamplerTest, EthernetPortal) {
             NetworkType::ETHERNET);
 }
 
-TEST(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
+TEST_F(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
   const std::vector<FakeNetworkData> networks_data = {
       {"guid1", shill::kStateReady, shill::kTypeWifi, 10 /* signal_strength */,
        "device/path1", "192.168.86.25" /* ip_address */,
@@ -215,6 +276,12 @@ TEST(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
        "192.168.86.27" /* ip_address */, "192.168.86.3" /* gateway */,
        false /* is_portal */, true /* is_visible */, true /* is_configured */}};
 
+  auto telemetry_info = CreateWifiResult(
+      kInterfaceName, kPowerManagementEnabled, kAccessPointAddress,
+      kTxBitRateMbps, kRxBitRateMbps, kTxPowerDbm, kEncryptionOn, kLinkQuality,
+      kSignalLevelDbm);
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   TelemetryData result = NetworkTelemetrySamplerTestHelper(networks_data);
 
   // Not configured network is not included
@@ -236,6 +303,24 @@ TEST(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
             networks_data[1].gateway);
   EXPECT_EQ(result.networks_telemetry().network_telemetry(0).type(),
             NetworkType::WIFI);
+
+  ASSERT_TRUE(result.networks_telemetry()
+                  .network_telemetry(0)
+                  .network_interface_telemetry(0)
+                  .has_wireless_interface());
+  const auto& wireless_interface = result.networks_telemetry()
+                                       .network_telemetry(0)
+                                       .network_interface_telemetry(0)
+                                       .wireless_interface();
+  EXPECT_EQ(wireless_interface.power_management_enabled(),
+            kPowerManagementEnabled);
+  EXPECT_EQ(wireless_interface.access_point_address(), kAccessPointAddress);
+  EXPECT_EQ(wireless_interface.tx_bit_rate_mbps(), kTxBitRateMbps);
+  EXPECT_EQ(wireless_interface.rx_bit_rate_mbps(), kRxBitRateMbps);
+  EXPECT_EQ(wireless_interface.tx_power_dbm(), kTxPowerDbm);
+  EXPECT_EQ(wireless_interface.encryption_on(), kEncryptionOn);
+  EXPECT_EQ(wireless_interface.link_quality(), kLinkQuality);
+  EXPECT_EQ(wireless_interface.signal_level_dbm(), kSignalLevelDbm);
 
   // TETHER
   EXPECT_EQ(result.networks_telemetry().network_telemetry(1).guid(),

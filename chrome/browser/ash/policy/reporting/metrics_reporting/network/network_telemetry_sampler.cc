@@ -7,9 +7,11 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
@@ -98,7 +100,11 @@ void OnHttpsLatencySamplerCompleted(MetricCallback callback,
     }
   }
 
-  std::move(callback).Run(metric_data);
+  CrosHealthdMetricSampler sampler(
+      chromeos::cros_healthd::mojom::ProbeCategoryEnum::kNetworkInterface,
+      ::reporting::CrosHealthdMetricSampler::MetricType::kTelemetry);
+  sampler.SetMetricData(std::move(metric_data));
+  sampler.Collect(std::move(callback));
 }
 }  // namespace
 
