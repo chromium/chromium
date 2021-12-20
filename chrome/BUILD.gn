@@ -1105,8 +1105,6 @@ if (is_win) {
     ]
 
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
-    configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
-    configs += [ "//build/config/compiler:thinlto_optimize_max" ]
   }
 
   mac_framework_bundle("chrome_framework") {
@@ -1122,8 +1120,8 @@ if (is_win) {
     if (is_chrome_branded) {
       framework_contents += [ "Default Apps" ]
       if (enable_keystone_registration_framework) {
-        framework_contents +=
-            [ "Frameworks" ]  # For KeystoneRegistration.framework.
+        # For KeystoneRegistration.framework.
+        framework_contents += [ "Frameworks" ]
       }
     }
 
@@ -1132,6 +1130,8 @@ if (is_win) {
     }
 
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
+    configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
+    configs += [ "//build/config/compiler:thinlto_optimize_max" ]
 
     info_plist_target = ":chrome_framework_plist"
     extra_substitutions = [
