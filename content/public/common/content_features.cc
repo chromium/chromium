@@ -291,7 +291,7 @@ const base::Feature kEnableCanvasContextLostInBackground{
 // Enables new canvas 2d api features. Enabled either with either
 // enable-experimental-canvas-features or new-canvas-2d-api runtime flags
 const base::Feature kEnableNewCanvas2DAPI{"EnableNewCanvas2DAPI",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If this feature is enabled and device permission is not granted by the user,
 // media-device enumeration will provide at most one device per type and the

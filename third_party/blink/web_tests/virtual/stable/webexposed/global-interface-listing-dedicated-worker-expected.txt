@@ -131,6 +131,9 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method keys
 [Worker]     method match
 [Worker]     method open
+[Worker] interface CanvasFilter
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
 [Worker] interface CanvasGradient
 [Worker]     attribute @@toStringTag
 [Worker]     method addColorStop
@@ -871,12 +874,16 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface OffscreenCanvas : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter height
+[Worker]     getter oncontextlost
+[Worker]     getter oncontextrestored
 [Worker]     getter width
 [Worker]     method constructor
 [Worker]     method convertToBlob
 [Worker]     method getContext
 [Worker]     method transferToImageBitmap
 [Worker]     setter height
+[Worker]     setter oncontextlost
+[Worker]     setter oncontextrestored
 [Worker]     setter width
 [Worker] interface OffscreenCanvasRenderingContext2D
 [Worker]     attribute @@toStringTag
@@ -885,10 +892,14 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter fillStyle
 [Worker]     getter filter
 [Worker]     getter font
+[Worker]     getter fontKerning
+[Worker]     getter fontStretch
+[Worker]     getter fontVariantCaps
 [Worker]     getter globalAlpha
 [Worker]     getter globalCompositeOperation
 [Worker]     getter imageSmoothingEnabled
 [Worker]     getter imageSmoothingQuality
+[Worker]     getter letterSpacing
 [Worker]     getter lineCap
 [Worker]     getter lineDashOffset
 [Worker]     getter lineJoin
@@ -901,6 +912,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter strokeStyle
 [Worker]     getter textAlign
 [Worker]     getter textBaseline
+[Worker]     getter textRendering
+[Worker]     getter wordSpacing
 [Worker]     method arc
 [Worker]     method arcTo
 [Worker]     method beginPath
@@ -909,6 +922,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method clip
 [Worker]     method closePath
 [Worker]     method constructor
+[Worker]     method createConicGradient
 [Worker]     method createImageData
 [Worker]     method createLinearGradient
 [Worker]     method createPattern
@@ -921,6 +935,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method getImageData
 [Worker]     method getLineDash
 [Worker]     method getTransform
+[Worker]     method isContextLost
 [Worker]     method isPointInPath
 [Worker]     method isPointInStroke
 [Worker]     method lineTo
@@ -929,9 +944,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method putImageData
 [Worker]     method quadraticCurveTo
 [Worker]     method rect
+[Worker]     method reset
 [Worker]     method resetTransform
 [Worker]     method restore
 [Worker]     method rotate
+[Worker]     method roundRect
 [Worker]     method save
 [Worker]     method scale
 [Worker]     method setLineDash
@@ -945,10 +962,14 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter fillStyle
 [Worker]     setter filter
 [Worker]     setter font
+[Worker]     setter fontKerning
+[Worker]     setter fontStretch
+[Worker]     setter fontVariantCaps
 [Worker]     setter globalAlpha
 [Worker]     setter globalCompositeOperation
 [Worker]     setter imageSmoothingEnabled
 [Worker]     setter imageSmoothingQuality
+[Worker]     setter letterSpacing
 [Worker]     setter lineCap
 [Worker]     setter lineDashOffset
 [Worker]     setter lineJoin
@@ -961,6 +982,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter strokeStyle
 [Worker]     setter textAlign
 [Worker]     setter textBaseline
+[Worker]     setter textRendering
+[Worker]     setter wordSpacing
 [Worker] interface Path2D
 [Worker]     attribute @@toStringTag
 [Worker]     method addPath
@@ -974,6 +997,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method moveTo
 [Worker]     method quadraticCurveTo
 [Worker]     method rect
+[Worker]     method roundRect
 [Worker] interface PaymentInstruments
 [Worker]     attribute @@toStringTag
 [Worker]     method clear
