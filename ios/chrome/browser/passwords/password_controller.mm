@@ -55,6 +55,8 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/passwords/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/passwords/notify_auto_signin_view_controller.h"
+#include "ios/chrome/browser/signin/authentication_service.h"
+#include "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -426,10 +428,16 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   infobars::InfoBarManager* infoBarManager =
       InfoBarManagerImpl::FromWebState(_webState);
 
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(self.browserState);
+  ChromeIdentity* authenticatedIdentity =
+      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+
   switch (type) {
     case PasswordInfoBarType::SAVE: {
       auto delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
-          isSyncUser, /*password_update*/ false, std::move(form));
+          [authenticatedIdentity userEmail], isSyncUser,
+          /*password_update*/ false, std::move(form));
       delegate->set_handler(self.applicationCommandsHandler);
 
         // Count only new infobar showings, not replacements.
@@ -457,7 +465,8 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
         }
 
         auto delegate = std::make_unique<IOSChromeSavePasswordInfoBarDelegate>(
-            isSyncUser, /*password_update*/ true, std::move(form));
+            [authenticatedIdentity userEmail], isSyncUser,
+            /*password_update*/ true, std::move(form));
         delegate->set_handler(self.applicationCommandsHandler);
         // If manual save, skip showing banner.
         std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(

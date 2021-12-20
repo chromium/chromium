@@ -160,9 +160,11 @@ source_set("infobar_delegates") {
     "//base",
     "//components/infobars/core",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/common",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
+    "//ios/chrome/browser/signin",
     "//ui/base",
   ]
 }
