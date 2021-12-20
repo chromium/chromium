@@ -1207,7 +1207,7 @@ void NodeController::OnBroadcast(const ports::NodeName& from_node,
   for (auto& iter : peers_) {
     // Clone and send the event to each known peer. Events which cannot be
     // cloned cannot be broadcast.
-    ports::ScopedEvent clone = event->Clone();
+    ports::ScopedEvent clone = event->CloneForBroadcast();
     if (!clone) {
       DVLOG(1) << "Ignoring request to broadcast invalid event from "
                << from_node << " [type=" << static_cast<uint32_t>(event->type())

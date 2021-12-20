@@ -440,7 +440,7 @@ class PortsTest : public testing::Test, public MessageRouter {
       // Broadcast doesn't deliver to the local node.
       if (node == from_node)
         continue;
-      node->EnqueueEvent(event->Clone());
+      node->EnqueueEvent(event->CloneForBroadcast());
     }
   }
 

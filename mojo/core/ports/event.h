@@ -98,7 +98,7 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Event {
 
   size_t GetSerializedSize() const;
   void Serialize(void* buffer) const;
-  virtual ScopedEvent Clone() const;
+  virtual ScopedEvent CloneForBroadcast() const;
 
  protected:
   Event(Type type, const PortName& port_name);
@@ -212,7 +212,7 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) ObserveProxyEvent : public Event {
  private:
   size_t GetSerializedDataSize() const override;
   void SerializeData(void* buffer) const override;
-  ScopedEvent Clone() const override;
+  ScopedEvent CloneForBroadcast() const override;
 
   const NodeName proxy_node_name_;
   const PortName proxy_port_name_;
@@ -238,7 +238,6 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) ObserveProxyAckEvent : public Event {
  private:
   size_t GetSerializedDataSize() const override;
   void SerializeData(void* buffer) const override;
-  ScopedEvent Clone() const override;
 
   const uint64_t last_sequence_num_;
 };
@@ -264,7 +263,6 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) ObserveClosureEvent : public Event {
  private:
   size_t GetSerializedDataSize() const override;
   void SerializeData(void* buffer) const override;
-  ScopedEvent Clone() const override;
 
   uint64_t last_sequence_num_;
 };
