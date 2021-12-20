@@ -14,10 +14,7 @@ android_library("java") {
     "//components/version_info/android:version_constants_java",
   ]
 
-  sources = [
-    "java/src/org/chromium/chrome/browser/version/ChromeVersionInfo.java",
-    _chrome_version_java_file,
-  ]
+  sources = [ _chrome_version_java_file ]
 }
 
 process_version("chrome_version_constants") {
