@@ -653,6 +653,8 @@ component("platform") {
     "fonts/opentype/open_type_caps_support.cc",
     "fonts/opentype/open_type_caps_support.h",
     "fonts/opentype/open_type_caps_support_mpl.cc",
+    "fonts/opentype/open_type_cpal_lookup.cc",
+    "fonts/opentype/open_type_cpal_lookup.h",
     "fonts/opentype/open_type_math_stretch_data.h",
     "fonts/opentype/open_type_math_support.cc",
     "fonts/opentype/open_type_math_support.h",
@@ -2023,6 +2025,7 @@ source_set("blink_platform_unittests_sources") {
     "fonts/generic_font_family_settings_test.cc",
     "fonts/opentype/font_format_check_test.cc",
     "fonts/opentype/font_settings_test.cc",
+    "fonts/opentype/open_type_cpal_lookup_test.cc",
     "fonts/opentype/open_type_math_support_test.cc",
     "fonts/opentype/open_type_vertical_data_test.cc",
     "fonts/opentype/variable_axes_names_test.cc",
@@ -2386,8 +2389,7 @@ group("blink_platform_unittests_data") {
 
     # Required by some font tests.
     "//third_party/blink/web_tests/external/wpt/fonts/",
-
-    # Required by some font tests.
+    "//third_party/blink/web_tests/external/wpt/css/css-fonts/resources",
     "//third_party/blink/web_tests/third_party/",
   ]
 
