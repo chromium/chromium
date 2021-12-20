@@ -1626,7 +1626,14 @@ web_app::AppId InstallPWAWithName(Profile* profile,
   return web_app::test::InstallWebApp(profile, std::move(web_app_info));
 }
 
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ListAppsForAllProfiles) {
+// TODO(crbug.com/1281009): Fix flakes and re-enable.
+#if defined(OS_WIN)
+#define MAYBE_ListAppsForAllProfiles DISABLED_ListAppsForAllProfiles
+#else
+#define MAYBE_ListAppsForAllProfiles ListAppsForAllProfiles
+#endif
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
+                       MAYBE_ListAppsForAllProfiles) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath user_data_dir = profile_manager->user_data_dir();
   Profile* profile1 = browser()->profile();
@@ -1733,7 +1740,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ListAppsForAllProfiles) {
   CloseBrowserSynchronously(app_browser2);
 }
 
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ListAppsForGivenProfile) {
+// TODO(crbug.com/1281009): Fix flakes and re-enable.
+#if defined(OS_WIN)
+#define MAYBE_ListAppsForGivenProfile DISABLED_ListAppsForGivenProfile
+#else
+#define MAYBE_ListAppsForGivenProfile ListAppsForGivenProfile
+#endif
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
+                       MAYBE_ListAppsForGivenProfile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath user_data_dir = profile_manager->user_data_dir();
   Profile* profile1 = browser()->profile();
