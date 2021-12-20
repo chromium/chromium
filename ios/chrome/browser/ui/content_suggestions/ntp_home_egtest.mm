@@ -843,13 +843,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 #pragma mark - New Tab menu tests
 
 // Tests the "new search" menu item from the new tab menu.
-// TODO(crbug.com/1280323): Fails on iOS device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testNewSearchFromNewTabMenu testNewSearchFromNewTabMenu
-#else
-#define MAYBE_testNewSearchFromNewTabMenu DISABLED_testNewSearchFromNewTabMenu
-#endif
-- (void)MAYBE_testNewSearchFromNewTabMenu {
+// TODO(crbug.com/1280323): Fails on iOS device and ios15-beta-simulator.
+- (void)DISABLED_testNewSearchFromNewTabMenu {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"New Search is only available in phone layout.");
   }
