@@ -74,7 +74,8 @@ declare_args() {
   use_thin_lto =
       is_cfi ||
       (is_clang && is_official_build && chrome_pgo_phase != 1 &&
-       (is_linux || is_win || (is_android && target_os != "chromeos") ||
+       (is_linux || is_win || is_mac ||
+        (is_android && target_os != "chromeos") ||
         ((is_chromeos_ash || is_chromeos_lacros) && is_chromeos_device)))
 
   # If true, use Goma for ThinLTO code generation where applicable.
