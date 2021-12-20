@@ -842,41 +842,9 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @CommandLineFlags.Add({"enable-features="
-                    + ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:useSearchImageWithGoogleLensItemName/false"})
+    @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void
-    testSearchWithGoogleLensMenuItemName() throws Throwable {
-        Tab tab = mDownloadTestRule.getActivity().getActivityTab();
-
-        LensUtils.setFakePassableLensEnvironmentForTesting(true);
-        ShareHelper.setIgnoreActivityNotFoundExceptionForTesting(true);
-        hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
-
-        ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImage");
-        Integer[] expectedItems = {R.id.contextmenu_save_image,
-                R.id.contextmenu_open_image_in_new_tab, R.id.contextmenu_share_image,
-                R.id.contextmenu_copy_image, R.id.contextmenu_search_with_google_lens};
-        expectedItems = addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems,
-                new Integer[] {R.id.contextmenu_open_image_in_ephemeral_tab});
-        String title = getMenuTitleFromItem(menu, R.id.contextmenu_search_with_google_lens);
-        Assert.assertTrue("Context menu item name should be \'Search with Google Lens\'.",
-                title.startsWith("Search with Google Lens"));
-        assertMenuItemsAreEqual(menu, expectedItems);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Browser", "ContextMenu"})
-    @CommandLineFlags.Add({"enable-features="
-                    + ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:useSearchImageWithGoogleLensItemName/true"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void
-    testSearchImageWithGoogleLensMenuItemName() throws Throwable {
+    public void testSearchImageWithGoogleLensMenuItemName() throws Throwable {
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
 
         LensUtils.setFakePassableLensEnvironmentForTesting(true);

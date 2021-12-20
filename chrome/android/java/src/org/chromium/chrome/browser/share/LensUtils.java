@@ -30,8 +30,6 @@ public class LensUtils {
     private static final String LENS_SHOPPING_URL_PATTERNS_FEATURE_PARAM_NAME =
             "shoppingUrlPatterns";
     private static final String LOG_UKM_PARAM_NAME = "logUkm";
-    private static final String USE_SEARCH_IMAGE_WITH_GOOGLE_LENS_ITEM_NAME_PARAM_NAME =
-            "useSearchImageWithGoogleLensItemName";
     private static final String ENABLE_ON_TABLET_PARAM_NAME = "enableContextMenuSearchOnTablet";
     private static final String DISABLE_ON_INCOGNITO_PARAM_NAME = "disableOnIncognito";
     private static final String ORDER_SHARE_IMAGE_BEFORE_LENS_PARAM_NAME =
@@ -381,14 +379,5 @@ public class LensUtils {
         }
 
         return false;
-    }
-
-    /**
-     * Check if experiment to change Lens context menu item name is enabled.
-     */
-    public static boolean useSearchImageWithGoogleLensItemName() {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
-                USE_SEARCH_IMAGE_WITH_GOOGLE_LENS_ITEM_NAME_PARAM_NAME, true);
     }
 }
