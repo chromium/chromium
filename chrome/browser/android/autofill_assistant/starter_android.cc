@@ -7,6 +7,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/notreached.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantOnboardingHelperImpl_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers_public/Starter_jni.h"
@@ -213,8 +214,14 @@ void StarterAndroid::SetProactiveHelpSettingEnabled(bool enabled) {
 }
 
 bool StarterAndroid::GetMakeSearchesAndBrowsingBetterEnabled() const {
+  if (!java_object_) {
+    // Failsafe, should never happen.
+    NOTREACHED();
+    return false;
+  }
+
   return Java_Starter_getMakeSearchesAndBrowsingBetterSettingEnabled(
-      base::android::AttachCurrentThread());
+      base::android::AttachCurrentThread(), java_object_);
 }
 
 bool StarterAndroid::GetIsCustomTab() const {
@@ -225,7 +232,7 @@ bool StarterAndroid::GetIsCustomTab() const {
 bool StarterAndroid::GetIsTabCreatedByGSA() const {
   if (!java_object_) {
     // Failsafe, should never happen.
-    DCHECK(false);
+    NOTREACHED();
     return false;
   }
   return Java_Starter_getIsTabCreatedByGSA(base::android::AttachCurrentThread(),

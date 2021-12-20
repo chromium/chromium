@@ -12,8 +12,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.autofill_assistant.metrics.FeatureModuleInstallation;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -33,6 +31,7 @@ public class Starter extends EmptyTabObserver implements UserData {
     private final Tab mTab;
 
     private final AssistantIsGsaFunction mIsGsaFunction;
+    private final AssistantIsMsbbEnabledFunction mIsMsbbEnabledFunction;
 
     /**
      * The WebContents associated with the Tab which this starter is monitoring, unless detached.
@@ -65,9 +64,11 @@ public class Starter extends EmptyTabObserver implements UserData {
      *
      * This will wait for dependencies to become available and then create the native-side starter.
      */
-    public Starter(Tab tab, AssistantIsGsaFunction isGsaFunction) {
+    public Starter(Tab tab, AssistantIsGsaFunction isGsaFunction,
+            AssistantIsMsbbEnabledFunction isMsbbEnabledFunction) {
         mTab = tab;
         mIsGsaFunction = isGsaFunction;
+        mIsMsbbEnabledFunction = isMsbbEnabledFunction;
         detectWebContentsChange(tab);
     }
 
@@ -273,10 +274,8 @@ public class Starter extends EmptyTabObserver implements UserData {
     }
 
     @CalledByNative
-    static boolean getMakeSearchesAndBrowsingBetterSettingEnabled() {
-        // TODO(arbesser): call this from native directly.
-        return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
-                Profile.getLastUsedRegularProfile());
+    private boolean getMakeSearchesAndBrowsingBetterSettingEnabled() {
+        return mIsMsbbEnabledFunction.getAsBoolean();
     }
 
     private AutofillAssistantModuleEntry getModuleOrThrow() {

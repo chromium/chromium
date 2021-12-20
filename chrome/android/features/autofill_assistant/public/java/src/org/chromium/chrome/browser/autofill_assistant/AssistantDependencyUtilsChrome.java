@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.ExternalAppId;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 
 /**
  * Chrome specific dependency methods used by the Autofill Assistant outside of it's module.
@@ -47,6 +49,11 @@ public class AssistantDependencyUtilsChrome {
                 && (activityType == ActivityType.CUSTOM_TAB || activityType == ActivityType.TABBED)
                 && AssistantFeatures.AUTOFILL_ASSISTANT.isEnabled()
                 && AssistantFeatures.AUTOFILL_ASSISTANT_DIRECT_ACTIONS.isEnabled();
+    }
+
+    public static boolean isMakeSearchesAndBrowsingBetterSettingEnabled() {
+        return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
+                Profile.getLastUsedRegularProfile());
     }
 
     private AssistantDependencyUtilsChrome() {}

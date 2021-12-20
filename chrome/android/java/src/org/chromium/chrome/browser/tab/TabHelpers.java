@@ -38,7 +38,8 @@ public final class TabHelpers {
         TabBrowserControlsConstraintsHelper.createForTab(tab);
         ContinuousSearchTabHelper.createForTab(tab);
         if (ReaderModeManager.isEnabled()) ReaderModeManager.createForTab(tab);
-        AutofillAssistantTabHelper.createForTab(tab, AssistantDependencyUtilsChrome::isGsa);
+        AutofillAssistantTabHelper.createForTab(tab, AssistantDependencyUtilsChrome::isGsa,
+                AssistantDependencyUtilsChrome::isMakeSearchesAndBrowsingBetterSettingEnabled);
 
         // The following will start prefetching data for the price drops feature, so
         // we should only do it if the user is eligible for the feature (e.g. has sync enabled).
