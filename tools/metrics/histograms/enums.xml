@@ -52335,6 +52335,7 @@ from previous Chrome versions.
   <int value="-336768659" label="NtpPhotosModule:enabled"/>
   <int value="-335331552" label="TabGroupsForTablets:disabled"/>
   <int value="-334873793" label="MediaSessionNotification:enabled"/>
+  <int value="-334846826" label="DesktopPWAsDefaultOfflinePage:enabled"/>
   <int value="-333216449" label="MouseSubframeNoImplicitCapture:enabled"/>
   <int value="-332010491" label="RetailCoupons:enabled"/>
   <int value="-331952590" label="OmniboxTriggerForPrerender2:enabled"/>
@@ -54822,6 +54823,7 @@ from previous Chrome versions.
   <int value="1514158607" label="NearbySharingDeviceContacts:enabled"/>
   <int value="1515196403" label="fast-user-switching"/>
   <int value="1515334367" label="ToolbarMicIphAndroid:disabled"/>
+  <int value="1516258676" label="DesktopPWAsDefaultOfflinePage:disabled"/>
   <int value="1517863401" label="history-entry-requires-user-gesture"/>
   <int value="1517988103" label="FilesBannerFramework:disabled"/>
   <int value="1518833340" label="MediaAppDisplayExif:enabled"/>

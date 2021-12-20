@@ -272,6 +272,11 @@ const base::Feature kDesktopPWAsAdditionalWindowingControls{
 const base::Feature kDesktopPWAsCacheDuringDefaultInstall{
     "DesktopPWAsCacheDuringDefaultInstall", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Generates customised default offline page that is shown when web app is
+// offline if no custom page is provided by developer.
+const base::Feature kDesktopPWAsDefaultOfflinePage{
+    "DesktopPWAsDefaultOfflinePage", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Moves the Extensions "puzzle piece" icon from the title bar into the app menu
 // for web app windows.
 const base::Feature kDesktopPWAsElidedExtensionsMenu{

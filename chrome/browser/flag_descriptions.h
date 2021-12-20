@@ -473,6 +473,9 @@ extern const char kDesktopPWAsPrefixAppNameInWindowTitleDescription[];
 extern const char kDesktopPWAsRemoveStatusBarName[];
 extern const char kDesktopPWAsRemoveStatusBarDescription[];
 
+extern const char kDesktopPWAsDefaultOfflinePageName[];
+extern const char kDesktopPWAsDefaultOfflinePageDescription[];
+
 extern const char kDesktopPWAsElidedExtensionsMenuName[];
 extern const char kDesktopPWAsElidedExtensionsMenuDescription[];
 

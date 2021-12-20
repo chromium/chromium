@@ -790,6 +790,11 @@ const char kDesktopPWAsRemoveStatusBarName[] = "Desktop PWAs remove status bar";
 const char kDesktopPWAsRemoveStatusBarDescription[] =
     "Hides the status bar popup in Desktop PWA app windows.";
 
+const char kDesktopPWAsDefaultOfflinePageName[] =
+    "Desktop PWAs default offline page";
+const char kDesktopPWAsDefaultOfflinePageDescription[] =
+    "Shows customised default offline page when web app is offline.";
+
 const char kDesktopPWAsElidedExtensionsMenuName[] =
     "Desktop PWAs elided extensions menu";
 const char kDesktopPWAsElidedExtensionsMenuDescription[] =
