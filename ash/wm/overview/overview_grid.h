@@ -501,6 +501,14 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Called back when the button to save a desk template is pressed.
   void OnSaveDeskAsTemplateButtonPressed();
 
+  // Called when the animation for fading the `desks_templates_grid_widget_` out
+  // is completed.
+  void OnDesksTemplatesGridFadedOut();
+
+  // Called when the animation for fading the `save_desk_as_template_widget_`
+  // out is completed.
+  void OnSaveDeskAsTemplateButtonFadedOut();
+
   // Returns the height of `desks_bar_view_`.
   int GetDesksBarHeight() const;
 
@@ -589,6 +597,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // A widget that contains a button which creates a new desk template when
   // pressed.
   std::unique_ptr<views::Widget> save_desk_as_template_widget_;
+
+  base::WeakPtrFactory<OverviewGrid> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

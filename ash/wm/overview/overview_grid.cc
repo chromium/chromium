@@ -1752,31 +1752,44 @@ void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
 }
 
 void OverviewGrid::HideDesksTemplatesGrid(bool exit_overview) {
-  // Un-hide the overview mode items.
-  for (auto& overview_mode_item : window_list_)
-    overview_mode_item->RevertHideForDesksTemplatesGrid();
+  if (!desks_templates_grid_widget_)
+    return;
 
-  if (exit_overview && overview_session_->enter_exit_overview_type() !=
+  auto* grid_layer = desks_templates_grid_widget_->GetLayer();
+  const bool already_hiding_grid = grid_layer->GetAnimator()->is_animating() &&
+                                   grid_layer->GetTargetOpacity() == 0.f;
+  if (already_hiding_grid)
+    return;
+
+  if (exit_overview && overview_session_->enter_exit_overview_type() ==
                            OverviewEnterExitType::kImmediateExit) {
+    // Since we're immediately exiting, we don't need to animate anything and
+    // can let the `desks_templates_grid_widget_` handle its own destruction.
+    return;
+  }
+
+  if (exit_overview) {
+    // Un-hide the overview mode items.
+    for (auto& overview_mode_item : window_list_)
+      overview_mode_item->RevertHideForDesksTemplatesGrid();
+
     // Disable the `desks_templates_grid_widget_`'s event targeting so it can't
     // get any events during the animation.
     desks_templates_grid_widget_->GetNativeWindow()->SetEventTargetingPolicy(
         aura::EventTargetingPolicy::kNone);
+
     FadeOutWidgetFromOverview(
         std::move(desks_templates_grid_widget_),
         OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_DESKS_TEMPLATES_GRID_FADE_OUT);
     return;
   }
 
-  desks_templates_grid_widget_->Hide();
-
-  // Activate the overview focus window to match the behavior of entering
-  // overview mode in the beginning. Otherwise there are cases where some
-  // overview windows are not able to be focused and activated.
-  wm::ActivateWindow(overview_session_->GetOverviewFocusWindow());
-
-  desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
-  desks_bar_view_->OnDesksTemplatesGridHidden();
+  // Fade out the `desks_templates_grid_widget_` and then when its animation is
+  // done fade in the supporting widgets and revert the overview item hides.
+  PerformFadeOutLayer(
+      desks_templates_grid_widget_->GetLayer(),
+      base::BindOnce(&OverviewGrid::OnDesksTemplatesGridFadedOut,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool OverviewGrid::IsShowingDesksTemplatesGrid() const {
@@ -1852,8 +1865,12 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
       !IsShowingDesksTemplatesGrid();
 
   if (!visible) {
-    if (save_desk_as_template_widget_)
-      save_desk_as_template_widget_->Hide();
+    if (save_desk_as_template_widget_) {
+      PerformFadeOutLayer(
+          save_desk_as_template_widget_->GetLayer(),
+          base::BindOnce(&OverviewGrid::OnSaveDeskAsTemplateButtonFadedOut,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
     return;
   }
 
@@ -1867,6 +1884,7 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
         PillButton::Type::kIcon, &kSaveDeskAsTemplateIcon));
   }
   save_desk_as_template_widget_->Show();
+  PerformFadeInLayer(save_desk_as_template_widget_->GetLayer());
 
   // Disable the create templates button if the current number of templates has
   // reached the max or the current desk has only unsupported apps.
@@ -2332,6 +2350,26 @@ void OverviewGrid::UpdateFrameThrottling() {
 
 void OverviewGrid::OnSaveDeskAsTemplateButtonPressed() {
   DesksTemplatesPresenter::Get()->MaybeSaveActiveDeskAsTemplate();
+}
+
+void OverviewGrid::OnDesksTemplatesGridFadedOut() {
+  for (auto& overview_mode_item : window_list_)
+    overview_mode_item->RevertHideForDesksTemplatesGrid();
+
+  desks_templates_grid_widget_->Hide();
+
+  // Activate the overview focus window to match the behavior of entering
+  // overview mode in the beginning. Otherwise there are cases where some
+  // overview windows are not able to be focused and activated.
+  wm::ActivateWindow(overview_session_->GetOverviewFocusWindow());
+
+  desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
+  desks_bar_view_->OnDesksTemplatesGridHidden();
+  UpdateSaveDeskAsTemplateButton();
+}
+
+void OverviewGrid::OnSaveDeskAsTemplateButtonFadedOut() {
+  save_desk_as_template_widget_->Hide();
 }
 
 int OverviewGrid::GetDesksBarHeight() const {

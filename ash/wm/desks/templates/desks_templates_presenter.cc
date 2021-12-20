@@ -97,6 +97,14 @@ void DesksTemplatesPresenter::UpdateDesksTemplatesUI() {
       Shell::Get()->tablet_mode_controller()->InTabletMode();
   should_show_templates_ui_ = !in_tablet_mode && GetEntryCount() > 0u;
   for (auto& overview_grid : overview_session_->grid_list()) {
+    if (!should_show_templates_ui_ &&
+        overview_grid->IsShowingDesksTemplatesGrid()) {
+      // When deleting, it is possible to delete the last template. In this
+      // case, close the template grid and go back to overview.
+      overview_grid->HideDesksTemplatesGrid(/*exit_overview=*/false);
+      continue;
+    }
+
     if (DesksBarView* desks_bar_view =
             const_cast<DesksBarView*>(overview_grid->desks_bar_view())) {
       // When templates is enabled but templates haven't loaded, the templates
@@ -105,18 +113,7 @@ void DesksTemplatesPresenter::UpdateDesksTemplatesUI() {
       desks_bar_view->UpdateDesksTemplatesButtonVisibility();
       desks_bar_view->UpdateButtonsForDesksTemplatesGrid();
       desks_bar_view->Layout();
-    }
-
-    overview_grid->UpdateSaveDeskAsTemplateButton();
-
-    if (!overview_grid->IsShowingDesksTemplatesGrid())
-      continue;
-
-    if (!should_show_templates_ui_) {
-      // When deleting, it is possible to delete the last template. In this
-      // case, close the template grid and go back to overview.
-      overview_grid->HideDesksTemplatesGrid(/*exit_overview=*/false);
-      continue;
+      overview_grid->UpdateSaveDeskAsTemplateButton();
     }
   }
 }

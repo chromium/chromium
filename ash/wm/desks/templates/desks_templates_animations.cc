@@ -32,10 +32,17 @@ void FadeInLayer(ui::Layer* layer, int duration_in_ms) {
 }
 
 // Fade out animation using AnimationBuilder.
-void FadeOutLayer(ui::Layer* layer, int duration_in_ms) {
+void FadeOutLayer(ui::Layer* layer,
+                  base::OnceClosure on_animation_ended_callback,
+                  int duration_in_ms) {
+  std::pair<base::OnceClosure, base::OnceClosure> split =
+      base::SplitOnceCallback(std::move(on_animation_ended_callback));
+
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(std::move(split.first))
+      .OnAborted(std::move(split.second))
       .Once()
       .SetDuration(base::TimeDelta())
       .SetOpacity(layer, 1.0f)
@@ -50,8 +57,10 @@ void PerformFadeInLayer(ui::Layer* layer) {
   FadeInLayer(layer, kFadeInDurationMs);
 }
 
-void PerformFadeOutLayer(ui::Layer* layer) {
-  FadeOutLayer(layer, kFadeOutDurationMs);
+void PerformFadeOutLayer(ui::Layer* layer,
+                         base::OnceClosure on_animation_ended_callback) {
+  FadeOutLayer(layer, std::move(on_animation_ended_callback),
+               kFadeOutDurationMs);
 }
 
 }  // namespace ash
