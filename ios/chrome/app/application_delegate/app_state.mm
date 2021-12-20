@@ -73,7 +73,7 @@ namespace {
 void PostTaskOnUIThread(base::OnceClosure closure) {
   base::PostTask(FROM_HERE, {web::WebThread::UI}, std::move(closure));
 }
-NSString* const kStartupAttemptReset = @"StartupAttempReset";
+NSString* const kStartupAttemptReset = @"StartupAttemptReset";
 
 // Time interval used for startRecordingMemoryFootprintWithInterval:
 const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
@@ -111,7 +111,7 @@ const NSTimeInterval kMemoryFootprintRecordingTimeInterval = 5;
 @property(nonatomic, strong) AppStateObserverList* observers;
 
 // This method is the first to be called when user launches the application.
-// This performs the minimal amount of browser initalization that is needed by
+// This performs the minimal amount of browser initialization that is needed by
 // safe mode.
 // Depending on the background tasks history, the state of the application is
 // INITIALIZATION_STAGE_BACKGROUND so this
@@ -253,7 +253,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   if (self.initStage < InitStageBrowserObjectsForUI) {
     // The clean-up done in |-applicationDidEnterBackground:| is only valid for
     // the case when the application is started in foreground, so there is
-    // nothing to clean up as the application was not initialized for foregound.
+    // nothing to clean up as the application was not initialized for foreground.
     //
     // From the stack trace of the crash bug http://crbug.com/437307 , it
     // seems that |-applicationDidEnterBackground:| may be called when the app
@@ -424,7 +424,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // Usually Chrome uses -[SceneState sceneSessionID] as identifier to properly
   // support devices that do not support multi-window (and which use a constant
   // identifier). For devices that do not support multi-window the session is
-  // saved at a constant path, so it is harmnless to delete files at a path
+  // saved at a constant path, so it is harmless to delete files at a path
   // derived from -persistentIdentifier (since there won't be files deleted).
   // For devices that do support multi-window, there is data to delete once the
   // session is garbage collected.

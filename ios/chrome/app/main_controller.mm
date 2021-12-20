@@ -137,9 +137,9 @@
 
 namespace {
 
-// Constants for deferring reseting the startup attempt count (to give the app
+// Constants for deferring resetting the startup attempt count (to give the app
 // a little while to make sure it says alive).
-NSString* const kStartupAttemptReset = @"StartupAttempReset";
+NSString* const kStartupAttemptReset = @"StartupAttemptReset";
 
 // Constants for deferring memory debugging tools startup.
 NSString* const kMemoryDebuggingToolsStartup = @"MemoryDebuggingToolsStartup";
@@ -295,7 +295,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   WindowConfigurationRecorder* _windowConfigurationRecorder;
 
-  // Hander for the startup tasks, deferred or not.
+  // Handler for the startup tasks, deferred or not.
   StartupTasks* _startupTasks;
 
   // List of closure to run as part of shutdown. The closure will be called
@@ -687,7 +687,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [appState addAgent:[[AppMetricsAppStateAgent alloc] init]];
   [appState addAgent:[[SafeModeAppAgent alloc] init]];
 
-  // Create the window accessibility agent only when multuple windows are
+  // Create the window accessibility agent only when multiple windows are
   // possible.
   if (base::ios::IsMultipleScenesSupported()) {
     [appState addAgent:[[WindowAccessibityChangeNotifierAppAgent alloc] init]];
@@ -777,7 +777,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
   // Under the UIScene API, the scene delegate does not receive
   // sceneDidDisconnect: notifications on app termination. We mark remaining
-  // connected scene states as diconnected in order to allow services to
+  // connected scene states as disconnected in order to allow services to
   // properly unregister their observers and tear down remaining UI.
   for (SceneState* sceneState in self.appState.connectedScenes) {
     sceneState.activationLevel = SceneActivationLevelUnattached;
@@ -805,7 +805,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 - (void)registerForOrientationChangeNotifications {
   // Register device orientation. UI orientation will be registered by
-  // each window BVC. These two events may be triggered independantely.
+  // each window BVC. These two events may be triggered independently.
   [[NSNotificationCenter defaultCenter]
       addObserver:self
          selector:@selector(orientationDidChange:)
