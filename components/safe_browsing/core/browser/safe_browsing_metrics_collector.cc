@@ -263,7 +263,7 @@ void SafeBrowsingMetricsCollector::OnEnhancedProtectionPrefChanged() {
 
 const base::Value* SafeBrowsingMetricsCollector::GetSafeBrowsingEventDictionary(
     UserState user_state) {
-  const base::DictionaryValue* state_dict =
+  const base::Value* state_dict =
       pref_service_->GetDictionary(prefs::kSafeBrowsingEventTimestamps);
 
   return state_dict->FindDictKey(UserStateToPrefKey(user_state));

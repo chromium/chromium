@@ -2055,7 +2055,7 @@ void AccessibilityControllerImpl::UpdateSwitchAccessKeyCodesFromPref(
     return;
 
   std::string pref_key = PrefKeyForSwitchAccessCommand(command);
-  const base::DictionaryValue* key_codes_pref =
+  const base::Value* key_codes_pref =
       active_user_prefs_->GetDictionary(pref_key);
   std::map<int, std::set<std::string>> key_codes;
   for (const auto v : key_codes_pref->DictItems()) {

@@ -55,7 +55,7 @@ TEST_F(ScopedUserPrefUpdateTest, RegularUse) {
     Mock::VerifyAndClearExpectations(&observer_);
 
     // Modifications happen online and are instantly visible, though.
-    const base::DictionaryValue* current_value = prefs_.GetDictionary(kPref);
+    const base::Value* current_value = prefs_.GetDictionary(kPref);
     ASSERT_TRUE(current_value);
     EXPECT_TRUE(expected_dictionary.Equals(current_value));
 
@@ -64,18 +64,18 @@ TEST_F(ScopedUserPrefUpdateTest, RegularUse) {
   }
   Mock::VerifyAndClearExpectations(&observer_);
 
-  const base::DictionaryValue* current_value = prefs_.GetDictionary(kPref);
+  const base::Value* current_value = prefs_.GetDictionary(kPref);
   ASSERT_TRUE(current_value);
   EXPECT_TRUE(expected_dictionary.Equals(current_value));
 }
 
 TEST_F(ScopedUserPrefUpdateTest, NeverTouchAnything) {
-  const base::DictionaryValue* old_value = prefs_.GetDictionary(kPref);
+  const base::Value* old_value = prefs_.GetDictionary(kPref);
   EXPECT_CALL(observer_, OnPreferenceChanged(_)).Times(0);
   {
     DictionaryPrefUpdate update(&prefs_, kPref);
   }
-  const base::DictionaryValue* new_value = prefs_.GetDictionary(kPref);
+  const base::Value* new_value = prefs_.GetDictionary(kPref);
   EXPECT_EQ(old_value, new_value);
   Mock::VerifyAndClearExpectations(&observer_);
 }

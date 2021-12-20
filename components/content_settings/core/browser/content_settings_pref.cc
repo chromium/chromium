@@ -263,7 +263,7 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
 
   // The returned value could be nullptr if the pref has never been set.
   const base::DictionaryValue* all_settings_dictionary =
-      prefs_->GetDictionary(pref_name_);
+      &base::Value::AsDictionaryValue(*prefs_->GetDictionary(pref_name_));
   if (!all_settings_dictionary)
     return;
 

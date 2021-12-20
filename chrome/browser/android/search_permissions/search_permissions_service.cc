@@ -406,7 +406,7 @@ void SearchPermissionsService::InitializeSettingsIfNeeded() {
       // again.
       reset_disclosure = false;
 
-      const base::DictionaryValue* dict =
+      const base::Value* dict =
           pref_service_->GetDictionary(prefs::kDSEGeolocationSettingDeprecated);
 
       // If the user's content setting is being overridden by the DSE setting,
@@ -468,8 +468,8 @@ void SearchPermissionsService::InitializeSettingsIfNeeded() {
 }
 
 SearchPermissionsService::PrefValue SearchPermissionsService::GetDSEPref() {
-  const base::DictionaryValue* dict =
-      pref_service_->GetDictionary(prefs::kDSEPermissionsSettings);
+  const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(
+      *pref_service_->GetDictionary(prefs::kDSEPermissionsSettings));
 
   PrefValue pref;
   std::u16string dse_name;

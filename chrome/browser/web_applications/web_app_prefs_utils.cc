@@ -28,7 +28,7 @@ const base::DictionaryValue* GetWebAppDictionary(
     const PrefService* pref_service,
     const AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::DictionaryValue* web_apps_prefs =
+  const base::Value* web_apps_prefs =
       pref_service->GetDictionary(prefs::kWebAppsPreferences);
   if (!web_apps_prefs)
     return nullptr;

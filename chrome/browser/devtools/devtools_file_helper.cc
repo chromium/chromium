@@ -195,7 +195,8 @@ DevToolsFileHelper::FileSystem CreateFileSystemStruct(
 using PathToType = std::map<std::string, std::string>;
 PathToType GetAddedFileSystemPaths(Profile* profile) {
   const base::DictionaryValue* file_systems_paths_value =
-      profile->GetPrefs()->GetDictionary(prefs::kDevToolsFileSystemPaths);
+      &base::Value::AsDictionaryValue(
+          *profile->GetPrefs()->GetDictionary(prefs::kDevToolsFileSystemPaths));
   PathToType result;
   for (base::DictionaryValue::Iterator it(*file_systems_paths_value);
        !it.IsAtEnd(); it.Advance()) {
@@ -247,8 +248,8 @@ void DevToolsFileHelper::Save(const std::string& url,
     return;
   }
 
-  const base::DictionaryValue* file_map =
-      profile_->GetPrefs()->GetDictionary(prefs::kDevToolsEditedFiles);
+  const base::DictionaryValue* file_map = &base::Value::AsDictionaryValue(
+      *profile_->GetPrefs()->GetDictionary(prefs::kDevToolsEditedFiles));
   base::FilePath initial_path;
 
   const base::Value* path_value;
@@ -433,9 +434,9 @@ bool DevToolsFileHelper::IsFileSystemAdded(
     const std::string& file_system_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const base::DictionaryValue* file_systems_paths_value =
+  const base::Value* file_systems_paths_value =
       profile_->GetPrefs()->GetDictionary(prefs::kDevToolsFileSystemPaths);
-  return file_systems_paths_value->HasKey(file_system_path);
+  return file_systems_paths_value->FindKey(file_system_path);
 }
 
 void DevToolsFileHelper::OnOpenItemComplete(

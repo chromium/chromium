@@ -222,7 +222,7 @@ std::unique_ptr<CdmPrefData> CdmPrefServiceHelper::GetCdmPrefData(
   // Access to the PrefService must be made from the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       user_prefs->GetDictionary(prefs::kMediaCdmOriginData);
 
   DCHECK(!cdm_origin.opaque());
@@ -296,7 +296,7 @@ void CdmPrefServiceHelper::SetCdmClientToken(
 std::map<std::string, url::Origin> CdmPrefServiceHelper::GetOriginIdMapping(
     PrefService* user_prefs) {
   std::map<std::string, url::Origin> mapping;
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       user_prefs->GetDictionary(prefs::kMediaCdmOriginData);
 
   for (auto key_value : dict->DictItems()) {

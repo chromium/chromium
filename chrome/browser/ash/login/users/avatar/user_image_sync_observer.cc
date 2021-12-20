@@ -166,7 +166,8 @@ void UserImageSyncObserver::UpdateLocalImageFromSynced() {
 
 bool UserImageSyncObserver::GetSyncedImageIndex(int* index) {
   *index = user_manager::User::USER_IMAGE_INVALID;
-  const base::DictionaryValue* dict = prefs_->GetDictionary(kUserImageInfo);
+  const base::DictionaryValue* dict =
+      &base::Value::AsDictionaryValue(*prefs_->GetDictionary(kUserImageInfo));
   return dict && dict->GetInteger(kImageIndex, index);
 }
 

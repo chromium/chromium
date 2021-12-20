@@ -113,8 +113,7 @@ void DataUseTracker::UpdateUsagePref(const std::string& pref_name,
   DictionaryPrefUpdate pref_updater(local_state_, pref_name);
   std::string todays_key = GetCurrentMeasurementDateAsString();
 
-  const base::DictionaryValue* user_pref_dict =
-      local_state_->GetDictionary(pref_name);
+  const base::Value* user_pref_dict = local_state_->GetDictionary(pref_name);
   int todays_traffic = user_pref_dict->FindIntKey(todays_key).value_or(0);
   pref_updater->SetInteger(todays_key, todays_traffic + message_size);
 }
@@ -129,7 +128,7 @@ void DataUseTracker::RemoveExpiredEntriesForPref(const std::string& pref_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const base::DictionaryValue* user_pref_dict =
-      local_state_->GetDictionary(pref_name);
+      &base::Value::AsDictionaryValue(*local_state_->GetDictionary(pref_name));
   const base::Time current_date = GetCurrentMeasurementDate();
   const base::Time week_ago = current_date - base::Days(7);
 
@@ -153,7 +152,7 @@ int DataUseTracker::ComputeTotalDataUse(const std::string& pref_name) {
 
   int total_data_use = 0;
   const base::DictionaryValue* pref_dict =
-      local_state_->GetDictionary(pref_name);
+      &base::Value::AsDictionaryValue(*local_state_->GetDictionary(pref_name));
   for (base::DictionaryValue::Iterator it(*pref_dict); !it.IsAtEnd();
        it.Advance()) {
     total_data_use += it.value().GetIfInt().value_or(0);

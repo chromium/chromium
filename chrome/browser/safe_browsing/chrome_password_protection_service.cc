@@ -197,7 +197,7 @@ void OpenUrl(content::WebContents* current_web_contents,
 
 int64_t GetNavigationIDFromPrefsByOrigin(PrefService* prefs,
                                          const Origin& origin) {
-  const base::DictionaryValue* unhandled_sync_password_reuses =
+  const base::Value* unhandled_sync_password_reuses =
       prefs->GetDictionary(prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
   if (!unhandled_sync_password_reuses)
     return 0;

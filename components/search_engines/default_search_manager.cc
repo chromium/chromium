@@ -290,8 +290,8 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
   DCHECK(pref);
   default_search_controlled_by_policy_ = pref->IsManaged();
 
-  const base::DictionaryValue* url_dict =
-      pref_service_->GetDictionary(kDefaultSearchProviderDataPrefName);
+  const base::DictionaryValue* url_dict = &base::Value::AsDictionaryValue(
+      *pref_service_->GetDictionary(kDefaultSearchProviderDataPrefName));
   if (url_dict->DictEmpty())
     return;
 

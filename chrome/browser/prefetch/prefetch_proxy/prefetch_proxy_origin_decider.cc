@@ -79,7 +79,7 @@ void PrefetchProxyOriginDecider::ReportOriginRetryAfter(
 void PrefetchProxyOriginDecider::LoadFromPrefs() {
   origin_retry_afters_.clear();
 
-  const base::DictionaryValue* dictionary =
+  const base::Value* dictionary =
       pref_service_->GetDictionary(prefetch::prefs::kRetryAfterPrefPath);
   DCHECK(dictionary);
 

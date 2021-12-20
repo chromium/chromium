@@ -184,7 +184,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
     const PrefService& pref_service) {
   ExpectSyncedDevicesAreEqual(expected_devices, devices);
 
-  const base::ListValue* synced_devices_pref =
+  const base::Value* synced_devices_pref =
       pref_service.GetList(prefs::kCryptAuthDeviceSyncUnlockKeys);
   ASSERT_EQ(expected_devices.size(), synced_devices_pref->GetList().size());
   for (size_t i = 0; i < synced_devices_pref->GetList().size(); ++i) {

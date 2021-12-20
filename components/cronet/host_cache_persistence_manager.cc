@@ -56,7 +56,7 @@ void HostCachePersistenceManager::ReadFromDisk() {
     return;
 
   net_log_.BeginEvent(net::NetLogEventType::HOST_CACHE_PREF_READ);
-  const base::ListValue* pref_value = pref_service_->GetList(pref_name_);
+  const base::Value* pref_value = pref_service_->GetList(pref_name_);
   bool success = cache_->RestoreFromListValue(*pref_value);
   net_log_.AddEntryWithBoolParams(net::NetLogEventType::HOST_CACHE_PREF_READ,
                                   net::NetLogEventPhase::END, "success",

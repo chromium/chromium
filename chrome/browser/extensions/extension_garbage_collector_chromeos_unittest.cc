@@ -182,12 +182,13 @@ TEST_F(ExtensionGarbageCollectorChromeOSUnitTest, SharedExtensions) {
 
   EXPECT_TRUE(base::PathExists(path_id2_1));
 
-  const base::DictionaryValue* shared_extensions = testing_local_state_.Get()->
-      GetDictionary(ExtensionAssetsManagerChromeOS::kSharedExtensions);
+  const base::Value* shared_extensions =
+      testing_local_state_.Get()->GetDictionary(
+          ExtensionAssetsManagerChromeOS::kSharedExtensions);
   ASSERT_TRUE(shared_extensions);
 
-  EXPECT_FALSE(shared_extensions->HasKey(kExtensionId1));
-  EXPECT_TRUE(shared_extensions->HasKey(kExtensionId2));
+  EXPECT_FALSE(shared_extensions->FindKey(kExtensionId1));
+  EXPECT_TRUE(shared_extensions->FindKey(kExtensionId2));
 }
 
 }  // namespace extensions

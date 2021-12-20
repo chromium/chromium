@@ -57,7 +57,7 @@ constexpr const char* kGoogleGstaticAppIds[] = {
 
 // ContainsAppIdByHash returns true iff the SHA-256 hash of one of the
 // elements of |list| equals |hash|.
-bool ContainsAppIdByHash(const base::ListValue& list,
+bool ContainsAppIdByHash(const base::Value& list,
                          const std::vector<uint8_t>& hash) {
   if (hash.size() != crypto::kSHA256Length) {
     return false;
@@ -170,7 +170,7 @@ CryptotokenPrivateIsAppIdHashInEnterpriseContextFunction::Run() {
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   const PrefService* const prefs = profile->GetPrefs();
-  const base::ListValue* const permit_attestation =
+  const base::Value* const permit_attestation =
       prefs->GetList(prefs::kSecurityKeyPermitAttestation);
 
   return RespondNow(ArgumentList(
@@ -200,7 +200,7 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
   // prompt is shown.
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   const PrefService* const prefs = profile->GetPrefs();
-  const base::ListValue* const permit_attestation =
+  const base::Value* const permit_attestation =
       prefs->GetList(prefs::kSecurityKeyPermitAttestation);
 
   for (const auto& entry : permit_attestation->GetList()) {

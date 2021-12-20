@@ -482,7 +482,7 @@ std::vector<std::string> GetSelectedPackagesFromPrefs(
   const Profile* const profile = Profile::FromBrowserContext(context);
   const PrefService* prefs = profile->GetPrefs();
 
-  const base::ListValue* selected_package_prefs =
+  const base::Value* selected_package_prefs =
       prefs->GetList(arc::prefs::kArcFastAppReinstallPackages);
   for (const base::Value& item : selected_package_prefs->GetList()) {
     std::string item_str = item.is_string() ? item.GetString() : std::string();

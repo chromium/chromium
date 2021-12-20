@@ -651,8 +651,7 @@ void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
 
   dictionary->Set("apps", std::move(installed_extensions));
 
-  const base::ListValue* app_page_names =
-      prefs->GetList(prefs::kNtpAppPageNames);
+  const base::Value* app_page_names = prefs->GetList(prefs::kNtpAppPageNames);
   if (!app_page_names || !app_page_names->GetList().size()) {
     ListPrefUpdate update(prefs, prefs::kNtpAppPageNames);
     base::ListValue* list = update.Get();

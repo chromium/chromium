@@ -178,8 +178,8 @@ void BrowserStateInfoCache::RegisterPrefs(PrefRegistrySimple* registry) {
 const base::DictionaryValue*
 BrowserStateInfoCache::GetInfoForBrowserStateAtIndex(size_t index) const {
   DCHECK_LT(index, GetNumberOfBrowserStates());
-  const base::DictionaryValue* cache =
-      prefs_->GetDictionary(prefs::kBrowserStateInfoCache);
+  const base::DictionaryValue* cache = &base::Value::AsDictionaryValue(
+      *prefs_->GetDictionary(prefs::kBrowserStateInfoCache));
   const base::DictionaryValue* info = nullptr;
   cache->GetDictionaryWithoutPathExpansion(sorted_keys_[index], &info);
   return info;

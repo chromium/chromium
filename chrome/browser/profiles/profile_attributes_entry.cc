@@ -902,7 +902,7 @@ void ProfileAttributesEntry::RecordAccountNamesMetric() const {
 }
 
 const base::Value* ProfileAttributesEntry::GetEntryData() const {
-  const base::DictionaryValue* attributes =
+  const base::Value* attributes =
       prefs_->GetDictionary(prefs::kProfileAttributes);
   return attributes->FindDictKey(storage_key_);
 }

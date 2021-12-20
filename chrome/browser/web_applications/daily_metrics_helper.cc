@@ -157,8 +157,8 @@ void EmitRecord(DailyInteraction record, Profile* profile) {
 }
 
 void EmitRecords(Profile* profile) {
-  const DictionaryValue* urls_to_features =
-      profile->GetPrefs()->GetDictionary(prefs::kWebAppsDailyMetrics);
+  const DictionaryValue* urls_to_features = &base::Value::AsDictionaryValue(
+      *profile->GetPrefs()->GetDictionary(prefs::kWebAppsDailyMetrics));
   DCHECK(urls_to_features);
 
   for (DictionaryValue::Iterator iter(*urls_to_features); !iter.IsAtEnd();
@@ -173,7 +173,7 @@ void EmitRecords(Profile* profile) {
 }
 
 void RemoveRecords(PrefService* prefs) {
-  const DictionaryValue* urls_to_features =
+  const Value* urls_to_features =
       prefs->GetDictionary(prefs::kWebAppsDailyMetrics);
   if (!urls_to_features)
     return;
@@ -184,7 +184,7 @@ void RemoveRecords(PrefService* prefs) {
 void UpdateRecord(DailyInteraction& record, PrefService* prefs) {
   DCHECK(record.start_url.is_valid());
   const std::string& url = record.start_url.spec();
-  const DictionaryValue* urls_to_features =
+  const Value* urls_to_features =
       prefs->GetDictionary(prefs::kWebAppsDailyMetrics);
   CHECK(urls_to_features);
   const Value* existing_val = urls_to_features->FindDictKey(url);

@@ -262,7 +262,7 @@ std::string EasyUnlockTpmKeyManager::GetPublicTpmKey(
     const AccountId& account_id) {
   if (!local_state_)
     return std::string();
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       local_state_->GetDictionary(prefs::kEasyUnlockLocalStateTpmKeys);
   const std::string* key = nullptr;
   if (dict)

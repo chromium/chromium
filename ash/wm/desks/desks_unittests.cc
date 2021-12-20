@@ -1985,7 +1985,7 @@ PrefService* GetPrimaryUserPrefService() {
 // given list of |desks_names|.
 void VerifyDesksRestoreData(PrefService* user_prefs,
                             const std::vector<std::string>& desks_names) {
-  const base::ListValue* desks_restore_names =
+  const base::Value* desks_restore_names =
       user_prefs->GetList(prefs::kDesksNamesList);
   ASSERT_EQ(desks_names.size(), desks_restore_names->GetList().size());
 

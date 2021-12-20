@@ -315,7 +315,7 @@ std::unique_ptr<SystemNudge> ClipboardNudgeController::CreateSystemNudge() {
 }
 
 int ClipboardNudgeController::GetShownCount(PrefService* prefs) {
-  const base::DictionaryValue* dictionary =
+  const base::Value* dictionary =
       prefs->GetDictionary(prefs::kMultipasteNudges);
   if (!dictionary)
     return 0;
@@ -323,7 +323,7 @@ int ClipboardNudgeController::GetShownCount(PrefService* prefs) {
 }
 
 int ClipboardNudgeController::GetNewFeatureBadgeShownCount(PrefService* prefs) {
-  const base::DictionaryValue* dictionary =
+  const base::Value* dictionary =
       prefs->GetDictionary(prefs::kMultipasteNudges);
   if (!dictionary)
     return 0;
@@ -331,7 +331,7 @@ int ClipboardNudgeController::GetNewFeatureBadgeShownCount(PrefService* prefs) {
 }
 
 base::Time ClipboardNudgeController::GetLastShownTime(PrefService* prefs) {
-  const base::DictionaryValue* dictionary =
+  const base::Value* dictionary =
       prefs->GetDictionary(prefs::kMultipasteNudges);
   if (!dictionary)
     return base::Time();

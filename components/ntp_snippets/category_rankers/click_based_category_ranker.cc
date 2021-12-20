@@ -347,7 +347,7 @@ base::Time ParseLastDismissedDate(const base::DictionaryValue& value) {
 bool ClickBasedCategoryRanker::ReadOrderFromPrefs(
     std::vector<RankedCategory>* result_categories) const {
   result_categories->clear();
-  const base::ListValue* list =
+  const base::Value* list =
       pref_service_->GetList(prefs::kClickBasedCategoryRankerOrderWithClicks);
   if (!list || list->GetList().size() == 0) {
     return false;

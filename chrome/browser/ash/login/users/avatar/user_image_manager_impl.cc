@@ -417,8 +417,8 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
   // Because the user ID (i.e. email address) contains '.', the code here
   // cannot use the dots notation (path expantion) hence is verbose.
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* prefs_images =
-      local_state->GetDictionary(kUserImageProperties);
+  const base::DictionaryValue* prefs_images = &base::Value::AsDictionaryValue(
+      *local_state->GetDictionary(kUserImageProperties));
   if (prefs_images) {
     const base::DictionaryValue* image_properties = nullptr;
     prefs_images->GetDictionaryWithoutPathExpansion(account_id().GetUserEmail(),
@@ -493,8 +493,8 @@ UserImageManagerImpl::~UserImageManagerImpl() {}
 
 void UserImageManagerImpl::LoadUserImage() {
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* prefs_images =
-      local_state->GetDictionary(kUserImageProperties);
+  const base::DictionaryValue* prefs_images = &base::Value::AsDictionaryValue(
+      *local_state->GetDictionary(kUserImageProperties));
   if (!prefs_images)
     return;
   user_manager::User* user = GetUserAndModify();

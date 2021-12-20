@@ -110,7 +110,10 @@ bool* g_discard_domain_reliability_uploads_for_testing = nullptr;
 const char kHttpCacheFinchExperimentGroups[] =
     "profile_network_context_service.http_cache_finch_experiment_groups";
 
-std::vector<std::string> TranslateStringArray(const base::ListValue* list) {
+std::vector<std::string> TranslateStringArray(const base::Value* list) {
+  if (!list->is_list())
+    return std::vector<std::string>();
+
   std::vector<std::string> strings;
   for (const base::Value& value : list->GetList()) {
     DCHECK(value.is_string());
@@ -397,13 +400,13 @@ void ProfileNetworkContextService::UpdateReferrersEnabled() {
 
 network::mojom::CTPolicyPtr ProfileNetworkContextService::GetCTPolicy() {
   auto* prefs = profile_->GetPrefs();
-  const base::ListValue* ct_required =
+  const base::Value* ct_required =
       prefs->GetList(certificate_transparency::prefs::kCTRequiredHosts);
-  const base::ListValue* ct_excluded =
+  const base::Value* ct_excluded =
       prefs->GetList(certificate_transparency::prefs::kCTExcludedHosts);
-  const base::ListValue* ct_excluded_spkis =
+  const base::Value* ct_excluded_spkis =
       prefs->GetList(certificate_transparency::prefs::kCTExcludedSPKIs);
-  const base::ListValue* ct_excluded_legacy_spkis =
+  const base::Value* ct_excluded_legacy_spkis =
       prefs->GetList(certificate_transparency::prefs::kCTExcludedLegacySPKIs);
 
   std::vector<std::string> required(TranslateStringArray(ct_required));
@@ -745,7 +748,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     network_context_params->file_paths->transport_security_persister_file_name =
         base::FilePath(chrome::kTransportSecurityPersisterFilename);
   }
-  const base::ListValue* hsts_policy_bypass_list =
+  const base::Value* hsts_policy_bypass_list =
       g_browser_process->local_state()->GetList(prefs::kHSTSPolicyBypassList);
   for (const auto& value : hsts_policy_bypass_list->GetList()) {
     const std::string* string_value = value.GetIfString();

@@ -809,7 +809,7 @@ bool IsAutoplayAllowedByPolicy(content::WebContents* contents,
     return false;
 
   // Check if the current URL matches a URL pattern on the allowlist.
-  const base::ListValue* autoplay_allowlist =
+  const base::Value* autoplay_allowlist =
       prefs->GetList(prefs::kAutoplayWhitelist);
   return autoplay_allowlist &&
          prefs->IsManagedPreference(prefs::kAutoplayWhitelist) &&

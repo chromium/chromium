@@ -426,7 +426,7 @@ TEST_F(ExternalProtocolHandlerTest, TestSetBlockState) {
       kScheme_2, &example_origin_2, profile_.get());
   EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);
 
-  const base::DictionaryValue* protocol_origin_pairs =
+  const base::Value* protocol_origin_pairs =
       profile_->GetPrefs()->GetDictionary(
           prefs::kProtocolHandlerPerOriginAllowedProtocols);
   base::Value expected_allowed_protocols_for_example_origin_1(

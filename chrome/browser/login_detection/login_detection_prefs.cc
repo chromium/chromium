@@ -72,7 +72,7 @@ void SaveSiteToOAuthSignedInList(PrefService* pref_service, const GURL& url) {
 
 bool IsSiteInOAuthSignedInList(PrefService* pref_service, const GURL& url) {
   if (auto* dict = pref_service->GetDictionary(kOAuthSignedInSitesPref))
-    return dict->HasKey(GetSiteNameForURL(url));
+    return dict->FindKey(GetSiteNameForURL(url));
   return false;
 }
 

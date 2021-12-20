@@ -223,7 +223,7 @@ bool KnownUser::FindPrefs(const AccountId& account_id,
   if (!account_id.is_valid())
     return false;
 
-  const base::ListValue* known_users = local_state_->GetList(kKnownUsers);
+  const base::Value* known_users = local_state_->GetList(kKnownUsers);
   for (const base::Value& element_value : known_users->GetList()) {
     if (element_value.is_dict()) {
       const base::DictionaryValue& element =
@@ -434,7 +434,7 @@ AccountId KnownUser::GetAccountId(const std::string& user_email,
 std::vector<AccountId> KnownUser::GetKnownAccountIds() {
   std::vector<AccountId> result;
 
-  const base::ListValue* known_users = local_state_->GetList(kKnownUsers);
+  const base::Value* known_users = local_state_->GetList(kKnownUsers);
   for (const base::Value& element_value : known_users->GetList()) {
     if (element_value.is_dict()) {
       const base::DictionaryValue& element =

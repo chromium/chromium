@@ -427,8 +427,8 @@ static std::string MakePathRelative(const base::FilePath& parent,
 }
 
 void ExtensionPrefs::MakePathsRelative() {
-  const base::DictionaryValue* dict =
-      prefs_->GetDictionary(pref_names::kExtensions);
+  const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(
+      *prefs_->GetDictionary(pref_names::kExtensions));
   if (!dict || dict->DictEmpty())
     return;
 
@@ -474,7 +474,7 @@ void ExtensionPrefs::MakePathsRelative() {
 
 const base::DictionaryValue* ExtensionPrefs::GetExtensionPref(
     const std::string& extension_id) const {
-  const base::DictionaryValue* extensions =
+  const base::Value* extensions =
       prefs_->GetDictionary(pref_names::kExtensions);
   if (!extensions)
     return nullptr;
@@ -1140,7 +1140,8 @@ void ExtensionPrefs::SetLastPingDay(const std::string& extension_id,
 }
 
 base::Time ExtensionPrefs::BlocklistLastPingDay() const {
-  return ReadTime(prefs_->GetDictionary(kExtensionsBlocklistUpdate),
+  return ReadTime(&base::Value::AsDictionaryValue(
+                      *prefs_->GetDictionary(kExtensionsBlocklistUpdate)),
                   kLastPingDay);
 }
 
@@ -1513,7 +1514,7 @@ std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
 std::unique_ptr<ExtensionInfo> ExtensionPrefs::GetInstalledExtensionInfo(
     const std::string& extension_id,
     bool include_component_extensions) const {
-  const base::DictionaryValue* extensions =
+  const base::Value* extensions =
       prefs_->GetDictionary(pref_names::kExtensions);
   if (!extensions)
     return nullptr;
@@ -1536,15 +1537,14 @@ ExtensionPrefs::GetInstalledExtensionsInfo(
     bool include_component_extensions) const {
   std::unique_ptr<ExtensionsInfo> extensions_info(new ExtensionsInfo);
 
-  const base::DictionaryValue* extensions =
+  const base::Value* extensions =
       prefs_->GetDictionary(pref_names::kExtensions);
-  for (base::DictionaryValue::Iterator extension_id(*extensions);
-       !extension_id.IsAtEnd(); extension_id.Advance()) {
-    if (!crx_file::id_util::IdIsValid(extension_id.key()))
+  for (const auto extension_id : extensions->DictItems()) {
+    if (!crx_file::id_util::IdIsValid(extension_id.first))
       continue;
 
     std::unique_ptr<ExtensionInfo> info = GetInstalledExtensionInfo(
-        extension_id.key(), include_component_extensions);
+        extension_id.first, include_component_extensions);
     if (info)
       extensions_info->push_back(std::move(info));
   }
@@ -1665,15 +1665,14 @@ std::unique_ptr<ExtensionPrefs::ExtensionsInfo>
 ExtensionPrefs::GetAllDelayedInstallInfo() const {
   std::unique_ptr<ExtensionsInfo> extensions_info(new ExtensionsInfo);
 
-  const base::DictionaryValue* extensions =
+  const base::Value* extensions =
       prefs_->GetDictionary(pref_names::kExtensions);
-  for (base::DictionaryValue::Iterator extension_id(*extensions);
-       !extension_id.IsAtEnd(); extension_id.Advance()) {
-    if (!crx_file::id_util::IdIsValid(extension_id.key()))
+  for (const auto extension_id : extensions->DictItems()) {
+    if (!crx_file::id_util::IdIsValid(extension_id.first))
       continue;
 
     std::unique_ptr<ExtensionInfo> info =
-        GetDelayedInstallInfo(extension_id.key());
+        GetDelayedInstallInfo(extension_id.first);
     if (info)
       extensions_info->push_back(std::move(info));
   }
@@ -1783,8 +1782,7 @@ void ExtensionPrefs::SetLastLaunchTime(const std::string& extension_id,
 }
 
 void ExtensionPrefs::ClearLastLaunchTimes() {
-  const base::DictionaryValue* dict =
-      prefs_->GetDictionary(pref_names::kExtensions);
+  const base::Value* dict = prefs_->GetDictionary(pref_names::kExtensions);
   if (!dict || dict->DictEmpty())
     return;
 
@@ -1895,7 +1893,7 @@ const base::DictionaryValue* ExtensionPrefs::GetPrefAsDictionary(
     const PrefMap& pref) const {
   DCHECK_EQ(PrefScope::kProfile, pref.scope);
   DCHECK_EQ(PrefType::kDictionary, pref.type);
-  return prefs_->GetDictionary(pref.name);
+  return &base::Value::AsDictionaryValue(*prefs_->GetDictionary(pref.name));
 }
 
 void ExtensionPrefs::IncrementPref(const PrefMap& pref) {
@@ -2003,7 +2001,8 @@ void ExtensionPrefs::SetGeometryCache(
 }
 
 const base::DictionaryValue* ExtensionPrefs::GetInstallSignature() const {
-  return prefs_->GetDictionary(kInstallSignature);
+  return &base::Value::AsDictionaryValue(
+      *prefs_->GetDictionary(kInstallSignature));
 }
 
 void ExtensionPrefs::SetInstallSignature(
@@ -2438,7 +2437,7 @@ void ExtensionPrefs::LoadExtensionControlledPrefs(
     return;
   std::string key = extension_id + "." + scope_string;
 
-  const base::DictionaryValue* source_dict =
+  const base::Value* source_dict =
       pref_service()->GetDictionary(pref_names::kExtensions);
 
   const base::Value* preferences = source_dict->FindDictPath(key);
@@ -2533,7 +2532,7 @@ void ExtensionPrefs::MigrateDeprecatedDisableReasons() {
 }
 
 void ExtensionPrefs::MigrateYoutubeOffBookmarkApps() {
-  const base::DictionaryValue* extensions_dictionary =
+  const base::Value* extensions_dictionary =
       prefs_->GetDictionary(pref_names::kExtensions);
   DCHECK(extensions_dictionary->is_dict());
   const base::Value* youtube_dictionary =

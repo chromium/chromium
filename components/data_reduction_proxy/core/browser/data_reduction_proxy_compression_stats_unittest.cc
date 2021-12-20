@@ -186,7 +186,8 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
   // |simple_pref_service| for |pref|.
   void VerifyPrefListWasWritten(const char* pref) {
     const base::ListValue* delayed_list = compression_stats_->GetList(pref);
-    const base::ListValue* written_list = pref_service()->GetList(pref);
+    const base::ListValue* written_list =
+        &base::Value::AsListValue(*pref_service()->GetList(pref));
     ASSERT_EQ(delayed_list->GetList().size(), written_list->GetList().size());
     size_t count = delayed_list->GetList().size();
 
@@ -374,9 +375,11 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
   void VerifyDictionaryPref(const std::string& pref,
                             int key,
                             int expected_value) const {
-    const base::DictionaryValue* dict =
+    const base::Value* dict =
         compression_stats_->pref_service_->GetDictionary(pref);
-    EXPECT_EQ(expected_value != 0, dict->HasKey(base::NumberToString(key)));
+
+    const base::Value* value = dict->FindKey(base::NumberToString(key));
+    EXPECT_EQ(expected_value != 0, !!value);
     if (expected_value) {
       EXPECT_EQ(expected_value,
                 dict->FindKey(base::NumberToString(key))->GetInt());

@@ -573,8 +573,8 @@ void MediaGalleriesPreferences::InitFromPrefs() {
   device_map_.clear();
 
   PrefService* prefs = profile_->GetPrefs();
-  const base::ListValue* list = prefs->GetList(
-      prefs::kMediaGalleriesRememberedGalleries);
+  const base::Value* list =
+      prefs->GetList(prefs::kMediaGalleriesRememberedGalleries);
   if (list) {
     for (const auto& gallery_value : list->GetList()) {
       if (!gallery_value.is_dict())
@@ -1035,7 +1035,8 @@ bool MediaGalleriesPreferences::NonAutoGalleryHasPermission(
              MediaGalleryPrefInfo::kAutoDetected);
   ExtensionPrefs* prefs = GetExtensionPrefs();
   const base::DictionaryValue* extensions =
-      prefs->pref_service()->GetDictionary(extensions::pref_names::kExtensions);
+      &base::Value::AsDictionaryValue(*prefs->pref_service()->GetDictionary(
+          extensions::pref_names::kExtensions));
   if (!extensions)
     return true;
 
@@ -1254,7 +1255,8 @@ void MediaGalleriesPreferences::RemoveGalleryPermissionsFromPrefs(
   DCHECK(IsInitialized());
   ExtensionPrefs* prefs = GetExtensionPrefs();
   const base::DictionaryValue* extensions =
-      prefs->pref_service()->GetDictionary(extensions::pref_names::kExtensions);
+      &base::Value::AsDictionaryValue(*prefs->pref_service()->GetDictionary(
+          extensions::pref_names::kExtensions));
   if (!extensions)
     return;
 

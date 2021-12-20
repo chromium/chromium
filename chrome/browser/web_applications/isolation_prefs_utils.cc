@@ -83,7 +83,7 @@ void RemoveAppIsolationState(PrefService* pref_service,
 const std::string* GetStorageIsolationKey(PrefService* pref_service,
                                           const url::Origin& origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::DictionaryValue* isolation_prefs =
+  const base::Value* isolation_prefs =
       pref_service->GetDictionary(prefs::kWebAppsIsolationState);
   if (!isolation_prefs)
     return nullptr;

@@ -103,7 +103,7 @@ PersistentHostScanCacheImpl::~PersistentHostScanCacheImpl() = default;
 
 std::unordered_map<std::string, HostScanCacheEntry>
 PersistentHostScanCacheImpl::GetStoredCacheEntries() {
-  const base::ListValue* cache_entry_list =
+  const base::Value* cache_entry_list =
       pref_service_->GetList(prefs::kHostScanCache);
   DCHECK(cache_entry_list);
 

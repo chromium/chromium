@@ -14,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -302,8 +303,8 @@ void AudioDevicesPrefHandlerImpl::InitializePrefObservers() {
 }
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesMutePref() {
-  const base::DictionaryValue* mute_prefs =
-      local_state_->GetDictionary(prefs::kAudioDevicesMute);
+  const base::DictionaryValue* mute_prefs = &base::Value::AsDictionaryValue(
+      *local_state_->GetDictionary(prefs::kAudioDevicesMute));
   if (mute_prefs)
     device_mute_settings_.reset(mute_prefs->DeepCopy());
 }
@@ -315,8 +316,8 @@ void AudioDevicesPrefHandlerImpl::SaveDevicesMutePref() {
 }
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesVolumePref() {
-  const base::DictionaryValue* volume_prefs =
-      local_state_->GetDictionary(prefs::kAudioDevicesVolumePercent);
+  const base::DictionaryValue* volume_prefs = &base::Value::AsDictionaryValue(
+      *local_state_->GetDictionary(prefs::kAudioDevicesVolumePercent));
   if (volume_prefs)
     device_volume_settings_.reset(volume_prefs->DeepCopy());
 }
@@ -329,8 +330,8 @@ void AudioDevicesPrefHandlerImpl::SaveDevicesVolumePref() {
 }
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesGainPref() {
-  const base::DictionaryValue* gain_prefs =
-      local_state_->GetDictionary(prefs::kAudioDevicesGainPercent);
+  const base::DictionaryValue* gain_prefs = &base::Value::AsDictionaryValue(
+      *local_state_->GetDictionary(prefs::kAudioDevicesGainPercent));
   if (gain_prefs)
     device_gain_settings_.reset(gain_prefs->DeepCopy());
 }
@@ -343,8 +344,8 @@ void AudioDevicesPrefHandlerImpl::SaveDevicesGainPref() {
 }
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesStatePref() {
-  const base::DictionaryValue* state_prefs =
-      local_state_->GetDictionary(prefs::kAudioDevicesState);
+  const base::DictionaryValue* state_prefs = &base::Value::AsDictionaryValue(
+      *local_state_->GetDictionary(prefs::kAudioDevicesState));
   if (state_prefs)
     device_state_settings_.reset(state_prefs->DeepCopy());
 }

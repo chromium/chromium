@@ -718,7 +718,8 @@ bool ChromeUserManagerImpl::IsEnterpriseManaged() const {
 void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
     std::set<AccountId>* device_local_accounts_set) {
   const base::ListValue* prefs_device_local_accounts =
-      GetLocalState()->GetList(kDeviceLocalAccountsWithSavedData);
+      &base::Value::AsListValue(
+          *GetLocalState()->GetList(kDeviceLocalAccountsWithSavedData));
   std::vector<AccountId> device_local_accounts;
   ParseUserList(*prefs_device_local_accounts, std::set<AccountId>(),
                 &device_local_accounts, device_local_accounts_set);
@@ -1302,7 +1303,7 @@ void ChromeUserManagerImpl::SetUserAffiliation(
 }
 
 bool ChromeUserManagerImpl::ShouldReportUser(const std::string& user_id) const {
-  const base::ListValue& reporting_users =
+  const base::Value& reporting_users =
       *(GetLocalState()->GetList(::prefs::kReportingUsers));
   base::Value user_id_value(FullyCanonicalize(user_id));
   // TODO(crbug.com/1187106): Use base::Contains once |reporting_users| is not a

@@ -536,7 +536,7 @@ std::vector<base::FilePath> GuestOsSharePath::GetPersistedSharedPaths(
   CHECK(profile_);
   CHECK(profile_->GetPrefs());
   // |shared_paths| format is {'path': ['vm1', vm2']}.
-  const base::DictionaryValue* shared_paths =
+  const base::Value* shared_paths =
       profile_->GetPrefs()->GetDictionary(prefs::kGuestOSPathsSharedToVms);
   CHECK(shared_paths);
   for (const auto it : shared_paths->DictItems()) {
@@ -628,7 +628,7 @@ void GuestOsSharePath::OnVolumeMounted(chromeos::MountError error_code,
 
   // Check if any persisted paths match volume.mount_path() or are children
   // of it then share them with any running VMs.
-  const base::DictionaryValue* shared_paths =
+  const base::Value* shared_paths =
       profile_->GetPrefs()->GetDictionary(prefs::kGuestOSPathsSharedToVms);
   for (const auto it : shared_paths->DictItems()) {
     base::FilePath path(it.first);

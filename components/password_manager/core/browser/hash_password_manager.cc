@@ -222,8 +222,7 @@ std::vector<PasswordHashData> HashPasswordManager::RetrieveAllPasswordHashes() {
   if (!prefs_ || !prefs_->HasPrefPath(prefs::kPasswordHashDataList))
     return result;
 
-  const base::ListValue* hash_list =
-      prefs_->GetList(prefs::kPasswordHashDataList);
+  const base::Value* hash_list = prefs_->GetList(prefs::kPasswordHashDataList);
 
   for (const base::Value& entry : hash_list->GetList()) {
     absl::optional<PasswordHashData> password_hash_data =

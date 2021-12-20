@@ -792,7 +792,7 @@ void DiceWebSigninInterceptor::RecordProfileCreationDeclined(
 
 bool DiceWebSigninInterceptor::HasUserDeclinedProfileCreation(
     const std::string& email) const {
-  const base::DictionaryValue* pref_data = profile_->GetPrefs()->GetDictionary(
+  const base::Value* pref_data = profile_->GetPrefs()->GetDictionary(
       kProfileCreationInterceptionDeclinedPref);
   absl::optional<int> declined_count =
       pref_data->FindIntKey(GetPersistentEmailHash(email));

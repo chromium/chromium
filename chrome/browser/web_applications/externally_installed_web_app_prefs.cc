@@ -54,7 +54,7 @@ constexpr char kIsPlaceholder[] = "is_placeholder";
 const base::Value* GetPreferenceValue(const PrefService* pref_service,
                                       const AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::DictionaryValue* urls_to_dicts =
+  const base::Value* urls_to_dicts =
       pref_service->GetDictionary(prefs::kWebAppsExtensionIDs);
   if (!urls_to_dicts) {
     return nullptr;
@@ -115,7 +115,7 @@ bool ExternallyInstalledWebAppPrefs::HasAppIdWithInstallSource(
 std::map<AppId, GURL> ExternallyInstalledWebAppPrefs::BuildAppIdsMap(
     const PrefService* pref_service,
     ExternalInstallSource install_source) {
-  const base::DictionaryValue* urls_to_dicts =
+  const base::Value* urls_to_dicts =
       pref_service->GetDictionary(prefs::kWebAppsExtensionIDs);
 
   std::map<AppId, GURL> ids_to_urls;
@@ -187,7 +187,7 @@ absl::optional<AppId> ExternallyInstalledWebAppPrefs::LookupAppId(
 bool ExternallyInstalledWebAppPrefs::HasNoApps() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       pref_service_->GetDictionary(prefs::kWebAppsExtensionIDs);
   return dict->DictEmpty();
 }
@@ -214,7 +214,7 @@ void ExternallyInstalledWebAppPrefs::SetIsPlaceholder(const GURL& url,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   DCHECK(pref_service_->GetDictionary(prefs::kWebAppsExtensionIDs)
-             ->HasKey(url.spec()));
+             ->FindKey(url.spec()));
   DictionaryPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
   base::Value* map = update.Get();
 

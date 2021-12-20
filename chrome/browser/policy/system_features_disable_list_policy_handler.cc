@@ -61,7 +61,7 @@ bool SystemFeaturesDisableListPolicyHandler::IsSystemFeatureDisabled(
   if (!pref_service)  // Sometimes it's not available in tests.
     return false;
 
-  const base::ListValue* disabled_system_features_pref =
+  const base::Value* disabled_system_features_pref =
       pref_service->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
   if (!disabled_system_features_pref)
     return false;

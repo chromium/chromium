@@ -311,8 +311,8 @@ SSLConfigServiceManagerPref::GetSSLConfigFromPrefs() const {
 
 void SSLConfigServiceManagerPref::OnDisabledCipherSuitesChange(
     PrefService* local_state) {
-  const base::ListValue* value =
-      local_state->GetList(prefs::kCipherSuiteBlacklist);
+  const base::ListValue* value = &base::Value::AsListValue(
+      *local_state->GetList(prefs::kCipherSuiteBlacklist));
   disabled_cipher_suites_ = ParseCipherSuites(ListValueToStringVector(value));
 }
 

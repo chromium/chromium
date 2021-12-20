@@ -47,9 +47,9 @@ class ExtensionOverrideTest : public ExtensionApiTest {
 
   bool CheckHistoryOverridesContainsNoDupes() {
     // There should be no duplicate entries in the preferences.
-    const base::DictionaryValue* overrides =
-        browser()->profile()->GetPrefs()->GetDictionary(
-            ExtensionWebUI::kExtensionURLOverrides);
+    const base::DictionaryValue* overrides = &base::Value::AsDictionaryValue(
+        *browser()->profile()->GetPrefs()->GetDictionary(
+            ExtensionWebUI::kExtensionURLOverrides));
 
     const base::ListValue* values = nullptr;
     if (!overrides->GetList("history", &values))

@@ -534,7 +534,7 @@ TEST_F(ProfileAttributesStorageTest, AddStubProfile) {
   // Check that the profiles can be extracted from the local state.
   std::vector<std::string> names;
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* attributes =
+  const base::Value* attributes =
       local_state->GetDictionary(prefs::kProfileAttributes);
   for (const auto kv : attributes->DictItems()) {
     const base::Value& info = kv.second;

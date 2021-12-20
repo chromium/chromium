@@ -818,8 +818,8 @@ TEST_F(VariationsServiceTest, LoadPermanentConsistencyCountry) {
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
       expected_list_value.Append(component);
     }
-    const base::ListValue* pref_value =
-        prefs_.GetList(prefs::kVariationsPermanentConsistencyCountry);
+    const base::ListValue* pref_value = &base::Value::AsListValue(
+        *prefs_.GetList(prefs::kVariationsPermanentConsistencyCountry));
     EXPECT_EQ(ListValueToString(expected_list_value),
               ListValueToString(*pref_value))
         << test.permanent_consistency_country_before << ", " << test.version

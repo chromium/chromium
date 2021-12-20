@@ -295,8 +295,8 @@ bool CommandService::SetScope(const std::string& extension_id,
 
 Command CommandService::FindCommandByName(const std::string& extension_id,
                                           const std::string& command) const {
-  const base::DictionaryValue* bindings =
-      profile_->GetPrefs()->GetDictionary(prefs::kExtensionCommands);
+  const base::DictionaryValue* bindings = &base::Value::AsDictionaryValue(
+      *profile_->GetPrefs()->GetDictionary(prefs::kExtensionCommands));
   for (base::DictionaryValue::Iterator it(*bindings); !it.IsAtEnd();
        it.Advance()) {
     const base::DictionaryValue* item = NULL;

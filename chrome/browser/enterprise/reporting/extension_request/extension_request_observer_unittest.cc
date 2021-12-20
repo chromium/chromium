@@ -146,7 +146,7 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
     close_run_loop.Run();
 
     // Verify that only |expected_removed_requests| are removed from the pref.
-    const base::DictionaryValue* actual_pending_requests =
+    const base::Value* actual_pending_requests =
         profile()->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
     EXPECT_EQ(number_of_existing_requests - expected_removed_requests.size(),
               actual_pending_requests->DictSize());

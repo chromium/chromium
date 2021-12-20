@@ -37,7 +37,7 @@ namespace {
 // attributes.
 bool CanAccessDeviceAttributes(const PrefService* prefs,
                                const url::Origin& origin) {
-  const base::ListValue* prefs_list =
+  const base::Value* prefs_list =
       prefs->GetList(prefs::kDeviceAttributesAllowedForOrigins);
   if (!prefs_list)
     return false;
@@ -68,7 +68,7 @@ bool IsEqualToKioskOrigin(const url::Origin& origin) {
 // policy.
 bool IsForceInstalledOrigin(const PrefService* prefs,
                             const url::Origin& origin) {
-  const base::ListValue* prefs_list =
+  const base::Value* prefs_list =
       prefs->GetList(prefs::kWebAppInstallForceList);
   if (!prefs_list)
     return false;

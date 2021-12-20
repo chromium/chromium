@@ -87,7 +87,7 @@ class GuestOsSharePathTest : public testing::Test {
       const base::FilePath& container_path,
       bool success,
       const std::string& failure_reason) {
-    const base::DictionaryValue* prefs =
+    const base::Value* prefs =
         profile()->GetPrefs()->GetDictionary(prefs::kGuestOSPathsSharedToVms);
     EXPECT_NE(prefs->FindKey(shared_path_.value()), nullptr);
     EXPECT_EQ(prefs->FindKey(shared_path_.value())->GetList().size(), 1U);
@@ -172,7 +172,7 @@ class GuestOsSharePathTest : public testing::Test {
       const std::string& expected_failure_reason,
       bool success,
       const std::string& failure_reason) {
-    const base::DictionaryValue* prefs =
+    const base::Value* prefs =
         profile()->GetPrefs()->GetDictionary(prefs::kGuestOSPathsSharedToVms);
     if (expected_persist == Persist::YES) {
       EXPECT_NE(prefs->FindKey(path.value()), nullptr);
@@ -718,7 +718,7 @@ TEST_F(GuestOsSharePathTest, RegisterPersistedPaths) {
   profile()->GetPrefs()->Set(prefs::kGuestOSPathsSharedToVms, shared_paths);
 
   guest_os_share_path_->RegisterPersistedPath("v1", base::FilePath("/a/a/a"));
-  const base::DictionaryValue* prefs =
+  const base::Value* prefs =
       profile()->GetPrefs()->GetDictionary(prefs::kGuestOSPathsSharedToVms);
   EXPECT_EQ(prefs->DictSize(), 1U);
   EXPECT_EQ(prefs->FindKey("/a/a/a")->GetList().size(), 1U);

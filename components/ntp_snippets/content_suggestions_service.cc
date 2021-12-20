@@ -673,8 +673,7 @@ void ContentSuggestionsService::RestoreDismissedCategoriesFromPrefs() {
   DCHECK(dismissed_providers_by_category_.empty());
   DCHECK(providers_by_category_.empty());
 
-  const base::ListValue* list =
-      pref_service_->GetList(prefs::kDismissedCategories);
+  const base::Value* list = pref_service_->GetList(prefs::kDismissedCategories);
   for (const base::Value& entry : list->GetList()) {
     if (!entry.is_int()) {
       DLOG(WARNING) << "Invalid category pref value: " << entry;

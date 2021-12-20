@@ -46,7 +46,7 @@ PrefService* GetPrefs() {
 
 // Gets the timestamp when the nudge was last shown.
 base::Time GetLastShownTime(PrefService* prefs) {
-  const base::DictionaryValue* dictionary =
+  const base::Value* dictionary =
       prefs->GetDictionary(prefs::kShelfLauncherNudge);
   if (!dictionary)
     return base::Time();
@@ -59,7 +59,7 @@ base::Time GetLastShownTime(PrefService* prefs) {
 // set if the user has logged in before the launcher nudge feature was
 // enabled.
 base::Time GetFirstLoginTime(PrefService* prefs) {
-  const base::DictionaryValue* dictionary =
+  const base::Value* dictionary =
       prefs->GetDictionary(prefs::kShelfLauncherNudge);
   if (!dictionary)
     return base::Time();
@@ -70,7 +70,7 @@ base::Time GetFirstLoginTime(PrefService* prefs) {
 
 // Returns true if the launcher has been shown before.
 bool WasLauncherShownPreviously(PrefService* prefs) {
-  const base::DictionaryValue* dictionary =
+  const base::Value* dictionary =
       prefs->GetDictionary(prefs::kShelfLauncherNudge);
   if (!dictionary)
     return false;
@@ -113,7 +113,7 @@ HomeButton* LauncherNudgeController::GetHomeButtonForDisplay(
 
 // static
 int LauncherNudgeController::GetShownCount(PrefService* prefs) {
-  const base::DictionaryValue* dictionary =
+  const base::Value* dictionary =
       prefs->GetDictionary(prefs::kShelfLauncherNudge);
   if (!dictionary)
     return 0;

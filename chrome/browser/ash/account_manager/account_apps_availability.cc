@@ -50,7 +50,7 @@ bool IsActiveDirectoryUser() {
 }
 
 bool IsPrefInitialized(PrefService* prefs) {
-  const base::DictionaryValue* accounts =
+  const base::Value* accounts =
       prefs->GetDictionary(account_manager::prefs::kAccountAppsAvailability);
   return accounts && (accounts->DictSize() > 0 || IsActiveDirectoryUser());
 }
@@ -96,7 +96,7 @@ void CompleteGetAccountsAvailableInArc(
 
 base::flat_set<std::string> GetGaiaIdsAvailableInArc(PrefService* prefs) {
   base::flat_set<std::string> result;
-  const base::DictionaryValue* accounts =
+  const base::Value* accounts =
       prefs->GetDictionary(account_manager::prefs::kAccountAppsAvailability);
   if (!accounts) {
     LOG(ERROR) << "Couldn't find "
@@ -123,7 +123,7 @@ base::flat_set<std::string> GetGaiaIdsAvailableInArc(PrefService* prefs) {
 // `SetIsAccountAvailableInArc` wasn't called for this account yet).
 absl::optional<bool> IsAccountAvailableInArc(PrefService* prefs,
                                              const std::string& gaia_id) {
-  const base::DictionaryValue* accounts =
+  const base::Value* accounts =
       prefs->GetDictionary(account_manager::prefs::kAccountAppsAvailability);
   if (!accounts) {
     LOG(ERROR) << "Couldn't find "

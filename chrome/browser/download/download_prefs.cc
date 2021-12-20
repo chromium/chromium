@@ -663,7 +663,7 @@ void DownloadPrefs::UpdateAllowedURLsForOpenByPolicy() {
   // We only need to configure |allowed_urls| if something is set by policy,
   // otherwise the default object does what we want.
   if (list->GetList().size() != 0) {
-    allowed_urls->Allow(list);
+    allowed_urls->Allow(&base::Value::AsListValue(*list));
 
     // Since we only want to auto-open for the specified urls, block everything
     // else.

@@ -192,7 +192,8 @@ ProximityAuthLocalStatePrefManager::GetActiveUserPrefsDictionary() const {
   }
 
   const base::DictionaryValue* all_user_prefs_dict =
-      local_state_->GetDictionary(prefs::kEasyUnlockLocalStateUserPrefs);
+      &base::Value::AsDictionaryValue(
+          *local_state_->GetDictionary(prefs::kEasyUnlockLocalStateUserPrefs));
   DCHECK(all_user_prefs_dict);
 
   const base::DictionaryValue* current_user_prefs;

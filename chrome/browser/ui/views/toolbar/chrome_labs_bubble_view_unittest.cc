@@ -473,17 +473,17 @@ TEST_F(ChromeLabsBubbleTest, NewBadgeTest) {
 // removed from the PrefService when updating new badge prefs.
 TEST_F(ChromeLabsBubbleTest, CleanUpNewBadgePrefsTest) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const base::DictionaryValue* new_badge_prefs =
+  const base::Value* new_badge_prefs =
       browser_view()->browser()->profile()->GetPrefs()->GetDictionary(
           chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
 #else
-  const base::DictionaryValue* new_badge_prefs =
+  const base::Value* new_badge_prefs =
       g_browser_process->local_state()->GetDictionary(
           chrome_labs_prefs::kChromeLabsNewBadgeDict);
 #endif
 
-  EXPECT_TRUE(new_badge_prefs->HasKey(kFirstTestFeatureId));
-  EXPECT_TRUE(new_badge_prefs->HasKey(kTestFeatureWithVariationId));
+  EXPECT_TRUE(new_badge_prefs->FindKey(kFirstTestFeatureId));
+  EXPECT_TRUE(new_badge_prefs->FindKey(kTestFeatureWithVariationId));
 
   // Remove two experiments.
   std::vector<LabInfo> test_experiments = TestLabInfo();
@@ -498,6 +498,6 @@ TEST_F(ChromeLabsBubbleTest, CleanUpNewBadgePrefsTest) {
 
   UpdateChromeLabsNewBadgePrefs(browser_view()->browser()->profile(),
                                 chrome_labs_model());
-  EXPECT_FALSE(new_badge_prefs->HasKey(kFirstTestFeatureId));
-  EXPECT_FALSE(new_badge_prefs->HasKey(kTestFeatureWithVariationId));
+  EXPECT_FALSE(new_badge_prefs->FindKey(kFirstTestFeatureId));
+  EXPECT_FALSE(new_badge_prefs->FindKey(kTestFeatureWithVariationId));
 }

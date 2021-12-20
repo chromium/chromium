@@ -137,8 +137,8 @@ EnrollmentConfig DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
   // signal present that indicates the device should enroll.
 
   // Gather enrollment signals from various sources.
-  const base::DictionaryValue* device_state =
-      local_state_->GetDictionary(prefs::kServerBackedDeviceState);
+  const base::DictionaryValue* device_state = &base::Value::AsDictionaryValue(
+      *local_state_->GetDictionary(prefs::kServerBackedDeviceState));
   std::string device_state_mode;
   std::string device_state_management_domain;
   absl::optional<bool> is_license_packaged_with_device;

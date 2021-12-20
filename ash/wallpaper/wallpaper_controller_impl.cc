@@ -2432,8 +2432,9 @@ absl::optional<std::vector<SkColor>> WallpaperControllerImpl::GetCachedColors(
   absl::optional<std::vector<SkColor>> cached_colors_out;
   const base::ListValue* prominent_colors = nullptr;
   if (!local_state_ ||
-      !local_state_->GetDictionary(prefs::kWallpaperColors)
-           ->GetListWithoutPathExpansion(current_location, &prominent_colors)) {
+      !base::Value::AsDictionaryValue(
+           *local_state_->GetDictionary(prefs::kWallpaperColors))
+           .GetListWithoutPathExpansion(current_location, &prominent_colors)) {
     return cached_colors_out;
   }
   cached_colors_out = std::vector<SkColor>();

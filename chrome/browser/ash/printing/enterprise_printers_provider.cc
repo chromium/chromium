@@ -29,9 +29,9 @@ namespace ash {
 
 namespace {
 
-std::vector<std::string> ConvertToVector(const base::ListValue* list) {
+std::vector<std::string> ConvertToVector(const base::Value* list) {
   std::vector<std::string> string_list;
-  if (list) {
+  if (list && list->is_list()) {
     for (const base::Value& value : list->GetList()) {
       if (value.is_string()) {
         string_list.push_back(value.GetString());

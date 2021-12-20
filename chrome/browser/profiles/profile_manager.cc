@@ -1187,7 +1187,7 @@ void ProfileManager::CleanUpEphemeralProfiles() {
 void ProfileManager::CleanUpDeletedProfiles() {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  const base::ListValue* deleted_profiles =
+  const base::Value* deleted_profiles =
       local_state->GetList(prefs::kProfilesDeleted);
   DCHECK(deleted_profiles);
 

@@ -437,27 +437,26 @@ void AppListSyncableService::InitFromLocalStorage() {
   DCHECK(!IsInitialized());
 
   // Restore initial state from local storage.
-  const base::DictionaryValue* local_items =
+  const base::Value* local_items =
       profile_->GetPrefs()->GetDictionary(prefs::kAppListLocalState);
   DCHECK(local_items);
 
-  for (base::DictionaryValue::Iterator item(*local_items); !item.IsAtEnd();
-       item.Advance()) {
+  for (const auto item : local_items->DictItems()) {
     const base::DictionaryValue* dict_item;
-    if (!item.value().GetAsDictionary(&dict_item)) {
-      LOG(ERROR) << "Dictionary not found for " << item.key() + ".";
+    if (!item.second.GetAsDictionary(&dict_item)) {
+      LOG(ERROR) << "Dictionary not found for " << item.first + ".";
       continue;
     }
 
     absl::optional<int> type = dict_item->FindIntKey(kTypeKey);
     if (!type) {
-      LOG(ERROR) << "Item type is not set in local storage for " << item.key()
+      LOG(ERROR) << "Item type is not set in local storage for " << item.second
                  << ".";
       continue;
     }
 
     SyncItem* sync_item = CreateSyncItem(
-        item.key(),
+        item.first,
         static_cast<sync_pb::AppListSpecifics::AppListItemType>(*type));
 
     dict_item->GetString(kNameKey, &sync_item->item_name);

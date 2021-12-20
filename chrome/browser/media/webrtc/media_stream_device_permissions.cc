@@ -27,7 +27,7 @@ MediaStreamDevicePolicy GetDevicePolicy(const Profile* profile,
 
   const PrefService* prefs = profile->GetPrefs();
 
-  const base::ListValue* list = prefs->GetList(allowed_urls_pref_name);
+  const base::Value* list = prefs->GetList(allowed_urls_pref_name);
   for (const base::Value& i : list->GetList()) {
     const std::string* value = i.GetIfString();
     if (value) {

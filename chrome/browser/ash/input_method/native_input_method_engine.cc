@@ -100,7 +100,7 @@ bool IsPhysicalKeyboardAutocorrectEnabled(PrefService* prefs,
     return true;
   }
 
-  const base::DictionaryValue* input_method_settings =
+  const base::Value* input_method_settings =
       prefs->GetDictionary(::prefs::kLanguageInputMethodSpecificSettings);
   const base::Value* autocorrect_setting = input_method_settings->FindPath(
       engine_id + ".physicalKeyboardAutoCorrectionLevel");

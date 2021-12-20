@@ -56,7 +56,8 @@ int PrefetchBackgroundTaskHandlerImpl::GetAdditionalBackoffSeconds() const {
 
 std::unique_ptr<net::BackoffEntry>
 PrefetchBackgroundTaskHandlerImpl::GetCurrentBackoff() const {
-  const base::ListValue* value = prefs_->GetList(prefetch_prefs::kBackoff);
+  const base::ListValue* value =
+      &base::Value::AsListValue(*prefs_->GetList(prefetch_prefs::kBackoff));
   std::unique_ptr<net::BackoffEntry> result;
   if (value) {
     result = net::BackoffEntrySerializer::DeserializeFromValue(

@@ -384,7 +384,7 @@ void RecordTerminalSettingsChangesUMAs(Profile* profile) {
       {"theme-variations", TerminalSetting::kThemeVariations},
   });
 
-  const base::DictionaryValue* settings = profile->GetPrefs()->GetDictionary(
+  const base::Value* settings = profile->GetPrefs()->GetDictionary(
       crostini::prefs::kCrostiniTerminalSettings);
   for (const auto item : settings->DictItems()) {
     // Only record settings for /hterm/profiles/default/.
@@ -401,14 +401,14 @@ void RecordTerminalSettingsChangesUMAs(Profile* profile) {
 }
 
 std::string GetTerminalSettingBackgroundColor(Profile* profile) {
-  const base::DictionaryValue* value = profile->GetPrefs()->GetDictionary(
+  const base::Value* value = profile->GetPrefs()->GetDictionary(
       crostini::prefs::kCrostiniTerminalSettings);
   const std::string* result = value->FindStringKey(kSettingBackgroundColor);
   return result ? *result : kDefaultBackgroundColor;
 }
 
 bool GetTerminalSettingPassCtrlW(Profile* profile) {
-  const base::DictionaryValue* value = profile->GetPrefs()->GetDictionary(
+  const base::Value* value = profile->GetPrefs()->GetDictionary(
       crostini::prefs::kCrostiniTerminalSettings);
   return value->FindBoolKey(kSettingPassCtrlW).value_or(kDefaultPassCtrlW);
 }

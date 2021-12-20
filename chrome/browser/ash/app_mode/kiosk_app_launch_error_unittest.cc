@@ -29,8 +29,9 @@ constexpr char kKeyCryptohomeFailure[] = "cryptohome_failure";
 
 // Get Kiosk dictionary value. It is replaced after each update.
 const base::DictionaryValue* GetKioskDictionary() {
-  return g_browser_process->local_state()->GetDictionary(
-      KioskAppManager::kKioskDictionaryName);
+  return &base::Value::AsDictionaryValue(
+      *g_browser_process->local_state()->GetDictionary(
+          KioskAppManager::kKioskDictionaryName));
 }
 
 }  // namespace

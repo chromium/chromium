@@ -180,7 +180,7 @@ NetworkTimeTracker::NetworkTimeTracker(
       tick_clock_(std::move(tick_clock)),
       pref_service_(pref_service),
       time_query_completed_(false) {
-  const base::DictionaryValue* time_mapping =
+  const base::Value* time_mapping =
       pref_service_->GetDictionary(prefs::kNetworkTimeMapping);
   absl::optional<double> time_js = time_mapping->FindDoubleKey(kPrefTime);
   absl::optional<double> ticks_js = time_mapping->FindDoubleKey(kPrefTicks);

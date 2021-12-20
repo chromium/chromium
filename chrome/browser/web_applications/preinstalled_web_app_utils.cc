@@ -586,7 +586,7 @@ bool IsReinstallPastMilestoneNeeded(
 }
 
 bool WasAppMigratedToWebApp(Profile* profile, const std::string& app_id) {
-  const base::ListValue* migrated_apps =
+  const base::Value* migrated_apps =
       profile->GetPrefs()->GetList(webapps::kWebAppsMigratedPreinstalledApps);
   if (!migrated_apps)
     return false;
@@ -611,7 +611,7 @@ void MarkAppAsMigratedToWebApp(Profile* profile,
 }
 
 bool WasMigrationRun(Profile* profile, base::StringPiece feature_name) {
-  const base::ListValue* migrated_features =
+  const base::Value* migrated_features =
       profile->GetPrefs()->GetList(prefs::kWebAppsDidMigrateDefaultChromeApps);
   if (!migrated_features)
     return false;
@@ -637,7 +637,7 @@ void SetMigrationRun(Profile* profile,
 
 bool WasPreinstalledAppUninstalled(Profile* profile,
                                    const std::string& app_id) {
-  const base::ListValue* uninstalled_apps =
+  const base::Value* uninstalled_apps =
       profile->GetPrefs()->GetList(prefs::kWebAppsUninstalledDefaultChromeApps);
   if (!uninstalled_apps)
     return false;

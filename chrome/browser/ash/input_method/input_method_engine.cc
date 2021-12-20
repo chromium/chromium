@@ -977,9 +977,8 @@ void InputMethodEngine::HideInputView() {
 }
 
 void InputMethodEngine::OnInputMethodOptionsChanged() {
-  const base::DictionaryValue* new_settings =
-      profile_->GetPrefs()->GetDictionary(
-          prefs::kLanguageInputMethodSpecificSettings);
+  const base::Value* new_settings = profile_->GetPrefs()->GetDictionary(
+      prefs::kLanguageInputMethodSpecificSettings);
   const base::DictionaryValue& old_settings =
       base::Value::AsDictionaryValue(input_method_settings_snapshot_);
   for (const auto it : new_settings->DictItems()) {

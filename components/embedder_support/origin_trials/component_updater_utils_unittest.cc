@@ -96,7 +96,7 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
     ASSERT_TRUE(local_state()->HasPrefPath(
         embedder_support::prefs::kOriginTrialDisabledFeatures));
 
-    const base::ListValue* disabled_feature_list = local_state()->GetList(
+    const base::Value* disabled_feature_list = local_state()->GetList(
         embedder_support::prefs::kOriginTrialDisabledFeatures);
     ASSERT_TRUE(disabled_feature_list);
 
@@ -130,7 +130,7 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
     ASSERT_TRUE(local_state()->HasPrefPath(
         embedder_support::prefs::kOriginTrialDisabledTokens));
 
-    const base::ListValue* disabled_token_list = local_state()->GetList(
+    const base::Value* disabled_token_list = local_state()->GetList(
         embedder_support::prefs::kOriginTrialDisabledTokens);
     ASSERT_TRUE(disabled_token_list);
 

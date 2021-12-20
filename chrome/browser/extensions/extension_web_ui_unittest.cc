@@ -212,7 +212,7 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
 
   // Duplicates should be removed (in response to ExtensionSystem::ready()).
   // Only a single entry should remain.
-  const base::DictionaryValue* overrides =
+  const base::Value* overrides =
       prefs->GetDictionary(ExtensionWebUI::kExtensionURLOverrides);
   ASSERT_TRUE(overrides);
   const base::Value* newtab_overrides =

@@ -115,7 +115,7 @@ class NotificationsEnabledDeferred {
   }
 
   bool Get(const std::string& app_id) {
-    const base::DictionaryValue* dict =
+    const base::Value* dict =
         prefs_->GetDictionary(arc::prefs::kArcSetNotificationsEnabledDeferred);
     return dict->FindBoolKey(app_id).value_or(false);
   }
@@ -339,8 +339,7 @@ void ArcAppListPrefs::UprevCurrentIconsVersionForTesting() {
 
 std::string ArcAppListPrefs::GetAppIdByPackageName(
     const std::string& package_name) const {
-  const base::DictionaryValue* apps =
-      prefs_->GetDictionary(arc::prefs::kArcApps);
+  const base::Value* apps = prefs_->GetDictionary(arc::prefs::kArcApps);
   if (!apps)
     return std::string();
 
@@ -655,8 +654,8 @@ std::unique_ptr<ArcAppListPrefs::PackageInfo> ArcAppListPrefs::GetPackage(
     return nullptr;
 
   const base::DictionaryValue* package = nullptr;
-  const base::DictionaryValue* packages =
-      prefs_->GetDictionary(arc::prefs::kArcPackages);
+  const base::DictionaryValue* packages = &base::Value::AsDictionaryValue(
+      *prefs_->GetDictionary(arc::prefs::kArcPackages));
   if (!packages ||
       !packages->GetDictionaryWithoutPathExpansion(package_name, &package))
     return nullptr;
@@ -740,8 +739,8 @@ std::vector<std::string> ArcAppListPrefs::GetAppIds() const {
 
 std::vector<std::string> ArcAppListPrefs::GetAppIdsNoArcEnabledCheck() const {
   std::vector<std::string> ids;
-  const base::DictionaryValue* apps =
-      prefs_->GetDictionary(arc::prefs::kArcApps);
+  const base::DictionaryValue* apps = &base::Value::AsDictionaryValue(
+      *prefs_->GetDictionary(arc::prefs::kArcApps));
   DCHECK(apps);
 
   // crx_file::id_util is de-facto utility for id generation.
@@ -770,8 +769,8 @@ std::unique_ptr<ArcAppListPrefs::AppInfo> ArcAppListPrefs::GetApp(
 std::unique_ptr<ArcAppListPrefs::AppInfo> ArcAppListPrefs::GetAppFromPrefs(
     const std::string& app_id) const {
   const base::DictionaryValue* app = nullptr;
-  const base::DictionaryValue* apps =
-      prefs_->GetDictionary(arc::prefs::kArcApps);
+  const base::DictionaryValue* apps = &base::Value::AsDictionaryValue(
+      *prefs_->GetDictionary(arc::prefs::kArcApps));
   if (!apps || !apps->GetDictionaryWithoutPathExpansion(app_id, &app))
     return nullptr;
 
@@ -826,8 +825,8 @@ bool ArcAppListPrefs::IsRegistered(const std::string& app_id) const {
     return false;
 
   const base::DictionaryValue* app = nullptr;
-  const base::DictionaryValue* apps =
-      prefs_->GetDictionary(arc::prefs::kArcApps);
+  const base::DictionaryValue* apps = &base::Value::AsDictionaryValue(
+      *prefs_->GetDictionary(arc::prefs::kArcApps));
   return apps && apps->GetDictionaryWithoutPathExpansion(app_id, &app);
 }
 
@@ -1692,8 +1691,8 @@ void ArcAppListPrefs::OnInstallShortcut(arc::mojom::ShortcutInfoPtr shortcut) {
 void ArcAppListPrefs::OnUninstallShortcut(const std::string& package_name,
                                           const std::string& intent_uri) {
   std::vector<std::string> shortcuts_to_remove;
-  const base::DictionaryValue* apps =
-      prefs_->GetDictionary(arc::prefs::kArcApps);
+  const base::DictionaryValue* apps = &base::Value::AsDictionaryValue(
+      *prefs_->GetDictionary(arc::prefs::kArcApps));
   for (base::DictionaryValue::Iterator app_it(*apps); !app_it.IsAtEnd();
        app_it.Advance()) {
     const base::Value* value = &app_it.value();
@@ -1731,8 +1730,8 @@ std::unordered_set<std::string> ArcAppListPrefs::GetAppsAndShortcutsForPackage(
     bool include_only_launchable_apps,
     bool include_shortcuts) const {
   std::unordered_set<std::string> app_set;
-  const base::DictionaryValue* apps =
-      prefs_->GetDictionary(arc::prefs::kArcApps);
+  const base::DictionaryValue* apps = &base::Value::AsDictionaryValue(
+      *prefs_->GetDictionary(arc::prefs::kArcApps));
   for (base::DictionaryValue::Iterator app_it(*apps); !app_it.IsAtEnd();
        app_it.Advance()) {
     if (!crx_file::id_util::IdIsValid(app_it.key()))
@@ -1879,8 +1878,8 @@ void ArcAppListPrefs::OnTaskSetActive(int32_t task_id) {
 void ArcAppListPrefs::OnNotificationsEnabledChanged(
     const std::string& package_name,
     bool enabled) {
-  const base::DictionaryValue* apps =
-      prefs_->GetDictionary(arc::prefs::kArcApps);
+  const base::DictionaryValue* apps = &base::Value::AsDictionaryValue(
+      *prefs_->GetDictionary(arc::prefs::kArcApps));
   for (base::DictionaryValue::Iterator app(*apps); !app.IsAtEnd();
        app.Advance()) {
     const base::DictionaryValue* app_dict;
@@ -1978,8 +1977,8 @@ std::vector<std::string> ArcAppListPrefs::GetPackagesFromPrefs(
     return packages;
   }
 
-  const base::DictionaryValue* package_prefs =
-      prefs_->GetDictionary(arc::prefs::kArcPackages);
+  const base::DictionaryValue* package_prefs = &base::Value::AsDictionaryValue(
+      *prefs_->GetDictionary(arc::prefs::kArcPackages));
   for (base::DictionaryValue::Iterator package(*package_prefs);
        !package.IsAtEnd(); package.Advance()) {
     const base::DictionaryValue* package_info;
@@ -2001,8 +2000,8 @@ std::vector<std::string> ArcAppListPrefs::GetPackagesFromPrefs(
 
 base::Time ArcAppListPrefs::GetInstallTime(const std::string& app_id) const {
   const base::DictionaryValue* app = nullptr;
-  const base::DictionaryValue* apps =
-      prefs_->GetDictionary(arc::prefs::kArcApps);
+  const base::DictionaryValue* apps = &base::Value::AsDictionaryValue(
+      *prefs_->GetDictionary(arc::prefs::kArcApps));
   if (!apps || !apps->GetDictionaryWithoutPathExpansion(app_id, &app))
     return base::Time();
 

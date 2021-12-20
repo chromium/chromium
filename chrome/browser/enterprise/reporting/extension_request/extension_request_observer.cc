@@ -96,7 +96,7 @@ void ExtensionRequestObserver::ShowAllNotifications() {
 
 void ExtensionRequestObserver::ShowNotification(
     ExtensionRequestNotification::NotifyType type) {
-  const base::DictionaryValue* pending_requests =
+  const base::Value* pending_requests =
       profile_->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
 
   if (!pending_requests)

@@ -471,7 +471,7 @@ bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
   VLOG(1) << "Looking for default for MIME type: " << mime_type
       << " and suffix: " << suffix;
   if (!mime_type.empty()) {
-    const base::DictionaryValue* mime_task_prefs =
+    const base::Value* mime_task_prefs =
         pref_service.GetDictionary(prefs::kDefaultTasksByMimeType);
     DCHECK(mime_task_prefs);
     LOG_IF(ERROR, !mime_task_prefs) << "Unable to open MIME type prefs";
@@ -484,7 +484,7 @@ bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
     }
   }
 
-  const base::DictionaryValue* suffix_task_prefs =
+  const base::Value* suffix_task_prefs =
       pref_service.GetDictionary(prefs::kDefaultTasksBySuffix);
   DCHECK(suffix_task_prefs);
   LOG_IF(ERROR, !suffix_task_prefs) << "Unable to open suffix prefs";

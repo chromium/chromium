@@ -64,7 +64,7 @@ bool PolicyCertServiceFactory::MigrateLocalStatePrefIntoProfilePref(
     const std::string& user_email,
     Profile* profile) {
   base::Value user_email_value(user_email);
-  const base::ListValue* list =
+  const base::Value* list =
       g_browser_process->local_state()->GetList(prefs::kUsedPolicyCertificates);
   if (!list) {
     NOTREACHED();

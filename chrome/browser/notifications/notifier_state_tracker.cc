@@ -144,7 +144,7 @@ void NotifierStateTracker::OnStringListPrefChanged(
   // Separate GetPrefs()->GetList() to analyze the crash. See crbug.com/322320
   const PrefService* pref_service = profile_->GetPrefs();
   CHECK(pref_service);
-  const base::ListValue* pref_list = pref_service->GetList(pref_name);
+  const base::Value* pref_list = pref_service->GetList(pref_name);
   base::Value::ConstListView pref_list_view = pref_list->GetList();
   for (size_t i = 0; i < pref_list_view.size(); ++i) {
     const std::string* element = pref_list_view[i].GetIfString();

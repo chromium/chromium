@@ -143,9 +143,9 @@ void RestorePrimaryUserDesks() {
   if (primary_user_prefs->GetBoolean(kUserHasUsedDesksRecently))
     UMA_HISTOGRAM_BOOLEAN("Ash.Desks.UserHasUsedDesksRecently", true);
 
-  const base::ListValue* desks_names =
+  const base::Value* desks_names =
       primary_user_prefs->GetList(prefs::kDesksNamesList);
-  const base::ListValue* desks_metrics =
+  const base::Value* desks_metrics =
       primary_user_prefs->GetList(prefs::kDesksMetricsList);
 
   // First create the same number of desks.

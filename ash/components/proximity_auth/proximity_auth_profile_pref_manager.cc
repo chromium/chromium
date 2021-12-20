@@ -218,7 +218,8 @@ void ProximityAuthProfilePrefManager::SetHasShownLoginDisabledMessage(
 
 bool ProximityAuthProfilePrefManager::HasShownLoginDisabledMessage() const {
   const base::DictionaryValue* all_user_prefs_dict =
-      local_state_->GetDictionary(prefs::kEasyUnlockLocalStateUserPrefs);
+      &base::Value::AsDictionaryValue(
+          *local_state_->GetDictionary(prefs::kEasyUnlockLocalStateUserPrefs));
   const base::DictionaryValue* current_user_prefs;
   if (!all_user_prefs_dict ||
       !all_user_prefs_dict->GetDictionaryWithoutPathExpansion(

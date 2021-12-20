@@ -49,7 +49,7 @@ class DataReductionProxyPrefsTest : public testing::Test {
   void VerifyList(const char* pref_name,
                   int64_t starting_value,
                   PrefService* pref_service) {
-    const base::ListValue* list_value = pref_service->GetList(pref_name);
+    const base::Value* list_value = pref_service->GetList(pref_name);
     base::Value::ConstListView list_view = list_value->GetList();
     for (int64_t i = 0; i < 10L; ++i) {
       std::string string_value;

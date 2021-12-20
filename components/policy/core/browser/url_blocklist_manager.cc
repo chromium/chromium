@@ -78,11 +78,11 @@ constexpr char kIosNtpHost[] = "newtab";
 #endif
 
 // Returns a blocklist based on the given |block| and |allow| pattern lists.
-std::unique_ptr<URLBlocklist> BuildBlocklist(const base::ListValue* block,
-                                             const base::ListValue* allow) {
+std::unique_ptr<URLBlocklist> BuildBlocklist(const base::Value* block,
+                                             const base::Value* allow) {
   auto blocklist = std::make_unique<URLBlocklist>();
-  blocklist->Block(block);
-  blocklist->Allow(allow);
+  blocklist->Block(&base::Value::AsListValue(*block));
+  blocklist->Allow(&base::Value::AsListValue(*allow));
   return blocklist;
 }
 
@@ -241,12 +241,10 @@ void URLBlocklistManager::Update() {
       background_task_runner_.get(), FROM_HERE,
       base::BindOnce(
           &BuildBlocklist,
-          base::Owned(pref_service_->GetList(policy_prefs::kUrlBlocklist)
-                          ->CreateDeepCopy()
-                          .release()),
-          base::Owned(pref_service_->GetList(policy_prefs::kUrlAllowlist)
-                          ->CreateDeepCopy()
-                          .release())),
+          base::Owned(base::Value::ToUniquePtrValue(
+              pref_service_->GetList(policy_prefs::kUrlBlocklist)->Clone())),
+          base::Owned(base::Value::ToUniquePtrValue(
+              pref_service_->GetList(policy_prefs::kUrlAllowlist)->Clone()))),
       base::BindOnce(&URLBlocklistManager::SetBlocklist,
                      ui_weak_ptr_factory_.GetWeakPtr()));
 }

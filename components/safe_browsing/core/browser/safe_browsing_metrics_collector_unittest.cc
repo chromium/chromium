@@ -44,7 +44,7 @@ class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
 
   const base::Value* GetTsFromUserStateAndEventType(UserState state,
                                                     EventType event_type) {
-    const base::DictionaryValue* state_dict =
+    const base::Value* state_dict =
         pref_service_.GetDictionary(prefs::kSafeBrowsingEventTimestamps);
     const base::Value* event_dict =
         state_dict->FindDictKey(base::NumberToString(static_cast<int>(state)));

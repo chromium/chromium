@@ -255,7 +255,7 @@ ArcDataSnapshotdManager::Snapshot::CreateForTesting(
 }
 
 void ArcDataSnapshotdManager::Snapshot::Parse() {
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       local_state_->GetDictionary(arc::prefs::kArcSnapshotInfo);
   if (!dict)
     return;

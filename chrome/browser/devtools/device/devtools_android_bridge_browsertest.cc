@@ -102,8 +102,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsAndroidBridgeTest, DefaultValues) {
   service->ClearPref(prefs::kDevToolsDiscoverTCPTargetsEnabled);
   service->ClearPref(prefs::kDevToolsTCPDiscoveryConfig);
 
-  const base::ListValue* targets =
-    service->GetList(prefs::kDevToolsTCPDiscoveryConfig);
+  const base::Value* targets =
+      service->GetList(prefs::kDevToolsTCPDiscoveryConfig);
   EXPECT_NE(nullptr, targets);
   EXPECT_EQ(2ul, targets->GetList().size());
 

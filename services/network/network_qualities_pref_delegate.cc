@@ -46,7 +46,8 @@ class PrefDelegateImpl
   std::unique_ptr<base::DictionaryValue> GetDictionaryValue() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     UMA_HISTOGRAM_EXACT_LINEAR("NQE.Prefs.ReadCount", 1, 2);
-    return pref_service_->GetDictionary(path_)->CreateDeepCopy();
+    return base::DictionaryValue::From(base::Value::ToUniquePtrValue(
+        pref_service_->GetDictionary(path_)->Clone()));
   }
 
  private:

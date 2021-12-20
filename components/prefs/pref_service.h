@@ -233,8 +233,8 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // Note that |path| must point to a registered preference. In that case, these
   // functions will never return NULL.
   const base::Value* Get(const std::string& path) const;
-  const base::DictionaryValue* GetDictionary(const std::string& path) const;
-  const base::ListValue* GetList(const std::string& path) const;
+  const base::Value* GetDictionary(const std::string& path) const;
+  const base::Value* GetList(const std::string& path) const;
 
   // Removes a user pref and restores the pref to its default value.
   void ClearPref(const std::string& path);

@@ -378,7 +378,7 @@ ExtensionFunction::ResponseAction InputMethodPrivateGetSettingsFunction::Run() {
   const auto params = GetSettings::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  const base::DictionaryValue* input_methods =
+  const base::Value* input_methods =
       Profile::FromBrowserContext(browser_context())
           ->GetPrefs()
           ->GetDictionary(prefs::kLanguageInputMethodSpecificSettings);

@@ -1481,8 +1481,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
   EXPECT_FALSE(user->HasDefaultImage());
   EXPECT_EQ(user_manager::User::USER_IMAGE_EXTERNAL, user->image_index());
   EXPECT_TRUE(ash::test::AreImagesEqual(policy_image, user->GetImage()));
-  const base::DictionaryValue* images_pref =
-      g_browser_process->local_state()->GetDictionary("user_image_info");
+  const base::DictionaryValue* images_pref = &base::Value::AsDictionaryValue(
+      *g_browser_process->local_state()->GetDictionary("user_image_info"));
   ASSERT_TRUE(images_pref);
   const base::DictionaryValue* image_properties;
   ASSERT_TRUE(images_pref->GetDictionaryWithoutPathExpansion(

@@ -817,9 +817,9 @@ void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable() {
   if (!g_browser_process->local_state())
     return;
 
-  const base::DictionaryValue* dictionary =
-      g_browser_process->local_state()->GetDictionary(
-          prefs::kTaskManagerColumnVisibility);
+  const base::DictionaryValue* dictionary = &base::Value::AsDictionaryValue(
+      *g_browser_process->local_state()->GetDictionary(
+          prefs::kTaskManagerColumnVisibility));
   if (!dictionary)
     return;
 

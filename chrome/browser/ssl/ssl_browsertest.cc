@@ -1735,7 +1735,7 @@ class CertificateTransparencySSLUITest : public CertVerifierBrowserTest {
 
     EXPECT_NO_FATAL_FAILURE(UpdateChromePolicy(policy_map));
 
-    const base::ListValue* pref_value = pref_service->GetList(pref_name);
+    const base::Value* pref_value = pref_service->GetList(pref_name);
     ASSERT_TRUE(pref_value);
     std::vector<std::string> pref_values;
     for (const auto& value : pref_value->GetList()) {

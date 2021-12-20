@@ -117,8 +117,8 @@ ExtensionFunction::ResponseAction EchoPrivateGetOfferInfoFunction::Run() {
 
   const std::string& service_id = params->id;
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* offer_infos = local_state->
-      GetDictionary(prefs::kEchoCheckedOffers);
+  const base::DictionaryValue* offer_infos = &base::Value::AsDictionaryValue(
+      *local_state->GetDictionary(prefs::kEchoCheckedOffers));
 
   const base::DictionaryValue* offer_info = NULL;
   if (!offer_infos->GetDictionaryWithoutPathExpansion(

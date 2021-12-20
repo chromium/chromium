@@ -687,7 +687,8 @@ void ExtensionAppsChromeOs::OnSystemFeaturesPrefChanged() {
   }
 
   const base::ListValue* disabled_system_features_pref =
-      local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
+      &base::Value::AsListValue(*local_state->GetList(
+          policy::policy_prefs::kSystemFeaturesDisableList));
   if (!disabled_system_features_pref) {
     return;
   }

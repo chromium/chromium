@@ -271,7 +271,8 @@ PopularSitesImpl::PopularSitesImpl(
       url_loader_factory_(std::move(url_loader_factory)),
       is_fallback_(false),
       sections_(
-          ParseSites(*prefs->GetList(prefs::kPopularSitesJsonPref),
+          ParseSites(base::Value::AsListValue(
+                         *prefs->GetList(prefs::kPopularSitesJsonPref)),
                      prefs_->GetInteger(prefs::kPopularSitesVersionPref))) {}
 
 PopularSitesImpl::~PopularSitesImpl() {}
@@ -396,7 +397,8 @@ std::string PopularSitesImpl::GetVersionToFetch() {
 }
 
 const base::ListValue* PopularSitesImpl::GetCachedJson() {
-  return prefs_->GetList(prefs::kPopularSitesJsonPref);
+  return &base::Value::AsListValue(
+      *prefs_->GetList(prefs::kPopularSitesJsonPref));
 }
 
 // static

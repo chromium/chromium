@@ -170,7 +170,7 @@ void MaybeInitWeeklyAggregateDataUsePrefs(const base::Time& now,
 
 // Records the key-value pairs in the dictionary in a sparse histogram.
 void RecordDictionaryToHistogram(const std::string& histogram_name,
-                                 const base::DictionaryValue* dictionary) {
+                                 const base::Value* dictionary) {
   base::HistogramBase* histogram = base::SparseHistogram::FactoryGet(
       histogram_name, base::HistogramBase::kUmaTargetedHistogramFlag);
   for (auto entry : dictionary->DictItems()) {
@@ -395,9 +395,9 @@ void DataReductionProxyCompressionStats::InitInt64Pref(const char* pref) {
 }
 
 void DataReductionProxyCompressionStats::InitListPref(const char* pref) {
-  std::unique_ptr<base::ListValue> pref_value =
-      pref_service_->GetList(pref)->CreateDeepCopy();
-  list_pref_map_[pref] = std::move(pref_value);
+  base::Value pref_value = pref_service_->GetList(pref)->Clone();
+  list_pref_map_[pref] = base::ListValue::From(
+      base::Value::ToUniquePtrValue(std::move(pref_value)));
 }
 
 int64_t DataReductionProxyCompressionStats::GetInt64(const char* pref_path) {

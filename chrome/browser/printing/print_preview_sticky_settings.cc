@@ -47,7 +47,7 @@ void PrintPreviewStickySettings::SaveInPrefs(PrefService* prefs) const {
 }
 
 void PrintPreviewStickySettings::RestoreFromPrefs(PrefService* prefs) {
-  const base::DictionaryValue* value =
+  const base::Value* value =
       prefs->GetDictionary(prefs::kPrintPreviewStickySettings);
   const base::Value* app_state =
       value->FindKeyOfType(kSettingAppState, base::Value::Type::STRING);

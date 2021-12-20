@@ -597,7 +597,7 @@ std::set<std::string> LockScreenItemStorage::GetExtensionsWithDataItems(
     bool include_empty) {
   std::set<std::string> result;
 
-  const base::DictionaryValue* items =
+  const base::Value* items =
       local_state_->GetDictionary(kLockScreenDataPrefKey);
   if (!items)
     return result;
@@ -622,7 +622,7 @@ std::set<std::string> LockScreenItemStorage::GetExtensionsWithDataItems(
 std::set<ExtensionId> LockScreenItemStorage::GetExtensionsToMigrate() {
   std::set<ExtensionId> result;
 
-  const base::DictionaryValue* items =
+  const base::Value* items =
       local_state_->GetDictionary(kLockScreenDataPrefKey);
 
   if (!items)

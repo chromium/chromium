@@ -160,8 +160,7 @@ class UkmServiceTest : public testing::Test {
   }
 
   int GetPersistedLogCount() {
-    const base::ListValue* list_value =
-        prefs_.GetList(prefs::kUkmUnsentLogStore);
+    const base::Value* list_value = prefs_.GetList(prefs::kUkmUnsentLogStore);
     return list_value->GetList().size();
   }
 

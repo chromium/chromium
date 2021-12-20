@@ -472,8 +472,9 @@ TEST_F(SearchEngineTableViewControllerTest, TestChangeProvider) {
 
   // Check that the selection was written back to the prefs.
   const base::DictionaryValue* searchProviderDict =
-      chrome_browser_state_->GetTestingPrefService()->GetDictionary(
-          DefaultSearchManager::kDefaultSearchProviderDataPrefName);
+      &base::Value::AsDictionaryValue(
+          *chrome_browser_state_->GetTestingPrefService()->GetDictionary(
+              DefaultSearchManager::kDefaultSearchProviderDataPrefName));
   ASSERT_TRUE(searchProviderDict);
   std::u16string short_name;
   EXPECT_TRUE(searchProviderDict->GetString(DefaultSearchManager::kShortName,

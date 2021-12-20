@@ -77,7 +77,7 @@ void TetherHostResponseRecorder::
 bool TetherHostResponseRecorder::AddRecentResponse(
     const std::string& device_id,
     const std::string& pref_name) {
-  const base::ListValue* ids = pref_service_->GetList(pref_name);
+  const base::Value* ids = pref_service_->GetList(pref_name);
   base::Value::ConstListView ids_list = ids->GetList();
 
   std::string first_device_id_in_list;
@@ -112,7 +112,7 @@ std::vector<std::string> TetherHostResponseRecorder::GetDeviceIdsForPref(
     const std::string& pref_name) const {
   std::vector<std::string> device_ids;
 
-  const base::ListValue* ids = pref_service_->GetList(pref_name);
+  const base::Value* ids = pref_service_->GetList(pref_name);
   if (!ids)
     return device_ids;
 

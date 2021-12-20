@@ -62,7 +62,7 @@ SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(
     int suggestion_group_id) {
   DCHECK(prefs);
 
-  const base::DictionaryValue* dictionary =
+  const base::Value* dictionary =
       prefs->GetDictionary(kSuggestionGroupVisibility);
   DCHECK(dictionary);
 

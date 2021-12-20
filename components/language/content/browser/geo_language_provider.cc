@@ -73,7 +73,7 @@ void GeoLanguageProvider::StartUp(PrefService* const prefs) {
 
   prefs_ = prefs;
 
-  const base::ListValue* const cached_languages_list =
+  const base::Value* const cached_languages_list =
       prefs_->GetList(kCachedGeoLanguagesPref);
   for (const auto& language_value : cached_languages_list->GetList()) {
     languages_.push_back(language_value.GetString());

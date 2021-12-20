@@ -524,7 +524,7 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
   const base::Time now = base::Time::NowFromSystemTime();
   PrefService* local_state = g_browser_process->local_state();
 
-  const base::ListValue* prev_log_uploads =
+  const base::Value* prev_log_uploads =
       local_state->GetList(policy::prefs::kStoreLogStatesAcrossReboots);
 
   std::vector<base::Time> updated_log_uploads;

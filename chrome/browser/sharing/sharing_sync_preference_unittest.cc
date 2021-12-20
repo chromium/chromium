@@ -57,7 +57,7 @@ class SharingSyncPreferenceTest : public testing::Test {
   }
 
   void AddEnabledFeature(int feature) {
-    const base::DictionaryValue* registration =
+    const base::Value* registration =
         prefs_.GetDictionary(prefs::kSharingLocalSharingInfo);
     base::Value enabled_features =
         registration->FindListKey(kSharingInfoEnabledFeatures)->Clone();

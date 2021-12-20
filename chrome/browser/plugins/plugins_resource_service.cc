@@ -90,8 +90,8 @@ PluginsResourceService::PluginsResourceService(PrefService* local_state)
           base::BindOnce(&content::GetNetworkConnectionTracker)) {}
 
 void PluginsResourceService::Init() {
-  const base::DictionaryValue* metadata =
-      prefs_->GetDictionary(prefs::kPluginsMetadata);
+  const base::DictionaryValue* metadata = &base::Value::AsDictionaryValue(
+      *prefs_->GetDictionary(prefs::kPluginsMetadata));
   PluginFinder::GetInstance()->ReinitializePlugins(metadata);
   StartAfterDelay();
 }

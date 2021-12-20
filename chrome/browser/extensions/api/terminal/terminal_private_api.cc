@@ -654,7 +654,7 @@ ExtensionFunction::ResponseAction TerminalPrivateGetSettingsFunction::Run() {
       Profile::FromBrowserContext(browser_context()));
   PrefService* service =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
-  const base::DictionaryValue* value =
+  const base::Value* value =
       service->GetDictionary(crostini::prefs::kCrostiniTerminalSettings);
   return RespondNow(OneArgument(value->Clone()));
 }

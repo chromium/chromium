@@ -206,7 +206,7 @@ std::vector<std::unique_ptr<Pairing>> GetSyncedDevices(Profile* const profile) {
 
 std::vector<std::unique_ptr<Pairing>> GetLinkedDevices(Profile* const profile) {
   PrefService* const prefs = profile->GetPrefs();
-  const base::ListValue* pref_pairings =
+  const base::Value* pref_pairings =
       prefs->GetList(kWebAuthnCablePairingsPrefName);
 
   std::vector<std::unique_ptr<Pairing>> ret;

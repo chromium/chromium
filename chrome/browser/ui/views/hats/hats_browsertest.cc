@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
       kHatsNextTestSurveyProductSpecificStringData);
 
   // Check that no record of a survey being shown is present.
-  const base::DictionaryValue* pref_data =
+  const base::Value* pref_data =
       browser()->profile()->GetPrefs()->GetDictionary(
           prefs::kHatsSurveyMetadata);
   absl::optional<base::Time> last_survey_started_time =

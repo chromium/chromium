@@ -423,13 +423,13 @@ void SpellcheckService::LoadDictionaries() {
   PrefService* prefs = user_prefs::UserPrefs::Get(context_);
   DCHECK(prefs);
 
-  const base::ListValue* user_dictionaries =
+  const base::Value* user_dictionaries =
       prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries);
-  const base::ListValue* forced_dictionaries =
+  const base::Value* forced_dictionaries =
       prefs->GetList(spellcheck::prefs::kSpellCheckForcedDictionaries);
 
   // Build a lookup of blocked dictionaries to skip loading them.
-  const base::ListValue* blocked_dictionaries =
+  const base::Value* blocked_dictionaries =
       prefs->GetList(spellcheck::prefs::kSpellCheckBlocklistedDictionaries);
   std::unordered_set<std::string> blocked_dictionaries_lookup;
   for (const auto& blocked_dict : blocked_dictionaries->GetList()) {

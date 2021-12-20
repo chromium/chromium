@@ -756,8 +756,8 @@ void CryptAuthDeviceManagerImpl::OnResyncMessage(
 }
 
 void CryptAuthDeviceManagerImpl::UpdateUnlockKeysFromPrefs() {
-  const base::ListValue* unlock_key_list =
-      pref_service_->GetList(prefs::kCryptAuthDeviceSyncUnlockKeys);
+  const base::ListValue* unlock_key_list = &base::Value::AsListValue(
+      *pref_service_->GetList(prefs::kCryptAuthDeviceSyncUnlockKeys));
   synced_devices_.clear();
   for (size_t i = 0; i < unlock_key_list->GetList().size(); ++i) {
     const base::DictionaryValue* unlock_key_dictionary;

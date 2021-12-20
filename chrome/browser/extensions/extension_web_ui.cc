@@ -356,8 +356,9 @@ std::vector<GURL> GetOverridesForChromeURL(
   DCHECK(url.SchemeIs(content::kChromeUIScheme));
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  const base::DictionaryValue* overrides = profile->GetPrefs()->GetDictionary(
-      ExtensionWebUI::kExtensionURLOverrides);
+  const base::DictionaryValue* overrides =
+      &base::Value::AsDictionaryValue(*profile->GetPrefs()->GetDictionary(
+          ExtensionWebUI::kExtensionURLOverrides));
 
   const base::ListValue* url_list = nullptr;
   if (!overrides || !overrides->GetList(url.host_piece(), &url_list))
@@ -450,8 +451,8 @@ bool ExtensionWebUI::HandleChromeURLOverride(
 bool ExtensionWebUI::HandleChromeURLOverrideReverse(
     GURL* url, content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  const base::DictionaryValue* overrides =
-      profile->GetPrefs()->GetDictionary(kExtensionURLOverrides);
+  const base::DictionaryValue* overrides = &base::Value::AsDictionaryValue(
+      *profile->GetPrefs()->GetDictionary(kExtensionURLOverrides));
   if (!overrides)
     return false;
 

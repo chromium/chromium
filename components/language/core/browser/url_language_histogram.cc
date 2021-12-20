@@ -92,8 +92,8 @@ void UrlLanguageHistogram::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 std::vector<UrlLanguageHistogram::LanguageInfo>
 UrlLanguageHistogram::GetTopLanguages() const {
   std::vector<UrlLanguageHistogram::LanguageInfo> top_languages =
-      GetAllLanguages(
-          *pref_service_->GetDictionary(kUrlLanguageHistogramCounters));
+      GetAllLanguages(base::Value::AsDictionaryValue(
+          *pref_service_->GetDictionary(kUrlLanguageHistogramCounters)));
 
   std::sort(top_languages.begin(), top_languages.end(),
             [](UrlLanguageHistogram::LanguageInfo a,
@@ -106,8 +106,8 @@ UrlLanguageHistogram::GetTopLanguages() const {
 
 float UrlLanguageHistogram::GetLanguageFrequency(
     const std::string& language_code) const {
-  const base::DictionaryValue* dict =
-      pref_service_->GetDictionary(kUrlLanguageHistogramCounters);
+  const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(
+      *pref_service_->GetDictionary(kUrlLanguageHistogramCounters));
   int counters_sum = GetCountersSum(*dict);
   // If the sample is not large enough yet, pretend there are no top languages.
   if (counters_sum < kMinCountersSum)

@@ -167,8 +167,8 @@ void NotificationPromo::InitFromPrefs() {
   if (promo_id_ == -1)
     return;
 
-  const base::DictionaryValue* promo_dict =
-      local_state_->GetDictionary(kPrefPromoObject);
+  const base::DictionaryValue* promo_dict = &base::Value::AsDictionaryValue(
+      *local_state_->GetDictionary(kPrefPromoObject));
   if (!promo_dict)
     return;
 

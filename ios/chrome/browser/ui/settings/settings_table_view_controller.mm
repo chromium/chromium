@@ -1641,7 +1641,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 // Check if the default search engine is managed by policy.
 - (BOOL)isDefaultSearchEngineManagedByPolicy {
-  const base::DictionaryValue* dict = _browserState->GetPrefs()->GetDictionary(
+  const base::Value* dict = _browserState->GetPrefs()->GetDictionary(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
 
   if (dict) {
@@ -1654,7 +1654,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 // Returns the text to be displayed by the managed Search Engine item.
 - (NSString*)managedSearchEngineDetailText {
-  const base::DictionaryValue* dict = _browserState->GetPrefs()->GetDictionary(
+  const base::Value* dict = _browserState->GetPrefs()->GetDictionary(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
   if (dict->FindBoolPath(DefaultSearchManager::kDisabledByPolicy)) {
     // Default search engine is disabled by policy.

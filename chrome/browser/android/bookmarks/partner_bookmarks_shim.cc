@@ -254,8 +254,7 @@ void PartnerBookmarksShim::ReloadNodeMapping() {
   if (!prefs_)
     return;
 
-  const base::ListValue* list =
-      prefs_->GetList(prefs::kPartnerBookmarkMappings);
+  const base::Value* list = prefs_->GetList(prefs::kPartnerBookmarkMappings);
   if (!list)
     return;
 

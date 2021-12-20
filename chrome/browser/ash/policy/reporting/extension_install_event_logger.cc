@@ -58,7 +58,7 @@ void ExtensionInstallEventLogger::Add(
 }
 
 void ExtensionInstallEventLogger::OnForcedExtensionsPrefChanged() {
-  const base::DictionaryValue* value =
+  const base::Value* value =
       pref_service_->GetDictionary(extensions::pref_names::kInstallForceList);
   if (!value)
     return;

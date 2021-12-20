@@ -1326,7 +1326,7 @@ TEST_F(ExtensionPrefsSimpleTest, MigrateToNewExternalUninstallBits) {
   TestExtensionPrefs prefs(base::ThreadTaskRunnerHandle::Get());
 
   auto has_extension_pref_entry = [&prefs](const std::string& id) {
-    const base::DictionaryValue* extensions_dictionary =
+    const base::Value* extensions_dictionary =
         prefs.pref_service()->GetDictionary(pref_names::kExtensions);
     if (!extensions_dictionary) {
       ADD_FAILURE() << "Extensions dictionary is missing!";

@@ -446,7 +446,7 @@ TEST_F(SupervisedUserExtensionTest, UpdateWithoutPermissionIncrease) {
   // Prefs are updated via sync.
   PrefService* pref_service = profile()->GetPrefs();
   ASSERT_TRUE(pref_service);
-  const base::DictionaryValue* approved_extensions =
+  const base::Value* approved_extensions =
       pref_service->GetDictionary(prefs::kSupervisedUserApprovedExtensions);
   EXPECT_TRUE(approved_extensions->FindStringKey(id));
 }

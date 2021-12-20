@@ -184,7 +184,8 @@ void UnsentLogStore::TrimAndPersistUnsentLogs() {
 }
 
 void UnsentLogStore::LoadPersistedUnsentLogs() {
-  ReadLogsFromPrefList(*local_state_->GetList(log_data_pref_name_));
+  ReadLogsFromPrefList(
+      base::Value::AsListValue(*local_state_->GetList(log_data_pref_name_)));
   RecordMetaDataMetrics();
 }
 
@@ -388,8 +389,7 @@ void UnsentLogStore::RecordMetaDataMetrics() {
   if (metadata_pref_name_ == nullptr)
     return;
 
-  const base::DictionaryValue* value =
-      local_state_->GetDictionary(metadata_pref_name_);
+  const base::Value* value = local_state_->GetDictionary(metadata_pref_name_);
   if (!value)
     return;
 

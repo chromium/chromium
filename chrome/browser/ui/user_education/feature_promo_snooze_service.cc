@@ -189,7 +189,7 @@ absl::optional<FeaturePromoSnoozeService::SnoozeData>
 FeaturePromoSnoozeService::ReadSnoozeData(const base::Feature& iph_feature) {
   std::string path_prefix = std::string(iph_feature.name) + ".";
 
-  const base::DictionaryValue* pref_data =
+  const base::Value* pref_data =
       profile_->GetPrefs()->GetDictionary(kIPHSnoozeDataPath);
   absl::optional<bool> is_dismissed =
       pref_data->FindBoolPath(path_prefix + kIPHIsDismissedPath);

@@ -95,7 +95,7 @@ std::string GetUserLastInputMethodId(const AccountId& account_id) {
 
   // Try to use old values.
   PrefService* const local_state = g_browser_process->local_state();
-  const base::DictionaryValue* users_last_input_methods =
+  const base::Value* users_last_input_methods =
       local_state->GetDictionary(::prefs::kUsersLastInputMethod);
 
   if (!users_last_input_methods) {

@@ -176,7 +176,8 @@ std::map<ModelType, int64_t> SyncTransportDataPrefs::GetInvalidationVersions()
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::map<ModelType, int64_t> invalidation_versions;
   const base::DictionaryValue* invalidation_dictionary =
-      pref_service_->GetDictionary(kSyncInvalidationVersions);
+      &base::Value::AsDictionaryValue(
+          *pref_service_->GetDictionary(kSyncInvalidationVersions));
   for (ModelType type : ProtocolTypes()) {
     std::string key = ModelTypeToString(type);
     std::string version_str;

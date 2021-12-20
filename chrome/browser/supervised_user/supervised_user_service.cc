@@ -724,7 +724,7 @@ void SupervisedUserService::UpdateDenylist() {
 }
 
 void SupervisedUserService::UpdateManualHosts() {
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       profile_->GetPrefs()->GetDictionary(prefs::kSupervisedUserManualHosts);
   std::map<std::string, bool> host_map;
   for (auto it : dict->DictItems()) {
@@ -743,7 +743,7 @@ void SupervisedUserService::UpdateManualHosts() {
 }
 
 void SupervisedUserService::UpdateManualURLs() {
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       profile_->GetPrefs()->GetDictionary(prefs::kSupervisedUserManualURLs);
   std::map<GURL, bool> url_map;
   for (auto it : dict->DictItems()) {
@@ -981,7 +981,7 @@ void SupervisedUserService::RefreshApprovedExtensionsFromPrefs() {
   // version information stored in the values is unnecessary. It is only there
   // for backwards compatibility. Remove the version information once sufficient
   // users have migrated away from M83.
-  const base::DictionaryValue* dict = profile_->GetPrefs()->GetDictionary(
+  const base::Value* dict = profile_->GetPrefs()->GetDictionary(
       prefs::kSupervisedUserApprovedExtensions);
   for (auto it : dict->DictItems()) {
     approved_extensions_set_.insert(it.first);

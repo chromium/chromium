@@ -472,8 +472,8 @@ void BackgroundContentsService::RestartForceInstalledExtensionOnCrash(
 void BackgroundContentsService::LoadBackgroundContentsFromPrefs() {
   if (!prefs_)
     return;
-  const base::DictionaryValue* contents =
-      prefs_->GetDictionary(prefs::kRegisteredBackgroundContents);
+  const base::DictionaryValue* contents = &base::Value::AsDictionaryValue(
+      *prefs_->GetDictionary(prefs::kRegisteredBackgroundContents));
   if (!contents)
     return;
   extensions::ExtensionRegistry* extension_registry =
@@ -537,8 +537,8 @@ void BackgroundContentsService::LoadBackgroundContentsForExtension(
   // Now look in the prefs.
   if (!prefs_)
     return;
-  const base::DictionaryValue* contents =
-      prefs_->GetDictionary(prefs::kRegisteredBackgroundContents);
+  const base::DictionaryValue* contents = &base::Value::AsDictionaryValue(
+      *prefs_->GetDictionary(prefs::kRegisteredBackgroundContents));
   if (!contents)
     return;
   LoadBackgroundContentsFromDictionary(extension_id, contents);
@@ -653,9 +653,9 @@ bool BackgroundContentsService::HasRegisteredBackgroundContents(
     const std::string& app_id) {
   if (!prefs_)
     return false;
-  const base::DictionaryValue* contents =
+  const base::Value* contents =
       prefs_->GetDictionary(prefs::kRegisteredBackgroundContents);
-  return contents->HasKey(app_id);
+  return contents->FindKey(app_id);
 }
 
 void BackgroundContentsService::UnregisterBackgroundContents(

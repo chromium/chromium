@@ -71,7 +71,7 @@ CellularESimProfileHandlerImpl::GetESimProfiles() {
   if (!device_prefs_)
     return std::vector<CellularESimProfile>();
 
-  const base::ListValue* profiles_list =
+  const base::Value* profiles_list =
       device_prefs_->GetList(prefs::kESimProfiles);
   if (!profiles_list) {
     NET_LOG(ERROR) << "eSIM profiles pref is not a list";
@@ -193,7 +193,7 @@ base::flat_set<std::string>
 CellularESimProfileHandlerImpl::GetAutoRefreshedEuiccPathsFromPrefs() const {
   DCHECK(device_prefs_);
 
-  const base::ListValue* euicc_paths_from_prefs =
+  const base::Value* euicc_paths_from_prefs =
       device_prefs_->GetList(prefs::kESimRefreshedEuiccs);
   if (!euicc_paths_from_prefs) {
     NET_LOG(ERROR) << "Could not fetch refreshed EUICCs pref.";

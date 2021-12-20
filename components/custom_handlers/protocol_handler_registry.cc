@@ -621,7 +621,7 @@ ProtocolHandlerRegistry::GetHandlersFromPref(const char* pref_name) const {
     return result;
   }
 
-  const base::ListValue* handlers = prefs->GetList(pref_name);
+  const base::Value* handlers = prefs->GetList(pref_name);
   if (handlers) {
     for (const auto& dict : handlers->GetList()) {
       if (!dict.is_dict())

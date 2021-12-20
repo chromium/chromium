@@ -60,8 +60,7 @@ void AppShimRegistry::GetProfilesSetForApp(
     const std::string& app_id,
     const std::string& profiles_key,
     std::set<base::FilePath>* profiles) const {
-  const base::DictionaryValue* cache =
-      GetPrefService()->GetDictionary(kAppShims);
+  const base::Value* cache = GetPrefService()->GetDictionary(kAppShims);
   const base::Value* app_info = cache->FindDictKey(app_id);
   if (!app_info)
     return;
@@ -104,8 +103,8 @@ void AppShimRegistry::OnAppQuit(const std::string& app_id,
 std::set<std::string> AppShimRegistry::GetInstalledAppsForProfile(
     const base::FilePath& profile) const {
   std::set<std::string> result;
-  const base::DictionaryValue* app_shims =
-      GetPrefService()->GetDictionary(kAppShims);
+  const base::DictionaryValue* app_shims = &base::Value::AsDictionaryValue(
+      *GetPrefService()->GetDictionary(kAppShims));
   if (!app_shims)
     return result;
   for (base::DictionaryValue::Iterator iter_app(*app_shims);

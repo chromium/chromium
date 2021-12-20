@@ -51,7 +51,7 @@ constexpr base::TimeDelta kPermissionActionMaxAge = base::Days(90);
 std::vector<PermissionActionsHistory::Entry>
 PermissionActionsHistory::GetHistory(const base::Time& begin,
                                      EntryFilter entry_filter) {
-  const base::DictionaryValue* dictionary =
+  const base::Value* dictionary =
       pref_service_->GetDictionary(prefs::kPermissionActions);
   if (!dictionary)
     return {};

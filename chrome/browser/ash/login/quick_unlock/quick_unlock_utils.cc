@@ -40,7 +40,7 @@ const char kQuickUnlockAllowlistOptionFingerprint[] = "FINGERPRINT";
 constexpr int kDefaultMinimumPinLength = 6;
 
 bool HasPolicyValue(const PrefService* pref_service, const char* value) {
-  const base::ListValue* quick_unlock_allowlist =
+  const base::Value* quick_unlock_allowlist =
       pref_service->GetList(prefs::kQuickUnlockModeAllowlist);
   // TODO(crbug.com/1187106): Use base::Contains once |quick_unlock_allowlist|
   // is not a ListValue.

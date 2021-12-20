@@ -69,7 +69,7 @@ class DeviceTrustServiceTest
                        std::make_unique<base::ListValue>());
   }
 
-  const base::ListValue* GetPolicyUrls() {
+  const base::Value* GetPolicyUrls() {
     return prefs_.GetList(kContextAwareAccessSignalsAllowlistPref);
   }
 

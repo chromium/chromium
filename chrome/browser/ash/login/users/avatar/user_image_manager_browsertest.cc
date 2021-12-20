@@ -223,7 +223,8 @@ class UserImageManagerTestBase : public LoginManagerTest,
                            int image_index,
                            const base::FilePath& image_path) {
     const base::DictionaryValue* images_pref =
-        local_state_->GetDictionary(UserImageManagerImpl::kUserImageProperties);
+        &base::Value::AsDictionaryValue(*local_state_->GetDictionary(
+            UserImageManagerImpl::kUserImageProperties));
     ASSERT_TRUE(images_pref);
     const base::DictionaryValue* image_properties = NULL;
     images_pref->GetDictionaryWithoutPathExpansion(account_id.GetUserEmail(),

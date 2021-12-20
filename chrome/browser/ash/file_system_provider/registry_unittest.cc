@@ -180,7 +180,8 @@ TEST_F(FileSystemProviderRegistryTest, RememberFileSystem) {
   ASSERT_TRUE(pref_service);
 
   const base::DictionaryValue* const extensions =
-      pref_service->GetDictionary(prefs::kFileSystemProviderMounted);
+      &base::Value::AsDictionaryValue(
+          *pref_service->GetDictionary(prefs::kFileSystemProviderMounted));
   ASSERT_TRUE(extensions);
 
   const base::DictionaryValue* file_systems = NULL;
@@ -267,7 +268,8 @@ TEST_F(FileSystemProviderRegistryTest, ForgetFileSystem) {
   ASSERT_TRUE(pref_service);
 
   const base::DictionaryValue* const extensions =
-      pref_service->GetDictionary(prefs::kFileSystemProviderMounted);
+      &base::Value::AsDictionaryValue(
+          *pref_service->GetDictionary(prefs::kFileSystemProviderMounted));
   ASSERT_TRUE(extensions);
 
   const base::DictionaryValue* file_systems = NULL;
@@ -299,7 +301,8 @@ TEST_F(FileSystemProviderRegistryTest, UpdateWatcherTag) {
   ASSERT_TRUE(pref_service);
 
   const base::DictionaryValue* const extensions =
-      pref_service->GetDictionary(prefs::kFileSystemProviderMounted);
+      &base::Value::AsDictionaryValue(
+          *pref_service->GetDictionary(prefs::kFileSystemProviderMounted));
   ASSERT_TRUE(extensions);
 
   const base::DictionaryValue* file_systems = NULL;

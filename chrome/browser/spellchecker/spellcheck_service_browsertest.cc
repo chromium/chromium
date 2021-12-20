@@ -184,7 +184,7 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
   }
 
   std::string GetMultilingualDictionaries() {
-    const base::ListValue* list_value =
+    const base::Value* list_value =
         prefs_->GetList(spellcheck::prefs::kSpellCheckDictionaries);
     std::vector<base::StringPiece> dictionaries;
     for (const auto& item_value : list_value->GetList()) {

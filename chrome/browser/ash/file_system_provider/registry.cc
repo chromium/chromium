@@ -130,7 +130,8 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
   DCHECK(pref_service);
 
   const base::DictionaryValue* const file_systems =
-      pref_service->GetDictionary(prefs::kFileSystemProviderMounted);
+      &base::Value::AsDictionaryValue(
+          *pref_service->GetDictionary(prefs::kFileSystemProviderMounted));
   DCHECK(file_systems);
 
   const base::DictionaryValue* file_systems_per_extension = NULL;

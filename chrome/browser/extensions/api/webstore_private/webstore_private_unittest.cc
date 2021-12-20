@@ -109,7 +109,7 @@ struct ExtensionRequestData {
 void VerifyPendingList(const std::map<ExtensionId, ExtensionRequestData>&
                            expected_pending_requests,
                        Profile* profile) {
-  const base::DictionaryValue* actual_pending_requests =
+  const base::Value* actual_pending_requests =
       profile->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
   ASSERT_EQ(expected_pending_requests.size(),
             actual_pending_requests->DictSize());

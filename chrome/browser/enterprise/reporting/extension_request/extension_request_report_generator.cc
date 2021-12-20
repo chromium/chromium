@@ -28,7 +28,7 @@ namespace enterprise_reporting {
 namespace {
 
 bool IsRequestInDict(const std::string& extension_id,
-                     const base::DictionaryValue* requests) {
+                     const base::Value* requests) {
   return requests->FindKey(extension_id) != nullptr;
 }
 
@@ -102,9 +102,9 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
   std::string webstore_update_url =
       extension_urls::GetDefaultWebstoreUpdateUrl().spec();
 
-  const base::DictionaryValue* pending_requests =
+  const base::Value* pending_requests =
       profile->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
-  const base::DictionaryValue* uploaded_requests =
+  const base::Value* uploaded_requests =
       profile->GetPrefs()->GetDictionary(kCloudExtensionRequestUploadedIds);
 
   for (auto it : pending_requests->DictItems()) {

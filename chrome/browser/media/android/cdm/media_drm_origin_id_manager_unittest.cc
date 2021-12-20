@@ -105,7 +105,8 @@ class MediaDrmOriginIdManagerTest : public testing::Test {
   }
 
   const base::DictionaryValue* GetDictionary(const std::string& path) const {
-    return profile_->GetTestingPrefService()->GetDictionary(path);
+    return &base::Value::AsDictionaryValue(
+        *profile_->GetTestingPrefService()->GetDictionary(path));
   }
 
   // On devices that support per-application provisioning pre-provisioning

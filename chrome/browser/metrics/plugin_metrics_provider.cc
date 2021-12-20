@@ -134,8 +134,8 @@ void PluginMetricsProvider::ProvideSystemProfileMetrics(
 void PluginMetricsProvider::ProvideStabilityMetrics(
     metrics::SystemProfileProto* system_profile_proto) {
   RecordCurrentStateIfPending();
-  const base::ListValue* plugin_stats_list = local_state_->GetList(
-      prefs::kStabilityPluginStats);
+  const base::Value* plugin_stats_list =
+      local_state_->GetList(prefs::kStabilityPluginStats);
   if (!plugin_stats_list)
     return;
 

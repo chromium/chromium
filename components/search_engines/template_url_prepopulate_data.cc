@@ -1340,7 +1340,7 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedTemplateURLData(
   if (!prefs)
     return t_urls;
 
-  const base::ListValue* list = prefs->GetList(prefs::kSearchProviderOverrides);
+  const base::Value* list = prefs->GetList(prefs::kSearchProviderOverrides);
   if (!list)
     return t_urls;
 

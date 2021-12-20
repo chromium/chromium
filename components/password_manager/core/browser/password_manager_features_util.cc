@@ -85,7 +85,7 @@ const char kMoveToAccountStoreOfferedCountKey[] =
 // Returns the total number of accounts for which an opt-in to the account
 // storage exists. Used for metrics.
 int GetNumberOfOptedInAccounts(const PrefService* pref_service) {
-  const base::DictionaryValue* global_pref =
+  const base::Value* global_pref =
       pref_service->GetDictionary(prefs::kAccountStoragePerAccountSettings);
   int count = 0;
   for (auto entry : global_pref->DictItems()) {
@@ -100,7 +100,7 @@ class AccountStorageSettingsReader {
  public:
   AccountStorageSettingsReader(const PrefService* prefs,
                                const GaiaIdHash& gaia_id_hash) {
-    const base::DictionaryValue* global_pref =
+    const base::Value* global_pref =
         prefs->GetDictionary(prefs::kAccountStoragePerAccountSettings);
     if (global_pref)
       account_settings_ = global_pref->FindDictKey(gaia_id_hash.ToBase64());

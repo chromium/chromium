@@ -39,7 +39,7 @@ const base::Value* GetPrefsEntry(const std::string& public_key_spki_der_b64,
   if (!profile_prefs)
     return nullptr;
 
-  const base::DictionaryValue* platform_keys =
+  const base::Value* platform_keys =
       profile_prefs->GetDictionary(prefs::kPlatformKeys);
   if (!platform_keys)
     return nullptr;

@@ -69,7 +69,7 @@ void ClipboardRestrictionService::UpdateSettings() {
     return;
   }
 
-  const base::DictionaryValue* settings = pref_service_->GetDictionary(
+  const base::Value* settings = pref_service_->GetDictionary(
       enterprise::content::kCopyPreventionSettings);
   const base::Value* enable = settings->FindListKey(
       enterprise::content::kCopyPreventionSettingsEnableFieldName);

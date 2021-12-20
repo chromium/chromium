@@ -91,8 +91,8 @@ void FullscreenController::MaybeShowNotification() {
 
   // Check if the URL is exempt from the notification by user pref.
   auto* prefs = session_controller->GetPrimaryUserPrefService();
-  const base::ListValue* url_exempt_list =
-      prefs->GetList(prefs::kFullscreenNotificationUrlExemptList);
+  const base::ListValue* url_exempt_list = &base::Value::AsListValue(
+      *prefs->GetList(prefs::kFullscreenNotificationUrlExemptList));
   url_matcher::URLMatcher url_matcher;
   policy::url_util::AddAllowFilters(&url_matcher, url_exempt_list);
   if (!url_matcher.MatchURL(url).empty())

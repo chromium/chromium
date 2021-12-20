@@ -374,8 +374,8 @@ network::mojom::URLLoaderFactory* KioskAppData::GetURLLoaderFactory() {
 
 bool KioskAppData::LoadFromCache() {
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* dict =
-      local_state->GetDictionary(dictionary_name());
+  const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(
+      *local_state->GetDictionary(dictionary_name()));
 
   if (!LoadFromDictionary(*dict))
     return false;

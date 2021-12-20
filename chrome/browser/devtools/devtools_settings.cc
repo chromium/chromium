@@ -89,7 +89,7 @@ absl::optional<base::Value> DevToolsSettings::Get(const std::string& name) {
     return base::Value(result ? "true" : "false");
   }
   const char* dict_name = GetDictionaryNameForSettingsName(name);
-  const base::DictionaryValue* dict = prefs->GetDictionary(dict_name);
+  const base::Value* dict = prefs->GetDictionary(dict_name);
   const base::Value* value = dict->FindKey(name);
   return value ? absl::optional<base::Value>(value->Clone()) : absl::nullopt;
 }

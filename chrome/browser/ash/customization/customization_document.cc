@@ -779,8 +779,8 @@ extensions::ExternalLoader* ServicesCustomizationDocument::CreateExternalLoader(
     loader->SetCurrentApps(GetDefaultAppsInProviderFormat(*root_));
     SetOemFolderName(profile, *root_);
   } else {
-    const base::DictionaryValue* root =
-        profile->GetPrefs()->GetDictionary(kServicesCustomizationKey);
+    const base::DictionaryValue* root = &base::Value::AsDictionaryValue(
+        *profile->GetPrefs()->GetDictionary(kServicesCustomizationKey));
     std::string version;
     if (root && root->GetString(kVersionAttr, &version)) {
       // If version exists, profile has cached version of customization.

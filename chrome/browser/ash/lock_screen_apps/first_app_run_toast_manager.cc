@@ -78,9 +78,8 @@ void FirstAppRunToastManager::RunForAppWindow(
   DCHECK(app_window->GetNativeWindow());
 
   const extensions::Extension* app = app_window->GetExtension();
-  const base::DictionaryValue* toast_shown =
-      profile_->GetPrefs()->GetDictionary(
-          prefs::kNoteTakingAppsLockScreenToastShown);
+  const base::Value* toast_shown = profile_->GetPrefs()->GetDictionary(
+      prefs::kNoteTakingAppsLockScreenToastShown);
   if (toast_shown->FindBoolPath(app->id()).value_or(false)) {
     return;
   }

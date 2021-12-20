@@ -142,8 +142,8 @@ const char kCrostiniUpgraderShelfId[] =
 std::string GetCrostiniShelfAppId(const Profile* profile,
                                   const std::string* window_app_id,
                                   const std::string* window_startup_id) {
-  const base::DictionaryValue* apps =
-      profile->GetPrefs()->GetDictionary(guest_os::prefs::kGuestOsRegistry);
+  const base::DictionaryValue* apps = &base::Value::AsDictionaryValue(
+      *profile->GetPrefs()->GetDictionary(guest_os::prefs::kGuestOsRegistry));
   std::string app_id;
 
   if (window_startup_id) {

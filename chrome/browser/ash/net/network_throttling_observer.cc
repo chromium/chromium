@@ -40,7 +40,8 @@ void NetworkThrottlingObserver::OnPreferenceChanged(
   DCHECK(pref_name == prefs::kNetworkThrottlingEnabled);
 
   const base::DictionaryValue* throttling_policy =
-      local_state_->GetDictionary(prefs::kNetworkThrottlingEnabled);
+      &base::Value::AsDictionaryValue(
+          *local_state_->GetDictionary(prefs::kNetworkThrottlingEnabled));
 
   // Default is to disable throttling if the policy is not found.
   bool enabled = false;

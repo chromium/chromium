@@ -117,5 +117,6 @@ const base::DictionaryValue* TtsControllerDelegateImpl::GetLangToVoicePref(
   const PrefService* prefs = GetPrefService(utterance);
   return prefs == nullptr
              ? nullptr
-             : prefs->GetDictionary(prefs::kTextToSpeechLangToVoiceName);
+             : &base::Value::AsDictionaryValue(
+                   *prefs->GetDictionary(prefs::kTextToSpeechLangToVoiceName));
 }

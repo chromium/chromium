@@ -107,7 +107,7 @@ DictionaryLocalStateValueWaiter::DictionaryLocalStateValueWaiter(
 DictionaryLocalStateValueWaiter::~DictionaryLocalStateValueWaiter() {}
 
 bool DictionaryLocalStateValueWaiter::ExpectedValueFound() {
-  const base::DictionaryValue* pref =
+  const base::Value* pref =
       pref_change_registrar_.prefs()->GetDictionary(pref_.c_str());
   if (!pref) {
     // Can't use ASSERT_* in non-void functions so this is the next best

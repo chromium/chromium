@@ -375,8 +375,8 @@ class KioskAppManagerTest : public InProcessBrowserTest {
 
     // Check data is cached in local state correctly.
     PrefService* local_state = g_browser_process->local_state();
-    const base::DictionaryValue* dict =
-        local_state->GetDictionary(KioskAppManager::kKioskDictionaryName);
+    const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(
+        *local_state->GetDictionary(KioskAppManager::kKioskDictionaryName));
 
     std::string name;
     const std::string name_key = "apps." + app_id + ".name";
@@ -548,8 +548,8 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, ClearAppData) {
   SetExistingApp("app_1", "Cached App1 Name", "red16x16.png", "");
 
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* dict =
-      local_state->GetDictionary(KioskAppManager::kKioskDictionaryName);
+  const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(
+      *local_state->GetDictionary(KioskAppManager::kKioskDictionaryName));
   const base::DictionaryValue* apps_dict;
   EXPECT_TRUE(dict->GetDictionary(KioskAppDataBase::kKeyApps, &apps_dict));
   EXPECT_TRUE(apps_dict->FindKey("app_1") != nullptr);

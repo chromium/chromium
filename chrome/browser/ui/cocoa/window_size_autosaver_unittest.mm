@@ -47,7 +47,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
   ASSERT_TRUE(pref);
 
   // Check to make sure there is no existing pref for window placement.
-  const base::DictionaryValue* placement = pref->GetDictionary(path_);
+  const base::Value* placement = pref->GetDictionary(path_);
   ASSERT_TRUE(placement);
   EXPECT_TRUE(placement->DictEmpty());
 
@@ -98,7 +98,8 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesPos) {
   // ...and it should be in the profile, too.
   EXPECT_TRUE(pref->GetDictionary(path_));
   int x, y;
-  const base::DictionaryValue* windowPref = pref->GetDictionary(path_);
+  const base::DictionaryValue* windowPref =
+      &base::Value::AsDictionaryValue(*pref->GetDictionary(path_));
   EXPECT_FALSE(windowPref->GetInteger("left", &x));
   EXPECT_FALSE(windowPref->GetInteger("right", &x));
   EXPECT_FALSE(windowPref->GetInteger("top", &x));
@@ -114,7 +115,7 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesRect) {
   ASSERT_TRUE(pref);
 
   // Check to make sure there is no existing pref for window placement.
-  const base::DictionaryValue* placement = pref->GetDictionary(path_);
+  const base::Value* placement = pref->GetDictionary(path_);
   ASSERT_TRUE(placement);
   EXPECT_TRUE(placement->DictEmpty());
 
@@ -157,7 +158,8 @@ TEST_F(WindowSizeAutosaverTest, RestoresAndSavesRect) {
   // ...and it should be in the profile, too.
   EXPECT_TRUE(pref->GetDictionary(path_));
   int x1, y1, x2, y2;
-  const base::DictionaryValue* windowPref = pref->GetDictionary(path_);
+  const base::DictionaryValue* windowPref =
+      &base::Value::AsDictionaryValue(*pref->GetDictionary(path_));
   EXPECT_FALSE(windowPref->GetInteger("x", &x1));
   EXPECT_FALSE(windowPref->GetInteger("y", &x1));
   ASSERT_TRUE(windowPref->GetInteger("left", &x1));

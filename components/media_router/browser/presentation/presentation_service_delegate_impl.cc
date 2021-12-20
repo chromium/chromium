@@ -711,7 +711,7 @@ MediaRoute::Id PresentationServiceDelegateImpl::GetRouteId(
 #if !defined(OS_ANDROID)
 bool PresentationServiceDelegateImpl::ShouldCancelAutoJoinForOrigin(
     const url::Origin& origin) {
-  const base::ListValue* origins =
+  const base::Value* origins =
       user_prefs::UserPrefs::Get(GetWebContents().GetBrowserContext())
           ->GetList(prefs::kMediaRouterTabMirroringSources);
   return origins &&

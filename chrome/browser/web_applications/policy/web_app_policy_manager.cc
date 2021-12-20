@@ -231,8 +231,8 @@ void WebAppPolicyManager::RefreshPolicySettings() {
   // No need to validate the types or values of the policy members because we
   // are using a SimpleSchemaValidatingPolicyHandler which should validate them
   // for us.
-  const base::DictionaryValue* web_app_dict =
-      pref_service_->GetDictionary(prefs::kWebAppSettings);
+  const base::DictionaryValue* web_app_dict = &base::Value::AsDictionaryValue(
+      *pref_service_->GetDictionary(prefs::kWebAppSettings));
 
   settings_by_url_.clear();
   default_settings_ = std::make_unique<WebAppPolicyManager::WebAppSetting>();
@@ -534,7 +534,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
   if (!local_state)  // Sometimes it's not available in tests.
     return;
 
-  const base::ListValue* disabled_system_features_pref =
+  const base::Value* disabled_system_features_pref =
       local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
   if (!disabled_system_features_pref)
     return;

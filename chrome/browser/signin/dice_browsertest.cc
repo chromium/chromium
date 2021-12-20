@@ -1202,7 +1202,7 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
   // Ensure that there are not deleted profiles before running this test.
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  const base::ListValue* deleted_profiles =
+  const base::Value* deleted_profiles =
       local_state->GetList(prefs::kProfilesDeleted);
   ASSERT_TRUE(deleted_profiles);
   ASSERT_TRUE(deleted_profiles->GetList().empty());
@@ -1221,7 +1221,7 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
   // longer allowed.
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  const base::ListValue* deleted_profiles =
+  const base::Value* deleted_profiles =
       local_state->GetList(prefs::kProfilesDeleted);
   EXPECT_TRUE(deleted_profiles);
   EXPECT_EQ(1U, deleted_profiles->GetList().size());

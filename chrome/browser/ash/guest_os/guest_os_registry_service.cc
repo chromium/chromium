@@ -561,7 +561,7 @@ base::WeakPtr<GuestOsRegistryService> GuestOsRegistryService::GetWeakPtr() {
 
 std::map<std::string, GuestOsRegistryService::Registration>
 GuestOsRegistryService::GetAllRegisteredApps() const {
-  const base::DictionaryValue* apps =
+  const base::Value* apps =
       prefs_->GetDictionary(guest_os::prefs::kGuestOsRegistry);
   std::map<std::string, GuestOsRegistryService::Registration> result;
   // Register Terminal by merging optional prefs with app values.
@@ -632,7 +632,7 @@ GuestOsRegistryService::GetRegisteredApps(VmType vm_type) const {
 
 absl::optional<GuestOsRegistryService::Registration>
 GuestOsRegistryService::GetRegistration(const std::string& app_id) const {
-  const base::DictionaryValue* apps =
+  const base::Value* apps =
       prefs_->GetDictionary(guest_os::prefs::kGuestOsRegistry);
 
   if (app_id == crostini::kCrostiniTerminalSystemAppId) {
@@ -648,7 +648,7 @@ GuestOsRegistryService::GetRegistration(const std::string& app_id) const {
 }
 
 void GuestOsRegistryService::RecordStartupMetrics() {
-  const base::DictionaryValue* apps =
+  const base::Value* apps =
       prefs_->GetDictionary(guest_os::prefs::kGuestOsRegistry);
 
   base::flat_map<int, int> num_apps;

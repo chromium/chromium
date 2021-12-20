@@ -530,7 +530,7 @@ void SearchPrefetchService::AddCacheEntry(const GURL& navigation_url,
 
 bool SearchPrefetchService::LoadFromPrefs() {
   prefetch_cache_.clear();
-  const base::DictionaryValue* dictionary =
+  const base::Value* dictionary =
       profile_->GetPrefs()->GetDictionary(prefetch::prefs::kCachePrefPath);
   DCHECK(dictionary);
 

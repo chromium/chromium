@@ -176,7 +176,7 @@ void SaveEventsToPrefs(Profile* profile,
 }  // namespace
 
 std::list<SessionServiceEvent> GetSessionServiceEvents(Profile* profile) {
-  const base::ListValue* serialized_events =
+  const base::Value* serialized_events =
       profile->GetPrefs()->GetList(kEventPrefKey);
   if (!serialized_events)
     return {};

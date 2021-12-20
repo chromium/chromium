@@ -226,7 +226,7 @@ bool EasyUnlockService::GetPersistedHardlockState(
   if (!local_state)
     return false;
 
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       local_state->GetDictionary(prefs::kEasyUnlockHardlockState);
   if (!dict)
     return false;

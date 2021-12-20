@@ -17,7 +17,8 @@ namespace enterprise_connectors {
 namespace {
 
 const base::ListValue* GetPolicyUrlPatterns(PrefService* prefs) {
-  return prefs->GetList(kContextAwareAccessSignalsAllowlistPref);
+  return &base::Value::AsListValue(
+      *prefs->GetList(kContextAwareAccessSignalsAllowlistPref));
 }
 
 bool ConnectorPolicyHasValues(PrefService* profile_prefs) {

@@ -119,7 +119,7 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
     return AppListControllerDelegate::PIN_EDITABLE;
   }
 
-  const base::ListValue* policy_apps =
+  const base::Value* policy_apps =
       profile->GetPrefs()->GetList(prefs::kPolicyPinnedLauncherApps);
   if (!policy_apps)
     return AppListControllerDelegate::PIN_EDITABLE;

@@ -121,8 +121,8 @@ class HostZoomMapBrowserTest : public InProcessBrowserTest {
 
   std::vector<std::string> GetHostsWithZoomLevelsFromPrefs() {
     PrefService* prefs = browser()->profile()->GetPrefs();
-    const base::DictionaryValue* dictionaries =
-        prefs->GetDictionary(prefs::kPartitionPerHostZoomLevels);
+    const base::DictionaryValue* dictionaries = &base::Value::AsDictionaryValue(
+        *prefs->GetDictionary(prefs::kPartitionPerHostZoomLevels));
     const base::DictionaryValue* values = NULL;
     std::string partition_key =
         ChromeZoomLevelPrefs::GetPartitionKeyForTesting(base::FilePath());

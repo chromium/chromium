@@ -69,7 +69,7 @@ const int kLogoutToLoginDelayMaxSec = 1800;
 
 // This reads integer value from kUserType Local State preference and
 // interprets it as UserType. It is used in initial users load.
-UserType GetStoredUserType(const base::DictionaryValue* prefs_user_types,
+UserType GetStoredUserType(const base::Value* prefs_user_types,
                            const AccountId& account_id) {
   const base::Value* stored_user_type = prefs_user_types->FindKey(
       account_id.HasAccountIdKey() ? account_id.GetAccountIdKey()
@@ -805,17 +805,16 @@ void UserManagerBase::EnsureUsersLoaded() {
   user_loading_stage_ = STAGE_LOADING;
 
   PrefService* local_state = GetLocalState();
-  const base::ListValue* prefs_regular_users =
+  const base::Value* prefs_regular_users =
       local_state->GetList(kRegularUsersPref);
 
-  const base::DictionaryValue* prefs_display_names =
+  const base::Value* prefs_display_names =
       local_state->GetDictionary(kUserDisplayName);
-  const base::DictionaryValue* prefs_given_names =
+  const base::Value* prefs_given_names =
       local_state->GetDictionary(kUserGivenName);
-  const base::DictionaryValue* prefs_display_emails =
+  const base::Value* prefs_display_emails =
       local_state->GetDictionary(kUserDisplayEmail);
-  const base::DictionaryValue* prefs_user_types =
-      local_state->GetDictionary(kUserType);
+  const base::Value* prefs_user_types = local_state->GetDictionary(kUserType);
 
   // Load public sessions first.
   std::set<AccountId> device_local_accounts_set;
@@ -824,8 +823,8 @@ void UserManagerBase::EnsureUsersLoaded() {
   // Load regular users and supervised users.
   std::vector<AccountId> regular_users;
   std::set<AccountId> regular_users_set;
-  ParseUserList(*prefs_regular_users, device_local_accounts_set, &regular_users,
-                &regular_users_set);
+  ParseUserList(base::Value::AsListValue(*prefs_regular_users),
+                device_local_accounts_set, &regular_users, &regular_users_set);
   for (std::vector<AccountId>::const_iterator it = regular_users.begin();
        it != regular_users.end(); ++it) {
     if (IsDeprecatedSupervisedAccountId(*it)) {
@@ -884,8 +883,7 @@ const User* UserManagerBase::FindUserInList(const AccountId& account_id) const {
 }
 
 bool UserManagerBase::UserExistsInList(const AccountId& account_id) const {
-  const base::ListValue* user_list =
-      GetLocalState()->GetList(kRegularUsersPref);
+  const base::Value* user_list = GetLocalState()->GetList(kRegularUsersPref);
   for (const base::Value& i : user_list->GetList()) {
     const std::string* email = i.GetIfString();
     if (email && (account_id.GetUserEmail() == *email))
@@ -975,7 +973,7 @@ User::OAuthTokenStatus UserManagerBase::LoadUserOAuthStatus(
     const AccountId& account_id) const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
 
-  const base::DictionaryValue* prefs_oauth_status =
+  const base::Value* prefs_oauth_status =
       GetLocalState()->GetDictionary(kUserOAuthTokenStatus);
   if (!prefs_oauth_status)
     return User::OAUTH_TOKEN_STATUS_UNKNOWN;
@@ -991,7 +989,7 @@ User::OAuthTokenStatus UserManagerBase::LoadUserOAuthStatus(
 bool UserManagerBase::LoadForceOnlineSignin(const AccountId& account_id) const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
 
-  const base::DictionaryValue* prefs_force_online =
+  const base::Value* prefs_force_online =
       GetLocalState()->GetDictionary(kUserForceOnlineSignin);
   if (prefs_force_online) {
     return prefs_force_online->FindBoolKey(account_id.GetUserEmail())
