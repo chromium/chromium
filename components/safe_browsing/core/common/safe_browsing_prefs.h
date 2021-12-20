@@ -115,6 +115,10 @@ extern const char kSafeBrowsingEventTimestamps[];
 // was updated.
 extern const char kAccountTailoredSecurityUpdateTimestamp[];
 
+// Whether the user was shown the notification that they may want to enable
+// Enhanced Safe Browsing due to their account tailored security state.
+extern const char kAccountTailoredSecurityShownNotification[];
+
 // A boolean indicating if Enhanced Protection was enabled in sync with
 // account tailored security.
 extern const char kEnhancedProtectionEnabledViaTailoredSecurity[];
