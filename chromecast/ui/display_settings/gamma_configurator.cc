@@ -65,6 +65,9 @@ void GammaConfigurator::ApplyGammaLut() {
 }
 
 void GammaConfigurator::SetColorInversion(bool invert) {
+  if (is_inverted_ == invert)
+    return;
+
   is_inverted_ = invert;
 
   if (is_initialized_)
