@@ -142,6 +142,11 @@ class HintsFetcher {
   // in the pref.
   void UpdateHostsSuccessfullyFetched(base::TimeDelta valid_duration);
 
+  // Returns the subset of URLs from |urls| for which the URL is considered
+  // valid and can be included in a hints fetch.
+  std::vector<GURL> GetSizeLimitedURLsForFetching(
+      const std::vector<GURL>& urls) const;
+
   // Returns the subset of hosts from |hosts| for which the hints should be
   // refreshed. The count of returned hosts is limited to
   // features::MaxHostsForOptimizationGuideServiceHintsFetch().

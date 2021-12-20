@@ -222,6 +222,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.HintsFetcher.GetHintsRequest.DroppedHosts.{RequestContext}"
+    units="counts" expires_after="M106">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the number of hosts that were dropped for a request made with
+    {RequestContext}, if the number of hosts dropped is non-zero. Will record at
+    most once per fetch.
+  </summary>
+  <token key="RequestContext" variants="RequestContext"/>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.HintsFetcher.GetHintsRequest.DroppedUrls.{RequestContext}"
+    units="counts" expires_after="M106">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the number of URLs that were dropped for a request made with
+    {RequestContext}, if the number of URLs dropped is non-zero. Will record at
+    most once per fetch.
+  </summary>
+  <token key="RequestContext" variants="RequestContext"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency.{RequestContext}"
     units="ms" expires_after="2022-04-17">
   <owner>sophiechang@chromium.org</owner>

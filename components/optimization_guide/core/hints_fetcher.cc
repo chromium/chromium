@@ -62,21 +62,6 @@ std::string GetStringNameForRequestContext(
   return std::string();
 }
 
-// Returns the subset of URLs from |urls| for which the URL is considered
-// valid and can be included in a hints fetch.
-std::vector<GURL> GetValidURLsForFetching(const std::vector<GURL>& urls) {
-  std::vector<GURL> valid_urls;
-  for (const auto& url : urls) {
-    if (valid_urls.size() >=
-        features::MaxUrlsForOptimizationGuideServiceHintsFetch()) {
-      break;
-    }
-    if (IsValidURLForURLKeyedHint(url))
-      valid_urls.push_back(url);
-  }
-  return valid_urls;
-}
-
 void RecordRequestStatusHistogram(proto::RequestContext request_context,
                                   HintsFetcherRequestStatus status) {
   base::UmaHistogramEnumeration(
@@ -190,16 +175,17 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
     HintsFetchedCallback hints_fetched_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(optimization_types.size(), 0u);
+  request_context_ = request_context;
 
   if (network_connection_tracker_->IsOffline()) {
-    RecordRequestStatusHistogram(request_context,
+    RecordRequestStatusHistogram(request_context_,
                                  HintsFetcherRequestStatus::kNetworkOffline);
     std::move(hints_fetched_callback).Run(absl::nullopt);
     return false;
   }
 
   if (active_url_loader_) {
-    RecordRequestStatusHistogram(request_context,
+    RecordRequestStatusHistogram(request_context_,
                                  HintsFetcherRequestStatus::kFetcherBusy);
     std::move(hints_fetched_callback).Run(absl::nullopt);
     return false;
@@ -207,10 +193,10 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
 
   std::vector<std::string> filtered_hosts =
       GetSizeLimitedHostsDueForHintsRefresh(hosts);
-  std::vector<GURL> valid_urls = GetValidURLsForFetching(urls);
+  std::vector<GURL> valid_urls = GetSizeLimitedURLsForFetching(urls);
   if (filtered_hosts.empty() && valid_urls.empty()) {
     RecordRequestStatusHistogram(
-        request_context, HintsFetcherRequestStatus::kNoHostsOrURLsToFetch);
+        request_context_, HintsFetcherRequestStatus::kNoHostsOrURLsToFetch);
     std::move(hints_fetched_callback).Run(absl::nullopt);
     return false;
   }
@@ -222,14 +208,13 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
 
   if (optimization_types.empty()) {
     RecordRequestStatusHistogram(
-        request_context,
+        request_context_,
         HintsFetcherRequestStatus::kNoSupportedOptimizationTypes);
     std::move(hints_fetched_callback).Run(absl::nullopt);
     return false;
   }
 
   hints_fetch_start_time_ = base::TimeTicks::Now();
-  request_context_ = request_context;
 
   proto::GetHintsRequest get_hints_request;
   get_hints_request.add_supported_key_representations(proto::HOST);
@@ -445,6 +430,26 @@ void HintsFetcher::OnURLLoadComplete(
   HandleResponse(response_body ? *response_body : "", net_error, response_code);
 }
 
+// Returns the subset of URLs from |urls| for which the URL is considered
+// valid and can be included in a hints fetch.
+std::vector<GURL> HintsFetcher::GetSizeLimitedURLsForFetching(
+    const std::vector<GURL>& urls) const {
+  std::vector<GURL> valid_urls;
+  for (size_t i = 0; i < urls.size(); i++) {
+    if (valid_urls.size() >=
+        features::MaxUrlsForOptimizationGuideServiceHintsFetch()) {
+      base::UmaHistogramCounts100(
+          "OptimizationGuide.HintsFetcher.GetHintsRequest.DroppedUrls." +
+              GetStringNameForRequestContext(request_context_),
+          urls.size() - i);
+      break;
+    }
+    if (IsValidURLForURLKeyedHint(urls[i]))
+      valid_urls.push_back(urls[i]);
+  }
+  return valid_urls;
+}
+
 std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
     const std::vector<std::string>& hosts) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -455,7 +460,17 @@ std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
   std::vector<std::string> target_hosts;
   target_hosts.reserve(hosts.size());
 
-  for (const auto& host : hosts) {
+  for (size_t i = 0; i < hosts.size(); i++) {
+    if (target_hosts.size() >=
+        features::MaxHostsForOptimizationGuideServiceHintsFetch()) {
+      base::UmaHistogramCounts100(
+          "OptimizationGuide.HintsFetcher.GetHintsRequest.DroppedHosts." +
+              GetStringNameForRequestContext(request_context_),
+          hosts.size() - i);
+      break;
+    }
+
+    std::string host = hosts[i];
     // Skip over localhosts, IP addresses, and invalid hosts.
     if (net::HostStringIsLocalhost(host))
       continue;
@@ -479,11 +494,6 @@ std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
     }
     if (host_hints_due_for_refresh)
       target_hosts.push_back(host);
-
-    if (target_hosts.size() >=
-        features::MaxHostsForOptimizationGuideServiceHintsFetch()) {
-      break;
-    }
   }
   DCHECK_GE(features::MaxHostsForOptimizationGuideServiceHintsFetch(),
             target_hosts.size());
