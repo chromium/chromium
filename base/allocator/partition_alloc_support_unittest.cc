@@ -32,25 +32,33 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
     pcscan_enabled = false;
 #endif
 
-    std::string brp_expectation = "Unavailable";
+    std::string brp_expectation;
+    std::string pcscan_expectation;
+
+    {
+      test::ScopedFeatureList brp_scope;
+      brp_scope.InitWithFeatures({}, {features::kPartitionAllocBackupRefPtr});
+
+      brp_expectation = "Unavailable";
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-    brp_expectation = pcscan_enabled ? "Ignore_PCScanIsOn" : "Ignore_NoGroup";
+      brp_expectation = pcscan_enabled ? "Ignore_PCScanIsOn" : "Ignore_NoGroup";
 #endif
-    std::string pcscan_expectation = "Unavailable";
+      pcscan_expectation = "Unavailable";
 #if defined(PA_ALLOW_PCSCAN)
-    pcscan_expectation = pcscan_enabled ? "Enabled" : "Disabled";
+      pcscan_expectation = pcscan_enabled ? "Enabled" : "Disabled";
 #endif
 
-    auto trials = ProposeSyntheticFinchTrials(false);
-    auto group_iter = trials.find("BackupRefPtr_Effective");
-    EXPECT_NE(group_iter, trials.end());
-    EXPECT_EQ(group_iter->second, brp_expectation);
-    group_iter = trials.find("PCScan_Effective");
-    EXPECT_NE(group_iter, trials.end());
-    EXPECT_EQ(group_iter->second, pcscan_expectation);
-    group_iter = trials.find("PCScan_Effective_Fallback");
-    EXPECT_NE(group_iter, trials.end());
-    EXPECT_EQ(group_iter->second, pcscan_expectation);
+      auto trials = ProposeSyntheticFinchTrials(false);
+      auto group_iter = trials.find("BackupRefPtr_Effective");
+      EXPECT_NE(group_iter, trials.end());
+      EXPECT_EQ(group_iter->second, brp_expectation);
+      group_iter = trials.find("PCScan_Effective");
+      EXPECT_NE(group_iter, trials.end());
+      EXPECT_EQ(group_iter->second, pcscan_expectation);
+      group_iter = trials.find("PCScan_Effective_Fallback");
+      EXPECT_NE(group_iter, trials.end());
+      EXPECT_EQ(group_iter->second, pcscan_expectation);
+    }
 
     {
       test::ScopedFeatureList brp_scope;
@@ -75,8 +83,8 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 #endif  // defined(PA_ALLOW_PCSCAN)
 
-      trials = ProposeSyntheticFinchTrials(false);
-      group_iter = trials.find("BackupRefPtr_Effective");
+      auto trials = ProposeSyntheticFinchTrials(false);
+      auto group_iter = trials.find("BackupRefPtr_Effective");
       EXPECT_NE(group_iter, trials.end());
       EXPECT_EQ(group_iter->second, brp_expectation);
       group_iter = trials.find("PCScan_Effective");
@@ -136,8 +144,8 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
                                     : (pcscan_enabled ? "Enabled" : "Disabled");
 #endif  // defined(PA_ALLOW_PCSCAN)
 
-        trials = ProposeSyntheticFinchTrials(false);
-        group_iter = trials.find("BackupRefPtr_Effective");
+        auto trials = ProposeSyntheticFinchTrials(false);
+        auto group_iter = trials.find("BackupRefPtr_Effective");
         EXPECT_NE(group_iter, trials.end());
         EXPECT_EQ(group_iter->second, brp_expectation);
         group_iter = trials.find("PCScan_Effective");
