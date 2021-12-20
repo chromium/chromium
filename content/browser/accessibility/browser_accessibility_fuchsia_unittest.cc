@@ -585,6 +585,91 @@ TEST_F(BrowserAccessibilityFuchsiaTest,
   EXPECT_EQ(fuchsia_node_data.child_ids()[1], child_2->GetFuchsiaNodeID());
 }
 
+TEST_F(BrowserAccessibilityFuchsiaTest, ChildTree) {
+  // Create a child tree with multiple nodes.
+  ui::AXNodeData node;
+  node.id = 1;
+  node.child_ids = {2, 3};
+  ui::AXNodeData node_2;
+  node_2.id = 2;
+  ui::AXNodeData node_3;
+  node_3.id = 3;
+  std::unique_ptr<BrowserAccessibilityManager> child_manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdate(node, node_2, node_3),
+          test_browser_accessibility_delegate_.get()));
+
+  // Create a parent tree that points to the child tree.
+  ui::AXNodeData node_4;
+  node_4.id = 4;
+  node_4.child_ids = {5};
+  ui::AXNodeData node_5;
+  node_5.id = 5;
+  node_5.AddChildTreeId(child_manager->ax_tree_id());
+  std::unique_ptr<BrowserAccessibilityManager> parent_manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdate(node_4, node_5),
+          test_browser_accessibility_delegate_.get()));
+
+  // Update the child tree's parent tree ID.
+  ui::AXTreeData updated_data = child_manager->GetTreeData();
+  updated_data.parent_tree_id = parent_manager->ax_tree_id();
+  child_manager->ax_tree()->UpdateDataForTesting(updated_data);
+
+  // Get the parent node that points to the child tree.
+  BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
+      ToBrowserAccessibilityFuchsia(parent_manager->GetFromID(5));
+
+  {
+    ASSERT_TRUE(browser_accessibility_fuchsia);
+    fuchsia::accessibility::semantics::Node fuchsia_node_data =
+        browser_accessibility_fuchsia->ToFuchsiaNodeData();
+
+    // Get the root of the child tree to verify that it's present in the parent
+    // node's children.
+    BrowserAccessibilityFuchsia* child_root =
+        ToBrowserAccessibilityFuchsia(child_manager->GetRoot());
+
+    ASSERT_EQ(fuchsia_node_data.child_ids().size(), 1u);
+    EXPECT_EQ(fuchsia_node_data.child_ids()[0], child_root->GetFuchsiaNodeID());
+  }
+
+  // Destroy the child tree, and ensure that the parent fuchsia node's child IDs
+  // no longer reference it.
+  child_manager.reset();
+
+  {
+    ASSERT_TRUE(browser_accessibility_fuchsia);
+    fuchsia::accessibility::semantics::Node fuchsia_node_data =
+        browser_accessibility_fuchsia->ToFuchsiaNodeData();
+
+    EXPECT_TRUE(fuchsia_node_data.child_ids().empty());
+  }
+}
+
+TEST_F(BrowserAccessibilityFuchsiaTest, ChildTreeMissing) {
+  // Create a parent tree that points to a non-existent child tree.
+  ui::AXNodeData node_4;
+  node_4.id = 4;
+  node_4.child_ids = {5};
+  ui::AXNodeData node_5;
+  node_5.id = 5;
+  node_5.AddChildTreeId(ui::AXTreeID::CreateNewAXTreeID());
+  std::unique_ptr<BrowserAccessibilityManager> parent_manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdate(node_4, node_5),
+          test_browser_accessibility_delegate_.get()));
+
+  // Get the parent node that points to the child tree.
+  BrowserAccessibilityFuchsia* browser_accessibility_fuchsia =
+      ToBrowserAccessibilityFuchsia(parent_manager->GetFromID(5));
+
+  ASSERT_TRUE(browser_accessibility_fuchsia);
+  auto fuchsia_node_data = browser_accessibility_fuchsia->ToFuchsiaNodeData();
+
+  EXPECT_TRUE(fuchsia_node_data.child_ids().empty());
+}
+
 TEST_F(BrowserAccessibilityFuchsiaTest, GetFuchsiaNodeIDNonRootTree) {
   // We want to verify that the root of a non-root tree will NOT be assigned ID
   // = 0, so Specify that this tree is not the root.

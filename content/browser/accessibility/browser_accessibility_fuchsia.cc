@@ -88,9 +88,14 @@ BrowserAccessibilityFuchsia* ToBrowserAccessibilityFuchsia(
 
 std::vector<uint32_t> BrowserAccessibilityFuchsia::GetFuchsiaChildIDs() const {
   std::vector<uint32_t> child_ids;
-  for (const BrowserAccessibility& child : PlatformChildren()) {
-    child_ids.push_back(static_cast<const BrowserAccessibilityFuchsia&>(child)
-                            .GetFuchsiaNodeID());
+
+  // TODO(abrusher): Switch back to using platform children.
+  for (const auto* child : AllChildren()) {
+    const BrowserAccessibilityFuchsia* fuchsia_child =
+        static_cast<const BrowserAccessibilityFuchsia*>(child);
+    DCHECK(fuchsia_child);
+
+    child_ids.push_back(fuchsia_child->GetFuchsiaNodeID());
   }
 
   return child_ids;
