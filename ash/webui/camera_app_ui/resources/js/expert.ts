@@ -7,9 +7,9 @@ import * as state from './state.js';
 
 /**
  * Enables or disables expert mode.
- * @param {boolean} enable Whether to enable or disable expert mode
+ * @param enable Whether to enable or disable expert mode
  */
-export function setExpertMode(enable) {
+export function setExpertMode(enable: boolean): void {
   state.set(state.State.EXPERT, enable);
   localStorage.set('expert', enable);
 }
@@ -17,7 +17,7 @@ export function setExpertMode(enable) {
 /**
  * Toggles expert mode.
  */
-export function toggleExpertMode() {
+export function toggleExpertMode(): void {
   const newState = !state.get(state.State.EXPERT);
   setExpertMode(newState);
 }
