@@ -82,7 +82,6 @@ class StartSurfaceToolbarMediator {
     private boolean mDefaultSearchEngineHasLogo;
     private boolean mShouldShowStartSurfaceAsHomepage;
     private boolean mHomepageEnabled;
-    private boolean mHasIncognitoTabs;
 
     private CallbackController mCallbackController = new CallbackController();
     private float mNonIncognitoHomepageTranslationY;
@@ -162,13 +161,11 @@ class StartSurfaceToolbarMediator {
         mIncognitoTabModelObserver = new IncognitoTabModelObserver() {
             @Override
             public void wasFirstTabCreated() {
-                mHasIncognitoTabs = true;
                 updateIncognitoToggleTabVisibility();
             }
 
             @Override
             public void didBecomeEmpty() {
-                mHasIncognitoTabs = false;
                 updateIncognitoToggleTabVisibility();
             }
         };
@@ -292,12 +289,14 @@ class StartSurfaceToolbarMediator {
             return;
         }
 
-        if (mHideIncognitoSwitchWhenNoTabs) {
-            mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, mHasIncognitoTabs);
-        } else {
-            mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, true);
-        }
+        mPropertyModel.set(
+                INCOGNITO_SWITCHER_VISIBLE, !mHideIncognitoSwitchWhenNoTabs || hasIncognitoTabs());
         updateNewTabViewTextVisibility();
+    }
+
+    private boolean hasIncognitoTabs() {
+        if (mTabModelSelector == null) return false;
+        return mTabModelSelector.getModel(true).getCount() != 0;
     }
 
     void setStartSurfaceToolbarVisibility(boolean shouldShowStartSurfaceToolbar) {
