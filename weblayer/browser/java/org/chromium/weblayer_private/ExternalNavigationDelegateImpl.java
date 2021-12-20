@@ -15,7 +15,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Function;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
-import org.chromium.components.external_intents.ExternalNavigationDelegate.StartActivityIfNeededResult;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -214,6 +213,16 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public boolean shouldLaunchWebApksOnInitialIntent() {
+        return false;
+    }
+
+    @Override
+    public boolean maybeSetTargetPackage(Intent intent) {
+        return false;
+    }
+
+    @Override
+    public boolean shouldAvoidDisambiguationDialog(Intent intent) {
         return false;
     }
 

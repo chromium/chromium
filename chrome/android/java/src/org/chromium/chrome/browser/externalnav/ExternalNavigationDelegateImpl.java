@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.external_intents.ExternalNavigationDelegate;
-import org.chromium.components.external_intents.ExternalNavigationDelegate.StartActivityIfNeededResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.components.external_intents.RedirectHandler;
@@ -349,5 +348,15 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
         return BuildInfo.isAtLeastS()
                 && CachedFeatureFlags.isEnabled(
                         ChromeFeatureList.WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT);
+    }
+
+    @Override
+    public boolean maybeSetTargetPackage(Intent intent) {
+        return false;
+    }
+
+    @Override
+    public boolean shouldAvoidDisambiguationDialog(Intent intent) {
+        return false;
     }
 }

@@ -247,4 +247,15 @@ public interface ExternalNavigationDelegate {
      * Whether WebAPKs should be launched even on the initial Intent.
      */
     boolean shouldLaunchWebApksOnInitialIntent();
+
+    /**
+     * Potentially adds a target package to the Intent. Returns whether the package was set.
+     */
+    boolean maybeSetTargetPackage(Intent intent);
+
+    /**
+     * Whether the Activity launch should be aborted if the disambiguation prompt is going to be
+     * shown.
+     */
+    boolean shouldAvoidDisambiguationDialog(Intent intent);
 }
