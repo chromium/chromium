@@ -31,6 +31,7 @@ include_rules = [
   "+components/web_resource",
   "+ios/chrome/browser",
   "+ios/chrome/browser/feature_engagement",
+  "+components/signin/public/identity_manager",
   "+ios/components/webui",
   "+ios/net",
   "+ios/public/provider/chrome",

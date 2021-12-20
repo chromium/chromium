@@ -14,6 +14,10 @@
 
 @class ChromeIdentity;
 
+namespace signin {
+enum class Tribool;
+}  // namespace signin
+
 // Returns an NSArray of |scopes| as NSStrings.
 NSArray* GetScopeArray(const std::set<std::string>& scopes);
 
@@ -25,5 +29,10 @@ bool ShouldHandleSigninError(NSError* error);
 
 // Returns CGSize based on |IdentityAvatarSize|.
 CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size);
+
+// Returns whether Chrome has been started after a device restore. This method
+// needs to be called for the first time before IO is disallowed on UI thread.
+// The value is cached. The result is cached for later calls.
+signin::Tribool IsFirstSessionAfterDeviceRestore();
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_SIGNIN_UTIL_H_

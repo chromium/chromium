@@ -232,6 +232,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/search_engines:unit_tests",
     "//ios/chrome/browser/send_tab_to_self:unit_tests",
     "//ios/chrome/browser/sessions:unit_tests",
+    "//ios/chrome/browser/signin:signin_util_internal_unit_tests",
     "//ios/chrome/browser/signin:unit_tests",
     "//ios/chrome/browser/snapshots:unit_tests",
     "//ios/chrome/browser/ssl:unit_tests",

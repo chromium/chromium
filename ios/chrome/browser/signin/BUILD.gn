@@ -27,8 +27,6 @@ source_set("signin") {
     "chrome_account_manager_service_observer_bridge.mm",
     "chrome_identity_service_observer_bridge.h",
     "chrome_identity_service_observer_bridge.mm",
-    "constants.h",
-    "constants.mm",
     "device_accounts_provider_impl.h",
     "device_accounts_provider_impl.mm",
     "gaia_auth_fetcher_ios.h",
@@ -56,8 +54,6 @@ source_set("signin") {
     "signin_client_factory.h",
     "signin_error_controller_factory.cc",
     "signin_error_controller_factory.h",
-    "signin_util.h",
-    "signin_util.mm",
     "user_approved_account_list_manager.h",
     "user_approved_account_list_manager.mm",
   ]
@@ -102,6 +98,53 @@ source_set("signin") {
     "//net",
     "//url",
   ]
+  public_deps = [
+    ":constants",
+    ":signin_util",
+  ]
+}
+
+source_set("signin_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "signin_util.h",
+    "signin_util.mm",
+  ]
+  deps = [
+    ":constants",
+    ":signin_util_internal",
+    "//base",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser",
+    "//ios/public/provider/chrome/browser/signin",
+    "//ios/public/provider/chrome/browser/signin:signin_error_api",
+  ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("signin_util_internal") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "signin_util_internal.h",
+    "signin_util_internal.mm",
+  ]
+  visibility = [
+    ":signin_util",
+    ":signin_util_internal_unit_tests",
+  ]
+  deps = [
+    "//base",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser",
+  ]
 }
 
 source_set("test_support") {
@@ -127,6 +170,18 @@ source_set("test_support") {
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/signin:constants",
     "//ios/public/provider/chrome/browser/signin:test_support",
+  ]
+}
+
+source_set("signin_util_internal_unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "signin_util_internal_unittest.mm" ]
+  deps = [
+    ":signin_util_internal",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/public/identity_manager",
   ]
 }
 
