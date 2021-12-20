@@ -220,7 +220,12 @@ class ShortcutsProviderTest : public testing::Test {
   scoped_refptr<ShortcutsProvider> provider_;
 };
 
-ShortcutsProviderTest::ShortcutsProviderTest() {}
+ShortcutsProviderTest::ShortcutsProviderTest() {
+  // `scoped_feature_list_` needs to be initialized as early as possible, to
+  // avoid data races caused by tasks on other threads accessing it.
+  scoped_feature_list_.InitAndDisableFeature(
+      omnibox::kPreserveLongerShortcutsText);
+}
 
 void ShortcutsProviderTest::SetUp() {
   client_ = std::make_unique<FakeAutocompleteProviderClient>();
@@ -518,6 +523,7 @@ class ShortcutsProviderPreserveLongerShortcutsTest
   ShortcutsProviderPreserveLongerShortcutsTest() {
     // `scoped_feature_list_` needs to be initialized as early as possible, to
     // avoid data races caused by tasks on other threads accessing it.
+    scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(
         omnibox::kPreserveLongerShortcutsText);
   }

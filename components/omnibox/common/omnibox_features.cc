@@ -210,7 +210,7 @@ const base::Feature kShortBookmarkSuggestionsByTotalInputLength{
 // enabled, they preserve up to 3 additional chars. See `GetShortcutText()` in
 // shortcuts_backend.cc for details.
 const base::Feature kPreserveLongerShortcutsText{
-    "OmniboxPreserveLongerShortcutsText", base::FEATURE_DISABLED_BY_DEFAULT};
+    "OmniboxPreserveLongerShortcutsText", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, inputs may match bookmark paths. These path matches won't
 // contribute to scoring. E.g. 'planets jupiter' can suggest a bookmark titled

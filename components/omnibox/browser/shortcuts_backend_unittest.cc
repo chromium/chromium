@@ -85,7 +85,10 @@ class ShortcutsBackendTest : public testing::Test,
   bool changed_notified_ = false;
 };
 
-ShortcutsBackendTest::ShortcutsBackendTest() = default;
+ShortcutsBackendTest::ShortcutsBackendTest() {
+  scoped_feature_list().InitAndDisableFeature(
+      omnibox::kPreserveLongerShortcutsText);
+}
 
 ShortcutsDatabase::Shortcut::MatchCore
 ShortcutsBackendTest::MatchCoreForTesting(const std::string& url,
@@ -440,6 +443,7 @@ TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut) {
 class ShortcutsBackendLongerShortcutsTest : public ShortcutsBackendTest {
  public:
   ShortcutsBackendLongerShortcutsTest() {
+    scoped_feature_list().Reset();
     scoped_feature_list().InitAndEnableFeature(
         omnibox::kPreserveLongerShortcutsText);
   }
