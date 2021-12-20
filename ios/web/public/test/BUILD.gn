@@ -22,6 +22,7 @@ source_set("test") {
     "//ios/web/navigation",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public/deprecated",
+    "//ios/web/test:js_test_util_internal",
     "//ios/web/test:test_support",
     "//ui/base",
   ]

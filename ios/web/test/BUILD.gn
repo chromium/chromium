@@ -84,6 +84,18 @@ source_set("test_support") {
   ]
 }
 
+source_set("js_test_util_internal") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+
+  deps = [ "//base/test:test_support" ]
+
+  sources = [
+    "js_test_util_internal.h",
+    "js_test_util_internal.mm",
+  ]
+}
+
 source_set("test_constants") {
   testonly = true
   sources = [

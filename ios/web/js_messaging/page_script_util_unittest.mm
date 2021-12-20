@@ -14,6 +14,7 @@
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #include "ios/web/public/test/web_test.h"
+#import "ios/web/test/js_test_util_internal.h"
 #import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
