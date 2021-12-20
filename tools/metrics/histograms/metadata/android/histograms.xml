@@ -4333,10 +4333,13 @@ chromium-metrics-reviews@google.com.
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     This captures two pieces of information about renderer crashes: did the app
-    developer handle the renderer crash to recover, and if not, what type of
-    crash was this? This is recorded once each time the renderer process dies
+    developer handle the renderer crash to recover and what type of crash was
+    this? This is recorded once each time the renderer process dies
     unexpectedly, and is logged after we have notified the app via the
     onRenderProcessGone() callback.
+
+    Prior to M99, this histogram did not distinguish between crashes vs. kills
+    if the renderer crash was handled by the app.
   </summary>
 </histogram>
 
