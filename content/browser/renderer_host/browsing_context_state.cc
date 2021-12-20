@@ -119,4 +119,27 @@ void BrowsingContextState::SetIsAdSubframe(bool is_ad_subframe) {
   }
 }
 
+void BrowsingContextState::ActiveFrameCountIsZero(
+    SiteInstanceImpl* site_instance) {
+  // |site_instance| no longer contains any active RenderFrameHosts, so we don't
+  // need to maintain a proxy there anymore.
+  RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(site_instance->group());
+  CHECK(proxy);
+
+  DeleteRenderFrameProxyHost(site_instance);
+}
+
+void BrowsingContextState::RenderProcessGone(
+    SiteInstanceImpl* instance,
+    const ChildProcessTerminationInfo& info) {
+  GetRenderFrameProxyHost(instance->group())->SetRenderFrameProxyCreated(false);
+}
+
+void BrowsingContextState::DeleteRenderFrameProxyHost(
+    SiteInstance* site_instance) {
+  static_cast<SiteInstanceImpl*>(site_instance)->RemoveObserver(this);
+  proxy_hosts_.erase(
+      static_cast<SiteInstanceImpl*>(site_instance)->group()->GetId());
+}
+
 }  // namespace content

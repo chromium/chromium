@@ -59,7 +59,8 @@ namespace content {
 // kLegacyOneToOneWithFrameTreeNode is currently enabled and will be removed
 // once the functionality gated behind kSwapForCrossBrowsingInstanceNavigations
 // is implemented.
-class BrowsingContextState : public base::RefCounted<BrowsingContextState> {
+class BrowsingContextState : public base::RefCounted<BrowsingContextState>,
+                             public SiteInstanceImpl::Observer {
  public:
   using RenderFrameProxyHostMap =
       std::unordered_map<SiteInstanceGroupId,
@@ -152,6 +153,14 @@ class BrowsingContextState : public base::RefCounted<BrowsingContextState> {
   // Sets whether this is an ad subframe and notifies the proxies about the
   // update.
   void SetIsAdSubframe(bool is_ad_subframe);
+
+  // Delete a RenderFrameProxyHost owned by this object.
+  void DeleteRenderFrameProxyHost(SiteInstance* site_instance);
+
+  // SiteInstanceImpl::Observer
+  void ActiveFrameCountIsZero(SiteInstanceImpl* site_instance) override;
+  void RenderProcessGone(SiteInstanceImpl* site_instance,
+                         const ChildProcessTerminationInfo& info) override;
 
  protected:
   friend class base::RefCounted<BrowsingContextState>;

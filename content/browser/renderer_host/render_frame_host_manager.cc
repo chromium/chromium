@@ -647,7 +647,8 @@ void RenderFrameHostManager::PrepareForCollectingPage(
   // RenderFrameHostManager, which also removes their respective
   // SiteInstanceImpl::Observer.
   for (auto& it : *proxy_hosts)
-    DeleteRenderFrameProxyHost(it.second->GetSiteInstance());
+    browsing_context_state_->DeleteRenderFrameProxyHost(
+        it.second->GetSiteInstance());
 }
 
 std::unique_ptr<StoredPage> RenderFrameHostManager::CollectPage(
@@ -861,10 +862,14 @@ void RenderFrameHostManager::RestorePage(
   stored_page_to_restore_ = std::move(stored_page);
 }
 
+// TODO(crbug.com/1270671): When this method is migrated to BrowsingContextState
+// we need to determine where/when we need to reset proxy hosts. In particular
+// we should consider how pending-delete RenderFrameHosts are handled after
+// cross-BCG navigations.
 void RenderFrameHostManager::ResetProxyHosts() {
   for (const auto& pair : browsing_context_state_->proxy_hosts()) {
     static_cast<SiteInstanceImpl*>(pair.second->GetSiteInstance())
-        ->RemoveObserver(this);
+        ->RemoveObserver(browsing_context_state_.get());
   }
   browsing_context_state_->proxy_hosts().clear();
 }
@@ -1425,12 +1430,6 @@ RenderFrameHostManager::SiteInstanceDescriptor::SiteInstanceDescriptor(
       dest_url_info(dest_url_info),
       relation(relation_to_current) {}
 
-void RenderFrameHostManager::RenderProcessGone(
-    SiteInstanceImpl* instance,
-    const ChildProcessTerminationInfo& info) {
-  GetRenderFrameProxyHost(instance->group())->SetRenderFrameProxyCreated(false);
-}
-
 void RenderFrameHostManager::CancelPendingIfNecessary(
     RenderFrameHostImpl* render_frame_host) {
   if (render_frame_host == speculative_render_frame_host_.get()) {
@@ -1479,16 +1478,6 @@ void RenderFrameHostManager::UpdateUserActivationState(
   }
 }
 
-void RenderFrameHostManager::ActiveFrameCountIsZero(
-    SiteInstanceImpl* site_instance) {
-  // |site_instance| no longer contains any active RenderFrameHosts, so we don't
-  // need to maintain a proxy there anymore.
-  RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(site_instance->group());
-  CHECK(proxy);
-
-  DeleteRenderFrameProxyHost(site_instance);
-}
-
 RenderFrameProxyHost* RenderFrameHostManager::CreateRenderFrameProxyHost(
     SiteInstance* site_instance,
     scoped_refptr<RenderViewHostImpl> rvh) {
@@ -1501,7 +1490,8 @@ RenderFrameProxyHost* RenderFrameHostManager::CreateRenderFrameProxyHost(
       new RenderFrameProxyHost(site_instance, std::move(rvh), frame_tree_node_);
   browsing_context_state_->proxy_hosts()[site_instance_group_id] =
       base::WrapUnique(proxy_host);
-  static_cast<SiteInstanceImpl*>(site_instance)->AddObserver(this);
+  static_cast<SiteInstanceImpl*>(site_instance)
+      ->AddObserver(browsing_context_state_.get());
 
   TRACE_EVENT_INSTANT("navigation",
                       "RenderFrameHostManager::CreateRenderFrameProxyHost",
@@ -1511,9 +1501,7 @@ RenderFrameProxyHost* RenderFrameHostManager::CreateRenderFrameProxyHost(
 
 void RenderFrameHostManager::DeleteRenderFrameProxyHost(
     SiteInstance* site_instance) {
-  static_cast<SiteInstanceImpl*>(site_instance)->RemoveObserver(this);
-  browsing_context_state_->proxy_hosts().erase(
-      static_cast<SiteInstanceImpl*>(site_instance)->group()->GetId());
+  browsing_context_state_->DeleteRenderFrameProxyHost(site_instance);
 }
 
 ShouldSwapBrowsingInstance
@@ -3356,7 +3344,7 @@ void RenderFrameHostManager::CommitPending(
         CHECK(!base::Contains(browsing_context_state_->proxy_hosts(),
                               proxy.second->site_instance_group()->GetId()));
         static_cast<SiteInstanceImpl*>(proxy.second->GetSiteInstance())
-            ->AddObserver(this);
+            ->AddObserver(browsing_context_state_.get());
         TRACE_EVENT_INSTANT(
             "navigation", "RenderFrameHostManager::CommitPending_RestoreProxy",
             ChromeTrackEvent::kRenderFrameProxyHost, *proxy.second);

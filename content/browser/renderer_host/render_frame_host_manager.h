@@ -109,8 +109,7 @@ using RemoteFramesBroadcastMethodCallback =
 //   RenderFrameProxyHost, to be used (for example) if the user goes back. The
 //   process only stays live if another tab is using it, but if so, the existing
 //   frame relationships will be maintained.
-class CONTENT_EXPORT RenderFrameHostManager
-    : public SiteInstanceImpl::Observer {
+class CONTENT_EXPORT RenderFrameHostManager {
  public:
   // Functions implemented by our owner that we need.
   //
@@ -485,11 +484,6 @@ class CONTENT_EXPORT RenderFrameHostManager
   GetAllProxyHostsForTesting() const {
     return browsing_context_state_->proxy_hosts();
   }
-
-  // SiteInstanceImpl::Observer
-  void ActiveFrameCountIsZero(SiteInstanceImpl* site_instance) override;
-  void RenderProcessGone(SiteInstanceImpl* site_instance,
-                         const ChildProcessTerminationInfo& info) override;
 
   // Cancels and destroys the pending or speculative RenderFrameHost if they
   // match the provided |render_frame_host|.
