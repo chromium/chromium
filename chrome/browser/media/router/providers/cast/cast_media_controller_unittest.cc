@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/time/time.h"
 #include "chrome/browser/media/router/providers/cast/app_activity.h"
 #include "chrome/browser/media/router/providers/cast/mock_app_activity.h"
 #include "chrome/browser/media/router/test/media_router_mojo_test.h"
@@ -29,6 +30,7 @@ namespace media_router {
 
 namespace {
 
+constexpr char kMediaTitle[] = "media title";
 constexpr char kSessionId[] = "sessionId123";
 constexpr int kMediaSessionId = 12345678;
 
@@ -113,7 +115,7 @@ Value CreateMediaStatus(const mojom::MediaStatus& status) {
 
 mojom::MediaStatusPtr CreateSampleMediaStatus() {
   mojom::MediaStatusPtr status = mojom::MediaStatus::New();
-  status->title = "media title";
+  status->title = kMediaTitle;
   status->can_play_pause = true;
   status->can_mute = true;
   status->can_set_volume = false;
@@ -334,6 +336,24 @@ TEST_F(CastMediaControllerTest, UpdateMediaStatusWithDoubleDurations) {
                          status->current_time.InSecondsF());
       });
   SetMediaStatus(*expected_status);
+  VerifyAndClearExpectations();
+}
+
+TEST_F(CastMediaControllerTest, IgnoreInvalidUpdate) {
+  Value invalid_status = CreateMediaStatus(*CreateSampleMediaStatus());
+  invalid_status.SetIntPath("media.duration", -100);
+  invalid_status.SetIntPath("currentTime", -100);
+
+  EXPECT_CALL(*status_observer_, OnMediaStatusUpdated(_))
+      .WillOnce([&](mojom::MediaStatusPtr status) {
+        // Valid fields are copied over.
+        EXPECT_EQ(kMediaTitle, status->title);
+        // Invalid fields (negative durations) are ignored, and the default
+        // value of zero is used.
+        EXPECT_EQ(base::Seconds(0), status->duration);
+        EXPECT_EQ(base::Seconds(0), status->current_time);
+      });
+  SetMediaStatus(std::move(invalid_status));
   VerifyAndClearExpectations();
 }
 
