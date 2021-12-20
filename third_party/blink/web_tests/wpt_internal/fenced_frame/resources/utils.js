@@ -100,6 +100,9 @@ const KEYS = {
 
   "ndef.write"                                  : "00000000-0000-0000-0000-000000000034",
   "ndef.scan"                                   : "00000000-0000-0000-0000-000000000035",
+
+  "history_navigation_performed"                : "00000000-0000-0000-0000-000000000036",
+  "outer_page_ready"                            : "00000000-0000-0000-0000-000000000037",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 

@@ -63,7 +63,7 @@ unsigned History::length(ExceptionState& exception_state) const {
   }
 
   // TODO(crbug.com/1262022): Remove this condition when Fenced Frames
-  // transition to MPArch completely
+  // transition to MPArch completely.
   if (DomWindow()->GetFrame()->IsInFencedFrameTree()) {
     return 1;
   }
@@ -180,6 +180,12 @@ void History::go(ScriptState* script_state,
     exception_state.ThrowSecurityError(
         "May not use a History object associated with a Document that is not "
         "fully active");
+    return;
+  }
+
+  // TODO(crbug.com/1262022): Remove this condition when Fenced Frames
+  // transition to MPArch completely.
+  if (DomWindow()->GetFrame()->IsInFencedFrameTree()) {
     return;
   }
 
