@@ -65,8 +65,9 @@ class HatsNotificationControllerTest : public BrowserWithTestWindowTest {
   scoped_refptr<HatsNotificationController> InstantiateHatsController() {
     // The initialization will fail since the function IsNewDevice() will return
     // true.
-    scoped_refptr<HatsNotificationController> hats_notification_controller =
-        new HatsNotificationController(profile(), kHatsGeneralSurvey);
+    auto hats_notification_controller =
+        base::MakeRefCounted<HatsNotificationController>(profile(),
+                                                         kHatsGeneralSurvey);
 
     // HatsController::IsNewDevice() is run on a blocking thread.
     content::RunAllTasksUntilIdle();
@@ -130,9 +131,11 @@ TEST_F(HatsNotificationControllerTest, OldDevice_ShouldShowNotification) {
   // Finally check if notification was launched to confirm initialization.
   EXPECT_TRUE(display_service_->GetNotification(
       HatsNotificationController::kNotificationId));
+
+  // Simulate dismissing notification by the user to clean up the notification.
   display_service_->RemoveNotification(
       NotificationHandler::Type::TRANSIENT,
-      HatsNotificationController::kNotificationId, false);
+      HatsNotificationController::kNotificationId, /*by_user=*/true);
 }
 
 TEST_F(HatsNotificationControllerTest, NoInternet_DoNotShowNotification) {
@@ -219,9 +222,10 @@ TEST_F(HatsNotificationControllerTest,
   EXPECT_TRUE(display_service_->GetNotification(
       HatsNotificationController::kNotificationId));
 
+  // Simulate dismissing notification by the user to clean up the notification.
   display_service_->RemoveNotification(
       NotificationHandler::Type::TRANSIENT,
-      HatsNotificationController::kNotificationId, false);
+      HatsNotificationController::kNotificationId, /*by_user=*/true);
 }
 
 }  // namespace ash
