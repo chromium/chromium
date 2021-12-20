@@ -21,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/common/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
@@ -172,11 +173,13 @@ void DisplayTailoredSecurityConsentedModalDesktop(Profile* profile,
     description = l10n_util::GetStringUTF16(
         IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_DESCRIPTION);
     primary_button = l10n_util::GetStringUTF16(
-        IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_TURN_ON);
+        IDS_TAILORED_SECURITY_CONSENTED_DISABLE_NOTIFICATION_TURN_OFF);
     secondary_button = l10n_util::GetStringUTF16(IDS_OK);
-    SkColor icon_color = color_provider->GetColor(ui::kColorAlertHighSeverity);
+    SkColor icon_color =
+        color_provider->GetColor(ui::kColorSecondaryForeground);
     icon = gfx::Image(gfx::CreateVectorIcon(
-        kShieldBadIcon, message_center::kNotificationIconSize, icon_color));
+        vector_icons::kGppMaybeIcon, message_center::kNotificationIconSize,
+        icon_color));
   }
   LogConsentedOutcome(TailoredSecurityOutcome::kShown, enable);
   message_center::Notification notification(
