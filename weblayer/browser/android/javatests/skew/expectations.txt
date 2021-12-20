@@ -5,7 +5,7 @@
 # with versions less than or equal to $VERSION of the implementation.
 #
 # These lines are not comments! They define the set of known tags and other information.
-# tags: [ client_lte_91 client_lte_94 client_lte_95 impl_lte_95 ]
+# tags: [ client_lte_91 client_lte_94 client_lte_95 impl_lte_95 client_lte_97 impl_lte_97 ]
 # 'all' disables the test from any skew test.
 # tags: [ all ]
 # results: [ Skip ]
@@ -95,3 +95,19 @@ crbug.com/1191751 [ all ] org.chromium.weblayer.test.ScrollOffsetCallbackTest#te
 # fail in this case. Unfortunately there is no way to skip tests based on
 # the impl being >= a given version.
 crbug.com/1233480 [ all ] org.chromium.weblayer.test.NavigationTest#testInitialRendererInitiatedNavigationToAboutBlankFails [ Skip ]
+
+# In 99 we added logic to avoid the disambiguation dialog and a test for it.
+crbug.com/1278017 [ client_lte_97 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentAfterRedirectInBackgroundTabLaunchedWhenBackgroundLaunchesAllowed [ Skip ]
+crbug.com/1278017 [ client_lte_97 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentAfterRedirectLaunched [ Skip ]
+crbug.com/1278017 [ client_lte_97 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentInNewTabLaunchedOnLinkClick [ Skip ]
+crbug.com/1278017 [ client_lte_97 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentInSameTabLaunchedOnLinkClick [ Skip ]
+crbug.com/1278017 [ client_lte_97 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentNavigationParamSetOnIntentLaunchViaLinkClick [ Skip ]
+crbug.com/1278017 [ client_lte_97 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentNavigationParamSetOnNavigationsToIntents [ Skip ]
+crbug.com/1278017 [ client_lte_97 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentViaOnLoadLaunched [ Skip ]
+crbug.com/1278017 [ client_lte_97 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithFallbackUrlAfterRedirectLaunched [ Skip ]
+crbug.com/1278017 [ client_lte_97 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectInBackgroundTabLaunchedWhenBackgroundLaunchesAllowed [ Skip ]
+crbug.com/1278017 [ client_lte_97 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectInBrowserStartupLaunchedWhenBackgroundLaunchesAllowed [ Skip ]
+crbug.com/1278017 [ client_lte_97 ] org.chromium.weblayer.test.ExternalNavigationTest#testExternalIntentWithNoRedirectLaunched [ Skip ]
+crbug.com/1278017 [ client_lte_97 ] org.chromium.weblayer.test.ExternalNavigationTest#testUserClicksLinkToPageWithExternalIntentLaunchedViaOnLoad [ Skip ]
+crbug.com/1278017 [ client_lte_97 ] org.chromium.weblayer.test.ExternalNavigationTest#testAvoidDisambiguationDialog [ Skip ]
+crbug.com/1278017 [ impl_lte_97 ] org.chromium.weblayer.test.ExternalNavigationTest#testAvoidDisambiguationDialog [ Skip ]

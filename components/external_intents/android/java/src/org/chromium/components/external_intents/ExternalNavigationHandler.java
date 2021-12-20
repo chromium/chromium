@@ -1457,8 +1457,10 @@ public class ExternalNavigationHandler {
         // If resolveActivity is contained in possibleHandlingActivities, that means the Intent
         // would launch a specialized Activity. If not, that means the Intent will launch the
         // Android disambiguation prompt.
-        return !resolversSubsetOf(
+        boolean result = !resolversSubsetOf(
                 Collections.singletonList(resolveActivity), possibleHandlingActivities);
+        if (DEBUG && result) Log.i(TAG, "Avoiding disambiguation dialog.");
+        return result;
     }
 
     private OverrideUrlLoadingResult handleIncognitoIntent(ExternalNavigationParams params,
