@@ -1847,7 +1847,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     buffer << Tr{} << field_number
            << base::StringPrintf(
                   "Fillable - has value: %d->%d; autofilled: %d->%d. %s",
-                  has_value_before, is_autofilled_before, has_value_after,
+                  has_value_before, has_value_after, is_autofilled_before,
                   is_autofilled_after, failure_to_fill.c_str());
 
     if (!cached_field->IsVisible() && result.fields[i].is_autofilled)
