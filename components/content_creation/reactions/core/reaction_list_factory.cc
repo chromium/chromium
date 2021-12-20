@@ -32,8 +32,12 @@ namespace content_creation {
 std::vector<ReactionMetadata> BuildReactionMetadata() {
   return {
       ReactionMetadata(
+          ReactionType::LAUGH_CRY,
+          l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_TEARS_OF_JOY),
+          MakeThumbnailUrl("laughcry"), MakeReactionUrl("laughcry"), 48),
+      ReactionMetadata(
           ReactionType::HEART,
-          l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_HEART),
+          l10n_util::GetStringUTF8(IDS_LIGHTWEIGHT_REACTIONS_BEATING_HEART),
           MakeThumbnailUrl("heart"), MakeReactionUrl("heart"), 48),
       ReactionMetadata(
           ReactionType::EMOTIONAL,

@@ -35,8 +35,12 @@
   </message>
 
   <!-- Lightweight Reactions names, currently only used on Android. -->
-  <message name="IDS_LIGHTWEIGHT_REACTIONS_HEART" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the heart reaction is selected.">
-    Heart
+  <message name="IDS_LIGHTWEIGHT_REACTIONS_TEARS_OF_JOY" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the tears of joy reaction is selected.">
+    Tears of Joy
+  </message>
+
+  <message name="IDS_LIGHTWEIGHT_REACTIONS_BEATING_HEART" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the beating heart reaction is selected.">
+    Beating Heart
   </message>
 
   <message name="IDS_LIGHTWEIGHT_REACTIONS_CLAPPING" is_accessibility_with_no_ui="true" desc="The accessibility text to read when the clapping reaction is selected.">
