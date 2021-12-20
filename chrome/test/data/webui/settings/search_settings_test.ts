@@ -3,17 +3,18 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getSearchManager} from 'chrome://settings/settings.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {BaseMixin, getSearchManager, SearchManager} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // clang-format on
 
 suite('SearchSettingsTest', function() {
-  let searchManager;
+  let searchManager: SearchManager;
 
   setup(function() {
     searchManager = getSearchManager();
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   /**
@@ -27,8 +28,8 @@ suite('SearchSettingsTest', function() {
            <div id="mydiv">${optionText}</div>
          </settings-section>`;
 
-    const section = document.querySelector('settings-section');
-    const div = document.querySelector('#mydiv');
+    const section = document.querySelector('settings-section')!;
+    const div = document.querySelector('#mydiv')!;
 
     assertTrue(section.hiddenBySearch);
     return searchManager.search('settings', section)
@@ -39,15 +40,15 @@ suite('SearchSettingsTest', function() {
               div.querySelector('.search-highlight-wrapper');
           assertTrue(!!highlightWrapper);
 
-          const originalContent = highlightWrapper.querySelector(
+          const originalContent = highlightWrapper!.querySelector(
               '.search-highlight-original-content');
           assertTrue(!!originalContent);
-          assertEquals(optionText, originalContent.textContent);
+          assertEquals(optionText, originalContent!.textContent);
 
-          const searchHits =
-              highlightWrapper.querySelectorAll('.search-highlight-hit');
+          const searchHits = highlightWrapper!.querySelectorAll<HTMLElement>(
+              '.search-highlight-hit');
           assertEquals(1, searchHits.length);
-          assertEquals('Settings', searchHits[0].textContent);
+          assertEquals('Settings', searchHits[0]!.textContent);
 
           // Check that original DOM structure is restored when search
           // highlights are cleared.
@@ -73,8 +74,8 @@ suite('SearchSettingsTest', function() {
            </select>
          </settings-section>`;
 
-    const section = document.querySelector('settings-section');
-    const select = section.querySelector('select');
+    const section = document.querySelector('settings-section')!;
+    const select = section.querySelector('select')!;
 
     assertTrue(section.hiddenBySearch);
     return searchManager.search('settings', section)
@@ -90,9 +91,9 @@ suite('SearchSettingsTest', function() {
         .then(function() {
           const options = select.querySelectorAll('option');
           assertEquals(3, options.length);
-          assertEquals('Foo', options[0].textContent);
-          assertEquals('Settings', options[1].textContent);
-          assertEquals('Baz', options[2].textContent);
+          assertEquals('Foo', options[0]!.textContent);
+          assertEquals('Settings', options[1]!.textContent);
+          assertEquals('Baz', options[2]!.textContent);
         });
   });
 
@@ -114,7 +115,7 @@ suite('SearchSettingsTest', function() {
            <template>${text}</template>
          </settings-section>`;
 
-    const section = document.querySelector('settings-section');
+    const section = document.querySelector('settings-section')!;
     assertTrue(section.hiddenBySearch);
 
     return searchManager.search(text, section).then(function() {
@@ -124,55 +125,63 @@ suite('SearchSettingsTest', function() {
 
   test('no-search elements are ignored', function() {
     // Define a dummy test element with the necessary structure for testing.
-    Polymer({
-      is: 'dummy-test-element',
+    const DummyTestElementBase = BaseMixin(PolymerElement);
+    class DummyTestElement extends DummyTestElementBase {
+      get is() {
+        return 'dummy-test-element';
+      }
 
-      properties: {
-        noSearch: {
-          type: Boolean,
-          value: true,
-        },
-      },
-    });
-
-    const text = 'hello';
-
-    document.body.innerHTML = `
-      <dom-module id="dummy-test-element">
-        <template>
+      static get template() {
+        return html`
           <button></button>
           <settings-section hidden-by-search>
             <!-- Test case were no-search is part of a data binding. -->
             <template is="dom-if" route-path="/myPath0"
                 no-search="[[noSearch]]">
               <settings-subpage associated-control="[[$$('button')]]">
-                ${text}
+                hello
               </settings-subpage>
             </template>
 
             <!-- Test case were no-search is not part of any data binding.-->
             <template is="dom-if" route-path="/myPath1" no-search>
               <settings-subpage associated-control="[[$$('button')]]">
-                ${text}
+                hello
               </settings-subpage>
             </template>
           </settings-section>
-        </template>
-      </dom-module>
-      <dummy-test-element></dummy-test-element>`;
+         `;
+      }
 
-    const element = document.body.querySelector('dummy-test-element');
-    const section = element.$$('settings-section');
+      get properties() {
+        return {
+          noSearch: Boolean,
+        };
+      }
+
+      noSearch: boolean = true;
+    }
+
+    customElements.define('dummy-test-element', DummyTestElement);
+
+    const text = 'hello';
+
+    document.body.innerHTML = `<dummy-test-element></dummy-test-element>`;
+
+    const element =
+        document.body.querySelector<DummyTestElement>('dummy-test-element')!;
+    const section = element.shadowRoot!.querySelector('settings-section')!;
 
     // Ensure that no settings-subpage instance exists.
-    assertEquals(null, element.$$('settings-subpage'));
+    assertEquals(null, element.shadowRoot!.querySelector('settings-subpage'));
 
     return searchManager.search(text, section)
         .then(function() {
           assertTrue(section.hiddenBySearch);
           // Check that searching did not cause a settings-subpage instance to
           // be forced rendered.
-          assertEquals(null, element.$$('settings-subpage'));
+          assertEquals(
+              null, element.shadowRoot!.querySelector('settings-subpage'));
 
           element.noSearch = false;
           return searchManager.search(text, section);
@@ -181,7 +190,7 @@ suite('SearchSettingsTest', function() {
           // Check that searching caused a settings-subpage instance to be
           // forced rendered.
           assertFalse(section.hiddenBySearch);
-          assertTrue(!!element.$$('settings-subpage'));
+          assertTrue(!!element.shadowRoot!.querySelector('settings-subpage'));
         });
   });
 
@@ -203,12 +212,12 @@ suite('SearchSettingsTest', function() {
 
     return Promise.all(sections.map(s => searchManager.search('there', s)))
         .then(function(requests) {
-          assertTrue(requests[0].didFindMatches());
-          assertFalse(sections[0].hiddenBySearch);
-          assertTrue(requests[1].didFindMatches());
-          assertFalse(sections[1].hiddenBySearch);
-          assertFalse(requests[2].didFindMatches());
-          assertTrue(sections[2].hiddenBySearch);
+          assertTrue(requests[0]!.didFindMatches());
+          assertFalse(sections[0]!.hiddenBySearch);
+          assertTrue(requests[1]!.didFindMatches());
+          assertFalse(sections[1]!.hiddenBySearch);
+          assertFalse(requests[2]!.didFindMatches());
+          assertTrue(sections[2]!.hiddenBySearch);
         });
   });
 
@@ -219,20 +228,20 @@ suite('SearchSettingsTest', function() {
           <div id="mydiv">${originalText}</div>
         </settings-section>`;
 
-    const section = document.querySelector('settings-section');
-    const div = document.querySelector('#mydiv');
+    const section = document.querySelector('settings-section')!;
+    const div = document.querySelector('#mydiv')!;
     assertTrue(section.hiddenBySearch);
     return searchManager.search('settings', document.body).then(() => {
       assertFalse(section.hiddenBySearch);
       assertEquals(1, div.childNodes.length);
-      const highlightWrapper = div.firstChild;
+      const highlightWrapper = div.firstChild as HTMLElement;
       assertTrue(
           highlightWrapper.classList.contains('search-highlight-wrapper'));
       const originalContent =
           highlightWrapper.querySelector('.search-highlight-original-content');
       assertTrue(!!originalContent);
-      originalContent.childNodes[0].nodeValue = 'Foo';
-      return new Promise(resolve => {
+      originalContent!.childNodes[0]!.nodeValue = 'Foo';
+      return new Promise<void>(resolve => {
         setTimeout(() => {
           assertFalse(section.hiddenBySearch);
           assertEquals(1, div.childNodes.length);
@@ -248,8 +257,8 @@ suite('SearchSettingsTest', function() {
         <div id="mydiv">Match</div>
         <settings-section></settings-section>`;
 
-    const section = document.querySelector('settings-section');
-    const mydiv = document.querySelector('#mydiv');
+    const section = document.querySelector('settings-section')!;
+    const mydiv = document.querySelector('#mydiv')!;
 
     await searchManager.search('Match', document.body);
     assertTrue(section.hiddenBySearch);
@@ -257,9 +266,9 @@ suite('SearchSettingsTest', function() {
     const highlight = mydiv.querySelector('.search-highlight-wrapper');
     assertTrue(!!highlight);
 
-    const searchHits = highlight.querySelectorAll('.search-highlight-hit');
+    const searchHits = highlight!.querySelectorAll('.search-highlight-hit');
     assertEquals(1, searchHits.length);
-    assertEquals('Match', searchHits[0].textContent);
+    assertEquals('Match', searchHits[0]!.textContent);
   });
 
   test('associated control causes search highlight bubble', async () => {
@@ -270,7 +279,7 @@ suite('SearchSettingsTest', function() {
             hello
           </settings-subpage>
         </settings-section>`;
-    const subpage = document.querySelector('settings-subpage');
+    const subpage = document.querySelector('settings-subpage')!;
     subpage.associatedControl = document.querySelector('button');
 
     await searchManager.search('hello', document.body);
@@ -294,15 +303,15 @@ suite('SearchSettingsTest', function() {
           </settings-subpage>
         </setting-section>`;
 
-    const subpage = document.querySelector('settings-subpage');
+    const subpage = document.querySelector('settings-subpage')!;
     subpage.associatedControl = document.querySelector('button');
 
     await searchManager.search('hello', document.body);
 
     const bubbles = document.querySelectorAll('.search-bubble');
     assertEquals(2, bubbles.length);
-    assertEquals('4 results', bubbles[1].textContent);
-    assertEquals('1 result', bubbles[0].textContent);
+    assertEquals('4 results', bubbles[1]!.textContent);
+    assertEquals('1 result', bubbles[0]!.textContent);
   });
 
   test('diacritics', async () => {
@@ -318,7 +327,7 @@ suite('SearchSettingsTest', function() {
           danger zone
         </setting-section>`;
 
-    const subpage = document.querySelector('settings-subpage');
+    const subpage = document.querySelector('settings-subpage')!;
     subpage.associatedControl = document.querySelector('button');
 
     await searchManager.search('an', document.body);

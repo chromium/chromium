@@ -5,6 +5,10 @@
 import {CrSearchFieldBehavior} from './cr_search_field_behavior.js';
 
 interface CrSearchFieldElement extends CrSearchFieldBehavior, HTMLElement {
+  $: {
+    clearSearch: HTMLElement,
+    searchInput: HTMLElement,
+  };
   autofocus: boolean;
 }
 

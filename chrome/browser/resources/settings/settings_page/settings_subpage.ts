@@ -290,4 +290,10 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-subpage': SettingsSubpageElement;
+  }
+}
+
 customElements.define(SettingsSubpageElement.is, SettingsSubpageElement);

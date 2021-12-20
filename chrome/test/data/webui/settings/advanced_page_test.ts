@@ -6,52 +6,49 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrSettingsPrefs, SettingsBasicPageElement, SettingsMainElement, SettingsUiElement} from 'chrome://settings/settings.js';
-
-import {assertEquals, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {CrSettingsPrefs, SettingsBasicPageElement, SettingsSectionElement} from 'chrome://settings/settings.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {getPage, getSection} from './settings_page_test_util.js';
 
 // clang-format on
 
 suite('AdvancedPage', function() {
-  /** @type {?SettingsBasicPageElement} */
-  let basicPage = null;
+  let basicPage: SettingsBasicPageElement;
 
   suiteSetup(function() {
     document.body.innerHTML = '';
-    const settingsUi = /** @type {SettingsUiElement} */ (
-        document.createElement('settings-ui'));
+    const settingsUi = document.createElement('settings-ui');
     document.body.appendChild(settingsUi);
     return CrSettingsPrefs.initialized
         .then(() => {
           return getPage('basic');
         })
         .then(page => {
-          basicPage = page;
-          const settingsMain = /** @type {!SettingsMainElement} */ (
-              settingsUi.shadowRoot.querySelector('settings-main'));
+          basicPage = page as SettingsBasicPageElement;
+          const settingsMain =
+              settingsUi.shadowRoot!.querySelector('settings-main');
           assertTrue(!!settingsMain);
-          settingsMain.advancedToggleExpanded = true;
+          settingsMain!.advancedToggleExpanded = true;
           flush();
         });
   });
 
   /**
    * Verifies that a section is rendered but hidden, including all its subpages.
-   * @param {!Node} section The DOM node for the section.
+   * @param section The DOM node for the section.
    */
-  function verifySectionWithSubpagesHidden(section) {
+  function verifySectionWithSubpagesHidden(section: SettingsSectionElement) {
     // Check if there are sub-pages to verify.
-    const pages = section.firstElementChild.shadowRoot.querySelector(
+    const pages = section.firstElementChild!.shadowRoot!.querySelector(
         'settings-animated-pages');
     if (!pages) {
       return;
     }
 
-    const children = pages.shadowRoot.querySelector('slot')
-                         .assignedNodes({flatten: true})
-                         .filter(n => n.nodeType === Node.ELEMENT_NODE);
+    const children =
+        pages.shadowRoot!.querySelector('slot')!.assignedNodes({flatten: true})
+            .filter(n => n.nodeType === Node.ELEMENT_NODE) as HTMLElement[];
 
     const stampedChildren = children.filter(function(element) {
       return element.tagName !== 'TEMPLATE';
@@ -62,10 +59,10 @@ suite('AdvancedPage', function() {
     const main = stampedChildren.filter(function(element) {
       return element.getAttribute('route-path') === 'default';
     });
-    const sectionName = /** @type {{section: string}} */ (section).section;
+    const sectionName = section.section;
     assertEquals(
         main.length, 1, 'default card not found for section ' + sectionName);
-    assertEquals(main[0].offsetHeight, 0);
+    assertEquals(main[0]!.offsetHeight, 0);
 
     // Any other stamped subpages should also be hidden.
     const subpages = stampedChildren.filter(function(element) {
@@ -86,10 +83,9 @@ suite('AdvancedPage', function() {
   test('advanced pages', function() {
     const sections = ['a11y', 'languages', 'downloads', 'reset'];
     for (let i = 0; i < sections.length; i++) {
-      const section = getSection(
-          /** @type {!SettingsBasicPageElement} */ (basicPage), sections[i]);
+      const section = getSection(basicPage, sections[i]!);
       assertTrue(!!section);
-      verifySectionWithSubpagesHidden(/** @type {!Node} */ (section));
+      verifySectionWithSubpagesHidden(section!);
     }
   });
 });

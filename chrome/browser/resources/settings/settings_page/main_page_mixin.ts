@@ -419,5 +419,6 @@ export const MainPageMixin = dedupingMixin(
     });
 
 export interface MainPageMixinInterface {
+  scroller: HTMLElement|null;
   containsRoute(route: Route|null): boolean;
 }

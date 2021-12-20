@@ -4,6 +4,7 @@
 
 // clang-format off
 import {Route, Router} from 'chrome://settings/settings.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {setupPopstateListener} from './test_util.js';
@@ -11,20 +12,32 @@ import {setupPopstateListener} from './test_util.js';
 // clang-format on
 
 suite('settings-animated-pages', function() {
-  /** @type {?SettingsRoutes}  */
-  let testRoutes = null;
+  let testRoutes: {
+    ABOUT: Route,
+    ADVANCED: Route,
+    BASIC: Route,
+    PRIVACY: Route,
+    SEARCH_ENGINES: Route,
+    SEARCH: Route,
+    SITE_SETTINGS_COOKIES: Route,
+    SITE_SETTINGS: Route,
+  };
 
   setup(function() {
-    testRoutes = {
-      BASIC: new Route('/'),
-    };
-    testRoutes.SEARCH = testRoutes.BASIC.createSection('/search', 'search');
-    testRoutes.SEARCH_ENGINES = testRoutes.SEARCH.createChild('/searchEngines');
+    const basicRoute = new Route('/');
+    const searchRoute = basicRoute.createSection('/search', 'search');
+    const privacyRoute = basicRoute.createSection('/privacy', 'privacy');
 
-    testRoutes.PRIVACY = testRoutes.BASIC.createSection('/privacy', 'privacy');
-    testRoutes.SITE_SETTINGS = testRoutes.PRIVACY.createChild('/content');
-    testRoutes.SITE_SETTINGS_COOKIES =
-        testRoutes.PRIVACY.createChild('/cookies');
+    testRoutes = {
+      ABOUT: basicRoute.createChild('/about'),
+      ADVANCED: basicRoute.createChild('/advanced'),
+      BASIC: basicRoute,
+      PRIVACY: privacyRoute,
+      SEARCH_ENGINES: searchRoute.createChild('/searchEngines'),
+      SEARCH: searchRoute,
+      SITE_SETTINGS_COOKIES: privacyRoute.createChild('/cookies'),
+      SITE_SETTINGS: privacyRoute.createChild('/content'),
+    };
 
     Router.resetInstanceForTesting(new Router(testRoutes));
     setupPopstateListener();
@@ -42,14 +55,14 @@ suite('settings-animated-pages', function() {
       </settings-animated-pages>`;
 
     const animatedPages =
-        document.body.querySelector('settings-animated-pages');
+        document.body.querySelector('settings-animated-pages')!;
     animatedPages.focusConfig = new Map();
     animatedPages.focusConfig.set(
         testRoutes.SEARCH_ENGINES.path, '#subpage-trigger');
 
     const trigger = document.body.querySelector('#subpage-trigger');
     assertTrue(!!trigger);
-    const whenDone = eventToPromise('focus', trigger);
+    const whenDone = eventToPromise('focus', trigger!);
 
     // Trigger subpage exit navigation.
     Router.getInstance().navigateTo(testRoutes.BASIC);
@@ -74,7 +87,7 @@ suite('settings-animated-pages', function() {
       </settings-animated-pages>`;
 
     const animatedPages =
-        document.body.querySelector('settings-animated-pages');
+        document.body.querySelector('settings-animated-pages')!;
     animatedPages.focusConfig = new Map();
     animatedPages.focusConfig.set(
         testRoutes.SITE_SETTINGS_COOKIES.path + '_' + testRoutes.PRIVACY.path,
@@ -88,7 +101,7 @@ suite('settings-animated-pages', function() {
     // correct element #subpageTrigger1 is focused.
     const trigger1 = document.body.querySelector('#subpage-trigger1');
     assertTrue(!!trigger1);
-    let whenDone = eventToPromise('focus', trigger1);
+    let whenDone = eventToPromise('focus', trigger1!);
 
     Router.getInstance().navigateTo(testRoutes.PRIVACY);
     Router.getInstance().navigateTo(testRoutes.SITE_SETTINGS_COOKIES);
@@ -99,7 +112,7 @@ suite('settings-animated-pages', function() {
     // correct element #subpageTrigger1 is focused.
     const trigger2 = document.body.querySelector('#subpage-trigger2');
     assertTrue(!!trigger2);
-    whenDone = eventToPromise('focus', trigger2);
+    whenDone = eventToPromise('focus', trigger2!);
 
     Router.getInstance().navigateTo(testRoutes.SITE_SETTINGS);
     Router.getInstance().navigateTo(testRoutes.SITE_SETTINGS_COOKIES);
@@ -116,16 +129,16 @@ suite('settings-animated-pages', function() {
         </settings-subpage>
       </settings-animated-pages>`;
 
-    const subpage = document.body.querySelector('settings-subpage');
+    const subpage = document.body.querySelector('settings-subpage')!;
     let counter = 0;
 
-    const whenFired = new Promise(resolve => {
+    const whenFired = new Promise<void>(resolve => {
       // Override |focusBackButton| to check how many times it is called.
       subpage.focusBackButton = () => {
         counter++;
 
         if (counter === 1) {
-          const other = document.body.querySelector('div');
+          const other = document.body.querySelector('div')!;
           other.dispatchEvent(new CustomEvent('iron-select', {bubbles: true}));
           resolve();
         }

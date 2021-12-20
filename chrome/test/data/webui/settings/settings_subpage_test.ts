@@ -4,7 +4,8 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {Route, Router} from 'chrome://settings/settings.js';
+import {loadTimeData, Route, Router} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {setupPopstateListener} from './test_util.js';
@@ -12,27 +13,46 @@ import {setupPopstateListener} from './test_util.js';
 // clang-format on
 
 suite('SettingsSubpage', function() {
-  let testRoutes;
+  let testRoutes: {
+    ABOUT: Route,
+    ADVANCED: Route,
+    BASIC: Route,
+    CERTIFICATES: Route,
+    COOKIE_DETAILS: Route,
+    PEOPLE: Route,
+    PRIVACY: Route,
+    SEARCH_ENGINES: Route,
+    SEARCH: Route,
+    SITE_DATA: Route,
+    SYNC: Route,
+  };
 
   setup(function() {
+    const basicRoute = new Route('/');
+    const searchRoute = basicRoute.createSection('/search', 'search');
+    const peopleRoute = basicRoute.createSection('/people', 'people');
+    const privacyRoute = basicRoute.createSection('/privacy', 'privacy');
+    const siteDataRoute = basicRoute.createChild('/siteData');
+
     testRoutes = {
-      BASIC: new Route('/'),
+      ABOUT: basicRoute.createChild('/about'),
+      ADVANCED: basicRoute.createChild('/advanced'),
+      BASIC: basicRoute,
+      CERTIFICATES: privacyRoute.createChild('/certificates'),
+      COOKIE_DETAILS: siteDataRoute.createChild('/cookies/detail'),
+      PEOPLE: peopleRoute,
+      PRIVACY: privacyRoute,
+      SEARCH_ENGINES: searchRoute.createChild('/searchEngines'),
+      SEARCH: searchRoute,
+      SITE_DATA: siteDataRoute,
+      SYNC: peopleRoute.createChild('/syncSetup'),
     };
-    testRoutes.SEARCH = testRoutes.BASIC.createSection('/search', 'search');
-    testRoutes.SEARCH_ENGINES = testRoutes.SEARCH.createChild('/searchEngines');
-    testRoutes.PEOPLE = testRoutes.BASIC.createSection('/people', 'people');
-    testRoutes.SYNC = testRoutes.PEOPLE.createChild('/syncSetup');
-    testRoutes.PRIVACY = testRoutes.BASIC.createSection('/privacy', 'privacy');
-    testRoutes.CERTIFICATES = testRoutes.PRIVACY.createChild('/certificates');
-    testRoutes.SITE_DATA = testRoutes.BASIC.createChild('/siteData');
-    testRoutes.COOKIE_DETAILS =
-        testRoutes.SITE_DATA.createChild('/cookies/detail');
 
     Router.resetInstanceForTesting(new Router(testRoutes));
 
     setupPopstateListener();
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   function createSettingsSubpageWithPreserveSearchTerm() {
@@ -52,14 +72,14 @@ suite('SettingsSubpage', function() {
     // Check that the help icon only shows up when a |learnMoreUrl| is
     // specified.
     assertFalse(
-        !!subpage.shadowRoot.querySelector('[iron-icon="cr:help-outline"]'));
+        !!subpage.shadowRoot!.querySelector('[iron-icon="cr:help-outline"]'));
     subpage.learnMoreUrl = 'https://www.chromium.org';
     flush();
-    const icon =
-        subpage.shadowRoot.querySelector('[iron-icon="cr:help-outline"]');
+    const icon = subpage.shadowRoot!.querySelector<HTMLElement>(
+        '[iron-icon="cr:help-outline"]');
     assertTrue(!!icon);
     // Check that the icon is forced to always use 'ltr' mode.
-    assertEquals('ltr', icon.getAttribute('dir'));
+    assertEquals('ltr', icon!.getAttribute('dir'));
   });
 
   test('clear search (event)', function() {
@@ -68,12 +88,13 @@ suite('SettingsSubpage', function() {
     subpage.searchLabel = 'test';
     document.body.appendChild(subpage);
     flush();
-    const search = subpage.shadowRoot.querySelector('cr-search-field');
+    const search = subpage.shadowRoot!.querySelector('cr-search-field');
     assertTrue(!!search);
-    search.setValue('Hello');
-    subpage.fire('clear-subpage-search');
+    search!.setValue('Hello');
+    subpage.dispatchEvent(new CustomEvent(
+        'clear-subpage-search', {bubbles: true, composed: true}));
     flush();
-    assertEquals('', search.getValue());
+    assertEquals('', search!.getValue());
   });
 
   test('clear search (click)', async () => {
@@ -82,14 +103,14 @@ suite('SettingsSubpage', function() {
     subpage.searchLabel = 'test';
     document.body.appendChild(subpage);
     flush();
-    const search = subpage.shadowRoot.querySelector('cr-search-field');
+    const search = subpage.shadowRoot!.querySelector('cr-search-field');
     assertTrue(!!search);
-    search.setValue('Hello');
-    assertEquals(null, search.root.activeElement);
-    search.$.clearSearch.click();
+    search!.setValue('Hello');
+    assertEquals(null, search!.shadowRoot!.activeElement);
+    search!.$.clearSearch.click();
     await flushTasks();
-    assertEquals('', search.getValue());
-    assertEquals(search.$.searchInput, search.root.activeElement);
+    assertEquals('', search!.getValue());
+    assertEquals(search!.$.searchInput, search!.shadowRoot!.activeElement);
   });
 
   test('preserve search result when back button is clicked', async () => {
@@ -99,10 +120,10 @@ suite('SettingsSubpage', function() {
     flush();
 
     // Set search field.
-    let search = subpage.shadowRoot.querySelector('cr-search-field');
+    let search = subpage.shadowRoot!.querySelector('cr-search-field');
     assertTrue(!!search);
-    search.setValue('test');
-    assertEquals('test', search.getValue());
+    search!.setValue('test');
+    assertEquals('test', search!.getValue());
 
     // Navigate to another subpage.
     Router.getInstance().navigateTo(testRoutes.COOKIE_DETAILS);
@@ -112,17 +133,17 @@ suite('SettingsSubpage', function() {
     Router.getInstance().navigateToPreviousRoute();
     subpage = createSettingsSubpageWithPreserveSearchTerm();
     await eventToPromise('popstate', window);
-    search = subpage.shadowRoot.querySelector('cr-search-field');
+    search = subpage.shadowRoot!.querySelector('cr-search-field');
     assertTrue(!!search);
-    assertEquals('test', search.getValue());
+    assertEquals('test', search!.getValue());
 
     // Go back to settings subpage, verify search field is empty
     Router.getInstance().navigateToPreviousRoute();
     subpage = createSettingsSubpageWithPreserveSearchTerm();
     await eventToPromise('popstate', window);
-    search = subpage.shadowRoot.querySelector('cr-search-field');
+    search = subpage.shadowRoot!.querySelector('cr-search-field');
     assertTrue(!!search);
-    assertEquals('', search.getValue());
+    assertEquals('', search!.getValue());
   });
 
   test('preserve search result from URL input', async function() {
@@ -131,9 +152,9 @@ suite('SettingsSubpage', function() {
     Router.getInstance().navigateTo(testRoutes.SITE_DATA, params);
     const subpage = createSettingsSubpageWithPreserveSearchTerm();
     await flushTasks();
-    const search = subpage.shadowRoot.querySelector('cr-search-field');
+    const search = subpage.shadowRoot!.querySelector('cr-search-field');
     assertTrue(!!search);
-    assertEquals('test', search.getValue());
+    assertEquals('test', search!.getValue());
   });
 
   test('navigates to parent when there is no history', function() {
@@ -146,7 +167,7 @@ suite('SettingsSubpage', function() {
     const subpage = document.createElement('settings-subpage');
     document.body.appendChild(subpage);
 
-    subpage.shadowRoot.querySelector('cr-icon-button').click();
+    subpage.shadowRoot!.querySelector('cr-icon-button')!.click();
     assertEquals(testRoutes.PRIVACY, Router.getInstance().getCurrentRoute());
   });
 
@@ -158,12 +179,10 @@ suite('SettingsSubpage', function() {
     const subpage = document.createElement('settings-subpage');
     document.body.appendChild(subpage);
 
-    subpage.shadowRoot.querySelector('cr-icon-button').click();
+    subpage.shadowRoot!.querySelector('cr-icon-button')!.click();
 
     await eventToPromise('popstate', window);
-    assertEquals(
-        Router.getInstance().getRoutes().BASIC,
-        Router.getInstance().getCurrentRoute());
+    assertEquals(testRoutes.BASIC, Router.getInstance().getCurrentRoute());
   });
 
   test('updates the title of the document when active', function() {
@@ -183,16 +202,16 @@ suite('SettingsSubpage', function() {
 
 suite('SettingsSubpageSearch', function() {
   test('host autofocus propagates to <cr-input>', function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     const element = document.createElement('cr-search-field');
-    element.setAttribute('autofocus', true);
+    element.toggleAttribute('autofocus', true);
     document.body.appendChild(element);
 
-    assertTrue(
-        element.shadowRoot.querySelector('cr-input').hasAttribute('autofocus'));
+    assertTrue(element.shadowRoot!.querySelector('cr-input')!.hasAttribute(
+        'autofocus'));
 
     element.removeAttribute('autofocus');
-    assertFalse(
-        element.shadowRoot.querySelector('cr-input').hasAttribute('autofocus'));
+    assertFalse(element.shadowRoot!.querySelector('cr-input')!.hasAttribute(
+        'autofocus'));
   });
 });

@@ -266,5 +266,11 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-animated-pages': SettingsAnimatedPagesElement;
+  }
+}
+
 customElements.define(
     SettingsAnimatedPagesElement.is, SettingsAnimatedPagesElement);

@@ -10,16 +10,17 @@ import 'chrome://settings/lazy_load.js';
 
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {loadTimeData, pageVisibility, Router, routes} from 'chrome://settings/settings.js';
-
+import {pageVisibility, Router, routes, SettingsBasicPageElement, SettingsIdleLoadElement, SettingsSectionElement} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
+
 // clang-format on
 
 suite('SettingsBasicPage', () => {
-  let page = null;
+  let page: SettingsBasicPageElement;
 
   setup(async function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     page = document.createElement('settings-basic-page');
     document.body.appendChild(page);
     page.scroller = document.body;
@@ -31,8 +32,9 @@ suite('SettingsBasicPage', () => {
 
     // Ensure that all settings-section instances are rendered.
     flush();
-    await page.$$('#advancedPageTemplate').get();
-    const sections = page.shadowRoot.querySelectorAll('settings-section');
+    await page.shadowRoot!
+        .querySelector<SettingsIdleLoadElement>('#advancedPageTemplate')!.get();
+    const sections = page.shadowRoot!.querySelectorAll('settings-section');
     assertTrue(sections.length > 1);
 
     await whenDone;
@@ -54,7 +56,8 @@ suite('SettingsBasicPage', () => {
     flush();
 
     for (const section of sections) {
-      const sectionElement = page.$$(`settings-section[section=${section}]`);
+      const sectionElement = page.shadowRoot!.querySelector(
+          `settings-section[section=${section}]`);
       assertTrue(!!sectionElement);
     }
   });
@@ -66,40 +69,40 @@ suite('SettingsBasicPage', () => {
     });
     flush();
 
-    const sectionElement = page.$$('settings-section-safety-check');
+    const sectionElement =
+        page.shadowRoot!.querySelector('settings-section-safety-check');
     assertFalse(!!sectionElement);
   });
 
-  /** @param {string} section */
-  function assertActiveSection(section) {
+  function assertActiveSection(section: string) {
     const activeSections =
-        page.shadowRoot.querySelectorAll('settings-section[active]');
+        page.shadowRoot!.querySelectorAll<SettingsSectionElement>(
+            'settings-section[active]');
     assertEquals(1, activeSections.length);
-    assertEquals(section, activeSections[0].section);
+    assertEquals(section, activeSections[0]!.section);
 
     // Check that only the |active| section is visible.
-    for (const s of page.shadowRoot.querySelectorAll('settings-section')) {
+    for (const s of page.shadowRoot!.querySelectorAll('settings-section')) {
       assertEquals(s === activeSections[0], isVisible(s));
     }
   }
 
-  /** @param {string} section */
-  function assertActiveSubpage(section) {
+  function assertActiveSubpage(section: string) {
     // Check that only the subpage of the |active| section is visible.
-    const settingsPages = page.shadowRoot.querySelectorAll(
+    const settingsPages = page.shadowRoot!.querySelectorAll(
         `settings-section[active] settings-${section}-page`);
     assertEquals(1, settingsPages.length);
     const subpages =
-        settingsPages[0].shadowRoot.querySelectorAll('settings-subpage');
+        settingsPages[0]!.shadowRoot!.querySelectorAll('settings-subpage');
     assertEquals(1, subpages.length);
-    assertTrue(isVisible(subpages[0]));
+    assertTrue(isVisible(subpages[0]!));
   }
 
   test('OnlyOneSectionShown', async () => {
     // RouteState.INITIAL -> RoutState.TOP_LEVEL
     // Check that only one is marked as |active|.
     assertActiveSection(routes.PEOPLE.section);
-    assertTrue(!!page.shadowRoot.querySelector(
+    assertTrue(!!page.shadowRoot!.querySelector(
         'settings-section[active] settings-people-page'));
 
     // RouteState.TOP_LEVEL -> RoutState.SECTION
@@ -109,22 +112,22 @@ suite('SettingsBasicPage', () => {
     await whenDone;
     await flushTasks();
     assertActiveSection(routes.SEARCH.section);
-    assertTrue(!!page.shadowRoot.querySelector(
+    assertTrue(!!page.shadowRoot!.querySelector(
         'settings-section[active] settings-search-page'));
 
     // Helper functions.
     function getCardElement() {
-      return page.shadowRoot.querySelector(
+      return page.shadowRoot!.querySelector(
           'settings-section[active] settings-appearance-page');
     }
 
     function getDefault() {
-      return getCardElement().shadowRoot.querySelector(
+      return getCardElement()!.shadowRoot!.querySelector(
           'div[route-path="default"].iron-selected');
     }
 
     function getSubpage() {
-      return getCardElement().shadowRoot.querySelector(
+      return getCardElement()!.shadowRoot!.querySelector(
           'settings-subpage.iron-selected settings-appearance-fonts-page');
     }
 
@@ -196,12 +199,13 @@ suite('SettingsBasicPage', () => {
     await flushTasks();
 
     const activeSections =
-        page.shadowRoot.querySelectorAll('settings-section[active]');
+        page.shadowRoot!.querySelectorAll<SettingsSectionElement>(
+            'settings-section[active]');
     assertEquals(2, activeSections.length);
-    assertEquals(routes.SAFETY_CHECK.section, activeSections[0].section);
+    assertEquals(routes.SAFETY_CHECK.section, activeSections[0]!.section);
     assertEquals(
         routes.PRIVACY.section,
-        activeSections[0].getAttribute('nest-under-section'));
-    assertEquals(routes.PRIVACY.section, activeSections[1].section);
+        activeSections[0]!.getAttribute('nest-under-section'));
+    assertEquals(routes.PRIVACY.section, activeSections[1]!.section);
   });
 });

@@ -363,4 +363,10 @@ export class SettingsUiElement extends SettingsUiElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-ui': SettingsUiElement;
+  }
+}
+
 customElements.define(SettingsUiElement.is, SettingsUiElement);
