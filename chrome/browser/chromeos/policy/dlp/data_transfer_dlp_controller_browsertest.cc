@@ -851,12 +851,8 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest,
 
 // Test case for crbug.com/1213143
 // Flaky on MSan bots: crbug.com/1230617
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_Reporting DISABLED_Reporting
-#else
-#define MAYBE_Reporting Reporting
-#endif
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, MAYBE_Reporting) {
+// Also flaky on linux-chromeos-dbg: crbug.com/1281659
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, DISABLED_Reporting) {
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(embedded_test_server()->Start());
