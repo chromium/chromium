@@ -1061,7 +1061,6 @@
       // Portals, as we require the support of the browser process to fully
       // enable the feature. Enabling this runtime enabled feature alone has no
       // effect.
-      status: "experimental",
       origin_trial_feature_name: "FencedFrames",
     },
     {

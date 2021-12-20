@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
@@ -17,7 +18,11 @@
 
 namespace blink {
 
-class FencedFrameShadowDOMDelegateTest : public RenderingTest {
+class FencedFrameShadowDOMDelegateTest : private ScopedFencedFramesForTest,
+                                         public RenderingTest {
+ public:
+  FencedFrameShadowDOMDelegateTest() : ScopedFencedFramesForTest(true) {}
+
  protected:
   void SetUp() override {
     PageTestBase::SetUp();
