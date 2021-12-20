@@ -592,8 +592,7 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedContinued) {
                   DlpRulesManager::Level::kWarn)));
   EXPECT_THAT(events_[1],
               IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
-                  kSrcPattern, DlpRulesManager::Restriction::kPrinting,
-                  DlpRulesManager::Level::kWarn)));
+                  kSrcPattern, DlpRulesManager::Restriction::kPrinting)));
 
   // Check again: allow based on cached user's response - no dialog is shown.
   GetManager()->CheckPrintingRestriction(
@@ -605,8 +604,7 @@ TEST_F(DlpContentManagerAshCheckRestrictionTest, PrintingWarnedContinued) {
   EXPECT_EQ(events_.size(), 3u);
   EXPECT_THAT(events_[2],
               IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
-                  kSrcPattern, DlpRulesManager::Restriction::kPrinting,
-                  DlpRulesManager::Level::kWarn)));
+                  kSrcPattern, DlpRulesManager::Restriction::kPrinting)));
 
   // Web contents are destroyed: allow, no dialog is shown.
   helper_.DestroyWebContents(web_contents.get());

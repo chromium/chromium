@@ -250,9 +250,9 @@ TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_ProceedDst) {
   dlp_controller_.PasteIfAllowed(&data_src, &data_dst, absl::nullopt,
                                  web_contents->GetMainFrame(), callback.Get());
   EXPECT_EQ(events_.size(), 1u);
-  EXPECT_THAT(events_[0], IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
-                              "", "", DlpRulesManager::Restriction::kClipboard,
-                              DlpRulesManager::Level::kWarn)));
+  EXPECT_THAT(events_[0],
+              IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
+                  "", "", DlpRulesManager::Restriction::kClipboard)));
 }
 
 TEST_F(DataTransferDlpControllerTest, PasteIfAllowed_CancelDst) {

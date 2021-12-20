@@ -197,13 +197,11 @@ void ReportWarningProceededEvent(const ui::DataTransferEndpoint* const data_src,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     reporting_manager->ReportWarningProceededEvent(
         src_pattern, GetComponent(data_dst->type()),
-        DlpRulesManager::Restriction::kClipboard,
-        DlpRulesManager::Level::kNotSet);
+        DlpRulesManager::Restriction::kClipboard);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   } else {
     reporting_manager->ReportWarningProceededEvent(
-        src_pattern, dst_pattern, DlpRulesManager::Restriction::kClipboard,
-        DlpRulesManager::Level::kNotSet);
+        src_pattern, dst_pattern, DlpRulesManager::Restriction::kClipboard);
   }
 }
 

@@ -19,8 +19,6 @@ namespace policy {
 // helper function to create DlpPolicyEvents to be enqueued or used to test
 // against.
 DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
-                                    DlpRulesManager::Restriction restriction);
-DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
                                     DlpRulesManager::Restriction restriction,
                                     DlpRulesManager::Level level);
 DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
@@ -31,14 +29,10 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
                                     DlpRulesManager::Component dst_component,
                                     DlpRulesManager::Restriction restriction,
                                     DlpRulesManager::Level level);
-// TODO(jkopanski): Using template parameter pack enforces including
-//  "dlp_policy_event.pb.h" in the header file. Check after implementing
-//  reporting for clipboard if this template patter is needed or move all
-//  functions to a separate header.
 template <typename... Args>
 DlpPolicyEvent CreateDlpPolicyWarningProceededEvent(Args... args) {
-  // TODO(jkopanski): Add level as the last argument.
-  auto event = CreateDlpPolicyEvent(args...);
+  auto event = CreateDlpPolicyEvent(args..., DlpRulesManager::Level::kNotSet);
+  // Override DlpRulesManager::Level::kNotSet set above.
   event.set_mode(DlpPolicyEvent_Mode_WARN_PROCEED);
   return event;
 }
