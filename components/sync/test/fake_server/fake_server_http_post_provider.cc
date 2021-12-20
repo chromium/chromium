@@ -27,7 +27,7 @@ FakeServerHttpPostProviderFactory::FakeServerHttpPostProviderFactory(
 FakeServerHttpPostProviderFactory::~FakeServerHttpPostProviderFactory() =
     default;
 
-scoped_refptr<syncer::HttpPostProviderInterface>
+scoped_refptr<syncer::HttpPostProvider>
 FakeServerHttpPostProviderFactory::Create() {
   return new FakeServerHttpPostProvider(fake_server_, fake_server_task_runner_);
 }

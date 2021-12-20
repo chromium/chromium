@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_NET_HTTP_POST_PROVIDER_INTERFACE_H_
-#define COMPONENTS_SYNC_ENGINE_NET_HTTP_POST_PROVIDER_INTERFACE_H_
+#ifndef COMPONENTS_SYNC_ENGINE_NET_HTTP_POST_PROVIDER_H_
+#define COMPONENTS_SYNC_ENGINE_NET_HTTP_POST_PROVIDER_H_
 
 #include <string>
 
@@ -19,8 +19,7 @@ namespace syncer {
 // It is RefCountedThreadSafe because its implementations may PostTask to
 // background task runners, and thus need to stick around across context
 // switches, etc.
-class HttpPostProviderInterface
-    : public base::RefCountedThreadSafe<HttpPostProviderInterface> {
+class HttpPostProvider : public base::RefCountedThreadSafe<HttpPostProvider> {
  public:
   // Add additional headers to the request.
   virtual void SetExtraRequestHeaders(const char* headers) = 0;
@@ -62,10 +61,10 @@ class HttpPostProviderInterface
   virtual void Abort() = 0;
 
  protected:
-  friend class base::RefCountedThreadSafe<HttpPostProviderInterface>;
-  virtual ~HttpPostProviderInterface() = default;
+  friend class base::RefCountedThreadSafe<HttpPostProvider>;
+  virtual ~HttpPostProvider() = default;
 };
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_NET_HTTP_POST_PROVIDER_INTERFACE_H_
+#endif  // COMPONENTS_SYNC_ENGINE_NET_HTTP_POST_PROVIDER_H_

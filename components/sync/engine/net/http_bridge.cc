@@ -63,10 +63,10 @@ HttpBridgeFactory::HttpBridgeFactory(
 
 HttpBridgeFactory::~HttpBridgeFactory() = default;
 
-scoped_refptr<HttpPostProviderInterface> HttpBridgeFactory::Create() {
+scoped_refptr<HttpPostProvider> HttpBridgeFactory::Create() {
   DCHECK(url_loader_factory_);
 
-  scoped_refptr<HttpPostProviderInterface> http =
+  scoped_refptr<HttpPostProvider> http =
       new HttpBridge(user_agent_, url_loader_factory_->Clone());
   return http;
 }

@@ -12,8 +12,8 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "components/sync/engine/cancelation_signal.h"
+#include "components/sync/engine/net/http_post_provider.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
-#include "components/sync/engine/net/http_post_provider_interface.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 
@@ -53,7 +53,7 @@ class Connection : public CancelationSignal::Observer {
   // operation should be aborted.
   const raw_ptr<CancelationSignal> cancelation_signal_;
 
-  scoped_refptr<HttpPostProviderInterface> const post_provider_;
+  scoped_refptr<HttpPostProvider> const post_provider_;
 
   std::string buffer_;
 };

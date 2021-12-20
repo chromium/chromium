@@ -17,7 +17,7 @@ class PendingSharedURLLoaderFactory;
 
 namespace syncer {
 
-class HttpPostProviderInterface;
+class HttpPostProvider;
 
 // A factory to create HttpPostProviders to hide details about the
 // implementations and dependencies.
@@ -27,8 +27,8 @@ class HttpPostProviderFactory {
  public:
   virtual ~HttpPostProviderFactory() = default;
 
-  // Obtain a new HttpPostProviderInterface instance, owned by caller.
-  virtual scoped_refptr<HttpPostProviderInterface> Create() = 0;
+  // Obtain a new HttpPostProvider instance, owned by caller.
+  virtual scoped_refptr<HttpPostProvider> Create() = 0;
 };
 
 using CreateHttpPostProviderFactory =
