@@ -27,6 +27,7 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
     private RoundedIconGenerator mIconGenerator;
     private final int mMinIconSize;
     private final int mDisplayedIconSize;
+    private boolean mFaviconCancelled;
 
     /**
      * Constructor for inflating from XML.
@@ -79,8 +80,14 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
         mStartIconView.setImageDrawable(null);
         mTitleView.setText(item.getTitle());
         mDescriptionView.setText(item.getUrlForDisplay());
+        mFaviconCancelled = false;
         mDelegate.getLargeIconBridge().getLargeIconForUrl(mUrl, mMinIconSize, this);
         return item;
+    }
+
+    /** Allows cancellation of the favicon. */
+    protected void cancelFavicon() {
+        mFaviconCancelled = true;
     }
 
     // LargeIconCallback implementation.
@@ -88,6 +95,7 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
     @Override
     public void onLargeIconAvailable(Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
             @IconType int iconType) {
+        if (mFaviconCancelled) return;
         Drawable iconDrawable = FaviconUtils.getIconDrawableWithoutFilter(
                 icon, mUrl, fallbackColor, mIconGenerator, getResources(), mDisplayedIconSize);
         setStartIconDrawable(iconDrawable);
