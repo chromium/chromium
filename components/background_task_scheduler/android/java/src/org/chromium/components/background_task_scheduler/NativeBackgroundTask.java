@@ -15,7 +15,6 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Base class implementing {@link BackgroundTask} that adds native initialization, ensuring that
@@ -48,7 +47,7 @@ public abstract class NativeBackgroundTask implements BackgroundTask {
     private boolean mRunningInMinimalBrowserMode;
 
     /** Make sure that we do not double record task finished metric */
-    private AtomicBoolean mFinishMetricRecorded = new AtomicBoolean(false);
+    private boolean mFinishMetricRecorded;
 
     /** Loads native and handles initialization. */
     private NativeBackgroundTaskDelegate mDelegate;
@@ -72,8 +71,10 @@ public abstract class NativeBackgroundTask implements BackgroundTask {
         mTaskId = taskParameters.getTaskId();
 
         TaskFinishedCallback wrappedCallback = needsReschedule -> {
-            recordTaskFinishedMetric();
-            callback.taskFinished(needsReschedule);
+            PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+                recordTaskFinishedMetric();
+                callback.taskFinished(needsReschedule);
+            });
         };
 
         // WrappedCallback will only be called when the work is done or in onStopTask. If the task
@@ -236,7 +237,9 @@ public abstract class NativeBackgroundTask implements BackgroundTask {
     }
 
     private void recordTaskFinishedMetric() {
-        if (!mFinishMetricRecorded.getAndSet(true)) {
+        ThreadUtils.assertOnUiThread();
+        if (!mFinishMetricRecorded) {
+            mFinishMetricRecorded = true;
             getUmaReporter().reportNativeTaskFinished(mTaskId, mRunningInMinimalBrowserMode);
         }
     }
