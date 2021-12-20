@@ -7,7 +7,6 @@ import {
   assertInstanceof,
   assertNotReached,
 } from '../../../assert.js';
-import {AsyncJobQueue} from '../../../async_job_queue.js';
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
 import {
@@ -323,11 +322,11 @@ export class Video extends ModeBase {
     this.recordingType_ = RecordType.NORMAL;
 
     /**
-     * Queueing all taking video snapshot jobs requested in a single recording.
-     * @type {!AsyncJobQueue}
+     * The ongoing video snapshot.
+     * @type {?Promise<void>}
      * @private
      */
-    this.snapshots_ = new AsyncJobQueue();
+    this.snapshotting_ = null;
 
     /**
      * Promise for process of toggling video pause/resume. Sets to null if CCA
@@ -392,32 +391,40 @@ export class Video extends ModeBase {
    * Takes a video snapshot during recording.
    * @return {!Promise} Promise resolved when video snapshot is finished.
    */
-  takeSnapshot() {
-    const doSnapshot = async () => {
-      let blob;
-      if (await this.isBlobVideoSnapshotEnabled()) {
-        const photoSettings = /** @type {!PhotoSettings} */ ({
-          imageWidth: this.snapshotResolution_.width,
-          imageHeight: this.snapshotResolution_.height,
-        });
-        const results = await this.crosImageCapture_.takePhoto(photoSettings);
-        blob = await results[0];
-      } else {
-        blob = await this.crosImageCapture_.grabJpegFrame();
-      }
+  async takeSnapshot() {
+    if (this.snapshotting_ !== null) {
+      return;
+    }
+    state.set(state.State.SNAPSHOTTING, true);
+    this.snapshotting_ = (async () => {
+      try {
+        let blob;
+        if (await this.isBlobVideoSnapshotEnabled()) {
+          const photoSettings = /** @type {!PhotoSettings} */ ({
+            imageWidth: this.snapshotResolution_.width,
+            imageHeight: this.snapshotResolution_.height,
+          });
+          const results = await this.crosImageCapture_.takePhoto(photoSettings);
+          blob = await results[0];
+        } else {
+          blob = await this.crosImageCapture_.grabJpegFrame();
+        }
 
-      this.handler_.playShutterEffect();
-      const imageName = (new Filenamer()).newImageName();
-      await this.handler_.handleResultPhoto(
-          {
-            resolution: this.captureResolution_,
-            blob,
-            isVideoSnapshot: true,
-          },
-          imageName);
-    };
-    this.snapshots_.push(doSnapshot);
-    return this.snapshots_.flush();
+        this.handler_.playShutterEffect();
+        const imageName = (new Filenamer()).newImageName();
+        await this.handler_.handleResultPhoto(
+            {
+              resolution: this.captureResolution_,
+              blob,
+              isVideoSnapshot: true,
+            },
+            imageName);
+      } finally {
+        state.set(state.State.SNAPSHOTTING, false);
+        this.snapshotting_ = null;
+      }
+    })();
+    return this.snapshotting_;
   }
 
   /**
@@ -514,7 +521,7 @@ export class Video extends ModeBase {
    * @override
    */
   async start_() {
-    this.snapshots_ = new AsyncJobQueue();
+    assert(this.snapshotting_ === null);
     this.togglePaused_ = null;
     this.everPaused_ = false;
 
@@ -602,7 +609,7 @@ export class Video extends ModeBase {
         } finally {
           this.recordTime_.stop({pause: false});
           sound.play(dom.get('#sound-rec-end', HTMLAudioElement));
-          await this.snapshots_.flush();
+          await this.snapshotting_;
         }
       } catch (e) {
         // Tolerates the error if it is due to the very short duration. Reports
