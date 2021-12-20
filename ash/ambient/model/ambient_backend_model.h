@@ -128,6 +128,8 @@ class ASH_EXPORT AmbientBackendModel {
 
   bool show_celsius() const { return show_celsius_; }
 
+  const AmbientPhotoConfig& photo_config() const { return photo_config_; }
+
  private:
   friend class AmbientBackendModelTest;
   friend class AmbientAshTestBase;

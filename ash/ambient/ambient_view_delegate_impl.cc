@@ -7,6 +7,7 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace ash {
@@ -29,6 +30,13 @@ void AmbientViewDelegateImpl::RemoveObserver(
 
 AmbientBackendModel* AmbientViewDelegateImpl::GetAmbientBackendModel() {
   return ambient_controller_->GetAmbientBackendModel();
+}
+
+AmbientViewEventHandler* AmbientViewDelegateImpl::GetAmbientViewEventHandler() {
+  AmbientViewEventHandler* event_handler =
+      ambient_controller_->ambient_photo_controller();
+  DCHECK(event_handler);
+  return event_handler;
 }
 
 void AmbientViewDelegateImpl::OnPhotoTransitionAnimationCompleted() {

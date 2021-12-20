@@ -25,18 +25,24 @@ size_t GetNumDynamicAssetsInAnimation(
 
 ASH_EXPORT AmbientPhotoConfig CreateAmbientAnimationPhotoConfig(
     const cc::SkottieResourceMetadataMap& skottie_resource_metadata) {
-  return {
-      // Unlike the full screen slideshow screensaver, the animated screensaver
-      // has much smaller assets, and/so primary/related photos are never split
-      // within the same asset and are assigned to separate ones.
-      /*should_split_topics=*/true,
-      // Unlike the slideshow screensaver, the animated screensaver has
-      // motion/activity in it. So in the worst case scenario, we can repeat the
-      // animation cycle with the same set of image assets indefinitely and the
-      // screen won't burn. Hence, only 1 set of assets is required in the
-      // buffer.
-      /*num_decoded_topics_to_buffer=*/
-      GetNumDynamicAssetsInAnimation(skottie_resource_metadata)};
+  AmbientPhotoConfig config;
+  config.should_split_topics = true;
+  // Unlike the slideshow screensaver, the animated screensaver has
+  // motion/activity in it. So in the worst case scenario, we can repeat the
+  // animation cycle with the same set of image assets indefinitely and the
+  // screen won't burn. Hence, only 1 set of assets is required in the buffer.
+  config.num_topic_sets_to_buffer = 1;
+  config.topic_set_size =
+      GetNumDynamicAssetsInAnimation(skottie_resource_metadata);
+
+  // Once an animation cycle starts rendering (including the very first
+  // cycle), start preparing the next set of decoded topics for the next
+  // cycle. Unlike the slideshow view, this view waits until a new animation
+  // cycle starts, then pulls the most recent topics from the model at that
+  // time.
+  config.refresh_topic_markers = {AmbientPhotoConfig::Marker::kUiStartRendering,
+                                  AmbientPhotoConfig::Marker::kUiCycleEnded};
+  return config;
 }
 
 }  // namespace ash

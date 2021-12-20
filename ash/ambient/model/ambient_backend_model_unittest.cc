@@ -96,8 +96,8 @@ class AmbientBackendModelTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    ambient_backend_model_ =
-        std::make_unique<AmbientBackendModel>(kAmbientSlideshowPhotoConfig);
+    ambient_backend_model_ = std::make_unique<AmbientBackendModel>(
+        CreateAmbientSlideshowPhotoConfig());
   }
 
   void TearDown() override {

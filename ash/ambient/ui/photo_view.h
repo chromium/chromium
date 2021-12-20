@@ -13,6 +13,7 @@
 #include "ash/ambient/ui/ambient_background_image_view.h"
 #include "ash/ash_export.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/view.h"
 
@@ -50,6 +51,7 @@ class ASH_EXPORT PhotoView : public views::View,
   void Init();
 
   void UpdateImage(const PhotoWithDetails& image);
+  void OnImageCycleComplete();
 
   void StartTransitionAnimation();
 
@@ -67,6 +69,10 @@ class ASH_EXPORT PhotoView : public views::View,
 
   // The index of |image_views_| to update the next image.
   int image_index_ = 0;
+
+  // Fires when the next photo should be prepared, which ultimately leads to
+  // it being rendered in this view.
+  base::OneShotTimer photo_refresh_timer_;
 
   base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
       scoped_backend_model_observer_{this};

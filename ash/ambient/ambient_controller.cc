@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ambient/model/ambient_backend_model_observer.h"
+#include "ash/ambient/model/ambient_slideshow_photo_config.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/util/ambient_util.h"
@@ -571,7 +572,14 @@ void AmbientController::OnEnabledPrefChanged() {
 
     DCHECK(AmbientClient::Get());
     ambient_photo_controller_ = std::make_unique<AmbientPhotoController>(
-        *AmbientClient::Get(), access_token_controller_);
+        *AmbientClient::Get(), access_token_controller_,
+        // TODO(esum): Read a setting here and initialize the photo controller
+        // with the slideshow config or the animation config based on that
+        // setting. When this setting is available,
+        // ambient_photo_controller_unittest.cc must be updated with tests for
+        // the animation use case; it is too difficult to add tests without that
+        // setting.
+        CreateAmbientSlideshowPhotoConfig());
 
     ambient_ui_model_observer_.Observe(&ambient_ui_model_);
 

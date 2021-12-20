@@ -13,22 +13,22 @@ namespace ash {
 
 using ::testing::Eq;
 
-TEST(AmbientAnimationPhotoConfigTest, SetsNumDecodedTopicsToBuffer) {
+TEST(AmbientAnimationPhotoConfigTest, SetsTopicSetSize) {
   cc::SkottieResourceMetadataMap skottie_resource_metadata;
   EXPECT_THAT(CreateAmbientAnimationPhotoConfig(skottie_resource_metadata)
-                  .num_decoded_topics_to_buffer,
+                  .topic_set_size,
               Eq(0u));
   ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
       "test-resource-path", "test-resource-name-0",
       GenerateTestLottieDynamicAssetId(/*unique_id=*/0)));
   EXPECT_THAT(CreateAmbientAnimationPhotoConfig(skottie_resource_metadata)
-                  .num_decoded_topics_to_buffer,
+                  .topic_set_size,
               Eq(1u));
   ASSERT_TRUE(skottie_resource_metadata.RegisterAsset(
       "test-resource-path", "test-resource-name-1",
       GenerateTestLottieDynamicAssetId(/*unique_id=*/1)));
   EXPECT_THAT(CreateAmbientAnimationPhotoConfig(skottie_resource_metadata)
-                  .num_decoded_topics_to_buffer,
+                  .topic_set_size,
               Eq(2u));
 }
 

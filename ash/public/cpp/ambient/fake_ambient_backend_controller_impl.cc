@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
 
+#include <algorithm>
 #include <array>
 #include <utility>
 
@@ -11,6 +12,7 @@
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -86,7 +88,11 @@ void FakeAmbientBackendControllerImpl::FetchScreenUpdateInfo(
     OnScreenUpdateInfoFetchedCallback callback) {
   ash::ScreenUpdate update;
 
-  for (int i = 0; i < num_topics; i++) {
+  int num_topics_to_return =
+      custom_num_topics_to_return_.has_value()
+          ? std::min(custom_num_topics_to_return_.value(), num_topics)
+          : num_topics;
+  for (int i = 0; i < num_topics_to_return; i++) {
     ash::AmbientModeTopic topic;
     topic.url = kFakeUrl;
     topic.details = kFakeDetails;
@@ -169,6 +175,12 @@ void FakeAmbientBackendControllerImpl::ReplyFetchSettingsAndAlbums(
     std::move(pending_fetch_settings_albums_callback_)
         .Run(/*settings=*/absl::nullopt, PersonalAlbums());
   }
+}
+
+void FakeAmbientBackendControllerImpl::SetFetchScreenUpdateInfoResponseSize(
+    int num_topics_to_return) {
+  DCHECK_GE(num_topics_to_return, 0);
+  custom_num_topics_to_return_.emplace(num_topics_to_return);
 }
 
 bool FakeAmbientBackendControllerImpl::IsFetchSettingsAndAlbumsPending() const {

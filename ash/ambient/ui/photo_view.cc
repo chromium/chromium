@@ -13,6 +13,7 @@
 #include "ash/ambient/ui/ambient_background_image_view.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
+#include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -90,6 +91,8 @@ void PhotoView::Init() {
   model->GetCurrentAndNextImages(&current_image, &next_image);
   UpdateImage(current_image);
   UpdateImage(next_image);
+  delegate_->GetAmbientViewEventHandler()->OnMarkerHit(
+      AmbientPhotoConfig::Marker::kUiStartRendering);
 }
 
 void PhotoView::UpdateImage(const PhotoWithDetails& next_image) {
@@ -103,6 +106,14 @@ void PhotoView::UpdateImage(const PhotoWithDetails& next_image) {
       ->UpdateImageDetails(base::UTF8ToUTF16(next_image.details),
                            base::UTF8ToUTF16(next_image.related_details));
   image_index_ = 1 - image_index_;
+  photo_refresh_timer_.Start(FROM_HERE,
+                             AmbientUiModel::Get()->photo_refresh_interval(),
+                             this, &PhotoView::OnImageCycleComplete);
+}
+
+void PhotoView::OnImageCycleComplete() {
+  delegate_->GetAmbientViewEventHandler()->OnMarkerHit(
+      AmbientPhotoConfig::Marker::kUiCycleEnded);
 }
 
 void PhotoView::StartTransitionAnimation() {

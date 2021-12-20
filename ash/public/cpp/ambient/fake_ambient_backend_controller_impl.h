@@ -51,6 +51,12 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
       bool success,
       const absl::optional<AmbientSettings>& settings = absl::nullopt);
 
+  // Simulates the reply for FetchScreenUpdateInfo(). All future calls to
+  // FetchScreenUpdateInfo() will return the number of topics specified by
+  // |num_topics_to_return|, bounded by the |num_topics| argument requested in
+  // FetchScreenUpdateInfo().
+  void SetFetchScreenUpdateInfoResponseSize(int num_topics_to_return);
+
   // Whether there is a pending FetchSettingsAndAlbums() request.
   bool IsFetchSettingsAndAlbumsPending() const;
 
@@ -80,6 +86,8 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
   bool has_related_image_ = true;
 
   ::ambient::TopicType topic_type_ = ::ambient::TopicType::kCulturalInstitute;
+
+  absl::optional<int> custom_num_topics_to_return_;
 };
 
 }  // namespace ash

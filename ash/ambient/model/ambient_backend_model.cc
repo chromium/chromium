@@ -132,7 +132,7 @@ bool PhotoWithDetails::IsNull() const {
 // AmbientBackendModel---------------------------------------------------------
 AmbientBackendModel::AmbientBackendModel(AmbientPhotoConfig photo_config)
     : photo_config_(std::move(photo_config)) {
-  DCHECK_GT(photo_config_.num_decoded_topics_to_buffer, 0u);
+  DCHECK_GT(photo_config_.GetNumDecodedTopicsToBuffer(), 0u);
 }
 
 AmbientBackendModel::~AmbientBackendModel() = default;
@@ -171,12 +171,12 @@ void AmbientBackendModel::AppendTopics(
 
 bool AmbientBackendModel::ImagesReady() const {
   DCHECK_LE(all_decoded_topics_.size(),
-            photo_config_.num_decoded_topics_to_buffer);
+            photo_config_.GetNumDecodedTopicsToBuffer());
   // TODO(esum): Add a timeout (ex: 10 seconds) for the animated screensaver,
   // after which we just start the UI anyways if at least 1 topic is buffered
   // (duplicating that topic in the animation).
   return all_decoded_topics_.size() ==
-         photo_config_.num_decoded_topics_to_buffer;
+         photo_config_.GetNumDecodedTopicsToBuffer();
 }
 
 void AmbientBackendModel::AddNextImage(
@@ -191,7 +191,7 @@ void AmbientBackendModel::AddNextImage(
 
   all_decoded_topics_.push_back(photo_with_details);
   while (all_decoded_topics_.size() >
-         photo_config_.num_decoded_topics_to_buffer) {
+         photo_config_.GetNumDecodedTopicsToBuffer()) {
     DCHECK(!all_decoded_topics_.empty());
     all_decoded_topics_.pop_front();
   }
