@@ -346,6 +346,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   // storage::mojom::QuotaInternalsHandler implementation
   void GetDiskAvailability(GetDiskAvailabilityCallback callback) override;
+  void GetStatistics(GetStatisticsCallback callback) override;
+
   // Called by UI and internal modules.
   void GetPersistentHostQuota(const std::string& host, QuotaCallback callback);
   void SetPersistentHostQuota(const std::string& host,
@@ -356,8 +358,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void GetHostUsageWithBreakdown(const std::string& host,
                                  blink::mojom::StorageType type,
                                  UsageWithBreakdownCallback callback);
-
-  std::map<std::string, std::string> GetStatistics();
 
   bool IsStorageUnlimited(const blink::StorageKey& storage_key,
                           blink::mojom::StorageType type) const;

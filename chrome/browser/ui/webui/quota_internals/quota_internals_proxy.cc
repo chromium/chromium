@@ -61,8 +61,8 @@ void QuotaInternalsProxy::RequestInfo(
   quota_manager_->DumpBucketTable(base::BindOnce(
       &QuotaInternalsProxy::DidDumpBucketTable, weak_factory_.GetWeakPtr()));
 
-  std::map<std::string, std::string> stats = quota_manager_->GetStatistics();
-  ReportStatistics(stats);
+  quota_manager_->GetStatistics(base::BindOnce(
+      &QuotaInternalsProxy::DidGetStatistics, weak_factory_.GetWeakPtr()));
 }
 
 void QuotaInternalsProxy::TriggerStoragePressure(
@@ -177,6 +177,15 @@ void QuotaInternalsProxy::DidGetHostUsage(
   if (!hosts_pending_.empty())
     GetHostUsage(hosts_pending_.begin()->first,
                  hosts_pending_.begin()->second);
+}
+
+void QuotaInternalsProxy::DidGetStatistics(
+    const base::flat_map<std::string, std::string>& stats) {
+  std::map<std::string, std::string> stats_map;
+  for (const auto& stat : stats) {
+    stats_map[stat.first] = stat.second;
+  }
+  ReportStatistics(stats_map);
 }
 
 void QuotaInternalsProxy::RequestPerOriginInfo(StorageType type) {

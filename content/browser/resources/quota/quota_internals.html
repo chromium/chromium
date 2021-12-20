@@ -21,10 +21,29 @@
     <tbody id="listeners-tbody"></tbody>
   </table>
 
+  <h2>Eviction Statistics</h2>
+  <table>
+    <thead>
+      <th>Errors on Getting Usage and Quota</th>
+      <th>Evicted Buckets</th>
+      <th>Eviction Rounds</th>
+      <th>Skipped Eviction Rounds</th>
+    </thead>
+    <tbody id="eviction-tbody"></tbody>
+  </table>
+
   <template id="listener-row">
     <tr>
       <td class="total-space"></td>
       <td class="available-space"></td>
+    </tr>
+  </template>
+  <template id="eviction-row">
+    <tr>
+      <td class="errors-on-getting-usage-and-quota"></td>
+      <td class="evicted-buckets"></td>
+      <td class="eviction-rounds"></td>
+      <td class="skipped-eviction-rounds"></td>
     </tr>
   </template>
 </body>

@@ -10,4 +10,9 @@ interface QuotaInternalsHandler {
     // Returns the total and available disk space in bits for a user,
     // which is then converted to bytes and displayed on the Quota Internals UI.
     GetDiskAvailability() => (uint64 total_space, uint64 available_space);
+
+    // Returns the following statistics:
+    // Errors on Getting Usage and Quota, Evicted Buckets, Evicted Rounds
+    // and Skipped Eviction Rounds.
+    GetStatistics() => (map<string, string> eviction_statistics);
 };

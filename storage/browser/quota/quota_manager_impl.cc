@@ -1407,6 +1407,20 @@ void QuotaManagerImpl::GetDiskAvailability(
       std::move(callback)));
 }
 
+void QuotaManagerImpl::GetStatistics(GetStatisticsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::flat_map<std::string, std::string> statistics;
+  if (temporary_storage_evictor_) {
+    std::map<std::string, int64_t> stats;
+    temporary_storage_evictor_->GetStatistics(&stats);
+    for (const auto& storage_key_usage_pair : stats) {
+      statistics[storage_key_usage_pair.first] =
+          base::NumberToString(storage_key_usage_pair.second);
+    }
+  }
+  std::move(callback).Run(statistics);
+}
+
 void QuotaManagerImpl::GetPersistentHostQuota(const std::string& host,
                                               QuotaCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1479,20 +1493,6 @@ void QuotaManagerImpl::GetHostUsageWithBreakdown(
   EnsureDatabaseOpened();
   DCHECK(GetUsageTracker(type));
   GetUsageTracker(type)->GetHostUsageWithBreakdown(host, std::move(callback));
-}
-
-std::map<std::string, std::string> QuotaManagerImpl::GetStatistics() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::map<std::string, std::string> statistics;
-  if (temporary_storage_evictor_) {
-    std::map<std::string, int64_t> stats;
-    temporary_storage_evictor_->GetStatistics(&stats);
-    for (const auto& storage_key_usage_pair : stats) {
-      statistics[storage_key_usage_pair.first] =
-          base::NumberToString(storage_key_usage_pair.second);
-    }
-  }
-  return statistics;
 }
 
 bool QuotaManagerImpl::IsStorageUnlimited(const StorageKey& storage_key,

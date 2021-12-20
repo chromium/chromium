@@ -26,6 +26,11 @@ body {
   text-align: center;
 }
 
+#eviction-tbody {
+  margin: auto;
+  text-align: center;
+}
+
 hr {
   border-top: 1px solid rgb(48, 57, 66);
   width: 100%;

@@ -47,6 +47,23 @@ IN_PROC_BROWSER_TEST_F(QuotaInternalsWebUiBrowserTest,
   EXPECT_TRUE(ExecJsInWebUI("document.getElementById('total-space') >= 0;"));
   EXPECT_TRUE(
       ExecJsInWebUI("document.getElementById('available-space') >= 0;"));
+  EXPECT_TRUE(
+      ExecJsInWebUI("document.body.innerHTML.search('Errors on Getting Usage "
+                    "and Quota') >= 0;"));
+  EXPECT_TRUE(
+      ExecJsInWebUI("document.body.innerHTML.search('Evicted Buckets') >= 0;"));
+  EXPECT_TRUE(
+      ExecJsInWebUI("document.body.innerHTML.search('Eviction Rounds') >= 0;"));
+  EXPECT_TRUE(ExecJsInWebUI(
+      "document.body.innerHTML.search('Skipped Eviction Rounds') >= 0;"));
+  EXPECT_TRUE(ExecJsInWebUI(
+      "document.getElementById('errors-on-getting-usage-and-quota') >= 0;"));
+  EXPECT_TRUE(ExecJsInWebUI(
+      "document.getElementById('skipped-eviction-rounds') >= 0;"));
+  EXPECT_TRUE(
+      ExecJsInWebUI("document.getElementById('eviction-rounds') >= 0;"));
+  EXPECT_TRUE(
+      ExecJsInWebUI("document.getElementById('evicted-buckets') >= 0;"));
 }
 
 }  // namespace content

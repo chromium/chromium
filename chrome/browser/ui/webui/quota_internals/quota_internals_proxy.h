@@ -75,6 +75,8 @@ class QuotaInternalsProxy
                        blink::mojom::StorageType type,
                        int64_t usage,
                        blink::mojom::UsageBreakdownPtr usage_breakdown);
+  void DidGetStatistics(
+      const base::flat_map<std::string, std::string>& statistics);
 
   // Helper. Called on IO Thread.
   void RequestPerOriginInfo(blink::mojom::StorageType type);
