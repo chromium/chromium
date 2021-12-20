@@ -1647,7 +1647,9 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
   // Ensure that the previous page won't be stored in the back/forward cache, so
   // that the histogram will be recorded when the previous page is unloaded.
-  // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
+  // UKM/UMA logging after BFCache eviction is checked by
+  // PageLoadMetricsBrowserTestWithBackForwardCache's
+  // UseCounterUkmFeaturesLoggedOnBFCacheEviction test.
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
@@ -1695,7 +1697,9 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAutoupgradesDisabled,
 
   // Ensure that the previous page won't be stored in the back/forward cache, so
   // that the histogram will be recorded when the previous page is unloaded.
-  // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
+  // UKM/UMA logging after BFCache eviction is checked by
+  // PageLoadMetricsBrowserTestWithBackForwardCache's
+  // UseCounterUkmFeaturesLoggedOnBFCacheEviction test.
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
@@ -3356,6 +3360,67 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithBackForwardCache,
   histogram_tester_->ExpectBucketCount(
       internal::kHistogramBackForwardCacheEvent,
       internal::PageLoadBackForwardCacheEvent::kRestoreFromBackForwardCache, 0);
+}
+
+// Test UseCounter UKM features observed when a page is in the BFCache and is
+// evicted from it.
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithBackForwardCache,
+                       UseCounterUkmFeaturesLoggedOnBFCacheEviction) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL(
+      "/page_load_metrics/use_counter_features.html");
+  {
+    auto waiter = CreatePageLoadMetricsTestWaiter();
+    waiter->AddPageExpectation(TimingField::kLoadEvent);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    MakeComponentFullscreen("testvideo");
+    waiter->Wait();
+  }
+  NavigateToUntrackedUrl();
+
+  // Force the BFCache to evict all entries. This should cause the
+  // UseCounter histograms to be logged.
+  browser()
+      ->tab_strip_model()
+      ->GetActiveWebContents()
+      ->GetController()
+      .GetBackForwardCache()
+      .Flush();
+
+  // Navigate to a new URL. This gives the various page load tracking
+  // mechanisms time to process the BFCache evictions.
+  auto url1 = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+
+  const auto& entries = test_ukm_recorder_->GetEntriesByName(
+      ukm::builders::Blink_UseCounter::kEntryName);
+  EXPECT_THAT(entries, SizeIs(4));
+  std::vector<int64_t> ukm_features;
+  for (const auto* entry : entries) {
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry, ukm::builders::Blink_UseCounter::kIsMainFrameFeatureName, 1);
+    const auto* metric = test_ukm_recorder_->GetEntryMetric(
+        entry, ukm::builders::Blink_UseCounter::kFeatureName);
+    DCHECK(metric);
+    ukm_features.push_back(*metric);
+  }
+  EXPECT_THAT(ukm_features,
+              UnorderedElementsAre(
+                  static_cast<int64_t>(WebFeature::kPageVisits),
+                  static_cast<int64_t>(WebFeature::kFullscreenSecureOrigin),
+                  static_cast<int64_t>(WebFeature::kNavigatorVibrate),
+                  static_cast<int64_t>(WebFeature::kPageVisits)));
+
+  // Check histogram counts.
+  histogram_tester_->ExpectBucketCount(
+      internal::kFeaturesHistogramName,
+      static_cast<int32_t>(WebFeature::kPageVisits), 2);
+  histogram_tester_->ExpectBucketCount(
+      internal::kFeaturesHistogramName,
+      static_cast<int32_t>(WebFeature::kFullscreenSecureOrigin), 1);
+  histogram_tester_->ExpectBucketCount(
+      internal::kFeaturesHistogramName,
+      static_cast<int32_t>(WebFeature::kNavigatorVibrate), 1);
 }
 
 class NavigationPageLoadMetricsBrowserTest
