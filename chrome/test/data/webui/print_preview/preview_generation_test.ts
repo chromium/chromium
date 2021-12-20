@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 
@@ -59,7 +59,7 @@ suite(preview_generation_test.suiteName, function() {
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     setNativeLayerCrosInstance();
     // </if>
     document.body.innerHTML = '';

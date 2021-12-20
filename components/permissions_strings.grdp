@@ -83,7 +83,7 @@
       Allow 2 permissions?
     </message>
 </if>
-  <if expr="is_android or chromeos or lacros or is_win">
+  <if expr="is_android or chromeos_ash or chromeos_lacros or is_win">
     <message name="IDS_PROTECTED_MEDIA_IDENTIFIER_PERMISSION_FRAGMENT" desc="Permission fragment shown in the permissions bubble when a web page requests access to the computer's protected media identifier.">
       Know your unique device identifier
     </message>

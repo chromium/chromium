@@ -43,7 +43,7 @@ are declared in tools/grit/grit_rule.gni.
       <output filename="generated_resources_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="generated_resources_zu.pak" type="data_package" lang="zu" />
     </if>
-    <if expr="chromeos or lacros">
+    <if expr="chromeos_ash or chromeos_lacros">
       <output filename="generated_resources_is.pak" type="data_package" lang="is" />
     </if>
     <output filename="generated_resources_am.pak" type="data_package" lang="am" />
@@ -301,7 +301,7 @@ are declared in tools/grit/grit_rule.gni.
       </if>
 
       <!-- Chrome-OS-specific strings -->
-      <if expr="chromeos or lacros">
+      <if expr="chromeos_ash or chromeos_lacros">
         <part file="chromeos_shared_strings.grdp" />
       </if>
       <if expr="chromeos">
@@ -1381,7 +1381,7 @@ are declared in tools/grit/grit_rule.gni.
       </if>
 
       <!-- App menu -->
-      <if expr="chromeos or lacros">
+      <if expr="chromeos_ash or chromeos_lacros">
         <message name="IDS_TOGGLE_REQUEST_TABLET_SITE" desc="The toggle to request mobile version site on a touch dev.">
           Request mobile site
         </message>
@@ -1772,7 +1772,7 @@ are declared in tools/grit/grit_rule.gni.
                desc="When starting a download, let the user know we're starting the download.">
         Starting...
       </message>
-      <if expr="chromeos or lacros">
+      <if expr="chromeos_ash or chromeos_lacros">
         <message name="IDS_DOWNLOAD_STATUS_IN_PROGRESS_TITLE"
                  desc="The title of a download notification: the current download status is in progress.">
                  Downloading <ph name="FILE_NAME">$1<ex>somedocument.pdf</ex></ph>
@@ -1996,21 +1996,21 @@ are declared in tools/grit/grit_rule.gni.
         This file is encrypted. Ask its owner to decrypt.
       </message>
 
-      <if expr="chromeos or lacros">
+      <if expr="chromeos_ash or chromeos_lacros">
         <message name="IDS_PROMPT_BLOCKED_MIXED_DOWNLOAD_TITLE"
                  desc="In the download notification, a title of the message shown on a download blocked for being insecure.">
           Insecure download blocked
         </message>
       </if>
 
-      <if expr="chromeos or lacros">
+      <if expr="chromeos_ash or chromeos_lacros">
         <message name="IDS_PROMPT_BLOCKED_MALICIOUS_DOWNLOAD_TITLE"
                  desc="In the download notification, a title of message shown for blocked download">
           Dangerous download blocked
         </message>
       </if>
 
-      <if expr="chromeos or lacros">
+      <if expr="chromeos_ash or chromeos_lacros">
         <message name="IDS_PROMPT_SEND_TO_SAFEBROWSING_DOWNLOAD_TITLE"
                  desc="In the download notification, a title of message shown indicating that the file may be malicious and Safe Browsing recommends sending the file to Google">
           Scan file before opening?
@@ -7410,7 +7410,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_TAB_CXMENU_MOVETOANOTHERNEWWINDOW" desc="The label for the Tab context item to move items to a new window from the 'Move tabs to another window' submenu.">
           New window
         </message>
-        <if expr="chromeos or lacros">
+        <if expr="chromeos_ash or chromeos_lacros">
           <message name="IDS_TAB_CXMENU_GROUPED_BY_DESK_MENU_ITEM_A11Y" desc="The a11y message for menu items in 'Move tabs to another window' when grouped by desk.">
             <ph name="TAB_TITLE">$1<ex>Google News</ex></ph> belongs to desk <ph name="DESK_TITLE">$2<ex>School</ex></ph>
           </message>
@@ -7821,7 +7821,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Send feedback
       </message>
       <!-- Killed Tab Strings -->
-      <if expr="chromeos or lacros">
+      <if expr="chromeos_ash or chromeos_lacros">
         <message name="IDS_KILLED_TAB_BY_OOM_MESSAGE" desc="The message displayed on the killed tab page when the page was killed by an out of memory error.">
           Either Chrome ran out of memory or the process for the webpage was terminated for some other reason.  To continue, reload or go to another page.
         </message>

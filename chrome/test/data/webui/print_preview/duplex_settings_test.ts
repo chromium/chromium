@@ -96,7 +96,7 @@ suite('DuplexSettingsTest', function() {
     assertTrue(duplexSection.getSetting('duplexShortEdge').setFromUi);
   });
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   // Tests that if settings are enforced by enterprise policy the
   // appropriate UI is disabled.
   test('disabled by policy', function() {

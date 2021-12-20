@@ -17,7 +17,7 @@ import '../settings_shared_css.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {PasswordManagerImpl, PasswordManagerProxy, PasswordsFileExportProgressListener} from './password_manager_proxy.js';
@@ -67,7 +67,7 @@ export class PasswordsExportDialogElement extends
       showProgressDialog_: Boolean,
       showErrorDialog_: Boolean,
 
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       tokenRequestManager: Object
       // </if>
     };
@@ -85,7 +85,7 @@ export class PasswordsExportDialogElement extends
   private delayedCompletionToken_: number|null;
   private delayedProgress_: chrome.passwordsPrivate.PasswordExportProgress|null;
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   tokenRequestManager: BlockingRequestManager;
   // </if>
 
@@ -205,10 +205,10 @@ export class PasswordsExportDialogElement extends
   }
 
   private onExportTap_() {
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     this.tokenRequestManager.request(() => this.exportPasswords_());
     // </if>
-    // <if expr="not (chromeos or lacros)">
+    // <if expr="not (chromeos_ash or chromeos_lacros)">
     this.exportPasswords_();
     // </if>
   }

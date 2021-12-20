@@ -42,7 +42,7 @@
     <output filename="extensions_strings_hr.pak" type="data_package" lang="hr" />
     <output filename="extensions_strings_hu.pak" type="data_package" lang="hu" />
     <output filename="extensions_strings_id.pak" type="data_package" lang="id" />
-    <if expr="chromeos or lacros">
+    <if expr="chromeos_ash or chromeos_lacros">
       <output filename="extensions_strings_is.pak" type="data_package" lang="is" />
     </if>
     <output filename="extensions_strings_it.pak" type="data_package" lang="it" />

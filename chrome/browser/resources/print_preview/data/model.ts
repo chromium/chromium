@@ -8,7 +8,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BackgroundGraphicsModeRestriction, ColorModeRestriction, DuplexModeRestriction, Policies} from '../native_layer.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {PinModeRestriction} from '../native_layer.js';
 // </if>
 import {CapabilityWithReset, Cdd, CddCapabilities, ColorOption, DpiOption, DuplexOption, MediaSizeOption, VendorCapability} from './cdd.js';
@@ -58,7 +58,7 @@ export type Settings = {
   otherOptions: Setting,
   ranges: Setting,
   pagesPerSheet: Setting,
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   pin: Setting,
   pinValue: Setting,
   // </if>
@@ -82,7 +82,7 @@ export type SerializedSettings = {
   scalingType?: ScalingType,
   scalingTypePdf?: ScalingType,
   vendorOptions?: object,
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   isPinEnabled?: boolean,
   pinValue?: string,
   // </if>
@@ -222,7 +222,7 @@ const STICKY_SETTING_NAMES: string[] = [
   'scalingTypePdf',
   'vendorItems',
 ];
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 STICKY_SETTING_NAMES.push('pin', 'pinValue');
 // </if>
 
@@ -493,7 +493,7 @@ export class PrintPreviewModelElement extends PolymerElement {
               key: 'recentDestinations',
               updatesPreview: false,
             },
-            // <if expr="chromeos or lacros">
+            // <if expr="chromeos_ash or chromeos_lacros">
             pin: {
               value: false,
               unavailableValue: false,
@@ -739,7 +739,7 @@ export class PrintPreviewModelElement extends PolymerElement {
     this.setSettingPath_(
         'vendorItems.available', !!caps && !!caps.vendor_capability);
 
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     const pinSupported = !!caps && !!caps.pin && !!caps.pin.supported &&
         loadTimeData.getBoolean('isEnterpriseManaged');
     this.set('settings.pin.available', pinSupported);
@@ -1068,7 +1068,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       return d.origin !== DestinationOrigin.PRIVET;
     });
 
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     // Remove Cloud Print Drive destination. The Chrome OS version will always
     // be shown in the dropdown and is still supported.
     recentDestinations = recentDestinations.filter((d: RecentDestination) => {
@@ -1205,7 +1205,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       const allowedMode = policiesObject[settingName].allowedMode;
       this.configurePolicySetting_(settingName, allowedMode, defaultMode);
     });
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     if (policiesObject['sheets']) {
       if (!this.policySettings_) {
         this.policySettings_ = {};
@@ -1300,7 +1300,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       for (const [settingName, policy] of Object.entries(
                this.policySettings_)) {
         const policyEntry = policy as PolicyEntry;
-        // <if expr="chromeos or lacros">
+        // <if expr="chromeos_ash or chromeos_lacros">
         if (settingName === 'sheets') {
           this.maxSheets = policyEntry.value;
           continue;
@@ -1472,7 +1472,7 @@ export class PrintPreviewModelElement extends PolymerElement {
 
   private updateManaged_() {
     let managedSettings = ['cssBackground', 'headerFooter'];
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     managedSettings =
         managedSettings.concat(['color', 'duplex', 'duplexShortEdge', 'pin']);
     // </if>
@@ -1565,7 +1565,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       pageHeight: this.pageSize.height,
       showSystemDialog: showSystemDialog,
     };
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     ticket['printToGoogleDrive'] = ticket['printToGoogleDrive'] ||
         destination.id === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS;
     // </if>
@@ -1590,7 +1590,7 @@ export class PrintPreviewModelElement extends PolymerElement {
       ticket['capabilities'] = JSON.stringify(destination.capabilities);
     }
 
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     if (this.getSettingValue('pin')) {
       ticket['pinValue'] = this.getSettingValue('pinValue');
     }

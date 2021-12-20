@@ -194,7 +194,7 @@ suite('AppearanceHandler', function() {
   });
   // </if>
 
-  // <if expr="not is_linux or chromeos or lacros">
+  // <if expr="not is_linux or chromeos_ash or chromeos_lacros">
   test('useDefaultTheme', function() {
     assertFalse(!!appearancePage.get(THEME_ID_PREF));
     assertFalse(!!appearancePage.shadowRoot!.querySelector('#useDefault'));

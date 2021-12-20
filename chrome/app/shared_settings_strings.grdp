@@ -391,7 +391,7 @@
   </if>
 
   <!-- Password Prompt Dialog -->
-  <if expr="chromeos or lacros">
+  <if expr="chromeos_ash or chromeos_lacros">
     <message name="IDS_SETTINGS_PEOPLE_PASSWORD_PROMPT_TITLE" desc="Title of the password prompt dialog popup.">
       Confirm your password
     </message>

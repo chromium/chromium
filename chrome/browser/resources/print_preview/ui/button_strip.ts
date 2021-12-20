@@ -51,7 +51,7 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
         },
       },
 
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       errorMessage_: {
         type: String,
         observer: 'errorMessageChanged_',
@@ -64,7 +64,7 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     return [
       'updatePrintButtonLabel_(destination.id)',
       'updatePrintButtonEnabled_(state, destination.id, maxSheets, sheetCount)',
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       'updateErrorMessage_(state, destination.id, maxSheets, sheetCount)',
       // </if>
 
@@ -78,7 +78,7 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
   state: State;
   private printButtonEnabled_: boolean;
   private printButtonLabel_: string;
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private errorMessage_: string;
   // </if>
 
@@ -115,7 +115,7 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
         this.printButtonEnabled_ = false;
         break;
       case (State.READY):
-        // <if expr="chromeos or lacros">
+        // <if expr="chromeos_ash or chromeos_lacros">
         this.printButtonEnabled_ = !this.printButtonDisabled_();
         // </if>
         // <if expr="not chromeos and not lacros">
@@ -135,7 +135,7 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     this.lastState_ = this.state;
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * @return Whether to disable "Print" button because of sheets limit policy.
    */

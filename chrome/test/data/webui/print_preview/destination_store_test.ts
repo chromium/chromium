@@ -15,7 +15,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 import {NativeLayerStub} from './native_layer_stub.js';
@@ -47,7 +47,7 @@ const destination_store_test = {
     MultipleRecentDestinationsAccounts: 'multiple recent destinations accounts',
     // </if>
     LoadAndSelectDestination: 'select loaded destination',
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     MultipleRecentDestinationsAccountsCros:
         'multiple recent destinations accounts for Chrome OS',
     LoadSaveToDriveCros: 'load Save to Drive Cros',
@@ -85,7 +85,7 @@ suite(destination_store_test.suiteName, function() {
 
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     setNativeLayerCrosInstance();
     // </if>
 
@@ -241,7 +241,7 @@ suite(destination_store_test.suiteName, function() {
           // Verify that all local printers have been added to the store.
           const reportedPrinters = destinationStore.destinations();
           destinations.forEach(destination => {
-            // <if expr="chromeos or lacros">
+            // <if expr="chromeos_ash or chromeos_lacros">
             assertEquals(DestinationOrigin.CROS, destination.origin);
             // </if>
             // <if expr="not chromeos and not lacros">
@@ -316,7 +316,7 @@ suite(destination_store_test.suiteName, function() {
           // should have been selected so there was only one preview request.
           const reportedPrinters = destinationStore.destinations();
           const expectedPrinters =
-              // <if expr="chromeos or lacros">
+              // <if expr="chromeos_ash or chromeos_lacros">
               7;
           // </if>
           // <if expr="not chromeos and not lacros">
@@ -622,7 +622,7 @@ suite(destination_store_test.suiteName, function() {
             });
       });
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * Tests that if there are recent destinations from different accounts, only
    * destinations associated with the most recent account are fetched.

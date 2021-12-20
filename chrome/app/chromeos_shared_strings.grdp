@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Chrome OS-specific strings (included from generated_resources.grd).
      Shared between both Ash and Lacros.
-     Everything in this file is wrapped in <if expr="chromeos or lacros">. -->
+     Everything in this file is wrapped in <if expr="chromeos_ash or chromeos_lacros">. -->
 <grit-part>
 
   <!-- Settings -->

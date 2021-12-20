@@ -22,7 +22,7 @@ import '../reset_page/reset_profile_banner.js';
 import '../search_page/search_page.js';
 import '../settings_page/settings_section.js';
 import '../settings_page_css.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 // </if>
 
@@ -37,7 +37,7 @@ import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer
 import {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 // </if>
 import {routes} from '../route.js';
@@ -45,7 +45,7 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 import {getSearchManager, SearchResult} from '../search_settings.js';
 import {MainPageMixin, MainPageMixinInterface} from '../settings_page/main_page_mixin.js';
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 const OS_BANNER_INTERACTION_METRIC_NAME =
     'ChromeOS.Settings.OsBannerInteraction';
 
@@ -66,7 +66,7 @@ const CrosSettingsOsBannerInteraction = {
 // TypeScript.
 type Constructor<T> = new (...args: any[]) => T;
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 const SettingsBasicPageElementBase =
     PrefsMixin(MainPageMixin(
         RouteObserverMixin(PolymerElement) as unknown as
@@ -148,7 +148,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         },
       },
 
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       showOSSettingsBanner_: {
         type: Boolean,
         computed: 'computeShowOSSettingsBanner_(' +
@@ -175,7 +175,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   private hasExpandedSection_: boolean;
   private showResetProfileBanner_: boolean;
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private showOSSettingsBanner_: boolean;
   private osBannerShowMetricRecorded_: boolean = false;
   // </if>
@@ -276,7 +276,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     });
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private computeShowOSSettingsBanner_(): boolean|undefined {
     // this.prefs is implicitly used by this.getPref() below.
     if (!this.prefs || !this.currentRoute_) {

@@ -31,7 +31,7 @@ function renderTemplate(componentsData) {
   jstProcess(input, output);
   output.removeAttribute('hidden');
 
-// <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   const crosUrlRedirectButton = $('os-link-href');
   if (crosUrlRedirectButton) {
     crosUrlRedirectButton.onclick = crosUrlComponentRedirect;
@@ -39,7 +39,7 @@ function renderTemplate(componentsData) {
 // </if>
 }
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 /**
  * Called when the user clicks on the os-link-href button.
  */

@@ -10,7 +10,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 
@@ -82,7 +82,7 @@ suite(print_preview_app_test.suiteName, function() {
     document.body.innerHTML = '';
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     setNativeLayerCrosInstance();
     // </if>
     cloudPrintInterface = new CloudPrintInterfaceStub();

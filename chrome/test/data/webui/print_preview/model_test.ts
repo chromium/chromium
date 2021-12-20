@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, DuplexMode, MarginsType, PrinterType, PrintPreviewModelElement, PrintTicket, ScalingType, Size} from 'chrome://print/print_preview.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {GooglePromotedDestinationId} from 'chrome://print/print_preview.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.m.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // </if>
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -64,7 +64,7 @@ suite(model_test.suiteName, function() {
       isLandscapeEnabled: false,
       isColorEnabled: true,
       vendorOptions: {},
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       isPinEnabled: false,
       pinValue: '',
       // </if>
@@ -91,7 +91,7 @@ suite(model_test.suiteName, function() {
         paperType: 1,
         printArea: 6,
       },
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       isPinEnabled: true,
       pinValue: '0000',
       // </if>
@@ -156,7 +156,7 @@ suite(model_test.suiteName, function() {
             .then(() => testStickySetting('scalingType', 'scalingType'))
             .then(() => testStickySetting('scalingTypePdf', 'scalingTypePdf'))
             .then(() => testStickySetting('vendorItems', 'vendorOptions'));
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     promise = promise.then(() => testStickySetting('pin', 'isPinEnabled'))
                   .then(() => testStickySetting('pinValue', 'pinValue'));
     // </if>
@@ -225,7 +225,7 @@ suite(model_test.suiteName, function() {
         paperType: 1,
       },
       ranges: [{from: 2, to: 2}],
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       pin: true,
       pinValue: '0000',
       // </if>
@@ -267,7 +267,7 @@ suite(model_test.suiteName, function() {
    * print ticket.
    */
   test(assert(model_test.TestNames.GetPrintTicket), function() {
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     const origin = DestinationOrigin.CROS;
     // </if>
     // <if expr="not chromeos and not lacros">
@@ -279,7 +279,7 @@ suite(model_test.suiteName, function() {
     testDestination.capabilities =
         getCddTemplateWithAdvancedSettings(2, 'FooDevice').capabilities;
 
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     // Make device managed. It's used for testing pin setting behavior.
     loadTimeData.overrideValues({isEnterpriseManaged: true});
     // </if>
@@ -315,7 +315,7 @@ suite(model_test.suiteName, function() {
       pageHeight: 792,
       showSystemDialog: false,
     };
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     expectedDefaultTicketObject.advancedSettings = {
       printArea: 4,
       paperType: 0,
@@ -359,7 +359,7 @@ suite(model_test.suiteName, function() {
         marginLeft: 400,
       },
     };
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     expectedNewTicketObject.pinValue = '0000';
     expectedNewTicketObject.advancedSettings = {
       printArea: 6,
@@ -543,7 +543,7 @@ suite(model_test.suiteName, function() {
     assertEquals(false, model.getSettingValue('duplex'));
   });
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   // Tests that printToGoogleDrive is set correctly on the print ticket for Save
   // to Drive CrOS.
   test(assert(model_test.TestNames.PrintToGoogleDriveCros), function() {

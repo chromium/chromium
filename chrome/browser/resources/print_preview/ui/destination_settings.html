@@ -1,5 +1,5 @@
 <style include="print-preview-shared">
-<if expr="chromeos or lacros">
+<if expr="chromeos_ash or chromeos_lacros">
   :host([has-pin-setting_]) {
     margin-bottom: 0 !important;
   }
@@ -35,7 +35,7 @@
     </template>
   </cr-lazy-render>
 </if>
-<if expr="chromeos or lacros">
+<if expr="chromeos_ash or chromeos_lacros">
   <print-preview-destination-select-cros id="destinationSelect"
       active-user="[[activeUser_]]" dark="[[dark]]"
       destination="[[destination]]"

@@ -20,7 +20,7 @@ import './more_settings.js';
 import './other_options_settings.js';
 import './pages_per_sheet_settings.js';
 import './pages_settings.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import './pin_settings.js';
 // </if>
 import './print_preview_vars_css.js';

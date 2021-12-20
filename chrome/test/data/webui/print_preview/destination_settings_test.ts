@@ -9,7 +9,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {eventToPromise, fakeDataBind, waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {NativeLayerCrosStub, setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 import {NativeLayerStub} from './native_layer_stub.js';
@@ -33,7 +33,7 @@ const destination_settings_test = {
     UpdateRecentDestinations: 'update recent destinations',
     DisabledSaveAsPdf: 'disabled save as pdf',
     NoDestinations: 'no destinations',
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     EulaIsRetrieved: 'eula is retrieved',
     DriveIsNotMounted: 'drive is not mounted',
     // </if>
@@ -49,7 +49,7 @@ suite(destination_settings_test.suiteName, function() {
 
   let cloudPrintInterface: CloudPrintInterfaceStub;
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   let nativeLayerCros: NativeLayerCrosStub;
   // </if>
 
@@ -68,7 +68,7 @@ suite(destination_settings_test.suiteName, function() {
   const defaultUser: string = 'foo@chromium.org';
 
   const driveDestinationKey: string =
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       'Save to Drive CrOS/local/';
   // </if>
   // <if expr="not chromeos and not lacros">
@@ -85,7 +85,7 @@ suite(destination_settings_test.suiteName, function() {
     // Stub out native layer and cloud print interface.
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     nativeLayerCros = setNativeLayerCrosInstance();
     // </if>
     localDestinations = [];
@@ -189,7 +189,7 @@ suite(destination_settings_test.suiteName, function() {
       });
 
   function getLocalOrigin(): DestinationOrigin {
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     return DestinationOrigin.CROS;
     // </if>
     // <if expr="not chromeos and not lacros">
@@ -198,7 +198,7 @@ suite(destination_settings_test.suiteName, function() {
   }
 
   function assertGoogleDrive() {
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     assertEquals(
         GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS,
         destinationSettings.destination.id);
@@ -261,7 +261,7 @@ suite(destination_settings_test.suiteName, function() {
           assertFalse(destinationSettings.$.destinationSelect.disabled);
           const dropdownItems = [
             'Save as PDF/local/',
-            // <if expr="chromeos or lacros">
+            // <if expr="chromeos_ash or chromeos_lacros">
             driveDestinationKey,
             // </if>
           ];
@@ -294,7 +294,7 @@ suite(destination_settings_test.suiteName, function() {
               const dropdownItems = [
                 makeLocalDestinationKey('ID1'), makeLocalDestinationKey('ID2'),
                 makeLocalDestinationKey('ID3'), 'Save as PDF/local/',
-                // <if expr="chromeos or lacros">
+                // <if expr="chromeos_ash or chromeos_lacros">
                 driveDestinationKey,
                 // </if>
               ];
@@ -329,7 +329,7 @@ suite(destination_settings_test.suiteName, function() {
               const dropdownItems = [
                 makeLocalDestinationKey('ID1'), makeLocalDestinationKey('ID3'),
                 'Save as PDF/local/',
-                // <if expr="chromeos or lacros">
+                // <if expr="chromeos_ash or chromeos_lacros">
                 driveDestinationKey,
                 // </if>
               ];
@@ -360,7 +360,7 @@ suite(destination_settings_test.suiteName, function() {
           const dropdownItems = [
             makeLocalDestinationKey('ID1'), makeLocalDestinationKey('ID3'),
             makeLocalDestinationKey('ID4'), 'Save as PDF/local/',
-            // <if expr="chromeos or lacros">
+            // <if expr="chromeos_ash or chromeos_lacros">
             driveDestinationKey,
             // </if>
           ];
@@ -393,7 +393,7 @@ suite(destination_settings_test.suiteName, function() {
               assertEquals('ID1', destinationSettings.destination.id);
               assertFalse(destinationSettings.$.destinationSelect.disabled);
 
-              // <if expr="chromeos or lacros">
+              // <if expr="chromeos_ash or chromeos_lacros">
               const dropdownItems = [
                 makeLocalDestinationKey('ID1'),
                 makeLocalDestinationKey('ID3'),
@@ -441,7 +441,7 @@ suite(destination_settings_test.suiteName, function() {
               assertGoogleDrive();
               assertFalse(destinationSettings.$.destinationSelect.disabled);
 
-              // <if expr="chromeos or lacros">
+              // <if expr="chromeos_ash or chromeos_lacros">
               const dropdownItems = [
                 makeLocalDestinationKey('ID2'),
                 makeLocalDestinationKey('ID3'),
@@ -488,7 +488,7 @@ suite(destination_settings_test.suiteName, function() {
           const dropdownItems = [
             makeLocalDestinationKey('ID1'), makeLocalDestinationKey('ID3'),
             makeLocalDestinationKey('ID4'), 'Save as PDF/local/',
-            // <if expr="chromeos or lacros">
+            // <if expr="chromeos_ash or chromeos_lacros">
             driveDestinationKey,
             // </if>
           ];
@@ -539,7 +539,7 @@ suite(destination_settings_test.suiteName, function() {
               // This will result in the destination store setting the most
               // recent destination.
               assertEquals('ID1', destinationSettings.destination.id);
-              // <if expr="chromeos or lacros">
+              // <if expr="chromeos_ash or chromeos_lacros">
               const dropdownItems = [
                 makeLocalDestinationKey('ID1'),
                 makeLocalDestinationKey('ID3'),
@@ -600,7 +600,7 @@ suite(destination_settings_test.suiteName, function() {
               const dropdownItems = [
                 makeLocalDestinationKey('ID1'), makeLocalDestinationKey('ID2'),
                 makeLocalDestinationKey('ID3'), 'Save as PDF/local/',
-                // <if expr="chromeos or lacros">
+                // <if expr="chromeos_ash or chromeos_lacros">
                 driveDestinationKey,
                 // </if>
               ];
@@ -643,7 +643,7 @@ suite(destination_settings_test.suiteName, function() {
           const dropdownItems = [
             makeLocalDestinationKey('ID1'), makeLocalDestinationKey('ID2'),
             makeLocalDestinationKey('ID3'), 'Save as PDF/local/',
-            // <if expr="chromeos or lacros">
+            // <if expr="chromeos_ash or chromeos_lacros">
             driveDestinationKey,
             // </if>
           ];
@@ -702,7 +702,7 @@ suite(destination_settings_test.suiteName, function() {
               const dropdownItems = [
                 'FooCloud/cookies/foo@chromium.org',
                 makeLocalDestinationKey('ID1'), 'Save as PDF/local/',
-                // <if expr="chromeos or lacros">
+                // <if expr="chromeos_ash or chromeos_lacros">
                 driveDestinationKey,
                 // </if>
               ];
@@ -730,7 +730,7 @@ suite(destination_settings_test.suiteName, function() {
               const dropdownItems = [
                 'BarCloud/cookies/bar@chromium.org',
                 makeLocalDestinationKey('ID1'), 'Save as PDF/local/',
-                // <if expr="chromeos or lacros">
+                // <if expr="chromeos_ash or chromeos_lacros">
                 driveDestinationKey,
                 // </if>
               ];
@@ -857,7 +857,7 @@ suite(destination_settings_test.suiteName, function() {
               // Because the 'Save as PDF' fallback is unavailable, the first
               // destination is selected.
               const expectedDestination =
-                  // <if expr="chromeos or lacros">
+                  // <if expr="chromeos_ash or chromeos_lacros">
                   'Save to Drive CrOS/local/';
               // </if>
               // <if expr="not chromeos and not lacros">
@@ -891,7 +891,7 @@ suite(destination_settings_test.suiteName, function() {
         .then(() => assertDropdownItems(['noDestinations']));
   });
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * Tests that destinations with a EULA will fetch the EULA URL when
    * selected.

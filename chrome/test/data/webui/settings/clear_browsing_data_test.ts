@@ -636,7 +636,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     });
   });
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   // On ChromeOS the footer is never shown.
   test('ClearBrowsingDataSyncAccountInfo', function() {
     assertTrue(element.$.clearBrowsingDataDialog.open);

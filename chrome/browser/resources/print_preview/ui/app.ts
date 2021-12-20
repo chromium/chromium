@@ -30,7 +30,7 @@ import {Size} from '../data/size.js';
 import {Error, PrintPreviewStateElement, State} from '../data/state.js';
 import {MetricsContext, PrintPreviewInitializationEvents} from '../metrics.js';
 import {NativeInitialSettings, NativeLayer, NativeLayerImpl} from '../native_layer.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {NativeLayerCros, NativeLayerCrosImpl} from '../native_layer_cros.js';
 
 // </if>
@@ -138,7 +138,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   private maxSheets_: number;
 
   private nativeLayer_: NativeLayer|null = null;
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private nativeLayerCros_: NativeLayerCros|null = null;
   // </if>
   private tracker_: EventTracker = new EventTracker();
@@ -174,7 +174,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
 
     document.documentElement.classList.remove('loading');
     this.nativeLayer_ = NativeLayerImpl.getInstance();
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     this.nativeLayerCros_ = NativeLayerCrosImpl.getInstance();
     // </if>
     this.addWebUIListener('cr-dialog-open', this.onCrDialogOpen_.bind(this));
@@ -228,7 +228,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
         e.preventDefault();
       }
 
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       if (this.destination_ &&
           this.destination_.origin === DestinationOrigin.CROS) {
         this.nativeLayerCros_!.recordPrinterStatusHistogram(
@@ -392,7 +392,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
         break;
       case DestinationState.ERROR:
         let newState = State.ERROR;
-        // <if expr="chromeos or lacros">
+        // <if expr="chromeos_ash or chromeos_lacros">
         if (this.error_ === Error.NO_DESTINATIONS) {
           newState = State.FATAL_ERROR;
         }
@@ -469,7 +469,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
       this.printRequested_ = true;
       return;
     }
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     if (this.destination_ &&
         this.destination_.origin === DestinationOrigin.CROS) {
       this.nativeLayerCros_!.recordPrinterStatusHistogram(
@@ -481,7 +481,7 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   }
 
   private onCancelRequested_() {
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     if (this.destination_ &&
         this.destination_.origin === DestinationOrigin.CROS) {
       this.nativeLayerCros_!.recordPrinterStatusHistogram(

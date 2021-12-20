@@ -24,7 +24,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
@@ -113,7 +113,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         value: () => [],
       },
 
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       /**
        * Used for authentication when switching from ADD to EDIT mode.
        */
@@ -194,7 +194,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
   readonly storeOptionAccountValue: string;
   readonly storeOptionDeviceValue: string;
   savedPasswords: Array<MultiStorePasswordUiEntry>;
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   tokenRequestManager: BlockingRequestManager|null;
   // </if>
   private usernamesByOrigin_: Map<string, Set<string>>|null = null;
@@ -545,7 +545,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
           .requestPlaintextPassword(
               id, chrome.passwordsPrivate.PlaintextReason.EDIT)
           .then(password => resolve(password), () => {
-            // <if expr="chromeos or lacros">
+            // <if expr="chromeos_ash or chromeos_lacros">
             // If no password was found, refresh auth token and retry.
             this.tokenRequestManager!.request(() => {
               this.requestPlaintextPasswordForEditing_(id).then(resolve);

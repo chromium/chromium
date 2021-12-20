@@ -7,7 +7,8 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {CloudPrintInterfaceStub} from './cloud_print_interface_stub.js';
-// <if expr="chromeos or lacros">
+
+// <if expr="chromeos_ash or chromeos_lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 
@@ -37,7 +38,7 @@ suite('UserManagerTest', function() {
     // Create data classes
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     setNativeLayerCrosInstance();
     // </if>
     cloudPrintInterface = new CloudPrintInterfaceStub();

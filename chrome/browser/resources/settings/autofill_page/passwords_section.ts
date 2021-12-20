@@ -17,7 +17,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../controls/extension_controlled_indicator.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import '../controls/password_prompt_dialog.js';
 // </if>
 import '../controls/settings_toggle_button.js';
@@ -48,7 +48,7 @@ import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, Router} from '../router.js';
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {MergeExceptionsStoreCopiesMixin} from './merge_exceptions_store_copies_mixin.js';
@@ -246,7 +246,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       syncPrefs_: Object,
       syncStatus_: Object,
 
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       showPasswordPromptDialog_: Boolean,
       tokenRequestManager_: Object,
       // </if>
@@ -291,7 +291,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private syncPrefs_: SyncPrefs;
   private syncStatus_: SyncStatus;
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private showPasswordPromptDialog_: boolean;
   private tokenRequestManager_: BlockingRequestManager;
   // </if>
@@ -349,7 +349,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.setIsOptedInForAccountStorageListener_ =
         setIsOptedInForAccountStorageListener;
 
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     // If the user's account supports the password check, an auth token will be
     // required in order for them to view or export passwords. Otherwise there
     // is no additional security so |tokenRequestManager_| will immediately
@@ -383,7 +383,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     syncBrowserProxy.sendSyncPrefsChanged();
 
     // For non-ChromeOS, non-Lacros, also check whether accounts are available.
-    // <if expr="not (chromeos or lacros)">
+    // <if expr="not (chromeos_ash or chromeos_lacros)">
     const storedAccountsChanged = (accounts: Array<StoredAccount>) =>
         this.storedAccounts_ = accounts;
     syncBrowserProxy.getStoredAccounts().then(storedAccountsChanged);
@@ -515,7 +515,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     Router.getInstance().navigateTo(routes.DEVICE_PASSWORDS);
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * When this event fired, it means that the password-prompt-dialog succeeded
    * in creating a fresh token in the quickUnlockPrivate API. Because new tokens

@@ -132,7 +132,7 @@ export type CddCapabilities = {
   page_orientation?: PageOrientationCapability,
   media_size?: MediaSizeCapability,
   dpi?: DpiCapability,
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   pin?: PinCapability,
   // </if>
 };

@@ -18,7 +18,7 @@ import './password_check_edit_dialog.js';
 import './password_check_edit_disclaimer_dialog.js';
 import './password_check_list_item.js';
 import './password_remove_confirmation_dialog.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import '../controls/password_prompt_dialog.js';
 
 // </if>
@@ -27,13 +27,13 @@ import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // </if>
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {loadTimeData} from '../i18n_setup.js';
 // </if>
 
@@ -42,7 +42,7 @@ import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 
@@ -149,7 +149,7 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
         value: new Set(),
       },
 
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       showPasswordPromptDialog_: Boolean,
       tokenRequestManager_: Object,
       // </if>
@@ -174,7 +174,7 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
   private iconHaloClass_: string;
   private clickedChangePasswordIds_: Set<number>;
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private showPasswordPromptDialog_: boolean;
   private tokenRequestManager_: BlockingRequestManager;
   // </if>
@@ -212,7 +212,7 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
   connectedCallback() {
     super.connectedCallback();
 
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     // If the user's account supports the password check, an auth token will be
     // required in order for them to view or export passwords. Otherwise there
     // is no additional security so |tokenRequestManager_| will immediately
@@ -250,7 +250,7 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
     syncBrowserProxy.sendSyncPrefsChanged();
 
     // For non-ChromeOS, also check whether accounts are available.
-    // <if expr="not (chromeos or lacros)">
+    // <if expr="not (chromeos_ash or chromeos_lacros)">
     const storedAccountsChanged = (accounts: Array<StoredAccount>) =>
         this.storedAccounts_ = accounts;
     syncBrowserProxy.getStoredAccounts().then(storedAccountsChanged);
@@ -386,12 +386,12 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
               this.showPasswordEditDialog_ = true;
             },
             _error => {
-              // <if expr="chromeos or lacros">
+              // <if expr="chromeos_ash or chromeos_lacros">
               // If no password was found, refresh auth token and retry.
               this.tokenRequestManager_.request(
                   () => this.onEditPasswordClick_());
               // </if>
-              // <if expr="not (chromeos or lacros)">
+              // <if expr="not (chromeos_ash or chromeos_lacros)">
               this.activePassword_ = null;
               this.onPasswordEditDialogClosed_();
               // </if>
@@ -742,7 +742,7 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
     return this.clickedChangePasswordIds_.has(item.id);
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * Copied from passwords_section.js.
    * TODO(crbug.com/1074228): Extract to a separate behavior

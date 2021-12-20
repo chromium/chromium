@@ -6,7 +6,7 @@ import {getInstance, MarginsType, NativeInitialSettings, NativeLayerImpl, Plugin
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {setNativeLayerCrosInstance} from './native_layer_cros_stub.js';
 // </if>
 
@@ -35,7 +35,7 @@ suite(restore_state_test.suiteName, function() {
   setup(function() {
     nativeLayer = new NativeLayerStub();
     NativeLayerImpl.setInstance(nativeLayer);
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     setNativeLayerCrosInstance();
     // </if>
     document.body.innerHTML = '';
@@ -143,7 +143,7 @@ suite(restore_state_test.suiteName, function() {
           isDuplexShortEdge: true,
           isLandscapeEnabled: true,
           isColorEnabled: true,
-          // <if expr="chromeos or lacros">
+          // <if expr="chromeos_ash or chromeos_lacros">
           isPinEnabled: true,
           pinValue: '0000',
           // </if>
@@ -184,7 +184,7 @@ suite(restore_state_test.suiteName, function() {
           isDuplexShortEdge: false,
           isLandscapeEnabled: false,
           isColorEnabled: false,
-          // <if expr="chromeos or lacros">
+          // <if expr="chromeos_ash or chromeos_lacros">
           isPinEnabled: false,
           pinValue: '',
           // </if>
@@ -301,7 +301,7 @@ suite(restore_state_test.suiteName, function() {
           printArea: 6,
         },
       },
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       {
         section: 'print-preview-pin-settings',
         settingName: 'pin',

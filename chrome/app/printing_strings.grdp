@@ -292,7 +292,7 @@
     <message name="IDS_PRINT_PREVIEW_MANAGED_SETTINGS_TEXT" desc="Text shown when hovering over the enterprise managed icon in the header">
       These settings are enforced by your administrator
     </message>
-    <if expr="chromeos or lacros">
+    <if expr="chromeos_ash or chromeos_lacros">
       <message name="IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE"
                desc="Option shown on printer drop-down list for saving previewed document to Google Drive.">
         Save to Google Drive

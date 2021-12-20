@@ -49,7 +49,7 @@
       disabled="[[controlsDisabled_]]"
       available class="settings-section">
   </print-preview-destination-settings>
-<if expr="chromeos or lacros">
+<if expr="chromeos_ash or chromeos_lacros">
   <print-preview-pin-settings state="[[state]]" settings="[[settings]]"
       disabled="[[controlsDisabled_]]"
       hidden$="[[!settings.pin.available]]" class="settings-section">

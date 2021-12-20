@@ -17,13 +17,13 @@ import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js'
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, DestinationOrigin} from '../data/destination.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
 // </if>
 
 import {updateHighlights} from './highlight_utils.js';
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 enum DestinationConfigStatus {
   IDLE = 0,
   IN_PROGRESS = 1,
@@ -69,7 +69,7 @@ export class PrintPreviewDestinationListItemElement extends
             'configurationStatus_)',
       },
 
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       isDestinationCrosLocal_: {
         type: Boolean,
         computed: 'computeIsDestinationCrosLocal_(destination)',
@@ -98,7 +98,7 @@ export class PrintPreviewDestinationListItemElement extends
           'destination.displayName, destination.isOfflineOrInvalid, ' +
           'destination.isExtension)',
       'updateHighlightsAndHint_(destination, searchQuery)',
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       'requestPrinterStatus_(destination.key)',
       // </if>
     ];
@@ -111,7 +111,7 @@ export class PrintPreviewDestinationListItemElement extends
   private searchHint_: string;
   private statusText_: string;
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private isDestinationCrosLocal_: boolean;
   private configurationStatus_: DestinationConfigStatus;
   // </if>
@@ -132,7 +132,7 @@ export class PrintPreviewDestinationListItemElement extends
     }
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * Called if the printer configuration request is accepted. Show the waiting
    * message to the user as the configuration might take longer than expected.
@@ -196,7 +196,7 @@ export class PrintPreviewDestinationListItemElement extends
       return '';
     }
 
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     if (this.destination.origin === DestinationOrigin.CROS) {
       // Don't show status text when destination is configuring.
       if (this.configurationStatus_ !== DestinationConfigStatus.IDLE) {
@@ -225,7 +225,7 @@ export class PrintPreviewDestinationListItemElement extends
       return '';
     }
 
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     if (this.destination.origin === DestinationOrigin.CROS) {
       return getPrinterStatusIcon(
           this.destination.printerStatusReason,
@@ -236,7 +236,7 @@ export class PrintPreviewDestinationListItemElement extends
     return this.destination.icon;
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * True when the destination is a CrOS local printer.
    */

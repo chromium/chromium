@@ -34,7 +34,7 @@
       <output filename="components_locale_settings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="components_locale_settings_zu.pak" type="data_package" lang="zu" />
     </if>
-    <if expr="chromeos or lacros">
+    <if expr="chromeos_ash or chromeos_lacros">
       <output filename="components_locale_settings_is.pak" type="data_package" lang="is" />
     </if>
     <output filename="components_locale_settings_am.pak" type="data_package" lang="am" />

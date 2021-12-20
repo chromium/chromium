@@ -24,7 +24,7 @@ import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions} from '../metrics_browser_proxy.js';
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 // </if>
 
@@ -107,7 +107,7 @@ export class SettingsSecurityPageElement extends
         },
       },
 
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       /**
        * Whether a link to secure DNS OS setting should be displayed.
        */
@@ -148,7 +148,7 @@ export class SettingsSecurityPageElement extends
   private showHttpsOnlyModeSetting_: boolean;
   private showSecureDnsSetting_: boolean;
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private showSecureDnsSettingLink_: boolean;
   // </if>
 
@@ -321,7 +321,7 @@ export class SettingsSecurityPageElement extends
     this.recordActionOnExpandButtonClicked_(SafeBrowsingSetting.STANDARD);
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private onOpenChromeOSSecureDnsSettingsClicked_() {
     const path =
         loadTimeData.getString('chromeOSPrivacyAndSecuritySectionPath');

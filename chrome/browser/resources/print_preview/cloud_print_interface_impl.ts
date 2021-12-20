@@ -10,7 +10,7 @@ import {CloudDestinationInfo, parseCloudDestination} from './data/cloud_parsers.
 import {CloudOrigins, Destination, DestinationOrigin} from './data/destination.js';
 import {PrinterType} from './data/destination_match.js';
 import {MetricsContext, PrintPreviewInitializationEvents} from './metrics.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {NativeLayerCrosImpl} from './native_layer_cros.js';
 
 // </if>
@@ -51,7 +51,7 @@ export class CloudPrintInterfaceImpl implements CloudPrintInterface {
    */
   private outstandingCloudSearchRequests_: CloudPrintRequest[] = [];
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * Promise that will be resolved when the access token for
    * DestinationOrigin.DEVICE is available. Null if there is no request
@@ -249,7 +249,7 @@ export class CloudPrintInterfaceImpl implements CloudPrintInterface {
       return;
     }
 
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     assert(request.origin === DestinationOrigin.DEVICE);
     if (this.accessTokenRequestPromise_ === null) {
       this.accessTokenRequestPromise_ =
@@ -342,7 +342,7 @@ export class CloudPrintInterfaceImpl implements CloudPrintInterface {
         });
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * Called when a native layer receives access token. Assumes that the
    * destination type for this token is DestinationOrigin.DEVICE.
