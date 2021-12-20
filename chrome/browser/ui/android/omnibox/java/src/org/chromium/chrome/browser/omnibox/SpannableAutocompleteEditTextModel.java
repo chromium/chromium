@@ -564,15 +564,14 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
         public boolean beginBatchEdit() {
             if (DEBUG) Log.i(TAG, "beginBatchEdit");
             onBeginImeCommand();
-            boolean retVal = incrementBatchEditCount();
-            onEndImeCommand();
-            return retVal;
+            incrementBatchEditCount();
+            return onEndImeCommand();
         }
 
         /**
          * Always call this at the beginning of any IME command. Compare this with beginBatchEdit()
          * which is by itself an IME command.
-         * @return Whether the call was successful.
+         * @return {@code true} if the batch edit is still in progress. {@code false} otherwise.
          */
         public boolean onBeginImeCommand() {
             if (DEBUG) Log.i(TAG, "onBeginImeCommand: " + mBatchEditNestCount);
@@ -625,15 +624,14 @@ public class SpannableAutocompleteEditTextModel implements AutocompleteEditTextM
         public boolean endBatchEdit() {
             if (DEBUG) Log.i(TAG, "endBatchEdit");
             onBeginImeCommand();
-            boolean retVal = decrementBatchEditCount();
-            onEndImeCommand();
-            return retVal;
+            decrementBatchEditCount();
+            return onEndImeCommand();
         }
 
         /**
          * Always call this at the end of an IME command. Compare this with endBatchEdit()
          * which is by itself an IME command.
-         * @return Whether the call was successful.
+         * @return {@code true} if the batch edit is still in progress. {@code false} otherwise.
          */
         public boolean onEndImeCommand() {
             if (DEBUG) Log.i(TAG, "onEndImeCommand: " + (mBatchEditNestCount - 1));

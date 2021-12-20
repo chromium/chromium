@@ -1405,4 +1405,14 @@ public class AutocompleteEditTextTest {
         assertVerifierCallCounts(2, 3);
         mInOrder.verifyNoMoreInteractions();
     }
+
+    // crbug.com/759876
+    @Test
+    @EnableFeatures(ChromeFeatureList.SPANNABLE_INLINE_AUTOCOMPLETE)
+    public void testEndBatchEditCanReturnFalse() {
+        assertTrue(mInputConnection.beginBatchEdit());
+        assertLastBatchEdit(mInputConnection.endBatchEdit());
+        // Additional endBatchEdit() must continue returning false.
+        assertFalse(mInputConnection.endBatchEdit());
+    }
 }
