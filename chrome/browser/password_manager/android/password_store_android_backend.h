@@ -81,9 +81,9 @@ class PasswordStoreAndroidBackend
 
   using MetricInfix = base::StrongAlias<struct MetricNameTag, std::string>;
 
-  // Records metrics for an asynchronous job or a series of jobs. The job is expected to have
-  // started when the MetricsRecorder instance is created. Latency is reported in RecordMetrics()
-  // under that assumption.
+  // Records metrics for an asynchronous job or a series of jobs. The job is
+  // expected to have started when the MetricsRecorder instance is created.
+  // Latency is reported in RecordMetrics() under that assumption.
   class MetricsRecorder {
    public:
     MetricsRecorder();
@@ -219,17 +219,24 @@ class PasswordStoreAndroidBackend
       PasswordStoreChangeListReply reply,
       LoginsResultOrError result);
 
+  // Filters logins that match |origin_filer| and asynchronously disables
+  // autosignin by updating stored logins.
+  void FilterAndDisableAutoSignIn(
+      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+      PasswordStoreChangeListReply completion,
+      LoginsResultOrError result);
+
   // Creates a metrics recorder that records latency and success metrics for
   // logins retrieval operation with |metric_infix| name prior to calling
   // |callback|.
-  LoginsOrErrorReply ReportMetricsAndInvokeCallbackForLoginsRetrieval(
+  static LoginsOrErrorReply ReportMetricsAndInvokeCallbackForLoginsRetrieval(
       const MetricInfix& metric_infix,
       LoginsReply callback);
 
   // Creates a metrics recorder that records latency and success metrics for
   // store modification operation with |metric_infix| name prior to
   // calling |callback|.
-  PasswordStoreChangeListReply
+  static PasswordStoreChangeListReply
   ReportMetricsAndInvokeCallbackForStoreModifications(
       const MetricInfix& metric_infix,
       PasswordStoreChangeListReply callback);

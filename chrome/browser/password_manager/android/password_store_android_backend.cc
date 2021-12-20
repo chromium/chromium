@@ -354,12 +354,12 @@ void PasswordStoreAndroidBackend::FillMatchingLoginsAsync(
 
   // Create and run a callbacks chain that retrieves logins and invokes
   // |barrier_callback| afterwards.
-  base::RepeatingClosure callbacks_chain = base::DoNothing();
+  base::OnceClosure callbacks_chain = base::DoNothing();
   for (const PasswordFormDigest& form : forms) {
-    callbacks_chain = base::BindRepeating(
+    callbacks_chain = base::BindOnce(
         &PasswordStoreAndroidBackend::GetLoginsAsync,
         weak_ptr_factory_.GetWeakPtr(), std::move(form), include_psl,
-        barrier_callback.Then(std::move(callbacks_chain)));
+        base::BindOnce(barrier_callback).Then(std::move(callbacks_chain)));
   }
   std::move(callbacks_chain).Run();
 }
@@ -420,12 +420,12 @@ void PasswordStoreAndroidBackend::FilterAndRemoveLogins(
           base::BindOnce(&JoinPasswordStoreChanges).Then(std::move(reply)));
 
   // Create and run the callback chain that removes the logins.
-  base::RepeatingClosure callbacks_chain = base::DoNothing();
+  base::OnceClosure callbacks_chain = base::DoNothing();
   for (const auto& login : logins_to_remove) {
-    callbacks_chain =
-        base::BindRepeating(&PasswordStoreAndroidBackend::RemoveLoginAsync,
-                            weak_ptr_factory_.GetWeakPtr(), std::move(login),
-                            barrier_callback.Then(std::move(callbacks_chain)));
+    callbacks_chain = base::BindOnce(
+        &PasswordStoreAndroidBackend::RemoveLoginAsync,
+        weak_ptr_factory_.GetWeakPtr(), std::move(login),
+        base::BindOnce(barrier_callback).Then(std::move(callbacks_chain)));
   }
   std::move(callbacks_chain).Run();
 }
@@ -479,7 +479,31 @@ void PasswordStoreAndroidBackend::RemoveLoginsCreatedBetweenAsync(
 void PasswordStoreAndroidBackend::DisableAutoSignInForOriginsAsync(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::OnceClosure completion) {
-  // TODO(https://crbug.com/1229655):Implement.
+  // TODO(https://crbug.com/1229655) Switch to using base::PassThrough to handle
+  // this callback more gracefully when it's implemented.
+  PasswordStoreChangeListReply record_metrics_and_run_completion =
+      base::BindOnce(
+          [](MetricsRecorder metrics_recorder, base::OnceClosure completion,
+             absl::optional<PasswordStoreChangeList> changes) {
+            // Errors are not recorded at the moment.
+            // TODO(https://crbug.com/1278807): Implement error handling, when
+            // actual store changes will be received from the store.
+            metrics_recorder.RecordMetrics(/*success=*/true,
+                                           /*error=*/absl::nullopt);
+            std::move(completion).Run();
+          },
+          MetricsRecorder(MetricInfix("DisableAutoSignInForOriginsAsync")),
+          std::move(completion));
+
+  JobId get_logins_job_id =
+      bridge_->GetAllLogins(PasswordStoreOperationTarget::kDefault);
+  QueueNewJob(get_logins_job_id,
+              JobReturnHandler(
+                  base::BindOnce(
+                      &PasswordStoreAndroidBackend::FilterAndDisableAutoSignIn,
+                      weak_ptr_factory_.GetWeakPtr(), origin_filter,
+                      std::move(record_metrics_and_run_completion)),
+                  MetricsRecorder(MetricInfix("GetAllLoginsAsync"))));
 }
 
 SmartBubbleStatsStore* PasswordStoreAndroidBackend::GetSmartBubbleStatsStore() {
@@ -576,6 +600,42 @@ void PasswordStoreAndroidBackend::GetLoginsAsync(const PasswordFormDigest& form,
                           MetricsRecorder(MetricInfix("GetLoginsAsync"))));
 }
 
+void PasswordStoreAndroidBackend::FilterAndDisableAutoSignIn(
+    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+    PasswordStoreChangeListReply completion,
+    LoginsResultOrError result) {
+  if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
+    std::move(completion).Run({});
+    return;
+  }
+
+  LoginsResult logins = std::move(absl::get<LoginsResult>(result));
+  std::vector<PasswordForm> logins_to_update;
+  for (std::unique_ptr<PasswordForm>& login : logins) {
+    // Update login if it matches |origin_filer| and has autosignin enabled.
+    if (origin_filter.Run(login->url) && !login->skip_zero_click) {
+      logins_to_update.push_back(std::move(*login));
+      logins_to_update.back().skip_zero_click = true;
+    }
+  }
+
+  auto barrier_callback =
+      base::BarrierCallback<absl::optional<PasswordStoreChangeList>>(
+          logins_to_update.size(), base::BindOnce(&JoinPasswordStoreChanges)
+                                       .Then(std::move(completion)));
+
+  // Create and run a callbacks chain that updates the logins.
+  base::OnceClosure callbacks_chain = base::DoNothing();
+  for (PasswordForm& login : logins_to_update) {
+    callbacks_chain = base::BindOnce(
+        &PasswordStoreAndroidBackend::UpdateLoginAsync,
+        weak_ptr_factory_.GetWeakPtr(), std::move(login),
+        base::BindOnce(barrier_callback).Then(std::move(callbacks_chain)));
+  }
+  std::move(callbacks_chain).Run();
+}
+
+// static
 LoginsOrErrorReply
 PasswordStoreAndroidBackend::ReportMetricsAndInvokeCallbackForLoginsRetrieval(
     const MetricInfix& metric_infix,
@@ -595,6 +655,7 @@ PasswordStoreAndroidBackend::ReportMetricsAndInvokeCallbackForLoginsRetrieval(
       MetricsRecorder(metric_infix), std::move(callback));
 }
 
+// static
 PasswordStoreChangeListReply PasswordStoreAndroidBackend::
     ReportMetricsAndInvokeCallbackForStoreModifications(
         const MetricInfix& metric_infix,
@@ -605,9 +666,9 @@ PasswordStoreChangeListReply PasswordStoreAndroidBackend::
       [](MetricsRecorder metrics_recorder,
          PasswordStoreChangeListReply callback,
          absl::optional<PasswordStoreChangeList> results) {
-        // Errors are not recorded at the moment. This should be implemented
-        // in the future, when actual store changes will be received from the
-        // store modifying operations.
+        // Errors are not recorded at the moment.
+        // TODO(https://crbug.com/1278807): Implement error handling, when
+        // actual store changes will be received from the store.
         metrics_recorder.RecordMetrics(/*success=*/true,
                                        /*error=*/absl::nullopt);
         std::move(callback).Run(std::move(results));

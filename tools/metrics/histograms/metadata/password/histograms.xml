@@ -2233,6 +2233,8 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Function">
     <variant name="AddLoginAsync" summary="add a login to"/>
+    <variant name="DisableAutoSignInForOriginsAsync"
+        summary="disable autosignin for matching logins in"/>
     <variant name="FillMatchingLoginsAsync"
         summary="fill matching logins from"/>
     <variant name="GetAllLoginsAsync" summary="retrieve all logins from"/>
@@ -2262,6 +2264,9 @@ chromium-metrics-reviews@google.com.
   <token key="Function">
     <variant name="AddLoginAsync"
         summary="AddLoginAsync() succeeded to add a login to"/>
+    <variant name="DisableAutoSignInForOriginsAsync"
+        summary="DisableAutoSignInForOriginsAsync() succeeded in disabling
+                 autosignin for matching logins in"/>
     <variant name="FillMatchingLoginsAsync"
         summary="succeeded in filling matching logins from"/>
     <variant name="GetAllLoginsAsync"

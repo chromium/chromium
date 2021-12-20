@@ -75,6 +75,12 @@ std::vector<PasswordForm> UnwrapForms(
   return forms;
 }
 
+PasswordForm FormWithDisabledAutoSignIn(const PasswordForm& form_to_update) {
+  PasswordForm result = form_to_update;
+  result.skip_zero_click = 1;
+  return result;
+}
+
 class MockPasswordStoreAndroidBackendBridge
     : public PasswordStoreAndroidBackendBridge {
  public:
@@ -467,6 +473,86 @@ TEST_F(PasswordStoreAndroidBackendTest, OnExternalError) {
 
   histogram_tester.ExpectBucketCount(kErrorCodeMetric, 7, 1);
   histogram_tester.ExpectBucketCount(kAPIErrorMetric, 11004, 1);
+}
+
+TEST_F(PasswordStoreAndroidBackendTest, DisableAutoSignInForOrigins) {
+  base::HistogramTester histogram_tester;
+  constexpr auto kLatencyDelta = base::Milliseconds(123u);
+
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+
+  // Check that calling DisableAutoSignInForOrigins triggers logins retrieval
+  // first.
+  const JobId kGetLoginsJobId{13387};
+  EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kGetLoginsJobId));
+
+  base::RepeatingCallback<bool(const GURL&)> origin_filter =
+      base::BindRepeating(
+          [](const GURL& url) { return url == GURL(kTestUrl); });
+  base::MockCallback<base::OnceClosure> mock_reply;
+  backend().DisableAutoSignInForOriginsAsync(origin_filter, mock_reply.Get());
+
+  // Imitate login retrieval and check that it triggers updating of matching
+  // forms.
+  PasswordForm form_to_update1 =
+      CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
+  PasswordForm form_to_update2 = CreateTestLogin(
+      u"OtherUsername", u"OtherPassword", kTestUrl, kTestDateCreated);
+  PasswordForm form_with_autosignin_disabled =
+      FormWithDisabledAutoSignIn(form_to_update1);
+  PasswordForm form_with_different_origin =
+      CreateTestLogin(kTestUsername, kTestPassword,
+                      "https://differentorigin.com", kTestDateCreated);
+
+  const JobId kUpdateJobId1{13388};
+  // Forms are updated in reverse order.
+  EXPECT_CALL(*bridge(),
+              UpdateLogin(FormWithDisabledAutoSignIn(form_to_update2)))
+      .WillOnce(Return(kUpdateJobId1));
+
+  consumer().OnCompleteWithLogins(
+      kGetLoginsJobId,
+      {form_to_update1, form_to_update2, form_with_autosignin_disabled,
+       form_with_different_origin});
+  RunUntilIdle();
+
+  // Fast forward to check latency metric recording.
+  task_environment_.FastForwardBy(kLatencyDelta);
+
+  // Receiving callback after updating the first login should trigger
+  // updating of the second login.
+  PasswordStoreChangeList change1;
+  change1.emplace_back(
+      PasswordStoreChange(PasswordStoreChange::UPDATE,
+                          FormWithDisabledAutoSignIn(form_to_update2)));
+  const JobId kUpdateJobId2{13389};
+  EXPECT_CALL(*bridge(),
+              UpdateLogin(FormWithDisabledAutoSignIn(form_to_update1)))
+      .WillOnce(Return(kUpdateJobId2));
+  consumer().OnLoginsChanged(kUpdateJobId1, change1);
+  RunUntilIdle();
+
+  // Verify that the callback is called.
+  EXPECT_CALL(mock_reply, Run());
+  PasswordStoreChangeList change2;
+  change2.emplace_back(
+      PasswordStoreChange(PasswordStoreChange::UPDATE,
+                          FormWithDisabledAutoSignIn(form_to_update1)));
+  consumer().OnLoginsChanged(kUpdateJobId2, change2);
+  RunUntilIdle();
+
+  histogram_tester.ExpectTimeBucketCount(
+      "PasswordManager.PasswordStoreAndroidBackend."
+      "DisableAutoSignInForOriginsAsync."
+      "Latency",
+      kLatencyDelta, 1);
+
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordStoreAndroidBackend."
+      "DisableAutoSignInForOriginsAsync."
+      "Success",
+      1);
 }
 
 class PasswordStoreAndroidBackendTestForMetrics
