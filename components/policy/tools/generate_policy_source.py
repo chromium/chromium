@@ -12,6 +12,7 @@ Pass at least:
 
 
 from argparse import ArgumentParser
+from collections import defaultdict
 from collections import namedtuple
 from collections import OrderedDict
 from functools import partial
@@ -1340,23 +1341,39 @@ def _WriteChromePolicyAccessSource(policies, f, protobuf_type):
       policies, protobuf_type)
   f.write('const std::array<%sPolicyAccess, %d> k%sPolicyAccess {{\n' %
           (protobuf_type, len(supported_user_policies), protobuf_type))
-  extra_args = ''
   for policy in supported_user_policies:
     name = policy.name
+    lowercase_name = name.lower()
+
     if protobuf_type == 'String':
       extra_args = ',\n   ' + _GetStringPolicyType(policy.policy_type)
+    else:
+      extra_args = ''
+
+    chunk_number = _ChunkNumber(policy.id)
+    if chunk_number == 0:
+      has_proto = 'policy.has_%s()' % lowercase_name
+      get_proto = 'policy.%s()' % lowercase_name
+    else:
+      has_subproto = 'policy.has_subproto%d() &&\n' % chunk_number
+      has_policy = '              policy.subproto%d().has_%s()' % (
+          chunk_number, lowercase_name)
+      has_proto = has_subproto + has_policy
+      get_proto = 'policy.subproto%d().%s()' % (chunk_number, lowercase_name)
+
     f.write('  {key::k%s,\n'
             '   %s,\n'
             '   [](const em::CloudPolicySettings& policy) {\n'
-            '     return policy.has_%s();\n'
+            '     return %s;\n'
             '   },\n'
             '   [](const em::CloudPolicySettings& policy)\n'
             '       -> const em::%sPolicyProto& {\n'
-            '     return policy.%s();\n'
+            '     return %s;\n'
             '   }%s\n'
-            '  },\n' % (name, str(policy.per_profile).lower(), name.lower(),
-                        protobuf_type, name.lower(), extra_args))
+            '  },\n' % (name, str(policy.per_profile).lower(), has_proto,
+                        protobuf_type, get_proto, extra_args))
   f.write('}};\n\n')
+
 
 #------------------ policy risk tag header -------------------------#
 
@@ -1471,10 +1488,22 @@ package enterprise_management;
 option go_package="chromium/policy/enterprise_management_proto";
 
 import "policy_common_definitions{full_runtime_suffix}.proto";
+
 '''
 
 # Field IDs [1..RESERVED_IDS] will not be used in the wrapping protobuf.
 RESERVED_IDS = 2
+
+# All user policies with ID <= |_LAST_TOP_LEVEL_POLICY_ID| are added to the top
+# level of ChromeSettingsProto and CloudPolicySettings, whereas all policies
+# with ID > |_LAST_TOP_LEVEL_POLICY_ID| are nested into sub-protos. See
+# https://crbug.com/1237044 for more details.
+_LAST_TOP_LEVEL_POLICY_ID = 979
+
+# The approximate number of policies in one nested chunk for user policies with
+# ID > |_LAST_TOP_LEVEL_POLICY_ID|. See https://crbug.com/1237044 for more
+# details.
+_CHUNK_SIZE = 800
 
 
 def _WritePolicyProto(f, policy):
@@ -1500,6 +1529,27 @@ def _WritePolicyProto(f, policy):
   f.write('}\n\n')
 
 
+def _ChunkNumber(policy_id):
+  # Compute which chunk the policy should go to. Chunk 0 contains the legacy
+  # policies, whereas subsequent chunks contain nested policies.
+  if policy_id <= _LAST_TOP_LEVEL_POLICY_ID:
+    return 0
+  else:
+    return (policy_id - _LAST_TOP_LEVEL_POLICY_ID - 1) // _CHUNK_SIZE + 1
+
+
+def _FieldNumber(policy_id, chunk_number):
+  if chunk_number == 0:
+    # For the top-level policies the field number in the proto file is the
+    # same as the id assigned to the policy in policy_templates.json,
+    # skipping the RESERVED_IDS.
+    return policy_id + RESERVED_IDS
+  else:
+    # For the nested policies, the field numbers should always be in the
+    # range [1, _CHUNK_SIZE], therefore we calculate them using this formula.
+    return (policy_id - _LAST_TOP_LEVEL_POLICY_ID - 1) % _CHUNK_SIZE + 1
+
+
 def _WriteChromeSettingsProtobuf(policies,
                                  policy_atomic_groups,
                                  target_platform,
@@ -1514,7 +1564,7 @@ def _WriteChromeSettingsProtobuf(policies,
       CHROME_SETTINGS_PROTO_HEAD.format(
           full_runtime_comment=full_runtime_comment,
           full_runtime_suffix=full_runtime_suffix))
-  fields = []
+  fields = defaultdict(list)
   f.write('// PBs for individual settings.\n\n')
   for policy in policies:
     # Note: This protobuf also gets the unsupported policies, since it's an
@@ -1522,17 +1572,40 @@ def _WriteChromeSettingsProtobuf(policies,
     if not policy.is_device_only:
       # Write the individual policy proto into the file
       _WritePolicyProto(f, policy)
-      # Add to |fields| in order to eventually add to ChromeSettingsProto
-      fields += [
-          '  optional %sProto %s = %s;\n' %
-          (policy.name, policy.name, policy.id + RESERVED_IDS)
-      ]
+
+      chunk_number = _ChunkNumber(policy.id)
+      field_number = _FieldNumber(policy.id, chunk_number)
+
+      # Add to |fields| in order to eventually add to ChromeSettingsProto.
+      fields[chunk_number].append('  optional %sProto %s = %s;\n' %
+                                  (policy.name, policy.name, field_number))
+
+  sorted_chunk_numbers = sorted(fields.keys())
+
+  if len(sorted_chunk_numbers) > 1:
+    f.write('// --------------------------------------------------\n'
+            '// PBs for policies with ID > %d.\n\n' % _LAST_TOP_LEVEL_POLICY_ID)
+
+    for sorted_chunk_number in sorted_chunk_numbers:
+      if sorted_chunk_number == 0:
+        continue
+      f.write('message ChromeSettingsSubProto%d {\n' % sorted_chunk_number)
+      f.write(''.join(fields[sorted_chunk_number]))
+      f.write('}\n\n')
 
   f.write('// --------------------------------------------------\n'
           '// Big wrapper PB containing the above groups.\n\n'
           'message ChromeSettingsProto {\n')
-  f.write(''.join(fields))
-  f.write('}\n\n')
+
+  for sorted_chunk_number in sorted_chunk_numbers:
+    if sorted_chunk_number == 0:
+      f.write(''.join(fields[sorted_chunk_number]))
+    else:
+      f.write('  optional ChromeSettingsSubProto%d subProto%d = %s;\n' %
+              (sorted_chunk_number, sorted_chunk_number,
+               _LAST_TOP_LEVEL_POLICY_ID + RESERVED_IDS + sorted_chunk_number))
+
+  f.write('}\n')
 
 
 def _WriteCloudPolicyProtobuf(policies,
@@ -1548,13 +1621,42 @@ def _WriteCloudPolicyProtobuf(policies,
   f.write(
       CLOUD_POLICY_PROTO_HEAD.format(full_runtime_comment=full_runtime_comment,
                                      full_runtime_suffix=full_runtime_suffix))
-  f.write('message CloudPolicySettings {\n')
+
+  fields = defaultdict(list)
+
   for policy in policies:
-    if policy.is_supported and not policy.is_device_only:
-      f.write(
-          '  optional %sPolicyProto %s = %s;\n' %
-          (policy.policy_protobuf_type, policy.name, policy.id + RESERVED_IDS))
-  f.write('}\n\n')
+    if not policy.is_supported or policy.is_device_only:
+      continue
+
+    chunk_number = _ChunkNumber(policy.id)
+    field_number = _FieldNumber(policy.id, chunk_number)
+
+    # Add to |fields| in order to eventually add to CloudPolicyProto.
+    fields[chunk_number].append(
+        '  optional %sPolicyProto %s = %s;\n' %
+        (policy.policy_protobuf_type, policy.name, field_number))
+
+  sorted_chunk_numbers = sorted(fields.keys())
+
+  if len(sorted_chunk_numbers) > 1:
+    for sorted_chunk_number in sorted_chunk_numbers:
+      if sorted_chunk_number == 0:
+        continue
+      f.write('message CloudPolicySubProto%d {\n' % sorted_chunk_number)
+      f.write(''.join(fields[sorted_chunk_number]))
+      f.write('}\n\n')
+
+  f.write('message CloudPolicySettings {\n')
+
+  for sorted_chunk_number in sorted_chunk_numbers:
+    if sorted_chunk_number == 0:
+      f.write(''.join(fields[sorted_chunk_number]))
+    else:
+      f.write('  optional CloudPolicySubProto%d subProto%d = %s;\n' %
+              (sorted_chunk_number, sorted_chunk_number,
+               _LAST_TOP_LEVEL_POLICY_ID + RESERVED_IDS + sorted_chunk_number))
+
+  f.write('}\n')
 
 
 def _WritePolicyCommonDefinitionsFullRuntimeProtobuf(

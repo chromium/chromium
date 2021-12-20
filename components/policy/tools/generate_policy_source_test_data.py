@@ -17,6 +17,7 @@ package enterprise_management;
 option go_package="chromium/policy/enterprise_management_proto";
 
 import "policy_common_definitions%(full_runtime_suffix)s.proto";
+
 message CloudPolicySettings {
   optional StringPolicyProto ExampleStringPolicy = 3;
   optional BooleanPolicyProto ExampleBoolPolicy = 4;
@@ -90,6 +91,69 @@ message CloudOnlyPolicyProto {
   optional bool CloudOnlyPolicy = 2;
 }
 
+// ChunkZeroLastFieldBooleanPolicy caption
+//
+// ChunkZeroLastFieldBooleanPolicy desc.
+//
+// Supported on:
+message ChunkZeroLastFieldBooleanPolicyProto {
+  optional PolicyOptions policy_options = 1;
+  optional bool ChunkZeroLastFieldBooleanPolicy = 2;
+}
+
+// ChunkOneFirstFieldBooleanPolicy caption
+//
+// ChunkOneFirstFieldBooleanPolicy desc.
+//
+// Supported on:
+message ChunkOneFirstFieldBooleanPolicyProto {
+  optional PolicyOptions policy_options = 1;
+  optional bool ChunkOneFirstFieldBooleanPolicy = 2;
+}
+
+// ChunkOneLastFieldBooleanPolicy caption
+//
+// ChunkOneLastFieldBooleanPolicy desc.
+//
+// Supported on:
+message ChunkOneLastFieldBooleanPolicyProto {
+  optional PolicyOptions policy_options = 1;
+  optional bool ChunkOneLastFieldBooleanPolicy = 2;
+}
+
+// ChunkTwoFirstFieldStringPolicy caption
+//
+// ChunkTwoFirstFieldStringPolicy desc
+//
+// Supported on:
+message ChunkTwoFirstFieldStringPolicyProto {
+  optional PolicyOptions policy_options = 1;
+  optional string ChunkTwoFirstFieldStringPolicy = 2;
+}
+
+// ChunkTwoLastFieldStringPolicy caption
+//
+// ChunkTwoLastFieldStringPolicy desc
+//
+// Supported on:
+message ChunkTwoLastFieldStringPolicyProto {
+  optional PolicyOptions policy_options = 1;
+  optional string ChunkTwoLastFieldStringPolicy = 2;
+}
+
+// --------------------------------------------------
+// PBs for policies with ID > 979.
+
+message ChromeSettingsSubProto1 {
+  optional ChunkOneFirstFieldBooleanPolicyProto ChunkOneFirstFieldBooleanPolicy = 1;
+  optional ChunkOneLastFieldBooleanPolicyProto ChunkOneLastFieldBooleanPolicy = 800;
+}
+
+message ChromeSettingsSubProto2 {
+  optional ChunkTwoFirstFieldStringPolicyProto ChunkTwoFirstFieldStringPolicy = 1;
+  optional ChunkTwoLastFieldStringPolicyProto ChunkTwoLastFieldStringPolicy = 800;
+}
+
 // --------------------------------------------------
 // Big wrapper PB containing the above groups.
 
@@ -99,6 +163,9 @@ message ChromeSettingsProto {
   optional ExampleBoolMergeMetapolicyProto ExampleBoolMergeMetapolicy = 5;
   optional ExampleBoolPrecedenceMetapolicyProto ExampleBoolPrecedenceMetapolicy = 6;
   optional CloudOnlyPolicyProto CloudOnlyPolicy = 7;
+  optional ChunkZeroLastFieldBooleanPolicyProto ChunkZeroLastFieldBooleanPolicy = 981;
+  optional ChromeSettingsSubProto1 subProto1 = 982;
+  optional ChromeSettingsSubProto2 subProto2 = 983;
 }
 """
 
@@ -158,6 +225,11 @@ extern const char kExampleBoolPolicy[];
 extern const char kExampleBoolMergeMetapolicy[];
 extern const char kExampleBoolPrecedenceMetapolicy[];
 extern const char kCloudOnlyPolicy[];
+extern const char kChunkZeroLastFieldBooleanPolicy[];
+extern const char kChunkOneFirstFieldBooleanPolicy[];
+extern const char kChunkOneLastFieldBooleanPolicy[];
+extern const char kChunkTwoFirstFieldStringPolicy[];
+extern const char kChunkTwoLastFieldStringPolicy[];
 
 }  // namespace key
 
@@ -369,6 +441,11 @@ const char kExampleBoolPolicy[] = "ExampleBoolPolicy";
 const char kExampleBoolMergeMetapolicy[] = "ExampleBoolMergeMetapolicy";
 const char kExampleBoolPrecedenceMetapolicy[] = "ExampleBoolPrecedenceMetapolicy";
 const char kCloudOnlyPolicy[] = "CloudOnlyPolicy";
+const char kChunkZeroLastFieldBooleanPolicy[] = "ChunkZeroLastFieldBooleanPolicy";
+const char kChunkOneFirstFieldBooleanPolicy[] = "ChunkOneFirstFieldBooleanPolicy";
+const char kChunkOneLastFieldBooleanPolicy[] = "ChunkOneLastFieldBooleanPolicy";
+const char kChunkTwoFirstFieldStringPolicy[] = "ChunkTwoFirstFieldStringPolicy";
+const char kChunkTwoLastFieldStringPolicy[] = "ChunkTwoLastFieldStringPolicy";
 
 }  // namespace key
 
