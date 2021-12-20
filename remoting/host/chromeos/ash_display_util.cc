@@ -42,20 +42,14 @@ class DefaultAshDisplayUtil : public AshDisplayUtil {
   }
 
   const std::vector<display::Display>& GetActiveDisplays() const override {
-    if (!display_manager())
-      return empty_display_list_;
-
-    return display_manager()->active_display_list();
+    return display_manager().active_display_list();
   }
 
   const display::Display* GetDisplayForId(DisplayId display_id) const override {
-    if (!display_manager())
+    if (!display_manager().IsActiveDisplayId(display_id))
       return nullptr;
 
-    if (!display_manager()->IsActiveDisplayId(display_id))
-      return nullptr;
-
-    return &display_manager()->GetDisplayForId(display_id);
+    return &display_manager().GetDisplayForId(display_id);
   }
 
   void TakeScreenshotOfDisplay(DisplayId display_id,
@@ -77,19 +71,20 @@ class DefaultAshDisplayUtil : public AshDisplayUtil {
 
  private:
   const display::Screen* screen() const { return display::Screen::GetScreen(); }
-  // We can not return a const pointer, as the ash shell has no const getter for
-  // the display manager :/
-  ash::Shell* shell() const { return ash::Shell::Get(); }
-  const display::DisplayManager* display_manager() const {
-    if (!shell())
-      return nullptr;
-    return shell()->display_manager();
+  // We can not return a const reference, as the ash shell has no const getter
+  // for the display manager :/
+  ash::Shell& shell() const {
+    auto* shell = ash::Shell::Get();
+    DCHECK(shell);
+    return *shell;
+  }
+  const display::DisplayManager& display_manager() const {
+    const auto* result = shell().display_manager();
+    DCHECK(result);
+    return *result;
   }
   aura::Window* GetRootWindowForId(DisplayId id) {
-    if (!shell())
-      return nullptr;
-
-    return shell()->GetRootWindowForDisplayId(id);
+    return shell().GetRootWindowForDisplayId(id);
   }
 
   const std::vector<display::Display> empty_display_list_;
