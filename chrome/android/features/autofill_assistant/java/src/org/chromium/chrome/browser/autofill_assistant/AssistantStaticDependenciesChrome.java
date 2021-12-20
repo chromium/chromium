@@ -38,4 +38,9 @@ public interface AssistantStaticDependenciesChrome extends AssistantStaticDepend
     default AssistantInfoPageUtil getInfoPageUtil() {
         return new AssistantInfoPageUtilChrome();
     }
+
+    @Override
+    default AssistantFeedbackUtil getFeedbackUtil() {
+        return new AssistantFeedbackUtilChrome();
+    }
 }

@@ -81,6 +81,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDependenciesChrome.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDependenciesFactoryChrome.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDialogButton.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantFeedbackUtilChrome.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantInfoPageUtilChrome.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantInfoPopup.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantKeyboardCoordinator.java",

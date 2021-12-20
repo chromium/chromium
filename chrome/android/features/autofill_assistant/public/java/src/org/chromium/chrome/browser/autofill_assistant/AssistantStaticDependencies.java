@@ -28,4 +28,6 @@ public interface AssistantStaticDependencies {
 
     @CalledByNative
     AssistantInfoPageUtil getInfoPageUtil();
+
+    AssistantFeedbackUtil getFeedbackUtil();
 }

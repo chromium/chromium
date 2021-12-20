@@ -33,7 +33,6 @@
 #include "chrome/browser/android/autofill_assistant/client_android.h"
 #include "chrome/browser/android/autofill_assistant/generic_ui_root_controller_android.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
-#include "chrome/browser/android/feedback/screenshot_mode.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -71,7 +70,6 @@ using ::base::android::JavaParamRef;
 using ::base::android::JavaRef;
 using ::base::android::ScopedJavaLocalRef;
 using ::base::android::ToJavaArrayOfStrings;
-using ::chrome::android::ScreenshotMode;
 
 namespace autofill_assistant {
 
@@ -546,7 +544,7 @@ void UiControllerAndroid::OnHeaderFeedbackButtonClicked() {
   Java_AutofillAssistantUiController_showFeedback(
       env, java_object_,
       ConvertUTF8ToJavaString(env, ui_delegate_->GetDebugContext()),
-      ScreenshotMode::DEFAULT);
+      /* screenshotMode */ 0);
 }
 
 void UiControllerAndroid::OnViewEvent(const EventHandler::EventKey& key) {
@@ -884,7 +882,7 @@ void UiControllerAndroid::OnFeedbackButtonClicked(
   Java_AutofillAssistantUiController_showFeedback(
       env, java_object_,
       ConvertUTF8ToJavaString(env, ui_delegate_->GetDebugContext()),
-      ScreenshotMode::COMPOSITOR);
+      /* screenshotMode */ 1);
 
   OnUserActionSelected(env, jcaller, index);
 }

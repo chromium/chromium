@@ -9,12 +9,9 @@ import android.content.Context;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.autofill_assistant.AssistantCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.AssistantDependencies;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiController;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderModel;
-import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -59,11 +56,8 @@ public class AssistantTriggerScriptBridge {
 
                     @Override
                     public void onFeedbackButtonClicked() {
-                        HelpAndFeedbackLauncherImpl.getInstance().showFeedback(
-                                TabUtils.getActivity(TabUtils.fromWebContents(webContents)),
-                                AutofillAssistantUiController.getProfile(),
-                                webContents.getVisibleUrl().getSpec(),
-                                AssistantCoordinator.FEEDBACK_CATEGORY_TAG);
+                        dependencies.getFeedbackUtil().showFeedback(dependencies.getActivity(),
+                                webContents, /* screenshotMode */ 0, /* debugContext */ null);
                     }
                 };
 

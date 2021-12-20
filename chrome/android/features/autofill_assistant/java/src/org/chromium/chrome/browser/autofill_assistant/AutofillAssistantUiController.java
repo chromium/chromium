@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
-import org.chromium.chrome.browser.feedback.ScreenshotMode;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -63,6 +62,7 @@ public class AutofillAssistantUiController {
     private WebContents mWebContents;
 
     private final AssistantSnackbarFactory mSnackbarFactory;
+    private final AssistantFeedbackUtil mFeedbackUtil;
     @Nullable
     private AssistantSnackbar mSnackbar;
 
@@ -143,11 +143,12 @@ public class AutofillAssistantUiController {
         @Nullable
         AssistantTabObscuringUtil tabObscuringUtil =
                 dependencies.getTabObscuringUtilOrNull(activity.getWindowAndroid());
+        mFeedbackUtil = dependencies.getFeedbackUtil();
 
         mCoordinator = new AssistantCoordinator(activity, controller, tabObscuringUtil,
                 overlayCoordinator, this::safeNativeOnKeyboardVisibilityChanged,
                 activity.getWindowAndroid().getKeyboardDelegate(), rootView.get(),
-                activity.getActivityTabProvider(), activity.getBrowserControlsManager(),
+                activity.getBrowserControlsManager(),
                 activity.getWindowAndroid().getApplicationBottomInsetProvider(),
                 dependencies.getAccessibilityUtil(), dependencies.getInfoPageUtil());
         mActivityTabObserver = new ActivityTabProvider.ActivityTabTabObserver(
@@ -321,9 +322,12 @@ public class AutofillAssistantUiController {
         mCoordinator.getBottomBarCoordinator().collapse();
     }
 
+    /**
+     * Shows a feedback form.
+     */
     @CalledByNative
-    private void showFeedback(String debugContext, @ScreenshotMode int screenshotMode) {
-        mCoordinator.showFeedback(debugContext, screenshotMode);
+    private void showFeedback(String debugContext, /* @ScreenshotMode */ int screenshotMode) {
+        mFeedbackUtil.showFeedback(mActivity, mWebContents, screenshotMode, debugContext);
     }
 
     @CalledByNative
