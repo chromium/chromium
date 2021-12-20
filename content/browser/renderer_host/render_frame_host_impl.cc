@@ -3220,6 +3220,32 @@ void RenderFrameHostImpl::Init() {
   }
 }
 
+RenderFrameProxyHost* RenderFrameHostImpl::GetProxyToParent() {
+  if (is_main_frame())
+    return nullptr;
+
+  return browsing_context_state_->GetRenderFrameProxyHost(
+      GetParent()->GetSiteInstance()->group());
+}
+
+RenderFrameProxyHost* RenderFrameHostImpl::GetProxyToOuterDelegate() {
+  // Only the main frame should be able to reach the outer WebContents.
+  DCHECK(is_main_frame());
+  int outer_contents_frame_tree_node_id =
+      frame_tree_node_->frame_tree()
+          ->delegate()
+          ->GetOuterDelegateFrameTreeNodeId();
+  FrameTreeNode* outer_contents_frame_tree_node =
+      FrameTreeNode::GloballyFindByID(outer_contents_frame_tree_node_id);
+  if (!outer_contents_frame_tree_node ||
+      !outer_contents_frame_tree_node->parent()) {
+    return nullptr;
+  }
+
+  return browsing_context_state_->GetRenderFrameProxyHost(
+      outer_contents_frame_tree_node->parent()->GetSiteInstance()->group());
+}
+
 void RenderFrameHostImpl::PropagateEmbeddingTokenToParentFrame() {
   // Protect against calls from WebContentsImpl::AttachInnerWebContents() that
   // happen before RFHI::SetEmbeddingToken() gets called, which is where the
@@ -3241,14 +3267,12 @@ void RenderFrameHostImpl::PropagateEmbeddingTokenToParentFrame() {
 
   if (RequiresProxyToParent()) {
     // This subframe should have a remote parent frame.
-    target_render_frame_proxy =
-        frame_tree_node()->render_manager()->GetProxyToParent();
+    target_render_frame_proxy = GetProxyToParent();
     DCHECK(target_render_frame_proxy);
   } else if (is_main_frame()) {
     // The main frame in an inner web contents could have a delegate in the
     // outer web contents, so we need to account for that as well.
-    target_render_frame_proxy =
-        frame_tree_node()->render_manager()->GetProxyToOuterDelegate();
+    target_render_frame_proxy = GetProxyToOuterDelegate();
   }
 
   // Propagate the token to the right process, if a proxy was found.
@@ -4813,8 +4837,7 @@ void RenderFrameHostImpl::TakeFocus(bool reverse) {
   RenderFrameHostImpl* parent_or_outer_document =
       GetParentOrOuterDocumentOrEmbedder();
   if (parent_or_outer_document) {
-    RenderFrameProxyHost* proxy_host =
-        frame_tree_node()->render_manager()->GetProxyToOuterDelegate();
+    RenderFrameProxyHost* proxy_host = GetProxyToOuterDelegate();
     DCHECK(proxy_host);
     parent_or_outer_document->AdvanceFocus(
         reverse ? blink::mojom::FocusType::kBackward
@@ -5464,8 +5487,7 @@ void RenderFrameHostImpl::SetNeedsOcclusionTracking(bool needs_tracking) {
           DisallowActivationReasonId::kSetNeedsOcclusionTracking))
     return;
 
-  RenderFrameProxyHost* proxy =
-      frame_tree_node()->render_manager()->GetProxyToParent();
+  RenderFrameProxyHost* proxy = GetProxyToParent();
   if (!proxy) {
     bad_message::ReceivedBadMessage(GetProcess(),
                                     bad_message::RFH_NO_PROXY_TO_PARENT);
@@ -5624,8 +5646,7 @@ void RenderFrameHostImpl::DispatchLoad() {
 
   // Only frames with an out-of-process parent frame should be sending this
   // message.
-  RenderFrameProxyHost* proxy =
-      frame_tree_node()->render_manager()->GetProxyToParent();
+  RenderFrameProxyHost* proxy = GetProxyToParent();
   if (!proxy) {
     bad_message::ReceivedBadMessage(GetProcess(),
                                     bad_message::RFH_NO_PROXY_TO_PARENT);
@@ -5759,8 +5780,7 @@ void RenderFrameHostImpl::ForwardResourceTimingToParent(
   DCHECK(lifecycle_state() == LifecycleStateImpl::kActive ||
          lifecycle_state() == LifecycleStateImpl::kPrerendering);
 
-  RenderFrameProxyHost* proxy =
-      frame_tree_node()->render_manager()->GetProxyToParent();
+  RenderFrameProxyHost* proxy = GetProxyToParent();
   if (!proxy) {
     bad_message::ReceivedBadMessage(GetProcess(),
                                     bad_message::RFH_NO_PROXY_TO_PARENT);
@@ -6018,7 +6038,7 @@ void RenderFrameHostImpl::EnterFullscreen(
       continue;
 
     RenderFrameProxyHost* child_proxy =
-        rfh->frame_tree_node()->render_manager()->GetRenderFrameProxyHost(
+        rfh->browsing_context_state()->GetRenderFrameProxyHost(
             static_cast<SiteInstanceImpl*>(parent_site_instance)->group());
     child_proxy->GetAssociatedRemoteFrame()->WillEnterFullscreen(
         options.Clone());
@@ -6217,8 +6237,7 @@ void RenderFrameHostImpl::HadStickyUserActivationBeforeNavigationChanged(
 void RenderFrameHostImpl::ScrollRectToVisibleInParentFrame(
     const gfx::Rect& rect_to_scroll,
     blink::mojom::ScrollIntoViewParamsPtr params) {
-  RenderFrameProxyHost* proxy =
-      frame_tree_node_->render_manager()->GetProxyToParent();
+  RenderFrameProxyHost* proxy = GetProxyToParent();
   if (!proxy)
     return;
   proxy->ScrollRectToVisible(rect_to_scroll, std::move(params));
@@ -6232,8 +6251,7 @@ void RenderFrameHostImpl::BubbleLogicalScrollInParentFrame(
           DisallowActivationReasonId::kDispatchLoad))
     return;
 
-  RenderFrameProxyHost* proxy =
-      frame_tree_node()->render_manager()->GetProxyToParent();
+  RenderFrameProxyHost* proxy = GetProxyToParent();
   if (!proxy) {
     // Only frames with an out-of-process parent frame should be sending this
     // message.

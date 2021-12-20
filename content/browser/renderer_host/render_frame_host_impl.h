@@ -2414,6 +2414,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return browsing_context_state_;
   }
 
+  // Retrieve proxies in a way that is no longer dependent on access to
+  // FrameTreeNode or RenderFrameHostManager.
+  RenderFrameProxyHost* GetProxyToParent();
+  RenderFrameProxyHost* GetProxyToOuterDelegate();
+
  protected:
   friend class RenderFrameHostFactory;
 

@@ -48,6 +48,14 @@ void BrowsingContextState::UpdateFramePolicy(
   }
 }
 
+RenderFrameProxyHost* BrowsingContextState::GetRenderFrameProxyHost(
+    SiteInstanceGroup* site_instance_group) const {
+  auto it = proxy_hosts_.find(site_instance_group->GetId());
+  if (it != proxy_hosts_.end())
+    return it->second.get();
+  return nullptr;
+}
+
 void BrowsingContextState::SetCurrentOrigin(
     const url::Origin& origin,
     bool is_potentially_trustworthy_unique_origin) {

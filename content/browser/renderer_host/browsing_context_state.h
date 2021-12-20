@@ -129,6 +129,9 @@ class BrowsingContextState : public base::RefCounted<BrowsingContextState> {
                          bool did_change_container_policy,
                          bool did_change_required_document_policy);
 
+  RenderFrameProxyHost* GetRenderFrameProxyHost(
+      SiteInstanceGroup* site_instance_group) const;
+
   // Set the current origin and notify proxies about the update.
   void SetCurrentOrigin(const url::Origin& origin,
                         bool is_potentially_trustworthy_unique_origin);

@@ -3657,11 +3657,10 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
 
 RenderFrameProxyHost* RenderFrameHostManager::GetRenderFrameProxyHost(
     SiteInstanceGroup* site_instance_group) const {
-  auto it =
-      browsing_context_state_->proxy_hosts().find(site_instance_group->GetId());
-  if (it != browsing_context_state_->proxy_hosts().end())
-    return it->second.get();
-  return nullptr;
+  // TODO(crbug.com/1270671): update all call sites of this method when the
+  // browsing_context_state_ is removed, so that the correct RenderFrameHost and
+  // associated BrowsingContextState are used.
+  return browsing_context_state_->GetRenderFrameProxyHost(site_instance_group);
 }
 
 size_t RenderFrameHostManager::GetProxyCount() {

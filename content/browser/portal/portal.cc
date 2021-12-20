@@ -186,10 +186,8 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal() {
     }
   }
 
-  FrameTreeNode* frame_tree_node =
-      portal_contents_->GetMainFrame()->frame_tree_node();
   RenderFrameProxyHost* proxy_host =
-      frame_tree_node->render_manager()->GetProxyToOuterDelegate();
+      portal_contents_->GetMainFrame()->GetProxyToOuterDelegate();
   proxy_host->SetRenderFrameProxyCreated(true);
   portal_contents_->ReattachToOuterWebContentsFrame();
 
