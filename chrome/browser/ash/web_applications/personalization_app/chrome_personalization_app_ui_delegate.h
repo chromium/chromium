@@ -40,15 +40,15 @@ class Collection;
 class Image;
 }  // namespace backdrop
 
+namespace content {
+class WebUI;
+}  // namespace content
+
 namespace wallpaper_handlers {
 class BackdropCollectionInfoFetcher;
 class BackdropImageInfoFetcher;
 class GooglePhotosCountFetcher;
 }  // namespace wallpaper_handlers
-
-namespace content {
-class WebUI;
-}  // namespace content
 
 class Profile;
 
@@ -131,6 +131,10 @@ class ChromePersonalizationAppUiDelegate
 
   void CancelPreviewWallpaper() override;
 
+  wallpaper_handlers::GooglePhotosCountFetcher*
+  SetGooglePhotosCountFetcherForTest(
+      std::unique_ptr<wallpaper_handlers::GooglePhotosCountFetcher> fetcher);
+
  private:
   friend class ChromePersonalizationAppUiDelegateTest;
 
@@ -143,8 +147,6 @@ class ChromePersonalizationAppUiDelegate
       bool success,
       const std::string& collection_id,
       const std::vector<backdrop::Image>& images);
-
-  void OnFetchGooglePhotosCount(int64_t count);
 
   void OnGetLocalImages(GetLocalImagesCallback callback,
                         const std::vector<base::FilePath>& images);
@@ -195,10 +197,12 @@ class ChromePersonalizationAppUiDelegate
   std::unique_ptr<wallpaper_handlers::BackdropImageInfoFetcher>
       wallpaper_attribution_info_fetcher_;
 
+  // Fetches the number of photos in the user's Google Photos library.
+  // Constructed lazily at the time of the first request and then persists for
+  // the rest of the delegate's lifetime, unless preemptively or subsequently
+  // replaced by a mock in a test.
   std::unique_ptr<wallpaper_handlers::GooglePhotosCountFetcher>
       google_photos_count_fetcher_;
-  std::vector<FetchGooglePhotosCountCallback>
-      pending_google_photos_count_callbacks_;
 
   SelectWallpaperCallback pending_select_wallpaper_callback_;
 

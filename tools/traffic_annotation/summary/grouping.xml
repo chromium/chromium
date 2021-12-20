@@ -81,6 +81,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="terms_of_service_fetch"/>
       <traffic_annotation unique_id="url_icon_source_fetch"/>
       <traffic_annotation unique_id="wallpaper_fetcher"/>
+      <traffic_annotation unique_id="wallpaper_google_photos_count"/>
     </sender>
     <!-- ChromeOS-specific features -->
     <sender name="ChromeOS Recovery">

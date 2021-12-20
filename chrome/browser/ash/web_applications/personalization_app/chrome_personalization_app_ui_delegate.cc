@@ -185,20 +185,13 @@ void ChromePersonalizationAppUiDelegate::FetchGooglePhotosCount(
     return;
   }
 
-  pending_google_photos_count_callbacks_.push_back(std::move(callback));
-  if (google_photos_count_fetcher_) {
-    // Photo count fetching already started. No need to start again.
-    return;
+  if (!google_photos_count_fetcher_) {
+    google_photos_count_fetcher_ =
+        std::make_unique<wallpaper_handlers::GooglePhotosCountFetcher>(
+            profile_);
   }
-
-  google_photos_count_fetcher_ =
-      std::make_unique<wallpaper_handlers::GooglePhotosCountFetcher>();
-
-  // base::Unretained is safe to use because |this| outlives
-  // |google_photos_count_fetcher_|.
-  google_photos_count_fetcher_->Start(base::BindOnce(
-      &ChromePersonalizationAppUiDelegate::OnFetchGooglePhotosCount,
-      base::Unretained(this)));
+  google_photos_count_fetcher_->AddCallbackAndStartIfNecessary(
+      std::move(callback));
 }
 
 void ChromePersonalizationAppUiDelegate::GetLocalImages(
@@ -432,6 +425,13 @@ void ChromePersonalizationAppUiDelegate::CancelPreviewWallpaper() {
   WallpaperController::Get()->CancelPreviewWallpaper();
 }
 
+wallpaper_handlers::GooglePhotosCountFetcher*
+ChromePersonalizationAppUiDelegate::SetGooglePhotosCountFetcherForTest(
+    std::unique_ptr<wallpaper_handlers::GooglePhotosCountFetcher> fetcher) {
+  google_photos_count_fetcher_ = std::move(fetcher);
+  return google_photos_count_fetcher_.get();
+}
+
 void ChromePersonalizationAppUiDelegate::OnFetchCollections(
     bool success,
     const std::vector<backdrop::Collection>& collections) {
@@ -474,18 +474,6 @@ void ChromePersonalizationAppUiDelegate::OnFetchCollectionImages(
     result = std::move(images);
   }
   std::move(callback).Run(std::move(result));
-}
-
-void ChromePersonalizationAppUiDelegate::OnFetchGooglePhotosCount(
-    int64_t count) {
-  DCHECK(google_photos_count_fetcher_);
-  DCHECK(!pending_google_photos_count_callbacks_.empty());
-
-  for (auto& callback : pending_google_photos_count_callbacks_) {
-    std::move(callback).Run(count);
-  }
-  pending_google_photos_count_callbacks_.clear();
-  google_photos_count_fetcher_.reset();
 }
 
 void ChromePersonalizationAppUiDelegate::OnGetLocalImages(
