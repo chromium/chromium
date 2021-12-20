@@ -77,7 +77,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
             new ObserverList<CriticalPersistedTabDataObserver>();
     private boolean mShouldSaveForTesting;
     /** Tab level Request Desktop Site setting. */
-    private @Nullable @TabUserAgent Integer mUserAgent;
+    private @TabUserAgent int mUserAgent;
 
     @VisibleForTesting
     protected CriticalPersistedTabData(Tab tab) {
@@ -355,7 +355,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
     }
 
     @VisibleForTesting
-    static @Nullable @TabUserAgent Integer getUserAgentType(
+    static @TabUserAgent int getUserAgentType(
             CriticalPersistedTabDataProto.UserAgentType protoUserAgent) {
         switch (protoUserAgent) {
             case DEFAULT:
@@ -371,18 +371,13 @@ public class CriticalPersistedTabData extends PersistedTabData {
             default:
                 assert false : "Unexpected deserialization of UserAgentType: " + protoUserAgent;
                 // shouldn't happen
-                return null;
+                return TabUserAgent.DEFAULT;
         }
     }
 
     @VisibleForTesting
     static CriticalPersistedTabDataProto.UserAgentType getUserAgentType(
-            @Nullable @TabUserAgent Integer protoUserAgent) {
-        if (protoUserAgent == null) {
-            assert false : "TabUserAgent should never be null.";
-            // shouldn't happen
-            return CriticalPersistedTabDataProto.UserAgentType.USER_AGENT_UNKNOWN;
-        }
+            @TabUserAgent int protoUserAgent) {
         switch (protoUserAgent) {
             case TabUserAgent.DEFAULT:
                 return CriticalPersistedTabDataProto.UserAgentType.DEFAULT;
@@ -397,7 +392,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
             default:
                 assert false : "Unexpected serialization of UserAgentType: " + protoUserAgent;
                 // shouldn't happen
-                return CriticalPersistedTabDataProto.UserAgentType.USER_AGENT_UNKNOWN;
+                return CriticalPersistedTabDataProto.UserAgentType.DEFAULT;
         }
     }
 
