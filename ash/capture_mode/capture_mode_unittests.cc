@@ -5742,13 +5742,13 @@ TEST_F(CaptureModeAdvancedSettingsTest, SwitchWhichFolderToUserFromOptions) {
   EXPECT_FALSE(capture_folder.is_default_downloads_folder);
 }
 
-// Tests that when capture label widget overlaps with settings widget, hide
-// capture label widget. Show capture label widget after closing settings
-// widget.
+// Tests that when there's no overlap betwwen capture label widget and settings
+// widget, capture label widget is shown/hidden correctly after open/close the
+// folder selection window.
 TEST_F(CaptureModeAdvancedSettingsTest,
-       CaptureLabelViewOverlapsWithSettingsView) {
-  // Update the display size to make sure capture label widget will not overlap
-  // with settings widget
+       CaptureLabelViewNotOverlapsWithSettingsView) {
+  // Update the display size to make sure capture label widget will not
+  // overlap with settings widget
   UpdateDisplay("1200x1000");
 
   auto* controller = StartImageRegionCapture();
@@ -5764,29 +5764,69 @@ TEST_F(CaptureModeAdvancedSettingsTest,
   EXPECT_TRUE(capture_label_widget->IsVisible());
   EXPECT_TRUE(settings_widget->IsVisible());
 
+  // Open folder selection window, check that both capture label widget and
+  // settings widget are invisible.
+  CaptureModeAdvancedSettingsTestApi test_api;
+  auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
+  ClickOnView(test_api.GetSelectFolderMenuItem(), event_generator);
+  EXPECT_TRUE(IsFolderSelectionDialogShown());
+  EXPECT_FALSE(capture_label_widget->IsVisible());
+  EXPECT_FALSE(settings_widget->IsVisible());
+
+  // Now close folder selection window, check that capture label widget and
+  // settings widget become visible.
+  dialog_factory->CancelDialog();
+  EXPECT_FALSE(IsFolderSelectionDialogShown());
+  EXPECT_TRUE(capture_label_widget->IsVisible());
+  EXPECT_EQ(capture_label_widget->GetLayer()->GetTargetOpacity(), 1.f);
+  EXPECT_TRUE(settings_widget->IsVisible());
+
   // Close settings widget. Capture label widget is visible.
   ClickOnView(GetSettingsButton(), event_generator);
   EXPECT_TRUE(capture_label_widget->IsVisible());
   controller->Stop();
+}
 
+// Tests that when capture label widget overlaps with settings widget, capture
+// label widget is shown/hidden correctly after open/close the folder selection
+// window, open/close settings menu. Regression test for
+// https://crbug.com/1279606.
+TEST_F(CaptureModeAdvancedSettingsTest,
+       CaptureLabelViewOverlapsWithSettingsView) {
   // Update display size to make capture label widget overlap with settings
   // widget.
   UpdateDisplay("1100x700");
-  controller = StartImageRegionCapture();
+  auto* controller = StartImageRegionCapture();
+  auto* event_generator = GetEventGenerator();
 
-  // Tests that capture label widget overlaps with settings widget and is hidden
-  // after setting widget is shown.
-  capture_label_widget = GetCaptureModeLabelWidget();
+  // Tests that capture label widget overlaps with settings widget and is
+  // hidden after setting widget is shown.
+  auto* capture_label_widget = GetCaptureModeLabelWidget();
   ClickOnView(GetSettingsButton(), event_generator);
-  settings_widget = GetCaptureModeSettingsWidget();
+  auto* settings_widget = GetCaptureModeSettingsWidget();
   EXPECT_TRUE(capture_label_widget->GetWindowBoundsInScreen().Intersects(
       settings_widget->GetWindowBoundsInScreen()));
   EXPECT_FALSE(GetCaptureModeLabelWidget()->IsVisible());
   EXPECT_TRUE(settings_widget->IsVisible());
 
-  // Tests that capture label widget is visible after settings widget is closed.
+  // Open folder selection window, capture label widget is invisible.
+  CaptureModeAdvancedSettingsTestApi test_api;
+  auto* dialog_factory = FakeFolderSelectionDialogFactory::Get();
+  ClickOnView(test_api.GetSelectFolderMenuItem(), event_generator);
+  EXPECT_TRUE(IsFolderSelectionDialogShown());
+  EXPECT_FALSE(capture_label_widget->IsVisible());
+
+  // Close folder selection window, capture label widget is invisible.
+  dialog_factory->CancelDialog();
+  EXPECT_FALSE(IsFolderSelectionDialogShown());
+  EXPECT_FALSE(capture_label_widget->IsVisible());
+
+  // Tests that capture label widget is visible after settings widget is
+  // closed.
   ClickOnView(GetSettingsButton(), event_generator);
   EXPECT_TRUE(capture_label_widget->IsVisible());
+  EXPECT_EQ(capture_label_widget->GetLayer()->GetTargetOpacity(), 1.f);
+  controller->Stop();
 }
 
 // Tests the basic keyboard navigation functions for the settings menu.
