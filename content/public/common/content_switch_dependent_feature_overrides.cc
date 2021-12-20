@@ -31,9 +31,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
      std::cref(net::features::kCookieSameSiteConsidersRedirectChain),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
     {switches::kEnableExperimentalWebPlatformFeatures,
-     std::cref(network::features::kCrossOriginEmbedderPolicyCredentialless),
-     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-    {switches::kEnableExperimentalWebPlatformFeatures,
      std::cref(features::kDocumentPolicyNegotiation),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 #if BUILDFLAG(ENABLE_REPORTING)
