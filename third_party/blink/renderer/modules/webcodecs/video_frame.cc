@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -56,6 +57,9 @@
 #include "v8/include/v8.h"
 
 namespace blink {
+
+const base::Feature kRemoveWebCodecsSpecViolations{
+    "RemoveWebCodecsSpecViolations", base::FEATURE_DISABLED_BY_DEFAULT};
 
 namespace {
 
@@ -504,6 +508,11 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   if (!init || !init->hasTimestamp()) {
     Deprecation::CountDeprecation(
         execution_context, WebFeature::kWebCodecsVideoFrameDefaultTimestamp);
+
+    if (base::FeatureList::IsEnabled(kRemoveWebCodecsSpecViolations)) {
+      exception_state.ThrowTypeError("VideoFrameInit must provide timestamp");
+      return nullptr;
+    }
   }
 
   const auto paint_image = image->PaintImageForCurrentFrame();
