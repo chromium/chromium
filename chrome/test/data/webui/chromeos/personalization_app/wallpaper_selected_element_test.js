@@ -343,4 +343,38 @@ export function WallpaperSelectedTest() {
 
     await clearTimeoutPromise;
   });
+
+  test('skips updating OnWallpaperChange while in fullscreen', async () => {
+    personalizationStore.data.wallpaper.fullscreen = true;
+
+    wallpaperSelectedElement =
+        initElement(WallpaperSelected.is, {'path': Paths.CollectionImages});
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    personalizationStore.resetLastAction();
+
+    await wallpaperProvider.wallpaperObserverRemote.onWallpaperChanged(
+        wallpaperProvider.currentWallpaper);
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    assertEquals(null, personalizationStore.lastAction);
+
+    personalizationStore.data.wallpaper.fullscreen = false;
+    personalizationStore.notifyObservers();
+
+    personalizationStore.expectAction(WallpaperActionName.SET_SELECTED_IMAGE);
+
+    wallpaperProvider.wallpaperObserverRemote.onWallpaperChanged(
+        wallpaperProvider.currentWallpaper);
+
+    const action = await personalizationStore.waitForAction(
+        WallpaperActionName.SET_SELECTED_IMAGE);
+
+    assertDeepEquals(
+        {
+          name: WallpaperActionName.SET_SELECTED_IMAGE,
+          image: wallpaperProvider.currentWallpaper,
+        },
+        action);
+  });
 }

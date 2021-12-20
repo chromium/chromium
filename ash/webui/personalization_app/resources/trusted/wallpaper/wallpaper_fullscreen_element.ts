@@ -134,9 +134,8 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
     if (hidden) {
       // SWA also supports exiting fullscreen when users press ESC. In this
       // case, the preview mode may be still on so we have to call cancel
-      // preview.
-      // This call is no-op when the user clicks on exit button or set as
-      // wallpaper button.
+      // preview. This call is no-op when the user clicks on set as wallpaper
+      // button.
       cancelPreviewWallpaper(this.wallpaperProvider_);
       this.dispatch(setFullscreenEnabledAction(/*enabled=*/ false));
       document.body.classList.remove(fullscreenClass);
@@ -146,14 +145,15 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
   }
 
   private async onClickExit_() {
+    await this.exitFullscreen();
     await cancelPreviewWallpaper(this.wallpaperProvider_);
-    this.exitFullscreen();
   }
 
   private async onClickConfirm_() {
-    // Wait for wallpaper to be confirmed before exiting full screen mode.
+    // Begin to exit fullscreen mode before confirming preview wallpaper. This
+    // makes local images and online images execute updates in the same order.
+    await this.exitFullscreen();
     await confirmPreviewWallpaper(this.wallpaperProvider_);
-    this.exitFullscreen();
   }
 
   private async onClickLayout_(event: MouseEvent) {

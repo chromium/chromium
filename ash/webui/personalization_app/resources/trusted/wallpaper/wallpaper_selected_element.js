@@ -261,6 +261,16 @@ export class WallpaperSelected extends WithPersonalizationStore {
    *     currentWallpaper
    */
   onWallpaperChanged(currentWallpaper) {
+    // Ignore updates while in fullscreen preview mode. The attribution
+    // information is for the old (non-preview) wallpaper. This is because
+    // setting an image in preview mode updates the image but not the stored
+    // WallpaperInfo. The wallpaper app should treat the duration of preview
+    // mode as loading. Another onWallpaperChanged will fire when preview mode
+    // is canceled or confirmed.
+    if (this.getState().wallpaper.fullscreen) {
+      return;
+    }
+
     // Clear the initial load timer if wallpaper information is received.
     if (this.initialLoadTimeout_) {
       clearTimeout(this.initialLoadTimeout_);
@@ -508,11 +518,6 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @private
    */
   getAriaLabel_(image) {
-    // Wait until full screen preview is finished. Otherwise will incorrectly
-    // read out attribution of last photo before getting updated attribution.
-    if (document.fullscreenElement) {
-      return '';
-    }
     if (!image) {
       return this.i18n('currentlySet') + ' ' +
           this.i18n('unknownImageAttribution');
