@@ -8197,3 +8197,6 @@ crbug.com/1279586 [ Mac ] external/wpt/IndexedDB/idbobjectstore-rename-abort.htm
 # Sheriff 2021-12-15
 crbug.com/1280387 [ Mac ] external/wpt/dom/abort/event.any.html [ Failure ]
 crbug.com/1280387 [ Mac ] external/wpt/dom/abort/event.any.worker.html [ Failure ]
+
+# Sheriff 2021-12-20
+crbug.com/1259188 [ Mac10.15 ] virtual/gpu-rasterization/images/color-profile-animate.html [ Failure Pass ]
