@@ -897,4 +897,73 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest, ChangeSource) {
                     capturing_tab->GetMainFrame()->GetLastCommittedOrigin(),
                     url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
 }
+
+IN_PROC_BROWSER_TEST_F(GetDisplayMediaChangeSourceBrowserTest,
+                       ChangeSourceReject) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* captured_tab = OpenTestPageInNewTab(kCapturedPageMain);
+  content::WebContents* other_tab = OpenTestPageInNewTab(kMainHtmlPage);
+  content::WebContents* capturing_tab = OpenTestPageInNewTab(kMainHtmlPage);
+
+  RunGetDisplayMedia(capturing_tab, "{video: true}", /*is_fake_ui=*/false,
+                     /*expect_success=*/true,
+                     /*is_tab_capture=*/true);
+  while (browser()->tab_strip_model()->GetActiveWebContents() != captured_tab) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  EXPECT_TRUE(captured_tab->IsBeingCaptured());
+  EXPECT_FALSE(other_tab->IsBeingCaptured());
+  EXPECT_FALSE(capturing_tab->IsBeingCaptured());
+  EXPECT_EQ(GetSecondaryButtonLabel(captured_tab),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+                url_formatter::FormatOriginForSecurityDisplay(
+                    captured_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
+  EXPECT_EQ(GetSecondaryButtonLabel(capturing_tab),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+                url_formatter::FormatOriginForSecurityDisplay(
+                    capturing_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+
+  browser()->tab_strip_model()->ActivateTabAt(
+      browser()->tab_strip_model()->GetIndexOfWebContents(other_tab));
+  while (browser()->tab_strip_model()->GetActiveWebContents() != other_tab) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kScreenCaptureAllowed,
+                                               false);
+
+  // Click the secondary button, i.e., the "Share this tab instead" button. This
+  // is rejected since screen capture is not allowed by the above policy.
+  GetDelegate(other_tab)->Cancel();
+
+  // When "Share this tab instead" fails for other_tab, the focus goes back to
+  // the captured tab. Wait until that happens:
+  while (browser()->tab_strip_model()->GetActiveWebContents() != captured_tab) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  EXPECT_TRUE(captured_tab->IsBeingCaptured());
+  EXPECT_FALSE(other_tab->IsBeingCaptured());
+  EXPECT_FALSE(capturing_tab->IsBeingCaptured());
+  EXPECT_EQ(GetSecondaryButtonLabel(captured_tab),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+                url_formatter::FormatOriginForSecurityDisplay(
+                    captured_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+  EXPECT_EQ(GetSecondaryButtonLabel(other_tab), kShareThisTabInsteadMessage);
+  EXPECT_EQ(GetSecondaryButtonLabel(capturing_tab),
+            l10n_util::GetStringFUTF16(
+                IDS_TAB_SHARING_INFOBAR_SWITCH_TO_BUTTON,
+                url_formatter::FormatOriginForSecurityDisplay(
+                    capturing_tab->GetMainFrame()->GetLastCommittedOrigin(),
+                    url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS)));
+}
+
 #endif
