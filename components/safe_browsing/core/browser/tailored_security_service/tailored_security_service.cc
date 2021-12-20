@@ -16,7 +16,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -229,9 +232,18 @@ TailoredSecurityService::Request::~Request() = default;
 
 TailoredSecurityService::TailoredSecurityService(
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : identity_manager_(identity_manager),
-      url_loader_factory_(std::move(url_loader_factory)) {}
+    PrefService* prefs)
+    : identity_manager_(identity_manager), prefs_(prefs) {
+  // `prefs` can be nullptr in unit tests.
+  if (prefs_) {
+    pref_registrar_.Init(prefs_);
+    pref_registrar_.Add(
+        prefs::kAccountTailoredSecurityUpdateTimestamp,
+        base::BindRepeating(
+            &TailoredSecurityService::TailoredSecurityTimestampUpdateCallback,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+}
 
 TailoredSecurityService::~TailoredSecurityService() {
   for (auto& observer : observer_list_) {
@@ -254,7 +266,7 @@ TailoredSecurityService::CreateRequest(
     const GURL& url,
     CompletionCallback callback,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
-  return std::make_unique<RequestImpl>(identity_manager_, url_loader_factory_,
+  return std::make_unique<RequestImpl>(identity_manager_, GetURLLoaderFactory(),
                                        url, std::move(callback),
                                        traffic_annotation);
 }
@@ -288,6 +300,21 @@ void TailoredSecurityService::RemoveQueryRequest() {
 }
 
 void TailoredSecurityService::QueryTailoredSecurityBit() {
+  StartRequest(
+      base::BindOnce(&TailoredSecurityService::OnTailoredSecurityBitRetrieved,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TailoredSecurityService::StartRequest(
+    QueryTailoredSecurityBitCallback callback) {
+  DCHECK(!is_shut_down_);
+
+  // Wrap the original callback into a generic completion callback.
+  CompletionCallback completion_callback = base::BindOnce(
+      &TailoredSecurityService::QueryTailoredSecurityBitCompletionCallback,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  GURL url(kQueryTailoredSecurityServiceUrl);
+
   static constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("tailored_security_service",
                                           R"(
@@ -316,22 +343,6 @@ void TailoredSecurityService::QueryTailoredSecurityBit() {
           }
         })");
 
-  StartRequest(
-      base::BindOnce(&TailoredSecurityService::OnTailoredSecurityBitRetrieved,
-                     weak_ptr_factory_.GetWeakPtr()),
-      traffic_annotation);
-}
-
-void TailoredSecurityService::StartRequest(
-    QueryTailoredSecurityBitCallback callback,
-    const net::NetworkTrafficAnnotationTag& traffic_annotation) {
-  DCHECK(!is_shut_down_);
-
-  // Wrap the original callback into a generic completion callback.
-  CompletionCallback completion_callback = base::BindOnce(
-      &TailoredSecurityService::QueryTailoredSecurityBitCompletionCallback,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-  GURL url(kQueryTailoredSecurityServiceUrl);
   std::unique_ptr<Request> request =
       CreateRequest(url, std::move(completion_callback), traffic_annotation);
   Request* request_ptr = request.get();
@@ -421,6 +432,11 @@ void TailoredSecurityService::Shutdown() {
   pending_tailored_security_requests_.clear();
   timer_.Stop();
   is_shut_down_ = true;
+}
+
+void TailoredSecurityService::TailoredSecurityTimestampUpdateCallback() {
+  StartRequest(base::BindOnce(&TailoredSecurityService::MaybeNotifySyncUser,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace safe_browsing

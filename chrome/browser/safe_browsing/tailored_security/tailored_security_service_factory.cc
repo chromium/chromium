@@ -6,12 +6,11 @@
 
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/tailored_security/chrome_tailored_security_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/storage_partition.h"
 
 namespace safe_browsing {
 
@@ -37,10 +36,7 @@ TailoredSecurityServiceFactory::TailoredSecurityServiceFactory()
 KeyedService* TailoredSecurityServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
-  return new TailoredSecurityService(
-      IdentityManagerFactory::GetForProfile(profile),
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess());
+  return new ChromeTailoredSecurityService(profile);
 }
 
 bool TailoredSecurityServiceFactory::ServiceIsCreatedWithBrowserContext()

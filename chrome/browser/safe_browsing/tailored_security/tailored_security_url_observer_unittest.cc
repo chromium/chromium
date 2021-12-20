@@ -19,6 +19,9 @@ class MockTailoredSecurityService : public TailoredSecurityService {
   MockTailoredSecurityService() : TailoredSecurityService(nullptr, nullptr) {}
   MOCK_METHOD0(AddQueryRequest, void());
   MOCK_METHOD0(RemoveQueryRequest, void());
+  MOCK_METHOD2(MaybeNotifySyncUser, void(bool, base::Time));
+  MOCK_METHOD0(GetURLLoaderFactory,
+               scoped_refptr<network::SharedURLLoaderFactory>());
 };
 
 }  // namespace

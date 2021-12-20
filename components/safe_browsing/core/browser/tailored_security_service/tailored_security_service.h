@@ -19,6 +19,7 @@
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
@@ -79,9 +80,8 @@ class TailoredSecurityService : public KeyedService {
 
   using CompletionCallback = base::OnceCallback<void(Request*, bool success)>;
 
-  TailoredSecurityService(
-      signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  TailoredSecurityService(signin::IdentityManager* identity_manager,
+                          PrefService* prefs);
   ~TailoredSecurityService() override;
 
   void AddObserver(TailoredSecurityServiceObserver* observer);
@@ -98,8 +98,7 @@ class TailoredSecurityService : public KeyedService {
   void QueryTailoredSecurityBit();
 
   // Starts the request to send to the backend to retrieve the bit.
-  void StartRequest(QueryTailoredSecurityBitCallback callback,
-                    const net::NetworkTrafficAnnotationTag& traffic_annotation);
+  void StartRequest(QueryTailoredSecurityBitCallback callback);
 
   // Sets the state of tailored security bit to |is_enabled| for testing.
   void SetTailoredSecurityBitForTesting(
@@ -138,13 +137,28 @@ class TailoredSecurityService : public KeyedService {
   void OnTailoredSecurityBitRetrieved(bool is_enabled,
                                       base::Time previous_update);
 
+  // After `kAccountTailoredSecurityUpdateTimestamp` is updated, we check the
+  // true value of the account tailored security preference and run this
+  // callback.
+  virtual void MaybeNotifySyncUser(bool is_enabled,
+                                   base::Time previous_update) = 0;
+
+  PrefService* prefs() { return prefs_; }
+
+  raw_ptr<signin::IdentityManager> identity_manager() {
+    return identity_manager_;
+  }
+
+  virtual scoped_refptr<network::SharedURLLoaderFactory>
+  GetURLLoaderFactory() = 0;
+
  private:
+  // Callback when the `kAccountTailoredSecurityUpdateTimestamp` is updated
+  void TailoredSecurityTimestampUpdateCallback();
+
   // Stores pointer to IdentityManager instance. It must outlive the
   // TailoredSecurityService and can be null during tests.
   raw_ptr<signin::IdentityManager> identity_manager_;
-
-  // Request context getter to use.
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Pending TailoredSecurity queries to be canceled if not complete by
   // profile shutdown.
@@ -166,6 +180,16 @@ class TailoredSecurityService : public KeyedService {
   base::Time last_updated_;
 
   bool is_shut_down_ = false;
+
+  // The preferences for the given profile.
+  PrefService* prefs_;
+
+  // This is used to observe when sync users update their Tailored Security
+  // setting.
+  PrefChangeRegistrar pref_registrar_;
+
+  // Callback run when we should notify a sync user about a state change.
+  base::RepeatingCallback<void(bool)> notify_sync_user_callback_;
 
   base::WeakPtrFactory<TailoredSecurityService> weak_ptr_factory_{this};
 };

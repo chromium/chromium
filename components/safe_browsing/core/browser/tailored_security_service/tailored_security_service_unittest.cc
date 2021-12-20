@@ -11,9 +11,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -36,12 +41,14 @@ const char kQueryTailoredSecurityServiceUrl[] =
 class TestingTailoredSecurityService : public TailoredSecurityService {
  public:
   explicit TestingTailoredSecurityService(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      PrefService* prefs)
       // NOTE: Simply pass null object for IdentityManager.
       // TailoredSecurityService's only usage of this object is to fetch access
       // tokens via RequestImpl, and TestingTailoredSecurityService deliberately
       // replaces this flow with TestRequest.
-      : TailoredSecurityService(nullptr, url_loader_factory) {}
+      : TailoredSecurityService(nullptr, prefs),
+        url_loader_factory_(url_loader_factory) {}
   ~TestingTailoredSecurityService() override = default;
 
   std::unique_ptr<TailoredSecurityService::Request> CreateRequest(
@@ -84,11 +91,39 @@ class TestingTailoredSecurityService : public TailoredSecurityService {
 
   void Shutdown() override;
 
+  void SetNotifySyncUserCallback(base::OnceClosure callback) {
+    notify_sync_user_callback_ = std::move(callback);
+  }
+  bool notify_sync_user_called() const { return notify_sync_user_called_; }
+  bool notify_sync_user_called_enabled() const {
+    return notify_sync_user_called_enabled_;
+  }
+
+ protected:
+  void MaybeNotifySyncUser(bool is_enabled,
+                           base::Time previous_update) override;
+
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
+      override {
+    return url_loader_factory_;
+  }
+
  private:
   GURL expected_url_;
   bool expected_tailored_security_service_value_;
   std::string current_expected_post_data_;
   std::map<Request*, std::string> expected_post_data_;
+
+  // Whether `MaybeNotifySyncUser` was called.
+  bool notify_sync_user_called_;
+
+  // The value of `is_enabled` when `MaybeNotifySyncUser` was called.
+  bool notify_sync_user_called_enabled_;
+
+  // Called whenever `MaybeNotifySyncUser` is called.
+  base::OnceClosure notify_sync_user_callback_;
+
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
 // A testing request class that allows expected values to be filled in.
@@ -212,6 +247,15 @@ void TestingTailoredSecurityService::Shutdown() {
   expected_post_data_.clear();
 }
 
+void TestingTailoredSecurityService::MaybeNotifySyncUser(
+    bool is_enabled,
+    base::Time previous_update) {
+  notify_sync_user_called_ = true;
+  notify_sync_user_called_enabled_ = is_enabled;
+  if (notify_sync_user_callback_)
+    std::move(notify_sync_user_callback_).Run();
+}
+
 }  // namespace
 
 // A test class used for testing the TailoredSecurityService class.
@@ -224,10 +268,23 @@ class TailoredSecurityServiceTest : public testing::Test {
   TailoredSecurityServiceTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_)),
-        tailored_security_service_(test_shared_loader_factory_) {}
+                &test_url_loader_factory_)) {}
 
   ~TailoredSecurityServiceTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(kTailoredSecurityIntegration);
+    prefs_.registry()->RegisterTimePref(
+        prefs::kAccountTailoredSecurityUpdateTimestamp, base::Time());
+    prefs_.registry()->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced, false);
+    prefs_.registry()->RegisterBooleanPref(prefs::kSafeBrowsingEnabled, true);
+    prefs_.registry()->RegisterBooleanPref(
+        prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
+
+    tailored_security_service_ =
+        std::make_unique<TestingTailoredSecurityService>(
+            test_shared_loader_factory_, &prefs_);
+  }
 
   void TearDown() override {
     base::RunLoop run_loop;
@@ -237,27 +294,30 @@ class TailoredSecurityServiceTest : public testing::Test {
   }
 
   TestingTailoredSecurityService* tailored_security_service() {
-    return &tailored_security_service_;
+    return tailored_security_service_.get();
   }
 
-  void Shutdown() { tailored_security_service_.Shutdown(); }
+  void Shutdown() { tailored_security_service_->Shutdown(); }
+
+  PrefService* prefs() { return &prefs_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  TestingTailoredSecurityService tailored_security_service_;
+  TestingPrefServiceSimple prefs_;
+  std::unique_ptr<TestingTailoredSecurityService> tailored_security_service_;
+  std::vector<bool> notify_sync_calls_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TailoredSecurityServiceTest, GetTailoredSecurityServiceEnabled) {
   tailored_security_service()->SetExpectedURL(
       GURL(kQueryTailoredSecurityServiceUrl));
   tailored_security_service()->SetExpectedTailoredSecurityServiceValue(true);
-  tailored_security_service()->StartRequest(
-      base::BindOnce(
-          &TestingTailoredSecurityService::GetTailoredSecurityServiceCallback,
-          base::Unretained(tailored_security_service())),
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+  tailored_security_service()->StartRequest(base::BindOnce(
+      &TestingTailoredSecurityService::GetTailoredSecurityServiceCallback,
+      base::Unretained(tailored_security_service())));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -321,8 +381,7 @@ TEST_F(TailoredSecurityServiceTest, MultipleRequests) {
   tailored_security_service()->SetExpectedPostData("");
   tailored_security_service()->StartRequest(
       base::BindOnce(&TestingTailoredSecurityService::MultipleRequestsCallback,
-                     base::Unretained(tailored_security_service())),
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+                     base::Unretained(tailored_security_service())));
 
   // Check that both requests are no longer pending.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -412,10 +471,42 @@ TEST_F(TailoredSecurityServiceTest, TestShutdown) {
       GURL(kQueryTailoredSecurityServiceUrl));
   tailored_security_service()->StartRequest(
       base::BindOnce(&TestingTailoredSecurityService::MultipleRequestsCallback,
-                     base::Unretained(tailored_security_service())),
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+                     base::Unretained(tailored_security_service())));
 
   Shutdown();
+}
+
+TEST_F(TailoredSecurityServiceTest, NotifiesSyncForEnabled) {
+  tailored_security_service()->SetExpectedURL(
+      GURL(kQueryTailoredSecurityServiceUrl));
+  tailored_security_service()->SetExpectedTailoredSecurityServiceValue(true);
+
+  base::RunLoop run_loop;
+  tailored_security_service()->SetNotifySyncUserCallback(
+      run_loop.QuitClosure());
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  prefs()->SetTime(prefs::kAccountTailoredSecurityUpdateTimestamp,
+                   base::Time::Now());
+  run_loop.Run();
+  EXPECT_TRUE(tailored_security_service()->notify_sync_user_called());
+  EXPECT_TRUE(tailored_security_service()->notify_sync_user_called_enabled());
+}
+
+TEST_F(TailoredSecurityServiceTest, NotifiesSyncForDisabled) {
+  tailored_security_service()->SetExpectedURL(
+      GURL(kQueryTailoredSecurityServiceUrl));
+  tailored_security_service()->SetExpectedTailoredSecurityServiceValue(false);
+
+  base::RunLoop run_loop;
+  tailored_security_service()->SetNotifySyncUserCallback(
+      run_loop.QuitClosure());
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION,
+                       /*is_esb_enabled_in_sync=*/true);
+  prefs()->SetTime(prefs::kAccountTailoredSecurityUpdateTimestamp,
+                   base::Time::Now());
+  run_loop.Run();
+  EXPECT_TRUE(tailored_security_service()->notify_sync_user_called());
+  EXPECT_FALSE(tailored_security_service()->notify_sync_user_called_enabled());
 }
 
 }  // namespace safe_browsing

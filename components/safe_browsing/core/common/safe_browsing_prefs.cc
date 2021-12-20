@@ -221,8 +221,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope, 0);
   registry->RegisterInt64Pref(prefs::kSafeBrowsingMetricsLastLogTime, 0);
   registry->RegisterDictionaryPref(prefs::kSafeBrowsingEventTimestamps);
-  registry->RegisterTimePref(prefs::kAccountTailoredSecurityUpdateTimestamp,
-                             base::Time());
+  registry->RegisterTimePref(
+      prefs::kAccountTailoredSecurityUpdateTimestamp, base::Time(),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
   registry->RegisterBooleanPref(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity, false);
 }
