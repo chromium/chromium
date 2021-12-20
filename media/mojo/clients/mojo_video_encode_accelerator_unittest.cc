@@ -13,6 +13,8 @@
 #include "media/mojo/clients/mojo_video_encode_accelerator.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/video/video_encode_accelerator.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -45,7 +47,7 @@ class MockMojoVideoEncodeAccelerator : public mojom::VideoEncodeAccelerator {
   // mojom::VideoEncodeAccelerator impl.
   void Initialize(
       const media::VideoEncodeAccelerator::Config& config,
-      mojo::PendingRemote<mojom::VideoEncodeAcceleratorClient> client,
+      mojo::PendingAssociatedRemote<mojom::VideoEncodeAcceleratorClient> client,
       InitializeCallback success_callback) override {
     if (initialization_success_) {
       ASSERT_TRUE(client);
@@ -62,13 +64,14 @@ class MockMojoVideoEncodeAccelerator : public mojom::VideoEncodeAccelerator {
     }
     std::move(success_callback).Run(initialization_success_);
   }
-  MOCK_METHOD6(DoInitialize,
-               void(media::VideoPixelFormat,
-                    const gfx::Size&,
-                    media::VideoCodecProfile,
-                    media::Bitrate,
-                    media::VideoEncodeAccelerator::Config::ContentType,
-                    mojo::Remote<mojom::VideoEncodeAcceleratorClient>*));
+  MOCK_METHOD6(
+      DoInitialize,
+      void(media::VideoPixelFormat,
+           const gfx::Size&,
+           media::VideoCodecProfile,
+           media::Bitrate,
+           media::VideoEncodeAccelerator::Config::ContentType,
+           mojo::AssociatedRemote<mojom::VideoEncodeAcceleratorClient>*));
 
   void Encode(const scoped_refptr<VideoFrame>& frame,
               bool keyframe,
@@ -120,7 +123,7 @@ class MockMojoVideoEncodeAccelerator : public mojom::VideoEncodeAccelerator {
   }
 
  private:
-  mojo::Remote<mojom::VideoEncodeAcceleratorClient> client_;
+  mojo::AssociatedRemote<mojom::VideoEncodeAcceleratorClient> client_;
   int32_t configured_bitstream_buffer_id_ = -1;
   bool initialization_success_ = true;
 };
