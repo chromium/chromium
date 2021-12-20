@@ -41,35 +41,36 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
 
   // Fires an event to send updated data to the About page and registers
   // observers to notify the page upon updates.
-  void HandleRequestDataAndRegisterForUpdates(const base::ListValue* args);
+  void HandleRequestDataAndRegisterForUpdates(base::Value::ConstListView args);
 
   // Fires an event to send the list of types back to the page.
-  void HandleRequestListOfTypes(const base::ListValue* args);
+  void HandleRequestListOfTypes(base::Value::ConstListView args);
 
   // Fires an event to send the initial state of the "include specifics" flag.
-  void HandleRequestIncludeSpecificsInitialState(const base::ListValue* args);
+  void HandleRequestIncludeSpecificsInitialState(
+      base::Value::ConstListView args);
 
   // Handler for getAllNodes message.  Needs a |request_id| argument.
-  void HandleGetAllNodes(const base::ListValue* args);
+  void HandleGetAllNodes(base::Value::ConstListView args);
 
   // Handler for setting internal state of if specifics should be included in
   // protocol events when sent to be displayed.
-  void HandleSetIncludeSpecifics(const base::ListValue* args);
+  void HandleSetIncludeSpecifics(base::Value::ConstListView args);
 
   // Handler for writeUserEvent message.
-  void HandleWriteUserEvent(const base::ListValue* args);
+  void HandleWriteUserEvent(base::Value::ConstListView args);
 
   // Handler for requestStart message.
-  void HandleRequestStart(const base::ListValue* args);
+  void HandleRequestStart(base::Value::ConstListView args);
 
   // Handler for requestStopKeepData message.
-  void HandleRequestStopKeepData(const base::ListValue* args);
+  void HandleRequestStopKeepData(base::Value::ConstListView args);
 
   // Handler for requestStopClearData message.
-  void HandleRequestStopClearData(const base::ListValue* args);
+  void HandleRequestStopClearData(base::Value::ConstListView args);
 
   // Handler for triggerRefresh message.
-  void HandleTriggerRefresh(const base::ListValue* args);
+  void HandleTriggerRefresh(base::Value::ConstListView args);
 
   // Callback used in GetAllNodes.
   void OnReceivedAllNodes(const std::string& callback_id,
