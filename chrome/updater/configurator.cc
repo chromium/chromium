@@ -111,7 +111,7 @@ std::string Configurator::GetOSLongName() const {
 
 base::flat_map<std::string, std::string> Configurator::ExtraRequestParams()
     const {
-  return {{"testrequest", "1"}, {"testsource", "dev"}};
+  return {};
 }
 
 std::string Configurator::GetDownloadPreference() const {
