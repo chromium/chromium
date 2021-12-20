@@ -1391,8 +1391,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.EnterCriticalPolicySectionDelay.Total" units="ms"
     expires_after="2022-06-12">
-  <owner>grt@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
   <summary>
     Elapsed time taken to acquire each lock to access policies in the Windows
     registry (at user scope and then at machine scope). This metric is recorded
@@ -1402,9 +1402,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnterCriticalPolicySectionDelay.{Scope}.{Result}"
-    units="ms" expires_after="2021-12-31">
-  <owner>grt@chromium.org</owner>
+    units="ms" expires_after="2022-06-12">
   <owner>zmin@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
   <summary>
     Elapsed time taken to acquire the lock to access policies in the Windows
     registry. The success or failure variant of this metric is recorded once for
@@ -1422,8 +1422,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.EnterCriticalPolicySectionError"
     enum="WinGetLastError" expires_after="2022-06-12">
-  <owner>grt@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
   <summary>
     Windows error code following a failure to acquire the lock to access
     policies in the Windows registry shortly after browser startup.
