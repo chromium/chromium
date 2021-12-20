@@ -3492,10 +3492,6 @@ const char kStartSurfaceAndroidDescription[] =
     "Enable showing the start surface when launching Chrome via the "
     "launcher.";
 
-const char kSharingHubLinkToggleName[] = "Sharing Hub Link Toggle";
-const char kSharingHubLinkToggleDescription[] =
-    "Enable the link toggle in the Sharing Hub.";
-
 const char kStrictSiteIsolationName[] = "Strict site isolation";
 const char kStrictSiteIsolationDescription[] =
     "Security mode that enables site isolation for all sites (SitePerProcess). "

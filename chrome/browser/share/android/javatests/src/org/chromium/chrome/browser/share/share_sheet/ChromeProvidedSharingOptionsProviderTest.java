@@ -69,7 +69,6 @@ import java.util.List;
  * Tests {@link ChromeProvidedSharingOptionsProvider}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.SHARING_HUB_LINK_TOGGLE})
 public class ChromeProvidedSharingOptionsProviderTest {
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();

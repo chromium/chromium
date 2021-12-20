@@ -2009,9 +2009,6 @@ extern const char kSmartSuggestionForLargeDownloadsDescription[];
 extern const char kStartSurfaceAndroidName[];
 extern const char kStartSurfaceAndroidDescription[];
 
-extern const char kSharingHubLinkToggleName[];
-extern const char kSharingHubLinkToggleDescription[];
-
 extern const char kStrictSiteIsolationName[];
 extern const char kStrictSiteIsolationDescription[];
 

@@ -623,16 +623,6 @@ const FeatureEntry::FeatureVariation kLongScreenshotVariations[] = {
     {"Autoscroll Experiment 2", kLongScreenshot_AutoscrollDragQuick,
      base::size(kLongScreenshot_AutoscrollDragQuick), nullptr}};
 
-const FeatureEntry::FeatureParam kSharingHubLinkToggle_ImageEnabled[] = {
-    {"image_enabled", "true"}};
-const FeatureEntry::FeatureParam kSharingHubLinkToggle_ScreenshotEnabled[] = {
-    {"screenshot_enabled", "true"}};
-const FeatureEntry::FeatureVariation kSharingHubLinkToggleVariations[] = {
-    {"image enabled by default", kSharingHubLinkToggle_ImageEnabled,
-     base::size(kSharingHubLinkToggle_ImageEnabled), nullptr},
-    {"screenshot enabled by default", kSharingHubLinkToggle_ScreenshotEnabled,
-     base::size(kSharingHubLinkToggle_ScreenshotEnabled), nullptr}};
-
 const FeatureEntry::FeatureParam kShowSingleRowMVTiles[] = {
     {"most_visited_max_rows_normal_screen", "1"},
     {"most_visited_max_rows_small_screen", "1"},
@@ -3558,11 +3548,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPersistShareHubOnAppSwitchName,
      flag_descriptions::kPersistShareHubOnAppSwitchDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(share::kPersistShareHubOnAppSwitch)},
-    {"sharing-hub-link-toggle", flag_descriptions::kSharingHubLinkToggleName,
-     flag_descriptions::kSharingHubLinkToggleDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kSharingHubLinkToggle,
-                                    kSharingHubLinkToggleVariations,
-                                    "SharingHubLinkToggle")},
     {"webnotes-publish", flag_descriptions::kWebNotesPublishName,
      flag_descriptions::kWebNotesPublishDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(content_creation::kWebNotesPublish)},

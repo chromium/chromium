@@ -60,8 +60,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Tests {@link ShareSheetCoordinator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION,
-        ChromeFeatureList.SHARING_HUB_LINK_TOGGLE})
+@Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
 public final class ShareSheetCoordinatorTest {
     private static final String MOCK_URL = JUnitTestGURLs.EXAMPLE_URL;
 
