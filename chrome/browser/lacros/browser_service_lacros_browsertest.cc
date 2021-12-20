@@ -6,9 +6,13 @@
 #include "chrome/browser/chromeos/app_mode/app_session.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -118,4 +122,29 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   const size_t browser_count = BrowserList::GetInstance()->size();
   CreateNewWindow();
   EXPECT_EQ(BrowserList::GetInstance()->size(), browser_count + 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
+                       ProfilePickerOpensOnStartup) {
+  // Create an additional profile.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  base::FilePath path_profile2 =
+      profile_manager->user_data_dir().Append(FILE_PATH_LITERAL("Profile 2"));
+
+  base::RunLoop run_loop;
+  profile_manager->CreateProfileAsync(
+      path_profile2, base::BindLambdaForTesting(
+                         [&](Profile* profile, Profile::CreateStatus status) {
+                           run_loop.Quit();
+                         }));
+  run_loop.Run();
+  ASSERT_EQ(2u, storage.GetNumberOfProfiles());
+  storage.GetProfileAttributesWithPath(path_profile2)->SetActiveTimeToNow();
+
+  browser_service()->NewWindow(
+      /*incognito=*/false, /*should_trigger_session_restore=*/false,
+      /*callback=*/base::BindLambdaForTesting([]() {}));
+  EXPECT_TRUE(ProfilePicker::IsOpen());
 }

@@ -17,6 +17,7 @@
 #include "chrome/browser/lacros/system_logs/lacros_system_log_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
 #include "chrome/common/channel_info.h"
@@ -135,10 +137,24 @@ void BrowserServiceLacros::NewWindow(bool incognito,
   // TODO(crbug.com/1102815): Find what profile should be used.
   Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
   DCHECK(profile) << "No last used profile is found.";
-  chrome::NewEmptyWindow(
-      incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
-                : profile,
-      should_trigger_session_restore);
+
+  bool session_restore_available = false;
+  if (should_trigger_session_restore) {
+    SessionService* sessionService =
+        SessionServiceFactory::GetForProfileForSessionRestore(profile);
+    if (sessionService && sessionService->ShouldRestore(nullptr))
+      session_restore_available = true;
+  }
+
+  if (ProfilePicker::ShouldShowAtLaunch() && !session_restore_available) {
+    ProfilePicker::Show(
+        ProfilePicker::EntryPoint::kNewSessionOnExistingProcess);
+  } else {
+    chrome::NewEmptyWindow(
+        incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                  : profile,
+        should_trigger_session_restore);
+  }
   std::move(callback).Run();
 }
 
