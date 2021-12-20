@@ -19,7 +19,6 @@ java_binary("errorprone_plugin") {
     "src/org/chromium/tools/errorprone/plugin/NoSynchronizedMethodCheck.java",
     "src/org/chromium/tools/errorprone/plugin/NoSynchronizedThisCheck.java",
     "src/org/chromium/tools/errorprone/plugin/TestClassNameCheck.java",
-    "src/org/chromium/tools/errorprone/plugin/UseNetworkAnnotations.java",
   ]
 
   # Necessary to avoid dependency cycle
