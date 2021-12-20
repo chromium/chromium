@@ -16,16 +16,23 @@ PasswordStoreSites::PasswordStoreSites(
     password_manager::PasswordStoreInterface* password_store)
     : password_store_(password_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (password_store_) {
-    password_store_->AddObserver(this);
-    password_store_->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
-  }
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&PasswordStoreSites::DoDeferredInitialization,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 PasswordStoreSites::~PasswordStoreSites() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (password_store_)
     password_store_->RemoveObserver(this);
+}
+
+void PasswordStoreSites::DoDeferredInitialization() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (password_store_) {
+    password_store_->AddObserver(this);
+    password_store_->GetAllLogins(weak_ptr_factory_.GetWeakPtr());
+  }
 }
 
 void PasswordStoreSites::OnLoginsChanged(
