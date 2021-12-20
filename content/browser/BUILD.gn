@@ -340,8 +340,6 @@ source_set("browser") {
     "$target_gen_dir/devtools/protocol/tracing.h",
     "about_url_loader_factory.cc",
     "about_url_loader_factory.h",
-    "accessibility/accessibility_event_recorder.cc",
-    "accessibility/accessibility_event_recorder.h",
     "accessibility/accessibility_tree_formatter_blink.cc",
     "accessibility/accessibility_tree_formatter_blink.h",
     "accessibility/browser_accessibility.cc",

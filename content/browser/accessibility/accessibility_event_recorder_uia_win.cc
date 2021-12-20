@@ -73,8 +73,7 @@ volatile base::subtle::Atomic32 AccessibilityEventRecorderUia::instantiated_ =
 AccessibilityEventRecorderUia::AccessibilityEventRecorderUia(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const base::StringPiece& application_name_match_pattern)
-    : AccessibilityEventRecorder(manager) {
+    const base::StringPiece& application_name_match_pattern) {
   CHECK(!base::subtle::NoBarrier_AtomicExchange(&instantiated_, 1))
       << "There can be only one instance at a time.";
 

@@ -33,10 +33,9 @@ static void EventReceivedThunk(AXObserverRef observer_ref,
 }
 
 AccessibilityEventRecorderMac::AccessibilityEventRecorderMac(
-    BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const AXTreeSelector& selector)
-    : AccessibilityEventRecorder(manager), observer_run_loop_source_(nullptr) {
+    : observer_run_loop_source_(nullptr) {
   AXUIElementRef node = nil;
   if (pid) {
     node = AXUIElementCreateApplication(pid);

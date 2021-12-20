@@ -62,8 +62,8 @@ bool AccessibilityEventRecorderAuraLinux::ShouldUseATSPI() {
 AccessibilityEventRecorderAuraLinux::AccessibilityEventRecorderAuraLinux(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const AXTreeSelector& selector)
-    : AccessibilityEventRecorder(manager), pid_(pid), selector_(selector) {
+    const ui::AXTreeSelector& selector)
+    : manager_(manager), pid_(pid), selector_(selector) {
   CHECK(!instance_) << "There can be only one instance of"
                     << " AccessibilityEventRecorder at a time.";
 

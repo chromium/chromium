@@ -15,15 +15,19 @@
 
 #include "base/atomicops.h"
 #include "base/memory/raw_ptr.h"
+#include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/atl.h"
-#include "content/browser/accessibility/accessibility_event_recorder.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace content {
 
-class AccessibilityEventRecorderUia : public AccessibilityEventRecorder {
+class BrowserAccessibilityManager;
+
+class AccessibilityEventRecorderUia : public ui::AXEventRecorder {
  public:
   AccessibilityEventRecorderUia(
       BrowserAccessibilityManager* manager,

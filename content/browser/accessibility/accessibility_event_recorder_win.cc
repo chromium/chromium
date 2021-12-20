@@ -104,7 +104,7 @@ AccessibilityEventRecorderWin::AccessibilityEventRecorderWin(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
     const ui::AXTreeSelector& selector)
-    : AccessibilityEventRecorder(manager) {
+    : manager_(manager) {
   CHECK(!instance_) << "There can be only one instance of"
                     << " AccessibilityEventRecorder at a time.";
 

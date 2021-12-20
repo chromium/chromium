@@ -6,9 +6,10 @@
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EVENT_RECORDER_MAC_H_
 
 #include "base/mac/scoped_cftyperef.h"
-#include "content/browser/accessibility/accessibility_event_recorder.h"
 #include "content/browser/accessibility/browser_accessibility_cocoa.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 @class BrowserAccessibilityCocoa;
 
@@ -17,11 +18,10 @@ namespace content {
 // Implementation of AccessibilityEventRecorder that uses AXObserver to
 // watch for NSAccessibility events.
 class CONTENT_EXPORT AccessibilityEventRecorderMac
-    : public AccessibilityEventRecorder {
+    : public ui::AXEventRecorder {
  public:
-  AccessibilityEventRecorderMac(BrowserAccessibilityManager* manager,
-                                base::ProcessId pid,
-                                const AXTreeSelector& selector);
+  AccessibilityEventRecorderMac(base::ProcessId pid,
+                                const ui::AXTreeSelector& selector);
 
   AccessibilityEventRecorderMac(const AccessibilityEventRecorderMac&) = delete;
   AccessibilityEventRecorderMac& operator=(

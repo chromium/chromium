@@ -7,13 +7,18 @@
 
 #include <oleacc.h>
 
-#include "content/browser/accessibility/accessibility_event_recorder.h"
+#include "base/memory/raw_ptr.h"
+#include "base/process/process_handle.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace content {
 
+class BrowserAccessibilityManager;
+
 class CONTENT_EXPORT AccessibilityEventRecorderWin
-    : public AccessibilityEventRecorder {
+    : public ui::AXEventRecorder {
  public:
   AccessibilityEventRecorderWin(BrowserAccessibilityManager* manager,
                                 base::ProcessId pid,
@@ -54,6 +59,8 @@ class CONTENT_EXPORT AccessibilityEventRecorderWin
                                             void** ppvObject);
 
   HWINEVENTHOOK win_event_hook_handle_;
+  // TODO: should be either removed or converted to a weakptr.
+  const raw_ptr<BrowserAccessibilityManager> manager_;
   static AccessibilityEventRecorderWin* instance_;
 };
 

@@ -11,10 +11,8 @@ AccessibilityEventRecorderFuchsia*
     AccessibilityEventRecorderFuchsia::instance_ = nullptr;
 
 AccessibilityEventRecorderFuchsia::AccessibilityEventRecorderFuchsia(
-    BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const ui::AXTreeSelector& selector)
-    : AccessibilityEventRecorder(manager) {
+    const ui::AXTreeSelector& selector) {
   CHECK(!instance_) << "There can be only one instance of"
                     << " AccessibilityEventRecorder at a time.";
   instance_ = this;

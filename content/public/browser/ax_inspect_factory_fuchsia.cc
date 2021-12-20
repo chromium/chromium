@@ -48,7 +48,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
 // static
 std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
     ui::AXApiType::Type type,
-    BrowserAccessibilityManager* manager,
+    BrowserAccessibilityManager*,
     base::ProcessId pid,
     const ui::AXTreeSelector& selector) {
   // Developer mode: crash immediately on any accessibility fatal error.
@@ -58,8 +58,7 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
 
   switch (type) {
     case ui::AXApiType::kFuchsia:
-      return std::make_unique<AccessibilityEventRecorderFuchsia>(manager, pid,
-                                                                 selector);
+      return std::make_unique<AccessibilityEventRecorderFuchsia>(pid, selector);
     default:
       NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }

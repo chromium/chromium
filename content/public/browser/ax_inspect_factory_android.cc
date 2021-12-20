@@ -5,7 +5,6 @@
 #include "content/public/browser/ax_inspect_factory.h"
 
 #include "base/notreached.h"
-#include "content/browser/accessibility/accessibility_event_recorder.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_android.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_android_external.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"

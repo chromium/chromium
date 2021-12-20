@@ -5,16 +5,17 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EVENT_RECORDER_FUCHSIA_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EVENT_RECORDER_FUCHSIA_H_
 
-#include "content/browser/accessibility/accessibility_event_recorder.h"
+#include "base/process/process_handle.h"
 #include "content/common/content_export.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder.h"
+#include "ui/accessibility/platform/inspect/ax_inspect.h"
 
 namespace content {
 
 class CONTENT_EXPORT AccessibilityEventRecorderFuchsia
-    : public AccessibilityEventRecorder {
+    : public ui::AXEventRecorder {
  public:
-  AccessibilityEventRecorderFuchsia(BrowserAccessibilityManager* manager,
-                                    base::ProcessId pid,
+  AccessibilityEventRecorderFuchsia(base::ProcessId pid,
                                     const ui::AXTreeSelector& selector);
 
   AccessibilityEventRecorderFuchsia(const AccessibilityEventRecorderFuchsia&) =
