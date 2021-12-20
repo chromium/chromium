@@ -513,10 +513,6 @@ StartupBrowserCreatorImpl::DetermineStartupTabs(
         StartupTabs new_features_tabs;
         new_features_tabs = provider.GetNewFeaturesTabs(whats_new_enabled);
         AppendTabs(new_features_tabs, &tabs);
-      } else {
-        // Record the current version so that What's New will not be shown until
-        // after the next major version update.
-        whats_new::SetLastVersion(g_browser_process->local_state());
       }
     }
 

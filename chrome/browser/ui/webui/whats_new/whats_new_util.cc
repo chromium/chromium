@@ -59,19 +59,19 @@ bool ShouldShowForState(PrefService* local_state) {
   if (!base::FeatureList::IsEnabled(features::kChromeWhatsNewUI))
     return false;
 
-  // Show What's New if the page hasn't yet been shown for the current
-  // milestone.
   int last_version = local_state->GetInteger(prefs::kLastWhatsNewVersion);
 
-  return CHROME_VERSION_MAJOR > last_version;
-}
+  // Don't show What's New if it's already been shown for the current major
+  // milestone.
+  if (CHROME_VERSION_MAJOR <= last_version)
+    return false;
 
-void SetLastVersion(PrefService* local_state) {
-  if (!local_state) {
-    return;
-  }
-
+  // Set the last version here to indicate that What's New should not attempt
+  // to display again for this milestone. This prevents the page from
+  // potentially displaying multiple times in a given milestone, e.g. for
+  // multiple profile relaunches (see https://crbug.com/1274313).
   local_state->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
+  return true;
 }
 
 GURL GetServerURL(bool may_redirect) {
@@ -190,11 +190,6 @@ class WhatsNewFetcher : public BrowserListObserver {
       return;
 
     DCHECK(browser_);
-
-    // Update pref if shown automatically. Do this even if the load failed - we
-    // only want to try once, so that the network request only occurs once per
-    // version and not every time the browser opens.
-    SetLastVersion(g_browser_process->local_state());
 
     LogLoadEvent(success ? LoadEvent::kLoadSuccess
                          : LoadEvent::kLoadFailAndDoNotShow);
