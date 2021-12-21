@@ -672,9 +672,13 @@ void ParkableStringImpl::CompressInBackground(
   // Hence, report thread time instead of wall clock time.
   base::ElapsedThreadTimer thread_timer;
   {
-    // Temporary vector. As we don't want to waste memory, the temporary buffer
-    // has the same size as the initial data. Compression will fail if this is
-    // not large enough.
+    // Create a temporary buffer for compressed data. After compression the
+    // output bytes are _copied_ to a new vector sized according to the newly
+    // discovered compressed size. This is done as a memory saving measure
+    // because Vector::Shrink() does not resize the memory allocation.
+    //
+    // The temporary buffer has the same size as the initial data. Compression
+    // will fail if this is not large enough.
     //
     // This is not using:
     // - malloc() or any STL container: this is discouraged in blink, and there
