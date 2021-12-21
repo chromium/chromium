@@ -425,7 +425,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     @Override
     public void onBackPressed() {
         // Terminate if we are still waiting for the native or for Android EDU / GAIA Child checks.
-        if (mPagerAdapter == null) {
+        if (!mPostNativeAndPolicyPagesCreated) {
             abortFirstRunExperience();
             return;
         }
