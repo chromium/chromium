@@ -21,6 +21,7 @@
         android:layout_gravity="center"
         android:layout_marginHorizontal="@dimen/quick_action_search_widget_xsmall_search_bar_horizontal_margin"
         android:layout_weight="1"
+        android:contentDescription="@string/quick_action_search_widget_search_bar_hint"
         android:background="@drawable/quick_action_search_widget_xsmall_search_bar_background"
         android:gravity="center_vertical"
         android:orientation="horizontal">
@@ -33,7 +34,7 @@
             android:layout_marginBottom="@dimen/quick_action_search_widget_xsmall_search_bar_icon_margin"
             android:layout_marginStart="@dimen/quick_action_search_widget_xsmall_search_bar_icon_margin"
             android:layout_marginEnd="@dimen/quick_action_search_widget_xsmall_search_bar_icon_margin_text"
-            android:contentDescription="@string/accessibility_quick_action_search_widget_icon"
+            android:importantForAccessibility="no"
             android:src="@mipmap/app_icon" />
 
         <TextView
@@ -44,6 +45,7 @@
             android:gravity="center_vertical"
             android:hint="@string/search_widget_default"
             android:singleLine="true"
+            android:importantForAccessibility="no"
             android:textAlignment="viewStart" />
 
     </LinearLayout>

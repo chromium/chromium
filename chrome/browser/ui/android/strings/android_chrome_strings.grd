@@ -4461,9 +4461,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_ACCESSIBILITY_QUICK_ACTION_SEARCH_WIDGET_START_DINO_GAME" desc="Content description for the Dino button on the Quick Action Search Widget.">
         Start Dino Game
       </message>
-      <message name="IDS_ACCESSIBILITY_QUICK_ACTION_SEARCH_WIDGET_ICON" desc="Content description for the for the icon on the Quick Action Search Widget">
-        Quick Action Search Widget Icon
-      </message>
       <message name="IDS_QUICK_ACTION_SEARCH_WIDGET_MESSAGE_NO_INCOGNITO" desc="Toast message shown when the user tries to open Incognito tab which is disabled on the device.">
         Incognito is not available on this device
       </message>
