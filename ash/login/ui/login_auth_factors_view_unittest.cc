@@ -5,11 +5,13 @@
 #include "ash/login/ui/login_auth_factors_view.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/auth_factor_model.h"
 #include "ash/login/ui/auth_icon_view.h"
 #include "ash/login/ui/login_test_base.h"
 #include "ash/login/ui/login_test_utils.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
@@ -336,7 +338,10 @@ TEST_F(LoginAuthFactorsViewUnittest, ClickingArrowButton) {
   EXPECT_FALSE(test_api.arrow_nudge_animation()->GetVisible());
 }
 
-TEST_F(LoginAuthFactorsViewUnittest, Authenticated) {
+TEST_F(LoginAuthFactorsViewUnittest, Authenticated_LockScreen) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  Shell::Get()->login_screen_controller()->ShowLockScreen();
   AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
   LoginAuthFactorsView::TestApi test_api(view_);
   auth_factors_[0]->state_ = AuthFactorState::kAuthenticated;
@@ -350,6 +355,26 @@ TEST_F(LoginAuthFactorsViewUnittest, Authenticated) {
   EXPECT_FALSE(test_api.arrow_nudge_animation()->GetVisible());
   EXPECT_FALSE(test_api.auth_factor_icon_row()->GetVisible());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTH_FACTOR_LABEL_UNLOCKED),
+            test_api.label()->GetText());
+}
+
+TEST_F(LoginAuthFactorsViewUnittest, Authenticated_LoginScreen) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  Shell::Get()->login_screen_controller()->ShowLoginScreen();
+  AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
+  LoginAuthFactorsView::TestApi test_api(view_);
+  auth_factors_[0]->state_ = AuthFactorState::kAuthenticated;
+  auth_factors_[1]->state_ = AuthFactorState::kClickRequired;
+  test_api.UpdateState();
+
+  // Check that only the arrow button is shown and that the label has been
+  // updated.
+  EXPECT_TRUE(test_api.checkmark_icon()->GetVisible());
+  EXPECT_FALSE(test_api.arrow_button()->GetVisible());
+  EXPECT_FALSE(test_api.arrow_nudge_animation()->GetVisible());
+  EXPECT_FALSE(test_api.auth_factor_icon_row()->GetVisible());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTH_FACTOR_LABEL_SIGNED_IN),
             test_api.label()->GetText());
 }
 

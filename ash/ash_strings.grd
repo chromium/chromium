@@ -4383,6 +4383,9 @@ Here are some things you can try to get started.
       <message name="IDS_AUTH_FACTOR_LABEL_UNLOCKED" desc="Label on user's lock screen when a Chromebook is successfully unlocked.">
         Unlocked
       </message>
+      <message name="IDS_AUTH_FACTOR_LABEL_SIGNED_IN" desc="Label on user's login screen when a Chromebook is successfully logged in.">
+        Signed in
+      </message>
 
       <!-- Launcher: Continue Section -->
       <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_LABEL" desc="Label for the continue section of the launcher, which shows recent files and apps that the user can continue using.">

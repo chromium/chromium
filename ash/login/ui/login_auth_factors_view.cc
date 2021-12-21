@@ -8,6 +8,7 @@
 
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/auth_icon_view.h"
+#include "ash/login/ui/lock_screen.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -313,10 +314,13 @@ void LoginAuthFactorsView::UpdateState() {
     case PrioritizedAuthFactorViewState::kAuthenticated:
       // An auth factor has successfully authenticated. Show a green checkmark.
       ShowCheckmark();
-      // TODO(crbug.com/1233614): If we're on the login page, show "Signed in"
-      // instead of "Unlocked"
-      SetLabelTextAndAccessibleName(IDS_AUTH_FACTOR_LABEL_UNLOCKED,
-                                    IDS_AUTH_FACTOR_LABEL_UNLOCKED);
+      if (LockScreen::Get()->screen_type() == LockScreen::ScreenType::kLogin) {
+        SetLabelTextAndAccessibleName(IDS_AUTH_FACTOR_LABEL_SIGNED_IN,
+                                      IDS_AUTH_FACTOR_LABEL_SIGNED_IN);
+      } else {
+        SetLabelTextAndAccessibleName(IDS_AUTH_FACTOR_LABEL_UNLOCKED,
+                                      IDS_AUTH_FACTOR_LABEL_UNLOCKED);
+      }
       return;
     case PrioritizedAuthFactorViewState::kClickRequired:
       // An auth factor requires a click to enter. Show arrow button.
