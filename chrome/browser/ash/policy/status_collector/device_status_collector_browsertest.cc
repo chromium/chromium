@@ -1769,8 +1769,6 @@ TEST_F(DeviceStatusCollectorTest, DevSwitchBootMode) {
 }
 
 TEST_F(DeviceStatusCollectorTest, WriteProtectSwitch) {
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      ash::kReportDeviceSystemInfo, true);
   fake_statistics_provider_.SetMachineStatistic(
       chromeos::system::kFirmwareWriteProtectCurrentKey,
       chromeos::system::kFirmwareWriteProtectCurrentValueOn);
