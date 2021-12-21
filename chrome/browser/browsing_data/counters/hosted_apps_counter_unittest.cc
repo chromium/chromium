@@ -42,9 +42,7 @@ class HostedAppsCounterTest : public testing::Test {
   // Adding and removing apps and extensions. ----------------------------------
 
   std::string AddExtension() {
-    return AddItem(
-        base::GenerateGUID(),
-        std::unique_ptr<base::DictionaryValue>());
+    return AddItem(base::GenerateGUID(), /*app_manifest=*/nullptr);
   }
 
   std::string AddPackagedApp() {

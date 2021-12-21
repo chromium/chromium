@@ -87,21 +87,20 @@ ClearBrowsingDataHandler::ClearBrowsingDataHandler(content::WebUI* webui,
       sync_service_(SyncServiceFactory::GetForProfile(profile_)),
       show_history_deletion_dialog_(false) {}
 
-ClearBrowsingDataHandler::~ClearBrowsingDataHandler() {
-}
+ClearBrowsingDataHandler::~ClearBrowsingDataHandler() = default;
 
 void ClearBrowsingDataHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getInstalledApps",
       base::BindRepeating(
           &ClearBrowsingDataHandler::GetRecentlyLaunchedInstalledApps,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "clearBrowsingData",
       base::BindRepeating(&ClearBrowsingDataHandler::HandleClearBrowsingData,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initializeClearBrowsingData",
       base::BindRepeating(&ClearBrowsingDataHandler::HandleInitialize,
                           base::Unretained(this)));
@@ -160,12 +159,11 @@ void ClearBrowsingDataHandler::HandleClearBrowsingDataForTest() {
   list_args.Append(std::move(data_types));
   list_args.Append(1);
   list_args.Append(std::move(installed_apps));
-  HandleClearBrowsingData(&base::Value::AsListValue(list_args));
+  HandleClearBrowsingData(list_args.GetList());
 }
 
 void ClearBrowsingDataHandler::GetRecentlyLaunchedInstalledApps(
-    const base::ListValue* args) {
-  const auto& list = args->GetList();
+    base::Value::ConstListView list) {
   CHECK_EQ(2U, list.size());
   std::string webui_callback_id = list[0].GetString();
   int period_selected = list[1].GetInt();
@@ -242,8 +240,7 @@ ClearBrowsingDataHandler::ProcessInstalledApps(
 }
 
 void ClearBrowsingDataHandler::HandleClearBrowsingData(
-    const base::ListValue* args) {
-  base::Value::ConstListView args_list = args->GetList();
+    base::Value::ConstListView args_list) {
   CHECK_EQ(4U, args_list.size());
   std::string webui_callback_id = args_list[0].GetString();
 
@@ -415,9 +412,10 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
   ResolveJavascriptCallback(base::Value(webui_callback_id), std::move(result));
 }
 
-void ClearBrowsingDataHandler::HandleInitialize(const base::ListValue* args) {
+void ClearBrowsingDataHandler::HandleInitialize(
+    base::Value::ConstListView args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args[0];
 
   // Needed because WebUI doesn't handle renderer crashes. See crbug.com/610450.
   weak_ptr_factory_.InvalidateWeakPtrs();

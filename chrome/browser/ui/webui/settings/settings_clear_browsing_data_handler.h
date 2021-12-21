@@ -54,7 +54,7 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
  protected:
   // Fetches a list of installed apps to be displayed in the clear browsing
   // data confirmation dialog. Called by Javascript.
-  void GetRecentlyLaunchedInstalledApps(const base::ListValue* args);
+  void GetRecentlyLaunchedInstalledApps(base::Value::ConstListView args);
 
  private:
   friend class TestingClearBrowsingDataHandler;
@@ -80,7 +80,7 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
       base::Value::ConstListView installed_apps);
 
   // Clears browsing data, called by Javascript.
-  void HandleClearBrowsingData(const base::ListValue* value);
+  void HandleClearBrowsingData(base::Value::ConstListView value);
 
   // Called when a clearing task finished. |webui_callback_id| is provided
   // by the WebUI action that initiated it.
@@ -93,7 +93,7 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
       uint64_t failed_data_types);
 
   // Initializes the dialog UI. Called by JavaScript when the DOM is ready.
-  void HandleInitialize(const base::ListValue* args);
+  void HandleInitialize(base::Value::ConstListView args);
 
   // Implementation of SyncServiceObserver.
   void OnStateChanged(syncer::SyncService* sync) override;
