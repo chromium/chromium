@@ -829,8 +829,14 @@ void PrePaintTreeWalk::WalkFragmentationContextRootChildren(
   // means that their containing block lives outside the fragmentation context
   // root. Walk these missed fixepos elements now.
   if (!pending_fixedpos_missables_.IsEmpty()) {
-    for (const auto& fixedpos : pending_fixedpos_missables_) {
+    // First make a copy, clear the original set, and then walk the copy. There
+    // may be descendants attempting to walk the set as well, which will cause
+    // an infinite recursion.
+    HeapHashSet<Member<const LayoutObject>> copy;
+    copy.swap(pending_fixedpos_missables_);
+    for (const auto& fixedpos : copy) {
       DCHECK(!walked_fixedpos_.Contains(fixedpos));
+      walked_fixedpos_.insert(fixedpos);
       Walk(*fixedpos, context, /* pre_paint_info */ nullptr);
     }
   }
