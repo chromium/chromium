@@ -278,6 +278,10 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
     }
 
     private void updateAccountsList(List<Account> accounts) {
+        // This method is called asynchronously on accounts fetched from AccountManagerFacade.
+        // Make sure the fragment is alive before updating preferences.
+        if (!isResumed()) return;
+
         setAccountBadges(accounts);
 
         PreferenceCategory accountsCategory = findPreference(PREF_ACCOUNTS_CATEGORY);
