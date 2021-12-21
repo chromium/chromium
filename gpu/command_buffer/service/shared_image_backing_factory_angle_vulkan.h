@@ -5,16 +5,13 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_FACTORY_ANGLE_VULKAN_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_BACKING_FACTORY_ANGLE_VULKAN_H_
 
-#include <memory>
-
 #include "gpu/command_buffer/service/shared_image_backing_factory_gl_common.h"
-#include "gpu/gpu_gles2_export.h"
 
 namespace gpu {
 
 class SharedContextState;
 
-class GPU_GLES2_EXPORT SharedImageBackingFactoryAngleVulkan
+class SharedImageBackingFactoryAngleVulkan
     : public SharedImageBackingFactoryGLCommon {
  public:
   SharedImageBackingFactoryAngleVulkan(
