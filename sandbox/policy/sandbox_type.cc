@@ -47,6 +47,7 @@ bool IsUnsandboxedSandboxType(Sandbox sandbox_type) {
       return false;
     case Sandbox::kRenderer:
     case Sandbox::kService:
+    case Sandbox::kServiceWithJit:
     case Sandbox::kUtility:
     case Sandbox::kGpu:
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -112,6 +113,7 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
       break;
 #endif
     case Sandbox::kService:
+    case Sandbox::kServiceWithJit:
     case Sandbox::kUtility:
     case Sandbox::kNetwork:
     case Sandbox::kCdm:
@@ -254,6 +256,8 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
 #endif
     case Sandbox::kService:
       return switches::kServiceSandbox;
+    case Sandbox::kServiceWithJit:
+      return switches::kServiceSandboxWithJit;
     case Sandbox::kSpeechRecognition:
       return switches::kSpeechRecognitionSandbox;
 #if defined(OS_WIN)
@@ -308,6 +312,8 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
     return Sandbox::kUtility;
   if (sandbox_string == switches::kServiceSandbox)
     return Sandbox::kService;
+  if (sandbox_string == switches::kServiceSandboxWithJit)
+    return Sandbox::kServiceWithJit;
 
   if (sandbox_string == switches::kNoneSandbox)
     return Sandbox::kNoSandbox;

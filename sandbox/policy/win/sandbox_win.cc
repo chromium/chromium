@@ -1266,6 +1266,8 @@ std::string SandboxWin::GetSandboxTypeInEnglish(Sandbox sandbox_type) {
       return "Media Foundation CDM";
     case Sandbox::kService:
       return "Service";
+    case Sandbox::kServiceWithJit:
+      return "Service With Jit";
     case Sandbox::kIconReader:
       return "Icon Reader";
     case Sandbox::kWindowsSystemProxyResolver:

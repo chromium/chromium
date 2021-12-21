@@ -27,6 +27,8 @@ const char* ProcessNameFromSandboxType(sandbox::mojom::Sandbox sandbox_type) {
       return "utility";
     case sandbox::mojom::Sandbox::kService:
       return "service";
+    case sandbox::mojom::Sandbox::kServiceWithJit:
+      return "service-with-jit";
     case sandbox::mojom::Sandbox::kGpu:
       return "gpu";
     case sandbox::mojom::Sandbox::kNetwork:

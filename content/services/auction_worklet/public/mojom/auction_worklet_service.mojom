@@ -21,7 +21,7 @@ struct BrowserSignals {
 // Used by the browser to load and run FLEDGE worklets in a sandboxed utility
 // process.
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
-[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+[ServiceSandbox=sandbox.mojom.Sandbox.kServiceWithJit]
 interface AuctionWorkletService {
   // Attempts to load Javascript at the specified URL and create a BidderWorklet
   // from the response body. There is no return value - any error loading the

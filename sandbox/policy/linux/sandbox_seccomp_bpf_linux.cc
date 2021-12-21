@@ -186,6 +186,8 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<AudioProcessPolicy>();
     case sandbox::mojom::Sandbox::kService:
       return std::make_unique<ServiceProcessPolicy>();
+    case sandbox::mojom::Sandbox::kServiceWithJit:
+      return std::make_unique<ServiceProcessPolicy>();
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       return std::make_unique<SpeechRecognitionProcessPolicy>();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -259,6 +261,7 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kService:
+    case sandbox::mojom::Sandbox::kServiceWithJit:
     case sandbox::mojom::Sandbox::kSpeechRecognition:
     case sandbox::mojom::Sandbox::kNetwork:
 #if BUILDFLAG(ENABLE_OOP_PRINTING)

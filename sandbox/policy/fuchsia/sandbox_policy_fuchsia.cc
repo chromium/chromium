@@ -109,6 +109,11 @@ constexpr SandboxConfig kVideoCaptureConfig = {
     0,
 };
 
+constexpr SandboxConfig kServiceWithJitConfig = {
+    base::span<const char* const>(),
+    kAmbientMarkVmoAsExecutable,
+};
+
 // No-access-to-anything.
 constexpr SandboxConfig kEmptySandboxConfig = {
     base::span<const char* const>(),
@@ -127,6 +132,8 @@ const SandboxConfig* GetConfigForSandboxType(sandbox::mojom::Sandbox type) {
       return &kRendererConfig;
     case sandbox::mojom::Sandbox::kVideoCapture:
       return &kVideoCaptureConfig;
+    case sandbox::mojom::Sandbox::kServiceWithJit:
+      return &kServiceWithJitConfig;
     // Remaining types receive no-access-to-anything.
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kCdm:

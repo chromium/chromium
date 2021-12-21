@@ -3898,6 +3898,7 @@ std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
     case sandbox::mojom::Sandbox::kSpeechRecognition:
     case sandbox::mojom::Sandbox::kPdfConversion:
     case sandbox::mojom::Sandbox::kService:
+    case sandbox::mojom::Sandbox::kServiceWithJit:
     case sandbox::mojom::Sandbox::kIconReader:
     case sandbox::mojom::Sandbox::kMediaFoundationCdm:
     case sandbox::mojom::Sandbox::kWindowsSystemProxyResolver:
@@ -3949,6 +3950,9 @@ bool ChromeContentBrowserClient::PreSpawnChild(
     case sandbox::mojom::Sandbox::kNetwork:
       enforce_code_integrity =
           base::FeatureList::IsEnabled(kNetworkServiceCodeIntegrity);
+      break;
+    case sandbox::mojom::Sandbox::kServiceWithJit:
+      enforce_code_integrity = true;
       break;
     case sandbox::mojom::Sandbox::kUtility:
     case sandbox::mojom::Sandbox::kGpu:

@@ -12,7 +12,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/common/child_process_host.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -181,7 +183,13 @@ void AuctionProcessManager::LaunchProcess(
     const std::string& display_name) {
   content::ServiceProcessHost::Launch(
       std::move(auction_worklet_service_receiver),
-      ServiceProcessHost::Options().WithDisplayName(display_name).Pass());
+      ServiceProcessHost::Options()
+          .WithDisplayName(display_name)
+#if defined(OS_MAC)
+          // TODO(https://crbug.com/1281311) add a utility helper for Jit.
+          .WithChildFlags(ChildProcessHost::CHILD_RENDERER)
+#endif
+          .Pass());
 }
 
 std::string AuctionProcessManager::ComputeDisplayName(

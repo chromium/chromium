@@ -182,6 +182,10 @@ bool UtilityProcessHost::StartProcess() {
       process_->EnableWarmUpConnection();
     }
 #else
+#if defined(OS_MAC)
+    if (sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit)
+      DCHECK_EQ(child_flags_, ChildProcessHost::CHILD_RENDERER);
+#endif  // defined(OS_MAC)
     int child_flags = child_flags_;
 
     // When running under gdb, forking /proc/self/exe ends up forking the gdb

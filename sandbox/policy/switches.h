@@ -36,6 +36,7 @@ SANDBOX_POLICY_EXPORT extern const char kPrintBackendSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kPrintCompositorSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kAudioSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kServiceSandbox[];
+SANDBOX_POLICY_EXPORT extern const char kServiceSandboxWithJit[];
 SANDBOX_POLICY_EXPORT extern const char kSpeechRecognitionSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kVideoCaptureSandbox[];
 

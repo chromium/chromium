@@ -96,6 +96,7 @@ class SandboxMacTest : public base::MultiProcessTest {
         sandbox::mojom::Sandbox::kPrintCompositor,
         sandbox::mojom::Sandbox::kRenderer,
         sandbox::mojom::Sandbox::kService,
+        sandbox::mojom::Sandbox::kServiceWithJit,
         sandbox::mojom::Sandbox::kUtility,
     };
 

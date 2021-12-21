@@ -16,6 +16,11 @@ enum Sandbox {
   // if possible.
   kService,
 
+  // |kServiceWithJit| hosts computation only services that make use of
+  // dynamic code (e.g. v8 or wasm) but do not need access to OS resources.
+  // Prefer |kService| if possible.
+  kServiceWithJit,
+
   // Hosts generic utilities with limited access to system services.
   // On some platforms, may be slightly less locked down than |kService|.
   // For instance, it allows dynamic code and wider access to APIs on Windows.

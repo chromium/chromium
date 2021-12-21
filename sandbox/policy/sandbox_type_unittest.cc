@@ -115,6 +115,11 @@ TEST(SandboxTypeTest, Utility) {
                                    switches::kNoneSandbox);
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line14));
 
+  base::CommandLine command_line15(command_line);
+  SetCommandLineFlagsForSandboxType(&command_line15, Sandbox::kServiceWithJit);
+  EXPECT_EQ(Sandbox::kServiceWithJit,
+            SandboxTypeFromCommandLine(command_line15));
+
   command_line.AppendSwitch(switches::kNoSandbox);
   EXPECT_EQ(Sandbox::kNoSandbox, SandboxTypeFromCommandLine(command_line));
 }

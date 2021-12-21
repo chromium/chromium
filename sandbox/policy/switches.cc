@@ -35,6 +35,7 @@ const char kPrintBackendSandbox[] = "print_backend";
 const char kPrintCompositorSandbox[] = "print_compositor";
 const char kAudioSandbox[] = "audio";
 const char kServiceSandbox[] = "service";
+const char kServiceSandboxWithJit[] = "service_with_jit";
 const char kSpeechRecognitionSandbox[] = "speech_recognition";
 const char kVideoCaptureSandbox[] = "video_capture";
 

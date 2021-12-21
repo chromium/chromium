@@ -85,6 +85,7 @@ std::string GetSandboxProfile(sandbox::mojom::Sandbox sandbox_type) {
       break;
     // kService and kUtility are the same on OS_MAC, so fallthrough.
     case sandbox::mojom::Sandbox::kService:
+    case sandbox::mojom::Sandbox::kServiceWithJit:
     case sandbox::mojom::Sandbox::kUtility:
       profile += kSeatbeltPolicyString_utility;
       break;
