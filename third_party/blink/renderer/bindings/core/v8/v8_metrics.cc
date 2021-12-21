@@ -327,13 +327,16 @@ void V8MetricsRecorder::AddMainThreadEvent(
     const v8::metrics::GarbageCollectionYoungCycle& event,
     ContextId context_id) {
   // Check that all used values have been initialized.
+  DCHECK_LE(0, event.reason);
   DCHECK_LE(0, event.total_wall_clock_duration_in_us);
   DCHECK_LE(0, event.main_thread_wall_clock_duration_in_us);
   DCHECK_LE(0, event.collection_rate_in_percent);
   DCHECK_LE(0, event.efficiency_in_bytes_per_us);
   DCHECK_LE(0, event.main_thread_efficiency_in_bytes_per_us);
 
-  // Report throughput metrics:
+  UMA_HISTOGRAM_ENUMERATION("V8.GC.Cycle.Reason.Young", event.reason,
+                            v8::internal::kGarbageCollectionReasonMaxValue);
+
   UMA_HISTOGRAM_TIMES(
       "V8.GC.Cycle.Young",
       base::Microseconds(event.total_wall_clock_duration_in_us));
@@ -341,7 +344,6 @@ void V8MetricsRecorder::AddMainThreadEvent(
       "V8.GC.Cycle.MainThread.Young",
       base::Microseconds(event.main_thread_wall_clock_duration_in_us));
 
-  // Report efficacy metrics:
   static constexpr size_t kMinSize = 1;
   static constexpr size_t kMaxSize = 4 * 1024 * 1024;
   static constexpr size_t kNumBuckets = 50;

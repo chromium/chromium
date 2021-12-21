@@ -683,6 +683,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.Cycle.Reason.Young" enum="GarbageCollectionReason"
+    expires_after="M100">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Reason a young generation garbage collection was started in V8. Reported at
+    the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.Cycle.Young" units="ms" expires_after="2022-05-22">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
