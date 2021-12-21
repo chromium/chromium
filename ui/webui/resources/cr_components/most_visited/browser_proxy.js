@@ -5,17 +5,20 @@
 import {MostVisitedPageCallbackRouter, MostVisitedPageHandlerFactory, MostVisitedPageHandlerRemote} from './most_visited.mojom-webui.js';
 
 export class MostVisitedBrowserProxy {
-  handler: MostVisitedPageHandlerRemote;
-  callbackRouter: MostVisitedPageCallbackRouter;
-
-  constructor(
-      handler: MostVisitedPageHandlerRemote,
-      callbackRouter: MostVisitedPageCallbackRouter) {
+  /**
+   * @param {!MostVisitedPageHandlerRemote} handler
+   * @param {!MostVisitedPageCallbackRouter} callbackRouter
+   */
+  constructor(handler, callbackRouter) {
+    /** @type {!MostVisitedPageHandlerRemote} */
     this.handler = handler;
+
+    /** @type {!MostVisitedPageCallbackRouter} */
     this.callbackRouter = callbackRouter;
   }
 
-  static getInstance(): MostVisitedBrowserProxy {
+  /** @return {!MostVisitedBrowserProxy} */
+  static getInstance() {
     if (instance) {
       return instance;
     }
@@ -29,9 +32,13 @@ export class MostVisitedBrowserProxy {
     return instance;
   }
 
-  static setInstance(obj: MostVisitedBrowserProxy) {
+  /**
+   * @param {!MostVisitedBrowserProxy} obj
+   */
+  static setInstance(obj) {
     instance = obj;
   }
 }
 
-let instance: MostVisitedBrowserProxy|null = null;
+/** @type {?MostVisitedBrowserProxy} */
+let instance = null;

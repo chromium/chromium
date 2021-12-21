@@ -16,7 +16,10 @@ js_type_check("closure_compile") {
 }
 
 js_library("new_tab_page_third_party") {
-  deps = [ ":browser_proxy" ]
+  deps = [
+    ":browser_proxy",
+    "//ui/webui/resources/cr_components/most_visited",
+  ]
 }
 
 js_library("browser_proxy") {
