@@ -36,6 +36,7 @@
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/tribool.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/service/variations_service.h"
@@ -184,7 +185,17 @@ void IOSChromeMainParts::PreCreateThreads() {
 
   // Compute device restore flag before IO is disallowed on UI thread, so the
   // value is available from cache synchronously.
-  IsFirstSessionAfterDeviceRestore();
+  static crash_reporter::CrashKeyString<8> device_restore_key("device-restore");
+  switch (IsFirstSessionAfterDeviceRestore()) {
+    case signin::Tribool::kTrue:
+      device_restore_key.Set("yes");
+      break;
+    case signin::Tribool::kFalse:
+      break;
+    case signin::Tribool::kUnknown:
+      device_restore_key.Set("unknown");
+      break;
+  }
 
   // Convert freeform experimental settings into switches before initializing
   // local state, in case any of the settings affect policy.

@@ -208,6 +208,7 @@ source_set("browser_impl") {
     "//components/prefs",
     "//components/safe_browsing/core/common",
     "//components/sessions",
+    "//components/signin/public/identity_manager",
     "//components/translate/core/browser",
     "//components/ukm",
     "//components/update_client",
