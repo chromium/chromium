@@ -171,39 +171,6 @@ HighlightPseudoStyleWithOriginatingInheritance(
   return element->CachedStyleForPseudoElement(pseudo, pseudo_argument);
 }
 
-// Returns highlight styles for the given node, inheriting through the “tree” of
-// highlight pseudo styles mirroring the originating element tree. None of the
-// returned styles are influenced by originating elements or pseudo-elements.
-scoped_refptr<const ComputedStyle> HighlightPseudoStyle(
-    Node* node,
-    const ComputedStyle& style,
-    PseudoId pseudo,
-    const AtomicString& pseudo_argument = g_null_atom) {
-  if (!RuntimeEnabledFeatures::HighlightInheritanceEnabled()) {
-    return HighlightPseudoStyleWithOriginatingInheritance(node, pseudo,
-                                                          pseudo_argument);
-  }
-
-  if (!style.HighlightData())
-    return nullptr;
-
-  switch (pseudo) {
-    case kPseudoIdSelection:
-      return style.HighlightData()->Selection();
-    case kPseudoIdTargetText:
-      return style.HighlightData()->TargetText();
-    case kPseudoIdSpellingError:
-      return style.HighlightData()->SpellingError();
-    case kPseudoIdGrammarError:
-      return style.HighlightData()->GrammarError();
-    case kPseudoIdHighlight:
-      return style.HighlightData()->CustomHighlight(pseudo_argument);
-    default:
-      NOTREACHED();
-      return nullptr;
-  }
-}
-
 // Paired cascade: when we encounter any highlight colors, we make all other
 // highlight color properties default to initial, rather than the UA default.
 // https://drafts.csswg.org/css-pseudo-4/#highlight-cascade
@@ -234,7 +201,8 @@ Color HighlightColor(const Document& document,
   }
 
   scoped_refptr<const ComputedStyle> pseudo_style =
-      HighlightPseudoStyle(node, style, pseudo, pseudo_argument);
+      HighlightPaintingUtils::HighlightPseudoStyle(node, style, pseudo,
+                                                   pseudo_argument);
 
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
   if (pseudo_style && (!RuntimeEnabledFeatures::HighlightInheritanceEnabled() ||
@@ -252,6 +220,39 @@ Color HighlightColor(const Document& document,
 }
 
 }  // anonymous namespace
+
+// Returns highlight styles for the given node, inheriting through the “tree” of
+// highlight pseudo styles mirroring the originating element tree. None of the
+// returned styles are influenced by originating elements or pseudo-elements.
+scoped_refptr<const ComputedStyle> HighlightPaintingUtils::HighlightPseudoStyle(
+    Node* node,
+    const ComputedStyle& style,
+    PseudoId pseudo,
+    const AtomicString& pseudo_argument) {
+  if (!RuntimeEnabledFeatures::HighlightInheritanceEnabled()) {
+    return HighlightPseudoStyleWithOriginatingInheritance(node, pseudo,
+                                                          pseudo_argument);
+  }
+
+  if (!style.HighlightData())
+    return nullptr;
+
+  switch (pseudo) {
+    case kPseudoIdSelection:
+      return style.HighlightData()->Selection();
+    case kPseudoIdTargetText:
+      return style.HighlightData()->TargetText();
+    case kPseudoIdSpellingError:
+      return style.HighlightData()->SpellingError();
+    case kPseudoIdGrammarError:
+      return style.HighlightData()->GrammarError();
+    case kPseudoIdHighlight:
+      return style.HighlightData()->CustomHighlight(pseudo_argument);
+    default:
+      NOTREACHED();
+      return nullptr;
+  }
+}
 
 Color HighlightPaintingUtils::HighlightBackgroundColor(
     const Document& document,

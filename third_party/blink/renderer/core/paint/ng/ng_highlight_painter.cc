@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/paint/document_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/inline_text_box_painter.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_text_decoration_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -430,11 +431,27 @@ void NGHighlightPainter::Paint(Phase phase) {
                 text_style, paint_info_,
                 highlight_pseudo_marker.GetPseudoArgument());
 
+        scoped_refptr<const ComputedStyle> pseudo_style =
+            HighlightPaintingUtils::HighlightPseudoStyle(
+                node_, style_, highlight_pseudo_marker.GetPseudoId(),
+                highlight_pseudo_marker.GetPseudoArgument());
+        PhysicalRect decoration_rect = fragment_item_.LocalRect(
+            text, paint_start_offset, paint_end_offset);
+        decoration_rect.Move(PhysicalOffset(box_origin_));
+        NGTextDecorationPainter decoration_painter(
+            text_painter_, fragment_item_, paint_info_,
+            pseudo_style ? *pseudo_style : style_, final_text_style,
+            decoration_rect, selection_);
+
+        decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
+        decoration_painter.PaintExceptLineThrough();
+
         text_painter_.Paint(paint_start_offset, paint_end_offset,
                             paint_end_offset - paint_start_offset,
                             final_text_style, kInvalidDOMNodeId,
                             auto_dark_mode);
 
+        decoration_painter.PaintOnlyLineThrough();
       } break;
 
       default:

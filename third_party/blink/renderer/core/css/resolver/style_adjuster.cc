@@ -874,7 +874,13 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       style.OverflowY() != EOverflow::kVisible)
     AdjustOverflow(style, element);
 
-  if (StopPropagateTextDecorations(style, element))
+  // TODO(rego): When HighlightInheritance (https://crbug.com/1024156) is
+  // enabled, we're going to inherit the text decorations from the parent
+  // elements, that would cause that we paint the decorations more than once in
+  // the highlight pseudos. This doesn't seem right and there's a spec issue
+  // (https://github.com/w3c/csswg-drafts/issues/6829) about not propagating
+  // text decorations on highlights pseudos.
+  if (StopPropagateTextDecorations(style, element) || state.IsForHighlight())
     style.ClearAppliedTextDecorations();
   else
     style.RestoreParentTextDecorations(layout_parent_style);

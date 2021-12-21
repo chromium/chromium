@@ -57,6 +57,12 @@ class CORE_EXPORT HighlightPaintingUtils {
       const AtomicString& pseudo_argument = g_null_atom);
   static absl::optional<Color>
   HighlightTextDecorationColor(const ComputedStyle&, Node*, PseudoId);
+
+  static scoped_refptr<const ComputedStyle> HighlightPseudoStyle(
+      Node* node,
+      const ComputedStyle& style,
+      PseudoId pseudo,
+      const AtomicString& pseudo_argument = g_null_atom);
 };
 
 }  // namespace blink
