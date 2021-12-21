@@ -47,6 +47,15 @@ struct PortStatus {
   size_t unacknowledged_message_count;
 };
 
+struct PendingUpdatePreviousPeer {
+  NodeName receiver;
+  PortName port;
+  PortName from_port;
+  uint64_t sequence_num;
+  NodeName new_prev_node;
+  PortName new_prev_port;
+};
+
 class MessageFilter;
 class NodeDelegate;
 
@@ -106,7 +115,9 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Node {
   // Initializes a newly created port.
   int InitializePort(const PortRef& port_ref,
                      const NodeName& peer_node_name,
-                     const PortName& peer_port_name);
+                     const PortName& peer_port_name,
+                     const NodeName& prev_node_name,
+                     const PortName& prev_port_name);
 
   // Generates a new connected pair of ports bound to this node. These ports
   // are initialized and ready to go.
@@ -211,19 +222,38 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Node {
     const raw_ptr<NodeDelegate> delegate_;
   };
 
-  int OnUserMessage(const NodeName& from_node,
+  int OnUserMessage(const PortRef& port_ref,
+                    const NodeName& from_node,
                     std::unique_ptr<UserMessageEvent> message);
-  int OnPortAccepted(std::unique_ptr<PortAcceptedEvent> event);
-  int OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event);
-  int OnObserveProxyAck(std::unique_ptr<ObserveProxyAckEvent> event);
-  int OnObserveClosure(std::unique_ptr<ObserveClosureEvent> event);
-  int OnMergePort(std::unique_ptr<MergePortEvent> event);
+  int OnPortAccepted(const PortRef& port_ref,
+                     std::unique_ptr<PortAcceptedEvent> event);
+  int OnObserveProxy(const PortRef& port_ref,
+                     std::unique_ptr<ObserveProxyEvent> event);
+  int OnObserveProxyAck(const PortRef& port_ref,
+                        std::unique_ptr<ObserveProxyAckEvent> event);
+  int OnObserveClosure(const PortRef& port_ref,
+                       std::unique_ptr<ObserveClosureEvent> event);
+  int OnMergePort(const PortRef& port_ref,
+                  std::unique_ptr<MergePortEvent> event);
   int OnUserMessageReadAckRequest(
+      const PortRef& port_ref,
       std::unique_ptr<UserMessageReadAckRequestEvent> event);
-  int OnUserMessageReadAck(std::unique_ptr<UserMessageReadAckEvent> event);
+  int OnUserMessageReadAck(const PortRef& port_ref,
+                           std::unique_ptr<UserMessageReadAckEvent> event);
+  int OnUpdatePreviousPeer(const PortRef& port_ref,
+                           std::unique_ptr<UpdatePreviousPeerEvent> event);
 
   int AddPortWithName(const PortName& port_name, scoped_refptr<Port> port);
   void ErasePort(const PortName& port_name);
+
+  // Check if the event is sent by the previous peer of the port to decide if
+  // we can check the sequence number.
+  // This is not the case for example for PortAccepted or broadcasted events.
+  bool IsEventFromPreviousPeer(const Event& event);
+
+  int AcceptEventInternal(const PortRef& port_ref,
+                          const NodeName& from_node,
+                          ScopedEvent event);
 
   int SendUserMessageInternal(const PortRef& port_ref,
                               std::unique_ptr<UserMessageEvent>* message);
@@ -233,7 +263,8 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Node {
   void ConvertToProxy(Port* port,
                       const NodeName& to_node_name,
                       PortName* port_name,
-                      Event::PortDescriptor* port_descriptor);
+                      Event::PortDescriptor* port_descriptor,
+                      PendingUpdatePreviousPeer* pending_update);
   int AcceptPort(const PortName& port_name,
                  const Event::PortDescriptor& port_descriptor);
 

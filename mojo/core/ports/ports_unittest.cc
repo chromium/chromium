@@ -385,10 +385,12 @@ class PortsTest : public testing::Test, public MessageRouter {
     } else {
       EXPECT_EQ(OK, node0->node().CreateUninitializedPort(port0));
       EXPECT_EQ(OK, node1->node().CreateUninitializedPort(port1));
-      EXPECT_EQ(OK, node0->node().InitializePort(*port0, node1->name(),
-                                                 port1->name()));
-      EXPECT_EQ(OK, node1->node().InitializePort(*port1, node0->name(),
-                                                 port0->name()));
+      EXPECT_EQ(
+          OK, node0->node().InitializePort(*port0, node1->name(), port1->name(),
+                                           node1->name(), port1->name()));
+      EXPECT_EQ(
+          OK, node1->node().InitializePort(*port1, node0->name(), port0->name(),
+                                           node0->name(), port0->name()));
     }
   }
 
@@ -1454,8 +1456,10 @@ TEST_F(PortsTest, MergePortsFailsGracefully) {
   PortRef X, Y;
   EXPECT_EQ(OK, node0.node().CreateUninitializedPort(&X));
   EXPECT_EQ(OK, node1.node().CreateUninitializedPort(&Y));
-  EXPECT_EQ(OK, node0.node().InitializePort(X, node1.name(), Y.name()));
-  EXPECT_EQ(OK, node1.node().InitializePort(Y, node0.name(), X.name()));
+  EXPECT_EQ(OK, node0.node().InitializePort(X, node1.name(), Y.name(),
+                                            node1.name(), Y.name()));
+  EXPECT_EQ(OK, node1.node().InitializePort(Y, node0.name(), X.name(),
+                                            node0.name(), X.name()));
 
   // Block the merge from proceeding until we can do something stupid with port
   // C. This avoids the test logic racing with async merge logic.
