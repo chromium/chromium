@@ -57,6 +57,12 @@ std::string GetGUIDFromONCPart(const base::Value& onc_part) {
   return guid_value->GetString();
 }
 
+bool IsCellularPolicy(const base::DictionaryValue& onc_config) {
+  const std::string* type =
+      onc_config.FindStringKey(::onc::network_config::kType);
+  return type && *type == ::onc::network_type::kCellular;
+}
+
 const std::string* GetSMDPAddressFromONC(
     const base::DictionaryValue& onc_config) {
   const std::string* type =
@@ -441,9 +447,9 @@ void PolicyApplicator::ApplyRemainingPolicies() {
     VLOG(1) << "Creating new configuration managed by policy " << *it
             << " in profile " << profile_.ToDebugString() << ".";
 
-    if (features::IsESimPolicyEnabled()) {
+    if (IsCellularPolicy(*network_policy)) {
       const std::string* smdp_address = GetSMDPAddressFromONC(*network_policy);
-      if (smdp_address) {
+      if (features::IsESimPolicyEnabled() && smdp_address) {
         NET_LOG(EVENT)
             << "Found ONC configuration with SMDP: " << *smdp_address
             << ". Start installing policy eSim profile with ONC config: "
@@ -453,13 +459,17 @@ void PolicyApplicator::ApplyRemainingPolicies() {
         else
           NET_LOG(ERROR) << "Unable to install eSIM. CellularPolicyHandler not "
                             "initialized.";
-
-        it = remaining_policy_guids_.erase(it);
-        if (remaining_policy_guids_.empty()) {
-          NotifyConfigurationHandlerAndFinish();
-        }
-        continue;
+      } else {
+        NET_LOG(EVENT) << "Skip installing policy eSIM either because "
+                          "the eSIM policy feature is not enabled or the SMDP "
+                          "address is missing from ONC.";
       }
+
+      it = remaining_policy_guids_.erase(it);
+      if (remaining_policy_guids_.empty()) {
+        NotifyConfigurationHandlerAndFinish();
+      }
+      continue;
     }
 
     base::Value shill_dictionary = policy_util::CreateShillConfiguration(

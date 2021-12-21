@@ -59,29 +59,34 @@ namespace {
 constexpr char kUser1[] = "user1";
 constexpr char kUser1ProfilePath[] = "/profile/user1/shill";
 
-// The GUID used by chromeos/test/data/network/policy/*.{json,onc} files for a
-// VPN.
+// The GUID used by chromeos/components/test/data/onc/policy/*.{json,onc} files
+// for a VPN.
 constexpr char kTestGuidVpn[] = "{a3860e83-f03d-4cb1-bafa-b22c9e746950}";
 
-// The GUID used by chromeos/test/data/network/policy/*.{json,onc} files for a
-// managed Wifi service.
+// The GUID used by chromeos/components/test/data/onc/policy/*.{json,onc} files
+// for a managed Wifi service.
 constexpr char kTestGuidManagedWifi[] = "policy_wifi1";
 
-// The GUID used by chromeos/test/data/network/policy/policy_cellular.onc files
-// for a managed Cellular service.
+// The GUID used by chromeos/components/test/data/onc/policy/policy_cellular.onc
+// files for a managed Cellular service.
 constexpr char kTestGuidManagedCellular[] = "policy_cellular";
 
 // The GUID used by
-// chromeos/test/data/network/policy/policy_cellular_with_iccid.onc files for a
-// managed Cellular service.
+// chromeos/components/test/data/onc/policy/policy_cellular_with_iccid.onc files
+// for a managed Cellular service.
 constexpr char kTestGuidManagedCellular2[] = "policy_cellular2";
 
-// The GUID used by chromeos/test/data/network/policy/*.{json,onc} files for an
-// unmanaged Wifi service.
+// The GUID used by
+// chromeos/components/test/data/onc/policy/policy_cellular_with_no_smdp.onc
+// files for a managed Cellular service.
+constexpr char kTestGuidManagedCellular3[] = "policy_cellular3";
+
+// The GUID used by chromeos/components/test/data/onc/policy/*.{json,onc} files
+// for an unmanaged Wifi service.
 constexpr char kTestGuidUnmanagedWifi2[] = "wifi2";
 
-// The GUID used by chromeos/test/data/network/policy/*.{json,onc} files for a
-// Wifi service.
+// The GUID used by chromeos/components/test/data/onc/policy/*.{json,onc} files
+// for a Wifi service.
 constexpr char kTestGuidEthernetEap[] = "policy_ethernet_eap";
 
 constexpr char kTestEuiccPath[] = "/org/chromium/Hermes/Euicc/0";
@@ -421,6 +426,40 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManagedCellular) {
   absl::optional<bool> auto_connect =
       properties2->FindBoolKey(shill::kAutoConnectProperty);
   ASSERT_TRUE(*auto_connect);
+}
+
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       SetPolicyManagedCellularDisableFeatureFlag) {
+  base::test::ScopedFeatureList feature_list;
+  InitializeStandardProfiles();
+  InitializeEuicc();
+  // Verify that when eSIM policy feature flag is not set, applying managed
+  // eSIM policy should not create a new shill configuration for it.
+  feature_list.InitAndDisableFeature(ash::features::kESimPolicy);
+  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+            "policy/policy_cellular.onc");
+  FastForwardProfileRefreshDelay();
+  base::RunLoop().RunUntilIdle();
+  std::string service_path = GetShillServiceClient()->FindServiceMatchingGUID(
+      kTestGuidManagedCellular);
+  ASSERT_EQ(service_path, std::string());
+}
+
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       SetPolicyIgnoreNoSmdpManagedCellular) {
+  base::test::ScopedFeatureList feature_list;
+  InitializeStandardProfiles();
+  InitializeEuicc();
+  // Verify that applying managed eSIM policy with no SMDP address in the ONC
+  // should not create a new shill configuration for it.
+  feature_list.InitAndEnableFeature(ash::features::kESimPolicy);
+  SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
+            "policy/policy_cellular_with_no_smdp.onc");
+  FastForwardProfileRefreshDelay();
+  base::RunLoop().RunUntilIdle();
+  std::string service_path = GetShillServiceClient()->FindServiceMatchingGUID(
+      kTestGuidManagedCellular3);
+  ASSERT_EQ(service_path, std::string());
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManageUnconfigured) {
