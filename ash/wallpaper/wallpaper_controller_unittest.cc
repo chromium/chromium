@@ -280,7 +280,7 @@ std::unique_ptr<base::DictionaryValue> CreateWallpaperInfoDict(
         base::NumberToString(variant.asset_id));
     online_wallpaper_variant_dict.SetStringPath(
         WallpaperControllerImpl::kOnlineWallpaperUrlNodeName,
-        variant.url.spec());
+        variant.raw_url.spec());
     online_wallpaper_variant_dict.SetIntPath(
         WallpaperControllerImpl::kOnlineWallpaperTypeNodeName,
         static_cast<int>(variant.type));

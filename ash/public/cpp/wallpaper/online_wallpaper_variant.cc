@@ -8,10 +8,10 @@ namespace ash {
 
 OnlineWallpaperVariant::OnlineWallpaperVariant(
     uint64_t in_asset_id,
-    const GURL& in_url,
+    const GURL& in_raw_url,
     backdrop::Image::ImageType in_type)
-    : asset_id(in_asset_id), url(in_url), type(in_type) {
-  DCHECK(!url.is_empty());
+    : asset_id(in_asset_id), raw_url(in_raw_url), type(in_type) {
+  DCHECK(!raw_url.is_empty());
 }
 
 OnlineWallpaperVariant::OnlineWallpaperVariant(
@@ -25,7 +25,7 @@ OnlineWallpaperVariant& OnlineWallpaperVariant::operator=(
 
 bool OnlineWallpaperVariant::operator==(
     const OnlineWallpaperVariant& other) const {
-  return (asset_id == other.asset_id) && (url == other.url) &&
+  return (asset_id == other.asset_id) && (raw_url == other.raw_url) &&
          (type == other.type);
 }
 

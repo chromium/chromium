@@ -15,7 +15,7 @@ namespace ash {
 
 struct ASH_PUBLIC_EXPORT OnlineWallpaperVariant {
   OnlineWallpaperVariant(uint64_t asset_id,
-                         const GURL& url,
+                         const GURL& raw_url,
                          backdrop::Image::ImageType type);
 
   OnlineWallpaperVariant(const OnlineWallpaperVariant& other);
@@ -33,7 +33,7 @@ struct ASH_PUBLIC_EXPORT OnlineWallpaperVariant {
   // The unique identifier of the wallpaper.
   uint64_t asset_id;
   // The wallpaper url.
-  GURL url;
+  GURL raw_url;
   // The image type.
   backdrop::Image::ImageType type;
 };

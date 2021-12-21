@@ -425,7 +425,7 @@ base::flat_map<std::string, base::FilePath> GetOnlineWallpaperVariantPaths(
       GetAppropriateResolution();
 
   for (const auto& variant : variants) {
-    const std::string& url = variant.url.spec();
+    const std::string& url = variant.raw_url.spec();
     base::FilePath variant_path = GetOnlineWallpaperPath(url, resolution);
     base::FilePath large_variant_path = GetOnlineWallpaperPath(
         url, WallpaperControllerImpl::WALLPAPER_RESOLUTION_LARGE);
@@ -632,7 +632,7 @@ bool SetWallpaperInfo(const AccountId& account_id,
         base::NumberToString(variant.asset_id));
     online_wallpaper_variant_dict.SetStringPath(
         WallpaperControllerImpl::kOnlineWallpaperUrlNodeName,
-        variant.url.spec());
+        variant.raw_url.spec());
     online_wallpaper_variant_dict.SetIntPath(
         WallpaperControllerImpl::kOnlineWallpaperTypeNodeName,
         static_cast<int>(variant.type));
@@ -2624,7 +2624,7 @@ void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
 
     for (size_t i = 0; i < variants.size(); i++) {
       ImageDownloader::Get()->Download(
-          GURL(variants.at(i).url.spec() + GetBackdropWallpaperSuffix()),
+          GURL(variants.at(i).raw_url.spec() + GetBackdropWallpaperSuffix()),
           NO_TRAFFIC_ANNOTATION_YET,
           base::BindOnce(
               &WallpaperControllerImpl::OnOnlineWallpaperVariantDownloaded,
@@ -2647,14 +2647,14 @@ void WallpaperControllerImpl::OnOnlineWallpaperVariantDownloaded(
   const std::vector<OnlineWallpaperVariant>& variants = params.variants;
   const OnlineWallpaperVariant& current_variant = variants.at(current_index);
   // Keep track of each downloaded image.
-  url_to_image_map_.insert({current_variant.url.spec(), image});
+  url_to_image_map_.insert({current_variant.raw_url.spec(), image});
 
   // Save the image to disk.
   image.EnsureRepsForSupportedScales();
   gfx::ImageSkia deep_copy(image.DeepCopy());
   sequenced_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&SaveOnlineWallpaper, current_variant.url.spec(),
+      base::BindOnce(&SaveOnlineWallpaper, current_variant.raw_url.spec(),
                      params.layout, deep_copy));
   std::move(on_done).Run();
 }
@@ -2949,7 +2949,7 @@ void WallpaperControllerImpl::HandleSettingOnlineWallpaperFromWallpaperInfo(
     if (iter != info.variants.end()) {
       SetOnlineWallpaper(
           ash::OnlineWallpaperParams{account_id, iter->asset_id,
-                                     GURL(iter->url), info.collection_id,
+                                     GURL(iter->raw_url), info.collection_id,
                                      info.layout, /*preview_mode=*/false,
                                      /*from_user=*/false, daily_refresh_enabled,
                                      info.unit_id, info.variants},
@@ -3008,7 +3008,7 @@ void WallpaperControllerImpl::FindAndSetOnlineWallpaperVariants(
   } else {
     SetOnlineWallpaper(
         ash::OnlineWallpaperParams{
-            params.account_id, iter->asset_id, GURL(iter->url),
+            params.account_id, iter->asset_id, GURL(iter->raw_url),
             params.collection_id, params.layout, params.preview_mode,
             params.from_user, params.daily_refresh_enabled, unit_id, variants},
         std::move(callback));
