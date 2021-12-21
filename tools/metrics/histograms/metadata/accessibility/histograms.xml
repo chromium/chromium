@@ -1352,6 +1352,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PDF.HasAccessibleText" enum="BooleanExists"
+    expires_after="2022-08-23">
+  <owner>dtseng@chromium.org</owner>
+  <owner>nektar@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    When a PDF is constructed for accessibility, true if any page of the PDF
+    contains any accessible text derived from a text run. Note that a PDF
+    containing a mix of images and text will record true even though the images
+    may themselves contain inaccessible text.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Performance.HandleAXEvents" units="ms"
     expires_after="2022-11-18">
   <owner>aleventhal@chromium.org</owner>

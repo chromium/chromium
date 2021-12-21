@@ -198,6 +198,8 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   // outdated calls of SetAccessibilityPageInfo().
   uint32_t next_page_index_ = 0;
 
+  bool did_get_a_text_run_ = false;
+
   base::WeakPtrFactory<PdfAccessibilityTree> weak_ptr_factory_{this};
 };
 
