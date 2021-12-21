@@ -4,6 +4,8 @@
 
 import("//build/config/crypto.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
@@ -25,4 +27,29 @@ js_library("managed_dialog_test") {
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_cr_components"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "cr_components"
+}
+
+ts_library("build_ts") {
+  root_dir = "./"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [ "chrome://webui-test/*|" +
+                    rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                                target_gen_dir) ]
+  in_files = [
+    "most_visited_focus_test.js",
+    "most_visited_test.js",
+    "most_visited_test_support.js",
+  ]
+  deps = [ "//ui/webui/resources/cr_components/most_visited:build_ts" ]
+  extra_deps = [ "..:generate_definitions" ]
 }

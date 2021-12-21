@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../mojo_webui_test_support.js';
+import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {MostVisitedBrowserProxy} from 'chrome://resources/cr_components/most_visited/browser_proxy.js';
 import {MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
@@ -10,8 +10,8 @@ import {MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote} from 'chrom
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.js';
-import {eventToPromise} from '../test_util.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertFocus, keydown} from './most_visited_test_support.js';
 
