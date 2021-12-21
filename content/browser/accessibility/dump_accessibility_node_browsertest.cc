@@ -366,6 +366,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
   RunAccNameTest(FILE_PATH_LITERAL("desc-link-with-label-and-title.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest,
+                       NameButtonAriaPressedFalse) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-button-aria-pressed-false.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameButtonLabel) {
   RunAccNameTest(FILE_PATH_LITERAL("name-button-label.html"));
 }
