@@ -330,7 +330,7 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
 
     hints_manager_ = std::make_unique<HintsManager>(
         /*is_off_the_record=*/false, /*application_locale=*/"en-US",
-        pref_service(), hint_store_.get(), top_host_provider,
+        pref_service(), hint_store_->AsWeakPtr(), top_host_provider,
         tab_url_provider_.get(), url_loader_factory_,
         network::TestNetworkConnectionTracker::GetInstance(),
         /*push_notification_manager=*/nullptr);

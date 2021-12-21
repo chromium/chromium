@@ -36,8 +36,9 @@ class HintCache {
   // Construct the HintCache with an optional backing store and max host-keyed
   // cache size. If a backing store is not provided, all hints will only be
   // stored in-memory.
-  explicit HintCache(OptimizationGuideStore* optimization_guide_store,
-                     int max_host_keyed_memory_cache_size);
+  explicit HintCache(
+      base::WeakPtr<OptimizationGuideStore> optimization_guide_store,
+      int max_host_keyed_memory_cache_size);
 
   HintCache(const HintCache&) = delete;
   HintCache& operator=(const HintCache&) = delete;
@@ -152,7 +153,7 @@ class HintCache {
   bool IsHintStoreAvailable() const;
 
   // Returns the persistent store for |this|.
-  optimization_guide::OptimizationGuideStore* hint_store() {
+  base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store() {
     return optimization_guide_store_;
   }
 
@@ -184,8 +185,8 @@ class HintCache {
       std::unique_ptr<MemoryHint> hint);
 
   // The backing store used with this hint cache. Set during construction. Not
-  // owned. Guaranteed to outlive |this|.
-  raw_ptr<OptimizationGuideStore> optimization_guide_store_;
+  // owned.
+  base::WeakPtr<OptimizationGuideStore> optimization_guide_store_;
 
   // The cache of host-keyed hints loaded from the store. Maps store
   // EntryKey to Hint proto. This serves two purposes:

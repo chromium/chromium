@@ -59,8 +59,10 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
             ? std::make_unique<OptimizationGuideStore>(
                   db_provider_.get(), database_path, database_task_runner)
             : nullptr;
-    hint_cache_ = std::make_unique<HintCache>(optimization_guide_store_.get(),
-                                              memory_cache_size);
+    hint_cache_ = std::make_unique<HintCache>(
+        optimization_guide_store_ ? optimization_guide_store_->AsWeakPtr()
+                                  : nullptr,
+        memory_cache_size);
     is_store_initialized_ = false;
     hint_cache_->Initialize(purge_existing_data,
                             base::BindOnce(&HintCacheTest::OnStoreInitialized,

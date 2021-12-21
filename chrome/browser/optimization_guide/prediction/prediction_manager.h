@@ -55,7 +55,7 @@ using PostModelLoadCallback =
 class PredictionManager : public PredictionModelDownloadObserver {
  public:
   PredictionManager(
-      OptimizationGuideStore* model_and_features_store,
+      base::WeakPtr<OptimizationGuideStore> model_and_features_store,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* pref_service,
       Profile* profile);
@@ -100,7 +100,7 @@ class PredictionManager : public PredictionModelDownloadObserver {
     return prediction_model_download_manager_.get();
   }
 
-  OptimizationGuideStore* model_and_features_store() const {
+  base::WeakPtr<OptimizationGuideStore> model_and_features_store() const {
     return model_and_features_store_;
   }
 
@@ -317,9 +317,8 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // TODO(crbug/1183507): Remove host model features store and all relevant
   // code, and deprecate the proto field too.
   // The optimization guide store that contains prediction models and host
-  // model features from the remote Optimization Guide Service. Not owned and
-  // guaranteed to outlive |this|.
-  raw_ptr<OptimizationGuideStore> model_and_features_store_ = nullptr;
+  // model features from the remote Optimization Guide Service.
+  base::WeakPtr<OptimizationGuideStore> model_and_features_store_;
 
   // A stored response from a model and host model features fetch used to hold
   // models to be stored once host model features are processed and stored.
