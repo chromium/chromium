@@ -33,6 +33,10 @@
 #endif  // BUILDFLAG(USE_TCMALLOC)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(OS_WIN)
+#include "chrome/renderer/font_prewarmer.h"
+#endif
+
 namespace {
 
 void BindWebRTCLoggingAgent(
@@ -87,6 +91,11 @@ void ExposeChromeRendererInterfacesToBrowser(
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   binders->Add(base::BindRepeating(&BindSpellChecker, client),
+               base::SequencedTaskRunnerHandle::Get());
+#endif
+
+#if defined(OS_WIN)
+  binders->Add(base::BindRepeating(&FontPrewarmer::Bind),
                base::SequencedTaskRunnerHandle::Get());
 #endif
 }

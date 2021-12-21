@@ -377,6 +377,12 @@ static_library("renderer") {
 
   if (is_win) {
     deps += [ "//third_party/wtl" ]
+    sources += [
+      "font_prewarmer.cc",
+      "font_prewarmer.h",
+      "render_frame_font_family_accessor.cc",
+      "render_frame_font_family_accessor.h",
+    ]
   }
 
   if (is_chromeos_ash || is_chromeos_lacros) {

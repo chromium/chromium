@@ -16,6 +16,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_tab_helper.h"
 #include "chrome/browser/breadcrumbs/breadcrumbs_status.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
@@ -186,6 +187,10 @@
 
 #if defined(OS_MAC)
 #include "chrome/browser/ui/cocoa/screentime/tab_helper.h"
+#endif
+
+#if defined(OS_WIN)
+#include "chrome/browser/font_prewarmer_tab_helper.h"
 #endif
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
@@ -505,6 +510,11 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (Browser* browser = chrome::FindBrowserWithProfile(profile)) {
     SharedHighlightingPromo::CreateForWebContents(web_contents, browser);
   }
+#endif
+
+#if defined(OS_WIN)
+  if (base::FeatureList::IsEnabled(features::kPrewarmSearchResultsPageFonts))
+    FontPrewarmerTabHelper::CreateForWebContents(web_contents);
 #endif
 
   // --- Section 3: Feature tab helpers behind BUILDFLAGs ---

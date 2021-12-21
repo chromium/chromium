@@ -80,6 +80,14 @@ const base::Feature kMuteNotificationSnoozeAction{
     "MuteNotificationSnoozeAction", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if defined(OS_WIN)
+// Results in remembering fonts used at the time of fcp, and prewarming those
+// fonts on subsequent loading of search results pages for the default search
+// engine.
+const base::Feature kPrewarmSearchResultsPageFonts{
+    "PrewarmSearchResultsPageFonts", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Shows a confirmation dialog when updates to PWAs identity (name and icon)
 // have been detected.
 const base::Feature kPwaUpdateDialogForNameAndIcon{

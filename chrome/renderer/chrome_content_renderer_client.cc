@@ -176,6 +176,7 @@
 
 #if defined(OS_WIN)
 #include "base/win/windows_version.h"
+#include "chrome/renderer/render_frame_font_family_accessor.h"
 #endif
 
 #if BUILDFLAG(ENABLE_FEED_V2)
@@ -724,6 +725,13 @@ void ChromeContentRendererClient::RenderFrameCreated(
     associated_interfaces->AddInterface(
         base::BindRepeating(&pdf::PdfFindInPageFactory::BindReceiver,
                             render_frame->GetRoutingID()));
+  }
+#endif
+
+#if defined(OS_WIN)
+  if (render_frame->IsMainFrame()) {
+    associated_interfaces->AddInterface(base::BindRepeating(
+        &RenderFrameFontFamilyAccessor::Bind, render_frame));
   }
 #endif
 }

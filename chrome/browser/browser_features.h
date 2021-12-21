@@ -44,6 +44,10 @@ extern const base::Feature kCopyLinkToText;
 extern const base::Feature kMuteNotificationSnoozeAction;
 #endif
 
+#if defined(OS_WIN)
+extern const base::Feature kPrewarmSearchResultsPageFonts;
+#endif
+
 extern const base::Feature kPwaUpdateDialogForNameAndIcon;
 
 extern const base::Feature kSandboxExternalProtocolBlocked;

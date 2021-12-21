@@ -735,7 +735,10 @@ mojom("mojo_bindings") {
   }
 
   if (is_win) {
-    sources += [ "conflicts/module_event_sink_win.mojom" ]
+    sources += [
+      "conflicts/module_event_sink_win.mojom",
+      "font_prewarmer.mojom",
+    ]
   }
 
   if (enable_offline_pages) {
