@@ -328,9 +328,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenPromo"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-02-01">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-06-01">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
+  <owner>rkgibson@chromium.org</owner>
   <summary>
     The action taken by the user in response to the default browser promo.
   </summary>
