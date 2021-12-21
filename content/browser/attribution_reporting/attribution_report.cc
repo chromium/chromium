@@ -16,14 +16,14 @@
 
 namespace content {
 
-AttributionReport::AttributionReport(StorableSource impression,
+AttributionReport::AttributionReport(StorableSource source,
                                      uint64_t trigger_data,
                                      base::Time conversion_time,
                                      base::Time report_time,
                                      int64_t priority,
                                      base::GUID external_report_id,
                                      absl::optional<Id> report_id)
-    : impression_(std::move(impression)),
+    : source_(std::move(source)),
       trigger_data_(trigger_data),
       conversion_time_(conversion_time),
       report_time_(report_time),
@@ -50,25 +50,24 @@ GURL AttributionReport::ReportURL() const {
   static constexpr char kEndpointPath[] =
       "/.well-known/attribution-reporting/report-attribution";
   replacements.SetPath(kEndpointPath, url::Component(0, strlen(kEndpointPath)));
-  return impression_.reporting_origin().GetURL().ReplaceComponents(
-      replacements);
+  return source_.reporting_origin().GetURL().ReplaceComponents(replacements);
 }
 
 std::string AttributionReport::ReportBody(bool pretty_print) const {
   base::Value dict(base::Value::Type::DICTIONARY);
 
   dict.SetStringKey("attribution_destination",
-                    impression_.ConversionDestination().Serialize());
+                    source_.ConversionDestination().Serialize());
 
   // The API denotes these values as strings; a `uint64_t` cannot be put in
   // a dict as an integer in order to be opaque to various API configurations.
   dict.SetStringKey("source_event_id",
-                    base::NumberToString(impression_.source_event_id()));
+                    base::NumberToString(source_.source_event_id()));
 
   dict.SetStringKey("trigger_data", base::NumberToString(trigger_data_));
 
   const char* source_type = nullptr;
-  switch (impression_.source_type()) {
+  switch (source_.source_type()) {
     case StorableSource::SourceType::kNavigation:
       source_type = "navigation";
       break;

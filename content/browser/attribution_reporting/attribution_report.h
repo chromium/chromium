@@ -23,13 +23,13 @@ namespace content {
 
 // Class that contains all the data needed to serialize and send a conversion
 // report. This represents the report for a conversion event and its associated
-// impression.
+// source.
 class CONTENT_EXPORT AttributionReport {
  public:
   using Id = base::StrongAlias<AttributionReport, int64_t>;
 
   // The conversion_id may not be set for a conversion report.
-  AttributionReport(StorableSource impression,
+  AttributionReport(StorableSource source,
                     uint64_t trigger_data,
                     base::Time conversion_time,
                     base::Time report_time,
@@ -48,7 +48,7 @@ class CONTENT_EXPORT AttributionReport {
   // Returns the JSON for the report body.
   std::string ReportBody(bool pretty_print = false) const WARN_UNUSED_RESULT;
 
-  const StorableSource& impression() const { return impression_; }
+  const StorableSource& source() const { return source_; }
 
   uint64_t trigger_data() const { return trigger_data_; }
 
@@ -60,7 +60,7 @@ class CONTENT_EXPORT AttributionReport {
 
   const base::GUID& external_report_id() const { return external_report_id_; }
 
-  const absl::optional<Id>& report_id() const { return report_id_; }
+  absl::optional<Id> report_id() const { return report_id_; }
 
   int failed_send_attempts() const { return failed_send_attempts_; }
 
@@ -71,8 +71,8 @@ class CONTENT_EXPORT AttributionReport {
   void SetExternalReportIdForTesting(base::GUID external_report_id);
 
  private:
-  // Impression associated with this conversion report.
-  StorableSource impression_;
+  // Source associated with this conversion report.
+  StorableSource source_;
 
   // Data provided at trigger time by the attribution destination. Depending on
   // the source type, this contains the associated data in the trigger redirect.

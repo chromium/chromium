@@ -860,7 +860,7 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_Deactivates) {
 
   EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()),
               ElementsAre(AllOf(
-                  Property(&AttributionReport::impression,
+                  Property(&AttributionReport::source,
                            Property(&StorableSource::source_event_id, 5u)),
                   Property(&AttributionReport::trigger_data, 7u))));
 }
@@ -1099,7 +1099,7 @@ TEST_F(AttributionStorageTest,
 
   EXPECT_THAT(
       storage()->GetAttributionsToReport(clock()->Now()),
-      ElementsAre(Property(&AttributionReport::impression,
+      ElementsAre(Property(&AttributionReport::source,
                            Property(&StorableSource::source_event_id, 5u))));
 }
 
@@ -1130,7 +1130,7 @@ TEST_F(AttributionStorageTest,
 
   EXPECT_THAT(
       storage()->GetAttributionsToReport(clock()->Now()),
-      ElementsAre(Property(&AttributionReport::impression,
+      ElementsAre(Property(&AttributionReport::source,
                            Property(&StorableSource::source_event_id, 5u))));
 }
 
@@ -1234,10 +1234,10 @@ TEST_F(AttributionStorageTest, TriggerPriority) {
   EXPECT_THAT(
       storage()->GetAttributionsToReport(clock()->Now()),
       ElementsAre(
-          AllOf(Property(&AttributionReport::impression,
+          AllOf(Property(&AttributionReport::source,
                          Property(&StorableSource::source_event_id, 5u)),
                 Property(&AttributionReport::trigger_data, 21u)),
-          AllOf(Property(&AttributionReport::impression,
+          AllOf(Property(&AttributionReport::source,
                          Property(&StorableSource::source_event_id, 7u)),
                 Property(&AttributionReport::trigger_data, 22u))));
 }
@@ -1611,7 +1611,7 @@ TEST_F(AttributionStorageTest,
           Property(&CreateReportResult::status,
                    CreateReportStatus::kPriorityTooLow),
           Property(&CreateReportResult::dropped_report,
-                   Optional(Property(&AttributionReport::impression, source1))),
+                   Optional(Property(&AttributionReport::source, source1))),
           Property(&CreateReportResult::GetDeactivatedSource,
                    DeactivatedSource(
                        source1,

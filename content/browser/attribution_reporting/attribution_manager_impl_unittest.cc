@@ -509,17 +509,17 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
 
   EXPECT_CALL(
       observer,
-      OnReportSent(Property(&AttributionReport::impression,
+      OnReportSent(Property(&AttributionReport::source,
                             Property(&StorableSource::source_event_id, 1u)),
                    _));
   EXPECT_CALL(
       observer,
-      OnReportSent(Property(&AttributionReport::impression,
+      OnReportSent(Property(&AttributionReport::source,
                             Property(&StorableSource::source_event_id, 2u)),
                    _));
   EXPECT_CALL(
       observer,
-      OnReportSent(Property(&AttributionReport::impression,
+      OnReportSent(Property(&AttributionReport::source,
                             Property(&StorableSource::source_event_id, 3u)),
                    _));
 

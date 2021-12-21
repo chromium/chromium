@@ -344,7 +344,7 @@ bool operator==(const StorableSource& a, const StorableSource& b) {
 // sqlite db and should not be tested.
 bool operator==(const AttributionReport& a, const AttributionReport& b) {
   const auto tie = [](const AttributionReport& conversion) {
-    return std::make_tuple(conversion.impression(), conversion.trigger_data(),
+    return std::make_tuple(conversion.source(), conversion.trigger_data(),
                            conversion.conversion_time(),
                            conversion.report_time(), conversion.priority(),
                            conversion.external_report_id(),
@@ -497,7 +497,7 @@ std::ostream& operator<<(std::ostream& out, const StorableSource& impression) {
 }
 
 std::ostream& operator<<(std::ostream& out, const AttributionReport& report) {
-  return out << "{impression=" << report.impression()
+  return out << "{source=" << report.source()
              << ",trigger_data=" << report.trigger_data()
              << ",conversion_time=" << report.conversion_time()
              << ",report_time=" << report.report_time()

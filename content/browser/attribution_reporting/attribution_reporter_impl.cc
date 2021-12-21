@@ -40,7 +40,7 @@ void LogMetricsOnReportSend(const AttributionReport& report) {
   // is non-ideal for real world data.
   base::Time now = base::Time::Now();
   base::Time original_report_time =
-      ComputeReportTime(report.impression(), report.conversion_time());
+      ComputeReportTime(report.source(), report.conversion_time());
   base::TimeDelta time_since_original_report_time = now - original_report_time;
   base::UmaHistogramCustomTimes(
       "Conversions.ExtraReportDelay2", time_since_original_report_time,
@@ -128,9 +128,9 @@ void AttributionReporterImpl::SendNextReport() {
   if (GetContentClient()->browser()->IsConversionMeasurementOperationAllowed(
           partition_->browser_context(),
           ContentBrowserClient::ConversionMeasurementOperation::kReport,
-          &report.impression().impression_origin(),
-          &report.impression().conversion_origin(),
-          &report.impression().reporting_origin())) {
+          &report.source().impression_origin(),
+          &report.source().conversion_origin(),
+          &report.source().reporting_origin())) {
     if (!network_connection_tracker_)
       SetNetworkConnectionTracker(content::GetNetworkConnectionTracker());
 

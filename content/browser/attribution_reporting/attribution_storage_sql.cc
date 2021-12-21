@@ -496,12 +496,12 @@ AttributionStorageSql::MaybeReplaceLowerPriorityReport(
     int num_conversions,
     int64_t conversion_priority,
     absl::optional<AttributionReport>& replaced_report) {
-  DCHECK(report.impression().impression_id().has_value());
+  DCHECK(report.source().impression_id().has_value());
   DCHECK_GE(num_conversions, 0);
 
   // If there's already capacity for the new report, there's nothing to do.
-  if (num_conversions < delegate_->GetMaxAttributionsPerSource(
-                            report.impression().source_type())) {
+  if (num_conversions <
+      delegate_->GetMaxAttributionsPerSource(report.source().source_type())) {
     return MaybeReplaceLowerPriorityReportResult::kAddNewReport;
   }
 
@@ -518,8 +518,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityReport(
       "LIMIT 1";
   sql::Statement min_priority_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kMinPrioritySql));
-  min_priority_statement.BindInt64(
-      0, *report.impression().impression_id().value());
+  min_priority_statement.BindInt64(0, *report.source().impression_id().value());
   min_priority_statement.BindTime(1, report.report_time());
 
   const bool has_matching_report = min_priority_statement.Step();
@@ -533,8 +532,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityReport(
         "UPDATE impressions SET active = 0 WHERE impression_id = ?";
     sql::Statement deactivate_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kDeactivateSql));
-    deactivate_statement.BindInt64(
-        0, *report.impression().impression_id().value());
+    deactivate_statement.BindInt64(0, *report.source().impression_id().value());
     return deactivate_statement.Run()
                ? MaybeReplaceLowerPriorityReportResult::
                      kDropNewReportSourceDeactivated
@@ -714,12 +712,12 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   // Reports with `AttributionLogic::kNever` should be included in all
   // attribution operations and matching, but only `kTruthfully` should generate
   // reports that get sent.
-  const bool create_report = report.impression().attribution_logic() ==
+  const bool create_report = report.source().attribution_logic() ==
                              StorableSource::AttributionLogic::kTruthfully;
 
   if (create_report) {
-    DCHECK(report.impression().impression_id().has_value());
-    if (!StoreReport(report, *report.impression().impression_id())) {
+    DCHECK(report.source().impression_id().has_value());
+    if (!StoreReport(report, *report.source().impression_id())) {
       return CreateReportResult(CreateReportStatus::kInternalError);
     }
   }
@@ -733,7 +731,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     sql::Statement insert_dedup_key_statement(
         db_->GetCachedStatement(SQL_FROM_HERE, kInsertDedupKeySql));
     insert_dedup_key_statement.BindInt64(
-        0, *report.impression().impression_id().value());
+        0, *report.source().impression_id().value());
     insert_dedup_key_statement.BindInt64(1, *trigger.dedup_key());
     if (!insert_dedup_key_statement.Run()) {
       return CreateReportResult(CreateReportStatus::kInternalError);
@@ -752,7 +750,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
 
     // Update the attributed source.
     impression_update_statement.BindInt64(
-        0, *report.impression().impression_id().value());
+        0, *report.source().impression_id().value());
     if (!impression_update_statement.Run()) {
       return CreateReportResult(CreateReportStatus::kInternalError);
     }
