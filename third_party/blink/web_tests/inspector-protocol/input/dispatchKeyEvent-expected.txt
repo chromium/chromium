@@ -34,4 +34,6 @@ keyCode: 16
 location: 2
 code: ShiftRight
 
+Expect error for invalid text or unmodifiedText:
+Error: Invalid 'text' parameter
 

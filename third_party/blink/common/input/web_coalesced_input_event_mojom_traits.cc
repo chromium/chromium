@@ -374,6 +374,13 @@ StructTraits<blink::mojom::EventDataView,
     return nullptr;
   const blink::WebKeyboardEvent* key_event =
       static_cast<const blink::WebKeyboardEvent*>(event->EventPointer());
+  // Assure char16_t[N] filds are null-terminated before converting
+  // them to std::u16string.
+  CHECK(std::find(std::begin(key_event->text), std::end(key_event->text), 0) <
+        std::end(key_event->text));
+  CHECK(std::find(std::begin(key_event->unmodified_text),
+                  std::end(key_event->unmodified_text),
+                  0) < std::end(key_event->unmodified_text));
   return blink::mojom::KeyData::New(
       key_event->dom_key, key_event->dom_code, key_event->windows_key_code,
       key_event->native_key_code, key_event->is_system_key,
