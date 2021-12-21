@@ -90,6 +90,9 @@ class StartHandlerForSelfTest
   ~StartHandlerForSelfTest() = default;
 
   void SetUp() override {
+    // MSAN requires that padding bytes have been initialized for structs that
+    // are written to files.
+    memset(&options_, 0, sizeof(options_));
     std::tie(options_.start_handler_at_crash,
              options_.set_first_chance_handler,
              options_.crash_non_main_thread,
