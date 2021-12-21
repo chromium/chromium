@@ -56,12 +56,10 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator_context.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_gles2_interface.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
@@ -1898,7 +1896,7 @@ TEST_P(ScrollingTest, NonCompositedNonFastScrollableRegion) {
       )HTML");
   ForceFullCompositingUpdate();
 
-  // The non-scrolling graphics layer should have a non-scrolling region for the
+  // The non-scrolling layer should have a non-scrolling region for the
   // non-composited scroller.
   const auto* cc_layer = LayerByDOMElementId("composited_container");
   auto region = cc_layer->non_fast_scrollable_region();
@@ -1929,9 +1927,9 @@ TEST_P(ScrollingTest, NonCompositedResizerNonFastScrollableRegion) {
   ForceFullCompositingUpdate();
 
   auto* container_cc_layer = LayerByDOMElementId("container");
-  // The non-fast scrollable region should be on the container's graphics layer
-  // and not one of the viewport scroll layers because the region should move
-  // when the container moves and not when the viewport scrolls.
+  // The non-fast scrollable region should be on the container's layer and not
+  // one of the viewport scroll layers because the region should move when the
+  // container moves and not when the viewport scrolls.
   auto region = container_cc_layer->non_fast_scrollable_region();
   EXPECT_EQ(region.bounds(), gfx::Rect(86, 121, 14, 14));
 }

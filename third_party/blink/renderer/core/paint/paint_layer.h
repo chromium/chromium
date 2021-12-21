@@ -58,15 +58,12 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_resource_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_stacking_node.h"
 #include "third_party/blink/renderer/core/paint/paint_result.h"
-#include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
-#include "third_party/blink/renderer/platform/graphics/squashing_disallowed_reasons.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-class CompositedLayerMapping;
 class CompositorFilterOperations;
 class ComputedStyle;
 class FilterEffect;
@@ -74,7 +71,6 @@ class FilterOperations;
 class HitTestResult;
 class HitTestingTransformState;
 class PaintLayerScrollableArea;
-class ScrollingCoordinator;
 class TransformationMatrix;
 
 enum IncludeSelfOrNot { kIncludeSelf, kExcludeSelf };
@@ -298,15 +294,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   void UpdateTransformationMatrix();
 
-  bool IsStackingContextWithNegativeZOrderChildren() const {
-    DCHECK(!stacking_node_ || GetLayoutObject().IsStackingContext());
-    return stacking_node_ && !stacking_node_->NegZOrderList().IsEmpty();
-  }
-
-  bool SubtreeIsInvisible() const {
-    return !HasVisibleContent() && !HasVisibleDescendant();
-  }
-
   bool HasVisibleContent() const {
     DCHECK(!needs_descendant_dependent_flags_update_);
     return has_visible_content_;
@@ -318,13 +305,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   }
 
   void DirtyVisibleContentStatus();
-
-  // True if this layer paints box decorations or a background. Touch-action
-  // rects are painted as part of the background so these are included here.
-  bool HasBoxDecorationsOrBackground() const;
-  bool HasVisibleBoxDecorations() const;
-  // True if this layer container layoutObjects that paint.
-  bool HasNonEmptyChildLayoutObjects() const;
 
   // Gets the ancestor layer that serves as the containing block (in the sense
   // of LayoutObject::container() instead of LayoutObject::containingBlock())
@@ -338,38 +318,11 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   PaintLayer* ContainingLayer(const PaintLayer* ancestor = nullptr,
                               bool* skipped_ancestor = nullptr) const;
 
-  bool IsPaintInvalidationContainer() const;
-
-  // Do *not* call this method unless you know what you are dooing. You probably
-  // want to call enclosingCompositingLayerForPaintInvalidation() instead.
-  // If includeSelf is true, may return this.
-  PaintLayer* EnclosingLayerWithCompositedLayerMapping(IncludeSelfOrNot) const {
-    // TODO(pdr): Remove this.
-    return nullptr;
-  }
-
-  // Returns the enclosing layer root into which this layer paints, inclusive of
-  // this one. Note that the enclosing layer may or may not have its own
-  // GraphicsLayer backing, but is nevertheless the root for a call to the
-  // Layer::paint*() methods.
-  PaintLayer* EnclosingLayerForPaintInvalidation() const;
-
-  // For CompositeAfterPaint, but not for LayoutNGBlockFragmentation.
+  // Not for LayoutNGBlockFragmentation.
   const PaintLayer* EnclosingCompositedScrollingLayerUnderPagination(
       IncludeSelfOrNot) const;
 
-  // https://crbug.com/751768, this function can return nullptr sometimes.
-  // Always check the result before using it, don't just DCHECK.
-  PaintLayer* EnclosingLayerForPaintInvalidationCrossingFrameBoundaries() const;
-
   bool HasAncestorWithFilterThatMovesPixels() const;
-
-  bool CanUseConvertToLayerCoords() const {
-    // These LayoutObjects have an impact on their layers without the
-    // layoutObjects knowing about it.
-    return !GetLayoutObject().HasTransformRelatedProperty() &&
-           !GetLayoutObject().IsSVGRoot();
-  }
 
   void ConvertToLayerCoords(const PaintLayer* ancestor_layer,
                             PhysicalOffset&) const;
@@ -467,14 +420,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return position;
   }
 
-  PhysicalOffset SubpixelAccumulation() const {
-    // TODO(pdr): Remove this.
-    return PhysicalOffset();
-  }
-
-  bool HasTransformRelatedProperty() const {
-    return GetLayoutObject().HasTransformRelatedProperty();
-  }
   // Note that this transform has the transform-origin baked in.
   TransformationMatrix* Transform() const {
     return rare_data_ ? rare_data_->transform.get() : nullptr;
@@ -495,47 +440,13 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
            !rare_data_->transform->IsAffine();
   }
 
-  // FIXME: reflections should force transform-style to be flat in the style:
-  // https://bugs.webkit.org/show_bug.cgi?id=106959
-  bool ShouldPreserve3D() const {
-    return !GetLayoutObject().HasReflection() && Preserves3D();
-  }
-
   // Returns |true| if any property that renders using filter operations is
   // used (including, but not limited to, 'filter' and 'box-reflect').
   bool HasFilterInducingProperty() const {
     return GetLayoutObject().HasFilterInducingProperty();
   }
 
-  CompositingState GetCompositingState() const {
-    // TODO(pdr): Remove this.
-    return kNotComposited;
-  }
-
-  CompositedLayerMapping* GetCompositedLayerMapping() const {
-    // TODO(pdr): Remove this.
-    return nullptr;
-  }
-
-  bool HasCompositedLayerMapping() const {
-    // TODO(pdr): Remove this.
-    return false;
-  }
-
-  CompositedLayerMapping* GroupedMapping() const {
-    // TODO(pdr): Remove this.
-    return nullptr;
-  }
-
-  bool NeedsCompositedScrolling() const;
-
-  // Returns the ScrollingCoordinator associated with this layer, if
-  // any. Otherwise nullptr.
-  ScrollingCoordinator* GetScrollingCoordinator();
-
   bool PaintsWithTransform(GlobalPaintFlags) const;
-  bool PaintsIntoOwnBacking(GlobalPaintFlags) const;
-  bool PaintsIntoOwnOrGroupedBacking(GlobalPaintFlags) const;
 
   bool SupportsSubsequenceCaching() const;
 
@@ -612,8 +523,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // Returns true if the layer is fixed position and will not move with
   // scrolling.
   bool FixedToViewport() const;
-  bool ScrollsWithRespectTo(const PaintLayer*) const;
-
   bool IsAffectedByScrollOf(const PaintLayer* ancestor) const;
 
   // FIXME: This should probably return a ScrollableArea but a lot of internal
@@ -631,9 +540,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   bool ScrollsOverflow() const;
 
-  // Whether the layer could ever be composited.
-  bool CanBeComposited() const;
-
   bool NeedsVisualOverflowRecalc() const {
     return needs_visual_overflow_recalc_;
   }
@@ -650,14 +556,9 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   const gfx::Rect ClippedAbsoluteBoundingBox() const;
   const gfx::Rect UnclippedAbsoluteBoundingBox() const;
 
-  // TODO(pdr): Remove this.
-  const LayoutBoxModelObject* ClippingContainer() const { return nullptr; }
   const PaintLayer* AncestorScrollContainerLayer() const {
     return ancestor_scroll_container_layer_;
   }
-  // TODO(pdr): Remove this.
-  const PaintLayer* AncestorScrollingLayer() const { return nullptr; }
-  const PaintLayer* ScrollParent() const { return nullptr; }
 
   bool HasFixedPositionDescendant() const {
     DCHECK(!needs_descendant_dependent_flags_update_);
@@ -696,22 +597,12 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return CompositingReason::kNone;
   }
 
-  SquashingDisallowedReasons GetSquashingDisallowedReasons() const {
-    // TODO(pdr): Remove this.
-    return SquashingDisallowedReason::kNone;
-  }
-
   void UpdateDescendantDependentFlags();
 
   void UpdateSelfPaintingLayer();
   // This is O(depth) so avoid calling this in loops. Instead use optimizations
   // like those in PaintInvalidatorContext.
   PaintLayer* EnclosingSelfPaintingLayer();
-
-  // Returned value does not include any composited scroll offset of
-  // the transform ancestor.
-  PhysicalOffset ComputeOffsetFromAncestor(
-      const PaintLayer& ancestor_layer) const;
 
   void DidUpdateScrollsOverflow();
 
@@ -817,10 +708,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool LayerListMutationAllowed() const { return layer_list_mutation_allowed_; }
 #endif
 
-  void SetNeedsCompositingLayerAssignment();
-  void ClearNeedsCompositingLayerAssignment();
-  void PropagateDescendantNeedsCompositingLayerAssignment();
-
   void DirtyStackingContextZOrderLists();
 
   PhysicalOffset OffsetForInFlowRelPosition() const {
@@ -839,8 +726,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // Bounding box in the coordinates of this layer.
   PhysicalRect LocalBoundingBox() const;
   PhysicalRect ClippedLocalBoundingBox(const PaintLayer& ancestor_layer) const;
-
-  bool HasOverflowControls() const;
 
   void UpdateLayerPositionRecursive(const PaintLayer* enclosing_scroller);
 

@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
 #include "third_party/blink/renderer/platform/animation/compositor_scroll_offset_animation_curve.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {

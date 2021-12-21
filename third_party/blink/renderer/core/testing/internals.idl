@@ -195,8 +195,6 @@
 
     [RaisesException] DOMString layerTreeAsText(Document document, optional unsigned short flags);
 
-    [RaisesException] boolean scrollsWithRespectTo(Element element1, Element element2);
-
     DOMString scrollingStateTreeAsText(Document document);
     [RaisesException] DOMString mainThreadScrollingReasons(Document document);
     [RaisesException] DOMRectList nonFastScrollableRects(Document document);

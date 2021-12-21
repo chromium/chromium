@@ -613,11 +613,8 @@ PaintLayerType LayoutSVGRoot::LayerTypeRequired() const {
   NOT_DESTROYED();
   auto layer_type_required = LayoutReplaced::LayerTypeRequired();
   if (layer_type_required == kNoPaintLayer) {
-    // Force a paint layer so,
-    // 1) A GraphicsLayer can be created if there are directly-composited
-    // descendants.
-    // 2) The parent layer will know if there are non-isolated descendants with
-    // blend mode.
+    // Force a paint layer so the parent layer will know if there are
+    // non-isolated descendants with blend mode.
     layer_type_required = kForcedPaintLayer;
   }
   return layer_type_required;

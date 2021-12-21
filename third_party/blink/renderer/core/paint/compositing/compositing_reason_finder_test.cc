@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -69,10 +68,6 @@ TEST_P(CompositingReasonFinderTest, PromoteTrivial3D) {
       style='width: 100px; height: 100px; transform: translateZ(0)'></div>
   )HTML");
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    PaintLayer* paint_layer = GetPaintLayerByElementId("target");
-    EXPECT_EQ(kPaintsIntoOwnBacking, paint_layer->GetCompositingState());
-  }
   EXPECT_REASONS(
       CompositingReason::kTrivial3DTransform,
       DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
@@ -84,10 +79,6 @@ TEST_P(CompositingReasonFinderTest, PromoteNonTrivial3D) {
       style='width: 100px; height: 100px; transform: translateZ(1px)'></div>
   )HTML");
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    PaintLayer* paint_layer = GetPaintLayerByElementId("target");
-    EXPECT_EQ(kPaintsIntoOwnBacking, paint_layer->GetCompositingState());
-  }
   EXPECT_REASONS(
       CompositingReason::k3DTransform,
       DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
@@ -107,10 +98,6 @@ TEST_P(CompositingReasonFinderTest, DontPromoteTrivial3DWithLowEndDevice) {
       style='width: 100px; height: 100px; transform: translateZ(0)'></div>
   )HTML");
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    PaintLayer* paint_layer = GetPaintLayerByElementId("target");
-    EXPECT_EQ(kNotComposited, paint_layer->GetCompositingState());
-  }
   EXPECT_REASONS(
       CompositingReason::kNone,
       DirectReasonsForPaintProperties(*GetLayoutObjectByElementId("target")));
@@ -129,13 +116,6 @@ TEST_P(CompositingReasonFinderTest, OnlyAnchoredStickyPositionPromoted) {
     </div>
   )HTML");
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(kPaintsIntoOwnBacking,
-              GetPaintLayerByElementId("sticky-top")->GetCompositingState());
-    EXPECT_EQ(
-        kNotComposited,
-        GetPaintLayerByElementId("sticky-no-anchor")->GetCompositingState());
-  }
   EXPECT_REASONS(CompositingReason::kStickyPosition,
                  DirectReasonsForPaintProperties(
                      *GetLayoutObjectByElementId("sticky-top")));
@@ -209,17 +189,6 @@ TEST_P(CompositingReasonFinderTest, OnlyScrollingStickyPositionPromoted) {
       CompositingReason::kNone,
       CompositingReasonFinder::CompositingReasonsForScrollDependentPosition(
           *overflow_hidden_no_scrolling.Layer()));
-
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(kPaintsIntoOwnBacking,
-              sticky_scrolling.Layer()->GetCompositingState());
-    EXPECT_EQ(kNotComposited,
-              sticky_no_scrolling.Layer()->GetCompositingState());
-    EXPECT_EQ(kPaintsIntoOwnBacking,
-              overflow_hidden_scrolling.Layer()->GetCompositingState());
-    EXPECT_EQ(kNotComposited,
-              overflow_hidden_no_scrolling.Layer()->GetCompositingState());
-  }
 }
 
 void CompositingReasonFinderTest::CheckCompositingReasonsForAnimation(
@@ -292,11 +261,6 @@ TEST_P(CompositingReasonFinderTest, DontPromoteEmptyIframe) {
   ASSERT_TRUE(child_frame);
   LocalFrameView* child_frame_view = child_frame->View();
   ASSERT_TRUE(child_frame_view);
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(
-        kNotComposited,
-        child_frame_view->GetLayoutView()->Layer()->GetCompositingState());
-  }
   EXPECT_TRUE(child_frame_view->CanThrottleRendering());
 }
 

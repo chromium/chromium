@@ -129,7 +129,6 @@
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/paint/block_paint_invalidator.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/frame_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -155,7 +154,6 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset_recorder.h"
@@ -1178,8 +1176,8 @@ bool LocalFrameView::RequiresMainThreadScrollingForBackgroundAttachmentFixed()
       background_attachment_fixed_objects_.begin()->Get());
   // We should not add such object in the set.
   DCHECK(!object->BackgroundTransfersToView());
-  // If the background is viewport background and it paints onto the main
-  // graphics layer only, then it doesn't need main thread scrolling.
+  // If the background is viewport background and it paints onto the border box
+  // space only, then it doesn't need main thread scrolling.
   if (IsA<LayoutView>(object) &&
       object->GetBackgroundPaintLocation() == kBackgroundPaintInBorderBoxSpace)
     return false;
@@ -2939,9 +2937,6 @@ const cc::Layer* LocalFrameView::RootCcLayer() const {
 }
 
 void LocalFrameView::CreatePaintTimelineEvents() {
-  // For pre-CAP, this is done in CompositedLayerMapping::PaintContents()
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
   if (const cc::Layer* root_layer = paint_artifact_compositor_->RootLayer()) {
     for (const auto& layer : root_layer->children()) {
       if (!layer->update_rect().IsEmpty()) {

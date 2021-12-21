@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -21,7 +20,6 @@
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
 #include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_display_item_fragment.h"
@@ -38,8 +36,7 @@ void PaintLayerPainter::Paint(GraphicsContext& context,
                               PaintLayerFlags paint_flags) {
   PaintLayerPaintingInfo painting_info(&paint_layer_, cull_rect,
                                        global_paint_flags, PhysicalOffset());
-  if (!paint_layer_.PaintsIntoOwnOrGroupedBacking(global_paint_flags))
-    Paint(context, painting_info, paint_flags);
+  Paint(context, painting_info, paint_flags);
 }
 
 static ShouldRespectOverflowClipType ShouldRespectOverflowClip(
@@ -702,13 +699,6 @@ PaintResult PaintLayerPainter::PaintChildren(
 
   PaintLayerPaintOrderIterator iterator(&paint_layer_, children_to_visit);
   while (PaintLayer* child = iterator.Next()) {
-    // If this Layer should paint into its own backing or a grouped backing,
-    // that will be done via CompositedLayerMapping::PaintContents() and
-    // CompositedLayerMapping::DoPaintTask().
-    if (child->PaintsIntoOwnOrGroupedBacking(
-            painting_info.GetGlobalPaintFlags()))
-      continue;
-
     if (child->IsReplacedNormalFlowStacking())
       continue;
 
