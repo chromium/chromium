@@ -6,9 +6,9 @@
 #define BASE_SEQUENCE_CHECKER_H_
 
 #include "base/check.h"
+#include "base/dcheck_is_on.h"
 #include "base/sequence_checker_impl.h"
 #include "base/strings/string_piece.h"
-#include "build/build_config.h"
 
 #if DCHECK_IS_ON()
 #include "base/debug/stack_trace.h"
@@ -134,16 +134,6 @@ class SCOPED_LOCKABLE ScopedValidateSequenceChecker {
       EXCLUSIVE_LOCK_FUNCTION(checker) {
     std::unique_ptr<debug::StackTrace> bound_at;
     DCHECK(checker.CalledOnValidSequence(&bound_at))
-        << (bound_at ? "\nWas attached to sequence at:\n" + bound_at->ToString()
-                     : "");
-  }
-
-  explicit ScopedValidateSequenceChecker(const SequenceChecker& checker,
-                                         const StringPiece& msg)
-      EXCLUSIVE_LOCK_FUNCTION(checker) {
-    std::unique_ptr<debug::StackTrace> bound_at;
-    DCHECK(checker.CalledOnValidSequence(&bound_at))
-        << msg
         << (bound_at ? "\nWas attached to sequence at:\n" + bound_at->ToString()
                      : "");
   }
