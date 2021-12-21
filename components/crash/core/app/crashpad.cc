@@ -450,6 +450,13 @@ crashpad::CrashReportDatabase* GetCrashReportDatabase() {
   return g_database;
 }
 
+void SetCrashReportDatabaseForTesting(  // IN-TEST
+    crashpad::CrashReportDatabase* database,
+    base::FilePath* database_path) {
+  g_database = database;
+  g_database_path = database_path;
+}
+
 }  // namespace internal
 
 }  // namespace crash_reporter

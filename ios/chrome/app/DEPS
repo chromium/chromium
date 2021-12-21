@@ -6,6 +6,7 @@ include_rules = [
   "+components/component_updater",
   "+components/component_updater/installer_policies",
   "+components/content_settings",
+  "+components/crash/core/app",
   "+components/crash/core/common",
   "+components/favicon_base",
   "+components/favicon/core",

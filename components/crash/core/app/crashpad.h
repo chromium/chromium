@@ -27,6 +27,10 @@
 #include <signal.h>
 #endif
 
+#if defined(OS_IOS)
+#include "base/containers/span.h"
+#endif
+
 namespace base {
 class Time;
 }
@@ -151,6 +155,17 @@ void DumpWithoutCrashing();
 #if defined(OS_IOS)
 void DumpWithoutCrashAndDeferProcessing();
 void DumpWithoutCrashAndDeferProcessingAtPath(const base::FilePath& path);
+
+// Processes an externally generated dump.
+// An empty minidump is generated and an attachment is created with |dump_data|.
+// |source_name| is used as attachment name and is appended to the product name.
+// |override_annotations| overrides the standard simple annotations sent with
+// the report.
+// Returns whether the external dump was processed successfully.
+bool ProcessExternalDump(
+    const std::string& source_name,
+    base::span<const uint8_t> dump_data,
+    const std::map<std::string, std::string>& override_annotations = {});
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
@@ -266,6 +281,11 @@ bool PlatformCrashpadInitialization(
 // Returns the current crash report database object, or null if it has not
 // been initialized yet.
 crashpad::CrashReportDatabase* GetCrashReportDatabase();
+
+// Sets the global database and database path for testing. Must be called when
+// crashpad is not running.
+void SetCrashReportDatabaseForTesting(crashpad::CrashReportDatabase* database,
+                                      base::FilePath* database_path);
 
 }  // namespace internal
 

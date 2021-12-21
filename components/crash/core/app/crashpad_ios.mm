@@ -11,7 +11,13 @@
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "components/crash/core/app/crash_reporter_client.h"
+#include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
+#include "third_party/crashpad/crashpad/client/settings.h"
+#include "third_party/crashpad/crashpad/minidump/minidump_crashpad_info_writer.h"
+#include "third_party/crashpad/crashpad/minidump/minidump_file_writer.h"
+#include "third_party/crashpad/crashpad/minidump/minidump_simple_string_dictionary_writer.h"
+#include "third_party/crashpad/crashpad/util/misc/metrics.h"
 
 namespace crash_reporter {
 
@@ -67,6 +73,75 @@ void ProcessIntermediateDump(
     const base::FilePath& file,
     const std::map<std::string, std::string>& annotations) {
   GetCrashpadClient().ProcessIntermediateDump(file, annotations);
+}
+
+bool ProcessExternalDump(
+    const std::string& source,
+    base::span<const uint8_t> data,
+    const std::map<std::string, std::string>& override_annotations) {
+  auto crashpad_info_stream =
+      std::make_unique<crashpad::MinidumpCrashpadInfoWriter>();
+
+  auto simple_string_dictionary_writer =
+      std::make_unique<crashpad::MinidumpSimpleStringDictionaryWriter>();
+
+  std::map<std::string, std::string> annotations =
+      GetProcessSimpleAnnotations();
+  annotations["prod"] = annotations["prod"] + "_" + source;
+
+  for (auto& entry : override_annotations) {
+    annotations[entry.first] = entry.second;
+  }
+
+  for (auto& entry : annotations) {
+    auto writer =
+        std::make_unique<crashpad::MinidumpSimpleStringDictionaryEntryWriter>();
+    writer->SetKeyValue(entry.first, entry.second);
+    simple_string_dictionary_writer->AddEntry(std::move(writer));
+  }
+
+  crashpad_info_stream->SetSimpleAnnotations(
+      std::move(simple_string_dictionary_writer));
+
+  crashpad::CrashReportDatabase* database = internal::GetCrashReportDatabase();
+  if (!database) {
+    return false;
+  }
+  std::unique_ptr<crashpad::CrashReportDatabase::NewReport> new_report;
+  crashpad::CrashReportDatabase::OperationStatus database_status =
+      database->PrepareNewCrashReport(&new_report);
+  if (database_status != crashpad::CrashReportDatabase::kNoError) {
+    return false;
+  }
+
+  crashpad::MinidumpFileWriter minidump;
+
+  crashpad_info_stream->SetReportID(new_report->ReportID());
+  crashpad::Settings* const settings = database->GetSettings();
+  crashpad::UUID client_id;
+  if (settings && settings->GetClientID(&client_id)) {
+    crashpad_info_stream->SetClientID(client_id);
+  }
+
+  bool add_stream_result = minidump.AddStream(std::move(crashpad_info_stream));
+  DCHECK(add_stream_result);
+
+  if (data.size() > 0) {
+    crashpad::FileWriter* attachment_writer = new_report->AddAttachment(source);
+    attachment_writer->Write(data.data(), data.size());
+  }
+
+  if (!minidump.WriteEverything(new_report->Writer())) {
+    return false;
+  }
+
+  crashpad::UUID uuid;
+  database_status =
+      database->FinishedWritingCrashReport(std::move(new_report), &uuid);
+  if (database_status != crashpad::CrashReportDatabase::kNoError) {
+    return false;
+  }
+  return true;
 }
 
 void StartProcessingPendingReports() {
