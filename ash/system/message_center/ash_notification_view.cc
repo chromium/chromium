@@ -393,6 +393,10 @@ AshNotificationView::AshNotificationView(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
+  inline_reply()->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
 
   static_cast<views::FlexLayout*>(header_row()->GetLayoutManager())
       ->SetDefault(views::kMarginsKey, gfx::Insets())
