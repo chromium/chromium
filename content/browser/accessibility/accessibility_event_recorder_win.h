@@ -51,13 +51,6 @@ class CONTENT_EXPORT AccessibilityEventRecorderWin
                       DWORD event_thread,
                       DWORD event_time);
 
-  // Wrapper around AccessibleObjectFromWindow because the function call
-  // inexplicably flakes sometimes on build/trybots.
-  HRESULT AccessibleObjectFromWindowWrapper(HWND hwnd,
-                                            DWORD dwId,
-                                            REFIID riid,
-                                            void** ppvObject);
-
   HWINEVENTHOOK win_event_hook_handle_;
   // TODO: should be either removed or converted to a weakptr.
   const raw_ptr<BrowserAccessibilityManager> manager_;
