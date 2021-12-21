@@ -42,6 +42,7 @@
 #include "v8/include/v8-primitive.h"
 #include "v8/include/v8-script.h"
 #include "v8/include/v8-template.h"
+#include "v8/include/v8-wasm.h"
 
 namespace auction_worklet {
 
@@ -439,6 +440,41 @@ v8::MaybeLocal<v8::UnboundScript> AuctionV8Helper::Compile(
                                        try_catch.Message());
   }
   return result;
+}
+
+v8::MaybeLocal<v8::WasmModuleObject> AuctionV8Helper::CompileWasm(
+    const std::string& payload,
+    const GURL& src_url,
+    const DebugId* debug_id,
+    absl::optional<std::string>& error_out) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  v8::Isolate* v8_isolate = isolate();
+
+  DebugContextScope maybe_debug(inspector(), v8_isolate->GetCurrentContext(),
+                                debug_id, src_url.spec());
+
+  v8::TryCatch try_catch(isolate());
+  v8::MaybeLocal<v8::WasmModuleObject> result = v8::WasmModuleObject::Compile(
+      isolate(),
+      v8::MemorySpan<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(payload.data()), payload.size()));
+  if (try_catch.HasCaught()) {
+    // WasmModuleObject::Compile doesn't know the URL, so FormatExceptionMessage
+    // would produce unhelpful message w/o that important bit of context.
+    error_out =
+        base::StrCat({src_url.spec(), " ",
+                      try_catch.Message().IsEmpty()
+                          ? "Unknown exception"
+                          : FormatValue(isolate(), try_catch.Message()->Get()),
+                      "."});
+  }
+  return result;
+}
+
+v8::MaybeLocal<v8::WasmModuleObject> AuctionV8Helper::CloneWasmModule(
+    v8::Local<v8::WasmModuleObject> in) {
+  return v8::WasmModuleObject::FromCompiledModule(isolate(),
+                                                  in->GetCompiledModule());
 }
 
 v8::MaybeLocal<v8::Value> AuctionV8Helper::RunScript(

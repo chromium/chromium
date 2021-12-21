@@ -34,6 +34,7 @@
 
 namespace v8 {
 class UnboundScript;
+class WasmModuleObject;
 }  // namespace v8
 
 namespace v8_inspector {
@@ -199,6 +200,27 @@ class AuctionV8Helper
       const GURL& src_url,
       const DebugId* debug_id,
       absl::optional<std::string>& error_out);
+
+  // Compiles the provided WASM module from bytecode. A context must be active
+  // for this method to be invoked, and the object would be created for it (but
+  // may be cloned efficiently for other contexts via CloneWasmModule). In case
+  // of an error sets `error_out`.
+  //
+  // Note that since the returned object is a JS Object, so to properly isolate
+  // different executions it should not be used directly but rather fresh copies
+  // should be made via CloneWasmModule.
+  v8::MaybeLocal<v8::WasmModuleObject> CompileWasm(
+      const std::string& payload,
+      const GURL& src_url,
+      const DebugId* debug_id,
+      absl::optional<std::string>& error_out);
+
+  // Creates a fresh object describing the same WASM module as `in`, which must
+  // not be empty. Can return an empty handle on an error.
+  //
+  // An execution context must be active, and the object will be created for it.
+  v8::MaybeLocal<v8::WasmModuleObject> CloneWasmModule(
+      v8::Local<v8::WasmModuleObject> in);
 
   // Binds a script and runs it in the passed in context, returning the result.
   // Note that the returned value could include references to objects or

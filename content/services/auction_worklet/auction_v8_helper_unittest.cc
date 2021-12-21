@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
@@ -24,12 +25,18 @@
 #include "url/gurl.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-forward.h"
+#include "v8/include/v8-wasm.h"
 
 using testing::ElementsAre;
 using testing::HasSubstr;
 using testing::StartsWith;
 
 namespace auction_worklet {
+
+// The bytes of a minimal WebAssembly module, courtesy of
+// v8/test/cctest/test-api-wasm.cc
+const char kMinimalWasmModuleBytes[] = {0x00, 0x61, 0x73, 0x6d,
+                                        0x01, 0x00, 0x00, 0x00};
 
 class AuctionV8HelperTest : public testing::Test {
  public:
@@ -107,6 +114,33 @@ class AuctionV8HelperTest : public testing::Test {
             },
             helper_, std::move(debug_id), function_name, url, body,
             expect_success, std::move(done), result_out));
+  }
+
+  bool CompileWasmOnV8ThreadAndWait(
+      scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+      const GURL& url,
+      const std::string& body,
+      absl::optional<std::string>* error_out) {
+    bool success = false;
+    base::RunLoop run_loop;
+    helper_->v8_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](scoped_refptr<AuctionV8Helper> helper,
+               scoped_refptr<AuctionV8Helper::DebugId> debug_id, GURL url,
+               std::string body, bool* success_out,
+               absl::optional<std::string>* error_out, base::OnceClosure done) {
+              AuctionV8Helper::FullIsolateScope isolate_scope(helper.get());
+              v8::Context::Scope ctx(helper->scratch_context());
+              *success_out =
+                  !helper->CompileWasm(body, url, debug_id.get(), *error_out)
+                       .IsEmpty();
+              std::move(done).Run();
+            },
+            helper_, std::move(debug_id), url, body, &success, error_out,
+            run_loop.QuitClosure()));
+    run_loop.Run();
+    return success;
   }
 
   void ConnectToDevToolsAgent(
@@ -1053,6 +1087,152 @@ TEST_F(AuctionV8HelperTest, DebugTimeout) {
   result_run_loop.Run();
   EXPECT_EQ(-1, result);
   id->AbortDebuggerPauses();
+}
+
+TEST_F(AuctionV8HelperTest, CompileWasm) {
+  v8::Local<v8::Context> context = helper_->CreateContext();
+  v8::Context::Scope context_scope(context);
+
+  v8::Local<v8::WasmModuleObject> wasm_module;
+  absl::optional<std::string> compile_error;
+  ASSERT_TRUE(
+      helper_
+          ->CompileWasm(std::string(kMinimalWasmModuleBytes,
+                                    base::size(kMinimalWasmModuleBytes)),
+                        GURL("https://foo.test/"),
+                        /*debug_id=*/nullptr, compile_error)
+          .ToLocal(&wasm_module));
+  EXPECT_FALSE(compile_error.has_value());
+}
+
+TEST_F(AuctionV8HelperTest, CompileWasmError) {
+  v8::Local<v8::Context> context = helper_->CreateContext();
+  v8::Context::Scope context_scope(context);
+
+  v8::Local<v8::WasmModuleObject> wasm_module;
+  absl::optional<std::string> compile_error;
+  EXPECT_FALSE(helper_
+                   ->CompileWasm("not wasm", GURL("https://foo.test/"),
+                                 /*debug_id=*/nullptr, compile_error)
+                   .ToLocal(&wasm_module));
+  ASSERT_TRUE(compile_error.has_value());
+  EXPECT_THAT(compile_error.value(), StartsWith("https://foo.test/ "));
+  EXPECT_THAT(compile_error.value(),
+              HasSubstr("Uncaught CompileError: WasmModuleObject::Compile"));
+}
+
+TEST_F(AuctionV8HelperTest, CompileWasmDebug) {
+  const char kSession[] = "123-456";
+  // Need to use a separate thread for debugger stuff.
+  v8_scope_.reset();
+  helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
+
+  auto id = base::MakeRefCounted<AuctionV8Helper::DebugId>(helper_.get());
+
+  mojo::Remote<blink::mojom::DevToolsAgent> agent_remote;
+  ConnectToDevToolsAgent(id, agent_remote.BindNewPipeAndPassReceiver());
+
+  TestDevToolsAgentClient debug_client(std::move(agent_remote), kSession,
+                                       /*use_binary_protocol=*/false);
+
+  debug_client.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",
+      R"({"id":1,"method":"Runtime.enable","params":{}})");
+  debug_client.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  absl::optional<std::string> error_out;
+  EXPECT_TRUE(CompileWasmOnV8ThreadAndWait(
+      id, GURL("https://example.com"),
+      std::string(kMinimalWasmModuleBytes, base::size(kMinimalWasmModuleBytes)),
+      &error_out));
+  TestDevToolsAgentClient::Event script_parsed =
+      debug_client.WaitForMethodNotification("Debugger.scriptParsed");
+  const std::string* lang =
+      script_parsed.value.FindStringPath("params.scriptLanguage");
+  ASSERT_TRUE(lang);
+  EXPECT_EQ(*lang, "WebAssembly");
+
+  debug_client.WaitForMethodNotification("Runtime.executionContextDestroyed");
+  id->AbortDebuggerPauses();
+}
+
+TEST_F(AuctionV8HelperTest, CloneWasmModule) {
+  // Test proper CloneWasmModule() usage to prevent state persistence via
+  // WASM Module objects.
+
+  const char kScript[] = R"(
+    function probe(moduleObject) {
+      var result = moduleObject.weirdField ? moduleObject.weirdField : -1;
+      moduleObject.weirdField = 5;
+      return result;
+    }
+  )";
+
+  v8::Local<v8::Context> context = helper_->CreateContext();
+  v8::Context::Scope context_scope(context);
+
+  // Compile the WASM module...
+  v8::Local<v8::WasmModuleObject> wasm_module;
+  absl::optional<std::string> error_msg;
+  ASSERT_TRUE(
+      helper_
+          ->CompileWasm(std::string(kMinimalWasmModuleBytes,
+                                    base::size(kMinimalWasmModuleBytes)),
+                        GURL("https://foo.test/"),
+                        /*debug_id=*/nullptr, error_msg)
+          .ToLocal(&wasm_module));
+  EXPECT_FALSE(error_msg.has_value());
+
+  // And the test script.
+  v8::Local<v8::UnboundScript> script;
+  ASSERT_TRUE(helper_
+                  ->Compile(kScript, GURL("https://foo.test/"),
+                            /*debug_id=*/nullptr, error_msg)
+                  .ToLocal(&script));
+  EXPECT_FALSE(error_msg.has_value());
+
+  // Run the script a couple of times passing in the same module.
+  std::vector<v8::Local<v8::Value>> args;
+  args.push_back(wasm_module);
+  v8::Local<v8::Value> result;
+  std::vector<std::string> error_msgs;
+  ASSERT_TRUE(helper_
+                  ->RunScript(context, script,
+                              /*debug_id=*/nullptr, "probe", args, error_msgs)
+                  .ToLocal(&result));
+  EXPECT_TRUE(error_msgs.empty());
+  int int_result = 0;
+  ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &int_result));
+  EXPECT_EQ(-1, int_result);
+
+  ASSERT_TRUE(helper_
+                  ->RunScript(context, script,
+                              /*debug_id=*/nullptr, "probe", args, error_msgs)
+                  .ToLocal(&result));
+  EXPECT_TRUE(error_msgs.empty());
+  ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &int_result));
+  EXPECT_EQ(5, int_result);
+
+  // Nothing stick arounds if CloneWasmModule is consistently used, however.
+  args[0] = helper_->CloneWasmModule(wasm_module).ToLocalChecked();
+  ASSERT_TRUE(helper_
+                  ->RunScript(context, script,
+                              /*debug_id=*/nullptr, "probe", args, error_msgs)
+                  .ToLocal(&result));
+  EXPECT_TRUE(error_msgs.empty());
+  ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &int_result));
+  EXPECT_EQ(-1, int_result);
+
+  args[0] = helper_->CloneWasmModule(wasm_module).ToLocalChecked();
+  ASSERT_TRUE(helper_
+                  ->RunScript(context, script,
+                              /*debug_id=*/nullptr, "probe", args, error_msgs)
+                  .ToLocal(&result));
+  EXPECT_TRUE(error_msgs.empty());
+  ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &int_result));
+  EXPECT_EQ(-1, int_result);
 }
 
 }  // namespace auction_worklet
