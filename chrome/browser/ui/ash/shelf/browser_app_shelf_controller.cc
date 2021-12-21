@@ -214,6 +214,7 @@ void BrowserAppShelfController::MaybeUpdateBrowserWindowProperties(
   } else {
     // No active app for that window: it's mapped to the browser's shelf item,
     // which must be present.
+    app_id = browser_app_id;
     shelf_id = ash::ShelfID(browser_app_id);
     DCHECK(model_.ItemByID(shelf_id));
     BrowserWindowMustBeValid(browser_window);
