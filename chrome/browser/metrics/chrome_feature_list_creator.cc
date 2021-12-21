@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -103,6 +104,11 @@ void ChromeFeatureListCreator::CreatePrefService() {
   bool result =
       base::PathService::Get(chrome::FILE_LOCAL_STATE, &local_state_file);
   DCHECK(result);
+
+#if defined(OS_ANDROID)
+  base::UmaHistogramBoolean("UMA.Startup.LocalStateFileExistence",
+                            base::PathExists(local_state_file));
+#endif  // defined(OS_ANDROID)
 
   auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
   RegisterLocalState(pref_registry.get());

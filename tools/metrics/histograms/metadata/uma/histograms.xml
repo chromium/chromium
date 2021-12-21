@@ -781,6 +781,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.Startup.LocalStateFileExistence" enum="BooleanExists"
+    expires_after="2022-08-01">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Denotes whether or not the Local State file exists during startup. Emitted
+    when the PrefService is created. Android Chrome only.
+  </summary>
+</histogram>
+
 <histogram name="UMA.StructuredMetrics.ClientInitializationSuccessful"
     enum="BooleanSuccess" expires_after="M97">
   <owner>jongahn@chromium.org</owner>
