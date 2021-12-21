@@ -108,13 +108,11 @@ void ShillIPConfigClientImpl::SetProperty(const dbus::ObjectPath& ipconfig_path,
   // IPConfig supports writing basic type and string array properties.
   switch (value.type()) {
     case base::Value::Type::LIST: {
-      const base::ListValue* list_value = nullptr;
-      value.GetAsList(&list_value);
       dbus::MessageWriter variant_writer(nullptr);
       writer.OpenVariant("as", &variant_writer);
       dbus::MessageWriter array_writer(nullptr);
       variant_writer.OpenArray("s", &array_writer);
-      for (const auto& entry : list_value->GetList()) {
+      for (const auto& entry : value.GetList()) {
         DLOG_IF(ERROR, !entry.is_string())
             << "Unexpected type " << entry.type();
         array_writer.AppendString(entry.is_string() ? entry.GetString()
