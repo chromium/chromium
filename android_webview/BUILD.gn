@@ -7,6 +7,7 @@ import("//android_webview/system_webview_bundle.gni")
 import("//android_webview/variables.gni")
 import("//android_webview/webview_repack_locales.gni")
 import("//build/android/resource_sizes.gni")
+import("//build/config/android/channel.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/config/locales.gni")
@@ -894,6 +895,13 @@ repack("repack_pack") {
   if (webview_includes_weblayer) {
     sources += [ "$root_gen_dir/weblayer/weblayer_resources.pak" ]
     deps += [ "//weblayer:resources" ]
+
+    # These resources are primarily useful for developers. To avoid increasing
+    # the size of WebView they are only included in non-stable channels.
+    if (android_channel != "stable") {
+      sources += [ "$root_gen_dir/content/dev_ui_content_resources.pak" ]
+      deps += [ "//content:dev_ui_content_resources" ]
+    }
   }
 }
 
