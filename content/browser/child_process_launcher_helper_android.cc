@@ -143,10 +143,11 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     env->SetObjectArrayElement(j_file_infos.obj(), i, j_file_info.obj());
   }
 
+  AddRef();  // Balanced by OnChildProcessStarted.
   java_peer_.Reset(Java_ChildProcessLauncherHelperImpl_createAndStart(
       env, reinterpret_cast<intptr_t>(this), j_argv, j_file_infos,
       can_use_warm_up_connection));
-  AddRef();  // Balanced by OnChildProcessStarted.
+
   client_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
