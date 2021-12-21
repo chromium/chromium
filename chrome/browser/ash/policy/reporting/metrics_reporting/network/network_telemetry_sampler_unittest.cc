@@ -36,10 +36,10 @@ constexpr char kInterfaceName[] = "interface_name";
 constexpr char kAccessPointAddress[] = "access_point";
 constexpr bool kPowerManagementEnabled = true;
 constexpr bool kEncryptionOn = true;
-constexpr uint32_t kTxBitRateMbps = 8;
-constexpr uint32_t kRxBitRateMbps = 4;
-constexpr uint32_t kTxPowerDbm = 2;
-constexpr uint32_t kLinkQuality = 1;
+constexpr int64_t kTxBitRateMbps = 8;
+constexpr int64_t kRxBitRateMbps = 4;
+constexpr int64_t kTxPowerDbm = 2;
+constexpr int64_t kLinkQuality = 1;
 constexpr int kSignalLevelDbm = 10;
 
 struct FakeNetworkData {
@@ -135,11 +135,11 @@ chromeos::cros_healthd::mojom::TelemetryInfoPtr CreateWifiResult(
     const std::string& interface_name,
     bool power_management_enabled,
     const std::string& access_point_address,
-    uint32_t tx_bit_rate_mbps,
-    uint32_t rx_bit_rate_mbps,
-    uint32_t tx_power_dbm,
+    int64_t tx_bit_rate_mbps,
+    int64_t rx_bit_rate_mbps,
+    int64_t tx_power_dbm,
     bool encryption_on,
-    uint32_t link_quality,
+    int64_t link_quality,
     int signal_level_dbm) {
   auto telemetry_info = chromeos::cros_healthd::mojom::TelemetryInfo::New();
   std::vector<chromeos::cros_healthd::mojom::NetworkInterfaceInfoPtr>

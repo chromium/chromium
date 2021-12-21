@@ -108,15 +108,15 @@ message WirelessInterfaceTelemetry {
   // Access point address.
   optional string access_point_address = 2;
   // Transmission bit rate measured in Mbps.
-  optional uint32 tx_bit_rate_mbps = 3;
+  optional int64 tx_bit_rate_mbps = 3;
   // Receiving bit rate measured in Mbps.
-  optional uint32 rx_bit_rate_mbps = 4;
+  optional int64 rx_bit_rate_mbps = 4;
   // Transmission power measured in dBm.
   optional int32 tx_power_dbm = 5;
   // Is wifi encryption key on or not.
   optional bool encryption_on = 6;
   // Wifi link quality.
-  optional uint32 link_quality = 7;
+  optional int64 link_quality = 7;
   // Wifi signal level in dBm.
   optional int32 signal_level_dbm = 8;
 }
@@ -188,9 +188,9 @@ message TotalMemoryEncryptionInfo {
   // The state of memory encryption on the device.
   optional MemoryEncryptionState encryption_state = 1;
   // The maximum number of keys that can be used for encryption.
-  optional uint32 max_keys = 2;
+  optional int64 max_keys = 2;
   // The length of the encryption keys.
-  optional uint32 key_length = 3;
+  optional int64 key_length = 3;
   // The encryption algorithm being used on the device.
   optional MemoryEncryptionAlgorithm encryption_algorithm = 4;
 }

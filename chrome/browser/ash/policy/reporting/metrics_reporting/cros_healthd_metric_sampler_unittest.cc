@@ -28,26 +28,26 @@ struct MemoryEncryptionTestCase {
   reporting::MemoryEncryptionState reporting_encryption_state;
   cros_healthd::CryptoAlgorithm healthd_encryption_algorithm;
   reporting::MemoryEncryptionAlgorithm reporting_encryption_algorithm;
-  uint32_t max_keys;
-  uint32_t key_length;
+  int64_t max_keys;
+  int64_t key_length;
 };
 
 namespace reporting {
 namespace test {
 
 // Memory constants.
-constexpr uint32_t kTmeMaxKeys = 2;
-constexpr uint32_t kTmeKeysLength = 4;
+constexpr int64_t kTmeMaxKeys = 2;
+constexpr int64_t kTmeKeysLength = 4;
 
 // Wifi constants.
 constexpr char kInterfaceName[] = "interface_name";
 constexpr char kAccessPointAddress[] = "access_point";
 constexpr bool kPowerManagementEnabled = true;
 constexpr bool kEncryptionOn = true;
-constexpr uint32_t kTxBitRateMbps = 8;
-constexpr uint32_t kRxBitRateMbps = 4;
-constexpr uint32_t kTxPowerDbm = 2;
-constexpr uint32_t kLinkQuality = 1;
+constexpr int64_t kTxBitRateMbps = 8;
+constexpr int64_t kRxBitRateMbps = 4;
+constexpr int64_t kTxPowerDbm = 2;
+constexpr int64_t kLinkQuality = 1;
 constexpr int kSignalLevelDbm = 10;
 
 cros_healthd::KeylockerInfoPtr CreateKeylockerInfo(bool configured) {
@@ -91,11 +91,11 @@ cros_healthd::TelemetryInfoPtr CreateWifiResult(
     const std::string& interface_name,
     bool power_management_enabled,
     const std::string& access_point_address,
-    uint32_t tx_bit_rate_mbps,
-    uint32_t rx_bit_rate_mbps,
-    uint32_t tx_power_dbm,
+    int64_t tx_bit_rate_mbps,
+    int64_t rx_bit_rate_mbps,
+    int64_t tx_power_dbm,
     bool encryption_on,
-    uint32_t link_quality,
+    int64_t link_quality,
     int signal_level_dbm) {
   auto telemetry_info = cros_healthd::TelemetryInfo::New();
   std::vector<cros_healthd::NetworkInterfaceInfoPtr> network_interfaces;
@@ -122,10 +122,10 @@ cros_healthd::AudioInfoPtr CreateAudioInfo(
     bool input_mute,
     uint64_t output_volume,
     const std::string& output_device_name,
-    uint32_t input_gain,
+    int64_t input_gain,
     const std::string& input_device_name,
-    uint32_t underruns,
-    uint32_t severe_underruns) {
+    int64_t underruns,
+    int64_t severe_underruns) {
   return cros_healthd::AudioInfo::New(
       output_mute, input_mute, output_volume, output_device_name, input_gain,
       input_device_name, underruns, severe_underruns);
@@ -141,8 +141,8 @@ cros_healthd::TelemetryInfoPtr CreateAudioResult(
 
 cros_healthd::MemoryEncryptionInfoPtr CreateMemoryEncryptionInfo(
     cros_healthd::EncryptionState encryption_state,
-    uint32_t max_keys,
-    uint32_t key_length,
+    int64_t max_keys,
+    int64_t key_length,
     cros_healthd::CryptoAlgorithm encryption_algorithm) {
   return cros_healthd::MemoryEncryptionInfo::New(
       encryption_state, max_keys, key_length, encryption_algorithm);
