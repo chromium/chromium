@@ -873,10 +873,8 @@ bool StyleCascade::ResolveTokensInto(CSSParserTokenRange range,
 bool StyleCascade::ResolveVarInto(CSSParserTokenRange range,
                                   CascadeResolver& resolver,
                                   TokenSequence& out) {
-  AtomicString variable_name = ConsumeVariableName(range);
+  CustomProperty property(ConsumeVariableName(range), state_.GetDocument());
   DCHECK(range.AtEnd() || (range.Peek().GetType() == kCommaToken));
-
-  CustomProperty property(variable_name, state_.GetDocument());
 
   // Any custom property referenced (by anything, even just once) in the
   // document can currently not be animated on the compositor. Hence we mark

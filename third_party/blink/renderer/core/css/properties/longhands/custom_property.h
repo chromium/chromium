@@ -25,7 +25,7 @@ class CORE_EXPORT CustomProperty : public Variable {
 
  public:
   CustomProperty() = default;
-  CustomProperty(const AtomicString& name, const Document&);
+  CustomProperty(AtomicString name, const Document&);
   CustomProperty(const AtomicString& name, const PropertyRegistry*);
 
   const AtomicString& GetPropertyNameAtomicString() const override;
@@ -56,6 +56,7 @@ class CORE_EXPORT CustomProperty : public Variable {
  private:
   CustomProperty(const AtomicString& name,
                  const PropertyRegistration* registration);
+  explicit CustomProperty(const PropertyRegistration* registration);
 
   const CSSValue* ParseUntyped(CSSParserTokenRange,
                                const CSSParserContext&,

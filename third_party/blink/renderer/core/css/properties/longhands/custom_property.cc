@@ -25,11 +25,15 @@ CSSProperty::Flags InheritedFlag(const PropertyRegistration* registration) {
 
 }  // namespace
 
-CustomProperty::CustomProperty(const AtomicString& name,
-                               const Document& document)
+CustomProperty::CustomProperty(AtomicString name, const Document& document)
     : CustomProperty(
-          name,
-          PropertyRegistration::From(document.GetExecutionContext(), name)) {}
+          PropertyRegistration::From(document.GetExecutionContext(), name)) {
+  // Initializing `name_` on the body prevents `name` to be used after the
+  // std::move call.
+  name_ = std::move(name);
+  DCHECK_EQ(IsShorthand(), CSSProperty::IsShorthand(GetCSSPropertyName()));
+  DCHECK_EQ(IsRepeated(), CSSProperty::IsRepeated(GetCSSPropertyName()));
+}
 
 CustomProperty::CustomProperty(const AtomicString& name,
                                const PropertyRegistry* registry)
@@ -43,6 +47,9 @@ CustomProperty::CustomProperty(const AtomicString& name,
   DCHECK_EQ(IsShorthand(), CSSProperty::IsShorthand(GetCSSPropertyName()));
   DCHECK_EQ(IsRepeated(), CSSProperty::IsRepeated(GetCSSPropertyName()));
 }
+
+CustomProperty::CustomProperty(const PropertyRegistration* registration)
+    : Variable(InheritedFlag(registration)), registration_(registration) {}
 
 const AtomicString& CustomProperty::GetPropertyNameAtomicString() const {
   return name_;
