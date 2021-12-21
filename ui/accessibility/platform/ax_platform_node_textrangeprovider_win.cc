@@ -1615,19 +1615,22 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
   // When the subtree of the root node will be deleted, we can be certain that
   // our endpoint should be invalidated. We know it's the root node when the
   // node doesn't have a parent.
-  if (!node->GetParent()) {
+  AXNode* endpoint_anchor = endpoint->GetAnchor();
+  if (!node->GetParent() || !endpoint_anchor) {
     is_start_endpoint ? SetStart(AXNodePosition::CreateNullPosition())
                       : SetEnd(AXNodePosition::CreateNullPosition());
     return;
   }
 
+  // Fast check for the common case - there are many tree updates and the
+  // endpoints probably are not in the deleted subtree. Note that
+  // CreateAncestorPosition/GetParentPosition can be expensive for text
+  // positions.
+  if (!endpoint_anchor->IsDescendantOfCrossingTreeBoundary(node))
+    return;
+
   AXPositionInstance new_endpoint = endpoint->CreateAncestorPosition(
       node, ax::mojom::MoveDirection::kForward);
-  // When a null position is created from CreateAncestorPosition, it means that
-  // |node| wasn't an ancestor of |new_endpoint| or the anchor it's on. This
-  // means that endpoint is unaffected by the node deletion.
-  if (new_endpoint->IsNullPosition())
-    return;
 
   // Obviously, we want the position to be on the parent of |node| and not on
   // |node| itself since it's about to be deleted.
@@ -1642,17 +1645,30 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
   DCHECK(!new_endpoint->IsIgnored());
   DCHECK(!other_endpoint->IsIgnored());
 
-  // Create a degenerate range at |end_| if we have an inverted range - which
-  // occurs when the |end_| comes before the |start_|.
+  // If after all the above operations we're still left with a new endpoint that
+  // is a descendant of the subtree root being deleted, just point at a null
+  // position and don't crash later on. This can happen when the entire parent
+  // chain of the subtree is ignored.
+  endpoint_anchor = new_endpoint->GetAnchor();
+  if (!endpoint_anchor ||
+      endpoint_anchor->IsDescendantOfCrossingTreeBoundary(node))
+    new_endpoint = AXNodePosition::CreateNullPosition();
+
+  // Create a degenerate range at the new position if we have an inverted range
+  // - which occurs when the |end_| comes before the |start_|. This could have
+  // happened due to the new endpoint walking forwards or backwards when
+  // normalizing above. If we don't set the opposite endpoint to something that
+  // we know will be safe (i.e. not in a deleted subtree) we'll crash later on
+  // when trying to create a valid position.
   if (is_start_endpoint) {
     if (*other_endpoint < *new_endpoint)
-      new_endpoint = other_endpoint->Clone();
+      SetEnd(new_endpoint->Clone());
 
     SetStart(std::move(new_endpoint));
     validation_necessary_for_start_ = {tree->GetAXTreeID(), node->id()};
   } else {
     if (*new_endpoint < *other_endpoint)
-      new_endpoint = other_endpoint->Clone();
+      SetStart(new_endpoint->Clone());
 
     SetEnd(std::move(new_endpoint));
     validation_necessary_for_end_ = {tree->GetAXTreeID(), node->id()};
@@ -1666,43 +1682,26 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::OnNodeDeleted(
     AXNodeID node_id) {
   DCHECK(tree);
 
-  bool should_dump = false;
   if (validation_necessary_for_start_.has_value() &&
       validation_necessary_for_start_->tree_id == tree->GetAXTreeID() &&
       validation_necessary_for_start_->node_id == node_id) {
-    if (start_->GetAnchor()->IsDataValid()) {
+    if (!start_->IsNullPosition() && start_->GetAnchor()->IsDataValid())
       SetStart(start_->AsValidPosition());
-    } else {
-      should_dump = true;
+    else
       SetStart(AXNodePosition::CreateNullPosition());
-    }
+
     validation_necessary_for_start_ = absl::nullopt;
   }
+
   if (validation_necessary_for_end_.has_value() &&
       validation_necessary_for_end_->tree_id == tree->GetAXTreeID() &&
       validation_necessary_for_end_->node_id == node_id) {
-    if (end_->GetAnchor()->IsDataValid()) {
+    if (!end_->IsNullPosition() && end_->GetAnchor()->IsDataValid())
       SetEnd(end_->AsValidPosition());
-    } else {
-      should_dump = true;
+    else
       SetEnd(AXNodePosition::CreateNullPosition());
-    }
-    validation_necessary_for_end_ = absl::nullopt;
-  }
 
-  // TODO(bebeaudr): The following dump without crash is to collect data that
-  // will help us understand what causes the endpoints to be positioned on nodes
-  // that are no longer part of the tree. This bad state caused crashes like
-  // https://crbug.com/1278304, but the above mitigation should prevent any
-  // crashes related to this problem going forward.
-  if (should_dump) {
-    static auto* const crash_key = base::debug::AllocateCrashKeyString(
-        "text_range_endpoints_on_node_deleted_err",
-        base::debug::CrashKeySize::Size64);
-    std::ostringstream error;
-    error << "AXNode's |data_| is invalid. Unable to maintain a valid range.";
-    base::debug::SetCrashKeyString(crash_key, error.str());
-    base::debug::DumpWithoutCrashing();
+    validation_necessary_for_end_ = absl::nullopt;
   }
 }
 

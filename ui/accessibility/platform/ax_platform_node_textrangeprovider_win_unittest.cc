@@ -6509,7 +6509,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // a change to the range.
   //
   // ++1 kRootWebArea
-  // ++++++2 kStaticText "one"
+  // ++++2 kStaticText "one"
   // ++++3 kGenericContainer
   // ++++++4 kGenericContainer
   // ++++++++5 kStaticText " two"
@@ -6593,6 +6593,258 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   EXPECT_EQ(root_1.id, GetEnd(range.Get())->anchor_id());
   EXPECT_EQ(3, GetEnd(range.Get())->text_offset());
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestDeleteSubtreeWithIgnoredAncestors) {
+  // This test updates the tree structure to ensure that the text range doesn't
+  // crash and points to null positions after a subtree that includes the text
+  // range is deleted and all ancestors are ignored.
+  //
+  // ++1 kRootWebArea ignored
+  // ++++2 kStaticText "one"
+  // ++++3 kGenericContainer ignored
+  // ++++++4 kGenericContainer
+  // ++++++++5 kGenericContainer
+  // ++++++++++6 kStaticText " two"
+  // ++++++++7 kGenericContainer ignored
+  // ++++++++++8 kStaticText " ignored" ignored
+  // ++++++++9 kGenericContainer
+  // ++++++++++10 kStaticText " three"
+  // ++++11 kGenericContainer
+  // ++++++12 kStaticText "four"
+  AXNodeData root_1;
+  AXNodeData text_2;
+  AXNodeData gc_3;
+  AXNodeData gc_4;
+  AXNodeData gc_5;
+  AXNodeData text_6;
+  AXNodeData gc_7;
+  AXNodeData text_8;
+  AXNodeData gc_9;
+  AXNodeData text_10;
+  AXNodeData gc_11;
+  AXNodeData text_12;
+
+  root_1.id = 1;
+  text_2.id = 2;
+  gc_3.id = 3;
+  gc_4.id = 4;
+  gc_5.id = 5;
+  text_6.id = 6;
+  gc_7.id = 7;
+  text_8.id = 8;
+  gc_9.id = 9;
+  text_10.id = 10;
+  gc_11.id = 11;
+  text_12.id = 12;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {text_2.id, gc_3.id, gc_11.id};
+  root_1.AddState(ax::mojom::State::kIgnored);
+
+  text_2.role = ax::mojom::Role::kStaticText;
+  text_2.SetName("one");
+
+  gc_3.role = ax::mojom::Role::kGenericContainer;
+  gc_3.AddState(ax::mojom::State::kIgnored);
+  gc_3.child_ids = {gc_4.id};
+
+  gc_4.role = ax::mojom::Role::kGenericContainer;
+  gc_4.child_ids = {gc_5.id, gc_7.id, gc_9.id};
+
+  gc_5.role = ax::mojom::Role::kGenericContainer;
+  gc_5.child_ids = {text_6.id};
+
+  text_6.role = ax::mojom::Role::kStaticText;
+  text_6.SetName(" two");
+
+  gc_7.role = ax::mojom::Role::kGenericContainer;
+  gc_7.AddState(ax::mojom::State::kIgnored);
+  gc_7.child_ids = {text_8.id};
+
+  text_8.role = ax::mojom::Role::kStaticText;
+  text_8.AddState(ax::mojom::State::kIgnored);
+  text_8.SetName(" ignored");
+
+  gc_9.role = ax::mojom::Role::kGenericContainer;
+  gc_9.child_ids = {text_10.id};
+
+  text_10.role = ax::mojom::Role::kStaticText;
+  text_10.SetName(" three");
+
+  gc_11.role = ax::mojom::Role::kGenericContainer;
+  gc_11.child_ids = {text_12.id};
+
+  text_12.role = ax::mojom::Role::kStaticText;
+  text_12.SetName("four");
+
+  ui::AXTreeUpdate update;
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.root_id = root_1.id;
+  update.tree_data.tree_id = tree_id;
+  update.has_tree_data = true;
+  update.nodes = {root_1, text_2, gc_3, gc_4,    gc_5,  text_6,
+                  gc_7,   text_8, gc_9, text_10, gc_11, text_12};
+  Init(update);
+
+  // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
+  // will build the entire tree.
+  AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
+      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+
+  // Create a range that spans " two three" located on the leaf nodes.
+
+  // start: TextPosition, anchor_id=5, text_offset=0
+  // end  : TextPosition, anchor_id=7, text_offset=6
+  ComPtr<AXPlatformNodeTextRangeProviderWin> range;
+  CreateTextRangeProviderWin(
+      range, owner, tree_id,
+      /*start_anchor_id*/ text_6.id, /*start_offset*/ 2,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor_id*/ text_10.id, /*end_offset*/ 6,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"wo three");
+
+  // Delete |gc_3|, which will delete the entire subtree where both of our
+  // endpoints are.
+  AXTreeUpdate test_update;
+  gc_3.child_ids = {};
+  test_update.nodes = {gc_3};
+  ASSERT_TRUE(GetTree()->Unserialize(test_update));
+
+  // There was no unignored position in which to place the start and end - they
+  // should now be null positions.
+  EXPECT_TRUE(GetStart(range.Get())->IsNullPosition());
+  EXPECT_TRUE(GetEnd(range.Get())->IsNullPosition());
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestDeleteSubtreeThatIncludesEndpointsNormalizeMoves) {
+  // This test updates the tree structure to ensure that the text range is still
+  // valid after a subtree that includes the text range is deleted, resulting in
+  // a change to the range that is adjusted forwards due to an ignored node.
+  //
+  // ++1 kRootWebArea
+  // ++++2 kStaticText "one"
+  // ++++3 kGenericContainer ignored
+  // ++++++4 kGenericContainer
+  // ++++++++5 kGenericContainer
+  // ++++++++++6 kStaticText " two"
+  // ++++++++7 kGenericContainer
+  // ++++++++++8 kStaticText " three"
+  // ++++++++9 kGenericContainer ignored
+  // ++++++++++10 kStaticText " ignored" ignored
+  // ++++11 kGenericContainer
+  // ++++++12 kStaticText "four"
+  AXNodeData root_1;
+  AXNodeData text_2;
+  AXNodeData gc_3;
+  AXNodeData gc_4;
+  AXNodeData gc_5;
+  AXNodeData text_6;
+  AXNodeData gc_7;
+  AXNodeData text_8;
+  AXNodeData gc_9;
+  AXNodeData text_10;
+  AXNodeData gc_11;
+  AXNodeData text_12;
+
+  root_1.id = 1;
+  text_2.id = 2;
+  gc_3.id = 3;
+  gc_4.id = 4;
+  gc_5.id = 5;
+  text_6.id = 6;
+  gc_7.id = 7;
+  text_8.id = 8;
+  gc_9.id = 9;
+  text_10.id = 10;
+  gc_11.id = 11;
+  text_12.id = 12;
+
+  root_1.role = ax::mojom::Role::kRootWebArea;
+  root_1.child_ids = {text_2.id, gc_3.id, gc_11.id};
+
+  text_2.role = ax::mojom::Role::kStaticText;
+  text_2.SetName("one");
+
+  gc_3.role = ax::mojom::Role::kGenericContainer;
+  gc_3.AddState(ax::mojom::State::kIgnored);
+  gc_3.child_ids = {gc_4.id};
+
+  gc_4.role = ax::mojom::Role::kGenericContainer;
+  gc_4.child_ids = {gc_5.id, gc_7.id, gc_9.id};
+
+  gc_5.role = ax::mojom::Role::kGenericContainer;
+  gc_5.child_ids = {text_6.id};
+
+  text_6.role = ax::mojom::Role::kStaticText;
+  text_6.SetName(" two");
+
+  gc_7.role = ax::mojom::Role::kGenericContainer;
+  gc_7.child_ids = {text_8.id};
+
+  text_8.role = ax::mojom::Role::kStaticText;
+  text_8.SetName(" three");
+
+  gc_9.role = ax::mojom::Role::kGenericContainer;
+  gc_9.AddState(ax::mojom::State::kIgnored);
+  gc_9.child_ids = {text_10.id};
+
+  text_10.role = ax::mojom::Role::kStaticText;
+  text_10.AddState(ax::mojom::State::kIgnored);
+  text_10.SetName(" ignored");
+
+  gc_11.role = ax::mojom::Role::kGenericContainer;
+  gc_11.child_ids = {text_12.id};
+
+  text_12.role = ax::mojom::Role::kStaticText;
+  text_12.SetName("four");
+
+  ui::AXTreeUpdate update;
+  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  update.root_id = root_1.id;
+  update.tree_data.tree_id = tree_id;
+  update.has_tree_data = true;
+  update.nodes = {root_1, text_2, gc_3, gc_4,    gc_5,  text_6,
+                  gc_7,   text_8, gc_9, text_10, gc_11, text_12};
+  Init(update);
+
+  // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
+  // will build the entire tree.
+  AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
+      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+
+  // Create a range that spans " two three" located on the leaf nodes.
+
+  // start: TextPosition, anchor_id=5, text_offset=0
+  // end  : TextPosition, anchor_id=7, text_offset=6
+  ComPtr<AXPlatformNodeTextRangeProviderWin> range;
+  CreateTextRangeProviderWin(
+      range, owner, tree_id,
+      /*start_anchor_id*/ text_6.id, /*start_offset*/ 2,
+      /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+      /*end_anchor_id*/ text_8.id, /*end_offset*/ 6,
+      /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+  EXPECT_UIA_TEXTRANGE_EQ(range, /*expected_text*/ L"wo three");
+
+  // Delete |gc_3|, which will delete the entire subtree where both of our
+  // endpoints are.
+  AXTreeUpdate test_update;
+  gc_3.child_ids = {};
+  test_update.nodes = {gc_3};
+  ASSERT_TRUE(GetTree()->Unserialize(test_update));
+
+  // The text range should now be a degenerate range positioned at the end of
+  // root, the parent of |gc_3|, since |gc_3| has been deleted.
+  EXPECT_EQ(text_12.id, GetStart(range.Get())->anchor_id());
+  EXPECT_EQ(0, GetStart(range.Get())->text_offset());
+
+  EXPECT_EQ(text_12.id, GetEnd(range.Get())->anchor_id());
+  EXPECT_EQ(0, GetEnd(range.Get())->text_offset());
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
