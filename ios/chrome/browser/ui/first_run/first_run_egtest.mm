@@ -776,7 +776,8 @@ GREYLayoutConstraint* BelowConstraint() {
 // Checks that it is possible to add an account even if there is already account
 // and that it is possible to switch accounts when multiple accounts are
 // present.
-- (void)testSignInSelectAccount {
+// TODO(crbug.com/1266372): Fix issue finding needed element.
+- (void)DISABLED_testSignInSelectAccount {
   FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
   FakeChromeIdentity* fakeIdentity2 = [SigninEarlGrey fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
@@ -901,7 +902,8 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that sync is turned on after the user chose to turn on
 // sync in the advanced sync settings screen.
-- (void)testCustomSyncOn {
+// TODO(crbug.com/1266372): Fix issue finding needed element.
+- (void)DISABLED_testCustomSyncOn {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
