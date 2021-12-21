@@ -73,16 +73,12 @@ base::TimeTicks WebRtcTimer::SchedulableCallback::Inactivate() {
   is_active_ = false;
   repeated_delay_ = base::TimeDelta();  // Prevent automatic re-schedule.
   if (metronome_listener_) {
-    if (!is_inactivated_by_callback) {
-      RemoveMetronomeListener();
-    } else {
-      // The metronome listener must not be removed from inside the callback.
-      task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &WebRtcTimer::SchedulableCallback::RemoveMetronomeListener,
-              this));
-    }
+    // Remove the listener asynchronously to avoid a possible deadlock, see
+    // https://crbug.com/1281399.
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &WebRtcTimer::SchedulableCallback::RemoveMetronomeListener, this));
   }
   base::AutoLock auto_scheduled_time_lock(scheduled_time_lock_);
   return scheduled_time_;
