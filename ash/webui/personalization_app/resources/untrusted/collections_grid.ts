@@ -225,7 +225,7 @@ export class CollectionsGrid extends PolymerElement {
   private collections_: WallpaperCollection[];
   private googlePhotos_: unknown[]|null;
   private googlePhotosCount_: number|null;
-  private imageCounts_: {[key: string]: number};
+  private imageCounts_: {[key: string]: number|null};
   private localImages_: FilePath[];
   private localImageData_: {[key: string]: string};
   private tiles_: Tile[];
@@ -264,7 +264,7 @@ export class CollectionsGrid extends PolymerElement {
    */
   private onCollectionLoaded_(
       collections: WallpaperCollection[]|null,
-      imageCounts: {[key: string]: number|undefined}) {
+      imageCounts: {[key: string]: number|null}) {
     if (!Array.isArray(collections) || !imageCounts) {
       return;
     }

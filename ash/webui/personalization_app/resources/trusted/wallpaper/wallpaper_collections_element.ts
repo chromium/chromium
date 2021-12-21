@@ -10,11 +10,13 @@
 
 import './styles.js';
 
-import {kMaximumLocalImagePreviews} from '/common/constants.js';
-import {isNonEmptyArray, isNullOrArray, isNullOrNumber, promisifyOnload} from '/common/utils.js';
-import {sendCollections, sendGooglePhotosCount, sendGooglePhotosPhotos, sendImageCounts, sendLocalImageData, sendLocalImages, sendVisible} from '/trusted/iframe_api.js';
+import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {kMaximumLocalImagePreviews} from '../../common/constants.js';
+import {isNonEmptyArray, isNullOrArray, isNullOrNumber, promisifyOnload} from '../../common/utils.js';
+import {sendCollections, sendGooglePhotosCount, sendGooglePhotosPhotos, sendImageCounts, sendLocalImageData, sendLocalImages, sendVisible} from '../iframe_api.js';
+import {WallpaperCollection, WallpaperImage, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {initializeBackdropData} from './wallpaper_controller.js';
@@ -30,37 +32,44 @@ let sendLocalImageDataFunction = sendLocalImageData;
 /**
  * Mock out the iframe api functions for testing. Return promises that are
  * resolved when the function is called by |WallpaperCollectionsElement|.
- * @return {{
- *   sendCollections: Promise<?>,
- *   sendGooglePhotosCount: Promise<?>,
- *   sendGooglePhotosPhotos: Promise<?>,
- *   sendImageCounts: Promise<?>,
- *   sendLocalImages: Promise<?>,
- *   sendLocalImageData: Promise<?>,
- * }}
  */
-export function promisifyIframeFunctionsForTesting() {
-  const resolvers = {};
-  const promises = [
-    sendCollections, sendGooglePhotosCount, sendGooglePhotosPhotos,
-    sendImageCounts, sendLocalImages, sendLocalImageData
-  ].reduce((result, next) => {
-    result[next.name] = new Promise(resolve => resolvers[next.name] = resolve);
-    return result;
-  }, {});
-  sendCollectionsFunction = (...args) => resolvers[sendCollections.name](args);
+interface PromisifyResult {
+  sendCollections: Promise<unknown>;
+  sendGooglePhotosCount: Promise<unknown>;
+  sendGooglePhotosPhotos: Promise<unknown>;
+  sendImageCounts: Promise<unknown>;
+  sendLocalImages: Promise<unknown>;
+  sendLocalImageData: Promise<unknown>;
+}
+
+export function promisifyIframeFunctionsForTesting(): PromisifyResult {
+  const resolvers = {} as
+      {[key in keyof PromisifyResult]: (_: unknown) => void};
+  const promises = ([
+                     'sendCollections',
+                     'sendGooglePhotosCount',
+                     'sendGooglePhotosPhotos',
+                     'sendImageCounts',
+                     'sendLocalImages',
+                     'sendLocalImageData',
+                   ] as (keyof PromisifyResult)[])
+                       .reduce((result, next) => {
+                         result[next] =
+                             new Promise(resolve => resolvers[next] = resolve);
+                         return result;
+                       }, {} as PromisifyResult);
+  sendCollectionsFunction = (...args) => resolvers['sendCollections'](args);
   sendGooglePhotosCountFunction = (...args) =>
-      resolvers[sendGooglePhotosCount.name](args);
+      resolvers['sendGooglePhotosCount'](args);
   sendGooglePhotosPhotosFunction = (...args) =>
-      resolvers[sendGooglePhotosPhotos.name](args);
-  sendImageCountsFunction = (...args) => resolvers[sendImageCounts.name](args);
-  sendLocalImagesFunction = (...args) => resolvers[sendLocalImages.name](args);
+      resolvers['sendGooglePhotosPhotos'](args);
+  sendImageCountsFunction = (...args) => resolvers['sendImageCounts'](args);
+  sendLocalImagesFunction = (...args) => resolvers['sendLocalImages'](args);
   sendLocalImageDataFunction = (...args) =>
-      resolvers[sendLocalImageData.name](args);
+      resolvers['sendLocalImageData'](args);
   return promises;
 }
 
-/** @polymer */
 export class WallpaperCollections extends WithPersonalizationStore {
   static get is() {
     return 'wallpaper-collections';
@@ -82,110 +91,57 @@ export class WallpaperCollections extends WithPersonalizationStore {
         observer: 'onHiddenChanged_',
       },
 
-      /**
-       * @type {?Array<!WallpaperCollection>}
-       * @private
-       */
-      collections_: {
-        type: Array,
-      },
+      collections_: Array,
 
-      /** @private */
-      collectionsLoading_: {
-        type: Boolean,
-      },
+      collectionsLoading_: Boolean,
 
       /**
        * The list of Google Photos photos.
-       * @type {?Array<undefined>}
-       * @private
        */
-      googlePhotos: {
-        type: Array,
-      },
+      googlePhotos_: Array,
 
       /**
        * Whether the list of Google Photos photos is currently loading.
-       * @type {boolean}
-       * @private
        */
-      googlePhotosLoading_: {
-        type: Boolean,
-      },
+      googlePhotosLoading_: Boolean,
 
       /**
        * The count of Google Photos photos.
-       * @type {?number}
-       * @private
        */
-      googlePhotosCount: {
-        type: Number,
-      },
+      googlePhotosCount_: Number,
 
       /**
        * Whether the count of Google Photos photos is currently loading.
-       * @type {boolean}
-       * @private
        */
-      googlePhotosCountLoading_: {
-        type: Boolean,
-      },
+      googlePhotosCountLoading_: Boolean,
 
       /**
        * Contains a mapping of collection id to an array of images.
-       * @type {Object<string,
-       *     Array<!WallpaperImage>>}
-       * @private
        */
-      images_: {
-        type: Object,
-      },
+      images_: Object,
 
       /**
        * Contains a mapping of collection id to loading boolean.
-       * @type {Object<string, boolean>}
-       * @private
        */
-      imagesLoading_: {
-        type: Object,
-      },
+      imagesLoading_: Object,
 
-      /**
-       * @type {Array<!mojoBase.mojom.FilePath>}
-       * @private
-       */
-      localImages_: {
-        type: Array,
-      },
+      localImages_: Array,
 
       /**
        * Whether the local image list is currently loading.
-       * @type {boolean}
-       * @private
        */
-      localImagesLoading_: {
-        type: Boolean,
-      },
+      localImagesLoading_: Boolean,
 
       /**
        * Stores a mapping of local image id to loading status.
-       * @type {!Object<string, boolean>}
-       * @private
        */
-      localImageDataLoading_: {
-        type: Object,
-      },
+      localImageDataLoading_: Object,
 
       /**
        * Stores a mapping of local image id to thumbnail data.
-       * @type {Object<string, string>}
-       * @private
        */
-      localImageData_: {
-        type: Object,
-      },
+      localImageData_: Object,
 
-      /** @private */
       hasError_: {
         type: Boolean,
         // Call computed functions with their dependencies as arguments so that
@@ -195,6 +151,26 @@ export class WallpaperCollections extends WithPersonalizationStore {
       },
     };
   }
+
+  hidden: boolean;
+  private collections_: WallpaperCollection[];
+  private collectionsLoading_: boolean;
+  private googlePhotos_: unknown[]|null;
+  private googlePhotosLoading_: boolean;
+  private googlePhotosCount_: number|null;
+  private googlePhotosCountLoading_: boolean;
+  private images_: Record<string, WallpaperImage[]>;
+  private imagesLoading_: Record<string, boolean>;
+  private localImages_: FilePath[];
+  private localImagesLoading_: boolean;
+  private localImageData_: Record<string, string>;
+  private localImageDataLoading_: Record<string, boolean>;
+  private hasError_: boolean;
+
+  private wallpaperProvider_: WallpaperProviderInterface;
+  private iframePromise_: Promise<HTMLIFrameElement>;
+  private didSendLocalImageData_: boolean;
+
 
   static get observers() {
     return [
@@ -207,21 +183,15 @@ export class WallpaperCollections extends WithPersonalizationStore {
     ];
   }
 
-  /** @override */
   constructor() {
     super();
-    /** @private */
     this.wallpaperProvider_ = getWallpaperProvider();
-    this.iframePromise_ = /** @type {!Promise<!HTMLIFrameElement>} */ (
-        promisifyOnload(this, 'collections-iframe', afterNextRender));
-
-    /**
-     * @type {boolean}
-     */
+    this.iframePromise_ =
+        promisifyOnload(this, 'collections-iframe', afterNextRender) as
+        Promise<HTMLIFrameElement>;
     this.didSendLocalImageData_ = false;
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.watch('collections_', state => state.wallpaper.backdrop.collections);
@@ -250,180 +220,138 @@ export class WallpaperCollections extends WithPersonalizationStore {
 
   /**
    * Notify iframe that this element visibility has changed.
-   * @param {boolean} hidden
-   * @private
    */
-  async onHiddenChanged_(hidden) {
+  private async onHiddenChanged_(hidden: boolean) {
     if (!hidden) {
       document.title = this.i18n('title');
     }
     const iframe = await this.iframePromise_;
-    sendVisible(/** @type {!Window} */ (iframe.contentWindow), !hidden);
+    sendVisible(iframe.contentWindow!, !hidden);
   }
 
-  /**
-   * @param {?Array<!WallpaperCollection>}
-   *     collections
-   * @param {boolean} collectionsLoading
-   * @param {Array<!mojoBase.mojom.FilePath>}
-   *     localImages
-   * @param {boolean} localImagesLoading
-   * @return {boolean}
-   * @private
-   */
-  computeHasError_(
-      collections, collectionsLoading, localImages, localImagesLoading) {
+  private computeHasError_(
+      collections: WallpaperCollection[], collectionsLoading: boolean,
+      localImages: FilePath[], localImagesLoading: boolean): boolean {
     return this.localImagesError_(localImages, localImagesLoading) &&
         this.collectionsError_(collections, collectionsLoading);
   }
 
-  /**
-   * @param {?Array<!WallpaperCollection>}
-   *     collections
-   * @param {boolean} collectionsLoading
-   * @return {boolean}
-   * @private
-   */
-  collectionsError_(collections, collectionsLoading) {
+  private collectionsError_(
+      collections: WallpaperCollection[],
+      collectionsLoading: boolean): boolean {
     return !collectionsLoading && !isNonEmptyArray(collections);
   }
 
-  /**
-   * @param {Array<!mojoBase.mojom.FilePath>}
-   *     localImages
-   * @param {boolean} localImagesLoading
-   * @return {boolean}
-   * @private
-   */
-  localImagesError_(localImages, localImagesLoading) {
+  private localImagesError_(
+      localImages: FilePath[], localImagesLoading: boolean): boolean {
     return !localImagesLoading && !isNonEmptyArray(localImages);
   }
 
-  /**
-   * Send updated wallpaper collections to the iframe.
-   * @param {?Array<!WallpaperCollection>}
-   *     collections
-   * @private
-   */
-  async onCollectionsChanged_(collections, collectionsLoading) {
+  private async onCollectionsChanged_(
+      collections: WallpaperCollection[], collectionsLoading: boolean) {
     // Check whether collections are loaded before sending to
     // the iframe. Collections could be null/empty array.
     if (!collectionsLoading) {
       const iframe = await this.iframePromise_;
-      sendCollectionsFunction(iframe.contentWindow, collections);
+      sendCollectionsFunction(iframe.contentWindow!, collections);
     }
   }
 
   /**
    * Send count of image units in each collection when a new collection is
    * fetched. D/L variants of the same image represent a count of 1.
-   * @param {Object<string,
-   *     Array<!WallpaperImage>>} images
-   * @param {Object<string, boolean>} imagesLoading
-   * @private
    */
-  async onCollectionImagesChanged_(images, imagesLoading) {
+  private async onCollectionImagesChanged_(
+      images: Record<string, WallpaperImage[]>,
+      imagesLoading: Record<string, boolean>) {
     if (!images || !imagesLoading) {
       return;
     }
-    const counts =
-        Object.entries(images)
-            .filter(([collectionId]) => {
-              return imagesLoading[/** @type {string} */ (collectionId)] ===
-                  false;
-            })
-            .map(([key, value]) => {
-              // Collection has completed loading. If no images were retrieved,
-              // set count value to null to indicate failure.
-              if (Array.isArray(value)) {
-                const unitIds = new Set();
-                value.forEach(image => {
-                  unitIds.add(image.unitId);
-                });
-                return [key, unitIds.size];
-              } else {
-                return [key, null];
-              }
-            })
-            .reduce((result, [key, value]) => {
-              result[key] = value;
-              return result;
-            }, {});
+    const counts = Object.entries(images)
+                       .filter(([collectionId]) => {
+                         return imagesLoading[collectionId] === false;
+                       })
+                       .map(([key, value]) => {
+                         // Collection has completed loading. If no images were
+                         // retrieved, set count value to null to indicate
+                         // failure.
+                         if (Array.isArray(value)) {
+                           const unitIds = new Set();
+                           value.forEach(image => {
+                             unitIds.add(image.unitId);
+                           });
+                           return [key, unitIds.size] as [string, number];
+                         } else {
+                           return [key, null] as [string, null];
+                         }
+                       })
+                       .reduce((result, [key, value]) => {
+                         result[key!] = value;
+                         return result;
+                       }, {} as Record<string, number|null>);
     const iframe = await this.iframePromise_;
-    sendImageCountsFunction(
-        /** @type {!Window} */ (iframe.contentWindow), counts);
+    sendImageCountsFunction(iframe.contentWindow!, counts);
   }
 
   /**
    * Invoked on changes to the list of Google Photos photos.
-   * @param {?Array<undefined>} googlePhotos
-   * @param {boolean} googlePhotosLoading
-   * @private
    */
-  async onGooglePhotosChanged_(googlePhotos, googlePhotosLoading) {
+  private async onGooglePhotosChanged_(
+      googlePhotos: unknown[], googlePhotosLoading: boolean) {
     if (googlePhotosLoading || !isNullOrArray(googlePhotos)) {
       return;
     }
     const iframe = await this.iframePromise_;
-    sendGooglePhotosPhotosFunction(
-        /** @type {!Window} */ (iframe.contentWindow), googlePhotos);
+    sendGooglePhotosPhotosFunction(iframe.contentWindow!, googlePhotos);
   }
 
   /**
    * Invoked on changes to the count of Google Photos photos.
-   * @param {?number} googlePhotosCount
-   * @param {boolean} googlePhotosCountLoading
-   * @private
    */
-  async onGooglePhotosCountChanged_(
-      googlePhotosCount, googlePhotosCountLoading) {
+  private async onGooglePhotosCountChanged_(
+      googlePhotosCount: number|null, googlePhotosCountLoading: boolean) {
     if (googlePhotosCountLoading || !isNullOrNumber(googlePhotosCount)) {
       return;
     }
     const iframe = await this.iframePromise_;
-    sendGooglePhotosCountFunction(
-        /** @type {!Window} */ (iframe.contentWindow), googlePhotosCount);
+    sendGooglePhotosCountFunction(iframe.contentWindow!, googlePhotosCount);
   }
 
   /**
    * Send updated local images list to the iframe.
-   * @param {?Array<!mojoBase.mojom.FilePath>} localImages
-   * @param {boolean} localImagesLoading
-   * @private
    */
-  async onLocalImagesChanged_(localImages, localImagesLoading) {
+  private async onLocalImagesChanged_(
+      localImages: FilePath[]|null, localImagesLoading: boolean) {
     this.didSendLocalImageData_ = false;
     if (!localImagesLoading && Array.isArray(localImages)) {
       const iframe = await this.iframePromise_;
-      sendLocalImagesFunction(
-          /** @type {!Window} */ (iframe.contentWindow), localImages);
+      sendLocalImagesFunction(iframe.contentWindow!, localImages);
     }
   }
 
   /**
    * Send up to |maximumImageThumbnailsCount| image thumbnails to untrusted.
-   * @param {?Array<!mojoBase.mojom.FilePath>} images
-   * @param {?Object<string, string>} imageData
-   * @param {?Object<string, boolean>} imageDataLoading
-   * @private
    */
-  async onLocalImageDataChanged_(images, imageData, imageDataLoading) {
+  private async onLocalImageDataChanged_(
+      images: FilePath[]|null, imageData: Record<string, string>,
+      imageDataLoading: Record<string, boolean>) {
     if (!Array.isArray(images) || !imageData || !imageDataLoading ||
         this.didSendLocalImageData_) {
       return;
     }
 
-    /** @type !Array<string> */
-    const successfullyLoaded = images.map(image => image.path).filter(key => {
-      const doneLoading = imageDataLoading[key] === false;
-      const success = !!imageData[key];
-      return success && doneLoading;
-    });
+    const successfullyLoaded: string[] =
+        images.map(image => image.path).filter(key => {
+          const doneLoading = imageDataLoading[key] === false;
+          const success = !!imageData[key];
+          return success && doneLoading;
+        });
 
-    /**
-     * @return {boolean}
-     */
     function shouldSendImageData() {
+      if (!Array.isArray(images)) {
+        return false;
+      }
+
       // All images (up to |kMaximumLocalImagePreviews|) have loaded.
       const didLoadMaximum = successfullyLoaded.length >=
           Math.min(kMaximumLocalImagePreviews, images.length);
@@ -450,7 +378,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
                              // load.
                              result[key] = '';
                              return result;
-                           }, {});
+                           }, {} as Record<string, string>);
 
       const data =
           successfullyLoaded.filter((_, i) => i < kMaximumLocalImagePreviews)
@@ -462,8 +390,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
       this.didSendLocalImageData_ = true;
 
       const iframe = await this.iframePromise_;
-      sendLocalImageDataFunction(
-          /** @type {!Window} */ (iframe.contentWindow), data);
+      sendLocalImageDataFunction(iframe.contentWindow!, data);
     }
   }
 }

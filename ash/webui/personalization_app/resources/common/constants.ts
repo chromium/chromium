@@ -67,7 +67,7 @@ export type SelectLocalCollectionEvent = {
 
 export type SendImageCountsEvent = {
   type: EventType.SEND_IMAGE_COUNTS,
-  counts: {[key: string]: number},
+  counts: {[key: string]: number|null},
 };
 
 /**

@@ -50,8 +50,9 @@ export class PersonalizationRouter extends PolymerElement {
   private query_: string;
   private queryParams_: {id?: string; googlePhotosAlbumId?: string;};
 
-  static instance() {
-    return document.querySelector(PersonalizationRouter.is);
+  static instance(): PersonalizationRouter {
+    return document.querySelector(PersonalizationRouter.is) as
+        PersonalizationRouter;
   }
 
   /**
