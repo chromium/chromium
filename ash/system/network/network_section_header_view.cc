@@ -126,8 +126,7 @@ int GetAddESimTooltipMessageId() {
     case chromeos::network_config::mojom::InhibitReason::kNotInhibited:
       return IDS_ASH_STATUS_TRAY_ADD_CELLULAR_LABEL;
     case chromeos::network_config::mojom::InhibitReason::kResettingEuiccMemory:
-      // TODO(crbug.com/1231305) Update when reset reason strings are finalized.
-      return IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_REMOVING_PROFILE;
+      return IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_RESETTING_ESIM;
   }
 }
 

@@ -813,6 +813,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_CONNECTING_TO_PROFILE},
       {"cellularNetworRefreshingProfileListProfile",
        IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REFRESHING_PROFILE_LIST},
+      {"cellularNetworkResettingESim",
+       IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_RESETTING_ESIM},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
