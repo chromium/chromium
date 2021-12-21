@@ -114,21 +114,6 @@ ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
 
 ProjectorAnnotationTray::~ProjectorAnnotationTray() = default;
 
-void ProjectorAnnotationTray::DeactivateActiveTool() {
-  // TODO(b/201664243): Use ProjectorControllerImpl to disable.
-  EnablePen(false);
-  EnableLaserPointer(false);
-  UpdateIcon();
-}
-
-void ProjectorAnnotationTray::UpdateIcon() {
-  ProjectorTool tool = GetCurrentTool();
-  image_view_->SetImage(gfx::CreateVectorIcon(
-      GetIconForTool(tool),
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
-}
-
 bool ProjectorAnnotationTray::PerformAction(const ui::Event& event) {
   if (bubble_) {
     CloseBubble();
@@ -342,6 +327,21 @@ void ProjectorAnnotationTray::OnViewClicked(views::View* sender) {
     CloseBubble();
   }
   UpdateIcon();
+}
+
+void ProjectorAnnotationTray::DeactivateActiveTool() {
+  // TODO(b/201664243): Use ProjectorControllerImpl to disable.
+  EnablePen(false);
+  EnableLaserPointer(false);
+  UpdateIcon();
+}
+
+void ProjectorAnnotationTray::UpdateIcon() {
+  ProjectorTool tool = GetCurrentTool();
+  image_view_->SetImage(gfx::CreateVectorIcon(
+      GetIconForTool(tool),
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
 }
 
 }  // namespace ash

@@ -23,19 +23,6 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
   ProjectorAnnotationTray& operator=(const ProjectorAnnotationTray&) = delete;
   ~ProjectorAnnotationTray() override;
 
- private:
-  // Deactives any annotation tool that is currently enabled and update the UI.
-  void DeactivateActiveTool();
-
-  // Updates the icon in the status area.
-  void UpdateIcon();
-
-  // TODO(b/193579885): Hook up to Pen tools.
-  void OnRedPressed() {}
-  void OnYellowPressed() {}
-  void OnBlackPressed() {}
-  void OnWhitePressed() {}
-
   // TrayBackgroundView:
   bool PerformAction(const ui::Event& event) override;
   void ClickedOutsideBubble() override;
@@ -50,6 +37,19 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
 
   // ViewClickListener:
   void OnViewClicked(views::View* sender) override;
+
+ private:
+  // Deactives any annotation tool that is currently enabled and update the UI.
+  void DeactivateActiveTool();
+
+  // Updates the icon in the status area.
+  void UpdateIcon();
+
+  // TODO(b/193579885): Hook up to Pen tools.
+  void OnRedPressed() {}
+  void OnYellowPressed() {}
+  void OnBlackPressed() {}
+  void OnWhitePressed() {}
 
   // Image view of the tray icon.
   views::ImageView* const image_view_;

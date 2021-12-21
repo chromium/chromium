@@ -37,6 +37,7 @@
 #include "ash/display/output_protection_delegate.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/display/window_tree_host_manager.h"
+#include "ash/projector/projector_annotation_tray.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/test/mock_projector_client.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
@@ -91,6 +92,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/events/event_handler.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/insets.h"
@@ -5209,6 +5211,78 @@ TEST_P(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetBounds) {
   EXPECT_FALSE(overlay_controller->is_enabled());
   auto* overlay_window = overlay_controller->GetOverlayNativeWindow();
   VerifyOverlayWindow(overlay_window, capture_source);
+}
+
+namespace {
+
+// Defines a class that intercepts the events at the post-target handling phase
+// and caches the last event target to which the event was routed.
+class EventTargetCatcher : public ui::EventHandler {
+ public:
+  EventTargetCatcher() {
+    Shell::GetPrimaryRootWindow()->AddPostTargetHandler(this);
+  }
+  EventTargetCatcher(const EventTargetCatcher&) = delete;
+  EventTargetCatcher& operator=(const EventTargetCatcher&) = delete;
+  ~EventTargetCatcher() override {
+    Shell::GetPrimaryRootWindow()->RemovePostTargetHandler(this);
+  }
+
+  ui::EventTarget* last_event_target() { return last_event_target_; }
+
+  // ui::EventHandler:
+  void OnEvent(ui::Event* event) override {
+    ui::EventHandler::OnEvent(event);
+    last_event_target_ = event->target();
+  }
+
+ private:
+  ui::EventTarget* last_event_target_ = nullptr;
+};
+
+}  // namespace
+
+TEST_F(ProjectorCaptureModeIntegrationTests, RecordingOverlayWidgetTargeting) {
+  auto* controller = CaptureModeController::Get();
+  controller->SetSource(CaptureModeSource::kFullscreen);
+  StartProjectorModeSession();
+  EXPECT_TRUE(controller->IsActive());
+
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  WaitForRecordingToStart();
+  CaptureModeTestApi test_api;
+  RecordingOverlayController* overlay_controller =
+      test_api.GetRecordingOverlayController();
+
+  auto* projector_controller = ProjectorControllerImpl::Get();
+  projector_controller->OnMarkerPressed();
+  EXPECT_TRUE(overlay_controller->is_enabled());
+  auto* overlay_window = overlay_controller->GetOverlayNativeWindow();
+  VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/true);
+
+  // Clicking anywhere outside the projector shelf pod should be targeted to the
+  // overlay widget window.
+  EventTargetCatcher event_target_catcher;
+  auto* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(gfx::Point(10, 10));
+  event_generator->ClickLeftButton();
+  EXPECT_EQ(overlay_window, event_target_catcher.last_event_target());
+
+  // Now move the mouse over the projector shelf pod, the overlay should not
+  // consume the event, and it should instead go through to that pod.
+  auto* root_window = Shell::GetPrimaryRootWindow();
+  ProjectorAnnotationTray* annotations_tray =
+      RootWindowController::ForWindow(root_window)
+          ->GetStatusAreaWidget()
+          ->projector_annotation_tray();
+  EXPECT_TRUE(annotations_tray->visible_preferred());
+  event_generator->MoveMouseTo(
+      annotations_tray->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(annotations_tray->GetWidget()->GetNativeWindow(),
+            event_target_catcher.last_event_target());
+
+  // The overlay status hasn't changed.
+  VerifyOverlayEnabledState(overlay_window, /*overlay_enabled_state=*/true);
 }
 
 // Tests that neither preview notification nor recording in tote is shown if in
