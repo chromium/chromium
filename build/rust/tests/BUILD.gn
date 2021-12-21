@@ -52,6 +52,7 @@ group("deps") {
         "test_rlib_crate:test_rlib_crate_associated_bin",
         "test_rust_exe",
         "test_rust_multiple_dep_versions_exe",
+        "test_simple_rust_exe",
       ]
     }
   }
