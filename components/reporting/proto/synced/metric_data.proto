@@ -303,12 +303,29 @@ enum MetricEventType {
   NETWORK_CONNECTION_STATE_CHANGE = 2;
   NETWORK_SIGNAL_STRENGTH_CHANGE = 3;
   AUDIO_SEVERE_UNDERRUN = 4;
+  USB_ADDED = 5;
+  USB_REMOVED = 6;
+}
+
+message UsbEventData {
+  // Vendor name
+  optional string vendor = 1;
+  // Device name, model name, or product name
+  optional string name = 2;
+  // Vendor ID
+  optional int64 vid = 3;
+  // Product ID
+  optional int64 pid = 4;
+  // List of names of USB categories the device falls under
+  // https://www.usb.org/defined-class-codes
+  repeated string categories = 5;
 }
 
 // Indicates one of the following conditions occurred on the device, data
 // associated with the event will be reported as TelemetryData.
 message EventData {
   optional MetricEventType type = 1;
+  optional UsbEventData usb_event_data = 2;
 }
 
 // Main message to be reported, can contain `InfoData`, `TelemetryData`, or
