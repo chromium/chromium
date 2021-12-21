@@ -32,6 +32,8 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
@@ -201,8 +203,8 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetShowCloseButton(true);
   SetTitle(l10n_util::GetStringUTF16(IDS_WINDOW_TITLE_EXPERIMENTS));
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical);
+  SetLayoutManager(std::make_unique<views::BoxLayout>())
+      ->SetOrientation(views::BoxLayout::Orientation::kVertical);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   set_margins(gfx::Insets(0));
@@ -232,7 +234,17 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
 #endif
   flags_state_ = about_flags::GetCurrentFlagsState();
 
-  menu_item_container_ = AddChildView(
+  // TODO(crbug.com/1259763): Currently basing this off what extension menu uses
+  // for sizing as suggested as an initial fix by UI. Discuss a more formal
+  // solution.
+  constexpr int kMaxChromeLabsHeightDp = 448;
+  auto scroll_view = std::make_unique<views::ScrollView>();
+  // TODO(elainechien): Check with UI whether we want to draw overflow
+  // indicator.
+  scroll_view->SetDrawOverflowIndicator(false);
+  scroll_view->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  menu_item_container_ = scroll_view->SetContents(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kVertical)
           .SetProperty(views::kFlexBehaviorKey,
@@ -243,6 +255,8 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
               views::LayoutProvider::Get()->GetInsetsMetric(
                   views::INSETS_DIALOG)))
           .Build());
+  scroll_view->ClipHeightTo(0, kMaxChromeLabsHeightDp);
+  AddChildView(std::move(scroll_view));
 
   // Create each lab item.
   const std::vector<LabInfo>& all_labs = model_->GetLabInfo();
