@@ -5,14 +5,10 @@
 #ifndef BASE_SEQUENCE_CHECKER_H_
 #define BASE_SEQUENCE_CHECKER_H_
 
-#include "base/check.h"
+#include "base/base_export.h"
 #include "base/dcheck_is_on.h"
 #include "base/sequence_checker_impl.h"
 #include "base/strings/string_piece.h"
-
-#if DCHECK_IS_ON()
-#include "base/debug/stack_trace.h"
-#endif
 
 // SequenceChecker is a helper class used to help verify that some methods of a
 // class are called sequentially (for thread-safety). It supports thread safety
@@ -128,19 +124,11 @@ using SequenceChecker = SequenceCheckerDoNothing;
 #endif  // DCHECK_IS_ON()
 
 #if DCHECK_IS_ON()
-class SCOPED_LOCKABLE ScopedValidateSequenceChecker {
+class BASE_EXPORT SCOPED_LOCKABLE ScopedValidateSequenceChecker {
  public:
   explicit ScopedValidateSequenceChecker(const SequenceChecker& checker)
-      EXCLUSIVE_LOCK_FUNCTION(checker) {
-    std::unique_ptr<debug::StackTrace> bound_at;
-    DCHECK(checker.CalledOnValidSequence(&bound_at))
-        << (bound_at ? "\nWas attached to sequence at:\n" + bound_at->ToString()
-                     : "");
-  }
-
-  ~ScopedValidateSequenceChecker() UNLOCK_FUNCTION() {}
-
- private:
+      EXCLUSIVE_LOCK_FUNCTION(checker);
+  ~ScopedValidateSequenceChecker() UNLOCK_FUNCTION();
 };
 #endif
 

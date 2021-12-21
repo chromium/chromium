@@ -582,6 +582,7 @@ component("base") {
     "scoped_native_library.cc",
     "scoped_native_library.h",
     "scoped_observation.h",
+    "sequence_checker.cc",
     "sequence_checker.h",
     "sequence_checker_impl.cc",
     "sequence_checker_impl.h",
