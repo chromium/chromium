@@ -203,6 +203,8 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
     case DeviceManagementService::JobConfiguration::
         TYPE_BROWSER_UPLOAD_PUBLIC_KEY:
       return "BrowserUploadPublicKey";
+    case DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT:
+      return "ChromeProfileReport";
   }
   NOTREACHED() << "Invalid job type " << type;
   return "";

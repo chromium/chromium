@@ -4243,7 +4243,10 @@ message DeviceManagementRequest {
   // Request to upload info about eSIM provisioning.
   optional UploadEuiccInfoRequest upload_euicc_info_request = 39;
 
-  // Next id: 40.
+  // Request to upload profile usage information.
+  optional ChromeProfileReportRequest chrome_profile_report_request = 40;
+
+  // Next id: 41.
 }
 
 // Response from server to device.
@@ -4386,7 +4389,10 @@ message DeviceManagementResponse {
   // Response to EUICC info upload request.
   optional UploadEuiccInfoResponse upload_euicc_info_response = 37;
 
-  // Next id: 38.
+  // Response to a Chrome Profile report request.
+  optional ChromeProfileReportResponse chrome_profile_report_response = 38;
+
+  // Next id: 39.
 }
 
 // Device State Information stored in the server is retrieval at

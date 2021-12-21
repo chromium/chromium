@@ -85,42 +85,43 @@ namespace policy {
 
 namespace {
 
-const char kClientID[] = "fake-client-id";
-const char kMachineID[] = "fake-machine-id";
-const char kMachineModel[] = "fake-machine-model";
-const char kBrandCode[] = "fake-brand-code";
-const char kAttestedDeviceId[] = "fake-attested-device-id";
-const char kEthernetMacAddress[] = "fake-ethernet-mac-address";
-const char kDockMacAddress[] = "fake-dock-mac-address";
-const char kManufactureDate[] = "fake-manufacture-date";
-const char kOAuthToken[] = "fake-oauth-token";
-const char kDMToken[] = "fake-dm-token";
-const char kDeviceDMToken[] = "fake-device-dm-token";
-const char kMachineCertificate[] = "fake-machine-certificate";
-const char kEnrollmentCertificate[] = "fake-enrollment-certificate";
-const char kEnrollmentId[] = "fake-enrollment-id";
+constexpr char kClientID[] = "fake-client-id";
+constexpr char kMachineID[] = "fake-machine-id";
+constexpr char kMachineModel[] = "fake-machine-model";
+constexpr char kBrandCode[] = "fake-brand-code";
+constexpr char kAttestedDeviceId[] = "fake-attested-device-id";
+constexpr char kEthernetMacAddress[] = "fake-ethernet-mac-address";
+constexpr char kDockMacAddress[] = "fake-dock-mac-address";
+constexpr char kManufactureDate[] = "fake-manufacture-date";
+constexpr char kOAuthToken[] = "fake-oauth-token";
+constexpr char kDMToken[] = "fake-dm-token";
+constexpr char kDeviceDMToken[] = "fake-device-dm-token";
+constexpr char kMachineCertificate[] = "fake-machine-certificate";
+constexpr char kEnrollmentCertificate[] = "fake-enrollment-certificate";
+constexpr char kEnrollmentId[] = "fake-enrollment-id";
+constexpr char kOsName[] = "fake-os-name";
 
 #if defined(OS_WIN) || defined(OS_APPLE) || \
     (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-const char kEnrollmentToken[] = "enrollment_token";
+constexpr char kEnrollmentToken[] = "enrollment_token";
 #endif
 
-const char kRequisition[] = "fake-requisition";
-const char kStateKey[] = "fake-state-key";
-const char kPayload[] = "input_payload";
-const char kResultPayload[] = "output_payload";
-const char kAssetId[] = "fake-asset-id";
-const char kLocation[] = "fake-location";
-const char kGcmID[] = "fake-gcm-id";
-const char kPolicyToken[] = "fake-policy-token";
-const char kPolicyName[] = "fake-policy-name";
-const char kValueValidationMessage[] = "fake-value-validation-message";
-const char kRobotAuthCode[] = "fake-robot-auth-code";
-const char kApiAuthScope[] = "fake-api-auth-scope";
+constexpr char kRequisition[] = "fake-requisition";
+constexpr char kStateKey[] = "fake-state-key";
+constexpr char kPayload[] = "input_payload";
+constexpr char kResultPayload[] = "output_payload";
+constexpr char kAssetId[] = "fake-asset-id";
+constexpr char kLocation[] = "fake-location";
+constexpr char kGcmID[] = "fake-gcm-id";
+constexpr char kPolicyToken[] = "fake-policy-token";
+constexpr char kPolicyName[] = "fake-policy-name";
+constexpr char kValueValidationMessage[] = "fake-value-validation-message";
+constexpr char kRobotAuthCode[] = "fake-robot-auth-code";
+constexpr char kApiAuthScope[] = "fake-api-auth-scope";
 
-const int64_t kAgeOfCommand = 123123123;
-const int64_t kLastCommandId = 123456789;
-const int64_t kTimestamp = 987654321;
+constexpr int64_t kAgeOfCommand = 123123123;
+constexpr int64_t kLastCommandId = 123456789;
+constexpr int64_t kTimestamp = 987654321;
 
 MATCHER_P(MatchProto, expected, "matches protobuf") {
   return arg.SerializePartialAsString() == expected.SerializePartialAsString();
@@ -1655,6 +1656,34 @@ TEST_F(CloudPolicyClientTest, UploadChromeOsUserReport) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(job_request_.SerializePartialAsString(),
             chrome_os_user_report_request.SerializePartialAsString());
+  EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
+}
+
+TEST_F(CloudPolicyClientTest, UploadChromeProfileReport) {
+  RegisterClient();
+
+  em::DeviceManagementRequest device_managment_request;
+  device_managment_request.mutable_chrome_profile_report_request()
+      ->mutable_os_report()
+      ->set_name(kOsName);
+
+  ExpectAndCaptureJob(GetEmptyResponse());
+  EXPECT_CALL(callback_observer_, OnCallbackComplete(true)).Times(1);
+  CloudPolicyClient::StatusCallback callback =
+      base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
+                     base::Unretained(&callback_observer_));
+  auto chrome_profile_report =
+      std::make_unique<em::ChromeProfileReportRequest>();
+  chrome_profile_report->mutable_os_report()->set_name(kOsName);
+  client_->UploadChromeProfileReport(std::move(chrome_profile_report),
+                                     std::move(callback));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT,
+      job_type_);
+  EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
+  EXPECT_EQ(job_request_.SerializePartialAsString(),
+            device_managment_request.SerializePartialAsString());
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->status());
 }
 

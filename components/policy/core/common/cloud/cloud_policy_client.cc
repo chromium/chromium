@@ -618,16 +618,14 @@ void CloudPolicyClient::UploadChromeDesktopReport(
           base::BindOnce(&CloudPolicyClient::OnReportUploadCompleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
-  em::DeviceManagementRequest* request = config->request();
-  request->set_allocated_chrome_desktop_report_request(
+  config->request()->set_allocated_chrome_desktop_report_request(
       chrome_desktop_report.release());
 
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
 
 void CloudPolicyClient::UploadChromeOsUserReport(
-    std::unique_ptr<enterprise_management::ChromeOsUserReportRequest>
-        chrome_os_user_report,
+    std::unique_ptr<em::ChromeOsUserReportRequest> chrome_os_user_report,
     CloudPolicyClient::StatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(is_registered());
@@ -642,9 +640,30 @@ void CloudPolicyClient::UploadChromeOsUserReport(
           base::BindOnce(&CloudPolicyClient::OnReportUploadCompleted,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
-  em::DeviceManagementRequest* request = config->request();
-  request->set_allocated_chrome_os_user_report_request(
+  config->request()->set_allocated_chrome_os_user_report_request(
       chrome_os_user_report.release());
+
+  request_jobs_.push_back(service_->CreateJob(std::move(config)));
+}
+
+void CloudPolicyClient::UploadChromeProfileReport(
+    std::unique_ptr<em::ChromeProfileReportRequest> chrome_profile_report,
+    CloudPolicyClient::StatusCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(is_registered());
+  DCHECK(chrome_profile_report);
+
+  std::unique_ptr<DMServerJobConfiguration> config =
+      std::make_unique<DMServerJobConfiguration>(
+          DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT,
+          this,
+          /*critical=*/false, DMAuth::FromDMToken(dm_token_),
+          /*oauth_token=*/absl::nullopt,
+          base::BindOnce(&CloudPolicyClient::OnReportUploadCompleted,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  config->request()->set_allocated_chrome_profile_report_request(
+      chrome_profile_report.release());
 
   request_jobs_.push_back(service_->CreateJob(std::move(config)));
 }
