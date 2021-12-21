@@ -29,6 +29,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/child_process_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -209,6 +210,25 @@ bool FontPrewarmerTabHelper::IsSearchResultsPageNavigation(
              navigation_handle->GetURL());
 }
 
+void FontPrewarmerTabHelper::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!IsSearchResultsPageNavigation(navigation_handle))
+    return;
+
+  const int expected_render_process_host_id =
+      navigation_handle->GetExpectedRenderProcessHostId();
+  if (expected_render_process_host_id ==
+      content::ChildProcessHost::kInvalidUniqueID) {
+    expected_render_process_host_id_.reset();
+  } else {
+    expected_render_process_host_id_ = expected_render_process_host_id;
+    content::RenderProcessHost* rph =
+        content::RenderProcessHost::FromID(expected_render_process_host_id);
+    DCHECK(rph);
+    FontPrewarmerCoordinator::ForProfile(GetProfile()).SendFontsToPrewarm(rph);
+  }
+}
+
 void FontPrewarmerTabHelper::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!IsSearchResultsPageNavigation(navigation_handle))
@@ -218,7 +238,8 @@ void FontPrewarmerTabHelper::ReadyToCommitNavigation(
   DCHECK(rfh);
   FontPrewarmerCoordinator& coordinator =
       FontPrewarmerCoordinator::ForProfile(GetProfile());
-  coordinator.SendFontsToPrewarm(rfh->GetProcess());
+  if (expected_render_process_host_id_ != rfh->GetProcess()->GetID())
+    coordinator.SendFontsToPrewarm(rfh->GetProcess());
   coordinator.RequestFonts(rfh);
 }
 

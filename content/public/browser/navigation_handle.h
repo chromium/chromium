@@ -266,6 +266,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // exists.
   virtual GlobalRenderFrameHostId GetPreviousRenderFrameHostId() = 0;
 
+  // Returns the id of the RenderProcessHost this navigation is expected to
+  // commit in. The actual RenderProcessHost may change at commit time. It is
+  // only valid to call this before commit.
+  virtual int GetExpectedRenderProcessHostId() = 0;
+
   // Whether the navigation happened without changing document. Examples of
   // same document navigations are:
   // * reference fragment navigations

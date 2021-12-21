@@ -1319,6 +1319,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
   navigation_request->coep_reporter_ = std::move(coep_reporter);
   navigation_request->isolation_info_for_subresources_ =
       isolation_info_for_subresources;
+  navigation_request->associated_site_instance_type_ =
+      AssociatedSiteInstanceType::CURRENT;
   navigation_request->StartNavigation();
   DCHECK(navigation_request->IsNavigationStarted());
 
@@ -2145,6 +2147,14 @@ void NavigationRequest::StartNavigation() {
              ShouldReplaceCurrentEntryForNavigationFromInitialEmptyDocument()) {
     common_params_->should_replace_current_entry = true;
   }
+
+  DCHECK_NE(AssociatedSiteInstanceType::NONE, associated_site_instance_type_);
+  RenderFrameHostImpl* navigating_frame_host =
+      associated_site_instance_type_ == AssociatedSiteInstanceType::SPECULATIVE
+          ? frame_tree_node_->render_manager()->speculative_frame_host()
+          : frame_tree_node_->current_frame_host();
+  DCHECK(navigating_frame_host);
+  SetExpectedProcess(navigating_frame_host->GetProcess());
 
   DCHECK(!IsNavigationStarted());
   SetState(WILL_START_REQUEST);
@@ -3712,8 +3722,6 @@ void NavigationRequest::OnStartChecksComplete(
           ? frame_tree_node_->render_manager()->speculative_frame_host()
           : frame_tree_node_->current_frame_host();
   DCHECK(navigating_frame_host);
-
-  SetExpectedProcess(navigating_frame_host->GetProcess());
 
   BrowserContext* browser_context =
       frame_tree_node_->navigator().controller().GetBrowserContext();
@@ -6522,6 +6530,11 @@ const net::ProxyServer& NavigationRequest::GetProxyServer() {
 
 GlobalRenderFrameHostId NavigationRequest::GetPreviousRenderFrameHostId() {
   return previous_render_frame_host_id_;
+}
+
+int NavigationRequest::GetExpectedRenderProcessHostId() {
+  DCHECK_LT(state_, READY_TO_COMMIT);
+  return expected_render_process_host_id_;
 }
 
 bool NavigationRequest::IsServedFromBackForwardCache() {

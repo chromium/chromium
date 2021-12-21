@@ -361,6 +361,7 @@ class CONTENT_EXPORT NavigationRequest
   void RegisterSubresourceOverride(
       blink::mojom::TransferrableURLLoaderPtr transferrable_loader) override;
   GlobalRenderFrameHostId GetPreviousRenderFrameHostId() override;
+  int GetExpectedRenderProcessHostId() override;
   bool IsServedFromBackForwardCache() override;
   void SetIsOverridingUserAgent(bool override_ua) override;
   void SetSilentlyIgnoreErrors() override;
