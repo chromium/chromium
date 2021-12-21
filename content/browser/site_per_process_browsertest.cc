@@ -4923,12 +4923,21 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, OpenerSetLocation) {
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), cross_url);
 }
 
+// crbug.com/1281755
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#define MAYBE_NavigateProxyAndDetachBeforeProvisionalFrameCreation \
+  DISABLED_NavigateProxyAndDetachBeforeProvisionalFrameCreation
+#else
+#define MAYBE_NavigateProxyAndDetachBeforeProvisionalFrameCreation \
+  NavigateProxyAndDetachBeforeProvisionalFrameCreation
+#endif
 // Test for https://crbug.com/526304, where a parent frame executes a
 // remote-to-local navigation on a child frame and immediately removes the same
 // child frame.  This test exercises the path where the detach happens before
 // the provisional local frame is created.
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
-                       NavigateProxyAndDetachBeforeProvisionalFrameCreation) {
+IN_PROC_BROWSER_TEST_P(
+    SitePerProcessBrowserTest,
+    MAYBE_NavigateProxyAndDetachBeforeProvisionalFrameCreation) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b,b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
