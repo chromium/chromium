@@ -781,6 +781,7 @@ crosapi::mojom::IntentPtr ConvertAppServiceToCrosapiIntent(
       if (file_system_url.is_valid()) {
         auto crosapi_file = crosapi::mojom::IntentFile::New();
         crosapi_file->file_path = file_system_url.path();
+        crosapi_file->mime_type = file->mime_type;
         crosapi_files.push_back(std::move(crosapi_file));
       }
     }
@@ -826,6 +827,7 @@ apps::mojom::IntentPtr ConvertCrosapiToAppServiceIntent(
       intent_file->file_name =
           base::SafeBaseName::Create(file->file_path.BaseName());
 #endif
+      intent_file->mime_type = file->mime_type;
 
       intent_files.push_back(std::move(intent_file));
     }

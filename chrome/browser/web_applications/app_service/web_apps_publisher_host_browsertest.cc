@@ -817,4 +817,66 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ShareImage) {
   EXPECT_EQ(kData, ReadTextContent(web_contents, "image"));
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ShareMultimedia) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const AppId app_id = InstallWebAppFromManifest(
+      browser(),
+      embedded_test_server()->GetURL("/web_share_target/multimedia.html"));
+  const std::string kAudioContent(345, '*');
+  const std::string kVideoContent(67890, '*');
+
+  MockAppPublisher mock_app_publisher;
+  WebAppsPublisherHost web_apps_publisher_host(profile());
+  web_apps_publisher_host.SetPublisherForTesting(&mock_app_publisher);
+  web_apps_publisher_host.Init();
+  mock_app_publisher.Wait();
+  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 1U);
+  EXPECT_FALSE(mock_app_publisher.get_deltas().back()->intent_filters.empty());
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath audio_file =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("sam.ple.mp3"));
+  ASSERT_TRUE(base::WriteFile(audio_file, kAudioContent));
+  base::FilePath video_file =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("_sample.mp4"));
+  ASSERT_TRUE(base::WriteFile(video_file, kVideoContent));
+
+  ui_test_utils::AllBrowserTabAddedWaiter waiter;
+  {
+    crosapi::mojom::IntentPtr crosapi_intent = crosapi::mojom::Intent::New();
+    crosapi_intent->action = apps_util::kIntentActionSendMultiple;
+    crosapi_intent->mime_type = "*/*";
+    std::vector<crosapi::mojom::IntentFilePtr> crosapi_files;
+    {
+      auto crosapi_file = crosapi::mojom::IntentFile::New();
+      crosapi_file->file_path = audio_file;
+      crosapi_file->mime_type = "audio/mpeg";
+      crosapi_files.push_back(std::move(crosapi_file));
+    }
+    {
+      auto crosapi_file = crosapi::mojom::IntentFile::New();
+      crosapi_file->file_path = video_file;
+      crosapi_file->mime_type = "video/mp4";
+      crosapi_files.push_back(std::move(crosapi_file));
+    }
+    crosapi_intent->files = std::move(crosapi_files);
+
+    auto launch_params = apps::CreateCrosapiLaunchParamsWithEventFlags(
+        apps::AppServiceProxyFactory::GetForProfile(profile()), app_id,
+        /*event_flags=*/0, apps::mojom::LaunchSource::kFromSharesheet,
+        display::kInvalidDisplayId);
+    launch_params->intent = std::move(crosapi_intent);
+
+    static_cast<crosapi::mojom::AppController&>(web_apps_publisher_host)
+        .Launch(std::move(launch_params), base::DoNothing());
+  }
+  content::WebContents* const web_contents = waiter.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  EXPECT_EQ(kAudioContent, ReadTextContent(web_contents, "audio"));
+  EXPECT_EQ(kVideoContent, ReadTextContent(web_contents, "video"));
+}
+
 }  // namespace web_app

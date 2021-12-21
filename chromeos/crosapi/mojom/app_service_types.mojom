@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 15
+// Next MinVersion: 16
 
 module crosapi.mojom;
 
@@ -309,7 +309,10 @@ enum WindowMode {
 [Stable]
 struct IntentFile {
   // The file path of the file to share.
-  mojo_base.mojom.FilePath file_path;
+  mojo_base.mojom.FilePath file_path@0;
+
+  // File MIME type.
+  [MinVersion=15] string? mime_type@1;
 };
 
 // Action and resource handling request. This should

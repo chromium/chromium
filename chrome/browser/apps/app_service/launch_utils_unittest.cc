@@ -291,6 +291,7 @@ TEST_F(LaunchUtilsTest, FromCrosapiIntent) {
   constexpr char kIntentMimeType[] = "image/*";
   constexpr char kShareText[] = "Message";
   constexpr char kFilePath[] = "/tmp/picture.png";
+  constexpr char kFileMimeType[] = "image/png";
   constexpr char kBaseName[] = "picture.png";
 
   crosapi::mojom::LaunchParamsPtr crosapi_params =
@@ -308,6 +309,7 @@ TEST_F(LaunchUtilsTest, FromCrosapiIntent) {
     std::vector<crosapi::mojom::IntentFilePtr> crosapi_files;
     auto crosapi_file = crosapi::mojom::IntentFile::New();
     crosapi_file->file_path = base::FilePath(kFilePath);
+    crosapi_file->mime_type = kFileMimeType;
     crosapi_files.push_back(std::move(crosapi_file));
     crosapi_params->intent->files = std::move(crosapi_files);
   }
@@ -331,6 +333,7 @@ TEST_F(LaunchUtilsTest, FromCrosapiIntent) {
   EXPECT_EQ(converted_params.intent->files->size(), 1U);
   EXPECT_EQ((*converted_params.intent->files)[0]->file_name,
             base::SafeBaseName::Create(kBaseName));
+  EXPECT_EQ((*converted_params.intent->files)[0]->mime_type, kFileMimeType);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

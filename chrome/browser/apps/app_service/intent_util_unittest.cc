@@ -704,12 +704,14 @@ class IntentUtilsFileTest : public ::testing::Test {
 TEST_F(IntentUtilsFileTest, AppServiceIntentToCrosapi) {
   auto app_service_intent = apps::mojom::Intent::New();
   app_service_intent->action = "action";
-  app_service_intent->mime_type = "mime_type";
+  app_service_intent->mime_type = "*/*";
   const std::string path = "Documents/foo.txt";
+  const std::string mime_type = "text/plain";
   auto url = ToGURL(base::FilePath(storage::kTestDir), path);
   app_service_intent->files = std::vector<apps::mojom::IntentFilePtr>{};
   auto file = apps::mojom::IntentFile::New();
   file->url = url;
+  file->mime_type = mime_type;
   app_service_intent->files->push_back(std::move(file));
   auto crosapi_intent = apps_util::ConvertAppServiceToCrosapiIntent(
       app_service_intent, GetProfile());
@@ -718,6 +720,7 @@ TEST_F(IntentUtilsFileTest, AppServiceIntentToCrosapi) {
   ASSERT_TRUE(crosapi_intent->files.has_value());
   ASSERT_EQ(crosapi_intent->files.value().size(), 1U);
   EXPECT_EQ(crosapi_intent->files.value()[0]->file_path, base::FilePath(path));
+  EXPECT_EQ(crosapi_intent->files.value()[0]->mime_type, mime_type);
 }
 
 TEST_F(IntentUtilsFileTest, CrosapiIntentToAppService) {
