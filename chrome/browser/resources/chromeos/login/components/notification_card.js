@@ -1,6 +1,8 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+/* #js_imports_placeholder */
 
 /** @enum {string} */
 let NotificationCardType = {
@@ -8,16 +10,23 @@ let NotificationCardType = {
   SUCCESS: 'success',
 };
 
-Polymer({
-  is: 'notification-card',
+class NotificationCard extends Polymer.Element {
 
-  properties: {
-    buttonLabel: {type: String, value: ''},
+  static get is() {
+    return 'notification-card';
+  }
 
-    linkLabel: {type: String, value: ''},
+  /* #html_template_placeholder */
 
-    type: {type: String, value: ''}
-  },
+  static get properties() {
+    return {
+      buttonLabel: {type: String, value: ''},
+
+      linkLabel: {type: String, value: ''},
+
+      type: {type: String, value: ''}
+    };
+  }
 
   /**
    * @param {NotificationCardType} type
@@ -30,24 +39,28 @@ Polymer({
       return 'oobe-24:done';
     console.error('Unknown type "' + type + '".');
     return '';
-  },
+  }
 
   /** @private */
   buttonClicked_() {
-    this.fire('buttonclick');
-  },
+    this.dispatchEvent(new CustomEvent('buttonclick',
+        { bubbles: true, composed: true }));
+  }
 
   /**
    * @param {Event} e
    * @private
    */
   linkClicked_(e) {
-    this.fire('linkclick');
+    this.dispatchEvent(new CustomEvent('linkclick',
+        { bubbles: true, composed: true }));
     e.preventDefault();
-  },
+  }
 
   /** @type {Element} */
   get submitButton() {
     return this.$.submitButton;
   }
-});
+}
+
+customElements.define(NotificationCard.is, NotificationCard);

@@ -9,8 +9,8 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 
-<link rel="import" href="/components/oobe_icons.html">
-<link rel="import" href="/components/common_styles/common_styles.html">
+<link rel="import" href="./oobe_icons.html">
+<link rel="import" href="./common_styles/common_styles.html">
 
 <!--
   A simple notification card with a button, link (optional) and icon (optional).
@@ -33,8 +33,46 @@
 -->
 <dom-module id="notification-card">
   <template>
-    <style include="oobe-common-styles"></style>
-    <link rel="stylesheet" href="notification_card.css">
+    <style include="oobe-common-styles">
+      #container {
+        padding: 40px;
+      }
+
+      #icon-container {
+        margin-bottom: 14px;
+      }
+
+      :host iron-icon {
+        height: 28px;
+        width: 28px;
+      }
+
+      iron-icon[icon='cr:warning'] {
+        color: var(--google-yellow-500);
+      }
+
+      iron-icon[icon='notification-card:done'] {
+        color: var(--google-green-500);
+      }
+
+      #text-container {
+        color: grey;
+        line-height: 130%;
+        max-width: 240px;
+        text-align: center;
+      }
+
+      a {
+        color: rgb(17, 85, 204); /* #1155CC */
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      a:focus {
+        outline-color: rgb(77, 144, 254); /* #4D90FE */
+        transition: outline-color 200ms;
+      }
+    </style>
     <div id="container" class="vertical layout center fit">
       <div class="flex vertical layout center center-justified">
         <template is="dom-if" if="[[type]]">
@@ -59,4 +97,5 @@
       </div>
     </div>
   </template>
+  <script src="notification_card.js"></script>
 </dom-module>

@@ -51,6 +51,7 @@ group("closure_compile_module") {
     ":html_echo.m",
     ":long_touch_detector.m",
     ":network_select_login.m",
+    ":notification_card.m",
     ":oobe_a11y_option.m",
     ":oobe_cr_lottie.m",
     ":oobe_i18n_dropdown.m",
@@ -83,6 +84,7 @@ group("polymer3_elements") {
                   ":html_echo_module",
                   ":long_touch_detector_module",
                   ":network_select_login_module",
+                  ":notification_card_module",
                   ":oobe_a11y_option_module",
                   ":oobe_cr_lottie_module",
                   ":oobe_icons_module",
@@ -208,6 +210,12 @@ js_library("network_select_login.m") {
   extra_deps = [ ":network_select_login_module" ]
 }
 
+js_library("notification_card.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/notification_card.m.js" ]
+  deps = []
+  extra_deps = [ ":notification_card_module" ]
+}
+
 js_library("oobe_a11y_option.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_a11y_option.m.js" ]
   deps = []
@@ -322,6 +330,14 @@ polymer_modulizer("long_touch_detector") {
 polymer_modulizer("network_select_login") {
   js_file = "network_select_login.js"
   html_file = "network_select_login.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("notification_card") {
+  js_file = "notification_card.js"
+  html_file = "notification_card.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
