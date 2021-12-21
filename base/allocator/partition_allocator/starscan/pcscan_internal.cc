@@ -263,7 +263,7 @@ SimdSupport DetectSimdSupport() {
 #if defined(PA_STARSCAN_NEON_SUPPORTED)
   return SimdSupport::kNEON;
 #else
-  base::CPU cpu;
+  const base::CPU& cpu = base::CPU::GetInstanceNoAllocation();
   if (cpu.has_avx2())
     return SimdSupport::kAVX2;
   if (cpu.has_sse41())
