@@ -47,7 +47,6 @@ extern const base::Feature kUnifiedCredentialManagerDryRun;
 extern const base::Feature kUnifiedPasswordManagerAndroid;
 extern const base::Feature kUnifiedPasswordManagerMigration;
 extern const base::Feature kUnifiedPasswordManagerShadowAndroid;
-extern const base::Feature kUnifiedPasswordManagerShadowWriteOperationsAndroid;
 extern const base::Feature kUnifiedPasswordManagerSyncUsingAndroidBackendOnly;
 
 #endif

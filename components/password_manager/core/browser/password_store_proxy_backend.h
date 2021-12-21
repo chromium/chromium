@@ -12,8 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
 
-class PrefService;
-
 namespace password_manager {
 
 // This backend forwards requests to two backends in order to compare and record
@@ -26,7 +24,6 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   PasswordStoreProxyBackend(
       PasswordStoreBackend* main_backend,
       PasswordStoreBackend* shadow_backend,
-      PrefService* prefs,
       base::RepeatingCallback<bool()> is_syncing_passwords_callback);
   PasswordStoreProxyBackend(const PasswordStoreProxyBackend&) = delete;
   PasswordStoreProxyBackend(PasswordStoreProxyBackend&&) = delete;
@@ -74,7 +71,6 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
 
   const raw_ptr<PasswordStoreBackend> main_backend_;
   const raw_ptr<PasswordStoreBackend> shadow_backend_;
-  raw_ptr<PrefService> const prefs_ = nullptr;
   base::RepeatingCallback<bool()> is_syncing_passwords_callback_;
   base::WeakPtrFactory<PasswordStoreProxyBackend> weak_ptr_factory_{this};
 };
