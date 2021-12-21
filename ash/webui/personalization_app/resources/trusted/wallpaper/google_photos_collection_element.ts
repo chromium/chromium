@@ -56,13 +56,8 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
         observer: 'onHiddenChanged_',
       },
 
-      albums_: {
-        type: Array,
-      },
-
-      photos_: {
-        type: Array,
-      },
+      albums_: Array,
+      photos_: Array,
 
       tab_: {
         type: String,

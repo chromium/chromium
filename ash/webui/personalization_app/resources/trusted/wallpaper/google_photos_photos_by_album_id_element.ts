@@ -77,13 +77,8 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
             'computeAlbum_(albumId, photosByAlbumId_, photosByAlbumIdLoading_)',
       },
 
-      photosByAlbumId_: {
-        type: Object,
-      },
-
-      photosByAlbumIdLoading_: {
-        type: Object,
-      },
+      photosByAlbumId_: Object,
+      photosByAlbumIdLoading_: Object,
     };
   }
 

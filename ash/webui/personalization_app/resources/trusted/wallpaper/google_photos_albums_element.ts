@@ -8,16 +8,21 @@
 
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import './styles.js';
-import '/common/styles.js';
+import '../../common/styles.js';
 
-import {isSelectionEvent} from '/common/utils.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isSelectionEvent} from '../../common/utils.js';
+import {WallpaperCollection} from '../personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
-/** @polymer */
+export interface GooglePhotosAlbums {
+  $: {grid: IronListElement;};
+}
+
 export class GooglePhotosAlbums extends WithPersonalizationStore {
   static get is() {
     return 'google-photos-albums';
@@ -29,10 +34,6 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
 
   static get properties() {
     return {
-      /**
-       * Whether or not this element is currently hidden.
-       * @type {boolean}
-       */
       hidden: {
         type: Boolean,
         value: true,
@@ -40,54 +41,41 @@ export class GooglePhotosAlbums extends WithPersonalizationStore {
         observer: 'onHiddenChanged_',
       },
 
-      /**
-       * The list of albums.
-       * @type {?Array<WallpaperCollection>}
-       * @private
-       */
-      albums_: {
-        type: Array,
-      },
-
-      /**
-       * Whether the list of albums is currently loading.
-       * @type {boolean}
-       * @private
-       */
-      albumsLoading_: {
-        type: Boolean,
-      },
+      albums_: Array,
+      albumsLoading_: Boolean,
     };
   }
 
-  /** @override */
+  /** Whether or not this element is currently hidden. */
+  hidden: boolean;
+
+  /** The list of albums. */
+  private albums_: WallpaperCollection[]|null|undefined;
+
+  /** Whether the list of albums is currently loading. */
+  private albumsLoading_: boolean;
+
   connectedCallback() {
     super.connectedCallback();
 
-    this.watch('albums_', state => state.wallpaper.googlePhotos.albums);
-    this.watch(
+    this.watch<GooglePhotosAlbums['albums_']>(
+        'albums_', state => state.wallpaper.googlePhotos.albums);
+    this.watch<GooglePhotosAlbums['albumsLoading_']>(
         'albumsLoading_', state => state.wallpaper.loading.googlePhotos.albums);
 
     this.updateFromStore();
   }
 
-  /**
-   * Invoked on selection of an album.
-   * @param {!Event} e
-   * @private
-   */
-  onAlbumSelected_(e) {
+  /** Invoked on selection of an album. */
+  private onAlbumSelected_(e: Event&{model: {album: WallpaperCollection}}) {
     assert(e.model.album);
     if (isSelectionEvent(e)) {
       PersonalizationRouter.instance().selectGooglePhotosAlbum(e.model.album);
     }
   }
 
-  /**
-   * Invoked on changes to this element's |hidden| state.
-   * @private
-   */
-  onHiddenChanged_() {
+  /** Invoked on changes to this element's |hidden| state. */
+  private onHiddenChanged_() {
     if (this.hidden) {
       return;
     }
