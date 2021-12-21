@@ -336,12 +336,14 @@
     <dimen name="context_menu_header_vertical_padding">16dp</dimen>
     <dimen name="context_menu_header_image_max_size">60dp</dimen>
     <dimen name="context_menu_header_circle_bg_diameter">48dp</dimen>
-    <dimen name="context_menu_header_circle_bg_lateral_margin">6dp</dimen>
-    <dimen name="context_menu_header_circle_bg_vertical_margin">22dp</dimen>
+    <dimen name="context_menu_header_circle_bg_margin">6dp</dimen>
     <dimen name="context_menu_header_monogram_text_size">16dp</dimen>
     <dimen name="context_menu_header_monogram_size">26dp</dimen>
     <dimen name="context_menu_small_width">268dp</dimen>
     <dimen name="context_menu_small_lateral_margin">30dp</dimen>
+
+    <dimen name="context_menu_popup_header_image_max_size">36dp</dimen>
+    <dimen name="context_menu_popup_header_monogram_size">16dp</dimen>
 
     <!-- Defaults for TabbedModeFirstRunActivity values. -->
     <item type="dimen" name="dialog_fixed_width_major">100%</item>

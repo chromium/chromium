@@ -99,8 +99,7 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
             }
         }
 
-        final int size = mContext.getResources().getDimensionPixelSize(
-                R.dimen.context_menu_header_monogram_size);
+        final int size = mModel.get(ContextMenuHeaderProperties.MONOGRAM_SIZE_PIXEL);
 
         icon = Bitmap.createScaledBitmap(icon, size, size, true);
 
