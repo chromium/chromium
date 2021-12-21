@@ -30,6 +30,8 @@
 #include "url/gurl.h"
 
 #if defined(OS_CHROMEOS)
+#include "base/files/file_path.h"
+#include "base/files/safe_base_name.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
 #endif
 
@@ -38,7 +40,6 @@
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
-#include "base/files/file_path.h"
 #include "chrome/browser/ui/app_list/arc/intent.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
@@ -809,23 +810,29 @@ apps::mojom::IntentPtr ConvertCrosapiToAppServiceIntent(
   if (crosapi_intent->share_title.has_value()) {
     app_service_intent->share_title = crosapi_intent->share_title.value();
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (crosapi_intent->files.has_value() && profile) {
     std::vector<apps::mojom::IntentFilePtr> intent_files;
     for (const auto& file : crosapi_intent->files.value()) {
+      auto intent_file = apps::mojom::IntentFile::New();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       auto file_url = apps::GetFileSystemUrl(profile, file->file_path);
       if (file_url.is_empty()) {
         continue;
       }
-      auto intent_file = apps::mojom::IntentFile::New();
       intent_file->url = file_url;
+#else
+      // The directory is omitted from the human readable file name.
+      intent_file->file_name =
+          base::SafeBaseName::Create(file->file_path.BaseName());
+#endif
+
       intent_files.push_back(std::move(intent_file));
     }
     if (intent_files.size() > 0) {
       app_service_intent->files = std::move(intent_files);
     }
   }
-#endif
   if (crosapi_intent->activity_name.has_value()) {
     app_service_intent->activity_name = crosapi_intent->activity_name.value();
   }

@@ -10,17 +10,23 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/notifications/notification_common.h"
@@ -41,10 +47,12 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -52,6 +60,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/display/types/display_constants.h"
@@ -63,6 +72,8 @@
 using apps::IconEffects;
 
 namespace web_app {
+
+namespace {
 
 class MockAppPublisher : public crosapi::mojom::AppPublisher {
  public:
@@ -109,6 +120,15 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
   std::vector<apps::mojom::CapabilityAccessPtr> capability_access_deltas_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
+
+content::EvalJsResult ReadTextContent(content::WebContents* web_contents,
+                                      const char* id) {
+  const std::string script =
+      base::StringPrintf("document.getElementById('%s').textContent", id);
+  return content::EvalJs(web_contents, script);
+}
+
+}  // namespace
 
 class WebAppsPublisherHostBrowserTest : public WebAppControllerBrowserTest {
  public:
@@ -700,6 +720,101 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, DisabledState) {
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->app_id, app_id);
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->icon_key->icon_effects,
             IconEffects::kRoundCorners | IconEffects::kCrOsStandardIcon);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, GetLink) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const AppId app_id = InstallWebAppFromManifest(
+      browser(),
+      embedded_test_server()->GetURL("/web_share_target/gatherer.html"));
+  const GURL share_target_url =
+      embedded_test_server()->GetURL("/web_share_target/share.html");
+
+  MockAppPublisher mock_app_publisher;
+  WebAppsPublisherHost web_apps_publisher_host(profile());
+  web_apps_publisher_host.SetPublisherForTesting(&mock_app_publisher);
+  web_apps_publisher_host.Init();
+  mock_app_publisher.Wait();
+  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 1U);
+  EXPECT_FALSE(mock_app_publisher.get_deltas().back()->intent_filters.empty());
+
+  const std::string shared_title = "My News";
+  const std::string shared_link = "http://example.com/news";
+  const GURL expected_url(share_target_url.spec() +
+                          "?headline=My+News&link=http://example.com/news");
+
+  ui_test_utils::AllBrowserTabAddedWaiter waiter;
+  {
+    auto launch_params = apps::CreateCrosapiLaunchParamsWithEventFlags(
+        apps::AppServiceProxyFactory::GetForProfile(profile()), app_id,
+        /*event_flags=*/0, apps::mojom::LaunchSource::kFromSharesheet,
+        display::kInvalidDisplayId);
+    launch_params->intent = apps_util::ConvertAppServiceToCrosapiIntent(
+        apps_util::CreateShareIntentFromText(shared_link, shared_title),
+        profile());
+
+    static_cast<crosapi::mojom::AppController&>(web_apps_publisher_host)
+        .Launch(std::move(launch_params), base::DoNothing());
+  }
+  content::WebContents* const web_contents = waiter.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  EXPECT_EQ("GET", ReadTextContent(web_contents, "method"));
+  EXPECT_EQ(expected_url.spec(), ReadTextContent(web_contents, "url"));
+
+  EXPECT_EQ(shared_title, ReadTextContent(web_contents, "headline"));
+  // Gatherer web app's service worker detects omitted value.
+  EXPECT_EQ("N/A", ReadTextContent(web_contents, "author"));
+  EXPECT_EQ(shared_link, ReadTextContent(web_contents, "link"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ShareImage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const AppId app_id = InstallWebAppFromManifest(
+      browser(),
+      embedded_test_server()->GetURL("/web_share_target/multimedia.html"));
+  const std::string kData(12, '*');
+
+  MockAppPublisher mock_app_publisher;
+  WebAppsPublisherHost web_apps_publisher_host(profile());
+  web_apps_publisher_host.SetPublisherForTesting(&mock_app_publisher);
+  web_apps_publisher_host.Init();
+  mock_app_publisher.Wait();
+  EXPECT_EQ(mock_app_publisher.get_deltas().size(), 1U);
+  EXPECT_FALSE(mock_app_publisher.get_deltas().back()->intent_filters.empty());
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath image_file =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("sample.webp"));
+  ASSERT_TRUE(base::WriteFile(image_file, kData));
+
+  ui_test_utils::AllBrowserTabAddedWaiter waiter;
+  {
+    crosapi::mojom::IntentPtr crosapi_intent = crosapi::mojom::Intent::New();
+    crosapi_intent->action = apps_util::kIntentActionSend;
+    crosapi_intent->mime_type = "image/webp";
+    std::vector<crosapi::mojom::IntentFilePtr> crosapi_files;
+    auto crosapi_file = crosapi::mojom::IntentFile::New();
+    crosapi_file->file_path = image_file;
+    crosapi_files.push_back(std::move(crosapi_file));
+    crosapi_intent->files = std::move(crosapi_files);
+
+    auto launch_params = apps::CreateCrosapiLaunchParamsWithEventFlags(
+        apps::AppServiceProxyFactory::GetForProfile(profile()), app_id,
+        /*event_flags=*/0, apps::mojom::LaunchSource::kFromSharesheet,
+        display::kInvalidDisplayId);
+    launch_params->intent = std::move(crosapi_intent);
+
+    static_cast<crosapi::mojom::AppController&>(web_apps_publisher_host)
+        .Launch(std::move(launch_params), base::DoNothing());
+  }
+  content::WebContents* const web_contents = waiter.Wait();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+
+  EXPECT_EQ("POST", ReadTextContent(web_contents, "method"));
+  EXPECT_EQ(kData, ReadTextContent(web_contents, "image"));
 }
 
 }  // namespace web_app

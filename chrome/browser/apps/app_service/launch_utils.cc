@@ -404,7 +404,7 @@ apps::AppLaunchParams ConvertCrosapiToLaunchParams(
 
   if (crosapi_params->intent->files.has_value()) {
     for (const auto& file : crosapi_params->intent->files.value()) {
-      params.launch_files.push_back(std::move(file->file_path));
+      params.launch_files.push_back(file->file_path);
     }
   }
 

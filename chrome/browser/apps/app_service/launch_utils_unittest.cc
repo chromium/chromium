@@ -285,4 +285,53 @@ TEST_F(LaunchUtilsTest, FromCrosapiIncomplete) {
   EXPECT_EQ(apps::mojom::LaunchSource::kFromIntentUrl,
             converted_params.launch_source);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(LaunchUtilsTest, FromCrosapiIntent) {
+  constexpr char kIntentMimeType[] = "image/*";
+  constexpr char kShareText[] = "Message";
+  constexpr char kFilePath[] = "/tmp/picture.png";
+  constexpr char kBaseName[] = "picture.png";
+
+  crosapi::mojom::LaunchParamsPtr crosapi_params =
+      crosapi::mojom::LaunchParams::New();
+  crosapi_params->container =
+      crosapi::mojom::LaunchContainer::kLaunchContainerWindow;
+  crosapi_params->disposition =
+      crosapi::mojom::WindowOpenDisposition::kNewForegroundTab;
+  crosapi_params->launch_source = apps::mojom::LaunchSource::kFromSharesheet;
+  crosapi_params->intent = crosapi::mojom::Intent::New();
+  crosapi_params->intent->action = apps_util::kIntentActionSend;
+  crosapi_params->intent->mime_type = kIntentMimeType;
+  crosapi_params->intent->share_text = kShareText;
+  {
+    std::vector<crosapi::mojom::IntentFilePtr> crosapi_files;
+    auto crosapi_file = crosapi::mojom::IntentFile::New();
+    crosapi_file->file_path = base::FilePath(kFilePath);
+    crosapi_files.push_back(std::move(crosapi_file));
+    crosapi_params->intent->files = std::move(crosapi_files);
+  }
+
+  auto converted_params =
+      apps::ConvertCrosapiToLaunchParams(crosapi_params, &profile_);
+
+  EXPECT_EQ(converted_params.container,
+            apps::mojom::LaunchContainer::kLaunchContainerWindow);
+  EXPECT_EQ(converted_params.disposition,
+            WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  EXPECT_EQ(converted_params.launch_source,
+            apps::mojom::LaunchSource::kFromSharesheet);
+
+  EXPECT_EQ(converted_params.launch_files.size(), 1U);
+  EXPECT_EQ(converted_params.launch_files[0], base::FilePath(kFilePath));
+
+  EXPECT_EQ(converted_params.intent->action, apps_util::kIntentActionSend);
+  EXPECT_EQ(converted_params.intent->mime_type, kIntentMimeType);
+  EXPECT_EQ(converted_params.intent->share_text, kShareText);
+  EXPECT_EQ(converted_params.intent->files->size(), 1U);
+  EXPECT_EQ((*converted_params.intent->files)[0]->file_name,
+            base::SafeBaseName::Create(kBaseName));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 #endif  // defined(OS_CHROMEOS)

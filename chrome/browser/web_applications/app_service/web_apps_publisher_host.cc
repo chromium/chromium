@@ -248,7 +248,7 @@ void WebAppsPublisherHost::Launch(crosapi::mojom::LaunchParamsPtr launch_params,
   }
 
   auto params = apps::ConvertCrosapiToLaunchParams(launch_params, profile_);
-  if (!params.launch_files.empty()) {
+  if (!params.launch_files.empty() && !launch_params->intent) {
     // File handling may create the WebContents asynchronously.
     // TODO(crbug/1261263): implement.
     NOTIMPLEMENTED_LOG_ONCE();
