@@ -89,6 +89,34 @@ chromium-metrics-reviews@google.com.
   <summary>Errors experienced during Gobi device powerup.</summary>
 </histogram>
 
+<histogram name="Network.Ash.{NetworkType}.ConnectionResult.All"
+    enum="ShillConnectResult" expires_after="2022-11-01">
+  <owner>hsuregan@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the result of all Network connection attempts. A success is emitted
+    when a network of type {NetworkType} becomes connected from a non-connected
+    state. When a network of type {NetworkType} goes from a connecting state to
+    a disconnected state without a user initiated disconnect, a shill failure
+    reason is emitted.
+  </summary>
+  <token key="NetworkType">
+    <variant name="Cellular"/>
+    <variant name="Cellular.ESim"/>
+    <variant name="Cellular.PSim"/>
+    <variant name="Ethernet"/>
+    <variant name="Ethernet.Eap"/>
+    <variant name="Ethernet.NoEap"/>
+    <variant name="Tether"/>
+    <variant name="VPN"/>
+    <variant name="VPN.TypeBuiltIn"/>
+    <variant name="VPN.TypeThirdParty"/>
+    <variant name="WiFi"/>
+    <variant name="WiFi.SecurityOpen"/>
+    <variant name="WiFi.SecurityPasswordProtected"/>
+  </token>
+</histogram>
+
 <histogram name="Network.Cellular.Activation.StatusAtLogin"
     enum="NetworkCellularActivationState" expires_after="2021-08-29">
   <obsolete>
