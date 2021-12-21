@@ -139,6 +139,14 @@ class ProtoJSONStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         self.expected_output_file = 'colors_test_expected.protojson'
 
 
+class BlendStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
+    def setUp(self):
+        self.generator = CSSStyleGenerator()
+        self.generator.AddJSONFilesToModel(
+            ['colors_test_palette.json5', 'blend_colors_test.json5'])
+        self.expected_output_file = 'blend_colors_test_expected.css'
+
+
 class InvertedStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):
         self.generator = CSSStyleGenerator()

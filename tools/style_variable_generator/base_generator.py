@@ -147,6 +147,10 @@ class ColorModel(ModeKeyedModel):
         if isinstance(value_obj, dict):
             generate_per_mode = value_obj.pop('generate_per_mode', None)
             generate_inverted = value_obj.pop('generate_inverted', None)
+        elif self._CreateValue(value_obj).blended_colors:
+            # A blended color could evaluate to different colors in different
+            # modes, so add it to all the modes.
+            value_obj = {mode: value_obj for mode in Modes.ALL}
 
         generated_context = dict(context)
         generated_context['generated'] = True
