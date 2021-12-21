@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.ui.quickactionsearchwidget;
 
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
@@ -38,7 +36,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -606,13 +603,12 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1281655")
     public void resizeDinoWidgetToFillTargetCellArea_repositionContentRTL() {
         final Configuration c = new Configuration(mContext.getResources().getConfiguration());
         c.setLayoutDirection(Locale.forLanguageTag("ar")); // arabic
 
-        final Resources r = spy(mContext.getResources());
-        when(r.getConfiguration()).thenReturn(c);
+        final Resources r = mContext.getResources();
+        r.updateConfiguration(c, null);
         final float density = r.getDisplayMetrics().density;
 
         // Again, apply half the size of what the widget was designed for.
