@@ -265,9 +265,8 @@ void OverviewItem::RestoreWindow(bool reset_transform,
   }
 
   overview_item_view_->OnOverviewItemWindowRestoring();
-  transform_window_.RestoreWindow(
-      reset_transform,
-      /*transform_back=*/!was_desks_templates_grid_showing);
+  transform_window_.RestoreWindow(reset_transform,
+                                  was_desks_templates_grid_showing);
 
   if (transform_window_.IsMinimized()) {
     const auto enter_exit_type = overview_session_->enter_exit_overview_type();

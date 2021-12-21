@@ -66,6 +66,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/button.h"
@@ -1130,6 +1131,79 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   EXPECT_EQ(ash::Shell::GetContainer(settings_window->GetRootWindow(),
                                      ash::kShellWindowId_DeskContainerB),
             settings_window->parent());
+}
+
+// Tests that launching a template that contains a system web app will move the
+// existing instance of the system web app to the current desk.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
+                       NativeUILaunchTemplateWithSWAExisting) {
+  Profile* profile = browser()->profile();
+
+  // Create the settings app, which is a system web app.
+  CreateSettingsSystemWebApp(profile);
+
+  aura::Window* settings_window = FindBrowserWindow(kSettingsWindowId);
+  ASSERT_TRUE(settings_window);
+  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+
+  // Give the settings app a known position.
+  const gfx::Rect settings_bounds(100, 100, 600, 400);
+  settings_window->SetBounds(settings_bounds);
+  // Focus the browser so that the settings window is stacked at the bottom.
+  browser()->window()->GetNativeWindow()->Focus();
+  ASSERT_THAT(settings_window->parent()->children(),
+              ElementsAre(settings_window, _));
+
+  // Enter overview and save the current desk as a template.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+  views::Button* save_desk_as_template_button =
+      ash::GetSaveDeskAsTemplateButton();
+  ASSERT_TRUE(save_desk_as_template_button);
+  ClickButton(save_desk_as_template_button);
+
+  // Exit overview and move the settings window to a new place and stack it on
+  // top so that we can later verify that it has been placed and stacked
+  // correctly.
+  ash::ToggleOverview();
+  ash::WaitForOverviewExitAnimation();
+  settings_window->SetBounds(gfx::Rect(150, 150, 650, 500));
+  settings_window->Focus();
+
+  // Enter overview, head over to the desks templates grid and launch the
+  // template.
+  ash::ToggleOverview();
+  ash::WaitForOverviewEnterAnimation();
+  views::Button* zero_state_templates_button =
+      ash::GetZeroStateDesksTemplatesButton();
+  ASSERT_TRUE(zero_state_templates_button);
+  ClickButton(zero_state_templates_button);
+
+  ash::WaitForDesksTemplatesUI();
+  views::Button* template_item = ash::GetTemplateItemButton(/*index=*/0);
+  ASSERT_TRUE(template_item);
+  ClickButton(template_item);
+
+  // Wait for the tabs to load.
+  content::RunAllTasksUntilIdle();
+
+  // Exit overview.
+  ash::ToggleOverview();
+  ash::WaitForOverviewExitAnimation();
+
+  ash::DesksController* desks_controller = ash::DesksController::Get();
+  ASSERT_EQ(1, desks_controller->GetActiveDeskIndex());
+
+  // We launch a new browser window, but not a new settings app. Verify that the
+  // window has been moved to the right place and stacked at the bottom.
+  EXPECT_EQ(3u, BrowserList::GetInstance()->size());
+  EXPECT_TRUE(desks_controller->BelongsToActiveDesk(settings_window));
+  EXPECT_EQ(settings_bounds, settings_window->bounds());
+
+  // TODO(crbug.com/1281393): Verify that the element order is correct.
+
+  // Tests that there is no clipping on the settings window.
+  EXPECT_EQ(gfx::Rect(), settings_window->layer()->clip_rect());
 }
 
 class DesksTemplatesClientArcTest : public InProcessBrowserTest {

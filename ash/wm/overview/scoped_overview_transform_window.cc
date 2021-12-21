@@ -112,7 +112,8 @@ void ClipWindow(aura::Window* window, const gfx::Rect& clip_rect) {
     return;
 
   gfx::Rect new_clip_rect = clip_rect;
-  if (new_clip_rect.IsEmpty() && animator->is_animating()) {
+  if (new_clip_rect.IsEmpty() &&
+      animator->IsAnimatingProperty(ui::LayerAnimationElement::CLIP)) {
     // Animate to a clip the size of |window|. Create a self deleting object
     // which removes the clip when the animation is finished.
     new_clip_rect = gfx::Rect(window->bounds().size());
@@ -162,7 +163,7 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
     : overview_item_(overview_item),
       window_(window),
       original_opacity_(window->layer()->GetTargetOpacity()),
-      original_clip_rect_(window_->layer()->clip_rect()) {
+      original_clip_rect_(window_->layer()->GetTargetClipRect()) {
   type_ = GetWindowDimensionsType(window->bounds().size());
 
   std::vector<aura::Window*> transient_children_to_hide;
@@ -257,13 +258,14 @@ ScopedOverviewTransformWindow::GetWindowDimensionsType(const gfx::Size& size) {
   return OverviewGridWindowFillMode::kNormal;
 }
 
-void ScopedOverviewTransformWindow::RestoreWindow(bool reset_transform,
-                                                  bool animate_back) {
+void ScopedOverviewTransformWindow::RestoreWindow(
+    bool reset_transform,
+    bool was_desk_templates_grid_showing) {
   // Shadow controller may be null on shutdown.
   if (Shell::Get()->shadow_controller())
     Shell::Get()->shadow_controller()->UpdateShadowForWindow(window_);
 
-  if (IsMinimized() || !animate_back) {
+  if (IsMinimized() || was_desk_templates_grid_showing) {
     // Minimized windows may have had their transforms altered by swiping up
     // from the shelf.
     SetTransform(window_, gfx::Transform());
@@ -297,8 +299,11 @@ void ScopedOverviewTransformWindow::RestoreWindow(bool reset_transform,
     }
   }
 
-  ScopedOverviewAnimationSettings animation_settings(
-      overview_item_->GetExitOverviewAnimationType(), window_);
+  OverviewAnimationType animation_type =
+      was_desk_templates_grid_showing
+          ? OVERVIEW_ANIMATION_NONE
+          : overview_item_->GetExitOverviewAnimationType();
+  ScopedOverviewAnimationSettings animation_settings(animation_type, window_);
   SetOpacity(original_opacity_);
   SetClipping({ClippingType::kExit, gfx::SizeF()});
 }
@@ -453,14 +458,14 @@ gfx::RectF ScopedOverviewTransformWindow::ShrinkRectToFitPreservingAspectRatio(
           // We also do not consider `top_view_inset` in our calculation of
           // `new_scale` because we want to find out the height of the inset when
           // the whole window, including the inset, is scaled down to `new_bounds`.
-          const float new_scale = 
+          const float new_scale =
               GetItemScale(rect.size(), new_bounds.size(), 0, 0);
           const float scaled_top_view_inset = top_view_inset * new_scale;
-          // Offset `new_bounds` to be at a point in the overview item frame where 
-          // it will be centered when we clip the `top_view_inset`.
-          new_bounds.Offset(0, (bounds.height() - title_height) / 2 - 
-                               (new_height - scaled_top_view_inset) / 2 - 
-                               scaled_top_view_inset);
+          // Offset `new_bounds` to be at a point in the overview item frame
+          // where it will be centered when we clip the `top_view_inset`.
+          new_bounds.Offset(0, (bounds.height() - title_height) / 2 -
+                                   (new_height - scaled_top_view_inset) / 2 -
+                                   scaled_top_view_inset);
         } else {
           new_bounds.ClampToCenteredSize(gfx::SizeF(bounds.width(), new_height));
         }
