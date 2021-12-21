@@ -22,7 +22,6 @@
 #include "net/third_party/quiche/src/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quic/test_tools/quic_test_backend.h"
 #include "net/tools/quic/quic_simple_server.h"
-#include "net/tools/quic/quic_transport_simple_server.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
@@ -263,7 +262,7 @@ class TestClient final : public mojom::WebTransportClient {
 };
 
 quic::ParsedQuicVersion GetTestVersion() {
-  quic::ParsedQuicVersion version = quic::DefaultVersionForQuicTransport();
+  quic::ParsedQuicVersion version = quic::ParsedQuicVersion::RFCv1();
   quic::QuicEnableVersion(version);
   return version;
 }

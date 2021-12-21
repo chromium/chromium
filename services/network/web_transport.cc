@@ -17,7 +17,6 @@
 #include "net/third_party/quiche/src/quic/core/quic_time.h"
 #include "net/third_party/quiche/src/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_mem_slice.h"
-#include "net/third_party/quiche/src/quic/quic_transport/quic_transport_stream.h"
 #include "services/network/network_context.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 

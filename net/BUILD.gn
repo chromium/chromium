@@ -2654,8 +2654,6 @@ source_set("simple_quic_tools") {
     "tools/quic/quic_simple_server_session_helper.h",
     "tools/quic/quic_simple_server_socket.cc",
     "tools/quic/quic_simple_server_socket.h",
-    "tools/quic/quic_transport_simple_server.cc",
-    "tools/quic/quic_transport_simple_server.h",
     "tools/quic/synchronous_host_resolver.cc",
     "tools/quic/synchronous_host_resolver.h",
   ]
@@ -2704,17 +2702,6 @@ if (!is_ios) {
     public_deps = [ "//net/third_party/quiche:quic_server_core" ]
     allow_circular_includes_from =
         [ "//net/third_party/quiche:quic_server_core" ]
-  }
-  executable("quic_transport_simple_server") {
-    sources = [ "tools/quic/quic_transport_simple_server_bin.cc" ]
-    deps = [
-      ":net",
-      ":simple_quic_tools",
-      "//base",
-      "//build/win:default_exe_manifest",
-      "//third_party/boringssl",
-      "//third_party/protobuf:protobuf_lite",
-    ]
   }
   executable("crypto_message_printer") {
     sources = [ "tools/quic/crypto_message_printer_bin.cc" ]
