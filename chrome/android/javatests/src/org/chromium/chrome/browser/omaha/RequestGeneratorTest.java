@@ -14,13 +14,17 @@ import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.uid.SettingsSecureBasedIdentificationGenerator;
 import org.chromium.chrome.browser.uid.UniqueIdentificationGenerator;
@@ -41,6 +45,18 @@ public class RequestGeneratorTest {
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+
+    @Before
+    public void setUp() {
+        FeatureList.TestValues overrides = new FeatureList.TestValues();
+        overrides.addFeatureFlagOverride(ChromeFeatureList.ANONYMOUS_UPDATE_CHECKS, true);
+        FeatureList.setTestValues(overrides);
+    }
+
+    @After
+    public void tearDown() {
+        FeatureList.setTestValues(null);
+    }
 
     @Test
     @SmallTest
@@ -178,8 +194,6 @@ public class RequestGeneratorTest {
             Assert.assertTrue("Update check and install event are mutually exclusive",
                     checkForTag(xml, "updatecheck"));
         }
-
-        checkForAttributeAndValue(xml, "request", "userid", "{" + generator.getDeviceID() + "}");
 
         return generator;
     }
