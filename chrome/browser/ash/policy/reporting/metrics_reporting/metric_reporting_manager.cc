@@ -157,9 +157,12 @@ void MetricReportingManager::Init() {
 
   if (base::FeatureList::IsEnabled(kEnableNetworkTelemetryReporting)) {
     // Network health info.
-    CreateOneShotCollector(std::make_unique<NetworkInfoSampler>(),
-                           info_report_queue_.get(),
-                           ::ash::kReportDeviceNetworkConfiguration);
+    // ReportDeviceNetworkConfiguration policy is enabled by default, so set its
+    // default value to true.
+    CreateOneShotCollector(
+        std::make_unique<NetworkInfoSampler>(), info_report_queue_.get(),
+        /*enable_setting_path=*/::ash::kReportDeviceNetworkConfiguration,
+        /*setting_enabled_default_value=*/true);
   }
 }
 
@@ -199,7 +202,8 @@ MetricReportingManager::CreateTelemetryQueue() {
 void MetricReportingManager::CreateOneShotCollector(
     std::unique_ptr<Sampler> sampler,
     MetricReportQueue* metric_report_queue,
-    const std::string& enable_setting_path) {
+    const std::string& enable_setting_path,
+    bool setting_enabled_default_value) {
   auto* const sampler_ptr = sampler.get();
   samplers_.emplace_back(std::move(sampler));
   if (!metric_report_queue) {
@@ -207,12 +211,13 @@ void MetricReportingManager::CreateOneShotCollector(
   }
   one_shot_collectors_.emplace_back(std::make_unique<OneShotCollector>(
       sampler_ptr, metric_report_queue, &reporting_settings_,
-      enable_setting_path));
+      enable_setting_path, setting_enabled_default_value));
 }
 
 void MetricReportingManager::CreatePeriodicCollector(
     std::unique_ptr<Sampler> sampler,
     const std::string& enable_setting_path,
+    bool setting_enabled_default_value,
     const std::string& rate_setting_path,
     base::TimeDelta default_rate,
     int rate_unit_to_ms) {
@@ -223,7 +228,8 @@ void MetricReportingManager::CreatePeriodicCollector(
   }
   periodic_collectors_.emplace_back(std::make_unique<PeriodicCollector>(
       sampler_ptr, telemetry_report_queue_.get(), &reporting_settings_,
-      enable_setting_path, rate_setting_path, default_rate, rate_unit_to_ms));
+      enable_setting_path, setting_enabled_default_value, rate_setting_path,
+      default_rate, rate_unit_to_ms));
 }
 
 void MetricReportingManager::CreatePeriodicEventCollector(
@@ -231,6 +237,7 @@ void MetricReportingManager::CreatePeriodicEventCollector(
     std::unique_ptr<EventDetector> event_detector,
     std::vector<Sampler*> additional_samplers,
     const std::string& enable_setting_path,
+    bool setting_enabled_default_value,
     const std::string& rate_setting_path,
     base::TimeDelta default_rate,
     int rate_unit_to_ms) {
@@ -242,12 +249,14 @@ void MetricReportingManager::CreatePeriodicEventCollector(
   periodic_collectors_.emplace_back(std::make_unique<PeriodicEventCollector>(
       sampler_ptr, std::move(event_detector), std::move(additional_samplers),
       event_report_queue_.get(), &reporting_settings_, enable_setting_path,
-      rate_setting_path, default_rate, rate_unit_to_ms));
+      setting_enabled_default_value, rate_setting_path, default_rate,
+      rate_unit_to_ms));
 }
 
 void MetricReportingManager::CreateEventObserverManager(
     std::unique_ptr<MetricEventObserver> event_observer,
     const std::string& enable_setting_path,
+    bool setting_enabled_default_value,
     std::vector<Sampler*> additional_samplers) {
   if (!event_report_queue_) {
     return;
@@ -256,7 +265,7 @@ void MetricReportingManager::CreateEventObserverManager(
       std::make_unique<MetricEventObserverManager>(
           std::move(event_observer), event_report_queue_.get(),
           &reporting_settings_, enable_setting_path,
-          std::move(additional_samplers)));
+          setting_enabled_default_value, std::move(additional_samplers)));
 }
 
 void MetricReportingManager::InitNetworkCollectors() {
@@ -268,20 +277,28 @@ void MetricReportingManager::InitNetworkCollectors() {
   auto network_telemetry_sampler =
       std::make_unique<NetworkTelemetrySampler>(https_latency_sampler.get());
   // Network health telemetry.
+  // ReportDeviceNetworkStatus policy is enabled by default, so set its default
+  // value to true.
+  const bool kReportDeviceNetworkStatusDefaultValue = true;
   CreatePeriodicCollector(
-      std::move(network_telemetry_sampler), ::ash::kReportDeviceNetworkStatus,
+      std::move(network_telemetry_sampler),
+      /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
+      kReportDeviceNetworkStatusDefaultValue,
       ::ash::kReportDeviceNetworkTelemetryCollectionRateMs,
       GetDefaulCollectionRate(kDefaultNetworkTelemetryCollectionRate));
   // HttpsLatency events.
   CreatePeriodicEventCollector(
       std::move(https_latency_sampler),
       std::make_unique<HttpsLatencyEventDetector>(), /*additional_samplers=*/{},
-      ::ash::kReportDeviceNetworkStatus,
+      /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
+      kReportDeviceNetworkStatusDefaultValue,
       ::ash::kReportDeviceNetworkTelemetryEventCheckingRateMs,
       GetDefaulEventCheckingRate(kDefaultNetworkTelemetryEventCheckingRate));
   // Network health events observer.
-  CreateEventObserverManager(std::make_unique<NetworkEventsObserver>(),
-                             ::ash::kReportDeviceNetworkStatus);
+  CreateEventObserverManager(
+      std::make_unique<NetworkEventsObserver>(),
+      /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
+      kReportDeviceNetworkStatusDefaultValue);
 }
 
 }  // namespace reporting

@@ -53,11 +53,12 @@ OneShotCollector::OneShotCollector(Sampler* sampler,
                                    MetricReportQueue* metric_report_queue,
                                    ReportingSettings* reporting_settings,
                                    const std::string& setting_path,
+                                   bool setting_enabled_default_value,
                                    base::OnceClosure on_data_reported)
     : CollectorBase(sampler, metric_report_queue),
       on_data_reported_(std::move(on_data_reported)) {
   reporting_controller_ = std::make_unique<MetricReportingController>(
-      reporting_settings, setting_path,
+      reporting_settings, setting_path, setting_enabled_default_value,
       base::BindRepeating(&OneShotCollector::Collect, base::Unretained(this)));
 }
 
@@ -86,6 +87,7 @@ PeriodicCollector::PeriodicCollector(Sampler* sampler,
                                      MetricReportQueue* metric_report_queue,
                                      ReportingSettings* reporting_settings,
                                      const std::string& enable_setting_path,
+                                     bool setting_enabled_default_value,
                                      const std::string& rate_setting_path,
                                      base::TimeDelta default_rate,
                                      int rate_unit_to_ms)
@@ -100,6 +102,7 @@ PeriodicCollector::PeriodicCollector(Sampler* sampler,
       reporting_controller_(std::make_unique<MetricReportingController>(
           reporting_settings,
           enable_setting_path,
+          setting_enabled_default_value,
           base::BindRepeating(&PeriodicEventCollector::StartPeriodicCollection,
                               base::Unretained(this)),
           base::BindRepeating(&PeriodicEventCollector::StopPeriodicCollection,
@@ -171,6 +174,7 @@ PeriodicEventCollector::PeriodicEventCollector(
     MetricReportQueue* metric_report_queue,
     ReportingSettings* reporting_settings,
     const std::string& enable_setting_path,
+    bool setting_enabled_default_value,
     const std::string& rate_setting_path,
     base::TimeDelta default_rate,
     int rate_unit_to_ms)
@@ -178,6 +182,7 @@ PeriodicEventCollector::PeriodicEventCollector(
                         metric_report_queue,
                         reporting_settings,
                         enable_setting_path,
+                        setting_enabled_default_value,
                         rate_setting_path,
                         default_rate,
                         rate_unit_to_ms),

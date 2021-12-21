@@ -23,6 +23,7 @@ MetricEventObserverManager::MetricEventObserverManager(
     MetricReportQueue* metric_report_queue,
     ReportingSettings* reporting_settings,
     const std::string& enable_setting_path,
+    bool setting_enabled_default_value,
     std::vector<Sampler*> additional_samplers)
     : event_observer_(std::move(event_observer)),
       metric_report_queue_(metric_report_queue),
@@ -39,7 +40,7 @@ MetricEventObserverManager::MetricEventObserverManager(
       base::SequencedTaskRunnerHandle::Get(), std::move(on_event_observed_cb)));
 
   reporting_controller_ = std::make_unique<MetricReportingController>(
-      reporting_settings, enable_setting_path,
+      reporting_settings, enable_setting_path, setting_enabled_default_value,
       base::BindRepeating(&MetricEventObserverManager::SetReportingEnabled,
                           base::Unretained(this),
                           /*is_enabled=*/true),

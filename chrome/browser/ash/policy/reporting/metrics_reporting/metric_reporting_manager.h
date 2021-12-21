@@ -94,9 +94,11 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   void CreateOneShotCollector(std::unique_ptr<Sampler> sampler,
                               MetricReportQueue* report_queue,
-                              const std::string& enable_setting_path);
+                              const std::string& enable_setting_path,
+                              bool setting_enabled_default_value);
   void CreatePeriodicCollector(std::unique_ptr<Sampler> sampler,
                                const std::string& enable_setting_path,
+                               bool setting_enabled_default_value,
                                const std::string& rate_setting_path,
                                base::TimeDelta default_rate,
                                int rate_unit_to_ms = 1);
@@ -105,12 +107,14 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
       std::unique_ptr<EventDetector> event_detector,
       std::vector<Sampler*> additional_samplers,
       const std::string& enable_setting_path,
+      bool setting_enabled_default_value,
       const std::string& rate_setting_path,
       base::TimeDelta default_rate,
       int rate_unit_to_ms = 1);
   void CreateEventObserverManager(
       std::unique_ptr<MetricEventObserver> event_observer,
       const std::string& enable_setting_path,
+      bool setting_enabled_default_value,
       std::vector<Sampler*> additional_samplers = {});
 
   void InitNetworkCollectors();

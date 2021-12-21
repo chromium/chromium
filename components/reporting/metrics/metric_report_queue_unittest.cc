@@ -21,21 +21,22 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace reporting {
-
 using ::testing::_;
+
+namespace reporting {
+namespace {
 
 class MetricReportQueueTest : public ::testing::Test {
  public:
   void SetUp() override {
     priority_ = Priority::SLOW_BATCH;
-    settings_ = std::make_unique<FakeReportingSettings>();
+    settings_ = std::make_unique<test::FakeReportingSettings>();
   }
 
  protected:
   const std::string kRateSettingPath = "rate_path";
 
-  std::unique_ptr<FakeReportingSettings> settings_;
+  std::unique_ptr<test::FakeReportingSettings> settings_;
 
   Priority priority_;
 
@@ -152,4 +153,5 @@ TEST_F(MetricReportQueueTest, RateControlledFlush_TimeElapsed) {
   EXPECT_CALL(*mock_queue_ptr, Flush(priority_, _)).Times(1);
   task_environment_.FastForwardBy(base::Milliseconds(rate_ms));
 }
+}  // namespace
 }  // namespace reporting

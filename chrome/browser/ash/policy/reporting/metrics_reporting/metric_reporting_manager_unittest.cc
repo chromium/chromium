@@ -30,6 +30,7 @@
 #include "components/reporting/metrics/fake_sampler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace reporting {
@@ -120,8 +121,9 @@ struct NetworkHealthReportingTestCase {
   bool is_feature_enabled;
   bool is_deprovisioned;
   bool is_affiliated;
-  bool info_policy_enabled;
-  bool telemetry_policy_enabled;
+  // optional to test the cases where the policies are not set.
+  absl::optional<bool> info_policy_enabled;
+  absl::optional<bool> telemetry_policy_enabled;
   RoutineVerdict latency_verdict;
   int expected_info_count;
   int expected_telemetry_count;
@@ -193,10 +195,16 @@ class NetworkHealthReportingTest
 TEST_P(NetworkHealthReportingTest, Info_Telemetry_LatencyEvent) {
   const NetworkHealthReportingTestCase& test_case = GetParam();
 
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      ::ash::kReportDeviceNetworkConfiguration, test_case.info_policy_enabled);
-  scoped_testing_cros_settings_.device_settings()->SetBoolean(
-      ::ash::kReportDeviceNetworkStatus, test_case.telemetry_policy_enabled);
+  if (test_case.info_policy_enabled.has_value()) {
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        ::ash::kReportDeviceNetworkConfiguration,
+        test_case.info_policy_enabled.value());
+  }
+  if (test_case.telemetry_policy_enabled.has_value()) {
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        ::ash::kReportDeviceNetworkStatus,
+        test_case.telemetry_policy_enabled.value());
+  }
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatureState(
       MetricReportingManager::kEnableNetworkTelemetryReporting,
@@ -336,6 +344,22 @@ INSTANTIATE_TEST_SUITE_P(
           /*latency_verdict=*/RoutineVerdict::PROBLEM,
           /*expected_info_count=*/1,
           /*expected_telemetry_count=*/0, /*expected_event_count=*/0,
+          /*expected_flush_per_period=*/1},
+         {"InfoPolicyDefaultEnabled", /*is_feature_enabled=*/true,
+          /*is_deprovisioned=*/false,
+          /*is_affiliated=*/true, /*info_policy_enabled=*/absl::nullopt,
+          /*telemetry_policy_enabled=*/false,
+          /*latency_verdict=*/RoutineVerdict::PROBLEM,
+          /*expected_info_count=*/1,
+          /*expected_telemetry_count=*/0, /*expected_event_count=*/0,
+          /*expected_flush_per_period=*/1},
+         {"TelemetryPolicyDefaultEnabled", /*is_feature_enabled=*/true,
+          /*is_deprovisioned=*/false,
+          /*is_affiliated=*/true, /*info_policy_enabled=*/false,
+          /*telemetry_policy_enabled=*/absl::nullopt,
+          /*latency_verdict=*/RoutineVerdict::PROBLEM,
+          /*expected_info_count=*/0,
+          /*expected_telemetry_count=*/1, /*expected_event_count=*/1,
           /*expected_flush_per_period=*/1},
          {"LatencyVerdictNoProblem", /*is_feature_enabled=*/true,
           /*is_deprovisioned=*/false,

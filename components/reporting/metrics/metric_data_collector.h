@@ -63,6 +63,7 @@ class OneShotCollector : public CollectorBase {
                    MetricReportQueue* metric_report_queue,
                    ReportingSettings* reporting_settings,
                    const std::string& setting_path,
+                   bool setting_enabled_default_value,
                    base::OnceClosure on_data_reported = base::DoNothing());
 
   OneShotCollector(const OneShotCollector& other) = delete;
@@ -91,6 +92,7 @@ class PeriodicCollector : public CollectorBase {
                     MetricReportQueue* metric_report_queue,
                     ReportingSettings* reporting_settings,
                     const std::string& enable_setting_path,
+                    bool setting_enabled_default_value,
                     const std::string& rate_setting_path,
                     base::TimeDelta default_rate,
                     int rate_unit_to_ms = 1);
@@ -163,6 +165,7 @@ class PeriodicEventCollector : public PeriodicCollector {
                          MetricReportQueue* metric_report_queue,
                          ReportingSettings* reporting_settings,
                          const std::string& enable_setting_path,
+                         bool setting_enabled_default_value,
                          const std::string& rate_setting_path,
                          base::TimeDelta default_rate,
                          int rate_unit_to_ms = 1);

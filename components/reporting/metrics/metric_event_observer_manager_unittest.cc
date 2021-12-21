@@ -20,11 +20,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace reporting {
+namespace {
 
 class MetricEventObserverManagerTest : public ::testing::Test {
  public:
   void SetUp() override {
-    settings_ = std::make_unique<FakeReportingSettings>();
+    settings_ = std::make_unique<test::FakeReportingSettings>();
     event_observer_ = std::make_unique<test::FakeMetricEventObserver>();
     metric_report_queue_ = std::make_unique<test::FakeMetricReportQueue>();
   }
@@ -34,7 +35,7 @@ class MetricEventObserverManagerTest : public ::testing::Test {
 
   const std::string kEnableSettingPath = "enable_path";
 
-  std::unique_ptr<FakeReportingSettings> settings_;
+  std::unique_ptr<test::FakeReportingSettings> settings_;
   std::unique_ptr<test::FakeMetricEventObserver> event_observer_;
   std::unique_ptr<test::FakeMetricReportQueue> metric_report_queue_;
 };
@@ -43,9 +44,9 @@ TEST_F(MetricEventObserverManagerTest, InitiallyEnabled) {
   settings_->SetBoolean(kEnableSettingPath, true);
   auto* event_observer_ptr = event_observer_.get();
 
-  MetricEventObserverManager event_manager(std::move(event_observer_),
-                                           metric_report_queue_.get(),
-                                           settings_.get(), kEnableSettingPath);
+  MetricEventObserverManager event_manager(
+      std::move(event_observer_), metric_report_queue_.get(), settings_.get(),
+      kEnableSettingPath, /*setting_enabled_default_value=*/false);
 
   MetricData metric_data;
   metric_data.mutable_event_data();
@@ -76,9 +77,9 @@ TEST_F(MetricEventObserverManagerTest, InitiallyDisabled) {
   settings_->SetBoolean(kEnableSettingPath, false);
   auto* event_observer_ptr = event_observer_.get();
 
-  MetricEventObserverManager event_manager(std::move(event_observer_),
-                                           metric_report_queue_.get(),
-                                           settings_.get(), kEnableSettingPath);
+  MetricEventObserverManager event_manager(
+      std::move(event_observer_), metric_report_queue_.get(), settings_.get(),
+      kEnableSettingPath, /*setting_enabled_default_value=*/false);
 
   MetricData metric_data;
   metric_data.mutable_event_data();
@@ -98,6 +99,41 @@ TEST_F(MetricEventObserverManagerTest, InitiallyDisabled) {
   EXPECT_TRUE(metric_data_reported[0].has_event_data());
 }
 
+TEST_F(MetricEventObserverManagerTest, DefaultEnabled) {
+  auto* event_observer_ptr = event_observer_.get();
+
+  MetricEventObserverManager event_manager(
+      std::move(event_observer_), metric_report_queue_.get(), settings_.get(),
+      "invalid/path", /*setting_enabled_default_value=*/true);
+
+  MetricData metric_data;
+  metric_data.mutable_event_data();
+
+  ASSERT_TRUE(event_observer_ptr->GetReportingEnabled());
+  event_observer_ptr->RunCallback(metric_data);
+
+  auto metric_data_reported = metric_report_queue_->GetMetricDataReported();
+  ASSERT_EQ(metric_data_reported.size(), 1ul);
+  EXPECT_TRUE(metric_data_reported[0].has_timestamp_ms());
+  EXPECT_TRUE(metric_data_reported[0].has_event_data());
+}
+
+TEST_F(MetricEventObserverManagerTest, DefaultDisabled) {
+  auto* event_observer_ptr = event_observer_.get();
+
+  MetricEventObserverManager event_manager(
+      std::move(event_observer_), metric_report_queue_.get(), settings_.get(),
+      "invalid/path", /*setting_enabled_default_value=*/false);
+
+  MetricData metric_data;
+  metric_data.mutable_event_data();
+
+  event_observer_ptr->RunCallback(metric_data);
+
+  ASSERT_FALSE(event_observer_ptr->GetReportingEnabled());
+  EXPECT_TRUE(metric_report_queue_->GetMetricDataReported().empty());
+}
+
 TEST_F(MetricEventObserverManagerTest, AdditionalSamplers) {
   settings_->SetBoolean(kEnableSettingPath, true);
   auto* event_observer_ptr = event_observer_.get();
@@ -109,7 +145,8 @@ TEST_F(MetricEventObserverManagerTest, AdditionalSamplers) {
 
   MetricEventObserverManager event_manager(
       std::move(event_observer_), metric_report_queue_.get(), settings_.get(),
-      kEnableSettingPath, {&additional_sampler});
+      kEnableSettingPath, /*setting_enabled_default_value=*/false,
+      {&additional_sampler});
 
   MetricData metric_data;
   metric_data.mutable_event_data();
@@ -130,4 +167,6 @@ TEST_F(MetricEventObserverManagerTest, AdditionalSamplers) {
     EXPECT_TRUE(metric_data_reported[i].has_telemetry_data());
   }
 }
+
+}  // namespace
 }  // namespace reporting

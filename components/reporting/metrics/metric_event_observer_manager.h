@@ -32,6 +32,7 @@ class MetricEventObserverManager {
       MetricReportQueue* metric_report_queue,
       ReportingSettings* reporting_settings,
       const std::string& enable_setting_path,
+      bool setting_enabled_default_value,
       std::vector<Sampler*> additional_samplers = {});
 
   MetricEventObserverManager(const MetricEventObserverManager& other) = delete;
