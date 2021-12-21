@@ -189,6 +189,8 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_DISCONNECTED},
       {"bluetoothDeviceDetailForget",
        IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_FORGET},
+      {"bluetoothDeviceDetailForgetA11yLabel",
+       IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_FORGET_A11Y_LABEL},
       {"bluetoothDeviceDetailName", IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_NAME},
       {"bluetoothDeviceDetailChangeNameDialogNewName",
        IDS_SETTINGS_BLUETOOTH_CHANGE_DEVICE_NAME_DIALOG_NEW_NAME},

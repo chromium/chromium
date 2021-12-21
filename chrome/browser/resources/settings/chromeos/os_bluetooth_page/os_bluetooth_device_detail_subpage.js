@@ -221,6 +221,14 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
         mojom.AudioOutputCapability.kCapableOfAudioOutput;
   }
 
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowForgetBtn_() {
+    return !!this.device_;
+  }
+
   /** @private */
   onDeviceChanged_() {
     if (!this.device_) {
@@ -518,6 +526,15 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
   /** @private */
   onKeyboardRowClick_() {
     Router.getInstance().navigateTo(routes.KEYBOARD);
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getForgetA11yLabel_() {
+    return this.i18n(
+        'bluetoothDeviceDetailForgetA11yLabel', this.getDeviceName_());
   }
 }
 

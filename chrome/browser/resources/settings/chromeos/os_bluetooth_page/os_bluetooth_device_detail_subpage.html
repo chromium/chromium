@@ -11,6 +11,10 @@
     flex: 8
   }
 
+  #forgetBtn {
+    margin-inline-end: 8px;
+  }
+
   .bluetooth-middle {
     align-items: center;
     flex: auto;
@@ -61,11 +65,15 @@
       </div>
     </template>
     <div id="buttonContainer" class="layout end">
-      <cr-button id="forgetBtn"
-          class="cancel-button"
-          on-click="onForgetBtnClick_">
-        $i18n{bluetoothDeviceDetailForget}
-      </cr-button>
+      <template is="dom-if" if="[[shouldShowForgetBtn_(device_.*)]]"
+          restamp>
+        <cr-button id="forgetBtn"
+            class="cancel-button"
+            aria-label$="[[getForgetA11yLabel_(device_.*)]]"
+            on-click="onForgetBtnClick_">
+          $i18n{bluetoothDeviceDetailForget}
+        </cr-button>
+      </template>
       <template is="dom-if" if="[[shouldShowConnectDisconnectBtn_(device_.*)]]"
           restamp>
         <cr-button id="connectDisconnectBtn"

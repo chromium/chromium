@@ -288,12 +288,13 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertFalse(!!getBluetoothStateBtn());
     assertFalse(!!getBluetoothDeviceBatteryInfo());
 
+    const deviceNickname = 'device1';
     const device1 = createDefaultBluetoothDevice(
         /*id=*/ '123456789',
         /*publicName=*/ 'BeatsX',
         /*connectionState=*/
         chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
-        /*opt_nickname=*/ 'device1',
+        deviceNickname,
         /*opt_udioCapability=*/
         mojom.AudioOutputCapability.kCapableOfAudioOutput,
         /*opt_deviceType=*/ mojom.DeviceType.kHeadset);
@@ -316,7 +317,8 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailConnected'),
         getBluetoothStateText().textContent.trim());
     assertTrue(bluetoothDeviceDetailPage.getIsDeviceConnectedForTest());
-    assertEquals('device1', getBluetoothDeviceNameLabel().textContent.trim());
+    assertEquals(
+        deviceNickname, getBluetoothDeviceNameLabel().textContent.trim());
     assertEquals(
         'os-settings:bluetooth-connected', getBluetoothStatusIcon().icon);
     assertTrue(!!getBluetoothDeviceBatteryInfo());
@@ -338,6 +340,10 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertEquals(
         'os-settings:bluetooth-disabled', getBluetoothStatusIcon().icon);
     assertFalse(!!getBluetoothDeviceBatteryInfo());
+    assertEquals(
+        getBluetoothForgetBtn().ariaLabel,
+        bluetoothDeviceDetailPage.i18n(
+            'bluetoothDeviceDetailForgetA11yLabel', deviceNickname));
   });
 
   test(
