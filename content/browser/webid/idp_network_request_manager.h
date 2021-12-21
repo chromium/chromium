@@ -61,28 +61,16 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
  public:
   enum class FetchStatus {
     kSuccess,
-    kWebIdNotSupported,
-    kFetchError,
+    kHttpNotFoundError,
+    kNoResponseError,
     kInvalidResponseError,
+    kInvalidRequestError,
   };
 
   enum class SigninResponse {
     kLoadIdp,
     kTokenGranted,
     kSigninError,
-    kInvalidResponseError,
-  };
-
-  enum class AccountsResponse {
-    kSuccess,
-    kNetError,
-    kInvalidResponseError,
-  };
-
-  enum class TokenResponse {
-    kSuccess,
-    kNetError,
-    kInvalidRequestError,
     kInvalidResponseError,
   };
 
@@ -123,9 +111,9 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   using SigninRequestCallback =
       base::OnceCallback<void(SigninResponse, const std::string&)>;
   using AccountsRequestCallback = base::OnceCallback<
-      void(AccountsResponse, AccountList, IdentityProviderMetadata)>;
+      void(FetchStatus, AccountList, IdentityProviderMetadata)>;
   using TokenRequestCallback =
-      base::OnceCallback<void(TokenResponse, const std::string&)>;
+      base::OnceCallback<void(FetchStatus, const std::string&)>;
   using RevokeCallback = base::OnceCallback<void(RevokeResponse)>;
   using LogoutCallback = base::OnceCallback<void()>;
 

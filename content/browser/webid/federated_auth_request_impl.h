@@ -82,11 +82,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   void OnTokenProvisionApproved(
       IdentityRequestDialogController::UserApproval approval);
   void OnAccountsResponseReceived(
-      IdpNetworkRequestManager::AccountsResponse status,
+      IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::AccountList accounts,
       content::IdentityProviderMetadata idp_metadata);
   void OnAccountSelected(const std::string& account_id);
-  void OnTokenResponseReceived(IdpNetworkRequestManager::TokenResponse status,
+  void OnTokenResponseReceived(IdpNetworkRequestManager::FetchStatus status,
                                const std::string& id_token);
   void DispatchOneLogout();
   void OnLogoutCompleted();

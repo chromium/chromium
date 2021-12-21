@@ -194,6 +194,35 @@ void ParseIdentityProviderMetadata(const base::Value& idp_metadata_value,
   }
 }
 
+using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
+FetchStatus GetResponseError(network::SimpleURLLoader* url_loader,
+                             std::string* response_body) {
+  int response_code = -1;
+  auto* response_info = url_loader->ResponseInfo();
+  if (response_info && response_info->headers)
+    response_code = response_info->headers->response_code();
+
+  if (response_code == net::HTTP_NOT_FOUND)
+    return FetchStatus::kHttpNotFoundError;
+
+  if (!response_body)
+    return FetchStatus::kNoResponseError;
+
+  return FetchStatus::kSuccess;
+}
+
+FetchStatus GetParsingError(
+    const data_decoder::DataDecoder::ValueOrError& result) {
+  if (!result.value)
+    return FetchStatus::kInvalidResponseError;
+
+  auto& response = *result.value;
+  if (!response.is_dict())
+    return FetchStatus::kInvalidResponseError;
+
+  return FetchStatus::kSuccess;
+}
+
 }  // namespace
 
 IdpNetworkRequestManager::Endpoints::Endpoints() = default;
@@ -328,7 +357,7 @@ void IdpNetworkRequestManager::SendTokenRequest(const GURL& token_url,
   std::string token_request_body = CreateTokenRequestBody(account, request);
   if (token_request_body.empty()) {
     std::move(token_request_callback_)
-        .Run(TokenResponse::kInvalidRequestError, std::string());
+        .Run(FetchStatus::kInvalidRequestError, std::string());
     return;
   }
 
@@ -418,22 +447,12 @@ void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,
 
 void IdpNetworkRequestManager::OnWellKnownLoaded(
     std::unique_ptr<std::string> response_body) {
-  int response_code = -1;
-  auto* response_info = url_loader_->ResponseInfo();
-  if (response_info && response_info->headers)
-    response_code = response_info->headers->response_code();
-
+  FetchStatus response_error =
+      GetResponseError(url_loader_.get(), response_body.get());
   url_loader_.reset();
 
-  if (response_code == net::HTTP_NOT_FOUND) {
-    std::move(idp_well_known_callback_)
-        .Run(FetchStatus::kWebIdNotSupported, Endpoints());
-    return;
-  }
-
-  if (!response_body) {
-    std::move(idp_well_known_callback_)
-        .Run(FetchStatus::kFetchError, Endpoints());
+  if (response_error != FetchStatus::kSuccess) {
+    std::move(idp_well_known_callback_).Run(response_error, Endpoints());
     return;
   }
 
@@ -445,22 +464,13 @@ void IdpNetworkRequestManager::OnWellKnownLoaded(
 
 void IdpNetworkRequestManager::OnWellKnownParsed(
     data_decoder::DataDecoder::ValueOrError result) {
-  auto Fail = [&]() {
+  if (GetParsingError(result) == FetchStatus::kInvalidResponseError) {
     std::move(idp_well_known_callback_)
         .Run(FetchStatus::kInvalidResponseError, Endpoints());
-  };
-
-  if (!result.value) {
-    Fail();
     return;
   }
 
   auto& response = *result.value;
-  if (!response.is_dict()) {
-    Fail();
-    return;
-  }
-
   auto ExtractEndpoint = [&](const char* key) {
     const base::Value* endpoint = response.FindKey(key);
     if (!endpoint || !endpoint->is_string()) {
@@ -539,12 +549,13 @@ void IdpNetworkRequestManager::OnSigninRequestParsed(
 
 void IdpNetworkRequestManager::OnAccountsRequestResponse(
     std::unique_ptr<std::string> response_body) {
+  FetchStatus response_error =
+      GetResponseError(url_loader_.get(), response_body.get());
   url_loader_.reset();
 
-  if (!response_body) {
+  if (response_error != FetchStatus::kSuccess) {
     std::move(accounts_request_callback_)
-        .Run(AccountsResponse::kNetError, AccountList(),
-             IdentityProviderMetadata());
+        .Run(response_error, AccountList(), IdentityProviderMetadata());
     return;
   }
 
@@ -558,21 +569,17 @@ void IdpNetworkRequestManager::OnAccountsRequestParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   auto Fail = [&]() {
     std::move(accounts_request_callback_)
-        .Run(AccountsResponse::kInvalidResponseError, AccountList(),
+        .Run(FetchStatus::kInvalidResponseError, AccountList(),
              IdentityProviderMetadata());
   };
 
-  if (!result.value) {
+  if (GetParsingError(result) == FetchStatus::kInvalidResponseError) {
     Fail();
     return;
   }
 
-  auto& response = *result.value;
-  if (!response.is_dict()) {
-    Fail();
-    return;
-  }
   AccountList account_list;
+  auto& response = *result.value;
   const base::Value* accounts = response.FindKey(kAccountsKey);
   bool accounts_present = accounts && ParseAccounts(accounts, account_list);
 
@@ -587,17 +594,18 @@ void IdpNetworkRequestManager::OnAccountsRequestParsed(
     ParseIdentityProviderMetadata(*idp_metadata_value, idp_metadata);
 
   std::move(accounts_request_callback_)
-      .Run(AccountsResponse::kSuccess, std::move(account_list),
+      .Run(FetchStatus::kSuccess, std::move(account_list),
            std::move(idp_metadata));
 }
 
 void IdpNetworkRequestManager::OnTokenRequestResponse(
     std::unique_ptr<std::string> response_body) {
+  FetchStatus response_error =
+      GetResponseError(url_loader_.get(), response_body.get());
   url_loader_.reset();
 
-  if (!response_body) {
-    std::move(token_request_callback_)
-        .Run(TokenResponse::kNetError, std::string());
+  if (response_error != FetchStatus::kSuccess) {
+    std::move(token_request_callback_).Run(response_error, std::string());
     return;
   }
 
@@ -611,19 +619,15 @@ void IdpNetworkRequestManager::OnTokenRequestParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   auto Fail = [&]() {
     std::move(token_request_callback_)
-        .Run(TokenResponse::kInvalidResponseError, std::string());
+        .Run(FetchStatus::kInvalidResponseError, std::string());
   };
 
-  if (!result.value) {
+  if (GetParsingError(result) == FetchStatus::kInvalidResponseError) {
     Fail();
     return;
   }
 
   auto& response = *result.value;
-  if (!response.is_dict()) {
-    Fail();
-    return;
-  }
   const base::Value* id_token = response.FindKey(kIdTokenKey);
   bool token_present = id_token && id_token->is_string();
 
@@ -632,7 +636,7 @@ void IdpNetworkRequestManager::OnTokenRequestParsed(
     return;
   }
   std::move(token_request_callback_)
-      .Run(TokenResponse::kSuccess, id_token->GetString());
+      .Run(FetchStatus::kSuccess, id_token->GetString());
 }
 
 void IdpNetworkRequestManager::OnRevokeResponse(
@@ -672,22 +676,13 @@ void IdpNetworkRequestManager::FetchClientIdMetadata(
 
 void IdpNetworkRequestManager::OnClientIdMetadataLoaded(
     std::unique_ptr<std::string> response_body) {
-  int response_code = -1;
-  auto* response_info = url_loader_->ResponseInfo();
-  if (response_info && response_info->headers)
-    response_code = response_info->headers->response_code();
-
+  FetchStatus response_error =
+      GetResponseError(url_loader_.get(), response_body.get());
   url_loader_.reset();
 
-  if (response_code == net::HTTP_NOT_FOUND) {
+  if (response_error != FetchStatus::kSuccess) {
     std::move(client_metadata_callback_)
-        .Run(FetchStatus::kFetchError, ClientIdMetadata());
-    return;
-  }
-
-  if (!response_body) {
-    std::move(client_metadata_callback_)
-        .Run(FetchStatus::kFetchError, ClientIdMetadata());
+        .Run(response_error, ClientIdMetadata());
     return;
   }
 
@@ -699,22 +694,13 @@ void IdpNetworkRequestManager::OnClientIdMetadataLoaded(
 
 void IdpNetworkRequestManager::OnClientIdMetadataParsed(
     data_decoder::DataDecoder::ValueOrError result) {
-  auto Fail = [&]() {
+  if (GetParsingError(result) == FetchStatus::kInvalidResponseError) {
     std::move(client_metadata_callback_)
         .Run(FetchStatus::kInvalidResponseError, ClientIdMetadata());
-  };
-
-  if (!result.value) {
-    Fail();
     return;
   }
 
   auto& response = *result.value;
-  if (!response.is_dict()) {
-    Fail();
-    return;
-  }
-
   auto ExtractUrl = [&](const char* key) {
     const base::Value* endpoint = response.FindKey(key);
     if (!endpoint || !endpoint->is_string()) {

@@ -301,8 +301,8 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, WebIdNotSupported) {
   idp_server()->SetWellKnownResponseDetails({net::HTTP_NOT_FOUND, "", ""});
 
   std::string expected_error =
-      "a JavaScript error: \"NotSupportedError: The "
-      "indicated provider does not support FedCM.\"\n";
+      "a JavaScript error: \"NetworkError: The provider's .well-known "
+      "configuration cannot be found.\"\n";
   EXPECT_EQ(expected_error, EvalJs(shell(), GetBasicRequestString()).error);
 }
 

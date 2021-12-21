@@ -37,11 +37,9 @@ using blink::mojom::LogoutStatus;
 using blink::mojom::RequestIdTokenStatus;
 using blink::mojom::RequestMode;
 using blink::mojom::RevokeStatus;
-using AccountsResponse = content::IdpNetworkRequestManager::AccountsResponse;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using LogoutResponse = content::IdpNetworkRequestManager::LogoutResponse;
 using SigninResponse = content::IdpNetworkRequestManager::SigninResponse;
-using TokenResponse = content::IdpNetworkRequestManager::TokenResponse;
 using RevokeResponse = content::IdpNetworkRequestManager::RevokeResponse;
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
 using AccountList = content::IdpNetworkRequestManager::AccountList;
@@ -113,9 +111,9 @@ typedef struct {
 } MockPermissionConfiguration;
 
 typedef struct {
-  absl::optional<AccountsResponse> accounts_response;
+  absl::optional<FetchStatus> accounts_response;
   AccountList accounts;
-  absl::optional<TokenResponse> token_response;
+  absl::optional<FetchStatus> token_response;
 } MockMediatedConfiguration;
 
 typedef struct {
@@ -191,19 +189,20 @@ static const AuthRequestTestCase kPermissionTestCases[]{
 
     {"Wellknown file not found",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kErrorFedCmNotSupportedByProvider, kEmptyToken},
-     {kToken, UserApproval::kApproved, FetchStatus::kWebIdNotSupported,
+     {RequestIdTokenStatus::kErrorFetchingWellKnownHttpNotFound, kEmptyToken},
+     {kToken, UserApproval::kApproved, FetchStatus::kHttpNotFoundError,
       absl::nullopt, "", "", "", "", kPermissionNoop, kMediatedNoop}},
 
     {"Wellknown fetch error",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kErrorFetchingWellKnown, kEmptyToken},
-     {kToken, UserApproval::kApproved, FetchStatus::kFetchError, absl::nullopt,
-      "", "", "", "", kPermissionNoop, kMediatedNoop}},
+     {RequestIdTokenStatus::kErrorFetchingWellKnownNoResponse, kEmptyToken},
+     {kToken, UserApproval::kApproved, FetchStatus::kNoResponseError,
+      absl::nullopt, "", "", "", "", kPermissionNoop, kMediatedNoop}},
 
     {"Error parsing wellknown for Permission mode",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
-     {RequestIdTokenStatus::kErrorInvalidWellKnown, kEmptyToken},
+     {RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
+      kEmptyToken},
      {kToken, UserApproval::kApproved, FetchStatus::kInvalidResponseError,
       absl::nullopt, "", kAccountsEndpoint, kTokenEndpoint, "", kPermissionNoop,
       kMediatedNoop}},
@@ -267,21 +266,23 @@ static const AuthRequestTestCase kPermissionTestCases[]{
 static const AuthRequestTestCase kMediatedTestCases[]{
     {"Error parsing wellknown for Mediated mode missing token endpoint",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
-     {RequestIdTokenStatus::kErrorInvalidWellKnown, kEmptyToken},
+     {RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
+      kEmptyToken},
      {kToken, absl::nullopt, FetchStatus::kInvalidResponseError, absl::nullopt,
       kIdpEndpoint, kAccountsEndpoint, "", kClientIdMetadataEndpoint,
       kPermissionNoop, kMediatedNoop}},
 
     {"Error parsing wellknown for Mediated mode missing accounts endpoint",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
-     {RequestIdTokenStatus::kErrorInvalidWellKnown, kEmptyToken},
+     {RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
+      kEmptyToken},
      {kToken, absl::nullopt, FetchStatus::kInvalidResponseError, absl::nullopt,
       kIdpEndpoint, "", kTokenEndpoint, kClientIdMetadataEndpoint,
       kPermissionNoop, kMediatedNoop}},
 
     {"Error reaching Accounts endpoint",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
-     {RequestIdTokenStatus::kError, kEmptyToken},
+     {RequestIdTokenStatus::kErrorFetchingAccountsNoResponse, kEmptyToken},
      {kEmptyToken,
       absl::nullopt,
       FetchStatus::kSuccess,
@@ -291,11 +292,11 @@ static const AuthRequestTestCase kMediatedTestCases[]{
       kTokenEndpoint,
       kClientIdMetadataEndpoint,
       kPermissionNoop,
-      {AccountsResponse::kNetError, kAccounts, absl::nullopt}}},
+      {FetchStatus::kNoResponseError, kAccounts, absl::nullopt}}},
 
     {"Error parsing Accounts response",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
-     {RequestIdTokenStatus::kErrorInvalidAccountsResponse, kEmptyToken},
+     {RequestIdTokenStatus::kErrorFetchingAccountsInvalidResponse, kEmptyToken},
      {kToken,
       absl::nullopt,
       FetchStatus::kSuccess,
@@ -305,7 +306,7 @@ static const AuthRequestTestCase kMediatedTestCases[]{
       kTokenEndpoint,
       kClientIdMetadataEndpoint,
       kPermissionNoop,
-      {AccountsResponse::kInvalidResponseError, kAccounts, absl::nullopt}}},
+      {FetchStatus::kInvalidResponseError, kAccounts, absl::nullopt}}},
 
     {"Successful Mediated flow",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
@@ -319,7 +320,7 @@ static const AuthRequestTestCase kMediatedTestCases[]{
       kTokenEndpoint,
       kClientIdMetadataEndpoint,
       kPermissionNoop,
-      {AccountsResponse::kSuccess, kAccounts, TokenResponse::kSuccess}}},
+      {FetchStatus::kSuccess, kAccounts, FetchStatus::kSuccess}}},
 };
 
 // Helper class for receiving the mojo method callback.
@@ -580,7 +581,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
               }));
     }
 
-    if (conf.accounts_response == AccountsResponse::kSuccess &&
+    if (conf.accounts_response == FetchStatus::kSuccess &&
         !prefer_auto_sign_in) {
       // Expects a dialog if prefer_auto_sign_in is not set by RP. However,
       // even though the bit is set we may not exercise the AutoSignIn flow.
@@ -604,9 +605,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
     }
 
     if (conf.token_response) {
-      auto delivered_token = conf.token_response == TokenResponse::kSuccess
-                                 ? token
-                                 : std::string();
+      auto delivered_token =
+          conf.token_response == FetchStatus::kSuccess ? token : std::string();
       EXPECT_CALL(*mock_request_manager_, SendTokenRequest(_, _, _, _))
           .WillOnce(Invoke(
               [=](const GURL& idp_signin_url, const std::string& account_id,
@@ -818,7 +818,7 @@ static const AuthRequestTestCase kSuccessfulMediatedSignUpTestCase{
      kTokenEndpoint,
      kClientIdMetadataEndpoint,
      kPermissionNoop,
-     {AccountsResponse::kSuccess, kAccounts, TokenResponse::kSuccess}}};
+     {FetchStatus::kSuccess, kAccounts, FetchStatus::kSuccess}}};
 
 static const AuthRequestTestCase kFailedMediatedSignUpTestCase{
     "Failed mediated flow with one account",
@@ -834,8 +834,7 @@ static const AuthRequestTestCase kFailedMediatedSignUpTestCase{
      kTokenEndpoint,
      kClientIdMetadataEndpoint,
      kPermissionNoop,
-     {AccountsResponse::kSuccess, kAccounts,
-      TokenResponse::kInvalidResponseError}}};
+     {FetchStatus::kSuccess, kAccounts, FetchStatus::kInvalidResponseError}}};
 
 static const AuthRequestTestCase kSuccessfulMediatedAutoSignInTestCase{
     "Successful mediated flow with one account",
@@ -851,7 +850,7 @@ static const AuthRequestTestCase kSuccessfulMediatedAutoSignInTestCase{
      kTokenEndpoint,
      kClientIdMetadataEndpoint,
      kPermissionNoop,
-     {AccountsResponse::kSuccess, kAccounts, TokenResponse::kSuccess}}};
+     {FetchStatus::kSuccess, kAccounts, FetchStatus::kSuccess}}};
 
 TEST_F(BasicFederatedAuthRequestImplTest,
        LoginStateShouldBeSignUpForFirstTimeUser) {

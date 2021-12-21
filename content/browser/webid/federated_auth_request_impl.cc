@@ -217,17 +217,23 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::Endpoints endpoints) {
   switch (status) {
-    case IdpNetworkRequestManager::FetchStatus::kWebIdNotSupported: {
-      CompleteRequest(RequestIdTokenStatus::kErrorFedCmNotSupportedByProvider,
+    case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
+      CompleteRequest(RequestIdTokenStatus::kErrorFetchingWellKnownHttpNotFound,
                       "");
       return;
     }
-    case IdpNetworkRequestManager::FetchStatus::kFetchError: {
-      CompleteRequest(RequestIdTokenStatus::kErrorFetchingWellKnown, "");
+    case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
+      CompleteRequest(RequestIdTokenStatus::kErrorFetchingWellKnownNoResponse,
+                      "");
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
-      CompleteRequest(RequestIdTokenStatus::kErrorInvalidWellKnown, "");
+      CompleteRequest(
+          RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse, "");
+      return;
+    }
+    case IdpNetworkRequestManager::FetchStatus::kInvalidRequestError: {
+      NOTREACHED();
       return;
     }
     case IdpNetworkRequestManager::FetchStatus::kSuccess: {
@@ -246,7 +252,8 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
       // For Mediated mode we require accounts, token and client ID endpoints.
       if (endpoints_.token.is_empty() || endpoints_.accounts.is_empty() ||
           endpoints_.client_id_metadata.is_empty()) {
-        CompleteRequest(RequestIdTokenStatus::kErrorInvalidWellKnown, "");
+        CompleteRequest(
+            RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse, "");
         return;
       }
       // TODO(kenrb): This has to be same-origin with the provider.
@@ -254,7 +261,8 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
       if (!IdpUrlIsValid(endpoints_.token) ||
           !IdpUrlIsValid(endpoints_.accounts) ||
           !IdpUrlIsValid(endpoints_.client_id_metadata)) {
-        CompleteRequest(RequestIdTokenStatus::kError, "");
+        CompleteRequest(
+            RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse, "");
         return;
       }
       network_manager_->FetchClientIdMetadata(
@@ -267,13 +275,15 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
     case RequestMode::kPermission: {
       // For Permission mode we require both accounts and token endpoints.
       if (endpoints_.idp.is_empty()) {
-        CompleteRequest(RequestIdTokenStatus::kErrorInvalidWellKnown, "");
+        CompleteRequest(
+            RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse, "");
         return;
       }
       // TODO(kenrb): This has to be same-origin with the provider.
       // https://crbug.com/1141125
       if (!IdpUrlIsValid(endpoints_.idp)) {
-        CompleteRequest(RequestIdTokenStatus::kError, "");
+        CompleteRequest(
+            RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse, "");
         return;
       }
 
@@ -344,13 +354,35 @@ void FederatedAuthRequestImpl::CompleteRevokeRequest(RevokeStatus status) {
 void FederatedAuthRequestImpl::OnClientIdMetadataResponseReceived(
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::ClientIdMetadata data) {
-  // TODO(cbiesinger): check status argument to make sure fetching/parsing
-  // succeeded?
-  client_id_metadata_ = data;
-  network_manager_->SendAccountsRequest(
-      endpoints_.accounts,
-      base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
-                     weak_ptr_factory_.GetWeakPtr()));
+  switch (status) {
+    case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
+      CompleteRequest(
+          RequestIdTokenStatus::kErrorFetchingClientIdMetadataHttpNotFound, "");
+      return;
+    }
+    case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
+      CompleteRequest(
+          RequestIdTokenStatus::kErrorFetchingClientIdMetadataNoResponse, "");
+      return;
+    }
+    case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
+      CompleteRequest(
+          RequestIdTokenStatus::kErrorFetchingClientIdMetadataInvalidResponse,
+          "");
+      return;
+    }
+    case IdpNetworkRequestManager::FetchStatus::kInvalidRequestError: {
+      NOTREACHED();
+      return;
+    }
+    case IdpNetworkRequestManager::FetchStatus::kSuccess: {
+      client_id_metadata_ = data;
+      network_manager_->SendAccountsRequest(
+          endpoints_.accounts,
+          base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
 }
 
 void FederatedAuthRequestImpl::OnSigninApproved(
@@ -490,19 +522,26 @@ void FederatedAuthRequestImpl::OnTokenProvisionApproved(
 }
 
 void FederatedAuthRequestImpl::OnAccountsResponseReceived(
-    IdpNetworkRequestManager::AccountsResponse status,
+    IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::AccountList accounts,
     content::IdentityProviderMetadata idp_metadata) {
   switch (status) {
-    case IdpNetworkRequestManager::AccountsResponse::kNetError: {
-      CompleteRequest(RequestIdTokenStatus::kError, "");
+    case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
+      CompleteRequest(RequestIdTokenStatus::kErrorFetchingAccountsHttpNotFound,
+                      "");
       return;
     }
-    case IdpNetworkRequestManager::AccountsResponse::kInvalidResponseError: {
-      CompleteRequest(RequestIdTokenStatus::kErrorInvalidAccountsResponse, "");
+    case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
+      CompleteRequest(RequestIdTokenStatus::kErrorFetchingAccountsNoResponse,
+                      "");
       return;
     }
-    case IdpNetworkRequestManager::AccountsResponse::kSuccess: {
+    case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
+      CompleteRequest(
+          RequestIdTokenStatus::kErrorFetchingAccountsInvalidResponse, "");
+      return;
+    }
+    case IdpNetworkRequestManager::FetchStatus::kSuccess: {
       WebContents* rp_web_contents =
           WebContents::FromRenderFrameHost(render_frame_host_);
       DCHECK(!idp_web_contents_);
@@ -543,6 +582,9 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
                          weak_ptr_factory_.GetWeakPtr()));
       return;
     }
+    case IdpNetworkRequestManager::FetchStatus::kInvalidRequestError: {
+      NOTREACHED();
+    }
   }
 }
 
@@ -569,22 +611,30 @@ void FederatedAuthRequestImpl::OnAccountSelected(
 }
 
 void FederatedAuthRequestImpl::OnTokenResponseReceived(
-    IdpNetworkRequestManager::TokenResponse status,
+    IdpNetworkRequestManager::FetchStatus status,
     const std::string& id_token) {
   switch (status) {
-    case IdpNetworkRequestManager::TokenResponse::kNetError: {
-      CompleteRequest(RequestIdTokenStatus::kError, "");
+    case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
+      CompleteRequest(RequestIdTokenStatus::kErrorFetchingIdTokenHttpNotFound,
+                      "");
       return;
     }
-    case IdpNetworkRequestManager::TokenResponse::kInvalidRequestError: {
-      CompleteRequest(RequestIdTokenStatus::kErrorInvalidTokenResponse, "");
+    case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
+      CompleteRequest(RequestIdTokenStatus::kErrorFetchingIdTokenNoResponse,
+                      "");
       return;
     }
-    case IdpNetworkRequestManager::TokenResponse::kInvalidResponseError: {
-      CompleteRequest(RequestIdTokenStatus::kErrorInvalidTokenResponse, "");
+    case IdpNetworkRequestManager::FetchStatus::kInvalidRequestError: {
+      CompleteRequest(RequestIdTokenStatus::kErrorFetchingIdTokenInvalidRequest,
+                      "");
       return;
     }
-    case IdpNetworkRequestManager::TokenResponse::kSuccess: {
+    case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
+      CompleteRequest(
+          RequestIdTokenStatus::kErrorFetchingIdTokenInvalidResponse, "");
+      return;
+    }
+    case IdpNetworkRequestManager::FetchStatus::kSuccess: {
       if (GetSharingPermissionContext()) {
         DCHECK_EQ(mode_, RequestMode::kMediated);
         // Grant sharing permission specific to *this account*.
