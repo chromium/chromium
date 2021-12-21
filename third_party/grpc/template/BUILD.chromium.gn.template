@@ -137,6 +137,9 @@
   # Split the sources into 3 set of sources so that
   # sources with repeated basenames are in different sets
   def find_repeated(sources):
+    # Deduplicate the sources files in the input so the same source file
+    # don't appear in multiple sets
+    sources = set(sources)
     out_sources = []
     repeated1 = []
     repeated2 = []

@@ -1,8 +1,8 @@
 Name: grpc
 URL: https://github.com/grpc/grpc
 License: Apache 2.0
-Version: v1.41.1+
-Revision: da47e8823754d12f1dd643bc911e80703b557ade
+Version: v1.42.0+
+Revision: 47f58f5b8d338a6861febc8ee1a602c23a5af70a
 Security Critical: yes
 
 Please note that that the use of gRPC is not generally allowed within Chromium.
@@ -27,3 +27,7 @@ Steps to upgrade to a new version of GRPC, all relative to //third_party/grpc:
 7. Run: gn format --in-place BUILD.gn
 
 We have a helper script `generate_gn.sh` does step (4), (5), (6), and (7).
+
+Note: Please also remember to check if `plugin_registry/grpc_plugin_registry.cc`
+needs update! Upstream sometimes introduces new plugins and we may need to update
+our custom `grpc_plugin_registry.cc`.
