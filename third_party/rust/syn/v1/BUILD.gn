@@ -25,12 +25,12 @@ cargo_crate("lib") {
   ]
   features = [
     "clone-impls",
+    "derive",
     "full",
     "parsing",
     "printing",
-    "quote",
-    "derive",
     "proc-macro",
+    "quote",
   ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]

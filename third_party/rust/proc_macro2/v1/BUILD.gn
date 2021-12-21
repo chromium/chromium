@@ -20,8 +20,8 @@ cargo_crate("lib") {
   edition = "2018"
   deps = [ "//third_party/rust/unicode_xid/v0_2:lib" ]
   features = [
-    "span-locations",
     "proc-macro",
+    "span-locations",
   ]
   build_root = "crate/build.rs"
   build_sources = [ "crate/build.rs" ]

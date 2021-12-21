@@ -23,6 +23,7 @@ if (is_win) {
       "consoleapi",
       "errhandlingapi",
       "fileapi",
+      "minwinbase",
       "minwindef",
       "processenv",
       "std",
@@ -30,7 +31,6 @@ if (is_win) {
       "wincon",
       "winerror",
       "winnt",
-      "minwinbase",
     ]
     build_root = "crate/build.rs"
     build_sources = [ "crate/build.rs" ]
