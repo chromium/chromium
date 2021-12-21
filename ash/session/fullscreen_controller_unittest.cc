@@ -49,7 +49,7 @@ class FullscreenControllerTest : public AshTestBase {
     CreateFullscreenWindow();
 
     fullscreen_controller_ =
-        Shell::Get()->session_controller()->fullscreen_controller();
+        Shell::Get()->session_controller()->fullscreen_controller_for_test();
 
     GetSessionControllerClient()->LockScreen();
   }

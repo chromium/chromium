@@ -10,9 +10,6 @@
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
-#include "ash/session/fullscreen_controller.h"
-#include "ash/session/session_controller_impl.h"
-#include "ash/shell.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/create_options.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/window.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -160,21 +157,8 @@ void UiHandler::OnWindowClosed(const std::string& extension_id) {
     close_callback_.Reset();
   }
 
-  if (!HasOpenWindow(extension_id)) {
-    // Shell could have no instance in tests.
-    if (ash::Shell::HasInstance()) {
-      // Notify the full screen controller that the last login screen UI window
-      // has been closed so that it could show the full screen notification, if
-      // required. This is necessary since the active window might still be the
-      // login screen extension window when the full screen controller is
-      // notified by the session controller.
-      ash::Shell::Get()
-          ->session_controller()
-          ->fullscreen_controller()
-          ->OnLoginScreenUiWindowClosed();
-    }
+  if (!HasOpenWindow(extension_id))
     return;
-  }
 
   ResetWindowAndHide();
 }
