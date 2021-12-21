@@ -3141,6 +3141,18 @@ New Search
       <message name="IDS_IOS_CARD_WILL_BE_SAVED_TO_ACCOUNT" desc="A message to inform the user that a credit card will be saved to their Google Account.">
         Cards are saved to your Google Account.
       </message>
+      <message name="IDS_IOS_SHARED_HIGHLIGHT_MENU_TITLE" desc="The title at the top of a menu which appears after a user taps on a highlighted passage in a web page. Title-cased.">
+        Highlighted Text
+      </message>
+      <message name="IDS_IOS_SHARED_HIGHLIGHT_LEARN_MORE" desc="An option in a menu which appears after a user taps on a highlighted passage in a web page. When selected, the user will be taken to a help article explaining how the highlighting feature works. Title-cased. [Length: 25em]">
+        Learn More...
+      </message>
+      <message name="IDS_IOS_SHARED_HIGHLIGHT_RESHARE" desc="An option in a menu which appears after a user taps on a highlighted passage in a web page. Selecting this option allows the user to share a link directly to the passage on which they tapped. Title-cased. [Length: 25em]">
+        Share Highlight
+      </message>
+      <message name="IDS_IOS_SHARED_HIGHLIGHT_REMOVE" desc="An option in a menu which appears after a user taps on a highlighted passage in a web page. Selecting this option causes the passage to no longer be highlighted. Title-cased. [Length: 25em]">
+        Remove
+      </message>
     </messages>
   </release>
 </grit>
