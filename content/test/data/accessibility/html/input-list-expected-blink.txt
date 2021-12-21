@@ -11,4 +11,3 @@ rootWebArea focusable
 ++++++++++++listItem ignored invisible
 ++++++++++++++listMarker ignored invisible
 ++++++++++++++++staticText ignored invisible name='%E2%96%BE'
-++++++genericContainer ignored invisible
