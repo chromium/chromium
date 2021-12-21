@@ -19,6 +19,7 @@
 #include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "components/metrics/stability_metrics_helper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -348,6 +349,8 @@ void PluginMetricsProvider::BrowserChildProcessCrashed(
     const content::ChildProcessData& data,
     const content::ChildProcessTerminationInfo& info) {
   GetChildProcessStats(data).process_crashes++;
+  metrics::StabilityMetricsHelper::RecordStabilityEvent(
+      metrics::StabilityEventType::kPluginCrash);
   RecordCurrentStateWithDelay();
 }
 
@@ -358,6 +361,8 @@ void PluginMetricsProvider::BrowserChildProcessKilled(
   // actual crashes, which is treated as a kill rather than a crash by
   // base::GetTerminationStatus
   GetChildProcessStats(data).process_crashes++;
+  metrics::StabilityMetricsHelper::RecordStabilityEvent(
+      metrics::StabilityEventType::kPluginCrash);
   RecordCurrentStateWithDelay();
 }
 

@@ -28,6 +28,7 @@ enum class StabilityEventType {
   kLaunch = 15,
   kBrowserCrash = 16,
   // kIncompleteShutdown = 17,  // Removed due to disuse and correctness issues.
+  kPluginCrash = 22,
   kRendererFailedLaunch = 24,
   kExtensionRendererFailedLaunch = 25,
   kRendererLaunch = 26,
