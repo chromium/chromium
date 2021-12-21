@@ -106,7 +106,7 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
     case CSSPropertyID::kOutlineColor:
     case CSSPropertyID::kStopColor:
     case CSSPropertyID::kTextDecorationColor:
-    case CSSPropertyID::kWebkitTextEmphasisColor: {
+    case CSSPropertyID::kTextEmphasisColor: {
       // Only 'currentcolor' is supported.
       auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
       if (identifier_value &&

@@ -411,6 +411,10 @@ textDecorationLine
 textDecorationSkipInk
 textDecorationStyle
 textDecorationThickness
+textEmphasis
+textEmphasisColor
+textEmphasisPosition
+textEmphasisStyle
 textIndent
 textJustify
 textOrientation

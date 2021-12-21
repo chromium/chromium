@@ -966,7 +966,7 @@
     "after",
     "before",
 
-    // -webkit-text-emphasis-position
+    // text-emphasis-position
     "over",
     "under",
     //right

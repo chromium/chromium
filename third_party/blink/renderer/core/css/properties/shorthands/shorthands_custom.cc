@@ -3068,14 +3068,14 @@ const CSSValue* WebkitMaskRepeat::CSSValueFromComputedStyleInternal(
       &style.MaskLayers());
 }
 
-bool WebkitTextEmphasis::ParseShorthand(
+bool TextEmphasis::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 256>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
-      webkitTextEmphasisShorthand(), important, context, range, properties);
+      textEmphasisShorthand(), important, context, range, properties);
 }
 
 bool WebkitTextStroke::ParseShorthand(

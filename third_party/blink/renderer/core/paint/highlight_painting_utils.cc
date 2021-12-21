@@ -336,8 +336,7 @@ Color HighlightPaintingUtils::HighlightEmphasisMarkColor(
     PseudoId pseudo,
     const GlobalPaintFlags global_paint_flags) {
   return HighlightColor(document, style, node, pseudo,
-                        GetCSSPropertyWebkitTextEmphasisColor(),
-                        global_paint_flags);
+                        GetCSSPropertyTextEmphasisColor(), global_paint_flags);
 }
 
 TextPaintStyle HighlightPaintingUtils::HighlightPaintingStyle(

@@ -4983,7 +4983,7 @@
       name_for_methods: "TextCombine",
     },
     {
-      name: "-webkit-text-emphasis-color",
+      name: "text-emphasis-color",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
       inherited: true,
       field_group: "*",
@@ -4998,7 +4998,7 @@
       valid_for_highlight: true,
     },
     {
-      name: "-webkit-text-emphasis-position",
+      name: "text-emphasis-position",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
       field_group: "*",
@@ -5010,7 +5010,7 @@
       valid_for_marker: true,
     },
     {
-      name: "-webkit-text-emphasis-style",
+      name: "text-emphasis-style",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
       style_builder_custom_functions: ["initial", "inherit", "value"],
@@ -6396,8 +6396,8 @@
       computable: true,
     },
     {
-      name: "-webkit-text-emphasis",
-      longhands: ["-webkit-text-emphasis-style", "-webkit-text-emphasis-color"],
+      name: "text-emphasis",
+      longhands: ["text-emphasis-style", "text-emphasis-color"],
       property_methods: ["ParseShorthand"],
     },
     {
@@ -6658,7 +6658,7 @@
     },
     {
       name: "-internal-visited-text-emphasis-color",
-      visited_property_for: "-webkit-text-emphasis-color",
+      visited_property_for: "text-emphasis-color",
       property_methods: ["ParseSingleValue", "ColorIncludingFallback"],
       inherited: true,
       field_group: "*->inherited_visited",
@@ -6839,15 +6839,15 @@
     },
     {
       name: "-epub-text-emphasis",
-      alias_for: "-webkit-text-emphasis",
+      alias_for: "text-emphasis",
     },
     {
       name: "-epub-text-emphasis-color",
-      alias_for: "-webkit-text-emphasis-color",
+      alias_for: "text-emphasis-color",
     },
     {
       name: "-epub-text-emphasis-style",
-      alias_for: "-webkit-text-emphasis-style",
+      alias_for: "text-emphasis-style",
     },
     {
       name: "-epub-text-orientation",
@@ -7070,6 +7070,22 @@
     {
       name: "-webkit-shape-outside",
       alias_for: "shape-outside",
+    },
+    {
+      name: "-webkit-text-emphasis",
+      alias_for: "text-emphasis",
+    },
+    {
+      name: "-webkit-text-emphasis-color",
+      alias_for: "text-emphasis-color",
+    },
+    {
+      name: "-webkit-text-emphasis-position",
+      alias_for: "text-emphasis-position",
+    },
+    {
+      name: "-webkit-text-emphasis-style",
+      alias_for: "text-emphasis-style",
     },
     {
       name: "-webkit-text-size-adjust",

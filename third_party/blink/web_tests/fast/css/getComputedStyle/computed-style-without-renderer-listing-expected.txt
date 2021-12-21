@@ -38,9 +38,6 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 -webkit-rtl-ordering: logical
 -webkit-text-combine: none
 -webkit-text-decorations-in-effect: none
--webkit-text-emphasis-color: rgb(0, 0, 0)
--webkit-text-emphasis-position: over right
--webkit-text-emphasis-style: none
 -webkit-text-fill-color: rgb(0, 0, 0)
 -webkit-text-orientation: vertical-right
 -webkit-text-security: none
@@ -324,6 +321,9 @@ text-decoration-color: rgb(0, 0, 0)
 text-decoration-line: none
 text-decoration-skip-ink: auto
 text-decoration-style: solid
+text-emphasis-color: rgb(0, 0, 0)
+text-emphasis-position: over right
+text-emphasis-style: none
 text-indent: 0px
 text-justify: auto
 text-overflow: clip

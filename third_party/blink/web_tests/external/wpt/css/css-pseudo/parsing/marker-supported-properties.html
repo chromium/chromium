@@ -81,10 +81,10 @@ test_pseudo_computed_value("::marker", "word-spacing", "10px");
 
 // ::marker supports inherited text decoration properties.
 test_pseudo_computed_value("::marker", "text-decoration-skip-ink", "none");
-test_pseudo_computed_value("::marker", "text-emphasis", "dot rgb(0, 255, 0)");
+test_pseudo_computed_value("::marker", "text-emphasis", "filled dot rgb(0, 255, 0)");
 test_pseudo_computed_value("::marker", "text-emphasis-color", "rgb(0, 255, 0)");
 test_pseudo_computed_value("::marker", "text-emphasis-position", "under left");
-test_pseudo_computed_value("::marker", "text-emphasis-style", "dot");
+test_pseudo_computed_value("::marker", "text-emphasis-style", "filled dot");
 test_pseudo_computed_value("::marker", "text-shadow", "rgb(0, 255, 0) 1px 2px 3px");
 
 // ::marker does NOT support layout properties

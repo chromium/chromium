@@ -169,7 +169,7 @@ static inline bool IsColorPropertyID(CSSPropertyID property_id) {
     case CSSPropertyID::kBorderInlineEndColor:
     case CSSPropertyID::kBorderInlineStartColor:
     case CSSPropertyID::kColumnRuleColor:
-    case CSSPropertyID::kWebkitTextEmphasisColor:
+    case CSSPropertyID::kTextEmphasisColor:
     case CSSPropertyID::kWebkitTextFillColor:
     case CSSPropertyID::kWebkitTextStrokeColor:
     case CSSPropertyID::kTextDecorationColor:

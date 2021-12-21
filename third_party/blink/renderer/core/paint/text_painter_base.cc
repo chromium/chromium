@@ -167,7 +167,7 @@ TextPaintStyle TextPainterBase::TextPaintingStyle(const Document& document,
     text_style.stroke_color =
         style.VisitedDependentColor(GetCSSPropertyWebkitTextStrokeColor());
     text_style.emphasis_mark_color =
-        style.VisitedDependentColor(GetCSSPropertyWebkitTextEmphasisColor());
+        style.VisitedDependentColor(GetCSSPropertyTextEmphasisColor());
     text_style.shadow = style.TextShadow();
 
     // Adjust text color when printing with a white background.

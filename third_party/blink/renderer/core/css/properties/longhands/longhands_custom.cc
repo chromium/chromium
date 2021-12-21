@@ -8160,14 +8160,14 @@ WebkitTextDecorationsInEffect::CSSValueFromComputedStyleInternal(
       style.TextDecorationsInEffect());
 }
 
-const CSSValue* WebkitTextEmphasisColor::ParseSingleValue(
+const CSSValue* TextEmphasisColor::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeColor(range, context);
 }
 
-const blink::Color WebkitTextEmphasisColor::ColorIncludingFallback(
+const blink::Color TextEmphasisColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style) const {
   DCHECK(!visited_link);
@@ -8178,7 +8178,7 @@ const blink::Color WebkitTextEmphasisColor::ColorIncludingFallback(
                                      style.UsedColorScheme());
 }
 
-const CSSValue* WebkitTextEmphasisColor::CSSValueFromComputedStyleInternal(
+const CSSValue* TextEmphasisColor::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
@@ -8188,7 +8188,7 @@ const CSSValue* WebkitTextEmphasisColor::CSSValueFromComputedStyleInternal(
 
 // [ over | under ] && [ right | left ]?
 // If [ right | left ] is omitted, it defaults to right.
-const CSSValue* WebkitTextEmphasisPosition::ParseSingleValue(
+const CSSValue* TextEmphasisPosition::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
@@ -8237,25 +8237,25 @@ const CSSValue* WebkitTextEmphasisPosition::ParseSingleValue(
   return list;
 }
 
-const CSSValue* WebkitTextEmphasisPosition::CSSValueFromComputedStyleInternal(
+const CSSValue* TextEmphasisPosition::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   switch (style.GetTextEmphasisPosition()) {
-    case TextEmphasisPosition::kOverRight:
+    case blink::TextEmphasisPosition::kOverRight:
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kOver));
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kRight));
       break;
-    case TextEmphasisPosition::kOverLeft:
+    case blink::TextEmphasisPosition::kOverLeft:
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kOver));
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kLeft));
       break;
-    case TextEmphasisPosition::kUnderRight:
+    case blink::TextEmphasisPosition::kUnderRight:
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kUnder));
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kRight));
       break;
-    case TextEmphasisPosition::kUnderLeft:
+    case blink::TextEmphasisPosition::kUnderLeft:
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kUnder));
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kLeft));
       break;
@@ -8263,7 +8263,7 @@ const CSSValue* WebkitTextEmphasisPosition::CSSValueFromComputedStyleInternal(
   return list;
 }
 
-const CSSValue* WebkitTextEmphasisStyle::ParseSingleValue(
+const CSSValue* TextEmphasisStyle::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
@@ -8298,7 +8298,7 @@ const CSSValue* WebkitTextEmphasisStyle::ParseSingleValue(
   return nullptr;
 }
 
-const CSSValue* WebkitTextEmphasisStyle::CSSValueFromComputedStyleInternal(
+const CSSValue* TextEmphasisStyle::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
@@ -8326,7 +8326,7 @@ const CSSValue* WebkitTextEmphasisStyle::CSSValueFromComputedStyleInternal(
   return nullptr;
 }
 
-void WebkitTextEmphasisStyle::ApplyInitial(StyleResolverState& state) const {
+void TextEmphasisStyle::ApplyInitial(StyleResolverState& state) const {
   state.Style()->SetTextEmphasisFill(
       ComputedStyleInitialValues::InitialTextEmphasisFill());
   state.Style()->SetTextEmphasisMark(
@@ -8335,7 +8335,7 @@ void WebkitTextEmphasisStyle::ApplyInitial(StyleResolverState& state) const {
       ComputedStyleInitialValues::InitialTextEmphasisCustomMark());
 }
 
-void WebkitTextEmphasisStyle::ApplyInherit(StyleResolverState& state) const {
+void TextEmphasisStyle::ApplyInherit(StyleResolverState& state) const {
   state.Style()->SetTextEmphasisFill(
       state.ParentStyle()->GetTextEmphasisFill());
   state.Style()->SetTextEmphasisMark(
@@ -8344,8 +8344,8 @@ void WebkitTextEmphasisStyle::ApplyInherit(StyleResolverState& state) const {
       state.ParentStyle()->TextEmphasisCustomMark());
 }
 
-void WebkitTextEmphasisStyle::ApplyValue(StyleResolverState& state,
-                                         const CSSValue& value) const {
+void TextEmphasisStyle::ApplyValue(StyleResolverState& state,
+                                   const CSSValue& value) const {
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     DCHECK_EQ(list->length(), 2U);
     for (unsigned i = 0; i < 2; ++i) {

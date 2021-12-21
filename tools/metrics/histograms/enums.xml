@@ -56868,10 +56868,10 @@ Called by update_use_counter_css.py.-->
   <int value="314" label="webkit-ruby-position"/>
   <int value="315" label="webkit-text-combine"/>
   <int value="316" label="webkit-text-decorations-in-effect"/>
-  <int value="317" label="webkit-text-emphasis"/>
-  <int value="318" label="webkit-text-emphasis-color"/>
-  <int value="319" label="webkit-text-emphasis-position"/>
-  <int value="320" label="webkit-text-emphasis-style"/>
+  <int value="317" label="alias-webkit-text-emphasis"/>
+  <int value="318" label="alias-webkit-text-emphasis-color"/>
+  <int value="319" label="alias-webkit-text-emphasis-position"/>
+  <int value="320" label="alias-webkit-text-emphasis-style"/>
   <int value="321" label="webkit-text-fill-color"/>
   <int value="322" label="webkit-text-security"/>
   <int value="323" label="webkit-text-stroke"/>
@@ -57256,6 +57256,10 @@ Called by update_use_counter_css.py.-->
   <int value="702" label="app-region"/>
   <int value="703" label="font-synthesis-small-caps"/>
   <int value="704" label="font-synthesis"/>
+  <int value="705" label="text-emphasis"/>
+  <int value="706" label="text-emphasis-color"/>
+  <int value="707" label="text-emphasis-position"/>
+  <int value="708" label="text-emphasis-style"/>
 </enum>
 
 <enum name="MappedEditingCommands">

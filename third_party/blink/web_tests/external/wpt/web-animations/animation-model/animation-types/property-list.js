@@ -1290,7 +1290,7 @@ const gCSSProperties2 = {
   'text-emphasis-style': {
     // http://dev.w3.org/csswg/css-text-decor-3/#propdef-text-emphasis-style
     types: [
-      { type: 'discrete', options: [ [ 'circle', 'open dot' ] ] }
+      { type: 'discrete', options: [ [ 'filled circle', 'open dot' ] ] }
     ]
   },
   'text-indent': {

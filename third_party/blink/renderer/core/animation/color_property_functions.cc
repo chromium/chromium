@@ -42,7 +42,7 @@ OptionalStyleColor ColorPropertyFunctions::GetUnvisitedColor(
       return style.OutlineColor();
     case CSSPropertyID::kColumnRuleColor:
       return style.ColumnRuleColor();
-    case CSSPropertyID::kWebkitTextEmphasisColor:
+    case CSSPropertyID::kTextEmphasisColor:
       return style.TextEmphasisColor();
     case CSSPropertyID::kWebkitTextFillColor:
       return style.TextFillColor();
@@ -92,7 +92,7 @@ OptionalStyleColor ColorPropertyFunctions::GetVisitedColor(
       return style.InternalVisitedOutlineColor();
     case CSSPropertyID::kColumnRuleColor:
       return style.InternalVisitedColumnRuleColor();
-    case CSSPropertyID::kWebkitTextEmphasisColor:
+    case CSSPropertyID::kTextEmphasisColor:
       return style.InternalVisitedTextEmphasisColor();
     case CSSPropertyID::kWebkitTextFillColor:
       return style.InternalVisitedTextFillColor();

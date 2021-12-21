@@ -41,9 +41,6 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-tap-highlight-color
     -webkit-text-combine
     -webkit-text-decorations-in-effect
-    -webkit-text-emphasis-color
-    -webkit-text-emphasis-position
-    -webkit-text-emphasis-style
     -webkit-text-fill-color
     -webkit-text-orientation
     -webkit-text-security
@@ -358,6 +355,9 @@ All changes to this list should go through Blink's feature review process: http:
     text-decoration-skip-ink
     text-decoration-style
     text-decoration-thickness
+    text-emphasis-color
+    text-emphasis-position
+    text-emphasis-style
     text-indent
     text-justify
     text-orientation
@@ -424,9 +424,6 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-mask-repeat
         -webkit-mask-repeat-x
         -webkit-mask-repeat-y
-    -webkit-text-emphasis
-        -webkit-text-emphasis-color
-        -webkit-text-emphasis-style
     -webkit-text-stroke
         -webkit-text-stroke-color
         -webkit-text-stroke-width
@@ -739,6 +736,9 @@ All changes to this list should go through Blink's feature review process: http:
         text-decoration-line
         text-decoration-style
         text-decoration-thickness
+    text-emphasis
+        text-emphasis-color
+        text-emphasis-style
     transition
         transition-delay
         transition-duration
@@ -751,11 +751,11 @@ All changes to this list should go through Blink's feature review process: http:
     -epub-text-combine
         -webkit-text-combine
     -epub-text-emphasis
-        -webkit-text-emphasis
+        text-emphasis
     -epub-text-emphasis-color
-        -webkit-text-emphasis-color
+        text-emphasis-color
     -epub-text-emphasis-style
-        -webkit-text-emphasis-style
+        text-emphasis-style
     -epub-text-orientation
         -webkit-text-orientation
     -epub-text-transform
@@ -928,6 +928,14 @@ All changes to this list should go through Blink's feature review process: http:
         shape-margin
     -webkit-shape-outside
         shape-outside
+    -webkit-text-emphasis
+        text-emphasis
+    -webkit-text-emphasis-color
+        text-emphasis-color
+    -webkit-text-emphasis-position
+        text-emphasis-position
+    -webkit-text-emphasis-style
+        text-emphasis-style
     -webkit-text-size-adjust
         text-size-adjust
     -webkit-transform

@@ -79,7 +79,7 @@
                 "-webkit-text-security", "hyphens", "HyphenationLimitBefore",
                 "HyphenationLimitAfter", "-webkit-hyphenate-character",
                 "image-orientation", "-webkit-ruby-position",
-                "TextEmphasisMark", "-webkit-text-emphasis-position",
+                "TextEmphasisMark", "text-emphasis-position",
                 "TextEmphasisCustomMark", "text-justify", "text-orientation",
                 "text-combine-upright", "tab-size", "text-size-adjust",
                 "list-style-image", "line-height-step",
@@ -455,7 +455,7 @@
           },
           {
             method: "TextEmphasisColor()",
-            field_dependencies: ["-webkit-text-emphasis-color"]
+            field_dependencies: ["text-emphasis-color"]
           },
           {
             method: "InternalVisitedTextFillColor()",
