@@ -504,7 +504,7 @@ class CORE_EXPORT NGConstraintSpace final {
   }
 
   // Return true if there's an ancestor multicol container with balanced
-  // columns.
+  // columns that we might affect.
   bool IsInsideBalancedColumns() const {
     return HasRareData() && rare_data_->is_inside_balanced_columns;
   }

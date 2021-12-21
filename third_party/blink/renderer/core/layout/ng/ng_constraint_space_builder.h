@@ -33,10 +33,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
                                  writing_direction,
                                  is_new_fc,
                                  /* force_orthogonal_writing_mode_root */ false,
-                                 adjust_inline_size_if_needed) {
-    if (parent_space.IsInsideBalancedColumns())
-      space_.EnsureRareData()->is_inside_balanced_columns = true;
-  }
+                                 adjust_inline_size_if_needed) {}
 
   // The setters on this builder are in the writing mode of parent_writing_mode.
   //

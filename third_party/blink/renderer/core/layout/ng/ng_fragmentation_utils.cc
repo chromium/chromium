@@ -241,6 +241,9 @@ void SetupSpaceBuilderForFragmentation(const NGConstraintSpace& parent_space,
          !parent_space.IsInitialColumnBalancingPass());
   builder->SetRequiresContentBeforeBreaking(requires_content_before_breaking);
 
+  if (parent_space.IsInsideBalancedColumns())
+    builder->SetIsInsideBalancedColumns();
+
   if (parent_space.IsInColumnBfc() && !is_new_fc)
     builder->SetIsInColumnBfc();
   builder->SetMinBreakAppeal(parent_space.MinBreakAppeal());
