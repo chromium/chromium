@@ -815,6 +815,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ShareImage) {
 
   EXPECT_EQ("POST", ReadTextContent(web_contents, "method"));
   EXPECT_EQ(kData, ReadTextContent(web_contents, "image"));
+  EXPECT_EQ("sample.webp", ReadTextContent(web_contents, "image_filename"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ShareMultimedia) {
@@ -877,6 +878,8 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ShareMultimedia) {
 
   EXPECT_EQ(kAudioContent, ReadTextContent(web_contents, "audio"));
   EXPECT_EQ(kVideoContent, ReadTextContent(web_contents, "video"));
+  EXPECT_EQ("sam.ple.mp3", ReadTextContent(web_contents, "audio_filename"));
+  EXPECT_EQ("_sample.mp4", ReadTextContent(web_contents, "video_filename"));
 }
 
 }  // namespace web_app
