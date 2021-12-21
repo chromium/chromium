@@ -10,6 +10,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/query_tiles/jni_headers/TileConversionBridge_jni.h"
+#include "url/android/gurl_android.h"
 
 namespace query_tiles {
 
@@ -26,16 +27,16 @@ ScopedJavaLocalRef<jobject> CreateJavaTileAndMaybeAddToList(
   for (const auto& subtile : tile.sub_tiles)
     CreateJavaTileAndMaybeAddToList(env, jchildren, *subtile.get());
 
-  std::vector<std::string> urls;
+  std::vector<ScopedJavaLocalRef<jobject>> urls;
   for (const ImageMetadata& image : tile.image_metadatas)
-    urls.push_back(image.url.spec());
+    urls.push_back(url::GURLAndroid::FromNativeGURL(env, image.url));
 
   return Java_TileConversionBridge_createTileAndMaybeAddToList(
       env, jlist, ConvertUTF8ToJavaString(env, tile.id),
       ConvertUTF8ToJavaString(env, tile.display_text),
       ConvertUTF8ToJavaString(env, tile.accessibility_text),
       ConvertUTF8ToJavaString(env, tile.query_text),
-      ToJavaArrayOfStrings(env, urls),
+      url::GURLAndroid::ToJavaArrayOfGURLs(env, urls),
       ToJavaArrayOfStrings(env, tile.search_params), jchildren);
 }
 

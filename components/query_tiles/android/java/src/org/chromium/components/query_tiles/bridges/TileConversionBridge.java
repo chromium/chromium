@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.components.query_tiles.QueryTile;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class TileConversionBridge {
     @CalledByNative
     private static QueryTile createTileAndMaybeAddToList(@Nullable List<QueryTile> list,
             String tileId, String displayTitle, String accessibilityText, String queryText,
-            String[] urls, String[] searchParams, List<QueryTile> children) {
+            GURL[] urls, String[] searchParams, List<QueryTile> children) {
         QueryTile tile = new QueryTile(
                 tileId, displayTitle, accessibilityText, queryText, urls, searchParams, children);
         if (list != null) list.add(tile);

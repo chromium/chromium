@@ -54,7 +54,10 @@ source_set("public") {
       "android/tile_provider_bridge.h",
     ]
 
-    deps += [ ":jni_headers" ]
+    deps += [
+      ":jni_headers",
+      "//url:gurl_android",
+    ]
   }
 }
 
@@ -82,6 +85,7 @@ if (is_android) {
     deps = [
       "//components/browser_ui/widget/android:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//url:gurl_java",
     ]
   }
 
@@ -100,6 +104,7 @@ if (is_android) {
       "//components/browser_ui/widget/android:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//ui/android:ui_java",
+      "//url:gurl_java",
     ]
 
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -115,11 +120,14 @@ if (is_android) {
   }
 
   android_library("test_support_java") {
+    testonly = true
     sources = [ "android/java/src/org/chromium/components/query_tiles/TestTileProvider.java" ]
 
     deps = [
       ":java",
       "//base:base_java",
+      "//url:gurl_java",
+      "//url:gurl_junit_test_support",
     ]
   }
 

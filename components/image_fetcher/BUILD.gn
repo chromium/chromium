@@ -20,6 +20,7 @@ android_library("java") {
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/gif_player:gif_player_java",
+    "//url:gurl_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   srcjar_deps = [ "//components/image_fetcher/core:java_enums_srcjar" ]
@@ -69,5 +70,7 @@ java_library("junit") {
     "//third_party/gif_player:gif_player_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
   ]
 }

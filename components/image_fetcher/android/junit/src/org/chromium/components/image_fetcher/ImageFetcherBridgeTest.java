@@ -27,6 +27,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
+import org.chromium.url.JUnitTestGURLs;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
@@ -93,7 +94,8 @@ public class ImageFetcherBridgeTest {
 
         mBridge.fetchImage(-1,
                 ImageFetcher.Params.createWithExpirationInterval(
-                        "url", "clientname", WIDTH_PX, HEIGHT_PX, EXPIRATION_INTERVAL_MINS),
+                        JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), "clientname", WIDTH_PX,
+                        HEIGHT_PX, EXPIRATION_INTERVAL_MINS),
                 mBitmapCallback);
         verify(mBitmapCallback).onResult(bitmap);
     }

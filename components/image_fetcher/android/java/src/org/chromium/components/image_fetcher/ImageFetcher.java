@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.url.GURL;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
@@ -68,11 +69,11 @@ public abstract class ImageFetcher {
          * certain period of time.
          * @See {@link #Params(String, String, int, int, int)}.
          */
-        public static Params createWithExpirationInterval(final String url, String clientName,
+        public static Params createWithExpirationInterval(final GURL url, String clientName,
                 int width, int height, int expirationIntervalMinutes) {
             assert expirationIntervalMinutes > INVALID_EXPIRATION_INTERVAL
                 : "Must specify a positive expiration interval, or use other constructors.";
-            return new Params(url, clientName, width, height, expirationIntervalMinutes);
+            return new Params(url.getSpec(), clientName, width, height, expirationIntervalMinutes);
         }
 
         private Params(String url, String clientName, int width, int height,

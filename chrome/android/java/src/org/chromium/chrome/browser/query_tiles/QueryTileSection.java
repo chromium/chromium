@@ -30,6 +30,7 @@ import org.chromium.components.query_tiles.TileUmaLogger;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -160,7 +161,7 @@ public class QueryTileSection {
             return;
         }
 
-        String url = queryTile.urls.get(0);
+        GURL url = queryTile.urls.get(0);
         ImageFetcher.Params params = ImageFetcher.Params.createWithExpirationInterval(url,
                 ImageFetcher.QUERY_TILE_UMA_CLIENT_NAME, size, size,
                 QueryTileConstants.IMAGE_EXPIRATION_INTERVAL_MINUTES);
