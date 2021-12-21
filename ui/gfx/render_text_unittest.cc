@@ -1568,9 +1568,9 @@ const RunListCase kBasicsRunListCases[] = {
      "[0][1][2][3][4]"},  // http://crbug.com/396776
     {"jap_paren2", u"國哲(c)1",
      "[0->1][2][3][4][5]"},  // http://crbug.com/125792
-    {"newline1", u"\n\n", "[0->1]"},
-    {"newline2", u"\r\n\r\n", "[0->3]"},
-    {"newline3", u"\r\r\n", "[0->2]"},
+    {"newline1", u"\n\n", "[0][1]"},
+    {"newline2", u"\r\n\r\n", "[0][1][2][3]"},
+    {"newline3", u"\r\r\n", "[0->1][2]"},
     {"multiline_newline1", u"\n\n", "[0][1]", true},
     {"multiline_newline2", u"\r\n\r\n", "[0->1][2->3]", true},
     {"multiline_newline3", u"\r\r\n", "[0][1->2]", true},
@@ -1749,7 +1749,7 @@ const RunListCase kScriptsRunListCases[] = {
 
     // Control Pictures.
     {"control_pictures", u"␑␒␓␔␕␖␗␘␙␚␛", "[0->10]"},
-    {"control_pictures_rewrite", u"␑\t␛", "[0->2]"},
+    {"control_pictures_rewrite", u"␑\t␛", "[0][1][2]"},
 
     // Unicode art.
     {"unicode_emoticon1", u"(▀̿ĺ̯▀̿ ̿)", "[0][1->2][3->4][5->6][7->8][9]"},
@@ -6370,16 +6370,28 @@ TEST_F(RenderTextTest, ControlCharacterReplacement) {
   render_text->SetText(kTextWithControlCharacters);
 
   // The control characters should have been replaced by their symbols.
-  EXPECT_EQ(u"␈␍␇␉␊␋␌", render_text->GetDisplayText());
+  EXPECT_EQ(u"␈␍␇⇥ ␋␌", render_text->GetDisplayText());
 
   // Setting multiline, the newline character will be back to the original text.
   render_text->SetMultiline(true);
-  EXPECT_EQ(u"␈\r␇␉\n␋␌", render_text->GetDisplayText());
+  EXPECT_EQ(u"␈\r␇⇥\n␋␌", render_text->GetDisplayText());
 
   // The generic control characters should have been replaced by the replacement
   // codepoints.
   render_text->SetText(u"\u008f\u0080");
   EXPECT_EQ(u"\ufffd\ufffd", render_text->GetDisplayText());
+
+  // The '\r\n' should have been replaced with single CR symbol in single line
+  // mode, even if it's a trailing newline.
+  render_text->SetMultiline(false);
+  render_text->SetText(u"abc\r\n\r\n");
+  EXPECT_EQ(u"abc␍ ␍ ", render_text->GetDisplayText());
+  render_text->SetText(u"abc\r\n");
+  EXPECT_EQ(u"abc␍ ", render_text->GetDisplayText());
+
+  // The trailing '\r\n' should not be replaced in multi line mode.
+  render_text->SetMultiline(true);
+  EXPECT_EQ(u"abc\r\n", render_text->GetDisplayText());
 }
 
 TEST_F(RenderTextTest, PrivateUseCharacterReplacement) {

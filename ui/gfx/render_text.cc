@@ -210,9 +210,18 @@ UChar32 ReplaceControlCharacter(UChar32 codepoint) {
   constexpr char16_t kSymbolsCodepoint = 0x2400;
 
   if (codepoint >= 0 && codepoint <= 0x1F) {
-    // Replace codepoints with their visual symbols, which are
-    // at the same offset from kSymbolsCodepoint.
-    return kSymbolsCodepoint + codepoint;
+    switch (codepoint) {
+      case 0x09:
+        // Replace character tabulation ('\t') with its visual arrow symbol.
+        return 0x21E5;
+      case 0x0A:
+        // Replace line feed ('\n') with space character.
+        return 0x20;
+      default:
+        // Replace codepoints with their visual symbols, which are
+        // at the same offset from kSymbolsCodepoint.
+        return kSymbolsCodepoint + codepoint;
+    }
   }
   if (codepoint == 0x7F) {
     // Replace the 'del' codepoint by its symbol (u2421).
