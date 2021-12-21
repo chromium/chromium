@@ -10,6 +10,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/animated_loading_card.h"
 #include "ash/system/phonehub/camera_roll_thumbnail.h"
+#include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
@@ -226,6 +227,8 @@ void CameraRollView::Update() {
       opt_in_view_->SetVisible(true);
       items_view_->SetVisible(false);
       SetVisible(true);
+      LogCameraRollOptInEvent(
+          phone_hub_metrics::InterstitialScreenEvent::kShown);
       break;
     case phonehub::CameraRollManager::CameraRollUiState::LOADING_VIEW:
       opt_in_view_->SetVisible(false);

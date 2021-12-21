@@ -102,6 +102,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PhoneHub.CameraRoll.OptInEvents"
+    enum="PhoneHubInterstitialScreenEvent" expires_after="2022-10-31">
+  <owner>jianbing@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records events from the Camera Roll opt-in view within the Phone Hub tray
+    bubble. Emitted when the opt-in view is shown and when the user clicks the
+    confirm/dismiss buttons.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.CompletedUserAction" enum="PhoneHubUserAction"
     expires_after="2022-10-31">
   <owner>jonmann@chromium.org</owner>

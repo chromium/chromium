@@ -102,6 +102,9 @@ void LogScreenOnSettingsButtonClicked(Screen screen);
 // Logs an |event| for the notification opt-in prompt.
 void LogNotificationOptInEvent(InterstitialScreenEvent event);
 
+// Logs an |event| for the camera roll opt-in dialog in phone hub view.
+void LogCameraRollOptInEvent(InterstitialScreenEvent event);
+
 // Logs the |tab_index| of the tab continuation chip that was clicked.
 void LogTabContinuationChipClicked(int tab_index);
 
