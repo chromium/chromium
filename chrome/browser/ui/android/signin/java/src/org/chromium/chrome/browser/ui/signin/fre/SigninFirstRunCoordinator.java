@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.signin.fre;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.StringRes;
@@ -52,13 +51,13 @@ public class SigninFirstRunCoordinator {
      * Constructs a coordinator instance.
      *
      * @param context is used to create the UI.
-     * @param view is the FRE bottom group view including the selected account, the continue/
-     *        dismiss buttons and other view components that change according to different state.
+     * @param view is the FRE view including the selected account, the continue/dismiss buttons,
+     *        the footer string and other view components that change according to different state.
      * @param modalDialogManager is used to open dialogs like account picker dialog and uma dialog.
      * @param delegate is invoked to interact with classes outside the module.
      */
-    public SigninFirstRunCoordinator(
-            Context context, View view, ModalDialogManager modalDialogManager, Delegate delegate) {
+    public SigninFirstRunCoordinator(Context context, SigninFirstRunView view,
+            ModalDialogManager modalDialogManager, Delegate delegate) {
         mMediator = new SigninFirstRunMediator(context, modalDialogManager, delegate);
         PropertyModelChangeProcessor.create(
                 mMediator.getModel(), view, SigninFirstRunViewBinder::bind);

@@ -3,13 +3,14 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/signin_fre_content"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -25,7 +26,6 @@
             android:orientation="vertical">
 
             <ImageView
-                android:id="@+id/fre_logo"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/fre_tos_image_height"
                 android:layout_marginTop="80dp"
@@ -82,4 +82,4 @@
         android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
         android:text="@string/signin_fre_footer"
         app:leading="@dimen/text_size_small_leading" />
-</LinearLayout>
+</org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunView>
