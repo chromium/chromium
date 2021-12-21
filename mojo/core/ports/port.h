@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/queue.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "mojo/core/ports/event.h"
@@ -144,6 +145,9 @@ class Port : public base::RefCountedThreadSafe<Port> {
   // Note that this is a priority queue which only exposes messages to consumers
   // in strict sequential order.
   MessageQueue message_queue;
+
+  // Buffer outgoing control messages while this port is in kBuffering state.
+  base::queue<std::pair<NodeName, ScopedEvent>> control_message_queue;
 
   // In some edge cases, a Node may need to remember to route a single special
   // event upon destruction of this (proxying) Port. That event is stashed here

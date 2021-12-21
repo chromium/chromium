@@ -687,7 +687,11 @@ int Node::OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event) {
       // port referring to the proxy.
       event_target_node = port->peer_node_name;
       event->set_port_name(port->peer_port_name);
-      event_to_forward = std::move(event);
+      if (port->state == Port::kBuffering) {
+        port->control_message_queue.push({event_target_node, std::move(event)});
+      } else {
+        event_to_forward = std::move(event);
+      }
     }
   }
 
@@ -755,7 +759,6 @@ int Node::OnObserveClosure(std::unique_ptr<ObserveClosureEvent> event) {
 
   bool notify_delegate = false;
   NodeName peer_node_name;
-  PortName peer_port_name;
   bool try_remove_proxy = false;
   {
     SinglePortLocker locker(&port_ref);
@@ -804,15 +807,19 @@ int Node::OnObserveClosure(std::unique_ptr<ObserveClosureEvent> event) {
              << port->peer_node_name
              << " (last_sequence_num=" << event->last_sequence_num() << ")";
 
+    event->set_port_name(port->peer_port_name);
     peer_node_name = port->peer_node_name;
-    peer_port_name = port->peer_port_name;
+
+    if (port->state == Port::kBuffering) {
+      port->control_message_queue.push({peer_node_name, std::move(event)});
+    }
   }
 
   if (try_remove_proxy)
     TryRemoveProxy(port_ref);
 
-  event->set_port_name(peer_port_name);
-  delegate_->ForwardEvent(peer_node_name, std::move(event));
+  if (event)
+    delegate_->ForwardEvent(peer_node_name, std::move(event));
 
   if (notify_delegate)
     delegate_->PortStatusChanged(port_ref);
@@ -888,6 +895,11 @@ int Node::OnUserMessageReadAckRequest(
         // request, send an ack immediately.
         event_to_send = std::make_unique<UserMessageReadAckEvent>(
             port->peer_port_name, current_sequence_num);
+
+        if (port->state == Port::kBuffering) {
+          port->control_message_queue.push(
+              {peer_node_name, std::move(event_to_send)});
+        }
 
         // This might be a late or duplicate acknowledge request, that's
         // requesting acknowledge for an already read message. There may already
@@ -1362,12 +1374,21 @@ int Node::PrepareToForwardUserMessage(const PortRef& forwarding_port_ref,
 }
 
 int Node::BeginProxying(const PortRef& port_ref) {
+  base::queue<std::pair<NodeName, ScopedEvent>> control_message_queue;
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
     if (port->state != Port::kBuffering)
       return OOPS(ERROR_PORT_STATE_UNEXPECTED);
     port->state = Port::kProxying;
+    std::swap(port->control_message_queue, control_message_queue);
+  }
+
+  while (!control_message_queue.empty()) {
+    auto node_event_pair = std::move(control_message_queue.front());
+    control_message_queue.pop();
+    delegate_->ForwardEvent(node_event_pair.first,
+                            std::move(node_event_pair.second));
   }
 
   int rv = ForwardUserMessagesFromProxy(port_ref);
@@ -1378,8 +1399,6 @@ int Node::BeginProxying(const PortRef& port_ref) {
   MaybeForwardAckRequest(port_ref);
 
   bool try_remove_proxy_immediately;
-  ScopedEvent closure_event;
-  NodeName closure_target_node;
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
@@ -1387,17 +1406,10 @@ int Node::BeginProxying(const PortRef& port_ref) {
       return OOPS(ERROR_PORT_STATE_UNEXPECTED);
 
     try_remove_proxy_immediately = port->remove_proxy_on_last_message;
-    if (try_remove_proxy_immediately) {
-      // Make sure we propagate closure to our current peer.
-      closure_target_node = port->peer_node_name;
-      closure_event = std::make_unique<ObserveClosureEvent>(
-          port->peer_port_name, port->last_sequence_num_to_receive);
-    }
   }
 
   if (try_remove_proxy_immediately) {
     TryRemoveProxy(port_ref);
-    delegate_->ForwardEvent(closure_target_node, std::move(closure_event));
   } else {
     InitiateProxyRemoval(port_ref);
   }
