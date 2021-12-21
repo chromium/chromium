@@ -41,7 +41,7 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
  public:
   // To make it less verbose and more readable to construct and update a node,
   // a struct with default values is used to represent the state.
-  struct State {
+  struct PLATFORM_EXPORT State {
     gfx::Rect container_rect;
     gfx::Size contents_size;
     bool user_scrollable_horizontal = false;
@@ -65,24 +65,7 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
         cc::OverscrollBehavior(cc::OverscrollBehavior::Type::kAuto);
     absl::optional<cc::SnapContainerData> snap_container_data;
 
-    PaintPropertyChangeType ComputeChange(const State& other) const {
-      if (container_rect != other.container_rect ||
-          contents_size != other.contents_size ||
-          user_scrollable_horizontal != other.user_scrollable_horizontal ||
-          user_scrollable_vertical != other.user_scrollable_vertical ||
-          prevent_viewport_scrolling_from_inner !=
-              other.prevent_viewport_scrolling_from_inner ||
-          max_scroll_offset_affected_by_page_scale !=
-              other.max_scroll_offset_affected_by_page_scale ||
-          main_thread_scrolling_reasons !=
-              other.main_thread_scrolling_reasons ||
-          compositor_element_id != other.compositor_element_id ||
-          overscroll_behavior != other.overscroll_behavior ||
-          snap_container_data != other.snap_container_data) {
-        return PaintPropertyChangeType::kChangedOnlyValues;
-      }
-      return PaintPropertyChangeType::kUnchanged;
-    }
+    PaintPropertyChangeType ComputeChange(const State& other) const;
   };
 
   // This node is really a sentinel, and does not represent a real scroll.

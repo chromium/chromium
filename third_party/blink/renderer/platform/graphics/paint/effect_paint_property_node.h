@@ -86,28 +86,11 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     // The compositor element id for any masks that are applied to elements that
     // also have backdrop-filters applied.
     CompositorElementId mask_element_id;
-
-    static PaintPropertyChangeType ComputeChange(
-        const BackdropFilterInfo* a,
-        const BackdropFilterInfo* b,
-        bool is_running_backdrop_filter_animation_on_compositor) {
-      if (!a && !b)
-        return PaintPropertyChangeType::kUnchanged;
-      if (!a || !b || a->bounds != b->bounds ||
-          a->mask_element_id != b->mask_element_id)
-        return PaintPropertyChangeType::kChangedOnlyValues;
-      if (a->operations != b->operations) {
-        return is_running_backdrop_filter_animation_on_compositor
-                   ? PaintPropertyChangeType::kChangedOnlyCompositedValues
-                   : PaintPropertyChangeType::kChangedOnlyValues;
-      }
-      return PaintPropertyChangeType::kUnchanged;
-    }
   };
 
   // To make it less verbose and more readable to construct and update a node,
   // a struct with default values is used to represent the state.
-  struct State {
+  struct PLATFORM_EXPORT State {
     // The local transform space serves two purposes:
     // 1. Assign a depth mapping for 3D depth sorting against other paint chunks
     //    and effects under the same parent.
@@ -146,52 +129,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
 
     PaintPropertyChangeType ComputeChange(
         const State& other,
-        const AnimationState& animation_state) {
-      if (local_transform_space != other.local_transform_space ||
-          output_clip != other.output_clip || blend_mode != other.blend_mode ||
-          document_transition_shared_element_id !=
-              other.document_transition_shared_element_id ||
-          shared_element_resource_id != other.shared_element_resource_id) {
-        return PaintPropertyChangeType::kChangedOnlyValues;
-      }
-      bool opacity_changed = opacity != other.opacity;
-      bool opacity_change_is_simple =
-          opacity_changed && opacity != 1.f && other.opacity != 1.f;
-      if (opacity_changed && !opacity_change_is_simple &&
-          !animation_state.is_running_opacity_animation_on_compositor) {
-        return PaintPropertyChangeType::kChangedOnlyValues;
-      }
-      bool filter_changed = filter != other.filter;
-      if (filter_changed &&
-          !animation_state.is_running_filter_animation_on_compositor) {
-        return PaintPropertyChangeType::kChangedOnlyValues;
-      }
-      auto backdrop_filter_changed = BackdropFilterInfo::ComputeChange(
-          backdrop_filter_info.get(), other.backdrop_filter_info.get(),
-          animation_state.is_running_backdrop_filter_animation_on_compositor);
-      if (backdrop_filter_changed ==
-          PaintPropertyChangeType::kChangedOnlyValues) {
-        return PaintPropertyChangeType::kChangedOnlyValues;
-      }
-      bool non_reraster_values_changed =
-          direct_compositing_reasons != other.direct_compositing_reasons ||
-          compositor_element_id != other.compositor_element_id;
-      bool simple_values_changed =
-          opacity_change_is_simple &&
-          !animation_state.is_running_opacity_animation_on_compositor;
-      if (non_reraster_values_changed && simple_values_changed)
-        return PaintPropertyChangeType::kChangedOnlyValues;
-      if (non_reraster_values_changed)
-        return PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
-      if (simple_values_changed)
-        return PaintPropertyChangeType::kChangedOnlySimpleValues;
-
-      if (opacity_changed || filter_changed ||
-          backdrop_filter_changed != PaintPropertyChangeType::kUnchanged) {
-        return PaintPropertyChangeType::kChangedOnlyCompositedValues;
-      }
-      return PaintPropertyChangeType::kUnchanged;
-    }
+        const AnimationState& animation_state) const;
   };
 
   // This node is really a sentinel, and does not represent a real effect.

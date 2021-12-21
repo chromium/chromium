@@ -156,7 +156,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
 
   // To make it less verbose and more readable to construct and update a node,
   // a struct with default values is used to represent the state.
-  struct State {
+  struct PLATFORM_EXPORT State {
     TransformAndOrigin transform_and_origin;
     scoped_refptr<const ScrollPaintPropertyNode> scroll;
     scoped_refptr<const TransformPaintPropertyNode>
@@ -182,84 +182,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
 
     PaintPropertyChangeType ComputeChange(
         const State& other,
-        const AnimationState& animation_state) const {
-      // Whether or not a node is considered a frame root should be invariant.
-      DCHECK_EQ(flags.is_frame_paint_offset_translation,
-                other.flags.is_frame_paint_offset_translation);
-
-      if (flags.flattens_inherited_transform !=
-              other.flags.flattens_inherited_transform ||
-          flags.in_subtree_of_page_scale !=
-              other.flags.in_subtree_of_page_scale ||
-          flags.animation_is_axis_aligned !=
-              other.flags.animation_is_axis_aligned ||
-          flags.delegates_to_parent_for_backface !=
-              other.flags.delegates_to_parent_for_backface ||
-          flags.is_frame_paint_offset_translation !=
-              other.flags.is_frame_paint_offset_translation ||
-          flags.is_for_svg_child != other.flags.is_for_svg_child ||
-          backface_visibility != other.backface_visibility ||
-          rendering_context_id != other.rendering_context_id ||
-          compositor_element_id != other.compositor_element_id ||
-          scroll != other.scroll ||
-          scroll_translation_for_fixed != other.scroll_translation_for_fixed ||
-          !StickyConstraintEquals(other) ||
-          visible_frame_element_id != other.visible_frame_element_id) {
-        return PaintPropertyChangeType::kChangedOnlyValues;
-      }
-
-      bool matrix_changed =
-          !transform_and_origin.TransformEquals(other.transform_and_origin);
-      bool origin_changed =
-          transform_and_origin.Origin() != other.transform_and_origin.Origin();
-      bool transform_changed = matrix_changed || origin_changed;
-
-      bool transform_has_simple_change = true;
-      if (!transform_changed) {
-        transform_has_simple_change = false;
-      } else if (!origin_changed &&
-                 animation_state.is_running_animation_on_compositor) {
-        // |is_running_animation_on_compositor| means a transform animation is
-        // running. Composited transform origin animations are not supported so
-        // origin changes need to be considered as simple changes.
-        transform_has_simple_change = false;
-      } else if (matrix_changed &&
-                 !transform_and_origin.ChangePreserves2dAxisAlignment(
-                     other.transform_and_origin)) {
-        // An additional cc::EffectNode may be required if
-        // blink::TransformPaintPropertyNode is not axis-aligned (see:
-        // PropertyTreeManager::NeedsSyntheticEffect). Changes to axis alignment
-        // are therefore treated as non-simple. We do not need to check origin
-        // because axis alignment is not affected by transform origin.
-        transform_has_simple_change = false;
-      }
-
-      // If the transform changed, and it's not simple then we need to report
-      // values change.
-      if (transform_changed && !transform_has_simple_change &&
-          !animation_state.is_running_animation_on_compositor) {
-        return PaintPropertyChangeType::kChangedOnlyValues;
-      }
-
-      bool non_reraster_values_changed =
-          direct_compositing_reasons != other.direct_compositing_reasons;
-      // Both simple value change and non-reraster change is upgraded to value
-      // change.
-      if (non_reraster_values_changed && transform_has_simple_change)
-        return PaintPropertyChangeType::kChangedOnlyValues;
-      if (non_reraster_values_changed)
-        return PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
-      if (transform_has_simple_change)
-        return PaintPropertyChangeType::kChangedOnlySimpleValues;
-      // At this point, our transform change isn't simple, and the above checks
-      // didn't return a values change, so it must mean that we're running a
-      // compositor animation here.
-      if (transform_changed) {
-        DCHECK(animation_state.is_running_animation_on_compositor);
-        return PaintPropertyChangeType::kChangedOnlyCompositedValues;
-      }
-      return PaintPropertyChangeType::kUnchanged;
-    }
+        const AnimationState& animation_state) const;
 
     bool StickyConstraintEquals(const State& other) const {
       if (!sticky_constraint && !other.sticky_constraint)

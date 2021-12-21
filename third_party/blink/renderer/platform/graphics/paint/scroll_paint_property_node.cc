@@ -23,6 +23,25 @@ WTF::String OverscrollBehaviorTypeToString(cc::OverscrollBehavior::Type value) {
 
 }  // namespace
 
+PaintPropertyChangeType ScrollPaintPropertyNode::State::ComputeChange(
+    const State& other) const {
+  if (container_rect != other.container_rect ||
+      contents_size != other.contents_size ||
+      user_scrollable_horizontal != other.user_scrollable_horizontal ||
+      user_scrollable_vertical != other.user_scrollable_vertical ||
+      prevent_viewport_scrolling_from_inner !=
+          other.prevent_viewport_scrolling_from_inner ||
+      max_scroll_offset_affected_by_page_scale !=
+          other.max_scroll_offset_affected_by_page_scale ||
+      main_thread_scrolling_reasons != other.main_thread_scrolling_reasons ||
+      compositor_element_id != other.compositor_element_id ||
+      overscroll_behavior != other.overscroll_behavior ||
+      snap_container_data != other.snap_container_data) {
+    return PaintPropertyChangeType::kChangedOnlyValues;
+  }
+  return PaintPropertyChangeType::kUnchanged;
+}
+
 const ScrollPaintPropertyNode& ScrollPaintPropertyNode::Root() {
   DEFINE_STATIC_REF(
       ScrollPaintPropertyNode, root,

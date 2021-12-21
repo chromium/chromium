@@ -74,7 +74,7 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
  public:
   // To make it less verbose and more readable to construct and update a node,
   // a struct with default values is used to represent the state.
-  struct State {
+  struct PLATFORM_EXPORT State {
     State(scoped_refptr<const TransformPaintPropertyNodeOrAlias>
               local_transform_space,
           const gfx::RectF& layout_clip_rect,
@@ -96,18 +96,7 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
       paint_clip_rect = paint_clip_rect_arg;
     }
 
-    PaintPropertyChangeType ComputeChange(const State& other) const {
-      if (local_transform_space != other.local_transform_space ||
-          paint_clip_rect != other.paint_clip_rect ||
-          clip_path != other.clip_path) {
-        return PaintPropertyChangeType::kChangedOnlyValues;
-      }
-      if (layout_clip_rect_excluding_overlay_scrollbars !=
-          other.layout_clip_rect_excluding_overlay_scrollbars) {
-        return PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
-      }
-      return PaintPropertyChangeType::kUnchanged;
-    }
+    PaintPropertyChangeType ComputeChange(const State& other) const;
 
     friend class ClipPaintPropertyNode;
 
