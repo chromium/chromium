@@ -35,6 +35,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
@@ -271,6 +272,7 @@ public final class ShareSheetBottomSheetContentTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Fails on official builders: https://crbug.com/1281875")
     public void createRecyclerViews_toggleOff_showsIph() {
         String fileContentType = "image/gif";
         ShareSheetBottomSheetContent shareSheetBottomSheetContent =
