@@ -341,11 +341,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // become activated.
   bool wants_mouse_events_when_inactive_ = false;
 
-  // The location of the most recent mouse event on an occluded window. This is
-  // used to generate the OccludedWindowMouseEvents stat and can be removed
-  // when that stat is no longer tracked.
-  gfx::Point occluded_window_mouse_event_loc_;
-
   // Set to true when DesktopDragDropClientWin starts a touch-initiated drag
   // drop and false when it finishes. While in touch drag, if touch move events
   // are received, the equivalent mouse events are generated, because ole32

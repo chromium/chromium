@@ -12,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -1000,25 +999,6 @@ bool DesktopWindowTreeHostWin::HandleMouseEvent(ui::MouseEvent* event) {
   // Ignore native platform events for test purposes
   if (ui::PlatformEventSource::ShouldIgnoreNativePlatformEvents())
     return true;
-  // Mouse events in occluded windows should be very rare. If this stat isn't
-  // very close to 0, that would indicate that windows are incorrectly getting
-  // marked occluded, or getting stuck in the occluded state. Event can cause
-  // this object to be deleted so check occlusion state before we do anything
-  // with the event.
-  // This stat tries to detect the user moving the mouse over a window falsely
-  // determined to be occluded, so ignore mouse events that have the same
-  // location as the first event, and exit events.
-  if (GetNativeWindowOcclusionState() ==
-      aura::Window::OcclusionState::OCCLUDED) {
-    if (occluded_window_mouse_event_loc_ != gfx::Point() &&
-        event->location() != occluded_window_mouse_event_loc_ &&
-        event->type() != ui::ET_MOUSE_EXITED) {
-      UMA_HISTOGRAM_BOOLEAN("OccludedWindowMouseEvents", true);
-    }
-    occluded_window_mouse_event_loc_ = event->location();
-  } else {
-    occluded_window_mouse_event_loc_ = gfx::Point();
-  }
 
   SendEventToSink(event);
   return event->handled();
