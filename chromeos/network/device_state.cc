@@ -55,11 +55,11 @@ bool DeviceState::PropertyChanged(const std::string& key,
   } else if (key == shill::kTechnologyFamilyProperty) {
     return GetStringValue(key, value, &technology_family_);
   } else if (key == shill::kFoundNetworksProperty) {
-    const base::ListValue* list = nullptr;
-    if (!value.GetAsList(&list))
+    if (!value.is_list())
       return false;
     CellularScanResults parsed_results;
-    if (!network_util::ParseCellularScanResults(*list, &parsed_results))
+    if (!network_util::ParseCellularScanResults(value.GetList(),
+                                                &parsed_results))
       return false;
     scan_results_.swap(parsed_results);
     return true;

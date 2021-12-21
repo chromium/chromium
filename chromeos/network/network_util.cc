@@ -137,11 +137,11 @@ std::string FormattedMacAddress(const std::string& shill_mac_address) {
   return result;
 }
 
-bool ParseCellularScanResults(const base::ListValue& list,
+bool ParseCellularScanResults(const base::Value::ConstListView list,
                               std::vector<CellularScanResult>* scan_results) {
   scan_results->clear();
-  scan_results->reserve(list.GetList().size());
-  for (const auto& value : list.GetList()) {
+  scan_results->reserve(list.size());
+  for (const auto& value : list) {
     const base::DictionaryValue* dict;
     if (!value.GetAsDictionary(&dict))
       return false;

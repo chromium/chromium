@@ -115,7 +115,7 @@ std::string FormattedMacAddress(const std::string& shill_mac_address);
 // CellularScanResult in |scan_results|. Returns false if parsing fails,
 // in which case the contents of |scan_results| will be undefined.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-bool ParseCellularScanResults(const base::ListValue& list,
+bool ParseCellularScanResults(const base::Value::ConstListView list,
                               std::vector<CellularScanResult>* scan_results);
 
 // Parses |list|, which contains DictionaryValues and returns a vector of
