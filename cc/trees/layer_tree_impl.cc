@@ -2737,7 +2737,7 @@ static gfx::SelectionBound ComputeViewportSelectionBound(
     gfx::Vector2dF visibility_offset = layer_start - layer_end;
     visibility_offset.Scale(device_scale_factor / visibility_offset.Length());
     gfx::PointF visibility_point = layer_end + visibility_offset;
-    if (visibility_point.x() <= 0)
+    if (visibility_point.x() < 0)
       visibility_point.set_x(visibility_point.x() + device_scale_factor);
     visibility_point =
         MathUtil::MapPoint(screen_space_transform, visibility_point, &clipped);

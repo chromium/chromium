@@ -2174,6 +2174,40 @@ TEST_F(LayerTreeImplTest, SelectionBoundsWithLargeTransforms) {
   EXPECT_EQ(gfx::SelectionBound(), output.end);
 }
 
+TEST_F(LayerTreeImplTest, SelectionBoundsForCaretLayer) {
+  LayerImpl* root = root_layer();
+  root->SetDrawsContent(true);
+  root->SetBounds(gfx::Size(100, 100));
+  host_impl().active_tree()->SetDeviceViewportRect(gfx::Rect(root->bounds()));
+
+  gfx::Vector2dF caret_layer_offset(10, 20);
+  LayerImpl* caret_layer = AddLayer<LayerImpl>();
+  caret_layer->SetBounds(gfx::Size(1, 16));
+  caret_layer->SetDrawsContent(true);
+  CopyProperties(root, caret_layer);
+  caret_layer->SetOffsetToTransformParent(caret_layer_offset);
+
+  UpdateDrawProperties(host_impl().active_tree());
+
+  LayerSelection input;
+  input.start.type = gfx::SelectionBound::CENTER;
+  input.start.edge_start = gfx::Point(0, 0);
+  input.start.edge_end = gfx::Point(0, 16);
+  input.start.layer_id = caret_layer->id();
+  input.end = input.start;
+  host_impl().active_tree()->RegisterSelection(input);
+
+  viz::Selection<gfx::SelectionBound> output;
+  host_impl().active_tree()->GetViewportSelection(&output);
+  EXPECT_EQ(gfx::SelectionBound::CENTER, output.start.type());
+  EXPECT_EQ(gfx::PointF(10, 20), output.start.edge_start());
+  EXPECT_EQ(gfx::PointF(10, 36), output.start.edge_end());
+  EXPECT_EQ(gfx::PointF(10, 20), output.start.visible_edge_start());
+  EXPECT_EQ(gfx::PointF(10, 36), output.start.visible_edge_end());
+  EXPECT_TRUE(output.start.visible());
+  EXPECT_EQ(output.end, output.start);
+}
+
 TEST_F(LayerTreeImplTest, NumLayersTestOne) {
   // Root is created by the test harness.
   EXPECT_EQ(1u, host_impl().active_tree()->NumLayers());
