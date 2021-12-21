@@ -37,6 +37,7 @@
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/signal_filter_processor.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
+#include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 
 using optimization_guide::proto::OptimizationTarget;
@@ -207,8 +208,11 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
                       signal_storage_config_initialized_;
 
   OnServiceStatusChanged();
-  if (!init_success)
+  if (!init_success) {
+    stats::RecordSegmentSelectionFailure(
+        stats::SegmentationSelectionFailureReason::kDBInitFailure);
     return;
+  }
 
   model_execution_manager_ = CreateModelExecutionManager(
       model_provider_, task_runner_, all_segment_ids_, clock_,

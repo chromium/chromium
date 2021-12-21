@@ -165,6 +165,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SegmentationPlatform.ModelAvailability.{SegmentationModel}"
+    enum="SegmentationModelAvailability" expires_after="2022-06-01">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the availability of the segmentation models. Since there is no good
+    way to check if a model is available, this histogram records an entry when
+    model is requested and one when model is available. The difference should
+    show how often a model is not returned.
+  </summary>
+  <token key="SegmentationModel" variants="SegmentationModel"/>
+</histogram>
+
 <histogram
     name="SegmentationPlatform.ModelDelivery.HasMetadata.{SegmentationModel}"
     enum="BooleanYesNo" expires_after="2022-02-01">
@@ -382,6 +395,17 @@ chromium-metrics-reviews@google.com.
     successfully.
   </summary>
   <token key="SegmentID" variants="SegmentationModel"/>
+</histogram>
+
+<histogram name="SegmentationPlatform.SelectionFailedReason"
+    enum="SegmentationSelectionFailureReason" expires_after="2022-06-01">
+  <owner>ssid@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the reason why the segmentation platform was unable to return a
+    segment selection to any client, or a result was available. Recorded when
+    failure is hit when trying to compute selection.
+  </summary>
 </histogram>
 
 <histogram

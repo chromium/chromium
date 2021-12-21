@@ -514,5 +514,18 @@ void RecordSignalsListeningCount(
       histogram_value_count);
 }
 
+void RecordSegmentSelectionFailure(SegmentationSelectionFailureReason reason) {
+  base::UmaHistogramEnumeration("SegmentationPlatform.SelectionFailedReason",
+                                reason);
+}
+
+void RecordModelAvailability(OptimizationTarget segment_id,
+                             SegmentationModelAvailability availability) {
+  base::UmaHistogramEnumeration(
+      "SegmentationPlatform.ModelAvailability." +
+          OptimizationTargetToHistogramVariant(segment_id),
+      availability);
+}
+
 }  // namespace stats
 }  // namespace segmentation_platform
