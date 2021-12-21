@@ -20,6 +20,7 @@
 #include "base/strings/strcat.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/url_handler_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -45,8 +46,11 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
+#include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #include "components/session_manager/core/session_manager.h"
 #include "extensions/common/extension.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
@@ -531,7 +535,18 @@ void AppListClientImpl::OpenURL(Profile* profile,
                                 ui::PageTransition transition,
                                 WindowOpenDisposition disposition) {
   if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
-    ash::NewWindowDelegate::GetPrimary()->OpenUrl(url, true);
+    const GURL sanitized_url =
+        crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
+    if ((PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_TYPED) ||
+         PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_GENERATED)) &&
+        ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
+            sanitized_url)) {
+      // Let our os url handler take care of the call.
+      crosapi::UrlHandlerAsh().OpenUrl(sanitized_url);
+    } else {
+      // Send the url to the current primary browser.
+      ash::NewWindowDelegate::GetPrimary()->OpenUrl(url, true);
+    }
   } else {
     NavigateParams params(profile, url, transition);
     params.disposition = disposition;

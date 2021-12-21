@@ -26,9 +26,12 @@
 #include "url/url_canon_ip.h"
 #include "url/url_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/crosapi/cpp/lacros_startup_state.h"  // nogncheck
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"  // nogncheck
-#endif
+#endif                                                   // defined(OS_CHROMEOS)
 
 namespace {
 
@@ -256,8 +259,17 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
   if (!canonicalized_url->is_valid())
     return metrics::OmniboxInputType::QUERY;
 
+#if defined(OS_CHROMEOS)
+  const bool is_lacros_or_lacros_is_primary =
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (crosapi::gurl_os_handler_utils::IsAshOsAsciiScheme(parsed_scheme_utf8)) {
+      true;
+#else
+      // ChromeOS's launcher is using the omnibox from Ash. As such we have to
+      // allow Ash to use the os scheme if Lacros is the primary browser.
+      crosapi::lacros_startup_state::IsLacrosPrimaryEnabled();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (is_lacros_or_lacros_is_primary &&
+      crosapi::gurl_os_handler_utils::IsAshOsAsciiScheme(parsed_scheme_utf8)) {
     // Lacros and Ash have a different set of internal chrome:// pages.
     // However - once Lacros is the primary browser, the Ash browser cannot be
     // reached anymore and many internal status / information / ... pages
@@ -266,7 +278,7 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
     // making them accessible again.
     return metrics::OmniboxInputType::URL;
   }
-#endif
+#endif  // defined(OS_CHROMEOS)
 
   if (base::LowerCaseEqualsASCII(parsed_scheme_utf8, url::kFileScheme)) {
     // A user might or might not type a scheme when entering a file URL.  In

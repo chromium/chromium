@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
@@ -59,6 +60,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
+#include "chromeos/crosapi/cpp/lacros_startup_state.h"
 #include "chromeos/startup/startup_switches.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -503,8 +505,17 @@ void BrowserManager::InitializeAndStart() {
 
   PrepareLacrosPolicies();
 
+  const bool is_enabled = browser_util::IsLacrosEnabled();
+
+  // As a switch between Ash and Lacros mode requires an Ash restart plus
+  // profile migration, the state will not change while the system is up.
+  // At this point we are starting Lacros for the first time and with that the
+  // operation mode is 'locked in'.
+  crosapi::lacros_startup_state::SetLacrosStartupState(
+      is_enabled, browser_util::IsLacrosPrimaryBrowser());
+
   // Must be checked after user session start because it depends on user type.
-  if (browser_util::IsLacrosEnabled()) {
+  if (is_enabled) {
     component_update_observation_.Observe(component_update_service_);
     SetState(State::MOUNTING);
     browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,

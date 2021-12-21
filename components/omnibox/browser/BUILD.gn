@@ -341,7 +341,7 @@ static_library("location_bar") {
     "//ui/gfx",
   ]
 
-  if (is_chromeos_lacros) {
+  if (is_chromeos) {
     deps += [ "//chromeos/crosapi/cpp:cpp" ]
   }
 
