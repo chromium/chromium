@@ -4401,6 +4401,50 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="ChromeOSApp.InputEvent">
+  <owner>nancylingwang@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <summary>
+    Records each five minutes in Chrome OS to log the input events happened on
+    the app window. This is logged only when the user allows app syncing or
+    allows sync of everything, and the user does not set up a sync passphrase.
+  </summary>
+  <metric name="AppInputEventCount">
+    <summary>
+      The number of the input events happened in each five mintues.
+    </summary>
+  </metric>
+  <metric name="AppInputEventSource" enum="AppInputEventSource">
+    <summary>
+      An enum that records the input event source.
+    </summary>
+  </metric>
+  <metric name="AppType" enum="AppType">
+    <summary>
+      An enum that records the app type.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="UserDeviceMatrix" enum="UserDeviceMatrix">
+    <summary>
+      An enum that records the user type and the device type.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="ChromeOSApp.InstalledApp">
   <owner>nancylingwang@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>

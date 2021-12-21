@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -14,6 +15,8 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/aura/window.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
@@ -58,19 +61,17 @@ std::string GetActiveAppIdForBrowserWindow(aura::Window* window) {
 
 AppPlatformInputMetrics::AppPlatformInputMetrics(
     Profile* profile,
+    apps::AppRegistryCache& app_registry_cache,
     InstanceRegistry& instance_registry)
     : profile_(profile) {
   InstanceRegistry::Observer::Observe(&instance_registry);
-  // Check whether ash::Shell exists before calling it to avoid crash, and keep
-  // consistent implementation with the destructor function.
+  AppRegistryCache::Observer::Observe(&app_registry_cache);
   if (ash::Shell::HasInstance()) {
     ash::Shell::Get()->AddPreTargetHandler(this);
   }
 }
 
 AppPlatformInputMetrics::~AppPlatformInputMetrics() {
-  // ash::Shell might be destroyed before AppPlatformInputMetrics's destroy, so
-  // check whether ash::Shell exists before calling it to avoid crash.
   if (ash::Shell::HasInstance()) {
     ash::Shell::Get()->RemovePreTargetHandler(this);
   }
@@ -94,6 +95,20 @@ void AppPlatformInputMetrics::OnTouchEvent(ui::TouchEvent* event) {
     RecordEventCount(GetInputEventSource(event->pointer_details().pointer_type),
                      event->target());
   }
+}
+
+void AppPlatformInputMetrics::OnFiveMinutes() {
+  for (const auto& event_counts : app_id_to_event_count_per_five_minutes_) {
+    ukm::SourceId source_id = GetSourceId(event_counts.first);
+    if (source_id == ukm::kInvalidSourceId) {
+      continue;
+    }
+
+    // `event_counts.second` is the map from InputEventSource to the event
+    // counts.
+    RecordInputEventsUkm(source_id, event_counts.second);
+  }
+  app_id_to_event_count_per_five_minutes_.clear();
 }
 
 void AppPlatformInputMetrics::OnInstanceUpdate(const InstanceUpdate& update) {
@@ -132,6 +147,29 @@ void AppPlatformInputMetrics::OnInstanceRegistryWillBeDestroyed(
   InstanceRegistry::Observer::Observe(nullptr);
 }
 
+void AppPlatformInputMetrics::OnAppRegistryCacheWillBeDestroyed(
+    AppRegistryCache* cache) {
+  AppRegistryCache::Observer::Observe(nullptr);
+}
+
+void AppPlatformInputMetrics::OnAppUpdate(const AppUpdate& update) {
+  if (!update.ReadinessChanged() ||
+      apps_util::IsInstalled(update.Readiness())) {
+    return;
+  }
+
+  auto it = app_id_to_source_id_.find(update.AppId());
+  if (it == app_id_to_source_id_.end()) {
+    return;
+  }
+
+  // Remove the source id when the app is removed. The source id will be added
+  // when record the UKM, so we don't need to add the source id here when the
+  // app is installed.
+  AppPlatformMetrics::RemoveSourceId(it->second);
+  app_id_to_source_id_.erase(it);
+}
+
 void AppPlatformInputMetrics::RecordEventCount(InputEventSource event_source,
                                                ui::EventTarget* event_target) {
   views::Widget* target = views::Widget::GetTopLevelWidgetForNativeView(
@@ -152,6 +190,35 @@ void AppPlatformInputMetrics::RecordEventCount(InputEventSource event_source,
 
   ++app_id_to_event_count_per_five_minutes_[it->second.app_id][event_source]
                                            [it->second.app_type_name];
+}
+
+ukm::SourceId AppPlatformInputMetrics::GetSourceId(const std::string& app_id) {
+  auto it = app_id_to_source_id_.find(app_id);
+  if (it != app_id_to_source_id_.end()) {
+    return it->second;
+  }
+
+  auto source_id = AppPlatformMetrics::GetSourceId(profile_, app_id);
+  app_id_to_source_id_[app_id] = source_id;
+  return source_id;
+}
+
+void AppPlatformInputMetrics::RecordInputEventsUkm(
+    ukm::SourceId source_id,
+    const EventSourceToCounts& event_counts) {
+  for (const auto& counts : event_counts) {
+    InputEventSource event_source = counts.first;
+
+    // `counts.second` is the map from AppTypeName to the event count.
+    for (const auto& count : counts.second) {
+      ukm::builders::ChromeOSApp_InputEvent builder(source_id);
+      builder.SetAppType((int)count.first)
+          .SetAppInputEventSource((int)event_source)
+          .SetAppInputEventCount(count.second)
+          .SetUserDeviceMatrix(GetUserTypeByDeviceTypeMetrics())
+          .Record(ukm::UkmRecorder::Get());
+    }
+  }
 }
 
 }  // namespace apps

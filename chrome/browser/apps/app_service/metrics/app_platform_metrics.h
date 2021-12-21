@@ -94,6 +94,10 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   static ukm::SourceId GetSourceIdForCrostini(Profile* profile,
                                               const std::string& app_id);
 
+  // Informs UKM service that the source_id is no longer needed and can be
+  // deleted later.
+  static void RemoveSourceId(ukm::SourceId source_id);
+
   // UMA metrics name for installed apps count in Chrome OS.
   static std::string GetAppsCountHistogramNameForTest(
       AppTypeName app_type_name);

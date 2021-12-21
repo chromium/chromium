@@ -512,6 +512,11 @@ ukm::SourceId AppPlatformMetrics::GetSourceIdForCrostini(
 }
 
 // static
+void AppPlatformMetrics::RemoveSourceId(ukm::SourceId source_id) {
+  ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
+}
+
+// static
 std::string AppPlatformMetrics::GetAppsCountHistogramNameForTest(
     AppTypeName app_type_name) {
   return kAppsCountHistogramPrefix + GetAppTypeHistogramName(app_type_name);
@@ -617,7 +622,7 @@ void AppPlatformMetrics::RecordAppLaunchUkm(
       .SetLaunchSource((int)launch_source)
       .SetUserDeviceMatrix(GetUserTypeByDeviceTypeMetrics())
       .Record(ukm::UkmRecorder::Get());
-  ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
+  RemoveSourceId(source_id);
 }
 
 void AppPlatformMetrics::RecordAppUninstallUkm(
@@ -638,7 +643,7 @@ void AppPlatformMetrics::RecordAppUninstallUkm(
       .SetUninstallSource((int)uninstall_source)
       .SetUserDeviceMatrix(user_type_by_device_type_)
       .Record(ukm::UkmRecorder::Get());
-  ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
+  RemoveSourceId(source_id);
 }
 
 void AppPlatformMetrics::OnAppTypeInitialized(apps::mojom::AppType app_type) {
@@ -1078,7 +1083,7 @@ void AppPlatformMetrics::RecordAppsUsageTimeUkm() {
     }
     if (it.second.window_is_closed) {
       closed_instance_ids.push_back(it.first);
-      ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
+      RemoveSourceId(source_id);
     } else {
       it.second.running_time = base::TimeDelta();
     }
@@ -1107,7 +1112,7 @@ void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
       .SetInstallTime((int)install_time)
       .SetUserDeviceMatrix(user_type_by_device_type_)
       .Record(ukm::UkmRecorder::Get());
-  ukm::AppSourceUrlRecorder::MarkSourceForDeletion(source_id);
+  RemoveSourceId(source_id);
 }
 
 }  // namespace apps

@@ -3028,6 +3028,14 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Apps Page context menu"/>
 </enum>
 
+<enum name="AppInputEventSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Mouse"/>
+  <int value="2" label="Stylus"/>
+  <int value="3" label="Touch"/>
+  <int value="4" label="Keyboard"/>
+</enum>
+
 <enum name="AppLaunch">
   <int value="0" label="NTP_APPS_MAXIMIZED"/>
   <int value="1" label="NTP_APPS_COLLAPSED"/>
