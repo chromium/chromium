@@ -37,7 +37,7 @@ TEST_F('CrElementsActionMenuTest', 'All', function() {
 var CrElementsCheckboxTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_checkbox_test.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_checkbox_test.js&host=webui-test';
   }
 };
 

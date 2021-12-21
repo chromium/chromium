@@ -5,19 +5,17 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import {keyDownOn, keyUpOn, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 // clang-format on
 
 suite('cr-checkbox', function() {
-  /** @type {!CrCheckboxElement} */
-  let checkbox;
-
-  /** @type {!HTMLElement} */
-  let innerCheckbox;
+  let checkbox: CrCheckboxElement;
+  let innerCheckbox: HTMLElement;
 
   setup(function() {
     document.body.innerHTML = `
@@ -28,9 +26,8 @@ suite('cr-checkbox', function() {
       </cr-checkbox>
     `;
 
-    checkbox = /** @type {!CrCheckboxElement} */ (
-        document.querySelector('cr-checkbox'));
-    innerCheckbox = /** @type {!HTMLElement} */ (checkbox.$$('#checkbox'));
+    checkbox = document.querySelector('cr-checkbox')!;
+    innerCheckbox = checkbox.$$('#checkbox') as HTMLElement;
     assertNotChecked();
   });
 
@@ -63,11 +60,7 @@ suite('cr-checkbox', function() {
     assertEquals('false', innerCheckbox.getAttribute('aria-disabled'));
   }
 
-  /**
-   * @param {string} keyName The name of the key to trigger.
-   * @param {!HTMLElement=} element
-   */
-  function triggerKeyPressEvent(keyName, element) {
+  function triggerKeyPressEvent(keyName: string, element?: HTMLElement) {
     pressAndReleaseKeyOn(element || innerCheckbox, 0, undefined, keyName);
   }
 
@@ -142,7 +135,7 @@ suite('cr-checkbox', function() {
   });
 
   test('LabelDisplay', function() {
-    const labelContainer = checkbox.$['label-container'];
+    const labelContainer = checkbox.$['label-container'] as HTMLElement;
     // Test that there's actually a label that's more than just the padding.
     assertTrue(labelContainer.offsetWidth > 20);
 
@@ -156,8 +149,7 @@ suite('cr-checkbox', function() {
     });
 
     assertNotChecked();
-    const link =
-        /** @type {!HTMLAnchorElement} */ (document.querySelector('a'));
+    const link = document.querySelector('a')!;
     link.click();
     assertNotChecked();
 
@@ -185,9 +177,8 @@ suite('cr-checkbox', function() {
       <cr-checkbox id="checkbox" tab-index="-1"></cr-checkbox>
     `;
 
-    checkbox = /** @type {!CrCheckboxElement} */ (
-        document.querySelector('cr-checkbox'));
-    innerCheckbox = /** @type {!HTMLElement} */ (checkbox.$$('#checkbox'));
+    checkbox = document.querySelector('cr-checkbox')!;
+    innerCheckbox = checkbox.$$('#checkbox') as HTMLElement;
 
     // Should not override tabindex if it is initialized.
     assertEquals(-1, checkbox.tabIndex);
@@ -200,9 +191,8 @@ suite('cr-checkbox', function() {
       <cr-checkbox id="checkbox" disabled></cr-checkbox>
     `;
 
-    checkbox = /** @type {!CrCheckboxElement} */ (
-        document.querySelector('cr-checkbox'));
-    innerCheckbox = /** @type {!HTMLElement} */ (checkbox.$$('#checkbox'));
+    checkbox = document.querySelector('cr-checkbox')!;
+    innerCheckbox = checkbox.$$('#checkbox') as HTMLElement;
 
     // Initializing with disabled should make tabindex="-1".
     assertEquals(-1, checkbox.tabIndex);
@@ -214,8 +204,7 @@ suite('cr-checkbox', function() {
     document.body.innerHTML = `
       <cr-checkbox id="checkbox" tabindex="-1"></cr-checkbox>
     `;
-    checkbox = /** @type {!CrCheckboxElement} */ (
-        document.querySelector('cr-checkbox'));
+    checkbox = document.querySelector('cr-checkbox')!;
     assertEquals(0, checkbox.tabIndex);
     assertFalse(checkbox.hasAttribute('tabindex'));
     assertEquals('0', innerCheckbox.getAttribute('tabindex'));

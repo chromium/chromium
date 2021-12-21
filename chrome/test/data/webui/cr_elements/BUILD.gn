@@ -5,6 +5,8 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("../namespace_rewrites.gni")
 
 js_type_check("closure_compile") {
@@ -17,9 +19,7 @@ js_type_check("closure_compile") {
   deps = [
     ":cr_action_menu_test",
     ":cr_auto_img_test",
-    ":cr_button_tests",
     ":cr_card_radio_button_test",
-    ":cr_checkbox_test",
     ":cr_container_shadow_behavior_test",
     ":cr_dialog_test",
     ":cr_drawer_tests",
@@ -69,25 +69,6 @@ js_library("cr_action_menu_test") {
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_button_tests") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_checkbox_test") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util",
-    "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
-    "//ui/webui/resources/cr_elements/cr_checkbox:cr_checkbox.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -417,4 +398,28 @@ if (is_chromeos_ash) {
     ]
     externs_list = [ "$externs_path/mocha-2.5.js" ]
   }
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_cr_elements"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "cr_elements"
+}
+
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [ "chrome://webui-test/*|" +
+                    rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                                target_gen_dir) ]
+  in_files = [
+    "cr_button_tests.ts",
+    "cr_checkbox_test.ts",
+  ]
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [ "..:generate_definitions" ]
 }

@@ -40,7 +40,7 @@ TEST_F('CrElementsA11yAnnouncerTest', 'All', function() {
 var CrElementsButtonTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_button_tests.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_button_tests.js&host=webui-test';
   }
 };
 
