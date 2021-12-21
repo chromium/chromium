@@ -97,8 +97,6 @@ class SyncSetupService : public KeyedService {
   // Returns true if the user has gone through the initial sync configuration.
   // This method is guaranteed not to start the sync backend so it can be
   // called at start-up.
-  // TODO(crbug.com/951313): This method has to be remove when UnifiedConsent
-  // flag is cleaned up.
   virtual bool HasFinishedInitialSetup();
 
   // Pauses sync allowing the user to configure what data to sync before
