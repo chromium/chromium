@@ -589,6 +589,7 @@ function updateReports() {
  * the data on completion.
  */
 function clearStorage() {
+  sourceTableModel.clear();
   reportTableModel.clear();
   pageHandler.clearStorage();
 }

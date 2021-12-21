@@ -530,6 +530,65 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
+                       ClearButton_ClearsSourceTable) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+
+  OverrideWebUIAttributionManager();
+
+  base::Time now = base::Time::Now();
+
+  ON_CALL(manager_, GetActiveSourcesForWebUI)
+      .WillByDefault(InvokeCallback<std::vector<StorableSource>>(
+          {SourceBuilder(now).SetSourceEventId(5).Build()}));
+
+  manager_.NotifySourceDeactivated(DeactivatedSource(
+      SourceBuilder(now + base::Hours(2)).SetSourceEventId(6).Build(),
+      DeactivatedSource::Reason::kReplacedByNewerSource));
+
+  EXPECT_CALL(manager_, ClearData)
+      .WillOnce([](base::Time delete_begin, base::Time delete_end,
+                   base::RepeatingCallback<bool(const url::Origin&)> filter,
+                   base::OnceClosure done) { std::move(done).Run(); });
+
+  // Verify both rows get rendered.
+  static constexpr char wait_script[] = R"(
+    let table = document.querySelector("#source-table-wrapper tbody");
+    let obs = new MutationObserver(() => {
+      if (table.children.length === 2 &&
+          table.children[0].children[0].innerText === "5" &&
+          table.children[1].children[0].innerText === "6") {
+        document.title = $1;
+      }
+    });
+    obs.observe(table, {'childList': true});)";
+  EXPECT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
+
+  // Wait for the table to rendered.
+  TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
+  ClickRefreshButton();
+  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+
+  // Click the clear storage button and expect that the source table is emptied.
+  const std::u16string kDeleteTitle = u"Delete";
+  TitleWatcher delete_title_watcher(shell()->web_contents(), kDeleteTitle);
+  static constexpr char kObserveEmptySourcesTableScript[] = R"(
+    let table = document.querySelector("#source-table-wrapper tbody");
+    let obs = new MutationObserver(() => {
+      if (table.children.length === 1 &&
+          table.children[0].children[0].innerText === "No sources.") {
+        document.title = $1;
+      }
+    });
+    obs.observe(table, {'childList': true});)";
+  EXPECT_TRUE(
+      ExecJsInWebUI(JsReplace(kObserveEmptySourcesTableScript, kDeleteTitle)));
+
+  // Click the button.
+  EXPECT_TRUE(ExecJsInWebUI("document.getElementById('clear-data').click();"));
+  EXPECT_EQ(kDeleteTitle, delete_title_watcher.WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUISendReports_ReportsRemoved) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
