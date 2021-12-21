@@ -174,8 +174,10 @@ void BrowserAccessibilityManagerAndroid::FireLocationChanged(
 
 void BrowserAccessibilityManagerAndroid::FireBlinkEvent(
     ax::mojom::Event event_type,
-    BrowserAccessibility* node) {
-  BrowserAccessibilityManager::FireBlinkEvent(event_type, node);
+    BrowserAccessibility* node,
+    int action_request_id) {
+  BrowserAccessibilityManager::FireBlinkEvent(event_type, node,
+                                              action_request_id);
   WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
   if (!wcax)
     return;

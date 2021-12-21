@@ -35,7 +35,7 @@ BrowserAccessibilityManagerFuchsia::~BrowserAccessibilityManagerFuchsia() =
 
 ui::AccessibilityBridgeFuchsia*
 BrowserAccessibilityManagerFuchsia::GetAccessibilityBridge() const {
-  auto* accessibility_bridge_registry =
+  ui::AccessibilityBridgeFuchsiaRegistry* accessibility_bridge_registry =
       ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
   DCHECK(accessibility_bridge_registry);
 
@@ -84,6 +84,38 @@ ui::AXTreeUpdate BrowserAccessibilityManagerFuchsia::GetEmptyDocument() {
   update.root_id = empty_document.id;
   update.nodes.push_back(empty_document);
   return update;
+}
+
+void BrowserAccessibilityManagerFuchsia::FireBlinkEvent(
+    ax::mojom::Event event_type,
+    BrowserAccessibility* node,
+    int action_request_id) {
+  BrowserAccessibilityManager::FireBlinkEvent(event_type, node,
+                                              action_request_id);
+
+  // Blink fires a hover event on the result of a hit test, so we should process
+  // it here.
+  if (event_type == ax::mojom::Event::kHover)
+    OnHitTestResult(action_request_id, node);
+}
+
+void BrowserAccessibilityManagerFuchsia::OnHitTestResult(
+    int action_request_id,
+    BrowserAccessibility* node) {
+  if (!GetAccessibilityBridge())
+    return;
+
+  absl::optional<uint32_t> hit_result_id;
+
+  if (node) {
+    BrowserAccessibilityFuchsia* hit_result =
+        ToBrowserAccessibilityFuchsia(node);
+    DCHECK(hit_result);
+    hit_result_id = hit_result->GetFuchsiaNodeID();
+  }
+
+  GetAccessibilityBridge()->OnAccessibilityHitTestResult(action_request_id,
+                                                         hit_result_id);
 }
 
 }  // namespace content

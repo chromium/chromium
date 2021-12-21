@@ -16,6 +16,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_relative_bounds.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
+#include "ui/accessibility/platform/fuchsia/ax_platform_node_fuchsia.h"
 
 namespace content {
 
@@ -44,6 +45,7 @@ class CONTENT_EXPORT BrowserAccessibilityFuchsia : public BrowserAccessibility {
   // BrowserAccessibility overrides.
   void OnDataChanged() override;
   void OnLocationChanged() override;
+  bool AccessibilityPerformAction(const ui::AXActionData& action_data) override;
 
   // Returns this object's AXUniqueID as a uint32_t.
   uint32_t GetFuchsiaNodeID() const;
@@ -64,6 +66,9 @@ class CONTENT_EXPORT BrowserAccessibilityFuchsia : public BrowserAccessibility {
   fuchsia::ui::gfx::BoundingBox GetFuchsiaLocation() const;
   fuchsia::ui::gfx::mat4 GetFuchsiaTransform() const;
   std::vector<uint32_t> GetFuchsiaChildIDs() const;
+
+  // Fuchsia-specific representation of this node.
+  ui::AXPlatformNodeFuchsia* platform_node_;
 };
 
 BrowserAccessibilityFuchsia* CONTENT_EXPORT

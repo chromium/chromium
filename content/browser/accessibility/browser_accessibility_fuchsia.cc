@@ -9,8 +9,12 @@
 #include "content/browser/accessibility/browser_accessibility_manager_fuchsia.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_registry.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace content {
+
+// Error allowed for each edge when converting from gfx::RectF to gfx::Rect.
+constexpr float kRectConversionError = 0.5;
 
 using AXRole = ax::mojom::Role;
 using FuchsiaRole = fuchsia::accessibility::semantics::Role;
@@ -18,11 +22,14 @@ using FuchsiaRole = fuchsia::accessibility::semantics::Role;
 BrowserAccessibilityFuchsia::BrowserAccessibilityFuchsia(
     BrowserAccessibilityManager* manager,
     ui::AXNode* node)
-    : BrowserAccessibility(manager, node) {}
+    : BrowserAccessibility(manager, node) {
+  platform_node_ =
+      static_cast<ui::AXPlatformNodeFuchsia*>(ui::AXPlatformNode::Create(this));
+}
 
 ui::AccessibilityBridgeFuchsia*
 BrowserAccessibilityFuchsia::GetAccessibilityBridge() const {
-  auto* accessibility_bridge_registry =
+  ui::AccessibilityBridgeFuchsiaRegistry* accessibility_bridge_registry =
       ui::AccessibilityBridgeFuchsiaRegistry::GetInstance();
   DCHECK(accessibility_bridge_registry);
 
@@ -39,6 +46,7 @@ std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
 
 BrowserAccessibilityFuchsia::~BrowserAccessibilityFuchsia() {
   DeleteNode();
+  platform_node_->Destroy();
 }
 
 uint32_t BrowserAccessibilityFuchsia::GetFuchsiaNodeID() const {
@@ -379,6 +387,43 @@ void BrowserAccessibilityFuchsia::DeleteNode() {
     return;
 
   GetAccessibilityBridge()->DeleteNode(GetFuchsiaNodeID());
+}
+
+bool BrowserAccessibilityFuchsia::AccessibilityPerformAction(
+    const ui::AXActionData& action_data) {
+  if (action_data.action == ax::mojom::Action::kHitTest) {
+    BrowserAccessibilityManager* root_manager = manager()->GetRootManager();
+    DCHECK(root_manager);
+
+    ui::AccessibilityBridgeFuchsia* accessibility_bridge =
+        GetAccessibilityBridge();
+    if (!accessibility_bridge)
+      return false;
+
+    root_manager->HitTest(action_data.target_point);
+    return true;
+  }
+
+  ui::AXActionData full_action_data = action_data;
+
+  if (action_data.action == ax::mojom::Action::kScrollToMakeVisible) {
+    // The scroll-to-make-visible action expects coordinates in the local
+    // coordinate space of |node|. So, we need to translate node's bounds to the
+    // origin.
+    gfx::Rect local_bounds = gfx::ToEnclosedRectIgnoringError(
+        GetData().relative_bounds.bounds, kRectConversionError);
+    local_bounds = gfx::Rect(local_bounds.size());
+
+    full_action_data.target_rect = local_bounds;
+    full_action_data.horizontal_scroll_alignment =
+        ax::mojom::ScrollAlignment::kScrollAlignmentCenter;
+    full_action_data.vertical_scroll_alignment =
+        ax::mojom::ScrollAlignment::kScrollAlignmentCenter;
+    full_action_data.scroll_behavior =
+        ax::mojom::ScrollBehavior::kScrollIfVisible;
+  }
+
+  return BrowserAccessibility::AccessibilityPerformAction(full_action_data);
 }
 
 }  // namespace content

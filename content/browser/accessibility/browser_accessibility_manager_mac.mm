@@ -82,10 +82,11 @@ void BrowserAccessibilityManagerMac::FireFocusEvent(
                             node);
 }
 
-void BrowserAccessibilityManagerMac::FireBlinkEvent(
-    ax::mojom::Event event_type,
-    BrowserAccessibility* node) {
-  BrowserAccessibilityManager::FireBlinkEvent(event_type, node);
+void BrowserAccessibilityManagerMac::FireBlinkEvent(ax::mojom::Event event_type,
+                                                    BrowserAccessibility* node,
+                                                    int action_request_id) {
+  BrowserAccessibilityManager::FireBlinkEvent(event_type, node,
+                                              action_request_id);
   NSString* mac_notification = nullptr;
   switch (event_type) {
     case ax::mojom::Event::kAutocorrectionOccured:

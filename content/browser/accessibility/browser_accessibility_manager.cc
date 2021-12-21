@@ -572,7 +572,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     if (root_manager && event.event_type == ax::mojom::Event::kHover)
       root_manager->CacheHitTestResult(event_target);
 
-    FireBlinkEvent(event.event_type, retargeted);
+    FireBlinkEvent(event.event_type, retargeted, event.action_request_id);
   }
 
   if (received_load_complete_event) {
@@ -660,7 +660,8 @@ void BrowserAccessibilityManager::ActivateFindInPageResult(int request_id) {
 
   // The "scrolled to anchor" notification is a great way to get a
   // screen reader to jump directly to a specific location in a document.
-  FireBlinkEvent(ax::mojom::Event::kScrolledToAnchor, node);
+  FireBlinkEvent(ax::mojom::Event::kScrolledToAnchor, node,
+                 /*action_request_id=*/-1);
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetActiveDescendant(

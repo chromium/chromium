@@ -7,6 +7,7 @@
 
 #include <fuchsia/accessibility/semantics/cpp/fidl.h>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_export.h"
 
 namespace ui {
@@ -40,8 +41,9 @@ class AX_EXPORT AccessibilityBridgeFuchsia {
   //
   // Method to notify the accessibility bridge when a hit test result is
   // received.
-  virtual void OnAccessibilityHitTestResult(int hit_test_request_id,
-                                            uint32_t result) = 0;
+  virtual void OnAccessibilityHitTestResult(
+      int hit_test_request_id,
+      absl::optional<uint32_t> result) = 0;
 
   // Returns the device scale factor.
   virtual float GetDeviceScaleFactor() = 0;

@@ -186,7 +186,8 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // Subclasses override these methods to send native event notifications.
   virtual void FireFocusEvent(BrowserAccessibility* node);
   virtual void FireBlinkEvent(ax::mojom::Event event_type,
-                              BrowserAccessibility* node) {}
+                              BrowserAccessibility* node,
+                              int action_request_id) {}
   virtual void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
                                   BrowserAccessibility* node);
 

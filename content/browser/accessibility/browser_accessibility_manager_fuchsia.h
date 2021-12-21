@@ -29,8 +29,14 @@ class CONTENT_EXPORT BrowserAccessibilityManagerFuchsia
   static ui::AXTreeUpdate GetEmptyDocument();
 
   // BrowserAccessibilityManager overrides.
+  void FireBlinkEvent(ax::mojom::Event event_type,
+                      BrowserAccessibility* node,
+                      int action_request_id) override;
   void FireFocusEvent(BrowserAccessibility* node) override;
   float device_scale_factor() const override;
+
+  // Sends hit test result to fuchsia.
+  void OnHitTestResult(int action_request_id, BrowserAccessibility* node);
 
  private:
   // Returns the accessibility bridge instance for this manager's WebContents.
