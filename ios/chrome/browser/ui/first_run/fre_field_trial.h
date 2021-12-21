@@ -44,6 +44,15 @@ extern const char kFREUIIdentitySwitcherPositionParam[];
 // UI (OLD or NEW).
 extern const char kFREUIStringsSetParam[];
 
+// FRE Second UI Trial name.
+extern const char kFRESecondUITrialName[];
+
+// Group names for the second trial of the FRE UI.
+extern const char kIdentitySwitcherInTopAndOldStringsSetGroup[];
+extern const char kIdentitySwitcherInTopAndNewStringsSetGroup[];
+extern const char kIdentitySwitcherInBottomAndOldStringsSetGroup[];
+extern const char kIdentitySwitcherInBottomAndNewStringsSetGroup[];
+
 namespace fre_field_trial {
 
 // Returns true if the user is in the group that will show the default browser

@@ -57,6 +57,9 @@
 // Induces a GREYAssert if the Sync state does not match |enabled|.
 - (void)verifySyncUIEnabled:(BOOL)enabled;
 
+// Induces a GREYAssert if the Sync cell is not hidden.
+- (void)verifySyncUIIsHidden;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_EARL_GREY_H_

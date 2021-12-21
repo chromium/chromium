@@ -24,6 +24,17 @@ const char kFREDefaultPromoTestingShortDelayParam[] =
 const char kFREUIIdentitySwitcherPositionParam[] =
     "signin_sync_screen_identity_position";
 const char kFREUIStringsSetParam[] = "signin_sync_screen_strings_set";
+const char kFRESecondUITrialName[] = "EnableFREUIModuleIOSV2";
+
+// Group names for the second trial of the FRE UI.
+const char kIdentitySwitcherInTopAndOldStringsSetGroup[] =
+    "IdentitySwitcherInTopAndOldStringsSet";
+const char kIdentitySwitcherInTopAndNewStringsSetGroup[] =
+    "IdentitySwitcherInTopAndNewStringsSet";
+const char kIdentitySwitcherInBottomAndOldStringsSetGroup[] =
+    "IdentitySwitcherInBottomAndOldStringsSet";
+const char kIdentitySwitcherInBottomAndNewStringsSetGroup[] =
+    "IdentitySwitcherInBottomAndNewStringsSet";
 
 // Feature param and options for the identity switcher position.
 constexpr base::FeatureParam<SigninSyncScreenUIIdentitySwitcherPosition>::Option
@@ -67,21 +78,8 @@ const variations::VariationID
     kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosID = 3342137;
 const variations::VariationID
     kFREDefaultBrowserAndSmallDelayBeforeOtherPromosID = 3342138;
-
-// FRE UI Trial name.
-const char kFREUITrialName[] = "EnableFREUIModuleIOSV2";
-
-// Group names for the second trial of the FRE UI.
+// Group name for the FRE disabled group.
 const char kDisabledGroup[] = "Disabled";
-const char kIdentitySwitcherInTopAndOldStringsSetGroup[] =
-    "IdentitySwitcherInTopAndOldStringsSet";
-const char kIdentitySwitcherInTopAndNewStringsSetGroup[] =
-    "IdentitySwitcherInTopAndNewStringsSet";
-const char kIdentitySwitcherInBottomAndOldStringsSetGroup[] =
-    "IdentitySwitcherInBottomAndOldStringsSet";
-const char kIdentitySwitcherInBottomAndNewStringsSetGroup[] =
-    "IdentitySwitcherInBottomAndNewStringsSet";
-
 // Experiment IDs defined for the second trial of the FRE UI.
 const variations::VariationID kDisabledTrialID = 3344682;
 const variations::VariationID kIdentitySwitcherInTopAndOldStringsSetID =
@@ -105,7 +103,8 @@ void AssociateFieldTrialParamsForFRESecondTrialGroup(
   base::FieldTrialParams params;
   params[kFREUIIdentitySwitcherPositionParam] = position;
   params[kFREUIStringsSetParam] = stringsSet;
-  DCHECK(base::AssociateFieldTrialParams(kFREUITrialName, group_name, params));
+  DCHECK(base::AssociateFieldTrialParams(kEnableFREUIModuleIOS.name, group_name,
+                                         params));
 }
 }  // namespace
 
@@ -272,7 +271,7 @@ int CreateFirstRunSecondTrial(
   }
 
   // Set up the trial and groups.
-  FirstRunFieldTrialConfig config(kFREUITrialName);
+  FirstRunFieldTrialConfig config(kFRESecondUITrialName);
 
   config.AddGroup(kIdentitySwitcherInTopAndOldStringsSetGroup,
                   kIdentitySwitcherInTopAndOldStringsSetID,
@@ -318,11 +317,11 @@ int CreateFirstRunSecondTrial(
       group_name == kIdentitySwitcherInBottomAndOldStringsSetGroup ||
       group_name == kIdentitySwitcherInBottomAndNewStringsSetGroup) {
     feature_list->RegisterFieldTrialOverride(
-        kFREUITrialName, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+        kEnableFREUIModuleIOS.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
         trial.get());
   } else if (group_name == kDisabledGroup) {
     feature_list->RegisterFieldTrialOverride(
-        kFREUITrialName, base::FeatureList::OVERRIDE_DISABLE_FEATURE,
+        kEnableFREUIModuleIOS.name, base::FeatureList::OVERRIDE_DISABLE_FEATURE,
         trial.get());
   }
 
@@ -345,8 +344,9 @@ void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
   }
   // Create trial and group user for the first time, or tag users again to
   // ensure the experiment can be used to filter UMA metrics.
-  trial_group = CreateFirstRunTrial(low_entropy_provider, feature_list);
-  trial_group = CreateFirstRunSecondTrial(low_entropy_provider, feature_list);
+  if (!base::FieldTrialList::TrialExists(kFRESecondUITrialName)) {
+    trial_group = CreateFirstRunSecondTrial(low_entropy_provider, feature_list);
+  }
   // Persist the assigned group for subsequent runs.
   local_state->SetInteger(kTrialGroupPrefName, trial_group);
 }
