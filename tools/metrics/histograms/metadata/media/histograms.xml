@@ -3260,7 +3260,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Midi.SendReceiveUsage" enum="MidiSendReceiveUsage"
-    expires_after="M95">
+    expires_after="2022-06-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>midi-dev@chromium.org</owner>
   <summary>
@@ -3274,7 +3274,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Midi.SysExMessageSizeUpTo1MB" units="bytes"
-    expires_after="M95">
+    expires_after="2022-06-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>midi-dev@chromium.org</owner>
   <summary>
@@ -3284,7 +3284,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Midi.Usage" enum="MidiUsage" expires_after="M95">
+<histogram name="Media.Midi.Usage" enum="MidiUsage" expires_after="2022-06-01">
   <owner>toyoshim@chromium.org</owner>
   <owner>midi-dev@chromium.org</owner>
   <summary>
