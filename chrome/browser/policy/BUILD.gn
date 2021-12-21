@@ -111,6 +111,7 @@ source_set("policy_specific_browser_tests") {
   sources = [
     "site_isolation_policy_browsertest.cc",
     "test/certificate_transparency_policy_browsertest.cc",
+    "test/network_time_policy_browsertest.cc",
     "test/safe_browsing_policy_browsertest.cc",
     "test/ssl_error_overriding_allowed_policy_browsertest.cc",
   ]
