@@ -131,9 +131,11 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   }
 
   // Keep only newest |max_kept_sources| sources when the number of sources
-  // in recordings_ exceeds this threshold. Returns the age of newest truncated
+  // in recordings_ exceeds this threshold. We only consider the set of ids
+  // contained in |pruning_set|. Returns the age of newest truncated
   // source in seconds.
-  int PruneOldSources(size_t max_kept_sources);
+  int PruneOldSources(size_t max_kept_sources,
+                      const std::set<SourceId>& pruning_set);
 
   // UkmRecorder:
   void AddEntry(mojom::UkmEntryPtr entry) override;

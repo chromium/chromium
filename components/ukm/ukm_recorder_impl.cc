@@ -333,6 +333,7 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
     StoreEntryProto(*entry, proto_entry);
     source_ids_seen.insert(entry->source_id);
   }
+
   // Number of sources excluded from this report because no entries referred to
   // them.
   const int num_sources_unsent =
@@ -346,6 +347,7 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
 
   // Number of sources discarded due to not matching a navigation URL.
   int num_sources_unmatched = 0;
+
   std::unordered_map<SourceIdType, int> serialized_source_type_counts;
 
   for (const auto& kv : recordings_.sources) {
@@ -375,11 +377,10 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
       // Omit entryless sources from the report.
       if (!base::Contains(source_ids_seen, kv.first)) {
         continue;
-      } else {
-        // Source of ukm::SourceIdObj::Type::DEFAULT type will not be kept
-        // after entries are logged.
-        MarkSourceForDeletion(kv.first);
       }
+
+      // Non-whitelisted Source types will not be kept after entries are logged.
+      MarkSourceForDeletion(kv.first);
     }
     // Minimal validations before serializing into a proto message.
     // See crbug/1274876.
@@ -437,8 +438,8 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
     }
   }
   int num_serialized_sources = 0;
-  for (const auto& entry : serialized_source_type_counts) {
-    num_serialized_sources += entry.second;
+  for (const auto& source_type_and_count : serialized_source_type_counts) {
+    num_serialized_sources += source_type_and_count.second;
   }
 
   UMA_HISTOGRAM_COUNTS_1000("UKM.Sources.SerializedCount2",
@@ -502,16 +503,65 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
   report->set_is_continuous(recording_is_continuous_);
   recording_is_continuous_ = true;
 
-  // Defer at most GetMaxKeptSources() sources to the next report,
-  // prioritizing most recently created ones.
-  int pruned_sources_age = PruneOldSources(max_kept_sources_);
+  // Modify the set source_ids_seen by removing sources that aren't in
+  // recordings_. We do this here as there is a few places for
+  // recordings_.sources to be modified. The resulting set will be currently
+  // existing sources that were seen in this report.
+  auto it = source_ids_seen.begin();
+  while (it != source_ids_seen.end()) {
+    if (!base::Contains(recordings_.sources, *it)) {
+      it = source_ids_seen.erase(it);
+    } else {
+      it++;
+    }
+  }
+
+  // Build the set of sources that exist in recordings_.sources that were not
+  // seen in this report.
+  std::set<SourceId> source_ids_unseen;
+  for (const auto& kv : recordings_.sources) {
+    if (!base::Contains(source_ids_seen, kv.first)) {
+      source_ids_unseen.insert(kv.first);
+    }
+  }
+
+  int pruned_sources_age_sec = 0;
+  // Setup an experiment to test what will occur if we prune unseen sources
+  // first.
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          kUkmFeature, "PruneUnseenSourcesFirst", false)) {
+    int pruned_sources_age_from_unseen_sec =
+        PruneOldSources(max_kept_sources_, source_ids_unseen);
+
+    // Prune again from seen sources. Note that if we've already pruned enough
+    // from the unseen sources, this will be a noop.
+    int pruned_sources_age_from_seen_sec =
+        PruneOldSources(max_kept_sources_, source_ids_seen);
+
+    // We're looking for the newest age, which will be the largest between the
+    // two sets we pruned from.
+    pruned_sources_age_sec = std::max(pruned_sources_age_from_unseen_sec,
+                                      pruned_sources_age_from_seen_sec);
+
+  } else {
+    // In this case, we prune all sources without caring if they were seen or
+    // not. Make a set of all existing sources so we can use the same
+    // PruneOldSources method.
+    std::set<SourceId> all_sources;
+    for (const auto& kv : recordings_.sources) {
+      all_sources.insert(kv.first);
+    }
+
+    pruned_sources_age_sec = PruneOldSources(max_kept_sources_, all_sources);
+  }
+
   // Record how old the newest truncated source is.
-  source_counts_proto->set_pruned_sources_age_seconds(pruned_sources_age);
+  source_counts_proto->set_pruned_sources_age_seconds(pruned_sources_age_sec);
 
   // Set deferred sources count after pruning.
   source_counts_proto->set_deferred_sources(recordings_.sources.size());
-  // Same value as the deferred source count, for setting the carryover count in
-  // the next reporting cycle.
+  // Same value as the deferred source count, for setting the carryover count
+  // in the next reporting cycle.
   recordings_.source_counts.carryover_sources = recordings_.sources.size();
 
   // We already matched these deferred sources against the URL whitelist.
@@ -565,29 +615,62 @@ bool UkmRecorderImpl::ApplyEntryFilter(mojom::UkmEntry* entry) {
   return true;
 }
 
-int UkmRecorderImpl::PruneOldSources(size_t max_kept_sources) {
-  if (recordings_.sources.size() <= max_kept_sources)
+int UkmRecorderImpl::PruneOldSources(size_t max_kept_sources,
+                                     const std::set<SourceId>& pruning_set) {
+  long num_prune_required = recordings_.sources.size() - max_kept_sources;
+  // In either case here, nothing to be done.
+  if (num_prune_required <= 0 || pruning_set.size() == 0)
     return 0;
 
-  std::vector<std::pair<base::TimeTicks, SourceId>> timestamp_source_id_pairs;
-  for (const auto& kv : recordings_.sources) {
-    timestamp_source_id_pairs.push_back(
-        std::make_pair(kv.second->creation_time(), kv.first));
+  // We can prune everything, so let's do that directly.
+  if (static_cast<unsigned long>(num_prune_required) >= pruning_set.size()) {
+    base::TimeTicks pruned_sources_age = base::TimeTicks();
+    for (const auto& source_id : pruning_set) {
+      auto creation_time = recordings_.sources[source_id]->creation_time();
+      if (creation_time > pruned_sources_age)
+        pruned_sources_age = creation_time;
+
+      recordings_.sources.erase(source_id);
+    }
+    base::TimeDelta age_delta = base::TimeTicks::Now() - pruned_sources_age;
+    // Technically the age we return here isn't quite right, this is the age of
+    // the newest element of the pruned set, while we actually want the age of
+    // the last one kept. However it's very unlikely to make a difference in
+    // practice as if all are pruned here, it is very likely we'll need to prune
+    // from the seen set next. Since it would be logically quite a bit more
+    // complex to get this exactly right, it's ok for this to be very slightly
+    // off in an edge case just to keep complexity down.
+    return age_delta.InSeconds();
   }
-  // Partially sort so that the last |max_kept_sources| elements are the
+
+  // In this case we cannot prune everything, so we will select only the oldest
+  // sources to prune.
+
+  // Build a list of timestamp->source pairs for all source we consider for
+  // pruning.
+  std::vector<std::pair<base::TimeTicks, SourceId>> timestamp_source_id_pairs;
+  for (const auto& source_id : pruning_set) {
+    auto creation_time = recordings_.sources[source_id]->creation_time();
+    timestamp_source_id_pairs.emplace_back(
+        std::make_pair(creation_time, source_id));
+  }
+
+  // Partially sort so that the last |num_prune_required| elements are the
   // newest.
   std::nth_element(timestamp_source_id_pairs.begin(),
-                   timestamp_source_id_pairs.end() - max_kept_sources,
+                   timestamp_source_id_pairs.end() - num_prune_required,
                    timestamp_source_id_pairs.end());
 
-  for (auto kv = timestamp_source_id_pairs.begin();
-       kv != timestamp_source_id_pairs.end() - max_kept_sources; ++kv) {
-    recordings_.sources.erase(kv->second);
+  // Actually prune |num_prune_required| sources.
+  for (int i = 0; i < num_prune_required; i++) {
+    auto source_id = timestamp_source_id_pairs[i].second;
+    recordings_.sources.erase(source_id);
   }
 
   base::TimeDelta pruned_sources_age =
       base::TimeTicks::Now() -
-      (timestamp_source_id_pairs.end() - (max_kept_sources + 1))->first;
+      (timestamp_source_id_pairs.end() - (num_prune_required + 1))->first;
+
   return pruned_sources_age.InSeconds();
 }
 
