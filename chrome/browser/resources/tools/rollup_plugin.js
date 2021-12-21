@@ -62,7 +62,6 @@ function getPathForUrl(source, origin, urlPrefix, urlSrcPath, excludes) {
   }
 
   const fullUrl = new URL(pathFromUrl, urlPrefix);
-  console.log(fullUrl.href);
   if (excludes.includes(fullUrl.href)) {
     return fullUrl.href;
   }

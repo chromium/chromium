@@ -210,7 +210,6 @@ void AppManagementPageHandler::SetPinned(const std::string& app_id,
 void AppManagementPageHandler::SetPermission(
     const std::string& app_id,
     apps::mojom::PermissionPtr permission) {
-  DLOG(ERROR) << "set permission";
   apps::AppServiceProxyFactory::GetForProfile(profile_)->SetPermission(
       app_id, std::move(permission));
 }
