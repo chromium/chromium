@@ -34,6 +34,12 @@ void SanitizeOutput(media::AudioBus* bus) {
     }
   }
 }
+
+bool SameChannelSetup(const media::AudioParameters& a,
+                      const media::AudioParameters& b) {
+  return a.channel_layout() == b.channel_layout() &&
+         a.channels() == b.channels();
+}
 }  // namespace
 
 MixingGraphImpl::MixingGraphImpl(const media::AudioParameters& output_params,
@@ -70,8 +76,7 @@ media::LoopbackAudioConverter* MixingGraphImpl::FindOrAddConverter(
     const media::AudioParameters& output_params,
     media::LoopbackAudioConverter* parent_converter) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  AudioConverterKey key(input_params.sample_rate(),
-                        input_params.channel_layout());
+  AudioConverterKey key(input_params);
   auto converter = converters_.find(key);
   if (converter == converters_.end()) {
     // No existing suitable converter. Add a new converter to the graph.
@@ -99,16 +104,19 @@ void MixingGraphImpl::AddInput(Input* input) {
          media::AudioParameters::AUDIO_PCM_LOW_LATENCY);
 
   // Resampler input format is the same as output except sample rate.
-  media::AudioParameters resampler_input_params(
-      output_params_.format(), output_params_.channel_layout(),
-      input_params.sample_rate(), output_params_.frames_per_buffer());
+  media::AudioParameters resampler_input_params(output_params_);
+  resampler_input_params.set_sample_rate(input_params.sample_rate());
 
   // Channel mixer input format is the same as resampler input except channel
-  // layout.
+  // layout and channel count.
   media::AudioParameters channel_mixer_input_params(
       resampler_input_params.format(), input_params.channel_layout(),
       resampler_input_params.sample_rate(),
       resampler_input_params.frames_per_buffer());
+  if (channel_mixer_input_params.channel_layout() ==
+      media::CHANNEL_LAYOUT_DISCRETE)
+    channel_mixer_input_params.set_channels_for_discrete(
+        input_params.channels());
 
   media::LoopbackAudioConverter* converter = nullptr;
 
@@ -120,8 +128,7 @@ void MixingGraphImpl::AddInput(Input* input) {
   }
 
   // Check if channel mixing is needed.
-  if (channel_mixer_input_params.channel_layout() !=
-      resampler_input_params.channel_layout()) {
+  if (!SameChannelSetup(channel_mixer_input_params, resampler_input_params)) {
     // Re-use or create a channel mixer.
     converter = FindOrAddConverter(channel_mixer_input_params,
                                    resampler_input_params, converter);
@@ -160,14 +167,14 @@ void MixingGraphImpl::Remove(const AudioConverterKey& key,
     // can be deduced. This key is used to find the grandparent and remove the
     // reference to the empty parent converter.
     AudioConverterKey next_key(key);
-    if (key.channel_layout != output_params_.channel_layout()) {
-      next_key.channel_layout = output_params_.channel_layout();
+    if (!key.SameChannelSetup(output_params_)) {
+      next_key.UpdateChannelSetup(output_params_);
     } else {
       // If the parent converter is not the main converter its key (and input
       // parameters) should differ from the output parameters in sample rate,
-      // channel layout or both.
-      DCHECK_NE(key.sample_rate, output_params_.sample_rate());
-      next_key.sample_rate = output_params_.sample_rate();
+      // channel setup or both.
+      DCHECK_NE(key.sample_rate(), output_params_.sample_rate());
+      next_key.set_sample_rate(output_params_.sample_rate());
     }
     Remove(next_key, parent);
     converters_.erase(converter);

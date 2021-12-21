@@ -5,6 +5,7 @@
 #ifndef SERVICES_AUDIO_MIXING_GRAPH_IMPL_H_
 #define SERVICES_AUDIO_MIXING_GRAPH_IMPL_H_
 
+#include "base/gtest_prod_util.h"
 #include "services/audio/mixing_graph.h"
 
 #include <map>
@@ -51,27 +52,47 @@ class MixingGraphImpl : public MixingGraph {
       const media::AudioParameters& output_params,
       media::LoopbackAudioConverter* parent_converter);
 
-  struct AudioConverterKey {
+  class AudioConverterKey {
+   public:
     explicit AudioConverterKey(const media::AudioParameters& params)
-        : sample_rate(params.sample_rate()),
-          channel_layout(params.channel_layout()) {}
-
-    AudioConverterKey(int sample_rate, media::ChannelLayout channel_layout)
-        : sample_rate(sample_rate), channel_layout(channel_layout) {}
+        : sample_rate_(params.sample_rate()),
+          channel_layout_(params.channel_layout()),
+          channels_(params.channels()) {}
 
     inline bool operator==(const AudioConverterKey& other) const {
-      return sample_rate == other.sample_rate &&
-             channel_layout == other.channel_layout;
+      return sample_rate_ == other.sample_rate_ &&
+             channel_layout_ == other.channel_layout_ &&
+             channels_ == other.channels_;
     }
 
     inline bool operator<(const AudioConverterKey& other) const {
-      if (sample_rate != other.sample_rate)
-        return sample_rate < other.sample_rate;
-      return channel_layout < other.channel_layout;
+      if (sample_rate_ != other.sample_rate_)
+        return sample_rate_ < other.sample_rate_;
+      if (channel_layout_ != other.channel_layout_)
+        return channel_layout_ < other.channel_layout_;
+      return channels_ < other.channels_;
     }
-    int sample_rate;
-    media::ChannelLayout channel_layout;
+
+    inline bool SameChannelSetup(const media::AudioParameters& params) const {
+      return channel_layout_ == params.channel_layout() &&
+             channels_ == params.channels();
+    }
+
+    inline void UpdateChannelSetup(const media::AudioParameters& params) {
+      channel_layout_ = params.channel_layout();
+      channels_ = params.channels();
+    }
+
+    inline int sample_rate() const { return sample_rate_; }
+
+    inline void set_sample_rate(int sample_rate) { sample_rate_ = sample_rate; }
+
+   private:
+    int sample_rate_;
+    media::ChannelLayout channel_layout_;
+    int channels_;
   };
+  FRIEND_TEST_ALL_PREFIXES(MixingGraphImpl, AudioConverterKeySorting);
 
   void Remove(const AudioConverterKey& key,
               media::AudioConverter::InputCallback* input);
