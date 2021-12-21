@@ -351,20 +351,6 @@ bool ShouldExcludeItemFromGridLayout(
   return item->animating_to_close() || ignored_items.contains(item);
 }
 
-// Apply the property that makes windows visible in the desk mini view,
-// recursively. Windows that have been updated are added to the vector.
-void SetForceVisibleInMiniView(
-    aura::Window* window,
-    std::vector<aura::Window*>* out_updated_windows) {
-  if (!window->GetProperty(kForceVisibleInMiniViewKey)) {
-    window->SetProperty(kForceVisibleInMiniViewKey, true);
-    out_updated_windows->push_back(window);
-  }
-
-  for (aura::Window* child : window->children())
-    SetForceVisibleInMiniView(child, out_updated_windows);
-}
-
 }  // namespace
 
 // The class to observe the overview window that the dragged tabs will merge
@@ -1714,24 +1700,6 @@ void OverviewGrid::ShowDesksTemplatesGrid(bool was_zero_state) {
         std::make_unique<DesksTemplatesGridView>());
   }
 
-  // Before showing the grid, we need to hide the overview items. However, we
-  // don't want to affect the desk preview. To do this, we temporarily set a
-  // window property that will keep them visible.
-  if (DeskMiniView* desk_mini_view = desks_bar_view_->FindMiniViewForDesk(
-          DesksController::Get()->GetTargetActiveDesk())) {
-    std::vector<aura::Window*> updated_windows;
-    SetForceVisibleInMiniView(desk_mini_view->GetDeskContainer(),
-                              &updated_windows);
-
-    // This makes the desk preview pick up on the window property change.
-    desk_mini_view->desk_preview()->RecreateDeskContentsMirrorLayers();
-
-    // Remove the property that was temporarily applied.
-    for (aura::Window* window : updated_windows)
-      window->ClearProperty(kForceVisibleInMiniViewKey);
-  }
-
-  // We can now hide the overview mode items.
   for (auto& overview_mode_item : window_list_)
     overview_mode_item->HideForDesksTemplatesGrid();
 

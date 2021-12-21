@@ -210,11 +210,16 @@ bool OverviewItem::Contains(const aura::Window* target) const {
 }
 
 void OverviewItem::HideForDesksTemplatesGrid() {
+  // To hide the window, we will set its layer opacity to 0. This would normally
+  // also hide the window from the mini view, which we don't want. By setting a
+  // property on the window, we can force it to stay visible.
+  GetWindow()->SetProperty(kForceVisibleInMiniViewKey, true);
+
   DCHECK(item_widget_);
   item_widget_->GetLayer()->SetOpacity(0.0f);
 
-  for (aura::Window* transient_child :
-       GetTransientTreeIterator(transform_window_.window())) {
+  for (aura::Window* transient_child : GetTransientTreeIterator(GetWindow())) {
+    transient_child->SetProperty(kForceVisibleInMiniViewKey, true);
     transient_child->layer()->SetOpacity(0.0f);
   }
 
@@ -252,6 +257,11 @@ void OverviewItem::RestoreWindow(bool reset_transform,
       !SplitViewController::Get(root_window_)->InSplitViewMode() &&
       reset_transform) {
     MaximizeIfSnapped(GetWindow());
+  }
+
+  GetWindow()->ClearProperty(kForceVisibleInMiniViewKey);
+  for (aura::Window* transient_child : GetTransientTreeIterator(GetWindow())) {
+    transient_child->ClearProperty(kForceVisibleInMiniViewKey);
   }
 
   overview_item_view_->OnOverviewItemWindowRestoring();
