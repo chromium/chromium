@@ -187,42 +187,27 @@ void OSCrypt::RegisterLocalPrefs(PrefRegistrySimple* registry) {
 
 // static
 bool OSCrypt::Init(PrefService* local_state) {
-  DCHECK(GetEncryptionKeyFactory().empty()) << "Key already exists.";
-  // Try and pull the key from local state.
-  if (local_state->HasPrefPath(kOsCryptEncryptedKeyPrefName)) {
-    std::string base64_encrypted_key =
-        local_state->GetString(kOsCryptEncryptedKeyPrefName);
-    std::string encrypted_key_with_header;
-
-    base::Base64Decode(base64_encrypted_key, &encrypted_key_with_header);
-
-    if (!base::StartsWith(encrypted_key_with_header, kDPAPIKeyPrefix,
-                          base::CompareCase::SENSITIVE)) {
-      NOTREACHED() << "Invalid key format.";
-      return false;
-    }
-    std::string encrypted_key =
-        encrypted_key_with_header.substr(sizeof(kDPAPIKeyPrefix) - 1);
-    std::string key;
-    // This DPAPI decryption can fail if the user's password has been reset
-    // by an Administrator.
-    if (DecryptStringWithDPAPI(encrypted_key, &key)) {
-      GetEncryptionKeyFactory().assign(key);
+  // Try to pull the key from the local state.
+  switch (InitWithExistingKey(local_state)) {
+    case kSuccess:
       return true;
-    }
-    base::UmaHistogramSparse("OSCrypt.Win.KeyDecryptionError",
-                             ::GetLastError());
+    case kKeyDoesNotExist:
+      break;
+    case kInvalidKeyFormat:
+      return false;
+    case kDecryptionFailed:
+      break;
   }
 
   // If there is no key in the local state, or if DPAPI decryption fails,
   // generate a new key.
   std::string key;
-
   crypto::RandBytes(base::WriteInto(&key, kKeyLength + 1), kKeyLength);
 
   std::string encrypted_key;
   if (!EncryptStringWithDPAPI(key, &encrypted_key))
     return false;
+
   // Add header indicating this key is encrypted with DPAPI.
   encrypted_key.insert(0, kDPAPIKeyPrefix);
   std::string base64_key;
@@ -230,6 +215,40 @@ bool OSCrypt::Init(PrefService* local_state) {
   local_state->SetString(kOsCryptEncryptedKeyPrefName, base64_key);
   GetEncryptionKeyFactory().assign(key);
   return true;
+}
+
+// static
+OSCrypt::InitResult OSCrypt::InitWithExistingKey(PrefService* local_state) {
+  DCHECK(GetEncryptionKeyFactory().empty()) << "Key already exists.";
+  // Try and pull the key from the local state.
+  if (!local_state->HasPrefPath(kOsCryptEncryptedKeyPrefName))
+    return kKeyDoesNotExist;
+
+  std::string base64_encrypted_key =
+      local_state->GetString(kOsCryptEncryptedKeyPrefName);
+  std::string encrypted_key_with_header;
+
+  base::Base64Decode(base64_encrypted_key, &encrypted_key_with_header);
+
+  if (!base::StartsWith(encrypted_key_with_header, kDPAPIKeyPrefix,
+                        base::CompareCase::SENSITIVE)) {
+    NOTREACHED() << "Invalid key format.";
+    return kInvalidKeyFormat;
+  }
+
+  std::string encrypted_key =
+      encrypted_key_with_header.substr(sizeof(kDPAPIKeyPrefix) - 1);
+  std::string key;
+  // This DPAPI decryption can fail if the user's password has been reset
+  // by an Administrator.
+  if (!DecryptStringWithDPAPI(encrypted_key, &key)) {
+    base::UmaHistogramSparse("OSCrypt.Win.KeyDecryptionError",
+                             ::GetLastError());
+    return kDecryptionFailed;
+  }
+
+  GetEncryptionKeyFactory().assign(key);
+  return kSuccess;
 }
 
 // static

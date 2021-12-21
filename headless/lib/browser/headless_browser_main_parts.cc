@@ -32,6 +32,10 @@
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #endif
 
+#if defined(OS_WIN)
+#include "base/command_line.h"
+#endif
+
 namespace headless {
 
 namespace {
@@ -167,10 +171,10 @@ void HeadlessBrowserMainParts::CreatePrefService() {
   local_state_ = factory.Create(std::move(pref_registry));
 
 #if defined(OS_WIN)
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableCookieEncryption)) {
-    if (!OSCrypt::Init(local_state_.get()))
-      LOG(ERROR) << "Failed to initialize OSCrypt";
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kDisableCookieEncryption) &&
+      OSCrypt::InitWithExistingKey(local_state_.get()) != OSCrypt::kSuccess) {
+    command_line->AppendSwitch(switches::kDisableCookieEncryption);
   }
 #endif  // defined(OS_WIN)
 }

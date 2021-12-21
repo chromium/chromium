@@ -88,6 +88,19 @@ class OSCrypt {
   // encryption or decryption. Returns |true| if os_crypt successfully
   // initialized.
   static COMPONENT_EXPORT(OS_CRYPT) bool Init(PrefService* local_state);
+
+  // Initialises OSCrypt using an encryption key present in the |local_state|.
+  // It is similar to the Init() method above, however, it will not create
+  // a new encryption key if it is not present in the |local_state|.
+  enum InitResult {
+    kSuccess,
+    kKeyDoesNotExist,
+    kInvalidKeyFormat,
+    kDecryptionFailed
+  };
+
+  static COMPONENT_EXPORT(OS_CRYPT) InitResult
+      InitWithExistingKey(PrefService* local_state);
 #endif
 
 #if defined(OS_APPLE)

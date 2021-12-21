@@ -68,7 +68,8 @@ void SetCryptKeyOnce(const base::FilePath& user_data_path) {
 #if (defined(OS_WIN) || defined(OS_LINUX)) && defined(HEADLESS_USE_PREFS)
   // The OSCrypt keys are process bound, so if network service is out of
   // process, send it the required key if it is available.
-  if (content::IsOutOfProcessNetworkService()) {
+  if (content::IsOutOfProcessNetworkService() &&
+      OSCrypt::IsEncryptionAvailable()) {
     content::GetNetworkService()->SetEncryptionKey(
         OSCrypt::GetRawEncryptionKey());
   }
