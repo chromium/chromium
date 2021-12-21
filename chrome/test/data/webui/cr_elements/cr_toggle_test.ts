@@ -5,20 +5,18 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 
-import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {CrToggleElement, MOVE_THRESHOLD_PX} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 suite('cr-toggle', function() {
-  /** @type {!CrToggleElement} */
-  let toggle;
+  let toggle: CrToggleElement;
 
   setup(function() {
     document.body.innerHTML = '';
-    toggle =
-        /** @type {!CrToggleElement} */ (document.createElement('cr-toggle'));
+    toggle = document.createElement('cr-toggle');
     document.body.appendChild(toggle);
     assertNotChecked();
   });
@@ -29,7 +27,7 @@ suite('cr-toggle', function() {
     assertEquals('true', toggle.getAttribute('aria-pressed'));
     // Asserting that the toggle button has actually moved.
     assertTrue(
-        getComputedStyle(toggle.$$('#knob')).transform.includes('matrix'));
+        getComputedStyle(toggle.$$('#knob')!).transform.includes('matrix'));
   }
 
   function assertNotChecked() {
@@ -37,7 +35,7 @@ suite('cr-toggle', function() {
     assertEquals(null, toggle.getAttribute('checked'));
     assertEquals('false', toggle.getAttribute('aria-pressed'));
     // Asserting that the toggle button has not moved.
-    assertEquals('none', getComputedStyle(toggle.$$('#knob')).transform);
+    assertEquals('none', getComputedStyle(toggle.$$('#knob')!).transform);
   }
 
   function assertDisabled() {
@@ -56,13 +54,15 @@ suite('cr-toggle', function() {
 
   /**
    * Simulates dragging the toggle button left/right.
-   * @param {number} moveDirection -1 for left, 1 for right, 0 when no
-   *     pointermove event should be simulated.
-   * @param {number=} diff The move amount in pixels. Only relevant if
-   *     moveDirection is non-zero.
+   * @param moveDirection -1 for left, 1 for right, 0 when no pointermove event
+   *     should be simulated.
+   * @param diff The move amount in pixels. Only relevant if moveDirection is
+   *     non-zero.
    */
-  function triggerPointerDownMoveUpTapSequence(moveDirection, diff) {
-    if (window.getComputedStyle(toggle)['pointer-events'] === 'none') {
+  function triggerPointerDownMoveUpTapSequence(
+      moveDirection: -1|0|1, diff?: number) {
+    const computedStyles = window.getComputedStyle(toggle);
+    if (computedStyles.getPropertyValue('pointer-events') === 'none') {
       return;
     }
 
@@ -74,7 +74,7 @@ suite('cr-toggle', function() {
         new PointerEvent('pointerdown', {pointerId: 1, clientX: xStart}));
     let xEnd = xStart;
     if (moveDirection) {
-      xEnd = moveDirection > 0 ? xStart + diff : xStart - diff;
+      xEnd = moveDirection > 0 ? xStart + diff! : xStart - diff!;
       toggle.dispatchEvent(
           new PointerEvent('pointermove', {pointerId: 1, clientX: xEnd}));
     }
@@ -120,14 +120,13 @@ suite('cr-toggle', function() {
   // MOVE_THRESHOLD_PX pixels accidentally (shaky hands) in any direction.
   test('ToggleByShakyPointerTap', function() {
     let whenChanged = eventToPromise('change', toggle);
-    triggerPointerDownMoveUpTapSequence(
-        1 /* right */, toggle.MOVE_THRESHOLD_PX - 1);
+    triggerPointerDownMoveUpTapSequence(1 /* right */, MOVE_THRESHOLD_PX - 1);
     return whenChanged
         .then(function() {
           assertChecked();
           whenChanged = eventToPromise('change', toggle);
           triggerPointerDownMoveUpTapSequence(
-              1 /* right */, toggle.MOVE_THRESHOLD_PX - 1);
+              1 /* right */, MOVE_THRESHOLD_PX - 1);
           return whenChanged;
         })
         .then(function() {
@@ -139,14 +138,12 @@ suite('cr-toggle', function() {
   // holding down.
   test('ToggleByPointerMove', function() {
     let whenChanged = eventToPromise('change', toggle);
-    triggerPointerDownMoveUpTapSequence(
-        1 /* right */, toggle.MOVE_THRESHOLD_PX);
+    triggerPointerDownMoveUpTapSequence(1 /* right */, MOVE_THRESHOLD_PX);
     return whenChanged
         .then(function() {
           assertChecked();
           whenChanged = eventToPromise('change', toggle);
-          triggerPointerDownMoveUpTapSequence(
-              -1 /* left */, toggle.MOVE_THRESHOLD_PX);
+          triggerPointerDownMoveUpTapSequence(-1 /* left */, MOVE_THRESHOLD_PX);
           return whenChanged;
         })
         .then(function() {

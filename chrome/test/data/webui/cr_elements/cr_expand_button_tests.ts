@@ -4,22 +4,22 @@
 
 // clang-format off
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+
+import {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
 suite('cr-expand-button', function() {
-  /** @type {!CrExpandButtonElement} */
-  let button;
-
-  /** @type {!CrIconButtonElement} */
-  let icon;
+  let button: CrExpandButtonElement;
+  let icon: CrIconButtonElement;
 
   setup(() => {
     document.body.innerHTML = '';
-    button = /** @type {!CrExpandButtonElement} */ (
-        document.createElement('cr-expand-button'));
+    button = document.createElement('cr-expand-button');
     document.body.appendChild(button);
-    icon = /** @type {!CrIconButtonElement} */ (button.$$('#icon'));
+    icon = button.shadowRoot!.querySelector<CrIconButtonElement>('#icon')!;
   });
 
   test('setting |aria-label| label', () => {
@@ -54,7 +54,10 @@ suite('cr-expand-button', function() {
   // reader focus goes straight to the cr-icon-button.
   test('label aria-hidden', () => {
     const labelId = 'label';
-    assertEquals('true', button.$$(`#${labelId}`).getAttribute('aria-hidden'));
+    assertEquals(
+        'true',
+        button.shadowRoot!.querySelector(`#${labelId}`)!.getAttribute(
+            'aria-hidden'));
     assertEquals(labelId, icon.getAttribute('aria-labelledby'));
   });
 

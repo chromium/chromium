@@ -3,6 +3,13 @@
 // found in the LICENSE file.
 
 /**
+ * Number of pixels required to move to consider the pointermove event as
+ * intentional.
+ * @type {number}
+ */
+/* #export */ const MOVE_THRESHOLD_PX = 5;
+
+/**
  * @fileoverview 'cr-toggle' is a component for showing an on/off switch. It
  * fires a 'change' event *only* when its state changes as a result of a user
  * interaction. Besides just clicking the element, its state can be changed by
@@ -57,13 +64,6 @@ Polymer({
   boundPointerMove_: null,
 
   /**
-   * Number of pixels required to move to consider the pointermove event as
-   * intentional.
-   * @type {number}
-   */
-  MOVE_THRESHOLD_PX: 5,
-
-  /**
    * Whether the state of the toggle has already taken into account by
    * |pointeremove| handlers. Used in the 'click' handler.
    * @private {boolean}
@@ -81,7 +81,7 @@ Polymer({
       e.preventDefault();
 
       const diff = e.clientX - this.pointerDownX_;
-      if (Math.abs(diff) < this.MOVE_THRESHOLD_PX) {
+      if (Math.abs(diff) < MOVE_THRESHOLD_PX) {
         return;
       }
 

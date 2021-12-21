@@ -5,15 +5,16 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 
-import {AnchorAlignment, CrActionMenuElement, ShowAtPositionConfig} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
-import {eventToPromise, flushTasks} from '../test_util.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 /**
@@ -21,27 +22,12 @@ import {eventToPromise, flushTasks} from '../test_util.js';
  * test, since many of these tests check focus behavior.
  */
 suite('CrActionMenu', function() {
-  /** @type {!CrActionMenuElement} */
-  let menu;
-
-  /** @type {!HTMLDialogElement} */
-  let dialog;
-
-  /** @type {!NodeList<!Element>} */
-  let items;
-
-  /** @type {!HTMLElement} */
-  let dots;
-
-  /** @type {HTMLElement} */
-  let container = null;
-
-  /** @type {Element} */
-  let checkboxFocusableElement = null;
-
-  /** @override */
-  suiteSetup(() => {
-  });
+  let menu: CrActionMenuElement;
+  let dialog: HTMLDialogElement;
+  let items: NodeListOf<HTMLElement>;
+  let dots: HTMLElement;
+  let container: HTMLElement;
+  let checkboxFocusableElement: Element|null = null;
 
   setup(function() {
     FocusOutlineManager.forDocument(document).visible = false;
@@ -55,13 +41,12 @@ suite('CrActionMenu', function() {
       </cr-action-menu>
     `;
 
-    menu = /** @type {!CrActionMenuElement} */ (
-        document.querySelector('cr-action-menu'));
+    menu = document.querySelector('cr-action-menu')!;
     dialog = menu.getDialog();
     items = menu.querySelectorAll('.dropdown-item');
     checkboxFocusableElement =
-        /** @type {!CrCheckboxElement} */ (items[2]).getFocusableElement();
-    dots = /** @type {!HTMLElement} */ (document.querySelector('#dots'));
+        (items[2] as CrCheckboxElement).getFocusableElement();
+    dots = document.querySelector('#dots')!;
     assertEquals(3, items.length);
   });
 
@@ -110,13 +95,13 @@ suite('CrActionMenu', function() {
     assertEquals(items[0], getDeepActiveElement());
 
     menu.close();
-    items[0].hidden = true;
+    items[0]!.hidden = true;
     menu.showAt(dots);
     down();
     assertEquals(items[1], getDeepActiveElement());
 
     menu.close();
-    items[1].disabled = true;
+    (items[1] as HTMLButtonElement).disabled = true;
     menu.showAt(dots);
     down();
     assertEquals(checkboxFocusableElement, getDeepActiveElement());
@@ -148,14 +133,14 @@ suite('CrActionMenu', function() {
     up();
     assertEquals(checkboxFocusableElement, getDeepActiveElement());
 
-    items[1].disabled = true;
+    (items[1] as HTMLButtonElement).disabled = true;
     up();
     assertEquals(items[0], getDeepActiveElement());
   });
 
   test('focus skips cr-checkbox when disabled or hidden', () => {
     menu.showAt(dots);
-    const crCheckbox = document.querySelector('cr-checkbox');
+    const crCheckbox = document.querySelector('cr-checkbox')!;
     assertEquals(items[2], crCheckbox);
 
     // Check checkbox is focusable when not disabled or hidden.
@@ -167,20 +152,22 @@ suite('CrActionMenu', function() {
     assertEquals(checkboxFocusableElement, getDeepActiveElement());
 
     // Check checkbox is not focusable when either disabled or hidden.
-    [[false, true],
-     [true, false],
-     [true, true],
-    ].forEach(([disabled, hidden]) => {
-      crCheckbox.disabled = disabled;
-      crCheckbox.hidden = hidden;
-      getDeepActiveElement().blur();
-      down();
-      assertEquals(items[0], getDeepActiveElement());
-      down();
-      assertEquals(items[1], getDeepActiveElement());
-      down();
-      assertEquals(items[0], getDeepActiveElement());
-    });
+    ([
+      [false, true],
+      [true, false],
+      [true, true],
+    ] as [boolean, boolean][])
+        .forEach(([disabled, hidden]) => {
+          crCheckbox.disabled = disabled;
+          crCheckbox.hidden = hidden;
+          (getDeepActiveElement() as HTMLElement).blur();
+          down();
+          assertEquals(items[0], getDeepActiveElement());
+          down();
+          assertEquals(items[1], getDeepActiveElement());
+          down();
+          assertEquals(items[0], getDeepActiveElement());
+        });
   });
 
   test('pressing up arrow when no focus will focus last item', function() {
@@ -201,6 +188,7 @@ suite('CrActionMenu', function() {
     assertEquals(menu, document.activeElement);
     enter();
     assertEquals(items[0], getDeepActiveElement());
+    return;
   });
 
   test('pressing enter when when item has focus', function() {
@@ -214,7 +202,7 @@ suite('CrActionMenu', function() {
     // Can modify children after attached() and before showAt().
     const item = document.createElement('button');
     item.classList.add('dropdown-item');
-    menu.insertBefore(item, items[0]);
+    menu.insertBefore(item, items[0]!);
     menu.showAt(dots);
     await flushTasks();
 
@@ -254,9 +242,9 @@ suite('CrActionMenu', function() {
     assertFalse(dialog.open);
   });
 
-  /** @param {string} key The key to use for closing. */
-  function testFocusAfterClosing(key) {
-    return new Promise(function(resolve) {
+  /** @param key The key to use for closing. */
+  function testFocusAfterClosing(key: string): Promise<void> {
+    return new Promise<void>(function(resolve) {
       menu.showAt(dots);
       assertTrue(dialog.open);
 
@@ -292,39 +280,38 @@ suite('CrActionMenu', function() {
 
   test('close on Escape', () => testFocusAfterClosing('Escape'));
 
-  /** @param {!EventTarget} eventTarget */
-  function dispatchMouseoverEvent(eventTarget) {
+  function dispatchMouseoverEvent(eventTarget: EventTarget) {
     eventTarget.dispatchEvent(new MouseEvent('mouseover', {bubbles: true}));
   }
 
   test('moving mouse on option 1 should focus it', () => {
     menu.showAt(dots);
     assertNotEquals(items[0], getDeepActiveElement());
-    dispatchMouseoverEvent(items[0]);
+    dispatchMouseoverEvent(items[0]!);
     assertEquals(items[0], getDeepActiveElement());
   });
 
   test('moving mouse on the menu (not on option) should focus the menu', () => {
     menu.showAt(dots);
-    items[0].focus();
+    items[0]!.focus();
     dispatchMouseoverEvent(menu);
     assertEquals(dialog.querySelector('[role="menu"]'), getDeepActiveElement());
   });
 
   test('moving mouse on a disabled item should focus the menu', () => {
     menu.showAt(dots);
-    items[2].toggleAttribute('disabled', true);
-    items[0].focus();
-    dispatchMouseoverEvent(items[2]);
+    items[2]!.toggleAttribute('disabled', true);
+    items[0]!.focus();
+    dispatchMouseoverEvent(items[2]!);
     assertEquals(dialog.querySelector('[role="menu"]'), getDeepActiveElement());
   });
 
   test('mouse movements should override keyboard focus', () => {
     menu.showAt(dots);
-    items[0].focus();
+    items[0]!.focus();
     down();
     assertEquals(items[1], getDeepActiveElement());
-    dispatchMouseoverEvent(items[0]);
+    dispatchMouseoverEvent(items[0]!);
     assertEquals(items[0], getDeepActiveElement());
   });
 
@@ -332,14 +319,14 @@ suite('CrActionMenu', function() {
     const newItem = document.createElement('button');
     newItem.classList.add('dropdown-item');
 
-    items[1].setAttribute('role', 'checkbox');
+    items[1]!.setAttribute('role', 'checkbox');
     menu.showAt(dots);
 
     await flushTasks();
-    assertEquals('menuitem', items[0].getAttribute('role'));
-    assertEquals('checkbox', items[1].getAttribute('role'));
+    assertEquals('menuitem', items[0]!.getAttribute('role'));
+    assertEquals('checkbox', items[1]!.getAttribute('role'));
 
-    menu.insertBefore(newItem, items[0]);
+    menu.insertBefore(newItem, items[0]!);
     await flushTasks();
     assertEquals('menuitem', newItem.getAttribute('role'));
   });
@@ -363,10 +350,9 @@ suite('CrActionMenu', function() {
     menu.close();
 
     // Center the menu horizontally.
-    menu.showAtPosition(
-        /** @type {!ShowAtPositionConfig} */ (Object.assign({}, config, {
-          anchorAlignmentX: AnchorAlignment.CENTER,
-        })));
+    menu.showAtPosition(Object.assign({}, config, {
+      anchorAlignmentX: AnchorAlignment.CENTER,
+    }));
     const menuWidth = dialog.offsetWidth;
     const menuHeight = dialog.offsetHeight;
     assertEquals(`${120 - menuWidth / 2}px`, dialog.style.left);
@@ -374,33 +360,30 @@ suite('CrActionMenu', function() {
     menu.close();
 
     // Center the menu in both axes.
-    menu.showAtPosition(
-        /** @type {!ShowAtPositionConfig} */ (Object.assign({}, config, {
-          anchorAlignmentX: AnchorAlignment.CENTER,
-          anchorAlignmentY: AnchorAlignment.CENTER,
-        })));
+    menu.showAtPosition(Object.assign({}, config, {
+      anchorAlignmentX: AnchorAlignment.CENTER,
+      anchorAlignmentY: AnchorAlignment.CENTER,
+    }));
     assertEquals(`${120 - menuWidth / 2}px`, dialog.style.left);
     assertEquals(`${255 - menuHeight / 2}px`, dialog.style.top);
     menu.close();
 
     // Left and top align the menu.
-    menu.showAtPosition(
-        /** @type {!ShowAtPositionConfig} */ (Object.assign({}, config, {
-          anchorAlignmentX: AnchorAlignment.BEFORE_END,
-          anchorAlignmentY: AnchorAlignment.BEFORE_END,
-        })));
+    menu.showAtPosition(Object.assign({}, config, {
+      anchorAlignmentX: AnchorAlignment.BEFORE_END,
+      anchorAlignmentY: AnchorAlignment.BEFORE_END,
+    }));
     assertEquals(`${140 - menuWidth}px`, dialog.style.left);
     assertEquals(`${260 - menuHeight}px`, dialog.style.top);
     menu.close();
 
     // Being left and top aligned at (0, 0) should anchor to the bottom right.
-    menu.showAtPosition(
-        /** @type {!ShowAtPositionConfig} */ (Object.assign({}, config, {
-          anchorAlignmentX: AnchorAlignment.BEFORE_END,
-          anchorAlignmentY: AnchorAlignment.BEFORE_END,
-          left: 0,
-          top: 0,
-        })));
+    menu.showAtPosition(Object.assign({}, config, {
+      anchorAlignmentX: AnchorAlignment.BEFORE_END,
+      anchorAlignmentY: AnchorAlignment.BEFORE_END,
+      left: 0,
+      top: 0,
+    }));
     assertEquals(`0px`, dialog.style.left);
     assertEquals(`0px`, dialog.style.top);
     menu.close();
@@ -438,7 +421,6 @@ suite('CrActionMenu', function() {
     menu.close();
   });
 
-  /** @suppress {missingProperties} */
   (function() {
     // TODO(dpapad): fix flakiness and re-enable this test.
     test.skip(
@@ -478,7 +460,7 @@ suite('CrActionMenu', function() {
           });
 
           // Still anchored at the right place after content size changes.
-          items[0].textContent = 'this is a long string to make menu wide';
+          items[0]!.textContent = 'this is a long string to make menu wide';
         });
   })();
 
@@ -542,11 +524,11 @@ suite('CrActionMenu', function() {
         </style>
         <test-element></test-element>`;
 
-      const testElement = document.querySelector('test-element');
-      menu = testElement.root.querySelector('cr-action-menu');
+      const testElement = document.querySelector('test-element')!;
+      menu = testElement.shadowRoot!.querySelector('cr-action-menu')!;
       dialog = menu.getDialog();
-      dots = testElement.root.querySelector('#dots');
-      container = testElement.root.querySelector('#container');
+      dots = testElement.shadowRoot!.querySelector('#dots')!;
+      container = testElement.shadowRoot!.querySelector('#container')!;
     });
 
     // Show the menu, scrolling the body to the button.

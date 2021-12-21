@@ -3,34 +3,37 @@
 // found in the LICENSE file.
 
 // clang-format off
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 // clang-format on
 
 suite('cr-link-row', function() {
-  /** @type {!CrLinkRowElement} */
-  let linkRow;
+  let linkRow: CrLinkRowElement;
 
   setup(() => {
     document.body.innerHTML = '<cr-link-row></cr-link-row>';
-    linkRow = /** @type {!CrLinkRowElement} */ (
-        document.body.querySelector('cr-link-row'));
+    linkRow = document.body.querySelector('cr-link-row')!;
   });
 
   test('check label visibility', () => {
-    assertTrue(linkRow.shadowRoot.querySelector('#labelWrapper').hidden);
+    const labelWrapper =
+        linkRow.shadowRoot!.querySelector<HTMLElement>('#labelWrapper')!;
+    assertTrue(labelWrapper.hidden);
     linkRow.usingSlottedLabel = true;
-    assertFalse(linkRow.shadowRoot.querySelector('#labelWrapper').hidden);
+    assertFalse(labelWrapper.hidden);
     linkRow.usingSlottedLabel = false;
-    assertTrue(linkRow.shadowRoot.querySelector('#labelWrapper').hidden);
+    assertTrue(labelWrapper.hidden);
     linkRow.label = 'label';
-    assertFalse(linkRow.shadowRoot.querySelector('#labelWrapper').hidden);
+    assertFalse(labelWrapper.hidden);
   });
 
   test('icon', () => {
     const iconButton =
-        /** @type {!CrIconButtonElement} */ (
-            linkRow.shadowRoot.querySelector('#icon'));
+        linkRow.shadowRoot!.querySelector<CrIconButtonElement>('#icon')!;
     assertFalse(linkRow.external);
     assertEquals('cr:arrow-right', iconButton.ironIcon);
     linkRow.external = true;
@@ -38,7 +41,7 @@ suite('cr-link-row', function() {
   });
 
   test('role description', () => {
-    const iconButton = linkRow.shadowRoot.querySelector('#icon');
+    const iconButton = linkRow.shadowRoot!.querySelector('#icon')!;
     assertEquals(undefined, linkRow.roleDescription);
     assertEquals(null, iconButton.getAttribute('aria-roledescription'));
     const description = 'self destruct button';

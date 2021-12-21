@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 // clang-format off
+import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
+
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.js';
+import {assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 suite('cr-drawer', function() {
@@ -16,18 +18,14 @@ suite('cr-drawer', function() {
     document.body.innerHTML = '';
   });
 
-  /**
-   * @param {string} align
-   * @return {!CrDrawerElement}
-   */
-  function createDrawer(align) {
+  function createDrawer(align: string): CrDrawerElement {
     document.body.innerHTML = `
       <cr-drawer id="drawer" align="${align}">
         <div slot="body">Test content</div>
       </cr-drawer>
     `;
     flush();
-    return /** @type {!CrDrawerElement} */ (document.getElementById('drawer'));
+    return document.body.querySelector('cr-drawer')!;
   }
 
   test('open and close', function() {
@@ -41,16 +39,15 @@ suite('cr-drawer', function() {
           assertTrue(drawer.open);
 
           // Clicking the content does not close the drawer.
-          document.querySelector('div[slot="body"]').click();
+          document.body.querySelector<HTMLElement>('div[slot="body"]')!.click();
 
           const whenClosed = eventToPromise('close', drawer);
-          drawer.shadowRoot.querySelector('#dialog').dispatchEvent(
-              new MouseEvent('click', {
-                bubbles: true,
-                cancelable: true,
-                clientX: 300,  // Must be larger than the drawer width (256px).
-                clientY: 300,
-              }));
+          drawer.$.dialog.dispatchEvent(new MouseEvent('click', {
+            bubbles: true,
+            cancelable: true,
+            clientX: 300,  // Must be larger than the drawer width (256px).
+            clientY: 300,
+          }));
 
           return whenClosed;
         })
@@ -69,8 +66,7 @@ suite('cr-drawer', function() {
     const drawer = createDrawer('ltr');
     drawer.openDrawer();
     return eventToPromise('cr-drawer-opened', drawer).then(() => {
-      const rect =
-          drawer.shadowRoot.querySelector('#dialog').getBoundingClientRect();
+      const rect = drawer.$.dialog.getBoundingClientRect();
       assertEquals(0, rect.left);
       assertNotEquals(0, rect.right);
     });
@@ -80,8 +76,7 @@ suite('cr-drawer', function() {
     const drawer = createDrawer('rtl');
     drawer.openDrawer();
     return eventToPromise('cr-drawer-opened', drawer).then(() => {
-      const rect =
-          drawer.shadowRoot.querySelector('#dialog').getBoundingClientRect();
+      const rect = drawer.$.dialog.getBoundingClientRect();
       assertNotEquals(0, rect.left);
       assertEquals(window.innerWidth, rect.right);
     });
