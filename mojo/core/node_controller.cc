@@ -769,7 +769,7 @@ void NodeController::ForwardEvent(const ports::NodeName& node,
                                   ports::ScopedEvent event) {
   DCHECK(event);
   if (node == name_)
-    node_->AcceptEvent(std::move(event));
+    node_->AcceptEvent(name_, std::move(event));
   else
     SendPeerEvent(node, std::move(event));
 
@@ -1071,7 +1071,7 @@ void NodeController::OnEventMessage(const ports::NodeName& from_node,
     return;
   }
 
-  node_->AcceptEvent(std::move(event));
+  node_->AcceptEvent(from_node, std::move(event));
 
   AttemptShutdownIfRequested();
 }

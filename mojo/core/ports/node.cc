@@ -431,10 +431,10 @@ int Node::SetAcknowledgeRequestInterval(
   return OK;
 }
 
-int Node::AcceptEvent(ScopedEvent event) {
+int Node::AcceptEvent(const NodeName& from_node, ScopedEvent event) {
   switch (event->type()) {
     case Event::Type::kUserMessage:
-      return OnUserMessage(Event::Cast<UserMessageEvent>(&event));
+      return OnUserMessage(from_node, Event::Cast<UserMessageEvent>(&event));
     case Event::Type::kPortAccepted:
       return OnPortAccepted(Event::Cast<PortAcceptedEvent>(&event));
     case Event::Type::kObserveProxy:
@@ -510,7 +510,8 @@ int Node::LostConnectionToNode(const NodeName& node_name) {
   return OK;
 }
 
-int Node::OnUserMessage(std::unique_ptr<UserMessageEvent> message) {
+int Node::OnUserMessage(const NodeName& from_node,
+                        std::unique_ptr<UserMessageEvent> message) {
   PortName port_name = message->port_name();
 
 #if DCHECK_IS_ON()
@@ -531,23 +532,12 @@ int Node::OnUserMessage(std::unique_ptr<UserMessageEvent> message) {
   // this node. When the message is forwarded, these ports will get transferred
   // following the usual method. If the message cannot be accepted, then the
   // newly bound ports will simply be closed.
-  for (size_t i = 0; i < message->num_ports(); ++i) {
-    Event::PortDescriptor& descriptor = message->port_descriptors()[i];
-    if (descriptor.referring_node_name == kInvalidNodeName) {
-      // If the referring node name is invalid, this descriptor can be ignored
-      // and the port should already exist locally.
-      PortRef port_ref;
-      if (GetPort(message->ports()[i], &port_ref) != OK)
-        return ERROR_PORT_UNKNOWN;
-    } else {
+  if (from_node != name_) {
+    for (size_t i = 0; i < message->num_ports(); ++i) {
+      Event::PortDescriptor& descriptor = message->port_descriptors()[i];
       int rv = AcceptPort(message->ports()[i], descriptor);
       if (rv != OK)
         return rv;
-
-      // Ensure that the referring node is wiped out of this descriptor. This
-      // allows the event to be forwarded across multiple local hops without
-      // attempting to accept the port more than once.
-      descriptor.referring_node_name = kInvalidNodeName;
     }
   }
 
@@ -1040,7 +1030,7 @@ int Node::SendUserMessageInternal(const PortRef& port_ref,
     return OK;
   }
 
-  int accept_result = AcceptEvent(std::move(m));
+  int accept_result = AcceptEvent(name_, std::move(m));
   if (accept_result != OK) {
     // See comment above for why we don't return an error in this case.
     DVLOG(2) << "AcceptEvent failed: " << accept_result;

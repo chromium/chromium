@@ -156,7 +156,7 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Node {
       uint64_t sequence_number_acknowledge_interval);
 
   // Corresponding to NodeDelegate::ForwardEvent.
-  int AcceptEvent(ScopedEvent event);
+  int AcceptEvent(const NodeName& from_node, ScopedEvent event);
 
   // Called to merge two ports with each other. If you have two independent
   // port pairs A <=> B and C <=> D, the net result of merging B and C is a
@@ -211,7 +211,8 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) Node {
     const raw_ptr<NodeDelegate> delegate_;
   };
 
-  int OnUserMessage(std::unique_ptr<UserMessageEvent> message);
+  int OnUserMessage(const NodeName& from_node,
+                    std::unique_ptr<UserMessageEvent> message);
   int OnPortAccepted(std::unique_ptr<PortAcceptedEvent> event);
   int OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event);
   int OnObserveProxyAck(std::unique_ptr<ObserveProxyAckEvent> event);
