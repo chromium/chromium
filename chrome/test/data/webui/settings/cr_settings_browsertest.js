@@ -485,9 +485,17 @@ var CrSettingsPrivacyReviewPageTest = class extends CrSettingsBrowserTest {
   }
 };
 
-TEST_F('CrSettingsPrivacyReviewPageTest', 'PrivacyReviewPageTests', function() {
-  runMochaSuite('PrivacyReviewPage');
-});
+// TODO(crbug.com/1281967): Flaky on debug Linux builds.
+GEN('#if defined(OS_LINUX) && !defined(NDEBUG)');
+GEN('#define MAYBE_PrivacyReviewPageTests DISABLED_PrivacyReviewPageTests');
+GEN('#else');
+GEN('#define MAYBE_PrivacyReviewPageTests PrivacyReviewPageTests');
+GEN('#endif');
+TEST_F(
+    'CrSettingsPrivacyReviewPageTest', 'MAYBE_PrivacyReviewPageTests',
+    function() {
+      runMochaSuite('PrivacyReviewPage');
+    });
 
 
 TEST_F(
