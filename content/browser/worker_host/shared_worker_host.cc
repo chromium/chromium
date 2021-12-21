@@ -530,19 +530,29 @@ void SharedWorkerHost::OnScriptLoadFailed(const std::string& error_message) {
     info.client->OnScriptLoadFailed(error_message);
 }
 
-// The implementation of the following algorithm:
+// [spec]:
 // https://html.spec.whatwg.org/C/#check-a-global-object's-embedder-policy
 bool SharedWorkerHost::CheckCrossOriginEmbedderPolicy(
     network::CrossOriginEmbedderPolicy creator_cross_origin_embedder_policy,
     network::CrossOriginEmbedderPolicy worker_cross_origin_embedder_policy) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kCOEPForSharedWorker));
+  // [spec]: 4. If ownerPolicy's report-only value is "require-corp" or
+  // "credentialless" and policy's value is "unsafe-none", then queue a
+  // cross-origin embedder policy inheritance violation with response, "worker
+  // initialization", owner's policy's report only reporting endpoint,
+  // "reporting", and owner.
+  // TODO(https://crbug.com/1060832): Add reporters.
+
+  // [spec]: 5. If ownerPolicy's value is "unsafe-none" or policy's value is
+  // "require-corp" or "credentialless", then return true.
   if (!network::CompatibleWithCrossOriginIsolated(
           creator_cross_origin_embedder_policy) ||
       network::CompatibleWithCrossOriginIsolated(
           worker_cross_origin_embedder_policy)) {
     return true;
   }
-  // TODO(https://crbug.com/1060832): Add reporters.
+
+  // [spec]: 7. Return false.
   return false;
 }
 

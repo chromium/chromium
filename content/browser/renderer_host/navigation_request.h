@@ -1342,6 +1342,9 @@ class CONTENT_EXPORT NavigationRequest
 
   void CreateCoepReporter(StoragePartition* storage_partition);
 
+  bool CheckResponseAdherenceToCoep(network::CrossOriginEmbedderPolicy* coep,
+                                    const GURL& url);
+
   absl::optional<network::mojom::BlockedByResponseReason> EnforceCOEP();
 
   // Check the COOP value of the page is compatible with the COEP value of each

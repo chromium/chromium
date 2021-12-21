@@ -3191,63 +3191,28 @@ void NavigationRequest::OnResponseStarted(
   auto cross_origin_embedder_policy =
       CoepFromMainResponse(url, response_head_.get());
 
-  if (network::IsUrlPotentiallyTrustworthy(url)) {
-    // https://mikewest.github.io/corpp/#process-navigation-response
-    auto* parent = GetParentFrame();
-    // Fenced Frames should respect the outer frame's COEP.
-    // Note: we only check the outer document for fenced frames, because it's
-    // unclear if other embedded cases like Portals should inherit COEP from the
-    // embedder as well.
-    // TODO(https://crbug.com/1278207) add other embedded cases if needed.
-    if (GetNavigatingFrameType() == FrameType::kFencedFrameRoot) {
-      parent = GetParentFrameOrOuterDocument();
-    }
-    if (parent) {
-      const auto& parent_coep = parent->cross_origin_embedder_policy();
-      CrossOriginEmbedderPolicyReporter* parent_coep_reporter =
-          parent->coep_reporter();
-
-      // Some special URLs not loaded using the network are inheriting the
-      // Cross-Origin-Embedder-Policy header from their parent.
-      // TODO(https://crbug.com/1153648) Add COEP into the PolicyContainer and
-      // remove this fragile inheritance mechanism.
-      const bool inherit_coep_from_parent =
-          url.SchemeIsBlob() || url.SchemeIs(url::kDataScheme) ||
-          GetContentClient()
-              ->browser()
-              ->ShouldInheritCrossOriginEmbedderPolicyImplicitly(url);
-      if (inherit_coep_from_parent)
-        cross_origin_embedder_policy.value = parent_coep.value;
-
-      if (CoepBlockIframe(parent_coep.report_only_value,
-                          cross_origin_embedder_policy.value, anonymous())) {
-        if (parent_coep_reporter) {
-          parent_coep_reporter->QueueNavigationReport(redirect_chain_[0],
-                                                      /*report_only=*/true);
-        }
-      }
-
-      if (CoepBlockIframe(parent_coep.value, cross_origin_embedder_policy.value,
-                          anonymous())) {
-        if (parent_coep_reporter) {
-          parent_coep_reporter->QueueNavigationReport(redirect_chain_[0],
-                                                      /*report_only=*/false);
-        }
-        // TODO(https://crbug.com/1172169): Investigate what must be done in
-        // case of a download.
-        OnRequestFailedInternal(network::URLLoaderCompletionStatus(
-                                    network::mojom::BlockedByResponseReason::
-                                        kCoepFrameResourceNeedsCoepHeader),
-                                false /* skip_throttles */,
-                                absl::nullopt /* error_page_content */,
-                                false /* collapse_frame */);
-        // DO NOT ADD CODE after this. The previous call to
-        // OnRequestFailedInternal has destroyed the NavigationRequest.
-        return;
-      }
-    }
-  } else {
+  // [spec]: https://html.spec.whatwg.org/C/#obtain-an-embedder-policy
+  //
+  // 1. Let policy be a new embedder policy.
+  // 2. If environment is a non-secure context, then return policy.
+  if (!network::IsUrlPotentiallyTrustworthy(url))
     cross_origin_embedder_policy = network::CrossOriginEmbedderPolicy();
+
+  // [spec]: https://html.spec.whatwg.org/C/#process-a-navigate-response
+  // 4. if [...] the result of checking a navigation response's adherence to its
+  // embedder policy [...], then set failure to true.
+  if (!CheckResponseAdherenceToCoep(&cross_origin_embedder_policy, url)) {
+    // TODO(https://crbug.com/1172169): Investigate what must be done in
+    // case of a download.
+    OnRequestFailedInternal(network::URLLoaderCompletionStatus(
+                                network::mojom::BlockedByResponseReason::
+                                    kCoepFrameResourceNeedsCoepHeader),
+                            false /* skip_throttles */,
+                            absl::nullopt /* error_page_content */,
+                            false /* collapse_frame */);
+    return;
+    // DO NOT ADD CODE after this. The previous call to
+    // OnRequestFailedInternal has destroyed the NavigationRequest.
   }
 
   // Select an appropriate renderer to commit the navigation.
@@ -6696,9 +6661,85 @@ void NavigationRequest::ForceEnableOriginTrials(
   commit_params_->force_enabled_origin_trials = trials;
 }
 
+// [spec]:
+// https://html.spec.whatwg.org/C/#check-a-navigation-response's-adherence-to-its-embedder-policy
+//
+// Return whether the child's |coep| is compatible with its parent's COEP. It
+// also sends COEP reports if needed.
+bool NavigationRequest::CheckResponseAdherenceToCoep(
+    network::CrossOriginEmbedderPolicy* coep,
+    const GURL& url) {
+  // TODO(arthursonzogni): This check looks fishy to me. Consider removing it.
+  // It was kept during refactoring, in order not to break WPT test:
+  // web-bundle/subresource-loading/link-coep.https.tentative.html
+  // This allows non trustworthy URL like urn: URL to bypass COEP check.
+  if (!network::IsUrlPotentiallyTrustworthy(url))
+    return true;
+
+  // Fenced Frames should respect the outer frame's COEP.
+  // Note: we only check the outer document for fenced frames, because it's
+  // unclear if other embedded cases like Portals should inherit COEP from
+  // the embedder as well.
+  // TODO(https://crbug.com/1278207) add other embedded cases if needed.
+  RenderFrameHostImpl* const parent =
+      GetNavigatingFrameType() == FrameType::kFencedFrameRoot
+          ? GetParentFrameOrOuterDocument()
+          : GetParentFrame();
+
+  // [spec]: 1. If target is not a child browsing context, then return true.
+  if (!parent)
+    return true;
+
+  // [spec]: 2. Let parentPolicy be target's container document's policy
+  //            container's embedder policy.
+  const auto& parent_coep = parent->cross_origin_embedder_policy();
+  CrossOriginEmbedderPolicyReporter* parent_coep_reporter =
+      parent->coep_reporter();
+
+  // Some special URLs not loaded using the network are inheriting the
+  // Cross-Origin-Embedder-Policy header from their parent.
+  // TODO(https://crbug.com/1153648) Add COEP into the PolicyContainer and
+  // remove this fragile inheritance mechanism.
+  const bool inherit_coep_from_parent =
+      url.SchemeIsBlob() || url.SchemeIs(url::kDataScheme) ||
+      GetContentClient()
+          ->browser()
+          ->ShouldInheritCrossOriginEmbedderPolicyImplicitly(url);
+  if (inherit_coep_from_parent)
+    coep->value = parent_coep.value;
+
+  // [spec]: 3. If parentPolicy's report-only value is compatible with
+  // cross-origin isolation and responsePolicy's value is not, then queue a
+  // cross-origin embedder policy inheritance violation [...].
+  if (CoepBlockIframe(parent_coep.report_only_value, coep->value,
+                      anonymous())) {
+    if (parent_coep_reporter) {
+      parent_coep_reporter->QueueNavigationReport(redirect_chain_[0],
+                                                  /*report_only=*/true);
+    }
+  }
+
+  // [spec]: 4. If parentPolicy's value is not compatible with cross-origin
+  // isolation or responsePolicy's value is compatible with cross-origin
+  // isolation, then return true.
+  if (!CoepBlockIframe(parent_coep.value, coep->value, anonymous()))
+    return true;
+
+  // [spec]: 5 Queue a cross-origin embedder policy inheritance violation with
+  // response, "navigation", parentPolicy's reporting endpoint, "enforce", and
+  // target's container document's relevant settings object.
+  if (parent_coep_reporter) {
+    parent_coep_reporter->QueueNavigationReport(redirect_chain_[0],
+                                                /*report_only=*/false);
+  }
+
+  // [spec]: 6. Return false.
+  return false;
+}
+
 absl::optional<network::mojom::BlockedByResponseReason>
 NavigationRequest::EnforceCOEP() {
-  // https://html.spec.whatwg.org/#check-a-navigation-response's-adherence-to-its-embedder-policy
+  // https://html.spec.whatwg.org/C/#check-a-navigation-response's-adherence-to-its-embedder-policy
   auto* parent_frame = GetParentFrame();
   if (!parent_frame) {
     return absl::nullopt;

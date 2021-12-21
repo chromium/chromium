@@ -520,6 +520,7 @@ class PLATFORM_EXPORT ResourceResponse final {
   // Whether the resource came from the cache and validated over the network.
   bool is_validated_ : 1;
 
+  // [spec] https://fetch.spec.whatwg.org/#response-request-includes-credentials
   // The request's |includeCredentials| value from the "HTTP-network fetch"
   // algorithm.
   // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch

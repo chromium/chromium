@@ -7,12 +7,26 @@ module network.mojom;
 import "url/mojom/url.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 
-// https://html.spec.whatwg.org/multipage/origin.html#embedder-policy-value
-// https://htmlpreview.github.io/?https://github.com/mikewest/credentiallessness/blob/main/index.html
+// [spec]: https://html.spec.whatwg.org/C/#coep
+// An embedder policy value is one of three strings that controls the fetching
+// of cross-origin resources without explicit permission from resource owners.
 enum CrossOriginEmbedderPolicyValue {
+  // [spec]: This is the default value. When this value is used, cross-origin
+  // resources can be fetched without giving explicit permission through the
+  // CORS protocol or the `Cross-Origin-Resource-Policy` header.
   kNone,
-  kCredentialless,
+
+  // [spec]: When this value is used, fetching cross-origin resources requires
+  // the server's explicit permission through the CORS protocol or the
+  // `Cross-Origin-Resource-Policy` header.
   kRequireCorp,
+
+  // [spec]: When this value is used, fetching cross-origin no-CORS resources
+  // omits credentials. In exchange, an explicit `Cross-Origin-Resource-Policy`
+  // header is not required. Other requests sent with credentials require the
+  // server's explicit permission through the CORS protocol or the
+  // `Cross-Origin-Resource-Policy` header.
+  kCredentialless,
 };
 
 // Reports potential COEP violations. This is mainly used by the CORP check
@@ -27,16 +41,19 @@ interface CrossOriginEmbedderPolicyReporter {
   Clone(pending_receiver<CrossOriginEmbedderPolicyReporter> receiver);
 };
 
-// Corresponding to the "embedder policy" concept in the spec.
-// https://html.spec.whatwg.org/multipage/origin.html#coep
+// [spec]: https://html.spec.whatwg.org/C/#embedder-policy
+// An embedder policy consists of:
 struct CrossOriginEmbedderPolicy {
-    // The value of the policy.
-    CrossOriginEmbedderPolicyValue value = CrossOriginEmbedderPolicyValue.kNone;
-    // The reporting endpoint for the policy.
-    string? reporting_endpoint;
-    // The value for the "report only" mode.
-    CrossOriginEmbedderPolicyValue report_only_value =
-        CrossOriginEmbedderPolicyValue.kNone;
-    // The reporting endpoint for the "report only" mode.
-    string? report_only_reporting_endpoint;
+  // [spec]: A `value`, which is an embedder policy value, initially
+  // "unsafe-none".
+  CrossOriginEmbedderPolicyValue value = CrossOriginEmbedderPolicyValue.kNone;
+  // [spec]: A `reporting endpoint` string, initially the empty string.
+  string? reporting_endpoint;
+  // [spec]: A `report only value`, which is an embedder policy value, initially
+  // "unsafe-none".
+  CrossOriginEmbedderPolicyValue report_only_value =
+      CrossOriginEmbedderPolicyValue.kNone;
+  // [spec]: A `report only reporting endpoint` string, initially the empty
+  // string.
+  string? report_only_reporting_endpoint;
 };

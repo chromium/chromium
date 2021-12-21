@@ -30,6 +30,10 @@ bool CompatibleWithCrossOriginIsolated(const CrossOriginEmbedderPolicy& coep) {
   return CompatibleWithCrossOriginIsolated(coep.value);
 }
 
+// [spec]:
+// https://html.spec.whatwg.org/C/#compatible-with-cross-origin-isolation An
+// embedder policy value is compatible with cross-origin isolation if it is
+// "credentialless" or "require-corp".
 bool CompatibleWithCrossOriginIsolated(
     mojom::CrossOriginEmbedderPolicyValue value) {
   switch (value) {

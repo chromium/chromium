@@ -58,9 +58,13 @@ const char* CoopAccessReportTypeToString(mojom::CoopAccessReportType type) {
   }
 }
 
+// [spec]: https://html.spec.whatwg.org/C/#obtain-coop
 void AugmentCoopWithCoep(CrossOriginOpenerPolicy* coop,
                          const CrossOriginEmbedderPolicy& coep) {
   // COOP:
+  //
+  // [spec]: 4.1.2. If coep's value is compatible with cross-origin isolation,
+  //                then set policy's value to "same-origin-plus-COEP".
   if (coop->value == mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
       CompatibleWithCrossOriginIsolated(coep.value)) {
     coop->value = mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
@@ -75,6 +79,10 @@ void AugmentCoopWithCoep(CrossOriginOpenerPolicy* coop,
   }
 
   // COOP-Report-Only:
+  //
+  // [spec]: 6.1.2. If coep's value is compatible with cross-origin isolation or
+  // coep's report-only value is compatible with cross-origin isolation, then
+  // set policy's report-only value to "same-origin-plus-COEP".
   if (coop->report_only_value ==
           mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
       (CompatibleWithCrossOriginIsolated(coep.value) ||

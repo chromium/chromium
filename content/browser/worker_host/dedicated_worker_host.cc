@@ -511,7 +511,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
   return pending_default_factory;
 }
 
-// The implementation of the following algorithm:
+// [spec]
 // https://html.spec.whatwg.org/C/#check-a-global-object's-embedder-policy
 bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy(
     network::CrossOriginEmbedderPolicy creator_cross_origin_embedder_policy,
@@ -522,7 +522,7 @@ bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy(
   if (!creator_coep_reporter_)
     return false;
 
-  // > 4. If ownerPolicy's report-only value is "require-corp" or
+  // [spec]: 4. If ownerPolicy's report-only value is "require-corp" or
   // "credentialless" and policy's value is "unsafe-none", then queue a
   // cross-origin embedder policy inheritance violation with response, "worker
   // initialization", owner's policy's report only reporting endpoint,
@@ -536,7 +536,7 @@ bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy(
         /*report_only=*/true);
   }
 
-  // > 5. If ownerPolicy's value is "unsafe-none" or policy's value is
+  // [spec]: 5. If ownerPolicy's value is "unsafe-none" or policy's value is
   // "require-corp" or "credentialless", then return true.
   if (!network::CompatibleWithCrossOriginIsolated(
           creator_cross_origin_embedder_policy) ||
@@ -545,14 +545,14 @@ bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy(
     return true;
   }
 
-  // > 6. Queue a cross-origin embedder policy inheritance violation with
+  // [spec]: 6. Queue a cross-origin embedder policy inheritance violation with
   // response, "worker initialization", owner's policy's reporting endpoint,
   // "enforce", and owner.
   creator_coep_reporter_->QueueWorkerInitializationReport(
       final_response_url_.value(),
       /*report_only=*/false);
 
-  // > 7. Return false.
+  // [spec]: 7. Return false.
   return false;
 }
 
