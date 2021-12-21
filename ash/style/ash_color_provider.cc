@@ -54,6 +54,8 @@ constexpr int kAlpha95 = 242;  // 95%
 constexpr int kDarkBackgroundBlendAlpha = 127;   // 50%
 constexpr int kLightBackgroundBlendAlpha = 127;  // 50%
 
+AshColorProvider* g_instance = nullptr;
+
 // Get the corresponding ColorName for |type|. ColorName is an enum in
 // cros_styles.h file that is generated from cros_colors.json5, which
 // includes the color IDs and colors that will be used by ChromeOS WebUI.
@@ -112,16 +114,26 @@ void NotifyColorModeAndThemeChanges(bool is_dark_mode_enabled) {
 }  // namespace
 
 AshColorProvider::AshColorProvider() {
-  Shell::Get()->session_controller()->AddObserver(this);
+  DCHECK(!g_instance);
+  g_instance = this;
+
+  // May be null in unit tests.
+  if (Shell::HasInstance())
+    Shell::Get()->session_controller()->AddObserver(this);
 }
 
 AshColorProvider::~AshColorProvider() {
-  Shell::Get()->session_controller()->RemoveObserver(this);
+  DCHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+
+  // May be null in unit tests.
+  if (Shell::HasInstance())
+    Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
 // static
 AshColorProvider* AshColorProvider::Get() {
-  return Shell::Get()->ash_color_provider();
+  return g_instance;
 }
 
 // static
