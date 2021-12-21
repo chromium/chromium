@@ -37,23 +37,23 @@ void OnArcHandled(const GURL& url,
   if (handled)
     return;
 
+  // If WebContents have been destroyed, do not show any dialog.
   WebContents* web_contents =
       tab_util::GetWebContentsByID(render_process_host_id, routing_id);
+  if (!web_contents)
+    return;
 
   // Display the standard ExternalProtocolDialog if Guest OS has a handler.
-  if (web_contents) {
-    absl::optional<guest_os::GuestOsRegistryService::Registration>
-        registration = guest_os::GetHandler(
-            Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-            url);
-    if (registration) {
-      new ExternalProtocolDialog(web_contents, url,
-                                 base::UTF8ToUTF16(registration->Name()),
-                                 initiating_origin);
-      return;
-    }
+  absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
+      guest_os::GetHandler(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()), url);
+  if (registration) {
+    new ExternalProtocolDialog(web_contents, url,
+                               base::UTF8ToUTF16(registration->Name()),
+                               initiating_origin);
+  } else {
+    new ash::ExternalProtocolNoHandlersDialog(web_contents, url);
   }
-  new ash::ExternalProtocolNoHandlersDialog(web_contents, url);
 }
 
 }  // namespace
