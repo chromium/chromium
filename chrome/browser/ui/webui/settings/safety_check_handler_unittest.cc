@@ -482,7 +482,7 @@ TEST_F(SafetyCheckHandlerTest, CheckUpdates_Relaunch) {
 #else
   VerifyDisplayString(event,
                       "Nearly up to date! Relaunch Browser to finish "
-                      "updating. Incognito windows won't reopen.");
+                      "updating.");
 #endif
   histogram_tester_.ExpectBucketCount(
       "Settings.SafetyCheck.UpdatesResult",

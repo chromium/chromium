@@ -9,6 +9,9 @@
 
 import '../icons.js';
 import '../prefs/prefs.js';
+// <if expr="not chromeos_ash">
+import '../relaunch_confirmation_dialog.js';
+// </if>
 import '../settings_page/settings_section.js';
 import '../settings_page_css.js';
 import '../settings_shared_css.js';
@@ -27,16 +30,16 @@ import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
+import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
-
 // <if expr="_google_chrome and is_macosx">
 import {PromoteUpdaterStatus} from './about_page_browser_proxy.js';
+
 // </if>
 
 const SettingsAboutPageElementBase =
-    WebUIListenerMixin(I18nMixin(PolymerElement));
+    RelaunchMixin(WebUIListenerMixin(I18nMixin(PolymerElement)));
 
 export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   static get is() {
@@ -194,7 +197,7 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   }
 
   private onRelaunchTap_() {
-    LifetimeBrowserProxyImpl.getInstance().relaunch();
+    this.performRestart(RestartType.RELAUNCH);
   }
 
   // <if expr="not chromeos">

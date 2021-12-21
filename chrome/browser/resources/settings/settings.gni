@@ -160,6 +160,7 @@ web_component_files = [
 if (!is_chromeos_ash) {
   web_component_files += [
     "people_page/manage_profile.ts",
+    "relaunch_confirmation_dialog.ts",
     "languages_page/add_languages_dialog.ts",
     "languages_page/languages_page.ts",
     "languages_page/languages_subpage.ts",
@@ -241,6 +242,7 @@ non_webcomponent_files = [
   "privacy_page/privacy_review/constants.ts",
   "privacy_page/security_keys_browser_proxy.ts",
   "privacy_sandbox/privacy_sandbox_browser_proxy.ts",
+  "relaunch_mixin.ts",
   "reset_page/reset_browser_proxy.ts",
   "route.ts",
   "router.js",

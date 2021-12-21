@@ -10,7 +10,7 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
  */
 export class TestLifetimeBrowserProxy extends TestBrowserProxy implements
     LifetimeBrowserProxy {
-  // <if expr="not chromeos">
+  // <if expr="not chromeos_ash">
   private shouldShowRelaunchDialog_: boolean = false;
   private relaunchConfirmationDialogDescription_: string|null = null;
   // </if>
@@ -19,7 +19,7 @@ export class TestLifetimeBrowserProxy extends TestBrowserProxy implements
     super([
       'restart', 'relaunch',
 
-      // <if expr="not chromeos">
+      // <if expr="not chromeos_ash">
       'shouldShowRelaunchDialog', 'getRelaunchConfirmationDialogDescription',
       // </if>
 
@@ -37,10 +37,14 @@ export class TestLifetimeBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('relaunch');
   }
 
-  // <if expr="not chromeos">
+  // <if expr="not chromeos_ash">
   shouldShowRelaunchConfirmationDialog() {
     this.methodCalled('shouldShowRelaunchDialog');
     return Promise.resolve(this.shouldShowRelaunchDialog_);
+  }
+
+  setShouldShowRelaunchConfirmationDialog(value: boolean) {
+    this.shouldShowRelaunchDialog_ = value;
   }
 
   setRelaunchConfirmationDialogDescription(value: string) {

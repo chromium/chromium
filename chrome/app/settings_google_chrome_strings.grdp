@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Settings-specific Google Chrome strings (included from google_chrome_strings.grd). -->
 <grit-part>
+  <!-- Shared across multiple pages -->
+  <if expr="not chromeos">
+  <message name="IDS_RELAUNCH_CONFIRMATION_DIALOG_TITLE" desc="The title of the modal dialog that we show when users click on relaunch and they have open Incognito windows. The dialog serves to warn the users about losing their Incognito windows if they proceed with the relaunch.">
+    Relaunch Chrome?
+  </message>
+  </if>
   <!-- About Page -->
   <message name="IDS_SETTINGS_ABOUT_PROGRAM" desc="Menu title for the About Chrome page.">
     About Chrome
@@ -16,7 +22,7 @@
       Updating Chrome (<ph name="PROGRESS_PERCENT">$1<ex>90%</ex></ph>)
     </message>
     <message name="IDS_SETTINGS_UPGRADE_SUCCESSFUL_RELAUNCH" desc="Status label: Successfully updated Chrome">
-      Nearly up to date! Relaunch Chrome to finish updating. Incognito windows won't reopen.
+      Nearly up to date! Relaunch Chrome to finish updating.
     </message>
     <message name="IDS_SETTINGS_UPGRADE_UP_TO_DATE" desc="Status label: Already up to date (Chrome)">
       Chrome is up to date

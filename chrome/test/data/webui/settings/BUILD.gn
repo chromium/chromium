@@ -156,6 +156,7 @@ if (is_chromeos_ash) {
     "languages_tests.js",
     "metrics_reporting_tests.ts",
     "people_page_manage_profile_test.ts",
+    "relaunch_confirmation_dialog_test.ts",
   ]
 }
 
