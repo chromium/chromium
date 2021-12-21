@@ -58,6 +58,9 @@ class PolicyTest : public PlatformBrowserTest {
 
   void FlushBlocklistPolicy();
 
+  // Navigates to `url` and returns true if navigation completed.
+  bool NavigateToUrl(GURL url, PlatformBrowserTest* browser_test);
+
   testing::NiceMock<MockConfigurationPolicyProvider> provider_;
 };
 

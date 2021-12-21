@@ -7,9 +7,8 @@
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/policy/safe_browsing_policy_test.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -46,7 +45,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(https_server_expired.Start());
 
-  const PrefService* const prefs = browser()->profile()->GetPrefs();
+  const PrefService* const prefs =
+      chrome_test_utils::GetProfile(this)->GetPrefs();
 
   // Policy should allow overriding by default. Allow list should be empty by
   // default.
@@ -57,10 +57,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy allows overriding - navigate to an SSL error page and expect the
   // proceed link.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           https_server_expired.GetURL("/")));
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
+  content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   WaitForInterstitial(tab);
 
   // The interstitial should display the proceed link.
@@ -78,7 +76,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(https_server_expired.Start());
 
-  const PrefService* const prefs = browser()->profile()->GetPrefs();
+  const PrefService* const prefs =
+      chrome_test_utils::GetProfile(this)->GetPrefs();
 
   // Policy should allow overriding by default. Allow list should be empty by
   // default.
@@ -104,10 +103,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy allows overriding - navigate to an SSL error page and expect the
   // proceed link.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           https_server_expired.GetURL("/")));
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
+  content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   WaitForInterstitial(tab);
 
   // The interstitial should display the proceed link.
@@ -125,7 +122,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(https_server_expired.Start());
 
-  const PrefService* const prefs = browser()->profile()->GetPrefs();
+  const PrefService* const prefs =
+      chrome_test_utils::GetProfile(this)->GetPrefs();
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
 
   // Disallowing the proceed link by setting the policy to |false|.
@@ -140,10 +138,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           https_server_expired.GetURL("/")));
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
+  content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   WaitForInterstitial(tab);
 
   // The interstitial should not display the proceed link.
@@ -167,7 +163,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(https_server_expired.Start());
 
-  const PrefService* const prefs = browser()->profile()->GetPrefs();
+  const PrefService* const prefs =
+      chrome_test_utils::GetProfile(this)->GetPrefs();
 
   // Policy should allow overriding by default. Allow list should be empty by
   // default.
@@ -197,10 +194,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           https_server_expired.GetURL("/")));
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
+  content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   WaitForInterstitial(tab);
 
   // The interstitial should not display the proceed link.
@@ -224,7 +219,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(https_server_expired.Start());
 
-  const PrefService* const prefs = browser()->profile()->GetPrefs();
+  const PrefService* const prefs =
+      chrome_test_utils::GetProfile(this)->GetPrefs();
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
   EXPECT_TRUE(prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
                   ->GetList()
@@ -252,10 +248,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           https_server_expired.GetURL("/")));
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
+  content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   WaitForInterstitial(tab);
 
   // The interstitial should not display the proceed link.
@@ -278,7 +272,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(https_server_expired.Start());
 
-  const PrefService* const prefs = browser()->profile()->GetPrefs();
+  const PrefService* const prefs =
+      chrome_test_utils::GetProfile(this)->GetPrefs();
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
   EXPECT_TRUE(prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
                   ->GetList()
@@ -304,10 +299,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           https_server_expired.GetURL("/")));
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
+  content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   WaitForInterstitial(tab);
 
   // The interstitial should not display the proceed link.
@@ -331,7 +324,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
   https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
   ASSERT_TRUE(https_server_expired.Start());
 
-  const PrefService* const prefs = browser()->profile()->GetPrefs();
+  const PrefService* const prefs =
+      chrome_test_utils::GetProfile(this)->GetPrefs();
 
   // Policy should allow overriding by default. Allow list should be empty by
   // default.
@@ -362,10 +356,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingPolicyTest,
 
   // Policy allows overriding - navigate to an SSL error page and expect the
   // proceed link.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           https_server_expired.GetURL("/")));
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(NavigateToUrl(https_server_expired.GetURL("/"), this));
+  content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   WaitForInterstitial(tab);
 
   // The interstitial should display the proceed link.

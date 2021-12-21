@@ -42,14 +42,25 @@ source_set("test_support") {
   sources = [
     "cloud/cloud_policy_test_utils.cc",
     "cloud/cloud_policy_test_utils.h",
+    "policy_test_utils.cc",
+    "policy_test_utils.h",
+    "safe_browsing_policy_test.cc",
+    "safe_browsing_policy_test.h",
   ]
 
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/test:test_support",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//url:url",
   ]
+
+  if (is_android) {
+    sources += [ "policy_test_utils_android.cc" ]
+  }
 
   if (is_chromeos_ash) {
     deps += [
@@ -62,10 +73,7 @@ source_set("test_support") {
     sources += [
       "extension_policy_test_base.cc",
       "extension_policy_test_base.h",
-      "policy_test_utils.cc",
-      "policy_test_utils.h",
-      "safe_browsing_policy_test.cc",
-      "safe_browsing_policy_test.h",
+      "policy_test_utils_desktop.cc",
       "safe_search_policy_test.cc",
       "safe_search_policy_test.h",
       "url_blocking_policy_test_utils.cc",
@@ -73,16 +81,13 @@ source_set("test_support") {
     ]
 
     deps += [
-      "//base/test:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:ui",
       "//chrome/common:constants",
       "//chrome/common/net:net",
-      "//chrome/test:test_support",
       "//components/omnibox/browser:browser",
       "//components/policy/core/browser:browser",
       "//components/policy/core/common:test_support",
-      "//components/security_interstitials/content:security_interstitial_page",
       "//components/security_interstitials/core:core",
       "//components/variations:test_support",
       "//content/public/browser:browser",
@@ -93,7 +98,6 @@ source_set("test_support") {
       "//net:test_support",
       "//services/network/public/mojom:mojom",
       "//ui/snapshot:snapshot",
-      "//url:url",
     ]
   }
 }
@@ -104,7 +108,12 @@ source_set("policy_specific_browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "site_isolation_policy_browsertest.cc" ]
+  sources = [
+    "site_isolation_policy_browsertest.cc",
+    "test/certificate_transparency_policy_browsertest.cc",
+    "test/safe_browsing_policy_browsertest.cc",
+    "test/ssl_error_overriding_allowed_policy_browsertest.cc",
+  ]
 
   deps = [
     ":test_support",
@@ -115,6 +124,7 @@ source_set("policy_specific_browser_tests") {
     "//chrome/test:test_support",
     "//components/policy/core/common",
     "//components/prefs",
+    "//components/security_interstitials/content:security_interstitial_page",
     "//content/test:test_support",
     "//testing/gmock",
   ]
