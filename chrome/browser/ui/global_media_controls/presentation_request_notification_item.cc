@@ -31,7 +31,7 @@ PresentationRequestNotificationItem::PresentationRequestNotificationItem(
       is_default_presentation_request_(context == nullptr),
       context_(std::move(context)),
       request_(request) {
-  DCHECK(!context || request == context->presentation_request());
+  DCHECK(!context_ || request == context_->presentation_request());
 }
 
 PresentationRequestNotificationItem::~PresentationRequestNotificationItem() {
