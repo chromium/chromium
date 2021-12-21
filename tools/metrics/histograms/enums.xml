@@ -90332,6 +90332,11 @@ others/histograms.xml -->
   <int value="4" label="Toolbar button"/>
 </enum>
 
+<enum name="VPNConfigurationSource">
+  <int value="0" label="Configured manually"/>
+  <int value="1" label="Configured by policy"/>
+</enum>
+
 <enum name="VPNDriver">
   <int value="0" label="OpenVPN"/>
   <int value="1" label="L2TP/IPSec"/>

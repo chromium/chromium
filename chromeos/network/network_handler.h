@@ -43,6 +43,7 @@ class NetworkSmsHandler;
 class ProhibitedTechnologiesHandler;
 class StubCellularNetworksProvider;
 class UIProxyConfigService;
+class VpnNetworkMetricsHelper;
 
 // Class for handling initialization and access to chromeos network handlers.
 // This class should NOT be used in unit tests. Instead, construct individual
@@ -140,6 +141,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   std::unique_ptr<ConnectionInfoMetricsLogger> connection_info_metrics_logger_;
   std::unique_ptr<ESimPolicyLoginMetricsLogger>
       esim_policy_login_metrics_logger_;
+  std::unique_ptr<VpnNetworkMetricsHelper> vpn_network_metrics_helper_;
   std::unique_ptr<NetworkCertMigrator> network_cert_migrator_;
   std::unique_ptr<ClientCertResolver> client_cert_resolver_;
   std::unique_ptr<AutoConnectHandler> auto_connect_handler_;

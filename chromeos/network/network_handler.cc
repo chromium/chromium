@@ -19,6 +19,7 @@
 #include "chromeos/network/managed_network_configuration_handler_impl.h"
 #include "chromeos/network/metrics/connection_info_metrics_logger.h"
 #include "chromeos/network/metrics/esim_policy_login_metrics_logger.h"
+#include "chromeos/network/metrics/vpn_network_metrics_helper.h"
 #include "chromeos/network/network_activation_handler_impl.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_cert_migrator.h"
@@ -61,6 +62,7 @@ NetworkHandler::NetworkHandler()
   }
   cellular_metrics_logger_.reset(new CellularMetricsLogger());
   connection_info_metrics_logger_.reset(new ConnectionInfoMetricsLogger());
+  vpn_network_metrics_helper_.reset(new VpnNetworkMetricsHelper());
   if (NetworkCertLoader::IsInitialized()) {
     network_cert_migrator_.reset(new NetworkCertMigrator());
     client_cert_resolver_.reset(new ClientCertResolver());
@@ -121,6 +123,7 @@ void NetworkHandler::Init() {
                                  cellular_esim_profile_handler_.get());
   connection_info_metrics_logger_->Init(network_state_handler_.get(),
                                         network_connection_handler_.get());
+  vpn_network_metrics_helper_->Init(network_configuration_handler_.get());
   if (network_cert_migrator_)
     network_cert_migrator_->Init(network_state_handler_.get());
   if (client_cert_resolver_) {

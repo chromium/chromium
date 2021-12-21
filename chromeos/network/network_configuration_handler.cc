@@ -540,21 +540,31 @@ void NetworkConfigurationHandler::ConfigurationCompleted(
   // from a previous connection attempt.
   network_state_handler_->ClearLastErrorForNetwork(service_path.value());
 
+  // |configure_callbacks_| will get triggered when NetworkStateHandler notifies
+  // this that a state list update has occurred, which will be triggered by the
+  // following RequestUpdateForNetwork call. |service_path| is unique per
+  // configuration.
+  configure_callbacks_.insert(std::make_pair(
+      service_path.value(),
+      base::BindOnce(&NetworkConfigurationHandler::NotifyConfigurationCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+
   // Shill should send a network list update, but to ensure that Shill sends
   // the newly configured properties immediately, request an update here.
   network_state_handler_->RequestUpdateForNetwork(service_path.value());
+}
 
+void NetworkConfigurationHandler::NotifyConfigurationCompleted(
+    network_handler::ServiceResultCallback callback,
+    const std::string& service_path,
+    const std::string& guid) {
   for (auto& observer : observers_)
-    observer.OnConfigurationCreated(service_path.value(), guid);
+    observer.OnConfigurationCreated(service_path, guid);
 
   if (callback.is_null())
     return;
 
-  // |configure_callbacks_| will get triggered when NetworkStateHandler
-  // notifies this that a state list update has occurred. |service_path|
-  // is unique per configuration.
-  configure_callbacks_.insert(
-      std::make_pair(service_path.value(), std::move(callback)));
+  std::move(callback).Run(service_path, guid);
 }
 
 void NetworkConfigurationHandler::ProfileEntryDeleterCompleted(

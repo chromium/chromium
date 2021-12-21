@@ -89,6 +89,23 @@ chromium-metrics-reviews@google.com.
   <summary>Errors experienced during Gobi device powerup.</summary>
 </histogram>
 
+<histogram name="Network.Ash.VPN.{VPNProviderType}.ConfigurationSource"
+    enum="VPNConfigurationSource" expires_after="2022-12-31">
+  <owner>chadduffin@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Logs the configuration source (i.e., the user vs. policy) for VPN networks.
+    Emitted when a VPN is configured.
+  </summary>
+  <token key="VPNProviderType">
+    <variant name="ARC"/>
+    <variant name="L2TPIPsec"/>
+    <variant name="OpenVpn"/>
+    <variant name="ThirdParty"/>
+    <variant name="WireGuard"/>
+  </token>
+</histogram>
+
 <histogram name="Network.Ash.{NetworkType}.ConnectionResult.All"
     enum="ShillConnectResult" expires_after="2022-11-01">
   <owner>hsuregan@chromium.org</owner>
