@@ -54,6 +54,7 @@ android_resources("java_resources") {
     "java/res/drawable/cable_qr_code.xml",
     "java/res/drawable/usb_conn_disconnect.xml",
     "java/res/layout-sw600dp/cablev2_ble_enable.xml",
+    "java/res/layout-sw600dp/cablev2_qr.xml",
     "java/res/layout/cablev2_ble_enable.xml",
     "java/res/layout/cablev2_qr.xml",
     "java/res/layout/cablev2_usb_attached.xml",

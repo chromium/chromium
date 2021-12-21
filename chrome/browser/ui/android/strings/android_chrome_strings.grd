@@ -4903,6 +4903,30 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Removed
       </message>
 
+      <message name="IDS_CABLEV2_QR_TITLE" desc="The title on a screen that confirms that the user wants to connect to a computer that displayed a QR code.">
+        Connect with QR Code?
+      </message>
+
+      <message name="IDS_CABLEV2_QR_BODY_PHONE" desc="The body text on a screen that confirms that the user wants to connect to a computer that displayed a QR code. This message is specific to phones and won't appear on tablets.">
+        You can use this phone to sign in on the computer that’s displaying this QR code.
+      </message>
+
+      <message name="IDS_CABLEV2_QR_BODY_TABLET" desc="The body text on a screen that confirms that the user wants to connect to a computer that displayed a QR code. This message is specific to tablets and won't appear on phones.">
+        You can use this tablet to sign in on the computer that’s displaying this QR code.
+      </message>
+
+      <message name="IDS_CABLEV2_QR_REMEMBER" desc="The label of a checkbox that appears on a screen confirming that the user wants to connect to a computer from which they just scanned a QR code. If the computer is 'remembered' then it'll be able to connect to the phone automatically in the future. The 'computer' is a laptop, desktop, or (eventually) another phone or tablet.">
+        Remember this computer
+      </message>
+
+      <message name="IDS_CABLEV2_QR_ALLOW" desc="The label of a button that the user presses to confirm that they want to connect to a computer from which they just scanned a QR code.">
+        Allow
+      </message>
+
+      <message name="IDS_CABLEV2_QR_DONT_ALLOW" desc="The label of a button that the user can press to decline to connect to a computer from which they just scanned a QR code.">
+        Don’t allow
+      </message>
+
       <!-- QR Code -->
       <message name="IDS_QR_CODE_SHARE_ICON_LABEL" desc="Icon label for sharing with QR Code activity.">
         QR Code
