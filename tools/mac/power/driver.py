@@ -45,7 +45,7 @@ class DriverContext:
     # Force user_idle_level to stay active by poking a key code. caffeinate -u
     # declares that a user is active but this doesn't seem to have a lasting
     # effect.
-    self._poke_user_process = subprocess.call([
+    self._poke_user_process = subprocess.Popen([
         "osascript",
         os.path.join(os.path.dirname(__file__), "driver_scripts_templates",
                      "poke_user.scpt")
