@@ -70,7 +70,7 @@ bool QuickUnlockStorage::TryAuthenticatePin(const Key& key) {
 }
 
 std::string QuickUnlockStorage::CreateAuthToken(
-    const chromeos::UserContext& user_context) {
+    const UserContext& user_context) {
   auth_token_ = std::make_unique<AuthToken>(user_context);
   DCHECK(auth_token_->Identifier().has_value());
   return *auth_token_->Identifier();

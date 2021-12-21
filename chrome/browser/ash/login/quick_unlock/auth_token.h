@@ -12,11 +12,10 @@
 #include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-class UserContext;
-}
-
 namespace ash {
+
+class UserContext;
+
 namespace quick_unlock {
 
 // Security token with an identifyier string and a predetermined life time,
@@ -28,7 +27,7 @@ class AuthToken {
   // How long the token lives.
   static const int kTokenExpirationSeconds;
 
-  explicit AuthToken(const chromeos::UserContext& user_context);
+  explicit AuthToken(const UserContext& user_context);
 
   AuthToken(const AuthToken&) = delete;
   AuthToken& operator=(const AuthToken&) = delete;
@@ -43,9 +42,7 @@ class AuthToken {
   absl::optional<base::TimeDelta> GetAge() const;
 
   // The UserContext returned here can be null if Reset() was called.
-  const chromeos::UserContext* user_context() const {
-    return user_context_.get();
-  }
+  const UserContext* user_context() const { return user_context_.get(); }
 
  private:
   friend class QuickUnlockStorageUnitTest;
@@ -56,7 +53,7 @@ class AuthToken {
 
   base::UnguessableToken identifier_;
   base::TimeTicks creation_time_;
-  std::unique_ptr<chromeos::UserContext> user_context_;
+  std::unique_ptr<UserContext> user_context_;
 
   base::WeakPtrFactory<AuthToken> weak_factory_{this};
 };

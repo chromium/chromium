@@ -85,7 +85,7 @@ std::string PinBackend::ComputeSecret(const std::string& pin,
     return pin;
 
   Key key(pin);
-  key.Transform(chromeos::Key::KEY_TYPE_SALTED_PBKDF2_AES256_1234, salt);
+  key.Transform(Key::KEY_TYPE_SALTED_PBKDF2_AES256_1234, salt);
   return key.GetSecret();
 }
 

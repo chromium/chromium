@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 COMPONENT_EXPORT(ASH_LOGIN_AUTH)
 extern const char kCryptohomeGaiaKeyLabel[];
@@ -21,13 +21,11 @@ extern const char kCryptohomePublicMountLabel[];
 COMPONENT_EXPORT(ASH_LOGIN_AUTH)
 extern const char kCryptohomeWildcardLabel[];
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source code migration is finished.
-namespace ash {
-using ::chromeos::kCryptohomeGaiaKeyLabel;
-using ::chromeos::kCryptohomePinLabel;
-}
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::kCryptohomeGaiaKeyLabel;
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_CRYPTOHOME_KEY_CONSTANTS_H_

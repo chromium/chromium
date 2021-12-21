@@ -11,8 +11,6 @@
 #include <memory>
 #include <string>
 
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/components/login/auth/user_context.h"
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
@@ -28,6 +26,8 @@ class ListValue;
 }  // namespace base
 
 namespace ash {
+
+class UserContext;
 
 // A class to manage Easy unlock cryptohome keys.
 class EasyUnlockKeyManager {

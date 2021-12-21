@@ -9,7 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 using testing::ElementsAre;
@@ -144,4 +144,4 @@ TEST(SyncTrustedVaultKeysTest, FromJsWithTrustedRecoveryMethods) {
                   MatchesRecoveryMethod(kPublicKeyMaterial2, kMethodType2)));
 }
 
-}  // namespace chromeos
+}  // namespace ash

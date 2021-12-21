@@ -6,7 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -63,4 +63,4 @@ TEST(KeyTest, KeyTypeStable) {
   EXPECT_EQ(4, Key::KEY_TYPE_COUNT);
 }
 
-}  // namespace chromeos
+}  // namespace ash

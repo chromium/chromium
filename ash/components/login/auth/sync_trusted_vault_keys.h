@@ -12,9 +12,9 @@
 
 namespace base {
 class DictionaryValue;
-}
+}  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 // Struct which holds keys about a user's encryption keys during signin flow.
 class COMPONENT_EXPORT(ASH_LOGIN_AUTH) SyncTrustedVaultKeys {
@@ -54,12 +54,11 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) SyncTrustedVaultKeys {
   std::vector<TrustedRecoveryMethod> trusted_recovery_methods_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::SyncTrustedVaultKeys;
-}
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::SyncTrustedVaultKeys;
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_SYNC_TRUSTED_VAULT_KEYS_H_

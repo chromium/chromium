@@ -109,10 +109,10 @@ LoginLaunchManagedGuestSessionFunction::Run() {
   for (const user_manager::User* user : user_manager->GetUsers()) {
     if (!user || user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
       continue;
-    chromeos::UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
-                                  user->GetAccountId());
+    ash::UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+                             user->GetAccountId());
     if (parameters->password) {
-      context.SetKey(chromeos::Key(*parameters->password));
+      context.SetKey(ash::Key(*parameters->password));
       context.SetManagedGuestSessionLaunchExtensionId(extension_id());
     }
 
@@ -216,9 +216,9 @@ LoginUnlockManagedGuestSessionFunction::Run() {
     return RespondNow(Error(login_api_errors::kAnotherUnlockAttemptInProgress));
   }
 
-  chromeos::UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
-                                active_user->GetAccountId());
-  context.SetKey(chromeos::Key(parameters->password));
+  ash::UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+                           active_user->GetAccountId());
+  context.SetKey(ash::Key(parameters->password));
   handler->Authenticate(
       context,
       base::BindOnce(

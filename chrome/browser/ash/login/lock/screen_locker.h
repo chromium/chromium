@@ -11,11 +11,7 @@
 #include <vector>
 
 #include "ash/components/login/auth/auth_status_consumer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/components/login/auth/authenticator.h"
 #include "ash/components/login/auth/challenge_response_key.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/components/login/auth/extended_authenticator.h"
 #include "ash/components/login/auth/user_context.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/callback_forward.h"
@@ -39,6 +35,9 @@
 class PrefChangeRegistrar;
 
 namespace ash {
+
+class Authenticator;
+class ExtendedAuthenticator;
 class ViewsScreenLocker;
 
 // ScreenLocker displays the lock UI and takes care of authenticating the user
@@ -87,7 +86,7 @@ class ScreenLocker
   void Init();
 
   // AuthStatusConsumer:
-  void OnAuthFailure(const chromeos::AuthFailure& error) override;
+  void OnAuthFailure(const AuthFailure& error) override;
   void OnAuthSuccess(const UserContext& user_context) override;
 
   // Called when an account password (not PIN/quick unlock) has been used to
@@ -141,7 +140,7 @@ class ScreenLocker
 
   // Allow a AuthStatusConsumer to listen for
   // the same login events that ScreenLocker does.
-  void SetLoginStatusConsumer(chromeos::AuthStatusConsumer* consumer);
+  void SetLoginStatusConsumer(AuthStatusConsumer* consumer);
 
   // Initialize or uninitialize the ScreenLocker class. It observes
   // SessionManager so that the screen locker accepts lock requests only after a

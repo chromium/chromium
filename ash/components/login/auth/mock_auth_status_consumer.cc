@@ -8,7 +8,7 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 MockAuthStatusConsumer::MockAuthStatusConsumer(base::OnceClosure quit_closure)
     : quit_closure_(std::move(quit_closure)) {}
@@ -63,4 +63,4 @@ void MockAuthStatusConsumer::OnMigrateQuitAndFail() {
   std::move(quit_closure_).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

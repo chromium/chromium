@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/screens/os_install_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/js_calls_container.h"
 #include "chrome/grit/chromium_strings.h"

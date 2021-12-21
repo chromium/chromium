@@ -10,7 +10,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 // This class contains information about a challenge-response key for user
 // authentication. This includes information about the public key of the
@@ -72,13 +72,11 @@ struct COMPONENT_EXPORT(ASH_LOGIN_AUTH) DeserializedChallengeResponseKey {
   std::string extension_id;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ChallengeResponseKey;
-using ::chromeos::DeserializedChallengeResponseKey;
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::ChallengeResponseKey;
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_CHALLENGE_RESPONSE_KEY_H_

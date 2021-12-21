@@ -13,6 +13,10 @@ namespace ash {
 class OsInstallScreen;
 }
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace login {
 class LocalizedValuesBuilder;
 }  // namespace login

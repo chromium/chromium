@@ -1181,8 +1181,8 @@ void WizardController::OnGuestTosScreenExit(GuestTosScreen::Result result) {
   switch (result) {
     case GuestTosScreen::Result::ACCEPT:
       ash::LoginDisplayHost::default_host()->GetExistingUserController()->Login(
-          chromeos::UserContext(user_manager::USER_TYPE_GUEST,
-                                user_manager::GuestAccountId()),
+          UserContext(user_manager::USER_TYPE_GUEST,
+                      user_manager::GuestAccountId()),
           chromeos::SigninSpecifics());
       break;
     case GuestTosScreen::Result::BACK:

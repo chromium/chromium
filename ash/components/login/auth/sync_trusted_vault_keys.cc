@@ -9,7 +9,7 @@
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -146,4 +146,4 @@ SyncTrustedVaultKeys::trusted_recovery_methods() const {
   return trusted_recovery_methods_;
 }
 
-}  // namespace chromeos
+}  // namespace ash

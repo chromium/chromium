@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -92,4 +92,4 @@ bool DeserializeChallengeResponseKeyFromKnownUser(
   return !deserialized_challenge_response_keys->empty();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -4,7 +4,7 @@
 
 #include "ash/components/login/auth/stub_authenticator_builder.h"
 
-namespace chromeos {
+namespace ash {
 
 StubAuthenticatorBuilder::StubAuthenticatorBuilder(
     const UserContext& expected_user_context)
@@ -51,4 +51,4 @@ void StubAuthenticatorBuilder::SetUpAuthFailure(
   failure_reason_ = failure_reason;
 }
 
-}  // namespace chromeos
+}  // namespace ash

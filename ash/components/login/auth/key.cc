@@ -14,7 +14,7 @@
 #include "crypto/sha2.h"
 #include "crypto/symmetric_key.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -107,4 +107,4 @@ void Key::Transform(KeyType target_key_type, const std::string& salt) {
   salt_ = salt;
 }
 
-}  // namespace chromeos
+}  // namespace ash

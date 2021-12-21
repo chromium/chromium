@@ -136,7 +136,7 @@ void ManagedSessionService::OnAuthAttemptStarted() {
   }
 }
 
-void ManagedSessionService::OnAuthFailure(const chromeos::AuthFailure& error) {
+void ManagedSessionService::OnAuthFailure(const ash::AuthFailure& error) {
   for (auto& observer : observers_) {
     observer.OnLoginFailure(error);
   }

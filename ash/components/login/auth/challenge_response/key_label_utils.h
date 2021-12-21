@@ -10,7 +10,7 @@
 
 #include "ash/components/login/auth/challenge_response_key.h"
 
-namespace chromeos {
+namespace ash {
 
 // Generates the cryptohome user key label for the given challenge-response key
 // information. Currently the constraint is that |challenge_response_keys| must
@@ -18,6 +18,6 @@ namespace chromeos {
 std::string GenerateChallengeResponseKeyLabel(
     const std::vector<ChallengeResponseKey>& challenge_response_keys);
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_CHALLENGE_RESPONSE_KEY_LABEL_UTILS_H_

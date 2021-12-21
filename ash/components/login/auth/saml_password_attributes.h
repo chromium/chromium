@@ -15,9 +15,9 @@ class PrefService;
 
 namespace base {
 class DictionaryValue;
-}
+}  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 // Struct which holds attributes about a user's password provided by the SAML
 // Identity Provider during SAML signin flow. These can be read or written to
@@ -71,12 +71,11 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) SamlPasswordAttributes {
   std::string password_change_url_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::SamlPasswordAttributes;
-}
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::SamlPasswordAttributes;
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_SAML_PASSWORD_ATTRIBUTES_H_

@@ -96,9 +96,9 @@ SharedSessionHandler::LaunchSharedManagedGuestSession(
 
   session_secret_ = GenerateRandomString(kSessionSecretLength);
 
-  chromeos::UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
-                                user->GetAccountId());
-  context.SetKey(chromeos::Key(session_secret_));
+  ash::UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+                           user->GetAccountId());
+  context.SetKey(ash::Key(session_secret_));
   context.SetManagedGuestSessionLaunchExtensionId(extension_id);
   existing_user_controller->Login(context, chromeos::SigninSpecifics());
 
@@ -287,9 +287,9 @@ void SharedSessionHandler::UnlockWithSessionSecret(
   const user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
 
-  UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
-                           active_user->GetAccountId());
-  user_context.SetKey(chromeos::Key(session_secret_));
+  ash::UserContext user_context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
+                                active_user->GetAccountId());
+  user_context.SetKey(ash::Key(session_secret_));
   LoginApiLockHandler::Get()->Authenticate(user_context, std::move(callback));
 }
 

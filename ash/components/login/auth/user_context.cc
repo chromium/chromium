@@ -8,7 +8,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 
-namespace chromeos {
+namespace ash {
 
 UserContext::UserContext() : account_id_(EmptyAccountId()) {}
 
@@ -299,4 +299,4 @@ void UserContext::ClearSecrets() {
   authsession_id_.clear();
 }
 
-}  // namespace chromeos
+}  // namespace ash

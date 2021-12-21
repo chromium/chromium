@@ -35,6 +35,7 @@ class AccountId;
 
 namespace ash {
 class LoginDisplayHostMojo;
+class UserContext;
 
 namespace mojom {
 enum class TrayActionState;
@@ -45,7 +46,6 @@ namespace chromeos {
 
 class CoreOobeView;
 class GaiaScreenHandler;
-class UserContext;
 
 // An interface for WebUILoginDisplay to call SigninScreenHandler.
 class LoginDisplayWebUIHandler {

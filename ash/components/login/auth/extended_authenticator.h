@@ -15,7 +15,7 @@
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 
-namespace chromeos {
+namespace ash {
 
 class AuthStatusConsumer;
 class UserContext;
@@ -104,12 +104,6 @@ class COMPONENT_EXPORT(ASH_LOGIN_AUTH) ExtendedAuthenticator
   friend class base::RefCountedThreadSafe<ExtendedAuthenticator>;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ExtendedAuthenticator;
-}
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_EXTENDED_AUTHENTICATOR_H_
