@@ -72,9 +72,6 @@ class HandleCloser {
   HandleMap handles_to_close_;
 };
 
-// Returns the object manager's name associated with a handle
-bool GetHandleName(HANDLE handle, std::wstring* handle_name);
-
 }  // namespace sandbox
 
 #endif  // SANDBOX_WIN_SRC_HANDLE_CLOSER_H_
