@@ -2084,7 +2084,8 @@ TEST_P(PaintArtifactCompositorTest, ForcedCompositedExoticBlendMode) {
   masking_state.local_transform_space = &t0();
   masking_state.output_clip = &c0();
   masking_state.blend_mode = SkBlendMode::kXor;
-  masking_state.direct_compositing_reasons = CompositingReason::kOverlap;
+  masking_state.direct_compositing_reasons =
+      CompositingReason::kSquashingDisallowed;
   auto masking =
       EffectPaintPropertyNode::Create(*masked, std::move(masking_state));
 

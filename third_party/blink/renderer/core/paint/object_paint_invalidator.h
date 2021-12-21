@@ -55,6 +55,8 @@ class CORE_EXPORT ObjectPaintInvalidator {
     client.Invalidate(reason);
   }
 
+  void InvalidatePaintIncludingNonCompositingDescendants();
+
  protected:
 #if DCHECK_IS_ON()
   void CheckPaintLayerNeedsRepaint();

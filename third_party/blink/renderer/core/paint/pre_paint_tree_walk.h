@@ -85,6 +85,10 @@ class CORE_EXPORT PrePaintTreeWalk final {
     // fragmentainer even if the OOF / float is there.
     bool is_inside_orphaned_object = false;
 
+    const LayoutBoxModelObject* paint_invalidation_container = nullptr;
+    const LayoutBoxModelObject*
+        paint_invalidation_container_for_stacked_contents = nullptr;
+
     ContainingFragment current_fragmentainer;
     ContainingFragment absolute_positioned_container;
     ContainingFragment fixed_positioned_container;
@@ -216,6 +220,11 @@ class CORE_EXPORT PrePaintTreeWalk final {
                                        PrePaintTreeWalkContext&);
   void InvalidatePaintForHitTesting(const LayoutObject&,
                                     PrePaintTreeWalkContext&);
+
+  void UpdatePaintInvalidationContainer(const LayoutObject& object,
+                                        const PaintLayer* painting_layer,
+                                        PrePaintTreeWalkContext& context,
+                                        bool is_ng_painting);
 
   PaintInvalidator paint_invalidator_;
 

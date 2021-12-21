@@ -34,7 +34,6 @@
 
 #include "base/auto_reset.h"
 #include "build/build_config.h"
-#include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/platform.h"

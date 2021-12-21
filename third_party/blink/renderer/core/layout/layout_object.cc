@@ -111,6 +111,7 @@
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/core/style/cursor_data.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
@@ -1847,6 +1848,13 @@ String LayoutObject::DebugName() const {
 DOMNodeId LayoutObject::OwnerNodeId() const {
   NOT_DESTROYED();
   return GetNode() ? DOMNodeIds::IdForNode(GetNode()) : kInvalidDOMNodeId;
+}
+
+bool LayoutObject::IsPaintInvalidationContainer() const {
+  NOT_DESTROYED();
+  return HasLayer() && To<LayoutBoxModelObject>(this)
+                           ->Layer()
+                           ->IsPaintInvalidationContainer();
 }
 
 void LayoutObject::InvalidateDisplayItemClients(
@@ -4025,6 +4033,13 @@ PositionWithAffinity LayoutObject::PositionForPoint(
   DCHECK(!IsLayoutNGObject() || GetDocument().Lifecycle().GetState() >=
                                     DocumentLifecycle::kPrePaintClean);
   return CreatePositionWithAffinity(0);
+}
+
+CompositingState LayoutObject::GetCompositingState() const {
+  NOT_DESTROYED();
+  return HasLayer()
+             ? To<LayoutBoxModelObject>(this)->Layer()->GetCompositingState()
+             : kNotComposited;
 }
 
 bool LayoutObject::CanHaveAdditionalCompositingReasons() const {

@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/link_highlight.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -359,6 +360,65 @@ void PrePaintTreeWalk::CheckTreeBuilderContextState(
 }
 #endif
 
+static LayoutBoxModelObject* ContainerForPaintInvalidation(
+    const PaintLayer* painting_layer) {
+  if (!painting_layer)
+    return nullptr;
+  if (auto* containing_paint_layer =
+          painting_layer
+              ->EnclosingLayerForPaintInvalidationCrossingFrameBoundaries())
+    return &containing_paint_layer->GetLayoutObject();
+  return nullptr;
+}
+
+void PrePaintTreeWalk::UpdatePaintInvalidationContainer(
+    const LayoutObject& object,
+    const PaintLayer* painting_layer,
+    PrePaintTreeWalkContext& context,
+    bool is_ng_painting) {
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  if (object.IsPaintInvalidationContainer()) {
+    context.paint_invalidation_container = To<LayoutBoxModelObject>(&object);
+    if (object.IsStackingContext() || object.IsSVGRoot()) {
+      context.paint_invalidation_container_for_stacked_contents =
+          To<LayoutBoxModelObject>(&object);
+    }
+  } else if (IsA<LayoutView>(object)) {
+    // paint_invalidation_container_for_stacked_contents is only for stacked
+    // descendants in its own frame, because it doesn't establish stacking
+    // context for stacked contents in sub-frames.
+    // Contents stacked in the root stacking context in this frame should use
+    // this frame's PaintInvalidationContainer.
+    context.paint_invalidation_container_for_stacked_contents =
+        ContainerForPaintInvalidation(painting_layer);
+  } else if (!is_ng_painting &&
+             (object.IsColumnSpanAll() ||
+              object.IsFloatingWithNonContainingBlockParent())) {
+    // In these cases, the object may belong to an ancestor of the current
+    // paint invalidation container, in paint order.
+    // Post LayoutNG the |LayoutObject::IsFloatingWithNonContainingBlockParent|
+    // check can be removed as floats will be painted by the correct layer.
+    context.paint_invalidation_container =
+        ContainerForPaintInvalidation(painting_layer);
+  } else if (object.IsStacked() &&
+             // This is to exclude some objects (e.g. LayoutText) inheriting
+             // stacked style from parent but aren't actually stacked.
+             object.HasLayer() &&
+             !To<LayoutBoxModelObject>(object)
+                  .Layer()
+                  ->IsReplacedNormalFlowStacking() &&
+             context.paint_invalidation_container !=
+                 context.paint_invalidation_container_for_stacked_contents) {
+    // The current object is stacked, so we should use
+    // m_paintInvalidationContainerForStackedContents as its paint invalidation
+    // container on which the current object is painted.
+    context.paint_invalidation_container =
+        context.paint_invalidation_container_for_stacked_contents;
+  }
+}
+
 NGPrePaintInfo PrePaintTreeWalk::CreatePrePaintInfo(
     const NGLink& child,
     const PrePaintTreeWalkContext& context) {
@@ -506,6 +566,10 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
     needs_invalidate_chrome_client_ = true;
 
   InvalidatePaintForHitTesting(object, context);
+
+  UpdatePaintInvalidationContainer(object,
+                                   paint_invalidator_context.painting_layer,
+                                   context, !!pre_paint_info);
 
   if (context.tree_builder_context) {
     property_changed =

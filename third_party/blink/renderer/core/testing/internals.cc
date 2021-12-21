@@ -132,6 +132,7 @@
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
+#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -174,6 +175,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidation_tracking.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -2444,6 +2446,46 @@ bool Internals::isPageBoxVisible(Document* document, int page_number) {
 String Internals::layerTreeAsText(Document* document,
                                   ExceptionState& exception_state) const {
   return layerTreeAsText(document, 0, exception_state);
+}
+
+bool Internals::scrollsWithRespectTo(Element* element1,
+                                     Element* element2,
+                                     ExceptionState& exception_state) {
+  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+  DCHECK(element1 && element2);
+  element1->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  LayoutObject* layout_object1 = element1->GetLayoutObject();
+  LayoutObject* layout_object2 = element2->GetLayoutObject();
+  if (!layout_object1 || !layout_object1->IsBox()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        layout_object1
+            ? "The first provided element's layoutObject is not a box."
+            : "The first provided element has no layoutObject.");
+    return false;
+  }
+  if (!layout_object2 || !layout_object2->IsBox()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        layout_object2
+            ? "The second provided element's layoutObject is not a box."
+            : "The second provided element has no layoutObject.");
+    return false;
+  }
+
+  PaintLayer* layer1 = To<LayoutBox>(layout_object1)->Layer();
+  PaintLayer* layer2 = To<LayoutBox>(layout_object2)->Layer();
+  if (!layer1 || !layer2) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        String::Format(
+            "No PaintLayer can be obtained from the %s provided element.",
+            layer1 ? "second" : "first"));
+    return false;
+  }
+
+  return layer1->ScrollsWithRespectTo(layer2);
 }
 
 String Internals::layerTreeAsText(Document* document,

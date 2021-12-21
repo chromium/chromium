@@ -354,6 +354,8 @@ class Internals final : public ScriptWrappable {
   String layerTreeAsText(Document*, unsigned flags, ExceptionState&) const;
   String layerTreeAsText(Document*, ExceptionState&) const;
 
+  bool scrollsWithRespectTo(Element*, Element*, ExceptionState&);
+
   String scrollingStateTreeAsText(Document*) const;
   String mainThreadScrollingReasons(Document*, ExceptionState&) const;
   DOMRectList* nonFastScrollableRects(Document*, ExceptionState&) const;

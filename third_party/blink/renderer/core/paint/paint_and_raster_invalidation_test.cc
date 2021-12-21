@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -397,6 +398,14 @@ TEST_P(PaintAndRasterInvalidationTest, CompositedLayoutViewGradientResize) {
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
+static const LayoutBoxModelObject& EnclosingCompositedContainer(
+    const LayoutObject& layout_object) {
+  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+  return layout_object.PaintingLayer()
+      ->EnclosingLayerForPaintInvalidationCrossingFrameBoundaries()
+      ->GetLayoutObject();
+}
+
 TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewResize) {
   ScopedPreferNonCompositedScrollingForTest non_composited_scrolling(true);
 
@@ -417,6 +426,10 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewResize) {
   UpdateAllLifecyclePhasesForTest();
   Element* iframe = GetDocument().getElementById("iframe");
   Element* content = ChildDocument().getElementById("content");
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_EQ(GetLayoutView(),
+              EnclosingCompositedContainer(*content->GetLayoutObject()));
+  }
   EXPECT_EQ(kBackgroundPaintInContentsSpace,
             content->GetLayoutObject()
                 ->View()
@@ -497,6 +510,10 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewGradientResize) {
   UpdateAllLifecyclePhasesForTest();
   Element* iframe = GetDocument().getElementById("iframe");
   Element* content = ChildDocument().getElementById("content");
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_EQ(GetLayoutView(),
+              EnclosingCompositedContainer(*content->GetLayoutObject()));
+  }
 
   // Resize the content.
   GetDocument().View()->SetTracksRasterInvalidations(true);
@@ -646,6 +663,8 @@ TEST_P(PaintAndRasterInvalidationTest,
       ASSERT_NO_EXCEPTION);
   Element* child = GetDocument().getElementById("child");
   UpdateAllLifecyclePhasesForTest();
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    EXPECT_EQ(&GetLayoutView(), EnclosingCompositedContainer(*object));
   EXPECT_EQ(kBackgroundPaintInContentsSpace,
             object->ComputeBackgroundPaintLocationIfComposited());
   EXPECT_EQ(kBackgroundPaintInBorderBoxSpace,

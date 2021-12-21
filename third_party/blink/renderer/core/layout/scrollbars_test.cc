@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -2178,7 +2179,7 @@ TEST_P(ScrollbarsTest, PLSADisposeShouldClearPointerInLayers) {
   request.Complete(R"HTML(
     <!DOCTYPE html>
     <style>
-    /* transform keeps the composited layer */
+    /* transform keeps the graphics layer */
     #div { width: 100px; height: 100px; will-change: transform; }
     .scroller{ overflow: scroll; }
     .big{ height: 2000px; }

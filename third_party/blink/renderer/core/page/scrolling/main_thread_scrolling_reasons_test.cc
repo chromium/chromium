@@ -16,9 +16,11 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -447,8 +449,9 @@ TEST_P(NonCompositedMainThreadScrollingReasonsTest, BorderRadiusTest) {
 TEST_P(NonCompositedMainThreadScrollingReasonsTest,
        ForcedComositingWithLCDRelatedReasons) {
   // With "will-change:transform" we composite elements with
-  // LCDTextRelatedReasons only. For elements with other NonCompositedReasons,
-  // we don't composite them.
+  // LCDTextRelatedReasons only. For elements with other
+  // NonCompositedReasons, we don't create scrollingLayer for their
+  // CompositedLayerMapping therefore they don't get composited.
   GetWebView()->GetSettings()->SetPreferCompositingToLCDTextEnabled(false);
   Document* document = GetFrame()->GetDocument();
   Element* container = document->getElementById("scroller1");
