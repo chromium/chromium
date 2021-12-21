@@ -37,6 +37,8 @@ const test::UIPath kEmailInput = {kOfflineLoginDialog, "emailInput"};
 const test::UIPath kPasswordInput = {kOfflineLoginDialog, "passwordInput"};
 const test::UIPath kNextButton = {kOfflineLoginDialog, "nextButton"};
 const test::UIPath kManagementDisclosure = {kOfflineLoginDialog, "managedBy"};
+const test::UIPath kOnlineRequiredDialog = {kOfflineLoginDialog,
+                                            "onlineRequiredDialog"};
 
 void SetExpectedCredentials(const AccountId& test_account_id,
                             const std::string& password) {
@@ -142,6 +144,23 @@ void OfflineLoginTestMixin::SubmitLoginAuthOfflineForm(
     SessionStateWaiter(session_manager::SessionState::LOGGED_IN_NOT_ACTIVE)
         .Wait();
   }
+}
+
+void OfflineLoginTestMixin::SubmitEmailAndBlockOfflineFlow(
+    const std::string& user_email) {
+  test::OobeJS().ExpectVisible(kOfflineLoginDialog);
+
+  test::OobeJS().CreateDisplayedWaiter(true, kEmailPage)->Wait();
+  test::OobeJS().CreateDisplayedWaiter(false, kPasswordPage)->Wait();
+
+  test::OobeJS().TypeIntoPath(user_email, kEmailInput);
+
+  test::OobeJS().ClickOnPath(kNextButton);
+
+  // User offline signin time expired - we show the dialog
+  // instead of proceeding to the password page.
+  test::OobeJS().CreateVisibilityWaiter(true, kOnlineRequiredDialog)->Wait();
+  test::OobeJS().CreateDisplayedWaiter(false, kPasswordPage)->Wait();
 }
 
 }  // namespace ash
