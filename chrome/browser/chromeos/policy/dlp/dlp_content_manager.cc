@@ -46,34 +46,6 @@ void ReportEvent(GURL url,
   reporting_manager->ReportEvent(src_url, restriction, level);
 }
 
-// Reports events of type DlpPolicyEvent::Mode::WARN_PROCEED to
-// `reporting_manager`.
-void ReportWarningProceededEvent(const GURL& url,
-                                 DlpRulesManager::Restriction restriction,
-                                 DlpReportingManager* reporting_manager) {
-  if (!reporting_manager)
-    return;
-
-  DlpRulesManager* rules_manager =
-      DlpRulesManagerFactory::GetForPrimaryProfile();
-  if (rules_manager) {
-    const std::string src_url = rules_manager->GetSourceUrlPattern(
-        url, restriction, DlpRulesManager::Level::kWarn);
-    reporting_manager->ReportWarningProceededEvent(src_url, restriction);
-  }
-}
-
-// Helper method to create a callback with ReportWarningProceededEvent function.
-bool MaybeReportWarningProceededEvent(GURL url,
-                                      DlpRulesManager::Restriction restriction,
-                                      DlpReportingManager* reporting_manager,
-                                      bool should_proceed) {
-  if (should_proceed) {
-    ReportWarningProceededEvent(url, restriction, reporting_manager);
-  }
-  return should_proceed;
-}
-
 // Helper method to check whether the restriction level is kBlock.
 bool IsBlocked(RestrictionLevelAndUrl restriction_info) {
   return restriction_info.level == DlpRulesManager::Level::kBlock;
@@ -130,7 +102,7 @@ void DlpContentManager::CheckPrintingRestriction(
     }
 
     // Immediately report a warning event.
-    ReportWarningEvent(restriction_info,
+    ReportWarningEvent(restriction_info.url,
                        DlpRulesManager::Restriction::kPrinting);
 
     // Report a warning proceeded event only after a user proceeds with printing
@@ -152,6 +124,33 @@ void DlpContentManager::CheckPrintingRestriction(
 
 DlpContentManager::DlpContentManager() = default;
 DlpContentManager::~DlpContentManager() = default;
+
+void DlpContentManager::ReportWarningProceededEvent(
+    const GURL& url,
+    DlpRulesManager::Restriction restriction,
+    DlpReportingManager* reporting_manager) {
+  if (!reporting_manager)
+    return;
+
+  DlpRulesManager* rules_manager =
+      DlpRulesManagerFactory::GetForPrimaryProfile();
+  if (rules_manager) {
+    const std::string src_url = rules_manager->GetSourceUrlPattern(
+        url, restriction, DlpRulesManager::Level::kWarn);
+    reporting_manager->ReportWarningProceededEvent(src_url, restriction);
+  }
+}
+
+bool DlpContentManager::MaybeReportWarningProceededEvent(
+    GURL url,
+    DlpRulesManager::Restriction restriction,
+    DlpReportingManager* reporting_manager,
+    bool should_proceed) {
+  if (should_proceed) {
+    ReportWarningProceededEvent(url, restriction, reporting_manager);
+  }
+  return should_proceed;
+}
 
 void DlpContentManager::Init() {
   DlpRulesManager* rules_manager =
@@ -276,12 +275,11 @@ void DlpContentManager::MaybeReportEvent(
 }
 
 void DlpContentManager::ReportWarningEvent(
-    const RestrictionLevelAndUrl& restriction_info,
+    const GURL& url,
     DlpRulesManager::Restriction restriction) {
-  DCHECK(IsWarn(restriction_info));
   if (reporting_manager_) {
-    ReportEvent(restriction_info.url, restriction,
-                DlpRulesManager::Level::kWarn, reporting_manager_);
+    ReportEvent(url, restriction, DlpRulesManager::Level::kWarn,
+                reporting_manager_);
   }
 }
 

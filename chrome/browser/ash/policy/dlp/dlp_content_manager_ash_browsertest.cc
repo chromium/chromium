@@ -233,6 +233,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenshotsRestricted) {
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenshotsWarned) {
+  SetupReporting();
   DlpContentManagerAsh* manager = helper_->GetContentManager();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
@@ -256,12 +257,16 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenshotsWarned) {
   EXPECT_FALSE(manager->IsScreenshotApiRestricted(window));
   EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_in));
   EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kWarn, 0u);
 
   helper_->ChangeConfidentiality(web_contents, kScreenshotWarned);
   EXPECT_TRUE(manager->IsScreenshotApiRestricted(fullscreen));
   EXPECT_TRUE(manager->IsScreenshotApiRestricted(window));
   EXPECT_TRUE(manager->IsScreenshotApiRestricted(partial_in));
   EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kWarn, 3u);
 
   web_contents->WasHidden();
   helper_->ChangeVisibility(web_contents);
@@ -269,6 +274,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenshotsWarned) {
   EXPECT_TRUE(manager->IsScreenshotApiRestricted(window));
   EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_in));
   EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kWarn, 4u);
 
   web_contents->WasShown();
   helper_->ChangeVisibility(web_contents);
@@ -276,11 +283,15 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenshotsWarned) {
   EXPECT_TRUE(manager->IsScreenshotApiRestricted(window));
   EXPECT_TRUE(manager->IsScreenshotApiRestricted(partial_in));
   EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kWarn, 7u);
 
   helper_->DestroyWebContents(web_contents);
   EXPECT_FALSE(manager->IsScreenshotApiRestricted(fullscreen));
   EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_in));
   EXPECT_FALSE(manager->IsScreenshotApiRestricted(partial_out));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kWarn, 7u);
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenshotsReported) {

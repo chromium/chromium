@@ -113,6 +113,9 @@ bool DlpContentManagerAsh::IsScreenshotApiRestricted(
       GetAreaConfidentialContentsInfo(area, DlpContentRestriction::kScreenshot);
   MaybeReportEvent(info.restriction_info,
                    DlpRulesManager::Restriction::kScreenshot);
+  if (IsWarn(info.restriction_info))
+    ReportWarningEvent(info.restriction_info.url,
+                       DlpRulesManager::Restriction::kScreenshot);
   DlpBooleanHistogram(dlp::kScreenshotBlockedUMA,
                       IsBlocked(info.restriction_info));
   // TODO(crbug.com/1252736): Properly handle WARN for screenshots API.
@@ -166,8 +169,18 @@ void DlpContentManagerAsh::CheckStoppedVideoCapture(
   // before, warn the user before saving the file.
   if (running_video_capture_info_.has_value() &&
       !running_video_capture_info_->confidential_contents.IsEmpty()) {
+    const GURL& url =
+        running_video_capture_info_->confidential_contents.GetContents()
+            .begin()
+            ->url;
+
+    ReportWarningEvent(url, DlpRulesManager::Restriction::kScreenshot);
+
+    auto reporting_callback = base::BindOnce(
+        &MaybeReportWarningProceededEvent, url,
+        DlpRulesManager::Restriction::kScreenshot, reporting_manager_);
     warn_notifier_->ShowDlpVideoCaptureWarningDialog(
-        std::move(callback),
+        std::move(reporting_callback).Then(std::move(callback)),
         running_video_capture_info_->confidential_contents);
   } else {
     std::move(callback).Run(/*proceed=*/true);
@@ -768,16 +781,26 @@ void DlpContentManagerAsh::CheckScreenCaptureRestriction(
                           DlpRulesManager::Restriction::kScreenshot);
     if (info.confidential_contents.IsEmpty()) {
       // The user already allowed all the visible content.
+      ReportWarningProceededEvent(info.restriction_info.url,
+                                  DlpRulesManager::Restriction::kScreenshot,
+                                  reporting_manager_);
       std::move(callback).Run(true);
       return;
     }
+
+    ReportWarningEvent(info.restriction_info.url,
+                       DlpRulesManager::Restriction::kScreenshot);
+
+    auto reporting_callback = base::BindOnce(
+        &MaybeReportWarningProceededEvent, info.restriction_info.url,
+        DlpRulesManager::Restriction::kScreenshot, reporting_manager_);
     // base::Unretained(this) is safe here because DlpContentManagerAsh is
     // initialized as a singleton that's always available in the system.
     warn_notifier_->ShowDlpScreenCaptureWarningDialog(
         base::BindOnce(&DlpContentManagerAsh::OnDlpWarnDialogReply,
                        base::Unretained(this), info.confidential_contents,
                        DlpRulesManager::Restriction::kScreenshot,
-                       std::move(callback)),
+                       std::move(reporting_callback).Then(std::move(callback))),
         info.confidential_contents);
     return;
   }

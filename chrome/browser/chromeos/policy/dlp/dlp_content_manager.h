@@ -74,6 +74,21 @@ class DlpContentManager : public DlpContentObserver {
   DlpContentManager();
   ~DlpContentManager() override;
 
+  // Reports events of type DlpPolicyEvent::Mode::WARN_PROCEED to
+  // `reporting_manager`.
+  static void ReportWarningProceededEvent(
+      const GURL& url,
+      DlpRulesManager::Restriction restriction,
+      DlpReportingManager* reporting_manager);
+
+  // Helper method to create a callback with ReportWarningProceededEvent
+  // function.
+  static bool MaybeReportWarningProceededEvent(
+      GURL url,
+      DlpRulesManager::Restriction restriction,
+      DlpReportingManager* reporting_manager,
+      bool should_proceed);
+
   // Initializing to be called separately to make testing possible.
   virtual void Init();
 
@@ -119,10 +134,10 @@ class DlpContentManager : public DlpContentObserver {
                         DlpRulesManager::Restriction restriction);
 
   // Reports warning events if `reporting_manager` is configured.
-  void ReportWarningEvent(const RestrictionLevelAndUrl& restriction_info,
+  void ReportWarningEvent(const GURL& url,
                           DlpRulesManager::Restriction restriction);
 
-  // Removes all elements of |contents| that the user has recently already
+  // Removes all elemxents of |contents| that the user has recently already
   // acknowledged the warning for.
   void RemoveAllowedContents(DlpConfidentialContents& contents,
                              DlpRulesManager::Restriction restriction);
