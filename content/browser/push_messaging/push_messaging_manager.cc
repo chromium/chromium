@@ -17,6 +17,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
+#include "content/browser/bad_message.h"
+#include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -32,6 +34,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -172,7 +175,6 @@ void PushMessagingManager::Subscribe(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(options);
 
-  // TODO(mvanouwerkerk): Validate arguments?
   RegisterData data;
 
   data.service_worker_registration_id = service_worker_registration_id;
@@ -190,8 +192,17 @@ void PushMessagingManager::Subscribe(
         blink::mojom::PushRegistrationStatus::NO_SERVICE_WORKER);
     return;
   }
-  data.requesting_origin =
-      service_worker_registration->scope().DeprecatedGetOriginAsURL();
+
+  GURL origin = service_worker_registration->scope().DeprecatedGetOriginAsURL();
+
+  if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
+          render_process_host_.GetID(), url::Origin::Create(origin))) {
+    bad_message::ReceivedBadMessage(&render_process_host_,
+                                    bad_message::PMM_SUBSCRIBE_INVALID_ORIGIN);
+    return;
+  }
+
+  data.requesting_origin = std::move(origin);
 
   DCHECK(!(data.options->application_server_key.empty() &&
            IsRequestFromDocument(render_frame_id_)));
@@ -492,13 +503,20 @@ void PushMessagingManager::Unsubscribe(int64_t service_worker_registration_id,
     return;
   }
 
+  GURL origin = service_worker_registration->scope().DeprecatedGetOriginAsURL();
+
+  if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
+          render_process_host_.GetID(), url::Origin::Create(origin))) {
+    bad_message::ReceivedBadMessage(
+        &render_process_host_, bad_message::PMM_UNSUBSCRIBE_INVALID_ORIGIN);
+    return;
+  }
+
   service_worker_context_->GetRegistrationUserData(
       service_worker_registration_id, {kPushSenderIdServiceWorkerKey},
-      base::BindOnce(
-          &PushMessagingManager::UnsubscribeHavingGottenSenderId,
-          weak_factory_.GetWeakPtr(), std::move(callback),
-          service_worker_registration_id,
-          service_worker_registration->scope().DeprecatedGetOriginAsURL()));
+      base::BindOnce(&PushMessagingManager::UnsubscribeHavingGottenSenderId,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     service_worker_registration_id, std::move(origin)));
 }
 
 void PushMessagingManager::UnsubscribeHavingGottenSenderId(
@@ -572,7 +590,22 @@ void PushMessagingManager::GetSubscription(
     int64_t service_worker_registration_id,
     GetSubscriptionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // TODO(johnme): Validate arguments?
+
+  scoped_refptr<ServiceWorkerRegistration> registration =
+      service_worker_context_->GetLiveRegistration(
+          service_worker_registration_id);
+  if (registration) {
+    const GURL origin = registration->scope().DeprecatedGetOriginAsURL();
+
+    if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
+            render_process_host_.GetID(), url::Origin::Create(origin))) {
+      bad_message::ReceivedBadMessage(
+          &render_process_host_,
+          bad_message::PMM_GET_SUBSCRIPTION_INVALID_ORIGIN);
+      return;
+    }
+  }
+
   service_worker_context_->GetRegistrationUserData(
       service_worker_registration_id,
       {kPushRegistrationIdServiceWorkerKey, kPushSenderIdServiceWorkerKey},
