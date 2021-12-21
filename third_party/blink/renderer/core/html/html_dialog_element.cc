@@ -101,19 +101,16 @@ static void InertSubtreesChanged(Document& document,
     return;
 
   // Update IsInert() flags.
-  auto SetNeedsStyleRecalc = [](Element& element) {
-    element.SetNeedsStyleRecalc(
-        kLocalStyleChange,
-        StyleChangeReasonForTracing::Create(style_change_reason::kDialog));
-  };
+  const StyleChangeReasonForTracing& reason =
+      StyleChangeReasonForTracing::Create(style_change_reason::kDialog);
   if (old_modal_dialog && new_modal_dialog) {
-    SetNeedsStyleRecalc(*old_modal_dialog);
-    SetNeedsStyleRecalc(*new_modal_dialog);
+    old_modal_dialog->SetNeedsStyleRecalc(kLocalStyleChange, reason);
+    new_modal_dialog->SetNeedsStyleRecalc(kLocalStyleChange, reason);
   } else {
     if (Element* root = document.documentElement())
-      SetNeedsStyleRecalc(*root);
+      root->SetNeedsStyleRecalc(kLocalStyleChange, reason);
     if (Element* fullscreen = Fullscreen::FullscreenElementFrom(document))
-      SetNeedsStyleRecalc(*fullscreen);
+      fullscreen->SetNeedsStyleRecalc(kLocalStyleChange, reason);
   }
 
   // When a modal dialog opens or closes, nodes all over the accessibility

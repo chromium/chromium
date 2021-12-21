@@ -102,16 +102,13 @@ void FullscreenElementChanged(Document& document,
   }
 
   // Update IsInert() flags.
-  auto SetNeedsStyleRecalc = [](Element& element) {
-    element.SetNeedsStyleRecalc(
-        kLocalStyleChange,
-        StyleChangeReasonForTracing::Create(style_change_reason::kFullscreen));
-  };
+  const StyleChangeReasonForTracing& reason =
+      StyleChangeReasonForTracing::Create(style_change_reason::kFullscreen);
   if (old_element && new_element) {
-    SetNeedsStyleRecalc(*old_element);
-    SetNeedsStyleRecalc(*new_element);
+    old_element->SetNeedsStyleRecalc(kLocalStyleChange, reason);
+    new_element->SetNeedsStyleRecalc(kLocalStyleChange, reason);
   } else if (Element* root = document.documentElement()) {
-    SetNeedsStyleRecalc(*root);
+    root->SetNeedsStyleRecalc(kLocalStyleChange, reason);
   }
 
   // Any element not contained by the fullscreen element is inert (see
