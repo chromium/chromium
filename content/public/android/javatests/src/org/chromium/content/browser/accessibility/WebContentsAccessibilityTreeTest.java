@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 
@@ -274,6 +275,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1281847")
     public void test_br() {
         performHtmlTest("br.html");
     }
@@ -379,6 +381,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1281847")
     public void test_contenteditableWithEmbeddedContenteditables() {
         performHtmlTest("contenteditable-with-embedded-contenteditables.html");
     }
@@ -511,6 +514,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1280734")
     public void test_frameset() {
         performHtmlTest("frameset.html");
     }
@@ -571,6 +575,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1281847")
     public void test_iframeCoordinatesCrossProcess() {
         performHtmlTest("iframe-coordinates-cross-process.html");
     }
@@ -595,12 +600,14 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1281797")
     public void test_iframePresentational() {
         performHtmlTest("iframe-presentational.html");
     }
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1279960")
     public void test_iframeTransform() {
         performHtmlTest("iframe-transform.html");
     }
@@ -631,6 +638,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1279723")
     public void test_img() {
         performHtmlTest("img.html");
     }
@@ -751,6 +759,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1281847")
     public void test_inputRadio() {
         performHtmlTest("input-radio.html");
     }
@@ -859,6 +868,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1281847")
     public void test_landmark() {
         performHtmlTest("landmark.html");
     }
