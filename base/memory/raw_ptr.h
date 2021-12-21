@@ -538,6 +538,44 @@ class TRIVIAL_ABI raw_ptr {
     return *GetForDereference();
   }
   RAW_PTR_FUNC_ATTRIBUTES T* operator->() const { return GetForDereference(); }
+
+  // PendingMemberFunctionCall implements a temporary object returned by
+  // operator->*.  PendingMemberFunctionCall::operator() runs the member
+  // function taking arguments.
+  template <typename ReturnType, typename... ArgTypes>
+  class PendingMemberFunctionCall {
+    // PMF = pointer to member function
+    using PMF = ReturnType (T::*)(ArgTypes...);
+
+   public:
+    explicit PendingMemberFunctionCall(T* receiver, PMF pmf)
+        : receiver_(receiver), pmf_(pmf) {}
+    // It's possible to support copy and move semantics, but we don't need them
+    // at this moment.
+    PendingMemberFunctionCall(const PendingMemberFunctionCall&) = delete;
+    PendingMemberFunctionCall& operator=(const PendingMemberFunctionCall&) =
+        delete;
+
+    ReturnType operator()(ArgTypes... args) const {
+      return (receiver_->*pmf_)(std::forward<ArgTypes>(args)...);
+    }
+
+   private:
+    T* receiver_;
+    PMF pmf_;
+  };
+
+  // Implements `(my_raw_ptr->*pmf)(arg1, arg2, ...)` as a workaround for
+  // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=103455
+  template <typename PMF,  // PMF = pointer to member function
+            typename... ArgTypes>
+  RAW_PTR_FUNC_ATTRIBUTES const
+      PendingMemberFunctionCall<std::invoke_result_t<PMF, ArgTypes...>,
+                                ArgTypes...>
+      operator->*(PMF&& pmf) const {
+    return {GetForDereference(), std::forward<PMF>(pmf)};
+  }
+
   // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
   // NOLINTNEXTLINE(runtime/explicit)
   RAW_PTR_FUNC_ATTRIBUTES operator T*() const { return GetForExtraction(); }
