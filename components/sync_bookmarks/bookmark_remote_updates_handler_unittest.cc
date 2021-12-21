@@ -431,6 +431,51 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
+       ShouldLogFreshnessToUma) {
+  const base::GUID kGuid = base::GUID::GenerateRandomV4();
+
+  syncer::UpdateResponseDataList updates;
+  updates.push_back(CreateUpdateResponseData(/*guid=*/kGuid,
+                                             /*parent_guid=*/kBookmarkBarGuid));
+
+  base::HistogramTester histogram_tester;
+  updates_handler()->Process(updates,
+                             /*got_new_encryption_requirements=*/false);
+  histogram_tester.ExpectTotalCount(
+      "Sync.NonReflectionUpdateFreshnessPossiblySkewed2.BOOKMARK", 1);
+
+  // Process the same update again, which should be ignored because the version
+  // hasn't increased.
+  updates_handler()->Process(updates,
+                             /*got_new_encryption_requirements=*/false);
+  histogram_tester.ExpectTotalCount(
+      "Sync.NonReflectionUpdateFreshnessPossiblySkewed2.BOOKMARK", 1);
+
+  // Increase version and process again; should log freshness.
+  ++updates[0].response_version;
+  updates_handler()->Process(updates,
+                             /*got_new_encryption_requirements=*/false);
+  histogram_tester.ExpectTotalCount(
+      "Sync.NonReflectionUpdateFreshnessPossiblySkewed2.BOOKMARK", 2);
+
+  // Process remote deletion; should log freshness.
+  updates[0] =
+      CreateTombstoneResponseData(/*guid=*/kGuid,
+                                  /*version=*/updates[0].response_version + 1);
+  updates_handler()->Process(updates,
+                             /*got_new_encryption_requirements=*/false);
+  histogram_tester.ExpectTotalCount(
+      "Sync.NonReflectionUpdateFreshnessPossiblySkewed2.BOOKMARK", 3);
+
+  // Process another (redundant) deletion for the same entity; should not log.
+  ++updates[0].response_version;
+  updates_handler()->Process(updates,
+                             /*got_new_encryption_requirements=*/false);
+  histogram_tester.ExpectTotalCount(
+      "Sync.NonReflectionUpdateFreshnessPossiblySkewed2.BOOKMARK", 3);
+}
+
+TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldProcessRandomlyOrderedDeletions) {
   // Prepare creation updates to construct this structure:
   // bookmark_bar

@@ -20,6 +20,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/base/unique_position.h"
+#include "components/sync/engine/model_type_processor_metrics.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
@@ -298,6 +299,16 @@ void BookmarkRemoteUpdatesHandler::Process(
         ReuploadEntityIfNeeded(update_entity, tracked_entity);
       }
       continue;
+    }
+
+    // Record freshness of the update to UMA. To mimic the behavior in
+    // ClientTagBasedModelTypeProcessor, one scenario is special-cased: an
+    // incoming tombstone for an entity that is not tracked.
+    if (tracked_entity || !update_entity.is_deleted()) {
+      syncer::LogNonReflectionUpdateFreshnessToUma(
+          syncer::BOOKMARKS,
+          /*remote_modification_time=*/
+          update_entity.modification_time);
     }
 
     // The server ID has changed for a tracked entity (matched via client tag).

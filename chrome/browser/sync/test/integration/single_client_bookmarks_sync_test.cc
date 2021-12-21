@@ -1090,6 +1090,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
       GetBookmarkBarNode(kSingleProfileIndex)->children()[0].get()->guid());
   EXPECT_EQ(1, histogram_tester.GetBucketCount("Sync.BookmarkGUIDSource2",
                                                /*kSpecifics=*/0));
+
+  EXPECT_NE(0U,
+            histogram_tester
+                .GetAllSamples(
+                    "Sync.NonReflectionUpdateFreshnessPossiblySkewed2.BOOKMARK")
+                .size());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
