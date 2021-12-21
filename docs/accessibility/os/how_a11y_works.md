@@ -13,6 +13,9 @@ For Chrome OS, this document will provide the reader with a technical survey of
 the major system components to give a good foundation for additional
 exploration.
 
+![Chrome OS Accessibility Architecture: entities and how they relate to one
+another.](figures/architecture.png)
+
 At a glance, Chrome OS accessibility roughly decomposes into three major
 entities, separated by large abstractions like process boundaries or api layers.
 
