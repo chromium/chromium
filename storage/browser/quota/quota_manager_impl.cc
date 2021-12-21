@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <sstream>
 
 #include <algorithm>
 #include <functional>
@@ -26,6 +25,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
@@ -761,14 +761,13 @@ class QuotaManagerImpl::BucketDataDeleter : public QuotaTask {
       QuotaClientType client_type = client_and_type.second;
       if (quota_client_types_.contains(client_type)) {
         static int tracing_id = 0;
-        std::ostringstream bucket_params;
-        bucket_params << "storage_key: " << bucket_.storage_key.Serialize()
-                      << ", is_default: " << bucket_.is_default
-                      << ", id: " << bucket_.id;
+        std::string bucket_params = base::StrCat(
+            {"storage_key: ", bucket_.storage_key.Serialize(),
+             ", is_default: ", bucket_.is_default ? "true" : "false",
+             ", id: ", base::NumberToString(bucket_.id.value())});
         TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
             "browsing_data", "QuotaManagerImpl::BucketDataDeleter",
-            ++tracing_id, "client_type", client_type, "bucket",
-            bucket_params.str());
+            ++tracing_id, "client_type", client_type, "bucket", bucket_params);
         client->DeleteStorageKeyData(
             bucket_.storage_key, bucket_.type,
             base::BindOnce(&BucketDataDeleter::DidDeleteBucketData,
