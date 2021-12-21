@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Offline.Measurements.HttpProbeResult"
-    enum="OfflineMeasurementsHttpProbeResult" expires_after="2022-04-17">
+    enum="OfflineMeasurementsHttpProbeResult" expires_after="2022-06-19">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Offline.Measurements.IsAirplaneModeEnabled"
-    enum="BooleanEnabled" expires_after="2022-04-17">
+    enum="BooleanEnabled" expires_after="2022-06-19">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Offline.Measurements.IsRoaming" enum="Boolean"
-    expires_after="2022-04-17">
+    expires_after="2022-06-19">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Offline.Measurements.TimeBetweenChecks" units="minutes"
-    expires_after="2022-04-17">
+    expires_after="2022-06-19">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -92,7 +92,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Offline.Measurements.UserState"
-    enum="OfflineMeasurementsUserState" expires_after="2022-04-17">
+    enum="OfflineMeasurementsUserState" expires_after="2022-06-19">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -729,7 +729,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OfflinePages.DidNavigationThrottleCancelNavigation"
-    enum="Boolean" expires_after="2022-04-17">
+    enum="Boolean" expires_after="2022-06-19">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
