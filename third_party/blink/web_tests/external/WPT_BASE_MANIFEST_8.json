@@ -1155,6 +1155,13 @@
        {}
       ]
      ],
+     "triply-nested-with-fixedpos-in-abspos-crash.html": [
+      "8bed96f8c028df7c90567cd74cd7eb7af4ff028e",
+      [
+       null,
+       {}
+      ]
+     ],
      "with-custom-layout-on-same-element-crash.https.html": [
       "7e1c804258ab54290047a4b712f0bff613acd168",
       [
@@ -2943,6 +2950,15 @@
     }
    },
    "selection": {
+    "crashtests": {
+     "table.html": [
+      "36eb803a5cbbe6b397ebb76659d1da7a8ae5d881",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "selection-select-all-move-input-crash.html": [
      "6f692dc5e7d69a30a407f107268c9e012efcd9e3",
      [
@@ -78081,6 +78097,19 @@
        {}
       ]
      ],
+     "change-block-background.html": [
+      "48d33e39b467fab57e26628bd28de1915cc1ff9c",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "change-inline-color.html": [
       "c4334af0d7377ad9cdae4d2c13bf36a6b75554f3",
       [
@@ -100797,6 +100826,19 @@
        {}
       ]
      ],
+     "flexbox-iframe-intrinsic-size-001.html": [
+      "8c5127b690fb687cdc6fb4ceb5a311484e66d2d6",
+      [
+       null,
+       [
+        [
+         "/css/css-flexbox/flexbox-iframe-intrinsic-size-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "flexbox-items-as-stacking-contexts-001.xhtml": [
       "fac905339110967578289f18ae156e4a651d81ab",
       [
@@ -119590,6 +119632,32 @@
         [
          [
           "/css/css-highlight-api/painting/custom-highlight-painting-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "custom-highlight-painting-text-decoration-001.html": [
+       "df6e5dd32cc9260743ab096acf3bb13cf8f9abfb",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-painting-text-decoration-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "custom-highlight-painting-text-decoration-dynamic-001.html": [
+       "050c7c77ce7d506148a0525b177fd40189b93ed0",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-painting-text-decoration-dynamic-001-ref.html",
           "=="
          ]
         ],
@@ -142891,6 +142959,19 @@
        [
         [
          "/css/css-pseudo/target-text-dynamic-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "target-text-text-decoration-001.html": [
+      "1709ce70816a9f384b2ad86d74e03284aea7b50e",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/target-text-text-decoration-001-ref.html",
          "=="
         ]
        ],
@@ -172544,6 +172625,19 @@
        [
         [
          "/css/css-transforms/transform-lime-square-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "3d-scene-with-iframe-001.html": [
+      "075e4ad1bc0984996f81789ff90b719142ca6e09",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/3d-scene-with-iframe-001-ref.html",
          "=="
         ]
        ],
@@ -244937,6 +245031,10 @@
       "7cea1fb1ddb24e046845732f627f0459c2cbfc4a",
       []
      ],
+     "flexbox-iframe-intrinsic-size-001-ref.html": [
+      "58f2ee6905f39ed2bf41c97bb9f30ed27005e190",
+      []
+     ],
      "flexbox-items-as-stacking-contexts-001-ref.xhtml": [
       "7e02b799f0f75b5d238ecc3c7bbaf87a53572e88",
       []
@@ -255648,6 +255746,14 @@
        "a89d86dc819c3235846a83a49b58755459098ace",
        []
       ],
+      "custom-highlight-painting-text-decoration-001-ref.html": [
+       "568e5f93213d941f98bd55a488dbf619714b87d5",
+       []
+      ],
+      "custom-highlight-painting-text-decoration-dynamic-001-ref.html": [
+       "3a713aa8440c5877253ce9f612f2c90515f9dd60",
+       []
+      ],
       "resources": {
        "iframe-code.html": [
         "a4a1829be229acb4c0cf75cbb0e2885060741d3f",
@@ -260477,11 +260583,11 @@
      ],
      "parsing": {
       "marker-supported-properties-expected.txt": [
-       "f99b2ca3319f820aac96b8967c124f6ad36af545",
+       "1d6999f2ffb0e8722aa14df88d01a5e79ae48044",
        []
       ],
       "marker-supported-properties-in-animation-expected.txt": [
-       "6226c7d4ad64fdcae458fe867177af7835cff6bc",
+       "a389ccdc5a6faa2e4d4d4c432825a6c4f3502dd3",
        []
       ]
      },
@@ -260643,6 +260749,10 @@
      ],
      "target-text-lime-ref.html": [
       "bd94d694359b4bac1e226d3520af3090c30c7ebe",
+      []
+     ],
+     "target-text-text-decoration-001-ref.html": [
+      "b15f74c1dac7da3000f9f9fcc71ba86d5336a072",
       []
      ],
      "target-text-two-words-ref.html": [
@@ -266677,10 +266787,6 @@
       "f196c8221df606e3a22e3019b5cd47ab9bf6e82b",
       []
      ],
-     "inheritance-expected.txt": [
-      "1f27a3ed9719a56aa8fb9dcc14ef651b3af1d975",
-      []
-     ],
      "invalidation": {
       "reference": {
        "text-decoration-invalidation-dashed-ref.html": [
@@ -266712,6 +266818,10 @@
       ],
       "text-decoration-valid-expected.txt": [
        "ce9163e42af7cc3a775e7a51246038305ed184b5",
+       []
+      ],
+      "text-emphasis-position-computed-expected.txt": [
+       "c2427019bf1bd314e9f23b0ae5af48295182a1e9",
        []
       ]
      },
@@ -267345,6 +267455,10 @@
      }
     },
     "css-transforms": {
+     "3d-scene-with-iframe-001-ref.html": [
+      "d984f8a6e9d6f9c221affc07628f8b353dccb010",
+      []
+     ],
      "3dtransform-and-filter-no-perspective-001-ref.html": [
       "bb7ae235fef0c4216de99c9c0ab3bec26db33fd4",
       []
@@ -269282,7 +269396,7 @@
         []
        ],
        "text-emphasis-color-expected.txt": [
-        "a101fe8fdd471023110b32a23b3ed83bd1e0d05d",
+        "772c71bb80d30d1cb0cd222edb7e64eb9b145cdc",
         []
        ],
        "text-justify-expected.txt": [
@@ -271815,6 +271929,10 @@
      ],
      "overconstrained-rel-pos-rtl-top-bottom-vrl-006-ref.xht": [
       "da97328c1438f4220e4b64d80266eb335329b356",
+      []
+     ],
+     "padding-percent-orthogonal-dynamic-expected.txt": [
+      "f96daef5661e09b360ec008974f05600d480e5cb",
       []
      ],
      "reference": {
@@ -315175,7 +315293,7 @@
        []
       ],
       "accumulation-per-property-002-expected.txt": [
-       "d9a60f3c6494e437a02371d362d804c6d473d3e9",
+       "b508e5abe0c28e9486724ace6bcba15ea0b59d05",
        []
       ],
       "addition-per-property-001-expected.txt": [
@@ -315183,7 +315301,7 @@
        []
       ],
       "addition-per-property-002-expected.txt": [
-       "09a6e1c3868b8a2c05e875404453d7d0a8be24fd",
+       "2047aeaab037b7606af4b192455278aa63b258a2",
        []
       ],
       "interpolation-per-property-001-expected.txt": [
@@ -315191,11 +315309,11 @@
        []
       ],
       "interpolation-per-property-002-expected.txt": [
-       "ecf94a6d89d10fb1ead81b3af5dfeaee95e0a8a0",
+       "9e3c434080bcd9437faa790a11567da6dbffcdb2",
        []
       ],
       "property-list.js": [
-       "e9b7c524a749f2a8372868a1245224cf0f7d01d5",
+       "60b0b595150cd92486d3ed41abba6188fd4d4011",
        []
       ],
       "property-types.js": [
@@ -316554,26 +316672,6 @@
        "bd5db0cfeba7bbc8aaf23c3151109cf48094ff09",
        []
       ]
-     },
-     "bidi": {
-      "new_session": {
-       "__init__.py": [
-        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
-        []
-       ]
-      },
-      "session_subscribe": {
-       "__init__.py": [
-        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
-        []
-       ]
-      },
-      "session_unsubscribe": {
-       "__init__.py": [
-        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
-        []
-       ]
-      }
      },
      "close_window": {
       "__init__.py": [
@@ -368612,14 +368710,14 @@
        ]
       ],
       "marker-supported-properties-in-animation.html": [
-       "349c56d8ba08076c8889f3459f053192ea898628",
+       "d2b9961351fb20c534caf2f86041ba1c2d47603b",
        [
         null,
         {}
        ]
       ],
       "marker-supported-properties.html": [
-       "ab03b9825deee02142bd0a03a21e9ff95feaa82f",
+       "ddcf98bfcf283fbb72d08396a6676a686bf02da5",
        [
         null,
         {}
@@ -374624,7 +374722,7 @@
     },
     "css-text-decor": {
      "inheritance.html": [
-      "9ee65b4e5926f043b4841bc1f5a7cf84e214ce49",
+      "b106343742e03aa305a3017610272c8692b2a428",
       [
        null,
        {}
@@ -374738,6 +374836,20 @@
       ],
       "text-decoration-valid.html": [
        "ad82dd203cdfafc5ee5960837a23bf14cd661cf3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "text-emphasis-position-computed.html": [
+       "f288fdf57edc5cf2e463441415c755e1d99e51ce",
+       [
+        null,
+        {}
+       ]
+      ],
+      "text-emphasis-style-computed.html": [
+       "5aa84ab08b615568b96812670674caade7b663ab",
        [
         null,
         {}
@@ -380099,6 +380211,13 @@
      ],
      "orthogonal-parent-shrink-to-fit-001x.html": [
       "09dd171ed7a08bd07491394e683f0d1c4c9cbb64",
+      [
+       null,
+       {}
+      ]
+     ],
+     "padding-percent-orthogonal-dynamic.html": [
+      "402991bca61a7b57353ed353603a0af97a9d13ef",
       [
        null,
        {}
@@ -462042,7 +462161,7 @@
        ]
       ],
       "reporterror.any.js": [
-       "080aa075d558bbdea4d1aa5f23e07165c5faf97d",
+       "b9e7ba25bc6a3938783f7bf32472ba422e815ae2",
        [
         "html/webappapis/scripting/reporterror.any.html",
         {}
@@ -562037,33 +562156,6 @@
         }
        ]
       ]
-     },
-     "bidi": {
-      "log_entry_added": {
-       "event_buffer.py": [
-        "8d0bbac3a4b60d58f9dc8d667b95eb280fc2fa4c",
-        [
-         null,
-         {}
-        ]
-       ],
-       "stacktrace.py": [
-        "c1aec53b117d3bf607d14678c20cd65206a9a53d",
-        [
-         null,
-         {}
-        ]
-       ]
-      },
-      "session_status": {
-       "status.py": [
-        "eee102fee71f7de9e13740938d2fb8cc23e6b94d",
-        [
-         null,
-         {}
-        ]
-       ]
-      }
      },
      "close_window": {
       "close.py": [
