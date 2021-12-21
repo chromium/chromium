@@ -166,13 +166,17 @@ void IntentPickerTabHelper::DidFinishNavigation(
   // TODO(crbug.com/826982): Check is not error page here. Adding this check
   // will break the browser test, given this is a refactor CL, will add check in
   // follow up CL.
+  if (!web_contents()) {
+    return;
+  }
   if (navigation_handle->IsInPrimaryMainFrame() &&
       navigation_handle->HasCommitted() &&
       (!navigation_handle->IsSameDocument() ||
        navigation_handle->GetURL() !=
-           navigation_handle->GetPreviousMainFrameURL()) &&
-      navigation_handle->GetURL().SchemeIsHTTPOrHTTPS()) {
-    bool should_show_icon = apps::MaybeShowIntentPicker(navigation_handle);
+           navigation_handle->GetPreviousMainFrameURL())) {
+    bool should_show_icon = navigation_handle->GetURL().SchemeIsHTTPOrHTTPS()
+                                ? apps::MaybeShowIntentPicker(navigation_handle)
+                                : false;
     IntentPickerTabHelper::SetShouldShowIcon(web_contents(), should_show_icon);
   }
 }
