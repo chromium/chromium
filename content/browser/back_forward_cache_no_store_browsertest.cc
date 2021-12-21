@@ -633,9 +633,16 @@ class BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange
 // TODO(https://crbug.com/1231849): flaky on Cast Linux.
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and gets restored if cookies do not change.
+#if BUILDFLAG(IS_CHROMECAST)
+#define MAYBE_PagesWithCacheControlNoStoreRestoreFromBackForwardCache \
+  DISABLED_PagesWithCacheControlNoStoreRestoreFromBackForwardCache
+#else
+#define MAYBE_PagesWithCacheControlNoStoreRestoreFromBackForwardCache \
+  PagesWithCacheControlNoStoreRestoreFromBackForwardCache
+#endif
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange,
-    PagesWithCacheControlNoStoreRestoreFromBackForwardCache) {
+    MAYBE_PagesWithCacheControlNoStoreRestoreFromBackForwardCache) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/main_document");
   net::test_server::ControllableHttpResponse response2(embedded_test_server(),
