@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="az">
+<translation id="1016055326260264411">Ürək ikonası, Sevimli mənasını daşıya bilər</translation>
+<translation id="1088086359088493902">Saniyələr</translation>
+<translation id="1142001580032786438">Həftə seçicisini göstərin</translation>
+<translation id="1171774979989969504">Lütfən, e-poçt ünvanınızı daxil edin.</translation>
+<translation id="1178581264944972037">Durdurun</translation>
+<translation id="1193819188371549072">Günəş ikonası, Gündüz mənasını daşıya bilər</translation>
+<translation id="1197443222693564123">"Üç nöqtə" ikonası, "Ardı" mənasını daşıya bilər</translation>
+<translation id="1231311685714446044">"Məyus sima" ikonası</translation>
+<translation id="1248712480115826517">"Böyüdücü şüşə" ikonası, Axtarış və ya Zoom mənasını daşıya bilər</translation>
+<translation id="1253694090376430115">"Alış-veriş torbası" ikonası</translation>
+<translation id="1292759642840406299">Kompas ikonası</translation>
+<translation id="1301463715094321941">"Telefon dəstəyi" ikonası, Zəng mənasını daşıya bilər</translation>
+<translation id="1306460908038601864">Deaktiv</translation>
+<translation id="1311894908970423688">Dəyər <ph name="VALUE_DATE_OR_TIME" /> olmalıdır.</translation>
+<translation id="1312685112570645372">"Sual işarəsi" ikonası</translation>
+<translation id="1386033905837826130">Paylaşım ikonası</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> element</translation>
+<translation id="1480676835519562650">çox sayda seçilə bilər, <ph name="SELECTED" />/<ph name="COUNT" /> seçilib.</translation>
+<translation id="157989258522571434">Təqvim ikonası</translation>
+<translation id="1588438908519853928">Normal</translation>
+<translation id="1591562245178063882">Bu ay</translation>
+<translation id="1598348607589961718">"Yuxarı ox" ikonası, Yükləmə mənasını daşıya bilər</translation>
+<translation id="1632409084477505723">Endirmə ikonası</translation>
+<translation id="1637811476055996098">Faylları seçin</translation>
+<translation id="1658806147928973309">"Mikrofonu susdurun" ikonası</translation>
+<translation id="1677491356035817504">"Aşağı şevron" ikonası, Genişləndirmə mənasını daşıya bilər</translation>
+<translation id="1681022320378710418">cari vaxt</translation>
+<translation id="1727839386348365796">Pipet</translation>
+<translation id="1727886345390570319">bağlanmış subtitrlər menyusunu gizlədin</translation>
+<translation id="1729654308190250600">Boş olmayan e-poçt ünvanı daxil edin.</translation>
+<translation id="173386679947102756">Zınqırov ikonası, Bildirişlər mənasını daşıya bilər</translation>
+<translation id="175222816025430946">"Üç xətt" ikonası, Menyu mənasını daşıya bilər</translation>
+<translation id="1758486001363313524">Digər...</translation>
+<translation id="1787192514241997742">cəmi vaxt: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">X ikonası, Bağlamaq və ya Silmək mənasını daşıya bilər</translation>
+<translation id="1804122079878165329">"Sağ ox" ikonası, İrəli mənasını daşıya bilər</translation>
+<translation id="1822429046913737220">AM/PM</translation>
+<translation id="1832974991323546415">uzaqdann idarəetmə cihazında oxudun</translation>
+<translation id="1921819250265091946">dd</translation>
+<translation id="1938124657309484470">Dəyər <ph name="MAXIMUM_DATE_OR_TIME" /> və ya daha öncə olmalıdır.</translation>
+<translation id="1946271899482435442">Tarix seçicisini göstərin</translation>
+<translation id="1993104285338243655">Kopyalamağa keçildi</translation>
+<translation id="2031987842108996681">Qırmızı kanal</translation>
+<translation id="2060505056492490888">'<ph name="DOT" />' '<ph name="INVALIDDOMAIN" />' daxilində yanlış pozisiya işlətdi.</translation>
+<translation id="2131189924434603515">"Kiçik i" ikonası, İnformasiya mənasını daşıya bilər</translation>
+<translation id="2148716181193084225">Bu gün</translation>
+<translation id="2177093963727449806">"Təzələ" ikonası</translation>
+<translation id="221177765244658491">"Susdurun" ikonası</translation>
+<translation id="2226276347425096477">Mətni <ph name="MAX_CHARACTERS" /> və ya daha az simvola qədər azaldın (hazırda <ph name="CURRENT_LENGTH" /> simvol işlədirsiniz).</translation>
+<translation id="2246498165605549352">Yerli Fayl</translation>
+<translation id="2247351761944213033"><ph name="WEEKNUMBER" /> həftə, <ph name="YEAR" /></translation>
+<translation id="2265260019987849198">Ev ikonası</translation>
+<translation id="2277199496770840904">Trek <ph name="NUMBER" /></translation>
+<translation id="2307576640803031502">siyahıda <ph name="INDEX" />/<ph name="COUNT" /> element</translation>
+<translation id="2320316128050046908">"Səsi artırın" ikonası</translation>
+<translation id="2393030564806080191">Altırəqəmli rəng dəyəri</translation>
+<translation id="2398813069815436052">dialoq açılıb.</translation>
+<translation id="2427288427427702833">"Tətbiqləri işə salın" ikonası</translation>
+<translation id="245932805758469625">videonun göstərilməmiş saniyələrinin sayı</translation>
+<translation id="248395913932153421">Gün</translation>
+<translation id="2507943997699731163">Lütfən, bu sahəni doldurun.</translation>
+<translation id="2530182415807757784">çox sayda seçilə bilər, heç biri seçilməyib.</translation>
+<translation id="2561842179657104141">daha çox media kontrolları göstərin</translation>
+<translation id="2572483411312390101">oxudun</translation>
+<translation id="2613802280814924224">Düzgün dəyər daxil edin. Ən yaxın düzgün dəyər: <ph name="VALID_VALUE" />.</translation>
+<translation id="2634240155926812724">Yaşıl kanal</translation>
+<translation id="2653659639078652383">Təqdim edin</translation>
+<translation id="2723001399770238859">audio</translation>
+<translation id="2746543609216772311">Dəyər <ph name="MINIMUM_DATE_OR_TIME" /> və ya sonrakı buraxılış olmalıdır.</translation>
+<translation id="2761667185364618470">Davam etmək istəyirsinizsə, bu qutunu işarələyin.</translation>
+<translation id="2908441821576996758">Lütfən, e-poçt ünvanlarının vergüllə ayrılmış siyahısını daxil edin.</translation>
+<translation id="2987445268505333132">"Zəngi Bitirin" ikonası</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3075154866155599887">Lütfən, etibarlı dəyər daxil edin. Sahə natamamdır və ya tarix yanlışdır.</translation>
+<translation id="310520048233152454">URL daxil edin.</translation>
+<translation id="3220661731597678625">cari addım</translation>
+<translation id="3321030238473337787">Oxutma sürəti</translation>
+<translation id="3329013043687509092">Saturasiya</translation>
+<translation id="3435893727187534376">"Dörd çölə ox" ikonası, Genişləndirmə mənasını daşıya bilər</translation>
+<translation id="3450233048674729344">Qiymət <ph name="MAXIMUM" /> göstəricisindən kiçik və ya ona tay olmalıdır.</translation>
+<translation id="3685101356851116974">Şəkil təsviri yoxdur</translation>
+<translation id="3732799496749320381">mm</translation>
+<translation id="3754210790023674521">Şəkildə şəkil rejimindən çıxın</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3822383571486410024">Lütfən, bu mətni <ph name="MIN_CHARACTERS" /> və ya daha çox simvoladək uzadın (hazırda <ph name="CURRENT_LENGTH" /> simvol istifadə edirsiniz).</translation>
+<translation id="383465348367842624">'<ph name="ATSIGN" />' ilə davam edən hissə '<ph name="INVALIDCHARACTER" />' simvolunu içərməməlidir.</translation>
+<translation id="3845063161460806746">"Bəyənirəm" ikonası, Bəyənmə mənasını daşıya bilər</translation>
+<translation id="3846214748874656680">Tam ekrandan çıxın</translation>
+<translation id="3904695548697879411">Twitter ikonası</translation>
+<translation id="405782047075994056">"Sol ox" ikonası, Geri mənasını daşıya bilər</translation>
+<translation id="4103419683916926126">Millisaniyə</translation>
+<translation id="4201051445878709314">Keçən ayı göstərin</translation>
+<translation id="4302299849305494927">"Dinamik" ikonası, səs mənasını daşıya bilər</translation>
+<translation id="4360991593054037559">Düzgün dəyər daxil edin. Ən uyğun düzgün dəyərlər: <ph name="VALID_VALUE_LOW" /> və <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4363712632243441817">"Yayım" ikonası, "Videonu uzaq ekranda yayımlayın" mənasını daşıya bilər</translation>
+<translation id="4371899966896349864">oxutma sürəti menyusunu gizlədin</translation>
+<translation id="4384249794467006333">Bu şəkil etiketlənməyib. Şəkil təsvirlərini əldə etmək üçün yuxarı sağdakı Daha Çox Seçim menyusunu açın.</translation>
+<translation id="4436211924730548766">"Sol şevron" ikonası</translation>
+<translation id="4444765639179266822">Ola bilər: <ph name="OCR_TEXT" /></translation>
+<translation id="4522570452068850558">Detallar</translation>
+<translation id="4540719609030900356">"Kağız təyyarə" ikonası, "Göndərin" mənasını daşıya bilər</translation>
+<translation id="4576178047100686001">Bu şəkil etiketlənməyib. Şəkil təsvirlərini əldə etmək üçün yuxarı soldakı Daha Çox Seçim menyusunu açın.</translation>
+<translation id="4577968231433672268">"Üstəgəl" ikonası, Əlavə etmə mənasını daşıya bilər</translation>
+<translation id="4611825382945206498">Dairəvi ox ilə saat, Tarixçə mənasını daşıya bilər</translation>
+<translation id="4664250907885839816">'<ph name="ATSIGN" />' bir hissəsi '<ph name="INVALIDCHARACTER" />' simvolunu içərməməlidir.</translation>
+<translation id="4679853894970977730">Kamera ikonası, "Şəkil Çəkin" mənasını daşıya bilər</translation>
+<translation id="4718048029184481307">Şəkildə şəkil rejimində oxudulur</translation>
+<translation id="4748357248530471599">Kəsilmiş sahə tam ekrana keçirilsin</translation>
+<translation id="4763480195061959176">video</translation>
+<translation id="4812940957355064477">Rəqəm daxil edin.</translation>
+<translation id="4832245585893280119">Hava ikonası</translation>
+<translation id="4908855810237020461">Saat ikonası, Vaxt mənasını daşıya bilər</translation>
+<translation id="4912200001568447310">cari element</translation>
+<translation id="4915360478455618802">Vaxt seçicisini göstərin</translation>
+<translation id="4924138096460353083">qeyri-müəyyən</translation>
+<translation id="4950364064308314478">Yerli tarix və vaxt seçicisini göstərin</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> seçilib</translation>
+<translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> seçilib</translation>
+<translation id="4992066212339426712">Səssiz rejimdən çıxın</translation>
+<translation id="49969490063480558">'Aşağıdakı bir hissəsi daxil edin <ph name="ATSIGN" /> '. " <ph name="INVALIDADDRESS" /> "Tam deyil.</translation>
+<translation id="5090250355906949916">video vaxt tənzimləyicisi</translation>
+<translation id="509897012892853729">Mavi kanal</translation>
+<translation id="5117590920725113268">Gələn ayı göstərin</translation>
+<translation id="5121688653159243920">"Markerlənmiş siyahı" ikonası</translation>
+<translation id="5164977714490026579">Dəyər daha böyük və ya <ph name="MINIMUM" /> ilə bərabər olmalıdır.</translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5214400792580101697">"Dayandır" ikonası</translation>
+<translation id="5307600278924710095">'<ph name="ATSIGN" />' ilə davam edən hissəni daxil edin. '<ph name="INVALIDADDRESS" />' natamamdır.</translation>
+<translation id="5334352251556557839">Medianı oxutmaq mümkün deyil.</translation>
+<translation id="537648784377940524">Minimum tarix (<ph name="MIN_DATE_OR_TIME" />) Maksimum tarixdən (<ph name="MAX_DATE_OR_TIME" />) əvvəl gəlməlidir.</translation>
+<translation id="5378437566635403538">genişləndirilib, dialoq açılıb.</translation>
+<translation id="5425179576310518467">cari tarix</translation>
+<translation id="5466621249238537318">Bir və ya daha çox faylı seçin.</translation>
+<translation id="5468998798572797635">tam ekrandan çıxın</translation>
+<translation id="5516235301412634559">0.75</translation>
+<translation id="5537725057119320332">Yayım</translation>
+<translation id="5546461542133609677">səsssiz etməyin</translation>
+<translation id="5586467629893654334">Ay ikonası, gecə və ya yatma mənasını daşıya bilər</translation>
+<translation id="5599474660109692598">"Cizgi filmi qabarcığı" ikonası, Söhbət mənasını daşıya bilər</translation>
+<translation id="5617165654945759937">Karandaş ikonası, Redaktə mənasını daşıya bilər</translation>
+<translation id="5621627136377293173">Mikrofon ikonası, Qeydəalma mənasını daşıya bilər</translation>
+<translation id="5630795885300617244">10 saniyəni keçmək üçün solda və ya sağda iki dəfə klikləyin</translation>
+<translation id="5647477850810769350">Qulaqlıq ikonası</translation>
+<translation id="5677946354068040947">əlavə seçimlər</translation>
+<translation id="5720390168116663167">"Yuxarı ox" ikonası</translation>
+<translation id="5724910823641175216">"Saat əqrəbi istiqamətində ox" ikonası, Təkrarlama mənasını daşıya bilər</translation>
+<translation id="57838592816432529">Səssiz</translation>
+<translation id="5786442179789148008">oxutma sürəti menyusunu göstərin</translation>
+<translation id="5787939484346677755">genişləndirilib, avtomatik tamamlama seçimləri əlçatandır.</translation>
+<translation id="5838904342468928321">Bulud ikonası</translation>
+<translation id="5860033963881614850">Deaktiv</translation>
+<translation id="588258955323874662">Tam ekran</translation>
+<translation id="5888666972993069672">İndi <ph name="DEVICE_FRIENDLY_NAME" /> cihazına yayımlanır</translation>
+<translation id="5916664084637901428">Aktiv</translation>
+<translation id="5939518447894949180">Sıfırlayın</translation>
+<translation id="5966707198760109579">Həftə</translation>
+<translation id="5985507339671257014">0.5</translation>
+<translation id="6011459053400940133">səs slayderi</translation>
+<translation id="6015796118275082299">İl</translation>
+<translation id="6054619856758804514">"Zibil qutusu" ikonası, Silmə mənasını daşıya bilər</translation>
+<translation id="6054638203631275602">"Xoşbəxt üz" ikonası</translation>
+<translation id="608465159662359598">Dişli çarx və ya açar ikonası, Ayarlar mənasını daşıya bilər</translation>
+<translation id="6165053282446038410">genişləndirilib, <ph name="COUNT" /> avtomatik tamamlama seçimi əlçatandır.</translation>
+<translation id="6209276755895393898">Ola bilər: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">cari səhifə</translation>
+<translation id="6240633443440794881">Zərf ikonası, Məktub mənasını daşıya bilər</translation>
+<translation id="6247212328664111379">Şəxs ikonası</translation>
+<translation id="6281588256137006900">Açıqlıq</translation>
+<translation id="6310801910862476708">Şəkil içində Şəkil düyməsindən çıxın</translation>
+<translation id="6350382280299255966">"Gülümsəyən sima" ikonası, Emoji mənasını daşıya bilər</translation>
+<translation id="6398862346408813489">Ay seçimi panelini göstərin</translation>
+<translation id="6404546809543547843">audio zaman skrubberi</translation>
+<translation id="6443871981718447451">Subtitr menyusu göstərilsin</translation>
+<translation id="6550675742724504774">Seçimlər</translation>
+<translation id="6572309429103589720">Yanlış qrammatika</translation>
+<translation id="658823671542763450">tam ekrana daxil olun</translation>
+<translation id="6632254525813309835">"Saat əqrəbinə əks istiqamətdə ox" ikonası, Ləğv etmə mənasını daşıya bilər</translation>
+<translation id="6643016212128521049">Silin</translation>
+<translation id="668171684555832681">Digər...</translation>
+<translation id="6709093583001123835">Dəyər <ph name="VALUE" /> olmalıdır.</translation>
+<translation id="6709570249143506788">Oxutma keyfiyyəti pisdir</translation>
+<translation id="6790428901817661496">Oxudun</translation>
+<translation id="6820355525329141109">Plaqin yüklənə bilmədi.</translation>
+<translation id="6831465880655513317">Dolğunluq və açıqlığı seçmək üçün iki-ölçülü slayder ilə rəng bölməsi</translation>
+<translation id="6843725295806269523">səssiz</translation>
+<translation id="6889412865110485830">"Alış-veriş arabası" ikonası</translation>
+<translation id="6919891270253167948">1.5</translation>
+<translation id="6940482800520966738">Ulduz ikonası</translation>
+<translation id="6941933287844615239">medianı endirin</translation>
+<translation id="698788488269350478">genişləndirilib.</translation>
+<translation id="6989848892321993519">Bu mətni <ph name="MIN_CHARACTERS" /> və ya daha çox simvola qədər uzadın (hazırda 1 simvol istifadə edirsiniz).</translation>
+<translation id="7022838723850801004">Xoşbəxt və məyus sima emoji ikonası</translation>
+<translation id="709897737746224366">Tələb olunan formata uyğun edin.</translation>
+<translation id="7102274145889307184">cari məkan</translation>
+<translation id="7118469954320184356">Təsvir əlçatan deyil.</translation>
+<translation id="7263440858009898357">Lütfən, siyahıdan bir element seçin.</translation>
+<translation id="7320576522385648310">buferizasiya</translation>
+<translation id="7341556277900466204">Rəng bölməsi</translation>
+<translation id="7364796246159120393">Fayl seçin</translation>
+<translation id="739024184232394898">Digər...</translation>
+<translation id="7410239719251593705">Yetkin insanlar üçün uyğun olan kontentdir. Təsvir əlçatan deyil.</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
+<translation id="7514365320538308">Endirmə</translation>
+<translation id="7533959249147584474">Şəklin təsviri yoxdur</translation>
+<translation id="7673697353781729403">Saat</translation>
+<translation id="7742609585924342092">Məkan ikonası</translation>
+<translation id="7745230546936012372">Olmayan şəkil təsvirlərini əldə etmək üçün kontekst menyunu açın.</translation>
+<translation id="7750228210027921155">Şəkil içində şəkil</translation>
+<translation id="775297008183122718">Yanlış giriş</translation>
+<translation id="7782515065589691344">1.25</translation>
+<translation id="7789962463072032349">durdurun</translation>
+<translation id="7796968532285333302">"Aşağı şevron" ikonası, Yığcamlaşdırma mənasını daşıya bilər</translation>
+<translation id="7819026464394689674">"Durdurun" ikonası</translation>
+<translation id="7852167693871241274">Çalar slayderi</translation>
+<translation id="7855610409192055689">Sancaq ikonası, qoşma mənasını daşıya bilər</translation>
+<translation id="7888071071722539607">E-poçt ünvanına '<ph name="ATSIGN" />' daxil edin. '<ph name="INVALIDADDRESS" />' çatışmayan '<ph name="ATSIGN" />' vardır.</translation>
+<translation id="795667975304826397">Heç bir fayl seçilməyib</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> seçilməyib</translation>
+<translation id="7994555495914042081">"Qeyd işarəsi" ikonası</translation>
+<translation id="8097409774376213335">"Aşağı ox" ikonası</translation>
+<translation id="8105750478534334542">"Bəyənmirəm" ikonası, bəyənməmə mənasını daşıya bilər</translation>
+<translation id="811583516810654505">Təsvir əldə edilir...</translation>
+<translation id="8117451130807776954">Bu həftə</translation>
+<translation id="8131955114056917397">0.25</translation>
+<translation id="8147719583347050106">Google ikonası</translation>
+<translation id="8199524924445686405">yyyy</translation>
+<translation id="8261464734335370856">Yanlış yazı</translation>
+<translation id="8276790177939055966">"Sağ şevron" ikonası</translation>
+<translation id="8284326494547611709">Başlıqlar</translation>
+<translation id="835897206747267392">Yanlış dəyər.</translation>
+<translation id="839593075537728968">Dəyər <ph name="MINIMUM_TIME" /> ilə <ph name="MAXIMUM_TIME" /> arasında olmalıdır.</translation>
+<translation id="8403857369060869934">keçən vaxt: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> fayl</translation>
+<translation id="8451268428117625855">Fayl seçin.</translation>
+<translation id="8488243824626550045">Facebook ikonası</translation>
+<translation id="8534579021159131403">Dəqiqə</translation>
+<translation id="8541249477527128034">media nəzarət</translation>
+<translation id="8613126697340063924">uzaqdan idarəetməni idarə edin</translation>
+<translation id="8634971699417195529">Ay seçicisini göstərin</translation>
+<translation id="8637593834423658414">1.75</translation>
+<translation id="8657910582115602348">"Google Assistent" ikonası</translation>
+<translation id="8668988909814782445">Sətrin sığışdırılması</translation>
+<translation id="8750798805984357768">Bu variantlardan birini seçin.</translation>
+<translation id="8845239796550121995">İndi TV-də yayımlanır</translation>
+<translation id="8875657656876809964">Video oxutma xətası</translation>
+<translation id="8889402386540077796">Rəng çaları</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="894736920926684893">Format dəyişdirici</translation>
+<translation id="8987927404178983737">Ay</translation>
+<translation id="901493112792887934">saniyə ilə cari vaxt</translation>
+<translation id="9039639793210005614">"Qalereya" ikonası</translation>
+<translation id="9040233563616141093">"Dörd içəri ox" ikonası, Yığcamlaşdırma mənasını daşıya bilər</translation>
+<translation id="9073800864014589651">Oxutma ikonası</translation>
+<translation id="9093215626363556771">şəkil içində şəkil düyməsindən çıxın</translation>
+<translation id="9105500880071990795">"Səsi azaldın" ikonası</translation>
+<translation id="9132465097189459683">Digər...</translation>
+<translation id="913630661384792974">Videokamera ikonası, "Video Çəkin" mənasını daşıya bilər</translation>
+<translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> tarixində başlayır</translation>
+<translation id="916607977885256133">Şəkil içində Şəkil</translation>
+<translation id="945780513535800434">Qismən Yoxlanılıb</translation>
+<translation id="947651054772746219">"Adamlar" ikonası</translation>
+<translation id="954003015749068518">şəkil içində şəkil düyməsinə daxil olun</translation>
+</translationbundle>

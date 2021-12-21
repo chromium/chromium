@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="fa">
+<translation id="1016055326260264411">نماد «قلب»، می‌تواند به‌معنای «افزودن به موارد دلخواه» باشد</translation>
+<translation id="1088086359088493902">ثانیه</translation>
+<translation id="1142001580032786438">نمایش انتخابگر هفته</translation>
+<translation id="1171774979989969504">لطفاً یک نشانی ایمیل وارد کنید.</translation>
+<translation id="1178581264944972037">مکث</translation>
+<translation id="1193819188371549072">نماد «خورشید»، می‌تواند به‌معنای «روز» باشد</translation>
+<translation id="1197443222693564123">سه‌نقطه، می‌تواند به‌معنای «بیشتر» باشد</translation>
+<translation id="1231311685714446044">نماد «چهره غمگین»</translation>
+<translation id="1248712480115826517">نماد «ذره‌بین»، می‌تواند به‌معنای «جستجو» یا «بزرگ‌نمایی» باشد</translation>
+<translation id="1253694090376430115">نماد «کیف خرید»</translation>
+<translation id="1292759642840406299">نماد «قطب‌نما»</translation>
+<translation id="1301463715094321941">نماد «گوشی تلفن»، می‌تواند به‌معنای «تماس» باشد</translation>
+<translation id="1306460908038601864">خاموش</translation>
+<translation id="1311894908970423688">مقدار باید <ph name="VALUE_DATE_OR_TIME" /> باشد.</translation>
+<translation id="1312685112570645372">نماد «علامت سؤال»</translation>
+<translation id="1386033905837826130">نماد «هم‌رسانی»</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> مورد</translation>
+<translation id="1480676835519562650">قابلیت چند انتخابی، <ph name="SELECTED" /> مورد از <ph name="COUNT" /> مورد انتخاب شده است.</translation>
+<translation id="157989258522571434">نماد «تقویم»</translation>
+<translation id="1588438908519853928">معمولی</translation>
+<translation id="1591562245178063882">این ماه</translation>
+<translation id="1598348607589961718">«جهت‌نمای بالا»، می‌تواند به‌معنای «بارگذاری» باشد</translation>
+<translation id="1632409084477505723">نماد «بارگیری»</translation>
+<translation id="1637811476055996098">انتخاب فایل‌ها</translation>
+<translation id="1658806147928973309">نماد «بی‌صدا کردن میکروفون»</translation>
+<translation id="1677491356035817504">نماد «پیکان سمت پایین»، می‌تواند به‌معنای «گسترده کردن» باشد</translation>
+<translation id="1681022320378710418">زمان کنونی</translation>
+<translation id="1727839386348365796">قطره‌چکان</translation>
+<translation id="1727886345390570319">پنهان کردن منوی زیرنویس ناشنوایان</translation>
+<translation id="1729654308190250600">لطفاً یک نشانی ایمیل غیرخالی وارد کنید.</translation>
+<translation id="173386679947102756">نماد «زنگوله»، می‌تواند به‌معنای «اعلان» باشد</translation>
+<translation id="175222816025430946">نماد «سه‌خط»، می‌تواند به‌معنای «منو» باشد</translation>
+<translation id="1758486001363313524">موارد دیگر...</translation>
+<translation id="1787192514241997742">زمان کل: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">‏نماد X، می‌تواند به‌معنای «بستن» یا «حذف کردن» باشد</translation>
+<translation id="1804122079878165329">نماد «جهت‌نمای راست»، می‌تواند به‌معنای «بازارسال» باشد</translation>
+<translation id="1822429046913737220">ق.ظ/ب.ظ</translation>
+<translation id="1832974991323546415">پخش در دستگاه راه دور</translation>
+<translation id="1921819250265091946">dd</translation>
+<translation id="1938124657309484470">مقدار باید <ph name="MAXIMUM_DATE_OR_TIME" /> یا قبل از آن باشد.</translation>
+<translation id="1946271899482435442">نمایش انتخابگر تاریخ</translation>
+<translation id="1993104285338243655">به نمایش صفحه‌نمایش روی دستگاه دیگر تغییر یافت</translation>
+<translation id="2031987842108996681">کانال قرمز</translation>
+<translation id="2060505056492490888">«<ph name="DOT" />» در «<ph name="INVALIDDOMAIN" />» در محل اشتباهی قرار دارد.</translation>
+<translation id="2131189924434603515">‏نماد «i کوچک»، می‌تواند به‌معنای «اطلاعات» باشد</translation>
+<translation id="2148716181193084225">امروز</translation>
+<translation id="2177093963727449806">نماد «بازخوانی»</translation>
+<translation id="221177765244658491">نماد «بی‌صدا کردن»</translation>
+<translation id="2226276347425096477">لطفاً این متن را به اندازه <ph name="MAX_CHARACTERS" /> نویسه یا کمتر کوتاه کنید (شما در حال حاضر از <ph name="CURRENT_LENGTH" /> نویسه استفاده می‌کنید).</translation>
+<translation id="2246498165605549352">فایل محلی</translation>
+<translation id="2247351761944213033">هفته <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
+<translation id="2265260019987849198">نماد «خانه»</translation>
+<translation id="2277199496770840904">آهنگ <ph name="NUMBER" /></translation>
+<translation id="2307576640803031502">در فهرست، مورد <ph name="INDEX" /> از <ph name="COUNT" /></translation>
+<translation id="2320316128050046908">نماد «افزایش صدا»</translation>
+<translation id="2393030564806080191">مقدار رنگ در مبنای شانزده</translation>
+<translation id="2398813069815436052">کادر گفتگو باز شد.</translation>
+<translation id="2427288427427702833">نماد «راه‌اندازی برنامه‌ها»</translation>
+<translation id="245932805758469625">ثانیه‌های باقی‌مانده از ویدیو</translation>
+<translation id="248395913932153421">روز</translation>
+<translation id="2507943997699731163">لطفاً این قسمت را تکمیل کنید.</translation>
+<translation id="2530182415807757784">قابلیت چند انتخابی، هیچ موردی انتخاب نشده است.</translation>
+<translation id="2561842179657104141">نمایش کنترل‌های رسانه بیشتر</translation>
+<translation id="2572483411312390101">پخش</translation>
+<translation id="2613802280814924224">لطفاً یک مقدار معتبر وارد کنید. نزدیک‌ترین مقدار معتبر <ph name="VALID_VALUE" /> است.</translation>
+<translation id="2634240155926812724">کانال سبز</translation>
+<translation id="2653659639078652383">ارسال</translation>
+<translation id="2723001399770238859">صدا</translation>
+<translation id="2746543609216772311">مقدار باید <ph name="MINIMUM_DATE_OR_TIME" /> یا بعد از آن باشد.</translation>
+<translation id="2761667185364618470">درصورتی‌که می‌خواهید ادامه دهید، این کادر را انتخاب کنید.</translation>
+<translation id="2908441821576996758">لطفاً لیستی از آدرس‌های ایمیل که با کاما از هم جدا شده‌اند را وارد کنید.</translation>
+<translation id="2987445268505333132">نماد «پایان دادن به تماس»</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> مگابایت</translation>
+<translation id="3075154866155599887">لطفاً یک مقدار معتبر وارد کنید. این قسمت کامل نیست و یا تاریخ نامعتبر است.</translation>
+<translation id="310520048233152454">لطفاً یک نشانی وب وارد کنید.</translation>
+<translation id="3220661731597678625">مرحله کنونی</translation>
+<translation id="3321030238473337787">سرعت بازپخش</translation>
+<translation id="3329013043687509092">اشباع رنگ</translation>
+<translation id="3435893727187534376">نماد «چهار جهت‌نمای به‌سمت خارج»، می‌تواند به‌معنای «گسترده کردن» باشد</translation>
+<translation id="3450233048674729344">مقدار باید کمتر یا برابر با <ph name="MAXIMUM" /> باشد.</translation>
+<translation id="3685101356851116974">تصویر بدون برچسب</translation>
+<translation id="3732799496749320381">mm</translation>
+<translation id="3754210790023674521">خروج از تصویردرتصویر</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> گیگابایت</translation>
+<translation id="3822383571486410024">لطفاً این نوشتار را به <ph name="MIN_CHARACTERS" /> نویسه یا بیشتر افزایش دهید (درحال حاضر از <ph name="CURRENT_LENGTH" /> نویسه استفاده می‌کنید).</translation>
+<translation id="383465348367842624">قسمت قبل از «<ph name="ATSIGN" />» نباید حاوی نماد «<ph name="INVALIDCHARACTER" />» باشد.</translation>
+<translation id="3845063161460806746">نماد «انگشت شست به‌سمت بالا»، می‌تواند به‌معنای «پسندیدن» باشد</translation>
+<translation id="3846214748874656680">خروج از حالت تمام صفحه</translation>
+<translation id="3904695548697879411">‏نماد «Twitter»</translation>
+<translation id="405782047075994056">نماد «جهت‌نمای چپ»، می‌تواند به‌معنای «برگشتن» باشد</translation>
+<translation id="4103419683916926126">میلی‌ ثانیه</translation>
+<translation id="4201051445878709314">نمایش ماه قبلی</translation>
+<translation id="4302299849305494927">نماد «بلندگو»، می‌تواند به‌معنای «میزان صدا» باشد</translation>
+<translation id="4360991593054037559">لطفاً یک مقدار معتبر وارد کنید. نزدیک‌ترین مقادیر معتبر <ph name="VALID_VALUE_LOW" /> و <ph name="VALID_VALUE_HIGHER" /> هستند.</translation>
+<translation id="4363712632243441817">نماد «ارسال محتوا»، می‌تواند به‌معنای ارسال محتوای ویدیویی به صفحه‌نمایش ازراه‌دور باشد</translation>
+<translation id="4371899966896349864">پنهان کردن منوی سرعت بازپخش</translation>
+<translation id="4384249794467006333">این تصویر برچسب ندارد. برای دریافت شرح تصویر، منوی «گزینه‌های بیشتر» را در بالا سمت چپ باز کنید.</translation>
+<translation id="4436211924730548766">نماد «پیکان سمت چپ»</translation>
+<translation id="4444765639179266822">ظاهراً <ph name="OCR_TEXT" /> را نشان می‌دهد</translation>
+<translation id="4522570452068850558">جزئیات</translation>
+<translation id="4540719609030900356">نماد «موشک»، می‌تواند به‌معنای «ارسال کردن» باشد</translation>
+<translation id="4576178047100686001">این تصویر برچسب ندارد. برای دریافت شرح تصویر، منوی «گزینه‌های بیشتر» را در بالا سمت راست باز کنید.</translation>
+<translation id="4577968231433672268">نماد «مثبت»، می‌تواند به‌معنای «افزودن» باشد</translation>
+<translation id="4611825382945206498">ساعت با جهت‌نمای گرد، می‌تواند به‌معنای «سابقه» باشد</translation>
+<translation id="4664250907885839816">قسمت بعد از «<ph name="ATSIGN" />» نباید حاوی نماد «<ph name="INVALIDCHARACTER" />» باشد.</translation>
+<translation id="4679853894970977730">نماد «دوربین»، می‌تواند به‌معنای «گرفتن عکس» باشد</translation>
+<translation id="4718048029184481307">درحال پخش در حالت تصویردرتصویر</translation>
+<translation id="4748357248530471599">جابجایی برش نمایشگر تمام‌صفحه</translation>
+<translation id="4763480195061959176">ویدئو</translation>
+<translation id="4812940957355064477">لطفاً شماره‌ای را وارد کنید.</translation>
+<translation id="4832245585893280119">نماد «آب‌وهوا»</translation>
+<translation id="4908855810237020461">نماد «ساعت»، می‌تواند به‌معنای «زمان» باشد</translation>
+<translation id="4912200001568447310">مورد کنونی</translation>
+<translation id="4915360478455618802">نمایش انتخابگر زمان</translation>
+<translation id="4924138096460353083">نامعین</translation>
+<translation id="4950364064308314478">نمایش انتخابگر تاریخ و زمان محلی</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> انتخاب شد</translation>
+<translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> انتخاب شد</translation>
+<translation id="4992066212339426712">باصدا کردن</translation>
+<translation id="49969490063480558">لطفاً قسمت بعد از «<ph name="ATSIGN" />» را وارد کنید. «<ph name="INVALIDADDRESS" />» ناقص است.</translation>
+<translation id="5090250355906949916">انتخابگر زمان ویدیو</translation>
+<translation id="509897012892853729">کانال آبی</translation>
+<translation id="5117590920725113268">نمایش ماه بعدی</translation>
+<translation id="5121688653159243920">نماد «فهرست گلوله‌ای»</translation>
+<translation id="5164977714490026579">مقدار باید بیشتر یا مساوی با <ph name="MINIMUM" /> باشد.</translation>
+<translation id="5196716972587102051">۲</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> پتابایت</translation>
+<translation id="5214400792580101697">نماد «توقف»</translation>
+<translation id="5307600278924710095">لطفاً قسمت قبل از «<ph name="ATSIGN" />» را وارد کنید. «<ph name="INVALIDADDRESS" />» ناقص است.</translation>
+<translation id="5334352251556557839">رسانه پخش نشد.</translation>
+<translation id="537648784377940524">حداقل تاریخ (<ph name="MIN_DATE_OR_TIME" />) باید قبل از حداکثر تاریخ باشد (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">گسترده شد، کادر گفتگو باز شد.</translation>
+<translation id="5425179576310518467">تاریخ کنونی</translation>
+<translation id="5466621249238537318">لطفاً یک یا چند فایل را انتخاب کنید.</translation>
+<translation id="5468998798572797635">خروج از حالت تمام صفحه</translation>
+<translation id="5516235301412634559">۰٫۷۵</translation>
+<translation id="5537725057119320332">فرستادن</translation>
+<translation id="5546461542133609677">صدادارکردن</translation>
+<translation id="5586467629893654334">نماد «ماه»، می‌تواند به‌معنای «شب» یا «خواب» باشد</translation>
+<translation id="5599474660109692598">نماد «حبابک کارتونی»، می‌تواند به‌معنای «گپ زدن» باشد</translation>
+<translation id="5617165654945759937">نماد «مداد»، می‌تواند به‌معنای «ویرایش کردن» باشد</translation>
+<translation id="5621627136377293173">نماد «میکروفون»، می‌تواند به‌معنای «ضبط کردن» باشد</translation>
+<translation id="5630795885300617244">روی سمت راست یا چپ دو ضربه سریع بزنید تا ۱۰ ثانیه رد شود</translation>
+<translation id="5647477850810769350">نماد «هدست»</translation>
+<translation id="5677946354068040947">گزینه‌های بیشتر</translation>
+<translation id="5720390168116663167">نماد «جهت‌نمای بالا»</translation>
+<translation id="5724910823641175216">نماد «جهت‌نمای ساعت‌گرد»، می‌تواند به‌معنای «انجام مجدد» باشد</translation>
+<translation id="57838592816432529">بی‌صدا کردن</translation>
+<translation id="5786442179789148008">نمایش دادن منوی سرعت بازپخش</translation>
+<translation id="5787939484346677755">گسترده شد، گزینه‌های تکمیل خودکار دردسترس است.</translation>
+<translation id="5838904342468928321">نماد «ابر»</translation>
+<translation id="5860033963881614850">خاموش</translation>
+<translation id="588258955323874662">تمام صفحه</translation>
+<translation id="5888666972993069672">درحال ارسال محتوا به <ph name="DEVICE_FRIENDLY_NAME" /></translation>
+<translation id="5916664084637901428">روشن</translation>
+<translation id="5939518447894949180">بازنشانی</translation>
+<translation id="5966707198760109579">هفته</translation>
+<translation id="5985507339671257014">۰٫۵</translation>
+<translation id="6011459053400940133">لغزنده میزان صدا</translation>
+<translation id="6015796118275082299">سال</translation>
+<translation id="6054619856758804514">نماد «سطل زباله»، می‌تواند به‌معنای «حذف کردن» باشد</translation>
+<translation id="6054638203631275602">نماد «چهره شاد»</translation>
+<translation id="608465159662359598">نماد «چرخ‌دنده» یا «آچار»، می‌تواند به‌معنای «تنظیمات» باشد</translation>
+<translation id="6165053282446038410">گسترده شد، <ph name="COUNT" /> گزینه تکمیل خودکار دردسترس است.</translation>
+<translation id="6209276755895393898">به‌نظر می‌رسد <ph name="DESCRIPTION" /> باشد</translation>
+<translation id="6212595056017402527">صفحه کنونی</translation>
+<translation id="6240633443440794881">نماد «پاکت نامه»، می‌تواند به‌معنای «ارسال ایمیل» باشد</translation>
+<translation id="6247212328664111379">نماد «آدمک»</translation>
+<translation id="6281588256137006900">روشنی</translation>
+<translation id="6310801910862476708">خروج از تصویر در تصویر</translation>
+<translation id="6350382280299255966">نماد «چهره متبسم»، می‌تواند به‌معنای «اموجی» باشد</translation>
+<translation id="6398862346408813489">نمایش پانل انتخاب ماه</translation>
+<translation id="6404546809543547843">انتخابگر زمان صدا</translation>
+<translation id="6443871981718447451">نمایش منوی زیرنویس ناشنوایان</translation>
+<translation id="6550675742724504774">گزینه‌ها</translation>
+<translation id="6572309429103589720">دستور زبان نامعتبر</translation>
+<translation id="658823671542763450">رفتن به حالت تمام صفحه</translation>
+<translation id="6632254525813309835">نماد «جهت‌نمای پادساعت‌گرد»، می‌تواند به‌معنای «واگرد کردن» باشد</translation>
+<translation id="6643016212128521049">پاک کردن</translation>
+<translation id="668171684555832681">دیگر...</translation>
+<translation id="6709093583001123835">مقدار باید <ph name="VALUE" /> باشد.</translation>
+<translation id="6709570249143506788">کیفیت پخش ضعیف</translation>
+<translation id="6790428901817661496">پخش</translation>
+<translation id="6820355525329141109">افزایه بارگیری نشد.</translation>
+<translation id="6831465880655513317">مخزن رنگ با لغزنده دوبعدی برای انتخاب اشباع رنگ و روشنایی</translation>
+<translation id="6843725295806269523">بیصداکردن</translation>
+<translation id="6889412865110485830">نماد «سبد خرید»</translation>
+<translation id="6919891270253167948">۱٫۵</translation>
+<translation id="6940482800520966738">نماد «ستاره»</translation>
+<translation id="6941933287844615239">بارگیری رسانه</translation>
+<translation id="698788488269350478">گسترده شد.</translation>
+<translation id="6989848892321993519">لطفاً این نوشتار را به <ph name="MIN_CHARACTERS" /> نویسه یا بیشتر افزایش دهید (درحال‌حاضر از ۱ نویسه استفاده می‌کنید).</translation>
+<translation id="7022838723850801004">نماد «اموجی چهره شاد و غمگین»</translation>
+<translation id="709897737746224366">لطفاً با قالب درخواستی مطابقت دهید.</translation>
+<translation id="7102274145889307184">مکان کنونی</translation>
+<translation id="7118469954320184356">توضیحی دردسترس نیست.</translation>
+<translation id="7263440858009898357">لطفاً یک مورد را در فهرست انتخاب کنید.</translation>
+<translation id="7320576522385648310">درحال بافر کردن</translation>
+<translation id="7341556277900466204">مخزن رنگ</translation>
+<translation id="7364796246159120393">انتخاب فایل</translation>
+<translation id="739024184232394898">موارد دیگر...</translation>
+<translation id="7410239719251593705">ظاهراً حاوی محتوای بزرگسالان است. توضیحی در دسترس نیست.</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> ترابایت</translation>
+<translation id="7514365320538308">بارگیری</translation>
+<translation id="7533959249147584474">گرافیک بدون برچسب</translation>
+<translation id="7673697353781729403">ساعت</translation>
+<translation id="7742609585924342092">نماد «مکان»</translation>
+<translation id="7745230546936012372">برای دریافت توضیحات تصویر جاافتاده، منوی بافت را باز کنید.</translation>
+<translation id="7750228210027921155">تصویردرتصویر</translation>
+<translation id="775297008183122718">ورودی نامعتبر</translation>
+<translation id="7782515065589691344">۱.۲۵</translation>
+<translation id="7789962463072032349">مکث</translation>
+<translation id="7796968532285333302">نماد «پیکان سمت پایین»، می‌تواند به‌معنای «جمع کردن» باشد</translation>
+<translation id="7819026464394689674">نماد «مکث»</translation>
+<translation id="7852167693871241274">لغزنده فام</translation>
+<translation id="7855610409192055689">نماد «گیره کاغذ»، می‌تواند به‌معنای «پیوست کردن» باشد</translation>
+<translation id="7888071071722539607">لطفاً نماد «<ph name="ATSIGN" />» را به نشانی ایمیل اضافه کنید. «<ph name="INVALIDADDRESS" />» در «<ph name="ATSIGN" />» موجود نیست.</translation>
+<translation id="795667975304826397">فایلی انتخاب نشده است</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> انتخاب نشده است</translation>
+<translation id="7994555495914042081">نماد «علامت تأیید»</translation>
+<translation id="8097409774376213335">نماد «جهت‌نمای پایین»</translation>
+<translation id="8105750478534334542">نماد «انگشت شست به‌سمت پایین»، می‌تواند به‌معنای «نپسندیدن» باشد</translation>
+<translation id="811583516810654505">درحال دریافت توضیح…</translation>
+<translation id="8117451130807776954">این هفته</translation>
+<translation id="8131955114056917397">۰٫۲۵</translation>
+<translation id="8147719583347050106">‏نماد «Google»</translation>
+<translation id="8199524924445686405">yyyy</translation>
+<translation id="8261464734335370856">املای نامعتبر</translation>
+<translation id="8276790177939055966">نماد «پیکان سمت راست»</translation>
+<translation id="8284326494547611709">زیرنویس‌ها</translation>
+<translation id="835897206747267392">مقدار نامعتبر.</translation>
+<translation id="839593075537728968">مقدار باید بین <ph name="MINIMUM_TIME" /> و <ph name="MAXIMUM_TIME" /> باشد.</translation>
+<translation id="8403857369060869934">زمان سپری‌شده: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> فایل</translation>
+<translation id="8451268428117625855">لطفاً یک فایل انتخاب کنید.</translation>
+<translation id="8488243824626550045">‏نماد «Facebook»</translation>
+<translation id="8534579021159131403">دقیقه</translation>
+<translation id="8541249477527128034">کنترل رسانه</translation>
+<translation id="8613126697340063924">کنترل بازپخش راه دور</translation>
+<translation id="8634971699417195529">نمایش انتخابگر ماه</translation>
+<translation id="8637593834423658414">۱٫۷۵</translation>
+<translation id="8657910582115602348">‏نماد «دستیار Google»</translation>
+<translation id="8668988909814782445">شکست خط</translation>
+<translation id="8750798805984357768">لطفاً یکی از این گزینه‌ها را انتخاب کنید.</translation>
+<translation id="8845239796550121995">درحال ارسال محتوا به تلویزیون</translation>
+<translation id="8875657656876809964">خطا در بازپخش ویدئو</translation>
+<translation id="8889402386540077796">رنگ‌مایه</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> کیلوبایت</translation>
+<translation id="894736920926684893">قالب‌بندی تغییردهنده وضعیت</translation>
+<translation id="8987927404178983737">ماه</translation>
+<translation id="901493112792887934">زمان کنونی به ثانیه</translation>
+<translation id="9039639793210005614">نماد «گالری»</translation>
+<translation id="9040233563616141093">نماد «چهار جهت‌نمای به‌سمت داخل»، می‌تواند به‌معنای «کوچک کردن» باشد</translation>
+<translation id="9073800864014589651">نماد «پخش»</translation>
+<translation id="9093215626363556771">خروج از تصویر در تصویر</translation>
+<translation id="9105500880071990795">نماد «کاهش صدا»</translation>
+<translation id="9132465097189459683">موارد دیگر...</translation>
+<translation id="913630661384792974">نماد «دوربین فیلم‌برداری»، می‌تواند به‌معنای «ضبط ویدیو» باشد</translation>
+<translation id="9155987714137265666"><ph name="WEEK" />، شروع از <ph name="WEEK_START_DATE" /></translation>
+<translation id="916607977885256133">تصویر در تصویر</translation>
+<translation id="945780513535800434">برخی موارد علامت‌گذاری شده است</translation>
+<translation id="947651054772746219">نماد «افراد»</translation>
+<translation id="954003015749068518">ورود به تصویر در تصویر</translation>
+</translationbundle>

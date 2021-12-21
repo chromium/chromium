@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="no">
+<translation id="1016055326260264411">Hjerteikon – kan bety Legg til som favoritt</translation>
+<translation id="1088086359088493902">Sekunder</translation>
+<translation id="1142001580032786438">Vis ukevelger</translation>
+<translation id="1171774979989969504">Skriv inn en e-postadresse.</translation>
+<translation id="1178581264944972037">Stans midlertidig</translation>
+<translation id="1193819188371549072">Sol-ikon – kan bety dagtid</translation>
+<translation id="1197443222693564123">Tre prikker – kan bety Mer</translation>
+<translation id="1231311685714446044">Ikon med trist fjes</translation>
+<translation id="1248712480115826517">Forstørrelsesglass-ikon – kan bety Søk eller Zoom</translation>
+<translation id="1253694090376430115">Handlepose-ikon</translation>
+<translation id="1292759642840406299">Kompassikon</translation>
+<translation id="1301463715094321941">Telefonrør-ikon – kan bety Ring</translation>
+<translation id="1306460908038601864">Av</translation>
+<translation id="1311894908970423688">Verdien må være <ph name="VALUE_DATE_OR_TIME" />.</translation>
+<translation id="1312685112570645372">Spørsmålstegnikon</translation>
+<translation id="1386033905837826130">Deleikon</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> elementer</translation>
+<translation id="1480676835519562650">node med flere mulige valg – <ph name="SELECTED" /> av <ph name="COUNT" /> er valgt.</translation>
+<translation id="157989258522571434">Kalenderikon</translation>
+<translation id="1588438908519853928">Normal</translation>
+<translation id="1591562245178063882">Denne måneden</translation>
+<translation id="1598348607589961718">Pil som peker oppover – kan bety Last opp</translation>
+<translation id="1632409084477505723">Nedlastingsikon</translation>
+<translation id="1637811476055996098">Velg filer</translation>
+<translation id="1658806147928973309">Slå av mikrofonen-ikon</translation>
+<translation id="1677491356035817504">Ikon med sjevron som peker nedover – kan bety Vis</translation>
+<translation id="1681022320378710418">klokkeslettet nå</translation>
+<translation id="1727839386348365796">Pipette</translation>
+<translation id="1727886345390570319">skjul menyen for teksting for hørselshemmede</translation>
+<translation id="1729654308190250600">Skriv inn en ikke-tom e-postadresse.</translation>
+<translation id="173386679947102756">Bjelleikon – kan bety Varsler</translation>
+<translation id="175222816025430946">Tre linjer-ikon – kan bety Meny</translation>
+<translation id="1758486001363313524">Andre</translation>
+<translation id="1787192514241997742">total tid: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">X-ikon – kan bety Lukk eller Slett</translation>
+<translation id="1804122079878165329">Høyrepil-ikon – kan bety Frem</translation>
+<translation id="1822429046913737220">AM/PM</translation>
+<translation id="1832974991323546415">spill på ekstern enhet</translation>
+<translation id="1921819250265091946">dd</translation>
+<translation id="1938124657309484470">Verdien må være <ph name="MAXIMUM_DATE_OR_TIME" /> eller før.</translation>
+<translation id="1946271899482435442">Vis datovelgeren</translation>
+<translation id="1993104285338243655">Byttet til speiling</translation>
+<translation id="2031987842108996681">Rød kanal</translation>
+<translation id="2060505056492490888">«<ph name="DOT" />» er brukt på feil sted i «<ph name="INVALIDDOMAIN" />».</translation>
+<translation id="2131189924434603515">Ikon med liten i – kan bety Informasjon</translation>
+<translation id="2148716181193084225">I dag</translation>
+<translation id="2177093963727449806">Last inn på nytt-ikon</translation>
+<translation id="221177765244658491">Kutt lyden-ikon</translation>
+<translation id="2226276347425096477">Forkort denne teksten til <ph name="MAX_CHARACTERS" /> tegn eller færre (for øyeblikket bruker du <ph name="CURRENT_LENGTH" /> tegn).</translation>
+<translation id="2246498165605549352">Lokal fil</translation>
+<translation id="2247351761944213033">Uke <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
+<translation id="2265260019987849198">Hjem-ikon</translation>
+<translation id="2277199496770840904">Spor <ph name="NUMBER" /></translation>
+<translation id="2307576640803031502">på listen, element <ph name="INDEX" /> av <ph name="COUNT" /></translation>
+<translation id="2320316128050046908">Volum opp-ikon</translation>
+<translation id="2393030564806080191">Heksadesimal fargeverdi</translation>
+<translation id="2398813069815436052">En dialogboks er åpnet.</translation>
+<translation id="2427288427427702833">Start apper-ikon</translation>
+<translation id="245932805758469625">antall sekunder med video som gjenstår</translation>
+<translation id="248395913932153421">Dag</translation>
+<translation id="2507943997699731163">Vennligst fyll ut dette feltet.</translation>
+<translation id="2530182415807757784">node med flere mulige valg – ingen er valgt.</translation>
+<translation id="2561842179657104141">vis flere mediakontroller</translation>
+<translation id="2572483411312390101">spill av</translation>
+<translation id="2613802280814924224">Skriv inn en gyldig verdi. Den nærmeste, gyldige verdien er <ph name="VALID_VALUE" />.</translation>
+<translation id="2634240155926812724">Grønn kanal</translation>
+<translation id="2653659639078652383">Send inn</translation>
+<translation id="2723001399770238859">lyd</translation>
+<translation id="2746543609216772311">Verdien må være <ph name="MINIMUM_DATE_OR_TIME" /> eller senere.</translation>
+<translation id="2761667185364618470">Kryss av denne boksen hvis du vil fortsette.</translation>
+<translation id="2908441821576996758">Skriv inn en liste over e-postadresser atskilt med komma.</translation>
+<translation id="2987445268505333132">Avslutt samtale-ikon</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3075154866155599887">Skriv inn en gyldig verdi. Feltet er ufullstendig, eller har en ugyldig dato.</translation>
+<translation id="310520048233152454">Skriv inn en nettadresse.</translation>
+<translation id="3220661731597678625">gjeldende trinn</translation>
+<translation id="3321030238473337787">Avspillingshastighet</translation>
+<translation id="3329013043687509092">Metning</translation>
+<translation id="3435893727187534376">Ikon med fire piler som peker utover – kan bety Utvid</translation>
+<translation id="3450233048674729344">Verdien må være mindre enn eller lik <ph name="MAXIMUM" />.</translation>
+<translation id="3685101356851116974">Umerket bilde</translation>
+<translation id="3732799496749320381">mm</translation>
+<translation id="3754210790023674521">Avslutt bilde-i-bilde</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3822383571486410024">Du må forlenge denne teksten til <ph name="MIN_CHARACTERS" /> tegn eller mer (for øyeblikket bruker du <ph name="CURRENT_LENGTH" /> tegn).</translation>
+<translation id="383465348367842624">En del etterfulgt av «<ph name="ATSIGN" />» kan ikke inneholde symbolet «<ph name="INVALIDCHARACTER" />».</translation>
+<translation id="3845063161460806746">Tommel opp-ikon – kan bety Liker</translation>
+<translation id="3846214748874656680">Avslutt fullskjermmodus</translation>
+<translation id="3904695548697879411">Twitter-ikon</translation>
+<translation id="405782047075994056">Venstrepil-ikon – kan bety Tilbake</translation>
+<translation id="4103419683916926126">Millisekunder</translation>
+<translation id="4201051445878709314">Se forrige måned</translation>
+<translation id="4302299849305494927">Høyttalerikon – kan bety volum</translation>
+<translation id="4360991593054037559">Skriv inn en gyldig verdi. De to nærmeste, gyldige verdiene er <ph name="VALID_VALUE_LOW" /> og <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4363712632243441817">Cast-ikon – kan bety å caste video til en ekstern skjerm</translation>
+<translation id="4371899966896349864">skjul meny for avspillingshastighet</translation>
+<translation id="4384249794467006333">Dette bildet er ikke satt etikett på. Åpne menyen Flere alternativer øverst til høyre for å hente bildebeskrivelser.</translation>
+<translation id="4436211924730548766">Ikon med sjevron som peker mot venstre</translation>
+<translation id="4444765639179266822">Det ser ut til at det står <ph name="OCR_TEXT" /></translation>
+<translation id="4522570452068850558">Detaljer</translation>
+<translation id="4540719609030900356">Papirfly-ikon – kan bety Send</translation>
+<translation id="4576178047100686001">Dette bildet er ikke satt etikett på. Åpne menyen Flere alternativer øverst til venstre for å hente bildebeskrivelser.</translation>
+<translation id="4577968231433672268">Pluss-ikon – kan bety Legg til</translation>
+<translation id="4611825382945206498">Klokke med sirkelformet pil – kan bety Logg</translation>
+<translation id="4664250907885839816">En del etterfulgt av «<ph name="ATSIGN" />» kan ikke inneholde symbolet «<ph name="INVALIDCHARACTER" />».</translation>
+<translation id="4679853894970977730">Kameraikon – kan bety Ta bilde</translation>
+<translation id="4718048029184481307">Spiller av i bilde-i-bilde</translation>
+<translation id="4748357248530471599">slå av/på fullskjermsvisning av skjermutklipp</translation>
+<translation id="4763480195061959176">video</translation>
+<translation id="4812940957355064477">Skriv inn et tall.</translation>
+<translation id="4832245585893280119">Værikon</translation>
+<translation id="4908855810237020461">Klokkeikon – kan bety Tid</translation>
+<translation id="4912200001568447310">gjeldende element</translation>
+<translation id="4915360478455618802">Vis klokkeslettvelger</translation>
+<translation id="4924138096460353083">ukjent</translation>
+<translation id="4950364064308314478">Vis lokal dato- og klokkeslettvelger</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> er valgt</translation>
+<translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> er valgt</translation>
+<translation id="4992066212339426712">Slå på lyden</translation>
+<translation id="49969490063480558">Skriv inn en del etterfulgt av «<ph name="ATSIGN" />». «<ph name="INVALIDADDRESS" />» er ufullstendig.</translation>
+<translation id="5090250355906949916">videotidslinje</translation>
+<translation id="509897012892853729">Blå kanal</translation>
+<translation id="5117590920725113268">Se neste måned</translation>
+<translation id="5121688653159243920">Punktliste-ikon</translation>
+<translation id="5164977714490026579">Verdien må være større enn eller lik <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5214400792580101697">Stopp-ikon</translation>
+<translation id="5307600278924710095">Skriv inn en del etterfulgt av «<ph name="ATSIGN" />». «<ph name="INVALIDADDRESS" />» er ufullstendig.</translation>
+<translation id="5334352251556557839">Kunne ikke spille innholdet.</translation>
+<translation id="537648784377940524">Minimumsdatoen (<ph name="MIN_DATE_OR_TIME" />) må komme før maksimumsdatoen (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">vises; en dialogboks er åpnet.</translation>
+<translation id="5425179576310518467">datoen i dag</translation>
+<translation id="5466621249238537318">Velg én eller flere filer.</translation>
+<translation id="5468998798572797635">avslutt fullskjerm</translation>
+<translation id="5516235301412634559">0,75</translation>
+<translation id="5537725057119320332">Cast</translation>
+<translation id="5546461542133609677">slå på lyden</translation>
+<translation id="5586467629893654334">Måneikon – kan bety natt eller hvilemodus</translation>
+<translation id="5599474660109692598">Tegneserieboble-ikon – kan bety Chat</translation>
+<translation id="5617165654945759937">Blyantikon – kan bety Rediger</translation>
+<translation id="5621627136377293173">Mikrofon-ikon – kan bety Ta opp</translation>
+<translation id="5630795885300617244">Dobbelttrykk på venstre eller høyre side for å hoppe 10 sekunder</translation>
+<translation id="5647477850810769350">Hodetelefoner-ikon</translation>
+<translation id="5677946354068040947">flere alternativer</translation>
+<translation id="5720390168116663167">Oppoverpil-ikon</translation>
+<translation id="5724910823641175216">Ikon med pil som går med klokken – kan bety Utfør likevel</translation>
+<translation id="57838592816432529">Kutt lyden</translation>
+<translation id="5786442179789148008">vis meny for avspillingshastighet</translation>
+<translation id="5787939484346677755">vises; alternativer for autofullføring er tilgjengelig.</translation>
+<translation id="5838904342468928321">Sky-ikon</translation>
+<translation id="5860033963881614850">Av</translation>
+<translation id="588258955323874662">Fullskjerm</translation>
+<translation id="5888666972993069672">Caster nå til <ph name="DEVICE_FRIENDLY_NAME" /></translation>
+<translation id="5916664084637901428">På</translation>
+<translation id="5939518447894949180">Tilbakestill</translation>
+<translation id="5966707198760109579">Uke</translation>
+<translation id="5985507339671257014">0,5</translation>
+<translation id="6011459053400940133">glidebryter for volum</translation>
+<translation id="6015796118275082299">År</translation>
+<translation id="6054619856758804514">Papirkurv-ikon – kan bety Slett</translation>
+<translation id="6054638203631275602">Smilefjes-ikon</translation>
+<translation id="608465159662359598">Tannhjul- eller skiftenøkkel-ikon – kan bety Innstillinger</translation>
+<translation id="6165053282446038410">vises; <ph name="COUNT" /> alternativer for autofullføring er tilgjengelig.</translation>
+<translation id="6209276755895393898">Dette ser ut til å være <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">gjeldende side</translation>
+<translation id="6240633443440794881">Konvolutt-ikon – kan bety E-post</translation>
+<translation id="6247212328664111379">Personikon</translation>
+<translation id="6281588256137006900">Lyshet</translation>
+<translation id="6310801910862476708">Avslutt bilde-i-bilde</translation>
+<translation id="6350382280299255966">Smilefjes-ikon – kan bety Emoji</translation>
+<translation id="6398862346408813489">Se panelet for valg av måned</translation>
+<translation id="6404546809543547843">lydtidslinje</translation>
+<translation id="6443871981718447451">vis menyen for teksting for hørselshemmede</translation>
+<translation id="6550675742724504774">Alternativer</translation>
+<translation id="6572309429103589720">Grammatikkfeil</translation>
+<translation id="658823671542763450">gå til fullskjermmodus</translation>
+<translation id="6632254525813309835">Ikon med pil som går mot klokken – kan bety Angre</translation>
+<translation id="6643016212128521049">Tøm</translation>
+<translation id="668171684555832681">Annen</translation>
+<translation id="6709093583001123835">Verdien må være <ph name="VALUE" />.</translation>
+<translation id="6709570249143506788">Dårlig avspillingskvalitet</translation>
+<translation id="6790428901817661496">Spill av</translation>
+<translation id="6820355525329141109">Kunne ikke laste inn programtillegget.</translation>
+<translation id="6831465880655513317">Fargebrønn med todimensjonal glidebryter for valg av metning og lyshet</translation>
+<translation id="6843725295806269523">kutt lyd</translation>
+<translation id="6889412865110485830">Handlekurv-ikon</translation>
+<translation id="6919891270253167948">1,5</translation>
+<translation id="6940482800520966738">Stjerneikon</translation>
+<translation id="6941933287844615239">last ned medier</translation>
+<translation id="698788488269350478">vises.</translation>
+<translation id="6989848892321993519">Øk lengden på denne teksten med minst <ph name="MIN_CHARACTERS" /> tegn (du bruker for øyeblikket 1 tegn).</translation>
+<translation id="7022838723850801004">Ikon med smilefjes og trist fjes</translation>
+<translation id="709897737746224366">Sørg for samsvar med det forespurte formatet.</translation>
+<translation id="7102274145889307184">nåværende posisjon</translation>
+<translation id="7118469954320184356">Ingen beskrivelse er tilgjengelig.</translation>
+<translation id="7263440858009898357">Velg en artikkel i listen.</translation>
+<translation id="7320576522385648310">bufring</translation>
+<translation id="7341556277900466204">Fargebrønn</translation>
+<translation id="7364796246159120393">Velg fil</translation>
+<translation id="739024184232394898">Andre</translation>
+<translation id="7410239719251593705">Ser ut til å inneholde seksuelt innhold. Ingen beskrivelse er tilgjengelig.</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
+<translation id="7514365320538308">Last ned</translation>
+<translation id="7533959249147584474">Umerket grafikk</translation>
+<translation id="7673697353781729403">Timer</translation>
+<translation id="7742609585924342092">Posisjonsikon</translation>
+<translation id="7745230546936012372">For å hente manglende bildebeskrivelser, åpne den kontekstuelle menyen.</translation>
+<translation id="7750228210027921155">Bilde i bilde</translation>
+<translation id="775297008183122718">Ugyldig oppføring</translation>
+<translation id="7782515065589691344">1.25</translation>
+<translation id="7789962463072032349">stans midlertidig</translation>
+<translation id="7796968532285333302">Ikon med sjevron som peker nedover – kan bety Skjul</translation>
+<translation id="7819026464394689674">Pause-ikon</translation>
+<translation id="7852167693871241274">Glidebryter for fargetone</translation>
+<translation id="7855610409192055689">Binders-ikon – kan bety vedlegg</translation>
+<translation id="7888071071722539607">Inkluder en «<ph name="ATSIGN" />» i e-postadressen. «<ph name="INVALIDADDRESS" />» mangler en «<ph name="ATSIGN" />».</translation>
+<translation id="795667975304826397">Ingen fil valgt</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> er ikke valgt</translation>
+<translation id="7994555495914042081">Hakemerke-ikon</translation>
+<translation id="8097409774376213335">Nedoverpil-ikon</translation>
+<translation id="8105750478534334542">Tommel ned-ikon – kan bety Liker ikke</translation>
+<translation id="811583516810654505">Henter beskrivelse …</translation>
+<translation id="8117451130807776954">Denne uken</translation>
+<translation id="8131955114056917397">0,25</translation>
+<translation id="8147719583347050106">Google-ikon</translation>
+<translation id="8199524924445686405">åååå</translation>
+<translation id="8261464734335370856">Stavefeil</translation>
+<translation id="8276790177939055966">Ikon med sjevron som peker mot høyre</translation>
+<translation id="8284326494547611709">Teksting</translation>
+<translation id="835897206747267392">Ugyldig verdi</translation>
+<translation id="839593075537728968">Verdien må være mellom <ph name="MINIMUM_TIME" /> og <ph name="MAXIMUM_TIME" />.</translation>
+<translation id="8403857369060869934">medgått tid: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> filer</translation>
+<translation id="8451268428117625855">Velg en fil.</translation>
+<translation id="8488243824626550045">Facebook-ikon</translation>
+<translation id="8534579021159131403">Minutter</translation>
+<translation id="8541249477527128034">mediekontroll</translation>
+<translation id="8613126697340063924">kontrollér ekstern avspilling</translation>
+<translation id="8634971699417195529">Vis månedsvelger</translation>
+<translation id="8637593834423658414">1,75</translation>
+<translation id="8657910582115602348">Ikon for Google-assistenten</translation>
+<translation id="8668988909814782445">Linjesammenføying</translation>
+<translation id="8750798805984357768">Velg ett av følgende alternativer.</translation>
+<translation id="8845239796550121995">Caster til TV-en nå</translation>
+<translation id="8875657656876809964">Feil ved videoavspilling</translation>
+<translation id="8889402386540077796">Fargetone</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
+<translation id="894736920926684893">Formatvelger</translation>
+<translation id="8987927404178983737">Måned</translation>
+<translation id="901493112792887934">gjeldende tid i sekunder</translation>
+<translation id="9039639793210005614">Galleri-ikon</translation>
+<translation id="9040233563616141093">Ikon med fire piler som peker innover – kan bety Krymp</translation>
+<translation id="9073800864014589651">Spill av-ikon</translation>
+<translation id="9093215626363556771">avslutt bilde-i-bilde</translation>
+<translation id="9105500880071990795">Volum ned-ikon</translation>
+<translation id="9132465097189459683">Andre</translation>
+<translation id="913630661384792974">Videokamera-ikon – kan bety Ta opp video</translation>
+<translation id="9155987714137265666"><ph name="WEEK" />, med start <ph name="WEEK_START_DATE" /></translation>
+<translation id="916607977885256133">Bilde i bilde</translation>
+<translation id="945780513535800434">delvis avmerket</translation>
+<translation id="947651054772746219">Personer-ikon</translation>
+<translation id="954003015749068518">start bilde-i-bilde</translation>
+</translationbundle>

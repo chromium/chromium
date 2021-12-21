@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ko">
+<translation id="1016055326260264411">하트 아이콘, 즐겨찾기를 의미할 수 있음</translation>
+<translation id="1088086359088493902">초</translation>
+<translation id="1142001580032786438">주 선택도구 표시</translation>
+<translation id="1171774979989969504">이메일 주소를 입력하세요.</translation>
+<translation id="1178581264944972037">일시중지</translation>
+<translation id="1193819188371549072">태양 아이콘, 낮을 의미할 수 있음</translation>
+<translation id="1197443222693564123">점 3개, 더보기를 의미할 수 있음</translation>
+<translation id="1231311685714446044">슬픈 얼굴 아이콘</translation>
+<translation id="1248712480115826517">돋보기 아이콘, 검색이나 확대/축소를 의미할 수 있음</translation>
+<translation id="1253694090376430115">쇼핑백 아이콘</translation>
+<translation id="1292759642840406299">나침반 아이콘</translation>
+<translation id="1301463715094321941">휴대전화 핸드셋 아이콘, 전화를 의미할 수 있음</translation>
+<translation id="1306460908038601864">꺼짐</translation>
+<translation id="1311894908970423688">값이 <ph name="VALUE_DATE_OR_TIME" />여야 합니다.</translation>
+<translation id="1312685112570645372">물음표 아이콘</translation>
+<translation id="1386033905837826130">공유 아이콘</translation>
+<translation id="145015347812617860">항목 <ph name="COUNT" />개</translation>
+<translation id="1480676835519562650">여러 항목 선택 가능, <ph name="COUNT" />개 중 <ph name="SELECTED" />개 선택됨.</translation>
+<translation id="157989258522571434">캘린더 아이콘</translation>
+<translation id="1588438908519853928">일반</translation>
+<translation id="1591562245178063882">이번 달</translation>
+<translation id="1598348607589961718">위쪽 화살표, 업로드를 의미할 수 있음</translation>
+<translation id="1632409084477505723">다운로드 아이콘</translation>
+<translation id="1637811476055996098">파일 선택</translation>
+<translation id="1658806147928973309">마이크 음소거 아이콘</translation>
+<translation id="1677491356035817504">아래쪽 갈매기형 아이콘, 펼치기를 의미할 수 있음</translation>
+<translation id="1681022320378710418">현재 시간</translation>
+<translation id="1727839386348365796">스포이트</translation>
+<translation id="1727886345390570319">자막 메뉴 숨기기</translation>
+<translation id="1729654308190250600">비어 있지 않은 이메일 주소를 입력해 주세요.</translation>
+<translation id="173386679947102756">종 아이콘, 알림을 의미할 수 있음</translation>
+<translation id="175222816025430946">막대 3개 아이콘, 메뉴를 의미할 수 있음</translation>
+<translation id="1758486001363313524">다른 일자...</translation>
+<translation id="1787192514241997742">총 시간: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">X 아이콘, 닫기나 삭제를 의미할 수 있음</translation>
+<translation id="1804122079878165329">오른쪽 화살표 아이콘, 앞으로 이동을 의미할 수 있음</translation>
+<translation id="1822429046913737220">오전/오후</translation>
+<translation id="1832974991323546415">원격 기기에서 재생</translation>
+<translation id="1921819250265091946">일</translation>
+<translation id="1938124657309484470">값은 <ph name="MAXIMUM_DATE_OR_TIME" /> 이전이어야 합니다.</translation>
+<translation id="1946271899482435442">날짜 선택도구 표시</translation>
+<translation id="1993104285338243655">미러링으로 전환됨</translation>
+<translation id="2031987842108996681">빨간색 채널</translation>
+<translation id="2060505056492490888">'<ph name="INVALIDDOMAIN" />'에서 '<ph name="DOT" />'의 위치가 잘못되었습니다.</translation>
+<translation id="2131189924434603515">소문자 i 아이콘, 정보를 의미할 수 있음</translation>
+<translation id="2148716181193084225">오늘</translation>
+<translation id="2177093963727449806">새로고침 아이콘</translation>
+<translation id="221177765244658491">음소거 아이콘</translation>
+<translation id="2226276347425096477">이 텍스트를 <ph name="MAX_CHARACTERS" />자 이하로 줄이세요(현재 <ph name="CURRENT_LENGTH" />자 사용 중).</translation>
+<translation id="2246498165605549352">로컬 파일</translation>
+<translation id="2247351761944213033"><ph name="YEAR" />, <ph name="WEEKNUMBER" />번째 주</translation>
+<translation id="2265260019987849198">집 아이콘</translation>
+<translation id="2277199496770840904"><ph name="NUMBER" />번 트랙</translation>
+<translation id="2307576640803031502">목록의 항목 <ph name="COUNT" />개 중 <ph name="INDEX" />번째</translation>
+<translation id="2320316128050046908">볼륨 업 아이콘</translation>
+<translation id="2393030564806080191">16진수 색상 값</translation>
+<translation id="2398813069815436052">대화상자가 열렸습니다.</translation>
+<translation id="2427288427427702833">앱 실행 아이콘</translation>
+<translation id="245932805758469625">동영상 남은 시간</translation>
+<translation id="248395913932153421">일</translation>
+<translation id="2507943997699731163">이 입력란을 작성하세요.</translation>
+<translation id="2530182415807757784">여러 항목 선택 가능, 선택된 항목 없음.</translation>
+<translation id="2561842179657104141">미디어 컨트롤 더보기</translation>
+<translation id="2572483411312390101">재생</translation>
+<translation id="2613802280814924224">유효한 값을 입력해 주세요. 가장 근접한 유효 값은 <ph name="VALID_VALUE" />입니다.</translation>
+<translation id="2634240155926812724">초록색 채널</translation>
+<translation id="2653659639078652383">제출</translation>
+<translation id="2723001399770238859">오디오</translation>
+<translation id="2746543609216772311">값은 <ph name="MINIMUM_DATE_OR_TIME" /> 이후여야 합니다.</translation>
+<translation id="2761667185364618470">계속하려면 이 확인란을 선택하세요.</translation>
+<translation id="2908441821576996758">이메일 주소를 쉼표로 구분하여 입력하세요.</translation>
+<translation id="2987445268505333132">통화 종료 아이콘</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" />MB</translation>
+<translation id="3075154866155599887">유효한 값을 입력하세요. 입력을 완료하지 않았거나 날짜가 잘못되었습니다.</translation>
+<translation id="310520048233152454">URL을 입력하세요.</translation>
+<translation id="3220661731597678625">현재 단계</translation>
+<translation id="3321030238473337787">재생 속도</translation>
+<translation id="3329013043687509092">채도</translation>
+<translation id="3435893727187534376">바깥쪽을 향한 화살표 4개 아이콘, 확장을 의미할 수 있음</translation>
+<translation id="3450233048674729344">값은 <ph name="MAXIMUM" /> 이하여야 합니다.</translation>
+<translation id="3685101356851116974">라벨이 없는 이미지</translation>
+<translation id="3732799496749320381">월</translation>
+<translation id="3754210790023674521">PIP 모드 종료</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" />GB</translation>
+<translation id="3822383571486410024">이 텍스트를 <ph name="MIN_CHARACTERS" />자 이상으로 늘리세요(현재 <ph name="CURRENT_LENGTH" />자 사용 중).</translation>
+<translation id="383465348367842624">'<ph name="ATSIGN" />' 앞 부분에 '<ph name="INVALIDCHARACTER" />' 기호가 포함되면 안됩니다.</translation>
+<translation id="3845063161460806746">엄지를 위로 든 모양의 아이콘, 좋아요를 의미할 수 있음</translation>
+<translation id="3846214748874656680">전체화면 종료</translation>
+<translation id="3904695548697879411">트위터 아이콘</translation>
+<translation id="405782047075994056">왼쪽 화살표 아이콘, 뒤로를 의미할 수 있음</translation>
+<translation id="4103419683916926126">밀리초</translation>
+<translation id="4201051445878709314">이전 달 표시</translation>
+<translation id="4302299849305494927">스피커 아이콘, 볼륨을 의미할 수 있음</translation>
+<translation id="4360991593054037559">유효한 값을 입력해 주세요. 가장 근접한 유효 값 2개는 <ph name="VALID_VALUE_LOW" /> 및 <ph name="VALID_VALUE_HIGHER" />입니다.</translation>
+<translation id="4363712632243441817">전송 아이콘, 원격 화면으로 동영상 전송을 의미할 수 있음</translation>
+<translation id="4371899966896349864">재생 속도 메뉴 숨기기</translation>
+<translation id="4384249794467006333">라벨이 지정되지 않은 이미지입니다. 이미지 설명을 확인하려면 오른쪽 상단에서 옵션 더보기 메뉴를 여세요.</translation>
+<translation id="4436211924730548766">왼쪽 갈매기형 아이콘</translation>
+<translation id="4444765639179266822">텍스트가 <ph name="OCR_TEXT" />인 것으로 보입니다</translation>
+<translation id="4522570452068850558">세부정보</translation>
+<translation id="4540719609030900356">종이 비행기 아이콘, 보내기를 의미할 수 있음</translation>
+<translation id="4576178047100686001">라벨이 지정되지 않은 이미지입니다. 이미지 설명을 확인하려면 왼쪽 상단에서 옵션 더보기 메뉴를 여세요.</translation>
+<translation id="4577968231433672268">더하기 아이콘, 추가를 의미할 수 있음</translation>
+<translation id="4611825382945206498">원형 화살표 모양 시계, 기록을 의미할 수 있음</translation>
+<translation id="4664250907885839816">'<ph name="ATSIGN" />' 다음 부분에 '<ph name="INVALIDCHARACTER" />' 기호가 포함되면 안됩니다.</translation>
+<translation id="4679853894970977730">카메라 아이콘, 사진 찍기를 의미할 수 있음</translation>
+<translation id="4718048029184481307">PIP 모드에서 재생</translation>
+<translation id="4748357248530471599">디스플레이 컷아웃을 전체화면으로 전환</translation>
+<translation id="4763480195061959176">동영상</translation>
+<translation id="4812940957355064477">숫자를 입력하세요.</translation>
+<translation id="4832245585893280119">날씨 아이콘</translation>
+<translation id="4908855810237020461">시계 아이콘, 시간을 의미할 수 있음</translation>
+<translation id="4912200001568447310">현재 항목</translation>
+<translation id="4915360478455618802">시간 선택도구 표시</translation>
+<translation id="4924138096460353083">알 수 없음</translation>
+<translation id="4950364064308314478">현지 날짜 및 시간 선택도구 표시</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> 선택됨</translation>
+<translation id="4975562563186953947"><ph name="SELECTED_COUNT" />개 선택됨</translation>
+<translation id="4992066212339426712">음소거 해제</translation>
+<translation id="49969490063480558">'<ph name="ATSIGN" />' 뒷 부분을 입력해 주세요. '<ph name="INVALIDADDRESS" />'(이)가 완전하지 않습니다.</translation>
+<translation id="5090250355906949916">동영상 시간 스크러버</translation>
+<translation id="509897012892853729">파란색 채널</translation>
+<translation id="5117590920725113268">다음 달 표시</translation>
+<translation id="5121688653159243920">글머리기호 목록 아이콘</translation>
+<translation id="5164977714490026579">값은 <ph name="MINIMUM" /> 이상이어야 합니다.</translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" />PB</translation>
+<translation id="5214400792580101697">중지 아이콘</translation>
+<translation id="5307600278924710095">'<ph name="ATSIGN" />' 앞 부분을 입력해 주세요. '<ph name="INVALIDADDRESS" />'(이)가 완전하지 않습니다.</translation>
+<translation id="5334352251556557839">미디어를 재생할 수 없습니다.</translation>
+<translation id="537648784377940524">최소 날짜(<ph name="MIN_DATE_OR_TIME" />)는 최대 날짜(<ph name="MAX_DATE_OR_TIME" />) 이전이어야 합니다.</translation>
+<translation id="5378437566635403538">펼쳐졌습니다. 대화상자가 열렸습니다.</translation>
+<translation id="5425179576310518467">현재 날짜</translation>
+<translation id="5466621249238537318">파일을 한 개 이상 선택하세요.</translation>
+<translation id="5468998798572797635">전체화면 닫기</translation>
+<translation id="5516235301412634559">0.75</translation>
+<translation id="5537725057119320332">전송</translation>
+<translation id="5546461542133609677">음소거 해제</translation>
+<translation id="5586467629893654334">달 아이콘, 밤이나 절전 모드를 의미할 수 있음</translation>
+<translation id="5599474660109692598">말풍선 아이콘, 채팅을 의미할 수 있음</translation>
+<translation id="5617165654945759937">연필 아이콘, 수정을 의미할 수 있음</translation>
+<translation id="5621627136377293173">마이크 아이콘, 녹음을 의미할 수 있음</translation>
+<translation id="5630795885300617244">10초를 건너뛰려면 왼쪽이나 오른쪽을 두 번 탭하세요.</translation>
+<translation id="5647477850810769350">헤드셋 아이콘</translation>
+<translation id="5677946354068040947">옵션 더보기</translation>
+<translation id="5720390168116663167">위쪽 화살표 아이콘</translation>
+<translation id="5724910823641175216">시계 방향 화살표 아이콘, 다시 실행을 의미할 수 있음</translation>
+<translation id="57838592816432529">음소거</translation>
+<translation id="5786442179789148008">재생 속도 메뉴 표시</translation>
+<translation id="5787939484346677755">펼쳐졌습니다. 자동 완성 옵션을 사용할 수 있습니다.</translation>
+<translation id="5838904342468928321">구름 아이콘</translation>
+<translation id="5860033963881614850">사용 안함</translation>
+<translation id="588258955323874662">전체화면</translation>
+<translation id="5888666972993069672">현재 <ph name="DEVICE_FRIENDLY_NAME" />(으)로 전송 중</translation>
+<translation id="5916664084637901428">사용</translation>
+<translation id="5939518447894949180">초기화</translation>
+<translation id="5966707198760109579">주</translation>
+<translation id="5985507339671257014">0.5</translation>
+<translation id="6011459053400940133">볼륨 슬라이더</translation>
+<translation id="6015796118275082299">연도</translation>
+<translation id="6054619856758804514">휴지통 아이콘, 삭제를 의미할 수 있음</translation>
+<translation id="6054638203631275602">행복한 얼굴 아이콘</translation>
+<translation id="608465159662359598">톱니바퀴나 렌치 아이콘, 설정을 의미할 수 있음</translation>
+<translation id="6165053282446038410">펼쳐졌습니다. 자동 완성 옵션 <ph name="COUNT" />개를 사용할 수 있습니다.</translation>
+<translation id="6209276755895393898"><ph name="DESCRIPTION" /> 같습니다</translation>
+<translation id="6212595056017402527">현재 페이지</translation>
+<translation id="6240633443440794881">편지봉투 아이콘, 메일을 의미할 수 있음</translation>
+<translation id="6247212328664111379">사람 아이콘</translation>
+<translation id="6281588256137006900">명암</translation>
+<translation id="6310801910862476708">PIP 모드 종료</translation>
+<translation id="6350382280299255966">웃는 얼굴 아이콘, 이모티콘을 의미할 수 있음</translation>
+<translation id="6398862346408813489">월 선택 패널 표시</translation>
+<translation id="6404546809543547843">오디오 시간 스크러버</translation>
+<translation id="6443871981718447451">자막 메뉴 표시</translation>
+<translation id="6550675742724504774">옵션</translation>
+<translation id="6572309429103589720">문법이 잘못되었습니다.</translation>
+<translation id="658823671542763450">전체화면 열기</translation>
+<translation id="6632254525813309835">시계 반대 방향 화살표 아이콘, 실행취소를 의미할 수 있음</translation>
+<translation id="6643016212128521049">삭제</translation>
+<translation id="668171684555832681">기타...</translation>
+<translation id="6709093583001123835">값이 <ph name="VALUE" />여야 합니다.</translation>
+<translation id="6709570249143506788">재생 품질 나쁨</translation>
+<translation id="6790428901817661496">재생</translation>
+<translation id="6820355525329141109">플러그인을 로드할 수 없습니다.</translation>
+<translation id="6831465880655513317">2차원 슬라이더가 포함된 채도 및 명암 선택용 색상환입니다.</translation>
+<translation id="6843725295806269523">음소거</translation>
+<translation id="6889412865110485830">장바구니 아이콘</translation>
+<translation id="6919891270253167948">1.5</translation>
+<translation id="6940482800520966738">별표 아이콘</translation>
+<translation id="6941933287844615239">미디어 다운로드</translation>
+<translation id="698788488269350478">펼쳐졌습니다.</translation>
+<translation id="6989848892321993519">이 텍스트를 <ph name="MIN_CHARACTERS" />자 이상으로 늘리세요(현재 1자 사용 중).</translation>
+<translation id="7022838723850801004">행복한 얼굴과 슬픈 얼굴 이모티콘 아이콘</translation>
+<translation id="709897737746224366">요청한 형식과 일치시키세요.</translation>
+<translation id="7102274145889307184">현재 위치</translation>
+<translation id="7118469954320184356">설명이 없습니다.</translation>
+<translation id="7263440858009898357">목록에서 항목을 선택하세요.</translation>
+<translation id="7320576522385648310">버퍼링</translation>
+<translation id="7341556277900466204">색상환</translation>
+<translation id="7364796246159120393">파일 선택</translation>
+<translation id="739024184232394898">다른 주...</translation>
+<translation id="7410239719251593705">성인용 콘텐츠가 포함된 것으로 보입니다. 설명이 없습니다.</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" />TB</translation>
+<translation id="7514365320538308">다운로드</translation>
+<translation id="7533959249147584474">라벨이 없는 그래픽</translation>
+<translation id="7673697353781729403">시간</translation>
+<translation id="7742609585924342092">위치 아이콘</translation>
+<translation id="7745230546936012372">누락된 이미지 설명을 확인하려면 컨텍스트 메뉴를 여세요.</translation>
+<translation id="7750228210027921155">PIP 모드</translation>
+<translation id="775297008183122718">입력값이 잘못되었습니다.</translation>
+<translation id="7782515065589691344">1.25</translation>
+<translation id="7789962463072032349">일시중지</translation>
+<translation id="7796968532285333302">위쪽 갈매기형 아이콘, 접기를 의미할 수 있음</translation>
+<translation id="7819026464394689674">일시중지 아이콘</translation>
+<translation id="7852167693871241274">색조 슬라이더</translation>
+<translation id="7855610409192055689">종이 클립 아이콘, 첨부파일을 의미할 수 있음</translation>
+<translation id="7888071071722539607">이메일 주소에 '<ph name="ATSIGN" />'를 포함해 주세요. '<ph name="INVALIDADDRESS" />'에 '<ph name="ATSIGN" />'가 없습니다.</translation>
+<translation id="795667975304826397">선택된 파일 없음</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> 선택되지 않음</translation>
+<translation id="7994555495914042081">체크표시 아이콘</translation>
+<translation id="8097409774376213335">아래쪽 화살표 아이콘</translation>
+<translation id="8105750478534334542">엄지를 아래로 내린 모양의 아이콘, 싫어요를 의미할 수 있음</translation>
+<translation id="811583516810654505">설명 가져오는 중...</translation>
+<translation id="8117451130807776954">이번 주</translation>
+<translation id="8131955114056917397">0.25</translation>
+<translation id="8147719583347050106">Google 아이콘</translation>
+<translation id="8199524924445686405">연도</translation>
+<translation id="8261464734335370856">맞춤법이 잘못되었습니다.</translation>
+<translation id="8276790177939055966">오른쪽 갈매기형 아이콘</translation>
+<translation id="8284326494547611709">자막</translation>
+<translation id="835897206747267392">값이 잘못되었습니다.</translation>
+<translation id="839593075537728968">값은 <ph name="MINIMUM_TIME" />에서 <ph name="MAXIMUM_TIME" /> 사이여야 합니다.</translation>
+<translation id="8403857369060869934">경과 시간: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423">파일 <ph name="NUMBER_OF_FILES" />개</translation>
+<translation id="8451268428117625855">파일을 선택하세요.</translation>
+<translation id="8488243824626550045">Facebook 아이콘</translation>
+<translation id="8534579021159131403">분</translation>
+<translation id="8541249477527128034">미디어 컨트롤</translation>
+<translation id="8613126697340063924">원격 재생 제어</translation>
+<translation id="8634971699417195529">월 선택도구 표시</translation>
+<translation id="8637593834423658414">1.75</translation>
+<translation id="8657910582115602348">Google 어시스턴트 아이콘</translation>
+<translation id="8668988909814782445">자동 줄바꿈</translation>
+<translation id="8750798805984357768">다음 옵션 중 하나를 선택하세요.</translation>
+<translation id="8845239796550121995">TV로 전송 중</translation>
+<translation id="8875657656876809964">동영상 재생 오류</translation>
+<translation id="8889402386540077796">색조</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" />KB</translation>
+<translation id="894736920926684893">형식 전환 버튼</translation>
+<translation id="8987927404178983737">월</translation>
+<translation id="901493112792887934">현재 시간(초)</translation>
+<translation id="9039639793210005614">갤러리 아이콘</translation>
+<translation id="9040233563616141093">안쪽을 향한 화살표 4개 아이콘, 축소를 의미할 수 있음</translation>
+<translation id="9073800864014589651">재생 아이콘</translation>
+<translation id="9093215626363556771">PIP 모드 종료</translation>
+<translation id="9105500880071990795">볼륨 다운 아이콘</translation>
+<translation id="9132465097189459683">다른 달...</translation>
+<translation id="913630661384792974">동영상 카메라 아이콘, 동영상 녹화를 의미할 수 있음</translation>
+<translation id="9155987714137265666"><ph name="WEEK" />(<ph name="WEEK_START_DATE" />에 시작)</translation>
+<translation id="916607977885256133">PIP 모드</translation>
+<translation id="945780513535800434">일부만 선택됨</translation>
+<translation id="947651054772746219">여러 명의 사람 아이콘</translation>
+<translation id="954003015749068518">PIP 모드 시작</translation>
+</translationbundle>

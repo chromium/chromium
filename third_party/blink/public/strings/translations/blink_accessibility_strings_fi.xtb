@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="fi">
+<translation id="1016055326260264411">Sydänkuvake, saattaa tarkoittaa suosikkia</translation>
+<translation id="1088086359088493902">Sekuntia</translation>
+<translation id="1142001580032786438">Näytä viikon valitsin</translation>
+<translation id="1171774979989969504">Anna sähköpostiosoite.</translation>
+<translation id="1178581264944972037">Tauko</translation>
+<translation id="1193819188371549072">Aurinkokuvake, saattaa tarkoittaa päivää</translation>
+<translation id="1197443222693564123">Kolme pistettä, saattaa tarkoittaa Lisää</translation>
+<translation id="1231311685714446044">Surullinen ilme</translation>
+<translation id="1248712480115826517">Suurennuslasikuvake, saattaa tarkoittaa Hae tai Lähennä</translation>
+<translation id="1253694090376430115">Ostoskassikuvake</translation>
+<translation id="1292759642840406299">Kompassikuvake</translation>
+<translation id="1301463715094321941">Puhelimen luurikuvake, saattaa tarkoittaa Soita</translation>
+<translation id="1306460908038601864">Pois päältä</translation>
+<translation id="1311894908970423688">Arvon on oltava <ph name="VALUE_DATE_OR_TIME" />.</translation>
+<translation id="1312685112570645372">Kysymysmerkkikuvake</translation>
+<translation id="1386033905837826130">Jakamiskuvake</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> kohdetta</translation>
+<translation id="1480676835519562650">monta valittavissa, <ph name="SELECTED" />/<ph name="COUNT" /> valittu.</translation>
+<translation id="157989258522571434">Kalenterikuvake</translation>
+<translation id="1588438908519853928">Normaali</translation>
+<translation id="1591562245178063882">Tässä kuussa</translation>
+<translation id="1598348607589961718">Nuoli ylöspäin, saattaa tarkoittaa Lataa</translation>
+<translation id="1632409084477505723">Latauskuvake</translation>
+<translation id="1637811476055996098">Valitse tiedostot</translation>
+<translation id="1658806147928973309">Mykistä mikrofoni ‑kuvake</translation>
+<translation id="1677491356035817504">Nuolenkärki alas ‑kuvake, saattaa tarkoittaa Laajenna</translation>
+<translation id="1681022320378710418">nykyinen aika</translation>
+<translation id="1727839386348365796">Pipetti</translation>
+<translation id="1727886345390570319">sulje tekstitysvalikko</translation>
+<translation id="1729654308190250600">Kirjoita ei-tyhjä sähköpostiosoite.</translation>
+<translation id="173386679947102756">Kellokuvake, saattaa tarkoittaa ilmoituksia</translation>
+<translation id="175222816025430946">Kolmen vaakaviivan kuvake, saattaa tarkoittaa valikkoa</translation>
+<translation id="1758486001363313524">Muu...</translation>
+<translation id="1787192514241997742">kokonaisaika: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">X-kuvake, saattaa tarkoittaa Sulje tai Poista</translation>
+<translation id="1804122079878165329">Nuoli oikealle ‑kuvake, saattaa tarkoittaa Eteenpäin</translation>
+<translation id="1822429046913737220">AP/IP</translation>
+<translation id="1832974991323546415">toista etälaitteella</translation>
+<translation id="1921819250265091946">pp</translation>
+<translation id="1938124657309484470">Arvon on oltava <ph name="MAXIMUM_DATE_OR_TIME" /> tai aiempi.</translation>
+<translation id="1946271899482435442">Näytä päivämäärävalitsin</translation>
+<translation id="1993104285338243655">Peilaus käynnissä</translation>
+<translation id="2031987842108996681">Punainen kanava</translation>
+<translation id="2060505056492490888"><ph name="DOT" />-merkkiä on käytetty väärässä kohdassa osoitteessa <ph name="INVALIDDOMAIN" />.</translation>
+<translation id="2131189924434603515">Pieni i ‑kirjainkuvake, saattaa tarkoittaa tietoja</translation>
+<translation id="2148716181193084225">Tänään</translation>
+<translation id="2177093963727449806">Päivityskuvake</translation>
+<translation id="221177765244658491">Mykistyskuvake</translation>
+<translation id="2226276347425096477">Lyhennä tämä teksti alle <ph name="MAX_CHARACTERS" /> merkkiin (tällä hetkellä käytössä <ph name="CURRENT_LENGTH" /> merkkiä).</translation>
+<translation id="2246498165605549352">Paikallinen tiedosto</translation>
+<translation id="2247351761944213033">Viikko <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
+<translation id="2265260019987849198">Kotikuvake</translation>
+<translation id="2277199496770840904">Kappale <ph name="NUMBER" /></translation>
+<translation id="2307576640803031502">listassa, kohde <ph name="INDEX" />/<ph name="COUNT" /></translation>
+<translation id="2320316128050046908">Äänenvoimakkuuden lisäyskuvake</translation>
+<translation id="2393030564806080191">Heksadesimaalinen väriarvo</translation>
+<translation id="2398813069815436052">ikkuna avattu</translation>
+<translation id="2427288427427702833">Sovellusten käynnistyskuvake</translation>
+<translation id="245932805758469625">videon jäljellä oleva aika sekunteina</translation>
+<translation id="248395913932153421">Päivä</translation>
+<translation id="2507943997699731163">Täytä tämä kenttä.</translation>
+<translation id="2530182415807757784">monta valittavissa, mitään ei ole valittu.</translation>
+<translation id="2561842179657104141">näytä lisää mediaohjaimia</translation>
+<translation id="2572483411312390101">toista</translation>
+<translation id="2613802280814924224">Syötä kelvollinen arvo. Lähin kelvollinen arvo on <ph name="VALID_VALUE" />.</translation>
+<translation id="2634240155926812724">Vihreä kanava</translation>
+<translation id="2653659639078652383">Lähetä</translation>
+<translation id="2723001399770238859">ääni</translation>
+<translation id="2746543609216772311">Arvon on oltava <ph name="MINIMUM_DATE_OR_TIME" /> tai myöhempi.</translation>
+<translation id="2761667185364618470">Valitse tämä ruutu jatkaaksesi.</translation>
+<translation id="2908441821576996758">Anna pilkuilla erotettu sähköpostiosoitteiden luettelo.</translation>
+<translation id="2987445268505333132">Lopeta puhelu ‑kuvake</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> Mt</translation>
+<translation id="3075154866155599887">Anna kelvollinen arvo. Kentän arvo on puutteellinen tai annettu päivä on virheellinen.</translation>
+<translation id="310520048233152454">Lisää URL-osoite.</translation>
+<translation id="3220661731597678625">nykyinen vaihe</translation>
+<translation id="3321030238473337787">Toistonopeus</translation>
+<translation id="3329013043687509092">Värikylläisyys</translation>
+<translation id="3435893727187534376">Neljä ulospäin osoittavaa nuolta, saattaa tarkoittaa Laajenna</translation>
+<translation id="3450233048674729344">Arvon tulee olla pienempi tai yhtä suuri kuin <ph name="MAXIMUM" />.</translation>
+<translation id="3685101356851116974">Tunnisteeton kuva</translation>
+<translation id="3732799496749320381">kk</translation>
+<translation id="3754210790023674521">Sulje kuva kuvassa ‑tila</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> Gt</translation>
+<translation id="3822383571486410024">Pidennä tämä teksti yli <ph name="MIN_CHARACTERS" /> merkkiin (tällä hetkellä käytössä <ph name="CURRENT_LENGTH" /> merkkiä).</translation>
+<translation id="383465348367842624"><ph name="ATSIGN" />-osaa ennen tulevassa osassa ei pitäisi olla merkkiä <ph name="INVALIDCHARACTER" />.</translation>
+<translation id="3845063161460806746">Peukalo ylös ‑kuvake, saattaa tarkoittaa Tykkään</translation>
+<translation id="3846214748874656680">Sulje koko näytön tila.</translation>
+<translation id="3904695548697879411">Twitter-kuvake</translation>
+<translation id="405782047075994056">Vasen nuolikuvake, saattaa tarkoittaa Takaisin</translation>
+<translation id="4103419683916926126">Millisekuntia</translation>
+<translation id="4201051445878709314">Näytä edellinen kuukausi</translation>
+<translation id="4302299849305494927">Kaiutinkuvake, saattaa tarkoittaa äänenvoimakkuutta</translation>
+<translation id="4360991593054037559">Syötä kelvollinen arvo. Kaksi lähintä kelvollista arvoa ovat <ph name="VALID_VALUE_LOW" /> ja <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4363712632243441817">Striimauskuvake, saattaa tarkoittaa videon striimaamista etänäytöllä</translation>
+<translation id="4371899966896349864">piilota toistonopeuden valikko</translation>
+<translation id="4384249794467006333">Tässä kuvassa ei ole tunnisteita. Avaa Lisäasetukset-valikko oikeasta yläkulmasta, niin näet kuvien kuvaukset.</translation>
+<translation id="4436211924730548766">Nuolenkärki vasemmalle ‑kuvake</translation>
+<translation id="4444765639179266822">Kuuluu sanovan: <ph name="OCR_TEXT" /></translation>
+<translation id="4522570452068850558">Tiedot</translation>
+<translation id="4540719609030900356">Paperilennokkikuvake, saattaa tarkoittaa Lähetä</translation>
+<translation id="4576178047100686001">Tässä kuvassa ei ole tunnisteita. Avaa Lisäasetukset-valikko vasemmasta yläkulmasta, niin näet kuvien kuvaukset.</translation>
+<translation id="4577968231433672268">Plus-kuvake, saattaa tarkoittaa Lisää</translation>
+<translation id="4611825382945206498">Kello jonka ympäri kulkee nuoli, saattaa tarkoittaa historiaa</translation>
+<translation id="4664250907885839816"><ph name="ATSIGN" />-osan jälkeen tulevassa osassa ei pitäisi olla merkkiä <ph name="INVALIDCHARACTER" />.</translation>
+<translation id="4679853894970977730">Kamerakuvake, saattaa tarkoittaa Ota kuva</translation>
+<translation id="4718048029184481307">Toistetaan kuva kuvassa ‑tilassa</translation>
+<translation id="4748357248530471599">näyttölovi osana koko näytön tilaa päälle/pois</translation>
+<translation id="4763480195061959176">video</translation>
+<translation id="4812940957355064477">Anna numero.</translation>
+<translation id="4832245585893280119">Sääkuvake</translation>
+<translation id="4908855810237020461">Kellokuvake, saattaa tarkoittaa aikaa</translation>
+<translation id="4912200001568447310">tämä kohta</translation>
+<translation id="4915360478455618802">Näytä ajan valitsin</translation>
+<translation id="4924138096460353083">määrittelemätön</translation>
+<translation id="4950364064308314478">Näytä paikallinen päivämäärän ja ajan valitsin</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> valittu</translation>
+<translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> valittu</translation>
+<translation id="4992066212339426712">Poista mykistys</translation>
+<translation id="49969490063480558">Kirjoita loppuun asti osoite, joka alkaa <ph name="ATSIGN" />. <ph name="INVALIDADDRESS" /> on vielä kesken.</translation>
+<translation id="5090250355906949916">videon ajan liukusäädin</translation>
+<translation id="509897012892853729">Sininen kanava</translation>
+<translation id="5117590920725113268">Näytä seuraava kuukausi</translation>
+<translation id="5121688653159243920">Listakuvake</translation>
+<translation id="5164977714490026579">Arvon tulee olla suurempi tai yhtä suuri kuin <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> Pt</translation>
+<translation id="5214400792580101697">Pysäytyskuvake</translation>
+<translation id="5307600278924710095">Lisää <ph name="ATSIGN" />-osaa ennen tuleva osa. <ph name="INVALIDADDRESS" /> on puutteellinen.</translation>
+<translation id="5334352251556557839">Mediaa ei voi toistaa.</translation>
+<translation id="537648784377940524">Vähimmäispäivämäärän (<ph name="MIN_DATE_OR_TIME" />) on oltava ennen enimmäispäivämäärää (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">laajennettu, valintaikkuna avattu.</translation>
+<translation id="5425179576310518467">nykyinen päivämäärä</translation>
+<translation id="5466621249238537318">Valitse vähintään yksi tiedosto.</translation>
+<translation id="5468998798572797635">poistu koko näytön tilasta</translation>
+<translation id="5516235301412634559">0,75</translation>
+<translation id="5537725057119320332">Suoratoista</translation>
+<translation id="5546461542133609677">peru mykistys</translation>
+<translation id="5586467629893654334">Kuukuvake, saattaa tarkoittaa yötä tai unta</translation>
+<translation id="5599474660109692598">Piirretty kuplakuvake, saattaa tarkoittaa chattia</translation>
+<translation id="5617165654945759937">Kynäkuvake, saattaa tarkoittaa Muokkaa</translation>
+<translation id="5621627136377293173">Mikrofonikuvake, saattaa tarkoittaa Nauhoita</translation>
+<translation id="5630795885300617244">Ohita 10 sekuntia kaksoisnapauttamalla vasemmalle tai oikealle.</translation>
+<translation id="5647477850810769350">Kuulokemikrofonikuvake</translation>
+<translation id="5677946354068040947">lisäasetukset</translation>
+<translation id="5720390168116663167">Ylänuolikuvake</translation>
+<translation id="5724910823641175216">Myötäpäivään osoittava nuolikuvake, saattaa tarkoittaa Toista</translation>
+<translation id="57838592816432529">Mykistä</translation>
+<translation id="5786442179789148008">näytä toistonopeuden valikko</translation>
+<translation id="5787939484346677755">laajennettu, automaattisia täydennysehdotuksia saatavilla.</translation>
+<translation id="5838904342468928321">Pilvikuvake</translation>
+<translation id="5860033963881614850">Pois päältä</translation>
+<translation id="588258955323874662">Koko ruutu</translation>
+<translation id="5888666972993069672">Katsotaan TV:stä <ph name="DEVICE_FRIENDLY_NAME" /></translation>
+<translation id="5916664084637901428">Päällä</translation>
+<translation id="5939518447894949180">Tyhjennä</translation>
+<translation id="5966707198760109579">Viikko</translation>
+<translation id="5985507339671257014">0,5</translation>
+<translation id="6011459053400940133">äänenvoimakkuuden liukusäädin</translation>
+<translation id="6015796118275082299">Vuosi</translation>
+<translation id="6054619856758804514">Roskakorikuvake, saattaa tarkoittaa Poista</translation>
+<translation id="6054638203631275602">Iloinen ilme ‑kuvake</translation>
+<translation id="608465159662359598">Ratas‑ tai jakoavainkuvake, saattaa tarkoittaa asetuksia</translation>
+<translation id="6165053282446038410">laajennettu, <ph name="COUNT" /> automaattista täydennysehdotusta saatavilla.</translation>
+<translation id="6209276755895393898">Näkyy olevan: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">nykyinen sivu</translation>
+<translation id="6240633443440794881">Kirjekuorikuvake, saattaa tarkoittaa postia</translation>
+<translation id="6247212328664111379">Henkilökuvake</translation>
+<translation id="6281588256137006900">Valoisuus</translation>
+<translation id="6310801910862476708">Sulje kuva kuvassa ‑tila</translation>
+<translation id="6350382280299255966">Iloinen ilme ‑kuvake, saattaa tarkoittaa emojia</translation>
+<translation id="6398862346408813489">Näytä kuukaudenvalintapaneeli</translation>
+<translation id="6404546809543547843">äänen ajan liukusäädin</translation>
+<translation id="6443871981718447451">näytä tekstitysvalikko</translation>
+<translation id="6550675742724504774">Asetukset</translation>
+<translation id="6572309429103589720">Kielioppivirhe</translation>
+<translation id="658823671542763450">siirry koko näytön tilaan</translation>
+<translation id="6632254525813309835">Vastapäivään osoittava nuolikuvake, saattaa tarkoittaa Kumoa</translation>
+<translation id="6643016212128521049">Tyhjennä</translation>
+<translation id="668171684555832681">Joku muu profiili...</translation>
+<translation id="6709093583001123835">Arvon on oltava <ph name="VALUE" />.</translation>
+<translation id="6709570249143506788">Heikko toiston laatu</translation>
+<translation id="6790428901817661496">Toista</translation>
+<translation id="6820355525329141109">Laajennuksen lataaminen epäonnistui.</translation>
+<translation id="6831465880655513317">Väripyörä, jossa on kahteen suuntaan liikkuva liukusäädin kylläisyyden ja valoisuuden valintaan</translation>
+<translation id="6843725295806269523">äänetön</translation>
+<translation id="6889412865110485830">Ostoskorikuvake</translation>
+<translation id="6919891270253167948">1,5</translation>
+<translation id="6940482800520966738">Tähtikuvake</translation>
+<translation id="6941933287844615239">lataa media</translation>
+<translation id="698788488269350478">laajennettu.</translation>
+<translation id="6989848892321993519">Pidennä tämä teksti vähintään <ph name="MIN_CHARACTERS" /> merkkiin (tällä hetkellä käytössä 1 merkki).</translation>
+<translation id="7022838723850801004">Iloinen ja surullinen emojikuvake</translation>
+<translation id="709897737746224366">Käytä pyydettyä muotoilua.</translation>
+<translation id="7102274145889307184">nykyinen sijainti</translation>
+<translation id="7118469954320184356">Ei kuvausta saatavilla</translation>
+<translation id="7263440858009898357">Valitse kohde luettelosta.</translation>
+<translation id="7320576522385648310">puskuroidaan</translation>
+<translation id="7341556277900466204">Väripyörä</translation>
+<translation id="7364796246159120393">Valitse tiedosto</translation>
+<translation id="739024184232394898">Muu...</translation>
+<translation id="7410239719251593705">Vaikuttaa sisältävän aikuisille suunnattua sisältöä Ei kuvausta saatavilla</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> Tt</translation>
+<translation id="7514365320538308">Lataa</translation>
+<translation id="7533959249147584474">Grafiikka, jolla ei ole tunnistetta</translation>
+<translation id="7673697353781729403">Tuntia</translation>
+<translation id="7742609585924342092">Sijaintikuvake</translation>
+<translation id="7745230546936012372">Avaa kontekstivalikko, niin näet puuttuvia kuvien selityksiä</translation>
+<translation id="7750228210027921155">Kuva kuvassa</translation>
+<translation id="775297008183122718">Virheellinen arvo</translation>
+<translation id="7782515065589691344">1,25</translation>
+<translation id="7789962463072032349">tauko</translation>
+<translation id="7796968532285333302">Nuolenkärki alas ‑kuvake, saattaa tarkoittaa Tiivistä</translation>
+<translation id="7819026464394689674">Keskeytyskuvake</translation>
+<translation id="7852167693871241274">Värisävyliukusäädin</translation>
+<translation id="7855610409192055689">Paperiliitinkuvake, saattaa tarkoittaa liitettä</translation>
+<translation id="7888071071722539607">Sähköpostiosoitteeseen kuuluu <ph name="ATSIGN" />-osa. Osoitteesta <ph name="INVALIDADDRESS" /> puuttuu <ph name="ATSIGN" />.</translation>
+<translation id="795667975304826397">Ei valittua tiedostoa</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> ei valittu</translation>
+<translation id="7994555495914042081">Valintamerkkikuvake</translation>
+<translation id="8097409774376213335">Alanuolikuvake</translation>
+<translation id="8105750478534334542">Peukalo alas ‑kuvake, saattaa tarkoittaa En tykkää</translation>
+<translation id="811583516810654505">Haetaan kuvausta…</translation>
+<translation id="8117451130807776954">Tällä viikolla</translation>
+<translation id="8131955114056917397">0,25</translation>
+<translation id="8147719583347050106">Google-kuvake</translation>
+<translation id="8199524924445686405">vvvv</translation>
+<translation id="8261464734335370856">Kirjoitusvirhe</translation>
+<translation id="8276790177939055966">Nuolenkärki oikealle ‑kuvake</translation>
+<translation id="8284326494547611709">Tekstitykset</translation>
+<translation id="835897206747267392">Virheellinen arvo.</translation>
+<translation id="839593075537728968">Arvon on oltava <ph name="MINIMUM_TIME" />–<ph name="MAXIMUM_TIME" />.</translation>
+<translation id="8403857369060869934">kulunut aika: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> tiedostoa</translation>
+<translation id="8451268428117625855">Valitse tiedosto.</translation>
+<translation id="8488243824626550045">Facebook-kuvake</translation>
+<translation id="8534579021159131403">Minuuttia</translation>
+<translation id="8541249477527128034">median hallinta</translation>
+<translation id="8613126697340063924">hallinnoi etätoistoa</translation>
+<translation id="8634971699417195529">Näytä kuukauden valitsin</translation>
+<translation id="8637593834423658414">1,75</translation>
+<translation id="8657910582115602348">Google Assistant ‑kuvake</translation>
+<translation id="8668988909814782445">Rivitys</translation>
+<translation id="8750798805984357768">Valitse yksi vaihtoehdoista.</translation>
+<translation id="8845239796550121995">Suoratoistetaan televisioosi</translation>
+<translation id="8875657656876809964">Videon toistovirhe</translation>
+<translation id="8889402386540077796">Sävy</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> kt</translation>
+<translation id="894736920926684893">Muodon valitsin</translation>
+<translation id="8987927404178983737">Kuukausi</translation>
+<translation id="901493112792887934">nykyinen toistoaika sekunteina</translation>
+<translation id="9039639793210005614">Galleriakuvake</translation>
+<translation id="9040233563616141093">Neljä sisäänpäin osoittavaa nuolta, saattaa tarkoittaa supistamista</translation>
+<translation id="9073800864014589651">Toistokuvake</translation>
+<translation id="9093215626363556771">sulje kuva kuvassa ‑tila</translation>
+<translation id="9105500880071990795">Äänenvoimakkuuden vähennyskuvake</translation>
+<translation id="9132465097189459683">Muu...</translation>
+<translation id="913630661384792974">Videokameran kuvake, saattaa tarkoittaa Kuvaa video</translation>
+<translation id="9155987714137265666"><ph name="WEEK" />, alkupäivä: <ph name="WEEK_START_DATE" /></translation>
+<translation id="916607977885256133">Kuva kuvassa</translation>
+<translation id="945780513535800434">Osittain valittu</translation>
+<translation id="947651054772746219">Ihmiskuvake</translation>
+<translation id="954003015749068518">avaa kuva kuvassa ‑tila</translation>
+</translationbundle>

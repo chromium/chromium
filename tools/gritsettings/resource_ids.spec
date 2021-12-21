@@ -839,8 +839,11 @@
     "includes": [4560],
     "structures": [4580],
   },
-  "third_party/blink/public/strings/blink_strings.grd": {
+  "third_party/blink/public/strings/blink_accessibility_strings.grd": {
     "messages": [4600],
+  },
+  "third_party/blink/public/strings/blink_strings.grd": {
+    "messages": [4610],
   },
   "third_party/libaddressinput/chromium/address_input_strings.grd": {
     "messages": [4620],

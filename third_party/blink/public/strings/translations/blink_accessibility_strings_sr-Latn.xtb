@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sr-Latn">
+<translation id="1016055326260264411">Ikona srca, može da znači Označi kao omiljeno</translation>
+<translation id="1088086359088493902">Sekunde</translation>
+<translation id="1142001580032786438">Prikazuj birač nedelje</translation>
+<translation id="1171774979989969504">Unesite imejl adresu.</translation>
+<translation id="1178581264944972037">Pauziraj</translation>
+<translation id="1193819188371549072">Ikona sunca, može da znači dan</translation>
+<translation id="1197443222693564123">Tri tačke, može da znači Još</translation>
+<translation id="1231311685714446044">Ikona tužnog lica</translation>
+<translation id="1248712480115826517">Ikona lupe, može da znači Pretraži ili Zumiraj</translation>
+<translation id="1253694090376430115">Ikona torbe za kupovinu</translation>
+<translation id="1292759642840406299">Ikona kompasa</translation>
+<translation id="1301463715094321941">Ikona telefona, može da znači Pozovi</translation>
+<translation id="1306460908038601864">Isključeno</translation>
+<translation id="1311894908970423688">Vrednost mora da bude <ph name="VALUE_DATE_OR_TIME" />.</translation>
+<translation id="1312685112570645372">Ikona upitnika</translation>
+<translation id="1386033905837826130">Ikona deljenja</translation>
+<translation id="145015347812617860">Stavki: <ph name="COUNT" /></translation>
+<translation id="1480676835519562650">više opcija za izbor, izabranih: <ph name="SELECTED" /> od <ph name="COUNT" />.</translation>
+<translation id="157989258522571434">Ikona kalendara</translation>
+<translation id="1588438908519853928">Normalan</translation>
+<translation id="1591562245178063882">Ovaj mesec</translation>
+<translation id="1598348607589961718">Strelica nagore, može da znači Otpremi</translation>
+<translation id="1632409084477505723">Ikona preuzimanja</translation>
+<translation id="1637811476055996098">Izbor datoteka</translation>
+<translation id="1658806147928973309">Ikona za isključivanje zvuka mikrofona</translation>
+<translation id="1677491356035817504">Ikona ševrona nadole, može da znači Proširi</translation>
+<translation id="1681022320378710418">trenutno vreme</translation>
+<translation id="1727839386348365796">Pipeta</translation>
+<translation id="1727886345390570319">sakrijte meni opcionalnog titla</translation>
+<translation id="1729654308190250600">Unesite imejl adresu koja nije prazna.</translation>
+<translation id="173386679947102756">Ikona zvonceta, može da znači Obaveštenja</translation>
+<translation id="175222816025430946">Ikona sa tri trake, može da znači Meni</translation>
+<translation id="1758486001363313524">Drugo...</translation>
+<translation id="1787192514241997742">ukupno vreme: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">Ikona X, može da znači Zatvori ili Izbriši</translation>
+<translation id="1804122079878165329">Ikona strelice nadesno, može da znači Napred</translation>
+<translation id="1822429046913737220">pre podne/po podne</translation>
+<translation id="1832974991323546415">puštajte na udaljenom uređaju</translation>
+<translation id="1921819250265091946">dd</translation>
+<translation id="1938124657309484470">Vrednost mora da bude <ph name="MAXIMUM_DATE_OR_TIME" /> ili starija.</translation>
+<translation id="1946271899482435442">Prikaži birač datuma</translation>
+<translation id="1993104285338243655">Prebačeno je na preslikavanje</translation>
+<translation id="2031987842108996681">Crveni kanal</translation>
+<translation id="2060505056492490888">„<ph name="DOT" />“ je stavljeno na pogrešno mesto u „<ph name="INVALIDDOMAIN" />“.</translation>
+<translation id="2131189924434603515">Ikona sa malim slovom i, može da znači Informacije</translation>
+<translation id="2148716181193084225">Danas</translation>
+<translation id="2177093963727449806">Ikona Osveži</translation>
+<translation id="221177765244658491">Ikona za isključivanje zvuka</translation>
+<translation id="2226276347425096477">Skratite ovaj tekst na <ph name="MAX_CHARACTERS" /> znak(ov)a ili manje (trenutno koristite <ph name="CURRENT_LENGTH" /> znak(ov)a).</translation>
+<translation id="2246498165605549352">Lokalna datoteka</translation>
+<translation id="2247351761944213033"><ph name="WEEKNUMBER" />. nedelja, <ph name="YEAR" />.</translation>
+<translation id="2265260019987849198">Ikona početnog ekrana</translation>
+<translation id="2277199496770840904"><ph name="NUMBER" />. pesma</translation>
+<translation id="2307576640803031502">na listi, <ph name="INDEX" />. stavka od <ph name="COUNT" /></translation>
+<translation id="2320316128050046908">Ikona za pojačavanje zvuka</translation>
+<translation id="2393030564806080191">Heksadecimalna vrednost boje</translation>
+<translation id="2398813069815436052">otvoren je dijalog.</translation>
+<translation id="2427288427427702833">Ikona za pokretanje aplikacija</translation>
+<translation id="245932805758469625">broj preostalih sekundi video snimka</translation>
+<translation id="248395913932153421">Dan</translation>
+<translation id="2507943997699731163">Popunite ovo polje.</translation>
+<translation id="2530182415807757784">više opcija za izbor, nijedna nije izabrana.</translation>
+<translation id="2561842179657104141">prikaži više kontrola za medije</translation>
+<translation id="2572483411312390101">pustite</translation>
+<translation id="2613802280814924224">Unesite važeću vrednost. Najbliža važeća vrednost je <ph name="VALID_VALUE" />.</translation>
+<translation id="2634240155926812724">Zeleni kanal</translation>
+<translation id="2653659639078652383">Pošalji</translation>
+<translation id="2723001399770238859">audio</translation>
+<translation id="2746543609216772311">Vrednost mora da bude <ph name="MINIMUM_DATE_OR_TIME" /> ili novija.</translation>
+<translation id="2761667185364618470">Potvrdite izbor u ovom polju za potvrdu ukoliko želite da nastavite.</translation>
+<translation id="2908441821576996758">Unesite listu imejl adresa razdvojenih zarezima.</translation>
+<translation id="2987445268505333132">Ikona Završi poziv</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3075154866155599887">Unesite važeću vrednost. Polje nije popunjeno ili sadrži nevažeći datum.</translation>
+<translation id="310520048233152454">Unesite URL adresu.</translation>
+<translation id="3220661731597678625">aktuelni korak</translation>
+<translation id="3321030238473337787">Brzina reprodukcije</translation>
+<translation id="3329013043687509092">Zasićenost boja</translation>
+<translation id="3435893727187534376">Ikona sa četiri strelice ka spolja, može da znači Proširi</translation>
+<translation id="3450233048674729344">Vrednost sme da bude najviše <ph name="MAXIMUM" />.</translation>
+<translation id="3685101356851116974">Neoznačena slika</translation>
+<translation id="3732799496749320381">mm</translation>
+<translation id="3754210790023674521">Izađi iz režima slike u slici</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3822383571486410024">Produžite ovaj tekst na <ph name="MIN_CHARACTERS" /> znak(ov)a ili više (trenutno koristite <ph name="CURRENT_LENGTH" /> znak(ov)a).</translation>
+<translation id="383465348367842624">Deo pre „<ph name="ATSIGN" />“ ne treba da sadrži simbol „<ph name="INVALIDCHARACTER" />“.</translation>
+<translation id="3845063161460806746">Ikona sa palcem nagore, može da znači sviđanje</translation>
+<translation id="3846214748874656680">Izađi iz celog ekrana</translation>
+<translation id="3904695548697879411">Ikona za Twitter</translation>
+<translation id="405782047075994056">Ikona strelice nalevo, može da znači Nazad</translation>
+<translation id="4103419683916926126">Milisekunde</translation>
+<translation id="4201051445878709314">Prikaži prethodni mesec</translation>
+<translation id="4302299849305494927">Ikona zvučnika, može da znači jačinu zvuka</translation>
+<translation id="4360991593054037559">Unesite važeću vrednost. Dve najbliže važeće vrednosti su <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4363712632243441817">Ikona prebacivanja, može da znači da prebacite video na udaljeni ekran</translation>
+<translation id="4371899966896349864">onemogućite prikaz menija brzine reprodukcije</translation>
+<translation id="4384249794467006333">Ova slika nema oznaku. Otvorite meni Još opcija u gornjem desnom uglu da biste videli opise slika.</translation>
+<translation id="4436211924730548766">Ikona ševrona ulevo</translation>
+<translation id="4444765639179266822">Izgleda da piše: <ph name="OCR_TEXT" /></translation>
+<translation id="4522570452068850558">Detalji</translation>
+<translation id="4540719609030900356">Ikona aviona od papira, može da znači Pošalji</translation>
+<translation id="4576178047100686001">Ova slika nema oznaku. Otvorite meni Još opcija u gornjem levom uglu da biste videli opise slika.</translation>
+<translation id="4577968231433672268">Ikona za plus, može da znači Dodaj</translation>
+<translation id="4611825382945206498">Sat sa kružnom strelicom, može da znači Istorija</translation>
+<translation id="4664250907885839816">Deo posle „<ph name="ATSIGN" />“ ne treba da sadrži simbol „<ph name="INVALIDCHARACTER" />“.</translation>
+<translation id="4679853894970977730">Ikona kamere, može da znači Snimite sliku</translation>
+<translation id="4718048029184481307">Reprodukuje se u režimu slike u slici</translation>
+<translation id="4748357248530471599">uključi/isključi ceo ekran bez oblasti izrezanog prikaza</translation>
+<translation id="4763480195061959176">video</translation>
+<translation id="4812940957355064477">Unesite broj.</translation>
+<translation id="4832245585893280119">Ikona vremena</translation>
+<translation id="4908855810237020461">Ikona sata, može da znači vreme</translation>
+<translation id="4912200001568447310">aktuelna stavka</translation>
+<translation id="4915360478455618802">Prikazuj birač vremena</translation>
+<translation id="4924138096460353083">neodređeno</translation>
+<translation id="4950364064308314478">Prikazuj birač lokalnog datuma i vremena</translation>
+<translation id="4971739861736909480">Izabrano: <ph name="ACCNAME" /></translation>
+<translation id="4975562563186953947">Izabrano: <ph name="SELECTED_COUNT" /></translation>
+<translation id="4992066212339426712">Uključi zvuk</translation>
+<translation id="49969490063480558">Unesite neki deo posle „<ph name="ATSIGN" />“. Adresa „<ph name="INVALIDADDRESS" />“ je nepotpuna.</translation>
+<translation id="5090250355906949916">klizač za trajanje video snimka</translation>
+<translation id="509897012892853729">Plavi kanal</translation>
+<translation id="5117590920725113268">Prikaži sledeći mesec</translation>
+<translation id="5121688653159243920">Ikona liste za nabrajanje</translation>
+<translation id="5164977714490026579">Vrednost sme da bude najmanje <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5214400792580101697">Ikona Zaustavi</translation>
+<translation id="5307600278924710095">Unesite neki deo pre „<ph name="ATSIGN" />“. Adresa „<ph name="INVALIDADDRESS" />“ je nepotpuna.</translation>
+<translation id="5334352251556557839">Puštanje medija nije uspelo.</translation>
+<translation id="537648784377940524">Minimalni datum (<ph name="MIN_DATE_OR_TIME" />) mora da bude pre maksimalnog datuma (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">prošireno, otvoren je dijalog.</translation>
+<translation id="5425179576310518467">trenutni datum</translation>
+<translation id="5466621249238537318">Izaberite jednu ili više datoteka.</translation>
+<translation id="5468998798572797635">izađite iz režima celog ekrana</translation>
+<translation id="5516235301412634559">0,75</translation>
+<translation id="5537725057119320332">Prebacuj</translation>
+<translation id="5546461542133609677">uključite zvuk</translation>
+<translation id="5586467629893654334">Ikona meseca, može da znači noć ili spavanje</translation>
+<translation id="5599474660109692598">Ikona nacrtanog oblačića, može da znači Ćaskajte</translation>
+<translation id="5617165654945759937">Ikona olovke, može da znači Izmeni</translation>
+<translation id="5621627136377293173">Ikona mikrofona, može da znači Snimaj</translation>
+<translation id="5630795885300617244">Dvaput dodirnite levo ili desno da biste preskočili 10 sek</translation>
+<translation id="5647477850810769350">Ikona slušalica</translation>
+<translation id="5677946354068040947">još opcija</translation>
+<translation id="5720390168116663167">Ikona strelice nagore</translation>
+<translation id="5724910823641175216">Ikona strelice udesno, može da znači Ponovi</translation>
+<translation id="57838592816432529">Isključi zvuk</translation>
+<translation id="5786442179789148008">omogućite prikaz menija brzine reprodukcije</translation>
+<translation id="5787939484346677755">prošireno, dostupne su opcije za automatsko dovršavanje.</translation>
+<translation id="5838904342468928321">Ikona klauda</translation>
+<translation id="5860033963881614850">Isključeno</translation>
+<translation id="588258955323874662">Ceo ekran</translation>
+<translation id="5888666972993069672">Trenutno se prebacuje na <ph name="DEVICE_FRIENDLY_NAME" /></translation>
+<translation id="5916664084637901428">Uključeno</translation>
+<translation id="5939518447894949180">Resetuj</translation>
+<translation id="5966707198760109579">Nedelja</translation>
+<translation id="5985507339671257014">0,5</translation>
+<translation id="6011459053400940133">klizač za jačinu zvuka</translation>
+<translation id="6015796118275082299">Godina</translation>
+<translation id="6054619856758804514">Ikona otpada, može da znači Izbriši</translation>
+<translation id="6054638203631275602">Ikona srećnog lica</translation>
+<translation id="608465159662359598">Ikona zupčanika ili francuskog ključa, može da znači Podešavanja</translation>
+<translation id="6165053282446038410">prošireno, dostupnih opcija za automatsko dovršavanje: <ph name="COUNT" />.</translation>
+<translation id="6209276755895393898">Izgleda da je ovo: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">aktuelna stranica</translation>
+<translation id="6240633443440794881">Ikona koverte, može da znači Pošta</translation>
+<translation id="6247212328664111379">Ikona osobe</translation>
+<translation id="6281588256137006900">Svetlina</translation>
+<translation id="6310801910862476708">Izađi iz režima slike u slici</translation>
+<translation id="6350382280299255966">Ikona nasmešenog lica, može da znači Emodži</translation>
+<translation id="6398862346408813489">Prikaži tablu za izbor meseca</translation>
+<translation id="6404546809543547843">klizač za trajanje audio-sadržaja</translation>
+<translation id="6443871981718447451">prikažite meni opcionalnog titla</translation>
+<translation id="6550675742724504774">Opcije</translation>
+<translation id="6572309429103589720">Netačna gramatika</translation>
+<translation id="658823671542763450">pređite na režim celog ekrana</translation>
+<translation id="6632254525813309835">Ikona strelice ulevo, može da znači Opozovi</translation>
+<translation id="6643016212128521049">Obriši</translation>
+<translation id="668171684555832681">Drugo...</translation>
+<translation id="6709093583001123835">Vrednost mora da bude <ph name="VALUE" />.</translation>
+<translation id="6709570249143506788">Loš kvalitet snimka</translation>
+<translation id="6790428901817661496">Pusti</translation>
+<translation id="6820355525329141109">Učitavanje dodatne komponente nije uspelo.</translation>
+<translation id="6831465880655513317">Skup boja sa dvodimenzionalnim klizačem za izbor zasićenosti i svetline boje</translation>
+<translation id="6843725295806269523">isključi zvuk</translation>
+<translation id="6889412865110485830">Ikona korpe za kupovinu</translation>
+<translation id="6919891270253167948">1,5</translation>
+<translation id="6940482800520966738">Ikona zvezdice</translation>
+<translation id="6941933287844615239">preuzmi medije</translation>
+<translation id="698788488269350478">prošireno.</translation>
+<translation id="6989848892321993519">Produžite ovaj tekst na bar <ph name="MIN_CHARACTERS" /> znak(ov)a (trenutno koristite 1 znak).</translation>
+<translation id="7022838723850801004">Ikona emodžija sa srećnim i tužnim licem</translation>
+<translation id="709897737746224366">Izaberite zahtevani format.</translation>
+<translation id="7102274145889307184">trenutna lokacija</translation>
+<translation id="7118469954320184356">Opis nije dostupan.</translation>
+<translation id="7263440858009898357">Izaberite stavku sa liste.</translation>
+<translation id="7320576522385648310">baferovanje</translation>
+<translation id="7341556277900466204">Skup boja</translation>
+<translation id="7364796246159120393">Odaberi datoteku</translation>
+<translation id="739024184232394898">Drugo...</translation>
+<translation id="7410239719251593705">Izgleda da ima sadržaj za odrasle. Opis nije dostupan.</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
+<translation id="7514365320538308">Preuzmi</translation>
+<translation id="7533959249147584474">Neoznačena slika</translation>
+<translation id="7673697353781729403">Sati</translation>
+<translation id="7742609585924342092">Ikona lokacije</translation>
+<translation id="7745230546936012372">Da biste dobili opise slika koji nedostaju, otvorite kontekstualni meni.</translation>
+<translation id="7750228210027921155">Slika u slici</translation>
+<translation id="775297008183122718">Nevažeći unos</translation>
+<translation id="7782515065589691344">1.25</translation>
+<translation id="7789962463072032349">pauziraj</translation>
+<translation id="7796968532285333302">Ikona ševrona nadole, može da znači Skupi</translation>
+<translation id="7819026464394689674">Ikona pauze</translation>
+<translation id="7852167693871241274">Klizač za nijansu</translation>
+<translation id="7855610409192055689">Ikona spajalice, može da znači prilog</translation>
+<translation id="7888071071722539607">Uvrstite „<ph name="ATSIGN" />“ u imejl adresu. U adresi e-pošte „<ph name="INVALIDADDRESS" />“ nedostaje „<ph name="ATSIGN" />“.</translation>
+<translation id="795667975304826397">Nije odabrano</translation>
+<translation id="7962328325860248200">Nije izabrano: <ph name="ACCNAME" /></translation>
+<translation id="7994555495914042081">Ikona znaka potvrde</translation>
+<translation id="8097409774376213335">Ikona strelice nadole</translation>
+<translation id="8105750478534334542">Ikona sa palcem nadole, može da znači nesviđanje</translation>
+<translation id="811583516810654505">Preuzima se opis...</translation>
+<translation id="8117451130807776954">Ova nedelja</translation>
+<translation id="8131955114056917397">0,25</translation>
+<translation id="8147719583347050106">Google ikona</translation>
+<translation id="8199524924445686405">gggg</translation>
+<translation id="8261464734335370856">Netačan pravopis</translation>
+<translation id="8276790177939055966">Ikona ševrona udesno</translation>
+<translation id="8284326494547611709">Titl</translation>
+<translation id="835897206747267392">Nevažeća vrednost.</translation>
+<translation id="839593075537728968">Vrednost mora da bude između <ph name="MINIMUM_TIME" /> i <ph name="MAXIMUM_TIME" />.</translation>
+<translation id="8403857369060869934">proteklo vreme: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> datoteke(a)</translation>
+<translation id="8451268428117625855">Izaberite datoteku.</translation>
+<translation id="8488243824626550045">Ikona za Facebook</translation>
+<translation id="8534579021159131403">Minuti</translation>
+<translation id="8541249477527128034">kontrola za medije</translation>
+<translation id="8613126697340063924">kontrolišite reprodukciju na udaljenom uređaju</translation>
+<translation id="8634971699417195529">Prikazuj birač meseca</translation>
+<translation id="8637593834423658414">1,75</translation>
+<translation id="8657910582115602348">Ikona Google pomoćnika</translation>
+<translation id="8668988909814782445">Prelom reda</translation>
+<translation id="8750798805984357768">Izaberite neku od ovih opcija.</translation>
+<translation id="8845239796550121995">Trenutno se prebacuje na TV</translation>
+<translation id="8875657656876809964">Greška pri puštanju video snimka</translation>
+<translation id="8889402386540077796">Nijansa</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="894736920926684893">Meni za formatiranje</translation>
+<translation id="8987927404178983737">Mesec</translation>
+<translation id="901493112792887934">aktuelno vreme u sekundama</translation>
+<translation id="9039639793210005614">Ikona galerije</translation>
+<translation id="9040233563616141093">Ikona sa četiri strelice ka unutra, može da znači Skupi</translation>
+<translation id="9073800864014589651">Ikona Pusti</translation>
+<translation id="9093215626363556771">izađi iz režima slike u slici</translation>
+<translation id="9105500880071990795">Ikona za smanjivanje zvuka</translation>
+<translation id="9132465097189459683">Drugo...</translation>
+<translation id="913630661384792974">Ikona video kamere, može da znači Snimaj video</translation>
+<translation id="9155987714137265666"><ph name="WEEK" />, od <ph name="WEEK_START_DATE" /></translation>
+<translation id="916607977885256133">Slika u slici</translation>
+<translation id="945780513535800434">Delimično označeno</translation>
+<translation id="947651054772746219">Ikona ljudi</translation>
+<translation id="954003015749068518">uđi u režim slike u slici</translation>
+</translationbundle>

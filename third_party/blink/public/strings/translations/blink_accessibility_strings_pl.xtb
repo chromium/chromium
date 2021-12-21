@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="pl">
+<translation id="1016055326260264411">Ikona serca, może oznaczać Dodaj do ulubionych</translation>
+<translation id="1088086359088493902">Sekundy</translation>
+<translation id="1142001580032786438">Pokaż selektor tygodnia</translation>
+<translation id="1171774979989969504">Wprowadź adres e-mail.</translation>
+<translation id="1178581264944972037">Wstrzymaj</translation>
+<translation id="1193819188371549072">Ikona słońca, może oznaczać porę dzienną</translation>
+<translation id="1197443222693564123">3 kropki, mogą oznaczać Więcej</translation>
+<translation id="1231311685714446044">Ikona smutnej buźki</translation>
+<translation id="1248712480115826517">Ikona lupy, może oznaczać Wyszukaj lub Powiększ</translation>
+<translation id="1253694090376430115">Ikona torby na zakupy</translation>
+<translation id="1292759642840406299">Ikona kompasu</translation>
+<translation id="1301463715094321941">Ikona słuchawki telefonicznej, może oznaczać Połączenie</translation>
+<translation id="1306460908038601864">Wyłączono</translation>
+<translation id="1311894908970423688">Wymagana wartość: <ph name="VALUE_DATE_OR_TIME" />.</translation>
+<translation id="1312685112570645372">Ikona znaku zapytania</translation>
+<translation id="1386033905837826130">Ikona udostępniania</translation>
+<translation id="145015347812617860">Elementy: <ph name="COUNT" /></translation>
+<translation id="1480676835519562650">wielokrotny wybór, wybrano <ph name="SELECTED" /> z <ph name="COUNT" />.</translation>
+<translation id="157989258522571434">Ikona kalendarza</translation>
+<translation id="1588438908519853928">Normalny</translation>
+<translation id="1591562245178063882">W tym miesiącu</translation>
+<translation id="1598348607589961718">Strzałka w górę, może oznaczać Prześlij</translation>
+<translation id="1632409084477505723">Ikona pobierania</translation>
+<translation id="1637811476055996098">Wybierz pliki</translation>
+<translation id="1658806147928973309">Ikona wyciszenia mikrofonu</translation>
+<translation id="1677491356035817504">Ikona szewronu w dół, może oznaczać Rozwiń</translation>
+<translation id="1681022320378710418">bieżąca godzina</translation>
+<translation id="1727839386348365796">Zakraplacz</translation>
+<translation id="1727886345390570319">ukrywanie menu napisów</translation>
+<translation id="1729654308190250600">Podaj adres e-mail.</translation>
+<translation id="173386679947102756">Ikona dzwonka, może oznaczać Powiadomienia</translation>
+<translation id="175222816025430946">Ikona 3 kresek, może oznaczać Menu</translation>
+<translation id="1758486001363313524">Inny...</translation>
+<translation id="1787192514241997742">łączny czas: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">Ikona X, może oznaczać Zamknij lub Usuń</translation>
+<translation id="1804122079878165329">Ikona strzałki w prawo, może oznaczać Dalej</translation>
+<translation id="1822429046913737220">rano/po południu</translation>
+<translation id="1832974991323546415">odtwarzanie na urządzeniu zdalnym</translation>
+<translation id="1921819250265091946">dd</translation>
+<translation id="1938124657309484470">Musisz podać wartość <ph name="MAXIMUM_DATE_OR_TIME" /> lub wcześniejszą.</translation>
+<translation id="1946271899482435442">Pokaż selektor dat</translation>
+<translation id="1993104285338243655">Przełączono na odbicie lustrzane</translation>
+<translation id="2031987842108996681">Kanał czerwony</translation>
+<translation id="2060505056492490888">„<ph name="DOT" />” występuje w niewłaściwym miejscu w „<ph name="INVALIDDOMAIN" />”.</translation>
+<translation id="2131189924434603515">Ikona małej litery i, może oznaczać Informacje</translation>
+<translation id="2148716181193084225">Dzisiaj</translation>
+<translation id="2177093963727449806">Ikona odświeżania</translation>
+<translation id="221177765244658491">Ikona wyciszenia</translation>
+<translation id="2226276347425096477">Skróć ten tekst do maksymalnie <ph name="MAX_CHARACTERS" /> znaków (w tej chwili korzystasz z <ph name="CURRENT_LENGTH" /> znaków).</translation>
+<translation id="2246498165605549352">Plik lokalny</translation>
+<translation id="2247351761944213033">Tydzień <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
+<translation id="2265260019987849198">Ikona domu</translation>
+<translation id="2277199496770840904">Utwór <ph name="NUMBER" /></translation>
+<translation id="2307576640803031502">na liście, pozycja <ph name="INDEX" /> z <ph name="COUNT" /></translation>
+<translation id="2320316128050046908">Ikona zwiększania głośności</translation>
+<translation id="2393030564806080191">Wartość szesnastkowego kodu koloru</translation>
+<translation id="2398813069815436052">okno zostało otwarte.</translation>
+<translation id="2427288427427702833">Ikona uruchamiania aplikacji</translation>
+<translation id="245932805758469625">pozostały czas filmu w sekundach</translation>
+<translation id="248395913932153421">Dzień</translation>
+<translation id="2507943997699731163">Wypełnij to pole.</translation>
+<translation id="2530182415807757784">wybór wielokrotny, nic nie wybrano.</translation>
+<translation id="2561842179657104141">pokaż więcej opcji sterowania multimediami</translation>
+<translation id="2572483411312390101">odtwórz</translation>
+<translation id="2613802280814924224">Podaj prawidłową wartość. Najbliższa prawidłowa wartość to <ph name="VALID_VALUE" />.</translation>
+<translation id="2634240155926812724">Kanał zielony</translation>
+<translation id="2653659639078652383">Prześlij</translation>
+<translation id="2723001399770238859">dźwięk</translation>
+<translation id="2746543609216772311">Musisz podać wartość <ph name="MINIMUM_DATE_OR_TIME" /> lub późniejszą.</translation>
+<translation id="2761667185364618470">Zaznacz to pole, jeśli chcesz kontynuować.</translation>
+<translation id="2908441821576996758">Podaj listę adresów e-mail rozdzielonych przecinkami.</translation>
+<translation id="2987445268505333132">Ikona zakończenia połączenia</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3075154866155599887">Wpisz prawidłową wartość. Pole jest niekompletne lub zawiera nieprawidłową datę.</translation>
+<translation id="310520048233152454">Wprowadź adres URL.</translation>
+<translation id="3220661731597678625">bieżący krok</translation>
+<translation id="3321030238473337787">Szybkość odtwarzania</translation>
+<translation id="3329013043687509092">Nasycenie</translation>
+<translation id="3435893727187534376">Ikona 4 strzałek skierowanych na zewnątrz, może oznaczać Rozwiń</translation>
+<translation id="3450233048674729344">Wartość nie może być większa niż <ph name="MAXIMUM" />.</translation>
+<translation id="3685101356851116974">Obraz bez etykiety</translation>
+<translation id="3732799496749320381">mm</translation>
+<translation id="3754210790023674521">Wyłącz tryb obrazu w obrazie</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3822383571486410024">Wydłuż ten tekst przynajmniej do <ph name="MIN_CHARACTERS" /> znaków (teraz używasz <ph name="CURRENT_LENGTH" /> znaków).</translation>
+<translation id="383465348367842624">Część przed znakiem „<ph name="ATSIGN" />” nie może zawierać symbolu „<ph name="INVALIDCHARACTER" />”.</translation>
+<translation id="3845063161460806746">Ikona kciuka w górę, może oznaczać Polubienie</translation>
+<translation id="3846214748874656680">Zamknij pełny ekran</translation>
+<translation id="3904695548697879411">Ikona Twittera</translation>
+<translation id="405782047075994056">Ikona strzałki w lewo, może oznaczać Wstecz</translation>
+<translation id="4103419683916926126">Milisekundy</translation>
+<translation id="4201051445878709314">Pokaż poprzedni miesiąc</translation>
+<translation id="4302299849305494927">Ikona głośnika, może oznaczać głośność</translation>
+<translation id="4360991593054037559">Podaj prawidłową wartość. Dwie najbliższe prawidłowe wartości to <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4363712632243441817">Ikona przesyłania, może oznaczać przesyłanie obrazu wideo na ekran zdalny</translation>
+<translation id="4371899966896349864">ukryj menu szybkości odtwarzania</translation>
+<translation id="4384249794467006333">Ten obraz nie ma etykiety. Aby pobrać opisy obrazów, otwórz menu Więcej opcji w prawym górnym rogu.</translation>
+<translation id="4436211924730548766">Ikona szewronu w lewo</translation>
+<translation id="4444765639179266822">Wygląda jak napis: <ph name="OCR_TEXT" /></translation>
+<translation id="4522570452068850558">Szczegóły</translation>
+<translation id="4540719609030900356">Ikona papierowego samolotu, może oznaczać Wyślij</translation>
+<translation id="4576178047100686001">Ten obraz nie ma etykiety. Aby pobrać opisy obrazów, otwórz menu Więcej opcji w lewym górnym rogu.</translation>
+<translation id="4577968231433672268">Ikona plusa, może oznaczać Dodaj</translation>
+<translation id="4611825382945206498">Zegar otoczony strzałką, może oznaczać Historię</translation>
+<translation id="4664250907885839816">Część po znaku „<ph name="ATSIGN" />” nie może zawierać symbolu „<ph name="INVALIDCHARACTER" />”.</translation>
+<translation id="4679853894970977730">Ikona aparatu, może oznaczać Zrób zdjęcie</translation>
+<translation id="4718048029184481307">Odtwarzam w trybie obrazu w obrazie</translation>
+<translation id="4748357248530471599">przełącz z wycięcia w ekranie na tryb pełnoekranowy</translation>
+<translation id="4763480195061959176">film</translation>
+<translation id="4812940957355064477">Wpisz liczbę.</translation>
+<translation id="4832245585893280119">Ikona pogody</translation>
+<translation id="4908855810237020461">Ikona zegara, może oznaczać Godzinę</translation>
+<translation id="4912200001568447310">bieżący element</translation>
+<translation id="4915360478455618802">Pokaż selektor godziny</translation>
+<translation id="4924138096460353083">nieokreślony</translation>
+<translation id="4950364064308314478">Pokaż selektor lokalnej daty i godziny</translation>
+<translation id="4971739861736909480">Wybrano <ph name="ACCNAME" /></translation>
+<translation id="4975562563186953947">Wybrano: <ph name="SELECTED_COUNT" /></translation>
+<translation id="4992066212339426712">Wyłącz wyciszenie</translation>
+<translation id="49969490063480558">Podaj część po znaku „<ph name="ATSIGN" />”. Adres „<ph name="INVALIDADDRESS" />” jest niepełny.</translation>
+<translation id="5090250355906949916">pasek czasu odtwarzania filmu</translation>
+<translation id="509897012892853729">Kanał niebieski</translation>
+<translation id="5117590920725113268">Pokaż przyszły miesiąc</translation>
+<translation id="5121688653159243920">Ikona listy punktowanej</translation>
+<translation id="5164977714490026579">Wartość nie może być mniejsza niż <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5214400792580101697">Ikona zatrzymania</translation>
+<translation id="5307600278924710095">Podaj część przed znakiem „<ph name="ATSIGN" />”. Adres „<ph name="INVALIDADDRESS" />” jest niepełny.</translation>
+<translation id="5334352251556557839">Nie można odtworzyć multimediów.</translation>
+<translation id="537648784377940524">Data minimalna (<ph name="MIN_DATE_OR_TIME" />) musi przypadać przed datą maksymalną (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">rozwinięto, otwarto okno.</translation>
+<translation id="5425179576310518467">bieżąca data</translation>
+<translation id="5466621249238537318">Wybierz jeden lub kilka plików.</translation>
+<translation id="5468998798572797635">zamknij pełny ekran</translation>
+<translation id="5516235301412634559">0,75</translation>
+<translation id="5537725057119320332">Przesyłaj</translation>
+<translation id="5546461542133609677">wyłącz wyciszenie</translation>
+<translation id="5586467629893654334">Ikona księżyca, może oznaczać noc lub sen</translation>
+<translation id="5599474660109692598">Ikona dymka z komiksu, może oznaczać Czat</translation>
+<translation id="5617165654945759937">Ikona ołówka, może oznaczać Edytuj</translation>
+<translation id="5621627136377293173">Ikona mikrofonu, może oznaczać Nagrywanie</translation>
+<translation id="5630795885300617244">Kliknij dwukrotnie z lewej lub prawej, by przewinąć o 10 s</translation>
+<translation id="5647477850810769350">Ikona zestawu słuchawkowego</translation>
+<translation id="5677946354068040947">więcej opcji</translation>
+<translation id="5720390168116663167">Ikona strzałki w górę</translation>
+<translation id="5724910823641175216">Ikona wygiętej strzałki w prawo, może oznaczać Ponów</translation>
+<translation id="57838592816432529">Wycisz</translation>
+<translation id="5786442179789148008">pokaż menu szybkości odtwarzania</translation>
+<translation id="5787939484346677755">rozwinięto, dostępne są opcje autouzupełniania.</translation>
+<translation id="5838904342468928321">Ikona chmury</translation>
+<translation id="5860033963881614850">Wyłączone</translation>
+<translation id="588258955323874662">Pełny ekran</translation>
+<translation id="5888666972993069672">Przesyłam na urządzenie <ph name="DEVICE_FRIENDLY_NAME" /></translation>
+<translation id="5916664084637901428">Włączone</translation>
+<translation id="5939518447894949180">Resetuj</translation>
+<translation id="5966707198760109579">Tydzień</translation>
+<translation id="5985507339671257014">0,5</translation>
+<translation id="6011459053400940133">suwak głośności</translation>
+<translation id="6015796118275082299">Rok</translation>
+<translation id="6054619856758804514">Ikona kosza, może oznaczać Usuń</translation>
+<translation id="6054638203631275602">Ikona szczęśliwej buźki</translation>
+<translation id="608465159662359598">Ikona koła zębatego lub klucza narzędziowego, może oznaczać Ustawienia</translation>
+<translation id="6165053282446038410">rozwinięto, liczba dostępnych opcji autouzupełniania: <ph name="COUNT" />.</translation>
+<translation id="6209276755895393898">Wygląda jak: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">bieżąca strona</translation>
+<translation id="6240633443440794881">Ikona koperty, może oznaczać Pocztę</translation>
+<translation id="6247212328664111379">Ikona osoby</translation>
+<translation id="6281588256137006900">Jasność</translation>
+<translation id="6310801910862476708">Wyłącz tryb obrazu w obrazie</translation>
+<translation id="6350382280299255966">Ikona uśmiechniętej buźki, może oznaczać emotikon</translation>
+<translation id="6398862346408813489">Pokaż panel wyboru miesiąca</translation>
+<translation id="6404546809543547843">pasek czasu odtwarzania dźwięku</translation>
+<translation id="6443871981718447451">wyświetlanie menu napisów</translation>
+<translation id="6550675742724504774">Opcje</translation>
+<translation id="6572309429103589720">Nieprawidłowa gramatyka</translation>
+<translation id="658823671542763450">przejdź do pełnego ekranu</translation>
+<translation id="6632254525813309835">Ikona wygiętej strzałki w lewo, może oznaczać Cofnij</translation>
+<translation id="6643016212128521049">Wyczyść</translation>
+<translation id="668171684555832681">Inny...</translation>
+<translation id="6709093583001123835">Wymagana wartość: <ph name="VALUE" />.</translation>
+<translation id="6709570249143506788">Niska jakość odtwarzania</translation>
+<translation id="6790428901817661496">Odtwórz</translation>
+<translation id="6820355525329141109">Nie można załadować wtyczki.</translation>
+<translation id="6831465880655513317">Podgląd koloru z dwuwymiarowym suwakiem do ustawiania nasycenia i jasności</translation>
+<translation id="6843725295806269523">wyciszenie</translation>
+<translation id="6889412865110485830">Ikona koszyka na zakupy</translation>
+<translation id="6919891270253167948">1,5</translation>
+<translation id="6940482800520966738">Ikona gwiazdki</translation>
+<translation id="6941933287844615239">pobierz multimedia</translation>
+<translation id="698788488269350478">rozwinięto.</translation>
+<translation id="6989848892321993519">Wydłuż ten tekst co najmniej do <ph name="MIN_CHARACTERS" /> znaków (teraz używasz jednego znaku).</translation>
+<translation id="7022838723850801004">Ikona emotikonu buźki szczęśliwej i smutnej</translation>
+<translation id="709897737746224366">Podaj wartość w wymaganym formacie.</translation>
+<translation id="7102274145889307184">bieżąca lokalizacja</translation>
+<translation id="7118469954320184356">Brak opisu.</translation>
+<translation id="7263440858009898357">Wybierz element z listy.</translation>
+<translation id="7320576522385648310">buforowanie</translation>
+<translation id="7341556277900466204">Podgląd koloru</translation>
+<translation id="7364796246159120393">Wybierz plik</translation>
+<translation id="739024184232394898">Inny...</translation>
+<translation id="7410239719251593705">To wygląda na przeznaczone tylko dla dorosłych. Brak opisu.</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
+<translation id="7514365320538308">Pobierz</translation>
+<translation id="7533959249147584474">Grafika bez etykiety</translation>
+<translation id="7673697353781729403">Godziny</translation>
+<translation id="7742609585924342092">Ikona lokalizacji</translation>
+<translation id="7745230546936012372">Aby uzyskać brakujące opisy obrazów, otwórz menu kontekstowe.</translation>
+<translation id="7750228210027921155">Obraz w obrazie</translation>
+<translation id="775297008183122718">Nieprawidłowy wpis</translation>
+<translation id="7782515065589691344">1,25</translation>
+<translation id="7789962463072032349">wstrzymaj</translation>
+<translation id="7796968532285333302">Ikona szewronu w dół, może oznaczać Zwiń</translation>
+<translation id="7819026464394689674">Ikona Wstrzymaj</translation>
+<translation id="7852167693871241274">Suwak odcienia</translation>
+<translation id="7855610409192055689">Ikona spinacza, może oznaczać załącznik</translation>
+<translation id="7888071071722539607">Uwzględnij znak „<ph name="ATSIGN" />” w adresie e-mail. W adresie „<ph name="INVALIDADDRESS" />” brakuje znaku „<ph name="ATSIGN" />”.</translation>
+<translation id="795667975304826397">Nie wybrano pliku</translation>
+<translation id="7962328325860248200">Nie wybrano: <ph name="ACCNAME" /></translation>
+<translation id="7994555495914042081">Ikona wyboru</translation>
+<translation id="8097409774376213335">Ikona strzałki w dół</translation>
+<translation id="8105750478534334542">Ikona kciuka w dół, może oznaczać głos na nie</translation>
+<translation id="811583516810654505">Pobieram opis...</translation>
+<translation id="8117451130807776954">W tym tygodniu</translation>
+<translation id="8131955114056917397">0,25</translation>
+<translation id="8147719583347050106">Ikona Google</translation>
+<translation id="8199524924445686405">rrrr</translation>
+<translation id="8261464734335370856">Nieprawidłowa pisownia</translation>
+<translation id="8276790177939055966">Ikona szewronu w prawo</translation>
+<translation id="8284326494547611709">Napisy</translation>
+<translation id="835897206747267392">Nieprawidłowa wartość.</translation>
+<translation id="839593075537728968">Musisz podać wartość z zakresu od <ph name="MINIMUM_TIME" /> do <ph name="MAXIMUM_TIME" />.</translation>
+<translation id="8403857369060869934">upłynęło: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423">Liczba plików: <ph name="NUMBER_OF_FILES" /></translation>
+<translation id="8451268428117625855">Wybierz plik.</translation>
+<translation id="8488243824626550045">Ikona Facebooka</translation>
+<translation id="8534579021159131403">Minuty</translation>
+<translation id="8541249477527128034">sterowanie multimediami</translation>
+<translation id="8613126697340063924">sterowanie zdalnym odtwarzaniem</translation>
+<translation id="8634971699417195529">Pokaż selektor miesiąca</translation>
+<translation id="8637593834423658414">1,75</translation>
+<translation id="8657910582115602348">Ikona Asystenta Google</translation>
+<translation id="8668988909814782445">Zawijaj tekst</translation>
+<translation id="8750798805984357768">Wybierz jedną z opcji.</translation>
+<translation id="8845239796550121995">Przesyłam na telewizor</translation>
+<translation id="8875657656876809964">Błąd odtwarzania filmu</translation>
+<translation id="8889402386540077796">Odcień</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
+<translation id="894736920926684893">Przełącznik formatów</translation>
+<translation id="8987927404178983737">Miesiąc</translation>
+<translation id="901493112792887934">bieżący czas w sekundach</translation>
+<translation id="9039639793210005614">Ikona Galeria</translation>
+<translation id="9040233563616141093">Ikona 4 strzałek skierowanych do środka, może oznaczać Pomniejsz</translation>
+<translation id="9073800864014589651">Ikona odtwarzania</translation>
+<translation id="9093215626363556771">wyłącz tryb obrazu w obrazie</translation>
+<translation id="9105500880071990795">Ikona zmniejszania głośności</translation>
+<translation id="9132465097189459683">Inny...</translation>
+<translation id="913630661384792974">Ikona kamery wideo, może oznaczać Nagrywanie filmu</translation>
+<translation id="9155987714137265666"><ph name="WEEK" />, początek <ph name="WEEK_START_DATE" /></translation>
+<translation id="916607977885256133">Obraz w obrazie</translation>
+<translation id="945780513535800434">Częściowo zaznaczono</translation>
+<translation id="947651054772746219">Ikona z ludźmi</translation>
+<translation id="954003015749068518">włącz tryb obrazu w obrazie</translation>
+</translationbundle>

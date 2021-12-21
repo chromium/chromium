@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sk">
+<translation id="1016055326260264411">Ikona srdca, môže znamenať Obľúbené</translation>
+<translation id="1088086359088493902">Sekundy</translation>
+<translation id="1142001580032786438">Zobraziť výber týždňa</translation>
+<translation id="1171774979989969504">Zadajte e-mailovú adresu.</translation>
+<translation id="1178581264944972037">Pozastaviť</translation>
+<translation id="1193819188371549072">Ikona slnka, môže znamenať denný čas</translation>
+<translation id="1197443222693564123">Tri bodky, môžu znamenať Viac</translation>
+<translation id="1231311685714446044">Ikona smutnej tváre</translation>
+<translation id="1248712480115826517">Ikona lupy, môže znamenať Vyhľadať alebo Zmeniť veľkosť</translation>
+<translation id="1253694090376430115">Ikona nákupnej tašky</translation>
+<translation id="1292759642840406299">Ikona kompasu</translation>
+<translation id="1301463715094321941">Ikona telefónu, môže znamenať Volať</translation>
+<translation id="1306460908038601864">vypnuté</translation>
+<translation id="1311894908970423688">Hodnota musí byť <ph name="VALUE_DATE_OR_TIME" />.</translation>
+<translation id="1312685112570645372">Ikona otáznika</translation>
+<translation id="1386033905837826130">Ikona zdieľania</translation>
+<translation id="145015347812617860">Počet položiek: <ph name="COUNT" /></translation>
+<translation id="1480676835519562650">s viacerými výbermi, vybrané: <ph name="SELECTED" /> z <ph name="COUNT" />.</translation>
+<translation id="157989258522571434">Ikona kalendára</translation>
+<translation id="1588438908519853928">Normálny</translation>
+<translation id="1591562245178063882">Tento mesiac</translation>
+<translation id="1598348607589961718">Šípka nahor, môže znamenať Nahrať</translation>
+<translation id="1632409084477505723">Ikona sťahovania</translation>
+<translation id="1637811476055996098">Vybrať súbory</translation>
+<translation id="1658806147928973309">Ikona vypnutia zvuku mikrofónu</translation>
+<translation id="1677491356035817504">Ikona šípky nadol, môže znamenať Rozbaliť</translation>
+<translation id="1681022320378710418">aktuálny čas</translation>
+<translation id="1727839386348365796">Kvapkadlo</translation>
+<translation id="1727886345390570319">skryť ponuku skrytých titulkov</translation>
+<translation id="1729654308190250600">Zadajte e-mailovú adresu, ktorá nie je prázdna hodnota.</translation>
+<translation id="173386679947102756">Ikona zvončeka, môže znamenať Upozornenia</translation>
+<translation id="175222816025430946">Ikona s troma pruhmi, môže znamenať ponuku</translation>
+<translation id="1758486001363313524">Iné...</translation>
+<translation id="1787192514241997742">celkový čas: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">Ikona X, môže znamenať Zavrieť alebo Odstrániť</translation>
+<translation id="1804122079878165329">Ikona šípky doprava, môže znamenať Dopredu</translation>
+<translation id="1822429046913737220">AM / PM</translation>
+<translation id="1832974991323546415">prehrať na vzdialenom zariadení</translation>
+<translation id="1921819250265091946">dd</translation>
+<translation id="1938124657309484470">Hodnota musí byť <ph name="MAXIMUM_DATE_OR_TIME" /> alebo skôr.</translation>
+<translation id="1946271899482435442">Zobraziť výber dátumu</translation>
+<translation id="1993104285338243655">Prepnuté na zrkadlenie</translation>
+<translation id="2031987842108996681">Červený kanál</translation>
+<translation id="2060505056492490888">Znak <ph name="DOT" /> je v doméne <ph name="INVALIDDOMAIN" /> použitý na nesprávnej pozícii.</translation>
+<translation id="2131189924434603515">Ikona s malým i, môže znamenať Informácie</translation>
+<translation id="2148716181193084225">Dnes</translation>
+<translation id="2177093963727449806">Ikona obnovenia</translation>
+<translation id="221177765244658491">Ikona vypnutia zvuku</translation>
+<translation id="2226276347425096477">Tento text musíte skrátiť na <ph name="MAX_CHARACTERS" /> znakov alebo menej (súčasný počet znakov: <ph name="CURRENT_LENGTH" />).</translation>
+<translation id="2246498165605549352">Miestny súbor</translation>
+<translation id="2247351761944213033"><ph name="WEEKNUMBER" />. týždeň, <ph name="YEAR" /></translation>
+<translation id="2265260019987849198">Ikona domu</translation>
+<translation id="2277199496770840904">Skladba <ph name="NUMBER" /></translation>
+<translation id="2307576640803031502">v zozname, <ph name="INDEX" />. položka z <ph name="COUNT" /></translation>
+<translation id="2320316128050046908">Ikona zvýšenia hlasitosti</translation>
+<translation id="2393030564806080191">Hodnota farby v šestnástkovej sústave</translation>
+<translation id="2398813069815436052">dialógové okno je otvorené.</translation>
+<translation id="2427288427427702833">Ikona spúšťania aplikácií</translation>
+<translation id="245932805758469625">počet sekúnd do konca videa</translation>
+<translation id="248395913932153421">Deň</translation>
+<translation id="2507943997699731163">Vyplňte toto pole.</translation>
+<translation id="2530182415807757784">s viacerými výbermi, žiadne vybrané</translation>
+<translation id="2561842179657104141">zobraziť ďalšie ovládacie prvky médií</translation>
+<translation id="2572483411312390101">prehrať</translation>
+<translation id="2613802280814924224">Zadajte platnú hodnotu. Najbližšia platná hodnota je <ph name="VALID_VALUE" />.</translation>
+<translation id="2634240155926812724">Zelený kanál</translation>
+<translation id="2653659639078652383">Odoslať</translation>
+<translation id="2723001399770238859">zvuk</translation>
+<translation id="2746543609216772311">Hodnota musí byť <ph name="MINIMUM_DATE_OR_TIME" /> alebo neskôr.</translation>
+<translation id="2761667185364618470">Ak chcete pokračovať, začiarknite toto políčko.</translation>
+<translation id="2908441821576996758">Zadajte zoznam e-mailových adries oddelených čiarkou.</translation>
+<translation id="2987445268505333132">Ikona ukončenia hovoru</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3075154866155599887">Zadajte platnú hodnotu. Pole obsahuje neúplnú hodnotu alebo neplatný dátum.</translation>
+<translation id="310520048233152454">Zadajte webovú adresu.</translation>
+<translation id="3220661731597678625">aktuálny krok</translation>
+<translation id="3321030238473337787">Rýchlosť prehrávania</translation>
+<translation id="3329013043687509092">Sýtosť</translation>
+<translation id="3435893727187534376">Ikona so štyrmi šípkami smerujúcimi von, môže znamenať Rozbaliť</translation>
+<translation id="3450233048674729344">Hodnota musí byť menšia alebo rovná hodnote <ph name="MAXIMUM" />.</translation>
+<translation id="3685101356851116974">Neoznačený obrázok</translation>
+<translation id="3732799496749320381">mm</translation>
+<translation id="3754210790023674521">Ukončiť obraz v obraze</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3822383571486410024">Predĺžte tento text aspoň na <ph name="MIN_CHARACTERS" /> alebo viac znakov (momentálny počet znakov je <ph name="CURRENT_LENGTH" />).</translation>
+<translation id="383465348367842624">Časť pred znakom <ph name="ATSIGN" /> by nemala obsahovať symbol <ph name="INVALIDCHARACTER" />.</translation>
+<translation id="3845063161460806746">Ikona s palcom hore, môže znamenať Páči sa mi</translation>
+<translation id="3846214748874656680">Ukončiť režim celej obrazovky</translation>
+<translation id="3904695548697879411">Ikona služby Twitter</translation>
+<translation id="405782047075994056">Ikona šípky doľava, môže znamenať Späť</translation>
+<translation id="4103419683916926126">Milisekundy</translation>
+<translation id="4201051445878709314">Zobraziť predchádzajúci mesiac</translation>
+<translation id="4302299849305494927">Ikona reproduktora, môže znamenať hlasitosť</translation>
+<translation id="4360991593054037559">Zadajte platnú hodnotu. Najbližšie platné hodnoty sú <ph name="VALID_VALUE_LOW" /> a <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4363712632243441817">Ikona prenosu, môže znamenať spustenie prenosu videa na vzdialenú obrazovku</translation>
+<translation id="4371899966896349864">skryť ponuku rýchlosti prehrávania</translation>
+<translation id="4384249794467006333">Tento obrázok nie je označený štítkom. Popisy obrázkov nájdete po otvorení ponuky Ďalšie možnosti vpravo hore.</translation>
+<translation id="4436211924730548766">Ikona šípky doľava</translation>
+<translation id="4444765639179266822">Zrejme znamená: <ph name="OCR_TEXT" /></translation>
+<translation id="4522570452068850558">Podrobnosti</translation>
+<translation id="4540719609030900356">Ikona papierového lietadla, môže znamenať Odoslať</translation>
+<translation id="4576178047100686001">Tento obrázok nie je označený štítkom. Popisy obrázkov nájdete po otvorení ponuky Ďalšie možnosti vľavo hore.</translation>
+<translation id="4577968231433672268">Ikona plus, môže znamenať Pridať</translation>
+<translation id="4611825382945206498">Hodiny s kruhovou šípkou, môžu znamenať položku História</translation>
+<translation id="4664250907885839816">Časť za znakom <ph name="ATSIGN" /> by nemala obsahovať symbol <ph name="INVALIDCHARACTER" />.</translation>
+<translation id="4679853894970977730">Ikona fotoaparátu, môže znamenať Odfotiť</translation>
+<translation id="4718048029184481307">Prehráva sa v režime obrazu v obraze</translation>
+<translation id="4748357248530471599">prepnúť výrez obrazovky na celú obrazovku</translation>
+<translation id="4763480195061959176">video</translation>
+<translation id="4812940957355064477">Zadajte číslo.</translation>
+<translation id="4832245585893280119">Ikona počasia</translation>
+<translation id="4908855810237020461">Ikona hodín, môže znamenať Čas</translation>
+<translation id="4912200001568447310">aktuálna položka</translation>
+<translation id="4915360478455618802">Zobraziť výber času</translation>
+<translation id="4924138096460353083">neurčité</translation>
+<translation id="4950364064308314478">Zobraziť výber miestneho dátumu a času</translation>
+<translation id="4971739861736909480">Vybrané: <ph name="ACCNAME" /></translation>
+<translation id="4975562563186953947">Počet vybraných položiek: <ph name="SELECTED_COUNT" /></translation>
+<translation id="4992066212339426712">Zapnúť zvuk</translation>
+<translation id="49969490063480558">Zadajte časť za znakom <ph name="ATSIGN" />. Adresa <ph name="INVALIDADDRESS" /> je neúplná.</translation>
+<translation id="5090250355906949916">posúvač časovej osi videa</translation>
+<translation id="509897012892853729">Modrý kanál</translation>
+<translation id="5117590920725113268">Zobraziť ďalší mesiac</translation>
+<translation id="5121688653159243920">Ikona nečíslovaného zoznamu</translation>
+<translation id="5164977714490026579">Hodnota musí byť väčšia alebo rovná hodnote <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5214400792580101697">Ikona zastavenia</translation>
+<translation id="5307600278924710095">Zadajte časť pred znakom <ph name="ATSIGN" />. Adresa <ph name="INVALIDADDRESS" /> je neúplná.</translation>
+<translation id="5334352251556557839">Nepodarilo sa prehrať médiá.</translation>
+<translation id="537648784377940524">Minimálny dátum (<ph name="MIN_DATE_OR_TIME" />) musí byť pred maximálnym dátumom (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">rozbalené, bolo otvorené dialógové okno.</translation>
+<translation id="5425179576310518467">aktuálny dátum</translation>
+<translation id="5466621249238537318">Vyberte jeden alebo viac súborov.</translation>
+<translation id="5468998798572797635">ukončiť režim celej obrazovky</translation>
+<translation id="5516235301412634559">0,75</translation>
+<translation id="5537725057119320332">Prenášať</translation>
+<translation id="5546461542133609677">obnoviť zvuk</translation>
+<translation id="5586467629893654334">Ikona mesiaca, môže znamenať nočný čas alebo spánok</translation>
+<translation id="5599474660109692598">Ikona bubliny, môže znamenať Čet</translation>
+<translation id="5617165654945759937">Ikona ceruzky, môže znamenať Upraviť</translation>
+<translation id="5621627136377293173">Ikona mikrofónu, môže znamenať Nahrať</translation>
+<translation id="5630795885300617244">Dvojitým klepnutím doľava alebo doprava preskočíte o 10 s</translation>
+<translation id="5647477850810769350">Ikona slúchadiel s mikrofónom</translation>
+<translation id="5677946354068040947">ďalšie možnosti</translation>
+<translation id="5720390168116663167">Ikona šípky nahor</translation>
+<translation id="5724910823641175216">Ikona šípky v smere hodinových ručičiek, môže znamenať Znova</translation>
+<translation id="57838592816432529">Vypnúť zvuk</translation>
+<translation id="5786442179789148008">zobraziť ponuku rýchlosti prehrávania</translation>
+<translation id="5787939484346677755">rozbalené, k dispozícii sú možnosti automatického dopĺňania.</translation>
+<translation id="5838904342468928321">Ikona oblaku</translation>
+<translation id="5860033963881614850">Vypnuté</translation>
+<translation id="588258955323874662">Celá obrazovka</translation>
+<translation id="5888666972993069672">Prenáša sa do zariadenia <ph name="DEVICE_FRIENDLY_NAME" /></translation>
+<translation id="5916664084637901428">Zapnuté</translation>
+<translation id="5939518447894949180">Resetovať</translation>
+<translation id="5966707198760109579">Týždeň</translation>
+<translation id="5985507339671257014">0,5</translation>
+<translation id="6011459053400940133">posúvač hlasitosti</translation>
+<translation id="6015796118275082299">Rok</translation>
+<translation id="6054619856758804514">Ikona koša, môže znamenať Odstrániť</translation>
+<translation id="6054638203631275602">Ikona šťastnej tváre</translation>
+<translation id="608465159662359598">Ikona ozubeného kolieska alebo kľúča na matice, môže znamenať Nastavenia</translation>
+<translation id="6165053282446038410">rozbalené, počet dostupných možností automatického dopĺňania: <ph name="COUNT" />.</translation>
+<translation id="6209276755895393898">Zrejme to bude: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">aktuálna stránka</translation>
+<translation id="6240633443440794881">Ikona obálky, môže znamenať položku Pošta</translation>
+<translation id="6247212328664111379">Ikona osoby</translation>
+<translation id="6281588256137006900">Svetlosť</translation>
+<translation id="6310801910862476708">Ukončiť obraz v obraze</translation>
+<translation id="6350382280299255966">Ikona šťastnej tváre, môže znamenať Emodži</translation>
+<translation id="6398862346408813489">Zobraziť panel na výber mesiaca</translation>
+<translation id="6404546809543547843">posúvač časovej osi zvuku</translation>
+<translation id="6443871981718447451">zobraziť ponuku skrytých titulkov</translation>
+<translation id="6550675742724504774">Možnosti</translation>
+<translation id="6572309429103589720">Neplatná gramatika</translation>
+<translation id="658823671542763450">prejsť do režimu celej obrazovky</translation>
+<translation id="6632254525813309835">Ikona šípky proti smeru hodinových ručičiek, môže znamenať Späť</translation>
+<translation id="6643016212128521049">Vymazať</translation>
+<translation id="668171684555832681">Iný...</translation>
+<translation id="6709093583001123835">Hodnota musí byť <ph name="VALUE" />.</translation>
+<translation id="6709570249143506788">Nízka kvalita prehrávania</translation>
+<translation id="6790428901817661496">Prehrať</translation>
+<translation id="6820355525329141109">Doplnok sa nepodarilo načítať.</translation>
+<translation id="6831465880655513317">Zdroj farieb s dvojrozmerným posúvačom na výber sýtosti a svetlosti</translation>
+<translation id="6843725295806269523">stlmiť</translation>
+<translation id="6889412865110485830">Ikona nákupného košíka</translation>
+<translation id="6919891270253167948">1,5</translation>
+<translation id="6940482800520966738">Ikona hviezdičky</translation>
+<translation id="6941933287844615239">stiahnuť médiá</translation>
+<translation id="698788488269350478">rozbalené.</translation>
+<translation id="6989848892321993519">Predĺžte tento text aspoň na <ph name="MIN_CHARACTERS" /> alebo viac znakov (momentálne používate jeden znak).</translation>
+<translation id="7022838723850801004">Ikona s emodži šťastnej a smutnej tváre</translation>
+<translation id="709897737746224366">Zadajte hodnotu zodpovedajúcu požadovanému formátu.</translation>
+<translation id="7102274145889307184">aktuálna poloha</translation>
+<translation id="7118469954320184356">Nie je k dispozícii žiadny popis.</translation>
+<translation id="7263440858009898357">Vyberte položku zo zoznamu.</translation>
+<translation id="7320576522385648310">ukladá sa do vyrovnávacej pamäte</translation>
+<translation id="7341556277900466204">Zdroj farieb</translation>
+<translation id="7364796246159120393">Vybrať súbor</translation>
+<translation id="739024184232394898">Iné...</translation>
+<translation id="7410239719251593705">Zrejme zahŕňa obsah pre dospelých. Nie je k dispozícii žiadny popis.</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
+<translation id="7514365320538308">Stiahnuť</translation>
+<translation id="7533959249147584474">Neoznačený obrázok</translation>
+<translation id="7673697353781729403">Hodiny</translation>
+<translation id="7742609585924342092">Ikona miesta</translation>
+<translation id="7745230546936012372">Ak chcete získať chýbajúce popisy obrázka, otvorte kontextovú ponuku.</translation>
+<translation id="7750228210027921155">Obraz v obraze</translation>
+<translation id="775297008183122718">Neplatný vstup</translation>
+<translation id="7782515065589691344">1.25</translation>
+<translation id="7789962463072032349">pozastaviť</translation>
+<translation id="7796968532285333302">Ikona šípky nadol, môže znamenať Zbaliť</translation>
+<translation id="7819026464394689674">Ikona pozastavenia</translation>
+<translation id="7852167693871241274">Posúvač odtieňa</translation>
+<translation id="7855610409192055689">Ikona kancelárskej sponky, môže znamenať prílohu</translation>
+<translation id="7888071071722539607">Uveďte v e-mailovej adrese znak <ph name="ATSIGN" />. V adrese <ph name="INVALIDADDRESS" /> znak <ph name="ATSIGN" /> chýba.</translation>
+<translation id="795667975304826397">Nie je vybratý žiadny súbor</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> – nevybrané</translation>
+<translation id="7994555495914042081">Ikona začiarknutia</translation>
+<translation id="8097409774376213335">Ikona šípky nadol</translation>
+<translation id="8105750478534334542">Ikona s palcom dole, môže znamenať Nepáči sa mi</translation>
+<translation id="811583516810654505">Načítava sa popis…</translation>
+<translation id="8117451130807776954">Tento týždeň</translation>
+<translation id="8131955114056917397">0,25</translation>
+<translation id="8147719583347050106">Ikona Google</translation>
+<translation id="8199524924445686405">rrrr</translation>
+<translation id="8261464734335370856">Neplatný pravopis</translation>
+<translation id="8276790177939055966">Ikona šípky doprava</translation>
+<translation id="8284326494547611709">Titulky</translation>
+<translation id="835897206747267392">Neplatná hodnota.</translation>
+<translation id="839593075537728968">Hodnota musí byť v rozsahu od <ph name="MINIMUM_TIME" /> do <ph name="MAXIMUM_TIME" />.</translation>
+<translation id="8403857369060869934">uplynutý čas: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423">Počet súborov: <ph name="NUMBER_OF_FILES" /></translation>
+<translation id="8451268428117625855">Vyberte súbor.</translation>
+<translation id="8488243824626550045">Ikona služby Facebook</translation>
+<translation id="8534579021159131403">Minúty</translation>
+<translation id="8541249477527128034">ovládanie médií</translation>
+<translation id="8613126697340063924">ovládať vzdialené prehrávanie</translation>
+<translation id="8634971699417195529">Zobraziť výber mesiaca</translation>
+<translation id="8637593834423658414">1,75</translation>
+<translation id="8657910582115602348">Ikona Asistenta Google</translation>
+<translation id="8668988909814782445">Zalomiť riadok</translation>
+<translation id="8750798805984357768">Vyberte jednu z týchto možností.</translation>
+<translation id="8845239796550121995">Prenáša sa do televízora</translation>
+<translation id="8875657656876809964">Chyba prehrávania videa</translation>
+<translation id="8889402386540077796">Odtieň</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
+<translation id="894736920926684893">Prepínač formátu</translation>
+<translation id="8987927404178983737">Mesiac</translation>
+<translation id="901493112792887934">aktuálny čas v sekundách</translation>
+<translation id="9039639793210005614">Ikona galérie</translation>
+<translation id="9040233563616141093">Ikona so štyrmi šípkami smerujúcimi dovnútra, môže znamenať Zmenšiť</translation>
+<translation id="9073800864014589651">Ikona prehrávania</translation>
+<translation id="9093215626363556771">ukončiť obraz v obraze</translation>
+<translation id="9105500880071990795">Ikona zníženia hlasitosti</translation>
+<translation id="9132465097189459683">Iné...</translation>
+<translation id="913630661384792974">Ikona videokamery, môže znamenať Nahrať video</translation>
+<translation id="9155987714137265666"><ph name="WEEK" /> začínajúci <ph name="WEEK_START_DATE" /></translation>
+<translation id="916607977885256133">Obraz v obraze</translation>
+<translation id="945780513535800434">Čiastočne začiarknuté</translation>
+<translation id="947651054772746219">Ikona ľudí</translation>
+<translation id="954003015749068518">zapnúť obraz v obraze</translation>
+</translationbundle>

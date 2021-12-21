@@ -13,7 +13,7 @@
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "content/test/test_content_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 
 namespace content {
 

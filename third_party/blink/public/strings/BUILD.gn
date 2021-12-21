@@ -11,3 +11,11 @@ grit("strings") {
             process_file_template(locales_with_pseudolocales,
                                   [ "blink_strings_{{source_name_part}}.pak" ])
 }
+
+grit("accessibility_strings") {
+  source = "blink_accessibility_strings.grd"
+  outputs = [ "grit/blink_accessibility_strings.h" ] +
+            process_file_template(
+                locales_with_pseudolocales,
+                [ "blink_accessibility_strings_{{source_name_part}}.pak" ])
+}

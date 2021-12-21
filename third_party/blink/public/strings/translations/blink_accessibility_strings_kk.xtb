@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="kk">
+<translation id="1016055326260264411">Жүрек белгішесі, таңдаулыны білдіруі мүмкін</translation>
+<translation id="1088086359088493902">Секундтар</translation>
+<translation id="1142001580032786438">Апта таңдау құралын көрсету</translation>
+<translation id="1171774979989969504">Электрондық пошта мекенжайын енгізіңіз.</translation>
+<translation id="1178581264944972037">Кідірту</translation>
+<translation id="1193819188371549072">Күн белгішесі, күндізгі уақытты білдіруі мүмкін</translation>
+<translation id="1197443222693564123">Үш нүкте, "толығырақ" дегенді білдіруі мүмкін</translation>
+<translation id="1231311685714446044">Көңілсіз жүз белгішесі</translation>
+<translation id="1248712480115826517">Ұлғайтқыш әйнек белгішесі, іздеуді немесе масштабтауды білдіруі мүмкін</translation>
+<translation id="1253694090376430115">Сауда дорбасы белгішесі</translation>
+<translation id="1292759642840406299">Компас белгішесі</translation>
+<translation id="1301463715094321941">Телефон тұтқасы белгішесі, қоңырауды білдіруі мүмкін</translation>
+<translation id="1306460908038601864">Өшірулі</translation>
+<translation id="1311894908970423688">Қажетті мән: <ph name="VALUE_DATE_OR_TIME" />.</translation>
+<translation id="1312685112570645372">Сұрақ белгісі</translation>
+<translation id="1386033905837826130">Бөлісу белгішесі</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> элемент</translation>
+<translation id="1480676835519562650">бірнешеуін таңдауға болады, <ph name="SELECTED" />/<ph name="COUNT" /> таңдалды.</translation>
+<translation id="157989258522571434">Күнтізбе белгішесі</translation>
+<translation id="1588438908519853928">Қалыпты</translation>
+<translation id="1591562245178063882">Осы айда</translation>
+<translation id="1598348607589961718">Жоғары қараған көрсеткі, жүктеп салуды білдіруі мүмкін</translation>
+<translation id="1632409084477505723">Жүктеп алу белгішесі</translation>
+<translation id="1637811476055996098">Файлдарды таңдау</translation>
+<translation id="1658806147928973309">Микрофон дыбысын өшіру белгішесі</translation>
+<translation id="1677491356035817504">Төмен қараған тырнақша белгішесі, жаюды білдіруі мүмкін</translation>
+<translation id="1681022320378710418">ағымдағы уақыт</translation>
+<translation id="1727839386348365796">Eye Dropper</translation>
+<translation id="1727886345390570319">субтитрді жасыру мәзірі</translation>
+<translation id="1729654308190250600">Электрондық пошта мекенжайын енгізіңіз.</translation>
+<translation id="173386679947102756">Қоңырау белгішесі, хабарландыруларды білдіруі мүмкін</translation>
+<translation id="175222816025430946">Үш бағана белгішесі, мәзірді білдіруі мүмкін</translation>
+<translation id="1758486001363313524">Басқа…</translation>
+<translation id="1787192514241997742">жалпы уақыт: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">X белгішесі, жабуды немесе жоюды білдіруі мүмкін</translation>
+<translation id="1804122079878165329">Оң жақ көрсеткі белгішесі, "алға қарай" дегенді білдіруі мүмкін</translation>
+<translation id="1822429046913737220">AM/PM</translation>
+<translation id="1832974991323546415">қашықтағы құрылғыда ойнату</translation>
+<translation id="1921819250265091946">кк</translation>
+<translation id="1938124657309484470">Мән <ph name="MAXIMUM_DATE_OR_TIME" /> не одан ерте болуы керек.</translation>
+<translation id="1946271899482435442">Күн таңдау құралын көрсету</translation>
+<translation id="1993104285338243655">Экран көшірмесін көрсетуге ауысты</translation>
+<translation id="2031987842108996681">Қызыл түсті арна</translation>
+<translation id="2060505056492490888">"<ph name="INVALIDDOMAIN" />" ішінде "<ph name="DOT" />" қате орында пайдаланылған.</translation>
+<translation id="2131189924434603515">Кіші "i" әрпі белгішесі, ақпаратты білдіруі мүмкін</translation>
+<translation id="2148716181193084225">Бүгін</translation>
+<translation id="2177093963727449806">Жаңарту белгішесі</translation>
+<translation id="221177765244658491">Дыбысты өшіру белгішесі</translation>
+<translation id="2226276347425096477">Осы мәтінді <ph name="MAX_CHARACTERS" /> таңбаға немесе одан азырақ етіп қысқартыңыз (сіз қазір  <ph name="CURRENT_LENGTH" /> таңба пайдаланып жатырсыз).</translation>
+<translation id="2246498165605549352">Жергілікті файл</translation>
+<translation id="2247351761944213033"><ph name="WEEKNUMBER" />-апта, <ph name="YEAR" /></translation>
+<translation id="2265260019987849198">Негізгі экран белгішесі</translation>
+<translation id="2277199496770840904"><ph name="NUMBER" />-аудиотрек</translation>
+<translation id="2307576640803031502">тізімде, <ph name="INDEX" />/<ph name="COUNT" /> элемент</translation>
+<translation id="2320316128050046908">Дыбысты арттыру белгішесі</translation>
+<translation id="2393030564806080191">Оналтылық форматтағы түс</translation>
+<translation id="2398813069815436052">диалогтік терезе ашылды.</translation>
+<translation id="2427288427427702833">Қолданбаларды іске қосу белгішесі</translation>
+<translation id="245932805758469625">бейненің соңына дейін қалған секундтар саны</translation>
+<translation id="248395913932153421">Күн</translation>
+<translation id="2507943997699731163">Бұл өрісті толтырыңыз.</translation>
+<translation id="2530182415807757784">бірнешеуін таңдауға болады, ешқайсысы таңдалмады.</translation>
+<translation id="2561842179657104141">басқа да мультимедиа басқару элементтерін көрсету</translation>
+<translation id="2572483411312390101">ойнату</translation>
+<translation id="2613802280814924224">Жарамды мән енгізіңіз. Ең жақын жарамды мән <ph name="VALID_VALUE" /> болып табылады.</translation>
+<translation id="2634240155926812724">Жасыл түсті арна</translation>
+<translation id="2653659639078652383">Жіберу</translation>
+<translation id="2723001399770238859">аудио</translation>
+<translation id="2746543609216772311">Мән <ph name="MINIMUM_DATE_OR_TIME" /> немесе одан кейінірек болуы керек.</translation>
+<translation id="2761667185364618470">Жалғастырғыңыз келсе, осы ұяшықты белгілеңіз.</translation>
+<translation id="2908441821576996758">Электрондық пошта мекенжайларының үтірмен бөлінген тізімін енгізіңіз.</translation>
+<translation id="2987445268505333132">Қоңырауды аяқтау белгішесі</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
+<translation id="3075154866155599887">Жарамды мән енгізіңіз. Бұл өріс толық емес немесе күні жарамсыз.</translation>
+<translation id="310520048233152454">URL мекенжайын енгізіңіз.</translation>
+<translation id="3220661731597678625">ағымдағы қадам</translation>
+<translation id="3321030238473337787">Ойнату жылдамдығы</translation>
+<translation id="3329013043687509092">Қанықтық</translation>
+<translation id="3435893727187534376">Сыртқа қараған төрт көрсеткі белгішесі, жаюды білдіруі мүмкін</translation>
+<translation id="3450233048674729344">Мән <ph name="MAXIMUM" /> шамасынан кіші немесе оған тең болуы керек.</translation>
+<translation id="3685101356851116974">Белгісі жоқ сурет</translation>
+<translation id="3732799496749320381">аа</translation>
+<translation id="3754210790023674521">"Суреттегі сурет" режимінен шығу</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> ГБ</translation>
+<translation id="3822383571486410024">Бұл мәтінді <ph name="MIN_CHARACTERS" /> немесе одан көп таңбаға дейін ұзартыңыз (қазір <ph name="CURRENT_LENGTH" /> таңба).</translation>
+<translation id="383465348367842624">"<ph name="ATSIGN" />" кейінгі бөлім "<ph name="INVALIDCHARACTER" />" белгісін қамтымауы тиіс.</translation>
+<translation id="3845063161460806746">Жоғары қараған бас бармақ белгішесі, ұнатуды білдіруі мүмкін</translation>
+<translation id="3846214748874656680">Толық экраннан шығу</translation>
+<translation id="3904695548697879411">Twitter белгішесі</translation>
+<translation id="405782047075994056">Сол жақ көрсеткі белгішесі, "артқа қарай" дегенді білдіруі мүмкін</translation>
+<translation id="4103419683916926126">Миллисекундтар</translation>
+<translation id="4201051445878709314">Алдыңғы айды көрсету</translation>
+<translation id="4302299849305494927">Динамик белгішесі, дыбыс деңгейін білдіруі мүмкін</translation>
+<translation id="4360991593054037559">Жарамды мән енгізіңіз. Екі ең жақын жарамды мән — <ph name="VALID_VALUE_LOW" /> және <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4363712632243441817">Трансляциялау белгішесі, бейнені қашықтағы экранға трансляциялауды білдіруі мүмкін</translation>
+<translation id="4371899966896349864">ойнату жылдамдығы мәзірін жасыру</translation>
+<translation id="4384249794467006333">Бұл сурет белгіленбеген. Сурет сипаттамаларын алу үшін оң жақ жоғарыдағы "Қосымша опциялар" мәзірін ашыңыз.</translation>
+<translation id="4436211924730548766">Сол жақ тырнақша белгішесі</translation>
+<translation id="4444765639179266822">Келесі сөз шығатын сияқты: <ph name="OCR_TEXT" /></translation>
+<translation id="4522570452068850558">Мәліметтер</translation>
+<translation id="4540719609030900356">Қағаз ұшақ белгішесі, жіберуді білдіруі мүмкін</translation>
+<translation id="4576178047100686001">Бұл сурет белгіленбеген. Сурет сипаттамаларын алу үшін оң жақ жоғарыдағы "Қосымша опциялар" мәзірін ашыңыз.</translation>
+<translation id="4577968231433672268">Плюс белгішесі, қосуды білдіруі мүмкін</translation>
+<translation id="4611825382945206498">Айналма көрсеткісі бар сағат, тарихты білдіруі мүмкін</translation>
+<translation id="4664250907885839816">"<ph name="ATSIGN" />" кейінгі бөлікте "<ph name="INVALIDCHARACTER" />" таңбасы болмауы керек.</translation>
+<translation id="4679853894970977730">Камера белгішесі, суретке түсіруді білдіруі мүмкін</translation>
+<translation id="4718048029184481307">"Суреттегі сурет" режимінде ойнатылуда.</translation>
+<translation id="4748357248530471599">экран ойығын толық экранға ауыстыру</translation>
+<translation id="4763480195061959176">бейне</translation>
+<translation id="4812940957355064477">Нөмірді енгізіңіз.</translation>
+<translation id="4832245585893280119">Ауа райы белгішесі</translation>
+<translation id="4908855810237020461">Сағат белгішесі, уақытты білдіруі мүмкін</translation>
+<translation id="4912200001568447310">ағымдағы элемент</translation>
+<translation id="4915360478455618802">Уақыт таңдау құралын көрсету</translation>
+<translation id="4924138096460353083">Белгісіз</translation>
+<translation id="4950364064308314478">Жергілікті күнді және уақыт таңдау құралын көрсету</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> таңдалды.</translation>
+<translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> таңдалды</translation>
+<translation id="4992066212339426712">Дыбысын қосу</translation>
+<translation id="49969490063480558">"<ph name="ATSIGN" />" кейінгі бөлімді енгізіңіз. "<ph name="INVALIDADDRESS" />" толық емес.</translation>
+<translation id="5090250355906949916">бейненің уақыт жолағы</translation>
+<translation id="509897012892853729">Көк түсті арна</translation>
+<translation id="5117590920725113268">Келесі айды көрсету</translation>
+<translation id="5121688653159243920">Таңбаланған тізім белгішесі</translation>
+<translation id="5164977714490026579">Мән <ph name="MINIMUM" /> мәнінен үлкен немесе тең болуы керек.</translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
+<translation id="5214400792580101697">Тоқтату белгішесі</translation>
+<translation id="5307600278924710095">"<ph name="ATSIGN" />" болып жалғасатын бөлікті енгізіңіз. "<ph name="INVALIDADDRESS" />" толық емес.</translation>
+<translation id="5334352251556557839">Медиафайл ойнатылмады.</translation>
+<translation id="537648784377940524">Минималды күн (<ph name="MIN_DATE_OR_TIME" />) максималды күннен (<ph name="MAX_DATE_OR_TIME" />) бұрын болуы тиіс.</translation>
+<translation id="5378437566635403538">жайылды, диалогтік терезе ашылды.</translation>
+<translation id="5425179576310518467">ағымдағы күн</translation>
+<translation id="5466621249238537318">Бір немесе бірнеше файлды таңдаңыз.</translation>
+<translation id="5468998798572797635">толық экраннан шығу</translation>
+<translation id="5516235301412634559">0,75</translation>
+<translation id="5537725057119320332">Cast</translation>
+<translation id="5546461542133609677">дыбысын қосу</translation>
+<translation id="5586467629893654334">Ай белгішесі, түнгі уақытты немесе ұйқы режимін білдіруі мүмкін</translation>
+<translation id="5599474660109692598">Мультипликациялық қалқыма хабар белгішесі, чатты білдіруі мүмкін</translation>
+<translation id="5617165654945759937">Қарындаш белгішесі, өзгертуді білдіруі мүмкін</translation>
+<translation id="5621627136377293173">Микрофон белгішесі, жазуды білдіруі мүмкін</translation>
+<translation id="5630795885300617244">10 секунд уақытты өткізіп жіберу үшін солға немесе оңға қарай екі рет түртіңіз</translation>
+<translation id="5647477850810769350">Гарнитура белгішесі</translation>
+<translation id="5677946354068040947">басқа да опциялар</translation>
+<translation id="5720390168116663167">Жоғары бағытталған көрсеткі белгішесі</translation>
+<translation id="5724910823641175216">Сағат тілімен бағытталған көрсеткі белгішесі, қайталауды білдіруі мүмкін</translation>
+<translation id="57838592816432529">Дыбысын өшіру</translation>
+<translation id="5786442179789148008">ойнату жылдамдығы мәзірін көрсету</translation>
+<translation id="5787939484346677755">жайылды, автоматты толтыру опциялары қолжетімді.</translation>
+<translation id="5838904342468928321">Бұлт белгішесі</translation>
+<translation id="5860033963881614850">Өшірулі</translation>
+<translation id="588258955323874662">Толық экран</translation>
+<translation id="5888666972993069672"><ph name="DEVICE_FRIENDLY_NAME" /> құрылғысына трансляциялануда</translation>
+<translation id="5916664084637901428">Қосулы</translation>
+<translation id="5939518447894949180">Қалпына келтіру</translation>
+<translation id="5966707198760109579">Апта</translation>
+<translation id="5985507339671257014">0,5</translation>
+<translation id="6011459053400940133">дыбыс деңгейі ысырмасы</translation>
+<translation id="6015796118275082299">Жыл</translation>
+<translation id="6054619856758804514">Қоқыс себеті белгішесі, жоюды білдіруі мүмкін</translation>
+<translation id="6054638203631275602">Бақытты жүз белгішесі</translation>
+<translation id="608465159662359598">Тістегершік немесе сомын кілт белгішесі, параметрлерді білдіруі мүмкін</translation>
+<translation id="6165053282446038410">жайылды, <ph name="COUNT" /> автоматты толтыру опциясы қолжетімді.</translation>
+<translation id="6209276755895393898">Сурет сипаттамасы: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">ағымдағы бет</translation>
+<translation id="6240633443440794881">Хатқалта белгішесі, поштаны білдіруі мүмкін</translation>
+<translation id="6247212328664111379">Адам белгішесі</translation>
+<translation id="6281588256137006900">Aшықтық</translation>
+<translation id="6310801910862476708">"Суреттегі сурет" режимінен шығу</translation>
+<translation id="6350382280299255966">Күлімсіреген жүз белгішесі, эмоджиді білдіруі мүмкін</translation>
+<translation id="6398862346408813489">Айлық таңдау панелін көрсету</translation>
+<translation id="6404546809543547843">аудио уақыт жолағы</translation>
+<translation id="6443871981718447451">субтитр мәзірін көрсету</translation>
+<translation id="6550675742724504774">Опциялар</translation>
+<translation id="6572309429103589720">Грамматикалық қате</translation>
+<translation id="658823671542763450">толық экранға өту</translation>
+<translation id="6632254525813309835">Сағат тіліне қарсы көрсеткі белгішесі, қайтаруды білдіруі мүмкін</translation>
+<translation id="6643016212128521049">Тазалау</translation>
+<translation id="668171684555832681">Басқа…</translation>
+<translation id="6709093583001123835">Қажетті мән: <ph name="VALUE" />.</translation>
+<translation id="6709570249143506788">Ойнату сапасы нашар</translation>
+<translation id="6790428901817661496">Ойнату</translation>
+<translation id="6820355525329141109">Плагинді жүктеу мүмкін емес.</translation>
+<translation id="6831465880655513317">Қанықтық пен ашықтықты таңдауға арналған екі өлшемді сырғытпасы бар түстер шеңбері</translation>
+<translation id="6843725295806269523">үнсіз</translation>
+<translation id="6889412865110485830">Сауда себеті белгішесі</translation>
+<translation id="6919891270253167948">1,5</translation>
+<translation id="6940482800520966738">Жұлдызша белгішесі</translation>
+<translation id="6941933287844615239">мультимедиа файлын жүктеп алу</translation>
+<translation id="698788488269350478">жайылды.</translation>
+<translation id="6989848892321993519">Бұл мәтінді <ph name="MIN_CHARACTERS" /> немесе одан көп таңбаға дейін ұзартыңыз (әзірге 1 таңба пайдаланылған).</translation>
+<translation id="7022838723850801004">Бақытты және көңілсіз жүзді эмоджи белгішесі</translation>
+<translation id="709897737746224366">Сұралған пішімге сәйкес толтырыңыз.</translation>
+<translation id="7102274145889307184">ағымдағы орын</translation>
+<translation id="7118469954320184356">Сипаттамасы жоқ.</translation>
+<translation id="7263440858009898357">Тізімдегі элементті таңдаңыз.</translation>
+<translation id="7320576522385648310">буферленуде</translation>
+<translation id="7341556277900466204">Түстер шеңбері</translation>
+<translation id="7364796246159120393">Файл таңдау</translation>
+<translation id="739024184232394898">Басқа…</translation>
+<translation id="7410239719251593705">Ересектерге арналған мазмұн сияқты. Сипаттамасы жоқ.</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
+<translation id="7514365320538308">Жүктеу</translation>
+<translation id="7533959249147584474">Белгісі жоқ кескін</translation>
+<translation id="7673697353781729403">Сағаттар</translation>
+<translation id="7742609585924342092">Локация белгішесі</translation>
+<translation id="7745230546936012372">Жеткіліксіз сурет сипаттамаларын алу үшін контекстік мәзірді ашыңыз.</translation>
+<translation id="7750228210027921155">Суреттегі сурет</translation>
+<translation id="775297008183122718">Жазба жарамсыз.</translation>
+<translation id="7782515065589691344">1,25</translation>
+<translation id="7789962463072032349">кідірту</translation>
+<translation id="7796968532285333302">Төмен қараған тырнақша белгішесі, жиюды білдіруі мүмкін</translation>
+<translation id="7819026464394689674">Кідірту белгішесі</translation>
+<translation id="7852167693871241274">Реңк сырғытпасы</translation>
+<translation id="7855610409192055689">Қағаз қыстырғыш белгішесі, тіркемені білдіруі мүмкін</translation>
+<translation id="7888071071722539607">Электрондық пошта мекенжайына "<ph name="ATSIGN" />" белгісін енгізіңіз. "<ph name="INVALIDADDRESS" />" мекенжайында "<ph name="ATSIGN" />" жоқ.</translation>
+<translation id="795667975304826397">Файл таңдалмады</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> таңдалмаған</translation>
+<translation id="7994555495914042081">Құсбелгі</translation>
+<translation id="8097409774376213335">Төмен бағытталған көрсеткі белгішесі</translation>
+<translation id="8105750478534334542">Төмен қараған бас бармақ белгішесі, ұнатпауды білдіруі мүмкін</translation>
+<translation id="811583516810654505">Сипаттамасы ашылуда…</translation>
+<translation id="8117451130807776954">Осы апта</translation>
+<translation id="8131955114056917397">0,25</translation>
+<translation id="8147719583347050106">Google белгішесі</translation>
+<translation id="8199524924445686405">жжжж</translation>
+<translation id="8261464734335370856">Емле қатесі</translation>
+<translation id="8276790177939055966">Оң жақ тырнақша белгішесі</translation>
+<translation id="8284326494547611709">Титрлер</translation>
+<translation id="835897206747267392">Жарамсыз мән.</translation>
+<translation id="839593075537728968">Мән <ph name="MINIMUM_TIME" /> және <ph name="MAXIMUM_TIME" /> аралығында болуы қажет</translation>
+<translation id="8403857369060869934">өткен уақыт: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> файл</translation>
+<translation id="8451268428117625855">Файлды таңдаңыз.</translation>
+<translation id="8488243824626550045">Facebook белгішесі</translation>
+<translation id="8534579021159131403">Минуттар</translation>
+<translation id="8541249477527128034">мультимедианы басқару</translation>
+<translation id="8613126697340063924">қашықтан ойнатуды басқару</translation>
+<translation id="8634971699417195529">Ай таңдау құралын көрсету</translation>
+<translation id="8637593834423658414">1,75</translation>
+<translation id="8657910582115602348">Google Assistant белгішесі</translation>
+<translation id="8668988909814782445">Жаңа жолға көшіру</translation>
+<translation id="8750798805984357768">Осы параметрлердің біреуін таңдаңыз.</translation>
+<translation id="8845239796550121995">Қазір теледидарға трансляциялануда</translation>
+<translation id="8875657656876809964">Бейне ойнату қатесі</translation>
+<translation id="8889402386540077796">Реңкі</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> КБ</translation>
+<translation id="894736920926684893">Формат ауыстырып қосқышы</translation>
+<translation id="8987927404178983737">Ай</translation>
+<translation id="901493112792887934">ағымдағы уақыт секундар өлшемінде</translation>
+<translation id="9039639793210005614">Галерея белгішесі</translation>
+<translation id="9040233563616141093">Ішке қараған төрт көрсеткі белгішесі, келісімшартты білдіруі мүмкін</translation>
+<translation id="9073800864014589651">Ойнату белгішесі</translation>
+<translation id="9093215626363556771">"суреттегі сурет" режимінен шығу</translation>
+<translation id="9105500880071990795">Дыбысты азайту белгішесі</translation>
+<translation id="9132465097189459683">Басқа…</translation>
+<translation id="913630661384792974">Бейнекамера белгішесі, бейне жазуды білдіруі мүмкін</translation>
+<translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> күні басталады</translation>
+<translation id="916607977885256133">Суреттегі сурет</translation>
+<translation id="945780513535800434">Ішінара тексерілген</translation>
+<translation id="947651054772746219">Адам белгішесі</translation>
+<translation id="954003015749068518">"суреттегі сурет" режиміне кіру</translation>
+</translationbundle>

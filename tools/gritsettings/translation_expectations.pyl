@@ -70,6 +70,7 @@
       "remoting/resources/remoting_strings.grd",
       "services/services_strings.grd",
       "third_party/libaddressinput/chromium/address_input_strings.grd",
+      "third_party/blink/public/strings/blink_accessibility_strings.grd",
       "third_party/blink/public/strings/blink_strings.grd",
       "ui/accessibility/extensions/strings/accessibility_extensions_strings.grd",
       "ui/android/java/strings/android_ui_strings.grd",

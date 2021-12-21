@@ -48,7 +48,7 @@ static_library("renderer") {
     "//ppapi/shared_impl",
     "//printing/buildflags",
     "//third_party/blink/public:blink",
-    "//third_party/blink/public/strings:strings_grit",
+    "//third_party/blink/public/strings:accessibility_strings",
     "//third_party/icu",
     "//url",
     "//v8",

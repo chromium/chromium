@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="mn">
+<translation id="1016055326260264411">Зүрхний дүрс тэмдэг, Дуртай гэсэн утгатай байж болно</translation>
+<translation id="1088086359088493902">Секунд</translation>
+<translation id="1142001580032786438">Долоо хоног сонгогчийг харуулах</translation>
+<translation id="1171774979989969504">И-мэйл хаягаа оруулна уу.</translation>
+<translation id="1178581264944972037">Түр зогсоох</translation>
+<translation id="1193819188371549072">Нарны дүрс тэмдэг, өдрийн цаг гэсэн утгатай байж болно</translation>
+<translation id="1197443222693564123">Гурван цэг, Дэлгэрэнгүй гэсэн утгатай байж болно</translation>
+<translation id="1231311685714446044">Гунигтай царайн дүрс тэмдэг</translation>
+<translation id="1248712480115826517">Томруулдаг шилний дүрс тэмдэг, Хайх эсвэл томруулах гэсэн утгатай байж болно</translation>
+<translation id="1253694090376430115">Худалдан авалтын цүнхний дүрс тэмдэг</translation>
+<translation id="1292759642840406299">Луужингийн дүрс тэмдэг</translation>
+<translation id="1301463715094321941">Утасны харилцуурын дүрс тэмдэг, Дуудлага гэсэн утгатай байж болно</translation>
+<translation id="1306460908038601864">Унтраалттай</translation>
+<translation id="1311894908970423688">Утга нь <ph name="VALUE_DATE_OR_TIME" /> байх ёстой.</translation>
+<translation id="1312685112570645372">Асуултын тэмдгийн дүрс тэмдэг</translation>
+<translation id="1386033905837826130">Хуваалцах дүрс</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> зүйлс</translation>
+<translation id="1480676835519562650">олныг сонгох боломжтой, <ph name="COUNT" />-c <ph name="SELECTED" />-г сонгосон</translation>
+<translation id="157989258522571434">Календарийн дүрс тэмдэг</translation>
+<translation id="1588438908519853928">Хэвийн</translation>
+<translation id="1591562245178063882">Энэ сар</translation>
+<translation id="1598348607589961718">Дээш заасан сум, Байршуулах гэсэн утгатай байж болно</translation>
+<translation id="1632409084477505723">Татаж авах дүрс тэмдэг</translation>
+<translation id="1637811476055996098">Файлуудыг сонгох</translation>
+<translation id="1658806147928973309">Микрофоны дууг хаах дүрс тэмдэг</translation>
+<translation id="1677491356035817504">Доош заасан сумны дүрс тэмдэг, Дэлгэх гэсэн утгатай байж болно</translation>
+<translation id="1681022320378710418">одоогийн цаг</translation>
+<translation id="1727839386348365796">Eyedropper</translation>
+<translation id="1727886345390570319">хаалттай тайлбаруудын цэсийг нуух</translation>
+<translation id="1729654308190250600">Заавал имэйл хаяг оруулах ёстой.</translation>
+<translation id="173386679947102756">Хонхны дүрс тэмдэг, Мэдэгдэл гэсэн утгатай байж болно</translation>
+<translation id="175222816025430946">Гурван зураасны дүрс тэмдэг, Цэс гэсэн утгатай байж болно</translation>
+<translation id="1758486001363313524">Бусад ...</translation>
+<translation id="1787192514241997742">нийт хугацаа: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">X дүрс тэмдэг, Хаах эсвэл устгах гэсэн утгатай байж болно</translation>
+<translation id="1804122079878165329">Баруун сумны дүрс тэмдэг, Урагш гэсэн утгатай байж болно</translation>
+<translation id="1822429046913737220">AM/PM</translation>
+<translation id="1832974991323546415">алсын төхөөрөмж дээр тоглуулах</translation>
+<translation id="1921819250265091946">өө</translation>
+<translation id="1938124657309484470">Оруулсан утга <ph name="MAXIMUM_DATE_OR_TIME" /> эсвэл түүнээс өмнөх хувилбар байх ёстой.</translation>
+<translation id="1946271899482435442">Огноо сонгогчийг харуулах</translation>
+<translation id="1993104285338243655">Тусгал үүсгэх рүү сэлгэсэн</translation>
+<translation id="2031987842108996681">Улаан суваг</translation>
+<translation id="2060505056492490888">" <ph name="DOT" /> '' нь <ph name="INVALIDDOMAIN" />-ны хувьд буруу байрлалд ашиглагдаж байна.</translation>
+<translation id="2131189924434603515">Жижгээр бичсэн i үсгийн дүрс тэмдэг, Мэдээлэл гэсэн утгатай байж болно</translation>
+<translation id="2148716181193084225">Өнөөдөр</translation>
+<translation id="2177093963727449806">Сэргээх дүрс тэмдэг</translation>
+<translation id="221177765244658491">Дууг хаах дүрс тэмдэг</translation>
+<translation id="2226276347425096477">Энэ текстийг <ph name="MAX_CHARACTERS" /> тэмдэгтүүд рүү богиносгох эсвэл  багасгана уу (та одоогоор <ph name="CURRENT_LENGTH" /> тэмдэгтүүдийг ашиглаж байна).</translation>
+<translation id="2246498165605549352">Дотоод файл</translation>
+<translation id="2247351761944213033">Долоо хоног <ph name="WEEKNUMBER" /> , <ph name="YEAR" /></translation>
+<translation id="2265260019987849198">Гэрийн дүрс тэмдэг</translation>
+<translation id="2277199496770840904"><ph name="NUMBER" />-р бичлэг</translation>
+<translation id="2307576640803031502">жагсаалтын <ph name="COUNT" />-с <ph name="INDEX" /></translation>
+<translation id="2320316128050046908">Дууны түвшнийг нэмэх дүрс тэмдэг</translation>
+<translation id="2393030564806080191">Арван зургаатын өнгөний утга</translation>
+<translation id="2398813069815436052">харилцах цонхыг нээсэн.</translation>
+<translation id="2427288427427702833">Аппуудыг эхлүүлэх дүрс тэмдэг</translation>
+<translation id="245932805758469625">видео үргэлжлэх үлдсэн секундийн тоо</translation>
+<translation id="248395913932153421">Өдөр</translation>
+<translation id="2507943997699731163">Энэ талбарыг бөглөнө үү.</translation>
+<translation id="2530182415807757784">олныг сонгох боломжтой, алийг нь ч сонгоогүй.</translation>
+<translation id="2561842179657104141">бусад медиа хяналтыг харуулах</translation>
+<translation id="2572483411312390101">Тоглуулах</translation>
+<translation id="2613802280814924224">Хүчинтэй утга оруулна уу. Хамгийн ойролцоо хүчинтэй утга нь <ph name="VALID_VALUE" /> юм.</translation>
+<translation id="2634240155926812724">Ногоон суваг</translation>
+<translation id="2653659639078652383">Илгээх</translation>
+<translation id="2723001399770238859">Дуу</translation>
+<translation id="2746543609216772311">Утга нь <ph name="MINIMUM_DATE_OR_TIME" />-тай адил эсвэл үүнээс дараа байх ёстой.</translation>
+<translation id="2761667185364618470">Цааш нь үргэлжлүүлэхийг хүсвэл энэ хайрцгийг зөвлөнө үү.</translation>
+<translation id="2908441821576996758">Цэгээр тусгаарлагдсан и-мэйл хаягуудын жагсаалтыг оруулна уу.</translation>
+<translation id="2987445268505333132">Дуудлага дуусгах дүрс тэмдэг</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
+<translation id="3075154866155599887">Энэ талбар нь бүрэн бус эсвэл хүчин төгөлдөр бус огноотой байна. Хүчин төгөлдөр утга оруулна уу.</translation>
+<translation id="310520048233152454">URL-аа оруулна уу.</translation>
+<translation id="3220661731597678625">одоогийн алхам</translation>
+<translation id="3321030238473337787">Дахин тоглуулах хурд</translation>
+<translation id="3329013043687509092">Өнгөний нэвчилт</translation>
+<translation id="3435893727187534376">Гадагш заасан дөрвөн сумны дүрс тэмдэг, Дэлгэх гэсэн утгатай байж болно</translation>
+<translation id="3450233048674729344">Оруулсан утга нь <ph name="MAXIMUM" />-тай тэнцүү эсвэл бага байх ёстой.</translation>
+<translation id="3685101356851116974">Шошголоогүй зураг</translation>
+<translation id="3732799496749320381">сс</translation>
+<translation id="3754210790023674521">Дэлгэцэн доторх дэлгэцээс гарах</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3822383571486410024">Энэ текстийг <ph name="MIN_CHARACTERS" /> болон үүнээс дээш тэмдэгтээр уртасгана уу (та одоогоор <ph name="CURRENT_LENGTH" /> тэмдэгт ашиглаж байна).</translation>
+<translation id="383465348367842624">'<ph name="ATSIGN" />'-д хамаарах хэсэг нь '<ph name="INVALIDCHARACTER" />' тэмдэгтийг агуулах ёсгүй.</translation>
+<translation id="3845063161460806746">Дээш заасан эрхий хурууны дүрс тэмдэг, Таалагдсан гэсэн утгатай байж болно</translation>
+<translation id="3846214748874656680">Бүтэн дэлгэцийг хумих</translation>
+<translation id="3904695548697879411">Twitter-н дүрс тэмдэг</translation>
+<translation id="405782047075994056">Зүүн сумны дүрс тэмдэг, Буцах гэсэн утгатай байж болно</translation>
+<translation id="4103419683916926126">Миллисекунт</translation>
+<translation id="4201051445878709314">Өмнөх сарыг харуулах</translation>
+<translation id="4302299849305494927">Чанга яригчийн дүрс тэмдэг, Дууны түвшин гэсэн утгатай байж болно</translation>
+<translation id="4360991593054037559">Хүчинтэй утгыг оруулна уу. Хамгийн ойрын хүчинтэй дараах хоёр <ph name="VALID_VALUE_LOW" /> болон <ph name="VALID_VALUE_HIGHER" />  утгууд байна.</translation>
+<translation id="4363712632243441817">Дамжуулах дүрс тэмдэг, видеог алсын дэлгэц рүү дамжуулах гэсэн утгатай байж болно</translation>
+<translation id="4371899966896349864">дахин тоглуулах хурдны цэсийг нуух</translation>
+<translation id="4384249794467006333">Энэ зургийг шошголоогүй байна. Зургийн тайлбарыг авахын тулд баруун дээд хэсэгт байх Бусад сонголт цэсийг нээнэ үү.</translation>
+<translation id="4436211924730548766">Зүүн тийш заасан сумны дүрс тэмдэг</translation>
+<translation id="4444765639179266822"><ph name="OCR_TEXT" /> гэж хэлж байгаа бололтой</translation>
+<translation id="4522570452068850558">дэлгэрэнгүй мэдээлэл</translation>
+<translation id="4540719609030900356">Цаaсан онгоцны дүрс тэмдэг, Илгээх гэсэн утгатай байж болно</translation>
+<translation id="4576178047100686001">Энэ зургийг шошголоогүй байна. Зургийн тайлбарыг авахын тулд зүүн дээд хэсэгт байх Бусад сонголт цэсийг нээнэ үү.</translation>
+<translation id="4577968231433672268">Нэмэх дүрс тэмдэг, Нэмэх гэсэн утгатай байж болно</translation>
+<translation id="4611825382945206498">Дугуй сумтай цаг, Түүх гэсэн утгатай байж болно</translation>
+<translation id="4664250907885839816">'<ph name="ATSIGN" />'-ын дараах хэсэгт '<ph name="INVALIDCHARACTER" />' тэмдэг оруулахгүй байх хэрэгтэй.</translation>
+<translation id="4679853894970977730">Камерын дүрс тэмдэг, Зураг авах гэсэн утгатай байж болно</translation>
+<translation id="4718048029184481307">Дэлгэцэн доторх дэлгэц дээр тоглуулж байна</translation>
+<translation id="4748357248530471599">дэлгэцийг таслахыг бүтэн дэлгэцээр асаах/унтраах</translation>
+<translation id="4763480195061959176">видео</translation>
+<translation id="4812940957355064477">Нэг тоо оруулна уу.</translation>
+<translation id="4832245585893280119">Цаг агаарын дүрс тэмдэг</translation>
+<translation id="4908855810237020461">Цагийн дүрс тэмдэг, Цаг гэсэн утгатай байж болно</translation>
+<translation id="4912200001568447310">одоогийн зүйл</translation>
+<translation id="4915360478455618802">Цаг сонгогчийг харуулах</translation>
+<translation id="4924138096460353083">тодорхойгүй</translation>
+<translation id="4950364064308314478">Орон нутгийн огноо болон цаг сонгогчийг харуулах</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" />-г сонголоо</translation>
+<translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> сонгогдсон</translation>
+<translation id="4992066212339426712">Дууг нээх</translation>
+<translation id="49969490063480558"><ph name="ATSIGN" /> -ны дараа байгаа хэсгийг оруулна уу. " <ph name="INVALIDADDRESS" /> " нь бүрэн бус байна.</translation>
+<translation id="5090250355906949916">видеоны цаг устгагч</translation>
+<translation id="509897012892853729">Цэнхэр суваг</translation>
+<translation id="5117590920725113268">Дараагийн сарыг харуулах</translation>
+<translation id="5121688653159243920">Жагсаалтын тэмдэгтэй жагсаалт (bulleted list)-ын дүрс тэмдэг</translation>
+<translation id="5164977714490026579">Оруулсан утга нь <ph name="MINIMUM" />-тай тэнцүү эсвэл илүү байх ёстой.</translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
+<translation id="5214400792580101697">Зогсоох дүрс тэмдэг</translation>
+<translation id="5307600278924710095">'<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' нь бүрэн гүйцэд биш бөгөөд бүрэн хаягаа оруулна уу.</translation>
+<translation id="5334352251556557839">Медиа тоглуулах боломжгүй байна.</translation>
+<translation id="537648784377940524">Хамгийн бага огноо (<ph name="MIN_DATE_OR_TIME" />) нь хамгийн их огнооны (<ph name="MAX_DATE_OR_TIME" />) өмнө байх ёстой.</translation>
+<translation id="5378437566635403538">дэлгэсэн, харилцах цонхыг нээсэн.</translation>
+<translation id="5425179576310518467">одоогийн огноо</translation>
+<translation id="5466621249238537318">Нэг буюу түүнээс дээш файлыг сонгоно уу.</translation>
+<translation id="5468998798572797635">Дэлгэцийг хумих</translation>
+<translation id="5516235301412634559">0.75</translation>
+<translation id="5537725057119320332">Cast</translation>
+<translation id="5546461542133609677">Дууг нээх</translation>
+<translation id="5586467629893654334">Сарны дүрс тэмдэг, шөнийн цаг эсвэл унтах гэсэн утгатай байж болно</translation>
+<translation id="5599474660109692598">Хүүхэлдэйн бөмбөлгийн дүрс тэмдэг, Чат гэсэн утгатай байж болно</translation>
+<translation id="5617165654945759937">Харандааны дүрс тэмдэг, Засах гэсэн утгатай байж болно</translation>
+<translation id="5621627136377293173">Микрофоны дүрс тэмдэг, Бичих гэсэн утгатай байж болно</translation>
+<translation id="5630795885300617244">10с алгасахын тулд зүүн эсвэл баруун талд давхар товшино уу</translation>
+<translation id="5647477850810769350">Чихэвчийн дүрс тэмдэг</translation>
+<translation id="5677946354068040947">бусад сонголт</translation>
+<translation id="5720390168116663167">Дээш сумны дүрс тэмдэг</translation>
+<translation id="5724910823641175216">Цагийн зүүний дагуу сумны дүрс тэмдэг, Дахин хийлт гэсэн утгатай байж болно</translation>
+<translation id="57838592816432529">Дууг хаах</translation>
+<translation id="5786442179789148008">дахин тоглуулах хурдны цэсийг харуулах</translation>
+<translation id="5787939484346677755">дэлгэсэн, автоматаар бөглөх сонголт боломжтой.</translation>
+<translation id="5838904342468928321">Үүлний дүрс тэмдэг</translation>
+<translation id="5860033963881614850">Идэвхгүй байна</translation>
+<translation id="588258955323874662">Дэлгэц дүүрэн</translation>
+<translation id="5888666972993069672">Одоо <ph name="DEVICE_FRIENDLY_NAME" />-д дамжуулж байна</translation>
+<translation id="5916664084637901428">Асаах</translation>
+<translation id="5939518447894949180">Дахин сэргээх</translation>
+<translation id="5966707198760109579">Долоо хоног</translation>
+<translation id="5985507339671257014">0.5</translation>
+<translation id="6011459053400940133">дууны түвшин тохируулагч</translation>
+<translation id="6015796118275082299">Жил</translation>
+<translation id="6054619856758804514">Хогийн савны дүрс тэмдэг, Устгах гэсэн утгатай байж болно</translation>
+<translation id="6054638203631275602">Баяртай царайн дүрс тэмдэг</translation>
+<translation id="608465159662359598">Араа эсвэл түлхүүрийн дүрс тэмдэг, Тохиргоо гэсэн утгатай байж болно</translation>
+<translation id="6165053282446038410">дэлгэсэн, автоматаар бөглөх <ph name="COUNT" /> сонголт боломжтой.</translation>
+<translation id="6209276755895393898">Дараах шиг харагдаж байна: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">одоогийн хуудас</translation>
+<translation id="6240633443440794881">Дугтуйн дүрс тэмдэг, Цахим шуудан гэсэн утгатай байж болно</translation>
+<translation id="6247212328664111379">Хүний дүрс</translation>
+<translation id="6281588256137006900">Цайвар байдал</translation>
+<translation id="6310801910862476708">Дэлгэцэн доторх дэлгэцийг хаах</translation>
+<translation id="6350382280299255966">Инээмсэглэсэн царайн дүрс тэмдэг, Эможи гэсэн утгатай байж болно</translation>
+<translation id="6398862346408813489">Сар сонгох самбар харуулах</translation>
+<translation id="6404546809543547843">аудио цаг цэвэрлэгч</translation>
+<translation id="6443871981718447451">хаалттай тайлбаруудын цэсийг харуулах</translation>
+<translation id="6550675742724504774">Сонголтууд</translation>
+<translation id="6572309429103589720">Дүрмийн алдаатай байна</translation>
+<translation id="658823671542763450">бүтэн дэлгэцэнд шилж</translation>
+<translation id="6632254525813309835">Цагийн зүүний эсрэг сумны дүрс тэмдэг, Болих гэсэн утгатай байж болно</translation>
+<translation id="6643016212128521049">Цэвэрлэх</translation>
+<translation id="668171684555832681">Бусад...</translation>
+<translation id="6709093583001123835">Утга нь <ph name="VALUE" /> байх ёстой.</translation>
+<translation id="6709570249143506788">Тоглуулагчийн чанар муу байна</translation>
+<translation id="6790428901817661496">Тоглуулах</translation>
+<translation id="6820355525329141109">Нэмэлт өгөгдлийг ачаалж чадсангүй.</translation>
+<translation id="6831465880655513317">Өнгө ялгалт болон цайвар байдлыг сонгоход зориулсан 2 хэмжээст тохируулагчтай өнгөний хүрд</translation>
+<translation id="6843725295806269523">дууг хаах</translation>
+<translation id="6889412865110485830">Худалдан авалтын сагсны дүрс тэмдэг</translation>
+<translation id="6919891270253167948">1.5</translation>
+<translation id="6940482800520966738">Одны дүрс тэмдэг</translation>
+<translation id="6941933287844615239">медиа татах</translation>
+<translation id="698788488269350478">дэлгэсэн.</translation>
+<translation id="6989848892321993519">Энэ текстийг <ph name="MIN_CHARACTERS" /> болон түүнээс дээш тэмдэгтээр уртасгана уу (та одоогоор 1 тэмдэгт оруулсан байна).</translation>
+<translation id="7022838723850801004">Баяртай болон гунигтай царайн эможиний дүрс тэмдэг</translation>
+<translation id="709897737746224366">Заагдсан форматанд тааруулна уу.</translation>
+<translation id="7102274145889307184">одоогийн байршил</translation>
+<translation id="7118469954320184356">Тайлбар алга.</translation>
+<translation id="7263440858009898357">Жагсаалтаас нэг зүйлийг сонгоно уу.</translation>
+<translation id="7320576522385648310">буферлэж байна</translation>
+<translation id="7341556277900466204">Өнгөний хүрд</translation>
+<translation id="7364796246159120393">Файлаа сонгоно уу</translation>
+<translation id="739024184232394898">Бусад...</translation>
+<translation id="7410239719251593705">Насанд хүрэгчдэд зориулсан контент агуулсан бололтой. Тайлбар алга.</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
+<translation id="7514365320538308">Татаж авах</translation>
+<translation id="7533959249147584474">Шошголоогүй график</translation>
+<translation id="7673697353781729403">Цаг</translation>
+<translation id="7742609585924342092">Байршлын дүрс тэмдэг</translation>
+<translation id="7745230546936012372">Байхгүй зургийн тайлбарыг авахын тулд хам сэдвийн цэсийг нээнэ үү.</translation>
+<translation id="7750228210027921155">Дэлгэцэн доторх дэлгэц</translation>
+<translation id="775297008183122718">Буруу утга</translation>
+<translation id="7782515065589691344">1.25</translation>
+<translation id="7789962463072032349">Түр зогсох</translation>
+<translation id="7796968532285333302">Доош заасан сумны дүрс тэмдэг, Хураах гэсэн утгатай байж болно</translation>
+<translation id="7819026464394689674">Түр зогсоох дүрс тэмдэг</translation>
+<translation id="7852167693871241274">Өнгө тохируулагч</translation>
+<translation id="7855610409192055689">Цаасны хавчаарын дүрс тэмдэг, хавсралт гэсэн утгатай байж болно</translation>
+<translation id="7888071071722539607">Имэйл хаягт "<ph name="ATSIGN" />"-ыг оруулж өгнө үү. '<ph name="INVALIDADDRESS" />'-д <ph name="ATSIGN" /> дутуу байна.</translation>
+<translation id="795667975304826397">Ямар ч файл сонгогдоогүй байна</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" />-г сонгоогүй</translation>
+<translation id="7994555495914042081">Сонгох тэмдгийн дүрс тэмдэг</translation>
+<translation id="8097409774376213335">Доош сумны дүрс тэмдэг</translation>
+<translation id="8105750478534334542">Доош заасан эрхий хурууны дүрс тэмдэг, таалагдаагүй гэсэн утгатай байж болно</translation>
+<translation id="811583516810654505">Тайлбарыг авч байна...</translation>
+<translation id="8117451130807776954">Энэ долоо хоног</translation>
+<translation id="8131955114056917397">0.25</translation>
+<translation id="8147719583347050106">Google-н дүрс тэмдэг</translation>
+<translation id="8199524924445686405">жжжж</translation>
+<translation id="8261464734335370856">Буруу бичсэн байна</translation>
+<translation id="8276790177939055966">Баруун тийш заасан сумны дүрс тэмдэг</translation>
+<translation id="8284326494547611709">Тайлбар</translation>
+<translation id="835897206747267392">Утга буруу байна.</translation>
+<translation id="839593075537728968">Утга нь <ph name="MINIMUM_TIME" />-с <ph name="MAXIMUM_TIME" />-н хооронд байх ёстой.</translation>
+<translation id="8403857369060869934">өнгөрсөн хугацаа: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> файлууд</translation>
+<translation id="8451268428117625855">Файлаа сонгоно уу.</translation>
+<translation id="8488243824626550045">Facebook-н дүрс тэмдэг</translation>
+<translation id="8534579021159131403">Минут</translation>
+<translation id="8541249477527128034">медиа хяналт</translation>
+<translation id="8613126697340063924">алсаас дахин тоглуулахыг хянах</translation>
+<translation id="8634971699417195529">Сар сонгогчийг харуулах</translation>
+<translation id="8637593834423658414">1.75</translation>
+<translation id="8657910582115602348">Google Туслахын дүрс тэмдэг</translation>
+<translation id="8668988909814782445">Мөрийг багтаах</translation>
+<translation id="8750798805984357768">Эдгээр сонголтоос нэгийг нь сонгоно уу.</translation>
+<translation id="8845239796550121995">Одоо таны ТВ-д дамжуулж байна</translation>
+<translation id="8875657656876809964">Видеог дахин тоглуулахaд алдаа гарлаа</translation>
+<translation id="8889402386540077796">Hue</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> килобайт</translation>
+<translation id="894736920926684893">Формат сэлгэгч</translation>
+<translation id="8987927404178983737">Сар</translation>
+<translation id="901493112792887934">Секунтаар илэрхийлэгдсэн цаг</translation>
+<translation id="9039639793210005614">Зургийн цомгийн дүрс тэмдэг</translation>
+<translation id="9040233563616141093">Дотогш заасан дөрвөн сумны дүрс тэмдэг, Гэрээ гэсэн утгатай байж болно</translation>
+<translation id="9073800864014589651">Тоглуулах дүрс тэмдэг</translation>
+<translation id="9093215626363556771">дэлгэцэн доторх дэлгэцийг хаах</translation>
+<translation id="9105500880071990795">Дууны түвшнийг багасгах дүрс тэмдэг</translation>
+<translation id="9132465097189459683">Бусад...</translation>
+<translation id="913630661384792974">Видео камерын дүрс тэмдэг, Видео бичих гэсэн утгатай байж болно</translation>
+<translation id="9155987714137265666"><ph name="WEEK_START_DATE" />-ээс эхэлж буй <ph name="WEEK" /></translation>
+<translation id="916607977885256133">Дэлгэцэн доторх дэлгэц</translation>
+<translation id="945780513535800434">Хэсэгчлэн тэмдэглэсэн</translation>
+<translation id="947651054772746219">Хүмүүсийн дүрс</translation>
+<translation id="954003015749068518">дэлгэцэн доторх дэлгэцийг оруулах</translation>
+</translationbundle>

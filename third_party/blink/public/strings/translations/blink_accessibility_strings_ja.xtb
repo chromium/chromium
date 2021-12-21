@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ja">
+<translation id="1016055326260264411">ハートアイコン（お気に入り）</translation>
+<translation id="1088086359088493902">秒</translation>
+<translation id="1142001580032786438">週選択ツールを表示します</translation>
+<translation id="1171774979989969504">メール アドレスを入力してください。</translation>
+<translation id="1178581264944972037">一時停止</translation>
+<translation id="1193819188371549072">太陽アイコン（昼間）</translation>
+<translation id="1197443222693564123">3 つの点（詳細）</translation>
+<translation id="1231311685714446044">泣き顔アイコン</translation>
+<translation id="1248712480115826517">虫メガネ アイコン（検索または拡大）</translation>
+<translation id="1253694090376430115">ショッピング バッグアイコン</translation>
+<translation id="1292759642840406299">コンパス アイコン</translation>
+<translation id="1301463715094321941">受話器アイコン（通話）</translation>
+<translation id="1306460908038601864">オフ</translation>
+<translation id="1311894908970423688">値は <ph name="VALUE_DATE_OR_TIME" /> とする必要があります。</translation>
+<translation id="1312685112570645372">疑問符アイコン</translation>
+<translation id="1386033905837826130">共有アイコン</translation>
+<translation id="145015347812617860"><ph name="COUNT" />個のアイテム</translation>
+<translation id="1480676835519562650">複数の選択が可能です。<ph name="COUNT" /> 件中 <ph name="SELECTED" /> 件が選択されています。</translation>
+<translation id="157989258522571434">カレンダー アイコン</translation>
+<translation id="1588438908519853928">ノーマル</translation>
+<translation id="1591562245178063882">今月</translation>
+<translation id="1598348607589961718">上矢印（アップロード）</translation>
+<translation id="1632409084477505723">ダウンロード アイコン</translation>
+<translation id="1637811476055996098">ファイル選択</translation>
+<translation id="1658806147928973309">ミュート状態のマイクアイコン</translation>
+<translation id="1677491356035817504">下山形アイコン（展開）</translation>
+<translation id="1681022320378710418">現在の時刻</translation>
+<translation id="1727839386348365796">スポイト</translation>
+<translation id="1727886345390570319">字幕メニューを表示しない</translation>
+<translation id="1729654308190250600">メール アドレスを入力してください。</translation>
+<translation id="173386679947102756">ベルアイコン（通知）</translation>
+<translation id="175222816025430946">3 本のバーアイコン（メニュー）</translation>
+<translation id="1758486001363313524">その他...</translation>
+<translation id="1787192514241997742">合計時間: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">X アイコン（閉じるまたは削除）</translation>
+<translation id="1804122079878165329">右矢印アイコン（早送り）</translation>
+<translation id="1822429046913737220">AM/PM</translation>
+<translation id="1832974991323546415">リモート デバイスで再生</translation>
+<translation id="1921819250265091946">日</translation>
+<translation id="1938124657309484470"><ph name="MAXIMUM_DATE_OR_TIME" /> 以前の値を指定する必要があります。</translation>
+<translation id="1946271899482435442">日付選択ツールを表示</translation>
+<translation id="1993104285338243655">ミラーリングに切り替わりました</translation>
+<translation id="2031987842108996681">赤チャネル</translation>
+<translation id="2060505056492490888">「<ph name="INVALIDDOMAIN" />」内の「<ph name="DOT" />」の位置が間違っています。</translation>
+<translation id="2131189924434603515">小文字の「i」アイコン（情報）</translation>
+<translation id="2148716181193084225">今日</translation>
+<translation id="2177093963727449806">更新アイコン</translation>
+<translation id="221177765244658491">ミュート アイコン</translation>
+<translation id="2226276347425096477">このテキストを半角 <ph name="MAX_CHARACTERS" /> 文字以下にしてください（現時点で半角 <ph name="CURRENT_LENGTH" /> 文字です）。</translation>
+<translation id="2246498165605549352">ローカル ファイル</translation>
+<translation id="2247351761944213033"><ph name="YEAR" />年第<ph name="WEEKNUMBER" />週</translation>
+<translation id="2265260019987849198">ホームアイコン</translation>
+<translation id="2277199496770840904">トラック <ph name="NUMBER" /></translation>
+<translation id="2307576640803031502">リスト内の <ph name="COUNT" /> 件中 <ph name="INDEX" /> 件目のアイテム</translation>
+<translation id="2320316128050046908">音量アップアイコン</translation>
+<translation id="2393030564806080191">16 進数色コード</translation>
+<translation id="2398813069815436052">ダイアログが開いています。</translation>
+<translation id="2427288427427702833">アプリ起動アイコン</translation>
+<translation id="245932805758469625">残りの再生時間（秒）</translation>
+<translation id="248395913932153421">日</translation>
+<translation id="2507943997699731163">このフィールドを入力してください。</translation>
+<translation id="2530182415807757784">複数の選択が可能です。項目が選択されていません。</translation>
+<translation id="2561842179657104141">その他のメディア操作ボタンを表示</translation>
+<translation id="2572483411312390101">再生</translation>
+<translation id="2613802280814924224">有効な値を入力してください。有効な値として最も近いのは <ph name="VALID_VALUE" /> です。</translation>
+<translation id="2634240155926812724">緑チャネル</translation>
+<translation id="2653659639078652383">送信</translation>
+<translation id="2723001399770238859">音声</translation>
+<translation id="2746543609216772311"><ph name="MINIMUM_DATE_OR_TIME" /> 以降の値を指定する必要があります。</translation>
+<translation id="2761667185364618470">次に進むにはこのチェックボックスをオンにしてください。</translation>
+<translation id="2908441821576996758">メール アドレスのカンマ区切りリストを入力してください。</translation>
+<translation id="2987445268505333132">通話終了アイコン</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3075154866155599887">有効な値を入力してください。フィールドの入力が不完全か、日付が無効です。</translation>
+<translation id="310520048233152454">URL を入力してください。</translation>
+<translation id="3220661731597678625">現在のステップ</translation>
+<translation id="3321030238473337787">再生速度</translation>
+<translation id="3329013043687509092">彩度</translation>
+<translation id="3435893727187534376">外向きの 4 本の矢印アイコン（拡大）</translation>
+<translation id="3450233048674729344">値は <ph name="MAXIMUM" /> 以下にする必要があります。</translation>
+<translation id="3685101356851116974">ラベルのない画像</translation>
+<translation id="3732799496749320381">月</translation>
+<translation id="3754210790023674521">ピクチャー イン ピクチャーを終了</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3822383571486410024">このテキストは <ph name="MIN_CHARACTERS" /> 文字以上で指定してください（現在は <ph name="CURRENT_LENGTH" /> 文字です）。</translation>
+<translation id="383465348367842624">「<ph name="ATSIGN" />」の前の文字列に記号「<ph name="INVALIDCHARACTER" />」を使用しないでください。</translation>
+<translation id="3845063161460806746">親指を上に向けた手のアイコン（高評価）</translation>
+<translation id="3846214748874656680">全画面表示を終了</translation>
+<translation id="3904695548697879411">Twitter アイコン</translation>
+<translation id="405782047075994056">左矢印アイコン（巻き戻し）</translation>
+<translation id="4103419683916926126">ミリ秒</translation>
+<translation id="4201051445878709314">前の月を表示</translation>
+<translation id="4302299849305494927">スピーカー アイコン（音量）</translation>
+<translation id="4360991593054037559">有効な値を入力してください。有効な値として最も近いのは <ph name="VALID_VALUE_LOW" /> と <ph name="VALID_VALUE_HIGHER" /> です。</translation>
+<translation id="4363712632243441817">キャスト アイコン（リモート スクリーンに動画をキャスト）</translation>
+<translation id="4371899966896349864">再生速度メニューを非表示にします</translation>
+<translation id="4384249794467006333">この画像にはラベルがありません。画像の説明を取得するには、右上のその他のオプションメニューを開いてください。</translation>
+<translation id="4436211924730548766">左山形アイコン</translation>
+<translation id="4444765639179266822"><ph name="OCR_TEXT" /> というテキストのようです</translation>
+<translation id="4522570452068850558">詳細</translation>
+<translation id="4540719609030900356">紙飛行機アイコン（送信）</translation>
+<translation id="4576178047100686001">この画像にはラベルがありません。画像の説明を取得するには、左上のその他のオプションメニューを開いてください。</translation>
+<translation id="4577968231433672268">プラスアイコン（追加）</translation>
+<translation id="4611825382945206498">円形の矢印で囲まれた時計アイコン（履歴）</translation>
+<translation id="4664250907885839816">「<ph name="ATSIGN" />」に続く文字列に記号「<ph name="INVALIDCHARACTER" />」を使用しないでください。</translation>
+<translation id="4679853894970977730">カメラアイコン（写真撮影）</translation>
+<translation id="4718048029184481307">ピクチャー イン ピクチャーを再生しています</translation>
+<translation id="4748357248530471599">ディスプレイ カットアウトに合わせた全画面表示に切り替えます</translation>
+<translation id="4763480195061959176">動画</translation>
+<translation id="4812940957355064477">数字を入力してください。</translation>
+<translation id="4832245585893280119">天気アイコン</translation>
+<translation id="4908855810237020461">時計アイコン（時間）</translation>
+<translation id="4912200001568447310">現在のアイテム</translation>
+<translation id="4915360478455618802">時間選択ツールを表示します</translation>
+<translation id="4924138096460353083">不確定</translation>
+<translation id="4950364064308314478">ローカル日時選択ツールを表示します</translation>
+<translation id="4971739861736909480">「<ph name="ACCNAME" />」は選択済みです</translation>
+<translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> 件選択</translation>
+<translation id="4992066212339426712">ミュートを解除</translation>
+<translation id="49969490063480558">「<ph name="INVALIDADDRESS" />」は完全なメールアドレスではありません。「<ph name="ATSIGN" />」に続く文字列を入力してください。</translation>
+<translation id="5090250355906949916">動画シークバー</translation>
+<translation id="509897012892853729">青チャネル</translation>
+<translation id="5117590920725113268">次の月を表示</translation>
+<translation id="5121688653159243920">箇条書きアイコン</translation>
+<translation id="5164977714490026579">値は <ph name="MINIMUM" /> 以上にする必要があります。</translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5214400792580101697">停止アイコン</translation>
+<translation id="5307600278924710095">「<ph name="ATSIGN" />」の前の文字列を入力してください。「<ph name="INVALIDADDRESS" />」は完全なメール アドレスではありません。</translation>
+<translation id="5334352251556557839">メディアを再生できません。</translation>
+<translation id="537648784377940524">最小の日付（<ph name="MIN_DATE_OR_TIME" />）には、最大の日付（<ph name="MAX_DATE_OR_TIME" />）より前の日付を指定してください。</translation>
+<translation id="5378437566635403538">展開表示されています。ダイアログが開いています。</translation>
+<translation id="5425179576310518467">現在の日付</translation>
+<translation id="5466621249238537318">1 つ以上のファイルを選択してください。</translation>
+<translation id="5468998798572797635">全画面表示を終了</translation>
+<translation id="5516235301412634559">0.75</translation>
+<translation id="5537725057119320332">キャスト</translation>
+<translation id="5546461542133609677">ミュートを解除</translation>
+<translation id="5586467629893654334">月アイコン（夜間または睡眠）</translation>
+<translation id="5599474660109692598">漫画の吹き出しアイコン（チャット）</translation>
+<translation id="5617165654945759937">鉛筆アイコン（編集）</translation>
+<translation id="5621627136377293173">マイクアイコン（録音）</translation>
+<translation id="5630795885300617244">左または右をダブルタップして 10 秒スキップします</translation>
+<translation id="5647477850810769350">ヘッドセット アイコン</translation>
+<translation id="5677946354068040947">その他のオプション</translation>
+<translation id="5720390168116663167">上矢印アイコン</translation>
+<translation id="5724910823641175216">時計回りの矢印アイコン（やり直し）</translation>
+<translation id="57838592816432529">ミュート</translation>
+<translation id="5786442179789148008">再生速度メニューを表示します</translation>
+<translation id="5787939484346677755">展開表示されています。オートコンプリート候補があります。</translation>
+<translation id="5838904342468928321">クラウド アイコン</translation>
+<translation id="5860033963881614850">オフ</translation>
+<translation id="588258955323874662">全画面表示</translation>
+<translation id="5888666972993069672">現在 <ph name="DEVICE_FRIENDLY_NAME" /> にキャストしています</translation>
+<translation id="5916664084637901428">オン</translation>
+<translation id="5939518447894949180">リセット</translation>
+<translation id="5966707198760109579">週</translation>
+<translation id="5985507339671257014">0.5</translation>
+<translation id="6011459053400940133">音量スライダー</translation>
+<translation id="6015796118275082299">年</translation>
+<translation id="6054619856758804514">ゴミ箱アイコン（削除）</translation>
+<translation id="6054638203631275602">笑い顔アイコン</translation>
+<translation id="608465159662359598">歯車またはレンチのアイコン（設定）</translation>
+<translation id="6165053282446038410">展開表示されています。<ph name="COUNT" /> 件のオートコンプリート候補があります。</translation>
+<translation id="6209276755895393898"><ph name="DESCRIPTION" /> の画像のようです</translation>
+<translation id="6212595056017402527">現在のページ</translation>
+<translation id="6240633443440794881">封筒アイコン（メール）</translation>
+<translation id="6247212328664111379">人型アイコン</translation>
+<translation id="6281588256137006900">明度</translation>
+<translation id="6310801910862476708">ピクチャー イン ピクチャーを終了</translation>
+<translation id="6350382280299255966">笑い顔アイコン（絵文字）</translation>
+<translation id="6398862346408813489">月選択パネルを表示</translation>
+<translation id="6404546809543547843">オーディオ再生バー</translation>
+<translation id="6443871981718447451">字幕メニューを表示</translation>
+<translation id="6550675742724504774">オプション</translation>
+<translation id="6572309429103589720">文法が無効です</translation>
+<translation id="658823671542763450">全画面表示</translation>
+<translation id="6632254525813309835">反時計回りの矢印アイコン（元に戻す）</translation>
+<translation id="6643016212128521049">削除</translation>
+<translation id="668171684555832681">その他...</translation>
+<translation id="6709093583001123835">値は <ph name="VALUE" /> とする必要があります。</translation>
+<translation id="6709570249143506788">低再生画質</translation>
+<translation id="6790428901817661496">再生</translation>
+<translation id="6820355525329141109">プラグインを読み込むことができませんでした。</translation>
+<translation id="6831465880655513317">彩度や明度を選択できる 2 次元スライダー付きの色選択ツールです</translation>
+<translation id="6843725295806269523">ミュート</translation>
+<translation id="6889412865110485830">ショッピング カートアイコン</translation>
+<translation id="6919891270253167948">1.5</translation>
+<translation id="6940482800520966738">スターアイコン</translation>
+<translation id="6941933287844615239">メディアをダウンロード</translation>
+<translation id="698788488269350478">展開表示されています。</translation>
+<translation id="6989848892321993519">このテキストは <ph name="MIN_CHARACTERS" /> 文字以上で指定してください（現在 1 文字で指定されています）。</translation>
+<translation id="7022838723850801004">笑い顔と泣き顔の絵文字アイコン</translation>
+<translation id="709897737746224366">指定されている形式で入力してください。</translation>
+<translation id="7102274145889307184">現在地</translation>
+<translation id="7118469954320184356">説明はありません。</translation>
+<translation id="7263440858009898357">リスト内の項目を選択してください。</translation>
+<translation id="7320576522385648310">バッファリング</translation>
+<translation id="7341556277900466204">色選択ツール</translation>
+<translation id="7364796246159120393">ファイルを選択</translation>
+<translation id="739024184232394898">その他...</translation>
+<translation id="7410239719251593705">アダルト コンテンツが含まれているようです。説明はありません。</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
+<translation id="7514365320538308">ダウンロード</translation>
+<translation id="7533959249147584474">ラベルのない画像</translation>
+<translation id="7673697353781729403">時間</translation>
+<translation id="7742609585924342092">位置情報アイコン</translation>
+<translation id="7745230546936012372">画像の説明がない場合に取得するには、コンテキスト メニューを開きます。</translation>
+<translation id="7750228210027921155">ピクチャー イン ピクチャー</translation>
+<translation id="775297008183122718">入力した値が無効です</translation>
+<translation id="7782515065589691344">1.25</translation>
+<translation id="7789962463072032349">一時停止</translation>
+<translation id="7796968532285333302">上山形アイコン（折りたたむ）</translation>
+<translation id="7819026464394689674">一時停止アイコン</translation>
+<translation id="7852167693871241274">色相スライダー</translation>
+<translation id="7855610409192055689">ペーパークリップ アイコン（添付ファイル）</translation>
+<translation id="7888071071722539607">メール アドレスに「<ph name="ATSIGN" />」を挿入してください。「<ph name="INVALIDADDRESS" />」内に「<ph name="ATSIGN" />」がありません。</translation>
+<translation id="795667975304826397">選択されていません</translation>
+<translation id="7962328325860248200">「<ph name="ACCNAME" />」は選択されていません</translation>
+<translation id="7994555495914042081">チェックマーク アイコン</translation>
+<translation id="8097409774376213335">下矢印アイコン</translation>
+<translation id="8105750478534334542">親指を下に向けた手のアイコン（低評価）</translation>
+<translation id="811583516810654505">説明を取得しています...</translation>
+<translation id="8117451130807776954">今週</translation>
+<translation id="8131955114056917397">0.25</translation>
+<translation id="8147719583347050106">Google アイコン</translation>
+<translation id="8199524924445686405"> 年 </translation>
+<translation id="8261464734335370856">スペルが無効です</translation>
+<translation id="8276790177939055966">右山形アイコン</translation>
+<translation id="8284326494547611709">字幕</translation>
+<translation id="835897206747267392">値が無効です。</translation>
+<translation id="839593075537728968">値は <ph name="MINIMUM_TIME" />～<ph name="MAXIMUM_TIME" /> の範囲で指定してください。</translation>
+<translation id="8403857369060869934">経過時間: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> ファイル</translation>
+<translation id="8451268428117625855">ファイルを選択してください。</translation>
+<translation id="8488243824626550045">Facebook アイコン</translation>
+<translation id="8534579021159131403">分</translation>
+<translation id="8541249477527128034">メディア管理</translation>
+<translation id="8613126697340063924">リモート再生をコントロール</translation>
+<translation id="8634971699417195529">月選択ツールを表示します</translation>
+<translation id="8637593834423658414">1.75</translation>
+<translation id="8657910582115602348">Google アシスタント アイコン</translation>
+<translation id="8668988909814782445">行を折り返す</translation>
+<translation id="8750798805984357768">これらのオプションから 1 つ選択してください。</translation>
+<translation id="8845239796550121995">テレビにキャストしています</translation>
+<translation id="8875657656876809964">動画再生エラー</translation>
+<translation id="8889402386540077796">色調</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="894736920926684893">形式の切り替え</translation>
+<translation id="8987927404178983737">月</translation>
+<translation id="901493112792887934">現在の時間（秒単位）</translation>
+<translation id="9039639793210005614">ギャラリー アイコン</translation>
+<translation id="9040233563616141093">内向きの 4 本の矢印アイコン（縮小）</translation>
+<translation id="9073800864014589651">再生アイコン</translation>
+<translation id="9093215626363556771">ピクチャー イン ピクチャーを終了します</translation>
+<translation id="9105500880071990795">音量ダウンアイコン</translation>
+<translation id="9132465097189459683">その他...</translation>
+<translation id="913630661384792974">ビデオカメラ アイコン（録画）</translation>
+<translation id="9155987714137265666"><ph name="WEEK_START_DATE" /> から始まる <ph name="WEEK" /></translation>
+<translation id="916607977885256133">ピクチャー イン ピクチャー</translation>
+<translation id="945780513535800434">一部オン</translation>
+<translation id="947651054772746219">連絡帳アイコン</translation>
+<translation id="954003015749068518">ピクチャー イン ピクチャーを開始します</translation>
+</translationbundle>

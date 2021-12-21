@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="fil">
+<translation id="1016055326260264411">Icon na puso, posibleng ang ibig sabihin ay Paborito</translation>
+<translation id="1088086359088493902">Segundo</translation>
+<translation id="1142001580032786438">Ipakita ang picker ng linggo</translation>
+<translation id="1171774979989969504">Mangyaring magpasok ng email address.</translation>
+<translation id="1178581264944972037">I-pause</translation>
+<translation id="1193819188371549072">Icon na araw, posibleng ang ibig sabihin ay daytime</translation>
+<translation id="1197443222693564123">Tatlong tuldok, posibleng ang ibig sabihin ay Higit pa</translation>
+<translation id="1231311685714446044">Icon na malungkot na mukha</translation>
+<translation id="1248712480115826517">Icon na magnifying glass, posibleng ang ibig sabihin ay Maghanap o Mag-zoom</translation>
+<translation id="1253694090376430115">Icon na shopping bag</translation>
+<translation id="1292759642840406299">Icon na compass</translation>
+<translation id="1301463715094321941">Icon na handset ng telepono, posibleng ang ibig sabihin ay Tumawag</translation>
+<translation id="1306460908038601864">I-off</translation>
+<translation id="1311894908970423688">Dapat ay <ph name="VALUE_DATE_OR_TIME" /> ang value.</translation>
+<translation id="1312685112570645372">Icon na tandang pananong</translation>
+<translation id="1386033905837826130">Icon ng pagbabahagi</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> (na) item</translation>
+<translation id="1480676835519562650">multiselectable, <ph name="SELECTED" /> sa <ph name="COUNT" /> ang pinili.</translation>
+<translation id="157989258522571434">Icon na kalendaryo</translation>
+<translation id="1588438908519853928">Normal</translation>
+<translation id="1591562245178063882">Buwang ito</translation>
+<translation id="1598348607589961718">Pataas na arrow, posibleng ang ibig sabihin ay Mag-upload</translation>
+<translation id="1632409084477505723">Icon na I-download</translation>
+<translation id="1637811476055996098">Pumili ng Mga File</translation>
+<translation id="1658806147928973309">Icon na I-mute ang mikropono</translation>
+<translation id="1677491356035817504">Icon na pababang chevron, posibleng ang ibig sabihin ay Palawakin</translation>
+<translation id="1681022320378710418">kasalukuyang oras</translation>
+<translation id="1727839386348365796">Eyedropper</translation>
+<translation id="1727886345390570319">itago ang menu ng mga nakasarang caption</translation>
+<translation id="1729654308190250600">Mangyaring maglagay ng isang non-empty na email address.</translation>
+<translation id="173386679947102756">Icon na bell, posibleng ang ibig sabihin ay Mga Notification</translation>
+<translation id="175222816025430946">Icon na tatlong bar, posibleng ang ibig sabihin ay Menu</translation>
+<translation id="1758486001363313524">Iba pa...</translation>
+<translation id="1787192514241997742">kabuuang oras: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">Icon na X, posibleng ang ibig sabihin ay Isara o I-delete</translation>
+<translation id="1804122079878165329">Icon na pakanang arrow, posibleng ang ibig sabihin ay Pasulong</translation>
+<translation id="1822429046913737220">AM/PM</translation>
+<translation id="1832974991323546415">i-play sa malayuang device</translation>
+<translation id="1921819250265091946">dd</translation>
+<translation id="1938124657309484470">Dapat <ph name="MAXIMUM_DATE_OR_TIME" /> o mas nauna ang value.</translation>
+<translation id="1946271899482435442">Ipakita ang picker ng petsa</translation>
+<translation id="1993104285338243655">Lumipat sa pag-mirror</translation>
+<translation id="2031987842108996681">Pulang channel</translation>
+<translation id="2060505056492490888">Ginamit ang '<ph name="DOT" />' sa maling posisyon sa '<ph name="INVALIDDOMAIN" />.'</translation>
+<translation id="2131189924434603515">Icon na maliit na titik i, posibleng ang ibig sabihin ay Impormasyon</translation>
+<translation id="2148716181193084225">Ngayon</translation>
+<translation id="2177093963727449806">Icon na I-refresh</translation>
+<translation id="221177765244658491">Icon na I-mute</translation>
+<translation id="2226276347425096477">Mangyaring paikliin ang tekstong ito ng <ph name="MAX_CHARACTERS" /> (na) character o mas mababa (kasalukuyan kang gumagamit ng <ph name="CURRENT_LENGTH" /> (na) character).</translation>
+<translation id="2246498165605549352">Lokal na File</translation>
+<translation id="2247351761944213033">Linggo <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
+<translation id="2265260019987849198">Icon ng home</translation>
+<translation id="2277199496770840904">Track <ph name="NUMBER" /></translation>
+<translation id="2307576640803031502">nasa listahan, item <ph name="INDEX" /> sa <ph name="COUNT" /></translation>
+<translation id="2320316128050046908">Icon ng pataas na volume</translation>
+<translation id="2393030564806080191">Hexadecimal na value ng kulay</translation>
+<translation id="2398813069815436052">nabuksan ang dialog.</translation>
+<translation id="2427288427427702833">Icon na Maglunsad ng mga app</translation>
+<translation id="245932805758469625">bilang ng mga segundong natitira sa video</translation>
+<translation id="248395913932153421">Araw</translation>
+<translation id="2507943997699731163">Pakipunan ang field na ito.</translation>
+<translation id="2530182415807757784">multiselectable, walang pinili.</translation>
+<translation id="2561842179657104141">magpakita ng higit pang kontrol sa media</translation>
+<translation id="2572483411312390101">i-play</translation>
+<translation id="2613802280814924224">Mangyaring maglagay ng isang wastong value. Ang pinakamalapit na wastong value ay <ph name="VALID_VALUE" />.</translation>
+<translation id="2634240155926812724">Berdeng channel</translation>
+<translation id="2653659639078652383">Isumite</translation>
+<translation id="2723001399770238859">audio</translation>
+<translation id="2746543609216772311">Dapat <ph name="MINIMUM_DATE_OR_TIME" /> o mas bago ang value.</translation>
+<translation id="2761667185364618470">Pakitingnan ang kahon na ito kung gusto mong magpatuloy.</translation>
+<translation id="2908441821576996758">Mangyaring magpasok ng listahan ng email address na pinaghihiwalay ng kuwit.</translation>
+<translation id="2987445268505333132">Icon na Tapusin ang Tawag</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> (na) MB</translation>
+<translation id="3075154866155599887">Mangyaring maglagay ng wastong halaga. Hindi kumpleto ang field o may isang di-wastong petsa.</translation>
+<translation id="310520048233152454">Mangyaring magpasok ng URL.</translation>
+<translation id="3220661731597678625">kasalukuyang hakbang</translation>
+<translation id="3321030238473337787">Bilis ng pag-playback</translation>
+<translation id="3329013043687509092">Saturation</translation>
+<translation id="3435893727187534376">Icon na apat na papalabas na arrow, posibleng ang ibig sabihin ay Palawakin</translation>
+<translation id="3450233048674729344">Dapat mas mababa kaysa sa o katumbas ng <ph name="MAXIMUM" /> ang halaga.</translation>
+<translation id="3685101356851116974">Walang label na larawan</translation>
+<translation id="3732799496749320381">mm</translation>
+<translation id="3754210790023674521">Lumabas sa picture-in-picture</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> (na) GB</translation>
+<translation id="3822383571486410024">Pakihabaan ang text na ito hanggang <ph name="MIN_CHARACTERS" /> (na) character o higit pa (kasalukuyan kang gumagamit ng <ph name="CURRENT_LENGTH" /> (na) character).</translation>
+<translation id="383465348367842624">Hindi dapat naglalaman ng simbolong '<ph name="INVALIDCHARACTER" />' ang bahagi bago ang '<ph name="ATSIGN" />.'</translation>
+<translation id="3845063161460806746">Icon na thumbs up, posibleng ang ibig sabihin ay I-like</translation>
+<translation id="3846214748874656680">Lumabas sa fullscreen</translation>
+<translation id="3904695548697879411">Icon ng Twitter</translation>
+<translation id="405782047075994056">Icon na pakaliwang arrow, posibleng ang ibig sabihin ay Bumalik</translation>
+<translation id="4103419683916926126">Milliseconds</translation>
+<translation id="4201051445878709314">Ipakita ang nakaraang buwan</translation>
+<translation id="4302299849305494927">Icon na speaker, posibleng ang ibig sabihin ay volume</translation>
+<translation id="4360991593054037559">Mangyaring maglagay ng isang wastong value. Ang dalawang pinakamalapit na wastong value ay <ph name="VALID_VALUE_LOW" /> at <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4363712632243441817">Icon na Mag-cast, posibleng ang ibig sabihin ay mag-cast ng video sa remote na screen</translation>
+<translation id="4371899966896349864">itago ang menu para sa bilis ng pag-playback</translation>
+<translation id="4384249794467006333">Walang label ang larawang ito. Buksan ang menu ng Higit pang Opsyon sa kanang bahagi sa itaas para makakuha ng mga paglalarawan ng larawan.</translation>
+<translation id="4436211924730548766">Icon na pakaliwang chevron</translation>
+<translation id="4444765639179266822">Mukhang ang sabi ay: <ph name="OCR_TEXT" /></translation>
+<translation id="4522570452068850558">Mga Detalye</translation>
+<translation id="4540719609030900356">Icon na eroplanong papel, posibleng ang ibig sabihin ay Ipadala</translation>
+<translation id="4576178047100686001">Walang label ang larawang ito. Buksan ang menu ng Higit pang Opsyon sa kaliwang bahagi sa itaas para makakuha ng mga paglalarawan ng larawan.</translation>
+<translation id="4577968231433672268">Icon na plus, posibleng ang ibig sabihin ay Magdagdag</translation>
+<translation id="4611825382945206498">Orasan na may paikot na arrow, posibleng ang ibig sabihin ay History</translation>
+<translation id="4664250907885839816">Hindi dapat naglalaman ng simbolong '<ph name="INVALIDCHARACTER" />' ang bahagi pagkatapos ng '<ph name="ATSIGN" />.'</translation>
+<translation id="4679853894970977730">Icon na camera, posibleng ang ibig sabihin ay Kumuha ng Larawan</translation>
+<translation id="4718048029184481307">Nagpe-play sa picture-in-picture</translation>
+<translation id="4748357248530471599">i-toggle ang fullscreen ng cutout ng display</translation>
+<translation id="4763480195061959176">video</translation>
+<translation id="4812940957355064477">Mangyaring maglagay ng numero.</translation>
+<translation id="4832245585893280119">Icon ng lagay ng panahon</translation>
+<translation id="4908855810237020461">Icon na orasan, posibleng ang ibig sabihin ay Oras</translation>
+<translation id="4912200001568447310">kasalukuyang item</translation>
+<translation id="4915360478455618802">Ipakita ang picker ng oras</translation>
+<translation id="4924138096460353083">hindi matukoy</translation>
+<translation id="4950364064308314478">Ipakita ang picker ng lokal na petsa at oras</translation>
+<translation id="4971739861736909480"><ph name="ACCNAME" /> ang napili</translation>
+<translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ang napili</translation>
+<translation id="4992066212339426712">I-unmute</translation>
+<translation id="49969490063480558">Mangyaring maglagay ng isang bahagi pagkatapos ng '<ph name="ATSIGN" />.' Hindi kumpleto ang '<ph name="INVALIDADDRESS" />.'</translation>
+<translation id="5090250355906949916">scrubber ng tagal ng video</translation>
+<translation id="509897012892853729">Asul na channel</translation>
+<translation id="5117590920725113268">Ipakita ang susunod na buwan</translation>
+<translation id="5121688653159243920">Icon na naka-bullet na listahan</translation>
+<translation id="5164977714490026579">Dapat mas mataas kaysa sa o katumbas ng <ph name="MINIMUM" /> ang halaga.</translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> (na) PB</translation>
+<translation id="5214400792580101697">Icon na Ihinto</translation>
+<translation id="5307600278924710095">Mangyaring maglagay ng isang bahagi na sinusundan ng '<ph name="ATSIGN" />.' Hindi kumpleto ang '<ph name="INVALIDADDRESS" />.'</translation>
+<translation id="5334352251556557839">Hindi ma-play ang media.</translation>
+<translation id="537648784377940524">Mauna dapat ang Minimum na petsa (<ph name="MIN_DATE_OR_TIME" />) sa Maximum na petsa (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">na-expand, binuksan ang dialog.</translation>
+<translation id="5425179576310518467">kasalukuyang petsa</translation>
+<translation id="5466621249238537318">Mangyaring pumili ng isa o higit pang mga file.</translation>
+<translation id="5468998798572797635">lumabas sa full screen</translation>
+<translation id="5516235301412634559">0.75</translation>
+<translation id="5537725057119320332">I-cast</translation>
+<translation id="5546461542133609677">i-unmute</translation>
+<translation id="5586467629893654334">Icon na buwan, posibleng ang ibig sabihin ay gabi o tulog</translation>
+<translation id="5599474660109692598">Icon na cartoon bubble, posibleng ang ibig sabihin ay Makipag-chat</translation>
+<translation id="5617165654945759937">Icon na lapis, posibleng ang ibig sabihin ay I-edit</translation>
+<translation id="5621627136377293173">Icon na mikropono, posibleng ang ibig sabihin ay Mag-record</translation>
+<translation id="5630795885300617244">Mag-double tap sa kaliwa o kanan upang lumaktaw nang 10s</translation>
+<translation id="5647477850810769350">Icon na headset</translation>
+<translation id="5677946354068040947">higit pang opsyon</translation>
+<translation id="5720390168116663167">Icon na pataas na arrow</translation>
+<translation id="5724910823641175216">Icon na clockwise arrow, posibleng ang ibig sabihin ay Gawin Ulit</translation>
+<translation id="57838592816432529">I-mute</translation>
+<translation id="5786442179789148008">ipakita ang menu para sa bilis ng pag-playback</translation>
+<translation id="5787939484346677755">na-expand, opsyon sa autocomplete ang available.</translation>
+<translation id="5838904342468928321">Icon na cloud</translation>
+<translation id="5860033963881614850">Naka-off</translation>
+<translation id="588258955323874662">Fullscreen</translation>
+<translation id="5888666972993069672">Nagka-cast na sa <ph name="DEVICE_FRIENDLY_NAME" /></translation>
+<translation id="5916664084637901428">Naka-on</translation>
+<translation id="5939518447894949180">I-reset</translation>
+<translation id="5966707198760109579">Linggo</translation>
+<translation id="5985507339671257014">0.5</translation>
+<translation id="6011459053400940133">slider ng volume</translation>
+<translation id="6015796118275082299">Taon</translation>
+<translation id="6054619856758804514">Icon na basurahan, posibleng ang ibig sabihin ay I-delete</translation>
+<translation id="6054638203631275602">Icon na masayang mukha</translation>
+<translation id="608465159662359598">Icon na gear o wrench, posibleng ang ibig sabihin ay Mga Setting</translation>
+<translation id="6165053282446038410">na-expand, <ph name="COUNT" /> (na) opsyon sa autocomplete ang available.</translation>
+<translation id="6209276755895393898">Mukhang: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">kasalukuyang page</translation>
+<translation id="6240633443440794881">Icon na sobre, posibleng ang ibig sabihin ay Mail</translation>
+<translation id="6247212328664111379">Icon na tao</translation>
+<translation id="6281588256137006900">Lightness</translation>
+<translation id="6310801910862476708">Lumabas sa Picture-in-Picture</translation>
+<translation id="6350382280299255966">Icon na smiley face, posibleng ang ibig sabihin ay Emoji</translation>
+<translation id="6398862346408813489">Ipakita ang panel ng pagpipilian ng buwan</translation>
+<translation id="6404546809543547843">scrubber ng oras ng audio</translation>
+<translation id="6443871981718447451">Ipakita ang menu ng mga nakasarang caption</translation>
+<translation id="6550675742724504774">Mga Pagpipilian</translation>
+<translation id="6572309429103589720">Invalid na grammar</translation>
+<translation id="658823671542763450">mag-full screen</translation>
+<translation id="6632254525813309835">Icon na counterclockwise arrow, posibleng ang ibig sabihin ay I-undo</translation>
+<translation id="6643016212128521049">I-clear</translation>
+<translation id="668171684555832681">Iba pa...</translation>
+<translation id="6709093583001123835">Dapat ay <ph name="VALUE" /> ang value.</translation>
+<translation id="6709570249143506788">Hindi magandang playback quality</translation>
+<translation id="6790428901817661496">I-play</translation>
+<translation id="6820355525329141109">Hindi ma-load ang plugin.</translation>
+<translation id="6831465880655513317">Color well na may two-dimensional na slider para sa pagpili ng saturation at lightess</translation>
+<translation id="6843725295806269523">i-mute</translation>
+<translation id="6889412865110485830">Icon na shopping cart</translation>
+<translation id="6919891270253167948">1.5</translation>
+<translation id="6940482800520966738">Icon na star</translation>
+<translation id="6941933287844615239">i-download ang media</translation>
+<translation id="698788488269350478">na-expand.</translation>
+<translation id="6989848892321993519">Pakidagdagan ang text na ito nang hanggang <ph name="MIN_CHARACTERS" /> (na) character o higit pa (kasalukuyan kang gumagamit ng 1 character).</translation>
+<translation id="7022838723850801004">Icon na emoji na may masaya at malungkot na mukha</translation>
+<translation id="709897737746224366">Pakitugma ang hiniling na format.</translation>
+<translation id="7102274145889307184">kasalukuyang lokasyon</translation>
+<translation id="7118469954320184356">Walang available na paglalarawan.</translation>
+<translation id="7263440858009898357">Mangyaring pumili ng item sa listahan.</translation>
+<translation id="7320576522385648310">nagba-buffer</translation>
+<translation id="7341556277900466204">Color well</translation>
+<translation id="7364796246159120393">Pumili ng File</translation>
+<translation id="739024184232394898">Iba pa...</translation>
+<translation id="7410239719251593705">Mukhang may lamang pang-adult na content. Walang available na paglalarawan.</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> (na) TB</translation>
+<translation id="7514365320538308">I-download</translation>
+<translation id="7533959249147584474">Walang label na graphic</translation>
+<translation id="7673697353781729403">Oras</translation>
+<translation id="7742609585924342092">Icon ng lokasyon</translation>
+<translation id="7745230546936012372">Para kunin ang mga paglalarawan ng larawan, buksan ang menu ng konteksto.</translation>
+<translation id="7750228210027921155">Picture in picture</translation>
+<translation id="775297008183122718">Di-wastong entry</translation>
+<translation id="7782515065589691344">1.25</translation>
+<translation id="7789962463072032349">i-pause</translation>
+<translation id="7796968532285333302">Icon na pababang chevron, posibleng ang ibig sabihin ay I-collapse</translation>
+<translation id="7819026464394689674">Icon na I-pause</translation>
+<translation id="7852167693871241274">Slider ng hue</translation>
+<translation id="7855610409192055689">Icon na paperclip, posibleng ang ibig sabihin ay attachment</translation>
+<translation id="7888071071722539607">Mangyaring magsama ng '<ph name="ATSIGN" />' sa email address. Kulang ng '<ph name="ATSIGN" />' ang '<ph name="INVALIDADDRESS" />.'</translation>
+<translation id="795667975304826397">Walang napiling file</translation>
+<translation id="7962328325860248200">Hindi napili ang <ph name="ACCNAME" /></translation>
+<translation id="7994555495914042081">Icon na check mark</translation>
+<translation id="8097409774376213335">Icon na pababang arrow</translation>
+<translation id="8105750478534334542">Icon na thumbs down, posibleng ang ibig sabihin ay i-dislike</translation>
+<translation id="811583516810654505">Kinukuha ang paglalarawan...</translation>
+<translation id="8117451130807776954">Linggong ito</translation>
+<translation id="8131955114056917397">0.25</translation>
+<translation id="8147719583347050106">Icon ng Google</translation>
+<translation id="8199524924445686405">yyyy</translation>
+<translation id="8261464734335370856">Invalid na spelling</translation>
+<translation id="8276790177939055966">Icon na pakanang chevron</translation>
+<translation id="8284326494547611709">Mga Caption</translation>
+<translation id="835897206747267392">Di-wastong halaga.</translation>
+<translation id="839593075537728968">Dapat na nasa pagitan ng <ph name="MINIMUM_TIME" /> at <ph name="MAXIMUM_TIME" /> ang value.</translation>
+<translation id="8403857369060869934">lumipas na oras: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> mga file</translation>
+<translation id="8451268428117625855">Mangyaring pumili ng file.</translation>
+<translation id="8488243824626550045">Icon ng Facebook</translation>
+<translation id="8534579021159131403">Minuto</translation>
+<translation id="8541249477527128034">kontrol sa media</translation>
+<translation id="8613126697340063924">kontrolin ang malayuang pag-playback</translation>
+<translation id="8634971699417195529">Ipakita ang picker ng buwan</translation>
+<translation id="8637593834423658414">1.75</translation>
+<translation id="8657910582115602348">Icon ng Google Assistant</translation>
+<translation id="8668988909814782445">Line wrap</translation>
+<translation id="8750798805984357768">Mangyaring pumili ng isa sa mga opsyong ito.</translation>
+<translation id="8845239796550121995">Ikina-cast ngayon sa iyong TV</translation>
+<translation id="8875657656876809964">Error sa pag-playback ng video</translation>
+<translation id="8889402386540077796">Hue</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="894736920926684893">Toggler ng format</translation>
+<translation id="8987927404178983737">Buwan</translation>
+<translation id="901493112792887934">kasalukuyang oras ayon sa segundo</translation>
+<translation id="9039639793210005614">Icon ng gallery</translation>
+<translation id="9040233563616141093">Icon na apat na papaloob na arrow, posibleng ang ibig sabihin ay Paliitin</translation>
+<translation id="9073800864014589651">Icon na I-play</translation>
+<translation id="9093215626363556771">lumabas sa picture-in-picture</translation>
+<translation id="9105500880071990795">Icon ng pababang volume</translation>
+<translation id="9132465097189459683">Iba pa...</translation>
+<translation id="913630661384792974">Icon na videocamera, posibleng ang ibig sabihin ay Mag-record ng Video</translation>
+<translation id="9155987714137265666"><ph name="WEEK" />, na magsisimula sa <ph name="WEEK_START_DATE" /></translation>
+<translation id="916607977885256133">Picture in Picture</translation>
+<translation id="945780513535800434">Hindi Nilagyan ng Check ang Lahat</translation>
+<translation id="947651054772746219">Icon na mga tao</translation>
+<translation id="954003015749068518">pumasok sa picture-in-picture</translation>
+</translationbundle>

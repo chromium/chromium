@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="lo">
+<translation id="1016055326260264411">ໄອຄອນຫົວໃຈ, ອາດໝາຍເຖິງລາຍການທີ່ມັກ</translation>
+<translation id="1088086359088493902">ວິ​ນາ​ທີ</translation>
+<translation id="1142001580032786438">ສະແດງຕົວເລືອກອາທິດ</translation>
+<translation id="1171774979989969504">ກະ​ລຸ​ນາ​ໃສ່​ທີ່​ຢູ່​ອີ​ເມວ.</translation>
+<translation id="1178581264944972037">ຢຸດຊົ່ວຄາວ</translation>
+<translation id="1193819188371549072">ໄອຄອນຕາເວັນ, ອາດໝາຍເຖິງເວລາກາງເວັນ</translation>
+<translation id="1197443222693564123">ສາມຈ້ຳ, ອາດໝາຍເຖິງເພີ່ມເຕີມ</translation>
+<translation id="1231311685714446044">ໄອຄອນໜ້າເສົ້າ</translation>
+<translation id="1248712480115826517">ໄອຄອນແກ້ວ​ຂະ​ຫຍາຍ, ອາດໝາຍເຖິງຊອກຫາ ຫຼື ຊູມ</translation>
+<translation id="1253694090376430115">ໄອຄອນຖົງຊື້ເຄື່ອງ</translation>
+<translation id="1292759642840406299">ໄອຄອນເຂັມທິດ</translation>
+<translation id="1301463715094321941">ໄອຄອນໂທລະສັບມືຖື, ອາດໝາຍເຖິງໂທ</translation>
+<translation id="1306460908038601864">ປິດ</translation>
+<translation id="1311894908970423688">ຄ່າຕ້ອງເປັນ <ph name="VALUE_DATE_OR_TIME" />.</translation>
+<translation id="1312685112570645372">ໄອຄອນເຄື່ອງໝາຍຄຳຖາມ</translation>
+<translation id="1386033905837826130">ໄອຄອນແບ່ງປັນ</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> ລາຍ​ການ</translation>
+<translation id="1480676835519562650">ເລືອກໄດ້ຫຼາຍລາຍການ, ເລືອກ <ph name="SELECTED" /> ຈາກທັງໝົດ <ph name="COUNT" /> ແລ້ວ.</translation>
+<translation id="157989258522571434">ໄອຄອນປະຕິທິນ</translation>
+<translation id="1588438908519853928">ປົກ​ກະ​ຕິ</translation>
+<translation id="1591562245178063882">ເດືອນ​ນີ້</translation>
+<translation id="1598348607589961718">ໄອຄອນລູກສອນຊີ້ຂຶ້ນ, ອາດໝາຍເຖິງອັບໂຫຼດ</translation>
+<translation id="1632409084477505723">ໄອຄອນການດາວໂຫຼດ</translation>
+<translation id="1637811476055996098">ເລືອກ​ໄຟລ​໌</translation>
+<translation id="1658806147928973309">ໄອຄອນປິດສຽງໄມໂຄຣໂຟນ</translation>
+<translation id="1677491356035817504">ໄອຄອນຕົວ V ຊີ້ລົງ, ອາດໝາຍເຖິງຂະຫຍາຍ</translation>
+<translation id="1681022320378710418">ເວລາປັດຈຸບັນ</translation>
+<translation id="1727839386348365796">Eyedropper</translation>
+<translation id="1727886345390570319">ເຊື່ອງເມນູຄໍາອະທິບາຍພາບ</translation>
+<translation id="1729654308190250600">ກະ​ລຸ​ນາ​ໃສ່​ທີ່​ຢູ່​ອີ​ເມວທີ່​ບໍ່​ວ່າງ​ເປົ່າ​.</translation>
+<translation id="173386679947102756">ໄອຄອນກະດິ່ງ, ອາດໝາຍເຖິງການແຈ້ງເຕືອນ</translation>
+<translation id="175222816025430946">ໄອຄອນສາມຂີດ, ອາດໝາຍເຖິງເມນູ</translation>
+<translation id="1758486001363313524">ອື່ນ...</translation>
+<translation id="1787192514241997742">ເວລາທັງໝົດ: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">ໄອຄອນ X, ອາດໝາຍເຖິງປິດ ຫຼື ລຶບ</translation>
+<translation id="1804122079878165329">ໄອຄອນລູກສອນຂວາ, ອາດໝາຍເຖິງໄປໜ້າ</translation>
+<translation id="1822429046913737220">ໂມງເຊົ້າ/ໂມງແລງ</translation>
+<translation id="1832974991323546415">ຫຼິ້ນ​ຢູ່​ເທິງ​ອຸ​ປະ​ກອນ​ທາງໄກ</translation>
+<translation id="1921819250265091946">ວວ</translation>
+<translation id="1938124657309484470">ຄ່າ​ຈະ​ຕ້ອງ <ph name="MAXIMUM_DATE_OR_TIME" /> ຫຼື​ໄວກ່ອນ​ນັ້ນ​.</translation>
+<translation id="1946271899482435442">ສະແດງຕົວເລືອກວັນທີ</translation>
+<translation id="1993104285338243655">ປ່ຽນເປັນການສະທ້ອນພາບແລ້ວ</translation>
+<translation id="2031987842108996681">ຊ່ອງສີແດງ</translation>
+<translation id="2060505056492490888">'<ph name="DOT" />' ຖືກໃຊ້ຢູ່ຜິດຕໍາແໜ່ງ​ໃນ '<ph name="INVALIDDOMAIN" />'.</translation>
+<translation id="2131189924434603515">ໄອຄອນຕົວ i ແບບຕົວພິມນ້ອຍ, ອາດໝາຍເຖິງຂໍ້ມູນ</translation>
+<translation id="2148716181193084225">ມື້​ນີ້</translation>
+<translation id="2177093963727449806">ໄອຄອນໂຫຼດຂໍ້ມູນຄືນໃໝ່</translation>
+<translation id="221177765244658491">ໄອຄອນປິດສຽງ</translation>
+<translation id="2226276347425096477">ກະລຸນາຫຍໍ້ຂໍ້ຄວາມນີ້ລົງໃຫ້ເຫຼືອ <ph name="MAX_CHARACTERS" /> ຕົວອັກສອນ ຫຼືໜ້ອຍກ່ວາ (ປະຈຸບັນທ່ານກໍາລັງໃຊ້ <ph name="CURRENT_LENGTH" /> ຕົວອັກສອນ).</translation>
+<translation id="2246498165605549352">ໄຟລ໌ໃນເຄື່ອງ</translation>
+<translation id="2247351761944213033">ອາ​ທິດ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
+<translation id="2265260019987849198">ໄອຄອນເຮືອນ</translation>
+<translation id="2277199496770840904">ແທຣັກ <ph name="NUMBER" /></translation>
+<translation id="2307576640803031502">ຢູ່ໃນລາຍຊື່, ລາຍການ <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="COUNT" /></translation>
+<translation id="2320316128050046908">ໄອຄອນເພີ່ມສຽງຂຶ້ນ</translation>
+<translation id="2393030564806080191">ຄ່າສີແບບຖານສິບຫົກ</translation>
+<translation id="2398813069815436052">ເປີດກ່ອງໂຕ້ຕອບແລ້ວ.</translation>
+<translation id="2427288427427702833">ໄອຄອນເປີດໃຊ້ແອັບ</translation>
+<translation id="245932805758469625">ຈໍານວນວິນາທີຂອງວິດີໂອທີ່ຍັງເຫຼືອ</translation>
+<translation id="248395913932153421">ວັນ</translation>
+<translation id="2507943997699731163">ກະລຸນາຕື່ມຂໍ້ມູນໃສ່ປ່ອງນີ້.</translation>
+<translation id="2530182415807757784">ເລືອກໄດ້ຫຼາຍລາຍການ, ບໍ່ໄດ້ເລືອກລາຍການໃດເລີຍ.</translation>
+<translation id="2561842179657104141">ສະແດງການຄວບຄຸມສື່ເພີ່ມເຕີມ</translation>
+<translation id="2572483411312390101">ຫຼິ້ນ</translation>
+<translation id="2613802280814924224">ກະ​ລຸ​ນາ​ປ້ອນຄ່າທີ່ໃຊ້ໄດ້ເຂົ້າໄປ​. ຄ່າໃຊ້ໄດ້ໃກ້ທີ່ສຸດແມ່ນ <ph name="VALID_VALUE" />.</translation>
+<translation id="2634240155926812724">ຊ່ອງສີຂຽວ</translation>
+<translation id="2653659639078652383">ສົ່ງ</translation>
+<translation id="2723001399770238859">ສຽງ</translation>
+<translation id="2746543609216772311">ມູນຄ່າຕ້ອງ <ph name="MINIMUM_DATE_OR_TIME" /> ຫຼື​ຕໍ່​ມາ​.</translation>
+<translation id="2761667185364618470">ກະລຸນາໝາຍຕິກໃສ່ຫ້ອງນີ້ ຖ້າທ່ານຕ້ອງການດໍາເນີນຕໍ່.</translation>
+<translation id="2908441821576996758">ກະລຸນາໃສ່ລາຍຊື່ທີ່ຢູ່ອີເມວທີ່​ແຍກ​ກັນ​ດ້ວຍ​ໝາຍ​ຈຸດ.</translation>
+<translation id="2987445268505333132">ໄອຄອນວາງສາຍ</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3075154866155599887">ກະ​ລຸ​ນາ​ປ້ອນ​ຄ່າທີ່ໃຊ້ໄດ້​. ບ່ອນໃສ່ຂໍ້ມູນ​ບໍ່​ຄົບ​ຖ້ວນ​ ຫຼື​ມີ​ວັນທີໃຊ້ບໍ່ໄດ້.</translation>
+<translation id="310520048233152454">ກະລຸນາປ້ອນ URL.</translation>
+<translation id="3220661731597678625">ຂັ້ນຕອນປັດຈຸບັນ</translation>
+<translation id="3321030238473337787">ຄວາມໄວການຫຼິ້ນ</translation>
+<translation id="3329013043687509092">ການອີ່ມຕົວ</translation>
+<translation id="3435893727187534376">ໄອຄອນລູກສອນຊີ້ອອກສີ່ອັນ, ອາດໝາຍເຖິງຂະຫຍາຍອອກ</translation>
+<translation id="3450233048674729344">ຄ່າຕ້ອງນ້ອຍກ່ວາ ຫຼືເທົ່າກັບ <ph name="MAXIMUM" />.</translation>
+<translation id="3685101356851116974">ຮູບທີ່ບໍ່ມີປ້າຍກຳກັບ</translation>
+<translation id="3732799496749320381">ມ​ມ</translation>
+<translation id="3754210790023674521">ອອກຈາກໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3822383571486410024">ກະລຸນາຂະຫຍາຍຂໍ້ຄວາມນີ້ໃຫ້ຍາວເປັນ <ph name="MIN_CHARACTERS" /> ອັກຂະລະຂຶ້ນໄປ (ປະຈຸບັນ ທ່ານກຳລັງໃຊ້ <ph name="CURRENT_LENGTH" /> ອັກຂະລະ).</translation>
+<translation id="383465348367842624">ສ່ວນ​ຫນຶ່ງ​ຕິດຕາມດ້ວຍ  '<ph name="ATSIGN" />' ບໍ່​ຄວນ​ໃຫ້​ມີ​ສັນ​ຍາ​ລັກ '<ph name="INVALIDCHARACTER" />'.</translation>
+<translation id="3845063161460806746">ໄອຄອນຍົກ​ໂປ້, ອາດໝາຍເຖິງຖືກໃຈ</translation>
+<translation id="3846214748874656680">ອອກຈາກເຕັມໜ້າຈໍ</translation>
+<translation id="3904695548697879411">ໄອຄອນ Twitter</translation>
+<translation id="405782047075994056">ໄອຄອນລູກສອນຊ້າຍ, ອາດໝາຍເຖິງກັບຄືນ</translation>
+<translation id="4103419683916926126">ມິລລິວິນາທີ</translation>
+<translation id="4201051445878709314">ສະແດງເດືອນກ່ອນນີ້</translation>
+<translation id="4302299849305494927">ໄອຄອນລຳໂພງ, ອາດໝາຍເຖິງລະດັບສຽງ</translation>
+<translation id="4360991593054037559">ກະ​ລຸ​ນາ​ປ້ອນຄ່າທີ່ໃຊ້ໄດ້ເຂົ້າໄປ​. ຄ່າທີ່ໃຊ້ໄດ້ຢູ່ໃກ້ທີ່ສຸດທັງສອງ​ແມ່ນ <ph name="VALID_VALUE_LOW" /> ແລະ <ph name="VALID_VALUE_HIGHER" /> .</translation>
+<translation id="4363712632243441817">ໄອຄອນສົ່ງສັນຍານ, ອາດໝາຍເຖິງສົ່ງສັນຍານວິດີໂອໄປຫາໜ້າຈໍທາງໄກ</translation>
+<translation id="4371899966896349864">ເຊື່ອງເມນູຄວາມໄວການຫຼິ້ນ</translation>
+<translation id="4384249794467006333">ຮູບພາບນີ້ບໍ່ມີປ້າຍກຳກັບ. ເປີດເມນູຕົວເລືອກເພີ່ມເຕີມຢູ່ເທິງສຸດເບື້ອງຂວາເພື່ອຮັບຄຳອະທິບາຍຮູບພາບ.</translation>
+<translation id="4436211924730548766">ໄອຄອນຕົວ V ຊີ້ໄປຊ້າຍ</translation>
+<translation id="4444765639179266822">ປາກົດວ່າຈະເວົ້າ: <ph name="OCR_TEXT" /></translation>
+<translation id="4522570452068850558">ລາຍ​ລະ​ອຽດ</translation>
+<translation id="4540719609030900356">ໄອຄອນຍົນເຈ້ຍ, ອາດໝາຍເຖິງສົ່ງ</translation>
+<translation id="4576178047100686001">ຮູບພາບນີ້ບໍ່ມີປ້າຍກຳກັບ. ເປີດເມນູຕົວເລືອກເພີ່ມເຕີມຢູ່ເທິງສຸດເບື້ອງຊ້າຍເພື່ອຮັບຄຳອະທິບາຍຮູບພາບ.</translation>
+<translation id="4577968231433672268">ໄອຄອນບວກ, ອາດໝາຍເຖິງເພີ່ມ</translation>
+<translation id="4611825382945206498">ໂມງມີລູກສອນເປັນວົງມົນ, ອາດໝາຍເຖິງປະຫວັດ</translation>
+<translation id="4664250907885839816">ສ່ວນ​ຫນຶ່ງ​ຕໍ່​ໄປ​ນີ້  '<ph name="ATSIGN" />' ບໍ່​ຄວນ​ໃຫ້​ມີ​ສັນ​ຍາ​ລັກ '<ph name="INVALIDCHARACTER" />'.</translation>
+<translation id="4679853894970977730">ໄອຄອນກ້ອງຖ່າຍຮູບ, ອາດໝາຍເຖິງຖ່າຍຮູບພາບ</translation>
+<translation id="4718048029184481307">ກຳລັງຫຼິ້ນໃນໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
+<translation id="4748357248530471599">ປ່ຽນເປັນໜ້າຈໍເຕັມສຳລັບຈໍສະແດງຜົນທີ່ມີຮອຍບາກ</translation>
+<translation id="4763480195061959176">ວິ​ດີ​ໂອ</translation>
+<translation id="4812940957355064477">ກະ​ລຸ​ນາ​ປ້ອນຕົວເລກ​.</translation>
+<translation id="4832245585893280119">ໄອຄອນສະພາບອາກາດ</translation>
+<translation id="4908855810237020461">ໄອຄອນໂມງ, ອາດໝາຍເຖິງເວລາ</translation>
+<translation id="4912200001568447310">ລາຍການປັດຈຸບັນ</translation>
+<translation id="4915360478455618802">ສະແດງຕົວເລືອກເວລາ</translation>
+<translation id="4924138096460353083">ບໍ່ແນ່ນອນ</translation>
+<translation id="4950364064308314478">ສະແດງຕົວເລືອກວັນທີ ແລະ ເວລາທ້ອງຖິ່ນ</translation>
+<translation id="4971739861736909480">ເລືອກ <ph name="ACCNAME" /> ແລ້ວ</translation>
+<translation id="4975562563186953947">ເລືອກ <ph name="SELECTED_COUNT" /> ແລ້ວ</translation>
+<translation id="4992066212339426712">ເປີດສຽງ</translation>
+<translation id="49969490063480558">ກະ​ລຸ​ນາ​ໃສ່​ພາກ​ສ່ວນໜຶ່ງ​ຫຼັງຈາກ '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' ບໍ່ສໍາເລັດ.</translation>
+<translation id="5090250355906949916">ຕົວຄວບຄຸມເວລາຂອງວິດີໂອ</translation>
+<translation id="509897012892853729">ຊ່ອງສີຟ້າ</translation>
+<translation id="5117590920725113268">ສະ​ແດງ​ເດືອນ​ຕໍ່​ໄປ</translation>
+<translation id="5121688653159243920">ໄອຄອນລາຍຊື່ສັນຍາລັກ</translation>
+<translation id="5164977714490026579">ຄ່າຕ້ອງໃຫຍ່ກ່ວາ ຫຼືເທົ່າກັບ <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5214400792580101697">ໄອຄອນຢຸດ</translation>
+<translation id="5307600278924710095">ກະ​ລຸ​ນາ​ໃສ່​ພາກ​ສ່ວນໜຶ່ງ​ຕາມມາ​ດ້ວຍ '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' ບໍ່ສົມບູນ.</translation>
+<translation id="5334352251556557839">ບໍ່ສາມາດຫຼິ້ນສື່ໄດ້.</translation>
+<translation id="537648784377940524">ວັນທີໜ້ອຍສຸດ (<ph name="MIN_DATE_OR_TIME" />) ຕ້ອງມາກ່ອນວັນທີຫຼາຍສຸດ (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">ຂະຫຍາຍແລ້ວ, ເປີດກ່ອງໂຕ້ຕອບແລ້ວ.</translation>
+<translation id="5425179576310518467">ວັນທີປະຈຸບັນ</translation>
+<translation id="5466621249238537318">ກະລຸນາເລືອກໜຶ່ງ ຫຼືຫຼາຍໄຟລ໌.</translation>
+<translation id="5468998798572797635">ອອກຈາກເຕັມໜ້າຈໍ</translation>
+<translation id="5516235301412634559">0.75</translation>
+<translation id="5537725057119320332">ຄາສທ໌</translation>
+<translation id="5546461542133609677">ເປີດສຽງ</translation>
+<translation id="5586467629893654334">ໄອຄອນເດືອນ, ອາດໝາຍເຖິງເວລາກາງຄືນ ຫຼື ນອນ</translation>
+<translation id="5599474660109692598">ໄອຄອນຟອງກາຕູນ, ອາດໝາຍເຖິງສົນທະນາ</translation>
+<translation id="5617165654945759937">ໄອຄອນສໍ, ອາດໝາຍເຖິງແກ້ໄຂ</translation>
+<translation id="5621627136377293173">ໄອຄອນໄມໂຄຣໂຟນ, ອາດໝາຍເຖິງບັນທຶກ</translation>
+<translation id="5630795885300617244">ແຕະຊ້າຍ ຫຼື ຂວາສອງຄັ້ງເພື່ອຂ້າມ 10 ວິ</translation>
+<translation id="5647477850810769350">ໄອຄອນຫູຟັງ</translation>
+<translation id="5677946354068040947">ຕົວເລືອກເພີ່ມເຕີມ</translation>
+<translation id="5720390168116663167">ໄອຄອນລູກສອນຂຶ້ນ</translation>
+<translation id="5724910823641175216">ໄອຄອນລູກສອນຕາມເຂັມໂມງ, ອາດໝາຍເຖິງເຮັດຊ້ຳ</translation>
+<translation id="57838592816432529">ປິດສຽງ</translation>
+<translation id="5786442179789148008">ສະແດງເມນູຄວາມໄວການຫຼິ້ນ</translation>
+<translation id="5787939484346677755">ຂະຫຍາຍແລ້ວ, ມີຕົວເລືອກການເຮັດສຳເລັດອັດຕະໂນມັດໃຫ້ນຳໃຊ້.</translation>
+<translation id="5838904342468928321">ໄອຄອນຄລາວ</translation>
+<translation id="5860033963881614850">ປິດ</translation>
+<translation id="588258955323874662">ເຕັມໜ້າຈໍ</translation>
+<translation id="5888666972993069672">ຕອນນີ້ກຳລັງສົ່ງສັນຍານໃສ່ <ph name="DEVICE_FRIENDLY_NAME" /></translation>
+<translation id="5916664084637901428">ເປີດ</translation>
+<translation id="5939518447894949180">ຕັ້ງຄ່າຄືນໃໝ່</translation>
+<translation id="5966707198760109579">ອາທິດ</translation>
+<translation id="5985507339671257014">0.5</translation>
+<translation id="6011459053400940133">ຕົວເລື່ອນປັບລະດັບສຽງ</translation>
+<translation id="6015796118275082299">ປີ</translation>
+<translation id="6054619856758804514">ໄອຄອນຖັງຂີ້ເຫຍື້ອ, ອາດໝາຍເຖິງລຶບ</translation>
+<translation id="6054638203631275602">ໄອຄອນໜ້າມີຄວາມສຸກ</translation>
+<translation id="608465159662359598">ໄອຄອນເຟືອງ ຫຼື ຄີມ, ອາດໝາຍເຖິງການຕັ້ງຄ່າ</translation>
+<translation id="6165053282446038410">ຂະຫຍາຍແລ້ວ, ມີຕົວເລືອກການເຮັດສຳເລັດອັດຕະໂນມັດ <ph name="COUNT" /> ລາຍການໃຫ້ນຳໃຊ້.</translation>
+<translation id="6209276755895393898">ປາກົດວ່າເປັນ: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">ໜ້າປັດຈຸບັນ</translation>
+<translation id="6240633443440794881">ໄອຄອນຊອງຈົດໝາຍ, ອາດໝາຍເຖິງເມວ</translation>
+<translation id="6247212328664111379">ໄອຄອນບຸກຄົນ</translation>
+<translation id="6281588256137006900">ຄວາມສະຫວ່າງ</translation>
+<translation id="6310801910862476708">ອອກຈາກໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
+<translation id="6350382280299255966">ໄອຄອນໜ້າຍິ້ມ, ອາດໝາຍເຖິງອີໂມຈິ</translation>
+<translation id="6398862346408813489">ສະແດງແຜງເລືອກເດືອນ</translation>
+<translation id="6404546809543547843">ຕົວຍົກເລີກເວລາສຽງ</translation>
+<translation id="6443871981718447451">ສະແດງເມນູຄຳອະທິບາຍພາບ</translation>
+<translation id="6550675742724504774">ທາງ​ເລືອກ</translation>
+<translation id="6572309429103589720">ໄວຍາກອນບໍ່ຖືກຕ້ອງ</translation>
+<translation id="658823671542763450">​​ເຂົ້າເຕັມ​ຫນ້າ​ຈໍ</translation>
+<translation id="6632254525813309835">ໄອຄອນລູກສອນທວນເຂັມໂມງ, ອາດໝາຍເຖິງຍົກເລີກ</translation>
+<translation id="6643016212128521049">ລຶບ</translation>
+<translation id="668171684555832681">ອື່ນໆ...</translation>
+<translation id="6709093583001123835">ຄ່າຕ້ອງເປັນ <ph name="VALUE" />.</translation>
+<translation id="6709570249143506788">ຄຸນນະພາບການຫຼິ້ນບໍ່ດີ</translation>
+<translation id="6790428901817661496">​ຫຼິ້ນ</translation>
+<translation id="6820355525329141109">ບໍ່ສາມາດໂຫຼດປລັກອິນໄດ້.</translation>
+<translation id="6831465880655513317">ໃສ່ສີຕາມຕ້ອງການດ້ວຍແຖບເລື່ອນສອງມິຕິສຳລັບການເລືອກຄວາມເຂັ້ມຂອງສີ ແລະ ຄວາມສະຫວ່າງ</translation>
+<translation id="6843725295806269523">ປິດສຽງ</translation>
+<translation id="6889412865110485830">ໄອຄອນກະຕ່າຊື້ເຄື່ອງ</translation>
+<translation id="6919891270253167948">1.5</translation>
+<translation id="6940482800520966738">ໄອຄອນດາວ</translation>
+<translation id="6941933287844615239">ດາວໂຫຼດສື່</translation>
+<translation id="698788488269350478">ຂະຫຍາຍແລ້ວ.</translation>
+<translation id="6989848892321993519">ກະລຸນາຂະຫຍາຍຄວາມຍາວຂອງຂໍ້ຄວາມນີ້ເປັນ <ph name="MIN_CHARACTERS" /> ຕົວອັກສອນຂຶ້ນໄປ (ໃນປັດຈຸບັນທ່ານກຳລັງໃຊ້ 1 ຕົວອັກສອນ).</translation>
+<translation id="7022838723850801004">ໄອຄອນອີໂມຈິໜ້າມີຄວາມສຸກ ແລະ ເສົ້າ</translation>
+<translation id="709897737746224366">ກະລຸນາຈັບຄູ່ຮູບແບບທີ່ໄດ້ສະເໜີ.</translation>
+<translation id="7102274145889307184">ສະຖານທີ່ປັດຈຸບັນ</translation>
+<translation id="7118469954320184356">ບໍ່ມີລາຍລະອຽດ.</translation>
+<translation id="7263440858009898357">ກະລຸນາເລືອກລາຍການຢູ່ໃນລາຍຊື່.</translation>
+<translation id="7320576522385648310">ກຳລັງບັບເຟີ້</translation>
+<translation id="7341556277900466204">ໃສ່ສີຕາມຕ້ອງການ</translation>
+<translation id="7364796246159120393">ເລືອກ​ໄຟລ​໌</translation>
+<translation id="739024184232394898">ອື່ນ...</translation>
+<translation id="7410239719251593705">ປາກົດວ່າປະກອບມີເນື້ອຫາສຳລັບຜູ້ໃຫຍ່. ບໍ່ມີລາຍລະອຽດ.</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
+<translation id="7514365320538308">ດາວ​ໂຫລດ</translation>
+<translation id="7533959249147584474">ກຣາຟິກທີ່ບໍ່ມີປ້າຍກຳກັບ</translation>
+<translation id="7673697353781729403">ຊົ່ວ​ໂມງ</translation>
+<translation id="7742609585924342092">ໄອຄອນສະຖານທີ່</translation>
+<translation id="7745230546936012372">ເພື່ອຮັບລາຍລະອຽດຮູບພາບທີ່ຫາຍໄປ, ກະລຸນາເປີດເມນູກົດຄ້າງ.</translation>
+<translation id="7750228210027921155">ສະແດງຜົນຊ້ອນກັນ</translation>
+<translation id="775297008183122718">ປ້ອນຂໍ້ມູນບໍ່ຖືກຕ້ອງ</translation>
+<translation id="7782515065589691344">1.25</translation>
+<translation id="7789962463072032349">ຢຸດຊົ່ວຄາວ</translation>
+<translation id="7796968532285333302">ໄອຄອນຕົວ V ຊີ້ຂຶ້ນ, ອາດໝາຍເຖິງຫຍໍ້ລົງ</translation>
+<translation id="7819026464394689674">ໄອຄອນຢຸດຊົ່ວຄາວ</translation>
+<translation id="7852167693871241274">ແຖບເລື່ອນໂທນສີ</translation>
+<translation id="7855610409192055689">ໄອຄອນຄລິບໜີບເຈ້ຍ, ອາດໝາຍເຖິງໄຟລ໌ແນບ</translation>
+<translation id="7888071071722539607">ກະລຸນາເອົາ '<ph name="ATSIGN" />' ເຂົ້າຢູ່ໃນທີ່ຢູ່ອີເມວ. '<ph name="INVALIDADDRESS" />' ຂາດ '<ph name="ATSIGN" />' ໄປ.</translation>
+<translation id="795667975304826397">ບໍ່ມີໄຟລ໌ເລືອກໄວ້</translation>
+<translation id="7962328325860248200">ບໍ່ໄດ້ເລືອກ <ph name="ACCNAME" /></translation>
+<translation id="7994555495914042081">ໄອຄອນໝາຍຖືກ</translation>
+<translation id="8097409774376213335">ໄອຄອນລູກສອນລົງ</translation>
+<translation id="8105750478534334542">ໄອຄອນບໍ່ມັກ, ອາດໝາຍເຖິງບໍ່​ຖືກ​ໃຈ</translation>
+<translation id="811583516810654505">ກຳລັງຮັບເອົາລາຍລະອຽດ...</translation>
+<translation id="8117451130807776954">ອາ​ທິດ​ນີ້</translation>
+<translation id="8131955114056917397">0.25</translation>
+<translation id="8147719583347050106">ໄອຄອນ Google</translation>
+<translation id="8199524924445686405">ປປປປ</translation>
+<translation id="8261464734335370856">ການສະກົດຄຳບໍ່ຖືກຕ້ອງ</translation>
+<translation id="8276790177939055966">ໄອຄອນຕົວ V ຊີ້ໄປຂວາ</translation>
+<translation id="8284326494547611709">ຄໍາບັນຍາຍພາບ</translation>
+<translation id="835897206747267392">ຄ່າບໍ່ຖືກຕ້ອງ</translation>
+<translation id="839593075537728968">ຄ່າຕ້ອງຢູ່ລະຫວ່າງ <ph name="MINIMUM_TIME" /> ຫາ <ph name="MAXIMUM_TIME" />.</translation>
+<translation id="8403857369060869934">ເວລາຜ່ານໄປ: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> ໄຟລ໌</translation>
+<translation id="8451268428117625855">ກະ​ລຸ​ນາ​ເລືອກ​ໄຟລ​໌​.</translation>
+<translation id="8488243824626550045">ໄອຄອນ Facebook</translation>
+<translation id="8534579021159131403">ນາທີ</translation>
+<translation id="8541249477527128034">ການ​ຄວບ​ຄຸມ​ມີເດຍ</translation>
+<translation id="8613126697340063924">ຄວບ​ຄຸມ​ການ​ຫຼິ້ນ​ທາງໄກ</translation>
+<translation id="8634971699417195529">ສະແດງຕົວເລືອກເດືອນ</translation>
+<translation id="8637593834423658414">1.75</translation>
+<translation id="8657910582115602348">ໄອຄອນຜູ້ຊ່ວຍ Google</translation>
+<translation id="8668988909814782445">ການຕັດຂຶ້ນແຖວໃໝ່</translation>
+<translation id="8750798805984357768">ກະລຸນາເລືອກໜຶ່ງໃນທາງເລືອກເຫຼົ່ານີ້.</translation>
+<translation id="8845239796550121995">ດຽວນີ້ກຳລັງສົ່ງສັນຍານຫາໂທລະພາບຂອງທ່ານ</translation>
+<translation id="8875657656876809964">ການຫຼິ້ນວິດີໂອມີຂໍ້ຜິດພາດ</translation>
+<translation id="8889402386540077796">ສີສັນ</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="894736920926684893">ປຸ່ມສະຫຼັບຮູບແບບ</translation>
+<translation id="8987927404178983737">ເດືອນ</translation>
+<translation id="901493112792887934">ເວ​ລາ​ປະຈຸ​ບັນ​ເປັນ​ວິ​ນາ​ທີ</translation>
+<translation id="9039639793210005614">ໄອຄອນຄັງ</translation>
+<translation id="9040233563616141093">ໄອຄອນລູກສອນຊີ້ເຂົ້າສີ່ອັນ, ອາດໝາຍເຖິງຫຍໍ້ເຂົ້າ</translation>
+<translation id="9073800864014589651">ໄອຄອນຫຼິ້ນ</translation>
+<translation id="9093215626363556771">ອອກຈາກໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
+<translation id="9105500880071990795">ໄອຄອນຫຼຸດສຽງລົງ</translation>
+<translation id="9132465097189459683">ອື່ນໆ...</translation>
+<translation id="913630661384792974">ໄອຄອນກ້ອງວິດີໂອ, ອາດໝາຍເຖິງບັນທຶກວິດີໂອ</translation>
+<translation id="9155987714137265666"><ph name="WEEK" />, ເລີ່ມຕົ້ນໃນວັນທີ <ph name="WEEK_START_DATE" /></translation>
+<translation id="916607977885256133">ສະແດງຜົນຫຼາຍຢ່າງພ້ອມກັນ</translation>
+<translation id="945780513535800434">ໝາຍເລືອກບາງສ່ວນ</translation>
+<translation id="947651054772746219">ໄອຄອນຄົນ</translation>
+<translation id="954003015749068518">ເຂົ້າໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
+</translationbundle>

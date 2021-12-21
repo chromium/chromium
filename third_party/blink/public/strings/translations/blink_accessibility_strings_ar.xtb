@@ -1,0 +1,268 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ar">
+<translation id="1016055326260264411">رمز القلب، وقد يعني "المفضّلة"</translation>
+<translation id="1088086359088493902">ثوانٍ‬‬</translation>
+<translation id="1142001580032786438">عرض منتقي الأسبوع</translation>
+<translation id="1171774979989969504">يُرجى إدخال عنوان البريد الإلكتروني.</translation>
+<translation id="1178581264944972037">الإيقاف مؤقتًا</translation>
+<translation id="1193819188371549072">رمز الشمس، وقد يعني "وقت النهار"</translation>
+<translation id="1197443222693564123">ثلاث نقاط، قد تعني "المزيد"</translation>
+<translation id="1231311685714446044">رمز وجه حزين</translation>
+<translation id="1248712480115826517">رمز عدسة مكبرة، وقد يعني "بحث" أو "تصغير/تكبير"</translation>
+<translation id="1253694090376430115">رمز حقيبة التسوّق</translation>
+<translation id="1292759642840406299">رمز البوصلة</translation>
+<translation id="1301463715094321941">رمز سماعة هاتف، وقد يعني "الاتصال"</translation>
+<translation id="1306460908038601864">غير مفعّل</translation>
+<translation id="1311894908970423688">يجب أن تكون القيمة <ph name="VALUE_DATE_OR_TIME" />.</translation>
+<translation id="1312685112570645372">رمز علامة الاستفهام</translation>
+<translation id="1386033905837826130">رمز المشاركة</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> من العناصر</translation>
+<translation id="1480676835519562650">اختيار متعدد، تم اختيار <ph name="SELECTED" /> من أصل <ph name="COUNT" />.</translation>
+<translation id="157989258522571434">رمز التقويم</translation>
+<translation id="1588438908519853928">عادي</translation>
+<translation id="1591562245178063882">هذا الشهر</translation>
+<translation id="1598348607589961718">رمز سهم يشير للأعلى، وقد يعني "تحميل"</translation>
+<translation id="1632409084477505723">رمز التنزيل</translation>
+<translation id="1637811476055996098">اختيار الملفات</translation>
+<translation id="1658806147928973309">رمز كتم صوت الميكروفون</translation>
+<translation id="1677491356035817504">رمز سهم متّجه للأسفل، وقد يعني "توسيع"</translation>
+<translation id="1681022320378710418">الوقت الحالي</translation>
+<translation id="1727839386348365796">اختيار اللون</translation>
+<translation id="1727886345390570319">إخفاء قائمة مقاطع الترجمة والشرح</translation>
+<translation id="1729654308190250600">يُرجى إدخال عنوان البريد الإلكتروني وعدم ترك الحق فارغًا.</translation>
+<translation id="173386679947102756">رمز الجرس، وقد يعني "الإشعارات"</translation>
+<translation id="175222816025430946">رمز ثلاثة أشرطة، وقد يعني "القائمة"</translation>
+<translation id="1758486001363313524">آخر...</translation>
+<translation id="1787192514241997742">الوقت الإجمالي: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">رمز علامة ×، وقد يعني "إغلاق" أو "حذف"</translation>
+<translation id="1804122079878165329">رمز سهم متّجه لليمين، وقد يعني "إعادة توجيه"</translation>
+<translation id="1822429046913737220">صباحًا/مساءً</translation>
+<translation id="1832974991323546415">تشغيل على جهاز بعيد</translation>
+<translation id="1921819250265091946">يوم</translation>
+<translation id="1938124657309484470">يجب أن تكون القيمة <ph name="MAXIMUM_DATE_OR_TIME" /> أو قبل ذلك.</translation>
+<translation id="1946271899482435442">عرض منتقي التاريخ</translation>
+<translation id="1993104285338243655">تم التبديل إلى النسخ المطابق.</translation>
+<translation id="2031987842108996681">درجات اللون الأحمر</translation>
+<translation id="2060505056492490888">تم استخدام "<ph name="DOT" />" في موضع خاطئ في "<ph name="INVALIDDOMAIN" />".</translation>
+<translation id="2131189924434603515">‏رمز حرف i صغير، وقد يعني "معلومات"</translation>
+<translation id="2148716181193084225">اليوم</translation>
+<translation id="2177093963727449806">رمز إعادة التحميل</translation>
+<translation id="221177765244658491">رمز كتم الصوت</translation>
+<translation id="2226276347425096477">يُرجى اختصار هذا النص حتى يصل إلى <ph name="MAX_CHARACTERS" /> من الحروف أو أقل (أنت الآن تستخدم <ph name="CURRENT_LENGTH" /> من الحروف).</translation>
+<translation id="2246498165605549352">ملف محلي</translation>
+<translation id="2247351761944213033">الأسبوع <ph name="WEEKNUMBER" />، <ph name="YEAR" /></translation>
+<translation id="2265260019987849198">رمز المنزل</translation>
+<translation id="2277199496770840904">المقطع الصوتي <ph name="NUMBER" /></translation>
+<translation id="2307576640803031502">في القائمة، العنصر <ph name="INDEX" /> من أصل <ph name="COUNT" />.</translation>
+<translation id="2320316128050046908">رمز رفع الصوت</translation>
+<translation id="2393030564806080191">قيمة اللون السداسية العشرية</translation>
+<translation id="2398813069815436052">تم فتح مربع الحوار.</translation>
+<translation id="2427288427427702833">رمز تشغيل التطبيقات</translation>
+<translation id="245932805758469625">عدد الثواني المتبقية من الفيديو</translation>
+<translation id="248395913932153421">يوم</translation>
+<translation id="2507943997699731163">يُرجى ملء هذا الحقل.</translation>
+<translation id="2530182415807757784">اختيار متعدد، لم يتم الاختيار.</translation>
+<translation id="2561842179657104141">عرض المزيد من عناصر التحكم في الوسائط</translation>
+<translation id="2572483411312390101">تشغيل</translation>
+<translation id="2613802280814924224">يُرجى إدخال قيمة صالحة. علمًا بأن أقرب قيمة صالحة هي <ph name="VALID_VALUE" />.</translation>
+<translation id="2634240155926812724">درجات اللون الأخضر</translation>
+<translation id="2653659639078652383">إرسال</translation>
+<translation id="2723001399770238859">الصوت</translation>
+<translation id="2746543609216772311">يجب أن تكون القيمة <ph name="MINIMUM_DATE_OR_TIME" /> أو بعد ذلك.</translation>
+<translation id="2761667185364618470">يُرجى وضع علامة في هذا المربع إذا أردت المتابعة.</translation>
+<translation id="2908441821576996758">يُرجى إدخال قائمة مفصولة بفواصل لعناوين البريد الإلكتروني.</translation>
+<translation id="2987445268505333132">رمز سماعة هاتف تشير للأسفل، لإنهاء المكالمة</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> ميغابايت</translation>
+<translation id="3075154866155599887">يرجى إدخال قيمة صالحة. الحقل غير مكتمل أو أن التاريخ غير صالح.</translation>
+<translation id="310520048233152454">‏يُرجى إدخال عنوان URL.</translation>
+<translation id="3220661731597678625">الخطوة الحالية</translation>
+<translation id="3321030238473337787">سرعة التشغيل</translation>
+<translation id="3329013043687509092">تشبع اللون</translation>
+<translation id="3435893727187534376">رمز أربعة أسهم تشير للخارج، وقد يعني "توسيع"</translation>
+<translation id="3450233048674729344">يجب أن تكون القيمة أقل من أو تساوي <ph name="MAXIMUM" />.</translation>
+<translation id="3685101356851116974">صورة غير مُصنَّفة</translation>
+<translation id="3732799496749320381">شهر</translation>
+<translation id="3754210790023674521">الخروج من وضع "نافذة ضمن نافذة"</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> غيغابايت</translation>
+<translation id="3822383571486410024">يُرجى إطالة هذا النص إلى <ph name="MIN_CHARACTERS" /> من الحروف أو أكثر (أنت تستخدم حاليًا <ph name="CURRENT_LENGTH" /> من الحروف).</translation>
+<translation id="383465348367842624">الجزء المتبوع بالعلامة "<ph name="ATSIGN" />" يجب ألا يشتمل على الرمز "<ph name="INVALIDCHARACTER" />".</translation>
+<translation id="3845063161460806746">رمز إشارة بالإبهام للأعلى، وقد يعني "أعجبني"</translation>
+<translation id="3846214748874656680">خروج من عرض ملء الشاشة</translation>
+<translation id="3904695548697879411">‏رمز Twitter</translation>
+<translation id="405782047075994056">رمز سهم متّجه لليسار، وقد يعني "رجوع"</translation>
+<translation id="4103419683916926126">مللي ثانية</translation>
+<translation id="4201051445878709314">عرض الشهر السابق</translation>
+<translation id="4302299849305494927">رمز مكبّر الصوت، وقد يعني "الصوت"</translation>
+<translation id="4360991593054037559">يُرجى إدخال قيمة صالحة. علمًا بأن القيم الصالحة تتراوح بين <ph name="VALID_VALUE_LOW" /> و<ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4363712632243441817">رمز البث، وقد يعني بث فيديو إلى شاشة عن بُعد</translation>
+<translation id="4371899966896349864">إخفاء قائمة سرعات التشغيل</translation>
+<translation id="4384249794467006333">هذه الصورة غير مصنَّفة. افتح قائمة الخيارات الإضافية في أعلى يسار الصفحة للحصول على أوصاف الصور.</translation>
+<translation id="4436211924730548766">رمز سهم "شيفرون" متّجه لليسار</translation>
+<translation id="4444765639179266822">يبدو أنه يقول: <ph name="OCR_TEXT" /></translation>
+<translation id="4522570452068850558">التفاصيل</translation>
+<translation id="4540719609030900356">رمز طائرة من ورق، وقد يعني "إرسال"</translation>
+<translation id="4576178047100686001">هذه الصورة غير مصنَّفة. افتح قائمة الخيارات الإضافية في أعلى يمين الصفحة للحصول على أوصاف الصور.</translation>
+<translation id="4577968231433672268">رمز علامة الجمع، وقد يعني "إضافة"</translation>
+<translation id="4611825382945206498">رمز ساعة مع سهم دائري، وقد يعني "السجلّ"</translation>
+<translation id="4664250907885839816">يجب ألا يشتمل الجزء الذي يلي العلامة "<ph name="ATSIGN" />" على الرمز "<ph name="INVALIDCHARACTER" />".</translation>
+<translation id="4679853894970977730">رمز الكاميرا، وقد يعني "التقاط صورة"</translation>
+<translation id="4718048029184481307">تشغيل في وضع "نافذة ضمن النافذة"</translation>
+<translation id="4748357248530471599">تبديل صورة مقطوعة للشاشة إلى وضع ملء الشاشة</translation>
+<translation id="4763480195061959176">فيديو</translation>
+<translation id="4812940957355064477">يُرجى إدخال عدد.</translation>
+<translation id="4832245585893280119">رمز الطقس</translation>
+<translation id="4908855810237020461">رمز الساعة، وقد يعني "الوقت"</translation>
+<translation id="4912200001568447310">العنصر الحالي</translation>
+<translation id="4915360478455618802">عرض منتقي الوقت</translation>
+<translation id="4924138096460353083">قيمة غير محدَّدة</translation>
+<translation id="4950364064308314478">عرض منتقي الوقت والتاريخ المحلييَن</translation>
+<translation id="4971739861736909480">تم اختيار <ph name="ACCNAME" />.</translation>
+<translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> محددة</translation>
+<translation id="4992066212339426712">إعادة الصوت</translation>
+<translation id="49969490063480558">يُرجى إدخال الجزء الذي يلي العلامة "<ph name="ATSIGN" />"، حيث إن "<ph name="INVALIDADDRESS" />" غير مكتمل.</translation>
+<translation id="5090250355906949916">شريط تمرير وقت الفيديو</translation>
+<translation id="509897012892853729">درجات اللون الأزرق</translation>
+<translation id="5117590920725113268">عرض الشهر التالي</translation>
+<translation id="5121688653159243920">رمز قائمة نقطية</translation>
+<translation id="5164977714490026579">يجب أن تكون القيمة أكبر من أو تساوي <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> بيتابايت</translation>
+<translation id="5214400792580101697">رمز الإيقاف</translation>
+<translation id="5307600278924710095">يُرجى إدخال جزء متبوع بعلامة "<ph name="ATSIGN" />"، حيث إن "<ph name="INVALIDADDRESS" />" غير مكتمل.</translation>
+<translation id="5334352251556557839">تعذّر تشغيل الوسائط</translation>
+<translation id="537648784377940524">يجب أن يكون الحد الأدنى للتاريخ (<ph name="MIN_DATE_OR_TIME" />
+) قبل الحد الأقصى للتاريخ (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">موسّع، تم فتح مربع الحوار.</translation>
+<translation id="5425179576310518467">التاريخ الحالي</translation>
+<translation id="5466621249238537318">يُرجى اختيار ملف واحد أو أكثر.</translation>
+<translation id="5468998798572797635">إنهاء وضع ملء الشاشة</translation>
+<translation id="5516235301412634559">0.75</translation>
+<translation id="5537725057119320332">إرسال</translation>
+<translation id="5546461542133609677">إعادة الصوت</translation>
+<translation id="5586467629893654334">رمز القمر، وقد يعني "وقت الليل" أو "وقت النوم"</translation>
+<translation id="5599474660109692598">رمز فقاعة رسومات متحركة، وقد يعني "محادثة"</translation>
+<translation id="5617165654945759937">رمز قلم رصاص، وقد يعني "تعديل"</translation>
+<translation id="5621627136377293173">رمز الميكروفون، وقد يعني "تسجيل"</translation>
+<translation id="5630795885300617244">انقر مرّتين جهة اليمين أو اليسار لتخطي 10 ثوانٍ.</translation>
+<translation id="5647477850810769350">رمز سماعة الرأس</translation>
+<translation id="5677946354068040947">خيارات إضافية</translation>
+<translation id="5720390168116663167">رمز سهم متّجه للأعلى</translation>
+<translation id="5724910823641175216">رمز سهم في اتجاه عقارب الساعة، وقد يعني "إعادة"</translation>
+<translation id="57838592816432529">كتم الصوت</translation>
+<translation id="5786442179789148008">إظهار قائمة سرعات التشغيل</translation>
+<translation id="5787939484346677755">موسّع، خيارات إكمال تلقائي متوفّرة.</translation>
+<translation id="5838904342468928321">رمز السحابة الإلكترونية</translation>
+<translation id="5860033963881614850">غير مفعّل</translation>
+<translation id="588258955323874662">ملء الشاشة</translation>
+<translation id="5888666972993069672">يتم الإرسال الآن إلى <ph name="DEVICE_FRIENDLY_NAME" /></translation>
+<translation id="5916664084637901428">مفعّل</translation>
+<translation id="5939518447894949180">إعادة الضبط</translation>
+<translation id="5966707198760109579">الأسبوع</translation>
+<translation id="5985507339671257014">0.5</translation>
+<translation id="6011459053400940133">شريط تمرير مستوى الصوت</translation>
+<translation id="6015796118275082299">عام</translation>
+<translation id="6054619856758804514">رمز سلة المهملات، وقد يعني "حذف"</translation>
+<translation id="6054638203631275602">رمز وجه سعيد</translation>
+<translation id="608465159662359598">رمز ترس أو مفتاح ربط، وقد يعني "الإعدادات"</translation>
+<translation id="6165053282446038410">موسّع، <ph name="COUNT" /> خيار إكمال تلقائي متوفّر.</translation>
+<translation id="6209276755895393898">يبدو أن: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">الصفحة الحالية</translation>
+<translation id="6240633443440794881">رمز ظرف، وقد يعني "البريد"</translation>
+<translation id="6247212328664111379">رمز الشخص</translation>
+<translation id="6281588256137006900">الإضاءة</translation>
+<translation id="6310801910862476708">الخروج من وضع "نافذة ضمن نافذة"</translation>
+<translation id="6350382280299255966">رمز وجه مبتسم، وقد يعني "رمز تعبيري"</translation>
+<translation id="6398862346408813489">عرض لوحة تحديد الشهر</translation>
+<translation id="6404546809543547843">شريط تمرير وقت الصوت</translation>
+<translation id="6443871981718447451">عرض قائمة مقاطع الترجمة والشرح</translation>
+<translation id="6550675742724504774">خيارات</translation>
+<translation id="6572309429103589720">قواعد لغوية غير صالحة</translation>
+<translation id="658823671542763450">تشغيل وضع ملء الشاشة</translation>
+<translation id="6632254525813309835">رمز سهم عكس عقارب الساعة، وقد يعني "تراجُع"</translation>
+<translation id="6643016212128521049">محو</translation>
+<translation id="668171684555832681">ملف تعريف آخر...</translation>
+<translation id="6709093583001123835">يجب أن تكون القيمة <ph name="VALUE" />.</translation>
+<translation id="6709570249143506788">جودة التشغيل ضعيفة.</translation>
+<translation id="6790428901817661496">التشغيل</translation>
+<translation id="6820355525329141109">تعذر تحميل المكوّن الإضافي.</translation>
+<translation id="6831465880655513317">يمكنك استخدام مجموعة خيارات الألوان المتاحة من خلال شريط تمرير ثنائي الأبعاد لاختيار تشبُّع اللون والإضاءة.</translation>
+<translation id="6843725295806269523">كتم الصوت</translation>
+<translation id="6889412865110485830">رمز سلّة التسوّق</translation>
+<translation id="6919891270253167948">1.5</translation>
+<translation id="6940482800520966738">رمز النجمة</translation>
+<translation id="6941933287844615239">تنزيل وسائط</translation>
+<translation id="698788488269350478">موسّع</translation>
+<translation id="6989848892321993519">يُرجى إطالة هذا النص إلى <ph name="MIN_CHARACTERS" /> من الحروف أو أكثر (أنت الآن تستخدم حرفًا واحدًا).</translation>
+<translation id="7022838723850801004">رمز تعبيري لوجه سعيد ووجه حزين</translation>
+<translation id="709897737746224366">يُرجى مطابقة التنسيق المطلوب.</translation>
+<translation id="7102274145889307184">الموقع الجغرافي الحالي</translation>
+<translation id="7118469954320184356">لا يتوفر أي وصف.</translation>
+<translation id="7263440858009898357">يُرجى اختيار عنصر من القائمة.</translation>
+<translation id="7320576522385648310">التخزين مؤقتًا</translation>
+<translation id="7341556277900466204">استخدام مجموعة خيارات الألوان المتاحة</translation>
+<translation id="7364796246159120393">اختيار ملفّ</translation>
+<translation id="739024184232394898">آخر...</translation>
+<translation id="7410239719251593705">يبدو أنه يحتوي على محتوى للبالغين. لا يتوفر أي وصف.</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> تيرابايت</translation>
+<translation id="7514365320538308">تنزيل</translation>
+<translation id="7533959249147584474">رسم غير مصنّف</translation>
+<translation id="7673697353781729403">ساعات</translation>
+<translation id="7742609585924342092">رمز الموقع الجغرافي</translation>
+<translation id="7745230546936012372">للحصول على أوصاف الصور غير المتوفّرة، افتح قائمة السياقات.</translation>
+<translation id="7750228210027921155">نافذة ضمن النافذة</translation>
+<translation id="775297008183122718">إدخال غير صالح</translation>
+<translation id="7782515065589691344">1.25</translation>
+<translation id="7789962463072032349">إيقاف مؤقت</translation>
+<translation id="7796968532285333302">رمز سهم "شيفرون" متّجه للأسفل، وقد يعني "تصغير"</translation>
+<translation id="7819026464394689674">رمز الإيقاف المؤقت</translation>
+<translation id="7852167693871241274">شريط تمرير تدرُّج الألوان</translation>
+<translation id="7855610409192055689">رمز مشبك ورق، وقد يعني "مرفق"</translation>
+<translation id="7888071071722539607">يُرجى تضمين العلامة "<ph name="ATSIGN" />" في عنوان البريد الإلكتروني، حيث يفتقر "<ph name="INVALIDADDRESS" />" إلى العلامة "<ph name="ATSIGN" />".</translation>
+<translation id="795667975304826397">ّلم يتمّ اختيار أيّ ملفّ</translation>
+<translation id="7962328325860248200">لم يتم اختيار <ph name="ACCNAME" />.</translation>
+<translation id="7994555495914042081">رمز علامة الاختيار</translation>
+<translation id="8097409774376213335">رمز سهم متّجه للأسفل</translation>
+<translation id="8105750478534334542">رمز إشارة بالإبهام لأسفل، وقد يعني "لم يعجبني"</translation>
+<translation id="811583516810654505">جارٍ الحصول على وصف...</translation>
+<translation id="8117451130807776954">هذا الأسبوع</translation>
+<translation id="8131955114056917397">0.25</translation>
+<translation id="8147719583347050106">‏رمز شعار Google</translation>
+<translation id="8199524924445686405">سنة</translation>
+<translation id="8261464734335370856">تدقيق إملائي غير صالح</translation>
+<translation id="8276790177939055966">رمز سهم متّجه لليمين</translation>
+<translation id="8284326494547611709">الترجمة والشرح</translation>
+<translation id="835897206747267392">قيمة غير صحيحة</translation>
+<translation id="839593075537728968">يجب أن تتراوح القيمة بين <ph name="MINIMUM_TIME" /> و<ph name="MAXIMUM_TIME" />.</translation>
+<translation id="8403857369060869934">الوقت المنقضي: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423">عدد الملفات: <ph name="NUMBER_OF_FILES" /></translation>
+<translation id="8451268428117625855">يُرجى اختيار ملف.</translation>
+<translation id="8488243824626550045">‏رمز Facebook</translation>
+<translation id="8534579021159131403">دقائق</translation>
+<translation id="8541249477527128034">التحكم في الوسائط</translation>
+<translation id="8613126697340063924">التحكم في التشغيل عن بعد</translation>
+<translation id="8634971699417195529">عرض منتقي الشهر</translation>
+<translation id="8637593834423658414">1.75</translation>
+<translation id="8657910582115602348">‏رمز "مساعد Google"</translation>
+<translation id="8668988909814782445">لفّ السطر</translation>
+<translation id="8750798805984357768">يُرجى اختيار أحد هذه الخيارات.</translation>
+<translation id="8845239796550121995">يتم الآن الإرسال إلى جهاز التلفزيون</translation>
+<translation id="8875657656876809964">خطأ في تشغيل الفيديو.</translation>
+<translation id="8889402386540077796">تدرج اللون</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> كيلوبايت</translation>
+<translation id="894736920926684893">مُبدِّل التنسيق</translation>
+<translation id="8987927404178983737">شهر</translation>
+<translation id="901493112792887934">المدة الحالية بالثواني</translation>
+<translation id="9039639793210005614">رمز المعرض</translation>
+<translation id="9040233563616141093">رمز أربعة أسهم تشير للداخل، وقد يعني "تصغير"</translation>
+<translation id="9073800864014589651">رمز التشغيل</translation>
+<translation id="9093215626363556771">الخروج من وضع "نافذة ضمن نافذة"</translation>
+<translation id="9105500880071990795">رمز خفض الصوت</translation>
+<translation id="9132465097189459683">آخر...</translation>
+<translation id="913630661384792974">رمز كاميرا فيديو، وقد يعني "تسجيل فيديو"</translation>
+<translation id="9155987714137265666"><ph name="WEEK" />، ابتداء من <ph name="WEEK_START_DATE" /></translation>
+<translation id="916607977885256133">نافذة ضمن النافذة</translation>
+<translation id="945780513535800434">مُحدَّد جزئيًا</translation>
+<translation id="947651054772746219">رمز أشخاص</translation>
+<translation id="954003015749068518">الدخول في وضع "نافذة ضمن نافذة"</translation>
+</translationbundle>

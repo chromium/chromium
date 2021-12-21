@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="hy">
+<translation id="1016055326260264411">Սրտի պատկերակ, կարող է նշանակել «Ավելացնել ընտրանիում»</translation>
+<translation id="1088086359088493902">Վայրկյաններ</translation>
+<translation id="1142001580032786438">Ցուցադրել շաբաթվա ընտրիչը</translation>
+<translation id="1171774979989969504">Մուտքագրեք էլ․ հասցե:</translation>
+<translation id="1178581264944972037">Դադար</translation>
+<translation id="1193819188371549072">Արևի պատկերակ, կարող է նշանակել ցերեկ</translation>
+<translation id="1197443222693564123">Երեք կետեր, կարող է նշանակել «Ավելին»</translation>
+<translation id="1231311685714446044">Տխուր դեմքի պատկերակ</translation>
+<translation id="1248712480115826517">Խոշորացույցի պատկերակ, կարող է նշանակել «Որոնել» կամ «Փոխել մասշտաբը»</translation>
+<translation id="1253694090376430115">Գնումների տոպրակի պատկերակ</translation>
+<translation id="1292759642840406299">Կողմնացույցի պատկերակ</translation>
+<translation id="1301463715094321941">Հեռախոսի լսափողի պատկերակ, կարող է նշանակել «Զանգել»</translation>
+<translation id="1306460908038601864">Անջատ</translation>
+<translation id="1311894908970423688">Արժեքը պետք է լինի <ph name="VALUE_DATE_OR_TIME" />։</translation>
+<translation id="1312685112570645372">Հարցական նշանի պատկերակ</translation>
+<translation id="1386033905837826130">Կիսվելու պատկերակ</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> տարր</translation>
+<translation id="1480676835519562650">հնարավոր է ընտրել մի քանի տարբերակ, ընտրվել է <ph name="SELECTED" />-ը՝ <ph name="COUNT" />-ից։</translation>
+<translation id="157989258522571434">Օրացույցի պատկերակ</translation>
+<translation id="1588438908519853928">Սովորական</translation>
+<translation id="1591562245178063882">Այս ամիս</translation>
+<translation id="1598348607589961718">Վերև սլաքի պատկերակ, կարող է նշանակել «Վերբեռնել»</translation>
+<translation id="1632409084477505723">Ներբեռնման պատկերակ</translation>
+<translation id="1637811476055996098">Ընտրել ֆայլեր</translation>
+<translation id="1658806147928973309">Խոսափողն անջատելու պատկերակ</translation>
+<translation id="1677491356035817504">Վերև ուղղված անկյունային փակագծի պատկերակ, կարող է նշանակել «Ծավալել»</translation>
+<translation id="1681022320378710418">ընթացիկ ժամը</translation>
+<translation id="1727839386348365796">Պիպետ</translation>
+<translation id="1727886345390570319">թաքցնել փակված ենթագրերի ընտրացանկը</translation>
+<translation id="1729654308190250600">Էլփոստի հասցեի տողը չպետք է դատարկ լինի:</translation>
+<translation id="173386679947102756">Զանգակի պատկերակ, կարող է նշանակել «Ծանուցումներ»</translation>
+<translation id="175222816025430946">Երեք գծի պատկերակ, կարող է նշանակել «Ընտրացանկ»</translation>
+<translation id="1758486001363313524">Այլ…</translation>
+<translation id="1787192514241997742">ընդհանուր ժամանակը՝ <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">X-ի պատկերակ, կարող է նշանակել «Փակել» կամ «Ջնջել»</translation>
+<translation id="1804122079878165329">Աջ սլաքի պատկերակ, կարող է նշանակել «Առաջ»</translation>
+<translation id="1822429046913737220">AM/PM</translation>
+<translation id="1832974991323546415">նվագարկել հեռակա սարքում</translation>
+<translation id="1921819250265091946">օօ</translation>
+<translation id="1938124657309484470">Արժեքը պետք է լինի <ph name="MAXIMUM_DATE_OR_TIME" /> կամ ավելի վաղ ժամանակի:</translation>
+<translation id="1946271899482435442">Ցուցադրել ամսաթվի ընտրիչը</translation>
+<translation id="1993104285338243655">Հայելապատճենումը միացվեց</translation>
+<translation id="2031987842108996681">Կարմիր կապուղի</translation>
+<translation id="2060505056492490888">«<ph name="DOT" />»-ը սխալ տեղ է դրված «<ph name="INVALIDDOMAIN" />» տիրույթում:</translation>
+<translation id="2131189924434603515">Փոքրատառ «i»-ի պատկերակ, կարող է նշանակել «Տեղեկություն»</translation>
+<translation id="2148716181193084225">Այսօր</translation>
+<translation id="2177093963727449806">Թարմացման պատկերակ</translation>
+<translation id="221177765244658491">Ձայնի անջատման պատկերակ</translation>
+<translation id="2226276347425096477">Կրճատեք այս տեքստը մինչև <ph name="MAX_CHARACTERS" /> գրանշան կամ ավելի քիչ (ներկայումս <ph name="CURRENT_LENGTH" /> գրանշան է):</translation>
+<translation id="2246498165605549352">Տեղային ֆայլ</translation>
+<translation id="2247351761944213033">Շաբաթ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
+<translation id="2265260019987849198">Հիմնական էկրանի պատկերակ</translation>
+<translation id="2277199496770840904">Կատարում <ph name="NUMBER" /></translation>
+<translation id="2307576640803031502">ցուցակում, տարր <ph name="INDEX" />՝ <ph name="COUNT" />-ից</translation>
+<translation id="2320316128050046908">Ձայնի բարձրացման պատկերակ</translation>
+<translation id="2393030564806080191">Գույնի տասնվեցական կոդը</translation>
+<translation id="2398813069815436052">երկխոսության պատուհան է բացվել։</translation>
+<translation id="2427288427427702833">Հավելվածների գործարկման պատկերակ</translation>
+<translation id="245932805758469625">տեսանյութի ավարտին մնացած ժամանակը վայրկյաններով</translation>
+<translation id="248395913932153421">Օր</translation>
+<translation id="2507943997699731163">Խնդրում ենք լրացնել այս դաշտը:</translation>
+<translation id="2530182415807757784">հնարավոր է ընտրել մի քանի տարբերակ, ոչ մեկը չի ընտրվել։</translation>
+<translation id="2561842179657104141">լրացուցիչ մեդիա կառավարներ</translation>
+<translation id="2572483411312390101">նվագարկել</translation>
+<translation id="2613802280814924224">Մուտքագրեք ճիշտ արժեք: Ամենամոտ ճիշտ արժեքը <ph name="VALID_VALUE" />-ն է:</translation>
+<translation id="2634240155926812724">Կանաչ կապուղի</translation>
+<translation id="2653659639078652383">Ուղարկել</translation>
+<translation id="2723001399770238859">audio</translation>
+<translation id="2746543609216772311">Արժեքը պետք է լինի <ph name="MINIMUM_DATE_OR_TIME" /> կամ ավելի ուշ ժամանակի:</translation>
+<translation id="2761667185364618470">Նշեք այս վանդակը, եթե ուզում եք շարունակել:</translation>
+<translation id="2908441821576996758">Մուտքագրեք էլփոստի հասցեների ստորակետներով բաժանված ցանկը:</translation>
+<translation id="2987445268505333132">Զանգն ավարտելու պատկերակ</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> ՄԲ</translation>
+<translation id="3075154866155599887">Մուտքագրեք ճիշտ արժեք: Դաշտը թերի է կամ ամսաթիվը ճիշտ չէ:</translation>
+<translation id="310520048233152454">Մուտքագրեք URL:</translation>
+<translation id="3220661731597678625">ընթացիկ քայլը</translation>
+<translation id="3321030238473337787">Նվագարկման արագություն</translation>
+<translation id="3329013043687509092">Հագեցում</translation>
+<translation id="3435893727187534376">Դեպի դուրս ուղղված չորս սլաքների պատկերակ, կարող է նշանակել «Ծավալել»</translation>
+<translation id="3450233048674729344">Արժեքը պետք է փոքր կամ հավասար լինի <ph name="MAXIMUM" />-ին:</translation>
+<translation id="3685101356851116974">Չպիտակված պատկեր</translation>
+<translation id="3732799496749320381">ամիս</translation>
+<translation id="3754210790023674521">Դուրս գալ «նկար նկարի մեջ» ռեժիմից</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> ԳԲ</translation>
+<translation id="3822383571486410024">Ընդլայնեք այս տեքստը մինչև <ph name="MIN_CHARACTERS" /> կամ ավելի գրանշան (ներկայումս <ph name="CURRENT_LENGTH" /> գրանշան է):</translation>
+<translation id="383465348367842624">«<ph name="ATSIGN" />»-ին հետևող մասը չպետք է պարունակի «<ph name="INVALIDCHARACTER" />» նշանը:</translation>
+<translation id="3845063161460806746">Բութ մատը վեր պատկերակ, կարող է նշանակել «Հավանում եմ»</translation>
+<translation id="3846214748874656680">Դուք գալ լիաէկրան ռեժիմից</translation>
+<translation id="3904695548697879411">Twitter-ի պատկերակ</translation>
+<translation id="405782047075994056">Ձախ սլաքի պատկերակ, կարող է նշանակել «Հետ»</translation>
+<translation id="4103419683916926126">Միլիվայրկյաններ</translation>
+<translation id="4201051445878709314">Ցուցադրել նախորդ ամիսը</translation>
+<translation id="4302299849305494927">Բարձրախոսի պատկերակ, կարող է նշանակել «Ձայնի ուժգնություն»</translation>
+<translation id="4360991593054037559">Մուտքագրեք ճիշտ արժեք: Մոտակա երկու ճիշտ արժեքներն են՝ <ph name="VALID_VALUE_LOW" /> և <ph name="VALID_VALUE_HIGHER" />:</translation>
+<translation id="4363712632243441817">Հեռարձակման պատկերակ, կարող է նշանակել տեսանյութի հեռարձակում այլ սարքի էկրանին</translation>
+<translation id="4371899966896349864">թաքցնել նվագարկման արագության ընտրացանկը</translation>
+<translation id="4384249794467006333">Այս պատկերը պիտակված չէ։ Պատկերների նկարագրությունները ստանալու համար բացեք «Լրացուցիչ ընտրանքներ» ընտրացանկը վերևի աջ անկյունում։</translation>
+<translation id="4436211924730548766">Ձախ անկյունային փակագծի պատկերակ</translation>
+<translation id="4444765639179266822">Կարծես թե ասում է <ph name="OCR_TEXT" /></translation>
+<translation id="4522570452068850558">Մանրամասներ</translation>
+<translation id="4540719609030900356">Թղթե ինքնաթիռի պատկերակ, կարող է նշանակել «Ուղարկել»</translation>
+<translation id="4576178047100686001">Այս պատկերը պիտակված չէ։ Պատկերների նկարագրությունները ստանալու համար բացեք «Լրացուցիչ ընտրանքներ» ընտրացանկը վերևի ձախ անկյունում։</translation>
+<translation id="4577968231433672268">Պլյուսի պատկերակ, կարող է նշանակել «Ավելացնել»</translation>
+<translation id="4611825382945206498">Շրջանաձև սլաքով ժամացույցի պատկերակ, կարող է նշանակել «Պատմություն»</translation>
+<translation id="4664250907885839816">«<ph name="ATSIGN" />»-ին հաջորդող մասը չպետք է պարունակի «<ph name="INVALIDCHARACTER" />» նշանը:</translation>
+<translation id="4679853894970977730">Տեսախցիկի պատկերակ, կարող է նշանակել «Լուսանկարել»</translation>
+<translation id="4718048029184481307">Նվագարկվում է «նկար նկարի մեջ» ռեժիմում</translation>
+<translation id="4748357248530471599">կտրվածքով տարածքը փոխարկել լիաէկրան ռեժիմի</translation>
+<translation id="4763480195061959176">video</translation>
+<translation id="4812940957355064477">Մուտքագրեք համար:</translation>
+<translation id="4832245585893280119">Եղանակի պատկերակ</translation>
+<translation id="4908855810237020461">Ժամացույցի պատկերակ, կարող է նշանակել ժամը</translation>
+<translation id="4912200001568447310">ընթացիկ տարրը</translation>
+<translation id="4915360478455618802">Ցուցադրել ժամի ընտրիչը</translation>
+<translation id="4924138096460353083">անորոշ</translation>
+<translation id="4950364064308314478">Ցուցադրել տեղական ամսաթվի և ժամի ընտրիչը</translation>
+<translation id="4971739861736909480">«<ph name="ACCNAME" />» օբյեկտն ընտրված է</translation>
+<translation id="4975562563186953947">Ընտրված է՝ <ph name="SELECTED_COUNT" /></translation>
+<translation id="4992066212339426712">Միացնել ձայնը</translation>
+<translation id="49969490063480558">Մուտքագրեք «<ph name="ATSIGN" />» նշանին հաջորդող մասը: «<ph name="INVALIDADDRESS" />» հասցեն թերի է:</translation>
+<translation id="5090250355906949916">տեսանյութի ժամանակագծի սահիչ</translation>
+<translation id="509897012892853729">Կապույտ կապուղի</translation>
+<translation id="5117590920725113268">Ցուցադրել հաջորդ ամիսը</translation>
+<translation id="5121688653159243920">Կետանշված ցուցակի պատկերակ</translation>
+<translation id="5164977714490026579">Արժեքը պետք է լինի մեծ կամ հավասար <ph name="MINIMUM" />-ին:</translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> ՊԲ</translation>
+<translation id="5214400792580101697">Կանգի պատկերակ</translation>
+<translation id="5307600278924710095">Մուտքագրեք «<ph name="ATSIGN" />»-ին հաջորդող մասը: «<ph name="INVALIDADDRESS" />»-ը թերի է:</translation>
+<translation id="5334352251556557839">Չհաջողվեց նվագարկել մեդիա ֆայլը:</translation>
+<translation id="537648784377940524">Նվազագույն ամսաթիվը (<ph name="MIN_DATE_OR_TIME" />) պետք է լինի առավելագույն ամսաթվից առաջ (<ph name="MAX_DATE_OR_TIME" />)։</translation>
+<translation id="5378437566635403538">ծավալվեց, երկխոսության պատուհանը բացվեց։</translation>
+<translation id="5425179576310518467">ընթացիկ ամսաթիվը</translation>
+<translation id="5466621249238537318">Ընտրեք մեկ կամ մի քանի ֆայլ:</translation>
+<translation id="5468998798572797635">ելնել լիաէկրան ռեժիմից</translation>
+<translation id="5516235301412634559">0,75</translation>
+<translation id="5537725057119320332">Cast</translation>
+<translation id="5546461542133609677">հնչեցնել</translation>
+<translation id="5586467629893654334">Լուսնի պատկերակ, կարող է նշանակել գիշեր կամ քուն</translation>
+<translation id="5599474660109692598">Խոսքի ամպիկի պատկերակ, կարող է նշանակել «Զրույց»</translation>
+<translation id="5617165654945759937">Մատիտի պատկերակ, կարող է նշանակել «Փոփոխել»</translation>
+<translation id="5621627136377293173">Խոսափողի պատկերակ, կարող է նշանակել «Ձայնագրել»</translation>
+<translation id="5630795885300617244">10 վ առաջ/հետ անցնելու համար կրկնակի հպեք աջ/ձախ մասում</translation>
+<translation id="5647477850810769350">Ականջակալի պատկերակ</translation>
+<translation id="5677946354068040947">լրացուցիչ ընտրանքներ</translation>
+<translation id="5720390168116663167">Վերև սլաքի պատկերակ</translation>
+<translation id="5724910823641175216">Շրջանաձև աջ սլաքի պատկերակ, կարող է նշանակել «Կրկնել»</translation>
+<translation id="57838592816432529">Անջատել ձայնը</translation>
+<translation id="5786442179789148008">ցուցադրել նվագարկման արագության ընտրացանկը</translation>
+<translation id="5787939484346677755">ծավալվեց, հասանելի են ինքնալրացման տարբերակներ։</translation>
+<translation id="5838904342468928321">Ամպի պատկերակ</translation>
+<translation id="5860033963881614850">Անջատ.</translation>
+<translation id="588258955323874662">Լիաէկրան</translation>
+<translation id="5888666972993069672">Հեռարձակում <ph name="DEVICE_FRIENDLY_NAME" /> սարքին</translation>
+<translation id="5916664084637901428">Միացնել</translation>
+<translation id="5939518447894949180">Վերակայել</translation>
+<translation id="5966707198760109579">Շաբաթ</translation>
+<translation id="5985507339671257014">0,5</translation>
+<translation id="6011459053400940133">ձայնի սահիչ</translation>
+<translation id="6015796118275082299">Տարի</translation>
+<translation id="6054619856758804514">Աղբարկղի պատկերակ, կարող է նշանակել «Ջնջել»</translation>
+<translation id="6054638203631275602">Ուրախ դեմքի պատկերակ</translation>
+<translation id="608465159662359598">Շարժանիվի կամ դարձակի պատկերակ, կարող է նշանակել «Կարգավորումներ»</translation>
+<translation id="6165053282446038410">ծավալվեց, հասանելի է ինքնալրացման <ph name="COUNT" /> տարբերակ։</translation>
+<translation id="6209276755895393898">Կարող է լինել՝ <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">ընթացիկ էջը</translation>
+<translation id="6240633443440794881">Ծրարի պատկերակ, կարող է նշանակել «Փոստ»</translation>
+<translation id="6247212328664111379">Անձի պատկերակ</translation>
+<translation id="6281588256137006900">Գույնի բացություն</translation>
+<translation id="6310801910862476708">Դուրս գալ «նկար նկարի մեջ» ռեժիմից</translation>
+<translation id="6350382280299255966">Ժպտացող դեմքի պատկերակ, կարող է նշանակել «Զմայլիկ»</translation>
+<translation id="6398862346408813489">Ցուցադրել ամիսների ընտրության վահանակը</translation>
+<translation id="6404546809543547843">աուդիո ժամագծի սահիչ</translation>
+<translation id="6443871981718447451">ցույց տալ ենթագրերի ընտրացանկը</translation>
+<translation id="6550675742724504774">Ընտրանքներ</translation>
+<translation id="6572309429103589720">Քերականական սխալ</translation>
+<translation id="658823671542763450">մտնել լիաէկրան ռեժիմ</translation>
+<translation id="6632254525813309835">Շրջանաձև ձախ սլաքի պատկերակ, կարող է նշանակել «Հետարկել»</translation>
+<translation id="6643016212128521049">Մաքրել</translation>
+<translation id="668171684555832681">Այլ…</translation>
+<translation id="6709093583001123835">Արժեքը պետք է լինի <ph name="VALUE" />։</translation>
+<translation id="6709570249143506788">Նվագարկման վատ որակ</translation>
+<translation id="6790428901817661496">Նվագարկել</translation>
+<translation id="6820355525329141109">Չհաջողվեց բեռնել փլագինը:</translation>
+<translation id="6831465880655513317">Երկչափ սահիչով գունապնակ՝ գույնի հագեցվածությունն ու բացությունը ընտրելու համար։</translation>
+<translation id="6843725295806269523">լռեցնել</translation>
+<translation id="6889412865110485830">Գնումների զամբյուղի պատկերակ</translation>
+<translation id="6919891270253167948">1,5</translation>
+<translation id="6940482800520966738">Աստղի պատկերակ</translation>
+<translation id="6941933287844615239">ներբեռնել ֆայլը</translation>
+<translation id="698788488269350478">ծավալվեց։</translation>
+<translation id="6989848892321993519">Տեքստը <ph name="MIN_CHARACTERS" /> գրանշանից պակաս չի կարող լինել (ներկայումս 1 գրանշան է)։</translation>
+<translation id="7022838723850801004">Ուրախ և տխուր դեմքով զմայլիկի պատկերակ</translation>
+<translation id="709897737746224366">Հետևեք պահանջված ձևաչափին:</translation>
+<translation id="7102274145889307184">ընթացիկ տեղադրությունը</translation>
+<translation id="7118469954320184356">Նկարագրություն չկա:</translation>
+<translation id="7263440858009898357">Ցանկից որևէ միավոր ընտրեք:</translation>
+<translation id="7320576522385648310">բուֆերացում</translation>
+<translation id="7341556277900466204">Գունապնակ</translation>
+<translation id="7364796246159120393">Ընտրել ֆայլ</translation>
+<translation id="739024184232394898">Այլ…</translation>
+<translation id="7410239719251593705">Կարծես թե պարունակում է բովանդակություն մեծահասակների համար։ Նկարագրություն չկա:</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> ՏԲ</translation>
+<translation id="7514365320538308">Ներբեռնել</translation>
+<translation id="7533959249147584474">Չպիտակված գծապատկեր</translation>
+<translation id="7673697353781729403">Ժամեր</translation>
+<translation id="7742609585924342092">Տեղադրության պատկերակ</translation>
+<translation id="7745230546936012372">Պատկերի նկարագրությունը տեսնելու համար բացեք տեղային ընտրացանկը։</translation>
+<translation id="7750228210027921155">Նկար նկարի մեջ</translation>
+<translation id="775297008183122718">Սխալ մուտքագրում</translation>
+<translation id="7782515065589691344">1.25</translation>
+<translation id="7789962463072032349">դադարեցնել</translation>
+<translation id="7796968532285333302">Ներքև ուղղված անկյունային փակագծի պատկերակ, կարող է նշանակել «Ծալել»</translation>
+<translation id="7819026464394689674">Դադարի պատկերակ</translation>
+<translation id="7852167693871241274">Գուներանգի սահիչ</translation>
+<translation id="7855610409192055689">Ամրակի պատկերակ, կարող է նշանակել առդիր</translation>
+<translation id="7888071071722539607">Էլ․ հասցեն պետք է պարունակի «<ph name="ATSIGN" />» նշանը: «<ph name="INVALIDADDRESS" />» հասցեում «<ph name="ATSIGN" />» նշանը չկա:</translation>
+<translation id="795667975304826397">Ընտրված ֆայլ չկա</translation>
+<translation id="7962328325860248200">«<ph name="ACCNAME" />» օբյեկտն ընտրված չէ</translation>
+<translation id="7994555495914042081">Ստուգանշանի պատկերակ</translation>
+<translation id="8097409774376213335">Ներքև սլաքի պատկերակ</translation>
+<translation id="8105750478534334542">Բութ մատը վար պատկերակ, կարող է նշանակել «Չեմ հավանում»</translation>
+<translation id="811583516810654505">Նկարագրության բեռնում…</translation>
+<translation id="8117451130807776954">Այս շաբաթ</translation>
+<translation id="8131955114056917397">0,25</translation>
+<translation id="8147719583347050106">Google-ի պատկերակ</translation>
+<translation id="8199524924445686405">տտտտ</translation>
+<translation id="8261464734335370856">Ուղղագրական սխալ</translation>
+<translation id="8276790177939055966">Աջ անկյունային փակագծի պատկերակ</translation>
+<translation id="8284326494547611709">Ենթագրեր</translation>
+<translation id="835897206747267392">Արժեքը սխալ է:</translation>
+<translation id="839593075537728968">Արժեքը պետք է լինի <ph name="MINIMUM_TIME" /> – <ph name="MAXIMUM_TIME" /> միջակայքում։</translation>
+<translation id="8403857369060869934">անցած ժամանակը՝ <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> ֆայլ</translation>
+<translation id="8451268428117625855">Ընտրեք ֆայլ:</translation>
+<translation id="8488243824626550045">Ֆեյսբուքի պատկերակ</translation>
+<translation id="8534579021159131403">Րոպեներ</translation>
+<translation id="8541249477527128034">մուլտիմեդիայի հսկողություն</translation>
+<translation id="8613126697340063924">կառավարել հեռակա նվագարկումը</translation>
+<translation id="8634971699417195529">Ցուցադրել ամսվա ընտրիչը</translation>
+<translation id="8637593834423658414">1,75</translation>
+<translation id="8657910582115602348">Google Օգնականի պատկերակ</translation>
+<translation id="8668988909814782445">Տողադարձ</translation>
+<translation id="8750798805984357768">Ընտրեք այս տարբերակներից մեկը:</translation>
+<translation id="8845239796550121995">Հեռարձակվում է հեռուստացույցին</translation>
+<translation id="8875657656876809964">Տեսանյութի նվագարկման սխալ</translation>
+<translation id="8889402386540077796">Երանգ</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> ԿԲ</translation>
+<translation id="894736920926684893">Ձևաչափի փոխանջատիչ</translation>
+<translation id="8987927404178983737">Ամիս</translation>
+<translation id="901493112792887934">ընթացիկ ժամանակը վայրկյաններով</translation>
+<translation id="9039639793210005614">Ցուցասրահի պատկերակ</translation>
+<translation id="9040233563616141093">Դեպի ներս ուղղված չորս սլաքների պատկերակ, կարող է նշանակել «Փոքրացնել»</translation>
+<translation id="9073800864014589651">Նվագարկման պատկերակ</translation>
+<translation id="9093215626363556771">դուրս գալ «նկար նկարի մեջ» ռեժիմից</translation>
+<translation id="9105500880071990795">Ձայնի իջեցման պատկերակ</translation>
+<translation id="9132465097189459683">Այլ…</translation>
+<translation id="913630661384792974">Տեսախցիկի պատկերակ, կարող է նշանակել «Տեսագրել»</translation>
+<translation id="9155987714137265666"><ph name="WEEK" />, սկսած <ph name="WEEK_START_DATE" />-ից</translation>
+<translation id="916607977885256133">Նկար նկարի մեջ</translation>
+<translation id="945780513535800434">Մասամբ նշված</translation>
+<translation id="947651054772746219">Մարդկանց պատկերակ</translation>
+<translation id="954003015749068518">մտնել «նկար նկարի մեջ» ռեժիմ</translation>
+</translationbundle>

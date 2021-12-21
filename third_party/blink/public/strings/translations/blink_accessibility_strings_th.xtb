@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="th">
+<translation id="1016055326260264411">ไอคอนหัวใจ อาจหมายถึงรายการโปรด</translation>
+<translation id="1088086359088493902">วินาที</translation>
+<translation id="1142001580032786438">แสดงเครื่องมือเลือกสัปดาห์</translation>
+<translation id="1171774979989969504">โปรดป้อนที่อยู่อีเมล</translation>
+<translation id="1178581264944972037">หยุดชั่วคราว</translation>
+<translation id="1193819188371549072">ไอคอนดวงอาทิตย์ อาจหมายถึงช่วงกลางวัน</translation>
+<translation id="1197443222693564123">3 จุด อาจหมายถึงเพิ่มเติม</translation>
+<translation id="1231311685714446044">ไอคอนหน้าเศร้า</translation>
+<translation id="1248712480115826517">ไอคอนแว่นขยาย อาจหมายถึงค้นหาหรือซูม</translation>
+<translation id="1253694090376430115">ไอคอนถุงช็อปปิ้ง</translation>
+<translation id="1292759642840406299">ไอคอนเข็มทิศ</translation>
+<translation id="1301463715094321941">ไอคอนโทรศัพท์มือถือ อาจหมายถึงโทร</translation>
+<translation id="1306460908038601864">ปิด</translation>
+<translation id="1311894908970423688">ค่าต้องเป็น <ph name="VALUE_DATE_OR_TIME" /></translation>
+<translation id="1312685112570645372">ไอคอนเครื่องหมายคำถาม</translation>
+<translation id="1386033905837826130">ไอคอนแชร์</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> รายการ</translation>
+<translation id="1480676835519562650">เลือกได้หลายรายการ และมีการเลือกไว้ <ph name="SELECTED" /> จาก <ph name="COUNT" /> รายการ</translation>
+<translation id="157989258522571434">ไอคอนปฏิทิน</translation>
+<translation id="1588438908519853928">ปกติ</translation>
+<translation id="1591562245178063882">เดือนนี้</translation>
+<translation id="1598348607589961718">ลูกศรขึ้น อาจหมายถึงอัปโหลด</translation>
+<translation id="1632409084477505723">ไอคอนดาวน์โหลด</translation>
+<translation id="1637811476055996098">เลือกไฟล์</translation>
+<translation id="1658806147928973309">ไอคอนปิดเสียงไมโครโฟน</translation>
+<translation id="1677491356035817504">ไอคอนเครื่องหมายบั้งลง อาจหมายถึงขยาย</translation>
+<translation id="1681022320378710418">เวลาปัจจุบัน</translation>
+<translation id="1727839386348365796">หลอดดูดสี</translation>
+<translation id="1727886345390570319">ซ่อนเมนูคำอธิบายภาพ</translation>
+<translation id="1729654308190250600">โปรดป้อนที่อยู่อีเมลที่ไม่ว่างเปล่า</translation>
+<translation id="173386679947102756">ไอคอนกระดิ่ง อาจหมายถึงการแจ้งเตือน</translation>
+<translation id="175222816025430946">ไอคอน 3 ขีด อาจหมายถึงเมนู</translation>
+<translation id="1758486001363313524">อื่นๆ...</translation>
+<translation id="1787192514241997742">เวลารวม: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">ไอคอน X อาจหมายถึงปิดหรือลบ</translation>
+<translation id="1804122079878165329">ไอคอนลูกศรขวา อาจหมายถึงไปข้างหน้า</translation>
+<translation id="1822429046913737220">AM/PM</translation>
+<translation id="1832974991323546415">เล่นในอุปกรณ์ระยะไกล</translation>
+<translation id="1921819250265091946">วว</translation>
+<translation id="1938124657309484470">ค่าต้องเป็น <ph name="MAXIMUM_DATE_OR_TIME" /> หรือก่อนหน้านั้น</translation>
+<translation id="1946271899482435442">แสดงเครื่องมือเลือกวันที่</translation>
+<translation id="1993104285338243655">เปลี่ยนเป็นการมิเรอร์</translation>
+<translation id="2031987842108996681">ช่องสีแดง</translation>
+<translation id="2060505056492490888">"<ph name="DOT" />" ถูกใช้งานในตำแหน่งที่ไม่ถูกต้องใน "<ph name="INVALIDDOMAIN" />"</translation>
+<translation id="2131189924434603515">ไอคอน i ตัวพิมพ์เล็ก อาจหมายถึงข้อมูล</translation>
+<translation id="2148716181193084225">วันนี้</translation>
+<translation id="2177093963727449806">ไอคอนรีเฟรช</translation>
+<translation id="221177765244658491">ไอคอนปิดเสียง</translation>
+<translation id="2226276347425096477">โปรดย่อข้อความนี้ให้เหลือไม่เกิน <ph name="MAX_CHARACTERS" /> อักขระ (ขณะนี้ข้อความของคุณมี <ph name="CURRENT_LENGTH" /> อักขระ)</translation>
+<translation id="2246498165605549352">ไฟล์ในตัวเครื่อง</translation>
+<translation id="2247351761944213033">สัปดาห์ที่ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
+<translation id="2265260019987849198">ไอคอนหน้าแรก</translation>
+<translation id="2277199496770840904">แทร็ก <ph name="NUMBER" /></translation>
+<translation id="2307576640803031502">ในลิสต์ รายการที่ <ph name="INDEX" /> จาก <ph name="COUNT" /></translation>
+<translation id="2320316128050046908">ไอคอนเพิ่มระดับเสียง</translation>
+<translation id="2393030564806080191">ค่าสีแบบฐานสิบหก</translation>
+<translation id="2398813069815436052">กล่องโต้ตอบเปิดอยู่</translation>
+<translation id="2427288427427702833">ไอคอนเปิดแอป</translation>
+<translation id="245932805758469625">จำนวนวินาทีที่เหลือของวิดีโอ</translation>
+<translation id="248395913932153421">วัน</translation>
+<translation id="2507943997699731163">โปรดกรอกฟิลด์นี้</translation>
+<translation id="2530182415807757784">เลือกได้หลายรายการ แต่ยังไม่ได้เลือกรายการใดเลย</translation>
+<translation id="2561842179657104141">แสดงส่วนควบคุมสื่อเพิ่มเติม</translation>
+<translation id="2572483411312390101">เล่น</translation>
+<translation id="2613802280814924224">โปรดป้อนค่าที่ถูกต้อง ค่าใกล้เคียงที่สุดที่ถูกต้องคือ <ph name="VALID_VALUE" /></translation>
+<translation id="2634240155926812724">ช่องสีเขียว</translation>
+<translation id="2653659639078652383">ส่ง</translation>
+<translation id="2723001399770238859">เสียง</translation>
+<translation id="2746543609216772311">ค่าต้องเป็น <ph name="MINIMUM_DATE_OR_TIME" /> หรือหลังจากนั้น</translation>
+<translation id="2761667185364618470">โปรดเลือกช่องนี้หากคุณต้องการดำเนินการต่อ</translation>
+<translation id="2908441821576996758">โปรดป้อนรายการที่อยู่อีเมลโดยคั่นด้วยเครื่องหมายจุลภาค</translation>
+<translation id="2987445268505333132">ไอคอนวางสาย</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3075154866155599887">โปรดป้อนค่าที่ถูกต้อง ฟิลด์นี้ไม่สมบูรณ์หรือมีวันที่ที่ไม่ถูกต้อง</translation>
+<translation id="310520048233152454">โปรดป้อน URL</translation>
+<translation id="3220661731597678625">ขั้นตอนปัจจุบัน</translation>
+<translation id="3321030238473337787">ความเร็วในการเล่น</translation>
+<translation id="3329013043687509092">ความอิ่มตัวของสี</translation>
+<translation id="3435893727187534376">ไอคอนลูกศรชี้ออก 4 อัน อาจหมายถึงขยาย</translation>
+<translation id="3450233048674729344">ค่าต้องน้อยกว่าหรือเท่ากับ <ph name="MAXIMUM" /></translation>
+<translation id="3685101356851116974">รูปภาพที่ไม่มีป้ายกำกับ</translation>
+<translation id="3732799496749320381">ดด</translation>
+<translation id="3754210790023674521">ออกจากการแสดงภาพซ้อนภาพ</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3822383571486410024">โปรดกรอกข้อความนี้ให้มีอักขระอย่างน้อย <ph name="MIN_CHARACTERS" /> ตัว (ตอนนี้คุณมี <ph name="CURRENT_LENGTH" /> ตัว)</translation>
+<translation id="383465348367842624">ส่วนที่ตามด้วย "<ph name="ATSIGN" />" ต้องไม่มีสัญลักษณ์ "<ph name="INVALIDCHARACTER" />"</translation>
+<translation id="3845063161460806746">ไอคอนสุดยอด อาจหมายถึงชอบ</translation>
+<translation id="3846214748874656680">ออกจากการแสดงเต็มหน้าจอ</translation>
+<translation id="3904695548697879411">ไอคอน Twitter</translation>
+<translation id="405782047075994056">ไอคอนลูกศรซ้าย อาจหมายถึงกลับ</translation>
+<translation id="4103419683916926126">มิลลิวินาที</translation>
+<translation id="4201051445878709314">แสดงเดือนที่ผ่านมา</translation>
+<translation id="4302299849305494927">ไอคอนลำโพง อาจหมายถึงระดับเสียง</translation>
+<translation id="4360991593054037559">โปรดป้อนค่าที่ถูกต้อง ค่าใกล้เคียงที่สุดที่ถูกต้องสองรายการคือ <ph name="VALID_VALUE_LOW" /> และ <ph name="VALID_VALUE_HIGHER" /></translation>
+<translation id="4363712632243441817">ไอคอนแคสต์ อาจหมายถึงแคสต์วิดีโอไปยังหน้าจอระยะไกล</translation>
+<translation id="4371899966896349864">ซ่อนเมนูความเร็วในการเล่น</translation>
+<translation id="4384249794467006333">รูปภาพนี้ไม่มีป้ายกำกับ เปิดเมนู "ตัวเลือกเพิ่มเติม" ที่ด้านขวาบนเพื่อดูคำอธิบายรูปภาพ</translation>
+<translation id="4436211924730548766">ไอคอนเครื่องหมายบั้งซ้าย</translation>
+<translation id="4444765639179266822">ดูเหมือนจะพูดว่า <ph name="OCR_TEXT" /></translation>
+<translation id="4522570452068850558">รายละเอียด</translation>
+<translation id="4540719609030900356">ไอคอนเครื่องบินกระดาษ อาจหมายถึงส่ง</translation>
+<translation id="4576178047100686001">รูปภาพนี้ไม่มีป้ายกำกับ เปิดเมนู "ตัวเลือกเพิ่มเติม" ที่ด้านซ้ายบนเพื่อดูคำอธิบายรูปภาพ</translation>
+<translation id="4577968231433672268">ไอคอนเครื่องหมายบวก อาจหมายถึงเพิ่ม</translation>
+<translation id="4611825382945206498">นาฬิกามีลูกศรวงกลม อาจหมายถึงประวัติการเข้าชม</translation>
+<translation id="4664250907885839816">ส่วนที่ต่อท้าย "<ph name="ATSIGN" />" ต้องไม่มีสัญลักษณ์ "<ph name="INVALIDCHARACTER" />"</translation>
+<translation id="4679853894970977730">ไอคอนกล้อง อาจหมายถึงถ่ายรูป</translation>
+<translation id="4718048029184481307">กำลังเล่นแบบการแสดงภาพซ้อนภาพ</translation>
+<translation id="4748357248530471599">สลับเป็นแบบเต็มหน้าจอสำหรับหน้าจอรอยบาก</translation>
+<translation id="4763480195061959176">วิดีโอ</translation>
+<translation id="4812940957355064477">โปรดป้อนตัวเลข</translation>
+<translation id="4832245585893280119">ไอคอนสภาพอากาศ</translation>
+<translation id="4908855810237020461">ไอคอนนาฬิกา อาจหมายถึงเวลา</translation>
+<translation id="4912200001568447310">รายการปัจจุบัน</translation>
+<translation id="4915360478455618802">แสดงเครื่องมือเลือกเวลา</translation>
+<translation id="4924138096460353083">ไม่ชัดเจน</translation>
+<translation id="4950364064308314478">แสดงเครื่องมือเลือกวันที่และเวลาท้องถิ่น</translation>
+<translation id="4971739861736909480">เลือก <ph name="ACCNAME" /> ไว้</translation>
+<translation id="4975562563186953947">เลือกไว้ <ph name="SELECTED_COUNT" /> รายการ</translation>
+<translation id="4992066212339426712">เปิดเสียง</translation>
+<translation id="49969490063480558">โปรดป้อนส่วนที่ต่อท้าย "<ph name="ATSIGN" />" "<ph name="INVALIDADDRESS" />" นั้นไม่สมบูรณ์</translation>
+<translation id="5090250355906949916">ตัวควบคุมเวลาของวิดีโอ</translation>
+<translation id="509897012892853729">ช่องสีน้ำเงิน</translation>
+<translation id="5117590920725113268">แสดงเดือนถัดไป</translation>
+<translation id="5121688653159243920">ไอคอนรายการสัญลักษณ์หัวข้อย่อย</translation>
+<translation id="5164977714490026579">ค่าต้องมากกว่าหรือเท่ากับ <ph name="MINIMUM" /></translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5214400792580101697">ไอคอนหยุด</translation>
+<translation id="5307600278924710095">โปรดป้อนส่วนหนึ่งโดยตามด้วย "<ph name="ATSIGN" />" "<ph name="INVALIDADDRESS" />" นั้นไม่สมบูรณ์</translation>
+<translation id="5334352251556557839">เล่นสื่อไม่ได้</translation>
+<translation id="537648784377940524">วันที่น้อยสุด (<ph name="MIN_DATE_OR_TIME" />) ต้องมาก่อนวันที่มากสุด (<ph name="MAX_DATE_OR_TIME" />)</translation>
+<translation id="5378437566635403538">ขยายอยู่ กล่องโต้ตอบเปิดขึ้น</translation>
+<translation id="5425179576310518467">วันที่ปัจจุบัน</translation>
+<translation id="5466621249238537318">โปรดเลือกอย่างน้อยหนึ่งไฟล์</translation>
+<translation id="5468998798572797635">ออกจากการแสดงแบบเต็มหน้าจอ</translation>
+<translation id="5516235301412634559">0.75</translation>
+<translation id="5537725057119320332">แคสต์</translation>
+<translation id="5546461542133609677">เปิดเสียง</translation>
+<translation id="5586467629893654334">ไอคอนดวงจันทร์ อาจหมายถึงช่วงกลางคืนหรือสลีป</translation>
+<translation id="5599474660109692598">ไอคอนลูกโป่งการ์ตูน อาจหมายถึงแชท</translation>
+<translation id="5617165654945759937">ไอคอนดินสอ อาจหมายถึงแก้ไข</translation>
+<translation id="5621627136377293173">ไอคอนไมโครโฟน อาจหมายถึงบันทึกเสียง</translation>
+<translation id="5630795885300617244">แตะ 2 ครั้งที่ด้านขวาหรือซ้ายเพื่อข้ามทีละ 10 วินาที</translation>
+<translation id="5647477850810769350">ไอคอนชุดหูฟัง</translation>
+<translation id="5677946354068040947">ตัวเลือกเพิ่มเติม</translation>
+<translation id="5720390168116663167">ไอคอนลูกศรขึ้น</translation>
+<translation id="5724910823641175216">ไอคอนลูกศรตามเข็มนาฬิกา อาจหมายถึงทำซ้ำ</translation>
+<translation id="57838592816432529">ปิดเสียง</translation>
+<translation id="5786442179789148008">แสดงเมนูความเร็วในการเล่น</translation>
+<translation id="5787939484346677755">ขยายอยู่ มีตัวเลือกการเติมข้อความอัตโนมัติ</translation>
+<translation id="5838904342468928321">ไอคอนก้อนเมฆ</translation>
+<translation id="5860033963881614850">ปิด</translation>
+<translation id="588258955323874662">เต็มหน้าจอ</translation>
+<translation id="5888666972993069672">ขณะนี้กำลังแคสต์ไปที่ <ph name="DEVICE_FRIENDLY_NAME" /></translation>
+<translation id="5916664084637901428">เปิด</translation>
+<translation id="5939518447894949180">รีเซ็ต</translation>
+<translation id="5966707198760109579">สัปดาห์</translation>
+<translation id="5985507339671257014">0.5</translation>
+<translation id="6011459053400940133">แถบเลื่อนปรับระดับเสียง</translation>
+<translation id="6015796118275082299">ปี</translation>
+<translation id="6054619856758804514">ไอคอนถังขยะ อาจหมายถึงลบ</translation>
+<translation id="6054638203631275602">ไอคอนหน้ามีความสุข</translation>
+<translation id="608465159662359598">ไอคอนรูปเฟืองหรือประแจ อาจหมายถึงการตั้งค่า</translation>
+<translation id="6165053282446038410">ขยายอยู่ มีตัวเลือกการเติมข้อความอัตโนมัติ <ph name="COUNT" /> รายการ</translation>
+<translation id="6209276755895393898">ดูเหมือนเป็น<ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">หน้าปัจจุบัน</translation>
+<translation id="6240633443440794881">ไอคอนซองจดหมาย อาจหมายถึงอีเมล</translation>
+<translation id="6247212328664111379">ไอคอนบุคคล</translation>
+<translation id="6281588256137006900">ความสว่าง</translation>
+<translation id="6310801910862476708">ออกจากการแสดงภาพซ้อนภาพ</translation>
+<translation id="6350382280299255966">ไอคอนหน้ายิ้ม อาจหมายถึงอีโมจิ</translation>
+<translation id="6398862346408813489">แสดงแผงการเลือกเดือน</translation>
+<translation id="6404546809543547843">ตัวควบคุมเวลาของเสียง</translation>
+<translation id="6443871981718447451">แสดงเมนูคำอธิบายภาพ</translation>
+<translation id="6550675742724504774">ตัวเลือก</translation>
+<translation id="6572309429103589720">ไวยากรณ์ไม่ถูกต้อง</translation>
+<translation id="658823671542763450">เข้าสู่โหมดเต็มหน้าจอ</translation>
+<translation id="6632254525813309835">ไอคอนลูกศรทวนเข็มนาฬิกา อาจหมายถึงเลิกทำ</translation>
+<translation id="6643016212128521049">ล้าง</translation>
+<translation id="668171684555832681">อื่นๆ...</translation>
+<translation id="6709093583001123835">ค่าต้องเป็น <ph name="VALUE" /></translation>
+<translation id="6709570249143506788">คุณภาพการเล่นต่ำ</translation>
+<translation id="6790428901817661496">เล่น</translation>
+<translation id="6820355525329141109">ไม่สามารถโหลดปลั๊กอิน</translation>
+<translation id="6831465880655513317">จานสีที่มีแถบเลื่อน 2 มิติสำหรับเลือกความอิ่มตัวและความสว่าง</translation>
+<translation id="6843725295806269523">ปิดเสียง</translation>
+<translation id="6889412865110485830">ไอคอนรถเข็นช็อปปิ้ง</translation>
+<translation id="6919891270253167948">1.5</translation>
+<translation id="6940482800520966738">ไอคอนดาว</translation>
+<translation id="6941933287844615239">ดาวน์โหลดสื่อ</translation>
+<translation id="698788488269350478">ขยายอยู่</translation>
+<translation id="6989848892321993519">โปรดกรอกข้อความนี้ให้มีอักขระอย่างน้อย <ph name="MIN_CHARACTERS" /> ตัว (ตอนนี้คุณมี 1 ตัว)</translation>
+<translation id="7022838723850801004">ไอคอนอีโมจิหน้ามีความสุขและหน้าเศร้า</translation>
+<translation id="709897737746224366">โปรดจับคู่รูปแบบที่ร้องขอ</translation>
+<translation id="7102274145889307184">ตำแหน่งปัจจุบัน</translation>
+<translation id="7118469954320184356">ไม่มีคำอธิบาย</translation>
+<translation id="7263440858009898357">โปรดเลือกรายการจากหน้ารายการ</translation>
+<translation id="7320576522385648310">กำลังบัฟเฟอร์</translation>
+<translation id="7341556277900466204">จานสี</translation>
+<translation id="7364796246159120393">เลือกไฟล์</translation>
+<translation id="739024184232394898">อื่นๆ...</translation>
+<translation id="7410239719251593705">ดูเหมือนจะมีเนื้อหาสำหรับผู้ใหญ่ ไม่มีคำอธิบาย</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
+<translation id="7514365320538308">ดาวน์โหลด</translation>
+<translation id="7533959249147584474">กราฟิกที่ไม่มีป้ายกำกับ</translation>
+<translation id="7673697353781729403">ชั่วโมง</translation>
+<translation id="7742609585924342092">ไอคอนตำแหน่ง</translation>
+<translation id="7745230546936012372">เปิดเมนูตามบริบทเพื่อดูคำอธิบายรูปภาพที่หายไป</translation>
+<translation id="7750228210027921155">การแสดงภาพซ้อนภาพ</translation>
+<translation id="775297008183122718">ป้อนค่าไม่ถูกต้อง</translation>
+<translation id="7782515065589691344">1.25</translation>
+<translation id="7789962463072032349">หยุดชั่วคราว</translation>
+<translation id="7796968532285333302">ไอคอนเครื่องหมายบั้งลง อาจหมายถึงยุบ</translation>
+<translation id="7819026464394689674">ไอคอนหยุดชั่วคราว</translation>
+<translation id="7852167693871241274">แถบเลื่อนโทนสี</translation>
+<translation id="7855610409192055689">ไอคอนคลิปหนีบกระดาษ อาจหมายถึงไฟล์แนบ</translation>
+<translation id="7888071071722539607">โปรดใส่ "<ph name="ATSIGN" />" ในที่อยู่อีเมล "<ph name="INVALIDADDRESS" />" ขาด "<ph name="ATSIGN" />"</translation>
+<translation id="795667975304826397">ไม่ได้เลือกไฟล์ใด</translation>
+<translation id="7962328325860248200">ไม่ได้เลือก <ph name="ACCNAME" />ไว้</translation>
+<translation id="7994555495914042081">ไอคอนเครื่องหมายถูก</translation>
+<translation id="8097409774376213335">ไอคอนลูกศรลง</translation>
+<translation id="8105750478534334542">ไอคอนไม่ชอบ อาจหมายถึงไม่ชอบ</translation>
+<translation id="811583516810654505">กำลังโหลดคำอธิบาย...</translation>
+<translation id="8117451130807776954">สัปดาห์นี้</translation>
+<translation id="8131955114056917397">0.25</translation>
+<translation id="8147719583347050106">ไอคอน Google</translation>
+<translation id="8199524924445686405">ปปปป</translation>
+<translation id="8261464734335370856">มีการสะกดผิด</translation>
+<translation id="8276790177939055966">ไอคอนเครื่องหมายบั้งขวา</translation>
+<translation id="8284326494547611709">คำบรรยาย</translation>
+<translation id="835897206747267392">ค่าไม่ถูกต้อง</translation>
+<translation id="839593075537728968">ค่าต้องอยู่ระหว่าง <ph name="MINIMUM_TIME" /> ถึง <ph name="MAXIMUM_TIME" /></translation>
+<translation id="8403857369060869934">เวลาที่ผ่านไป: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> ไฟล์</translation>
+<translation id="8451268428117625855">โปรดเลือกไฟล์</translation>
+<translation id="8488243824626550045">ไอคอน Facebook</translation>
+<translation id="8534579021159131403">นาที</translation>
+<translation id="8541249477527128034">การควบคุมสื่อ</translation>
+<translation id="8613126697340063924">ควบคุมการเล่นระยะไกล</translation>
+<translation id="8634971699417195529">แสดงเครื่องมือเลือกเดือน</translation>
+<translation id="8637593834423658414">1.75</translation>
+<translation id="8657910582115602348">ไอคอน Google Assistant</translation>
+<translation id="8668988909814782445">การตัดขึ้นบรรทัดใหม่</translation>
+<translation id="8750798805984357768">โปรดเลือกตัวเลือกอย่างหนึ่งอย่างใดเหล่านี้</translation>
+<translation id="8845239796550121995">ตอนนี้กำลังแคสต์ไปยัง TV</translation>
+<translation id="8875657656876809964">ข้อผิดพลาดในการเล่นวิดีโอ</translation>
+<translation id="8889402386540077796">โทนสี</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="894736920926684893">ปุ่มสลับรูปแบบ</translation>
+<translation id="8987927404178983737">เดือน</translation>
+<translation id="901493112792887934">เวลาปัจจุบันเป็นวินาที</translation>
+<translation id="9039639793210005614">ไอคอนแกลเลอรี</translation>
+<translation id="9040233563616141093">ไอคอนลูกศรชี้เข้า 4 อัน อาจหมายถึงสัญญา</translation>
+<translation id="9073800864014589651">ไอคอนเล่น</translation>
+<translation id="9093215626363556771">ออกจากการแสดงภาพซ้อนภาพ</translation>
+<translation id="9105500880071990795">ไอคอนลดระดับเสียง</translation>
+<translation id="9132465097189459683">อื่นๆ...</translation>
+<translation id="913630661384792974">ไอคอนกล้องวิดีโอ อาจหมายถึงบันทึกวิดีโอ</translation>
+<translation id="9155987714137265666"><ph name="WEEK" /> เริ่มวันที่ <ph name="WEEK_START_DATE" /></translation>
+<translation id="916607977885256133">การแสดงภาพซ้อนภาพ</translation>
+<translation id="945780513535800434">เลือกบางรายการ</translation>
+<translation id="947651054772746219">ไอคอนบุคคล</translation>
+<translation id="954003015749068518">เข้าสู่การแสดงภาพซ้อนภาพ</translation>
+</translationbundle>

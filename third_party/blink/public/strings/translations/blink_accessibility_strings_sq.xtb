@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sq">
+<translation id="1016055326260264411">Ikona e zemrës, mund të nënkuptojë "Cakto si të preferuar"</translation>
+<translation id="1088086359088493902">Sekonda</translation>
+<translation id="1142001580032786438">Shfaq zgjedhësin e javës</translation>
+<translation id="1171774979989969504">Fut një adresë mail-i.</translation>
+<translation id="1178581264944972037">Pauzë</translation>
+<translation id="1193819188371549072">Ikona e diellit, mund të nënkuptojë ditë</translation>
+<translation id="1197443222693564123">Tri pika, mund të nënkuptojë "Më shumë"</translation>
+<translation id="1231311685714446044">Ikona e fytyrës së trishtuar</translation>
+<translation id="1248712480115826517">Ikona e lupës zmadhuese, mund të nënkuptojë "Kërko" ose "Zmadho"</translation>
+<translation id="1253694090376430115">Ikona e çantës së blerjeve</translation>
+<translation id="1292759642840406299">Ikona e busullës</translation>
+<translation id="1301463715094321941">Ikona e receptorit të telefonit, mund të nënkuptojë "Telefonatë"</translation>
+<translation id="1306460908038601864">Joaktiv</translation>
+<translation id="1311894908970423688">Vlera duhet të jetë <ph name="VALUE_DATE_OR_TIME" />.</translation>
+<translation id="1312685112570645372">Ikona e pikëpyetjes</translation>
+<translation id="1386033905837826130">Ikona e shpërndarjes</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> artikuj</translation>
+<translation id="1480676835519562650">me zgjedhje të shumëfishtë, <ph name="SELECTED" /> nga <ph name="COUNT" /> të zgjedhura.</translation>
+<translation id="157989258522571434">Ikona e kalendarit</translation>
+<translation id="1588438908519853928">Normal</translation>
+<translation id="1591562245178063882">Këtë muaj</translation>
+<translation id="1598348607589961718">Shigjetë lart, mund të nënkuptojë "Ngarko"</translation>
+<translation id="1632409084477505723">Ikona e shkarkimit</translation>
+<translation id="1637811476055996098">Zgjidh skedarët</translation>
+<translation id="1658806147928973309">Ikona e heqjes së zërit të mikrofonit</translation>
+<translation id="1677491356035817504">Ikona e kllapës këndore poshtë, mund të nënkuptojë "Zgjero"</translation>
+<translation id="1681022320378710418">ora aktuale</translation>
+<translation id="1727839386348365796">Pikatorja</translation>
+<translation id="1727886345390570319">fshih menynë e titrave</translation>
+<translation id="1729654308190250600">Fut një adresë mail-i jo boshe.</translation>
+<translation id="173386679947102756">Ikona e ziles, mund të nënkuptojë "Njoftime"</translation>
+<translation id="175222816025430946">Ikona e tre shiritave, mund të nënkuptojë "Meny"</translation>
+<translation id="1758486001363313524">Tjetër...</translation>
+<translation id="1787192514241997742">koha totale: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">Ikona X, mund të nënkuptojë "Mbyll" ose "Fshi"</translation>
+<translation id="1804122079878165329">Ikona e shigjetës djathtas, mund të nënkuptojë "Përpara"</translation>
+<translation id="1822429046913737220">Paradite/Pasdite</translation>
+<translation id="1832974991323546415">luaje në pajisjen në distancë</translation>
+<translation id="1921819250265091946">ditë</translation>
+<translation id="1938124657309484470">Vlera duhet të jetë <ph name="MAXIMUM_DATE_OR_TIME" /> ose më e hershme.</translation>
+<translation id="1946271899482435442">Shfaq zgjedhësin e datës</translation>
+<translation id="1993104285338243655">U kalua te pasqyrimi</translation>
+<translation id="2031987842108996681">Kanali i kuq</translation>
+<translation id="2060505056492490888">"<ph name="DOT" />" përdoret në një pozicion të gabuar në "<ph name="INVALIDDOMAIN" />".</translation>
+<translation id="2131189924434603515">Ikona e i-së së vogël, mund të nënkuptojë "Informacion"</translation>
+<translation id="2148716181193084225">Sot</translation>
+<translation id="2177093963727449806">Ikona e rifreskimit</translation>
+<translation id="221177765244658491">Ikona e heqjes së zërit</translation>
+<translation id="2226276347425096477">Shkurtoje këtë tekst në <ph name="MAX_CHARACTERS" /> karaktere ose më pak (aktualisht po përdor <ph name="CURRENT_LENGTH" /> karaktere).</translation>
+<translation id="2246498165605549352">Skedari lokal</translation>
+<translation id="2247351761944213033">Java <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
+<translation id="2265260019987849198">Ikona e shtëpisë</translation>
+<translation id="2277199496770840904">Kënga <ph name="NUMBER" /></translation>
+<translation id="2307576640803031502">në listë, artikulli <ph name="INDEX" /> nga <ph name="COUNT" /></translation>
+<translation id="2320316128050046908">Ikona e volumit lart</translation>
+<translation id="2393030564806080191">Vlera e ngjyrave heksadecimale</translation>
+<translation id="2398813069815436052">dialogu u hap.</translation>
+<translation id="2427288427427702833">Ikona e hapjes së aplikacioneve</translation>
+<translation id="245932805758469625">numri i sekondave të mbetura të videos</translation>
+<translation id="248395913932153421">Dita</translation>
+<translation id="2507943997699731163">Plotësoje këtë fushë.</translation>
+<translation id="2530182415807757784">me zgjedhje të shumëfishtë, nuk është zgjedhur asnjë.</translation>
+<translation id="2561842179657104141">shfaq më shumë kontrolle të medias</translation>
+<translation id="2572483411312390101">luaj</translation>
+<translation id="2613802280814924224">Fut një vlerë të vlefshme. Vlera më e afërt e vlefshme është <ph name="VALID_VALUE" />.</translation>
+<translation id="2634240155926812724">Kanali i gjelbër</translation>
+<translation id="2653659639078652383">Dërgoje</translation>
+<translation id="2723001399770238859">audio</translation>
+<translation id="2746543609216772311">Vlera duhet të jetë <ph name="MINIMUM_DATE_OR_TIME" /> ose më e vonshme.</translation>
+<translation id="2761667185364618470">Verifikoje këtë kuti, nëse do të vazhdosh.</translation>
+<translation id="2908441821576996758">Fut një listë të ndarë me presje me adresa mail-i.</translation>
+<translation id="2987445268505333132">Ikona e mbylljes së telefonatës</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3075154866155599887">Fut një atribut të vlefshëm. Fusha nuk është e plotë ose ka datë të pavlefshme.</translation>
+<translation id="310520048233152454">Fut një URL.</translation>
+<translation id="3220661731597678625">hapi aktual</translation>
+<translation id="3321030238473337787">Shpejtësia e luajtjes</translation>
+<translation id="3329013043687509092">Ngopje</translation>
+<translation id="3435893727187534376">Ikona e katër shigjetave me drejtim për jashtë, mund të nënkuptojë "Zgjero"</translation>
+<translation id="3450233048674729344">Vlera duhet të jetë më e vogël ose e barabartë me <ph name="MAXIMUM" />.</translation>
+<translation id="3685101356851116974">Imazh i paetiketuar</translation>
+<translation id="3732799496749320381">mm</translation>
+<translation id="3754210790023674521">Dil nga "Figura brenda figurës"</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3822383571486410024">Shkurtoje këtë tekst në <ph name="MIN_CHARACTERS" /> karaktere ose më shumë (aktualisht po përdor <ph name="CURRENT_LENGTH" /> karaktere).</translation>
+<translation id="383465348367842624">Një pjesë e ndjekur nga "<ph name="ATSIGN" />" nuk duhet të përmbajë simbolin "<ph name="INVALIDCHARACTER" />".</translation>
+<translation id="3845063161460806746">Ikona e gishtave lart, mund të nënkuptojë "Pëlqim"</translation>
+<translation id="3846214748874656680">Dil nga ekrani i plotë</translation>
+<translation id="3904695548697879411">Ikona e Twitter</translation>
+<translation id="405782047075994056">Ikona e shigjetës majtas, mund të nënkuptojë "Pas"</translation>
+<translation id="4103419683916926126">Milisekonda</translation>
+<translation id="4201051445878709314">Trego muajin e kaluar</translation>
+<translation id="4302299849305494927">Ikona e altoparlantit, mund të nënkuptojë volumin</translation>
+<translation id="4360991593054037559">Fut një vlerë të vlefshme. Dy vlerat më e afërta të vlefshme janë <ph name="VALID_VALUE_LOW" /> dhe <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4363712632243441817">Ikona e transmetimit, mund të nënkuptojë transmetimin e një videoje në një ekran në distancë</translation>
+<translation id="4371899966896349864">fshih menynë e shpejtësisë së luajtjes</translation>
+<translation id="4384249794467006333">Ky imazh nuk është i etiketuar. Hap menynë "Më shumë opsione" në krye djathtas për të marrë përshkrimet e imazheve.</translation>
+<translation id="4436211924730548766">Ikona e kllapave këndore majtas</translation>
+<translation id="4444765639179266822">Duket se thotë: <ph name="OCR_TEXT" /></translation>
+<translation id="4522570452068850558">Detajet</translation>
+<translation id="4540719609030900356">Ikona e avionit prej letre, mund të nënkuptojë "Dërgo"</translation>
+<translation id="4576178047100686001">Ky imazh nuk është i etiketuar. Hap menynë "Më shumë opsione" në krye majtas për të marrë përshkrimet e imazheve.</translation>
+<translation id="4577968231433672268">Ikona "Plus", mund të nënkuptojë "Shto"</translation>
+<translation id="4611825382945206498">Orë me shigjetë rrethore, mund të nënkuptojë "Historiku"</translation>
+<translation id="4664250907885839816">Një pjesë që ndjek "<ph name="ATSIGN" />" nuk duhet të përmbajë simbolin "<ph name="INVALIDCHARACTER" />".</translation>
+<translation id="4679853894970977730">Ikona e kamerës, mund të nënkuptojë "Bëj fotografi"</translation>
+<translation id="4718048029184481307">Po luhet në "Figura brenda figurës"</translation>
+<translation id="4748357248530471599">kalo tek ekrani i plotë tek prerja e ekranit</translation>
+<translation id="4763480195061959176">video</translation>
+<translation id="4812940957355064477">Fut një numër.</translation>
+<translation id="4832245585893280119">Ikona e motit</translation>
+<translation id="4908855810237020461">Ikona e orës, mund të nënkuptojë "Ora"</translation>
+<translation id="4912200001568447310">artikulli aktual</translation>
+<translation id="4915360478455618802">Shfaq zgjedhësin e datës</translation>
+<translation id="4924138096460353083">i papërcaktuar</translation>
+<translation id="4950364064308314478">Shfaq zgjedhësin e datës dhe orës lokale</translation>
+<translation id="4971739861736909480">Përzgjedhur: <ph name="ACCNAME" /></translation>
+<translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> të përzgjedhur</translation>
+<translation id="4992066212339426712">Aktivizo zërin</translation>
+<translation id="49969490063480558">Fut një pjesë pas "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" është e paplotë.</translation>
+<translation id="5090250355906949916">shiriti kohor i videos</translation>
+<translation id="509897012892853729">Kanali blu</translation>
+<translation id="5117590920725113268">Trego muajin e ardhshëm</translation>
+<translation id="5121688653159243920">Ikona e listës me pika</translation>
+<translation id="5164977714490026579">Vlera duhet të jetë më e madhe ose e barabartë me <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5214400792580101697">Ikona e ndalimit</translation>
+<translation id="5307600278924710095">Fut një pjesë të ndjekur nga "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" është e paplotë.</translation>
+<translation id="5334352251556557839">Nuk mund të luajë media.</translation>
+<translation id="537648784377940524">Data minimale (<ph name="MIN_DATE_OR_TIME" />) duhet të jetë përpara datës maksimale (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">u zgjerua, dialogu u hap.</translation>
+<translation id="5425179576310518467">data aktuale</translation>
+<translation id="5466621249238537318">Përzgjidh një ose më shumë skedarë.</translation>
+<translation id="5468998798572797635">dil nga ekrani i plotë</translation>
+<translation id="5516235301412634559">0,75</translation>
+<translation id="5537725057119320332">Transmeto</translation>
+<translation id="5546461542133609677">aktivizo zërin</translation>
+<translation id="5586467629893654334">Ikona e hënës, mund të nënkuptojë natën ose gjumin</translation>
+<translation id="5599474660109692598">Ikona e flluskës vizatimore, mund të nënkuptojë "Bisedo"</translation>
+<translation id="5617165654945759937">Ikona e lapsit, mund të nënkuptojë "Modifiko"</translation>
+<translation id="5621627136377293173">Ikona e mikrofonit, mund të nënkuptojë "Regjistro"</translation>
+<translation id="5630795885300617244">Trokit dy herë majtas ose djathtas për të kapërcyer 10 sek.</translation>
+<translation id="5647477850810769350">Ikona e kufjeve me mikrofon</translation>
+<translation id="5677946354068040947">më shumë opsione</translation>
+<translation id="5720390168116663167">Ikona e shigjetës lart</translation>
+<translation id="5724910823641175216">Ikona e shigjetës në drejtim të akrepave të orës, mund të nënkuptojë "Ribëj"</translation>
+<translation id="57838592816432529">Hiqi zërin</translation>
+<translation id="5786442179789148008">shfaq menynë e shpejtësisë së luajtjes</translation>
+<translation id="5787939484346677755">u zgjerua, ofrohen opsione të plotësimit automatik.</translation>
+<translation id="5838904342468928321">Ikona e resë kompjuterike</translation>
+<translation id="5860033963881614850">Çaktivizuar</translation>
+<translation id="588258955323874662">Ekrani i plotë</translation>
+<translation id="5888666972993069672">Po transmeton tani në <ph name="DEVICE_FRIENDLY_NAME" /></translation>
+<translation id="5916664084637901428">Aktiv</translation>
+<translation id="5939518447894949180">Rivendos</translation>
+<translation id="5966707198760109579">Javë</translation>
+<translation id="5985507339671257014">0,5</translation>
+<translation id="6011459053400940133">rrëshqitësi i volumit</translation>
+<translation id="6015796118275082299">Viti</translation>
+<translation id="6054619856758804514">Ikona e koshit, mund të nënkuptojë "Fshi"</translation>
+<translation id="6054638203631275602">Ikona e fytyrës së lumtur</translation>
+<translation id="608465159662359598">Ikona e ingranazhit ose çelësit anglez, mund të nënkuptojë "Cilësimet"</translation>
+<translation id="6165053282446038410">u zgjerua, <ph name="COUNT" /> opsione të plotësimit automatik të ofruara.</translation>
+<translation id="6209276755895393898">Duket se është: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">faqja aktuale</translation>
+<translation id="6240633443440794881">Ikona e zarfit, mund të nënkuptojë "Postë"</translation>
+<translation id="6247212328664111379">Ikona e personit</translation>
+<translation id="6281588256137006900">Ndriçimi</translation>
+<translation id="6310801910862476708">Dil nga "figurë brenda figurës"</translation>
+<translation id="6350382280299255966">Ikona e fytyrës së qeshur, mund të nënkuptojë Emoji</translation>
+<translation id="6398862346408813489">Trego panelin e zgjedhjes mujore</translation>
+<translation id="6404546809543547843">shiriti kohor i audios</translation>
+<translation id="6443871981718447451">shfaq menynë e titrave</translation>
+<translation id="6550675742724504774">Opsionet</translation>
+<translation id="6572309429103589720">Gramatikë e pavlefshme</translation>
+<translation id="658823671542763450">hyr në ekranin e plotë</translation>
+<translation id="6632254525813309835">Ikona e shigjetës në drejtim të kundërt të akrepave të orës, mund të nënkuptojë "Zhbëj"</translation>
+<translation id="6643016212128521049">Pastro</translation>
+<translation id="668171684555832681">Tjetër...</translation>
+<translation id="6709093583001123835">Vlera duhet të jetë <ph name="VALUE" />.</translation>
+<translation id="6709570249143506788">Cilësi e dobët e luajtjes</translation>
+<translation id="6790428901817661496">Luaj</translation>
+<translation id="6820355525329141109">Nuk mund ta ngarkonte përbërësin shtesë.</translation>
+<translation id="6831465880655513317">Pusi i ngjyrave me rrëshqitësin dydimensional për zgjedhjen e gjallërisë dhe ndriçimit</translation>
+<translation id="6843725295806269523">heshtje</translation>
+<translation id="6889412865110485830">Ikona e grumbullit të artikujve për blerje</translation>
+<translation id="6919891270253167948">1,5</translation>
+<translation id="6940482800520966738">Ikona e yllit</translation>
+<translation id="6941933287844615239">shkarko media</translation>
+<translation id="698788488269350478">u zgjerua.</translation>
+<translation id="6989848892321993519">Zgjate këtë tekst në <ph name="MIN_CHARACTERS" /> karaktere ose më shumë (aktualisht po përdor 1 karakter).</translation>
+<translation id="7022838723850801004">Ikona e emoji-t me fytyrë të lumtur dhe të trishtuar</translation>
+<translation id="709897737746224366">Përputhe me formatin e kërkuar.</translation>
+<translation id="7102274145889307184">vendndodhja aktuale</translation>
+<translation id="7118469954320184356">Nuk ka asnjë përshkrim.</translation>
+<translation id="7263440858009898357">Përzgjidh një artikull në listë.</translation>
+<translation id="7320576522385648310">po ruan në ndërmemorie</translation>
+<translation id="7341556277900466204">Pusi i ngjyrave</translation>
+<translation id="7364796246159120393">Zgjidh skedarin</translation>
+<translation id="739024184232394898">Tjetër...</translation>
+<translation id="7410239719251593705">Duket se ka përmbajtje për të rritur. Nuk ka asnjë përshkrim.</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
+<translation id="7514365320538308">Shkarko</translation>
+<translation id="7533959249147584474">Grafikë e paetiketuar</translation>
+<translation id="7673697353781729403">Orë</translation>
+<translation id="7742609585924342092">Ikona e vendndodhjes</translation>
+<translation id="7745230546936012372">Për të marrë përshkrimet e imazheve që mungojnë, hap menynë e kontekstit.</translation>
+<translation id="7750228210027921155">Figurë brenda figurës</translation>
+<translation id="775297008183122718">Atribut i pavlefshëm</translation>
+<translation id="7782515065589691344">1,25</translation>
+<translation id="7789962463072032349">pauzë</translation>
+<translation id="7796968532285333302">Ikona e kllapës këndore poshtë, mund të nënkuptojë "Palos"</translation>
+<translation id="7819026464394689674">Ikona e vendosjes në pauzë</translation>
+<translation id="7852167693871241274">Rrëshqitësi i nuancës</translation>
+<translation id="7855610409192055689">Ikona e kapëses së letrave, mund të nënkuptojë bashkëngjitje</translation>
+<translation id="7888071071722539607">Përfshi një "<ph name="ATSIGN" />" në adresën e mail-it. Te "<ph name="INVALIDADDRESS" />" mungon një "<ph name="ATSIGN" />".</translation>
+<translation id="795667975304826397">Nuk u zgjodh asnjë skedar</translation>
+<translation id="7962328325860248200"><ph name="ACCNAME" /> nuk është zgjedhur</translation>
+<translation id="7994555495914042081">Ikona e shenjës së zgjedhjes</translation>
+<translation id="8097409774376213335">Ikona e shigjetës poshtë</translation>
+<translation id="8105750478534334542">Ikona e gishtave poshtë, mund të nënkuptojë mospëlqim</translation>
+<translation id="811583516810654505">Po merr përshkrimin...</translation>
+<translation id="8117451130807776954">Këtë javë</translation>
+<translation id="8131955114056917397">0,25</translation>
+<translation id="8147719583347050106">Ikona e Google</translation>
+<translation id="8199524924445686405">vvvv</translation>
+<translation id="8261464734335370856">Drejtshkrim i pavlefshëm</translation>
+<translation id="8276790177939055966">Ikona e kllapave këndore djathtas</translation>
+<translation id="8284326494547611709">Titrat</translation>
+<translation id="835897206747267392">Vlerë e pavlefshme.</translation>
+<translation id="839593075537728968">Vlera duhet të jetë nga <ph name="MINIMUM_TIME" /> deri në <ph name="MAXIMUM_TIME" />.</translation>
+<translation id="8403857369060869934">koha e kaluar: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> skedarë</translation>
+<translation id="8451268428117625855">Zgjidh një skedar.</translation>
+<translation id="8488243824626550045">Ikona e Facebook</translation>
+<translation id="8534579021159131403">Minuta</translation>
+<translation id="8541249477527128034">kontroll i medias</translation>
+<translation id="8613126697340063924">kontrolli i luajtjes në distancë</translation>
+<translation id="8634971699417195529">Shfaq zgjedhësin e muajit</translation>
+<translation id="8637593834423658414">1,75</translation>
+<translation id="8657910582115602348">Ikona e "Asistentit të Google"</translation>
+<translation id="8668988909814782445">Thyerja e rreshtit</translation>
+<translation id="8750798805984357768">Përzgjidh një nga këto opsione.</translation>
+<translation id="8845239796550121995">Po transmeton tani në televizor</translation>
+<translation id="8875657656876809964">Gabim gjatë luajtjes së videos</translation>
+<translation id="8889402386540077796">Nuanca</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="894736920926684893">Ndryshuesi i formatit</translation>
+<translation id="8987927404178983737">Muaji</translation>
+<translation id="901493112792887934">koha aktuale në sekonda</translation>
+<translation id="9039639793210005614">Ikona e galerisë</translation>
+<translation id="9040233563616141093">Ikona e katër shigjetave me drejtim për brenda, mund të nënkuptojë "Kontratë"</translation>
+<translation id="9073800864014589651">Ikona e luajtjes</translation>
+<translation id="9093215626363556771">dil nga "figurë brenda figurës"</translation>
+<translation id="9105500880071990795">Ikona e volumit poshtë</translation>
+<translation id="9132465097189459683">Tjetër...</translation>
+<translation id="913630661384792974">Ikona e videokamerës, mund të nënkuptojë "Regjistro video"</translation>
+<translation id="9155987714137265666"><ph name="WEEK" />, fillon në <ph name="WEEK_START_DATE" /></translation>
+<translation id="916607977885256133">Figura brenda figurës</translation>
+<translation id="945780513535800434">Pjesërisht e zgjedhur</translation>
+<translation id="947651054772746219">Ikona e njerëzve</translation>
+<translation id="954003015749068518">hyr në "figurë brenda figurës"</translation>
+</translationbundle>

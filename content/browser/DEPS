@@ -112,6 +112,7 @@ include_rules = [
   "+third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h",
   "+third_party/blink/public/platform/modules/sms/webotp_service.mojom.h",
   "+third_party/blink/public/public_buildflags.h",
+  "+third_party/blink/public/strings/grit/blink_accessibility_strings.h",
   "+third_party/blink/public/strings/grit/blink_strings.h",
   "+third_party/blink/public/web/web_ax_enums.h",
   "+third_party/blink/public/web/web_console_message.h",

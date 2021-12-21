@@ -1,0 +1,267 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="vi">
+<translation id="1016055326260264411">Biểu tượng trái tim, có thể có nghĩa là đánh dấu Yêu thích</translation>
+<translation id="1088086359088493902">Giây</translation>
+<translation id="1142001580032786438">Hiển thị bộ chọn tuần</translation>
+<translation id="1171774979989969504">Vui lòng nhập địa chỉ email.</translation>
+<translation id="1178581264944972037">Tạm dừng</translation>
+<translation id="1193819188371549072">Biểu tượng mặt trời, có thể có nghĩa là ban ngày</translation>
+<translation id="1197443222693564123">Ba dấu chấm, có thể có nghĩa là thao tác Xem thêm</translation>
+<translation id="1231311685714446044">Biểu tượng mặt buồn</translation>
+<translation id="1248712480115826517">Biểu tượng kính lúp, có thể có nghĩa là tính năng Tìm kiếm hoặc Thu phóng</translation>
+<translation id="1253694090376430115">Biểu tượng túi mua hàng</translation>
+<translation id="1292759642840406299">Biểu tượng la bàn</translation>
+<translation id="1301463715094321941">Biểu tượng điện thoại cầm tay, có thể có nghĩa là thao tác Gọi</translation>
+<translation id="1306460908038601864">Tắt</translation>
+<translation id="1311894908970423688">Giá trị phải là <ph name="VALUE_DATE_OR_TIME" />.</translation>
+<translation id="1312685112570645372">Biểu tượng dấu chấm hỏi</translation>
+<translation id="1386033905837826130">Biểu tượng chia sẻ</translation>
+<translation id="145015347812617860"><ph name="COUNT" /> mục</translation>
+<translation id="1480676835519562650">có thể chọn nhiều mục, đã chọn <ph name="SELECTED" />/<ph name="COUNT" /> mục.</translation>
+<translation id="157989258522571434">Biểu tượng lịch</translation>
+<translation id="1588438908519853928">Bình thường</translation>
+<translation id="1591562245178063882">Tháng này</translation>
+<translation id="1598348607589961718">Mũi tên hướng lên, có thể có nghĩa là thao tác Tải lên</translation>
+<translation id="1632409084477505723">Biểu tượng tải xuống</translation>
+<translation id="1637811476055996098">Chọn tệp</translation>
+<translation id="1658806147928973309">Biểu tượng tắt micrô</translation>
+<translation id="1677491356035817504">Biểu tượng sọc chữ V hướng xuống, có thể có nghĩa là thao tác Mở rộng</translation>
+<translation id="1681022320378710418">thời gian hiện tại</translation>
+<translation id="1727839386348365796">Dụng cụ nhỏ giọt</translation>
+<translation id="1727886345390570319">ẩn menu phụ đề chi tiết</translation>
+<translation id="1729654308190250600">Vui lòng nhập địa chỉ email không trống.</translation>
+<translation id="173386679947102756">Biểu tượng chuông, có thể có nghĩa là Thông báo</translation>
+<translation id="175222816025430946">Biểu tượng ba thanh ngang, có thể có nghĩa là Trình đơn</translation>
+<translation id="1758486001363313524">Khác...</translation>
+<translation id="1787192514241997742">tổng thời gian: <ph name="REMAINING_TIME" /></translation>
+<translation id="1793034400053617214">Biểu tượng chữ X, có thể có nghĩa là thao tác Đóng hoặc Xóa</translation>
+<translation id="1804122079878165329">Biểu tượng mũi tên phải, có thể có nghĩa là thao tác Chuyển tiếp</translation>
+<translation id="1822429046913737220">SA/CH</translation>
+<translation id="1832974991323546415">phát trên thiết bị từ xa</translation>
+<translation id="1921819250265091946">dd</translation>
+<translation id="1938124657309484470">Giá trị phải là <ph name="MAXIMUM_DATE_OR_TIME" /> hoặc sớm hơn.</translation>
+<translation id="1946271899482435442">Hiển thị bộ chọn ngày</translation>
+<translation id="1993104285338243655">Đã chuyển sang chế độ phản chiếu</translation>
+<translation id="2031987842108996681">Kênh đỏ</translation>
+<translation id="2060505056492490888">'<ph name="DOT" />' bị sử dụng sai vị trí trong '<ph name="INVALIDDOMAIN" />'.</translation>
+<translation id="2131189924434603515">Biểu tượng chữ i thường, có thể có nghĩa là Thông tin</translation>
+<translation id="2148716181193084225">Hôm nay</translation>
+<translation id="2177093963727449806">Biểu tượng làm mới</translation>
+<translation id="221177765244658491">Biểu tượng tắt tiếng</translation>
+<translation id="2226276347425096477">Hãy cắt ngắn văn bản này thành <ph name="MAX_CHARACTERS" /> ký tự hoặc ít hơn (bạn hiện đang sử dụng <ph name="CURRENT_LENGTH" /> ký tự).</translation>
+<translation id="2246498165605549352">Tệp trên máy</translation>
+<translation id="2247351761944213033">Tuần <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
+<translation id="2265260019987849198">Biểu tượng màn hình chính</translation>
+<translation id="2277199496770840904">Bản nhạc <ph name="NUMBER" /></translation>
+<translation id="2307576640803031502">trong danh sách, mục <ph name="INDEX" />/<ph name="COUNT" /></translation>
+<translation id="2320316128050046908">Biểu tượng tăng âm lượng</translation>
+<translation id="2393030564806080191">Giá trị màu thập lục phân</translation>
+<translation id="2398813069815436052">đã mở hộp thoại.</translation>
+<translation id="2427288427427702833">Biểu tượng chạy ứng dụng</translation>
+<translation id="245932805758469625">số giây còn lại của video</translation>
+<translation id="248395913932153421">Ngày</translation>
+<translation id="2507943997699731163">Vui lòng điền vào trường này.</translation>
+<translation id="2530182415807757784">có thể chọn nhiều mục; chưa chọn mục nào.</translation>
+<translation id="2561842179657104141">hiển thị các kiểm soát phương tiện khác</translation>
+<translation id="2572483411312390101">phát</translation>
+<translation id="2613802280814924224">Vui lòng nhập giá trị hợp lệ. Giá trị hợp lệ gần nhất là <ph name="VALID_VALUE" />.</translation>
+<translation id="2634240155926812724">Kênh xanh lục</translation>
+<translation id="2653659639078652383">Gửi</translation>
+<translation id="2723001399770238859">âm thanh</translation>
+<translation id="2746543609216772311">Giá trị phải là <ph name="MINIMUM_DATE_OR_TIME" /> hoặc muộn hơn.</translation>
+<translation id="2761667185364618470">Vui lòng chọn hộp kiểm này nếu bạn muốn tiếp tục.</translation>
+<translation id="2908441821576996758">Vui lòng nhập danh sách địa chỉ email được phân cách bằng dấu phẩy.</translation>
+<translation id="2987445268505333132">Biểu tượng Kết thúc cuộc gọi</translation>
+<translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
+<translation id="3075154866155599887">Vui lòng nhập một giá trị hợp lệ. Trường không hoàn chỉnh hoặc có giá trị không hợp lệ.</translation>
+<translation id="310520048233152454">Vui lòng nhập URL.</translation>
+<translation id="3220661731597678625">bước hiện tại</translation>
+<translation id="3321030238473337787">Tốc độ phát</translation>
+<translation id="3329013043687509092">Độ bão hòa</translation>
+<translation id="3435893727187534376">Biểu tượng bốn mũi tên hướng ra ngoài, có thể có nghĩa là thao tác Mở rộng</translation>
+<translation id="3450233048674729344">Giá trị phải nhỏ hơn hoặc bằng <ph name="MAXIMUM" />.</translation>
+<translation id="3685101356851116974">Hình ảnh không có nhãn</translation>
+<translation id="3732799496749320381">mm</translation>
+<translation id="3754210790023674521">Thoát chế độ hình trong hình</translation>
+<translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
+<translation id="3822383571486410024">Hãy kéo dài văn bản này thành <ph name="MIN_CHARACTERS" /> ký tự trở lên (bạn hiện đang sử dụng <ph name="CURRENT_LENGTH" /> ký tự).</translation>
+<translation id="383465348367842624">Phần đứng trước '<ph name="ATSIGN" />' không được chứa biểu tượng '<ph name="INVALIDCHARACTER" />'.</translation>
+<translation id="3845063161460806746">Biểu tượng ngón tay cái giơ lên, có thể có nghĩa là đánh dấu Thích</translation>
+<translation id="3846214748874656680">Thoát chế độ toàn màn hình</translation>
+<translation id="3904695548697879411">Biểu tượng Twitter</translation>
+<translation id="405782047075994056">Biểu tượng mũi tên trái, có thể có nghĩa là thao tác Quay lại</translation>
+<translation id="4103419683916926126">Mili giây</translation>
+<translation id="4201051445878709314">Hiển thị tháng trước</translation>
+<translation id="4302299849305494927">Biểu tượng loa, có thể có nghĩa là âm lượng</translation>
+<translation id="4360991593054037559">Vui lòng nhập giá trị hợp lệ. Hai giá trị hợp lệ gần nhất là <ph name="VALID_VALUE_LOW" /> và <ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4363712632243441817">Biểu tượng truyền, có thể có nghĩa là thao tác truyền video đến một màn hình từ xa</translation>
+<translation id="4371899966896349864">ẩn trình đơn tốc độ phát</translation>
+<translation id="4384249794467006333">Hình ảnh này chưa được gắn nhãn. Hãy mở trình đơn Tùy chọn khác ở trên cùng bên phải để xem thông tin mô tả hình ảnh.</translation>
+<translation id="4436211924730548766">Biểu tượng sọc chữ V chỉ bên trái</translation>
+<translation id="4444765639179266822">Có vẻ như nội dung là: <ph name="OCR_TEXT" /></translation>
+<translation id="4522570452068850558">Chi tiết</translation>
+<translation id="4540719609030900356">Biểu tượng máy bay giấy, có thể có nghĩa là thao tác Gửi</translation>
+<translation id="4576178047100686001">Hình ảnh này chưa được gắn nhãn. Hãy mở trình đơn Tùy chọn khác ở trên cùng bên trái để xem thông tin mô tả hình ảnh.</translation>
+<translation id="4577968231433672268">Biểu tượng dấu cộng, có thể có nghĩa là thao tác Thêm</translation>
+<translation id="4611825382945206498">Đồng hồ với hình mũi tên quay vòng, có thể có nghĩa là Nhật ký</translation>
+<translation id="4664250907885839816">Phần đứng sau '<ph name="ATSIGN" />' không được chứa biểu tượng '<ph name="INVALIDCHARACTER" />'.</translation>
+<translation id="4679853894970977730">Biểu tượng máy ảnh, có thể có nghĩa là thao tác Chụp ảnh</translation>
+<translation id="4718048029184481307">Đang phát ở chế độ hình trong hình</translation>
+<translation id="4748357248530471599">bật/tắt chế độ toàn màn hình có vết cắt</translation>
+<translation id="4763480195061959176">video</translation>
+<translation id="4812940957355064477">Vui lòng nhập một số.</translation>
+<translation id="4832245585893280119">Biểu tượng thời tiết</translation>
+<translation id="4908855810237020461">Biểu tượng đồng hồ, có thể có nghĩa là Thời gian</translation>
+<translation id="4912200001568447310">mục hiện tại</translation>
+<translation id="4915360478455618802">Hiển thị bộ chọn giờ</translation>
+<translation id="4924138096460353083">không xác định</translation>
+<translation id="4950364064308314478">Hiển thị bộ chọn ngày và giờ địa phương</translation>
+<translation id="4971739861736909480">Đã chọn <ph name="ACCNAME" /></translation>
+<translation id="4975562563186953947">Đã chọn <ph name="SELECTED_COUNT" /></translation>
+<translation id="4992066212339426712">Bật âm thanh</translation>
+<translation id="49969490063480558">Vui lòng nhập phần đứng sau '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' không hoàn chỉnh.</translation>
+<translation id="5090250355906949916">thanh trượt thời gian trên video</translation>
+<translation id="509897012892853729">Kênh xanh lam</translation>
+<translation id="5117590920725113268">Hiển thị tháng tiếp theo</translation>
+<translation id="5121688653159243920">Biểu tượng danh sách có dấu đầu dòng</translation>
+<translation id="5164977714490026579">Giá trị phải lớn hơn hoặc bằng <ph name="MINIMUM" />.</translation>
+<translation id="5196716972587102051">2</translation>
+<translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5214400792580101697">Biểu tượng dừng</translation>
+<translation id="5307600278924710095">Vui lòng nhập phần đứng trước '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' không hoàn chỉnh.</translation>
+<translation id="5334352251556557839">Không thể phát nội dung đa phương tiện.</translation>
+<translation id="537648784377940524">Ngày tối thiểu (<ph name="MIN_DATE_OR_TIME" />) phải trước ngày tối đa (<ph name="MAX_DATE_OR_TIME" />).</translation>
+<translation id="5378437566635403538">đã mở rộng, hộp thoại đã mở.</translation>
+<translation id="5425179576310518467">ngày hiện tại</translation>
+<translation id="5466621249238537318">Vui lòng chọn một hoặc nhiều tệp.</translation>
+<translation id="5468998798572797635">thoát khỏi chế độ toàn màn hình</translation>
+<translation id="5516235301412634559">0,75</translation>
+<translation id="5537725057119320332">Truyền</translation>
+<translation id="5546461542133609677">bật tiếng</translation>
+<translation id="5586467629893654334">Biểu tượng mặt trăng, có thể có nghĩa là ban đêm hoặc chế độ ngủ</translation>
+<translation id="5599474660109692598">Biểu tượng bong bóng hoạt hình, có thể có nghĩa là ứng dụng Trò chuyện</translation>
+<translation id="5617165654945759937">Biểu tượng bút chì, có thể có nghĩa là thao tác Chỉnh sửa</translation>
+<translation id="5621627136377293173">Biểu tượng micrô, có thể có nghĩa là thao tác Ghi âm</translation>
+<translation id="5630795885300617244">Nhấn đúp vào bên trái hoặc phải để tua lại/tua đi 10 giây</translation>
+<translation id="5647477850810769350">Biểu tượng tai nghe</translation>
+<translation id="5677946354068040947">tùy chọn khác</translation>
+<translation id="5720390168116663167">Biểu tượng mũi tên lên</translation>
+<translation id="5724910823641175216">Biểu tượng mũi tên quay theo chiều kim đồng hồ, có thể có nghĩa là thao tác Làm lại</translation>
+<translation id="57838592816432529">Tắt tiếng</translation>
+<translation id="5786442179789148008">hiện trình đơn tốc độ phát</translation>
+<translation id="5787939484346677755">đã mở rộng, có các tùy chọn tự động hoàn thành.</translation>
+<translation id="5838904342468928321">Biểu tượng đám mây</translation>
+<translation id="5860033963881614850">Tắt</translation>
+<translation id="588258955323874662">Toàn màn hình</translation>
+<translation id="5888666972993069672">Hiện đang truyền tới <ph name="DEVICE_FRIENDLY_NAME" /></translation>
+<translation id="5916664084637901428">Bật</translation>
+<translation id="5939518447894949180">Đặt lại</translation>
+<translation id="5966707198760109579">Tuần</translation>
+<translation id="5985507339671257014">0,5</translation>
+<translation id="6011459053400940133">thanh trượt âm lượng</translation>
+<translation id="6015796118275082299">Năm</translation>
+<translation id="6054619856758804514">Biểu tượng thùng rác, có thể có nghĩa là thao tác Xóa</translation>
+<translation id="6054638203631275602">Biểu tượng khuôn mặt hạnh phúc</translation>
+<translation id="608465159662359598">Biểu tượng bánh răng hoặc cờ lê, có thể có nghĩa là phần Cài đặt</translation>
+<translation id="6165053282446038410">đã mở rộng, có <ph name="COUNT" /> tùy chọn tự động hoàn thành.</translation>
+<translation id="6209276755895393898">Có vẻ như là: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">trang hiện tại</translation>
+<translation id="6240633443440794881">Biểu tượng phong bì, có thể có nghĩa là Thư</translation>
+<translation id="6247212328664111379">Biểu tượng hình người</translation>
+<translation id="6281588256137006900">Độ sáng</translation>
+<translation id="6310801910862476708">Thoát chế độ hình trong hình</translation>
+<translation id="6350382280299255966">Biểu tượng mặt cười, có thể có nghĩa là Biểu tượng cảm xúc</translation>
+<translation id="6398862346408813489">Hiển thị bảng lựa chọn tháng</translation>
+<translation id="6404546809543547843">trình kiểm soát thời gian âm thanh</translation>
+<translation id="6443871981718447451">hiển thị menu phụ đề chi tiết</translation>
+<translation id="6550675742724504774">Tùy chọn</translation>
+<translation id="6572309429103589720">Ngữ pháp không hợp lệ</translation>
+<translation id="658823671542763450">vào chế độ toàn màn hình</translation>
+<translation id="6632254525813309835">Biểu tượng mũi tên quay ngược chiều kim đồng hồ, có thể có nghĩa là thao tác Huỷ</translation>
+<translation id="6643016212128521049">Xóa</translation>
+<translation id="668171684555832681">Khác...</translation>
+<translation id="6709093583001123835">Giá trị phải là <ph name="VALUE" />.</translation>
+<translation id="6709570249143506788">Chất lượng phát kém</translation>
+<translation id="6790428901817661496">Phát</translation>
+<translation id="6820355525329141109">Không thể tải plugin.</translation>
+<translation id="6831465880655513317">Vòng tròn màu có thanh trượt hai chiều để chọn độ bão hòa và độ sáng</translation>
+<translation id="6843725295806269523">tắt tiếng</translation>
+<translation id="6889412865110485830">Biểu tượng giỏ hàng</translation>
+<translation id="6919891270253167948">1,5</translation>
+<translation id="6940482800520966738">Biểu tượng Dấu sao</translation>
+<translation id="6941933287844615239">tải xuống phương tiện</translation>
+<translation id="698788488269350478">đã mở rộng.</translation>
+<translation id="6989848892321993519">Vui lòng kéo dài văn bản này thành <ph name="MIN_CHARACTERS" /> ký tự trở lên (bạn hiện đang sử dụng 1 ký tự).</translation>
+<translation id="7022838723850801004">Biểu tượng cảm xúc với khuôn mặt hạnh phúc và buồn</translation>
+<translation id="709897737746224366">Vui lòng khớp với định dạng được yêu cầu.</translation>
+<translation id="7102274145889307184">vị trí hiện tại</translation>
+<translation id="7118469954320184356">Không có nội dung mô tả.</translation>
+<translation id="7263440858009898357">Vui lòng chọn một mục trong danh sách.</translation>
+<translation id="7320576522385648310">lưu vào bộ đệm</translation>
+<translation id="7341556277900466204">Vòng tròn màu</translation>
+<translation id="7364796246159120393">Chọn tệp</translation>
+<translation id="739024184232394898">Khác...</translation>
+<translation id="7410239719251593705">Có vẻ chứa nội dung người lớn. Không có nội dung mô tả.</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
+<translation id="7514365320538308">Tải xuống</translation>
+<translation id="7533959249147584474">Hình ảnh không có nhãn</translation>
+<translation id="7673697353781729403">Giờ</translation>
+<translation id="7742609585924342092">Biểu tượng vị trí</translation>
+<translation id="7745230546936012372">Để tải nội dung mô tả hình ảnh bị thiếu, hãy mở menu ngữ cảnh.</translation>
+<translation id="7750228210027921155">Hình trong hình</translation>
+<translation id="775297008183122718">Mục nhập không hợp lệ</translation>
+<translation id="7782515065589691344">1.25</translation>
+<translation id="7789962463072032349">tạm dừng</translation>
+<translation id="7796968532285333302">Biểu tượng sọc chữ V hướng xuống, có thể có nghĩa là thao tác Thu gọn</translation>
+<translation id="7819026464394689674">Biểu tượng tạm dừng</translation>
+<translation id="7852167693871241274">Thanh trượt màu sắc</translation>
+<translation id="7855610409192055689">Biểu tượng kẹp giấy, có thể có nghĩa là tệp đính kèm</translation>
+<translation id="7888071071722539607">Vui lòng bao gồm '<ph name="ATSIGN" />' trong địa chỉ email. '<ph name="INVALIDADDRESS" />' bị thiếu '<ph name="ATSIGN" />'.</translation>
+<translation id="795667975304826397">Không có tệp nào được chọn</translation>
+<translation id="7962328325860248200">Chưa chọn <ph name="ACCNAME" /></translation>
+<translation id="7994555495914042081">Biểu tượng dấu kiểm</translation>
+<translation id="8097409774376213335">Biểu tượng mũi tên xuống</translation>
+<translation id="8105750478534334542">Biểu tượng ngón tay cái quay xuống, có thể có nghĩa là đánh dấu không thích</translation>
+<translation id="811583516810654505">Đang tải nội dung mô tả...</translation>
+<translation id="8117451130807776954">Tuần này</translation>
+<translation id="8131955114056917397">0,25</translation>
+<translation id="8147719583347050106">Biểu tượng Google</translation>
+<translation id="8199524924445686405">yyyy</translation>
+<translation id="8261464734335370856">Chính tả không hợp lệ</translation>
+<translation id="8276790177939055966">Biểu tượng sọc chữ V chỉ bên phải</translation>
+<translation id="8284326494547611709">Phụ đề</translation>
+<translation id="835897206747267392">Giá trị không hợp lệ.</translation>
+<translation id="839593075537728968">Giá trị phải nằm trong khoảng từ <ph name="MINIMUM_TIME" /> đến <ph name="MAXIMUM_TIME" />.</translation>
+<translation id="8403857369060869934">thời gian trôi qua: <ph name="ELAPSED_TIME" /></translation>
+<translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> tệp</translation>
+<translation id="8451268428117625855">Vui lòng chọn một tệp.</translation>
+<translation id="8488243824626550045">Biểu tượng Facebook</translation>
+<translation id="8534579021159131403">Phút</translation>
+<translation id="8541249477527128034">điều khiển nội dung nghe nhìn</translation>
+<translation id="8613126697340063924">điều khiển phát lại từ xa</translation>
+<translation id="8634971699417195529">Hiển thị bộ chọn tháng</translation>
+<translation id="8637593834423658414">1,75</translation>
+<translation id="8657910582115602348">Biểu tượng Trợ lý Google</translation>
+<translation id="8668988909814782445">Tự ngắt dòng</translation>
+<translation id="8750798805984357768">Vui lòng chọn một trong các tùy chọn sau.</translation>
+<translation id="8845239796550121995">Hiện đang truyền tới TV của bạn</translation>
+<translation id="8875657656876809964">Lỗi phát lại video</translation>
+<translation id="8889402386540077796">Màu sắc</translation>
+<translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="894736920926684893">Trình chuyển đổi định dạng</translation>
+<translation id="8987927404178983737">Tháng</translation>
+<translation id="901493112792887934">thời gian hiện tại bằng giây</translation>
+<translation id="9039639793210005614">Biểu tượng thư viện ảnh</translation>
+<translation id="9040233563616141093">Biểu tượng bốn mũi tên hướng vào trong, có thể có nghĩa là thao tác Thu nhỏ</translation>
+<translation id="9073800864014589651">Biểu tượng phát</translation>
+<translation id="9093215626363556771">thoát chế độ hình trong hình</translation>
+<translation id="9105500880071990795">Biểu tượng giảm âm lượng</translation>
+<translation id="9132465097189459683">Khác...</translation>
+<translation id="913630661384792974">Biểu tượng máy quay video, có thể có nghĩa là thao tác Quay video</translation>
+<translation id="9155987714137265666"><ph name="WEEK" />, bắt đầu vào <ph name="WEEK_START_DATE" /></translation>
+<translation id="916607977885256133">Ảnh trong ảnh</translation>
+<translation id="945780513535800434">Đã kiểm tra một phần</translation>
+<translation id="947651054772746219">Biểu tượng hình người</translation>
+<translation id="954003015749068518">vào chế độ hình trong hình</translation>
+</translationbundle>
