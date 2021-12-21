@@ -7888,7 +7888,6 @@ crbug.com/1249176 [ Mac11-arm64 ] fast/forms/suggestion-picker/time-suggestion-p
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/local/stylesheet-and-script-load-order-http.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/local/blob/send-sliced-data-blob.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/local/formdata/send-form-data-with-empty-name.html [ Crash ]
-crbug.com/1249176 [ Mac11-arm64 ] http/tests/security/xss-DENIED-assign-location-hostname.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] media/picture-in-picture/v2/request-picture-in-picture.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] paint/invalidation/selection/invalidation-rect-includes-newline-for-rtl.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] storage/indexeddb/intversion-revert-on-abort.html [ Crash ]
