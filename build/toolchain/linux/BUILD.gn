@@ -117,7 +117,6 @@ template("clang_v8_toolchain") {
   clang_toolchain(target_name) {
     toolchain_args = {
       current_os = "linux"
-      use_glib = false
       forward_variables_from(invoker.toolchain_args, "*")
     }
   }
