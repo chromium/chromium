@@ -103,16 +103,16 @@ void TextureLayer::SetTransferableResourceInternal(
     viz::ReleaseCallback release_callback,
     bool requires_commit) {
   DCHECK(IsMutationAllowed());
-  DCHECK(resource.mailbox_holder.mailbox.IsZero() || !holder_ref_ ||
-         resource != holder_ref_->holder()->resource());
+  DCHECK(resource.mailbox_holder.mailbox.IsZero() || !resource_holder_ ||
+         resource != resource_holder_->resource());
   DCHECK_EQ(resource.mailbox_holder.mailbox.IsZero(), !release_callback);
 
   // If we never commited the mailbox, we need to release it here.
   if (!resource.mailbox_holder.mailbox.IsZero()) {
-    holder_ref_ = TransferableResourceHolder::Create(
+    resource_holder_ = TransferableResourceHolder::Create(
         resource, std::move(release_callback));
   } else {
-    holder_ref_ = nullptr;
+    resource_holder_ = nullptr;
   }
   needs_set_resource_ = true;
   // If we are within a commit, no need to do it again immediately after.
@@ -143,7 +143,7 @@ void TextureLayer::SetLayerTreeHost(LayerTreeHost* host) {
   // If we're removed from the tree, the TextureLayerImpl will be destroyed, and
   // we will need to set the mailbox again on a new TextureLayerImpl the next
   // time we push.
-  if (!host && holder_ref_)
+  if (!host && resource_holder_)
     needs_set_resource_ = true;
   if (host) {
     // When attached to a new LayerTreeHost, all previously registered
@@ -158,7 +158,7 @@ void TextureLayer::SetLayerTreeHost(LayerTreeHost* host) {
 }
 
 bool TextureLayer::HasDrawableContent() const {
-  return (client_ || holder_ref_) && Layer::HasDrawableContent();
+  return (client_ || resource_holder_) && Layer::HasDrawableContent();
 }
 
 bool TextureLayer::Update() {
@@ -209,13 +209,13 @@ void TextureLayer::PushPropertiesTo(
   if (needs_set_resource_) {
     viz::TransferableResource resource;
     viz::ReleaseCallback release_callback;
-    if (holder_ref_) {
-      TransferableResourceHolder* holder = holder_ref_->holder();
-      resource = holder->resource();
+    if (resource_holder_) {
+      resource = resource_holder_->resource();
       release_callback =
-          holder->GetCallbackForImplThread(layer->layer_tree_impl()
+          base::BindOnce(&TransferableResourceHolder::Return, resource_holder_,
+                         base::RetainedRef(layer->layer_tree_impl()
                                                ->task_runner_provider()
-                                               ->MainThreadTaskRunner());
+                                               ->MainThreadTaskRunner()));
     }
     texture_layer->SetTransferableResource(resource,
                                            std::move(release_callback));
@@ -268,23 +268,6 @@ void TextureLayer::UnregisterSharedBitmapId(viz::SharedBitmapId id) {
   SetNeedsPushProperties();
 }
 
-TextureLayer::TransferableResourceHolder::MainThreadReference::
-    MainThreadReference(TransferableResourceHolder* holder)
-    : holder_(holder) {
-  holder_->InternalAddRef();
-}
-
-TextureLayer::TransferableResourceHolder::MainThreadReference::
-    ~MainThreadReference() {
-#if DCHECK_IS_ON()
-  {
-    base::AutoLock hold(holder_->posted_internal_derefs_lock_);
-    ++holder_->posted_internal_derefs_;
-  }
-#endif
-  holder_->InternalRelease();
-}
-
 TextureLayer::TransferableResourceHolder::TransferableResourceHolder(
     const viz::TransferableResource& resource,
     viz::ReleaseCallback release_callback)
@@ -293,85 +276,36 @@ TextureLayer::TransferableResourceHolder::TransferableResourceHolder(
       sync_token_(resource.mailbox_holder.sync_token) {}
 
 TextureLayer::TransferableResourceHolder::~TransferableResourceHolder() {
-#if DCHECK_IS_ON()
-  {
-    // If the MessageLoop is destroyed while a posted deref is waiting to run,
-    // this object will be destroyed with an internal_references_ still present.
-    // So we must also include the outstanding posted derefences.
-    base::AutoLock hold(posted_internal_derefs_lock_);
-    DCHECK_EQ(internal_references_, posted_internal_derefs_);
-  }
-#endif
   if (release_callback_) {
-    // We land here if the dereferences are posted but not run and the
-    // MessageLoop is destroyed, destroying those tasks and this object with it.
-    // We run the ReleaseCallback in that case assuming the MessageLoop is being
-    // destroyed on the main thread.
-    DCHECK(main_thread_checker_.CalledOnValidThread());
-    std::move(release_callback_).Run(sync_token_, is_lost_);
+    if (!release_callback_task_runner_ ||
+        release_callback_task_runner_->RunsTasksInCurrentSequence()) {
+      std::move(release_callback_).Run(sync_token_, is_lost_);
+    } else {
+      DCHECK(release_callback_task_runner_);
+      release_callback_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(release_callback_), sync_token_, is_lost_));
+    }
   }
 }
 
-std::unique_ptr<TextureLayer::TransferableResourceHolder::MainThreadReference>
+scoped_refptr<TextureLayer::TransferableResourceHolder>
 TextureLayer::TransferableResourceHolder::Create(
     const viz::TransferableResource& resource,
     viz::ReleaseCallback release_callback) {
-  return std::make_unique<MainThreadReference>(
-      new TransferableResourceHolder(resource, std::move(release_callback)));
+  return new TransferableResourceHolder(resource, std::move(release_callback));
 }
 
 void TextureLayer::TransferableResourceHolder::Return(
+    scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
     const gpu::SyncToken& sync_token,
     bool is_lost) {
-  base::AutoLock lock(arguments_lock_);
   sync_token_ = sync_token;
   is_lost_ = is_lost;
-}
-
-viz::ReleaseCallback
-TextureLayer::TransferableResourceHolder::GetCallbackForImplThread(
-    scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner) {
-  // We can't call GetCallbackForImplThread if we released the main thread
-  // reference.
-  DCHECK_GT(internal_references_, 0);
-  InternalAddRef();
-  return base::BindOnce(
-      &TransferableResourceHolder::ReturnAndReleaseOnImplThread, this,
-      std::move(main_thread_task_runner));
-}
-
-void TextureLayer::TransferableResourceHolder::InternalAddRef() {
-  ++internal_references_;
-}
-
-void TextureLayer::TransferableResourceHolder::InternalRelease() {
-  DCHECK(main_thread_checker_.CalledOnValidThread());
-#if DCHECK_IS_ON()
-  {
-    base::AutoLock hold(posted_internal_derefs_lock_);
-    --posted_internal_derefs_;
-  }
-#endif
-  if (!--internal_references_) {
-    std::move(release_callback_).Run(sync_token_, is_lost_);
-    resource_ = viz::TransferableResource();
-  }
-}
-
-void TextureLayer::TransferableResourceHolder::ReturnAndReleaseOnImplThread(
-    const scoped_refptr<base::SequencedTaskRunner>& main_thread_task_runner,
-    const gpu::SyncToken& sync_token,
-    bool is_lost) {
-  Return(sync_token, is_lost);
-#if DCHECK_IS_ON()
-  {
-    base::AutoLock hold(posted_internal_derefs_lock_);
-    ++posted_internal_derefs_;
-  }
-#endif
-  main_thread_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&TransferableResourceHolder::InternalRelease, this));
+  // When this method returns, the refcount of the holder will be decremented,
+  // which might cause it to be destructed on the impl thread. We store the
+  // main thread task runner here to make sure it's available to the destructor.
+  release_callback_task_runner_ = std::move(main_thread_task_runner);
 }
 
 }  // namespace cc

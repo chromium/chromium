@@ -398,21 +398,22 @@ class TextureLayerMailboxHolderTest : public TextureLayerTest {
   }
 
   void CreateMainRef() {
-    main_ref_ = TestMailboxHolder::Create(test_data_.resource1_,
-                                          test_data_.release_callback1_);
+    resource_holder_ = TestMailboxHolder::Create(test_data_.resource1_,
+                                                 test_data_.release_callback1_);
   }
 
-  void ReleaseMainRef() { main_ref_ = nullptr; }
+  void ReleaseMainRef() { resource_holder_ = nullptr; }
 
   void CreateImplRef(
       viz::ReleaseCallback* impl_ref,
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner) {
-    *impl_ref = main_ref_->holder()->GetCallbackForImplThread(
-        std::move(main_thread_task_runner));
+    *impl_ref =
+        base::BindOnce(&TextureLayer::TransferableResourceHolder::Return,
+                       resource_holder_, main_thread_task_runner);
   }
 
  protected:
-  std::unique_ptr<TestMailboxHolder::MainThreadReference> main_ref_;
+  scoped_refptr<TextureLayer::TransferableResourceHolder> resource_holder_;
   base::Thread main_thread_;
 };
 
@@ -651,8 +652,8 @@ class TextureLayerImplWithMailboxThreadedCallback : public LayerTreeTest {
         // Resetting the resource will call the callback now, before another
         // commit is needed, as the ReleaseCallback is already in flight from
         // RemoveFromParent().
-        layer_->ClearTexture();
         pending_callback_ = true;
+        layer_->ClearTexture();
         frame_number_ = layer_tree_host()->SourceFrameNumber();
         break;
       case 8:
@@ -676,8 +677,16 @@ class TextureLayerImplWithMailboxThreadedCallback : public LayerTreeTest {
     ++callback_count_;
 
     // If we are waiting on a callback, advance now.
-    if (pending_callback_)
-      AdvanceTestCase();
+    if (pending_callback_) {
+      layer_tree_host()
+          ->GetTaskRunnerProvider()
+          ->MainThreadTaskRunner()
+          ->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  &TextureLayerImplWithMailboxThreadedCallback::AdvanceTestCase,
+                  base::Unretained(this)));
+    }
   }
 
   void SetMailbox(char mailbox_char) {
@@ -1869,11 +1878,15 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
     }
   }
 
+  void WillCommit(const CommitState& commit_state) override {
+    source_frame_number_ = commit_state.source_frame_number;
+  }
+
   void ReleaseCallback(const gpu::SyncToken& token, bool lost) {
     // The software resource is not released when the LayerTreeFrameSink is lost
     // since software resources are not destroyed by the GPU process dying. It
     // is released only after we call TextureLayer::ClearClient().
-    EXPECT_EQ(layer_tree_host()->SourceFrameNumber(), 4);
+    EXPECT_EQ(source_frame_number_, 3);
     released_ = true;
     EndTest();
   }
@@ -1882,6 +1895,7 @@ class SoftwareTextureLayerLoseFrameSinkTest : public SoftwareTextureLayerTest {
 
   int step_ = 0;
   int verified_frames_ = 0;
+  int source_frame_number_ = 0;
   bool released_ = false;
   viz::SharedBitmapId id_;
   SharedBitmapIdRegistration registration_;
