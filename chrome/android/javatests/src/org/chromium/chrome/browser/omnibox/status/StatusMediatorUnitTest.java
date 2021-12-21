@@ -484,16 +484,10 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
         Assert.assertFalse(mMediator.isStoreIconShowing());
-        Assert.assertNotEquals(mStoreIconDrawable,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
-                        .getDrawable(mContext, mResources));
 
         // Try to show the store icon.
         mMediator.showStoreIcon(mWindowAndroid, "test2.com", mStoreIconDrawable, 0, true);
         Assert.assertFalse(mMediator.isStoreIconShowing());
-        Assert.assertNotEquals(mStoreIconDrawable,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
-                        .getDrawable(mContext, mResources));
     }
 
     @Test
@@ -505,16 +499,10 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
         Assert.assertFalse(mMediator.isStoreIconShowing());
-        Assert.assertNotEquals(mStoreIconDrawable,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
-                        .getDrawable(mContext, mResources));
 
         // Try to show the store icon.
         mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0, true);
         Assert.assertFalse(mMediator.isStoreIconShowing());
-        Assert.assertNotEquals(mStoreIconDrawable,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
-                        .getDrawable(mContext, mResources));
     }
 
     @Test
@@ -526,16 +514,10 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
         Assert.assertFalse(mMediator.isStoreIconShowing());
-        Assert.assertNotEquals(mStoreIconDrawable,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
-                        .getDrawable(mContext, mResources));
 
         // Try to show the store icon.
         mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0, true);
         Assert.assertTrue(mMediator.isStoreIconShowing());
-        Assert.assertEquals(mStoreIconDrawable,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
-                        .getDrawable(mContext, mResources));
         Assert.assertEquals(IconTransitionType.ROTATE,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getTransitionType());
         Assert.assertNotNull(
@@ -555,9 +537,6 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
         Assert.assertFalse(mMediator.isStoreIconShowing());
-        Assert.assertNotEquals(mStoreIconDrawable,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
-                        .getDrawable(mContext, mResources));
     }
 
     @Test
@@ -569,16 +548,10 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
         Assert.assertFalse(mMediator.isStoreIconShowing());
-        Assert.assertNotEquals(mStoreIconDrawable,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
-                        .getDrawable(mContext, mResources));
 
         // Try to show the store icon.
         mMediator.showStoreIcon(mWindowAndroid, "test.com", mStoreIconDrawable, 0, false);
         Assert.assertTrue(mMediator.isStoreIconShowing());
-        Assert.assertEquals(mStoreIconDrawable,
-                mModel.get(StatusProperties.STATUS_ICON_RESOURCE)
-                        .getDrawable(mContext, mResources));
         Assert.assertEquals(IconTransitionType.ROTATE,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getTransitionType());
         Assert.assertNotNull(
