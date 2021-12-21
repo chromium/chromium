@@ -62,7 +62,6 @@ message CriticalPersistedTabDataProto {
     DESKTOP = 2;
     UNSET = 3;
     USER_AGENT_SIZE = 4;
-    USER_AGENT_UNKNOWN = 5;
   }
   optional UserAgentType user_agent = 9;
 }

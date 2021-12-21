@@ -591,12 +591,17 @@ public class CriticalPersistedTabDataTest {
     @SmallTest
     @Test
     public void testConvertTabUserAgentToProtoUserAgentType() {
-        for (@TabUserAgent Integer tabUserAgent = 0; tabUserAgent <= TabUserAgent.SIZE;
+        for (@TabUserAgent int tabUserAgent = 0; tabUserAgent <= TabUserAgent.SIZE;
                 tabUserAgent++) {
             CriticalPersistedTabDataProto.UserAgentType protoUserAgentType =
                     CriticalPersistedTabData.getUserAgentType(tabUserAgent);
-            Assert.assertNotEquals("TabUserAgent value is invalid.", protoUserAgentType,
-                    CriticalPersistedTabDataProto.UserAgentType.USER_AGENT_UNKNOWN);
+            if (tabUserAgent == TabUserAgent.DEFAULT) {
+                Assert.assertEquals("TabUserAgent value is mapped incorrectly.", protoUserAgentType,
+                        CriticalPersistedTabDataProto.UserAgentType.DEFAULT);
+            } else {
+                Assert.assertNotEquals("TabUserAgent value is invalid.", protoUserAgentType,
+                        CriticalPersistedTabDataProto.UserAgentType.DEFAULT);
+            }
             if (tabUserAgent != TabUserAgent.SIZE) continue;
             Assert.assertEquals("TabUserAgent and ProtoUserAgentType should have the same size.",
                     protoUserAgentType,
@@ -609,13 +614,18 @@ public class CriticalPersistedTabDataTest {
     public void testConvertProtoUserAgentTypeToTabUserAgent() {
         for (CriticalPersistedTabDataProto.UserAgentType type :
                 CriticalPersistedTabDataProto.UserAgentType.values()) {
-            if (type == CriticalPersistedTabDataProto.UserAgentType.USER_AGENT_UNKNOWN) continue;
             @TabUserAgent
-            Integer tabUserAgent = CriticalPersistedTabData.getUserAgentType(type);
-            Assert.assertNotNull("ProtoUserAgentType value is invalid.", tabUserAgent);
+            int tabUserAgent = CriticalPersistedTabData.getUserAgentType(type);
+            if (type == CriticalPersistedTabDataProto.UserAgentType.DEFAULT) {
+                Assert.assertEquals("ProtoUserAgentType value is mapped incorrectly.", tabUserAgent,
+                        TabUserAgent.DEFAULT);
+            } else {
+                Assert.assertNotEquals(
+                        "ProtoUserAgentType value is invalid.", tabUserAgent, TabUserAgent.DEFAULT);
+            }
             if (type != CriticalPersistedTabDataProto.UserAgentType.USER_AGENT_SIZE) continue;
             Assert.assertEquals("TabUserAgent and ProtoUserAgentType should have the same size.",
-                    (int) tabUserAgent, TabUserAgent.SIZE);
+                    tabUserAgent, TabUserAgent.SIZE);
         }
     }
 }
