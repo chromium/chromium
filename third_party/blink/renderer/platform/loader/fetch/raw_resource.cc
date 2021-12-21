@@ -357,8 +357,7 @@ Resource::MatchStatus RawResource::CanReuse(
 void RawResourceClient::DidDownloadToBlob(Resource*,
                                           scoped_refptr<BlobDataHandle>) {}
 
-RawResourceClientStateChecker::RawResourceClientStateChecker()
-    : state_(kNotAddedAsClient) {}
+RawResourceClientStateChecker::RawResourceClientStateChecker() = default;
 
 NOINLINE void RawResourceClientStateChecker::WillAddClient() {
   SECURITY_CHECK(state_ == kNotAddedAsClient);
@@ -367,7 +366,8 @@ NOINLINE void RawResourceClientStateChecker::WillAddClient() {
 
 NOINLINE void RawResourceClientStateChecker::WillRemoveClient() {
   SECURITY_CHECK(state_ != kNotAddedAsClient);
-  state_ = kNotAddedAsClient;
+  SECURITY_CHECK(state_ != kDetached);
+  state_ = kDetached;
 }
 
 NOINLINE void RawResourceClientStateChecker::RedirectReceived() {
@@ -440,6 +440,7 @@ NOINLINE void RawResourceClientStateChecker::NotifyFinished(
   base::debug::Alias(&mark2);
 
   SECURITY_CHECK(state_ != kNotAddedAsClient);
+  SECURITY_CHECK(state_ != kDetached);
   SECURITY_CHECK(state_ != kNotifyFinished);
 
   // TODO(https://crbug.com/1158346): Remove these CHECKs once the investigation
