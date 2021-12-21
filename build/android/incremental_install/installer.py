@@ -10,6 +10,7 @@ import argparse
 import collections
 import functools
 import glob
+import hashlib
 import json
 import logging
 import os
@@ -36,7 +37,7 @@ sys.path = prev_sys_path
 
 _R8_PATH = os.path.join(build_utils.DIR_SOURCE_ROOT, 'third_party', 'r8', 'lib',
                         'r8.jar')
-_SHARD_PREFIX = 'shard'
+_SHARD_JSON_FILENAME = 'shards.json'
 
 
 def _DeviceCachePath(device):
@@ -61,15 +62,32 @@ def _GetDeviceIncrementalDir(package):
   return '/data/local/tmp/incremental-app-%s' % package
 
 
-def _IsStale(src_paths, dest):
+def _IsStale(src_paths, old_src_paths, dest_path):
   """Returns if |dest| is older than any of |src_paths|, or missing."""
-  if not os.path.exists(dest):
+  if not os.path.exists(dest_path):
     return True
-  dest_time = os.path.getmtime(dest)
+  # Always mark as stale if any paths were added or removed.
+  if set(src_paths) != set(old_src_paths):
+    return True
+  dest_time = os.path.getmtime(dest_path)
   for path in src_paths:
     if os.path.getmtime(path) > dest_time:
       return True
   return False
+
+
+def _LoadPrevShards(dex_staging_dir):
+  shards_json_path = os.path.join(dex_staging_dir, _SHARD_JSON_FILENAME)
+  if not os.path.exists(shards_json_path):
+    return {}
+  with open(shards_json_path) as f:
+    return json.load(f)
+
+
+def _SaveNewShards(shards, dex_staging_dir):
+  shards_json_path = os.path.join(dex_staging_dir, _SHARD_JSON_FILENAME)
+  with open(shards_json_path, 'w') as f:
+    json.dump(shards, f)
 
 
 def _AllocateDexShards(dex_files):
@@ -92,25 +110,26 @@ def _AllocateDexShards(dex_files):
           os.sep, '.')
       shards[name].append(src_path)
     else:
-      # TODO(wnwen): hash(string) is not stable across python3 invocations.
-      #     Switch this to a stable hash that consistently shards the same file
-      #     to the same shard across runs.
-      name = '{}{}.dex.jar'.format(_SHARD_PREFIX,
-                                   hash(src_path) % NUM_CORE_SHARDS)
+      # The stdlib hash(string) function is salted differently across python3
+      # invocations. Thus we use md5 instead to consistently shard the same
+      # file to the same shard across runs.
+      hex_hash = hashlib.md5(src_path.encode('utf-8')).hexdigest()
+      name = 'shard{}.dex.jar'.format(int(hex_hash, 16) % NUM_CORE_SHARDS)
       shards[name].append(src_path)
   logging.info('Sharding %d dex files into %d buckets', len(dex_files),
                len(shards))
   return shards
 
 
-def _CreateDexFiles(shards, dex_staging_dir, min_api, use_concurrency):
+def _CreateDexFiles(shards, prev_shards, dex_staging_dir, min_api,
+                    use_concurrency):
   """Creates dex files within |dex_staging_dir| defined by |shards|."""
   tasks = []
   for name, src_paths in shards.items():
     dest_path = os.path.join(dex_staging_dir, name)
-    # TODO(wnwen): _IsStale() also needs to check if src_paths has changed for
-    #     shards comprised of multiple inputs. https://crbug.com/1269298
-    if name.startswith(_SHARD_PREFIX) or _IsStale(src_paths, dest_path):
+    if _IsStale(src_paths=src_paths,
+                old_src_paths=prev_shards.get(name, []),
+                dest_path=dest_path):
       tasks.append(
           functools.partial(dex.MergeDexForIncrementalInstall, _R8_PATH,
                             src_paths, dest_path, min_api))
@@ -219,10 +238,14 @@ def Install(device, install_json, apk=None, enable_device_cache=False,
 
     def do_merge_dex():
       merge_dex_timer.Start()
+      prev_shards = _LoadPrevShards(dex_staging_dir)
       shards = _AllocateDexShards(dex_files)
       build_utils.MakeDirectory(dex_staging_dir)
-      _CreateDexFiles(shards, dex_staging_dir, apk.GetMinSdkVersion(),
-                      use_concurrency)
+      _CreateDexFiles(shards, prev_shards, dex_staging_dir,
+                      apk.GetMinSdkVersion(), use_concurrency)
+      # New shard information must be saved after _CreateDexFiles since
+      # _CreateDexFiles removes all non-dex files from the staging dir.
+      _SaveNewShards(shards, dex_staging_dir)
       merge_dex_timer.Stop(log=False)
 
     def do_push_dex():

@@ -190,6 +190,8 @@ def _server():
     cmd = [_SRC_ROOT / 'build' / 'android' / 'fast_local_dev_server.py']
     # Avoid the build server's output polluting benchmark results, but allow
     # stderr to get through in case the build server fails with an error.
+    # TODO(wnwen): Switch to using subprocess.run and check=True to quit if the
+    #     server cannot be started.
     server_proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL)
     logging.debug('Started fast local dev server.')
     try:
