@@ -166,6 +166,8 @@ public class PriceDropNotifier {
         notificationBuilder.setContentText(notificationData.text);
         notificationBuilder.setContentIntent(createContentIntent(notificationData.destinationUrl));
         notificationBuilder.setSmallIcon(R.drawable.ic_chrome);
+        notificationBuilder.setTimeoutAfter(
+                PriceTrackingNotificationConfig.getNotificationTimeoutMs());
         if (notificationData.actions != null) {
             for (ActionData action : notificationData.actions) {
                 PendingIntentProvider actionClickIntentProvider = createClickIntent(
