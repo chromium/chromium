@@ -1695,7 +1695,13 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, MAYBE_ScrollWithSpace) {
   EXPECT_EQ(viewport_height, GetViewportScrollPositionY(guest_contents));
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, ScrollWithPageDownUp) {
+// crbug.com/1281749
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#define MAYBE_ScrollWithPageDownUp DISABLED_ScrollWithPageDownUp
+#else
+#define MAYBE_ScrollWithPageDownUp ScrollWithPageDownUp
+#endif
+IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, MAYBE_ScrollWithPageDownUp) {
   WebContents* guest_contents = LoadPdfGetGuestContents(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   SetInputFocusOnPlugin(guest_contents);
