@@ -69,6 +69,9 @@ void DesksTextfield::SetTextAndElideIfNeeded(const std::u16string& text) {
 
 void DesksTextfield::UpdateViewAppearance() {
   background()->SetNativeControlColor(GetBackgroundColor());
+  // Paint the whole view to update the background. The `SchedulePaint` in
+  // `UpdateFocusRingState` will only repaint the focus ring.
+  SchedulePaint();
   UpdateFocusRingState();
 }
 
