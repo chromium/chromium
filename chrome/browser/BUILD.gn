@@ -4586,6 +4586,8 @@ static_library("browser") {
       "apps/app_service/file_utils.h",
       "apps/app_service/menu_util.cc",
       "apps/app_service/menu_util.h",
+      "apps/app_service/metrics/app_platform_input_metrics.cc",
+      "apps/app_service/metrics/app_platform_input_metrics.h",
       "apps/app_service/metrics/app_platform_metrics.cc",
       "apps/app_service/metrics/app_platform_metrics.h",
       "apps/app_service/metrics/app_platform_metrics_service.cc",
