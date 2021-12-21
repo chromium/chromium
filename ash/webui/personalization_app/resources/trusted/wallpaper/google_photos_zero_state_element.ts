@@ -7,13 +7,12 @@
  */
 
 import './styles.js';
-import '/common/styles.js';
+import '../../common/styles.js';
 
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {WithPersonalizationStore} from '../personalization_store.js';
 
-/** @polymer */
 export class GooglePhotosZeroState extends WithPersonalizationStore {
   static get is() {
     return 'google-photos-zero-state';
@@ -23,12 +22,8 @@ export class GooglePhotosZeroState extends WithPersonalizationStore {
     return html`{__html_template__}`;
   }
 
-  /**
-   * Returns the message to be displayed.
-   * @return {string}
-   * @private
-   */
-  getMessage_() {
+  /** Returns the message to be displayed. */
+  private getMessage_(): string {
     return this.i18nAdvanced('googlePhotosZeroStateMessage', {
       substitutions: [
         '<a target="_blank" href="https://photos.google.com">photos.google.com</a>'
