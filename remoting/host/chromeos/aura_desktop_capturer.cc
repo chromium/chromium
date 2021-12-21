@@ -16,12 +16,15 @@ namespace remoting {
 namespace {
 
 std::unique_ptr<webrtc::DesktopFrame> ToDesktopFrame(
+    int dpi,
     absl::optional<SkBitmap> bitmap) {
   if (!bitmap)
     return nullptr;
 
   std::unique_ptr<webrtc::DesktopFrame> frame(SkiaBitmapDesktopFrame::Create(
       std::make_unique<SkBitmap>(std::move(bitmap.value()))));
+
+  frame->set_dpi(webrtc::DesktopVector(dpi, dpi));
 
   // |VideoFramePump| will not encode the frame if |updated_region| is empty.
   const webrtc::DesktopRect& rect = webrtc::DesktopRect::MakeWH(
@@ -50,9 +53,17 @@ void AuraDesktopCapturer::Start(webrtc::DesktopCapturer::Callback* callback) {
 
 void AuraDesktopCapturer::CaptureFrame() {
   DCHECK(callback_) << "Call Start() first";
+
+  const display::Display* source = GetSourceDisplay();
+  if (!source) {
+    callback_->OnCaptureResult(DesktopCapturer::Result::ERROR_TEMPORARY,
+                               nullptr);
+    return;
+  }
+
   util_.TakeScreenshotOfDisplay(
       source_display_id_,
-      base::BindOnce(ToDesktopFrame)
+      base::BindOnce(ToDesktopFrame, util_.GetDpi(*source))
           .Then(base::BindOnce(&AuraDesktopCapturer::OnFrameCaptured,
                                weak_factory_.GetWeakPtr())));
 }
@@ -78,6 +89,10 @@ bool AuraDesktopCapturer::GetSourceList(SourceList* sources) {
 bool AuraDesktopCapturer::SelectSource(SourceId id) {
   // TODO(zijiehe): Implement screen selection.
   return true;
+}
+
+const display::Display* AuraDesktopCapturer::GetSourceDisplay() const {
+  return util_.GetDisplayForId(source_display_id_);
 }
 
 }  // namespace remoting

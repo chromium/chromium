@@ -38,6 +38,8 @@ class AuraDesktopCapturer : public webrtc::DesktopCapturer {
   // Called when a copy of the layer is captured.
   void OnFrameCaptured(std::unique_ptr<webrtc::DesktopFrame> frame);
 
+  const display::Display* GetSourceDisplay() const;
+
   AshDisplayUtil& util_;
 
   // Points to the callback passed to webrtc::DesktopCapturer::Start().

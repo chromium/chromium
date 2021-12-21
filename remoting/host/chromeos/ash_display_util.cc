@@ -111,6 +111,16 @@ void AshDisplayUtil::SetInstanceForTesting(AshDisplayUtil* instance) {
   g_instance_for_testing_ = instance;
 }
 
+// static
+int AshDisplayUtil::ScaleFactorToDpi(float scale_factor) {
+  return static_cast<int>(scale_factor * kDefaultDpi);
+}
+
+// static
+int AshDisplayUtil::GetDpi(const display::Display& display) {
+  return ScaleFactorToDpi(display.device_scale_factor());
+}
+
 AshDisplayUtil::~AshDisplayUtil() = default;
 
 }  // namespace remoting

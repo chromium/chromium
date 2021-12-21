@@ -208,6 +208,41 @@ TEST_F(AuraDesktopCapturerTest, ShouldSetUpdatedRegion) {
   EXPECT_FALSE(result.frame->updated_region().is_empty());
 }
 
+TEST_F(AuraDesktopCapturerTest, ShouldSetDpi) {
+  const float scale_factor = 2.5;
+  // scale_factor = dpi / default_dpi (and default_dpi is 96).
+  const int dpi = static_cast<int>(scale_factor * 96);
+
+  display_util().GetPrimaryDisplay().set_device_scale_factor(scale_factor);
+
+  capturer_.Start(&desktop_capturer_callback());
+  capturer_.CaptureFrame();
+
+  display_util().ReplyWithScreenshot(TestBitmap());
+
+  CaptureResult result = desktop_capturer_callback().WaitForResult();
+  ASSERT_THAT(result.frame, NotNull());
+  EXPECT_THAT(result.frame->dpi().x(), Eq(dpi));
+  EXPECT_THAT(result.frame->dpi().y(), Eq(dpi));
+}
+
+TEST_F(AuraDesktopCapturerTest, ShouldNotCrashIfDisplayIsUnavailable) {
+  capturer_.Start(&desktop_capturer_callback());
+
+  capturer_.SelectSource(display_util().GetPrimaryDisplayId());
+
+  // By changing the primary display id, the selected source now no longer
+  // exists.
+  display_util().SetPrimaryDisplayId(666);
+
+  capturer_.CaptureFrame();
+
+  CaptureResult result = desktop_capturer_callback().WaitForResult();
+  ASSERT_THAT(result.result,
+              Eq(webrtc::DesktopCapturer::Result::ERROR_TEMPORARY));
+  ASSERT_THAT(result.frame, IsNull());
+}
+
 TEST_F(AuraDesktopCapturerTest, ShouldReturnTemporaryErrorIfScreenshotFails) {
   capturer_.Start(&desktop_capturer_callback());
   capturer_.CaptureFrame();

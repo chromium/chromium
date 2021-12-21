@@ -28,6 +28,10 @@ class AshDisplayUtil {
   // To unset call this method again with nullptr.
   static void SetInstanceForTesting(AshDisplayUtil* instance);
 
+  // Convert the scale factor to DPI.
+  static int ScaleFactorToDpi(float scale_factor);
+  static int GetDpi(const display::Display& display);
+
   virtual ~AshDisplayUtil();
 
   virtual DisplayId GetPrimaryDisplayId() const = 0;
