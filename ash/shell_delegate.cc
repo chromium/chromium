@@ -30,9 +30,4 @@ int ShellDelegate::GetUiDevToolsPort() const {
   return -1;
 }
 
-const GURL& ShellDelegate::GetLastCommittedURLForWindowIfAny(
-    aura::Window* window) {
-  return GURL::EmptyGURL();
-}
-
 }  // namespace ash
