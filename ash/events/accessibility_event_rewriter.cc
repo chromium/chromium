@@ -178,8 +178,16 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
     return false;
 
   const ui::KeyEvent* key_event = event.AsKeyEvent();
+  ui::EventRewriterChromeOS::MutableKeyState state(key_event);
+  event_rewriter_chromeos_->RewriteModifierKeys(*key_event, &state);
+
+  std::unique_ptr<ui::Event> rewritten_event;
+  ui::EventRewriterChromeOS::BuildRewrittenKeyEvent(*key_event, state,
+                                                    &rewritten_event);
+  ui::KeyEvent* rewritten_key_event = rewritten_event.get()->AsKeyEvent();
+
   const auto& key =
-      switch_access_key_codes_to_capture_.find(key_event->key_code());
+      switch_access_key_codes_to_capture_.find(rewritten_key_event->key_code());
   if (key == switch_access_key_codes_to_capture_.end())
     return false;
 
@@ -214,7 +222,7 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
       }
     } else {
       SwitchAccessCommand command =
-          key_code_to_switch_access_command_[key_event->key_code()];
+          key_code_to_switch_access_command_[rewritten_key_event->key_code()];
       delegate_->SendSwitchAccessCommand(command);
     }
   }
