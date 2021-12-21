@@ -280,8 +280,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // Note that this function just set the scrollbar itself needs repaint by
   // blink during paint, but doesn't set the scrollbar parts (thumb or track)
   // of an accelerated scrollbar needing repaint by the compositor.
-  // Use Scrollbar::SetNeedsPaintInvaldiation() instead.
-  virtual void SetScrollbarNeedsPaintInvalidation(ScrollbarOrientation);
+  // Use Scrollbar::SetNeedsPaintInvalidation() instead.
+  void SetScrollbarNeedsPaintInvalidation(ScrollbarOrientation);
 
   virtual void SetScrollCornerNeedsPaintInvalidation();
 
@@ -389,9 +389,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   virtual bool ScrollAnimatorEnabled() const { return false; }
 
-  // NOTE: Only called from Internals for testing.
-  void UpdateScrollOffsetFromInternals(const gfx::Vector2d&);
-
   gfx::Vector2d ClampScrollOffset(const gfx::Vector2d&) const;
   ScrollOffset ClampScrollOffset(const ScrollOffset&) const;
 
@@ -404,12 +401,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   virtual void DeregisterForAnimation() {}
 
   virtual bool UsesCompositedScrolling() const {
-    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    return uses_composited_scrolling_;
-  }
-  void SetUsesCompositedScrolling(bool uses_composited_scrolling) {
-    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    uses_composited_scrolling_ = uses_composited_scrolling;
+    NOTREACHED();
+    return false;
   }
   virtual bool ShouldScrollOnMainThread() const { return false; }
   void MainThreadScrollingDidChange();
@@ -446,7 +439,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   // Note that in CompositeAfterPaint, these methods always return nullptr
   // except for VisualViewport.
-  virtual cc::Layer* LayerForScrolling() const { return nullptr; }
   virtual cc::Layer* LayerForHorizontalScrollbar() const { return nullptr; }
   virtual cc::Layer* LayerForVerticalScrollbar() const { return nullptr; }
   virtual cc::Layer* LayerForScrollCorner() const { return nullptr; }
@@ -669,7 +661,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   unsigned scrollbar_captured_ : 1;
   unsigned mouse_over_scrollbar_ : 1;
   unsigned has_been_disposed_ : 1;
-  unsigned uses_composited_scrolling_ : 1;
 
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
 };

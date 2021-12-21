@@ -60,7 +60,6 @@ namespace blink {
 enum ResizerHitTestType { kResizerForPointer, kResizerForTouch };
 
 class ComputedStyle;
-class GraphicsLayer;
 class HitTestResult;
 class LayoutBox;
 class LayoutCustomScrollbarPart;
@@ -95,33 +94,28 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
 // scrollLeft).
 //
 // The size and scroll origin of the scrollable area are based on layout
-// dimensions. They are recomputed after layout in updateScrollDimensions.
+// dimensions. They are recomputed after layout in |UpdateScrollDimensions|.
 //
-// updateScrollDimensions also determines if scrollbars need to be allocated,
+// |UpdateScrollDimensions| also determines if scrollbars need to be allocated,
 // destroyed or updated as a result of layout. This is based on the value of the
 // 'overflow' property. Having non-overlay scrollbars automatically allocates a
-// scrollcorner (m_scrollCorner), which is used to style the intersection of the
-// two scrollbars.
+// scrollcorner (|scroll_corner_|), which is used to style the intersection of
+// the two scrollbars.
 //
 // Note that scrollbars are placed based on the LayoutBox's computed
 // 'direction'. See https://webkit.org/b/54623 for some context.
 //
-// The ‘resize' property allocates a resizer (m_resizer), which is overlaid on
-// top of the scroll corner. It is used to resize an element using the mouse.
-//
-// The scrollbars and scroll corner can also be hardware accelerated
-// and thus get their own GraphicsLayer (see the layerFor* functions).
-// This only happens if the associated PaintLayer is itself composited.
-//
+// The ‘resize' property allocates a resizer (|resizer_|), which is overlaid on
+// top of the scroll corner. It is used to resize an element using the mouse. A
+// resizer can exist when there are no scrollbars.
 //
 // ***** OVERLAY OVERFLOW CONTROLS *****
-// Overlay overflow controls are painted on top of the box's content. As such
-// they don't use any space in the box. Software overlay overflow controls are
-// painted by PaintLayerPainter::PaintOverlayOverflowControlsForFragments after
-// all content as part of a separate tree traversal. The reason for this 2nd
-// traversal is that they need to be painted on top of everything. Hardware
-// accelerated overlay overflow controls are painted into their associated
-// GraphicsLayers by CompositedLayerMapping::PaintScrollableArea.
+// Overlay overflow controls are painted on top of the box's content, including
+// overlay scrollbars and resizers (regardless of whether the scrollbars are
+// overlaid). As such, they don't use any space in the box. Overlay overflow
+// controls are painted by
+// |PaintLayerPainter::PaintOverlayOverflowControlsForFragments| after all
+// scrolling contents.
 class CORE_EXPORT PaintLayerScrollableArea final
     : public GarbageCollected<PaintLayerScrollableArea>,
       public ScrollableArea {
@@ -298,21 +292,10 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void DidCompositorScroll(const gfx::PointF&) override;
 
-  // GraphicsLayers for the scrolling components.
-  // Any function can return nullptr if they are not accelerated.
-  GraphicsLayer* GraphicsLayerForHorizontalScrollbar() const;
-  GraphicsLayer* GraphicsLayerForVerticalScrollbar() const;
-  GraphicsLayer* GraphicsLayerForScrollCorner() const;
-
-  cc::Layer* LayerForHorizontalScrollbar() const override;
-  cc::Layer* LayerForVerticalScrollbar() const override;
-  cc::Layer* LayerForScrollCorner() const override;
-
   bool ShouldScrollOnMainThread() const override;
   bool IsActive() const override;
   bool IsScrollCornerVisible() const override;
   gfx::Rect ScrollCornerRect() const override;
-  void SetScrollbarNeedsPaintInvalidation(ScrollbarOrientation) override;
   void SetScrollCornerNeedsPaintInvalidation() override;
   gfx::Rect ConvertFromScrollbarToContainingEmbeddedContentView(
       const Scrollbar&,
@@ -506,14 +489,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
                                       unsigned = 0) const final;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner() const final;
-
-  bool ShouldRebuildHorizontalScrollbarLayer() const {
-    return rebuild_horizontal_scrollbar_layer_;
-  }
-  bool ShouldRebuildVerticalScrollbarLayer() const {
-    return rebuild_vertical_scrollbar_layer_;
-  }
-  void ResetRebuildScrollbarLayerFlags();
 
   // Did DelayScrollOffsetClampScope prevent us from running
   // clampScrollOffsetsAfterLayout() in updateAfterLayout()?
@@ -728,7 +703,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
       const PaintInvalidatorContext&,
       bool needs_paint_invalidation,
       Scrollbar* scrollbar,
-      GraphicsLayer* graphics_layer,
       bool& previously_was_overlay,
       bool& previously_was_directly_composited,
       gfx::Rect& visual_rect);
@@ -752,13 +726,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // FIXME: once cc can handle composited scrolling with clip paths, we will
   // no longer need this bit.
   unsigned needs_composited_scrolling_ : 1;
-
-  // Set to indicate that a scrollbar layer, if present, needs to be rebuilt
-  // in the next compositing update because the underlying blink::Scrollbar
-  // instance has been reconstructed.
-  unsigned rebuild_horizontal_scrollbar_layer_ : 1;
-  unsigned rebuild_vertical_scrollbar_layer_ : 1;
-  unsigned previous_vertical_scrollbar_on_left_ : 1;
 
   unsigned needs_scroll_offset_clamp_ : 1;
   unsigned needs_relayout_ : 1;

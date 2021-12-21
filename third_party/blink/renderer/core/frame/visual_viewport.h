@@ -215,7 +215,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   void ScrollControlWasSetNeedsPaintInvalidation() override {}
   void UpdateScrollOffset(const ScrollOffset&,
                           mojom::blink::ScrollType) override;
-  cc::Layer* LayerForScrolling() const override;
+  cc::Layer* LayerForScrolling() const;
   cc::Layer* LayerForHorizontalScrollbar() const override;
   cc::Layer* LayerForVerticalScrollbar() const override;
   bool ScheduleAnimation() override;

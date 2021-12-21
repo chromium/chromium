@@ -15,7 +15,6 @@ class Vector2d;
 namespace blink {
 
 class CullRect;
-class DisplayItemClient;
 class GraphicsContext;
 class Scrollbar;
 struct PaintInfo;
@@ -55,7 +54,6 @@ class ScrollableAreaPainter {
                                 const gfx::Rect& resizer_corner_rect);
 
   PaintLayerScrollableArea& GetScrollableArea() const;
-  const DisplayItemClient& DisplayItemClientForCorner() const;
 
   PaintLayerScrollableArea* scrollable_area_;
 };

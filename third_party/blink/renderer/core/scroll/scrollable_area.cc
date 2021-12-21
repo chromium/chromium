@@ -55,7 +55,6 @@
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -110,7 +109,6 @@ ScrollableArea::ScrollableArea(
       scrollbar_captured_(false),
       mouse_over_scrollbar_(false),
       has_been_disposed_(false),
-      uses_composited_scrolling_(false),
       compositor_task_runner_(std::move(compositor_task_runner)) {
   DCHECK(compositor_task_runner_);
 }
@@ -488,13 +486,6 @@ bool ScrollableArea::ScrollBehaviorFromString(
   return true;
 }
 
-// NOTE: Only called from Internals for testing.
-void ScrollableArea::UpdateScrollOffsetFromInternals(
-    const gfx::Vector2d& offset) {
-  ScrollOffsetChanged(ScrollOffset(offset),
-                      mojom::blink::ScrollType::kProgrammatic);
-}
-
 void ScrollableArea::RegisterScrollCompleteCallback(ScrollCallback callback) {
   DCHECK(!HasBeenDisposed());
   pending_scroll_complete_callbacks_.push_back(std::move(callback));
@@ -645,21 +636,12 @@ void ScrollableArea::SetScrollbarNeedsPaintInvalidation(
   else
     vertical_scrollbar_needs_paint_invalidation_ = true;
 
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // GetLayoutBox() may be null in some unit tests.
-    if (auto* box = GetLayoutBox()) {
-      auto* frame_view = GetLayoutBox()->GetFrameView();
-      if (auto* compositor = frame_view->GetPaintArtifactCompositor()) {
-        compositor->SetScrollbarNeedsDisplay(
-            GetScrollbarElementId(orientation));
-      }
+  // GetLayoutBox() may be null in some unit tests.
+  if (auto* box = GetLayoutBox()) {
+    auto* frame_view = GetLayoutBox()->GetFrameView();
+    if (auto* compositor = frame_view->GetPaintArtifactCompositor()) {
+      compositor->SetScrollbarNeedsDisplay(GetScrollbarElementId(orientation));
     }
-  } else {
-    cc::Layer* layer = orientation == kHorizontalScrollbar
-                           ? LayerForHorizontalScrollbar()
-                           : LayerForVerticalScrollbar();
-    if (layer)
-      layer->SetNeedsDisplay();
   }
 
   ScrollControlWasSetNeedsPaintInvalidation();

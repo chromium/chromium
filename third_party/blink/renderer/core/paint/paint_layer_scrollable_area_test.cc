@@ -1435,28 +1435,18 @@ TEST_P(PaintLayerScrollableAreaTest,
     const auto& visual_viewport =
         document.View()->GetPage()->GetVisualViewport();
 
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      const auto& paint_chunks = ContentPaintChunks();
-      bool found_root_scrollbar = false;
-      for (const auto& chunk : paint_chunks) {
-        if (chunk.id ==
-            PaintChunk::Id(root_scrollable->VerticalScrollbar()->Id(),
-                           DisplayItem::kCustomScrollbarHitTest)) {
-          EXPECT_EQ(
-              &chunk.properties.Transform(),
-              visual_viewport.GetOverscrollElasticityTransformNode()->Parent());
-          found_root_scrollbar = true;
-        }
+    const auto& paint_chunks = ContentPaintChunks();
+    bool found_root_scrollbar = false;
+    for (const auto& chunk : paint_chunks) {
+      if (chunk.id == PaintChunk::Id(root_scrollable->VerticalScrollbar()->Id(),
+                                     DisplayItem::kCustomScrollbarHitTest)) {
+        EXPECT_EQ(
+            &chunk.properties.Transform(),
+            visual_viewport.GetOverscrollElasticityTransformNode()->Parent());
+        found_root_scrollbar = true;
       }
-      EXPECT_TRUE(found_root_scrollbar);
-    } else {
-      auto* vertical_scrollbar_layer =
-          root_scrollable->GraphicsLayerForVerticalScrollbar();
-      ASSERT_TRUE(vertical_scrollbar_layer);
-      EXPECT_EQ(
-          &vertical_scrollbar_layer->GetPropertyTreeState().Transform(),
-          visual_viewport.GetOverscrollElasticityTransformNode()->Parent());
     }
+    EXPECT_TRUE(found_root_scrollbar);
   }
 
   // Non root scrollbar should use scroller's transform node.
@@ -1470,27 +1460,17 @@ TEST_P(PaintLayerScrollableAreaTest,
                                 .FirstFragment()
                                 .LocalBorderBoxProperties();
 
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      const auto& paint_chunks = ContentPaintChunks();
-      bool found_subscroller_scrollbar = false;
-      for (const auto& chunk : paint_chunks) {
-        if (chunk.id ==
-            PaintChunk::Id(scrollable_area->VerticalScrollbar()->Id(),
-                           DisplayItem::kCustomScrollbarHitTest)) {
-          EXPECT_EQ(&chunk.properties.Transform(),
-                    &paint_properties.Transform());
+    const auto& paint_chunks = ContentPaintChunks();
+    bool found_subscroller_scrollbar = false;
+    for (const auto& chunk : paint_chunks) {
+      if (chunk.id == PaintChunk::Id(scrollable_area->VerticalScrollbar()->Id(),
+                                     DisplayItem::kCustomScrollbarHitTest)) {
+        EXPECT_EQ(&chunk.properties.Transform(), &paint_properties.Transform());
 
-          found_subscroller_scrollbar = true;
-        }
+        found_subscroller_scrollbar = true;
       }
-      EXPECT_TRUE(found_subscroller_scrollbar);
-    } else {
-      auto* vertical_scrollbar_layer =
-          scrollable_area->GraphicsLayerForVerticalScrollbar();
-      ASSERT_TRUE(vertical_scrollbar_layer);
-      EXPECT_EQ(&vertical_scrollbar_layer->GetPropertyTreeState().Transform(),
-                &paint_properties.Transform());
     }
+    EXPECT_TRUE(found_subscroller_scrollbar);
   }
 }
 

@@ -837,14 +837,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ViewportAddRemoveDeviceEmulationNode) {
   EXPECT_FALSE(visual_viewport.LayerForHorizontalScrollbar());
   EXPECT_FALSE(visual_viewport.LayerForVerticalScrollbar());
   ASSERT_TRUE(GetLayoutView().GetScrollableArea());
-  auto* scrollbar_layer = GetLayoutView()
-                              .GetScrollableArea()
-                              ->GraphicsLayerForHorizontalScrollbar();
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    ASSERT_TRUE(scrollbar_layer);
-    EXPECT_EQ(&TransformPaintPropertyNode::Root(),
-              &scrollbar_layer->GetPropertyTreeState().Transform());
-  } else {
+  {
     auto& chunk = *(ContentPaintChunks().begin() + 1);
     EXPECT_EQ(DisplayItem::kScrollbarHorizontal, chunk.id.type);
     EXPECT_EQ(&TransformPaintPropertyNode::Root(),
@@ -858,11 +851,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ViewportAddRemoveDeviceEmulationNode) {
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(visual_viewport.GetDeviceEmulationTransformNode());
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    ASSERT_TRUE(scrollbar_layer);
-    EXPECT_EQ(visual_viewport.GetDeviceEmulationTransformNode(),
-              &scrollbar_layer->GetPropertyTreeState().Transform());
-  } else {
+  {
     auto& chunk = *(ContentPaintChunks().begin() + 1);
     EXPECT_EQ(DisplayItem::kScrollbarHorizontal, chunk.id.type);
     EXPECT_EQ(visual_viewport.GetDeviceEmulationTransformNode(),
@@ -875,11 +864,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ViewportAddRemoveDeviceEmulationNode) {
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(visual_viewport.GetDeviceEmulationTransformNode());
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    ASSERT_TRUE(scrollbar_layer);
-    EXPECT_EQ(&TransformPaintPropertyNode::Root(),
-              &scrollbar_layer->GetPropertyTreeState().Transform());
-  } else {
+  {
     auto& chunk = *(ContentPaintChunks().begin() + 1);
     EXPECT_EQ(DisplayItem::kScrollbarHorizontal, chunk.id.type);
     EXPECT_EQ(&TransformPaintPropertyNode::Root(),

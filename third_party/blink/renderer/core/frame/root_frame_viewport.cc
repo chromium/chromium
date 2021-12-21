@@ -495,10 +495,6 @@ void RootFrameViewport::ScrollControlWasSetNeedsPaintInvalidation() {
   LayoutViewport().ScrollControlWasSetNeedsPaintInvalidation();
 }
 
-cc::Layer* RootFrameViewport::LayerForScrolling() const {
-  return LayoutViewport().LayerForScrolling();
-}
-
 cc::Layer* RootFrameViewport::LayerForHorizontalScrollbar() const {
   return LayoutViewport().LayerForHorizontalScrollbar();
 }
