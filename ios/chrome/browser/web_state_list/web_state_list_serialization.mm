@@ -12,11 +12,14 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #import "base/mac/foundation_util.h"
+#include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/sessions/session_features.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_state.h"
+#include "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -29,9 +32,18 @@ NSString* const kOpenerIndexKey = @"OpenerIndex";
 NSString* const kOpenerNavigationIndexKey = @"OpenerNavigationIndex";
 }  // namespace
 
-SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list) {
+SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list,
+                                        NSSet* web_states_to_serialize) {
   NSMutableArray<CRWSessionStorage*>* serialized_session =
       [NSMutableArray arrayWithCapacity:web_state_list->count()];
+  NSMutableArray<SessionSummary*>* serialized_session_summary = nil;
+  NSMutableDictionary<NSString*, NSData*>* serialized_tab_contents = nil;
+  if (sessions::ShouldSaveSessionTabsToSeparateFiles()) {
+    serialized_session_summary =
+        [NSMutableArray arrayWithCapacity:web_state_list->count()];
+    serialized_tab_contents =
+        [NSMutableDictionary dictionaryWithCapacity:web_state_list->count()];
+  }
 
   for (int index = 0; index < web_state_list->count(); ++index) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
@@ -53,7 +65,38 @@ SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list) {
                                              kOpenerNavigationIndexKey);
     }
 
-    [serialized_session addObject:web_state->BuildSessionStorage()];
+    CRWSessionStorage* session_storage = web_state->BuildSessionStorage();
+    [serialized_session addObject:session_storage];
+    if (sessions::ShouldSaveSessionTabsToSeparateFiles()) {
+      NSString* web_state_id = web_state->GetStableIdentifier();
+      NSURL* url = net::NSURLWithGURL(web_state->GetVisibleURL());
+      NSString* title = base::SysUTF16ToNSString(web_state->GetTitle());
+      SessionSummary* summary =
+          [[SessionSummary alloc] initWithURL:url
+                                        title:title
+                             stableIdentifier:web_state_id];
+      [serialized_session_summary addObject:summary];
+
+      if (!web_states_to_serialize ||
+          [web_states_to_serialize containsObject:web_state_id]) {
+        NSError* error = nil;
+        NSData* data =
+            [NSKeyedArchiver archivedDataWithRootObject:session_storage
+                                  requiringSecureCoding:NO
+                                                  error:&error];
+        if (!data || error) {
+          DLOG(WARNING) << "Error serializing session : "
+                        << base::SysNSStringToUTF8(web_state_id) << ": "
+                        << base::SysNSStringToUTF8([error description]);
+          serialized_tab_contents[web_state_id] = [NSData data];
+        } else {
+          serialized_tab_contents[web_state_id] = data;
+        }
+
+      } else {
+        serialized_tab_contents[web_state_id] = [NSData data];
+      }
+    }
   }
 
   NSUInteger selectedIndex =
@@ -61,8 +104,15 @@ SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list) {
           ? static_cast<NSUInteger>(web_state_list->active_index())
           : static_cast<NSUInteger>(NSNotFound);
 
-  return [[SessionWindowIOS alloc] initWithSessions:[serialized_session copy]
-                                      selectedIndex:selectedIndex];
+  return [[SessionWindowIOS alloc]
+      initWithSessions:[serialized_session copy]
+       sessionsSummary:[serialized_session_summary copy]
+           tabContents:[serialized_tab_contents copy]
+         selectedIndex:selectedIndex];
+}
+
+SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list) {
+  return SerializeWebStateList(web_state_list, nil);
 }
 
 void DeserializeWebStateList(WebStateList* web_state_list,

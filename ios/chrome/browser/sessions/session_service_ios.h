@@ -62,6 +62,17 @@
 + (NSString*)sessionPathForSessionID:(NSString*)sessionID
                            directory:(const base::FilePath&)directory;
 
+// Returns the path of the tab file with id |tabID| for session with |sessionID|
+// within a |directory|.
++ (NSString*)filePathForTabID:(NSString*)tabID
+                    sessionID:(NSString*)sessionID
+                    directory:(const base::FilePath&)directory;
+
+// Returns the path of the tab file with id |tabID| for session at
+// |sessionPath|.
++ (NSString*)filePathForTabID:(NSString*)tabID
+                  sessionPath:(NSString*)sessionPath;
+
 @end
 
 @interface SessionServiceIOS (SubClassing)
@@ -71,6 +82,7 @@
 // is not a situation we normally expect to be in because we never
 // want the session being saved on the main thread in the production app.
 - (void)performSaveSessionData:(NSData*)sessionData
+                   tabContents:(NSDictionary*)tabContents
                    sessionPath:(NSString*)sessionPath;
 
 @end

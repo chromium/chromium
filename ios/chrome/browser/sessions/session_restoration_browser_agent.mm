@@ -259,6 +259,7 @@ void SessionRestorationBrowserAgent::WebStateInsertedAt(
   if (activating || web_state->IsLoading())
     return;
 
+  [session_ios_factory_ markWebStateDirty:web_state];
   // Persist the session state if the new web state is not loading.
   SaveSession(/*immediately=*/false);
 }
@@ -271,6 +272,7 @@ void SessionRestorationBrowserAgent::WebStateReplacedAt(
   if (new_web_state->IsLoading())
     return;
 
+  [session_ios_factory_ markWebStateDirty:new_web_state];
   // Persist the session state if the new web state is not loading.
   SaveSession(/*immediately=*/false);
 }
@@ -290,6 +292,7 @@ void SessionRestorationBrowserAgent::WebStateMoved(WebStateList* web_state_list,
 void SessionRestorationBrowserAgent::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
+  [session_ios_factory_ markWebStateDirty:web_state];
   // Save the session each time a navigation finishes.
   SaveSession(/*immediately=*/false);
 }

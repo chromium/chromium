@@ -118,6 +118,8 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
       [sessions addObject:session_storage];
     }
     return [[SessionWindowIOS alloc] initWithSessions:sessions
+                                      sessionsSummary:nil
+                                          tabContents:nil
                                         selectedIndex:selected_index];
   }
 

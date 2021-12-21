@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "ios/chrome/browser/sessions/session_features.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -25,6 +27,10 @@ namespace {
 
 std::unique_ptr<web::WebState> CreateWebState() {
   return std::make_unique<web::FakeWebState>();
+}
+
+std::unique_ptr<web::WebState> CreateWebStateWithID(NSString* web_state_id) {
+  return std::make_unique<web::FakeWebState>(web_state_id);
 }
 
 std::unique_ptr<web::WebState> CreateWebStateWithSessionStorage(
@@ -83,7 +89,7 @@ class WebStateListSerializationTest : public PlatformTest {
 TEST_F(WebStateListSerializationTest, SerializationEmpty) {
   WebStateList original_web_state_list(web_state_list_delegate());
   SessionWindowIOS* session_window =
-      SerializeWebStateList(&original_web_state_list);
+      SerializeWebStateList(&original_web_state_list, [NSSet set]);
 
   EXPECT_EQ(0u, session_window.sessions.count);
   EXPECT_EQ(static_cast<NSUInteger>(NSNotFound), session_window.selectedIndex);
@@ -105,7 +111,7 @@ TEST_F(WebStateListSerializationTest, SerializationRoundTrip) {
       WebStateOpener(original_web_state_list.GetWebStateAt(1), 1));
 
   SessionWindowIOS* session_window =
-      SerializeWebStateList(&original_web_state_list);
+      SerializeWebStateList(&original_web_state_list, [NSSet set]);
 
   EXPECT_EQ(4u, session_window.sessions.count);
   EXPECT_EQ(1u, session_window.selectedIndex);
@@ -128,4 +134,48 @@ TEST_F(WebStateListSerializationTest, SerializationRoundTrip) {
   // Verify that the WebUsageEnabled bit is left to default value.
   for (int i = 0; i < restored_web_state_list.count(); ++i)
     EXPECT_TRUE(restored_web_state_list.GetWebStateAt(i)->IsWebUsageEnabled());
+}
+
+TEST_F(WebStateListSerializationTest, Serialize) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(sessions::kSaveSessionTabsToSeparateFiles);
+
+  WebStateList original_web_state_list(web_state_list_delegate());
+  original_web_state_list.InsertWebState(0, CreateWebStateWithID(@"1"),
+                                         WebStateList::INSERT_FORCE_INDEX,
+                                         WebStateOpener());
+  original_web_state_list.InsertWebState(
+      1, CreateWebStateWithID(@"2"),
+      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
+      WebStateOpener(original_web_state_list.GetWebStateAt(0), 3));
+  original_web_state_list.InsertWebState(
+      2, CreateWebStateWithID(@"3"), WebStateList::INSERT_FORCE_INDEX,
+      WebStateOpener(original_web_state_list.GetWebStateAt(0), 2));
+  original_web_state_list.InsertWebState(
+      3, CreateWebStateWithID(@"4"), WebStateList::INSERT_FORCE_INDEX,
+      WebStateOpener(original_web_state_list.GetWebStateAt(1), 1));
+
+  SessionWindowIOS* session_window =
+      SerializeWebStateList(&original_web_state_list, [NSSet set]);
+  for (int i = 0; i < 4; ++i) {
+    NSString* web_state_id = session_window.sessionsSummary[i].stableIdentifier;
+    EXPECT_EQ(session_window.tabContents[web_state_id].length, 0u);
+  }
+
+  session_window = SerializeWebStateList(&original_web_state_list, nil);
+  for (int i = 0; i < 4; ++i) {
+    NSString* web_state_id = session_window.sessionsSummary[i].stableIdentifier;
+    EXPECT_GT(session_window.tabContents[web_state_id].length, 0u);
+  }
+
+  NSSet* first_two = [NSSet setWithArray:@[ @"1", @"2" ]];
+  session_window = SerializeWebStateList(&original_web_state_list, first_two);
+  for (int i = 0; i < 4; ++i) {
+    NSString* web_state_id = session_window.sessionsSummary[i].stableIdentifier;
+    if ([first_two containsObject:web_state_id]) {
+      EXPECT_GT(session_window.tabContents[web_state_id].length, 0u);
+    } else {
+      EXPECT_EQ(session_window.tabContents[web_state_id].length, 0u);
+    }
+  }
 }

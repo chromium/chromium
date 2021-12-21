@@ -23,6 +23,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #import "ios/chrome/browser/sessions/scene_util.h"
+#include "ios/chrome/browser/sessions/session_features.h"
 #import "ios/chrome/browser/sessions/session_ios.h"
 #import "ios/chrome/browser/sessions/session_ios_factory.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
@@ -210,6 +211,19 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
           .AsUTF8Unsafe());
 }
 
++ (NSString*)filePathForTabID:(NSString*)tabID
+                    sessionID:(NSString*)sessionID
+                    directory:(const base::FilePath&)directory {
+  return [self filePathForTabID:tabID
+                    sessionPath:[self sessionPathForSessionID:sessionID
+                                                    directory:directory]];
+}
+
++ (NSString*)filePathForTabID:(NSString*)tabID
+                  sessionPath:(NSString*)sessionPath {
+  return [NSString stringWithFormat:@"%@-%@", sessionPath, tabID];
+}
+
 #pragma mark - Private methods
 
 // Delete files/folders of the given |paths|.
@@ -223,16 +237,47 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
         for (NSString* path : paths) {
           if (![fileManager fileExistsAtPath:path])
             continue;
-
-          NSError* error = nil;
-          if (![fileManager removeItemAtPath:path error:&error] || error) {
-            CHECK(false) << "Unable to delete path: "
-                         << base::SysNSStringToUTF8(path) << ": "
-                         << base::SysNSStringToUTF8([error description]);
-          }
+          [self deleteSessionPaths:path keepFiles:@[]];
         }
       }),
       std::move(callback));
+}
+
+- (void)deleteSessionPaths:(NSString*)sessionPath
+                 keepFiles:(NSArray*)keepFiles {
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  NSString* directory = [sessionPath stringByDeletingLastPathComponent];
+  NSString* sessionFilename = [sessionPath lastPathComponent];
+  NSError* error = nil;
+  BOOL isDirectory = NO;
+  if (![fileManager fileExistsAtPath:directory isDirectory:&isDirectory] ||
+      !isDirectory) {
+    return;
+  }
+  NSArray<NSString*>* fileList =
+      [fileManager contentsOfDirectoryAtPath:directory error:&error];
+  if (error) {
+    CHECK(false) << "Unable to get session path list: "
+                 << base::SysNSStringToUTF8(directory) << ": "
+                 << base::SysNSStringToUTF8([error description]);
+  }
+  for (NSString* filename : fileList) {
+    if (![filename hasPrefix:sessionFilename] ||
+        [keepFiles containsObject:filename]) {
+      continue;
+    }
+    NSString* filepath = [directory stringByAppendingPathComponent:filename];
+
+    if (![fileManager fileExistsAtPath:filepath isDirectory:&isDirectory] ||
+        isDirectory) {
+      continue;
+    }
+    if (![fileManager removeItemAtPath:filepath error:&error] || error) {
+      CHECK(false) << "Unable to delete path: "
+                   << base::SysNSStringToUTF8(filepath) << ": "
+                   << base::SysNSStringToUTF8([error description]);
+    }
+  }
 }
 
 // Do the work of saving on a background thread.
@@ -256,6 +301,10 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
     NSData* sessionData = [NSKeyedArchiver archivedDataWithRootObject:session
                                                 requiringSecureCoding:NO
                                                                 error:&error];
+    NSDictionary* tabContentsById = nil;
+    if (sessions::ShouldSaveSessionTabsToSeparateFiles()) {
+      tabContentsById = [session sessionTabContents];
+    }
     UmaHistogramTimes("Session.WebStates.ArchivedDataWithRootObjectTime",
                       base::TimeTicks::Now() - start_time);
     if (!sessionData || error) {
@@ -274,6 +323,7 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 
     _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
                             [self performSaveSessionData:sessionData
+                                             tabContents:tabContentsById
                                              sessionPath:sessionPath];
                           }));
   } @catch (NSException* exception) {
@@ -289,12 +339,14 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 @implementation SessionServiceIOS (SubClassing)
 
 - (void)performSaveSessionData:(NSData*)sessionData
+                   tabContents:(NSDictionary*)tabContents
                    sessionPath:(NSString*)sessionPath {
   base::ScopedBlockingCall scoped_blocking_call(
             FROM_HERE, base::BlockingType::MAY_BLOCK);
 
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSString* directory = [sessionPath stringByDeletingLastPathComponent];
+  NSString* sessionFilename = [sessionPath lastPathComponent];
 
   NSError* error = nil;
   BOOL isDirectory = NO;
@@ -320,6 +372,33 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 
   NSDataWritingOptions options =
       NSDataWritingAtomic | NSDataWritingFileProtectionComplete;
+
+  NSMutableArray* filesToKeep =
+      [NSMutableArray arrayWithArray:@[ sessionFilename ]];
+  if (sessions::ShouldSaveSessionTabsToSeparateFiles()) {
+    for (NSString* sessionId : tabContents) {
+      [filesToKeep
+          addObject:[SessionServiceIOS filePathForTabID:sessionId
+                                            sessionPath:sessionFilename]];
+    }
+  }
+
+  [self deleteSessionPaths:sessionPath keepFiles:filesToKeep];
+  if (sessions::ShouldSaveSessionTabsToSeparateFiles()) {
+    for (NSString* existingTab : tabContents) {
+      NSData* data = tabContents[existingTab];
+      NSString* filepath = [SessionServiceIOS filePathForTabID:existingTab
+                                                   sessionPath:sessionPath];
+      if (data.length) {
+        if (![data writeToFile:filepath options:options error:&error]) {
+          NOTREACHED() << "Error writing session file: "
+                       << base::SysNSStringToUTF8(filepath) << ": "
+                       << base::SysNSStringToUTF8([error description]);
+          return;
+        }
+      }
+    }
+  }
 
   base::TimeTicks start_time = base::TimeTicks::Now();
   if (![sessionData writeToFile:sessionPath options:options error:&error]) {

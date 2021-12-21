@@ -64,6 +64,7 @@
 #include "ios/chrome/browser/policy/policy_features.h"
 #include "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/screen_time/screen_time_buildflags.h"
+#import "ios/chrome/browser/sessions/session_features.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
@@ -769,6 +770,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMediaPermissionsControlName,
      flag_descriptions::kMediaPermissionsControlDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kMediaPermissionsControl)},
+    {"enable-save-session-tabs-in-separate-files",
+     flag_descriptions::kSaveSessionTabsToSeparateFilesName,
+     flag_descriptions::kSaveSessionTabsToSeparateFilesDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(sessions::kSaveSessionTabsToSeparateFiles)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

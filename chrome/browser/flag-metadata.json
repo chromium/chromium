@@ -2601,6 +2601,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-save-session-tabs-in-separate-files",
+    "owners": [ "olivierrobin", "sdefresne", "bling-flags@google.org" ],
+    "expiry_milestone": 103
+  },
+  {
     "name": "enable-secure-payment-confirmation-android",
     "owners": [ "maxlg", "web-payments-team@google.com" ],
     "expiry_milestone": 102

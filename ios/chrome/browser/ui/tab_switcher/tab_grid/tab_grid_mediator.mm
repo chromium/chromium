@@ -436,7 +436,7 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
       base::UserMetricsAction("MobileTabGridCloseAllRegularTabs"));
   if (self.webStateList->empty())
     return;
-  self.closedSessionWindow = SerializeWebStateList(self.webStateList);
+  self.closedSessionWindow = SerializeWebStateList(self.webStateList, nil);
   int old_size =
       self.tabRestoreService ? self.tabRestoreService->entries().size() : 0;
   self.webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
