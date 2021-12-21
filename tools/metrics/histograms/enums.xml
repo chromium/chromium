@@ -69261,6 +69261,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="511" label="Click on download in context menu media &gt;=5"/>
 </enum>
 
+<enum name="PhoneHubCameraRollOptInEntryPoint">
+  <int value="0" label="New user opted in via multidevice setup flow"/>
+  <int value="1" label="User opted in via onboarding dialog in phonehub view"/>
+  <int value="2" label="User opted in via Settings page"/>
+</enum>
+
 <enum name="PhoneHubFeatureStatus">
   <int value="0" label="Not eligible for feature"/>
   <int value="1" label="Eligible phone but not set up"/>

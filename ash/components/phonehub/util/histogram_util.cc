@@ -74,6 +74,12 @@ void LogFeatureOptInEntryPoint(OptInEntryPoint entry_point) {
   base::UmaHistogramEnumeration("PhoneHub.OptInEntryPoint", entry_point);
 }
 
+void LogCameraRollFeatureOptInEntryPoint(
+    CameraRollOptInEntryPoint entry_point) {
+  base::UmaHistogramEnumeration("PhoneHub.CameraRoll.OptInEntryPoint",
+                                entry_point);
+}
+
 void LogTetherConnectionResult(TetherConnectionResult result) {
   base::UmaHistogramEnumeration(
       "PhoneHub.TaskCompletion.TetherConnection.Result", result);

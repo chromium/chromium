@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/logging/logging.h"
@@ -355,6 +356,11 @@ void GlobalStateFeatureManagerImpl::ProcessEnableOnVerifyAttempt() {
   }
 
   SetIsFeatureEnabled(true);
+
+  if (managed_feature_ == mojom::Feature::kPhoneHubCameraRoll) {
+    base::UmaHistogramEnumeration("PhoneHub.CameraRoll.OptInEntryPoint",
+                                  mojom::CameraRollOptInEntryPoint::kSetupFlow);
+  }
 }
 
 bool GlobalStateFeatureManagerImpl::ShouldAttemptToEnableAfterHostVerified() {

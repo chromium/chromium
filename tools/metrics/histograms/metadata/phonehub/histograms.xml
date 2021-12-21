@@ -90,6 +90,18 @@ chromium-metrics-reviews@google.com.
   <token key="MediaType" variants="CameraRollMediaType"/>
 </histogram>
 
+<histogram name="PhoneHub.CameraRoll.OptInEntryPoint"
+    enum="PhoneHubCameraRollOptInEntryPoint" expires_after="2022-10-31">
+  <owner>jianbing@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Emitted when a new multidevice suite user goes through the multidevice
+    onboarding flow, when the user enables the Camera Roll toggle in Settings,
+    and when user chose to turn on the feature in camera roll onboarding dialog
+    inside phone hub panel.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.CompletedUserAction" enum="PhoneHubUserAction"
     expires_after="2022-10-31">
   <owner>jonmann@chromium.org</owner>

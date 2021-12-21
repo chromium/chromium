@@ -22,6 +22,17 @@ enum class OptInEntryPoint {
   kMaxValue = kSettings,
 };
 
+// Enumeration of possible opt-in entry points for Phone Hub Camera Roll
+// feature. Keep in  sync with corresponding enum in
+// tools/metrics/histograms/enums.xml. These  values are persisted to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class CameraRollOptInEntryPoint {
+  kSetupFlow = 0,
+  kOnboardingDialog = 1,
+  kSettings = 2,
+  kMaxValue = kSettings,
+};
+
 // Enumeration of results of a tethering connection attempt.
 enum class TetherConnectionResult {
   kAttemptConnection = 0,
@@ -40,6 +51,9 @@ enum class PhoneHubMessageResult {
 
 // Logs a given opt-in |entry_point| for the PhoneHub feature.
 void LogFeatureOptInEntryPoint(OptInEntryPoint entry_point);
+
+// Logs a given opt-in |entry_point| for the PhoneHub Camera Roll feature.
+void LogCameraRollFeatureOptInEntryPoint(CameraRollOptInEntryPoint entry_point);
 
 // Logs a given |result| of a tethering connection attempt.
 void LogTetherConnectionResult(TetherConnectionResult result);

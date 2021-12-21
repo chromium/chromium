@@ -339,6 +339,12 @@ void MultideviceHandler::HandleSetFeatureEnabledState(
     phonehub::util::LogFeatureOptInEntryPoint(
         phonehub::util::OptInEntryPoint::kSettings);
   }
+
+  if (enabled &&
+      feature == multidevice_setup::mojom::Feature::kPhoneHubCameraRoll) {
+    phonehub::util::LogCameraRollFeatureOptInEntryPoint(
+        phonehub::util::CameraRollOptInEntryPoint::kSettings);
+  }
 }
 
 void MultideviceHandler::HandleRemoveHostDevice(const base::ListValue* args) {

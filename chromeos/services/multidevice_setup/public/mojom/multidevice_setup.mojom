@@ -7,6 +7,16 @@ module chromeos.multidevice_setup.mojom;
 import "chromeos/components/multidevice/mojom/multidevice_types.mojom";
 import "chromeos/services/device_sync/public/mojom/device_sync.mojom";
 
+// Enumeration of possible opt-in entry points for Phone Hub Camera Roll
+// feature. This enum is tied directly to a UMA enum defined in
+// tools/metrics/histograms/enums.xml. These values are persisted to logs.
+// Entries should not be renumbered and numeric values should never be reused.
+enum CameraRollOptInEntryPoint {
+  kSetupFlow = 0,
+  kOnboardingDialog = 1,
+  kSettings = 2,
+};
+
 // Enumeration of event types which can be dispatched. Only used for debugging
 // purposes.
 enum EventTypeForDebugging {
