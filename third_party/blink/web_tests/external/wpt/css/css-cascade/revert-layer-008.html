@@ -31,8 +31,10 @@ function raf() {
   return new Promise(resolve => requestAnimationFrame(resolve));
 }
 promise_test(async () => {
-  await raf();
   const target = document.getElementById('target');
+  getComputedStyle(target).getPropertyValue('font-size');
+
+  await raf();
   target.classList.toggle('reverted');
 
   const result = getComputedStyle(target).getPropertyValue('font-size');

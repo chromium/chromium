@@ -13731,6 +13731,13 @@
       {}
      ]
     ],
+    "usbDevice_reset-manual.https.html": [
+     "63a0c356ee4efb34dc3367ba8f1605d995a819f7",
+     [
+      null,
+      {}
+     ]
+    ],
     "usbDevice_transferIn-manual.https.html": [
      "c0fad37e2090c1dfc06f48c978bb9fdf424f4fa9",
      [
@@ -242379,6 +242386,10 @@
        "ecd72b7516c41c83b6e8d320c9b0b87f9c231781",
        []
       ],
+      "percentage-padding-orthogonal-expected.txt": [
+       "7dde7f870c4d04ff81e8727b5e90aec1f79907de",
+       []
+      ],
       "pseudo-elements-002.tentative-ref.html": [
        "66bddf379d133e6c541c003c8e7a280118b678a4",
        []
@@ -357650,7 +357661,7 @@
       ]
      ],
      "revert-layer-008.html": [
-      "e21a178a59eec255e81cfe1ab82fc8bba93b3a62",
+      "cafb17dee1bef11a0e22795301903ceb856d2d29",
       [
        null,
        {}
@@ -358369,6 +358380,13 @@
       ],
       "orthogonal-wm-container-query.html": [
        "30e58f857cd28e524bfa5b4c420f4b268904a4e4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "percentage-padding-orthogonal.html": [
+       "8e0922b200d50c71ecaa9d355f34c3ef692b4413",
        [
         null,
         {}
