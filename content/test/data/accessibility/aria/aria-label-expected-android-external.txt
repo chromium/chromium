@@ -1,0 +1,2 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++CheckBox text:"aria label" checkable clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox", roleDescription="checkbox"]

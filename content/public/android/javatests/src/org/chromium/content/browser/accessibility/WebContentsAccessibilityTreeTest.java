@@ -157,6 +157,888 @@ public class WebContentsAccessibilityTreeTest {
         performAriaTest("annotation-roles.html");
     }
 
+    @Test
+    @SmallTest
+    public void test_ariaAlertdialog() {
+        performAriaTest("aria-alertdialog.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaAlert() {
+        performAriaTest("aria-alert.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaApplication() {
+        performAriaTest("aria-application.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaArticle() {
+        performAriaTest("aria-article.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaAtomic() {
+        performAriaTest("aria-atomic.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaAutocomplete() {
+        performAriaTest("aria-autocomplete.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaBanner() {
+        performAriaTest("aria-banner.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaBusy() {
+        performAriaTest("aria-busy.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaButton() {
+        performAriaTest("aria-button.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaCell() {
+        performAriaTest("aria-cell.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaCheckbox() {
+        performAriaTest("aria-checkbox.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaChecked() {
+        performAriaTest("aria-checked.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaCode() {
+        performAriaTest("aria-code.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaColAttr() {
+        performAriaTest("aria-col-attr.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaColRowIndex() {
+        performAriaTest("aria-col-row-index.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaColRowIndexUndefined() {
+        performAriaTest("aria-col-row-index-undefined.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaColumnheader() {
+        performAriaTest("aria-columnheader.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaCombobox() {
+        performAriaTest("aria-combobox.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaComboboxImplicitHaspopup() {
+        performAriaTest("aria-combobox-implicit-haspopup.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaComboboxUneditable() {
+        performAriaTest("aria-combobox-uneditable.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaComplementary() {
+        performAriaTest("aria-complementary.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaContentinfo() {
+        performAriaTest("aria-contentinfo.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaControls() {
+        performAriaTest("aria-controls.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaCurrent() {
+        performAriaTest("aria-current.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaDefinition() {
+        performAriaTest("aria-definition.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaDescribedby() {
+        performAriaTest("aria-describedby.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaDescription() {
+        performAriaTest("aria-description.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaDetails() {
+        performAriaTest("aria-details.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaDetailsMultiple() {
+        performAriaTest("aria-details-multiple.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaDialog() {
+        performAriaTest("aria-dialog.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaDirectory() {
+        performAriaTest("aria-directory.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaDisabled() {
+        performAriaTest("aria-disabled.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaDocument() {
+        performAriaTest("aria-document.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaDropeffect() {
+        performAriaTest("aria-dropeffect.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaEmphasis() {
+        performAriaTest("aria-emphasis.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaErrormessage() {
+        performAriaTest("aria-errormessage.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaExpanded() {
+        performAriaTest("aria-expanded.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaFigure() {
+        performAriaTest("aria-figure.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaFlowto() {
+        performAriaTest("aria-flowto.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaForm() {
+        performAriaTest("aria-form.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaGeneric() {
+        performAriaTest("aria-generic.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaGridcell() {
+        performAriaTest("aria-gridcell.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaGrid() {
+        performAriaTest("aria-grid.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaGroup() {
+        performAriaTest("aria-group.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaHaspopup() {
+        performAriaTest("aria-haspopup.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaHeading() {
+        performAriaTest("aria-heading.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaHiddenDescribedBy() {
+        performAriaTest("aria-hidden-described-by.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaHidden() {
+        performAriaTest("aria-hidden.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaHiddenIframe() {
+        performAriaTest("aria-hidden-iframe.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaHiddenLabelledBy() {
+        performAriaTest("aria-hidden-labelled-by.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaIllegalVal() {
+        performAriaTest("aria-illegal-val.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaImgChild() {
+        performAriaTest("aria-img-child.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaImg() {
+        performAriaTest("aria-img.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaInsertionDeletion() {
+        performAriaTest("aria-insertion-deletion.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaInvalid() {
+        performAriaTest("aria-invalid.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaKeyshortcuts() {
+        performAriaTest("aria-keyshortcuts.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaLabel() {
+        performAriaTest("aria-label.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaLabelledbyHeading() {
+        performAriaTest("aria-labelledby-heading.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaListboxAriaSelected() {
+        performAriaTest("aria-listbox-aria-selected.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaListboxDisabled() {
+        performAriaTest("aria-listbox-disabled.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaListbox() {
+        performAriaTest("aria-listbox.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaList() {
+        performAriaTest("aria-list.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaListitem() {
+        performAriaTest("aria-listitem.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaLive() {
+        performAriaTest("aria-live.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaLiveWithContent() {
+        performAriaTest("aria-live-with-content.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaLog() {
+        performAriaTest("aria-log.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaMain() {
+        performAriaTest("aria-main.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaMarquee() {
+        performAriaTest("aria-marquee.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaMath() {
+        performAriaTest("aria-math.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaMenubar() {
+        performAriaTest("aria-menubar.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaMenu() {
+        performAriaTest("aria-menu.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaMenuitemcheckbox() {
+        performAriaTest("aria-menuitemcheckbox.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaMenuitem() {
+        performAriaTest("aria-menuitem.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaMenuitemInGroup() {
+        performAriaTest("aria-menuitem-in-group.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaMenuitemradio() {
+        performAriaTest("aria-menuitemradio.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaMeter() {
+        performAriaTest("aria-meter.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaMismatchedTableAttr() {
+        performAriaTest("aria-mismatched-table-attr.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaMultiline() {
+        performAriaTest("aria-multiline.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaMultiselectable() {
+        performAriaTest("aria-multiselectable.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaNavigation() {
+        performAriaTest("aria-navigation.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaNone() {
+        performAriaTest("aria-none.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaNote() {
+        performAriaTest("aria-note.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaOptionComplexChildren() {
+        performAriaTest("aria-option-complex-children.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaOption() {
+        performAriaTest("aria-option.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaOrientation() {
+        performAriaTest("aria-orientation.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaOwnsFromDisplayNone() {
+        performAriaTest("aria-owns-from-display-none.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaOwns() {
+        performAriaTest("aria-owns.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaOwnsIgnored() {
+        performAriaTest("aria-owns-ignored.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaOwnsList() {
+        performAriaTest("aria-owns-list.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaPresentation() {
+        performAriaTest("aria-presentation.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaPresentationInList() {
+        performAriaTest("aria-presentation-in-list.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaPressed() {
+        performAriaTest("aria-pressed.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaProgressbar() {
+        performAriaTest("aria-progressbar.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaRadiogroup() {
+        performAriaTest("aria-radiogroup.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaRadio() {
+        performAriaTest("aria-radio.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaReadonly() {
+        performAriaTest("aria-readonly.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaRegion() {
+        performAriaTest("aria-region.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaRelevant() {
+        performAriaTest("aria-relevant.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaRequired() {
+        performAriaTest("aria-required.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaRoledescription() {
+        performAriaTest("aria-roledescription.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaRowAttr() {
+        performAriaTest("aria-row-attr.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaRowgroup() {
+        performAriaTest("aria-rowgroup.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaRowheader() {
+        performAriaTest("aria-rowheader.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaRow() {
+        performAriaTest("aria-row.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaScrollbar() {
+        performAriaTest("aria-scrollbar.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaSearch() {
+        performAriaTest("aria-search.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaSelected() {
+        performAriaTest("aria-selected.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaSeparator() {
+        performAriaTest("aria-separator.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaSetsize() {
+        performAriaTest("aria-setsize.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaSlider() {
+        performAriaTest("aria-slider.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaSortAriaGrid() {
+        performAriaTest("aria-sort-aria-grid.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaSortHtmlTable() {
+        performAriaTest("aria-sort-html-table.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaStatus() {
+        performAriaTest("aria-status.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaStrong() {
+        performAriaTest("aria-strong.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaSubscript() {
+        performAriaTest("aria-subscript.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaSuperscript() {
+        performAriaTest("aria-superscript.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaSwitch() {
+        performAriaTest("aria-switch.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTab() {
+        performAriaTest("aria-tab.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTable() {
+        performAriaTest("aria-table.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTablistAriaLevel() {
+        performAriaTest("aria-tablist-aria-level.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTablist() {
+        performAriaTest("aria-tablist.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTabNestedInLists() {
+        performAriaTest("aria-tab-nested-in-lists.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTabpanel() {
+        performAriaTest("aria-tabpanel.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTerm() {
+        performAriaTest("aria-term.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTextbox() {
+        performAriaTest("aria-textbox.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTextboxWithAriaTextboxChild() {
+        performAriaTest("aria-textbox-with-aria-textbox-child.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTextboxWithNonTextChildren() {
+        performAriaTest("aria-textbox-with-non-text-children.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTime() {
+        performAriaTest("aria-time.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTimer() {
+        performAriaTest("aria-timer.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTogglebutton() {
+        performAriaTest("aria-togglebutton.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaToolbar() {
+        performAriaTest("aria-toolbar.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTooltip() {
+        performAriaTest("aria-tooltip.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTreeDiscontinuous() {
+        performAriaTest("aria-tree-discontinuous.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTreegrid() {
+        performAriaTest("aria-treegrid.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTree() {
+        performAriaTest("aria-tree.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaTreeitemNestedInLists() {
+        performAriaTest("aria-treeitem-nested-in-lists.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaValuenow() {
+        performAriaTest("aria-valuenow.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaValuetext() {
+        performAriaTest("aria-valuetext.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_ariaVirtualcontent() {
+        performAriaTest("aria-virtualcontent.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_dpubRoles() {
+        performAriaTest("dpub-roles.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_graphicsRoles() {
+        performAriaTest("graphics-roles.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_hiddenDescribedBy() {
+        performAriaTest("hidden-described-by.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_hidden() {
+        performAriaTest("hidden.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_hiddenLabelledBy() {
+        performAriaTest("hidden-labelled-by.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_inputTextAriaPlaceholder() {
+        performAriaTest("input-text-aria-placeholder.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_presentational() {
+        performAriaTest("presentational.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_toggleButtonExpandCollapse() {
+        performAriaTest("toggle-button-expand-collapse.html");
+    }
+
     // ------------------ HTML TESTS ------------------ //
 
     @Test

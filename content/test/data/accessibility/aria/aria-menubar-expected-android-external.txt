@@ -1,0 +1,5 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="menuBar", roleDescription="menu bar"]
+++++MenuItem text:"File" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuItem", roleDescription="menu item"]
+++++MenuItem text:"Edit" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuItem", roleDescription="menu item"]
+++++MenuItem text:"View" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuItem", roleDescription="menu item"]

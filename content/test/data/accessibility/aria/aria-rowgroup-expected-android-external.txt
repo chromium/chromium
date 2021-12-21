@@ -1,0 +1,5 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++GridView CollectionInfo:[rows=0, cols=0] actions:[AX_FOCUS] bundle:[chromeRole="grid", roleDescription="table"]
+++++View actions:[AX_FOCUS] bundle:[chromeRole="rowGroup"]
+++++++View actions:[AX_FOCUS] bundle:[chromeRole="row"]
+++++++View actions:[AX_FOCUS] bundle:[chromeRole="row"]

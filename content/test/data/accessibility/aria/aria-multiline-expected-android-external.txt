@@ -1,0 +1,3 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++EditText clickable editable textSelectionStart:0 textSelectionEnd:0 actions:[CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField"]
+++EditText clickable editable multiLine textSelectionStart:0 textSelectionEnd:0 actions:[CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField"]
