@@ -2131,12 +2131,6 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE" desc="The subtitle of the view that teaches users to turn on iOS auto-fill from Chrome password manager">
         Use the passwords you saved to Chrome in other apps on your device
       </message>
-      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPAD" desc="The subtitle of the view that teaches users to turn on iOS auto-fill from Chrome password manager for iPad [iPadOS only]">
-        You can autofill saved passwords in other apps on your iPad.
-      </message>
-      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPHONE" desc="The subtitle of the view that teaches users to turn on iOS auto-fill from Chrome password manager for iPhone [iOS only]">
-        You can autofill saved passwords in other apps on your iPhone.
-      </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_SYNCING_ENABLED" desc="The subtitle of the view that teaches password-syncing users they can access passwords from their other devices">
         You can also use saved passwords on your other devices.
       </message>

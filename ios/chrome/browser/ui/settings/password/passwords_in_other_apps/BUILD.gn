@@ -13,8 +13,6 @@ source_set("passwords_in_other_apps") {
   deps = [
     ":passwords_in_other_apps_ui",
     "//base",
-    "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/public/provider/chrome/browser/password_auto_fill:password_auto_fill_api",

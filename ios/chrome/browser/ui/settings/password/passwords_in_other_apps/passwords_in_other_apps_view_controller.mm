@@ -6,8 +6,6 @@
 
 #include "base/ios/ios_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-//#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-//#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_view_controller_delegate.h"
@@ -50,7 +48,6 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
 // Properties set on initialization.
 @property(nonatomic, copy, readonly) NSString* titleText;
 @property(nonatomic, copy, readonly) NSString* subtitleText;
-@property(nonatomic, copy, readonly) NSString* secondSubtitleText;
 @property(nonatomic, strong, readonly) UIImage* bannerImage;
 @property(nonatomic, copy, readonly) NSString* actionString;
 
@@ -58,9 +55,6 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
 @property(nonatomic, strong) UIImageView* imageView;
 @property(nonatomic, strong) UILabel* titleLabel;
 @property(nonatomic, strong) UILabel* subtitleLabel;
-// NOTE: This label will only be displayed if
-// isPasswordManagerBrandingUpdateEnabled() returns true
-@property(nonatomic, strong) UILabel* secondSubtitleLabel;
 @property(nonatomic, strong) UIView* turnOnInstructionView;
 @property(nonatomic, strong) UIView* turnOffInstructionView;
 @property(nonatomic, strong) UIButton* actionButton;
@@ -90,7 +84,7 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
 
 @implementation PasswordsInOtherAppsViewController
 
-- (instancetype)initWithSyncingPasswords:(BOOL)isSyncingPasswords {
+- (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _titleText =
@@ -106,15 +100,7 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
         _subtitleText = l10n_util::GetNSString(
             IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPHONE);
       }
-      if (isSyncingPasswords) {
-        _subtitleText = [NSString
-            stringWithFormat:
-                @"%@ %@", _subtitleText,
-                l10n_util::GetNSString(
-                    IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_SYNCING_ENABLED)];
-      }
-      _secondSubtitleText = l10n_util::GetNSString(
-          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SECOND_SUBTITLE);
+
       _bannerImage =
           [UIImage imageNamed:@"settings_passwords_in_other_apps_banner"];
     } else {
@@ -150,9 +136,6 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
   // Add the labels.
   [self.scrollContentView addSubview:self.titleLabel];
   [self.scrollContentView addSubview:self.subtitleLabel];
-  if (isPasswordManagerBrandingUpdateEnabled()) {
-    [self.scrollContentView addSubview:self.secondSubtitleLabel];
-  }
   [self.view addLayoutGuide:subtitleMarginLayoutGuide];
   [self.scrollContentView addSubview:self.specificContentView];
 
@@ -236,6 +219,11 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
         constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
     [self.subtitleLabel.widthAnchor
         constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor],
+
+    // Constraints for the screen-specific content view. It should take the
+    // remaining scroll view area, with some margins on the top and sides.
+    [subtitleMarginLayoutGuide.topAnchor
+        constraintEqualToAnchor:self.subtitleLabel.bottomAnchor],
     [subtitleMarginLayoutGuide.heightAnchor
         constraintEqualToConstant:kDefaultMargin],
     [self.specificContentView.topAnchor
@@ -247,24 +235,6 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
     [self.specificContentView.bottomAnchor
         constraintEqualToAnchor:self.scrollContentView.bottomAnchor],
   ]];
-
-  if (isPasswordManagerBrandingUpdateEnabled()) {
-    [NSLayoutConstraint activateConstraints:@[
-      [self.secondSubtitleLabel.topAnchor
-          constraintEqualToAnchor:self.subtitleLabel.bottomAnchor
-                         constant:kDefaultMargin],
-      [self.secondSubtitleLabel.centerXAnchor
-          constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
-      [self.secondSubtitleLabel.widthAnchor
-          constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor],
-      [subtitleMarginLayoutGuide.topAnchor
-          constraintEqualToAnchor:self.secondSubtitleLabel.bottomAnchor],
-    ]];
-  } else {
-    [subtitleMarginLayoutGuide.topAnchor
-        constraintEqualToAnchor:self.subtitleLabel.bottomAnchor]
-        .active = YES;
-  }
 
   // In iPhone landscape mode, the top image is removed. In that case, we should
   // make sure there is enough distance between the title label and the top edge
@@ -406,21 +376,20 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
 }
 
 - (UILabel*)subtitleLabel {
-    if(!_subtitleLabel){
-      _subtitleLabel = [self createSubtitle];
-      _subtitleLabel.text = self.subtitleText;
-      _subtitleLabel.accessibilityIdentifier = kPasswordsInOtherAppsSubtitleAccessibilityIdentifier;
-    }
-    return _subtitleLabel;
-}
-
-- (UILabel*)secondSubtitleLabel {
-    if(!_secondSubtitleLabel){
-      _secondSubtitleLabel = [self createSubtitle];
-      _secondSubtitleLabel.text = self.secondSubtitleText;
-      _secondSubtitleLabel.accessibilityIdentifier = kPasswordsInOtherAppsSecondSubtitleAccessibilityIdentifier;
-    }
-    return _secondSubtitleLabel;
+  if (!_subtitleLabel) {
+    _subtitleLabel = [[UILabel alloc] init];
+    _subtitleLabel.font =
+        [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _subtitleLabel.numberOfLines = 0;
+    _subtitleLabel.textColor = [UIColor colorNamed:kGrey800Color];
+    _subtitleLabel.text = self.subtitleText;
+    _subtitleLabel.textAlignment = NSTextAlignmentCenter;
+    _subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _subtitleLabel.adjustsFontForContentSizeCategory = YES;
+    _subtitleLabel.accessibilityIdentifier =
+        kPasswordsInOtherAppsSubtitleAccessibilityIdentifier;
+  }
+  return _subtitleLabel;
 }
 
 - (UIActivityIndicatorView*)spinner {
@@ -684,19 +653,6 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
 }
 
 #pragma mark - Private
-
-// Creates a label with reasonable defaults
-- (UILabel*)createSubtitle {
-  UILabel* label = [[UILabel alloc] init];
-  label.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  label.numberOfLines = 0;
-  label.textColor = [UIColor colorNamed:kGrey800Color];
-  label.textAlignment = NSTextAlignmentCenter;
-  label.translatesAutoresizingMaskIntoConstraints = NO;
-  label.adjustsFontForContentSizeCategory = YES;
-  return label;
-}
 
 // Returns caption text that shows below the subtitle in turnOffInstructions.
 - (UITextView*)drawCaptionTextView {
