@@ -378,7 +378,8 @@ TEST_F(TemporaryAppListSortTest, ReparentingItemToRootResetsSortOrder) {
 
 // Verifies that merging two items to form a folder resets the nominal app list
 // sort order (if the app list is sorted at the time).
-TEST_F(TemporaryAppListSortTest, MergingItemsResetsSortOrder) {
+// Disabled due to flakiness (https://crbug.com/1281828).
+TEST_F(TemporaryAppListSortTest, DISABLED_MergingItemsResetsSortOrder) {
   RemoveAllExistingItems();
 
   std::vector<scoped_refptr<extensions::Extension>> apps;
