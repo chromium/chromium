@@ -1,0 +1,5 @@
+Tests DOM.getFrameOwner method.
+Error while executing test script: TypeError: Cannot read properties of undefined (reading 'node')
+TypeError: Cannot read properties of undefined (reading 'node')
+    at eval (http://127.0.0.1:8000/inspector-protocol/dom/dom-getFrameOwner.js:16:27)
+
