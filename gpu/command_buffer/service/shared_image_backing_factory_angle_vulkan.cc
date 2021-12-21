@@ -343,7 +343,9 @@ class AngleVulkanBacking::SkiaRepresentation
                      MemoryTypeTracker* tracker)
       : SharedImageRepresentationSkia(manager, backing, tracker) {}
 
-  ~SkiaRepresentation() override = default;
+  ~SkiaRepresentation() override {
+    backing_impl()->context_state_->EraseCachedSkSurface(this);
+  }
 
   // SharedImageRepresentationSkia implementation.
   sk_sp<SkPromiseImageTexture> BeginReadAccess(

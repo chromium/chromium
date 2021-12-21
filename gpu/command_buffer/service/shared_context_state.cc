@@ -218,6 +218,7 @@ SharedContextState::SharedContextState(
 }
 
 SharedContextState::~SharedContextState() {
+  DCHECK(sk_surface_cache_.empty());
   // Delete the transfer cache first: that way, destruction callbacks for image
   // entries can use *|this| to make the context current and do GPU clean up.
   // The context should be current so that texture deletes that result from
