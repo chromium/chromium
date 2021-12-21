@@ -65,10 +65,6 @@ SkBitmap TestBitmap() {
   return bitmap;
 }
 
-size_t SizeInBits(const SkBitmap& bitmap) {
-  return bitmap.computeByteSize() * 8;
-}
-
 ACTION_P(SaveUniquePtrArg, dest) {
   *dest = std::move(*arg1);
 }
@@ -182,8 +178,7 @@ TEST_F(AuraDesktopCapturerTest, ShouldSendScreenshotRequestForPrimaryDisplay) {
   EXPECT_THAT(request.display, Eq(111));
 }
 
-// Disabled: This is causing ASan failures (https://crbug.com/1281670)
-TEST_F(AuraDesktopCapturerTest, DISABLED_ShouldSendScreenshotToCapturer) {
+TEST_F(AuraDesktopCapturerTest, ShouldSendScreenshotToCapturer) {
   capturer_.Start(&desktop_capturer_callback());
   capturer_.CaptureFrame();
 
@@ -194,7 +189,7 @@ TEST_F(AuraDesktopCapturerTest, DISABLED_ShouldSendScreenshotToCapturer) {
   EXPECT_THAT(result.result, Eq(webrtc::DesktopCapturer::Result::SUCCESS));
   ASSERT_THAT(result.frame, NotNull());
   EXPECT_EQ(0, memcmp(expected_bitmap.getPixels(), result.frame->data(),
-                      SizeInBits(expected_bitmap)));
+                      expected_bitmap.computeByteSize()));
 }
 
 TEST_F(AuraDesktopCapturerTest, ShouldSetUpdatedRegion) {
