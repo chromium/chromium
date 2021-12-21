@@ -456,11 +456,6 @@ class CableAuthenticator {
         }
     }
 
-    void unlinkAllDevices() {
-        Log.i(TAG, "Unlinking devices");
-        CableAuthenticatorJni.get().unlink();
-    }
-
     void close() {
         assert mTaskRunner.belongsToCurrentThread();
         CableAuthenticatorJni.get().stop(mHandle);
@@ -528,13 +523,6 @@ class CableAuthenticator {
          * |webauthn::authenticator::Registration::Event::Serialize|.
          */
         long startCloudMessage(CableAuthenticator cableAuthenticator, byte[] fcmEvent);
-
-        /**
-         * unlink causes the linking FCM token to be rotated. This prevents all previously linked
-         * devices from being able to contact this device in the future -- they'll have to go via
-         * the QR-scanning path again.
-         */
-        void unlink();
 
         /**
          * Called to alert the C++ code to stop any ongoing transactions. Takes an opaque handle

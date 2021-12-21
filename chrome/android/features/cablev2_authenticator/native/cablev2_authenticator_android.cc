@@ -783,13 +783,6 @@ static jlong JNI_CableAuthenticator_StartCloudMessage(
   return ++global_data.instance_num;
 }
 
-static void JNI_CableAuthenticator_Unlink(JNIEnv* env) {
-  GlobalData& global_data = GetGlobalData();
-  RecordEvent(&global_data, CableV2MobileEvent::kUnlink);
-
-  global_data.registration->RotateContactID();
-}
-
 static void JNI_CableAuthenticator_Stop(JNIEnv* env, jlong instance_num) {
   GlobalData& global_data = GetGlobalData();
   if (global_data.instance_num == instance_num) {

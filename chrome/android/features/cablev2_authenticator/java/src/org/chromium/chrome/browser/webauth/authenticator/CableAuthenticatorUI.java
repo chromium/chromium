@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.webauth.authenticator;
 
 import android.Manifest.permission;
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.KeyguardManager;
@@ -383,7 +382,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
      * Called when the button to scan a QR code is pressed.
      */
     @Override
-    @SuppressLint("SetTextI18n")
     public void onClick(View v) {
         if (v == mErrorCloseButton) {
             getActivity().finish();
