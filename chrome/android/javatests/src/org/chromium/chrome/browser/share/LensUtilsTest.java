@@ -29,10 +29,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.url.GURL;
 
 /**
  * Tests of {@link LensUtils}.
@@ -119,119 +116,6 @@ public class LensUtilsTest {
     isGoogleLensFeatureEnabled_incognitoDisabledStandardUser() {
         Assert.assertTrue("Feature incorrectly disabled when user was not incognito",
                 isGoogleLensFeatureEnabledOnUiThread(false));
-    }
-
-    /**
-     * Test {@link LensUtils#isGoogleLensFeatureEnabled()} method when disable incognito param is
-     * unset and user is incognito.
-     */
-    @DisableFeatures({ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP})
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS})
-    @Test
-    @SmallTest
-    public void isGoogleLensShoppingFeatureEnabled_incognitoParamUnsetIncognitoUser() {
-        Assert.assertFalse("Feature incorrectly enabled when incognito param is not set",
-                isGoogleLensShoppingFeatureEnabledOnUiThread(true));
-    }
-
-    /**
-     * Test {@link LensUtils#isGoogleLensShoppingFeatureEnabled()} method when incognito users are
-     * enabled and user is incognito.
-     */
-    @DisableFeatures({ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP})
-    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS
-                    + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:disableOnIncognito/false"})
-    @Test
-    @SmallTest
-    public void
-    isGoogleLensShoppingFeatureEnabled_incognitoEnabledIncognitoUser() {
-        Assert.assertTrue("Feature incorrectly disabled when incognito param is not set",
-                isGoogleLensShoppingFeatureEnabledOnUiThread(true));
-    }
-
-    /**
-     * Test {@link LensUtils#isGoogleLensFeatureEnabled()} method when incognito users are disabled
-     * and user is incognito.
-     */
-    @DisableFeatures({ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP})
-    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS
-                    + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:disableOnIncognito/true"})
-    @Test
-    @SmallTest
-    public void
-    isGoogleLensShoppingFeatureEnabled_incognitoDisabledIncognitoUser() {
-        Assert.assertFalse("Feature incorrectly not disabled when incognito param was set",
-                isGoogleLensShoppingFeatureEnabledOnUiThread(true));
-    }
-
-    /**
-     * Test {@link LensUtils#isGoogleLensFeatureEnabled()} method when incognito users are disabled
-     * and user is not incognito.
-     */
-    @DisableFeatures({ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP})
-    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS
-                    + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:disableOnIncognito/true"})
-    @Test
-    @SmallTest
-    public void
-    isGoogleLensShoppingFeatureEnabled_incognitoDisabledStandardUser() {
-        Assert.assertTrue("Feature incorrectly disabled when user was not incognito",
-                isGoogleLensShoppingFeatureEnabledOnUiThread(false));
-    }
-
-    /**
-     * Test {@link LensUtils#isGoogleLensFeatureEnabled()} method when shopping chip is enabled.
-     */
-    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_SHOP_WITH_GOOGLE_LENS
-                    + "<FakeStudyName," + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP
-                    + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:disableOnIncognito/true"})
-    @Test
-    @SmallTest
-    public void
-    isGoogleLensShoppingFeatureEnabled_shoppingChipEnabled() {
-        Assert.assertFalse("Feature incorrectly enabled when shopping chip was enabled",
-                isGoogleLensShoppingFeatureEnabledOnUiThread(false));
-    }
-
-    /**
-     * Test {@link LensUtils#isInShoppingAllowlist(url)} method for url in domain allowlist.
-     */
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST
-                    + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:allowlistEntries/shopping-site-2"})
-    @Test
-    @SmallTest
-    public void
-    isInShoppingAllowlistWithDomainAllowlistTest() {
-        final GURL pageUrl = new GURL("https://shopping-site-2.com/product_1");
-        assertTrue(isInShoppingAllowlistOnUiThread(pageUrl));
-    }
-
-    /**
-     * Test {@link LensUtils#isInShoppingAllowlist(url)} method for url with shopping url patterns.
-     */
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST
-                    + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:shoppingUrlPatterns/"
-                    + "^https...shopping-site.*"})
-    @Test
-    @SmallTest
-    public void
-    isInShoppingAllowlistWithShoppingUrlPatternsTest() {
-        final GURL pageUrl = new GURL("https://shopping-site-2.com/product_1");
-        assertTrue(isInShoppingAllowlistOnUiThread(pageUrl));
     }
 
     /**
@@ -331,34 +215,9 @@ public class LensUtilsTest {
                 isGoogleLensFeatureEnabledOnTabletOnUiThread());
     }
 
-    /**
-     * Test {@link LensUtils#isInShoppingAllowlist(url)} method for url with default shopping url
-     * patterns.
-     */
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_ENABLE_LENS_SHOPPING_ALLOWLIST})
-    public void isInShoppingAllowlistWithDefaultShoppingUrlPatternTest() {
-        final GURL googleShoppingItemUrl = new GURL("https://www.google.com/shopping/product_1");
-        final GURL googleShoppingPageUrl =
-                new GURL("https://www.google.com/search?=8893t5/tbm=shop/dress");
-        assertTrue(isInShoppingAllowlistOnUiThread(googleShoppingPageUrl));
-        assertTrue(isInShoppingAllowlistOnUiThread(googleShoppingItemUrl));
-    }
-
-    private boolean isInShoppingAllowlistOnUiThread(GURL imageUri) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> LensUtils.isInShoppingAllowlist(imageUri));
-    }
-
     private boolean isGoogleLensFeatureEnabledOnUiThread(boolean isIncognito) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> LensUtils.isGoogleLensFeatureEnabled(isIncognito));
-    }
-
-    private boolean isGoogleLensShoppingFeatureEnabledOnUiThread(boolean isIncognito) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> LensUtils.isGoogleLensShoppingFeatureEnabled(isIncognito));
     }
 
     private boolean shouldLogUkmOnUiThread(String featureName) {

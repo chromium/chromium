@@ -16,7 +16,6 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
-import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -124,10 +123,6 @@ public class ContextMenuHelper {
                     TimeUnit.MICROSECONDS.toMillis(TimeUtilsJni.get().getTimeTicksNowUs());
             RecordHistogram.recordBooleanHistogram("ContextMenu.Shown", mWebContents != null);
             recordContextMenuShownType(params);
-            if (LensUtils.isInShoppingAllowlist(mCurrentContextMenuParams.getPageUrl())) {
-                RecordHistogram.recordBooleanHistogram(
-                        "ContextMenu.Shown.ShoppingDomain", mWebContents != null);
-            }
             if (sMenuShownCallbackForTests != null) {
                 sMenuShownCallbackForTests.onResult((ContextMenuCoordinator) mCurrentContextMenu);
             }
