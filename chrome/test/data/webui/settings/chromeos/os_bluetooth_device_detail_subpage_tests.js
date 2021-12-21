@@ -74,6 +74,8 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
       async function() {
         init();
         bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
+        const windowPopstatePromise =
+            test_util.eventToPromise('popstate', window);
 
         const getBluetoothConnectDisconnectBtn = () =>
             bluetoothDeviceDetailPage.$$('#connectDisconnectBtn');
@@ -113,7 +115,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         assertTrue(!!getConnectionFailedText());
 
         settings.Router.getInstance().navigateToPreviousRoute();
-        await test_util.waitAfterNextRender(bluetoothDeviceDetailPage);
+        await windowPopstatePromise;
         assertFalse(!!getConnectionFailedText());
       });
 
@@ -283,8 +285,8 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
 
     assertTrue(!!getBluetoothStatusIcon());
     assertTrue(!!getBluetoothStateText());
-    assertTrue(!!getBluetoothForgetBtn());
     assertTrue(!!getBluetoothDeviceNameLabel());
+    assertFalse(!!getBluetoothForgetBtn());
     assertFalse(!!getBluetoothStateBtn());
     assertFalse(!!getBluetoothDeviceBatteryInfo());
 
@@ -310,6 +312,8 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     settings.Router.getInstance().navigateTo(
         settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
     await flushAsync();
+
+    assertTrue(!!getBluetoothForgetBtn());
 
     // Simulate connected state and audio capable.
     assertTrue(!!getBluetoothStateBtn());
