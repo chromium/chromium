@@ -231,7 +231,11 @@ absl_source_set("cordz_update_tracker_test") {
 }
 
 absl_source_set("cord") {
-  sources = [ "cord.cc" ]
+  sources = [
+    "cord.cc",
+    "cord_analysis.cc",
+    "cord_analysis.h",
+  ]
   public = [ "cord.h" ]
   deps = [
     ":cord_internal",

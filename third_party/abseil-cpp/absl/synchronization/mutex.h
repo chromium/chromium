@@ -984,14 +984,15 @@ inline Condition::Condition(const T *object,
 // Register a hook for profiling support.
 //
 // The function pointer registered here will be called whenever a mutex is
-// contended.  The callback is given the absl/base/cycleclock.h timestamp when
-// waiting began.
+// contended.  The callback is given the cycles for which waiting happened (as
+// measured by //absl/base/internal/cycleclock.h, and which may not
+// be real "cycle" counts.)
 //
 // Calls to this function do not race or block, but there is no ordering
 // guaranteed between calls to this function and call to the provided hook.
 // In particular, the previously registered hook may still be called for some
 // time after this function returns.
-void RegisterMutexProfiler(void (*fn)(int64_t wait_timestamp));
+void RegisterMutexProfiler(void (*fn)(int64_t wait_cycles));
 
 // Register a hook for Mutex tracing.
 //

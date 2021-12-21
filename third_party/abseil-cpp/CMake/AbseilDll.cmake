@@ -195,6 +195,8 @@ set(ABSL_INTERNAL_DLL_FILES
   "strings/charconv.cc"
   "strings/charconv.h"
   "strings/cord.cc"
+  "strings/cord_analysis.cc"
+  "strings/cord_analysis.h"
   "strings/cord.h"
   "strings/escaping.cc"
   "strings/escaping.h"

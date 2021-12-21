@@ -834,6 +834,8 @@ absl_cc_library(
     "cord.h"
   SRCS
     "cord.cc"
+    "cord_analysis.cc"
+    "cord_analysis.h"
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS

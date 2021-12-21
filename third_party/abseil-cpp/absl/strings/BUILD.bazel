@@ -412,6 +412,8 @@ cc_library(
     name = "cord",
     srcs = [
         "cord.cc",
+        "cord_analysis.cc",
+        "cord_analysis.h",
     ],
     hdrs = [
         "cord.h",

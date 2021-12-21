@@ -50,7 +50,12 @@ static constexpr auto MAX_FLAT_TAG = absl::cord_internal::MAX_FLAT_TAG;
 typedef std::mt19937_64 RandomEngine;
 
 using absl::cord_internal::CordRep;
+using absl::cord_internal::CordRepBtree;
+using absl::cord_internal::CordRepConcat;
+using absl::cord_internal::CordRepCrc;
+using absl::cord_internal::CordRepExternal;
 using absl::cord_internal::CordRepFlat;
+using absl::cord_internal::CordRepSubstring;
 using absl::cord_internal::kFlatOverhead;
 using absl::cord_internal::kMaxFlatLength;
 
@@ -196,6 +201,7 @@ class CordTestPeer {
   }
 
   static bool IsTree(const Cord& c) { return c.contents_.is_tree(); }
+  static CordRep* Tree(const Cord& c) { return c.contents_.tree(); }
 
   static cord_internal::CordzInfo* GetCordzInfo(const Cord& c) {
     return c.contents_.cordz_info();
@@ -1474,76 +1480,186 @@ TEST_P(CordTest, ExternalMemoryGet) {
 }
 
 // CordMemoryUsage tests verify the correctness of the EstimatedMemoryUsage()
-// These tests take into account that the reported memory usage is approximate
-// and non-deterministic. For all tests, We verify that the reported memory
-// usage is larger than `size()`, and less than `size() * 1.5` as a cord should
-// never reserve more 'extra' capacity than half of its size as it grows.
-// Additionally we have some whiteboxed expectations based on our knowledge of
-// the layout and size of empty and inlined cords, and flat nodes.
+// We use whiteboxed expectations based on our knowledge of the layout and size
+// of empty and inlined cords, and flat nodes.
 
-TEST_P(CordTest, CordMemoryUsageEmpty) {
-  EXPECT_EQ(sizeof(absl::Cord), absl::Cord().EstimatedMemoryUsage());
+constexpr auto kFairShare = absl::CordMemoryAccounting::kFairShare;
+
+// Creates a cord of `n` `c` values, making sure no string stealing occurs.
+absl::Cord MakeCord(size_t n, char c) {
+  const std::string s(n, c);
+  return absl::Cord(s);
 }
 
-TEST_P(CordTest, CordMemoryUsageEmbedded) {
+TEST(CordTest, CordMemoryUsageEmpty) {
+  absl::Cord cord;
+  EXPECT_EQ(sizeof(absl::Cord), cord.EstimatedMemoryUsage());
+  EXPECT_EQ(sizeof(absl::Cord), cord.EstimatedMemoryUsage(kFairShare));
+}
+
+TEST(CordTest, CordMemoryUsageInlined) {
   absl::Cord a("hello");
   EXPECT_EQ(a.EstimatedMemoryUsage(), sizeof(absl::Cord));
+  EXPECT_EQ(a.EstimatedMemoryUsage(kFairShare), sizeof(absl::Cord));
 }
 
-TEST_P(CordTest, CordMemoryUsageEmbeddedAppend) {
-  absl::Cord a("a");
-  absl::Cord b("bcd");
-  EXPECT_EQ(b.EstimatedMemoryUsage(), sizeof(absl::Cord));
-  a.Append(b);
-  EXPECT_EQ(a.EstimatedMemoryUsage(), sizeof(absl::Cord));
-}
-
-TEST_P(CordTest, CordMemoryUsageExternalMemory) {
-  static const int kLength = 1000;
+TEST(CordTest, CordMemoryUsageExternalMemory) {
   absl::Cord cord;
-  AddExternalMemory(std::string(kLength, 'x'), &cord);
-  EXPECT_GT(cord.EstimatedMemoryUsage(), kLength);
-  EXPECT_LE(cord.EstimatedMemoryUsage(), kLength * 1.5);
+  AddExternalMemory(std::string(1000, 'x'), &cord);
+  const size_t expected =
+      sizeof(absl::Cord) + 1000 + sizeof(CordRepExternal) + sizeof(intptr_t);
+  EXPECT_EQ(cord.EstimatedMemoryUsage(), expected);
+  EXPECT_EQ(cord.EstimatedMemoryUsage(kFairShare), expected);
 }
 
-TEST_P(CordTest, CordMemoryUsageFlat) {
-  static const int kLength = 125;
-  absl::Cord a(std::string(kLength, 'a'));
-  EXPECT_GT(a.EstimatedMemoryUsage(), kLength);
-  EXPECT_LE(a.EstimatedMemoryUsage(), kLength * 1.5);
+TEST(CordTest, CordMemoryUsageFlat) {
+  absl::Cord cord = MakeCord(1000, 'a');
+  const size_t flat_size =
+      absl::CordTestPeer::Tree(cord)->flat()->AllocatedSize();
+  EXPECT_EQ(cord.EstimatedMemoryUsage(), sizeof(absl::Cord) + flat_size);
+  EXPECT_EQ(cord.EstimatedMemoryUsage(kFairShare),
+            sizeof(absl::Cord) + flat_size);
 }
 
-TEST_P(CordTest, CordMemoryUsageAppendFlat) {
-  using absl::strings_internal::CordTestAccess;
-  absl::Cord a(std::string(CordTestAccess::MaxFlatLength(), 'a'));
-  size_t length = a.EstimatedMemoryUsage();
-  a.Append(std::string(CordTestAccess::MaxFlatLength(), 'b'));
-  size_t delta = a.EstimatedMemoryUsage() - length;
-  EXPECT_GT(delta, CordTestAccess::MaxFlatLength());
-  EXPECT_LE(delta, CordTestAccess::MaxFlatLength() * 1.5);
+TEST(CordTest, CordMemoryUsageSubStringSharedFlat) {
+  absl::Cord flat = MakeCord(2000, 'a');
+  const size_t flat_size =
+      absl::CordTestPeer::Tree(flat)->flat()->AllocatedSize();
+  absl::Cord cord = flat.Subcord(500, 1000);
+  EXPECT_EQ(cord.EstimatedMemoryUsage(),
+            sizeof(absl::Cord) + sizeof(CordRepSubstring) + flat_size);
+  EXPECT_EQ(cord.EstimatedMemoryUsage(kFairShare),
+            sizeof(absl::Cord) + sizeof(CordRepSubstring) + flat_size / 2);
 }
 
-TEST_P(CordTest, CordMemoryUsageAppendExternal) {
-  static const int kLength = 1000;
-  using absl::strings_internal::CordTestAccess;
-  absl::Cord a(std::string(CordTestAccess::MaxFlatLength(), 'a'));
-  size_t length = a.EstimatedMemoryUsage();
-  AddExternalMemory(std::string(kLength, 'b'), &a);
-  size_t delta = a.EstimatedMemoryUsage() - length;
-  EXPECT_GT(delta, kLength);
-  EXPECT_LE(delta, kLength * 1.5);
+TEST(CordTest, CordMemoryUsageFlatShared) {
+  absl::Cord shared = MakeCord(1000, 'a');
+  absl::Cord cord(shared);
+  const size_t flat_size =
+      absl::CordTestPeer::Tree(cord)->flat()->AllocatedSize();
+  EXPECT_EQ(cord.EstimatedMemoryUsage(), sizeof(absl::Cord) + flat_size);
+  EXPECT_EQ(cord.EstimatedMemoryUsage(kFairShare),
+            sizeof(absl::Cord) + flat_size / 2);
 }
 
-TEST_P(CordTest, CordMemoryUsageSubString) {
-  static const int kLength = 2000;
-  using absl::strings_internal::CordTestAccess;
-  absl::Cord a(std::string(kLength, 'a'));
-  size_t length = a.EstimatedMemoryUsage();
-  AddExternalMemory(std::string(kLength, 'b'), &a);
-  absl::Cord b = a.Subcord(0, kLength + kLength / 2);
-  size_t delta = b.EstimatedMemoryUsage() - length;
-  EXPECT_GT(delta, kLength);
-  EXPECT_LE(delta, kLength * 1.5);
+TEST(CordTest, CordMemoryUsageFlatHardenedAndShared) {
+  absl::Cord shared = MakeCord(1000, 'a');
+  absl::Cord cord(shared);
+  const size_t flat_size =
+      absl::CordTestPeer::Tree(cord)->flat()->AllocatedSize();
+  cord.SetExpectedChecksum(1);
+  EXPECT_EQ(cord.EstimatedMemoryUsage(),
+            sizeof(absl::Cord) + sizeof(CordRepCrc) + flat_size);
+  EXPECT_EQ(cord.EstimatedMemoryUsage(kFairShare),
+            sizeof(absl::Cord) + sizeof(CordRepCrc) + flat_size / 2);
+
+  absl::Cord cord2(cord);
+  EXPECT_EQ(cord2.EstimatedMemoryUsage(),
+            sizeof(absl::Cord) + sizeof(CordRepCrc) + flat_size);
+  EXPECT_EQ(cord2.EstimatedMemoryUsage(kFairShare),
+            sizeof(absl::Cord) + (sizeof(CordRepCrc) + flat_size / 2) / 2);
+}
+
+TEST(CordTest, CordMemoryUsageBTree) {
+  absl::cord_internal::enable_cord_btree(true);
+
+  absl::Cord cord1;
+  size_t flats1_size = 0;
+  absl::Cord flats1[4] = {MakeCord(1000, 'a'), MakeCord(1100, 'a'),
+                          MakeCord(1200, 'a'), MakeCord(1300, 'a')};
+  for (absl::Cord flat : flats1) {
+    flats1_size += absl::CordTestPeer::Tree(flat)->flat()->AllocatedSize();
+    cord1.Append(std::move(flat));
+  }
+
+  // Make sure the created cord is a BTREE tree. Under some builds such as
+  // windows DLL, we may have ODR like effects on the flag, meaning the DLL
+  // code will run with the picked up default.
+  if (!absl::CordTestPeer::Tree(cord1)->IsBtree()) {
+    ABSL_RAW_LOG(WARNING, "Cord library code not respecting btree flag");
+    return;
+  }
+
+  size_t rep1_size = sizeof(CordRepBtree) + flats1_size;
+  size_t rep1_shared_size = sizeof(CordRepBtree) + flats1_size / 2;
+
+  EXPECT_EQ(cord1.EstimatedMemoryUsage(), sizeof(absl::Cord) + rep1_size);
+  EXPECT_EQ(cord1.EstimatedMemoryUsage(kFairShare),
+            sizeof(absl::Cord) + rep1_shared_size);
+
+  absl::Cord cord2;
+  size_t flats2_size = 0;
+  absl::Cord flats2[4] = {MakeCord(600, 'a'), MakeCord(700, 'a'),
+                          MakeCord(800, 'a'), MakeCord(900, 'a')};
+  for (absl::Cord& flat : flats2) {
+    flats2_size += absl::CordTestPeer::Tree(flat)->flat()->AllocatedSize();
+    cord2.Append(std::move(flat));
+  }
+  size_t rep2_size = sizeof(CordRepBtree) + flats2_size;
+
+  EXPECT_EQ(cord2.EstimatedMemoryUsage(), sizeof(absl::Cord) + rep2_size);
+  EXPECT_EQ(cord2.EstimatedMemoryUsage(kFairShare),
+            sizeof(absl::Cord) + rep2_size);
+
+  absl::Cord cord(cord1);
+  cord.Append(std::move(cord2));
+
+  EXPECT_EQ(cord.EstimatedMemoryUsage(),
+            sizeof(absl::Cord) + sizeof(CordRepBtree) + rep1_size + rep2_size);
+  EXPECT_EQ(cord.EstimatedMemoryUsage(kFairShare),
+            sizeof(absl::Cord) + sizeof(CordRepBtree) + rep1_shared_size / 2 +
+                rep2_size);
+}
+
+TEST(CordTest, CordMemoryUsageConcat) {
+  absl::cord_internal::enable_cord_btree(false);
+
+  absl::Cord cord1;
+  size_t flats1_size = 0;
+  absl::Cord flats1[4] = {MakeCord(1000, 'a'), MakeCord(1100, 'a'),
+                          MakeCord(1200, 'a'), MakeCord(1300, 'a')};
+  for (absl::Cord flat : flats1) {
+    flats1_size += absl::CordTestPeer::Tree(flat)->flat()->AllocatedSize();
+    cord1.Append(std::move(flat));
+  }
+
+  // Make sure the created cord is a CONCAT tree. Under some builds such as
+  // windows DLL, we may have ODR like effects on the flag, meaning the DLL
+  // code will run with the picked up default.
+  if (!absl::CordTestPeer::Tree(cord1)->IsConcat()) {
+    ABSL_RAW_LOG(WARNING, "Cord library code not respecting btree flag");
+    return;
+  }
+
+  size_t rep1_size = sizeof(CordRepConcat) * 3 + flats1_size;
+  size_t rep1_shared_size = sizeof(CordRepConcat) * 3 + flats1_size / 2;
+
+  EXPECT_EQ(cord1.EstimatedMemoryUsage(), sizeof(absl::Cord) + rep1_size);
+  EXPECT_EQ(cord1.EstimatedMemoryUsage(kFairShare),
+            sizeof(absl::Cord) + rep1_shared_size);
+
+  absl::Cord cord2;
+  size_t flats2_size = 0;
+  absl::Cord flats2[4] = {MakeCord(600, 'a'), MakeCord(700, 'a'),
+                          MakeCord(800, 'a'), MakeCord(900, 'a')};
+  for (absl::Cord& flat : flats2) {
+    flats2_size += absl::CordTestPeer::Tree(flat)->flat()->AllocatedSize();
+    cord2.Append(std::move(flat));
+  }
+
+  size_t rep2_size = sizeof(CordRepConcat) * 3 + flats2_size;
+
+  EXPECT_EQ(cord2.EstimatedMemoryUsage(), sizeof(absl::Cord) + rep2_size);
+  EXPECT_EQ(cord2.EstimatedMemoryUsage(kFairShare),
+            sizeof(absl::Cord) + rep2_size);
+
+  absl::Cord cord(cord1);
+  cord.Append(std::move(cord2));
+  EXPECT_EQ(cord.EstimatedMemoryUsage(),
+            sizeof(absl::Cord) + sizeof(CordRepConcat) + rep1_size + rep2_size);
+  EXPECT_EQ(cord.EstimatedMemoryUsage(kFairShare),
+            sizeof(absl::Cord) + sizeof(CordRepConcat) + rep1_shared_size / 2 +
+                rep2_size);
 }
 
 // Regtest for a change that had to be rolled back because it expanded out

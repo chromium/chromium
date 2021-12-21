@@ -79,6 +79,7 @@
 #include "absl/container/inlined_vector.h"
 #include "absl/functional/function_ref.h"
 #include "absl/meta/type_traits.h"
+#include "absl/strings/cord_analysis.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_btree.h"
 #include "absl/strings/internal/cord_rep_btree_reader.h"
@@ -101,6 +102,20 @@ class CordTestPeer;
 template <typename Releaser>
 Cord MakeCordFromExternal(absl::string_view, Releaser&&);
 void CopyCordToString(const Cord& src, std::string* dst);
+
+// Cord memory accounting modes
+enum class CordMemoryAccounting {
+  // Counts the *approximate* number of bytes held in full or in part by this
+  // Cord (which may not remain the same between invocations). Cords that share
+  // memory could each be "charged" independently for the same shared memory.
+  kTotal,
+
+  // Counts the *approximate* number of bytes held in full or in part by this
+  // Cord weighted by the sharing ratio of that data. For example, if some data
+  // edge is shared by 4 different Cords, then each cord is attributed 1/4th of
+  // the total memory usage as a 'fair share' of the total memory usage.
+  kFairShare,
+};
 
 // Cord
 //
@@ -272,11 +287,10 @@ class Cord {
 
   // Cord::EstimatedMemoryUsage()
   //
-  // Returns the *approximate* number of bytes held in full or in part by this
-  // Cord (which may not remain the same between invocations).  Note that Cords
-  // that share memory could each be "charged" independently for the same shared
-  // memory.
-  size_t EstimatedMemoryUsage() const;
+  // Returns the *approximate* number of bytes held by this cord.
+  // See CordMemoryAccounting for more information on accounting method used.
+  size_t EstimatedMemoryUsage(CordMemoryAccounting accounting_method =
+                                  CordMemoryAccounting::kTotal) const;
 
   // Cord::Compare()
   //
@@ -890,9 +904,6 @@ class Cord {
   };
   InlineRep contents_;
 
-  // Helper for MemoryUsage().
-  static size_t MemoryUsageAux(const absl::cord_internal::CordRep* rep);
-
   // Helper for GetFlat() and TryFlat().
   static bool GetFlatAux(absl::cord_internal::CordRep* rep,
                          absl::string_view* fragment);
@@ -1235,10 +1246,15 @@ inline size_t Cord::size() const {
 
 inline bool Cord::empty() const { return contents_.empty(); }
 
-inline size_t Cord::EstimatedMemoryUsage() const {
+inline size_t Cord::EstimatedMemoryUsage(
+    CordMemoryAccounting accounting_method) const {
   size_t result = sizeof(Cord);
   if (const absl::cord_internal::CordRep* rep = contents_.tree()) {
-    result += MemoryUsageAux(rep);
+    if (accounting_method == CordMemoryAccounting::kFairShare) {
+      result += cord_internal::GetEstimatedFairShareMemoryUsage(rep);
+    } else {
+      result += cord_internal::GetEstimatedMemoryUsage(rep);
+    }
   }
   return result;
 }
