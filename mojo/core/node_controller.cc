@@ -20,6 +20,7 @@
 #include "mojo/core/broker_host.h"
 #include "mojo/core/configuration.h"
 #include "mojo/core/ports/name.h"
+#include "mojo/core/ports/port_locker.h"
 #include "mojo/core/request_context.h"
 #include "mojo/core/user_message_impl.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -329,6 +330,8 @@ void NodeController::MergePortIntoInviter(const std::string& name,
     return;
   }
 
+  RecordPendingPortMerge(port);
+
   inviter->RequestPortMerge(port.name(), name);
 }
 
@@ -378,6 +381,13 @@ void NodeController::ForceDisconnectProcessForTesting(
       base::BindOnce(
           &NodeController::ForceDisconnectProcessForTestingOnIOThread,
           base::Unretained(this), process_id));
+}
+
+void NodeController::RecordPendingPortMerge(const ports::PortRef& port_ref) {
+  // TODO(sroettger): this should also keep track of the node that is allowed
+  //                  to trigger the merge.
+  ports::SinglePortLocker locker(&port_ref);
+  locker.port()->pending_merge_peer = true;
 }
 
 // static
@@ -525,6 +535,8 @@ void NodeController::ConnectIsolatedOnIOThread(
 
   channel->SetRemoteNodeName(token);
   channel->Start();
+
+  RecordPendingPortMerge(port);
 
   channel->AcceptPeer(name_, token, port.name());
 }
@@ -1023,10 +1035,16 @@ void NodeController::OnAcceptBrokerClient(const ports::NodeName& from_node,
 
   {
     // Complete any port merge requests we have waiting for the inviter.
-    base::AutoLock lock(pending_port_merges_lock_);
-    for (const auto& request : pending_port_merges_)
+    std::vector<std::pair<std::string, ports::PortRef>> pending_port_merges;
+    {
+      base::AutoLock lock(pending_port_merges_lock_);
+      std::swap(pending_port_merges_, pending_port_merges);
+    }
+    std::vector<ports::PortName> pending_port_names;
+    for (auto& request : pending_port_merges) {
+      RecordPendingPortMerge(request.second);
       inviter->RequestPortMerge(request.second.name(), request.first);
-    pending_port_merges_.clear();
+    }
   }
 
   // Feed the broker any pending invitees of our own.

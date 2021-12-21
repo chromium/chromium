@@ -106,6 +106,9 @@ class Port : public base::RefCountedThreadSafe<Port> {
   NodeName peer_node_name;
   PortName peer_port_name;
 
+  // Mark this port as to be merged.
+  bool pending_merge_peer;
+
   // The next available sequence number to use for outgoing user message events
   // originating from this port.
   uint64_t next_sequence_num_to_send;

@@ -69,7 +69,7 @@ class PortLocker {
 };
 
 // Convenience wrapper for a PortLocker that locks a single port.
-class SinglePortLocker {
+class COMPONENT_EXPORT(MOJO_CORE_PORTS) SinglePortLocker {
  public:
   explicit SinglePortLocker(const PortRef* port_ref);
 

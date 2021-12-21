@@ -258,6 +258,10 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   // See |ForceDisconnectProcessForTesting()|.
   void ForceDisconnectProcessForTestingOnIOThread(base::ProcessId process_id);
 
+  // Mark a port that it is about to be merged. This allows us to do a security
+  // check on the incoming port merge that this port was intended to be merged.
+  void RecordPendingPortMerge(const ports::PortRef& port);
+
   // These are safe to access from any thread as long as the Node is alive.
   const ports::NodeName name_;
   const std::unique_ptr<ports::Node> node_;

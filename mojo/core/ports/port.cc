@@ -11,6 +11,7 @@ namespace ports {
 Port::Port(uint64_t next_sequence_num_to_send,
            uint64_t next_sequence_num_to_receive)
     : state(kUninitialized),
+      pending_merge_peer(false),
       next_sequence_num_to_send(next_sequence_num_to_send),
       last_sequence_num_acknowledged(next_sequence_num_to_send - 1),
       sequence_num_acknowledge_interval(0),

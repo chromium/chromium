@@ -859,6 +859,23 @@ int Node::OnMergePort(std::unique_ptr<MergePortEvent> event) {
     return ERROR_PORT_UNKNOWN;
   }
 
+  bool peer_allowed = true;
+  {
+    SinglePortLocker locker(&port_ref);
+    auto* port = locker.port();
+    if (!port->pending_merge_peer) {
+      LOG(ERROR) << "MergePort called on unexpected port: "
+                 << event->port_name();
+      peer_allowed = false;
+    } else {
+      port->pending_merge_peer = false;
+    }
+  }
+  if (!peer_allowed) {
+    ClosePort(port_ref);
+    return ERROR_PORT_STATE_UNEXPECTED;
+  }
+
   return MergePortsInternal(port_ref, new_port_ref,
                             false /* allow_close_on_bad_state */);
 }
