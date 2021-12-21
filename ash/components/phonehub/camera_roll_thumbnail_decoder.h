@@ -20,12 +20,10 @@ class CameraRollThumbnailDecoder {
  public:
   // Result of a |BatchDecode| operation.
   enum class BatchDecodeResult {
-    // All items in the batch have been successfully decoded.
-    kSuccess = 0,
-    // Failed to decode at least one item in the batch.
-    kError = 1,
+    // All items in the batch have been completed.
+    kCompleted = 0,
     // The decode requests for this batch has been cancelled.
-    kCancelled = 2,
+    kCancelled = 1,
     kMaxValue = kCancelled
   };
 

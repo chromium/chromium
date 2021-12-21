@@ -47,6 +47,7 @@ class CameraRollThumbnailDecoderImpl : public CameraRollThumbnailDecoder {
     // decoded for the same item.
     void CompleteWithExistingImage(const gfx::Image& image);
 
+    bool is_completed() const { return is_completed_; }
     // Returns the encoded raw bytes of the thumbnail. May return an empty
     // string if the thumbnail is not sent with the camera roll item proto.
     const std::string& GetEncodedThumbnail() const;
@@ -57,6 +58,7 @@ class CameraRollThumbnailDecoderImpl : public CameraRollThumbnailDecoder {
    private:
     const proto::CameraRollItem item_proto_;
     gfx::Image decoded_thumbnail_;
+    bool is_completed_ = false;
   };
 
   // Delegate class that decodes camera roll item thumbnails. Can be overridden
@@ -81,10 +83,8 @@ class CameraRollThumbnailDecoderImpl : public CameraRollThumbnailDecoder {
   // Checks whether all requests to decode thumbnails have been completed for
   // the latest items received, and invoke the pending callback if so.
   void CheckPendingThumbnailRequests();
-  // Marks the pending requests as complete with the given result code and an
-  // empty item list when the requests are cancelled or when an error occurs.
-  void CompletePendingRequestsWithResult(
-      CameraRollThumbnailDecoder::BatchDecodeResult result);
+  // Cancels all pending requests.
+  void CancelPendingRequests();
 
   std::unique_ptr<DecoderDelegate> decoder_delegate_;
   std::vector<DecodeRequest> pending_requests_;

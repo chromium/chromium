@@ -211,10 +211,9 @@ void CameraRollManagerImpl::OnItemThumbnailsDecoded(
     CameraRollThumbnailDecoder::BatchDecodeResult result,
     const std::vector<CameraRollItem>& items) {
   resetViewRefreshingFlagIfNeeded();
-  if (result == CameraRollThumbnailDecoder::BatchDecodeResult::kSuccess) {
+  if (result == CameraRollThumbnailDecoder::BatchDecodeResult::kCompleted) {
     SetCurrentItems(items);
   }
-  // TODO(http://crbug.com/1221297): log and handle failed decode requests.
 }
 
 void CameraRollManagerImpl::CancelPendingThumbnailRequests() {

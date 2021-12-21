@@ -103,7 +103,7 @@ class FakeThumbnailDecoder : public CameraRollThumbnailDecoder {
 
   void CompletePendingCallback(BatchDecodeResult result) {
     std::vector<CameraRollItem> items;
-    if (result == BatchDecodeResult::kSuccess) {
+    if (result == BatchDecodeResult::kCompleted) {
       for (const proto::CameraRollItem& item_proto : last_response_.items()) {
         SkBitmap test_bitmap;
         test_bitmap.allocN32Pixels(1, 1);
@@ -286,21 +286,21 @@ TEST_F(CameraRollManagerImplTest, OnCameraRollItemsReceived) {
   PopulateItemProto(response.add_items(), "key1");
 
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
 
   EXPECT_EQ(1, GetOnCameraRollViewUiStateUpdatedCallCount());
   VerifyCurrentItemsMatchResponse(response);
 }
 
 TEST_F(CameraRollManagerImplTest,
-       OnCameraRollItemsReceivedWithThumbnailDecodingError) {
+       OnCameraRollItemsReceivedWithCancelledThumbnailDecodingRequest) {
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key3");
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
 
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kError);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCancelled);
 
   EXPECT_EQ(0, GetOnCameraRollViewUiStateUpdatedCallCount());
   EXPECT_EQ(0, GetCurrentItemsCount());
@@ -319,7 +319,7 @@ TEST_F(CameraRollManagerImplTest,
   PopulateItemProto(second_response.add_items(), "key3");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(
       second_response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
 
   // The first thumbnail decode request should be cancelled and the current item
   // set should be updated only once after the second request completes.
@@ -335,7 +335,7 @@ TEST_F(CameraRollManagerImplTest, OnCameraRollItemsReceivedWithExistingItems) {
 
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(
       first_response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
   VerifyCurrentItemsMatchResponse(first_response);
 
   proto::FetchCameraRollItemsResponse second_response;
@@ -349,7 +349,7 @@ TEST_F(CameraRollManagerImplTest, OnCameraRollItemsReceivedWithExistingItems) {
 
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(
       second_response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
   EXPECT_EQ(2, GetOnCameraRollViewUiStateUpdatedCallCount());
   VerifyCurrentItemsMatchResponse(second_response);
 }
@@ -393,7 +393,7 @@ TEST_F(CameraRollManagerImplTest,
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
 
   proto::PhoneStatusUpdate update;
   update.set_has_camera_roll_updates(true);
@@ -426,7 +426,7 @@ TEST_F(CameraRollManagerImplTest,
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
 
   proto::PhoneStatusUpdate update;
   update.set_has_camera_roll_updates(true);
@@ -448,7 +448,7 @@ TEST_F(CameraRollManagerImplTest,
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
 
   proto::PhoneStatusUpdate update;
   proto::CameraRollAccessState* access_state =
@@ -483,7 +483,7 @@ TEST_F(CameraRollManagerImplTest,
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
 
   proto::PhoneStatusSnapshot snapshot;
   proto::CameraRollAccessState* access_state =
@@ -504,7 +504,7 @@ TEST_F(CameraRollManagerImplTest,
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
 
   proto::PhoneStatusSnapshot snapshot;
   proto::CameraRollAccessState* access_state =
@@ -529,7 +529,7 @@ TEST_F(CameraRollManagerImplTest, OnFeatureOnFeatureStatesChangedToDisabled) {
   PopulateItemProto(response.add_items(), "key2");
   PopulateItemProto(response.add_items(), "key1");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
 
   SetCameraRollFeatureState(FeatureState::kDisabledByUser);
 
@@ -557,7 +557,7 @@ TEST_F(CameraRollManagerImplTest, DownloadItem) {
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key1");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
   const CameraRollItem& item_to_download =
       camera_roll_manager()->current_items().back();
 
@@ -600,7 +600,7 @@ TEST_F(CameraRollManagerImplTest,
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key1");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
   const CameraRollItem& item_to_download =
       camera_roll_manager()->current_items().back();
 
@@ -621,7 +621,7 @@ TEST_F(CameraRollManagerImplTest, DownloadItemAndCreatePayloadFilesFail) {
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key1");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
   const CameraRollItem& item_to_download =
       camera_roll_manager()->current_items().back();
 
@@ -644,7 +644,7 @@ TEST_F(CameraRollManagerImplTest, DownloadItemAndRegisterPayloadFileFail) {
   proto::FetchCameraRollItemsResponse response;
   PopulateItemProto(response.add_items(), "key1");
   fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
-  CompleteThumbnailDecoding(BatchDecodeResult::kSuccess);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
   const CameraRollItem& item_to_download =
       camera_roll_manager()->current_items().back();
 

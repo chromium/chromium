@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/components/multidevice/logging/logging.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "ui/gfx/image/image.h"
@@ -44,11 +45,13 @@ void CameraRollThumbnailDecoderImpl::DecodeRequest::CompleteWithDecodedBitmap(
     image_skia.MakeThreadSafe();
     decoded_thumbnail_ = gfx::Image(image_skia);
   }
+  is_completed_ = true;
 }
 
 void CameraRollThumbnailDecoderImpl::DecodeRequest::CompleteWithExistingImage(
     const gfx::Image& image) {
   decoded_thumbnail_ = image;
+  is_completed_ = true;
 }
 
 const std::string&
@@ -80,7 +83,7 @@ void CameraRollThumbnailDecoderImpl::BatchDecode(
     const proto::FetchCameraRollItemsResponse& response,
     const std::vector<CameraRollItem>& current_items,
     BatchDecodeCallback callback) {
-  CompletePendingRequestsWithResult(BatchDecodeResult::kCancelled);
+  CancelPendingRequests();
 
   for (const proto::CameraRollItem& item_proto : response.items()) {
     pending_requests_.emplace_back(item_proto);
@@ -109,7 +112,7 @@ void CameraRollThumbnailDecoderImpl::BatchDecode(
       // Thumbnail for this item is not already available but it is not sent by
       // the phone. Most likely that this is an outdated response. Ignore it and
       // wait for the next response.
-      CompletePendingRequestsWithResult(BatchDecodeResult::kError);
+      CancelPendingRequests();
       return;
     }
   }
@@ -126,20 +129,14 @@ void CameraRollThumbnailDecoderImpl::OnThumbnailDecoded(
     }
 
     request.CompleteWithDecodedBitmap(thumbnail_bitmap);
-    if (request.decoded_thumbnail().IsEmpty()) {
-      // The decode thumbnail image will be null if the thumbnail bytes cannot
-      // be decoded.
-      CompletePendingRequestsWithResult(BatchDecodeResult::kError);
-    } else {
-      CheckPendingThumbnailRequests();
-    }
+    CheckPendingThumbnailRequests();
     break;
   }
 }
 
 void CameraRollThumbnailDecoderImpl::CheckPendingThumbnailRequests() {
   for (const DecodeRequest& request : pending_requests_) {
-    if (request.decoded_thumbnail().IsEmpty()) {
+    if (!request.is_completed()) {
       return;
     }
   }
@@ -148,20 +145,28 @@ void CameraRollThumbnailDecoderImpl::CheckPendingThumbnailRequests() {
   // new batch.
   std::vector<CameraRollItem> new_items;
   for (const DecodeRequest& request : pending_requests_) {
-    new_items.emplace_back(request.GetMetadata(), request.decoded_thumbnail());
+    // The decoded thumbnail image can be null if the thumbnail bytes cannot be
+    // decoded.
+    if (!request.decoded_thumbnail().IsEmpty()) {
+      new_items.emplace_back(request.GetMetadata(),
+                             request.decoded_thumbnail());
+    } else {
+      PA_LOG(ERROR) << "Failed to decode thumbnail for file "
+                    << request.GetMetadata().file_name();
+    }
   }
   pending_requests_.clear();
 
-  std::move(pending_callback_).Run(BatchDecodeResult::kSuccess, new_items);
+  std::move(pending_callback_).Run(BatchDecodeResult::kCompleted, new_items);
 }
 
-void CameraRollThumbnailDecoderImpl::CompletePendingRequestsWithResult(
-    BatchDecodeResult result) {
+void CameraRollThumbnailDecoderImpl::CancelPendingRequests() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   pending_requests_.clear();
   if (!pending_callback_.is_null()) {
     std::vector<CameraRollItem> empty_items;
-    std::move(pending_callback_).Run(result, empty_items);
+    std::move(pending_callback_)
+        .Run(BatchDecodeResult::kCancelled, empty_items);
   }
 }
 
