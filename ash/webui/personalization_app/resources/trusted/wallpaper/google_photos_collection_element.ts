@@ -11,26 +11,28 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './styles.js';
 import '/common/styles.js';
 
-import {isNonEmptyArray} from '/common/utils.js';
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isNonEmptyArray} from '../../common/utils.js';
+import {WallpaperCollection, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {initializeGooglePhotosData} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
-/**
- * Enumeration of supported tabs.
- * @enum {string}
- */
-const Tab = {
-  Albums: 'albums',
-  Photos: 'photos',
-  PhotosByAlbumId: 'photosByAlbumId',
-};
+/** Enumeration of supported tabs. */
+enum Tab {
+  Albums,
+  Photos,
+  PhotosByAlbumId,
+}
 
-/** @polymer */
+export interface GooglePhotosCollection {
+  $: {main: HTMLElement;};
+}
+
 export class GooglePhotosCollection extends WithPersonalizationStore {
   static get is() {
     return 'google-photos-collection';
@@ -42,19 +44,11 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
 
   static get properties() {
     return {
-      /**
-       * The currently selected album id.
-       * @type {?string}
-       */
       albumId: {
         type: String,
         observer: 'onAlbumIdChanged_',
       },
 
-      /**
-       * Whether or not this element is currently hidden.
-       * @type {boolean}
-       */
       hidden: {
         type: Boolean,
         value: true,
@@ -62,29 +56,14 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
         observer: 'onHiddenChanged_',
       },
 
-      /**
-       * The list of albums.
-       * @type {?Array<WallpaperCollection>}
-       * @private
-       */
       albums_: {
         type: Array,
       },
 
-      /**
-       * The list of photos.
-       * @type {?Array<undefined>}
-       * @private
-       */
       photos_: {
         type: Array,
       },
 
-      /**
-       * The currently selected tab.
-       * @type {!Tab}
-       * @private
-       */
       tab_: {
         type: String,
         value: Tab.Photos,
@@ -92,52 +71,57 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
     };
   }
 
-  /** @override */
-  constructor() {
-    super();
-    /** @const @private */
-    this.wallpaperProvider_ = getWallpaperProvider();
-  }
+  /** The currently selected album id. */
+  albumId: string|undefined;
 
-  /** @override */
+  /** Whether or not this element is currently hidden. */
+  hidden: boolean;
+
+  /** The list of albums. */
+  private albums_: WallpaperCollection[]|null|undefined;
+
+  /** The list of photos. */
+  private photos_: Url[]|null|undefined;
+
+  /** The currently selected tab. */
+  private tab_: Tab;
+
+  /** The singleton wallpaper provider interface. */
+  private wallpaperProvider_: WallpaperProviderInterface =
+      getWallpaperProvider();
+
   connectedCallback() {
     super.connectedCallback();
 
-    this.watch('albums_', state => state.wallpaper.googlePhotos.albums);
-    this.watch('photos_', state => state.wallpaper.googlePhotos.photos);
+    this.watch<GooglePhotosCollection['albums_']>(
+        'albums_', state => state.wallpaper.googlePhotos.albums);
+    this.watch<GooglePhotosCollection['photos_']>(
+        'photos_', state => state.wallpaper.googlePhotos.photos);
+
     this.updateFromStore();
 
     initializeGooglePhotosData(this.wallpaperProvider_, this.getStore());
   }
 
-  /**
-   * Invoked on changes to the currently selected |albumId|.
-   * @private
-   */
-  onAlbumIdChanged_() {
+  /** Invoked on changes to the currently selected |albumId|. */
+  private onAlbumIdChanged_() {
     this.tab_ = this.albumId ? Tab.PhotosByAlbumId : Tab.Albums;
   }
 
-  /**
-   * Invoked on changes to this element's |hidden| state.
-   * @private
-   */
-  onHiddenChanged_() {
+  /** Invoked on changes to this element's |hidden| state. */
+  private onHiddenChanged_() {
     if (this.hidden) {
       return;
     }
 
     document.title = this.i18n('googlePhotosLabel');
-    this.shadowRoot.getElementById('main').focus();
+    this.$.main.focus();
   }
 
-  /**
-   * Invoked on tab selected.
-   * @param {!Event} e
-   * @private
-   */
-  onTabSelected_(e) {
-    switch (e.currentTarget.id) {
+  /** Invoked on tab selected. */
+  onTabSelected_(e: Event) {
+    const currentTarget: HTMLElement = e.currentTarget as HTMLElement;
+    switch (currentTarget.id) {
       case 'albumsTab':
         this.tab_ = Tab.Albums;
         return;
@@ -150,75 +134,43 @@ export class GooglePhotosCollection extends WithPersonalizationStore {
     }
   }
 
-  /**
-   * Whether the list of albums is empty.
-   * @return {boolean}
-   * @private
-   */
-  isAlbumsEmpty_() {
+  /** Whether the list of albums is empty. */
+  private isAlbumsEmpty_(): boolean {
     return !isNonEmptyArray(this.albums_);
   }
 
-  /**
-   * Whether the albums tab is currently selected.
-   * @return {boolean}
-   * @private
-   */
-  isAlbumsTabSelected_() {
+  /** Whether the albums tab is currently selected. */
+  private isAlbumsTabSelected_(): boolean {
     return this.tab_ === Tab.Albums;
   }
 
-  /**
-   * Whether the albums tab is currently visible.
-   * @return {boolean}
-   * @private
-   */
-  isAlbumsTabVisible_() {
+  /** Whether the albums tab is currently visible. */
+  private isAlbumsTabVisible_(): boolean {
     return this.isAlbumsTabSelected_() && !this.hidden;
   }
 
-  /**
-   * Whether the photos by album id tab is currently visible.
-   * @return {boolean}
-   * @private
-   */
-  isPhotosByAlbumIdTabVisible_() {
+  /** Whether the photos by album id tab is currently visible. */
+  private isPhotosByAlbumIdTabVisible_(): boolean {
     return this.tab_ === Tab.PhotosByAlbumId && !this.hidden;
   }
 
-  /**
-   * Whether the list of photos is empty.
-   * @return {boolean}
-   * @private
-   */
-  isPhotosEmpty_() {
+  /** Whether the list of photos is empty. */
+  private isPhotosEmpty_(): boolean {
     return !isNonEmptyArray(this.photos_);
   }
 
-  /**
-   * Whether the photos tab is currently selected.
-   * @return {boolean}
-   * @private
-   */
-  isPhotosTabSelected_() {
+  /** Whether the photos tab is currently selected. */
+  private isPhotosTabSelected_(): boolean {
     return this.tab_ === Tab.Photos;
   }
 
-  /**
-   * Whether the photos tab is currently visible.
-   * @return {boolean}
-   * @private
-   */
-  isPhotosTabVisible_() {
+  /** Whether the photos tab is currently visible. */
+  private isPhotosTabVisible_(): boolean {
     return this.isPhotosTabSelected_() && !this.hidden;
   }
 
-  /**
-   * Whether the tab strip is currently visible.
-   * @return {boolean}
-   * @private
-   */
-  isTabStripVisible_() {
+  /** Whether the tab strip is currently visible. */
+  private isTabStripVisible_(): boolean {
     return !this.albumId && !this.isAlbumsEmpty_();
   }
 }

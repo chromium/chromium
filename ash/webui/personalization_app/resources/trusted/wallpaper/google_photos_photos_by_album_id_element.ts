@@ -88,7 +88,7 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
   }
 
   /** The currently selected album id. */
-  albumId: string;
+  albumId: string|undefined;
 
   /** Whether or not this element is currently hidden. */
   hidden: boolean;
