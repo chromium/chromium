@@ -6,29 +6,21 @@
  * Abstracts built-in JS functions in order to mock in tests.
  */
 export class MostVisitedWindowProxy {
-  /**
-   * @param {string} query
-   * @return {!MediaQueryList}
-   */
-  matchMedia(query) {
+  matchMedia(query: string): MediaQueryList {
     return window.matchMedia(query);
   }
 
-  /** @return {number} */
-  now() {
+  now(): number {
     return Date.now();
   }
 
-  /** @return {!MostVisitedWindowProxy} */
-  static getInstance() {
+  static getInstance(): MostVisitedWindowProxy {
     return instance || (instance = new MostVisitedWindowProxy());
   }
 
-  /** @param {!MostVisitedWindowProxy} obj */
-  static setInstance(obj) {
+  static setInstance(obj: MostVisitedWindowProxy) {
     instance = obj;
   }
 }
 
-/** @type {?MostVisitedWindowProxy} */
-let instance = null;
+let instance: MostVisitedWindowProxy|null = null;

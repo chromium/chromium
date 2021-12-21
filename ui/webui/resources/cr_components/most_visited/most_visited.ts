@@ -11,62 +11,45 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MostVisitedBrowserProxy} from './browser_proxy.js';
-import {MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote, MostVisitedTheme, MostVisitedTile} from './most_visited.mojom-webui.js';
+import {MostVisitedInfo, MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote, MostVisitedTheme, MostVisitedTile} from './most_visited.mojom-webui.js';
 import {MostVisitedWindowProxy} from './window_proxy.js';
 
-/**
- * @enum {number}
- * @const
- */
-const ScreenWidth = {
-  NARROW: 0,
-  MEDIUM: 1,
-  WIDE: 2,
-};
+enum ScreenWidth {
+  NARROW = 0,
+  MEDIUM = 1,
+  WIDE = 2,
+}
 
-/**
- * @param {!HTMLElement} tile
- * @private
- */
-function resetTilePosition(tile) {
+function resetTilePosition(tile: HTMLElement) {
   tile.style.position = '';
   tile.style.left = '';
   tile.style.top = '';
 }
 
-/**
- * @param {!HTMLElement} tile
- * @param {!{x: number, y: number}} point
- * @private
- */
-function setTilePosition(tile, {x, y}) {
+function setTilePosition(tile: HTMLElement, {x, y}: {x: number, y: number}) {
   tile.style.position = 'fixed';
   tile.style.left = `${x}px`;
   tile.style.top = `${y}px`;
 }
 
-/**
- * @param {!Array<!DOMRect>} rects
- * @param {number} x
- * @param {number} y
- * @return {number}
- * @private
- */
-function getHitIndex(rects, x, y) {
+function getHitIndex(rects: Array<DOMRect>, x: number, y: number): number {
   return rects.findIndex(
       r => x >= r.left && x <= r.right && y >= r.top && y <= r.bottom);
 }
@@ -74,11 +57,8 @@ function getHitIndex(rects, x, y) {
 
 /**
  * Returns null if URL is not valid.
- * @param {string} urlString
- * @return {URL}
- * @private
  */
-function normalizeUrl(urlString) {
+function normalizeUrl(urlString: string): URL|null {
   try {
     const url = new URL(
         urlString.includes('://') ? urlString : `https://${urlString}/`);
@@ -90,30 +70,38 @@ function normalizeUrl(urlString) {
   return null;
 }
 
-/**
- * @polymer
- * @extends {PolymerElement}
- */
-export class MostVisitedElement extends mixinBehaviors
-([I18nBehavior], PolymerElement) {
+interface RepeaterEvent extends Event {
+  model: {
+    item: MostVisitedTile,
+    index: number,
+  };
+}
+
+const MostVisitedElementBase = I18nMixin(PolymerElement);
+
+export interface MostVisitedElement {
+  $: {
+    actionMenu: CrActionMenuElement,
+    dialog: CrDialogElement,
+    toast: CrToastElement,
+    addShortcut: HTMLElement,
+    tiles: DomRepeat,
+  };
+}
+
+export class MostVisitedElement extends MostVisitedElementBase {
   static get is() {
     return 'cr-most-visited';
   }
 
-  static get template() {
-    return html`{__html_template__}`;
-  }
-
   static get properties() {
     return {
-      /** @type {?MostVisitedTheme} */
       theme: Object,
 
       /**
        * When the tile icon background is dark, the icon color is white for
        * contrast. This can be used to determine the color of the tile hover as
        * well.
-       * @private
        */
       useWhiteTileIcon_: {
         type: Boolean,
@@ -123,7 +111,6 @@ export class MostVisitedElement extends mixinBehaviors
 
       /**
        * If true wraps the tile titles in white pills.
-       * @private
        */
       useTitlePill_: {
         type: Boolean,
@@ -131,63 +118,52 @@ export class MostVisitedElement extends mixinBehaviors
         computed: `computeUseTitlePill_(theme)`,
       },
 
-      /** @private */
       columnCount_: {
         type: Number,
         computed: `computeColumnCount_(tiles_, screenWidth_, maxTiles_)`,
       },
 
-      /** @private */
       rowCount_: {
         type: Number,
         computed: 'computeRowCount_(columnCount_, tiles_)',
       },
 
-      /** @private */
       customLinksEnabled_: {
         type: Boolean,
         reflectToAttribute: true,
       },
 
-      /** @private */
       dialogTileTitle_: String,
 
-      /** @private */
       dialogTileUrl_: {
         type: String,
         observer: 'onDialogTileUrlChange_',
       },
 
-      /** @private */
       dialogTileUrlInvalid_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       dialogTitle_: String,
 
-      /** @private */
       dialogSaveDisabled_: {
         type: Boolean,
         computed: `computeDialogSaveDisabled_(dialogTitle_, dialogTileUrl_,
             dialogShortcutAlreadyExists_)`,
       },
 
-      /** @private */
       dialogShortcutAlreadyExists_: {
         type: Boolean,
         computed: 'computeDialogShortcutAlreadyExists_(tiles_, dialogTileUrl_)',
       },
 
-      /** @private */
       dialogTileUrlError_: {
         type: String,
         computed: `computeDialogTileUrlError_(dialogTileUrl_,
             dialogShortcutAlreadyExists_)`,
       },
 
-      /** @private */
       isDark_: {
         type: Boolean,
         reflectToAttribute: true,
@@ -197,7 +173,6 @@ export class MostVisitedElement extends mixinBehaviors
       /**
        * Used to hide hover style and cr-icon-button of tiles while the tiles
        * are being reordered.
-       * @private
        */
       reordering_: {
         type: Boolean,
@@ -205,19 +180,16 @@ export class MostVisitedElement extends mixinBehaviors
         reflectToAttribute: true,
       },
 
-      /** @private */
       maxTiles_: {
         type: Number,
         computed: 'computeMaxTiles_(customLinksEnabled_)',
       },
 
-      /** @private */
       maxVisibleTiles_: {
         type: Number,
         computed: 'computeMaxVisibleTiles_(columnCount_, rowCount_)',
       },
 
-      /** @private */
       showAdd_: {
         type: Boolean,
         value: false,
@@ -225,19 +197,14 @@ export class MostVisitedElement extends mixinBehaviors
             'computeShowAdd_(tiles_, maxVisibleTiles_, customLinksEnabled_)',
       },
 
-      /** @private */
       showToastButtons_: Boolean,
 
-      /** @private {!ScreenWidth} */
       screenWidth_: Number,
 
-      /** @private {!Array<!MostVisitedTile>} */
       tiles_: Array,
 
-      /** @private */
       toastContent_: String,
 
-      /** @private */
       visible_: {
         type: Boolean,
         reflectToAttribute: true,
@@ -245,60 +212,85 @@ export class MostVisitedElement extends mixinBehaviors
     };
   }
 
-  /** @private {!Array<!HTMLElement>} */
-  get tileElements_() {
-    return /** @type {!Array<!HTMLElement>} */ (
-        Array.from(this.shadowRoot.querySelectorAll('.tile:not([hidden])')));
+  private theme: MostVisitedTheme|null;
+  private useWhiteTileIcon_: boolean;
+  private useTitlePill_: boolean;
+  private columnCount_: number;
+  private rowCount_: number;
+  private customLinksEnabled_: boolean;
+  private dialogTileTitle_: string;
+  private dialogTileUrl_: string;
+  private dialogTileUrlInvalid_: boolean;
+  private dialogTitle_: string;
+  private dialogSaveDisabled_: boolean;
+  private dialogShortcutAlreadyExists_: boolean;
+  private dialogTileUrlError_: string;
+  private isDark_: boolean;
+  private reordering_: boolean;
+  private maxTiles_: number;
+  private maxVisibleTiles_: number;
+  private showAdd_: boolean;
+  private showToastButtons_: boolean;
+  private screenWidth_: ScreenWidth;
+  private tiles_: Array<MostVisitedTile>;
+  private toastContent_: string;
+  private visible_: boolean;
+
+  private adding_: boolean = false;
+  private callbackRouter_: MostVisitedPageCallbackRouter;
+  private pageHandler_: MostVisitedPageHandlerRemote;
+  private windowProxy_: MostVisitedWindowProxy;
+  private setMostVisitedInfoListenerId_: number|null = null;
+  private actionMenuTargetIndex_: number = -1;
+  private dragOffset_: {x: number, y: number}|null;
+  private tileRects_: Array<DOMRect> = [];
+  private isRtl_: boolean;
+  private eventTracker_: EventTracker;
+  private boundOnWidthChange_: () => void;
+  private mediaListenerWideWidth_: MediaQueryList;
+  private mediaListenerMediumWidth_: MediaQueryList;
+  private boundOnDocumentKeyDown_: (e: KeyboardEvent) => void;
+
+  private get tileElements_() {
+    return Array.from(
+        this.shadowRoot!.querySelectorAll<HTMLElement>('.tile:not([hidden])'));
   }
 
+  // Suppress TypeScript's error TS2376 to intentionally allow calling
+  // performance.mark() before calling super().
+  // @ts-ignore
   constructor() {
     performance.mark('most-visited-creation-start');
     super();
 
-    /** @private {boolean} */
-    this.adding_ = false;
-
-    /** @private {!MostVisitedPageCallbackRouter} */
     this.callbackRouter_ = MostVisitedBrowserProxy.getInstance().callbackRouter;
 
-    /** @private {!MostVisitedPageHandlerRemote} */
     this.pageHandler_ = MostVisitedBrowserProxy.getInstance().handler;
 
-    /** @private {!MostVisitedWindowProxy} */
     this.windowProxy_ = MostVisitedWindowProxy.getInstance();
-
-    /** @private {?number} */
-    this.setMostVisitedInfoListenerId_ = null;
-
-    /** @private {number} */
-    this.actionMenuTargetIndex_ = -1;
 
     /**
      * This is the position of the mouse with respect to the top-left corner
      * of the tile being dragged.
-     * @private {(!{x: number, y: number}|null)}
      */
     this.dragOffset_ = null;
-
-    /** @private {!Array<!DOMRect>} */
-    this.tileRects_ = [];
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
-    /** @private {boolean} */
+
     this.isRtl_ = window.getComputedStyle(this)['direction'] === 'rtl';
-    /** @private {!EventTracker} */
     this.eventTracker_ = new EventTracker();
 
     this.setMostVisitedInfoListenerId_ =
-        this.callbackRouter_.setMostVisitedInfo.addListener(info => {
-          performance.measure('most-visited-mojo', 'most-visited-mojo-start');
-          this.visible_ = info.visible;
-          this.customLinksEnabled_ = info.customLinksEnabled;
-          this.tiles_ = info.tiles.slice(0, assert(this.maxTiles_));
-        });
+        this.callbackRouter_.setMostVisitedInfo.addListener(
+            (info: MostVisitedInfo) => {
+              performance.measure(
+                  'most-visited-mojo', 'most-visited-mojo-start');
+              this.visible_ = info.visible;
+              this.customLinksEnabled_ = info.customLinksEnabled;
+              this.tiles_ = info.tiles.slice(0, assert(this.maxTiles_));
+            });
     performance.mark('most-visited-mojo-start');
     this.eventTracker_.add(document, 'visibilitychange', () => {
       // This updates the most visited tiles every time the NTP tab gets
@@ -311,7 +303,6 @@ export class MostVisitedElement extends mixinBehaviors
     FocusOutlineManager.forDocument(document);
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
     this.mediaListenerWideWidth_.removeListener(
@@ -323,52 +314,36 @@ export class MostVisitedElement extends mixinBehaviors
     this.eventTracker_.removeAll();
   }
 
-  /** @override */
   ready() {
     super.ready();
 
-    /** @private {!Function} */
     this.boundOnWidthChange_ = this.updateScreenWidth_.bind(this);
-    /** @private {!MediaQueryList} */
     this.mediaListenerWideWidth_ =
         this.windowProxy_.matchMedia('(min-width: 672px)');
     this.mediaListenerWideWidth_.addListener(this.boundOnWidthChange_);
-    /** @private {!MediaQueryList} */
     this.mediaListenerMediumWidth_ =
         this.windowProxy_.matchMedia('(min-width: 560px)');
     this.mediaListenerMediumWidth_.addListener(this.boundOnWidthChange_);
     this.updateScreenWidth_();
-    /** @private {!function(Event)} */
-    this.boundOnDocumentKeyDown_ = e =>
-        this.onDocumentKeyDown_(/** @type {!KeyboardEvent} */ (e));
+    this.boundOnDocumentKeyDown_ = e => this.onDocumentKeyDown_(e);
     this.ownerDocument.addEventListener(
         'keydown', this.boundOnDocumentKeyDown_);
 
     performance.measure('most-visited-creation', 'most-visited-creation-start');
   }
 
-  /**
-   * @param {?SkColor} skColor
-   * @return {string}
-   * @private
-   */
-  rgbaOrInherit_(skColor) {
+  private rgbaOrInherit_(skColor: SkColor|null): string {
     return skColor ? skColorToRgba(skColor) : 'inherit';
   }
 
-  /** @private */
-  clearForceHover_() {
-    const forceHover = this.shadowRoot.querySelector('.force-hover');
+  private clearForceHover_() {
+    const forceHover = this.shadowRoot!.querySelector('.force-hover');
     if (forceHover) {
       forceHover.classList.remove('force-hover');
     }
   }
 
-  /**
-   * @return {number}
-   * @private
-   */
-  computeColumnCount_() {
+  private computeColumnCount_(): number {
     let maxColumns = 3;
     if (this.screenWidth_ === ScreenWidth.WIDE) {
       maxColumns = 5;
@@ -386,11 +361,7 @@ export class MostVisitedElement extends mixinBehaviors
     return columnCount || 3;
   }
 
-  /**
-   * @return {number}
-   * @private
-   */
-  computeRowCount_() {
+  private computeRowCount_(): number {
     if (this.columnCount_ === 0) {
       return 0;
     }
@@ -399,46 +370,26 @@ export class MostVisitedElement extends mixinBehaviors
     return this.columnCount_ <= shortcutCount ? 2 : 1;
   }
 
-  /**
-   * @return {number}
-   * @private
-   */
-  computeMaxTiles_() {
+  private computeMaxTiles_(): number {
     return this.customLinksEnabled_ ? 10 : 8;
   }
 
-  /**
-   * @return {number}
-   * @private
-   */
-  computeMaxVisibleTiles_() {
+  private computeMaxVisibleTiles_(): number {
     return this.columnCount_ * this.rowCount_;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeShowAdd_() {
+  private computeShowAdd_(): boolean {
     return this.customLinksEnabled_ && this.tiles_ &&
         this.tiles_.length < this.maxVisibleTiles_;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeDialogSaveDisabled_() {
+  private computeDialogSaveDisabled_(): boolean {
     return !this.dialogTileUrl_.trim() ||
         normalizeUrl(this.dialogTileUrl_) === null ||
         this.dialogShortcutAlreadyExists_;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeDialogShortcutAlreadyExists_() {
+  private computeDialogShortcutAlreadyExists_(): boolean {
     const dialogTileHref = (normalizeUrl(this.dialogTileUrl_) || {}).href;
     if (!dialogTileHref) {
       return false;
@@ -452,37 +403,21 @@ export class MostVisitedElement extends mixinBehaviors
     });
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeDialogTileUrlError_() {
+  private computeDialogTileUrlError_(): string {
     return loadTimeData.getString(
         this.dialogShortcutAlreadyExists_ ? 'shortcutAlreadyExists' :
                                             'invalidUrl');
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsDark_() {
+  private computeIsDark_(): boolean {
     return this.theme ? this.theme.isDark : false;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeUseWhiteTileIcon_() {
+  private computeUseWhiteTileIcon_(): boolean {
     return this.theme ? this.theme.useWhiteTileIcon : false;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeUseTitlePill_() {
+  private computeUseTitlePill_(): boolean {
     return this.theme ? this.theme.useTitlePill : false;
   }
 
@@ -497,25 +432,25 @@ export class MostVisitedElement extends mixinBehaviors
    * |reordering_| is not set to false when the tiles are reordered. The callers
    * will need to set it to false. This is necessary to handle a mouse drag
    * issue.
-   * @param {number} x
-   * @param {number} y
-   * @private
    */
-  dragEnd_(x, y) {
+  private dragEnd_(x: number, y: number) {
     if (!this.customLinksEnabled_) {
       this.reordering_ = false;
       return;
     }
     this.dragOffset_ = null;
-    const dragElement = this.shadowRoot.querySelector('.tile.dragging');
+    const dragElement =
+        this.shadowRoot!.querySelector<HTMLElement>('.tile.dragging');
     if (!dragElement) {
       this.reordering_ = false;
       return;
     }
-    const dragIndex = this.$.tiles.modelForElement(dragElement).index;
+    const dragIndex = (this.$.tiles.modelForElement(dragElement) as unknown as {
+                        index: number
+                      }).index;
     dragElement.classList.remove('dragging');
-    this.tileElements_.forEach(resetTilePosition);
-    resetTilePosition(/** @type {!HTMLElement} */ (this.$.addShortcut));
+    this.tileElements_.forEach(el => resetTilePosition(el));
+    resetTilePosition(this.$.addShortcut);
     const dropIndex = getHitIndex(this.tileRects_, x, y);
     if (dragIndex !== dropIndex && dropIndex > -1) {
       const [draggingTile] = this.tiles_.splice(dragIndex, 1);
@@ -543,20 +478,20 @@ export class MostVisitedElement extends mixinBehaviors
   /**
    * The positions of the tiles are updated based on the location of the
    * pointer.
-   * @param {number} x
-   * @param {number} y
-   * @private
    */
-  dragOver_(x, y) {
-    const dragElement = this.shadowRoot.querySelector('.tile.dragging');
+  private dragOver_(x: number, y: number) {
+    const dragElement =
+        this.shadowRoot!.querySelector<HTMLElement>('.tile.dragging');
     if (!dragElement) {
       this.reordering_ = false;
       return;
     }
-    const dragIndex = this.$.tiles.modelForElement(dragElement).index;
-    setTilePosition(/** @type {!HTMLElement} */ (dragElement), {
-      x: x - this.dragOffset_.x,
-      y: y - this.dragOffset_.y,
+    const dragIndex = (this.$.tiles.modelForElement(dragElement) as unknown as {
+                        index: number
+                      }).index;
+    setTilePosition(dragElement, {
+      x: x - this.dragOffset_!.x,
+      y: y - this.dragOffset_!.y,
     });
     const dropIndex = getHitIndex(this.tileRects_, x, y);
     this.tileElements_.forEach((element, i) => {
@@ -572,9 +507,7 @@ export class MostVisitedElement extends mixinBehaviors
       } else {
         positionIndex = i;
       }
-      setTilePosition(
-          /** @type {!HTMLElement} */ (element),
-          this.tileRects_[positionIndex]);
+      setTilePosition(element, this.tileRects_[positionIndex]);
     });
   }
 
@@ -588,12 +521,8 @@ export class MostVisitedElement extends mixinBehaviors
    *       and cr-icon-button of the tiles while they are being reordered.
    *   |tileRects_|: This is the rects of the tiles before the drag start. It is
    *       to determine which tile the pointer is over while dragging.
-   * @param {!HTMLElement} dragElement
-   * @param {number} x
-   * @param {number} y
-   * @private
    */
-  dragStart_(dragElement, x, y) {
+  private dragStart_(dragElement: HTMLElement, x: number, y: number) {
     // Need to clear the tile that has a forced hover style for when the drag
     // started without moving the mouse after the last drag/drop.
     this.clearForceHover_();
@@ -608,7 +537,7 @@ export class MostVisitedElement extends mixinBehaviors
     // Get all the rects first before setting the absolute positions.
     this.tileRects_ = tileElements.map(t => t.getBoundingClientRect());
     if (this.showAdd_) {
-      const element = /** @type {!HTMLElement} */ (this.$.addShortcut);
+      const element = this.$.addShortcut;
       setTilePosition(element, element.getBoundingClientRect());
     }
     tileElements.forEach((tile, i) => {
@@ -617,12 +546,7 @@ export class MostVisitedElement extends mixinBehaviors
     this.reordering_ = true;
   }
 
-  /**
-   * @param {!Url} url
-   * @return {string}
-   * @private
-   */
-  getFaviconUrl_(url) {
+  private getFaviconUrl_(url: Url): string {
     const faviconUrl = new URL('chrome://favicon2/');
     faviconUrl.searchParams.set('size', '24');
     faviconUrl.searchParams.set('scale_factor', '1x');
@@ -631,37 +555,22 @@ export class MostVisitedElement extends mixinBehaviors
     return faviconUrl.href;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getRestoreButtonText_() {
+  private getRestoreButtonText_(): string {
     return loadTimeData.getString(
         this.customLinksEnabled_ ? 'restoreDefaultLinks' :
                                    'restoreThumbnailsShort');
   }
 
-  /**
-   * @param {!MostVisitedTile} tile
-   * @return {string}
-   * @private
-   */
-  getTileTitleDirectionClass_(tile) {
+  private getTileTitleDirectionClass_(tile: MostVisitedTile): string {
     return tile.titleDirection === TextDirection.RIGHT_TO_LEFT ? 'title-rtl' :
                                                                  'title-ltr';
   }
 
-  /**
-   * @param {number} index
-   * @return {boolean}
-   * @private
-   */
-  isHidden_(index) {
+  private isHidden_(index: number): boolean {
     return index >= this.maxVisibleTiles_;
   }
 
-  /** @private */
-  onAdd_() {
+  private onAdd_() {
     this.dialogTitle_ = loadTimeData.getString('addLinkTitle');
     this.dialogTileTitle_ = '';
     this.dialogTileUrl_ = '';
@@ -670,11 +579,7 @@ export class MostVisitedElement extends mixinBehaviors
     this.$.dialog.showModal();
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onAddShortcutKeyDown_(e) {
+  private onAddShortcutKeyDown_(e: KeyboardEvent) {
     if (hasKeyModifiers(e)) {
       return;
     }
@@ -688,14 +593,12 @@ export class MostVisitedElement extends mixinBehaviors
     }
   }
 
-  /** @private */
-  onDialogCancel_() {
+  private onDialogCancel_() {
     this.actionMenuTargetIndex_ = -1;
     this.$.dialog.cancel();
   }
 
-  /** @private */
-  onDialogClose_() {
+  private onDialogClose_() {
     this.dialogTileUrl_ = '';
     if (this.adding_) {
       this.$.addShortcut.focus();
@@ -703,8 +606,7 @@ export class MostVisitedElement extends mixinBehaviors
     this.adding_ = false;
   }
 
-  /** @private */
-  onDialogTileUrlBlur_() {
+  private onDialogTileUrlBlur_() {
     if (this.dialogTileUrl_.length > 0 &&
         (normalizeUrl(this.dialogTileUrl_) === null ||
          this.dialogShortcutAlreadyExists_)) {
@@ -712,16 +614,11 @@ export class MostVisitedElement extends mixinBehaviors
     }
   }
 
-  /** @private */
-  onDialogTileUrlChange_() {
+  private onDialogTileUrlChange_() {
     this.dialogTileUrlInvalid_ = false;
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onDocumentKeyDown_(e) {
+  private onDocumentKeyDown_(e: KeyboardEvent) {
     if (e.altKey || e.shiftKey) {
       return;
     }
@@ -733,11 +630,7 @@ export class MostVisitedElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @param {!DragEvent} e
-   * @private
-   */
-  onDragStart_(e) {
+  private onDragStart_(e: DragEvent) {
     if (!this.customLinksEnabled_) {
       return;
     }
@@ -747,10 +640,10 @@ export class MostVisitedElement extends mixinBehaviors
       e.dataTransfer.setDragImage(new Image(), 0, 0);
     }
 
-    this.dragStart_(/** @type {!HTMLElement} */ (e.target), e.x, e.y);
-    const dragOver = e => {
+    this.dragStart_(e.target as HTMLElement, e.x, e.y);
+    const dragOver = (e: DragEvent) => {
       e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
+      e.dataTransfer!.dropEffect = 'move';
       this.dragOver_(e.x, e.y);
     };
     this.ownerDocument.addEventListener('dragover', dragOver);
@@ -771,8 +664,7 @@ export class MostVisitedElement extends mixinBehaviors
     }, {once: true});
   }
 
-  /** @private */
-  onEdit_() {
+  private onEdit_() {
     this.$.actionMenu.close();
     this.dialogTitle_ = loadTimeData.getString('editLinkTitle');
     const tile = this.tiles_[this.actionMenuTargetIndex_];
@@ -782,8 +674,7 @@ export class MostVisitedElement extends mixinBehaviors
     this.$.dialog.showModal();
   }
 
-  /** @private */
-  onRestoreDefaultsClick_() {
+  private onRestoreDefaultsClick_() {
     if (!this.$.toast.open || !this.showToastButtons_) {
       return;
     }
@@ -791,16 +682,14 @@ export class MostVisitedElement extends mixinBehaviors
     this.pageHandler_.restoreMostVisitedDefaults();
   }
 
-  /** @private */
-  async onRemove_() {
+  private async onRemove_() {
     this.$.actionMenu.close();
     await this.tileRemove_(this.actionMenuTargetIndex_);
     this.actionMenuTargetIndex_ = -1;
   }
 
-  /** @private */
-  async onSave_() {
-    const newUrl = {url: normalizeUrl(this.dialogTileUrl_).href};
+  private async onSave_() {
+    const newUrl = {url: normalizeUrl(this.dialogTileUrl_)!.href};
     this.$.dialog.close();
     let newTitle = this.dialogTileTitle_.trim();
     if (newTitle.length === 0) {
@@ -821,32 +710,18 @@ export class MostVisitedElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onTileActionButtonClick_(e) {
+  private onTileActionButtonClick_(e: RepeaterEvent) {
     e.preventDefault();
-    const {index} = this.$.tiles.modelForElement(e.target.parentElement);
-    this.actionMenuTargetIndex_ = index;
-    this.$.actionMenu.showAt(e.target);
+    this.actionMenuTargetIndex_ = e.model.index;
+    this.$.actionMenu.showAt(e.target as HTMLElement);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onTileRemoveButtonClick_(e) {
+  private onTileRemoveButtonClick_(e: RepeaterEvent) {
     e.preventDefault();
-    const {index} = this.$.tiles.modelForElement(e.target.parentElement);
-    this.tileRemove_(index);
+    this.tileRemove_(e.model.index);
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onTileClick_(e) {
+  private onTileClick_(e: MouseEvent&RepeaterEvent) {
     if (e.defaultPrevented) {
       // Ignore previousely handled events.
       return;
@@ -857,16 +732,11 @@ export class MostVisitedElement extends mixinBehaviors
     }
 
     this.pageHandler_.onMostVisitedTileNavigation(
-        this.$.tiles.itemForElement(e.target),
-        this.$.tiles.indexForElement(e.target), e.button || 0, e.altKey,
-        e.ctrlKey, e.metaKey, e.shiftKey);
+        e.model.item, e.model.index, e.button || 0, e.altKey, e.ctrlKey,
+        e.metaKey, e.shiftKey);
   }
 
-  /**
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onTileKeyDown_(e) {
+  private onTileKeyDown_(e: KeyboardEvent&RepeaterEvent) {
     if (hasKeyModifiers(e)) {
       return;
     }
@@ -876,7 +746,7 @@ export class MostVisitedElement extends mixinBehaviors
       return;
     }
 
-    const {index} = this.$.tiles.modelForElement(e.target);
+    const index = e.model.index;
     if (e.key === 'Delete') {
       this.tileRemove_(index);
       return;
@@ -887,8 +757,7 @@ export class MostVisitedElement extends mixinBehaviors
     this.tileFocus_(Math.max(0, index + delta));
   }
 
-  /** @private */
-  onUndoClick_() {
+  private onUndoClick_() {
     if (!this.$.toast.open || !this.showToastButtons_) {
       return;
     }
@@ -896,26 +765,23 @@ export class MostVisitedElement extends mixinBehaviors
     this.pageHandler_.undoMostVisitedTileAction();
   }
 
-  /**
-   * @param {!TouchEvent} e
-   * @private
-   */
-  onTouchStart_(e) {
+  private onTouchStart_(e: TouchEvent) {
     if (this.reordering_ || !this.customLinksEnabled_) {
       return;
     }
-    const tileElement = /** @type {HTMLElement} */ (e.composedPath().find(
-        el => el.classList && el.classList.contains('tile')));
+    const tileElement =
+        (e.composedPath() as HTMLElement[])
+            .find(el => el.classList && el.classList.contains('tile'));
     if (!tileElement) {
       return;
     }
     const {clientX, clientY} = e.changedTouches[0];
     this.dragStart_(tileElement, clientX, clientY);
-    const touchMove = e => {
+    const touchMove = (e: TouchEvent) => {
       const {clientX, clientY} = e.changedTouches[0];
       this.dragOver_(clientX, clientY);
     };
-    const touchEnd = e => {
+    const touchEnd = (e: TouchEvent) => {
       this.ownerDocument.removeEventListener('touchmove', touchMove);
       tileElement.removeEventListener('touchend', touchEnd);
       tileElement.removeEventListener('touchcancel', touchEnd);
@@ -928,11 +794,7 @@ export class MostVisitedElement extends mixinBehaviors
     tileElement.addEventListener('touchcancel', touchEnd, {once: true});
   }
 
-  /**
-   * @param {number} index
-   * @private
-   */
-  tileFocus_(index) {
+  private tileFocus_(index: number) {
     if (index < 0) {
       return;
     }
@@ -944,21 +806,13 @@ export class MostVisitedElement extends mixinBehaviors
     }
   }
 
-  /**
-   * @param {string} msgId
-   * @param {boolean} showButtons
-   */
-  toast_(msgId, showButtons) {
+  private toast_(msgId: string, showButtons: boolean) {
     this.toastContent_ = loadTimeData.getString(msgId);
     this.showToastButtons_ = showButtons;
     this.$.toast.show();
   }
 
-  /**
-   * @param {number} index
-   * @private
-   */
-  tileRemove_(index) {
+  private tileRemove_(index: number) {
     const {url, isQueryTile} = this.tiles_[index];
     this.pageHandler_.deleteMostVisitedTile(url);
     // Do not show the toast buttons when a query tile is removed unless it is a
@@ -969,8 +823,7 @@ export class MostVisitedElement extends mixinBehaviors
     this.tileFocus_(index);
   }
 
-  /** @private */
-  updateScreenWidth_() {
+  private updateScreenWidth_() {
     if (this.mediaListenerWideWidth_.matches) {
       this.screenWidth_ = ScreenWidth.WIDE;
     } else if (this.mediaListenerMediumWidth_.matches) {
@@ -980,12 +833,15 @@ export class MostVisitedElement extends mixinBehaviors
     }
   }
 
-  /** @private */
-  onTilesRendered_() {
+  private onTilesRendered_() {
     performance.measure('most-visited-rendered');
     this.pageHandler_.onMostVisitedTilesRendered(
         this.tiles_.slice(0, assert(this.maxVisibleTiles_)),
         this.windowProxy_.now());
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
   }
 }
 
