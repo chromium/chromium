@@ -16,18 +16,27 @@ target_cpu = "x86"  # or "x64" if you have an x86_64 emulator
 
 Chromium has a set of prebuilt images stored as CIPD packages. These are used
 by various builders to run tests on the emulator. Their configurations are
-currently stored in `//tools/android/avd/proto`.
+currently stored in [`//tools/android/avd/proto`](../tools/android/avd/proto/).
 
-| File | Builder |
-|:----:|:-------:|
-| `tools/android/avd/proto/generic_android23.textpb` | [android-marshmallow-x86-rel][android-marshmallow-x86-rel] |
-| `tools/android/avd/proto/generic_android28.textpb` | [android-pie-x86-rel][android-pie-x86-rel] |
-| `tools/android/avd/proto/generic_playstore_android28.textpb` | [android-pie-x86-rel][android-pie-x86-rel] |
+| Configurations | Android Version | AVD Target | Builder |
+|:-------------- |:--------------- |:---------- |:------- |
+| `generic_android23.textpb` | M | google_apis | [android-marshmallow-x86-rel][android-marshmallow-x86-rel] |
+| `generic_android27.textpb` | O | google_apis | N/A |
+| `generic_playstore_android27.textpb` | O | google_apis_playstore | N/A |
+| `generic_android28.textpb` | P | google_apis | [android-pie-x86-rel][android-pie-x86-rel] |
+| `generic_playstore_android28.textpb` | P | google_apis_playstore | [android-pie-x86-rel][android-pie-x86-rel] |
+| `generic_android29.textpb` | 10 (Q) | google_apis | N/A |
+| `generic_android30.textpb` | 11 (R) | google_apis | [android-11-x86-rel][android-11-x86-rel] |
+| `generic_playstore_android30.textpb` | 11 (R) | google_apis_playstore | [android-11-x86-rel][android-11-x86-rel] |
+| `generic_android31.textpb` | 12 (S) | google_apis | [android-12-x64-fyi-rel][android-12-x64-fyi-rel] |
+| `generic_playstore_android31.textpb` | 12 (S) | google_apis_playstore | [android-12-x64-fyi-rel][android-12-x64-fyi-rel] |
 
 You can use these configuration files to run the same emulator images locally.
 
 [android-marshmallow-x86-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-marshmallow-x86-rel
 [android-pie-x86-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-pie-x86-rel
+[android-11-x86-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-11-x86-rel
+[android-12-x64-fyi-rel]: https://ci.chromium.org/p/chromium/builders/ci/android-12-x64-fyi-rel
 
 #### Prerequisite
 
@@ -135,6 +144,22 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
           --emulator-window
     ```
 
+ * `--gpu-mode GPU_MODE`
+
+    Override the mode of hardware OpenGL ES emulation indicated by the AVD.
+    See "emulator -help-gpu" for a full list of modes.
+
+ * `--no-read-only`
+
+    `avd.py` runs the emulator in read-only mode by default. To run a modifiable
+    emulator, use `--no-read-only`:
+
+    ```
+      $ tools/android/avd/avd.py start \
+          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --no-read-only
+    ```
+
  * `--wipe-data`
 
     Since the prebuilt playstore images use adbkey from the GCE bots that created
@@ -148,16 +173,9 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
           --wipe-data
     ```
 
- * `--no-read-only`
+ * `--writable-system`
 
-    `avd.py` runs the emulator in read-only mode by default. To run a modifiable
-    emulator, use `--no-read-only`:
-
-    ```
-      $ tools/android/avd/avd.py start \
-          --avd-config tools/android/avd/proto/generic_android28.textpb \
-          --no-read-only
-    ```
+    Makes system & vendor image writable after adb remount.
 
  * `--debug-tags`
 
