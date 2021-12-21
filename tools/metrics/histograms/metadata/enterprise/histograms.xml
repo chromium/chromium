@@ -1996,6 +1996,29 @@ chromium-metrics-reviews@google.com.
   <summary>Tracking the results of policy user verification.</summary>
 </histogram>
 
+<histogram name="Enterprise.ProfileSeparation.DasherPolicyFetch.HttpResponse"
+    enum="HttpResponseCode" expires_after="2022-12-08">
+  <owner>ydago@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    The Http statuses returned by the server when trying to get the
+    ManagedAccounsSigninRestriction policy value for individual dasher accounts.
+    This is recorded after trying to the the policy value, when the status is
+    available.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ProfileSeparation.DasherPolicyFetch.NetworkError"
+    enum="NetErrorCodes" expires_after="2022-12-08">
+  <owner>ydago@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    The network errors that happen when trying to get the
+    ManagedAccounsSigninRestriction policy value for individual dasher accounts.
+    This is recorded every time after trying to the the policy value.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.PublicSession.ExtensionPermissions"
     enum="ExtensionPermission3" expires_after="2022-03-01">
   <owner>anqing@chromium.org</owner>

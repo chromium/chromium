@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
@@ -157,14 +158,24 @@ void UserCloudSigninRestrictionPolicyFetcher::
   std::string restriction;
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(url_loader_);
 
-  // TODO (crbug/1261474): Add metrics for the failure rate.
   GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
+  absl::optional<int> response_code;
+  if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers)
+    response_code = url_loader->ResponseInfo()->headers->response_code();
+
+  if (response_code)
+    base::UmaHistogramSparse(
+        "Enterprise.ProfileSeparation.DasherPolicyFetch.HttpResponse",
+        response_code.value());
+
+  base::UmaHistogramSparse(
+      "Enterprise.ProfileSeparation.DasherPolicyFetch.NetworkError",
+      url_loader->NetError());
   if (url_loader->NetError() != net::OK) {
-    if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
-      int response_code = url_loader->ResponseInfo()->headers->response_code();
+    if (response_code) {
       LOG(WARNING)
           << "ManagedAccountsSigninRestriction request failed with HTTP code: "
-          << response_code;
+          << response_code.value();
     } else {
       error =
           GoogleServiceAuthError::FromConnectionError(url_loader->NetError());
