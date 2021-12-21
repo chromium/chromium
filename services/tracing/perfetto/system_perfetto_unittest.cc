@@ -747,8 +747,9 @@ TEST_F(SystemPerfettoTest, MAYBE_MultipleSystemAndLocalSourcesLocalFirst) {
   PerfettoProducer::DeleteSoonForTesting(std::move(system_producer));
 }
 
-#if defined(OS_CHROMEOS)
+#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
 // Flaky on all CrOS platforms: crbug.com/1262132#c18
+// Flaky on Android: crbug.com/1262132
 #define MAYBE_SystemTraceWhileLocalStartupTracing \
   DISABLED_SystemTraceWhileLocalStartupTracing
 #else
