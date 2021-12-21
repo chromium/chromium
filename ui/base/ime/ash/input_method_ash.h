@@ -83,6 +83,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   InputMethod* GetInputMethod() override;
   void ConfirmCompositionText(bool reset_engine, bool keep_selection) override;
   bool HasCompositionText() override;
+  std::u16string GetCompositionText() override;
   ukm::SourceId GetClientSourceForMetrics() override;
 
  protected:

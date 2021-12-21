@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
+#include "chrome/browser/ash/input_method/diacritics_checker.h"
 #include "chrome/browser/ash/input_method/grammar_service_client.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
 #include "chrome/browser/ash/input_method/suggestions_service_client.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_ukm.h"
@@ -42,6 +44,15 @@ namespace input_method {
 namespace {
 
 namespace mojom = ::chromeos::ime::mojom;
+
+// These are persisted to logs. Entries should not be renumbered. Numeric values
+// should not be reused. Must stay in sync with IMENonAutocorrectDiacriticStatus
+// enum in: tools/metrics/histograms/enums.xml
+enum class NonAutocorrectDiacriticStatus {
+  kWithoutDiacritics = 0,
+  kWithDiacritics = 1,
+  kMaxValue = kWithDiacritics,
+};
 
 bool IsRuleBasedEngine(const std::string& engine_id) {
   return base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE);
@@ -987,9 +998,27 @@ void NativeInputMethodEngine::ImeObserver::SetCompositionRange(
 }
 
 void NativeInputMethodEngine::ImeObserver::FinishComposition() {
-  ui::IMEBridge::Get()->GetInputContextHandler()->ConfirmCompositionText(
-      /*reset_engine=*/false,
-      /*keep_selection=*/true);
+  ui::IMEInputContextHandlerInterface* input_context =
+      ui::IMEBridge::Get()->GetInputContextHandler();
+
+  input_context->ConfirmCompositionText(/*reset_engine=*/false,
+                                        /*keep_selection=*/true);
+
+  auto* manager = InputMethodManager::Get();
+  if (!manager ||
+      !extension_ime_util::IsExperimentalMultilingual(
+          manager->GetActiveIMEState()->GetCurrentInputMethod().id())) {
+    return;
+  }
+
+  std::u16string composition_text = input_context->GetCompositionText();
+  base::TrimWhitespace(composition_text, base::TRIM_ALL, &composition_text);
+  bool has_diacritics = HasDiacritics(composition_text);
+
+  base::UmaHistogramEnumeration(
+      "InputMethod.MultilingualExperiment.NonAutocorrect",
+      has_diacritics ? NonAutocorrectDiacriticStatus::kWithDiacritics
+                     : NonAutocorrectDiacriticStatus::kWithoutDiacritics);
 }
 
 void NativeInputMethodEngine::ImeObserver::DeleteSurroundingText(

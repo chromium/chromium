@@ -962,6 +962,20 @@ bool InputMethodAsh::HasCompositionText() {
   return client && client->HasCompositionText();
 }
 
+std::u16string InputMethodAsh::GetCompositionText() {
+  TextInputClient* client = GetTextInputClient();
+  if (!client) {
+    return u"";
+  }
+
+  gfx::Range composition_range;
+  client->GetCompositionTextRange(&composition_range);
+  std::u16string composition_text;
+  client->GetTextFromRange(composition_range, &composition_text);
+
+  return composition_text;
+}
+
 ukm::SourceId InputMethodAsh::GetClientSourceForMetrics() {
   TextInputClient* client = GetTextInputClient();
   return client ? client->GetClientSourceForMetrics() : ukm::kInvalidSourceId;
