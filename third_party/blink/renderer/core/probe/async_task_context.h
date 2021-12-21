@@ -44,10 +44,6 @@ class CORE_EXPORT AsyncTaskContext {
   void SetAdTask() { ad_task_ = true; }
   bool IsAdTask() const { return ad_task_; }
 
-  // Trace id for this task.
-  absl::optional<uint64_t> GetTraceId() const { return trace_id_; }
-  void SetTraceId(uint64_t trace_id) { trace_id_ = trace_id; }
-
   // The Id uniquely identifies this task with the V8 debugger. The Id is
   // calculated based on the address of `AsyncTaskContext`.
   void* Id() const;
@@ -56,7 +52,6 @@ class CORE_EXPORT AsyncTaskContext {
   friend class AsyncTask;
 
   bool ad_task_ = false;
-  absl::optional<uint64_t> trace_id_;
   v8::Isolate* isolate_ = nullptr;
 };
 

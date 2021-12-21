@@ -24,11 +24,8 @@ void AsyncTaskContext::Schedule(ExecutionContext* context,
   // confidence that such a CHECK wouldn't break blink.
   isolate_ = context ? context->GetIsolate() : nullptr;
 
-  uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
-  SetTraceId(trace_id);
-  TRACE_EVENT("blink", "AsyncTask Scheduled", [&](perfetto::EventContext ctx) {
-    ctx.event()->add_flow_ids(trace_id);
-  });
+  TRACE_EVENT("blink", "AsyncTask Scheduled",
+              perfetto::Flow::FromPointer(this));
 
   if (!context)
     return;

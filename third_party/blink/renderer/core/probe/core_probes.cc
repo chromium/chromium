@@ -67,7 +67,6 @@ AsyncTask::AsyncTask(ExecutionContext* context,
                                    : nullptr),
       task_context_(task_context),
       recurring_(step),
-      tracing_(!!task_context->GetTraceId()),
       ad_tracker_(enabled && ad_tracking_type == AdTrackingType::kReport
                       ? AdTracker::FromExecutionContext(context)
                       : nullptr) {
@@ -75,12 +74,8 @@ AsyncTask::AsyncTask(ExecutionContext* context,
   // not yet canceled. Currently we don't have enough confidence that such
   // a CHECK wouldn't break blink.
 
-  if (tracing_) {
-    TRACE_EVENT_BEGIN(
-        "blink", "AsyncTask Run", [&](perfetto::EventContext ctx) {
-          ctx.event()->add_flow_ids(task_context->GetTraceId().value());
-        });
-  }
+  TRACE_EVENT_BEGIN("blink", "AsyncTask Run",
+                    perfetto::Flow::FromPointer(task_context));
   if (debugger_)
     debugger_->AsyncTaskStarted(task_context->Id());
 
@@ -98,9 +93,7 @@ AsyncTask::~AsyncTask() {
   if (ad_tracker_)
     ad_tracker_->DidFinishAsyncTask(task_context_);
 
-  if (tracing_) {
-    TRACE_EVENT_END("blink");  // "AsyncTask Run"
-  }
+  TRACE_EVENT_END("blink");  // "AsyncTask Run"
 }
 
 void AllAsyncTasksCanceled(ExecutionContext* context) {
