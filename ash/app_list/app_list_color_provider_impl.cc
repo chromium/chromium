@@ -255,6 +255,15 @@ SkColor AppListColorProviderImpl::GetSearchResultViewHighlightColor() const {
                      GetInkDropOpacity(GetSearchBoxBackgroundColor()) * 255);
 }
 
+SkColor AppListColorProviderImpl::GetTextColorURL() const {
+  // Use highlight colors when Dark Light mode is enabled.
+  if (ShouldUseDarkLightColors()) {
+    return AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorURL);
+  }
+  return gfx::kGoogleBlue600;
+}
+
 bool AppListColorProviderImpl::ShouldUseDarkLightColors() const {
   return is_dark_light_mode_enabled_ || is_productivity_launcher_enabled_;
 }

@@ -46,6 +46,7 @@ class TestAppListColorProvider : public AppListColorProvider {
   float GetInkDropOpacity(
       SkColor bg_color = gfx::kPlaceholderColor) const override;
   SkColor GetSearchResultViewHighlightColor() const override;
+  SkColor GetTextColorURL() const override;
 };
 
 }  // namespace ash

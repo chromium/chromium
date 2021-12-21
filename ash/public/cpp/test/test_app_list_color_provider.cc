@@ -123,4 +123,8 @@ SkColor TestAppListColorProvider::GetSearchResultViewHighlightColor() const {
   return SkColorSetA(SK_ColorWHITE, 0x0D);
 }
 
+SkColor TestAppListColorProvider::GetTextColorURL() const {
+  return gfx::kGoogleBlue600;
+}
+
 }  // namespace ash
