@@ -204,7 +204,7 @@ void BackdropCollectionInfoFetcher::Start(OnCollectionsInfoFetched callback) {
   request.SerializeToString(&serialized_proto);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("backdrop_collection_names_download",
+      net::DefineNetworkTrafficAnnotation("wallpaper_backdrop_collection_names",
                                           R"(
         semantics {
           sender: "ChromeOS Wallpaper Picker"
@@ -276,7 +276,7 @@ void BackdropImageInfoFetcher::Start(OnImagesInfoFetched callback) {
   request.SerializeToString(&serialized_proto);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("backdrop_images_info_download", R"(
+      net::DefineNetworkTrafficAnnotation("wallpaper_backdrop_images_info", R"(
         semantics {
           sender: "ChromeOS Wallpaper Picker"
           description:
@@ -351,8 +351,9 @@ void BackdropSurpriseMeImageFetcher::Start(OnSurpriseMeImageFetched callback) {
   request.SerializeToString(&serialized_proto);
 
   const net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("backdrop_surprise_me_image_download",
-                                          R"(
+      net::DefineNetworkTrafficAnnotation(
+          "wallpaper_backdrop_surprise_me_image",
+          R"(
         semantics {
           sender: "ChromeOS Wallpaper Picker"
           description:

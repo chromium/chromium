@@ -301,7 +301,6 @@ Refer to README.md for content description and update process.
  <item id="fast_pair_footprints_request" added_in_milestone="98" type="partial" second_id="oauth2_api_call_flow" content_hash_code="0181e407" os_list="chromeos" semantics_fields="1,2,3,4,5" policy_fields="-1,3,5" file_path="ash/quick_pair/repository/fast_pair/footprints_fetcher.cc" />
  <item id="kiosk_app_icon" added_in_milestone="98" content_hash_code="04f02fef" os_list="chromeos" file_path="chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.cc" />
  <item id="arc_auth_code_fetcher" added_in_milestone="98" content_hash_code="057519ca" os_list="chromeos" file_path="chrome/browser/ash/arc/auth/arc_background_auth_code_fetcher.cc" />
- <item id="secondary_account_consent_logger" added_in_milestone="98" content_hash_code="015db79a" os_list="chromeos" file_path="chrome/browser/ash/child_accounts/secondary_account_consent_logger.cc" />
  <item id="customization_wallpaper_downloader" added_in_milestone="98" content_hash_code="03ee8364" os_list="chromeos" file_path="chrome/browser/ash/customization/customization_wallpaper_downloader.cc" />
  <item id="ime_url_downloader" added_in_milestone="98" content_hash_code="00f13105" os_list="chromeos" file_path="chrome/browser/ash/input_method/ime_service_connector.cc" />
  <item id="chromebook_mail_api" added_in_milestone="98" content_hash_code="01bfcf72" os_list="chromeos" file_path="chrome/browser/ash/login/marketing_backend_connector.cc" />
@@ -348,6 +347,8 @@ Refer to README.md for content description and update process.
  <item id="minidump_uploader_android" added_in_milestone="98" content_hash_code="0327544e" os_list="android" file_path="components/minidump_uploader/android/java/src/org/chromium/components/minidump_uploader/util/HttpURLConnectionFactoryImpl.java" />
  <item id="chrome_variations_android" added_in_milestone="98" content_hash_code="04eeb61f" os_list="android" file_path="components/variations/android/java/src/org/chromium/components/variations/firstrun/VariationsSeedFetcher.java" />
  <item id="wallpaper_google_photos_count" added_in_milestone="99" content_hash_code="073c3f10" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.cc" />
- <item id="backdrop_images_info_download" added_in_milestone="99" content_hash_code="030771dc" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.cc" />
- <item id="backdrop_surprise_me_image_download" added_in_milestone="99" content_hash_code="06f0b87b" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.cc" />
+ <item id="wallpaper_backdrop_collection_names" added_in_milestone="99" content_hash_code="06379fce" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.cc" />
+ <item id="wallpaper_backdrop_images_info" added_in_milestone="99" content_hash_code="0010428c" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.cc" />
+ <item id="wallpaper_backdrop_surprise_me_image" added_in_milestone="99" content_hash_code="0383b9db" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.cc" />
+ <item id="nearby_connections_wifi_lan" added_in_milestone="99" content_hash_code="06b30010" os_list="chromeos" file_path="chrome/services/sharing/nearby/platform/wifi_lan_medium.cc" />
 </annotations>
