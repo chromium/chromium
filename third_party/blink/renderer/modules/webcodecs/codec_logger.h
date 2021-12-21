@@ -12,7 +12,10 @@
 #include "media/base/status.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/inspector/inspector_media_context_impl.h"
+#include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace base {
@@ -20,6 +23,14 @@ class SingleThreadTaskRunner;
 }  // namespace base
 
 namespace blink {
+
+namespace internal {
+
+void SendPlayerNameInformationInternal(media::MediaLog* media_log,
+                                       const ExecutionContext& context,
+                                       std::string loadedAs);
+
+}  // namespace internal
 
 class ExecutionContext;
 
@@ -61,6 +72,12 @@ class MODULES_EXPORT CodecLogger final {
   }
 
   ~CodecLogger() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
+
+  void SendPlayerNameInformation(const ExecutionContext& context,
+                                 std::string loadedAs) {
+    internal::SendPlayerNameInformationInternal(media_log_.get(), context,
+                                                loadedAs);
+  }
 
   // Creates an OperationError DOMException with the given |error_msg|, and logs
   // the given |status| in |media_log_|.

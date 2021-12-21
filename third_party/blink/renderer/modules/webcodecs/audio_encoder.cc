@@ -140,11 +140,6 @@ AudioEncoderConfig* CopyConfig(const AudioEncoderConfig& config) {
 }  // namespace
 
 // static
-const char* AudioEncoderTraits::GetNameForDevTools() {
-  return "AudioEncoder(WebCodecs)";
-}
-
-// static
 const char* AudioEncoderTraits::GetName() {
   return "AudioEncoder";
 }

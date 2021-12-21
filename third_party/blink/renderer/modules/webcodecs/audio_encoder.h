@@ -48,7 +48,6 @@ class MODULES_EXPORT AudioEncoderTraits {
   using MediaEncoder = media::AudioEncoder;
 
   // Can't be a virtual method, because it's used from base ctor.
-  static const char* GetNameForDevTools();
   static const char* GetName();
 };
 

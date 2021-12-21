@@ -636,6 +636,8 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::Status status) {
   if (is_flush) {
     pending_request_->resolver.Release()->Resolve();
   } else {
+    logger_->SendPlayerNameInformation(*GetExecutionContext(),
+                                       Traits::GetName());
     Traits::UpdateDecoderLog(*decoder_, *pending_request_->media_config,
                              logger_->log());
 

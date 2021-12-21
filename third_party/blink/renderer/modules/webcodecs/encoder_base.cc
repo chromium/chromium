@@ -68,9 +68,7 @@ EncoderBase<Traits>::EncoderBase(ScriptState* script_state,
                                                          callback_runner_);
 
   media::MediaLog* log = logger_->log();
-
-  log->SetProperty<media::MediaLogProperty::kFrameTitle>(
-      std::string(Traits::GetNameForDevTools()));
+  logger_->SendPlayerNameInformation(*context, Traits::GetName());
   log->SetProperty<media::MediaLogProperty::kFrameUrl>(
       GetExecutionContext()->Url().GetString().Ascii());
 

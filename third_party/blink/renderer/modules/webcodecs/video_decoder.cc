@@ -282,8 +282,6 @@ void VideoDecoderTraits::InitializeDecoder(
 void VideoDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
                                           const MediaConfigType& media_config,
                                           media::MediaLog* media_log) {
-  media_log->SetProperty<media::MediaLogProperty::kFrameTitle>(
-      std::string("VideoDecoder(WebCodecs)"));
   media_log->SetProperty<media::MediaLogProperty::kVideoDecoderName>(
       decoder.GetDecoderType());
   media_log->SetProperty<media::MediaLogProperty::kIsPlatformVideoDecoder>(

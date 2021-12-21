@@ -428,11 +428,6 @@ bool CanUseGpuMemoryBufferReadback(media::VideoPixelFormat format,
 }  // namespace
 
 // static
-const char* VideoEncoderTraits::GetNameForDevTools() {
-  return "VideoEncoder(WebCodecs)";
-}
-
-// static
 const char* VideoEncoderTraits::GetName() {
   return "VideoEncoder";
 }

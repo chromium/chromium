@@ -1,5 +1,6 @@
 include_rules = [
     "+base/bind.h",
+    "+base/strings/string_util.h",
     "+base/test",
     "+base/threading/sequenced_task_runner_handle.h",
     "+base/threading/thread_task_runner_handle.h",

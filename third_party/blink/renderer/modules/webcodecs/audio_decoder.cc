@@ -97,8 +97,6 @@ AudioDecoderTraits::CreateDecoder(
 void AudioDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
                                           const MediaConfigType& media_config,
                                           media::MediaLog* media_log) {
-  media_log->SetProperty<media::MediaLogProperty::kFrameTitle>(
-      std::string("AudioDecoder(WebCodecs)"));
   media_log->SetProperty<media::MediaLogProperty::kAudioDecoderName>(
       decoder.GetDecoderType());
   media_log->SetProperty<media::MediaLogProperty::kIsPlatformAudioDecoder>(
