@@ -6,7 +6,11 @@
 #define DEVICE_FIDO_CABLE_CABLE_DISCOVERY_DATA_H_
 
 #include <stdint.h>
+
 #include <array>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
@@ -15,12 +19,17 @@
 #include "device/fido/fido_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/icu/source/common/unicode/locid.h"
-#include "third_party/icu/source/i18n/unicode/coll.h"
+#include "third_party/icu/source/common/unicode/uversion.h"
 
 namespace cbor {
 class Value;
 }
+
+// third_party/icu/source/common/unicode/uversion.h will set namespace icu.
+namespace U_ICU_NAMESPACE {
+class Collator;
+class Locale;
+}  // namespace U_ICU_NAMESPACE
 
 namespace device {
 
