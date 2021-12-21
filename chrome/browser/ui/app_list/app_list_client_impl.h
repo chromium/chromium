@@ -151,9 +151,6 @@ class AppListClientImpl
 
   app_list::SearchController* search_controller();
 
-  void SetSearchControllerForTest(
-      std::unique_ptr<app_list::SearchController> test_controller);
-
   AppListModelUpdater* GetModelUpdaterForTest();
 
   // Initializes as if a new user logged in for testing.

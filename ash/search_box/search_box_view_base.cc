@@ -251,11 +251,6 @@ class SearchBoxTextfield : public views::Textfield {
     }
   }
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    views::Textfield::GetAccessibleNodeData(node_data);
-    search_box_view_->UpdateSearchTextfieldAccessibleNodeData(node_data);
-  }
-
  private:
   SearchBoxViewBase* const search_box_view_;
 };
@@ -525,9 +520,6 @@ bool SearchBoxViewBase::IsSearchBoxTrimmedQueryEmpty() const {
                        &trimmed_query);
   return trimmed_query.empty();
 }
-
-void SearchBoxViewBase::UpdateSearchTextfieldAccessibleNodeData(
-    ui::AXNodeData* node_data) {}
 
 void SearchBoxViewBase::ClearSearch() {
   // Avoid setting |search_box_| text to empty if it is already empty.
