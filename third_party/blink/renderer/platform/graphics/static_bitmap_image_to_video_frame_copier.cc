@@ -116,16 +116,18 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
       // StaticBitmapImages are 8-bit sRGB. Expose the color space and pixel
       // format that is backing `image->GetMailboxHolder()`, or, alternatively,
       // expose an accelerated SkImage.
-      if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
-              viz::SkColorTypeToResourceFormat(kRGBA_8888_SkColorType),
-              gfx::Size(image->width(), image->height()),
-              gfx::ColorSpace::CreateSRGB(),
-              image->IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
-                                       : kBottomLeft_GrSurfaceOrigin,
-              image->GetMailboxHolder(), gfx::ColorSpace::CreateREC709(),
-              std::move(blit_done_callback))) {
-        return;
-      }
+      accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
+          viz::SkColorTypeToResourceFormat(kRGBA_8888_SkColorType),
+          gfx::Size(image->width(), image->height()),
+          gfx::ColorSpace::CreateSRGB(),
+          image->IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
+                                   : kBottomLeft_GrSurfaceOrigin,
+          image->GetMailboxHolder(), gfx::ColorSpace::CreateREC709(),
+          std::move(blit_done_callback));
+      // Early out even if the above fails since it would've already invoked the
+      // FrameReadyCallback with a null VideoFrame to indicate failure, and that
+      // will cause us to the take the fallback path in |blit_done_lambda|.
+      return;
     }
     ReadYUVPixelsAsync(image, context_provider->ContextProvider(),
                        std::move(callback));
