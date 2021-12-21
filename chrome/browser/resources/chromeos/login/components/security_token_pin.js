@@ -7,83 +7,96 @@
  * sign-in.
  */
 
-(function() {
+/* #js_imports_placeholder */
 
-Polymer({
-  is: 'security-token-pin',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {OobeI18nBehaviorInterface}
+ * @implements {OobeDialogHostBehaviorInterface}
+ */
+const SecurityTokenPinBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, OobeDialogHostBehavior], Polymer.Element);
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior],
+class SecurityTokenPin extends SecurityTokenPinBase {
+  static get is() {
+    return 'security-token-pin';
+  }
 
-  properties: {
-    /**
-     * Contains the OobeTypes.SecurityTokenPinDialogParameters object. It can be
-     * null when our element isn't used.
-     *
-     * Changing this field resets the dialog state. (Please note that, due to
-     * the Polymer's limitation, only assigning a new object is observed;
-     * changing just a subproperty won't work.)
-     */
-    parameters: {
-      type: Object,
-      observer: 'onParametersChanged_',
-    },
+  /* #html_template_placeholder */
 
-    /**
-     * Whether the current state is the wait for the processing completion
-     * (i.e., the backend is verifying the entered PIN).
-     * @private
-     */
-    processingCompletion_: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      /**
+       * Contains the OobeTypes.SecurityTokenPinDialogParameters object. It can
+       * be null when our element isn't used.
+       *
+       * Changing this field resets the dialog state. (Please note that, due to
+       * the Polymer's limitation, only assigning a new object is observed;
+       * changing just a subproperty won't work.)
+       */
+      parameters: {
+        type: Object,
+        observer: 'onParametersChanged_',
+      },
 
-    /**
-     * Whether the input is currently non-empty.
-     * @private
-     */
-    hasValue_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Whether the current state is the wait for the processing completion
+       * (i.e., the backend is verifying the entered PIN).
+       * @private
+       */
+      processingCompletion_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Whether the user has made changes in the input field since the dialog
-     * was initialized or reset.
-     * @private
-     */
-    userEdited_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Whether the input is currently non-empty.
+       * @private
+       */
+      hasValue_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Whether the user can change the value in the input field.
-     * @private
-     */
-    canEdit_: {
-      type: Boolean,
-      computed:
-          'computeCanEdit_(parameters.enableUserInput, processingCompletion_)',
-    },
+      /**
+       * Whether the user has made changes in the input field since the dialog
+       * was initialized or reset.
+       * @private
+       */
+      userEdited_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Whether the user can submit a login request.
-     * @private
-     */
-    canSubmit_: {
-      type: Boolean,
-      computed: 'computeCanSubmit_(parameters.enableUserInput, ' +
-          'hasValue_, processingCompletion_)',
-    },
-  },
+      /**
+       * Whether the user can change the value in the input field.
+       * @private
+       */
+      canEdit_: {
+        type: Boolean,
+        computed:
+            'computeCanEdit_(parameters.enableUserInput, processingCompletion_)',
+      },
+
+      /**
+       * Whether the user can submit a login request.
+       * @private
+       */
+      canSubmit_: {
+        type: Boolean,
+        computed: 'computeCanSubmit_(parameters.enableUserInput, ' +
+            'hasValue_, processingCompletion_)',
+      },
+    };
+  }
 
   focus() {
     // Note: setting the focus synchronously, to avoid flakiness in tests due to
     // racing between the asynchronous caret positioning and the PIN characters
     // input.
     this.$.pinKeyboard.focusInputSynchronously();
-  },
+  }
 
   /**
    * Computes the value of the canEdit_ property.
@@ -94,7 +107,7 @@ Polymer({
    */
   computeCanEdit_(enableUserInput, processingCompletion) {
     return enableUserInput && !processingCompletion;
-  },
+  }
 
   /**
    * Computes the value of the canSubmit_ property.
@@ -106,15 +119,16 @@ Polymer({
    */
   computeCanSubmit_(enableUserInput, hasValue, processingCompletion) {
     return enableUserInput && hasValue && !processingCompletion;
-  },
+  }
 
   /**
    * Invoked when the "Back" button is clicked.
    * @private
    */
   onBackClicked_() {
-    this.fire('cancel');
-  },
+    this.dispatchEvent(
+        new CustomEvent('cancel', {bubbles: true, composed: true}));
+  }
 
   /**
    * Invoked when the "Next" button is clicked or Enter is pressed.
@@ -127,8 +141,10 @@ Polymer({
       return;
     }
     this.processingCompletion_ = true;
-    this.fire('completed', this.$.pinKeyboard.value);
-  },
+    this.dispatchEvent(new CustomEvent(
+        'completed',
+        {bubbles: true, composed: true, detail: this.$.pinKeyboard.value}));
+  }
 
   /**
    * Observer that is called when the |parameters| property gets changed.
@@ -142,7 +158,7 @@ Polymer({
     this.userEdited_ = false;
 
     this.focus();
-  },
+  }
 
   /**
    * Observer that is called when the user changes the PIN input field.
@@ -152,7 +168,7 @@ Polymer({
   onPinChange_(e) {
     this.hasValue_ = e.detail.pin.length > 0;
     this.userEdited_ = true;
-  },
+  }
 
   /**
    * Returns whether the error label should be shown.
@@ -163,7 +179,7 @@ Polymer({
    */
   isErrorLabelVisible_(parameters, userEdited) {
     return parameters && parameters.hasError && !userEdited;
-  },
+  }
 
   /**
    * Returns whether the PIN attempts left count should be shown.
@@ -173,7 +189,7 @@ Polymer({
    */
   isAttemptsLeftVisible_(parameters) {
     return parameters && parameters.formattedAttemptsLeft !== '';
-  },
+  }
 
   /**
    * Returns whether there is a visible label for the PIN input field
@@ -185,7 +201,7 @@ Polymer({
   isLabelVisible_(parameters, userEdited) {
     return this.isErrorLabelVisible_(parameters, userEdited) ||
         this.isAttemptsLeftVisible_(parameters);
-  },
+  }
 
   /**
    * Returns the label to be used for the PIN input field.
@@ -205,6 +221,7 @@ Polymer({
       return parameters.formattedAttemptsLeft;
     }
     return parameters.formattedError;
-  },
-});
-})();
+  }
+}
+
+customElements.define(SecurityTokenPin.is, SecurityTokenPin);

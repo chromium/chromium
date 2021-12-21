@@ -59,6 +59,7 @@ group("closure_compile_module") {
     ":oobe_network_icons.m",
     ":oobe_select.m",
     ":oobe_types.m",
+    ":security_token_pin.m",
     ":throbber_notice.m",
     ":web_view_helper.m",
     ":web_view_loader.m",
@@ -92,6 +93,7 @@ group("polymer3_elements") {
                   ":oobe_a11y_option_module",
                   ":oobe_icons_module",
                   ":oobe_network_icons_module",
+                  ":security_token_pin_module",
                   ":throbber_notice_module",
                 ] + [ ":modulize" ]
 }
@@ -267,10 +269,14 @@ js_library("oobe_types.m") {
 
 js_library("throbber_notice.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/throbber_notice.m.js" ]
-  deps = [
-    "./behaviors:oobe_i18n_behavior",
-  ]
+  deps = [ "./behaviors:oobe_i18n_behavior" ]
   extra_deps = [ ":throbber_notice_module" ]
+}
+
+js_library("security_token_pin.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/security_token_pin.m.js" ]
+  deps = [ "./behaviors:oobe_i18n_behavior" ]
+  extra_deps = [ ":security_token_pin_module" ]
 }
 
 js_library("web_view_helper.m") {
@@ -377,6 +383,14 @@ polymer_modulizer("oobe_network_icons") {
   js_file = "oobe_network_icons.m.js"
   html_file = "oobe_network_icons.html"
   html_type = "iron-iconset"
+}
+
+polymer_modulizer("security_token_pin") {
+  js_file = "security_token_pin.js"
+  html_file = "security_token_pin.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
 }
 
 polymer_modulizer("throbber_notice") {
