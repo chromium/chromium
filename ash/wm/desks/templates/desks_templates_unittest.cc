@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/desk_template.h"
+#include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -45,6 +46,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/prefs/pref_service.h"
@@ -307,10 +309,26 @@ class DesksTemplatesTest : public OverviewTestBase {
       ASSERT_TRUE(overview_grid->IsShowingDesksTemplatesGrid());
   }
 
+  void SetDisableAppIdCheckForDeskTemplates(bool disabled) {
+    DesksController::Get()->set_disable_app_id_check_for_desk_templates(
+        disabled);
+  }
+
   // OverviewTestBase:
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kDesksTemplates);
     OverviewTestBase::SetUp();
+
+    // The FullRestoreSaveHandler isn't setup during tests so every window we
+    // create in tests doesn't have an app id associated with it. Since these
+    // windows don't have app ids, Desk won't consider them supported windows so
+    // we need to disable the app id check during tests.
+    DesksController::Get()->set_disable_app_id_check_for_desk_templates(true);
+  }
+
+  void TearDown() override {
+    DesksController::Get()->set_disable_app_id_check_for_desk_templates(true);
+    OverviewTestBase::TearDown();
   }
 
  protected:
@@ -1200,21 +1218,55 @@ TEST_F(DesksTemplatesTest, UnsupportedAppsDialog) {
 }
 
 // Tests that the save desk as template button is disabled when all windows on
-// the desk are unsupported.
+// the desk are unsupported or there are no windows with Full Restore app ids.
+// See crbug.com/1277763.
 TEST_F(DesksTemplatesTest, AllUnsupportedAppsDisablesSaveTemplates) {
-  auto* root = Shell::Get()->GetPrimaryRootWindow();
+  SetDisableAppIdCheckForDeskTemplates(false);
 
-  // Use `CreateTestWindow` instead of `CreateAppWindow`, which by default
+  // Use `CreateTestWindow()` instead of `CreateAppWindow()`, which by default
   // creates a supported window.
   auto test_window = CreateTestWindow();
+
+  // Also create an app window which should be supported and not have an app id.
+  auto no_app_id_window = CreateAppWindow();
+  auto* delegate = Shell::Get()->desks_templates_delegate();
+  ASSERT_TRUE(
+      delegate->IsWindowSupportedForDeskTemplate(no_app_id_window.get()));
+  ASSERT_TRUE(full_restore::GetAppId(no_app_id_window.get()).empty());
 
   EXPECT_EQ(0, DesksController::Get()->active_desk()->num_supported_windows());
 
   ToggleOverview();
 
   auto* save_template = static_cast<PillButton*>(
-      GetSaveDeskAsTemplateButtonForRoot(root)->GetContentsView());
+      GetSaveDeskAsTemplateButtonForRoot(Shell::Get()->GetPrimaryRootWindow())
+          ->GetContentsView());
   EXPECT_EQ(views::Button::STATE_DISABLED, save_template->GetState());
+}
+
+TEST_F(DesksTemplatesTest, AddRemoveSupportedWindows) {
+  auto* controller = DesksController::Get();
+
+  // Create a desk other than the default initial desk.
+  NewDesk();
+
+  Desk* desk_1 = controller->desks()[0].get();
+
+  // Create 3 supported windows on desk_1.
+  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
+  auto win2 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
+
+  // Expect `num_supported_windows_` to be 3.
+  EXPECT_EQ(3, desk_1->num_supported_windows());
+
+  // Close the supported windows.
+  win0.reset();
+  win1.reset();
+  win2.reset();
+
+  // Expect `num_supported_windows_` to be 0.
+  EXPECT_EQ(0, desk_1->num_supported_windows());
 }
 
 // Tests the mouse and touch hover behavior on the template item view.

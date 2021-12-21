@@ -246,10 +246,10 @@ class ASH_EXPORT Desk {
   int first_day_visited_ = -1;
   int last_day_visited_ = -1;
 
-  // The number of supported windows open on this desk. A window is supported
-  // for the Desks Templates feature if its app type is supported. Used to
-  // disable the save desk as templates button if there are no supported windows
-  // open.
+  // The number of Desks Templates supported windows open on this desk with a
+  // valid Full Restore app id. A window is supported for the Desks Templates
+  // feature if its app type is supported. Used to disable the save desk as
+  // templates button if there are no supported windows open.
   int num_supported_windows_ = 0;
 
   // Tracks whether |this| has been interacted with this week. This value is

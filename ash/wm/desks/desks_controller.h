@@ -97,6 +97,10 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
     return visible_on_all_desks_windows_;
   }
 
+  bool disable_app_id_check_for_desk_templates() {
+    return disable_app_id_check_for_desk_templates_;
+  }
+
   DeskAnimationBase* animation() const { return animation_.get(); }
 
   // Returns the current |active_desk()| or the soon-to-be active desk if a desk
@@ -300,6 +304,13 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   friend class DeskAnimationBase;
   friend class DeskActivationAnimation;
   friend class DeskRemovalAnimation;
+  friend class DesksTemplatesTest;
+
+  void set_disable_app_id_check_for_desk_templates(
+      bool disable_app_id_check_for_desk_templates) {
+    disable_app_id_check_for_desk_templates_ =
+        disable_app_id_check_for_desk_templates;
+  }
 
   void OnAnimationFinished(DeskAnimationBase* animation);
 
@@ -364,6 +375,14 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // This can be checked when overview mode is active to avoid exiting overview
   // mode as a result of desks modifications.
   bool are_desks_being_modified_ = false;
+
+  // In ash unittests, the FullRestoreSaveHandler isn't hooked up so initialized
+  // windows lack an app id. If a window doesn't have a valid app id, then it
+  // won't be tracked by Desk as a supported window and those windows will be
+  // deemed unsupported for Desk Templates. If
+  // `disable_app_id_check_for_desk_templates_` is true, then this check is
+  // omitted so we can test Desk Templates.
+  bool disable_app_id_check_for_desk_templates_ = false;
 
   // Not null if there is an on-going desks animation.
   std::unique_ptr<DeskAnimationBase> animation_;
