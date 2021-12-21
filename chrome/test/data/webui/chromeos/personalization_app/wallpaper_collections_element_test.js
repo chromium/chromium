@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {kMaximumLocalImagePreviews} from 'chrome://personalization/common/constants.js';
+import {kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews} from 'chrome://personalization/common/constants.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
 import {promisifyIframeFunctionsForTesting, WallpaperCollections} from 'chrome://personalization/trusted/wallpaper/wallpaper_collections_element.js';
 
@@ -88,7 +88,9 @@ export function WallpaperCollectionsTest() {
 
     wallpaperCollectionsElement = initElement(WallpaperCollections.is);
 
-    personalizationStore.data.wallpaper.googlePhotos.photos = [1, 2, 3, 4];
+    personalizationStore.data.wallpaper.googlePhotos.photos =
+        Array.from({length: kMaximumGooglePhotosPreviews + 1})
+            .map((_, i) => `foo://${i}`);
     personalizationStore.data.wallpaper.loading.googlePhotos.photos = false;
     personalizationStore.notifyObservers();
 
@@ -102,7 +104,9 @@ export function WallpaperCollectionsTest() {
 
     assertWindowObjectsEqual(iframe.contentWindow, target);
     assertDeepEquals(
-        personalizationStore.data.wallpaper.googlePhotos.photos, data);
+        personalizationStore.data.wallpaper.googlePhotos.photos.slice(
+            0, kMaximumGooglePhotosPreviews),
+        data);
   });
 
   test('sends image counts when a collection loads', async () => {

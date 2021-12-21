@@ -26,6 +26,13 @@
     display: flex;
     justify-content: center;
   }
+
+  .photo img {
+    flex: 1 1 auto;
+    height: 100%;
+    object-fit: cover;
+    width: 100%;
+  }
 </style>
 <iron-list id="grid" items="[[photosByRow_]]" as="row">
   <template>
@@ -34,7 +41,7 @@
       <template is="dom-repeat" items="[[row]]" as="photo">
         <wallpaper-grid-item>
           <div class="photo" colindex$="[[index]]" tabindex="-1">
-            [[photo]]
+            <img is="cr-auto-img" auto-src="[[photo.url]]"></img>
           </div>
         </wallpaper-grid-item>
       </template>

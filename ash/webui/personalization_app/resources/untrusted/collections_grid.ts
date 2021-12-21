@@ -9,7 +9,7 @@ import './styles.js';
 import {afterNextRender, html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.m.js';
 
-import {Events, EventType, kMaximumLocalImagePreviews} from '../common/constants.js';
+import {Events, EventType, kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews} from '../common/constants.js';
 import {getLoadingPlaceholderAnimationDelay, getNumberOfGridItemsPerRow, isNullOrArray, isNullOrNumber, isSelectionEvent} from '../common/utils.js';
 import {selectCollection, selectGooglePhotosCollection, selectLocalCollection, validateReceivedData} from '../untrusted/iframe_api.js';
 
@@ -103,16 +103,14 @@ function getCountText(x: number|null|undefined): string {
   }
 }
 
-/**
- * Returns the tile to display for the Google Photos collection.
- */
+/** Returns the tile to display for the Google Photos collection. */
 function getGooglePhotosTile(
-    _: unknown[], googlePhotosCount: number|null): ImageTile {
+    googlePhotos: Url[]|null, googlePhotosCount: number|null): ImageTile {
   return {
     name: loadTimeData.getString('googlePhotosLabel'),
     id: kGooglePhotosCollectionId,
     count: getCountText(googlePhotosCount ?? 0),
-    preview: [],
+    preview: googlePhotos?.slice(0, kMaximumGooglePhotosPreviews) ?? [],
     type: TileType.IMAGE,
   };
 }
@@ -311,11 +309,10 @@ export class CollectionsGrid extends PolymerElement {
     });
   }
 
-  /**
-   * Invoked on changes to the list and count of Google Photos photos.
-   */
+  /** Invoked on changes to the list and count of Google Photos photos. */
   private onGooglePhotosLoaded_(
-      googlePhotos: unknown[]|undefined, googlePhotosCount: number|undefined) {
+      googlePhotos: Url[]|null|undefined,
+      googlePhotosCount: number|null|undefined) {
     if (isNullOrArray(googlePhotos) && isNullOrNumber(googlePhotosCount)) {
       const tile = getGooglePhotosTile(googlePhotos, googlePhotosCount);
       this.set('tiles_.1', tile);

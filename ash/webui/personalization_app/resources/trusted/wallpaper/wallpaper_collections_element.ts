@@ -11,9 +11,10 @@
 import './styles.js';
 
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {kMaximumLocalImagePreviews} from '../../common/constants.js';
+import {kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews} from '../../common/constants.js';
 import {isNonEmptyArray, isNullOrArray, isNullOrNumber, promisifyOnload} from '../../common/utils.js';
 import {sendCollections, sendGooglePhotosCount, sendGooglePhotosPhotos, sendImageCounts, sendLocalImageData, sendLocalImages, sendVisible} from '../iframe_api.js';
 import {WallpaperCollection, WallpaperImage, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
@@ -293,21 +294,19 @@ export class WallpaperCollections extends WithPersonalizationStore {
     sendImageCountsFunction(iframe.contentWindow!, counts);
   }
 
-  /**
-   * Invoked on changes to the list of Google Photos photos.
-   */
+  /** Invoked on changes to the list of Google Photos photos. */
   private async onGooglePhotosChanged_(
-      googlePhotos: unknown[], googlePhotosLoading: boolean) {
+      googlePhotos: Url[]|null, googlePhotosLoading: boolean) {
     if (googlePhotosLoading || !isNullOrArray(googlePhotos)) {
       return;
     }
     const iframe = await this.iframePromise_;
-    sendGooglePhotosPhotosFunction(iframe.contentWindow!, googlePhotos);
+    sendGooglePhotosPhotosFunction(
+        iframe.contentWindow!,
+        googlePhotos?.slice(0, kMaximumGooglePhotosPreviews) ?? null);
   }
 
-  /**
-   * Invoked on changes to the count of Google Photos photos.
-   */
+  /** Invoked on changes to the count of Google Photos photos. */
   private async onGooglePhotosCountChanged_(
       googlePhotosCount: number|null, googlePhotosCountLoading: boolean) {
     if (googlePhotosCountLoading || !isNullOrNumber(googlePhotosCount)) {

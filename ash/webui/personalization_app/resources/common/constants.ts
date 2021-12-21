@@ -17,6 +17,7 @@ export const untrustedOrigin = 'chrome-untrusted://personalization';
 
 export const trustedOrigin = 'chrome://personalization';
 
+export const kMaximumGooglePhotosPreviews = 4;
 export const kMaximumLocalImagePreviews = 3;
 
 export enum EventType {

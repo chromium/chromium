@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {Action} from 'chrome://resources/js/cr/ui/store.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {CurrentWallpaper, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
 import {DisplayableImage} from '../personalization_reducers.js';
@@ -270,13 +271,11 @@ export function setGooglePhotosCountAction(count: number|
 
 export type SetGooglePhotosPhotosAction = Action&{
   name: WallpaperActionName.SET_GOOGLE_PHOTOS_PHOTOS;
-  photos: unknown[]|null;
+  photos: Url[]|null;
 };
 
-/**
- * Sets the list of Google Photos photos. May be called with null on error.
- */
-export function setGooglePhotosPhotosAction(photos: unknown[]|
+/** Sets the list of Google Photos photos. May be called with null on error. */
+export function setGooglePhotosPhotosAction(photos: Url[]|
                                             null): SetGooglePhotosPhotosAction {
   return {photos, name: WallpaperActionName.SET_GOOGLE_PHOTOS_PHOTOS};
 }

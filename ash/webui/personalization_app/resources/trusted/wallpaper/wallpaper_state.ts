@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {CurrentWallpaper, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
 
@@ -29,7 +30,7 @@ export interface BackdropState {
 export interface GooglePhotosState {
   count: number|null|undefined;
   albums: WallpaperCollection[]|null|undefined;
-  photos: unknown[]|null|undefined;
+  photos: Url[]|null|undefined;
   photosByAlbumId: Record<string, unknown[]|null|undefined>;
 }
 

@@ -5,6 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';
 import {WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
@@ -119,11 +120,24 @@ async function fetchGooglePhotosPhotos(
 
   // TODO(dmblack): Create and wire up mojo API. For now, simulate an async
   // request that returns a list of 1,000 Google Photos photos.
-  return new Promise(resolve => setTimeout(() => {
-                       store.dispatch(action.setGooglePhotosPhotosAction(
-                           Array.from({length: 1000})));
-                       resolve();
-                     }, 1000));
+  return new Promise(
+      resolve => setTimeout(() => {
+        // Temporarily use hard-coded URLs from the solid colors backdrop
+        // collection since the backdrop server is already allowlisted with the
+        // untrusted iframe's content security policy.
+        const urls = [
+          'https://lh6.googleusercontent.com/proxy/dVgC6TzmRH-4uhdcqZK37RyRErOz46Y4S9W8Pw3tfRHyPluwELODHfvrx-SorsUFq5YphXy1VXIxQO2oXlF7GfjeRLY4hsH9c20FqCM4Tpk',
+          'https://lh6.googleusercontent.com/proxy/qcBQd3OJ8qwQeFvAb0p23WJau6s1w5RQ0UAUFD1bm56SVBgP1X7-LAfv2_uF47-9Dd6v_fCVKYVU6SCsorTxMRahBSdv6of9FBdReaoqPg',
+          'https://lh6.googleusercontent.com/proxy/fahpL4TekPUgLhKJQ289ISWz_FPG9XutzfjqBiSdDhxjuBfZ7SjlE4j58rg9wzEsu9NcQ0Yrm0B5NW_MWaLbX0TWJ5yRDVH1z-Zf',
+          'https://lh6.googleusercontent.com/proxy/dVgC6TzmRH-4uhdcqZK37RyRErOz46Y4S9W8Pw3tfRHyPluwELODHfvrx-SorsUFq5YphXy1VXIxQO2oXlF7GfjeRLY4hsH9c20FqCM4Tpk',
+          'https://lh6.googleusercontent.com/proxy/5ftru2Wt8g3R7r4TzRAOhJD7jMpLWOiqKxgql3vd_s26EnV51M5WfJe-ZJZkrMnqbOQ4uB1iBycwwGziEVYCwMeRx2Tcdmiq2lH44hUD3OLX',
+          'https://lh6.googleusercontent.com/proxy/qcBQd3OJ8qwQeFvAb0p23WJau6s1w5RQ0UAUFD1bm56SVBgP1X7-LAfv2_uF47-9Dd6v_fCVKYVU6SCsorTxMRahBSdv6of9FBdReaoqPg',
+        ];
+        store.dispatch(action.setGooglePhotosPhotosAction(
+            Array.from({length: 1000})
+                .map((_, i) => ({url: urls[i % urls.length]}))));
+        resolve();
+      }, 1000));
 }
 
 /** Get list of local images from disk and save it to the store. */

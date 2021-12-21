@@ -10,6 +10,7 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import * as constants from '../common/constants.js';
 import {isNonEmptyArray} from '../common/utils.js';
@@ -44,7 +45,7 @@ export function sendGooglePhotosCount(target: Window, count: number|null) {
  * Sends the list of Google Photos photos to untrusted.
  */
 export function sendGooglePhotosPhotos(
-    target: Window, photos: Array<any>|null) {
+    target: Window, photos: Array<Url>|null) {
   const event: constants.SendGooglePhotosPhotosEvent = {
     type: constants.EventType.SEND_GOOGLE_PHOTOS_PHOTOS,
     photos
