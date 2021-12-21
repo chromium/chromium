@@ -8,6 +8,5 @@
     <dimen name="signin_promo_account_image_size">48dp</dimen>
     <dimen name="signin_promo_cold_state_image_size">24dp</dimen>
     <!-- Signin fre uma dialog dimensions -->
-    <dimen name="signin_fre_uma_dialog_section_margin">16dp</dimen>
     <dimen name="signin_fre_uma_dialog_padding">24dp</dimen>
 </resources>
