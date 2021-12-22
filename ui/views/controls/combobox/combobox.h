@@ -104,6 +104,13 @@ class VIEWS_EXPORT Combobox : public View,
   void SetSizeToLargestLabel(bool size_to_largest_label);
   bool GetSizeToLargestLabel() const { return size_to_largest_label_; }
 
+  // Use the time when combobox was closed in order for parent view to not
+  // treat a user event already treated by the combobox.
+  base::TimeTicks GetClosedTime() { return closed_time_; }
+
+  // Returns whether or not the menu is currently running.
+  bool IsMenuRunning() const;
+
   // Overridden from View:
   gfx::Size CalculatePreferredSize() const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;

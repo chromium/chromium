@@ -363,6 +363,10 @@ void Combobox::SetSizeToLargestLabel(bool size_to_largest_label) {
   OnPropertyChanged(&selected_index_, kPropertyEffectsPreferredSizeChanged);
 }
 
+bool Combobox::IsMenuRunning() const {
+  return menu_runner_ && menu_runner_->IsRunning();
+}
+
 void Combobox::OnThemeChanged() {
   View::OnThemeChanged();
   SetBackground(
@@ -678,7 +682,7 @@ void Combobox::ShowDropDownMenu(ui::MenuSourceType source_type) {
 
   // Allow |menu_runner_| to be set by the testing API, but if this method is
   // ever invoked recursively, ensure the old menu is closed.
-  if (!menu_runner_ || menu_runner_->IsRunning()) {
+  if (!menu_runner_ || IsMenuRunning()) {
     menu_runner_ = std::make_unique<MenuRunner>(
         menu_model_.get(), MenuRunner::COMBOBOX,
         base::BindRepeating(&Combobox::OnMenuClosed, base::Unretained(this),

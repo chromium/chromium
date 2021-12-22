@@ -662,7 +662,7 @@ std::string LoginScreenTestApi::GetExpandedPublicSessionSelectedLocale() {
       lock_screen_test.contents_view());
   LoginExpandedPublicAccountView::TestApi expanded_test(
       lock_contents_test.expanded_view());
-  return expanded_test.selected_language_item().value;
+  return expanded_test.selected_language_item_value();
 }
 
 // static
@@ -672,7 +672,7 @@ std::string LoginScreenTestApi::GetExpandedPublicSessionSelectedKeyboard() {
       lock_screen_test.contents_view());
   LoginExpandedPublicAccountView::TestApi expanded_test(
       lock_contents_test.expanded_view());
-  return expanded_test.selected_keyboard_item().value;
+  return expanded_test.selected_keyboard_item_value();
 }
 
 // static
