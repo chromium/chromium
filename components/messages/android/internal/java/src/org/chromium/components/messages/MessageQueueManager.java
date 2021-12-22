@@ -220,7 +220,7 @@ class MessageQueueManager implements ScopeChangeController.Delegate {
             : "This should not be called when there is no valid currently displayed message.";
         Runnable runnable = () -> {
             mMessageQueueDelegate.onFinishHiding();
-            mCurrentDisplayedMessage = null;
+            mCurrentDisplayedMessage = mLastShownMessage = null;
             if (updateCurrentMessage) updateCurrentDisplayedMessage(true, getNextMessage());
         };
         if (mLastShownMessage != mCurrentDisplayedMessage) {

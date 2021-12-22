@@ -508,10 +508,12 @@ public class MessageQueueManagerTest {
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
 
+        // Show and hide twice.
         ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         verify(delegate).onStartShowing(runnableCaptor.capture());
         Runnable onShow = runnableCaptor.getValue();
         verify(m1, never()).show();
+        // Become inactive before onStartShowing is finished.
         queueManager.onScopeChange(
                 new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.INACTIVE));
         verify(m1, never()).hide(anyBoolean(), any());
@@ -528,6 +530,40 @@ public class MessageQueueManagerTest {
         queueManager.onScopeChange(
                 new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.DESTROY));
         verify(m1).hide(anyBoolean(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testSuspendDuringOnStartingShow() {
+        MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
+        MessageQueueManager queueManager = new MessageQueueManager();
+        queueManager.setDelegate(delegate);
+        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
+        queueManager.enqueueMessage(m1, m1, SCOPE_INSTANCE_ID, false);
+
+        queueManager.onScopeChange(
+                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
+        verify(m1).show();
+
+        // Hide
+        queueManager.onScopeChange(
+                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.INACTIVE));
+        verify(m1).hide(anyBoolean(), any());
+
+        // Re-assign a delegate so that onStartShowing will not trigger callback at once.
+        delegate = Mockito.spy(MessageQueueDelegate.class);
+        queueManager.setDelegate(delegate);
+        queueManager.onScopeChange(
+                new MessageScopeChange(SCOPE_TYPE, SCOPE_INSTANCE_ID, ChangeType.ACTIVE));
+        // Suspend queue before onStartShowing is finished.
+        queueManager.suspend();
+
+        verify(m1,
+                times(1).description(
+                        "Message should not show again before onStartShowing is finished"))
+                .show();
+        verify(m1, times(1).description("Message should not call #hide if it is not shown before"))
+                .hide(anyBoolean(), any());
     }
 
     /**
