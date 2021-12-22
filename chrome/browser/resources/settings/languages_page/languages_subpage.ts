@@ -25,6 +25,9 @@ import './add_languages_dialog.js';
 import './languages.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.js';
+// <if expr="not chromeos_ash">
+import '../relaunch_confirmation_dialog.js';
+// </if>
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
@@ -43,10 +46,8 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-// <if expr="is_win">
-import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
-// </if>
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
+import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.js';
@@ -72,7 +73,7 @@ export interface SettingsLanguagesSubpageElement {
 }
 
 const SettingsLanguagesSubpageElementBase =
-    I18nMixin(PrefsMixin(PolymerElement));
+    RelaunchMixin(I18nMixin(PrefsMixin(PolymerElement)));
 
 export class SettingsLanguagesSubpageElement extends
     SettingsLanguagesSubpageElementBase {
@@ -437,7 +438,7 @@ export class SettingsLanguagesSubpageElement extends
    * Handler for the restart button.
    */
   private onRestartTap_() {
-    LifetimeBrowserProxyImpl.getInstance().restart();
+    this.performRestart(RestartType.RESTART);
   }
   // </if>
 

@@ -347,6 +347,7 @@ preprocess_if_expr("copy_browser_settings_tsc") {
     "privacy_page/privacy_page_browser_proxy.js",
     "privacy_page/secure_dns_input.js",
     "privacy_page/secure_dns.js",
+    "relaunch_mixin.js",
     "setting_id_param_util.js",
     "settings_page_css.js",
     "settings_page/settings_animated_pages.js",

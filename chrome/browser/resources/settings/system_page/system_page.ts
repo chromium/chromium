@@ -14,12 +14,15 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../controls/extension_controlled_indicator.js';
 import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.js';
+// <if expr="not chromeos_ash">
+import '../relaunch_confirmation_dialog.js';
+// </if>
 import '../settings_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
+import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 
 import {SystemPageBrowserProxyImpl} from './system_page_browser_proxy.js';
 
@@ -31,7 +34,9 @@ export interface SettingsSystemPageElement {
   };
 }
 
-export class SettingsSystemPageElement extends PolymerElement {
+const SettingsSystemPageElementBase = RelaunchMixin(PolymerElement);
+
+export class SettingsSystemPageElement extends SettingsSystemPageElementBase {
   static get is() {
     return 'settings-system-page';
   }
@@ -90,8 +95,7 @@ export class SettingsSystemPageElement extends PolymerElement {
   private onRestartTap_(e: Event) {
     // Prevent event from bubbling up to the toggle button.
     e.stopPropagation();
-    // TODO(dbeam): we should prompt before restarting the browser.
-    LifetimeBrowserProxyImpl.getInstance().restart();
+    this.performRestart(RestartType.RESTART);
   }
 
   /**

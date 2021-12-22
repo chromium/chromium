@@ -103,9 +103,14 @@
       </settings-signout-dialog>
     </template>
 
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
     <cr-toast id="toast">
       <div>$i18n{restartToApplyChanges}</div>
       <cr-button on-click="onRestartTap_">$i18n{restart}</cr-button>
     </cr-toast>
+
+    <template is="dom-if" if="[[shouldShowRelaunchDialog]]" restamp>
+      <relaunch-confirmation-dialog restart-type="[[restartTypeEnum.RESTART]]"
+          on-close="onRelaunchDialogClose"></relaunch-confirmation-dialog>
+    </template>
 </if>
