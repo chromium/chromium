@@ -68,14 +68,6 @@ class TopVisitElement extends PolymerElement {
       },
 
       /**
-       * Whether there are related visits.
-       */
-      hasRelatedVisits_: {
-        type: Boolean,
-        computed: 'computeHasRelatedVisits_(visit.relatedVisits.*)',
-      },
-
-      /**
        * The default-hidden related visits.
        */
       hiddenRelatedVisits_: {
@@ -100,7 +92,6 @@ class TopVisitElement extends PolymerElement {
   visit: URLVisit;
   private expanded_: boolean;
   private hiddenRelatedVisits_: Array<URLVisit>;
-  private relatedVisits_: Array<URLVisit>;
 
   //============================================================================
   // Event handlers
@@ -141,10 +132,6 @@ class TopVisitElement extends PolymerElement {
 
   private computeHasHiddenRelatedVisits_(): boolean {
     return this.hiddenRelatedVisits_.length > 0;
-  }
-
-  private computeHasRelatedVisits_(): boolean {
-    return this.visit.relatedVisits.length > 0;
   }
 
   private computeHiddenRelatedVisits_(): Array<URLVisit> {
