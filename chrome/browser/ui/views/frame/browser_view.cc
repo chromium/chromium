@@ -80,6 +80,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/reopen_tab_in_product_help.h"
 #include "chrome/browser/ui/user_education/reopen_tab_in_product_help_factory.h"
+#include "chrome/browser/ui/user_education/tutorial/tutorial_service_manager.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/accessibility/accessibility_focus_highlight.h"
@@ -720,7 +721,9 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
       std::make_unique<TabStripRegionView>(std::move(tabstrip)));
 
   feature_promo_controller_ = std::make_unique<FeaturePromoControllerViews>(
-      this, FeaturePromoBubbleOwnerImpl::GetInstance());
+      this, FeaturePromoBubbleOwnerImpl::GetInstance(),
+      TutorialServiceManager::GetInstance()->GetTutorialServiceForProfile(
+          GetProfile()));
 
   // Create WebViews early so |webui_tab_strip_| can observe their size.
   auto devtools_web_view =

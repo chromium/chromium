@@ -18,6 +18,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/feature_promo_snooze_service.h"
 #include "chrome/browser/ui/user_education/feature_promo_specification.h"
+#include "chrome/browser/ui/user_education/tutorial/tutorial_identifier.h"
+#include "chrome/browser/ui/user_education/tutorial/tutorial_service.h"
 #include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_owner.h"
@@ -113,11 +115,13 @@ bool FeaturePromoControllerViews::active_window_check_blocked_for_testing =
 
 FeaturePromoControllerViews::FeaturePromoControllerViews(
     BrowserView* browser_view,
-    FeaturePromoBubbleOwner* bubble_owner)
+    FeaturePromoBubbleOwner* bubble_owner,
+    TutorialService* tutorial_service)
     : browser_view_(browser_view),
       bubble_owner_(bubble_owner),
       snooze_service_(std::make_unique<FeaturePromoSnoozeService>(
           browser_view->browser()->profile())),
+      tutorial_service_(tutorial_service),
       tracker_(feature_engagement::TrackerFactory::GetForBrowserContext(
           browser_view->browser()->profile())) {
   DCHECK(tracker_);
@@ -174,8 +178,9 @@ absl::optional<base::Token> FeaturePromoControllerViews::ShowCriticalPromo(
   if (current_iph_feature_ && bubble_id_)
     CloseBubble(*current_iph_feature_);
 
-  // Snooze is not supported for critical promos.
+  // Some promo types are not supported for critical promos.
   DCHECK_NE(FeaturePromoSpecification::PromoType::kSnooze, spec.promo_type());
+  DCHECK_NE(FeaturePromoSpecification::PromoType::kTutorial, spec.promo_type());
 
   DCHECK(!bubble_id_);
 
@@ -254,7 +259,29 @@ void FeaturePromoControllerViews::OnUserSnooze(
 
 void FeaturePromoControllerViews::OnUserDismiss(
     const base::Feature& iph_feature) {
-  snooze_service_->OnUserDismiss(iph_feature);
+  if (snooze_service_)
+    snooze_service_->OnUserDismiss(iph_feature);
+}
+
+void FeaturePromoControllerViews::OnTutorialStart(
+    const base::Feature& iph_feature,
+    TutorialIdentifier tutorial_id) {
+  if (snooze_service_)
+    snooze_service_->OnUserDismiss(iph_feature);
+  if (!bubble_id_ || !bubble_owner_->BubbleIsShowing(*bubble_id_)) {
+    StartTutorial(tutorial_id);
+  } else {
+    pending_tutorial_ = tutorial_id;
+  }
+}
+
+void FeaturePromoControllerViews::StartTutorial(
+    TutorialIdentifier tutorial_id) {
+  if (!browser_view_)
+    return;
+  tutorial_service_->StartTutorial(
+      tutorial_id,
+      views::ElementTrackerViews::GetContextForView(browser_view_));
 }
 
 bool FeaturePromoControllerViews::BubbleIsShowing(
@@ -452,6 +479,12 @@ bool FeaturePromoControllerViews::ShowPromoBubbleImpl(
           feature_engagement::kIPHDesktopSnoozeFeature)) {
     CHECK(spec.feature());
     create_params.buttons = CreateSnoozeButtons(*spec.feature());
+  } else if (spec.promo_type() ==
+             FeaturePromoSpecification::PromoType::kTutorial) {
+    CHECK(spec.feature());
+    create_params.buttons =
+        CreateTutorialButtons(*spec.feature(), spec.tutorial_id());
+    create_params.has_close_button = true;
   } else {
     create_params.has_close_button = true;
   }
@@ -517,6 +550,11 @@ void FeaturePromoControllerViews::HandleBubbleClosed() {
   } else {
     current_critical_promo_.reset();
   }
+
+  if (!pending_tutorial_.empty()) {
+    StartTutorial(pending_tutorial_);
+    pending_tutorial_ = TutorialIdentifier();
+  }
 }
 
 bool FeaturePromoControllerViews::CheckScreenReaderPromptAvailable() const {
@@ -565,6 +603,46 @@ FeaturePromoControllerViews::CreateSnoozeButtons(const base::Feature& feature) {
       base::BindRepeating(&FeaturePromoControllerViews::OnUserDismiss,
                           weak_ptr_factory_.GetWeakPtr(), feature);
   buttons.push_back(std::move(dismiss_button));
+
+  if (views::PlatformStyle::kIsOkButtonLeading)
+    std::swap(buttons[0], buttons[1]);
+
+  return buttons;
+}
+
+std::vector<FeaturePromoBubbleView::ButtonParams>
+FeaturePromoControllerViews::CreateTutorialButtons(
+    const base::Feature& feature,
+    TutorialIdentifier tutorial_id) {
+  std::vector<FeaturePromoBubbleView::ButtonParams> buttons;
+
+  if (base::FeatureList::IsEnabled(
+          feature_engagement::kIPHDesktopSnoozeFeature)) {
+    FeaturePromoBubbleView::ButtonParams snooze_button;
+    snooze_button.text = l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);
+    snooze_button.has_border = false;
+    snooze_button.callback =
+        base::BindRepeating(&FeaturePromoControllerViews::OnUserSnooze,
+                            weak_ptr_factory_.GetWeakPtr(), feature);
+    buttons.push_back(std::move(snooze_button));
+  } else {
+    FeaturePromoBubbleView::ButtonParams dismiss_button;
+    dismiss_button.text = l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);
+    dismiss_button.has_border = false;
+    dismiss_button.callback =
+        base::BindRepeating(&FeaturePromoControllerViews::OnUserDismiss,
+                            weak_ptr_factory_.GetWeakPtr(), feature);
+    buttons.push_back(std::move(dismiss_button));
+  }
+
+  FeaturePromoBubbleView::ButtonParams tutorial_button;
+  tutorial_button.text =
+      l10n_util::GetStringUTF16(IDS_PROMO_SHOW_TUTORIAL_BUTTON);
+  tutorial_button.has_border = true;
+  tutorial_button.callback =
+      base::BindRepeating(&FeaturePromoControllerViews::OnTutorialStart,
+                          weak_ptr_factory_.GetWeakPtr(), feature, tutorial_id);
+  buttons.push_back(std::move(tutorial_button));
 
   if (views::PlatformStyle::kIsOkButtonLeading)
     std::swap(buttons[0], buttons[1]);

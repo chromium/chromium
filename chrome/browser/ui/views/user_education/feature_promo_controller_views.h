@@ -14,6 +14,8 @@
 #include "base/token.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/user_education/feature_promo_specification.h"
+#include "chrome/browser/ui/user_education/tutorial/tutorial.h"
+#include "chrome/browser/ui/user_education/tutorial/tutorial_identifier.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_owner.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view_tracker.h"
@@ -38,7 +40,8 @@ class FeaturePromoControllerViews : public FeaturePromoController {
  public:
   // Create the instance for the given |browser_view|.
   explicit FeaturePromoControllerViews(BrowserView* browser_view,
-                                       FeaturePromoBubbleOwner* bubble_owner);
+                                       FeaturePromoBubbleOwner* bubble_owner,
+                                       TutorialService* tutorial_service);
   ~FeaturePromoControllerViews() override;
 
   // Get the appropriate instance for |view|. This finds the BrowserView
@@ -121,6 +124,10 @@ class FeaturePromoControllerViews : public FeaturePromoController {
     return snooze_service_.get();
   }
 
+  FeaturePromoBubbleOwner* bubble_owner_for_testing() {
+    return bubble_owner_.get();
+  }
+
  private:
   bool MaybeShowPromoImpl(
       const FeaturePromoSpecification& spec,
@@ -143,6 +150,11 @@ class FeaturePromoControllerViews : public FeaturePromoController {
   // Call these methods when the user actively snooze or dismiss the IPH.
   void OnUserSnooze(const base::Feature& iph_feature);
   void OnUserDismiss(const base::Feature& iph_feature);
+  void OnTutorialStart(const base::Feature& iph_feature,
+                       TutorialIdentifier tutorial_id);
+
+  // Launch a tutorial.
+  void StartTutorial(TutorialIdentifier tutorial_id);
 
   // Returns whether we can play a screen reader prompt for the "focus help
   // bubble" promo.
@@ -157,6 +169,11 @@ class FeaturePromoControllerViews : public FeaturePromoController {
   std::vector<FeaturePromoBubbleView::ButtonParams> CreateSnoozeButtons(
       const base::Feature& feature);
 
+  // Create appropriate buttons for a tutorial promo for the current platform.
+  std::vector<FeaturePromoBubbleView::ButtonParams> CreateTutorialButtons(
+      const base::Feature& feature,
+      TutorialIdentifier tutorial_id);
+
   // The browser window this instance is responsible for.
   const raw_ptr<BrowserView> browser_view_;
 
@@ -166,6 +183,9 @@ class FeaturePromoControllerViews : public FeaturePromoController {
   // Snooze service that is notified when a user snoozes or dismisses the promo.
   // Ask this service for display permission before |tracker_|.
   std::unique_ptr<FeaturePromoSnoozeService> snooze_service_;
+
+  // The tutorial service to use to launch tutorials.
+  TutorialService* const tutorial_service_;
 
   // IPH backend that is notified of user events and decides whether to
   // trigger IPH.
@@ -193,6 +213,9 @@ class FeaturePromoControllerViews : public FeaturePromoController {
   // Stores the bubble anchor view so we can set/unset a highlight on
   // it.
   views::ViewTracker anchor_view_tracker_;
+
+  // Pending tutorial to run, if any.
+  TutorialIdentifier pending_tutorial_;
 
   static bool active_window_check_blocked_for_testing;
   bool promos_blocked_for_testing_ = false;

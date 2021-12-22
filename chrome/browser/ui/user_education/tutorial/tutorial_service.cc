@@ -31,13 +31,18 @@ bool TutorialService::StartTutorial(
     tutorial_registry = tutorial_service_manager->tutorial_registry();
   }
 
-  return StartTutorialImpl(tutorial_registry->CreateTutorial(
-      id, this, bubble_factory_registry, context));
+  auto tutorial = tutorial_registry->CreateTutorial(
+      id, this, bubble_factory_registry, context);
+  if (!tutorial)
+    return false;
+  return StartTutorialImpl(std::move(tutorial));
 }
 
 bool TutorialService::StartTutorialImpl(std::unique_ptr<Tutorial> tutorial) {
   if (running_tutorial_)
     return false;
+
+  CHECK(tutorial);
 
   running_tutorial_ = std::move(tutorial);
   running_tutorial_->Start();

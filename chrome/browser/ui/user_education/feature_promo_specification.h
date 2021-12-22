@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/user_education/tutorial/tutorial_identifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -48,6 +49,8 @@ class FeaturePromoSpecification {
     kToast,
     // A snooze-style promo.
     kSnooze,
+    // A tutorial promo.
+    kTutorial,
     // A simple promo that acts like a toast but without the required
     // accessibility data.
     kLegacy,
@@ -119,6 +122,13 @@ class FeaturePromoSpecification {
       ui::ElementIdentifier anchor_element_id,
       int body_text_string_id);
 
+  // Specifies a promo that launches a tutorial.
+  static FeaturePromoSpecification CreateForTutorialPromo(
+      const base::Feature& feature,
+      ui::ElementIdentifier anchor_element_id,
+      int body_text_string_id,
+      TutorialIdentifier tutorial_id);
+
   // Specifies a text-only promo without additional accessibility information.
   // Deprecated. Only included for backwards compatibility with existing
   // promos. This is the only case in which |feature| can be null, and if it is
@@ -161,6 +171,7 @@ class FeaturePromoSpecification {
   const AcceleratorInfo& screen_reader_accelerator() const {
     return screen_reader_accelerator_;
   }
+  const TutorialIdentifier& tutorial_id() const { return tutorial_id_; }
 
  private:
   static constexpr BubbleArrow kDefaultBubbleArrow = BubbleArrow::kTopRight;
@@ -205,6 +216,9 @@ class FeaturePromoSpecification {
   // Accelerator that is used to fill in a parametric field in
   // screen_reader_string_id_.
   AcceleratorInfo screen_reader_accelerator_;
+
+  // Tutorial identifier if the user decides to view a tutorial.
+  TutorialIdentifier tutorial_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_FEATURE_PROMO_SPECIFICATION_H_

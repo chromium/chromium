@@ -16,11 +16,15 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/user_education/feature_promo_snooze_service.h"
 #include "chrome/browser/ui/user_education/feature_promo_specification.h"
+#include "chrome/browser/ui/user_education/tutorial/tutorial.h"
+#include "chrome/browser/ui/user_education/tutorial/tutorial_service_manager.h"
 #include "chrome/browser/ui/views/chrome_view_class_properties.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/user_education/feature_promo_bubble_owner.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_owner_impl.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_registry.h"
@@ -30,7 +34,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_class_properties.h"
 
@@ -501,4 +507,70 @@ TEST_F(FeaturePromoControllerViewsTest, FailsIfBubbleIsShowing) {
 
   EXPECT_FALSE(controller_->MaybeShowPromoFromSpecification(
       DefaultBubbleParams(), GetAnchorView()));
+}
+
+// Test that a feature promo can chain into a tutorial.
+TEST_F(FeaturePromoControllerViewsTest, StartsTutorial) {
+  TutorialService* const tutorial_service =
+      TutorialServiceManager::GetInstance()->GetTutorialServiceForProfile(
+          browser()->profile());
+  if (!tutorial_service)
+    return;
+
+  // Create a dummy tutorial.
+  // This is just the first two steps of the "create tab group" tutorial.
+  constexpr char kTestTutorialIdentifier[] = "Test Tutorial";
+  TutorialDescription desc;
+
+  TutorialDescription::Step step1(
+      absl::nullopt,
+      u"Right Click on a Tab and select \"Add Tab To new Group\".",
+      ui::InteractionSequence::StepType::kShown, kTabStripElementId,
+      std::string(), TutorialDescription::Step::Arrow::TOP, absl::nullopt);
+  desc.steps.emplace_back(step1);
+
+  TutorialDescription::Step step2(
+      absl::nullopt, u"Select \"Enter a name for your Tab Group\".",
+      ui::InteractionSequence::StepType::kShown,
+      TabGroupEditorBubbleView::kEditorBubbleIdentifier, std::string(),
+      TutorialDescription::Step::Arrow::CENTER_HORIZONTAL,
+      false /*must_remain_visible*/);
+  desc.steps.emplace_back(std::move(step2));
+
+  TutorialServiceManager::GetInstance()->tutorial_registry()->AddTutorial(
+      kTestTutorialIdentifier, desc);
+
+  // Launch a feature promo that has a tutorial.
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+  FeaturePromoSpecification spec =
+      FeaturePromoSpecification::CreateForTutorialPromo(
+          kTestIPHFeature, kAppMenuButtonElementId, IDS_REOPEN_TAB_PROMO,
+          kTestTutorialIdentifier);
+  ASSERT_TRUE(
+      controller_->MaybeShowPromoFromSpecification(spec, GetAnchorView(), {}));
+
+  // Simulate clicking the "Show Tutorial" button.
+  auto* const bubble = static_cast<FeaturePromoBubbleOwnerImpl*>(
+                           controller_->bubble_owner_for_testing())
+                           ->bubble_for_testing();
+  ASSERT_TRUE(bubble);
+  auto* const button = bubble->GetButtonForTesting(
+      views::PlatformStyle::kIsOkButtonLeading ? 0 : 1);
+  ASSERT_TRUE(button);
+  ui::MouseEvent mouse_press(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent mouse_release(
+      ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  button->OnMouseEvent(&mouse_press);
+  button->OnMouseEvent(&mouse_release);
+  views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
+  waiter.Wait();
+
+  // We should be running the tutorial now.
+  EXPECT_TRUE(tutorial_service->IsRunningTutorial());
+  tutorial_service->HideCurrentBubbleIfShowing();
 }

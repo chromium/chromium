@@ -90,13 +90,13 @@ void BrowserTutorialServiceFactory::RegisterTutorials() {
       TutorialServiceManager::GetInstance()->tutorial_registry();
 
   {  // Tab Group Tutorial
-    TutorialDescription* description = new TutorialDescription();
+    TutorialDescription description;
     TutorialDescription::Step step1(
         absl::nullopt,
         u"Right Click on a Tab and select \"Add Tab To new Group\".",
         ui::InteractionSequence::StepType::kShown, kTabStripElementId,
         std::string(), TutorialDescription::Step::Arrow::TOP, absl::nullopt);
-    description->steps.emplace_back(step1);
+    description.steps.emplace_back(step1);
 
     TutorialDescription::Step step2(
         absl::nullopt, u"Select \"Enter a name for your Tab Group\".",
@@ -104,22 +104,22 @@ void BrowserTutorialServiceFactory::RegisterTutorials() {
         TabGroupEditorBubbleView::kEditorBubbleIdentifier, std::string(),
         TutorialDescription::Step::Arrow::CENTER_HORIZONTAL,
         false /*must_remain_visible*/);
-    description->steps.emplace_back(std::move(step2));
+    description.steps.emplace_back(std::move(step2));
 
     TutorialDescription::Step step3(
         absl::nullopt, absl::nullopt,
         ui::InteractionSequence::StepType::kHidden,
         TabGroupEditorBubbleView::kEditorBubbleIdentifier, std::string(),
         TutorialDescription::Step::Arrow::NONE, false /*must_remain_visible*/);
-    description->steps.emplace_back(std::move(step3));
+    description.steps.emplace_back(std::move(step3));
 
     TutorialDescription::Step step4(
         absl::nullopt, u"Congratulations, you've made your first tab group.",
         ui::InteractionSequence::StepType::kShown,
         TabGroupHeader::kTabGroupHeaderIdentifier, std::string(),
         TutorialDescription::Step::Arrow::TOP, absl::nullopt);
-    description->steps.emplace_back(std::move(step4));
+    description.steps.emplace_back(std::move(step4));
 
-    tutorial_registry->AddTutorial("Tab Group Tutorial", *description);
+    tutorial_registry->AddTutorial("Tab Group Tutorial", description);
   }
 }

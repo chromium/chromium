@@ -65,7 +65,8 @@ FeaturePromoSpecification::FeaturePromoSpecification(
       screen_reader_string_id_(
           std::exchange(other.screen_reader_string_id_, 0)),
       screen_reader_accelerator_(
-          std::exchange(other.screen_reader_accelerator_, AcceleratorInfo())) {}
+          std::exchange(other.screen_reader_accelerator_, AcceleratorInfo())),
+      tutorial_id_(std::move(other.tutorial_id_)) {}
 
 FeaturePromoSpecification::~FeaturePromoSpecification() = default;
 
@@ -84,6 +85,7 @@ FeaturePromoSpecification& FeaturePromoSpecification::operator=(
     screen_reader_string_id_ = std::exchange(other.screen_reader_string_id_, 0);
     screen_reader_accelerator_ =
         std::exchange(other.screen_reader_accelerator_, AcceleratorInfo());
+    tutorial_id_ = std::move(other.tutorial_id_);
   }
   return *this;
 }
@@ -109,6 +111,19 @@ FeaturePromoSpecification FeaturePromoSpecification::CreateForSnoozePromo(
     int body_text_string_id) {
   return FeaturePromoSpecification(&feature, PromoType::kSnooze,
                                    anchor_element_id, body_text_string_id);
+}
+
+// static
+FeaturePromoSpecification FeaturePromoSpecification::CreateForTutorialPromo(
+    const base::Feature& feature,
+    ui::ElementIdentifier anchor_element_id,
+    int body_text_string_id,
+    TutorialIdentifier tutorial_id) {
+  FeaturePromoSpecification spec(&feature, PromoType::kTutorial,
+                                 anchor_element_id, body_text_string_id);
+  DCHECK(!tutorial_id.empty());
+  spec.tutorial_id_ = tutorial_id;
+  return spec;
 }
 
 // static
