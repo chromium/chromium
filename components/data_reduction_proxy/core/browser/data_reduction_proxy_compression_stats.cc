@@ -49,12 +49,13 @@ namespace {
   }
 
 // Returns the value at |index| of |list_value| as an int64_t.
-int64_t GetInt64PrefValue(const base::ListValue& list_value, size_t index) {
+int64_t GetInt64PrefValue(const base::Value& list_value, size_t index) {
   int64_t val = 0;
   base::Value::ConstListView list_value_view = list_value.GetList();
   if (index < list_value_view.size() && list_value_view[index].is_string()) {
-    std::string pref_value = list_value_view[index].GetString();
-    bool rv = base::StringToInt64(pref_value, &val);
+    const base::Value& pref_value = list_value_view[index];
+    DCHECK(pref_value.is_string());
+    bool rv = base::StringToInt64(pref_value.GetString(), &val);
     DCHECK(rv);
   }
   return val;
@@ -62,7 +63,7 @@ int64_t GetInt64PrefValue(const base::ListValue& list_value, size_t index) {
 
 // Ensure list has exactly |length| elements, either by truncating at the
 // front, or appending "0"'s to the back.
-void MaintainContentLengthPrefsWindow(base::ListValue* list, size_t length) {
+void MaintainContentLengthPrefsWindow(base::Value* list, size_t length) {
   // Remove data for old days from the front.
   base::Value::ListView list_view = list->GetList();
   while (list_view.size() > length)
@@ -79,7 +80,7 @@ void MaintainContentLengthPrefsWindow(base::ListValue* list, size_t length) {
 // number.
 void AddInt64ToListPref(size_t index,
                         int64_t length,
-                        base::ListValue* list_update) {
+                        base::Value* list_update) {
   int64_t value = GetInt64PrefValue(*list_update, index) + length;
   list_update->GetList()[index] = base::Value(base::NumberToString(value));
 }
@@ -111,7 +112,7 @@ void AddToDictionaryPref(PrefService* pref_service,
                          int key,
                          int value) {
   DictionaryPrefUpdate pref_update(pref_service, pref);
-  base::DictionaryValue* pref_dict = pref_update.Get();
+  base::Value* pref_dict = pref_update.Get();
   const std::string key_str = base::NumberToString(key);
   base::Value* dict_value = pref_dict->FindKey(key_str);
   if (dict_value)
@@ -264,7 +265,7 @@ class DataReductionProxyCompressionStats::DailyContentLengthUpdate {
   }
 
   // Non-owned. Lazily initialized, set to nullptr until initialized.
-  raw_ptr<base::ListValue> update_;
+  raw_ptr<base::Value> update_;
   // Non-owned pointer.
   raw_ptr<DataReductionProxyCompressionStats> compression_stats_;
   // The path of the content length pref for |this|.
@@ -396,8 +397,7 @@ void DataReductionProxyCompressionStats::InitInt64Pref(const char* pref) {
 
 void DataReductionProxyCompressionStats::InitListPref(const char* pref) {
   base::Value pref_value = pref_service_->GetList(pref)->Clone();
-  list_pref_map_[pref] = base::ListValue::From(
-      base::Value::ToUniquePtrValue(std::move(pref_value)));
+  list_pref_map_[pref] = std::move(pref_value);
 }
 
 int64_t DataReductionProxyCompressionStats::GetInt64(const char* pref_path) {
@@ -425,7 +425,7 @@ void DataReductionProxyCompressionStats::IncreaseInt64Pref(
   SetInt64(pref_path, GetInt64(pref_path) + delta);
 }
 
-base::ListValue* DataReductionProxyCompressionStats::GetList(
+base::Value* DataReductionProxyCompressionStats::GetList(
     const char* pref_path) {
   if (delay_.is_zero())
     return ListPrefUpdate(pref_service_, pref_path).Get();
@@ -434,7 +434,7 @@ base::ListValue* DataReductionProxyCompressionStats::GetList(
   auto it = list_pref_map_.find(pref_path);
   if (it == list_pref_map_.end())
     return nullptr;
-  return it->second.get();
+  return &it->second;
 }
 
 void DataReductionProxyCompressionStats::WritePrefs() {
@@ -448,7 +448,7 @@ void DataReductionProxyCompressionStats::WritePrefs() {
 
   for (auto iter = list_pref_map_.begin(); iter != list_pref_map_.end();
        ++iter) {
-    TransferList(*(iter->second.get()),
+    TransferList(iter->second,
                  ListPrefUpdate(pref_service_, iter->first).Get());
   }
 }
@@ -461,9 +461,9 @@ int64_t DataReductionProxyCompressionStats::GetLastUpdateTime() {
 }
 
 void DataReductionProxyCompressionStats::ResetStatistics() {
-  base::ListValue* original_update =
+  base::Value* original_update =
       GetList(prefs::kDailyHttpOriginalContentLength);
-  base::ListValue* received_update =
+  base::Value* received_update =
       GetList(prefs::kDailyHttpReceivedContentLength);
   original_update->ClearList();
   received_update->ClearList();
@@ -484,7 +484,7 @@ int64_t DataReductionProxyCompressionStats::GetHttpOriginalContentLength() {
 ContentLengthList DataReductionProxyCompressionStats::GetDailyContentLengths(
     const char* pref_name) {
   ContentLengthList content_lengths;
-  const base::ListValue* list_value = GetList(pref_name);
+  const base::Value* list_value = GetList(pref_name);
   if (list_value->GetList().size() == kNumDaysInHistory) {
     for (size_t i = 0; i < kNumDaysInHistory; ++i)
       content_lengths.push_back(GetInt64PrefValue(*list_value, i));
@@ -499,9 +499,9 @@ void DataReductionProxyCompressionStats::GetContentLengths(
     int64_t* last_update_time) {
   DCHECK_LE(days, kNumDaysInHistory);
 
-  const base::ListValue* original_list =
+  const base::Value* original_list =
       GetList(prefs::kDailyHttpOriginalContentLength);
-  const base::ListValue* received_list =
+  const base::Value* received_list =
       GetList(prefs::kDailyHttpReceivedContentLength);
 
   if (original_list->GetList().size() != kNumDaysInHistory ||
@@ -611,7 +611,7 @@ void DataReductionProxyCompressionStats::ClearDataSavingStatistics(
 
   for (auto iter = list_pref_map_.begin(); iter != list_pref_map_.end();
        ++iter) {
-    iter->second->ClearList();
+    iter->second.ClearList();
   }
 
   RecordSavingsClearedMetric(reason);

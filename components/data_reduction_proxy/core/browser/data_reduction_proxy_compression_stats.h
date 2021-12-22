@@ -28,7 +28,6 @@
 class PrefService;
 
 namespace base {
-class ListValue;
 class Value;
 }
 
@@ -169,7 +168,7 @@ class DataReductionProxyCompressionStats {
   friend class DataReductionProxyCompressionStatsTest;
 
   typedef std::map<const char*, int64_t> DataReductionProxyPrefMap;
-  typedef std::unordered_map<const char*, std::unique_ptr<base::ListValue>>
+  typedef std::unordered_map<const char*, base::Value>
       DataReductionProxyListPrefMap;
 
   class DailyContentLengthUpdate;
@@ -201,7 +200,7 @@ class DataReductionProxyCompressionStats {
   void IncreaseInt64Pref(const char* pref_path, int64_t delta);
 
   // Gets the pref list at |pref_path| from the |DataReductionProxyPrefMap|.
-  base::ListValue* GetList(const char* pref_path);
+  base::Value* GetList(const char* pref_path);
 
   // Writes the prefs stored in |DataReductionProxyPrefMap| and
   // |DataReductionProxyListPrefMap| to |pref_service|.
