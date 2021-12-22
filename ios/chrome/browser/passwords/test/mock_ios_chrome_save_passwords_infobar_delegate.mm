@@ -49,6 +49,7 @@ MockIOSChromeSavePasswordInfoBarDelegate::
         std::unique_ptr<password_manager::PasswordForm> form,
         std::unique_ptr<GURL> url)
     : IOSChromeSavePasswordInfoBarDelegate(
+          /*user_email=*/@"foobar@gmail.com",
           /*is_sync_user=*/false,
           /*password_update=*/false,
           CreateFormManager(form.get(), url.get())),
