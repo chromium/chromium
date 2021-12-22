@@ -15,19 +15,26 @@ namespace content {
 //   org.chromium.content_public.browser)
 // GENERATED_JAVA_PREFIX_TO_STRIP: INVALIDATE_TYPE_
 enum InvalidateTypes {
-  INVALIDATE_TYPE_URL           = 1 << 0,  // The URL has changed.
-  INVALIDATE_TYPE_TAB           = 1 << 1,  // The favicon, app icon, or crashed
-                                           // state changed.
-  INVALIDATE_TYPE_LOAD          = 1 << 2,  // The loading state has changed.
-  INVALIDATE_TYPE_TITLE         = 1 << 3,  // The title changed.
-  INVALIDATE_TYPE_AUDIO         = 1 << 4,  // The tab became audible or
-                                           // inaudible.
-                                           // TODO(crbug.com/846374):
-                                           // remove this.
-
-  INVALIDATE_TYPE_ALL           = (1 << 5) - 1,
+  INVALIDATE_TYPE_URL = 1 << 0,    // The URL has changed.
+  INVALIDATE_TYPE_TAB = 1 << 1,    // The favicon, app icon, or crashed
+                                   // state changed.
+  INVALIDATE_TYPE_LOAD = 1 << 2,   // The loading state has changed.
+  INVALIDATE_TYPE_TITLE = 1 << 3,  // The title changed.
+  INVALIDATE_TYPE_AUDIO = 1 << 4,  // The tab became audible or
+                                   // inaudible.
+                                   // TODO(crbug.com/846374):
+                                   // remove this.
+  INVALIDATE_TYPE_ALL = (1 << 5) - 1,
+  // Same as INVALIDATE_TYPE_ALL but this is caused by a navigation that used to
+  // get "ignored" (won't modify an existing NavigationEntry) because there are
+  // no NavigationEntries yet. Now that we will always have at least the initial
+  // NavigationEntry, these navigations won't get ignored anymore, but WebView
+  // still needs this info to ignore the NavigationStateChanged() call in some
+  // cases to avoid firing onPageFinished etc in more cases than it previously
+  // did. See also https://crbug.com/1277414.
+  INVALIDATE_TYPE_ALL_BUT_USED_TO_BE_IGNORED_DUE_TO_NULL_NAVIGATION_ENTRY =
+      (1 << 6) - 1,
 };
-
 }
 
 #endif  // CONTENT_PUBLIC_BROWSER_INVALIDATE_TYPE_H_
