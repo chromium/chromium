@@ -103,6 +103,7 @@ enum NotificationType {
   // Notification from WebContents that we have received a response from the
   // renderer in response to a dom automation controller action. The source is
   // the RenderViewHost, and the details is a string with the response.
+  // DEPRECATED: Use WebContentsObserver::DomOperationResponse()
   // TODO(https://crbug.com/1174774): Remove.
   NOTIFICATION_DOM_OPERATION_RESPONSE,
 

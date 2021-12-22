@@ -602,7 +602,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Called when the renderer sends a response via DomAutomationController.
   // For example, `window.domAutomationController.send(foo())` sends the result
   // of foo() here.
-  virtual void DomOperationResponse(const std::string& json_string) {}
+  virtual void DomOperationResponse(RenderFrameHost* render_frame_host,
+                                    const std::string& json_string) {}
 
   virtual void OnCookiesAccessed(RenderFrameHostImpl* render_frame_host,
                                  const CookieAccessDetails& details) {}

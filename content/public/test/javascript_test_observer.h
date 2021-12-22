@@ -8,11 +8,9 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace content {
-class WebContents;
 
 // Base class for handling a stream of automation messages produced by a
 // JavascriptTestObserver.
@@ -51,7 +49,7 @@ class TestMessageHandler {
 
 // This class captures a stream of automation messages coming from a Javascript
 // test and dispatches them to a message handler.
-class JavascriptTestObserver : public NotificationObserver {
+class JavascriptTestObserver : public WebContentsObserver {
  public:
   // The observer does not own any arguments passed to it.  It is assumed that
   // the arguments will outlive all uses of the observer.
@@ -72,9 +70,8 @@ class JavascriptTestObserver : public NotificationObserver {
   // while Run() is pumping the message loop.
   void Reset();
 
-  void Observe(int type,
-               const NotificationSource& source,
-               const NotificationDetails& details) override;
+  void DomOperationResponse(RenderFrameHost* render_frame_host,
+                            const std::string& json_string) override;
 
  private:
   // This message did not signal the end of a test, keep going.
@@ -86,7 +83,6 @@ class JavascriptTestObserver : public NotificationObserver {
   raw_ptr<TestMessageHandler> handler_;
   bool running_;
   bool finished_;
-  NotificationRegistrar registrar_;
 };
 
 }  // namespace content

@@ -6150,9 +6150,11 @@ void WebContentsImpl::UnregisterProtocolHandler(RenderFrameHostImpl* source,
   delegate_->UnregisterProtocolHandler(source, protocol, url, user_gesture);
 }
 
-void WebContentsImpl::DomOperationResponse(const std::string& json_string) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DomOperationResponse",
-                        "json_string", json_string);
+void WebContentsImpl::DomOperationResponse(RenderFrameHost* render_frame_host,
+                                           const std::string& json_string) {
+  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::DomOperationResponse",
+                        "render_frame_host", render_frame_host, "json_string",
+                        json_string);
 
   // TODO(lukasza): The notification below should probably indicate which
   // RenderFrameHostImpl the message is coming from. This can enable tests to
@@ -6162,6 +6164,9 @@ void WebContentsImpl::DomOperationResponse(const std::string& json_string) {
   NotificationService::current()->Notify(
       NOTIFICATION_DOM_OPERATION_RESPONSE, Source<WebContents>(this),
       Details<const std::string>(&json_string));
+
+  observers_.NotifyObservers(&WebContentsObserver::DomOperationResponse,
+                             render_frame_host, json_string);
 }
 
 void WebContentsImpl::SavableResourceLinksResponse(

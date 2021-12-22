@@ -6575,7 +6575,7 @@ void RenderFrameHostImpl::GetSavableResourceLinksCallback(
 }
 
 void RenderFrameHostImpl::DomOperationResponse(const std::string& json_string) {
-  delegate_->DomOperationResponse(json_string);
+  delegate_->DomOperationResponse(this, json_string);
 }
 
 std::unique_ptr<blink::PendingURLLoaderFactoryBundle>

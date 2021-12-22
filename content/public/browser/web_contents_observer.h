@@ -384,6 +384,15 @@ class CONTENT_EXPORT WebContentsObserver {
   virtual void DocumentOnLoadCompletedInMainFrame(
       RenderFrameHost* render_frame_host) {}
 
+  // This method is invoked when we have received a response from the
+  // renderer in response to a dom automation controller action.
+  // For example, `window.domAutomationController.send(foo())` sends the
+  // result of foo() here.
+  // |json_string| is a string with the response which came from a specific
+  // |render_frame_host|.
+  virtual void DomOperationResponse(RenderFrameHost* render_frame_host,
+                                    const std::string& json_string) {}
+
   // This method is invoked when the document in the given frame finished
   // loading. At this point, scripts marked as defer were executed, and
   // content scripts marked "document_end" get injected into the frame.

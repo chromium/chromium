@@ -3098,7 +3098,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestRedirectHTTPSToInvalidHTTP) {
 }
 
 class SSLUITestWaitForDOMNotification : public SSLUITestIgnoreCertErrors,
-                                        public content::NotificationObserver {
+                                        public content::WebContentsObserver {
  public:
   SSLUITestWaitForDOMNotification()
       : SSLUITestIgnoreCertErrors(), run_loop_(nullptr) {}
@@ -3107,13 +3107,10 @@ class SSLUITestWaitForDOMNotification : public SSLUITestIgnoreCertErrors,
       delete;
   SSLUITestWaitForDOMNotification& operator=(
       const SSLUITestWaitForDOMNotification&) = delete;
-
-  ~SSLUITestWaitForDOMNotification() override { registrar_.RemoveAll(); }
+  ~SSLUITestWaitForDOMNotification() override = default;
 
   void SetUpOnMainThread() override {
     SSLUITestIgnoreCertErrors::SetUpOnMainThread();
-    registrar_.Add(this, content::NOTIFICATION_DOM_OPERATION_RESPONSE,
-                   content::NotificationService::AllSources());
   }
 
   void set_expected_notification(const std::string& expected_notification) {
@@ -3121,22 +3118,20 @@ class SSLUITestWaitForDOMNotification : public SSLUITestIgnoreCertErrors,
   }
 
   void set_run_loop(base::RunLoop* run_loop) { run_loop_ = run_loop; }
+  void observe(content::WebContents* web_contents) {
+    content::WebContentsObserver::Observe(web_contents);
+  }
 
-  // content::NotificationObserver
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
+  // content::WebContentsObserver
+  void DomOperationResponse(content::RenderFrameHost* render_frame_host,
+                            const std::string& json_string) override {
     DCHECK(run_loop_);
-    if (type == content::NOTIFICATION_DOM_OPERATION_RESPONSE) {
-      content::Details<std::string> dom_op_result(details);
-      if (*dom_op_result.ptr() == expected_notification_) {
-        run_loop_->Quit();
-      }
+    if (json_string == expected_notification_) {
+      run_loop_->Quit();
     }
   }
 
  private:
-  content::NotificationRegistrar registrar_;
   std::string expected_notification_;
   raw_ptr<base::RunLoop> run_loop_;
 };
@@ -3180,6 +3175,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITestWaitForDOMNotification,
   // chain passes through HTTP, the page should be marked as mixed
   // content.
   set_expected_notification("\"mixed-image-loaded\"");
+  observe(tab);
   set_run_loop(&run_loop);
   ASSERT_TRUE(content::ExecuteScript(
       tab,
