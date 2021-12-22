@@ -202,6 +202,8 @@ class BookmarkButtonBase : public views::LabelButton {
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    if (GetAccessibleName().empty())
+      node_data->SetNameExplicitlyEmpty();
     views::LabelButton::GetAccessibleNodeData(node_data);
     node_data->AddStringAttribute(
         ax::mojom::StringAttribute::kRoleDescription,
