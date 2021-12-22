@@ -5003,7 +5003,7 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
       field_group: "*",
-      field_size: 2,
+      field_size: 3,
       field_template: "primitive",
       default_value: "TextEmphasisPosition::kOverRight",
       type_name: "TextEmphasisPosition",

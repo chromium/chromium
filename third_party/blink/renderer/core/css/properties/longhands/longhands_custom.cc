@@ -8229,11 +8229,10 @@ const CSSValue* TextEmphasisPosition::ParseSingleValue(
   }
   if (!over_under)
     return nullptr;
-  if (!left_right)
-    left_right = CSSIdentifierValue::Create(CSSValueID::kRight);
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*over_under);
-  list->Append(*left_right);
+  if (left_right)
+    list->Append(*left_right);
   return list;
 }
 
@@ -8243,6 +8242,9 @@ const CSSValue* TextEmphasisPosition::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   switch (style.GetTextEmphasisPosition()) {
+    case blink::TextEmphasisPosition::kOver:
+      list->Append(*CSSIdentifierValue::Create(CSSValueID::kOver));
+      break;
     case blink::TextEmphasisPosition::kOverRight:
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kOver));
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kRight));
@@ -8250,6 +8252,9 @@ const CSSValue* TextEmphasisPosition::CSSValueFromComputedStyleInternal(
     case blink::TextEmphasisPosition::kOverLeft:
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kOver));
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kLeft));
+      break;
+    case blink::TextEmphasisPosition::kUnder:
+      list->Append(*CSSIdentifierValue::Create(CSSValueID::kUnder));
       break;
     case blink::TextEmphasisPosition::kUnderRight:
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kUnder));

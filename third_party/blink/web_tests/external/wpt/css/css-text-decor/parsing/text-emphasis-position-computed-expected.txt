@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-FAIL Property text-emphasis-position value 'over' assert_equals: expected "over" but got "over right"
-FAIL Property text-emphasis-position value 'under' assert_equals: expected "under" but got "under right"
-PASS Property text-emphasis-position value 'over right'
-PASS Property text-emphasis-position value 'over left'
-PASS Property text-emphasis-position value 'under right'
-PASS Property text-emphasis-position value 'under left'
-Harness: the test ran to completion.
-

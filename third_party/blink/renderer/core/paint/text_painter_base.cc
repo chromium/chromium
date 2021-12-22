@@ -54,17 +54,12 @@ void TextPainterBase::SetEmphasisMark(const AtomicString& emphasis_mark,
 
   if (!font_data || emphasis_mark.IsNull()) {
     emphasis_mark_offset_ = 0;
-  } else if ((horizontal_ && (position == TextEmphasisPosition::kOverRight ||
-                              position == TextEmphasisPosition::kOverLeft)) ||
-             (!horizontal_ &&
-              (position == TextEmphasisPosition::kOverRight ||
-               position == TextEmphasisPosition::kUnderRight))) {
+  } else if ((horizontal_ && IsOver(position)) ||
+             (!horizontal_ && IsRight(position))) {
     emphasis_mark_offset_ = -font_data->GetFontMetrics().Ascent() -
                             font_.EmphasisMarkDescent(emphasis_mark);
   } else {
-    DCHECK(position == TextEmphasisPosition::kUnderRight ||
-           position == TextEmphasisPosition::kUnderLeft ||
-           position == TextEmphasisPosition::kOverLeft);
+    DCHECK(!IsOver(position) || position == TextEmphasisPosition::kOverLeft);
     emphasis_mark_offset_ = font_data->GetFontMetrics().Descent() +
                             font_.EmphasisMarkAscent(emphasis_mark);
   }
