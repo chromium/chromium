@@ -34,8 +34,6 @@ void InputMethodManager::Initialize(InputMethodManager* instance) {
 
 // static
 void InputMethodManager::Shutdown() {
-  DCHECK(g_input_method_manager)
-      << "InputMethodManager() is not initialized.";
   delete g_input_method_manager;
   g_input_method_manager = nullptr;
 }
