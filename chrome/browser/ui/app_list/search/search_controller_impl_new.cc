@@ -70,6 +70,9 @@ void SearchControllerImplNew::StartSearch(const std::u16string& query) {
 
 void SearchControllerImplNew::StartZeroState(base::OnceClosure on_done,
                                              base::TimeDelta timeout) {
+  // Categories currently are not used by zero-state, but may be required for
+  // sorting in SetResults.
+  categories_ = CreateAllCategories();
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, std::move(on_done), timeout);
 }
@@ -161,7 +164,15 @@ void SearchControllerImplNew::SetResults(
   ranker_->UpdateResultRanks(results_, provider_type);
   ranker_->UpdateCategoryRanks(results_, categories_, provider_type);
 
-  // Compile a single list of results and sort by their relevance.
+  // Sort categories and create a vector of category enums in display order.
+  std::sort(categories_.begin(), categories_.end(),
+            [](const auto& a, const auto& b) { return a.score > b.score; });
+  std::vector<Category> category_enums;
+  for (const auto& category : categories_)
+    category_enums.push_back(category.category);
+
+  // Compile a single list of results and sort first by their category with best
+  // match first, and then by relevance.
   std::vector<ChromeSearchResult*> all_results;
   for (const auto& type_results : results_) {
     for (const auto& result : type_results.second) {
@@ -186,17 +197,32 @@ void SearchControllerImplNew::SetResults(
       all_results.push_back(result.get());
     }
   }
-  std::sort(all_results.begin(), all_results.end(),
-            [](const ChromeSearchResult* a, const ChromeSearchResult* b) {
-              return a->display_score() > b->display_score();
-            });
 
-  // Create a vector of categories in display order.
-  std::sort(categories_.begin(), categories_.end(),
-            [](const auto& a, const auto& b) { return a.score > b.score; });
-  std::vector<Category> category_enums;
-  for (const auto& category : categories_)
-    category_enums.push_back(category.category);
+  std::sort(all_results.begin(), all_results.end(),
+            [&](const ChromeSearchResult* a, const ChromeSearchResult* b) {
+              if (a->best_match() != b->best_match()) {
+                // First, sort best matches to the front of the list.
+                return a->best_match();
+              } else if (!a->best_match() && a->category() != b->category()) {
+                // Next, sort by categories, except for within best match.
+                // |categories_| has been sorted above so the first category in
+                // |categories_| should be ranked more highly.
+                for (const auto& category : categories_) {
+                  if (category.category == a->category()) {
+                    return true;
+                  } else if (category.category == b->category()) {
+                    return false;
+                  }
+                }
+                // Any category associated with a result should also be present
+                // in |categories_|.
+                NOTREACHED();
+                return false;
+              } else {
+                // Lastly, sort by display score.
+                return a->display_score() > b->display_score();
+              }
+            });
 
   if (!observer_list_.empty()) {
     std::vector<const ChromeSearchResult*> observer_results;

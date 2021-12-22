@@ -22,8 +22,7 @@ class SearchController;
 // behavior.
 class RankerDelegate : public Ranker {
  public:
-  RankerDelegate(Profile* profile,
-                 SearchController* controller);
+  RankerDelegate(Profile* profile, SearchController* controller);
   ~RankerDelegate() override;
 
   RankerDelegate(const RankerDelegate&) = delete;

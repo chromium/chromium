@@ -31,14 +31,15 @@ class TestSearchResult : public ChromeSearchResult {
   void Open(int event_flags) override { NOTIMPLEMENTED(); }
 };
 
-// SearchControllerTest --------------------------------------------------------
+// SearchControllerImplTest
+// --------------------------------------------------------
 
-class SearchControllerTest : public ChromeAshTestBase {
+class SearchControllerImplTest : public ChromeAshTestBase {
  public:
-  SearchControllerTest() = default;
-  SearchControllerTest(const SearchControllerTest&) = delete;
-  SearchControllerTest& operator=(const SearchControllerTest&) = delete;
-  ~SearchControllerTest() override = default;
+  SearchControllerImplTest() = default;
+  SearchControllerImplTest(const SearchControllerImplTest&) = delete;
+  SearchControllerImplTest& operator=(const SearchControllerImplTest&) = delete;
+  ~SearchControllerImplTest() override = default;
 
   SearchController& search_controller() { return search_controller_; }
   TestAppListControllerDelegate& list_controller() { return list_controller_; }
@@ -52,7 +53,8 @@ class SearchControllerTest : public ChromeAshTestBase {
 
 // Tests -----------------------------------------------------------------------
 
-TEST_F(SearchControllerTest, ShouldConditionallyDismissViewWhenOpeningResult) {
+TEST_F(SearchControllerImplTest,
+       ShouldConditionallyDismissViewWhenOpeningResult) {
   struct TestCase {
     bool is_tablet_mode = false;
     bool request_to_dismiss_view = false;
