@@ -128,6 +128,17 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_EphemeralTab"
       summary="new label on the context menu for Ephemeral Tab"/>
   <variant name="IPH_ExploreSitesTile" summary="Explore Sites feature"/>
+  <variant name="IPH_FeatureNotificationGuideDefaultBrowserNotificationShown"
+      summary="feature notification guide default browser notification"/>
+  <variant name="IPH_FeatureNotificationGuideIncognitoTabNotificationShown"
+      summary="feature notification guide incognito tab notification"/>
+  <variant
+      name="IPH_FeatureNotificationGuideNTPSuggestionCardNotificationShown"
+      summary="feature notification guide NTP suggestion card notification"/>
+  <variant name="IPH_FeatureNotificationGuideSignInNotificationShown"
+      summary="feature notification guide sign in notification"/>
+  <variant name="IPH_FeatureNotificationGuideVoiceSearchNotificationShown"
+      summary="feature notification guide voice search notification"/>
   <variant name="IPH_FeedCardMenu" summary="feed card menu on NTP"/>
   <variant name="IPH_FeedHeaderMenu" summary="feed header menu on NTP"/>
   <variant name="IPH_FeedSwipeRefresh" summary="swipe refreshing feeds on NTP"/>

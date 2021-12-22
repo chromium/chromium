@@ -31500,6 +31500,20 @@ should be able to be added at any place in this file.
       label="For DownloadPageScreenshot feature."/>
   <suffix name="EphemeralTab" label="For Ephemeral Tab."/>
   <suffix name="ExploreSitesTile" label="For Explore Sites feature."/>
+  <suffix name="FeatureNotificationGuideDefaultBrowserNotificationShown"
+      label="For feature notification guide default browser notification
+             feature."/>
+  <suffix name="FeatureNotificationGuideIncognitoTabNotificationShown"
+      label="For feature notification guide incognito tab notification
+             feature."/>
+  <suffix name="FeatureNotificationGuideNTPSuggestionCardNotificationShown"
+      label="For feature notification guide NTP suggestion card notification
+             feature."/>
+  <suffix name="FeatureNotificationGuideSignInNotificationShown"
+      label="For feature notification guide sign in notification feature."/>
+  <suffix name="FeatureNotificationGuideVoiceSearchNotificationShown"
+      label="For feature notification guide voice search notification
+             feature."/>
   <suffix name="FeedCardMenu" label="For FeedCardMenu feature."/>
   <suffix name="FeedHeaderMenu" label="For FeedHeaderMenu feature."/>
   <suffix name="GlobalMediaControls" label="For GlobalMediaControls feature."/>
