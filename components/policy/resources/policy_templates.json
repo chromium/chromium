@@ -29615,7 +29615,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DevicePciPeripheralDataAccessEnabled': 'device_pci_peripheral_data_access_enabled_v2.enabled',
     'DeviceRestrictedManagedGuestSessionEnabled': 'device_restricted_managed_guest_session_enabled.enabled',
     'DeviceLoginScreenPromptOnMultipleMatchingCertificates': 'login_screen_prompt_on_multiple_matching_certificates.value',
-    'KioskCRXManifestUpdateURLIgnored': 'kiosk_crx_manifest_update_url_ignored',
+    'KioskCRXManifestUpdateURLIgnored': 'kiosk_crx_manifest_update_url_ignored.value',
     'DeviceI18nShortcutsEnabled': 'device_i18n_shortcuts_enabled.enabled',
     'ChromadToCloudMigrationEnabled': 'chromad_to_cloud_migration_enabled.value',
     'DeviceLoginScreenWebUILazyLoading': 'login_web_ui_lazy_loading.enabled',
