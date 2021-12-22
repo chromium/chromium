@@ -20,7 +20,10 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
 
   void UpdateBlockLayout(bool relayout_children) override;
 
-  const char* GetName() const override { return "LayoutNGGrid"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGGrid";
+  }
 
   const LayoutNGGridInterface* ToLayoutNGGridInterface() const final;
 
@@ -46,6 +49,7 @@ class CORE_EXPORT LayoutNGGrid : public LayoutNGBlock,
 
  protected:
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectNGGrid ||
            LayoutNGMixin<LayoutBlock>::IsOfType(type);
   }

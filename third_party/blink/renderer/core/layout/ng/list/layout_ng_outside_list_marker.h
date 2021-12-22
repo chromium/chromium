@@ -25,12 +25,21 @@ class CORE_EXPORT LayoutNGOutsideListMarker final
 
   void WillCollectInlines() override;
 
-  const char* GetName() const override { return "LayoutNGOutsideListMarker"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGOutsideListMarker";
+  }
 
   bool NeedsOccupyWholeLine() const;
 
-  const ListMarker& Marker() const { return list_marker_; }
-  ListMarker& Marker() { return list_marker_; }
+  const ListMarker& Marker() const {
+    NOT_DESTROYED();
+    return list_marker_;
+  }
+  ListMarker& Marker() {
+    NOT_DESTROYED();
+    return list_marker_;
+  }
 
   PaginationBreakability GetPaginationBreakability(
       FragmentationEngine engine) const final;

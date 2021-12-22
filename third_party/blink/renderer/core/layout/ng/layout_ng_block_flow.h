@@ -25,7 +25,10 @@ class CORE_EXPORT LayoutNGBlockFlow
 
   void UpdateBlockLayout(bool relayout_children) override;
 
-  const char* GetName() const override { return "LayoutNGBlockFlow"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGBlockFlow";
+  }
 
  protected:
   bool IsOfType(LayoutObjectType) const override;

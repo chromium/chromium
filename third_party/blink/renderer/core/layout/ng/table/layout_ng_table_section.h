@@ -26,7 +26,10 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGBlock,
 
   // LayoutBlock methods start.
 
-  void UpdateBlockLayout(bool relayout_children) override { NOTREACHED(); }
+  void UpdateBlockLayout(bool relayout_children) override {
+    NOT_DESTROYED();
+    NOTREACHED();
+  }
 
   const char* GetName() const override {
     NOT_DESTROYED();

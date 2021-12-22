@@ -81,7 +81,10 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
     NOT_DESTROYED();
     return false;
   }
-  virtual bool DrawsBackgroundOntoContentLayer() const { return false; }
+  virtual bool DrawsBackgroundOntoContentLayer() const {
+    NOT_DESTROYED();
+    return false;
+  }
   virtual void PaintReplaced(const PaintInfo&,
                              const PhysicalOffset& paint_offset) const {
     NOT_DESTROYED();

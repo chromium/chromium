@@ -19,6 +19,7 @@ class CORE_EXPORT LayoutDocumentTransitionContent : public LayoutReplaced {
   ~LayoutDocumentTransitionContent() override;
 
   const char* GetName() const override {
+    NOT_DESTROYED();
     return "LayoutDocumentTransitionContent";
   }
   void OnIntrinsicSizeUpdated(const LayoutSize& intrinsic_size);

@@ -89,7 +89,10 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
     NOT_DESTROYED();
     return &content_.Children();
   }
-  SVGContentContainer& Content() { return content_; }
+  SVGContentContainer& Content() {
+    NOT_DESTROYED();
+    return content_;
+  }
 
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();

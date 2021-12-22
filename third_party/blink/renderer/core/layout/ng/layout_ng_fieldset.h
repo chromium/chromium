@@ -14,12 +14,18 @@ class CORE_EXPORT LayoutNGFieldset final : public LayoutNGBlockFlow {
  public:
   explicit LayoutNGFieldset(Element*);
 
-  const char* GetName() const override { return "LayoutNGFieldset"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGFieldset";
+  }
 
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
 
-  bool CreatesNewFormattingContext() const final { return true; }
+  bool CreatesNewFormattingContext() const final {
+    NOT_DESTROYED();
+    return true;
+  }
 
   LayoutBlock* FindAnonymousFieldsetContentBox() const;
 
@@ -34,7 +40,10 @@ class CORE_EXPORT LayoutNGFieldset final : public LayoutNGBlockFlow {
                        const PhysicalOffset& accumulated_offset,
                        HitTestAction hit_test_action) override;
 
-  bool AllowsNonVisibleOverflow() const override { return false; }
+  bool AllowsNonVisibleOverflow() const override {
+    NOT_DESTROYED();
+    return false;
+  }
   // Override to forward to the anonymous fieldset content box.
   LayoutUnit ScrollWidth() const override;
   LayoutUnit ScrollHeight() const override;

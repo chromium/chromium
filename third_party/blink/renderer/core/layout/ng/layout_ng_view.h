@@ -22,7 +22,10 @@ class CORE_EXPORT LayoutNGView : public LayoutNGBlockFlowMixin<LayoutView> {
 
   void UpdateBlockLayout(bool relayout_children) override;
 
-  const char* GetName() const override { return "LayoutNGView"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGView";
+  }
 
  protected:
   bool IsOfType(LayoutObjectType) const override;

@@ -25,10 +25,19 @@ class LayoutNGCustom final : public LayoutNGBlockFlow {
 
   explicit LayoutNGCustom(Element*);
 
-  const char* GetName() const override { return "LayoutNGCustom"; }
-  bool CreatesNewFormattingContext() const override { return true; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGCustom";
+  }
+  bool CreatesNewFormattingContext() const override {
+    NOT_DESTROYED();
+    return true;
+  }
 
-  bool IsLoaded() { return state_ != kUnloaded; }
+  bool IsLoaded() {
+    NOT_DESTROYED();
+    return state_ != kUnloaded;
+  }
 
   void AddChild(LayoutObject* new_child, LayoutObject* before_child) override;
   void RemoveChild(LayoutObject* child) override;
@@ -37,11 +46,13 @@ class LayoutNGCustom final : public LayoutNGBlockFlow {
 
   PaginationBreakability GetPaginationBreakability(
       FragmentationEngine) const final {
+    NOT_DESTROYED();
     return kForbidBreaks;
   }
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectNGCustom || LayoutNGBlockFlow::IsOfType(type);
   }
 
