@@ -313,7 +313,8 @@ typedef NTSTATUS(WINAPI* NtSetInformationThreadFunction)(
 // Partial definition only:
 typedef enum _PROCESSINFOCLASS {
   ProcessBasicInformation = 0,
-  ProcessExecuteFlags = 0x22
+  ProcessExecuteFlags = 0x22,
+  ProcessHandleTable = 0x3A
 } PROCESSINFOCLASS;
 
 // For the structure documentation, see

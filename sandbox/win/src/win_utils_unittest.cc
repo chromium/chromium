@@ -8,6 +8,7 @@
 
 #include <psapi.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -20,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
+#include "base/win/windows_version.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/tests/common/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,6 +80,35 @@ void CompareHandleType(const base::win::ScopedHandle& handle,
   std::wstring type_name;
   ASSERT_TRUE(GetTypeNameFromHandle(handle.Get(), &type_name));
   EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(type_name, expected_type));
+}
+
+void FindHandle(const ProcessHandleMap& handle_map,
+                const wchar_t* type_name,
+                const base::win::ScopedHandle& handle) {
+  ProcessHandleMap::const_iterator entry = handle_map.find(type_name);
+  ASSERT_NE(handle_map.end(), entry);
+  const std::vector<HANDLE>& handles = entry->second;
+  EXPECT_NE(handles.cend(),
+            std::find(handles.cbegin(), handles.cend(), handle.Get()));
+}
+
+void TestCurrentProcessHandles(absl::optional<ProcessHandleMap> (*func)()) {
+  std::wstring random_name = GetRandomName();
+  ASSERT_FALSE(random_name.empty());
+  base::win::ScopedHandle event_handle(
+      ::CreateEvent(nullptr, FALSE, FALSE, random_name.c_str()));
+  ASSERT_TRUE(event_handle.IsValid());
+  std::wstring pipe_name = L"\\\\.\\pipe\\" + random_name;
+  base::win::ScopedHandle pipe_handle(::CreateNamedPipe(
+      pipe_name.c_str(), PIPE_ACCESS_DUPLEX, PIPE_TYPE_BYTE,
+      PIPE_UNLIMITED_INSTANCES, 0, 0, NMPWAIT_USE_DEFAULT_WAIT, nullptr));
+  ASSERT_TRUE(pipe_handle.IsValid());
+
+  absl::optional<ProcessHandleMap> handle_map = func();
+  ASSERT_TRUE(handle_map);
+  EXPECT_LE(2U, handle_map->size());
+  FindHandle(*handle_map, L"Event", event_handle);
+  FindHandle(*handle_map, L"File", pipe_handle);
 }
 
 }  // namespace
@@ -294,6 +325,16 @@ TEST(WinUtils, GetPathAndTypeFromHandle) {
   ASSERT_TRUE(pipe_handle.IsValid());
   CompareHandlePath(pipe_handle, L"\\Device\\NamedPipe\\" + random_name);
   CompareHandleType(pipe_handle, L"File");
+}
+
+TEST(WinUtils, GetCurrentProcessHandles) {
+  if (base::win::GetVersion() < base::win::Version::WIN8) {
+    ASSERT_FALSE(GetCurrentProcessHandles());
+    EXPECT_EQ(DWORD{ERROR_INVALID_PARAMETER}, ::GetLastError());
+  } else {
+    TestCurrentProcessHandles(GetCurrentProcessHandles);
+  }
+  TestCurrentProcessHandles(GetCurrentProcessHandlesWin7);
 }
 
 }  // namespace sandbox

@@ -20,6 +20,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
 #include "base/win/pe_image.h"
+#include "base/win/win_util.h"
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
@@ -559,6 +560,72 @@ void* GetProcessBaseAddress(HANDLE process) {
     return nullptr;
 
   return base_address;
+}
+
+absl::optional<ProcessHandleMap> GetCurrentProcessHandles() {
+  NtQueryInformationProcessFunction query_information_process = nullptr;
+  ResolveNTFunctionPtr("NtQueryInformationProcess", &query_information_process);
+  if (!query_information_process)
+    return absl::nullopt;
+
+  DWORD handle_count;
+  if (!::GetProcessHandleCount(::GetCurrentProcess(), &handle_count))
+    return absl::nullopt;
+
+  // The system call will return only handles up to the buffer size so add a
+  // margin of error of an additional 1000 handles.
+  std::vector<char> buffer((handle_count + 1000) * sizeof(uint32_t));
+  DWORD return_length;
+  NTSTATUS status = query_information_process(
+      ::GetCurrentProcess(), ProcessHandleTable, buffer.data(),
+      static_cast<ULONG>(buffer.size()), &return_length);
+
+  if (!NT_SUCCESS(status)) {
+    ::SetLastError(GetLastErrorFromNtStatus(status));
+    return absl::nullopt;
+  }
+  DCHECK(buffer.size() >= return_length);
+  DCHECK((buffer.size() % sizeof(uint32_t)) == 0);
+  ProcessHandleMap handle_map;
+  const uint32_t* handle_values = reinterpret_cast<uint32_t*>(buffer.data());
+  size_t count = return_length / sizeof(uint32_t);
+  for (size_t index = 0; index < count; ++index) {
+    HANDLE handle = base::win::Uint32ToHandle(handle_values[index]);
+    std::wstring type_name;
+    if (GetTypeNameFromHandle(handle, &type_name))
+      handle_map[type_name].push_back(handle);
+  }
+  return handle_map;
+}
+
+absl::optional<ProcessHandleMap> GetCurrentProcessHandlesWin7() {
+  DWORD handle_count = UINT_MAX;
+  const int kInvalidHandleThreshold = 100;
+  const size_t kHandleOffset = 4;  // Handles are always a multiple of 4.
+
+  if (!::GetProcessHandleCount(::GetCurrentProcess(), &handle_count))
+    return absl::nullopt;
+  ProcessHandleMap handle_map;
+
+  uint32_t handle_value = 0;
+  int invalid_count = 0;
+
+  // Keep incrementing until we hit the number of handles reported by
+  // GetProcessHandleCount(). If we hit a very long sequence of invalid
+  // handles we assume that we've run past the end of the table.
+  while (handle_count && invalid_count < kInvalidHandleThreshold) {
+    handle_value += kHandleOffset;
+    HANDLE handle = base::win::Uint32ToHandle(handle_value);
+    std::wstring type_name;
+    if (!GetTypeNameFromHandle(handle, &type_name)) {
+      ++invalid_count;
+      continue;
+    }
+
+    --handle_count;
+    handle_map[type_name].push_back(handle);
+  }
+  return handle_map;
 }
 
 }  // namespace sandbox

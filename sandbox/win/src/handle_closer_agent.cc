@@ -4,14 +4,13 @@
 
 #include "sandbox/win/src/handle_closer_agent.h"
 
-#include <limits.h>
 #include <stddef.h>
-#include <cstdint>
 
 #include "base/check.h"
 #include "base/win/static_constants.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_version.h"
 #include "sandbox/win/src/win_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -143,56 +142,45 @@ void HandleCloserAgent::InitializeHandlesToClose(bool* is_csrss_connected) {
 }
 
 bool HandleCloserAgent::CloseHandles() {
-  DWORD handle_count = UINT_MAX;
-  const int kInvalidHandleThreshold = 100;
-  const size_t kHandleOffset = 4;  // Handles are always a multiple of 4.
-
-  if (!::GetProcessHandleCount(::GetCurrentProcess(), &handle_count))
-    return false;
-
   // Skip closing these handles when Application Verifier is in use in order to
   // avoid invalid-handle exceptions.
   if (GetModuleHandleA(base::win::kApplicationVerifierDllName))
     return true;
+  // If the accurate handle enumeration fails then fallback to the old brute
+  // force approach. This should only happen on Windows 7.
+  absl::optional<ProcessHandleMap> handle_map = GetCurrentProcessHandles();
+  if (!handle_map) {
+    DCHECK(base::win::GetVersion() < base::win::Version::WIN8);
+    handle_map = GetCurrentProcessHandlesWin7();
+  }
 
-  uint32_t handle_value = 0;
-  int invalid_count = 0;
+  if (!handle_map)
+    return false;
 
-  // Keep incrementing until we hit the number of handles reported by
-  // GetProcessHandleCount(). If we hit a very long sequence of invalid
-  // handles we assume that we've run past the end of the table.
-  while (handle_count && invalid_count < kInvalidHandleThreshold) {
-    handle_value += kHandleOffset;
-    HANDLE handle = base::win::Uint32ToHandle(handle_value);
-    std::wstring type_name;
-    if (!GetTypeNameFromHandle(handle, &type_name)) {
-      ++invalid_count;
+  for (const HandleMap::value_type& handle_to_close : handles_to_close_) {
+    ProcessHandleMap::iterator result = handle_map->find(handle_to_close.first);
+    if (result == handle_map->end())
       continue;
-    }
-
-    --handle_count;
-    // Check if we're looking for this type of handle.
-    HandleMap::iterator result = handles_to_close_.find(type_name);
-    if (result == handles_to_close_.end())
-      continue;
-
-    HandleMap::mapped_type& names = result->second;
-    // Empty set means close all handles of this type; otherwise check name.
-    if (!names.empty()) {
-      std::wstring handle_name;
-      // Move on to the next handle if this name doesn't match.
-      if (!GetPathFromHandle(handle, &handle_name) ||
-          !names.count(handle_name)) {
-        continue;
+    const HandleMap::mapped_type& names = handle_to_close.second;
+    for (HANDLE handle : result->second) {
+      // Empty set means close all handles of this type; otherwise check name.
+      if (!names.empty()) {
+        std::wstring handle_name;
+        // Move on to the next handle if this name doesn't match.
+        if (!GetPathFromHandle(handle, &handle_name) ||
+            !names.count(handle_name)) {
+          continue;
+        }
       }
-    }
 
-    if (!::SetHandleInformation(handle, HANDLE_FLAG_PROTECT_FROM_CLOSE, 0))
-      return false;
-    if (!::CloseHandle(handle))
-      return false;
-    // Attempt to stuff this handle with a new dummy Event.
-    AttemptToStuffHandleSlot(handle, result->first);
+      // If we can't unprotect or close the handle we should keep going.
+      if (!::SetHandleInformation(handle, HANDLE_FLAG_PROTECT_FROM_CLOSE, 0))
+        continue;
+      if (!::CloseHandle(handle))
+        continue;
+      // Attempt to stuff this handle with a new dummy Event.
+      AttemptToStuffHandleSlot(handle, result->first);
+    }
   }
 
   return true;

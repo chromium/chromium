@@ -7,11 +7,14 @@
 
 #include <stdlib.h>
 
+#include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/cxx17_backports.h"
 #include "base/win/windows_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
 
@@ -21,6 +24,9 @@ const size_t kNTPrefixLen = base::size(kNTPrefix) - 1;
 
 const wchar_t kNTDevicePrefix[] = L"\\Device\\";
 const size_t kNTDevicePrefixLen = base::size(kNTDevicePrefix) - 1;
+
+// List of handles mapped to their kernel object type name.
+using ProcessHandleMap = std::map<std::wstring, std::vector<HANDLE>>;
 
 // Basic implementation of a singleton which calls the destructor
 // when the exe is shutting down or the DLL is being unloaded.
@@ -115,6 +121,18 @@ DWORD GetLastErrorFromNtStatus(NTSTATUS status);
 // address space layout randomization. This uses the process' PEB to extract
 // the base address. This should only be called on new, suspended processes.
 void* GetProcessBaseAddress(HANDLE process);
+
+// Returns a map of handles open in the current process. The call will only
+// works on Windows 8+. The map is keyed by the kernel object type name. If
+// querying the handles fails an empty optional value is returned. Note that
+// unless all threads are suspended in the process the valid handles could
+// change between the return of the list and when you use them.
+absl::optional<ProcessHandleMap> GetCurrentProcessHandles();
+
+// Fallback function for GetCurrentProcessHandles. Should only be needed on
+// Windows 7 which doesn't support the API to query all process handles. This
+// uses a brute force method to get the process handles.
+absl::optional<ProcessHandleMap> GetCurrentProcessHandlesWin7();
 
 }  // namespace sandbox
 
