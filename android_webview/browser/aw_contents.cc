@@ -79,6 +79,7 @@
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -1512,21 +1513,20 @@ void AwContents::RenderViewHostChanged(content::RenderViewHost* old_host,
       new_host->GetWidget()->GetFrameSinkId());
 }
 
-void AwContents::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // If this request was blocked in any way, broadcast an error.
-  net::Error error_code = navigation_handle->GetNetErrorCode();
-
-  bool navigation_successful_and_scheme_http_or_https =
-      ((error_code == net::OK) &&
-       navigation_handle->GetURL().SchemeIsHTTPOrHTTPS());
-  if (navigation_successful_and_scheme_http_or_https != scheme_http_or_https_) {
-    scheme_http_or_https_ = navigation_successful_and_scheme_http_or_https;
+void AwContents::PrimaryPageChanged(content::Page& page) {
+  std::string scheme = page.GetMainDocument().GetLastCommittedURL().scheme();
+  if (scheme_ != scheme) {
+    scheme_ = scheme;
     AwBrowserProcess::GetInstance()
         ->visibility_metrics_logger()
         ->ClientVisibilityChanged(this);
   }
+}
 
+void AwContents::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // If this request was blocked in any way, broadcast an error.
+  net::Error error_code = navigation_handle->GetNetErrorCode();
   if (!net::IsRequestBlockedError(error_code) &&
       error_code != net::ERR_ABORTED) {
     return;
@@ -1582,7 +1582,8 @@ VisibilityMetricsLogger::VisibilityInfo AwContents::GetVisibilityInfo() {
   return VisibilityMetricsLogger::VisibilityInfo{
       browser_view_renderer_.attached_to_window(),
       browser_view_renderer_.view_visible(),
-      browser_view_renderer_.window_visible(), scheme_http_or_https_};
+      browser_view_renderer_.window_visible(),
+      VisibilityMetricsLogger::SchemeStringToEnum(scheme_)};
 }
 
 void AwContents::RendererUnresponsive(
