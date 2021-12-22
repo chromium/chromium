@@ -35,6 +35,10 @@ class BorealisWindowManager : public apps::InstanceRegistry::Observer {
   // Returns true if this window's ID belongs to a borealis VM.
   static bool IsBorealisWindowId(const std::string& window_id);
 
+  // Determines if a newly created window should be minimized on creation.
+  // TODO(b/210569001): this is intended to be a temporary solution.
+  static bool ShouldNewWindowBeMinimized();
+
   // An observer for tracking the creation and deletion of anonymous windows.
   class AnonymousAppObserver : public base::CheckedObserver {
    public:

@@ -13,6 +13,7 @@
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/exo/permission.h"
+#include "components/exo/shell_surface_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/class_property.h"
 
@@ -48,6 +49,14 @@ void ExoAppTypeResolver::PopulateProperties(
     // Auto-maximize causes compatibility issues, and we don't need it anyway.
     out_properties_container.SetProperty(chromeos::kAutoMaximizeXdgShellEnabled,
                                          false);
+
+    // In some instances we don't want new borealis windows to steal focus,
+    // instead they are created as minimized windows.
+    // TODO(b/210569001): this is intended to be a temporary solution.
+    if (borealis::BorealisWindowManager::ShouldNewWindowBeMinimized()) {
+      out_properties_container.SetProperty(aura::client::kShowStateKey,
+                                           ui::SHOW_STATE_MINIMIZED);
+    }
   }
 
   auto task_id = arc::GetTaskIdFromWindowAppId(params.app_id);
