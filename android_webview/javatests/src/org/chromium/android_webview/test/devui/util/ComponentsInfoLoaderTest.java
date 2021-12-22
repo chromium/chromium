@@ -18,6 +18,7 @@ import org.chromium.android_webview.services.ComponentsProviderPathUtil;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.FileUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -67,6 +68,7 @@ public class ComponentsInfoLoaderTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1282188")
     public void testComponentsDownloadDirectory_isEmpty() {
         sComponentsDownloadDir.mkdirs();
 
@@ -80,6 +82,7 @@ public class ComponentsInfoLoaderTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1282188")
     public void testComponentsDownloadDirectory_doesNotExist() {
         ComponentsInfoLoader componentsInfoLoader = new ComponentsInfoLoader();
         ArrayList<ComponentInfo> retrievedComponentsInfoList =
