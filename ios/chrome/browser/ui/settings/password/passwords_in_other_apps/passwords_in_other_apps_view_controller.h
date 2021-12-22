@@ -31,11 +31,13 @@
 @property(nonatomic, weak) id<PasswordsInOtherAppsViewControllerDelegate>
     delegate;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSyncingPasswords:(BOOL)isSyncingPasswords
+    NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
-- (instancetype)initWithNibName:(NSString*)nibNAme
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString*)nibName
                          bundle:(NSBundle*)nibBundle NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 @end
 

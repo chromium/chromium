@@ -13,6 +13,8 @@ source_set("passwords_in_other_apps") {
   deps = [
     ":passwords_in_other_apps_ui",
     "//base",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/public/provider/chrome/browser/password_auto_fill:password_auto_fill_api",
@@ -30,11 +32,13 @@ source_set("passwords_in_other_apps_ui") {
   deps = [
     ":constants",
     "//base",
+    "//components/password_manager/core/common",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/resources:legacy_settings_passwords_in_other_apps_banner",
     "//ios/chrome/browser/ui/settings/resources:settings",
     "//ios/chrome/browser/ui/settings/resources:settings_passwords_in_other_apps_banner",
     "//ios/chrome/browser/ui/settings/utils",

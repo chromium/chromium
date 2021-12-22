@@ -5,6 +5,10 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/passwords_in_other_apps_view_controller.h"
 
@@ -34,6 +38,7 @@
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
+    DCHECK(browser);
     DCHECK(navigationController);
     _baseNavigationController = navigationController;
   }
@@ -41,7 +46,12 @@
 }
 
 - (void)start {
-  self.viewController = [[PasswordsInOtherAppsViewController alloc] init];
+  SyncSetupService* syncSetupService =
+      SyncSetupServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+  syncer::ModelType kSyncPasswordsModelType =
+      syncSetupService->GetModelType(SyncSetupService::kSyncPasswords);
+
+  self.viewController = [[PasswordsInOtherAppsViewController alloc] initWithSyncingPasswords:syncSetupService->IsDataTypeActive(kSyncPasswordsModelType)];
   self.viewController.presenter = self;
 
   self.mediator = [[PasswordsInOtherAppsMediator alloc] init];
