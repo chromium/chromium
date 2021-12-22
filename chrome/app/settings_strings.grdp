@@ -2064,6 +2064,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALL_SITES_SORT_METHOD_NAME" desc="A selection menu option to sort the All Sites list by the name of the site, which is derived from its URL." meaning="Name of an inanimate object">
     Name
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_ENTRY_PARTITIONED_LABEL" desc="The label which is applied to site entries which are partitioned. These entries represent data whose access scope is limited to the site the labeled entry appears under">
+    Partitioned
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_REPRESENTATION_SEPARATOR" desc="The separator used to split up the display of a URL into host and scheme/protocol, when the scheme is not HTTPS. For example, it will be used in a string that looks like 'google.co.uk — http'.">
       —
   </message>
@@ -3059,6 +3062,9 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_ORIGIN_APP_DIALOG_TITLE" desc="Title of the confirmation dialog when a user selects to remove a specific origin, and that origin also has an installed web app">
     Clear site data and permissions for <ph name="SITE_NAME">$1<ex>www.example.com</ex></ph> and its installed app?
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_ORIGIN_PARTITIONED_DIALOG_TITLE" desc="Title of the confirmation dialog when a user selects to remove a specific origins partitioned data. That data will be partitioned on a specific eTLD +1.">
+    Clear site data for <ph name="SITE_NAME">$1<ex>www.ad-tech.com</ex></ph> partitioned on <ph name="PARTITION_SITE_NAME">$2<ex>www.publisher.com</ex></ph>?
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_GROUP_DIALOG_TITLE" desc="Title of the confirmation dialog when a user selects to remove a group of sites">
     Clear site data and permissions for <ph name="SITE_NAME">$1<ex>www.example.com</ex></ph> and all sites under it?

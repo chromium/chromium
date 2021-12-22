@@ -139,6 +139,7 @@ export enum AllSitesAction2 {
   ENTER_SITE_DETAILS = 6,
   REMOVE_SITE_GROUP = 7,
   REMOVE_ORIGIN = 8,
+  REMOVE_ORIGIN_PARTITIONED = 9,
 }
 
 /**

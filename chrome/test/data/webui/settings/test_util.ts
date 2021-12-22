@@ -190,6 +190,7 @@ export function createOriginInfo(
         numCookies: 0,
         hasPermissionSettings: false,
         isInstalled: false,
+        isPartitioned: false,
       },
       override || {});
 }

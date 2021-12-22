@@ -61,7 +61,8 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'setProtocolHandlerDefault',
       'updateIncognitoStatus',
       'clearEtldPlus1DataAndCookies',
-      'clearOriginDataAndCookies',
+      'clearUnpartitionedOriginDataAndCookies',
+      'clearPartitionedOriginDataAndCookies',
       'recordAction',
       'getCookieSettingDescription',
       'getRecentSitePermissions',
@@ -580,8 +581,14 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   }
 
   /** @override */
-  clearOriginDataAndCookies(origin: string) {
-    this.methodCalled('clearOriginDataAndCookies', origin);
+  clearUnpartitionedOriginDataAndCookies(origin: string) {
+    this.methodCalled('clearUnpartitionedOriginDataAndCookies', origin);
+  }
+
+  /** @override */
+  clearPartitionedOriginDataAndCookies(origin: string, etldPlus1: string) {
+    this.methodCalled(
+        'clearPartitionedOriginDataAndCookies', [origin, etldPlus1]);
   }
 
   /** @override */

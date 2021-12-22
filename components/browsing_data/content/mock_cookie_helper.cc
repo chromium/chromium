@@ -29,26 +29,23 @@ void MockCookieHelper::StartFetching(FetchCallback callback) {
 }
 
 void MockCookieHelper::DeleteCookie(const net::CanonicalCookie& cookie) {
-  std::string key = cookie.Name() + "=" + cookie.Value();
-  ASSERT_TRUE(base::Contains(cookies_, key));
-  cookies_[key] = false;
+  ASSERT_TRUE(base::Contains(cookies_, cookie));
+  cookies_[cookie] = false;
 }
 
-void MockCookieHelper::AddCookieSamples(const GURL& url,
-                                        const std::string& cookie_line) {
+void MockCookieHelper::AddCookieSamples(
+    const GURL& url,
+    const std::string& cookie_line,
+    absl::optional<net::CookiePartitionKey> cookie_partition_key) {
   std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
       url, cookie_line, base::Time::Now(), absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */));
+      cookie_partition_key));
 
   if (cc.get()) {
-    for (const auto& cookie : cookie_list_) {
-      if (cookie.Name() == cc->Name() && cookie.Domain() == cc->Domain() &&
-          cookie.Path() == cc->Path()) {
-        return;
-      }
-    }
+    if (cookies_.count(*cc))
+      return;
     cookie_list_.push_back(*cc);
-    cookies_[cookie_line] = true;
+    cookies_[*cc] = true;
   }
 }
 

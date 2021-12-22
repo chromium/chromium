@@ -179,7 +179,8 @@ export class SiteEntryElement extends SiteEntryElementBase {
       return false;
     }
     if (siteGroup.origins.length > 1 ||
-        siteGroup.numCookies > siteGroup.origins[0].numCookies) {
+        siteGroup.numCookies > siteGroup.origins[0].numCookies ||
+        siteGroup.origins.some(o => o.isPartitioned)) {
       return true;
     }
     return false;
@@ -360,6 +361,9 @@ export class SiteEntryElement extends SiteEntryElementBase {
    * A handler for selecting a site (by clicking on the origin).
    */
   private onOriginTap_(e: RepeaterEvent) {
+    if (this.siteGroup.origins[e.model.index].isPartitioned) {
+      return;
+    }
     this.navigateToSiteDetails_(this.siteGroup.origins[e.model.index].origin);
     this.browserProxy.recordAction(AllSitesAction2.ENTER_SITE_DETAILS);
     chrome.metricsPrivate.recordUserAction('AllSites_EnterSiteDetails');
@@ -407,6 +411,7 @@ export class SiteEntryElement extends SiteEntryElementBase {
       index: this.listIndex,
       item: this.siteGroup,
       origin: (e.target as HTMLElement).dataset['origin'],
+      isPartitioned: (e.target as HTMLElement).dataset['partitioned'],
       actionScope: (e.target as HTMLElement).dataset['context'],
     });
   }
@@ -417,6 +422,8 @@ export class SiteEntryElement extends SiteEntryElementBase {
       index: this.listIndex,
       item: this.siteGroup,
       origin: (e.target as HTMLElement).dataset['origin'],
+      isPartitioned:
+          (e.target as HTMLElement).dataset['partitioned'] !== undefined,
       actionScope: (e.target as HTMLElement).dataset['context'],
     });
   }
@@ -468,16 +475,22 @@ export class SiteEntryElement extends SiteEntryElementBase {
       (o1: OriginInfo, o2: OriginInfo) => number {
     if (sortMethod === SortMethod.MOST_VISITED) {
       return (origin1, origin2) => {
-        return origin2.engagement - origin1.engagement;
+        return (origin1.isPartitioned ? 1 : 0) -
+            (origin2.isPartitioned ? 1 : 0) ||
+            origin2.engagement - origin1.engagement;
       };
     } else if (sortMethod === SortMethod.STORAGE) {
       return (origin1, origin2) => {
-        return origin2.usage - origin1.usage ||
+        return (origin1.isPartitioned ? 1 : 0) -
+            (origin2.isPartitioned ? 1 : 0) ||
+            origin2.usage - origin1.usage ||
             origin2.numCookies - origin1.numCookies;
       };
     } else if (sortMethod === SortMethod.NAME) {
       return (origin1, origin2) => {
-        return origin1.origin.localeCompare(origin2.origin);
+        return (origin1.isPartitioned ? 1 : 0) -
+            (origin2.isPartitioned ? 1 : 0) ||
+            origin1.origin.localeCompare(origin2.origin);
       };
     }
     assertNotReached();

@@ -12,7 +12,11 @@ namespace canonical_cookie {
 size_t FastHash(const net::CanonicalCookie& cookie) {
   return base::PersistentHash(cookie.Name()) +
          3 * base::PersistentHash(cookie.Domain()) +
-         7 * base::PersistentHash(cookie.Path());
+         7 * base::PersistentHash(cookie.Path()) +
+         (cookie.IsPartitioned()
+              ? 13 * base::PersistentHash(
+                         cookie.PartitionKey()->site().GetURL().host())
+              : 0);
 }
 
 bool CanonicalCookieComparer::operator()(
@@ -20,7 +24,8 @@ bool CanonicalCookieComparer::operator()(
     const net::CanonicalCookie& cookie2) const {
   return cookie1.Name() == cookie2.Name() &&
          cookie1.Domain() == cookie2.Domain() &&
-         cookie1.Path() == cookie2.Path();
+         cookie1.Path() == cookie2.Path() &&
+         cookie1.PartitionKey() == cookie2.PartitionKey();
 }
 
 }  // namespace canonical_cookie

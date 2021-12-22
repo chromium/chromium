@@ -112,7 +112,8 @@ enum class AllSitesAction2 {
   kEnterSiteDetails = 6,
   kRemoveSiteGroup = 7,
   kRemoveOrigin = 8,
-  kMaxValue = kRemoveOrigin,
+  kRemoveOriginPartitioned = 9,
+  kMaxValue = kRemoveOriginPartitioned,
 };
 
 // Return an appropriate API Permission ID for the given string name.
@@ -185,35 +186,44 @@ base::flat_set<std::string> GetInstalledAppOrigins(Profile* profile) {
 }
 
 // Groups |url| into sets of eTLD+1s in |site_group_map|, assuming |url| is an
-// origin.
+// origin. The effective eTLD+1 is |partition_etld_plus1| is set, otherwise it
+// is the eTLD+1 of |url|.
 // There are three cases:
-// 1. The ETLD+1 of |url| is not yet in |site_group_map|. We add the ETLD+1
-//    to |site_group_map|. If the |url| is an ETLD+1 cookie origin, put a
-//    placeholder origin for the ETLD+1.
-// 2. The ETLD+1 of |url| is in |site_group_map|, and is equal to host of
+// 1. The effective eLTD+1 is not yet in |site_group_map|. We add the ETLD+1
+//    to |site_group_map|. If the |url| is an effective ETLD+1 cookie origin,
+//    put a placeholder origin for the ETLD+1.
+// 2. The effective ETLD+1 is in |site_group_map|, and is equal to host of
 //    |url|. This means case 1 has already happened and nothing more needs to
 //    be done.
-// 3. The ETLD+1 of |url| is in |site_group_map| and is different to host of
-//    |url|. For a cookies url, if a https origin with same host exists,
-//    nothing more needs to be done.
+// 3. The effective ETLD+1 is in |site_group_map| and is different to host of
+//    |url|. For a cookies url, if a https origin with same host and partitioned
+//    status exists, nothing more needs to be done.
 // In case 3, we try to add |url| to the set of origins for the ETLD+1. If an
 // existing origin is a placeholder, delete it, because the placeholder is no
 // longer needed.
 void CreateOrAppendSiteGroupEntry(
-    std::map<std::string, std::set<std::string>>* site_group_map,
+    std::map<std::string, std::set<std::pair<std::string, bool>>>*
+        site_group_map,
     const GURL& url,
-    bool url_is_origin_with_cookies = false) {
-  std::string etld_plus1_string =
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  auto entry = site_group_map->find(etld_plus1_string);
+    bool url_is_origin_with_cookies = false,
+    absl::optional<std::string> partition_etld_plus1 = absl::nullopt) {
+  bool is_partitioned = partition_etld_plus1.has_value();
+  std::string effective_etld_plus1_string =
+      is_partitioned
+          ? partition_etld_plus1.value()
+          : net::registry_controlled_domains::GetDomainAndRegistry(
+                url,
+                net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  auto entry = site_group_map->find(effective_etld_plus1_string);
   bool etld_plus1_cookie_url =
-      url_is_origin_with_cookies && url.host() == etld_plus1_string;
+      url_is_origin_with_cookies && url.host() == effective_etld_plus1_string;
 
   if (entry == site_group_map->end()) {
     // Case 1:
     std::string origin = etld_plus1_cookie_url ? kPlaceholder : url.spec();
-    site_group_map->emplace(etld_plus1_string, std::set<std::string>({origin}));
+    site_group_map->emplace(
+        effective_etld_plus1_string,
+        std::set<std::pair<std::string, bool>>({{origin, is_partitioned}}));
     return;
   }
   // Case 2:
@@ -226,11 +236,13 @@ void CreateOrAppendSiteGroupEntry(
     // version into the map.
     std::string https_url = std::string(url::kHttpsScheme) +
                             url::kStandardSchemeSeparator + url.host() + "/";
-    if (entry->second.find(https_url) != entry->second.end())
+    if (entry->second.find({https_url, is_partitioned}) !=
+        entry->second.end()) {
       return;
+    }
   }
-  entry->second.insert(url.spec());
-  auto placeholder = entry->second.find(kPlaceholder);
+  entry->second.insert({url.spec(), is_partitioned});
+  auto placeholder = entry->second.find({kPlaceholder, is_partitioned});
   if (placeholder != entry->second.end())
     entry->second.erase(placeholder);
 }
@@ -246,7 +258,8 @@ void UpdateDataForOrigin(const GURL& url,
 // Converts a given |site_group_map| to a list of base::DictionaryValues, adding
 // the site engagement score for each origin.
 void ConvertSiteGroupMapToListValue(
-    const std::map<std::string, std::set<std::string>>& site_group_map,
+    const std::map<std::string, std::set<std::pair<std::string, bool>>>&
+        site_group_map,
     const std::set<std::string>& origin_permission_set,
     base::Value* list_value,
     Profile* profile) {
@@ -263,7 +276,9 @@ void ConvertSiteGroupMapToListValue(
                       base::Value(entry.first));
     bool has_installed_pwa = false;
     base::Value origin_list(base::Value::Type::LIST);
-    for (const std::string& origin : entry.second) {
+    for (const auto& origin_is_partitioned : entry.second) {
+      const auto& origin = origin_is_partitioned.first;
+      bool is_partitioned = origin_is_partitioned.second;
       base::Value origin_object(base::Value::Type::DICTIONARY);
       // If origin is placeholder, create a http ETLD+1 origin for it.
       if (origin == kPlaceholder) {
@@ -274,6 +289,7 @@ void ConvertSiteGroupMapToListValue(
       } else {
         origin_object.SetKey("origin", base::Value(origin));
       }
+      origin_object.SetKey("isPartitioned", base::Value(is_partitioned));
       origin_object.SetKey(
           "engagement",
           base::Value(engagement_service->GetScore(GURL(origin))));
@@ -344,7 +360,8 @@ bool IsPatternValidForType(const std::string& pattern_string,
 }
 
 void UpdateDataFromCookiesTree(
-    std::map<std::string, std::set<std::string>>* all_sites_map,
+    std::map<std::string, std::set<std::pair<std::string, bool>>>*
+        all_sites_map,
     std::map<std::string, int64_t>* origin_size_map,
     const GURL& origin,
     int64_t size) {
@@ -403,6 +420,82 @@ std::string GetCookieSettingDescription(Profile* profile) {
   NOTREACHED();
 }
 
+// Removes all nodes from |model| which match |origin| and |etld_plus1|. At
+// least one of |origin| or |etld_plus1| must be set. If only |origin| is set,
+// then unpartitioned storage for that origin is removed. If only |etld_plus1|
+// is set, then any unpartitioned storage which matches that etld + 1, or
+// partitioned storage where it is the partitioning site, is removed. If both
+// |origin| and |etld_plus1| is set, then only storage for |origin| partitioned
+// by |etld_plus1| is removed.
+void RemoveMatchingNodes(CookiesTreeModel* model,
+                         absl::optional<std::string> origin,
+                         absl::optional<std::string> etld_plus1) {
+  DCHECK(origin || etld_plus1);
+  std::vector<CookieTreeNode*> nodes_to_delete;
+
+  for (const auto& host_node : model->GetRoot()->children()) {
+    bool origin_matches =
+        origin &&
+        *origin == host_node->GetDetailedInfo().origin.GetURL().spec();
+
+    if (origin && !origin_matches) {
+      // If the origin is set, host nodes which do not match that origin cannot
+      // contain storage targeted for removal.
+      continue;
+    }
+
+    std::string host_node_etld_plus1 =
+        net::registry_controlled_domains::GetDomainAndRegistry(
+            base::UTF16ToUTF8(host_node->GetTitle()),
+            net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+    bool etld_plus1_matches = etld_plus1 && *etld_plus1 == host_node_etld_plus1;
+
+    for (const auto& storage_type_node : host_node->children()) {
+      if (storage_type_node->GetDetailedInfo().node_type !=
+          CookieTreeNode::DetailedInfo::TYPE_COOKIES) {
+        // Non cookie storage cannot (currently) be partitioned.
+        if (origin && etld_plus1) {
+          continue;
+        }
+
+        if (origin_matches || etld_plus1_matches) {
+          nodes_to_delete.push_back(storage_type_node.get());
+          continue;
+        }
+      } else {
+        // Every cookie must be inspected to confirm partition state.
+        // TODO(crbug.com/1271155): This is slow, and should be addressed when
+        // the CookiesTreeModel is deprecated.
+        for (const auto& cookie_node : storage_type_node->children()) {
+          const auto& cookie = cookie_node->GetDetailedInfo().cookie;
+          if (!cookie->IsPartitioned() &&
+              (origin_matches || etld_plus1_matches) &&
+              (!origin || !etld_plus1)) {
+            nodes_to_delete.push_back(cookie_node.get());
+            continue;
+          }
+          if (cookie->IsPartitioned()) {
+            const auto& partition_site =
+                cookie->PartitionKey()->site().GetURL().host();
+
+            // If an origin has been set, it must match the origin of the
+            // current node, which means it can be ignored.
+            DCHECK(!origin || origin_matches);
+
+            if (etld_plus1 && partition_site == *etld_plus1) {
+              nodes_to_delete.push_back(cookie_node.get());
+            }
+          }
+        }
+      }
+    }
+  }
+
+  for (auto* node : nodes_to_delete)
+    model->DeleteCookieNode(node);
+}
+
 }  // namespace
 
 SiteSettingsHandler::SiteSettingsHandler(Profile* profile)
@@ -419,8 +512,13 @@ void SiteSettingsHandler::RegisterMessages() {
       base::BindRepeating(&SiteSettingsHandler::HandleFetchUsageTotal,
                           base::Unretained(this)));
   web_ui()->RegisterDeprecatedMessageCallback(
-      "clearUsage", base::BindRepeating(&SiteSettingsHandler::HandleClearUsage,
-                                        base::Unretained(this)));
+      "clearUnpartitionedUsage",
+      base::BindRepeating(&SiteSettingsHandler::HandleClearUnpartitionedUsage,
+                          base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "clearPartitionedUsage",
+      base::BindRepeating(&SiteSettingsHandler::HandleClearPartitionedUsage,
+                          base::Unretained(this)));
   web_ui()->RegisterDeprecatedMessageCallback(
       "setDefaultValueForContentType",
       base::BindRepeating(
@@ -671,19 +769,16 @@ void SiteSettingsHandler::HandleFetchUsageTotal(const base::ListValue* args) {
   EnsureCookiesTreeModelCreated();
 }
 
-void SiteSettingsHandler::HandleClearUsage(const base::ListValue* args) {
+void SiteSettingsHandler::HandleClearUnpartitionedUsage(
+    const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
   const std::string& origin = args->GetList()[0].GetString();
   GURL url(origin);
   if (!url.is_valid())
     return;
   AllowJavascript();
-  for (const auto& node : cookies_tree_model_->GetRoot()->children()) {
-    if (origin == node->GetDetailedInfo().origin.GetURL().spec()) {
-      cookies_tree_model_->DeleteCookieNode(node.get());
-      break;
-    }
-  }
+
+  RemoveMatchingNodes(cookies_tree_model_.get(), origin, absl::nullopt);
 
   // TODO(crbug.com/1271155, crbug.com/1268626): This is a temporary hack while
   // the CookiesTreeModel is deprecated. Currently cookies will fail to be
@@ -694,6 +789,15 @@ void SiteSettingsHandler::HandleClearUsage(const base::ListValue* args) {
   HostContentSettingsMapFactory::GetForProfile(profile_)
       ->SetWebsiteSettingDefaultScope(
           url, GURL(), ContentSettingsType::CLIENT_HINTS, nullptr);
+}
+
+void SiteSettingsHandler::HandleClearPartitionedUsage(
+    const base::ListValue* args) {
+  CHECK_EQ(2U, args->GetList().size());
+  const std::string& origin = args->GetList()[0].GetString();
+  const std::string& etld_plus1 = args->GetList()[1].GetString();
+
+  RemoveMatchingNodes(cookies_tree_model_.get(), origin, etld_plus1);
 }
 
 void SiteSettingsHandler::HandleSetDefaultValueForContentType(
@@ -891,7 +995,8 @@ void SiteSettingsHandler::HandleGetRecentSitePermissions(
 
 base::Value SiteSettingsHandler::PopulateCookiesAndUsageData(Profile* profile) {
   std::map<std::string, int64_t> origin_size_map;
-  std::map<std::string, int> origin_cookie_map;
+  std::map<std::pair<std::string, absl::optional<std::string>>, int>
+      origin_cookie_map;
   base::Value list_value(base::Value::Type::LIST);
 
   GetOriginStorage(&all_sites_map_, &origin_size_map);
@@ -905,7 +1010,8 @@ base::Value SiteSettingsHandler::PopulateCookiesAndUsageData(Profile* profile) {
     int cookie_num = 0;
     const std::string& etld_plus1 =
         site_group.FindKey(kEffectiveTopLevelDomainPlus1Name)->GetString();
-    const auto& etld_plus1_cookie_num_it = origin_cookie_map.find(etld_plus1);
+    const auto& etld_plus1_cookie_num_it =
+        origin_cookie_map.find({etld_plus1, absl::nullopt});
     // Add the number of eTLD+1 scoped cookies.
     if (etld_plus1_cookie_num_it != origin_cookie_map.end())
       cookie_num = etld_plus1_cookie_num_it->second;
@@ -913,13 +1019,19 @@ base::Value SiteSettingsHandler::PopulateCookiesAndUsageData(Profile* profile) {
     // numbers.
     for (base::Value& origin_info : origin_list->GetList()) {
       const std::string& origin = origin_info.FindKey("origin")->GetString();
-      const auto& size_info_it = origin_size_map.find(origin);
-      if (size_info_it != origin_size_map.end())
-        origin_info.SetKey(
-            "usage", base::Value(static_cast<double>(size_info_it->second)));
+      bool is_partitioned = origin_info.FindKey("isPartitioned")->GetBool();
+      if (!is_partitioned) {
+        // Only unpartitioned storage has a size.
+        const auto& size_info_it = origin_size_map.find(origin);
+        if (size_info_it != origin_size_map.end())
+          origin_info.SetKey(
+              "usage", base::Value(static_cast<double>(size_info_it->second)));
+      }
       GURL origin_url(origin);
-      const auto& origin_cookie_num_it =
-          origin_cookie_map.find(origin_url.host());
+      const auto& origin_cookie_num_it = origin_cookie_map.find(
+          {origin_url.host(),
+           (is_partitioned ? absl::optional<std::string>(etld_plus1)
+                           : absl::nullopt)});
       if (origin_cookie_num_it != origin_cookie_map.end()) {
         origin_info.SetKey(kNumCookies,
                            base::Value(origin_cookie_num_it->second));
@@ -1532,7 +1644,8 @@ void SiteSettingsHandler::TreeModelEndBatch(CookiesTreeModel* model) {
 }
 
 void SiteSettingsHandler::GetOriginStorage(
-    std::map<std::string, std::set<std::string>>* all_sites_map,
+    std::map<std::string, std::set<std::pair<std::string, bool>>>*
+        all_sites_map,
     std::map<std::string, int64_t>* origin_size_map) {
   CHECK(cookies_tree_model_.get());
 
@@ -1546,38 +1659,57 @@ void SiteSettingsHandler::GetOriginStorage(
 }
 
 void SiteSettingsHandler::GetOriginCookies(
-    std::map<std::string, std::set<std::string>>* all_sites_map,
-    std::map<std::string, int>* origin_cookie_map) {
+    std::map<std::string, std::set<std::pair<std::string, bool>>>*
+        all_sites_map,
+    std::map<std::pair<std::string, absl::optional<std::string>>, int>*
+        origin_cookie_map) {
   CHECK(cookies_tree_model_.get());
   // Get sites that don't have data but have cookies.
   for (const auto& site : cookies_tree_model_->GetRoot()->children()) {
     GURL url = site->GetDetailedInfo().origin.GetURL();
-    (*origin_cookie_map)[url.host()] = site->NumberOfCookies();
-    CreateOrAppendSiteGroupEntry(all_sites_map, url,
-                                 /*url_is_origin_with_cookies = */ true);
+    if (!site->NumberOfCookies())
+      continue;
+
+    // Each cookie will need to be inspected to see if it is partitioned, so it
+    // may be associated with the appropriate eTLD+1.
+    // TODO (crbug.com/1271155): This is slow, the replacement for the
+    // CookiesTreeModel should improve this significantly.
+    for (const auto& site_child : site->children()) {
+      if (site_child->GetDetailedInfo().node_type !=
+          CookieTreeNode::DetailedInfo::TYPE_COOKIES) {
+        continue;
+      }
+
+      for (const auto& cookie : site_child->children()) {
+        const auto& detailed_info = cookie->GetDetailedInfo();
+        DCHECK(detailed_info.node_type ==
+               CookieTreeNode::DetailedInfo::TYPE_COOKIE);
+        DCHECK(detailed_info.cookie);
+
+        absl::optional<std::string> associated_etld_plus1 =
+            detailed_info.cookie->IsPartitioned()
+                ? absl::optional<std::string>(
+                      detailed_info.cookie->PartitionKey()
+                          ->site()
+                          .GetURL()
+                          .host())
+                : absl::nullopt;
+        CreateOrAppendSiteGroupEntry(all_sites_map, url,
+                                     /*url_is_origin_with_cookies = */ true,
+                                     associated_etld_plus1);
+        (*origin_cookie_map)[{url.host(), associated_etld_plus1}]++;
+      }
+    }
   }
 }
 
 void SiteSettingsHandler::HandleClearEtldPlus1DataAndCookies(
     const base::ListValue* args) {
   CHECK_EQ(1U, args->GetList().size());
-  const std::string& etld_plus1_string = args->GetList()[0].GetString();
+  const std::string& etld_plus1 = args->GetList()[0].GetString();
 
   AllowJavascript();
-  CookieTreeNode* parent = cookies_tree_model_->GetRoot();
-
-  // Find all the nodes that contain the given etld+1.
-  std::vector<CookieTreeNode*> nodes_to_delete;
-  for (const auto& node : parent->children()) {
-    std::string cookie_node_etld_plus1 =
-        net::registry_controlled_domains::GetDomainAndRegistry(
-            base::UTF16ToUTF8(node->GetTitle()),
-            net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-    if (etld_plus1_string == cookie_node_etld_plus1)
-      nodes_to_delete.push_back(node.get());
-  }
-  for (auto* node : nodes_to_delete)
-    cookies_tree_model_->DeleteCookieNode(node);
+  RemoveMatchingNodes(cookies_tree_model_.get(), absl::nullopt, etld_plus1);
 }
 
 void SiteSettingsHandler::HandleRecordAction(const base::ListValue* args) {

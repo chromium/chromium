@@ -959,8 +959,54 @@ suite('AllSites_EnabledConsolidatedControls', function() {
 
     assertEquals(
         siteGroup.origins[0].origin,
-        await browserProxy.whenCalled('clearOriginDataAndCookies'));
-    assertEquals(1, browserProxy.getCallCount('clearOriginDataAndCookies'));
+        await browserProxy.whenCalled(
+            'clearUnpartitionedOriginDataAndCookies'));
+
+    const [origin, types, setting] =
+        await browserProxy.whenCalled('setOriginPermissions');
+    assertEquals(origin, siteGroup.origins[0].origin);
+    assertEquals(types, null);  // Null affects all content types.
+    assertEquals(setting, ContentSetting.DEFAULT);
+
+    assertEquals(
+        1, browserProxy.getCallCount('clearUnpartitionedOriginDataAndCookies'));
+    assertEquals(1, browserProxy.getCallCount('setOriginPermissions'));
+    assertEquals(5, testElement.$.allSitesList.items![0].numCookies);
+  });
+
+  test('remove partitioned origin', async function() {
+    const siteGroup = JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
+    siteGroup.origins[0].isPartitioned = true;
+    siteGroup.origins[0].numCookies = 1;
+    siteGroup.origins[1].numCookies = 2;
+    siteGroup.origins[2].numCookies = 3;
+    siteGroup.numCookies = 6;
+
+    testElement.siteGroupMap.set(
+        siteGroup.etldPlus1, JSON.parse(JSON.stringify(siteGroup)));
+    testElement.forceListUpdateForTesting();
+    flush();
+
+    // Remove the the partitioned entry, which will have been ordered to the
+    // bottom of the displayed origins.
+    const siteEntries =
+        testElement.$.listContainer.querySelectorAll('site-entry');
+    const originList = siteEntries[0]!.$.originList.get();
+    flush();
+    const originEntries = originList.querySelectorAll('.hr');
+    assertEquals(3, originEntries.length);
+    originEntries[2]!.querySelector<HTMLElement>(
+                         '#removeOriginButton')!.click();
+    confirmDialog();
+
+    const [origin, etldPlus1] =
+        await browserProxy.whenCalled('clearPartitionedOriginDataAndCookies');
+
+    assertEquals(siteGroup.origins[0].origin, origin);
+    assertEquals(siteGroup.etldPlus1, etldPlus1);
+    assertEquals(
+        1, browserProxy.getCallCount('clearPartitionedOriginDataAndCookies'));
+    assertEquals(0, browserProxy.getCallCount('setOriginPermissions'));
     assertEquals(5, testElement.$.allSitesList.items![0].numCookies);
   });
 
@@ -993,7 +1039,8 @@ suite('AllSites_EnabledConsolidatedControls', function() {
     removeFirstOrigin();
     cancelDialog();
 
-    assertEquals(0, browserProxy.getCallCount('clearOriginDataAndCookies'));
+    assertEquals(
+        0, browserProxy.getCallCount('clearUnpartitionedOriginDataAndCookies'));
     assertEquals(0, browserProxy.getCallCount('setOriginPermissions'));
     assertEquals(6, testElement.$.allSitesList.items![0].numCookies);
   });

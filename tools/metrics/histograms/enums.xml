@@ -92602,6 +92602,7 @@ Called by update_scheduler_enums.py.-->
   <int value="6" label="Enter Site Details"/>
   <int value="7" label="Remove Site Group"/>
   <int value="8" label="Remove Origin"/>
+  <int value="9" label="Remove Origin Partitioned"/>
 </enum>
 
 <enum name="WebsiteSettingsDiscoverabilityAction">
