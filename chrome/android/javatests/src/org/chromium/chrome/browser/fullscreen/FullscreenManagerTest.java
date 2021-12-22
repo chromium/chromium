@@ -184,7 +184,6 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @DisabledTest(message = "crbug.com/1282137")
     public void testDelayedPersistentFullscreen() {
         mActivityTestRule.startMainActivityWithURL(LONG_HTML_TEST_PAGE);
 
@@ -216,7 +215,6 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisabledTest(message = "crbug.com/1282137")
     public void testPersistentFullscreenChangingUiFlags() throws InterruptedException {
         // Exiting fullscreen via UI Flags is not supported in versions prior to MR2.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) return;
@@ -542,7 +540,6 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Feature({"Fullscreen"})
-    @DisabledTest(message = "crbug.com/1282137")
     public void testEnterPendingPersistentFullscreen() {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(LONG_FULLSCREEN_API_HTML_TEST_PAGE);
