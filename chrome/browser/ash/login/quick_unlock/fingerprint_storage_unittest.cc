@@ -24,7 +24,6 @@ namespace quick_unlock {
 namespace {
 
 const char* kUmaAuthScanResult = "Fingerprint.Auth.ScanResult";
-const char* kUmaAuthError = "Fingerprint.Auth.Error";
 
 class FingerprintStorageUnitTest : public testing::Test {
  public:
@@ -137,29 +136,6 @@ TEST_F(FingerprintStorageUnitTest, TestScanResultIsSentToUma) {
       histogram_tester.GetAllSamples(kUmaAuthScanResult),
       ElementsAre(base::Bucket(
           static_cast<int>(device::mojom::ScanResult::SUCCESS), /*count=*/1)));
-
-  EXPECT_TRUE(histogram_tester.GetAllSamples(kUmaAuthError).empty());
-}
-
-TEST_F(FingerprintStorageUnitTest, TestFingerprintErrorIsSentToUma) {
-  FingerprintStorage* fingerprint_storage =
-      QuickUnlockFactory::GetForProfile(profile_.get())->fingerprint_storage();
-  base::HistogramTester histogram_tester;
-  base::flat_map<std::string, std::vector<std::string>> empty_matches;
-  device::mojom::FingerprintMessagePtr msg =
-      device::mojom::FingerprintMessage::New();
-
-  msg->set_fingerprint_error(
-      device::mojom::FingerprintError::UNABLE_TO_PROCESS);
-  fingerprint_storage->OnAuthScanDone(std::move(msg), empty_matches);
-
-  EXPECT_TRUE(histogram_tester.GetAllSamples(kUmaAuthScanResult).empty());
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kUmaAuthError),
-      ElementsAre(base::Bucket(
-          static_cast<int>(device::mojom::FingerprintError::UNABLE_TO_PROCESS),
-          /*count=*/1)));
 }
 
 }  // namespace quick_unlock
