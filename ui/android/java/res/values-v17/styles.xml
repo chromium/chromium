@@ -343,11 +343,6 @@
         <item name="android:textColor">@color/chip_text_color_secondary</item>
     </style>
 
-    <!-- Toast UI -->
-    <style name="TextAppearance.Toast" parent="TextAppearance.TextSmall">
-        <item name="android:textColor">@color/default_text_color_light</item>
-    </style>
-
     <!-- Dividers -->
     <style name="HorizontalDivider"
            tools:ignore="UnusedResources">

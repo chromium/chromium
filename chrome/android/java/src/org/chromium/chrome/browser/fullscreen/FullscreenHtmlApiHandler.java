@@ -11,10 +11,9 @@ import static android.view.View.SYSTEM_UI_FLAG_LOW_PROFILE;
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
-import android.view.LayoutInflater;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -47,6 +46,7 @@ import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
@@ -66,8 +66,6 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
     // Delay to allow a frame to render between getting the fullscreen layout update and clearing
     // the SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN flag.
     private static final long CLEAR_LAYOUT_FULLSCREEN_DELAY_MS = 20;
-    // Fade in/out animation duration for fullscreen notification toast.
-    private static final int TOAST_FADE_MS = 500;
 
     private final Activity mActivity;
     private final Handler mHandler;
@@ -88,7 +86,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
 
     // Toast at the top of the screen that is shown when user enters fullscreen for the
     // first time.
-    private View mNotificationToast;
+    private Toast mNotificationToast;
 
     private OnLayoutChangeListener mFullscreenOnLayoutChangeListener;
 
@@ -511,27 +509,23 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
      * Create and show the fullscreen notification toast.
      */
     private void showNotificationToast() {
-        assert mTab != null && mTab.getContentView() != null;
-        ViewGroup parent = mTab.getContentView();
-        if (mNotificationToast != null) parent.removeView(mNotificationToast);
-        mNotificationToast =
-                LayoutInflater.from(mActivity).inflate(R.layout.fullscreen_notification, null);
-        mNotificationToast.setAlpha(0);
-        parent.addView(mNotificationToast);
-        mNotificationToast.animate().alpha(1).setDuration(TOAST_FADE_MS).start();
-        mHandler.postDelayed(this::hideNotificationToast, 5000);
+        if (mNotificationToast != null) {
+            mNotificationToast.cancel();
+        }
+        int resId = R.string.immersive_fullscreen_api_notification;
+        mNotificationToast = Toast.makeText(mActivity, resId, Toast.LENGTH_LONG);
+        mNotificationToast.setGravity(Gravity.TOP | Gravity.CENTER, 0, 0);
+        mNotificationToast.show();
     }
 
     /**
      * Hides the notification toast.
      */
     private void hideNotificationToast() {
-        if (mNotificationToast == null) return;
-        mNotificationToast.animate().alpha(0).setDuration(TOAST_FADE_MS).withEndAction(() -> {
-            assert mTab != null && mTab.getContentView() != null;
-            mTab.getContentView().removeView(mNotificationToast);
+        if (mNotificationToast != null) {
+            mNotificationToast.cancel();
             mNotificationToast = null;
-        });
+        }
     }
 
     // ActivityStateListener
