@@ -3720,8 +3720,6 @@ def CheckNoDeprecatedCss(input_api, output_api):
                    input_api.DEFAULT_FILES_TO_SKIP +
                    (r"^chrome/common/extensions/docs",
                     r"^chrome/docs",
-                    r"^components/dom_distiller/core/css/distilledpage_ios.css",
-                    r"^components/neterror/resources/neterror.css",
                     r"^native_client_sdk"))
   file_filter = lambda f: input_api.FilterSourceFile(
       f, files_to_check=file_inclusion_pattern, files_to_skip=files_to_skip)
