@@ -13,8 +13,6 @@
 #include "chrome/browser/android/autofill_assistant/ui_controller_android.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 
 using base::android::AttachCurrentThread;

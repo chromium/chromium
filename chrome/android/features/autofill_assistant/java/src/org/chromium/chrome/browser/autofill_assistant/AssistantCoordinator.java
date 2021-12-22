@@ -23,8 +23,6 @@ import org.chromium.ui.util.AccessibilityUtil;
  * sub-components and shutting down the Autofill Assistant.
  */
 public class AssistantCoordinator {
-    private final Activity mActivity;
-
     private final AssistantModel mModel;
     private AssistantBottomBarCoordinator mBottomBarCoordinator;
     private final AssistantKeyboardCoordinator mKeyboardCoordinator;
@@ -38,8 +36,6 @@ public class AssistantCoordinator {
             @NonNull BrowserControlsManager browserControlsManager,
             @NonNull ApplicationViewportInsetSupplier applicationBottomInsetProvider,
             AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil) {
-        mActivity = activity;
-
         if (overlayCoordinator != null) {
             mModel = new AssistantModel(overlayCoordinator.getModel());
             mOverlayCoordinator = overlayCoordinator;
