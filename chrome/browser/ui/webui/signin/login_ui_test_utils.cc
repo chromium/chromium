@@ -117,6 +117,11 @@ class SignInObserver : public signin::IdentityManager::Observer {
 // Synchronously waits for the Sync confirmation to be closed.
 class SyncConfirmationClosedObserver : public LoginUIService::Observer {
  public:
+  explicit SyncConfirmationClosedObserver(Browser* browser) {
+    login_ui_service_observation_.Observe(
+        LoginUIServiceFactory::GetForProfile(browser->profile()));
+  }
+
   void WaitForConfirmationClosed() {
     if (sync_confirmation_closed_)
       return;
@@ -136,6 +141,8 @@ class SyncConfirmationClosedObserver : public LoginUIService::Observer {
 
   bool sync_confirmation_closed_ = false;
   base::OnceClosure quit_closure_;
+  base::ScopedObservation<LoginUIService, LoginUIService::Observer>
+      login_ui_service_observation_{this};
 };
 
 void RunLoopFor(base::TimeDelta duration) {
@@ -369,6 +376,15 @@ class SigninViewControllerTestUtil {
     return true;
 #endif
   }
+
+  static bool ShowsModalDialog(Browser* browser) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    NOTREACHED();
+    return false;
+#else
+    return browser->signin_view_controller()->ShowsModalDialog();
+#endif
+  }
 };
 
 void WaitUntilUIReady(Browser* browser) {
@@ -472,17 +488,14 @@ bool SignInWithUI(Browser* browser,
 bool DismissSyncConfirmationDialog(Browser* browser,
                                    base::TimeDelta timeout,
                                    SyncConfirmationDialogAction action) {
-  SyncConfirmationClosedObserver confirmation_closed_observer;
-  base::ScopedObservation<LoginUIService, LoginUIService::Observer>
-      scoped_confirmation_closed_observation(&confirmation_closed_observer);
-  scoped_confirmation_closed_observation.Observe(
-      LoginUIServiceFactory::GetForProfile(browser->profile()));
+  SyncConfirmationClosedObserver confirmation_closed_observer(browser);
 
   const base::Time expire_time = base::Time::Now() + timeout;
   while (base::Time::Now() <= expire_time) {
     if (SigninViewControllerTestUtil::TryDismissSyncConfirmationDialog(
             browser, action)) {
       confirmation_closed_observer.WaitForConfirmationClosed();
+      EXPECT_FALSE(SigninViewControllerTestUtil::ShowsModalDialog(browser));
       return true;
     }
     RunLoopFor(base::Milliseconds(1000));

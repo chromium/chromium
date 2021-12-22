@@ -213,8 +213,6 @@ void SyncConfirmationHandler::CloseModalSigninWindow(
   }
   LoginUIServiceFactory::GetForProfile(profile_)->SyncConfirmationUIClosed(
       result);
-  if (browser_)
-    browser_->signin_view_controller()->CloseModalSignin();
 }
 
 void SyncConfirmationHandler::HandleInitializedWithSize(
