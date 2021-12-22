@@ -751,6 +751,48 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached) {
             screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
 
+// Verifies wl_data_device::leave events are properly handled and propagated
+// while in window dragging "attached" mode.
+TEST_P(WaylandWindowDragControllerTest, DragExitAttached_TOUCH) {
+  // Ensure there is no window currently focused
+  EXPECT_FALSE(window_manager()->GetCurrentPointerOrTouchFocusedWindow());
+  EXPECT_EQ(gfx::kNullAcceleratedWidget,
+            screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
+
+  // SendPointerEnter(window_.get(), &delegate_);
+  // SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  // SendPointerMotion(window_.get(), &delegate_, {10, 10});
+  SendTouchDown(window_.get(), &delegate_, 0 /*point id*/, {0, 0} /*location*/);
+  SendTouchMotion(window_.get(), &delegate_, 0 /*point id*/,
+                  {10, 10} /*location*/);
+  Sync();
+  EXPECT_EQ(window_->GetWidget(),
+            screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
+
+  auto* wayland_extension = GetWaylandExtension(*window_);
+  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  Sync();
+  EXPECT_EQ(State::kAttached, drag_controller()->state());
+
+  // Emulate a [motion => leave] event sequence and make sure the correct
+  // ui::Events are dispatched in response.
+  SendDndMotion({50, 50});
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(1);
+  Sync();
+
+  SendDndLeave();
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([&](Event* event) {
+    EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+    EXPECT_EQ(gfx::Point(50, -1000).ToString(),
+              event->AsTouchEvent()->location().ToString());
+  });
+  Sync();
+
+  SendDndDrop();
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(1);
+  Sync();
+}
+
 TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
   const gfx::Rect original_bounds = window_->GetBounds();
   wl::ScopedWlArray states({XDG_TOPLEVEL_STATE_ACTIVATED});
