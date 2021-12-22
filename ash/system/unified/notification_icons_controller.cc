@@ -240,23 +240,28 @@ void NotificationIconsController::UpdateNotificationIcons() {
   const bool should_show_icons =
       icons_view_visible_ && ShouldShowNotificationItemsInTray();
 
-  auto it = tray_items_.begin();
-  for (message_center::Notification* notification :
-       message_center_utils::GetSortedNotificationsWithOwnView()) {
-    if (it == tray_items_.end())
+  // Iterates `tray_items_` and notifications in reverse order so new pinned
+  // notifications get shown on the left side.
+  auto notifications =
+      message_center_utils::GetSortedNotificationsWithOwnView();
+
+  auto tray_it = tray_items_.rbegin();
+  for (auto notification_it = notifications.rbegin();
+       notification_it != notifications.rend(); ++notification_it) {
+    if (tray_it == tray_items_.rend())
       break;
-    if (ShouldShowNotification(notification)) {
-      (*it)->SetNotification(notification);
-      (*it)->SetVisible(should_show_icons);
-      ++it;
+    if (ShouldShowNotification(*notification_it)) {
+      (*tray_it)->SetNotification(*notification_it);
+      (*tray_it)->SetVisible(should_show_icons);
+      ++tray_it;
     }
   }
 
-  first_unused_item_index_ = std::distance(tray_items_.begin(), it);
+  first_unused_item_index_ = std::distance(tray_items_.rbegin(), tray_it);
 
-  for (; it != tray_items_.end(); ++it) {
-    (*it)->Reset();
-    (*it)->SetVisible(false);
+  for (; tray_it != tray_items_.rend(); ++tray_it) {
+    (*tray_it)->Reset();
+    (*tray_it)->SetVisible(false);
   }
   separator_->SetVisible(should_show_icons && TrayItemHasNotification());
 }
