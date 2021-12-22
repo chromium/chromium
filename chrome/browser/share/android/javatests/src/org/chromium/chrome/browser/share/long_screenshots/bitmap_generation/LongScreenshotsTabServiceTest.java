@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -87,7 +88,10 @@ public class LongScreenshotsTabServiceTest {
     @Test
     @MediumTest
     @Feature({"LongScreenshots"})
-    public void testCapturedFilesystem() throws Exception {
+    @DisableIf.Build(message = "Flaky on emulators; see https://crbug.com/1282258",
+            supported_abis_includes = "x86")
+    public void
+    testCapturedFilesystem() throws Exception {
         EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
         final String url = testServer.getURL("/chrome/test/data/android/about.html");
 
