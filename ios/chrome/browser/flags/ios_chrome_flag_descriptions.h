@@ -480,6 +480,11 @@ extern const char kURLBlocklistIOSDescription[];
 extern const char kUseLensToSearchForImageName[];
 extern const char kUseLensToSearchForImageDescription[];
 
+// Title and description for the flag to enable the replacement of some images
+// by SFSymbols.
+extern const char kUseSFSymbolsSamplesName[];
+extern const char kUseSFSymbolsSamplesDescription[];
+
 // Title and description for the flag to control the maximum wait time (in
 // seconds) for a response from the Account Capabilities API.
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiName[];

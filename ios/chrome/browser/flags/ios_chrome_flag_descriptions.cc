@@ -534,6 +534,10 @@ const char kUseLensToSearchForImageDescription[] =
     "When enabled, use Lens to search for images from the long press context "
     "menu when Google is the selected search engine.";
 
+const char kUseSFSymbolsSamplesName[] = "Replace Image by SFSymbols";
+const char kUseSFSymbolsSamplesDescription[] =
+    "When enabled, some images (toolbar...) are replaced by SFSymbols";
+
 const char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Maximum wait time (in seconds) for a response from the Account "
     "Capabilities API";

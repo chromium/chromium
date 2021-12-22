@@ -775,6 +775,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSaveSessionTabsToSeparateFilesDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(sessions::kSaveSessionTabsToSeparateFiles)},
+    {"use-sf-symbols-samples", flag_descriptions::kUseSFSymbolsSamplesName,
+     flag_descriptions::kUseSFSymbolsSamplesDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kUseSFSymbolsSamples)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
