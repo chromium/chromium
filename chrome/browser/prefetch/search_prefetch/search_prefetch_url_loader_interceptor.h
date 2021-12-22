@@ -38,7 +38,7 @@ class SearchPrefetchURLLoaderInterceptor
       const network::ResourceRequest& tentative_resource_request,
       int frame_tree_node_id);
 
-  // content::URLLaoderRequestInterceptor:
+  // content::URLLoaderRequestInterceptor:
   void MaybeCreateLoader(
       const network::ResourceRequest& tentative_resource_request,
       content::BrowserContext* browser_context,

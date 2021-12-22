@@ -37,7 +37,7 @@ class PrefetchProxyURLLoaderInterceptor
 
   ~PrefetchProxyURLLoaderInterceptor() override;
 
-  // content::URLLaoderRequestInterceptor:
+  // content::URLLoaderRequestInterceptor:
   void MaybeCreateLoader(
       const network::ResourceRequest& tentative_resource_request,
       content::BrowserContext* browser_context,
