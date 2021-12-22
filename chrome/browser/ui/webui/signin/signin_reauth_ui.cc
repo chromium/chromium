@@ -23,6 +23,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -89,7 +90,7 @@ int GetReauthCloseButtonLabelStringId(
 }  // namespace
 
 SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
-    : SigninWebDialogUI(web_ui) {
+    : content::WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUISigninReauthHost);
@@ -136,8 +137,6 @@ void SigninReauthUI::InitializeMessageHandlerWithReauthController(
       controller,
       base::flat_map<std::string, int>(js_localized_string_to_ids_)));
 }
-
-void SigninReauthUI::InitializeMessageHandlerWithBrowser(Browser* browser) {}
 
 void SigninReauthUI::AddStringResource(content::WebUIDataSource* source,
                                        base::StringPiece name,

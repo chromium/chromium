@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
+#include "content/public/browser/web_ui_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -19,7 +19,7 @@ namespace content {
 class WebUI;
 }
 
-class EnterpriseProfileWelcomeUI : public SigninWebDialogUI {
+class EnterpriseProfileWelcomeUI : public content::WebUIController {
  public:
   // Type of a welcome screen for the enterprise flow.
   enum class ScreenType {
@@ -45,9 +45,6 @@ class EnterpriseProfileWelcomeUI : public SigninWebDialogUI {
 
   // Allows tests to trigger page events.
   EnterpriseProfileWelcomeHandler* GetHandlerForTesting();
-
-  // SigninWebDialogUI:
-  void InitializeMessageHandlerWithBrowser(Browser* browser) override;
 
  private:
   // Stored for tests.

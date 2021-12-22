@@ -21,7 +21,7 @@
 #include "ui/resources/grit/webui_generated_resources.h"
 
 EnterpriseProfileWelcomeUI::EnterpriseProfileWelcomeUI(content::WebUI* web_ui)
-    : SigninWebDialogUI(web_ui) {
+    : content::WebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUIEnterpriseProfileWelcomeHost);
   webui::SetJSModuleDefaults(source);
@@ -80,8 +80,5 @@ EnterpriseProfileWelcomeHandler*
 EnterpriseProfileWelcomeUI::GetHandlerForTesting() {
   return handler_;
 }
-
-void EnterpriseProfileWelcomeUI::InitializeMessageHandlerWithBrowser(
-    Browser* browser) {}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(EnterpriseProfileWelcomeUI)

@@ -61,14 +61,15 @@ SigninViewControllerDelegateViews::CreateSyncConfirmationWebView(
   return CreateDialogWebView(
       browser, GURL(chrome::kChromeUISyncConfirmationURL),
       GetSyncConfirmationDialogPreferredHeight(browser->profile()),
-      kSyncConfirmationDialogWidth);
+      kSyncConfirmationDialogWidth, InitializeSigninWebDialogUI(true));
 }
 
 // static
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateSigninErrorWebView(Browser* browser) {
   return CreateDialogWebView(browser, GURL(chrome::kChromeUISigninErrorURL),
-                             kSigninErrorDialogHeight, absl::nullopt);
+                             kSigninErrorDialogHeight, absl::nullopt,
+                             InitializeSigninWebDialogUI(true));
 }
 
 // static
@@ -78,7 +79,8 @@ SigninViewControllerDelegateViews::CreateReauthConfirmationWebView(
     signin_metrics::ReauthAccessPoint access_point) {
   return CreateDialogWebView(browser,
                              signin::GetReauthConfirmationURL(access_point),
-                             kReauthDialogHeight, kReauthDialogWidth);
+                             kReauthDialogHeight, kReauthDialogWidth,
+                             InitializeSigninWebDialogUI(false));
 }
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
@@ -92,7 +94,8 @@ SigninViewControllerDelegateViews::CreateEnterpriseConfirmationWebView(
     base::OnceCallback<void(bool)> callback) {
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
       browser, GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL),
-      kSyncConfirmationDialogHeight, kSyncConfirmationDialogWidth);
+      kSyncConfirmationDialogHeight, kSyncConfirmationDialogWidth,
+      InitializeSigninWebDialogUI(false));
 
   EnterpriseProfileWelcomeUI* web_dialog_ui =
       web_view->GetWebContents()
@@ -244,14 +247,17 @@ SigninViewControllerDelegateViews::CreateDialogWebView(
     Browser* browser,
     const GURL& url,
     int dialog_height,
-    absl::optional<int> opt_width) {
+    absl::optional<int> opt_width,
+    InitializeSigninWebDialogUI initialize_signin_web_dialog_ui) {
   int dialog_width = opt_width.value_or(kModalDialogWidth);
   views::WebView* web_view = new views::WebView(browser->profile());
   web_view->LoadInitialURL(url);
 
-  SigninWebDialogUI* web_dialog_ui = static_cast<SigninWebDialogUI*>(
-      web_view->GetWebContents()->GetWebUI()->GetController());
-  web_dialog_ui->InitializeMessageHandlerWithBrowser(browser);
+  if (initialize_signin_web_dialog_ui) {
+    SigninWebDialogUI* web_dialog_ui = static_cast<SigninWebDialogUI*>(
+        web_view->GetWebContents()->GetWebUI()->GetController());
+    web_dialog_ui->InitializeMessageHandlerWithBrowser(browser);
+  }
 
   int max_height = browser->window()
                        ->GetWebContentsModalDialogHost()

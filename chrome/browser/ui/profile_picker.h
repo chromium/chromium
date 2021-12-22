@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/signin/enterprise_profile_welcome_ui.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -16,11 +17,6 @@
 
 class GURL;
 class Profile;
-
-namespace base {
-class FilePath;
-}  // namespace base
-
 namespace content {
 class BrowserContext;
 }

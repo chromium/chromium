@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/strong_alias.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
@@ -106,6 +107,9 @@ class SigninViewControllerDelegateViews
   friend SigninViewControllerDelegate;
   friend class SigninViewControllerDelegateViewsBrowserTest;
 
+  using InitializeSigninWebDialogUI =
+      base::StrongAlias<class InitializeSigninWebDialogUITag, bool>;
+
   // Creates and displays a constrained window containing |web_contents|. If
   // |wait_for_size| is true, the delegate will wait for ResizeNativeView() to
   // be called by the base class before displaying the constrained window.
@@ -122,7 +126,8 @@ class SigninViewControllerDelegateViews
       Browser* browser,
       const GURL& url,
       int dialog_height,
-      absl::optional<int> dialog_width);
+      absl::optional<int> dialog_width,
+      InitializeSigninWebDialogUI initialize_signin_web_dialog_ui);
 
   // Displays the modal dialog.
   void DisplayModal();
