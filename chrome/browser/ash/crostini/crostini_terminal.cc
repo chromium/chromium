@@ -159,10 +159,10 @@ void LoadIconsFromResources(
   if (images.size() >= resource_ids.size()) {
     return std::move(callback).Run(std::move(images));
   }
+  auto resource_id = resource_ids[images.size()];
   apps::LoadIconFromResource(
-      apps::IconType::kStandard, apps::kAppShortcutIconSizeDip,
-      resource_ids[images.size()], /*placeholder=*/false,
-      apps::IconEffects::kNone,
+      apps::IconType::kStandard, apps::kAppShortcutIconSizeDip, resource_id,
+      /*placeholder=*/false, apps::IconEffects::kNone,
       base::BindOnce(
           [](std::vector<int> resource_ids, std::vector<gfx::ImageSkia> images,
              base::OnceCallback<void(std::vector<gfx::ImageSkia>)> callback,
