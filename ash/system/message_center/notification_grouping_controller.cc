@@ -142,6 +142,10 @@ void NotificationGroupingController::PopulateGroupParent(
                  << notification_id;
     return;
   }
+
+  if (!parent_view->IsManuallyExpandedOrCollapsed())
+    parent_view->SetExpanded(false);
+
   std::vector<const Notification*> notifications;
   for (const auto* notification : MessageCenter::Get()->GetNotifications()) {
     if (notification->notifier_id() == parent_view->notifier_id() &&
