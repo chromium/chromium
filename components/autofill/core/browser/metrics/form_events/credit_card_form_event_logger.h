@@ -64,6 +64,10 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   void OnDidFillSuggestion(const CreditCard& credit_card,
                            const FormStructure& form,
                            const AutofillField& field,
+                           const base::flat_map<FieldGlobalId, ServerFieldType>&
+                               field_types_to_be_filled_before_security_policy,
+                           const base::flat_map<FieldGlobalId, ServerFieldType>&
+                               field_types_filled_after_security_policy,
                            AutofillSyncSigninState sync_state);
 
   // Logging what type of authentication flow was prompted.

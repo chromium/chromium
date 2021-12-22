@@ -11,11 +11,24 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill {
+
+namespace {
+
+ServerFieldTypeSet GetFieldTypeSet(
+    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
+  ServerFieldTypeSet set;
+  for (const auto& p : field_type_map)
+    set.insert(p.second);
+  return set;
+}
+
+}  // namespace
 
 CreditCardFormEventLogger::CreditCardFormEventLogger(
     bool is_in_main_frame,
@@ -99,6 +112,10 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
     const CreditCard& credit_card,
     const FormStructure& form,
     const AutofillField& field,
+    const base::flat_map<FieldGlobalId, ServerFieldType>&
+        field_types_to_be_filled_before_security_policy,
+    const base::flat_map<FieldGlobalId, ServerFieldType>&
+        field_types_filled_after_security_policy,
     AutofillSyncSigninState sync_state) {
   CreditCard::RecordType record_type = credit_card.record_type();
   sync_state_ = sync_state;
@@ -106,6 +123,47 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
   form_interactions_ukm_logger_->LogDidFillSuggestion(
       record_type,
       /*is_for_credit_card=*/true, form, field);
+
+  AutofillMetrics::LogCreditCardNumberFills(
+      GetFieldTypeSet(field_types_to_be_filled_before_security_policy),
+      AutofillMetrics::MeasurementTime::kFillTimeBeforeSecurityPolicy);
+  AutofillMetrics::LogCreditCardNumberFills(
+      GetFieldTypeSet(field_types_filled_after_security_policy),
+      AutofillMetrics::MeasurementTime::kFillTimeAfterSecurityPolicy);
+
+  AutofillMetrics::LogCreditCardSeamlessFills(
+      GetFieldTypeSet(field_types_to_be_filled_before_security_policy),
+      AutofillMetrics::MeasurementTime::kFillTimeBeforeSecurityPolicy);
+  absl::optional<AutofillMetrics::CreditCardSeamlessFillMetric>
+      credit_card_seamlessness = AutofillMetrics::LogCreditCardSeamlessFills(
+          GetFieldTypeSet(field_types_filled_after_security_policy),
+          AutofillMetrics::MeasurementTime::kFillTimeAfterSecurityPolicy);
+
+  if (credit_card_seamlessness) {
+    FormEvent e = NUM_FORM_EVENTS;
+    switch (*credit_card_seamlessness) {
+      using M = AutofillMetrics::CreditCardSeamlessFillMetric;
+      case M::kFullFill:
+        e = FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_FULL_FILL;
+        break;
+      case M::kOptionalNameMissing:
+        e = FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_OPTIONAL_NAME_MISSING;
+        break;
+      case M::kFullFillButExpDateMissing:
+        e = FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_FULL_FILL_BUT_EXPDATE_MISSING;
+        break;
+      case M::kOptionalNameAndCvcMissing:
+        e = FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_OPTIONAL_NAME_AND_CVC_MISSING;
+        break;
+      case M::kOptionalCvcMissing:
+        e = FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_OPTIONAL_CVC_MISSING;
+        break;
+      case M::kPartialFill:
+        e = FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_PARTIAL_FILL;
+        break;
+    }
+    Log(e, form);
+  }
 
   switch (record_type) {
     case CreditCard::LOCAL_CARD:

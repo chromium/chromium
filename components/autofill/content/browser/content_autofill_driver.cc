@@ -192,14 +192,15 @@ net::IsolationInfo ContentAutofillDriver::IsolationInfo() {
   return render_frame_host_->GetIsolationInfoForSubresources();
 }
 
-void ContentAutofillDriver::FillOrPreviewForm(
+base::flat_map<FieldGlobalId, ServerFieldType>
+ContentAutofillDriver::FillOrPreviewForm(
     int query_id,
     mojom::RendererFormDataAction action,
     const FormData& data,
     const url::Origin& triggered_origin,
     const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
-  GetAutofillRouter().FillOrPreviewForm(this, query_id, action, data,
-                                        triggered_origin, field_type_map);
+  return GetAutofillRouter().FillOrPreviewForm(
+      this, query_id, action, data, triggered_origin, field_type_map);
 }
 
 void ContentAutofillDriver::FillOrPreviewFormImpl(

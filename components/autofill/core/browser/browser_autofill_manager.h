@@ -607,7 +607,17 @@ class BrowserAutofillManager : public AutofillManager,
       size_t current_index,
       const ServerFieldTypeSet& upload_types);
 
-  void FillFieldWithValue(
+  // Calls FieldFiller::FillFormField().
+  //
+  // If the field was newly filled, sets `autofill_field->is_autofilled` and
+  // `field_data->is_autofilled` both to true (otherwise leaves them unchanged).
+  //
+  // Also logs metrics and, if `should_notify` is true, calls
+  // AutofillClient::DidFillOrPreviewField().
+  //
+  // Returns true if the field has been filled, false otherwise. This is
+  // independent of whether the field was filled or autofilled before.
+  bool FillFieldWithValue(
       AutofillField* autofill_field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,

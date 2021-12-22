@@ -1062,11 +1062,6 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     return;
   }
 
-  if (!is_preview) {
-    credit_card_form_event_logger_->OnDidFillSuggestion(
-        credit_card_, *form_structure, *autofill_field, sync_state_);
-  }
-
   FillOrPreviewDataModelForm(action, query_id, form, field, &credit_card_,
                              /*cvc=*/nullptr, form_structure, autofill_field);
 }
@@ -1081,11 +1076,6 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
   AutofillField* autofill_field = nullptr;
   if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
     return;
-  if (action == mojom::RendererFormDataAction::kFill) {
-    address_form_event_logger_->OnDidFillSuggestion(
-        profile, *form_structure, *autofill_field, sync_state_);
-  }
-
   FillOrPreviewDataModelForm(action, query_id, form, field, &profile,
                              /*cvc=*/nullptr, form_structure, autofill_field);
 }
@@ -1465,12 +1455,6 @@ void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
     return;
   }
 
-  // The originally selected masked card is |credit_card_|. So we must log
-  // |credit_card_| as opposed to |credit_card| to correctly indicate that the
-  // user filled the form using a masked card suggestion.
-  credit_card_form_event_logger_->OnDidFillSuggestion(
-      credit_card_, *form_structure, *autofill_field, sync_state_);
-
   DCHECK(credit_card);
 
   // If synced down card is a virtual card, let the client know so that it can
@@ -1705,13 +1689,20 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   bool could_attempt_refill = filling_context != nullptr &&
                               !filling_context->attempted_refill && !is_refill;
 
-  // Count the number of times the value of a specific type was filled into the
-  // form.
-  base::flat_map<ServerFieldType, size_t> type_filling_count;
-  // See FillOrPreviewForm().
-  base::flat_map<FieldGlobalId, ServerFieldType> field_type_map;
-  type_filling_count.reserve(form_structure->field_count());
-  field_type_map.reserve(form_structure->field_count());
+  // Counts the number of times a type was seen in the section to be filled.
+  // This is used to limit the maximum number fills per value.
+  base::flat_map<ServerFieldType, size_t> type_count;
+  type_count.reserve(form_structure->field_count());
+
+  // Maps those fields to their field type that BrowserAutofillManager can and
+  // wants to fill. This is passed on to ContentAutofillRouter, which may
+  // disallow filling some fields according to the security policy for filling
+  // across frames (e.g., credit card numbers are not allowed to be filled
+  // across origins). See AutofillDriver::FillOrPreviewForm() for details.
+  base::flat_map<FieldGlobalId, ServerFieldType>
+      field_types_to_be_filled_before_security_policy;
+  field_types_to_be_filled_before_security_policy.reserve(
+      form_structure->field_count());
 
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     std::string field_number = base::StringPrintf("Field %zu", i);
@@ -1812,8 +1803,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
 
     // A field with a specific type is only allowed to be filled a limited
     // number of times given by |TypeValueFormFillingLimit(field_type)|.
-    if (++type_filling_count[field_type] >
-        TypeValueFormFillingLimit(field_type)) {
+    if (++type_count[field_type] > TypeValueFormFillingLimit(field_type)) {
       buffer << Tr{} << field_number
              << "Skipped: field-type filling-limit reached";
       continue;
@@ -1837,13 +1827,18 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     const std::u16string kEmptyCvc{};
     std::string failure_to_fill;  // Reason for failing to fill.
 
-    // Fill the non-empty value from |profile_or_credit_card| into the result
-    // vector, which will be sent to the renderer.
-    FillFieldWithValue(cached_field, profile_or_credit_card, &result.fields[i],
-                       should_notify, optional_cvc ? *optional_cvc : kEmptyCvc,
-                       data_util::DetermineGroups(*form_structure), action,
-                       &failure_to_fill);
-    field_type_map[result.fields[i].global_id()] = field_type;
+    // Fill the non-empty value from |profile_or_credit_card| into the |result|
+    // form, which will be sent to the renderer. FillFieldWithValue() may also
+    // fill a field if it had been autofilled or manually filled before, and
+    // also returns true in such a case.
+    bool is_newly_autofilled = FillFieldWithValue(
+        cached_field, profile_or_credit_card, &result.fields[i], should_notify,
+        optional_cvc ? *optional_cvc : kEmptyCvc,
+        data_util::DetermineGroups(*form_structure), action, &failure_to_fill);
+    if (is_newly_autofilled) {
+      FieldGlobalId field_id = result.fields[i].global_id();
+      field_types_to_be_filled_before_security_policy[field_id] = field_type;
+    }
 
     bool has_value_after = !result.fields[i].value.empty();
     bool is_autofilled_after = result.fields[i].is_autofilled;
@@ -1865,17 +1860,41 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   if (autofilled_form_signatures_.size() > kMaxRecentFormSignaturesToRemember)
     autofilled_form_signatures_.pop_back();
 
-  // Note that this may invalidate |profile_or_credit_card|.
-  if (action == mojom::RendererFormDataAction::kFill && !is_refill)
-    personal_data_->RecordUseOf(profile_or_credit_card);
-
   if (log_manager()) {
     log_manager()->Log() << LoggingScope::kFilling
                          << LogMessage::kSendFillingData << Br{}
                          << std::move(buffer);
   }
-  driver()->FillOrPreviewForm(query_id, action, result, field.origin,
-                              field_type_map);
+
+  base::flat_map<FieldGlobalId, ServerFieldType>
+      field_types_filled_after_security_policy;
+  field_types_filled_after_security_policy = driver()->FillOrPreviewForm(
+      query_id, action, result, field.origin,
+      field_types_to_be_filled_before_security_policy);
+
+  // Call OnDidFillSuggestion() to log the metrics.
+  if (action == mojom::RendererFormDataAction::kFill && !is_refill) {
+    if (is_credit_card) {
+      // The originally selected masked card is `credit_card_`. So we must log
+      // `credit_card_` as opposed to
+      // `absl::get<CreditCard*>(profile_or_credit_card)` to correctly indicate
+      // whether the user filled the form using a masked card suggestion.
+      credit_card_form_event_logger_->OnDidFillSuggestion(
+          credit_card_, *form_structure, *autofill_field,
+          field_types_to_be_filled_before_security_policy,
+          field_types_filled_after_security_policy, sync_state_);
+    }
+
+    if (!is_credit_card) {
+      address_form_event_logger_->OnDidFillSuggestion(
+          *absl::get<const AutofillProfile*>(profile_or_credit_card),
+          *form_structure, *autofill_field, sync_state_);
+    }
+  }
+
+  // Note that this may invalidate |profile_or_credit_card|.
+  if (action == mojom::RendererFormDataAction::kFill && !is_refill)
+    personal_data_->RecordUseOf(profile_or_credit_card);
 }
 
 std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(
@@ -2369,7 +2388,7 @@ void BrowserAutofillManager::DisambiguateNameUploadTypes(
   }
 }
 
-void BrowserAutofillManager::FillFieldWithValue(
+bool BrowserAutofillManager::FillFieldWithValue(
     AutofillField* autofill_field,
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
@@ -2379,8 +2398,10 @@ void BrowserAutofillManager::FillFieldWithValue(
     uint32_t profile_form_bitmask,
     mojom::RendererFormDataAction action,
     std::string* failure_to_fill) {
-  if (field_filler_.FillFormField(*autofill_field, profile_or_credit_card,
-                                  field_data, cvc, action, failure_to_fill)) {
+  bool filled_field =
+      field_filler_.FillFormField(*autofill_field, profile_or_credit_card,
+                                  field_data, cvc, action, failure_to_fill);
+  if (filled_field) {
     if (failure_to_fill)
       *failure_to_fill = "Decided to fill";
     // Mark the cached field as autofilled, so that we can detect when a
@@ -2406,6 +2427,7 @@ void BrowserAutofillManager::FillFieldWithValue(
                                                  app_locale_));
     }
   }
+  return filled_field;
 }
 
 void BrowserAutofillManager::SetFillingContext(

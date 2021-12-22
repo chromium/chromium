@@ -74,8 +74,12 @@ std::string GetRandomCardNumber() {
 
 }  // namespace
 
-LocalFrameToken GetLocalFrameToken() {
-  return LocalFrameToken(base::UnguessableToken::Deserialize(98765, 43210));
+LocalFrameToken GetLocalFrameToken(RandomizeFrame randomize) {
+  if (*randomize) {
+    return LocalFrameToken(base::UnguessableToken::Create());
+  } else {
+    return LocalFrameToken(base::UnguessableToken::Deserialize(98765, 43210));
+  }
 }
 
 FormRendererId MakeFormRendererId() {
@@ -88,14 +92,12 @@ FieldRendererId MakeFieldRendererId() {
   return FieldRendererId(counter++);
 }
 
-// Creates new, pairwise distinct FormGlobalIds.
-FormGlobalId MakeFormGlobalId() {
-  return {GetLocalFrameToken(), MakeFormRendererId()};
+FormGlobalId MakeFormGlobalId(RandomizeFrame randomize) {
+  return {GetLocalFrameToken(randomize), MakeFormRendererId()};
 }
 
-// Creates new, pairwise distinct FieldGlobalIds.
-FieldGlobalId MakeFieldGlobalId() {
-  return {GetLocalFrameToken(), MakeFieldRendererId()};
+FieldGlobalId MakeFieldGlobalId(RandomizeFrame randomize) {
+  return {GetLocalFrameToken(randomize), MakeFieldRendererId()};
 }
 
 void SetFormGroupValues(FormGroup& form_group,

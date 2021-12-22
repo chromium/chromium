@@ -40,6 +40,8 @@ namespace internal {
 template <typename = void>
 struct FieldDataDescription {
   ServerFieldType role = ServerFieldType::EMPTY_TYPE;
+  absl::optional<LocalFrameToken> host_frame;
+  absl::optional<FieldRendererId> unique_renderer_id;
   bool is_focusable = true;
   const base::StringPiece16 label = kLabelText;
   const base::StringPiece16 name = kNameText;
@@ -48,6 +50,7 @@ struct FieldDataDescription {
   const base::StringPiece form_control_type = "text";
   bool should_autocomplete = true;
   absl::optional<bool> is_autofilled;
+  absl::optional<url::Origin> origin;
   std::vector<SelectOption> select_options = {};
 };
 
@@ -56,6 +59,7 @@ template <typename = void>
 struct TestFormAttributes {
   const base::StringPiece description_for_logging;
   std::vector<FieldDataDescription<>> fields;
+  absl::optional<LocalFrameToken> host_frame;
   absl::optional<FormRendererId> unique_renderer_id;
   const base::StringPiece16 name = u"TestForm";
   const base::StringPiece url = kFormUrl;

@@ -320,7 +320,7 @@ class MockAutofillDriver : public TestAutofillDriver {
   MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
 
   // Mock methods to enable testability.
-  MOCK_METHOD(void,
+  MOCK_METHOD((base::flat_map<FieldGlobalId, ServerFieldType>),
               FillOrPreviewForm,
               (int query_id,
                mojom::RendererFormDataAction action,
@@ -528,7 +528,8 @@ class BrowserAutofillManagerTest : public testing::Test {
                                           FormData* response_data) {
     EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _))
         .WillOnce((DoAll(testing::SaveArg<0>(response_query_id),
-                         testing::SaveArg<2>(response_data))));
+                         testing::SaveArg<2>(response_data),
+                         testing::ReturnArg<4>())));
     FillAutofillFormData(input_query_id, input_form, input_field, unique_id);
   }
 
@@ -2638,7 +2639,8 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldChanged) {
   FormData response_data;
   EXPECT_CALL(*autofill_driver_, FillOrPreviewForm(_, _, _, _, _))
       .WillOnce((DoAll(testing::SaveArg<0>(&response_query_id),
-                       testing::SaveArg<2>(&response_data))));
+                       testing::SaveArg<2>(&response_data),
+                       testing::ReturnArg<4>())));
   browser_autofill_manager_->FillOrPreviewDataModelForm(
       mojom::RendererFormDataAction::kFill, kDefaultPageID, form,
       form.fields.front(), profile, nullptr, form_structure, autofill_field);

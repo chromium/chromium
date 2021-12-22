@@ -32,7 +32,9 @@ class FieldFiller {
   // values. If |action| indicates that the value will be used for the
   // autofill preview (aka. suggestion) state, the data to be filled may be
   // obfuscated.
-  // Returns |true| if the field has been filled, false otherwise. If
+  //
+  // Returns |true| if the field has been filled, false otherwise. This is
+  // independent of whether the field was filled or autofilled before. If
   // |failure_to_fill| is not null, errors are reported to that string.
   bool FillFormField(const AutofillField& field,
                      absl::variant<const AutofillProfile*, const CreditCard*>

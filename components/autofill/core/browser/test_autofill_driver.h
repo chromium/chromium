@@ -45,12 +45,15 @@ class TestAutofillDriver : public ContentAutofillDriver {
   webauthn::InternalAuthenticator* GetOrCreateCreditCardInternalAuthenticator()
       override;
 #endif
-  void FillOrPreviewForm(int query_id,
-                         mojom::RendererFormDataAction action,
-                         const FormData& data,
-                         const url::Origin& triggered_origin,
-                         const base::flat_map<FieldGlobalId, ServerFieldType>&
-                             field_type_map) override;
+  // The return value contains the members (field, type) of `field_type_map` for
+  // which `field_type_filter_.Run(triggered_origin, field, type)` is true.
+  base::flat_map<FieldGlobalId, ServerFieldType> FillOrPreviewForm(
+      int query_id,
+      mojom::RendererFormDataAction action,
+      const FormData& data,
+      const url::Origin& triggered_origin,
+      const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map)
+      override;
   void PropagateAutofillPredictions(
       const std::vector<autofill::FormStructure*>& forms) override;
   void HandleParsedForms(const std::vector<const FormData*>& forms) override;
@@ -81,6 +84,11 @@ class TestAutofillDriver : public ContentAutofillDriver {
   void SetIsInMainFrame(bool is_in_main_frame);
   void SetIsolationInfo(const net::IsolationInfo& isolation_info);
 
+  // The filter that determines the return value of FillOrPreviewForm().
+  void SetFieldTypeMapFilter(
+      base::RepeatingCallback<
+          bool(const url::Origin&, FieldGlobalId, ServerFieldType)> callback);
+
   void SetSharedURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 #if !defined(OS_IOS)
@@ -93,6 +101,9 @@ class TestAutofillDriver : public ContentAutofillDriver {
   bool is_incognito_ = false;
   bool is_in_main_frame_ = false;
   net::IsolationInfo isolation_info_;
+  base::RepeatingCallback<
+      bool(const url::Origin&, FieldGlobalId, ServerFieldType)>
+      field_type_map_filter_;
 
 #if !defined(OS_IOS)
   std::unique_ptr<webauthn::InternalAuthenticator> test_authenticator_;
