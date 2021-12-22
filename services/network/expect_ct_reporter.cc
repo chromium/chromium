@@ -166,14 +166,14 @@ void ExpectCTReporter::OnExpectCTFailed(
   if (!base::FeatureList::IsEnabled(features::kExpectCTReporting))
     return;
 
-  base::DictionaryValue outer_report;
-  base::DictionaryValue* report = outer_report.SetDictionary(
-      "expect-ct-report", std::make_unique<base::DictionaryValue>());
-  report->SetString("hostname", host_port_pair.host());
-  report->SetInteger("port", host_port_pair.port());
-  report->SetString("date-time", base::TimeToISO8601(base::Time::Now()));
-  report->SetString("effective-expiration-date",
-                    base::TimeToISO8601(expiration));
+  base::Value outer_report(base::Value::Type::DICTIONARY);
+  base::Value* report = outer_report.SetKey(
+      "expect-ct-report", base::Value(base::Value::Type::DICTIONARY));
+  report->SetStringKey("hostname", host_port_pair.host());
+  report->SetIntKey("port", host_port_pair.port());
+  report->SetStringKey("date-time", base::TimeToISO8601(base::Time::Now()));
+  report->SetStringKey("effective-expiration-date",
+                       base::TimeToISO8601(expiration));
   report->SetKey("served-certificate-chain",
                  GetPEMEncodedChainAsList(served_certificate_chain));
   report->SetKey("validated-certificate-chain",
