@@ -3830,6 +3830,7 @@ if (enable_nocompile_tests) {
       "containers/buffer_iterator_unittest.nc",
       "containers/checked_iterators_unittest.nc",
       "containers/contains_unittest.nc",
+      "containers/enum_set_unittest.nc",
       "containers/span_unittest.nc",
       "debug/crash_logging_unittest.nc",
       "memory/raw_ptr_unittest.nc",

@@ -296,7 +296,7 @@ class EnumSet {
   // some minor optimizations.
   explicit constexpr EnumSet(EnumBitSet enums) : enums_(enums) {
     static_assert(kValueCount <= 64,
-                  "Max number of enum values is 64 for constexpr ");
+                  "Max number of enum values is 64 for constexpr constructor");
   }
 
   // Converts a value to/from an index into |enums_|.

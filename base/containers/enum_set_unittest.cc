@@ -420,6 +420,57 @@ TEST_F(EnumSetDeathTest, SingleValBitstringCrashesOnOutOfRange) {
       TestEnumSet::single_val_bitstring(TestEnum::TEST_7_OUT_OF_BOUNDS));
 }
 
+TEST_F(EnumSetTest, SparseEnum) {
+  enum class TestEnumSparse {
+    TEST_1 = 1,
+    TEST_MIN = 1,
+    TEST_50 = 50,
+    TEST_100 = 100,
+    TEST_MAX = TEST_100,
+  };
+  using TestEnumSparseSet = EnumSet<TestEnumSparse, TestEnumSparse::TEST_MIN,
+                                    TestEnumSparse::TEST_MAX>;
+  TestEnumSparseSet sparse;
+  sparse.Put(TestEnumSparse::TEST_MIN);
+  sparse.Put(TestEnumSparse::TEST_MAX);
+  EXPECT_EQ(sparse.Size(), 2u);
+
+  // TestEnumSparseSet::All() does not compile because there are more than 64
+  // possible values. See NCTEST_ALL_METHOD_DISALLOWED_ON_LARGE_SPARSE_ENUM in
+  // enum_set_unittest.nc.
+}
+
+TEST_F(EnumSetTest, SparseEnumSmall) {
+  enum class TestEnumSparse {
+    TEST_1 = 1,
+    TEST_MIN = 1,
+    TEST_50 = 50,
+    TEST_60 = 60,
+    TEST_MAX = TEST_60,
+  };
+  using TestEnumSparseSet = EnumSet<TestEnumSparse, TestEnumSparse::TEST_MIN,
+                                    TestEnumSparse::TEST_MAX>;
+  TestEnumSparseSet sparse;
+  sparse.Put(TestEnumSparse::TEST_MIN);
+  sparse.Put(TestEnumSparse::TEST_MAX);
+  EXPECT_EQ(sparse.Size(), 2u);
+
+  // This may seem a little surprising! There are only 3 distinct values in
+  // TestEnumSparse, so why does TestEnumSparseSet think it has 60 of them? This
+  // is an artifact of EnumSet's design, as it has no way of knowing which
+  // values between the min and max are actually named in the enum's definition.
+  EXPECT_EQ(TestEnumSparseSet::All().Size(), 60u);
+}
+
+TEST_F(EnumSetTest, SingleValBitstringCrashesOnOutOfRange) {
+  EXPECT_CHECK_DEATH(
+      TestEnumSet::single_val_bitstring(TestEnum::TEST_BELOW_MIN));
+  EXPECT_CHECK_DEATH(
+      TestEnumSet::single_val_bitstring(TestEnum::TEST_6_OUT_OF_BOUNDS));
+  EXPECT_CHECK_DEATH(
+      TestEnumSet::single_val_bitstring(TestEnum::TEST_7_OUT_OF_BOUNDS));
+}
+
 TEST_F(EnumSetDeathTest, SingleValBitstringEnumWithNegatives) {
   enum class TestEnumNeg {
     TEST_BELOW_MIN = -3,
