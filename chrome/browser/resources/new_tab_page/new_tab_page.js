@@ -26,7 +26,7 @@ export {FooProxy} from './modules/dummy/foo_proxy.js';
 export {dummyDescriptor} from './modules/dummy/module.js';
 // </if>
 export {InfoDialogElement} from './modules/info_dialog.js';
-export {InitializeModuleCallback, Module, ModuleDescriptor, ModuleDescriptorV2} from './modules/module_descriptor.js';
+export {InitializeModuleCallback, Module, ModuleDescriptor, ModuleDescriptorV2, ModuleHeight} from './modules/module_descriptor.js';
 export {ModuleHeaderElement} from './modules/module_header.js';
 export {ModuleRegistry} from './modules/module_registry.js';
 export {ModuleWrapperElement} from './modules/module_wrapper.js';

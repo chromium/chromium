@@ -16,6 +16,12 @@
     }
   }
 
+  #module {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
   /* Adjusting header margin and cartCarousel to make sure
    * the discount chip doesn't get clipped due to
    * overflow-x: hidden */
@@ -25,7 +31,8 @@
 
   #moduleContent {
     display: flex;
-    height: 368px;
+    flex-grow: 1;
+    overflow: hidden;
     position: relative;
   }
 
@@ -33,6 +40,7 @@
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
+    height: 100%;
     overflow-x: hidden;
     padding-top: 24px;
     white-space: nowrap;
@@ -50,7 +58,7 @@
     cursor: pointer;
     display: flex;
     flex-direction: row;
-    height: 83px;
+    height: 63px;
     padding-inline: 15px 15px;
     position: relative;
     text-decoration: none;
@@ -145,7 +153,7 @@
   .thumbnail-container {
     align-items: center;
     display: flex;
-    height: 83px;
+    height: 63px;
     margin-inline-start: 16px;
     overflow-x: hidden;
     text-align: center;
@@ -153,7 +161,7 @@
 
   .thumbnail-container ul {
     display: flex;
-    height: 83px;
+    height: 63px;
     list-style-type: none;
     margin-block-end: 0;
     margin-block-start: 0;
@@ -163,15 +171,15 @@
 
   .thumbnail-container li {
     display: inline;
-    margin-inline-start: 24px;
+    margin-inline-start: 8px;
   }
 
   .image-background {
     /* Mixes to Google Grey 100 underneath .image-container. */
     background-color: rgb(115, 135, 145);
     border-radius: 50%;
-    height: 83px;
-    width: 83px;
+    height: 63px;
+    width: 63px;
   }
 
   .image-container {
@@ -184,9 +192,9 @@
 
   .thumbnail-img {
     border-radius: 50%;
-    height: 83px;
+    height: 63px;
     object-fit: cover;
-    width: 83px;
+    width: 63px;
   }
 
   .fallback-background {
@@ -194,11 +202,11 @@
     background-color: var(--google-grey-refresh-100);
     border-radius: 50%;
     display: flex;
-    height: 83px;
+    height: 63px;
     justify-content: center;
-    margin-inline-start: 24px;
+    margin-inline-start: 8px;
     position: relative;
-    width: 83px;
+    width: 63px;
   }
 
   .thumbnail-fallback {

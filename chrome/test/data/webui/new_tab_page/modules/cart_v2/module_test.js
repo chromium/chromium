@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$$, ChromeCartProxy, chromeCartV2Descriptor} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, ChromeCartProxy, chromeCartV2Descriptor, ModuleHeight} from 'chrome://new-tab-page/new_tab_page.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
@@ -99,7 +99,6 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       // Assert.
       const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
       assertEquals(5, cartItems.length);
-      assertEquals(446, moduleElement.offsetHeight);
       assertEquals(1, metrics.count('NewTabPage.Carts.CartCount', 5));
 
       assertEquals('https://amazon.com/', cartItems[0].href);
@@ -399,6 +398,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
       // Arrange.
       const moduleElement = assert(await chromeCartV2Descriptor.initialize(0));
+      moduleElement.style.height = `${ModuleHeight.TALL}px`;
       document.body.append(moduleElement);
       $$(moduleElement, '#cartItemRepeat').render();
       const cartCarousel =
@@ -494,6 +494,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
       // Arrange.
       const moduleElement = assert(await chromeCartV2Descriptor.initialize(0));
+      moduleElement.style.height = `${ModuleHeight.TALL}px`;
       document.body.append(moduleElement);
       $$(moduleElement, '#cartItemRepeat').render();
       const cartCarousel =
@@ -561,6 +562,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
       // Arrange.
       const moduleElement = assert(await chromeCartV2Descriptor.initialize(0));
+      moduleElement.style.height = `${ModuleHeight.TALL}px`;
       document.body.append(moduleElement);
       $$(moduleElement, '#cartItemRepeat').render();
       const cartCarousel =
@@ -757,6 +759,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
       // Arrange.
       const moduleElement = assert(await chromeCartV2Descriptor.initialize(0));
+      moduleElement.style.height = `${ModuleHeight.TALL}px`;
       document.body.append(moduleElement);
       $$(moduleElement, '#cartItemRepeat').render();
       const cartCarousel =
@@ -781,7 +784,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
       // Assert.
       checkScrollButtonDisabled(moduleElement, true, false);
-      checkVisibleRange(moduleElement, 0, 1);
+      checkVisibleRange(moduleElement, 0, 0);
 
       // Act.
       waitForLeftScrollEnableChange =
@@ -794,7 +797,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
       // Assert.
       checkScrollButtonDisabled(moduleElement, false, false);
-      checkVisibleRange(moduleElement, 2, 4);
+      checkVisibleRange(moduleElement, 1, 3);
 
       // Act.
       waitForLeftScrollEnableChange =
@@ -806,7 +809,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
       // Assert.
       checkScrollButtonDisabled(moduleElement, true, false);
-      checkVisibleRange(moduleElement, 0, 1);
+      checkVisibleRange(moduleElement, 0, 0);
 
       // Remove the observer.
       cartCarousel.removeEventListener('scroll', onScroll);

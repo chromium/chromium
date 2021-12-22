@@ -10,7 +10,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {I18nBehavior, loadTimeData} from '../../i18n_setup.js';
 import {DriveProxy} from '../drive/drive_module_proxy.js';
 import {InfoDialogElement} from '../info_dialog.js';
-import {ModuleDescriptorV2} from '../module_descriptor.js';
+import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
 
 /**
  * The Drive module, which serves as an inside look in to recent activity within
@@ -97,7 +97,7 @@ customElements.define(DriveModuleElement.is, DriveModuleElement);
 async function createDriveElement() {
   const {files} = await DriveProxy.getHandler().getFiles();
   const element = new DriveModuleElement();
-  element.files = files;
+  element.files = files.slice(0, 2);
   return element;
 }
 
@@ -105,4 +105,4 @@ async function createDriveElement() {
 export const driveDescriptor = new ModuleDescriptorV2(
     /*id*/ 'drive',
     /*name*/ loadTimeData.getString('modulesDriveSentence'),
-    createDriveElement);
+    /*height*/ ModuleHeight.SHORT, createDriveElement);

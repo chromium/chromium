@@ -15,7 +15,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {I18nBehavior, loadTimeData} from '../../i18n_setup.js';
 import {$$} from '../../utils.js';
 import {ChromeCartProxy} from '../cart/chrome_cart_proxy.js';
-import {ModuleDescriptorV2} from '../module_descriptor.js';
+import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
 
 /**
  * Implements the UI of chrome cart module. This module shows pending carts for
@@ -430,4 +430,5 @@ async function createCartElement() {
 /** @type {!ModuleDescriptorV2} */
 export const chromeCartDescriptor = new ModuleDescriptorV2(
     /*id=*/ 'chrome_cart',
-    /*name=*/ loadTimeData.getString('modulesCartSentence'), createCartElement);
+    /*name=*/ loadTimeData.getString('modulesCartSentence'),
+    /*height*/ ModuleHeight.TALL, createCartElement);

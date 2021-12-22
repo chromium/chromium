@@ -56,7 +56,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
 
     assertTrue(isVisible(module.$.files));
     assertTrue(!!module);
-    assertEquals(3, items.length);
+    assertEquals(2, items.length);
     assertEquals('Bar', items[1].querySelector('.file-title').textContent);
     assertEquals(
         'Edited yesterday',
@@ -67,12 +67,8 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     assertEquals(
         'https://drive-thirdparty.googleusercontent.com/32/type/application/vnd.google-apps.document',
         items[1].querySelector('.file-icon').autoSrc);
-    assertEquals(
-        'https://drive-thirdparty.googleusercontent.com/32/type/application/vnd.google-apps.presentation',
-        items[2].querySelector('.file-icon').autoSrc);
     assertEquals('https://foo.com/', urls[0].href);
     assertEquals('https://bar.com/', urls[1].href);
-    assertEquals('https://caz.com/', urls[2].href);
   });
 
   test('empty module shows without data', async () => {
@@ -122,29 +118,6 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     assertEquals(142, module.offsetHeight);
   });
 
-  test('module has height of 198 with 3 files', async () => {
-    const data = {
-      files: [
-        {
-          title: 'Abc',
-        },
-        {
-          title: 'Def',
-        },
-        {
-          title: 'Ghi',
-        },
-      ]
-    };
-    handler.setResultFor('getFiles', Promise.resolve(data));
-
-    const module = assert(await driveV2Descriptor.initialize(0));
-    document.body.append(module);
-    await handler.whenCalled('getFiles');
-    $$(module, '#fileRepeat').render();
-
-    assertEquals(198, module.offsetHeight);
-  });
 
   test('clicking the info button opens the ntp info dialog box', async () => {
     // Arrange.

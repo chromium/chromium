@@ -7,7 +7,7 @@ import '../module_header.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nBehavior, loadTimeData} from '../../i18n_setup.js';
-import {ModuleDescriptorV2} from '../module_descriptor.js';
+import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
 import {TaskModuleHandlerProxy} from '../task_module/task_module_handler_proxy.js';
 
 /**
@@ -47,4 +47,4 @@ async function createModule() {
 export const recipeTasksDescriptor = new ModuleDescriptorV2(
     /*id=*/ 'recipe_tasks',
     /*name=*/ loadTimeData.getString('modulesRecipeTasksSentence'),
-    createModule);
+    /*height*/ ModuleHeight.TALL, createModule);
