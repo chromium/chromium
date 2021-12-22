@@ -57,5 +57,7 @@ group("cxx_rustdeps") {
 # by retaining all sections.
 # TODO(crbug/1281664) - remove these lines when this is fixed.
 config("keep_sections") {
-  ldflags = [ "-Wl,--no-gc-sections" ]
+  if (is_linux || is_chromeos || is_android) {
+    ldflags = [ "-Wl,--no-gc-sections" ]
+  }
 }
