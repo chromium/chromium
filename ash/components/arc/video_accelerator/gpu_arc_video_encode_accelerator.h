@@ -57,10 +57,6 @@ class GpuArcVideoEncodeAccelerator
   void Initialize(const media::VideoEncodeAccelerator::Config& config,
                   mojo::PendingRemote<mojom::VideoEncodeClient> client,
                   InitializeCallback callback) override;
-  void InitializeDeprecated(
-      const media::VideoEncodeAccelerator::Config& config,
-      mojo::PendingRemote<mojom::VideoEncodeClient> client,
-      InitializeDeprecatedCallback callback) override;
   mojom::VideoEncodeAccelerator::Result InitializeTask(
       const media::VideoEncodeAccelerator::Config& config,
       mojo::PendingRemote<mojom::VideoEncodeClient> client);

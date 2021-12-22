@@ -425,11 +425,9 @@ interface MetricsHost {
   [MinVersion=21] ReportMemoryPressure@23(array<uint8> psi_file_contents);
 };
 
+// Deprecated method IDs: 0
 // Next method ID: 3
 interface MetricsInstance {
-  // DEPRECATED: Please use Init@1 instead.
-  InitDeprecated@0(pending_remote<MetricsHost> host_remote);
-
   // Establishes full-duplex communication with the host.
   [MinVersion=2] Init@1(pending_remote<MetricsHost> host_remote) => ();
 

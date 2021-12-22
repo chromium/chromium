@@ -103,15 +103,6 @@ void GpuArcVideoEncodeAccelerator::Initialize(
   std::move(callback).Run(result);
 }
 
-void GpuArcVideoEncodeAccelerator::InitializeDeprecated(
-    const media::VideoEncodeAccelerator::Config& config,
-    mojo::PendingRemote<mojom::VideoEncodeClient> client,
-    InitializeDeprecatedCallback callback) {
-  auto result = InitializeTask(config, std::move(client));
-  std::move(callback).Run(result ==
-                          mojom::VideoEncodeAccelerator::Result::kSuccess);
-}
-
 mojom::VideoEncodeAccelerator::Result
 GpuArcVideoEncodeAccelerator::InitializeTask(
     const media::VideoEncodeAccelerator::Config& config,

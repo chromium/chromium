@@ -21,11 +21,6 @@ class FakeProcessInstance : public mojom::ProcessInstance {
 
   void KillProcess(uint32_t pid, const std::string& reason) override;
   void RequestProcessList(RequestProcessListCallback callback) override;
-  void RequestApplicationProcessMemoryInfoDeprecated(
-      RequestApplicationProcessMemoryInfoDeprecatedCallback callback) override;
-  void RequestSystemProcessMemoryInfoDeprecated(
-      const std::vector<uint32_t>& nspids,
-      RequestSystemProcessMemoryInfoDeprecatedCallback callback) override;
   void RequestApplicationProcessMemoryInfo(
       RequestApplicationProcessMemoryInfoCallback callback) override;
   void RequestSystemProcessMemoryInfo(

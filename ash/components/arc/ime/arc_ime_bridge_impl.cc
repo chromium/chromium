@@ -173,10 +173,6 @@ void ArcImeBridgeImpl::OnCursorRectChangedWithSurroundingText(
       is_screen_coordinates);
 }
 
-void ArcImeBridgeImpl::RequestHideImeDeprecated() {
-  DVLOG(1) << "RequestHideIme is deprecated.";
-}
-
 void ArcImeBridgeImpl::SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
                                     SendKeyEventCallback callback) {
   delegate_->SendKeyEvent(std::move(key_event), std::move(callback));

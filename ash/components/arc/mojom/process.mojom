@@ -153,6 +153,7 @@ struct ArcMemoryDump {
   uint32 private_footprint_kb = 0;
 };
 
+// Deprecated method IDs: 6, 7
 // Next Method ID: 11
 interface ProcessInstance {
   // Requests ARC instance to kill a process.
@@ -161,16 +162,6 @@ interface ProcessInstance {
 
   [MinVersion=6]
   RequestProcessList@5() => (array<RunningAppProcessInfo> processes);
-
-  // Requests memory usage dumps for all ARC application processes.
-  [MinVersion=7]
-  RequestApplicationProcessMemoryInfoDeprecated@6()
-    => (memory_instrumentation.mojom.GlobalMemoryDump dump);
-
-  // Requests memory usage dumps for all ARC system processes.
-  [MinVersion=7]
-  RequestSystemProcessMemoryInfoDeprecated@7(array<uint32> nspids)
-    => (memory_instrumentation.mojom.GlobalMemoryDump dump);
 
   // Requests memory usage dumps for all ARC application processes.
   [MinVersion=8]

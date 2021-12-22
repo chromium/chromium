@@ -39,10 +39,6 @@ class ArcTtsService : public KeyedService,
   ~ArcTtsService() override;
 
   // mojom::TtsHost overrides:
-  void OnTtsEventDeprecated(uint32_t id,
-                            mojom::TtsEventType event_type,
-                            uint32_t char_index,
-                            const std::string& error_msg) override;
   void OnTtsEvent(uint32_t id,
                   mojom::TtsEventType event_type,
                   uint32_t char_index,

@@ -10,9 +10,6 @@ FakeNetInstance::FakeNetInstance() {}
 
 FakeNetInstance::~FakeNetInstance() = default;
 
-void FakeNetInstance::InitDeprecated(
-    mojo::PendingRemote<mojom::NetHost> host_remote) {}
-
 void FakeNetInstance::Init(::mojo::PendingRemote<mojom::NetHost> host_remote,
                            InitCallback callback) {}
 

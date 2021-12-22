@@ -200,14 +200,6 @@ void ArcUsbHostBridge::OpenDevice(const std::string& guid,
       base::BindOnce(&OnDeviceOpenError, std::move(split_callback.second)));
 }
 
-void ArcUsbHostBridge::OpenDeviceDeprecated(
-    const std::string& guid,
-    const absl::optional<std::string>& package,
-    OpenDeviceCallback callback) {
-  LOG(ERROR) << "ArcUsbHostBridge::OpenDeviceDeprecated is deprecated";
-  OpenDevice(guid, package, std::move(callback));
-}
-
 void ArcUsbHostBridge::GetDeviceInfo(const std::string& guid,
                                      GetDeviceInfoCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);

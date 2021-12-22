@@ -36,15 +36,6 @@ interface PrintSessionInstance {
 // Deprecated method ID: 0
 // Next method ID: 2
 interface PrintSpoolerHost {
-  // DEPRECATED: Please use StartPrintInCustomTab@1 instead.
-  [MinVersion=1] StartPrintInCustomTabDeprecated@0(
-      handle scoped_handle,
-      int32 task_id,
-      int32 surface_id,
-      int32 top_margin,
-      pending_remote<PrintSessionInstance> instance)
-      => (pending_remote<PrintSessionHost>? host);
-
   // Opens the file owned by |scoped_handle| in Chrome print preview in an ARC
   // Custom Tab.
   // The |task_id| specifies the Android task on which the ARC Custom Tab should

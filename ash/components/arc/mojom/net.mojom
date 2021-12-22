@@ -603,11 +603,8 @@ interface NetHost {
 };
 
 // Next Method ID: 11
-// ID 2 is missing as it belonged to deprecated method.
+// IDs 0 and 2 are missing as they belonged to deprecated method.
 interface NetInstance {
-  // DEPRECATED: Please use Init@6 instead.
-  InitDeprecated@0(pending_remote<NetHost> host_remote);
-
   // Establishes full-duplex communication with the host.
   [MinVersion=8] Init@6(pending_remote<NetHost> host_remote) => ();
 

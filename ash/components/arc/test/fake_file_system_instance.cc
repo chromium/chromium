@@ -630,11 +630,6 @@ void FakeFileSystemInstance::MoveDocument(
       base::BindOnce(std::move(callback), MakeDocument(iter->second)));
 }
 
-void FakeFileSystemInstance::InitDeprecated(
-    mojo::PendingRemote<mojom::FileSystemHost> host_remote) {
-  Init(std::move(host_remote), base::DoNothing());
-}
-
 void FakeFileSystemInstance::Init(
     mojo::PendingRemote<mojom::FileSystemHost> host_remote,
     InitCallback callback) {

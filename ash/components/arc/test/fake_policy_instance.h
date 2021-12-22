@@ -23,8 +23,6 @@ class FakePolicyInstance : public mojom::PolicyInstance {
   ~FakePolicyInstance() override;
 
   // mojom::PolicyInstance
-  void InitDeprecated(
-      mojo::PendingRemote<mojom::PolicyHost> host_remote) override;
   void Init(mojo::PendingRemote<mojom::PolicyHost> host_remote,
             InitCallback callback) override;
   void OnPolicyUpdated() override;

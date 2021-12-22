@@ -70,7 +70,7 @@ struct KeyEventData {
   [MinVersion=16] uint32 scan_code;
 };
 
-// Next method ID: 8
+// Next method ID: 5, 8
 interface ImeHost {
   // Notifies Chrome that the text input focus is changed.
   // Each bit of the bitmask |flags| corresponds to TEXT_INPUT_FLAG_*.
@@ -116,10 +116,6 @@ interface ImeHost {
                                                  // are in screen coordinates.
       );
 
-  // Requests Chrome to hide the virtual keyboard.
-  // However, hiding can be canceled if a text field gets focus.
-  [MinVersion=9] RequestHideImeDeprecated@5();
-
   // Sends a key event to Chrome to pass it to the Chrome OS IME.
   [MinVersion=14] SendKeyEvent@7(KeyEventData key_event_data)
       => (bool is_consumed);
@@ -127,11 +123,8 @@ interface ImeHost {
 
 // Represents a text input field that is hosted inside ARC++, allowing Chrome OS
 // browser process to manipulate text within Android apps.
-// Next method ID: 9
+// Next method ID: 0, 9
 interface ImeInstance {
-  // DEPRECATED: Please use Init@6 instead.
-  InitDeprecated@0(pending_remote<ImeHost> host_remote);
-
   // Establishes full-duplex communication with the host.
   [MinVersion=6] Init@6(pending_remote<ImeHost> host_remote) => ();
 

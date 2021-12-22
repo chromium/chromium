@@ -115,8 +115,6 @@ class FakeBluetoothInstance : public mojom::BluetoothInstance {
   ~FakeBluetoothInstance() override;
 
   // mojom::BluetoothInstance overrides:
-  void InitDeprecated(
-      mojo::PendingRemote<mojom::BluetoothHost> host_remote) override;
   void Init(mojo::PendingRemote<mojom::BluetoothHost> host_remote,
             InitCallback callback) override;
   void OnAdapterProperties(

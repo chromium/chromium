@@ -15,11 +15,6 @@ FakeWallpaperInstance::FakeWallpaperInstance() = default;
 
 FakeWallpaperInstance::~FakeWallpaperInstance() = default;
 
-void FakeWallpaperInstance::InitDeprecated(
-    mojo::PendingRemote<mojom::WallpaperHost> host_remote) {
-  Init(std::move(host_remote), base::DoNothing());
-}
-
 void FakeWallpaperInstance::Init(
     mojo::PendingRemote<mojom::WallpaperHost> host_remote,
     InitCallback callback) {

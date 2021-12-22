@@ -17,11 +17,6 @@ void FakeClipboardInstance::Init(
   std::move(callback).Run();
 }
 
-void FakeClipboardInstance::InitDeprecated(
-    mojo::PendingRemote<mojom::ClipboardHost> host_remote) {
-  Init(std::move(host_remote), base::DoNothing());
-}
-
 void FakeClipboardInstance::OnHostClipboardUpdated() {
   num_host_clipboard_updated_++;
 }

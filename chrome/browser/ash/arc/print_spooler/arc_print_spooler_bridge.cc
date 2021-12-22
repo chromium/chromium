@@ -68,17 +68,6 @@ ArcPrintSpoolerBridge::~ArcPrintSpoolerBridge() {
   arc_bridge_service_->print_spooler()->SetHost(nullptr);
 }
 
-void ArcPrintSpoolerBridge::StartPrintInCustomTabDeprecated(
-    mojo::ScopedHandle scoped_handle,
-    int32_t task_id,
-    int32_t surface_id,
-    int32_t top_margin,
-    mojo::PendingRemote<mojom::PrintSessionInstance> instance,
-    StartPrintInCustomTabCallback callback) {
-  StartPrintInCustomTab(std::move(scoped_handle), task_id, std::move(instance),
-                        std::move(callback));
-}
-
 void ArcPrintSpoolerBridge::StartPrintInCustomTab(
     mojo::ScopedHandle scoped_handle,
     int32_t task_id,

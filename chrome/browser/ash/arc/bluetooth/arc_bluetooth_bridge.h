@@ -270,9 +270,6 @@ class ArcBluetoothBridge
   void ReadRemoteRssi(mojom::BluetoothAddressPtr remote_addr,
                       ReadRemoteRssiCallback callback) override;
 
-  void OpenBluetoothSocketDeprecated(
-      OpenBluetoothSocketDeprecatedCallback callback) override;
-
   // Bluetooth Mojo host interface - Bluetooth Gatt Server functions
   // Android counterpart link:
   // https://source.android.com/devices/halref/bt__gatt__server_8h.html
@@ -318,16 +315,6 @@ class ArcBluetoothBridge
                        CreateSdpRecordCallback callback) override;
   void RemoveSdpRecord(uint32_t service_handle,
                        RemoveSdpRecordCallback callback) override;
-
-  // Bluetooth Mojo host interface - Bluetooth RFCOMM functions
-  void RfcommListenDeprecated(int32_t channel,
-                              int32_t optval,
-                              RfcommListenDeprecatedCallback callback) override;
-  void RfcommConnectDeprecated(
-      mojom::BluetoothAddressPtr remote_addr,
-      int32_t channel,
-      int32_t optval,
-      RfcommConnectDeprecatedCallback callback) override;
 
   // Bluetooth Mojo host interface - Bluetooth socket functions
   void BluetoothSocketListen(mojom::BluetoothSocketType sock_type,

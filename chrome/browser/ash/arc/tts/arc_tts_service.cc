@@ -80,13 +80,6 @@ ArcTtsService::~ArcTtsService() {
   arc_bridge_service_->tts()->SetHost(nullptr);
 }
 
-void ArcTtsService::OnTtsEventDeprecated(uint32_t id,
-                                         mojom::TtsEventType event_type,
-                                         uint32_t char_index,
-                                         const std::string& error_msg) {
-  OnTtsEvent(id, event_type, char_index, -1 /* length */, error_msg);
-}
-
 void ArcTtsService::OnTtsEvent(uint32_t id,
                                mojom::TtsEventType event_type,
                                uint32_t char_index,

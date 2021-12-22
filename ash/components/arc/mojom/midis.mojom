@@ -41,6 +41,7 @@ interface MidisClient {
 
 // This interface is used by the client to send messages / requests to the
 // daemon. This should be implemented by midis.
+// Deprecated method IDs: 0
 // Next Method ID: 4
 interface MidisServer {
   // Used to list out the MIDI devices that are currently connected to the
@@ -50,8 +51,6 @@ interface MidisServer {
   // This function returns a handle(a Unix FD wrapped in a Mojo Handle)
   // for a subdevice specified by |request|.
   // In the event of an error, returns an empty handle.
-  // DEPRECATED: Please use RequestPort@3 instead.
-  RequestPortDeprecated@1(MidisRequest request) => (handle port_handle);
   [MinVersion=2]
   RequestPort@3(MidisRequest request) => (handle? port_handle);
 
@@ -72,11 +71,9 @@ interface MidisHost {
 
 // MidisInstance is implemented in the ARC MIDI JNI code that
 // runs in Android and handles the Android side of the ArcBridge connection.
+// Deprecated method IDs: 0
 // Next Method ID: 2
 interface MidisInstance {
-  // DEPRECATED: Please use Init@1 instead.
-  InitDeprecated@0(pending_remote<MidisHost> host_remote);
-
   // Establishes full-duplex communication with the host.
   [MinVersion=1] Init@1(pending_remote<MidisHost> host_remote) => ();
 };

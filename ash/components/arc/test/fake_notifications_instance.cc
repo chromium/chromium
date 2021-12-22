@@ -37,11 +37,6 @@ void FakeNotificationsInstance::SetDoNotDisturbStatusOnAndroid(
 
 void FakeNotificationsInstance::CancelPress(const std::string& key) {}
 
-void FakeNotificationsInstance::InitDeprecated(
-    mojo::PendingRemote<mojom::NotificationsHost> host_remote) {
-  Init(std::move(host_remote), base::DoNothing());
-}
-
 void FakeNotificationsInstance::Init(
     mojo::PendingRemote<mojom::NotificationsHost> host_remote,
     InitCallback callback) {

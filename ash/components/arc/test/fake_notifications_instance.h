@@ -25,8 +25,6 @@ class FakeNotificationsInstance : public mojom::NotificationsInstance {
   ~FakeNotificationsInstance() override;
 
   // mojom::NotificationsInstance overrides:
-  void InitDeprecated(
-      mojo::PendingRemote<mojom::NotificationsHost> host_remote) override;
   void Init(mojo::PendingRemote<mojom::NotificationsHost> host_remote,
             InitCallback callback) override;
 

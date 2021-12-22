@@ -24,11 +24,9 @@ interface AudioHost {
   [MinVersion=3] OnSystemVolumeUpdateRequest@1(int32 percent);
 };
 
+// Deprecated method IDs: 1
 // Next method ID: 4
 interface AudioInstance {
-  // DEPRECATED: Please use Init@3 instead.
-  [MinVersion=1] InitDeprecated@1(pending_remote<AudioHost> host_remote);
-
   // Establishes full-duplex communication with the host.
   [MinVersion=4] Init@3(pending_remote<AudioHost> host_remote) => ();
 

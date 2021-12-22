@@ -116,20 +116,6 @@ interface VideoEncodeAccelerator {
   Initialize@9(VideoEncodeAcceleratorConfig config,
                pending_remote<VideoEncodeClient> client) => (Result result);
 
-  // Initializes the video encoder with specific configuration.  Called once per
-  // encoder construction.
-  // Parameters:
-  //  |config| is the parameter set for encoder initialization.
-  //  |client| is the client of this video encoder. The client must be valid
-  //  during the lifetime of this accelerator.
-  // Callback:
-  //  Called with true iff initialization is successful. The client should not
-  //  invoke any other methods before the callback.
-  [MinVersion=1]
-  InitializeDeprecated@7(VideoEncodeAcceleratorConfig config,
-                         pending_remote<VideoEncodeClient> client) =>
-                             (bool success);
-
   // Encodes the given frame.
   // Parameters:
   //  |format| is the pixel format of video frame. This could be different from

@@ -55,7 +55,6 @@ class ArcImeBridgeImpl : public ArcImeBridge, public mojom::ImeHost {
                                               const std::string& text_in_range,
                                               const gfx::Range& selection_range,
                                               bool screen_coordinates) override;
-  void RequestHideImeDeprecated() override;
   void SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
                     SendKeyEventCallback callback) override;
 

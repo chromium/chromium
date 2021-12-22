@@ -357,9 +357,6 @@ interface AppHost {
 // Next method ID: 40
 // Deprecated method IDs: 0, 1, 2, 3, 4, 9, 12, 13, 15, 17, 22
 interface AppInstance {
-  // DEPRECATED: Please use Init@21 instead.
-  InitDeprecated@0(pending_remote<AppHost> host_remote);
-
   // Establishes full-duplex communication with the host.
   [MinVersion=26] Init@21(pending_remote<AppHost> host_remote) => ();
 

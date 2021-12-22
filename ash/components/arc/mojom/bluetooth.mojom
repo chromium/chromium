@@ -423,11 +423,6 @@ interface BluetoothHost {
   [MinVersion=1] ReadRemoteRssi@28(BluetoothAddress remote_addr)
       => (int32 rssi);
 
-  // DEPRECATED: Use BluetoothSocketListen@47 or BluetoothSocketConnect@48
-  // instead.
-  [MinVersion=2] OpenBluetoothSocketDeprecated@29()
-      => (handle sock);
-
   // Bluetooth Gatt Server functions
   // Copied from Android API
   // https://source.android.com/devices/halref/bt__gatt__server_8h.html
@@ -474,24 +469,6 @@ interface BluetoothHost {
   [MinVersion=8] DisableAdvertisement@43(int32 adv_handle)
       => (BluetoothGattStatus status);
 
-  // RFCOMM functions
-  // Opens a bluetooth socket with socket option |optval|, and then bind() and
-  // listen() with the requested RFCOMM |channel| number. When |channel| = 0,
-  // we will select a channel number automatically.  If this process succeeds,
-  // returns SUCCESS in |status|, the actual listening channel in |channel|,
-  // and a new mojo connection which represents the listening socket.
-  [MinVersion=15] RfcommListenDeprecated@45(int32 channel, int32 optval)
-      => (BluetoothStatus status, int32 channel,
-          RfcommListeningSocketClient&? client);
-  // Opens a bluetooth socket with socket option |optval|, and then connect()
-  // to (|remote_addr|, |channel|). If this process succeeds, returns SUCCESS
-  // in |status| and a new mojo connection which holds the connecting socket.
-  // Unlike in RfcommListen(), |channel| here could not be 0, since this is the
-  // peer channel number.
-  [MinVersion=15] RfcommConnectDeprecated@46(BluetoothAddress remote_addr,
-                                             int32 channel, int32 optval)
-      => (BluetoothStatus status, RfcommConnectingSocketClient&? client);
-
   // Bluetooth socket (RFCOMM and L2CAP LE) functions
   // Opens a |sock_type| socket with security options in |sock_flags|, and
   // listens on |port| (RFCOMM channel or L2CAP PSM). When |port| = 0, we will
@@ -512,11 +489,8 @@ interface BluetoothHost {
 };
 
 // Next Method ID: 24
-// Deprecated Method ID: 2, 6, 11, 12
+// Deprecated Method ID: 0, 2, 6, 11, 12
 interface BluetoothInstance {
-  // DEPRECATED: Please use Init@18 instead.
-  InitDeprecated@0(pending_remote<BluetoothHost> host_remote);
-
   // Establishes full-duplex communication with the host.
   [MinVersion=7] Init@18(pending_remote<BluetoothHost> host_remote) => ();
 

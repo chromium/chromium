@@ -24,17 +24,6 @@ void FakeProcessInstance::RequestProcessList(
   DCHECK(false);
 }
 
-void FakeProcessInstance::RequestApplicationProcessMemoryInfoDeprecated(
-    RequestApplicationProcessMemoryInfoDeprecatedCallback callback) {
-  DCHECK(false);
-}
-
-void FakeProcessInstance::RequestSystemProcessMemoryInfoDeprecated(
-    const std::vector<uint32_t>& nspids,
-    RequestSystemProcessMemoryInfoDeprecatedCallback callback) {
-  DCHECK(false);
-}
-
 void FakeProcessInstance::RequestApplicationProcessMemoryInfo(
     RequestApplicationProcessMemoryInfoCallback callback) {
   DCHECK(false);

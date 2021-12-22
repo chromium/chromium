@@ -17,11 +17,6 @@ FakePolicyInstance::FakePolicyInstance() = default;
 
 FakePolicyInstance::~FakePolicyInstance() = default;
 
-void FakePolicyInstance::InitDeprecated(
-    mojo::PendingRemote<mojom::PolicyHost> host_remote) {
-  Init(std::move(host_remote), base::DoNothing());
-}
-
 void FakePolicyInstance::Init(
     mojo::PendingRemote<mojom::PolicyHost> host_remote,
     InitCallback callback) {

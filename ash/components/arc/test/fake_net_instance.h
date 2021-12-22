@@ -17,8 +17,6 @@ class FakeNetInstance : public mojom::NetInstance {
   FakeNetInstance(const FakeNetInstance&) = delete;
   FakeNetInstance& operator=(const FakeNetInstance&) = delete;
 
-  void InitDeprecated(mojo::PendingRemote<mojom::NetHost> host_remote) override;
-
   void Init(::mojo::PendingRemote<mojom::NetHost> host_remote,
             InitCallback callback) override;
 

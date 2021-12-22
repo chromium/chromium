@@ -339,7 +339,6 @@ class FakeFileSystemInstance : public mojom::FileSystemInstance {
                     const std::string& source_parent_document_id,
                     const std::string& target_parent_document_id,
                     MoveDocumentCallback callback) override;
-  void InitDeprecated(mojo::PendingRemote<mojom::FileSystemHost> host) override;
   void Init(mojo::PendingRemote<mojom::FileSystemHost> host,
             InitCallback callback) override;
   void OpenFileToRead(const std::string& url,

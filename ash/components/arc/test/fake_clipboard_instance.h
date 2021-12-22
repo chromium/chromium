@@ -24,8 +24,6 @@ class FakeClipboardInstance : public mojom::ClipboardInstance {
   // mojom::ClipboardInstance overrides:
   void Init(mojo::PendingRemote<mojom::ClipboardHost> host_remote,
             InitCallback callback) override;
-  void InitDeprecated(
-      mojo::PendingRemote<mojom::ClipboardHost> host_remote) override;
   void OnHostClipboardUpdated() override;
 
  private:

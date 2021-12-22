@@ -8,18 +8,9 @@ module arc.mojom;
 // re-use device.mojom.UsbDeviceInfo
 import "services/device/public/mojom/usb_device.mojom";
 
+// Deprecated method IDs: 0
 // Next method ID: 4
 interface UsbHostHost {
-  // Tries to open the USB device node for the device named 'guid' for caller
-  // 'pkg_name' and returns an open file descriptor to this node. 'pkg_name'
-  // needs to have previously called RequestPermission for this 'guid' else this
-  // call will fail. Note the 'pkg_name' is informational purposes only, there
-  // is no effective way that host can restrict access to only a specific
-  // package at the security boundary formed by this Mojo interface.
-  // Deprecated.
-  OpenDeviceDeprecated@0(string guid,
-                         [MinVersion=1] string? pkg_name) => (handle usb_fd);
-
   // Tries to open the USB device node for the device named 'guid' for caller
   // 'pkg_name' and returns an open file descriptor to this node. 'pkg_name'
   // needs to have previously called RequestPermission for this 'guid' else this

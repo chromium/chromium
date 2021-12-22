@@ -31,14 +31,9 @@ struct TtsVoice {
   bool is_network_connection_required;
 };
 
+// Deprecated method IDs: 0
 // Next Method ID: 3
 interface TtsHost {
-  // Notifies Chrome of Android tts events.
-  OnTtsEventDeprecated@0(uint32 utteranceId,
-               TtsEventType event_type,
-               uint32 char_index,
-               string error_msg);
-
   // Notifies Chrome of Android tts voices.
   [MinVersion=2] OnVoicesChanged@1(array<TtsVoice> voices);
 
@@ -50,11 +45,9 @@ interface TtsHost {
                string error_msg);
 };
 
+// Deprecated method IDs: 0
 // Next Method ID: 4
 interface TtsInstance {
-  // DEPRECATED: Please use Init@3 instead.
-  InitDeprecated@0(pending_remote<TtsHost> host_remote);
-
   // Establishes full-duplex communication with the host.
   [MinVersion=1] Init@3(pending_remote<TtsHost> host_remote) => ();
 

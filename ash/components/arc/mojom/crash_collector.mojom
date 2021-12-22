@@ -36,11 +36,9 @@ interface CrashCollectorHost {
   [MinVersion=5] DumpKernelCrash@3(handle ramoops_handle);
 };
 
+// Deprecated method IDs: 0
 // Next Method ID: 2
 interface CrashCollectorInstance {
-  // DEPRECATED: Please use Init@1 instead.
-  InitDeprecated@0(pending_remote<CrashCollectorHost> host_remote);
-
   // Establishes full-duplex communication with the host.
   [MinVersion=2] Init@1(pending_remote<CrashCollectorHost> host_remote) => ();
 };

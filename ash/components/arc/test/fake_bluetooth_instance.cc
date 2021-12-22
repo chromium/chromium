@@ -47,11 +47,6 @@ FakeBluetoothInstance::LEConnectionStateChangeData::LEConnectionStateChangeData(
 FakeBluetoothInstance::LEConnectionStateChangeData::
     ~LEConnectionStateChangeData() = default;
 
-void FakeBluetoothInstance::InitDeprecated(
-    mojo::PendingRemote<mojom::BluetoothHost> host_remote) {
-  Init(std::move(host_remote), base::DoNothing());
-}
-
 void FakeBluetoothInstance::Init(
     mojo::PendingRemote<mojom::BluetoothHost> host_remote,
     InitCallback callback) {

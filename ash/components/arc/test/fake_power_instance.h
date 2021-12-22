@@ -35,8 +35,6 @@ class FakePowerInstance : public mojom::PowerInstance {
   SuspendCallback GetSuspendCallback();
 
   // mojom::PowerInstance overrides:
-  void InitDeprecated(
-      mojo::PendingRemote<mojom::PowerHost> host_remote) override;
   void Init(mojo::PendingRemote<mojom::PowerHost> host_remote,
             InitCallback callback) override;
   void SetInteractive(bool enabled) override;

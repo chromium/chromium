@@ -98,7 +98,6 @@ class FakeAppInstance : public mojom::AppInstance {
   ~FakeAppInstance() override;
 
   // mojom::AppInstance overrides:
-  void InitDeprecated(mojo::PendingRemote<mojom::AppHost> host_remote) override;
   void Init(mojo::PendingRemote<mojom::AppHost> host_remote,
             InitCallback callback) override;
   void LaunchAppDeprecated(const std::string& package_name,

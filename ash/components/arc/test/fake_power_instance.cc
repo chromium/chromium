@@ -19,11 +19,6 @@ FakePowerInstance::SuspendCallback FakePowerInstance::GetSuspendCallback() {
   return std::move(suspend_callback_);
 }
 
-void FakePowerInstance::InitDeprecated(
-    mojo::PendingRemote<mojom::PowerHost> host_remote) {
-  Init(std::move(host_remote), base::DoNothing());
-}
-
 void FakePowerInstance::Init(mojo::PendingRemote<mojom::PowerHost> host_remote,
                              InitCallback callback) {
   host_remote_.reset();

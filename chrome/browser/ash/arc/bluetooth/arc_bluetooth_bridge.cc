@@ -1944,26 +1944,6 @@ void ArcBluetoothBridge::ReadRemoteRssi(mojom::BluetoothAddressPtr remote_addr,
   }
 }
 
-void ArcBluetoothBridge::OpenBluetoothSocketDeprecated(
-    OpenBluetoothSocketDeprecatedCallback callback) {
-  base::ScopedFD sock(socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM));
-  if (!sock.is_valid()) {
-    LOG(ERROR) << "Failed to open socket.";
-    std::move(callback).Run(mojo::ScopedHandle());
-    return;
-  }
-
-  mojo::ScopedHandle handle =
-      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(sock)));
-  if (!handle.is_valid()) {
-    LOG(ERROR) << "Failed to wrap socket handle. Closing";
-    std::move(callback).Run(mojo::ScopedHandle());
-    return;
-  }
-
-  std::move(callback).Run(std::move(handle));
-}
-
 bool ArcBluetoothBridge::IsGattServerAttributeHandleAvailable(int need) {
   return gatt_server_attribute_next_handle_ + need <= kMaxGattAttributeHandle;
 }
@@ -3062,40 +3042,6 @@ base::ScopedFD OpenBluetoothSocketImpl(mojom::BluetoothSocketType sock_type,
 
 }  // namespace
 
-void ArcBluetoothBridge::RfcommListenDeprecated(
-    int32_t channel,
-    int32_t optval,
-    RfcommListenDeprecatedCallback callback) {
-  if (channel != kAutoSockPort &&
-      !IsValidPort(mojom::BluetoothSocketType::TYPE_RFCOMM, channel)) {
-    LOG(ERROR) << "Invalid channel number";
-    std::move(callback).Run(
-        mojom::BluetoothStatus::FAIL, /*channel=*/0,
-        mojo::PendingReceiver<mojom::RfcommListeningSocketClient>());
-    return;
-  }
-
-  uint16_t listen_channel = static_cast<uint16_t>(channel);
-  auto sock_wrapper = CreateBluetoothListenSocket(
-      mojom::BluetoothSocketType::TYPE_RFCOMM, optval, &listen_channel);
-  if (!sock_wrapper) {
-    std::move(callback).Run(
-        mojom::BluetoothStatus::FAIL, /*channel=*/0,
-        mojo::PendingReceiver<mojom::RfcommListeningSocketClient>());
-    return;
-  }
-
-  sock_wrapper->created_by_deprecated_method = true;
-  std::move(callback).Run(
-      mojom::BluetoothStatus::SUCCESS, listen_channel,
-      sock_wrapper->deprecated_remote.BindNewPipeAndPassReceiver());
-
-  sock_wrapper->deprecated_remote.set_disconnect_handler(
-      base::BindOnce(&ArcBluetoothBridge::CloseBluetoothListeningSocket,
-                     weak_factory_.GetWeakPtr(), sock_wrapper.get()));
-  listening_sockets_.insert(std::move(sock_wrapper));
-}
-
 void ArcBluetoothBridge::BluetoothSocketListen(
     mojom::BluetoothSocketType sock_type,
     mojom::BluetoothSocketFlagsPtr sock_flags,
@@ -3140,37 +3086,6 @@ void ArcBluetoothBridge::CloseBluetoothListeningSocket(
     BluetoothListeningSocket* ptr) {
   auto itr = listening_sockets_.find(ptr);
   listening_sockets_.erase(itr);
-}
-
-void ArcBluetoothBridge::RfcommConnectDeprecated(
-    mojom::BluetoothAddressPtr remote_addr,
-    int32_t channel,
-    int32_t optval,
-    RfcommConnectDeprecatedCallback callback) {
-  if (!IsValidPort(mojom::BluetoothSocketType::TYPE_RFCOMM, channel)) {
-    LOG(ERROR) << "Invalid channel number " << channel;
-    std::move(callback).Run(mojom::BluetoothStatus::FAIL,
-                            mojom::RfcommConnectingSocketClientRequest());
-    return;
-  }
-
-  auto sock_wrapper = CreateBluetoothConnectSocket(
-      mojom::BluetoothSocketType::TYPE_RFCOMM, optval, std::move(remote_addr),
-      static_cast<uint16_t>(channel));
-  if (!sock_wrapper) {
-    std::move(callback).Run(mojom::BluetoothStatus::FAIL,
-                            mojom::RfcommConnectingSocketClientRequest());
-    return;
-  }
-
-  sock_wrapper->created_by_deprecated_method = true;
-  std::move(callback).Run(
-      mojom::BluetoothStatus::SUCCESS,
-      sock_wrapper->deprecated_remote.BindNewPipeAndPassReceiver());
-  sock_wrapper->deprecated_remote.set_disconnect_handler(
-      base::BindOnce(&ArcBluetoothBridge::CloseBluetoothConnectingSocket,
-                     weak_factory_.GetWeakPtr(), sock_wrapper.get()));
-  connecting_sockets_.insert(std::move(sock_wrapper));
 }
 
 void ArcBluetoothBridge::BluetoothSocketConnect(
