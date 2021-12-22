@@ -168,6 +168,12 @@ const base::Feature kUnifiedPasswordManagerMigration{
 const base::Feature kUnifiedPasswordManagerShadowAndroid{
     "UnifiedPasswordManagerShadowAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Similar to kUnifiedPasswordManagerShadowAndroid but send modify operations
+// instead of read operations.Relevant only for non-sync'ing users.
+const base::Feature kUnifiedPasswordManagerShadowWriteOperationsAndroid{
+    "UnifiedPasswordManagerShadowWriteOperationsAndroid",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, the built-in sync functionality in PasswordSyncBridge becomes
 // unused, meaning that SyncService/SyncEngine will no longer download or
 // upload changes to/from the Sync server. Instead, an external Android-specific
