@@ -58,33 +58,33 @@ testing::AssertionResult RegistryDictEquals(const RegistryDict& a,
   for (; iter_value_a != a.values().end() && iter_value_b != b.values().end();
        ++iter_value_a, ++iter_value_b) {
     if (iter_value_a->first != iter_value_b->first ||
-        *iter_value_a->second != *iter_value_b->second) {
+        iter_value_a->second != iter_value_b->second) {
       return testing::AssertionFailure()
              << "Value mismatch " << iter_value_a->first << "="
-             << *iter_value_a->second << " vs. " << iter_value_b->first << "="
-             << *iter_value_b->second;
+             << iter_value_a->second << " vs. " << iter_value_b->first << "="
+             << iter_value_b->second;
     }
   }
   if (iter_value_a != a.values().end())
     return testing::AssertionFailure()
            << "Value mismatch, a has extra value " << iter_value_a->first << "="
-           << *iter_value_a->second;
+           << iter_value_a->second;
   if (iter_value_b != b.values().end())
     return testing::AssertionFailure()
            << "Value mismatch, b has extra value " << iter_value_b->first << "="
-           << *iter_value_b->second;
+           << iter_value_b->second;
 
   return testing::AssertionSuccess();
 }
 
 void SetInteger(RegistryDict* dict, const std::string& name, int value) {
-  dict->SetValue(name, base::WrapUnique<base::Value>(new base::Value(value)));
+  dict->SetValue(name, base::Value(value));
 }
 
 void SetString(RegistryDict* dict,
                const std::string& name,
                const std::string& value) {
-  dict->SetValue(name, base::WrapUnique<base::Value>(new base::Value(value)));
+  dict->SetValue(name, base::Value(value));
 }
 
 class PRegParserTest : public testing::Test {
