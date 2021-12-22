@@ -1422,8 +1422,7 @@ bool AttributionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
     }
   }
 
-  if (InitializeSchema(db_init_status_ == DbStatus::kDeferringCreation) ==
-      false) {
+  if (!InitializeSchema(db_init_status_ == DbStatus::kDeferringCreation)) {
     HandleInitializationFailure(InitStatus::kFailedToInitializeSchema);
     return false;
   }
@@ -1452,18 +1451,14 @@ bool AttributionStorageSql::InitializeSchema(bool db_empty) {
   if (current_version == kCurrentVersionNumber)
     return true;
 
-  if (current_version <= kDeprecatedVersionNumber) {
+  // Recreate the DB if the version is deprecated or too new. In the latter
+  // case, the DB will never work until Chrome is re-upgraded. Assume the user
+  // will continue using this Chrome version and raze the DB to get attribution
+  // reporting working.
+  if (current_version <= kDeprecatedVersionNumber ||
+      meta_table_.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
     // Note that this also razes the meta table, so it will need to be
     // initialized again.
-    db_->Raze();
-    return CreateSchema();
-  }
-
-  if (meta_table_.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
-    // In this case the database version is too new to be used. The DB will
-    // never work until Chrome is re-upgraded. Assume the user will continue
-    // using this Chrome version and raze the DB to get attribution reporting
-    // working.
     db_->Raze();
     return CreateSchema();
   }
@@ -1474,6 +1469,11 @@ bool AttributionStorageSql::InitializeSchema(bool db_empty) {
 
 bool AttributionStorageSql::CreateSchema() {
   base::ThreadTicks start_timestamp = base::ThreadTicks::Now();
+
+  sql::Transaction transaction(db_.get());
+  if (!transaction.Begin())
+    return false;
+
   // TODO(johnidel, csharrison): Many sources will share a target origin and
   // a reporting origin, so it makes sense to make a "shared string" table for
   // these to save disk / memory. However, this complicates the schema a lot, so
@@ -1618,6 +1618,9 @@ bool AttributionStorageSql::CreateSchema() {
                         kCompatibleVersionNumber)) {
     return false;
   }
+
+  if (!transaction.Commit())
+    return false;
 
   base::UmaHistogramMediumTimes("Conversions.Storage.CreationTime",
                                 base::ThreadTicks::Now() - start_timestamp);
