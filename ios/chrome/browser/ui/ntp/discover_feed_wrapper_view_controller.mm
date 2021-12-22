@@ -8,6 +8,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -44,6 +46,7 @@
   // |discoverFeed| exists, then the feed must be enabled and visible.
   if (self.discoverFeed && self.contentCollectionView) {
     [self configureDiscoverFeedAsWrapper];
+    ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->UpdateTheme();
   } else {
     [self configureEmptyCollectionAsWrapper];
   }
