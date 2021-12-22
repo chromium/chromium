@@ -7,16 +7,24 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/settings/content_settings/default_page_mode.h"
+
 @protocol DefaultPageModeConsumer;
+class HostContentSettingsMap;
 
 // Mediator for the screen allowing the user to choose the default mode
 // (Desktop/Mobile) for loading pages.
 @interface DefaultPageModeMediator : NSObject
 
-- (instancetype)initWithConsumer:(id<DefaultPageModeConsumer>)consumer
+- (instancetype)initWithSettingsMap:(HostContentSettingsMap*)settingsMap
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+@property(nonatomic, weak) id<DefaultPageModeConsumer> consumer;
+
+// Sets the default mode for loading a page.
+- (void)setDefaultMode:(DefaultPageMode)defaultMode;
 
 @end
 

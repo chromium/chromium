@@ -7,11 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-// The mode in which pages should be loaded.
-typedef NS_ENUM(NSUInteger, DefaultPageMode) {
-  DefaultPageModeMobile,
-  DefaultPageModeDesktop,
-};
+#import "ios/chrome/browser/ui/settings/content_settings/default_page_mode.h"
 
 // Consumer protocol for the screen allowing the user to choose the default mode
 // (Desktop/Mobile) for loading pages.

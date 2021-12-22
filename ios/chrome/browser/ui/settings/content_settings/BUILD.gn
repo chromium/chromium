@@ -47,9 +47,11 @@ source_set("content_settings") {
 source_set("content_settings_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "default_page_mode.h",
     "default_page_mode_consumer.h",
     "default_page_mode_table_view_controller.h",
     "default_page_mode_table_view_controller.mm",
+    "default_page_mode_table_view_controller_delegate.h",
   ]
   deps = [
     "//ios/chrome/browser/ui/settings:settings_root",

@@ -221,10 +221,15 @@ DefaultProvider::DefaultProvider(PrefService* prefs, bool off_the_record)
                                 ContentSettingsType::AUTO_DARK_WEB_CONTENT))),
                             CONTENT_SETTING_NUM_SETTINGS);
 
+#endif
+
+#if defined(OS_ANDROID) || defined(OS_IOS)
+
   UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultRequestDesktopSiteSetting",
                             IntToContentSetting(prefs_->GetInteger(GetPrefName(
                                 ContentSettingsType::REQUEST_DESKTOP_SITE))),
                             CONTENT_SETTING_NUM_SETTINGS);
+
 #endif
 
   pref_change_registrar_.Init(prefs_);

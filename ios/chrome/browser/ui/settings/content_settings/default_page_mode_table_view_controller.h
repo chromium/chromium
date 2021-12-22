@@ -9,11 +9,16 @@
 #import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 
+@protocol DefaultPageModeTableViewControllerDelegate;
+
 // ViewController for the screen allowing the user to choose the default mode
 // (Desktop/Mobile) for loading pages.
 @interface DefaultPageModeTableViewController
     : SettingsRootTableViewController <DefaultPageModeConsumer,
                                        SettingsControllerProtocol>
+
+@property(nonatomic, weak) id<DefaultPageModeTableViewControllerDelegate>
+    delegate;
 
 @end
 
