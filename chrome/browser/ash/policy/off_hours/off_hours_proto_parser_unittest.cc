@@ -110,10 +110,10 @@ TEST_F(ConvertOffHoursProtoToValueTest, Test) {
 
   base::DictionaryValue off_hours_expected;
   off_hours_expected.SetString("timezone", kUtcTimezone);
-  auto intervals_value = std::make_unique<base::ListValue>();
+  base::Value* intervals_value = off_hours_expected.SetKey(
+      "intervals", base::Value(base::Value::Type::LIST));
   for (const auto& interval : intervals)
     intervals_value->Append(interval.ToValue());
-  off_hours_expected.SetList("intervals", std::move(intervals_value));
   auto ignored_policies_value = std::make_unique<base::ListValue>();
   for (const auto& policy : kDefaultIgnoredPolicies)
     ignored_policies_value->Append(policy);

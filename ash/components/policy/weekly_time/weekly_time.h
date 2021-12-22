@@ -43,12 +43,12 @@ class COMPONENT_EXPORT(ASH_POLICY) WeeklyTime {
 
   bool operator!=(const WeeklyTime& rhs) const { return !operator==(rhs); }
 
-  // Return DictionaryValue in format:
+  // Return Dictionary type Value in format:
   // { "day_of_week" : int # value is from 1 to 7 (1 = Monday, 2 = Tuesday,
   // etc.)
   //   "time" : int # in milliseconds from the beginning of the day.
   // }
-  std::unique_ptr<base::DictionaryValue> ToValue() const;
+  base::Value ToValue() const;
 
   int day_of_week() const { return day_of_week_; }
 

@@ -76,17 +76,15 @@ TEST_P(SingleWeeklyTimeTest, Constructor) {
 TEST_P(SingleWeeklyTimeTest, ToValue) {
   WeeklyTime weekly_time = WeeklyTime(
       day_of_week(), minutes() * kMinute.InMilliseconds(), timezone_offset());
-  std::unique_ptr<base::DictionaryValue> weekly_time_value =
-      weekly_time.ToValue();
-  base::DictionaryValue expected_weekly_time;
-  expected_weekly_time.SetInteger(WeeklyTime::kDayOfWeek, day_of_week());
-  expected_weekly_time.SetInteger(WeeklyTime::kTime,
-                                  minutes() * kMinute.InMilliseconds());
+  base::Value expected_weekly_time(base::Value::Type::DICTIONARY);
+  expected_weekly_time.SetIntKey(WeeklyTime::kDayOfWeek, day_of_week());
+  expected_weekly_time.SetIntKey(WeeklyTime::kTime,
+                                 minutes() * kMinute.InMilliseconds());
   if (timezone_offset()) {
-    expected_weekly_time.SetInteger(WeeklyTime::kTimezoneOffset,
-                                    timezone_offset().value());
+    expected_weekly_time.SetIntKey(WeeklyTime::kTimezoneOffset,
+                                   timezone_offset().value());
   }
-  EXPECT_EQ(*weekly_time_value, expected_weekly_time);
+  EXPECT_EQ(weekly_time.ToValue(), expected_weekly_time);
 }
 
 TEST_P(SingleWeeklyTimeTest, ExtractFromProto_InvalidDay) {

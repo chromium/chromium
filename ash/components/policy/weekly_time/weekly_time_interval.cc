@@ -27,10 +27,10 @@ WeeklyTimeInterval::WeeklyTimeInterval(const WeeklyTimeInterval& rhs) = default;
 WeeklyTimeInterval& WeeklyTimeInterval::operator=(
     const WeeklyTimeInterval& rhs) = default;
 
-std::unique_ptr<base::DictionaryValue> WeeklyTimeInterval::ToValue() const {
-  auto interval = std::make_unique<base::DictionaryValue>();
-  interval->SetDictionary(kStart, start_.ToValue());
-  interval->SetDictionary(kEnd, end_.ToValue());
+base::Value WeeklyTimeInterval::ToValue() const {
+  base::Value interval(base::Value::Type::DICTIONARY);
+  interval.SetKey(kStart, start_.ToValue());
+  interval.SetKey(kEnd, end_.ToValue());
   return interval;
 }
 

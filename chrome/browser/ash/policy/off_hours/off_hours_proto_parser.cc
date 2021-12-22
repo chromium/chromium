@@ -55,10 +55,10 @@ std::unique_ptr<base::DictionaryValue> ConvertOffHoursProtoToValue(
   std::vector<WeeklyTimeInterval> intervals =
       ExtractWeeklyTimeIntervalsFromProto(container, *timezone,
                                           base::DefaultClock::GetInstance());
-  auto intervals_value = std::make_unique<base::ListValue>();
+  base::Value* intervals_value =
+      off_hours->SetKey("intervals", base::Value(base::Value::Type::LIST));
   for (const auto& interval : intervals)
     intervals_value->Append(interval.ToValue());
-  off_hours->SetList("intervals", std::move(intervals_value));
   std::vector<int> ignored_policy_proto_tags =
       ExtractIgnoredPolicyProtoTagsFromProto(container);
   auto ignored_policies_value = std::make_unique<base::ListValue>();

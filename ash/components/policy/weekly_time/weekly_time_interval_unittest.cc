@@ -74,13 +74,10 @@ TEST_P(SingleWeeklyTimeIntervalTest, ToValue) {
   WeeklyTime start = WeeklyTime(start_day_of_week(), start_time(), 0);
   WeeklyTime end = WeeklyTime(end_day_of_week(), end_time(), 0);
   WeeklyTimeInterval interval = WeeklyTimeInterval(start, end);
-  std::unique_ptr<base::DictionaryValue> interval_value = interval.ToValue();
-  base::DictionaryValue expected_interval_value;
-  expected_interval_value.SetDictionary(WeeklyTimeInterval::kStart,
-                                        start.ToValue());
-  expected_interval_value.SetDictionary(WeeklyTimeInterval::kEnd,
-                                        end.ToValue());
-  EXPECT_EQ(*interval_value, expected_interval_value);
+  base::Value expected_interval_value(base::Value::Type::DICTIONARY);
+  expected_interval_value.SetKey(WeeklyTimeInterval::kStart, start.ToValue());
+  expected_interval_value.SetKey(WeeklyTimeInterval::kEnd, end.ToValue());
+  EXPECT_EQ(interval.ToValue(), expected_interval_value);
 }
 
 TEST_P(SingleWeeklyTimeIntervalTest, ExtractFromProto_Empty) {

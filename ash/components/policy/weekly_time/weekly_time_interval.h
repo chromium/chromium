@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(ASH_POLICY) WeeklyTimeInterval {
     return start_ == rhs.start() && end_ == rhs.end();
   }
 
-  // Return DictionaryValue in format:
+  // Return a Dictionary type Value in format:
   // { "start" : WeeklyTime,
   //   "end" : WeeklyTime }
   // WeeklyTime dictionary format:
@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(ASH_POLICY) WeeklyTimeInterval {
   //   "time" : int # in milliseconds from the beginning of the day.
   //   "timezone_offset" : int # in milliseconds, how much time ahead of GMT.
   // }
-  std::unique_ptr<base::DictionaryValue> ToValue() const;
+  base::Value ToValue() const;
 
   // Check if |w| is in [WeeklyTimeIntervall.start, WeeklyTimeInterval.end).
   // |end| time is always after |start| time. It's possible because week time is

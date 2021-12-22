@@ -48,12 +48,12 @@ WeeklyTime::WeeklyTime(const WeeklyTime& rhs) = default;
 
 WeeklyTime& WeeklyTime::operator=(const WeeklyTime& rhs) = default;
 
-std::unique_ptr<base::DictionaryValue> WeeklyTime::ToValue() const {
-  auto weekly_time = std::make_unique<base::DictionaryValue>();
-  weekly_time->SetInteger(kDayOfWeek, day_of_week_);
-  weekly_time->SetInteger(kTime, milliseconds_);
+base::Value WeeklyTime::ToValue() const {
+  base::Value weekly_time(base::Value::Type::DICTIONARY);
+  weekly_time.SetIntKey(kDayOfWeek, day_of_week_);
+  weekly_time.SetIntKey(kTime, milliseconds_);
   if (timezone_offset_)
-    weekly_time->SetInteger(kTimezoneOffset, timezone_offset_.value());
+    weekly_time.SetIntKey(kTimezoneOffset, timezone_offset_.value());
   return weekly_time;
 }
 
