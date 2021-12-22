@@ -112,7 +112,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountEmpty) {
   std::tie(accounts_response, accounts, idp_metadata) =
       SendAccountsRequestAndWaitForResponse(test_empty_account_json);
 
-  EXPECT_EQ(FetchStatus::kSuccess, accounts_response);
+  EXPECT_EQ(FetchStatus::kInvalidResponseError, accounts_response);
   EXPECT_TRUE(accounts.empty());
 }
 
@@ -206,7 +206,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
         SendAccountsRequestAndWaitForResponse(
             test_accounts_missing_account_id_json);
 
-    EXPECT_EQ(FetchStatus::kSuccess, accounts_response);
+    EXPECT_EQ(FetchStatus::kInvalidResponseError, accounts_response);
     EXPECT_TRUE(accounts.empty());
   }
   {
@@ -220,7 +220,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
     std::tie(accounts_response, accounts, idp_metadata) =
         SendAccountsRequestAndWaitForResponse(test_accounts_missing_email_json);
 
-    EXPECT_EQ(FetchStatus::kSuccess, accounts_response);
+    EXPECT_EQ(FetchStatus::kInvalidResponseError, accounts_response);
     EXPECT_TRUE(accounts.empty());
   }
   {
@@ -234,7 +234,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
     std::tie(accounts_response, accounts, idp_metadata) =
         SendAccountsRequestAndWaitForResponse(test_accounts_missing_name_json);
 
-    EXPECT_EQ(FetchStatus::kSuccess, accounts_response);
+    EXPECT_EQ(FetchStatus::kInvalidResponseError, accounts_response);
     EXPECT_TRUE(accounts.empty());
   }
 }

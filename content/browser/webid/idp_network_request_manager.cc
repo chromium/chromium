@@ -148,6 +148,7 @@ absl::optional<content::IdentityRequestAccount> ParseAccount(
 // adds parsed accounts to the |account_list|.
 bool ParseAccounts(const base::Value* accounts,
                    IdpNetworkRequestManager::AccountList& account_list) {
+  DCHECK(account_list.empty());
   if (!accounts->is_list())
     return false;
 
@@ -159,7 +160,7 @@ bool ParseAccounts(const base::Value* accounts,
     if (parsed_account)
       account_list.push_back(parsed_account.value());
   }
-  return true;
+  return !account_list.empty();
 }
 
 absl::optional<SkColor> ParseCssColor(const std::string* value) {
