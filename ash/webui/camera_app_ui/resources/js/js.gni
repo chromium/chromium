@@ -17,7 +17,7 @@ compile_js_files = [
   "dom.ts",
   "error.ts",
   "expert.ts",
-  "face.js",
+  "face.ts",
   "flag.ts",
   "focus_ring.js",
   "gallerybutton.js",
