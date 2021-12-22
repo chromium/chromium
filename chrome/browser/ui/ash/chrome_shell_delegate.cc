@@ -315,10 +315,3 @@ void ChromeShellDelegate::SetDisableLoggingRedirectForTesting(bool value) {
 void ChromeShellDelegate::ResetDisableLoggingRedirectForTesting() {
   disable_logging_redirect_for_testing.reset();
 }
-
-const GURL& ChromeShellDelegate::GetLastCommittedURLForWindowIfAny(
-    aura::Window* window) {
-  content::WebContents* contents =
-      GetActiveWebContentsForNativeBrowserWindow(window);
-  return contents ? contents->GetLastCommittedURL() : GURL::EmptyGURL();
-}
