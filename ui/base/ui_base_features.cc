@@ -54,7 +54,7 @@ const base::Feature kScreenPowerListenerForNativeWinOcclusion{
 
 // If enabled, displays Windows 11 style menus on Windows 11.
 const base::Feature kWin11StyleMenus{"Win11StyleMenus",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If this Windows 11 style menu feature parameter is enabled, displays that
 // style menu on all Windows versions.
