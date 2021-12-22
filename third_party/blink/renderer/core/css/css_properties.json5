@@ -4993,6 +4993,8 @@
       default_value: "StyleColor::CurrentColor()",
       type_name: "StyleColor",
       computed_style_custom_functions: ["getter"],
+      keywords: ["currentcolor"],
+      typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
       valid_for_marker: true,
