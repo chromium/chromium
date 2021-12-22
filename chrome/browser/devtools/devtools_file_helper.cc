@@ -154,7 +154,8 @@ storage::IsolatedContext* isolated_context() {
 std::string RegisterFileSystem(WebContents* web_contents,
                                const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(web_contents->GetURL().SchemeIs(content::kChromeDevToolsScheme));
+  CHECK(web_contents->GetLastCommittedURL().SchemeIs(
+      content::kChromeDevToolsScheme));
   std::string root_name(kRootName);
   storage::IsolatedContext::ScopedFSHandle file_system =
       isolated_context()->RegisterFileSystemForPath(
@@ -183,7 +184,8 @@ DevToolsFileHelper::FileSystem CreateFileSystemStruct(
     const std::string& type,
     const std::string& file_system_id,
     const std::string& file_system_path) {
-  const GURL origin = web_contents->GetURL().DeprecatedGetOriginAsURL();
+  const GURL origin =
+      web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   std::string file_system_name =
       storage::GetIsolatedFileSystemName(origin, file_system_id);
   std::string root_url = storage::GetIsolatedFileSystemRootURIString(

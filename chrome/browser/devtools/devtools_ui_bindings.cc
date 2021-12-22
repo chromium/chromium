@@ -898,14 +898,14 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
     // committed URL of that frame, and use the loader associated with that
     // frame to allow nested frames with different schemes to load files.
     if (allow_web_ui_scheme && target_tab &&
-        target_tab->GetURL().scheme() == gurl.scheme()) {
+        target_tab->GetLastCommittedURL().scheme() == gurl.scheme()) {
       std::vector<std::string> allowed_webui_hosts;
       content::RenderFrameHost* frame_host = web_contents()->GetMainFrame();
 
       mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote =
-          content::CreateWebUIURLLoaderFactory(frame_host,
-                                               target_tab->GetURL().scheme(),
-                                               std::move(allowed_webui_hosts));
+          content::CreateWebUIURLLoaderFactory(
+              frame_host, target_tab->GetLastCommittedURL().scheme(),
+              std::move(allowed_webui_hosts));
       url_loader_factory = network::SharedURLLoaderFactory::Create(
           std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
               std::move(pending_remote)));
@@ -941,7 +941,8 @@ void DevToolsUIBindings::OpenInNewTab(const std::string& url) {
 }
 
 void DevToolsUIBindings::ShowItemInFolder(const std::string& file_system_path) {
-  CHECK(IsValidFrontendURL(web_contents_->GetURL()) && frontend_host_);
+  CHECK(IsValidFrontendURL(web_contents_->GetLastCommittedURL()) &&
+        frontend_host_);
   file_helper_->ShowItemInFolder(file_system_path);
 }
 
@@ -963,7 +964,8 @@ void DevToolsUIBindings::AppendToFile(const std::string& url,
 }
 
 void DevToolsUIBindings::RequestFileSystems() {
-  CHECK(IsValidFrontendURL(web_contents_->GetURL()) && frontend_host_);
+  CHECK(IsValidFrontendURL(web_contents_->GetLastCommittedURL()) &&
+        frontend_host_);
   base::ListValue file_systems_value;
   for (auto const& file_system : file_helper_->GetFileSystems())
     file_systems_value.Append(CreateFileSystemValue(file_system));
@@ -972,20 +974,23 @@ void DevToolsUIBindings::RequestFileSystems() {
 }
 
 void DevToolsUIBindings::AddFileSystem(const std::string& type) {
-  CHECK(IsValidFrontendURL(web_contents_->GetURL()) && frontend_host_);
+  CHECK(IsValidFrontendURL(web_contents_->GetLastCommittedURL()) &&
+        frontend_host_);
   file_helper_->AddFileSystem(
       type, base::BindRepeating(&DevToolsUIBindings::ShowDevToolsInfoBar,
                                 weak_factory_.GetWeakPtr()));
 }
 
 void DevToolsUIBindings::RemoveFileSystem(const std::string& file_system_path) {
-  CHECK(IsValidFrontendURL(web_contents_->GetURL()) && frontend_host_);
+  CHECK(IsValidFrontendURL(web_contents_->GetLastCommittedURL()) &&
+        frontend_host_);
   file_helper_->RemoveFileSystem(file_system_path);
 }
 
 void DevToolsUIBindings::UpgradeDraggedFileSystemPermissions(
     const std::string& file_system_url) {
-  CHECK(IsValidFrontendURL(web_contents_->GetURL()) && frontend_host_);
+  CHECK(IsValidFrontendURL(web_contents_->GetLastCommittedURL()) &&
+        frontend_host_);
   file_helper_->UpgradeDraggedFileSystemPermissions(
       file_system_url,
       base::BindRepeating(&DevToolsUIBindings::ShowDevToolsInfoBar,
@@ -997,7 +1002,8 @@ void DevToolsUIBindings::IndexPath(
     const std::string& file_system_path,
     const std::string& excluded_folders_message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(IsValidFrontendURL(web_contents_->GetURL()) && frontend_host_);
+  CHECK(IsValidFrontendURL(web_contents_->GetLastCommittedURL()) &&
+        frontend_host_);
   if (!file_helper_->IsFileSystemAdded(file_system_path)) {
     IndexingDone(index_request_id, file_system_path);
     return;
@@ -1042,7 +1048,8 @@ void DevToolsUIBindings::SearchInPath(int search_request_id,
                                       const std::string& file_system_path,
                                       const std::string& query) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(IsValidFrontendURL(web_contents_->GetURL()) && frontend_host_);
+  CHECK(IsValidFrontendURL(web_contents_->GetLastCommittedURL()) &&
+        frontend_host_);
   if (!file_helper_->IsFileSystemAdded(file_system_path)) {
     SearchCompleted(search_request_id,
                     file_system_path,

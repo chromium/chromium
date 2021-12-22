@@ -1891,9 +1891,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestDevToolsExternalNavigation) {
       std::string("window.location = \"") + url.spec() + "\""));
   observer.Wait();
 
-  ASSERT_TRUE(main_web_contents()->GetURL().
-                  SchemeIs(content::kChromeDevToolsScheme));
-  ASSERT_EQ(url, GetInspectedTab()->GetURL());
+  ASSERT_TRUE(main_web_contents()->GetLastCommittedURL().SchemeIs(
+      content::kChromeDevToolsScheme));
+  ASSERT_EQ(url, GetInspectedTab()->GetLastCommittedURL());
   CloseDevToolsWindow();
 }
 
