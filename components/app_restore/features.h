@@ -15,6 +15,10 @@ namespace features {
 // full restore process.
 COMPONENT_EXPORT(APP_RESTORE) extern const base::Feature kArcGhostWindow;
 
+// Enables the window state and bounds predictor and full ghost window for ARC++
+// apps.
+COMPONENT_EXPORT(APP_RESTORE) extern const base::Feature kArcWindowPredictor;
+
 // Enables the full restore feature. If this is enabled, we will restore apps
 // and app windows after a crash or reboot.
 COMPONENT_EXPORT(APP_RESTORE) extern const base::Feature kFullRestore;

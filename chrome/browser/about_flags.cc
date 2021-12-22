@@ -5576,6 +5576,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcGhostWindowDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(full_restore::features::kArcGhostWindow)},
 
+    {"arc-window-predictor", flag_descriptions::kArcWindowPredictorName,
+     flag_descriptions::kArcWindowPredictorDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(full_restore::features::kArcWindowPredictor)},
+
     {"arc-input-overlay", flag_descriptions::kArcInputOverlayName,
      flag_descriptions::kArcInputOverlayDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kArcInputOverlay)},

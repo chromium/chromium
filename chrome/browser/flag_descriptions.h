@@ -2898,6 +2898,9 @@ extern const char kReleaseNotesNotificationAllChannelsDescription[];
 extern const char kArcGhostWindowName[];
 extern const char kArcGhostWindowDescription[];
 
+extern const char kArcWindowPredictorName[];
+extern const char kArcWindowPredictorDescription[];
+
 extern const char kArcInputOverlayName[];
 extern const char kArcInputOverlayDescription[];
 

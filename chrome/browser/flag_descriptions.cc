@@ -5016,6 +5016,10 @@ const char kArcGhostWindowDescription[] =
     "Enables the pre-load app window for "
     "ARC++ app during ARCVM booting stage on full restore process";
 
+extern const char kArcWindowPredictorName[] = "Enable ARC window predictor";
+extern const char kArcWindowPredictorDescription[] =
+    "Enables the window state and bounds predictor for ARC task windows";
+
 const char kArcInputOverlayName[] = "Enable ARC Input Overlay";
 const char kArcInputOverlayDescription[] =
     "Enables the input overlay feature for some Android game apps, "

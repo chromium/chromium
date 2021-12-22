@@ -265,6 +265,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "arc-window-predictor",
+    "owners": [ "sstan" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "ash-advanced-screen-capture-settings",
     "owners": [ "afakhry", "gzadina", "fanafan" ],
     "expiry_milestone": 100
