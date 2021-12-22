@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
@@ -158,9 +159,22 @@ class NetworkHealthReportingTest
         ::ash::kReportDeviceNetworkTelemetryEventCheckingRateMs,
         kNetworkHealthRateMs);
 
-    network_handler_test_helper_.device_test()->ClearDevices();
-    network_handler_test_helper_.device_test()->AddDevice(
-        "ethernet/path", shill::kTypeEthernet, "ethernet");
+    const std::string kEthernetPath = "ethernet/path";
+    const std::string kProfilePath = "/profile/path";
+    network_handler_test_helper_.profile_test()->AddProfile(kProfilePath,
+                                                            "user_hash");
+    auto* const device_client = network_handler_test_helper_.device_test();
+    auto* const service_client = network_handler_test_helper_.service_test();
+    base::RunLoop().RunUntilIdle();
+
+    device_client->ClearDevices();
+    service_client->ClearServices();
+    device_client->AddDevice(kEthernetPath, shill::kTypeEthernet, "ethernet");
+    service_client->AddService(kEthernetPath, "guid", "name",
+                               shill::kTypeEthernet, shill::kStateOnline,
+                               /*is_visible=*/true);
+    service_client->SetServiceProperty(kEthernetPath, shill::kProfileProperty,
+                                       base::Value(kProfilePath));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -223,6 +237,11 @@ TEST_P(NetworkHealthReportingTest, Info_Telemetry_LatencyEvent) {
       ->set_verdict(test_case.latency_verdict);
   https_latency_sampler->SetMetricData(std::move(https_latency_data));
   fake_delegate->SetHttpsLatencySampler(std::move(https_latency_sampler));
+
+  int info_report_count = 0;
+  int telemetry_report_count = 0;
+  int telemetry_flush_count = 0;
+  int event_report_count = 0;
   auto info_queue = std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
       new ::testing::NiceMock<MockReportQueue>(),
       base::OnTaskRunnerDeleter(task_runner_));
@@ -234,45 +253,57 @@ TEST_P(NetworkHealthReportingTest, Info_Telemetry_LatencyEvent) {
       std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
           new ::testing::NiceMock<MockReportQueue>(),
           base::OnTaskRunnerDeleter(task_runner_));
-  auto* const info_queue_ptr = info_queue.get();
-  auto* const telemetry_queue_ptr = telemetry_queue.get();
-  auto* const event_queue_ptr = event_queue.get();
+  ON_CALL(*info_queue, AddRecord).WillByDefault([&]() { ++info_report_count; });
+  ON_CALL(*telemetry_queue, AddRecord).WillByDefault([&]() {
+    ++telemetry_report_count;
+  });
+  ON_CALL(*telemetry_queue, Flush).WillByDefault([&]() {
+    ++telemetry_flush_count;
+  });
+  ON_CALL(*event_queue, AddRecord).WillByDefault([&]() {
+    ++event_report_count;
+  });
 
   fake_delegate->SetInfoQueue(std::move(info_queue));
   fake_delegate->SetTelemetryQueue(std::move(telemetry_queue));
   fake_delegate->SetEventQueue(std::move(event_queue));
 
-  EXPECT_CALL(*info_queue_ptr, AddRecord).Times(test_case.expected_info_count);
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(fake_delegate), nullptr);
+  base::RunLoop run_loop;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(info_report_count, test_case.expected_info_count);
 
-  EXPECT_CALL(*telemetry_queue_ptr, AddRecord).Times(0);
-  EXPECT_CALL(*telemetry_queue_ptr, Flush)
-      .Times(test_case.expected_flush_per_period);
-  EXPECT_CALL(*event_queue_ptr, AddRecord).Times(0);
   task_environment_.FastForwardBy(base::Milliseconds(kNetworkHealthRateMs));
+  EXPECT_EQ(telemetry_report_count, 0);
+  EXPECT_EQ(telemetry_flush_count, test_case.expected_flush_per_period);
+  EXPECT_EQ(event_report_count, 0);
 
   metric_reporting_manager->OnLogin(nullptr);
 
-  EXPECT_CALL(*telemetry_queue_ptr, AddRecord)
-      .Times(test_case.expected_telemetry_count);
-  EXPECT_CALL(*telemetry_queue_ptr, Flush)
-      .Times(test_case.expected_flush_per_period);
-  EXPECT_CALL(*event_queue_ptr, AddRecord)
-      .Times(test_case.expected_event_count);
+  // Reset flush count.
+  telemetry_flush_count = 0;
   task_environment_.FastForwardBy(base::Milliseconds(kNetworkHealthRateMs));
+  EXPECT_EQ(telemetry_report_count, test_case.expected_telemetry_count);
+  EXPECT_EQ(telemetry_flush_count, test_case.expected_flush_per_period);
+  EXPECT_EQ(event_report_count, test_case.expected_event_count);
 
   fake_delegate_ptr->SetIsDeprovisioned(true);
   metric_reporting_manager->DeviceSettingsUpdated();
 
-  // Device is deprovisioned, so no reporting.
-  EXPECT_CALL(*telemetry_queue_ptr, AddRecord).Times(0);
-  EXPECT_CALL(*telemetry_queue_ptr, Flush).Times(0);
-  EXPECT_CALL(*event_queue_ptr, AddRecord).Times(0);
+  // Device is deprovisioned, so no reporting, reset all counts.
+  telemetry_report_count = 0;
+  telemetry_flush_count = 0;
+  event_report_count = 0;
   task_environment_.FastForwardBy(base::Milliseconds(kNetworkHealthRateMs));
+  EXPECT_EQ(telemetry_report_count, 0);
+  EXPECT_EQ(telemetry_flush_count, 0);
+  EXPECT_EQ(event_report_count, 0);
 }
 
-TEST_F(NetworkHealthReportingTest, NetworkEventsOvserver) {
+TEST_F(NetworkHealthReportingTest, NetworkEventsObserver) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       ::ash::kReportDeviceNetworkStatus, true);
 
@@ -282,23 +313,28 @@ TEST_F(NetworkHealthReportingTest, NetworkEventsOvserver) {
 
   auto fake_delegate = std::make_unique<FakeDelegate>();
   fake_delegate->SetIsAffiliated(true);
+
+  int event_reported_count = 0;
   auto event_queue =
       std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
           new ::testing::NiceMock<MockReportQueue>(),
           base::OnTaskRunnerDeleter(task_runner_));
-  auto* const event_queue_ptr = event_queue.get();
+  ON_CALL(*event_queue, AddRecord).WillByDefault([&]() {
+    ++event_reported_count;
+  });
   fake_delegate->SetEventQueue(std::move(event_queue));
 
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(fake_delegate), nullptr);
 
   metric_reporting_manager->OnLogin(nullptr);
-  EXPECT_CALL(*event_queue_ptr, AddRecord).Times(1);
   base::RunLoop run_loop;
   EmitSignalStrengthEvent();
   base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                    run_loop.QuitClosure());
   run_loop.Run();
+
+  EXPECT_EQ(event_reported_count, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
