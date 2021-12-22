@@ -4,6 +4,7 @@
 
 import("//chrome/common/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//pdf/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -50,6 +51,9 @@ group("closure_compile") {
     "cast:closure_compile",
   ]
 
+  if (enable_pdf) {
+    deps += [ "pdf:closure_compile" ]
+  }
   if (!is_android) {
     deps += [ "webui:closure_compile" ]
   }
