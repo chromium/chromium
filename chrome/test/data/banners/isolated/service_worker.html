@@ -1,4 +1,16 @@
 <head>
   <title>Web app banner isolated service worker test page</title>
-  <script>navigator.serviceWorker.register('/banners/service_worker.js');</script>
+  <!--
+    TODO: The test hangs if we add this line.
+    <link rel="manifest" href="/banners/manifest_isolated.json">
+  -->
+  <script src="../../result_queue.js"></script>
+  <script src="../../push_messaging/push_constants.js"></script>
+  <script src="../../push_messaging/push_test.js"></script>
+  <script>
+    navigator.serviceWorker.register('/banners/isolated/service_worker.js');
+  </script>
 </head>
+<body>
+  Isolated Service Worker Test Page.
+</body>

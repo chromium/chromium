@@ -2,20 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/barrier_closure.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/gcm/gcm_profile_service_factory.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
+#include "chrome/browser/push_messaging/push_messaging_constants.h"
+#include "chrome/browser/push_messaging/push_messaging_features.h"
+#include "chrome/browser/push_messaging/push_messaging_service_factory.h"
+#include "chrome/browser/push_messaging/push_messaging_service_impl.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/gcm_driver/common/gcm_message.h"
+#include "components/gcm_driver/fake_gcm_profile_service.h"
+#include "components/permissions/permission_request_manager.h"
+#include "content/public/browser/push_messaging_service.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_running_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 
 namespace web_app {
 
@@ -25,6 +45,125 @@ const char kAppHost[] = "app.com";
 const char kApp2Host[] = "app2.com";
 const char kNonAppHost[] = "nonapp.com";
 
+const int32_t kApplicationServerKeyLength = 65;
+// NIST P-256 public key made available to tests. Must be an uncompressed
+// point in accordance with SEC1 2.3.3.
+const uint8_t kApplicationServerKey[kApplicationServerKeyLength] = {
+    0x04, 0x55, 0x52, 0x6A, 0xA5, 0x6E, 0x8E, 0xAA, 0x47, 0x97, 0x36,
+    0x10, 0xC1, 0x66, 0x3C, 0x1E, 0x65, 0xBF, 0xA1, 0x7B, 0xEE, 0x48,
+    0xC9, 0xC6, 0xBB, 0xBF, 0x02, 0x18, 0x53, 0x72, 0x1D, 0x0C, 0x7B,
+    0xA9, 0xE3, 0x11, 0xB7, 0x03, 0x52, 0x21, 0xD3, 0x71, 0x90, 0x13,
+    0xA8, 0xC1, 0xCF, 0xED, 0x20, 0xF7, 0x1F, 0xD1, 0x7F, 0xF2, 0x76,
+    0xB6, 0x01, 0x20, 0xD8, 0x35, 0xA5, 0xD9, 0x3C, 0x43, 0xFD};
+
+std::string GetTestApplicationServerKey() {
+  std::string application_server_key(
+      kApplicationServerKey,
+      kApplicationServerKey + base::size(kApplicationServerKey));
+
+  return application_server_key;
+}
+
+class BaseServiceWorkerVersionWaiter
+    : public content::ServiceWorkerContextObserver {
+ public:
+  explicit BaseServiceWorkerVersionWaiter(
+      content::StoragePartition* storage_partition) {
+    DCHECK(storage_partition);
+
+    service_worker_context_ = storage_partition->GetServiceWorkerContext();
+    service_worker_context_->AddObserver(this);
+  }
+
+  BaseServiceWorkerVersionWaiter(const BaseServiceWorkerVersionWaiter&) =
+      delete;
+  BaseServiceWorkerVersionWaiter& operator=(
+      const BaseServiceWorkerVersionWaiter&) = delete;
+
+  ~BaseServiceWorkerVersionWaiter() override {
+    if (service_worker_context_)
+      service_worker_context_->RemoveObserver(this);
+  }
+
+ protected:
+  raw_ptr<content::ServiceWorkerContext> service_worker_context_;
+
+ private:
+  void OnDestruct(content::ServiceWorkerContext* context) override {
+    service_worker_context_->RemoveObserver(this);
+    service_worker_context_ = nullptr;
+  }
+};
+
+class ServiceWorkerVersionActivatedWaiter
+    : public BaseServiceWorkerVersionWaiter {
+ public:
+  ServiceWorkerVersionActivatedWaiter(
+      content::StoragePartition* storage_partition,
+      GURL& url)
+      : BaseServiceWorkerVersionWaiter(storage_partition), url_(url) {}
+
+  int64_t AwaitVersionActivated() { return future.Get(); }
+
+ private:
+  // content::ServiceWorkerContextObserver:
+  void OnVersionActivated(int64_t version_id, const GURL& scope) override {
+    if (content::ServiceWorkerContext::ScopeMatches(scope, url_)) {
+      future.SetValue(version_id);
+    }
+  }
+
+  const GURL url_;
+  base::test::TestFuture<int64_t> future;
+};
+
+class ServiceWorkerVersionStartedRunningWaiter
+    : public BaseServiceWorkerVersionWaiter {
+ public:
+  ServiceWorkerVersionStartedRunningWaiter(
+      content::StoragePartition* storage_partition,
+      int64_t version_id)
+      : BaseServiceWorkerVersionWaiter(storage_partition),
+        version_id_(version_id) {}
+
+  void AwaitVersionStartedRunning() { run_loop_.Run(); }
+
+ private:
+  // content::ServiceWorkerContextObserver:
+  void OnVersionStartedRunning(
+      int64_t version_id,
+      const content::ServiceWorkerRunningInfo& running_info) override {
+    if (version_id == version_id_) {
+      run_loop_.Quit();
+    }
+  }
+
+  const int64_t version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
+  base::RunLoop run_loop_;
+};
+
+class ServiceWorkerVersionStoppedRunningWaiter
+    : public BaseServiceWorkerVersionWaiter {
+ public:
+  ServiceWorkerVersionStoppedRunningWaiter(
+      content::StoragePartition* storage_partition,
+      int64_t version_id)
+      : BaseServiceWorkerVersionWaiter(storage_partition),
+        version_id_(version_id) {}
+
+  void AwaitVersionStoppedRunning() { run_loop_.Run(); }
+
+ private:
+  // content::ServiceWorkerContextObserver:
+  void OnVersionStoppedRunning(int64_t version_id) override {
+    if (version_id == version_id_) {
+      run_loop_.Quit();
+    }
+  }
+
+  const int64_t version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
+  base::RunLoop run_loop_;
+};
 }  // namespace
 
 class IsolatedAppBrowserTest : public WebAppControllerBrowserTest {
@@ -187,31 +326,167 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserCookieTest, Cookies) {
 
 class IsolatedAppBrowserServiceWorkerTest : public IsolatedAppBrowserTest {
  protected:
-  content::RenderFrameHost* InstallIsolatedAppAndWaitForServiceWorker(
-      const GURL& app_url) {
+  void SetUpOnMainThread() override {
+    IsolatedAppBrowserTest::SetUpOnMainThread();
+
+    app_url_ = https_server()->GetURL(kAppHost,
+                                      "/banners/isolated/service_worker.html");
+  }
+
+  int64_t InstallIsolatedAppAndWaitForServiceWorker() {
     InstallIsolatedApp(kAppHost);
 
-    auto* app_window = NavigateInNewWindowAndAwaitInstallabilityCheck(app_url);
-    auto* web_contents = app_window->tab_strip_model()->GetActiveWebContents();
-    auto* app_frame = web_contents->GetMainFrame();
-    EXPECT_NE(default_storage_partition(), app_frame->GetStoragePartition());
+    app_window_ = NavigateInNewWindowAndAwaitInstallabilityCheck(app_url_);
+    app_web_contents_ = app_window_->tab_strip_model()->GetActiveWebContents();
+    app_frame_ = app_web_contents_->GetMainFrame();
+    storage_partition_ = app_frame_->GetStoragePartition();
+    EXPECT_NE(default_storage_partition(), storage_partition_);
 
-    ServiceWorkerRegistrationWaiter waiter(app_frame->GetStoragePartition(),
-                                           app_url);
-    waiter.AwaitRegistration();
+    ServiceWorkerVersionActivatedWaiter version_activated_waiter(
+        storage_partition_, app_url_);
 
-    return app_frame;
+    return version_activated_waiter.AwaitVersionActivated();
   }
+
+  Browser* app_window_;
+  content::WebContents* app_web_contents_;
+  content::RenderFrameHost* app_frame_;
+  content::StoragePartition* storage_partition_;
+
+  GURL app_url_;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserServiceWorkerTest,
                        ServiceWorkerPartitioned) {
-  const GURL app_url =
-      https_server()->GetURL(kAppHost, "/banners/isolated/service_worker.html");
-
-  auto* app_frame = InstallIsolatedAppAndWaitForServiceWorker(app_url);
+  InstallIsolatedAppAndWaitForServiceWorker();
   test::CheckServiceWorkerStatus(
-      app_url, app_frame->GetStoragePartition(),
+      app_url_, storage_partition_,
       content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
 }
+
+class IsolatedAppBrowserServiceWorkerPushTest
+    : public IsolatedAppBrowserServiceWorkerTest {
+ public:
+  IsolatedAppBrowserServiceWorkerPushTest()
+      : scoped_testing_factory_installer_(
+            base::BindRepeating(&gcm::FakeGCMProfileService::Build)) {}
+
+ protected:
+  void SetUpOnMainThread() override {
+    IsolatedAppBrowserServiceWorkerTest::SetUpOnMainThread();
+
+    notification_tester_ = std::make_unique<NotificationDisplayServiceTester>(
+        browser()->profile());
+  }
+
+  void SendMessageAndWaitUntilHandled(
+      content::BrowserContext* context,
+      const PushMessagingAppIdentifier& app_identifier,
+      const gcm::IncomingMessage& message) {
+    auto* push_service = PushMessagingServiceFactory::GetForProfile(context);
+    base::RunLoop run_loop;
+    base::RepeatingClosure quit_barrier =
+        base::BarrierClosure(2 /* num_closures */, run_loop.QuitClosure());
+    push_service->SetMessageCallbackForTesting(quit_barrier);
+    notification_tester_->SetNotificationAddedClosure(quit_barrier);
+    push_service->OnMessage(app_identifier.app_id(), message);
+    run_loop.Run();
+  }
+
+  PushMessagingAppIdentifier GetAppIdentifierForServiceWorkerRegistration(
+      int64_t service_worker_registration_id) {
+    GURL origin = url::Origin::Create(app_url_).GetURL();
+
+    PushMessagingAppIdentifier app_identifier =
+        PushMessagingAppIdentifier::FindByServiceWorker(
+            browser()->profile(), origin, service_worker_registration_id);
+    return app_identifier;
+  }
+
+  std::string RunScript(content::RenderFrameHost* app_frame,
+                        const std::string& script) {
+    std::string script_result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(app_frame, script,
+                                                       &script_result));
+    return script_result;
+  }
+
+  std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
+
+ private:
+  gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
+      scoped_testing_factory_installer_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedAppBrowserServiceWorkerPushTest,
+    ServiceWorkerPartitionedWhenWakingUpDuetoPushNotification) {
+  int64_t service_worker_version_id =
+      InstallIsolatedAppAndWaitForServiceWorker();
+
+  // Request and confirm permission to show notifications.
+  auto* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(app_web_contents_);
+  permission_request_manager->set_auto_response_for_test(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+  ASSERT_EQ("permission status - granted",
+            RunScript(app_frame_, "requestNotificationPermission()"));
+
+  // Subscribe to push notifications and retrieve the app identifier.
+  std::string push_messaging_endpoint =
+      RunScript(app_frame_, "documentSubscribePush()");
+  size_t last_slash = push_messaging_endpoint.rfind('/');
+  ASSERT_EQ(kPushMessagingGcmEndpoint,
+            push_messaging_endpoint.substr(0, last_slash + 1));
+  PushMessagingAppIdentifier app_identifier =
+      GetAppIdentifierForServiceWorkerRegistration(0LL);
+  EXPECT_FALSE(app_identifier.is_null());
+
+  // Close the browser and stop the ServiceWorker
+  ServiceWorkerVersionStoppedRunningWaiter version_stopped_waiter(
+      storage_partition_, service_worker_version_id);
+  CloseBrowserSynchronously(app_window_);
+  base::RunLoop run_loop;
+  storage_partition_->GetServiceWorkerContext()->StopAllServiceWorkers(
+      run_loop.QuitClosure());
+  run_loop.Run();
+  version_stopped_waiter.AwaitVersionStoppedRunning();
+
+  // Push a message to the ServiceWorker and make sure the service worker is
+  // started again.
+  ServiceWorkerVersionStartedRunningWaiter version_started_waiter(
+      storage_partition_, service_worker_version_id);
+
+  gcm::IncomingMessage message;
+  message.sender_id = GetTestApplicationServerKey();
+  message.raw_data = "test";
+  message.decrypted = true;
+  SendMessageAndWaitUntilHandled(browser()->profile(), app_identifier, message);
+
+  version_started_waiter.AwaitVersionStartedRunning();
+
+  // Verify that the ServiceWorker has received the push message and created
+  // a push notification, then click on it.
+  auto notifications = notification_tester_->GetDisplayedNotificationsForType(
+      NotificationHandler::Type::WEB_PERSISTENT);
+  EXPECT_EQ(notifications.size(), 1UL);
+
+  web_app::BrowserWaiter browser_waiter(nullptr);
+  notification_tester_->SimulateClick(NotificationHandler::Type::WEB_PERSISTENT,
+                                      notifications[0].id(), absl::nullopt,
+                                      absl::nullopt);
+
+  // Check that the click resulted in a new isolated web app window that runs in
+  // the same isolated non-default storage partition.
+  auto* new_app_window = browser_waiter.AwaitAdded();
+  auto* new_app_frame =
+      new_app_window->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  auto* new_storage_partition = new_app_frame->GetStoragePartition();
+  EXPECT_EQ(new_storage_partition, storage_partition_);
+  EXPECT_EQ(new_app_frame->GetWebExposedIsolationLevel(),
+            content::RenderFrameHost::WebExposedIsolationLevel::
+                kMaybeIsolatedApplication);
+  EXPECT_TRUE(AppBrowserController::IsWebApp(new_app_window));
+}
+
 }  // namespace web_app
