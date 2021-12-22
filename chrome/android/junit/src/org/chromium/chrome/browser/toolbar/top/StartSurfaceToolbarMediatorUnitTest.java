@@ -85,6 +85,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
     @Mock
     private TabModelSelector mTabModelSelector;
     @Mock
+    private TabModel mIncognitoTabModel;
+    @Mock
     Runnable mDismissedCallback;
     @Mock
     View.OnClickListener mOnClickListener;
@@ -168,7 +170,10 @@ public class StartSurfaceToolbarMediatorUnitTest {
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mIncognitoTabModel).when(mTabModelSelector).getModel(true);
+        doReturn(mMockIncognitoTab).when(mIncognitoTabModel).getTabAt(0);
         doReturn(false).when(mMockIncognitoTab).isClosing();
+        doReturn(0).when(mIncognitoTabModel).getCount();
     }
 
     @After
@@ -180,7 +185,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     public void testShowAndHideHomePage() {
         createMediator(false);
 
-        mIncognitoTabModelObserver.getValue().didBecomeEmpty();
+        doReturn(0).when(mIncognitoTabModel).getCount();
         assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
@@ -201,7 +206,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertFalse(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
         assertTrue(mPropertyModel.get(IS_VISIBLE));
 
-        mIncognitoTabModelObserver.getValue().wasFirstTabCreated();
+        doReturn(1).when(mIncognitoTabModel).getCount();
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
         assertTrue(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
@@ -217,7 +222,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     public void testShowAndHideTabSwitcher() {
         createMediator(false);
 
-        mIncognitoTabModelObserver.getValue().didBecomeEmpty();
+        doReturn(0).when(mIncognitoTabModel).getCount();
         assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
@@ -240,7 +245,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mMediator.updateIdentityDisc(mButtonData);
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
 
-        mIncognitoTabModelObserver.getValue().wasFirstTabCreated();
+        doReturn(1).when(mIncognitoTabModel).getCount();
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, true);
         assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
@@ -287,22 +292,38 @@ public class StartSurfaceToolbarMediatorUnitTest {
     }
 
     @Test
-    public void testHidingIncognitoSwitchWithoutIncognitoTabs() {
+    public void testHidingIncognitoToggleWithoutIncognitoTabs() {
         createMediator(true);
 
-        mIncognitoTabModelObserver.getValue().didBecomeEmpty();
+        doReturn(0).when(mIncognitoTabModel).getCount();
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, true);
+        assertFalse(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
         assertTrue(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
         assertTrue(mPropertyModel.get(NEW_TAB_VIEW_AT_START));
         assertTrue(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
-        assertFalse(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
 
-        mIncognitoTabModelObserver.getValue().wasFirstTabCreated();
+        doReturn(1).when(mIncognitoTabModel).getCount();
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, true);
+        assertTrue(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
         assertTrue(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
         assertTrue(mPropertyModel.get(NEW_TAB_VIEW_AT_START));
         assertFalse(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
+    }
+
+    @Test
+    public void testIncognitoTabModelObserverUpdatesIncognitoToggle() {
+        createMediator(true);
+        mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, true);
+
+        doReturn(0).when(mIncognitoTabModel).getCount();
+        mIncognitoTabModelObserver.getValue().didBecomeEmpty();
+        assertFalse(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
+        assertTrue(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
+
+        doReturn(1).when(mIncognitoTabModel).getCount();
+        mIncognitoTabModelObserver.getValue().wasFirstTabCreated();
         assertTrue(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
     }
 
     @Test
