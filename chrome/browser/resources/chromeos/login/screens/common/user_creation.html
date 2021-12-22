@@ -32,8 +32,8 @@ found in the LICENSE file. -->
         margin-top: 16px;
       }
     </style>
-    <oobe-adaptive-dialog id="userCreationDialog" role="dialog"
-        aria-label$="[[i18nDynamic(locale, titleKey_)]]" for-step="create">
+    <oobe-adaptive-dialog id="userCreationDialog" for-step="create"
+        role="presentation">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">
         [[i18nDynamic(locale, titleKey_)]]
