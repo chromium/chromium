@@ -391,6 +391,9 @@ class AutofillPopupItemView : public AutofillPopupRowView {
       inner_labels_.push_back(label);
   }
 
+  // Returns the string to be set as the name of the ui::AXNodeData.
+  std::u16string GetVoiceOverString();
+
  private:
   // Returns a vector of optional labels to be displayed beneath value.
   virtual std::vector<std::unique_ptr<views::View>> CreateSubtextViews();
@@ -585,38 +588,8 @@ END_METADATA
 void AutofillPopupItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   base::WeakPtr<AutofillPopupController> controller =
       popup_view()->controller();
-  std::vector<std::u16string> text;
 
-  auto suggestion = controller->GetSuggestionAt(GetLineNumber());
-  std::u16string icon_name = GetIconAccessibleName(suggestion.icon);
-  if (!icon_name.empty())
-    text.push_back(icon_name);
-
-  auto main_text = controller->GetSuggestionMainTextAt(GetLineNumber());
-  text.push_back(main_text);
-
-  auto minor_text = controller->GetSuggestionMinorTextAt(GetLineNumber());
-  if (!minor_text.empty())
-    text.push_back(minor_text);
-
-  auto label_text = controller->GetSuggestionLabelAt(GetLineNumber());
-  if (!label_text.empty()) {
-    // |label| is not populated for footers or autocomplete entries.
-    text.push_back(label_text);
-  }
-
-  // TODO(siyua): GetSuggestionLabelAt should return a vector of strings.
-  if (!suggestion.offer_label.empty()) {
-    // |offer_label| is only populated for credit card suggestions.
-    text.push_back(suggestion.offer_label);
-  }
-
-  if (!suggestion.additional_label.empty()) {
-    // |additional_label| is only populated in a passwords context.
-    text.push_back(suggestion.additional_label);
-  }
-
-  node_data->SetName(base::JoinString(text, u" "));
+  node_data->SetName(GetVoiceOverString());
 
   // Options are selectable.
   node_data->role = ax::mojom::Role::kListBoxOption;
@@ -901,6 +874,43 @@ void AutofillPopupItemView::AddSpacerWithSize(int spacer_width,
   layout->SetFlexForView(AddChildView(std::move(spacer)),
                          /*flex=*/resize ? 1 : 0,
                          /*use_min_size=*/true);
+}
+
+std::u16string AutofillPopupItemView::GetVoiceOverString() {
+  base::WeakPtr<AutofillPopupController> controller =
+      popup_view()->controller();
+  std::vector<std::u16string> text;
+
+  auto suggestion = controller->GetSuggestionAt(GetLineNumber());
+  std::u16string icon_name = GetIconAccessibleName(suggestion.icon);
+  if (!icon_name.empty())
+    text.push_back(icon_name);
+
+  auto main_text = controller->GetSuggestionMainTextAt(GetLineNumber());
+  text.push_back(main_text);
+
+  auto minor_text = controller->GetSuggestionMinorTextAt(GetLineNumber());
+  if (!minor_text.empty())
+    text.push_back(minor_text);
+
+  auto label_text = controller->GetSuggestionLabelAt(GetLineNumber());
+  if (!label_text.empty()) {
+    // |label| is not populated for footers or autocomplete entries.
+    text.push_back(label_text);
+  }
+
+  // TODO(siyua): GetSuggestionLabelAt should return a vector of strings.
+  if (!suggestion.offer_label.empty()) {
+    // |offer_label| is only populated for credit card suggestions.
+    text.push_back(suggestion.offer_label);
+  }
+
+  if (!suggestion.additional_label.empty()) {
+    // |additional_label| is only populated in a passwords context.
+    text.push_back(suggestion.additional_label);
+  }
+
+  return base::JoinString(text, u" ");
 }
 
 /************** AutofillPopupSuggestionView **************/
