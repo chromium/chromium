@@ -337,6 +337,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // without actually updating it.
   bool CalculateCanResize() const;
 
+  // Returns true if this surface will exit fullscreen from a restore or
+  // maximize request. Currently only true for Lacros.
+  bool ShouldExitFullscreenFromRestoreOrMaximized();
+
   views::Widget* widget_ = nullptr;
   bool movement_disabled_ = false;
   gfx::Point origin_;

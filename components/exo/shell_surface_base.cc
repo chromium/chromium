@@ -1537,6 +1537,14 @@ ShellSurfaceBase::CreateNonClientFrameViewInternal(views::Widget* widget) {
   return frame_view;
 }
 
+bool ShellSurfaceBase::ShouldExitFullscreenFromRestoreOrMaximized() {
+  if (widget_ && widget_->GetNativeWindow()) {
+    return widget_->GetNativeWindow()->GetProperty(
+        kRestoreOrMaximizeExitsFullscreen);
+  }
+  return false;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // ShellSurfaceBase, private:
 

@@ -8,4 +8,6 @@ namespace exo {
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kApplicationIdKey, nullptr)
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kRestoreOrMaximizeExitsFullscreen, false)
+
 }  // namespace exo

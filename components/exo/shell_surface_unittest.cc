@@ -31,6 +31,7 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "components/exo/test/shell_surface_builder.h"
+#include "components/exo/window_properties.h"
 #include "components/exo/wm_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -252,6 +253,44 @@ TEST_F(ShellSurfaceTest, CannotMaximizeNonResizableWindow) {
   EXPECT_FALSE(shell_surface->CanMaximize());
 }
 
+TEST_F(ShellSurfaceTest, MaximizeFromFullscreen) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetMaximumSize(gfx::Size(10, 10))
+          .BuildShellSurface();
+  // Act: Maximize after fullscreen
+  shell_surface->root_surface()->Commit();
+  shell_surface->SetFullscreen(true);
+  shell_surface->root_surface()->Commit();
+  shell_surface->Maximize();
+  shell_surface->root_surface()->Commit();
+
+  // Assert: Window should stay fullscreen.
+  EXPECT_TRUE(shell_surface->GetWidget()->IsFullscreen());
+}
+
+TEST_F(ShellSurfaceTest, MaximizeExitsFullscreen) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetMaximumSize(gfx::Size(10, 10))
+          .BuildShellSurface();
+
+  // Act: Set window property kRestoreOrMaximizeExitsFullscreen
+  // then maximize after fullscreen
+  shell_surface->root_surface()->Commit();
+  shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
+      kRestoreOrMaximizeExitsFullscreen, true);
+  shell_surface->SetFullscreen(true);
+  shell_surface->root_surface()->Commit();
+  shell_surface->Maximize();
+  shell_surface->root_surface()->Commit();
+
+  // Assert: Window should exit fullscreen and be maximized.
+  EXPECT_TRUE(shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+      kRestoreOrMaximizeExitsFullscreen));
+  EXPECT_TRUE(shell_surface->GetWidget()->IsMaximized());
+}
+
 TEST_F(ShellSurfaceTest, Minimize) {
   gfx::Size buffer_size(256, 256);
   std::unique_ptr<Buffer> buffer(
@@ -305,6 +344,44 @@ TEST_F(ShellSurfaceTest, Restore) {
       shell_surface->GetWidget()->GetWindowBoundsInScreen().size().ToString());
 }
 
+TEST_F(ShellSurfaceTest, RestoreFromFullscreen) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetMaximumSize(gfx::Size(10, 10))
+          .BuildShellSurface();
+
+  // Act: Restore after fullscreen
+  shell_surface->SetFullscreen(true);
+  shell_surface->root_surface()->Commit();
+  shell_surface->Restore();
+  shell_surface->root_surface()->Commit();
+
+  // Assert: Window should stay fullscreen.
+  EXPECT_TRUE(shell_surface->GetWidget()->IsFullscreen());
+}
+
+TEST_F(ShellSurfaceTest, RestoreExitsFullscreen) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetMaximumSize(gfx::Size(10, 10))
+          .BuildShellSurface();
+
+  // Act: Set window property kRestoreOrMaximizeExitsFullscreen
+  // then restore after fullscreen
+  shell_surface->root_surface()->Commit();
+  shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
+      kRestoreOrMaximizeExitsFullscreen, true);
+  shell_surface->SetFullscreen(true);
+  shell_surface->Restore();
+  shell_surface->root_surface()->Commit();
+
+  // Assert: Window should exit fullscreen and be restored.
+  EXPECT_TRUE(shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+      kRestoreOrMaximizeExitsFullscreen));
+  EXPECT_EQ(gfx::Size(256, 256),
+            shell_surface->GetWidget()->GetWindowBoundsInScreen().size());
+}
+
 TEST_F(ShellSurfaceTest, HostWindowBoundsUpdatedAfterCommitWidget) {
   gfx::Size buffer_size(256, 256);
   std::unique_ptr<Buffer> buffer(
@@ -343,6 +420,33 @@ TEST_F(ShellSurfaceTest, SetFullscreen) {
   EXPECT_FALSE(HasBackdrop());
   EXPECT_NE(GetContext()->bounds().ToString(),
             shell_surface->GetWidget()->GetWindowBoundsInScreen().ToString());
+}
+
+TEST_F(ShellSurfaceTest, PreWidgetUnfullscreen) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetNoCommit()
+          .SetMaximumSize(gfx::Size(10, 10))
+          .BuildShellSurface();
+  shell_surface->Maximize();
+  shell_surface->SetFullscreen(false);
+  EXPECT_EQ(shell_surface->GetWidget(), nullptr);
+  shell_surface->root_surface()->Commit();
+  EXPECT_TRUE(shell_surface->GetWidget()->IsMaximized());
+}
+
+TEST_F(ShellSurfaceTest, PreWidgetMaximizeFromFullscreen) {
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({256, 256})
+          .SetNoCommit()
+          .SetMaximumSize(gfx::Size(10, 10))
+          .BuildShellSurface();
+  // Fullscreen -> Maximize for non Lacros surfaces should stay fullscreen
+  shell_surface->SetFullscreen(true);
+  shell_surface->Maximize();
+  EXPECT_EQ(shell_surface->GetWidget(), nullptr);
+  shell_surface->root_surface()->Commit();
+  EXPECT_TRUE(shell_surface->GetWidget()->IsFullscreen());
 }
 
 TEST_F(ShellSurfaceTest, SetTitle) {
