@@ -80,11 +80,6 @@ export function wrapupRepairCompletePageTest() {
     const logsDialog = component.shadowRoot.querySelector('#logsDialog');
     assertTrue(!!logsDialog);
     assertFalse(logsDialog.open);
-
-    const batteryDialog =
-        component.shadowRoot.querySelector('#batteryCutDialog');
-    assertTrue(!!batteryDialog);
-    assertFalse(batteryDialog.open);
   });
 
   test('CanShutDown', async () => {
@@ -128,7 +123,7 @@ export function wrapupRepairCompletePageTest() {
     assertTrue(logsDialog.open);
   });
 
-  test('BatteryCutDialogDisabledByDefault', async () => {
+  test('BatteryCutButtonDisabledByDefault', async () => {
     await initializeRepairCompletePage();
     const button = component.shadowRoot.querySelector('#batteryCutButton');
 
@@ -136,7 +131,7 @@ export function wrapupRepairCompletePageTest() {
     assertTrue(button.disabled);
   });
 
-  test('PowerCableStateTrueDisablesBatteryCutDialog', async () => {
+  test('PowerCableStateTrueDisablesBatteryCutButton', async () => {
     await initializeRepairCompletePage();
     service.triggerPowerCableObserver(true, 0);
     await flushTasks();
@@ -146,7 +141,7 @@ export function wrapupRepairCompletePageTest() {
     assertTrue(button.disabled);
   });
 
-  test('PowerCableStateFalseEnablesBatteryCutDialog', async () => {
+  test('PowerCableStateFalseEnablesBatteryCutButton', async () => {
     await initializeRepairCompletePage();
     service.triggerPowerCableObserver(false, 0);
     await flushTasks();
@@ -154,19 +149,6 @@ export function wrapupRepairCompletePageTest() {
 
     assertTrue(!!button);
     assertFalse(button.disabled);
-  });
-
-  test('OpensBatteryCutDialog', async () => {
-    await initializeRepairCompletePage();
-    // Trigger observation to enable button.
-    service.triggerPowerCableObserver(false, 0);
-    await flushTasks();
-    await clickButton('#batteryCutButton');
-
-    const batteryDialog =
-        component.shadowRoot.querySelector('#batteryCutDialog');
-    assertTrue(!!batteryDialog);
-    assertTrue(batteryDialog.open);
   });
 
   test('DialogCloses', async () => {
@@ -179,11 +161,5 @@ export function wrapupRepairCompletePageTest() {
     assertFalse(logsDialog.open);
 
     await clickButton('#batteryCutButton');
-    await clickButton('#closeBatteryDialogButton');
-
-    const batteryDialog =
-        component.shadowRoot.querySelector('#batteryCutDialog');
-    assertTrue(!!batteryDialog);
-    assertFalse(batteryDialog.open);
   });
 }

@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './base_page.js';
 import './shimless_rma_shared_css.js';
 
@@ -50,6 +51,7 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
        * Assume plugged in is true until first observation.
        */
       pluggedIn_: {
+        reflectToAttribute: true,
         type: Boolean,
         value: true,
       }
@@ -115,19 +117,7 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
   }
 
   /** @protected */
-  onBatteryCutButtonClick_() {
-    const dialog = /** @type {!CrDialogElement} */ (
-        this.shadowRoot.querySelector('#batteryCutDialog'));
-    if (!dialog.open) {
-      dialog.showModal();
-    }
-  }
-
-  /** @protected */
-  batteryCutInstructions_() {
-    return this.pluggedIn_ ? this.i18n('batteryShutoffUnplugMessageText') :
-                             this.i18n('batteryShutoffShutdownMessageText');
-  }
+  onBatteryCutButtonClick_() {}
 
   /** @protected */
   onCancelClick_() {

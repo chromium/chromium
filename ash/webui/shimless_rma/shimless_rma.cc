@@ -213,15 +213,8 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
       {"rmaLogsTitleText", IDS_SHIMLESS_RMA_LOGS_TITLE},
       {"rmaLogsCancelButtonText", IDS_SHIMLESS_RMA_LOGS_CANCEL_BUTTON},
       {"rmaLogsSaveToUsbButtonText", IDS_SHIMLESS_RMA_LOGS_SAVE_BUTTON},
-      {"batteryShutoffTitleText", IDS_SHIMLESS_BATTERY_CUTOFF_TITLE},
-      {"batteryShutoffUnplugMessageText",
-       IDS_SHIMLESS_BATTERY_SHUTOFF_UNPLUG_MESSAGE},
-      {"batteryShutoffShutdownMessageText",
-       IDS_SHIMLESS_BATTERY_SHUTOFF_SHUTDOWN_MESSAGE},
-      {"batteryShutoffCancelButtonText",
-       IDS_SHIMLESS_BATTERY_SHUTOFF_CANCEL_BUTTON},
-      {"batteryShutoffShutdownButtonText",
-       IDS_SHIMLESS_BATTERY_SHUTOFF_SHUTDOWN_BUTTON},
+      {"batteryShutoffTooltipText", IDS_SHIMLESS_BATTERY_SHUTOFF_TOOLTIP_TEXT},
+
       // Manual disable wp page
       {"manuallyDisableWpTitleText",
        IDS_SHIMLESS_RMA_MANUALLY_DISABLE_WP_TITLE},
