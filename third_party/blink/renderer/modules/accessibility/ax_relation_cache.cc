@@ -584,6 +584,8 @@ void AXRelationCache::RemoveOwnedRelation(AXID obj_id) {
         break;
       }
     }
+    if (AXObject* owned_child = ObjectFromAXID(obj_id))
+      owned_child->DetachFromParent();
   }
 }
 
