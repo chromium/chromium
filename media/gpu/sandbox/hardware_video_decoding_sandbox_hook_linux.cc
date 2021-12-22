@@ -115,7 +115,11 @@ bool HardwareVideoDecodingPreSandboxHook(
     }
   }
 #elif BUILDFLAG(USE_LIBV4L2)
+#if defined(__aarch64__)
+  dlopen("/usr/lib64/libv4l2.so", RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
+#else
   dlopen("/usr/lib/libv4l2.so", RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
+#endif  // defined(__aarch64__)
 #endif  // BUILDFLAG(USE_VAAPI)
 
   return true;
