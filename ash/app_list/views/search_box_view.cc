@@ -144,6 +144,14 @@ void SearchBoxView::ResetForShow() {
   }
 }
 
+void SearchBoxView::UpdateSearchTextfieldAccessibleNodeData(
+    ui::AXNodeData* node_data) {
+  if (a11y_active_descendant_) {
+    node_data->AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
+                               *a11y_active_descendant_);
+  }
+}
+
 void SearchBoxView::ClearSearch() {
   SearchBoxViewBase::ClearSearch();
   current_query_.clear();
@@ -597,10 +605,8 @@ void SearchBoxView::ClearAutocompleteText() {
 }
 
 void SearchBoxView::OnBeforeUserAction(views::Textfield* sender) {
-  if (a11y_selection_on_search_result_) {
-    a11y_selection_on_search_result_ = false;
-    search_box()->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
-  }
+  if (a11y_active_descendant_)
+    SetA11yActiveDescendant(absl::nullopt);
 }
 
 void SearchBoxView::ContentsChanged(views::Textfield* sender,
@@ -673,9 +679,16 @@ void SearchBoxView::ClearSearchAndDeactivateSearchBox() {
   if (!is_search_box_active())
     return;
 
-  a11y_selection_on_search_result_ = false;
+  SetA11yActiveDescendant(absl::nullopt);
   ClearSearch();
   SetSearchBoxActive(false, ui::ET_UNKNOWN);
+}
+
+void SearchBoxView::SetA11yActiveDescendant(
+    const absl::optional<int32_t>& active_descendant) {
+  a11y_active_descendant_ = active_descendant;
+  search_box()->NotifyAccessibilityEvent(
+      ax::mojom::Event::kActiveDescendantChanged, true);
 }
 
 bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
@@ -799,9 +812,7 @@ bool SearchBoxView::HandleKeyEvent(views::Textfield* sender,
 
       DCHECK(close_button()->GetVisible());
       close_button()->RequestFocus();
-      close_button()->NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
-                                               true);
-      a11y_selection_on_search_result_ = false;
+      SetA11yActiveDescendant(absl::nullopt);
       break;
     case ResultSelectionController::MoveResult::kResultChanged:
       UpdateSearchBoxTextForSelectedResult(

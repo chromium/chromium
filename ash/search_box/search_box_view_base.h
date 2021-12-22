@@ -114,6 +114,9 @@ class SearchBoxViewBase : public views::View,
   // Whether the trimmed query in the search box is empty.
   bool IsSearchBoxTrimmedQueryEmpty() const;
 
+  virtual void UpdateSearchTextfieldAccessibleNodeData(
+      ui::AXNodeData* node_data);
+
   virtual void ClearSearch();
 
   // Called when the search box active state changes.
