@@ -253,6 +253,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
       proto::RequestContext request_context,
       const base::flat_set<std::string>& hosts_fetched,
       const base::flat_set<GURL>& urls_fetched,
+      const base::flat_set<GURL>& urls_for_callback,
       const base::flat_set<proto::OptimizationType>& optimization_types,
       OnDemandOptimizationGuideDecisionRepeatingCallback callback,
       absl::optional<std::unique_ptr<proto::GetHintsResponse>>

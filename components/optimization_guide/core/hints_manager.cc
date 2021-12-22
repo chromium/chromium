@@ -861,7 +861,7 @@ void HintsManager::FetchHintsForURLs(const std::vector<GURL>& urls,
           &HintsManager::OnBatchUpdateHintsFetched,
           weak_ptr_factory_.GetWeakPtr(), request_id_and_fetcher.first,
           request_context, target_hosts.set(), target_urls.set(),
-          registered_optimization_types_,
+          target_urls.set(), registered_optimization_types_,
           base::DoNothingAs<void(
               const GURL&, const base::flat_map<
                                proto::OptimizationType,
@@ -990,18 +990,16 @@ void HintsManager::CanApplyOptimizationOnDemand(
 
   // TODO(crbug/1275612): Check whether we have consent to fetch.
 
+  // This set contains URLs that require some information to be fetched, whether
+  // that be a URL-keyed hint or a host-keyed hint.
+  base::flat_set<GURL> urls_with_pending_callback;
+
   InsertionOrderedSet<GURL> urls_to_fetch;
   InsertionOrderedSet<std::string> hosts_to_fetch;
   for (const auto& url : urls) {
-    base::flat_map<proto::OptimizationType,
-                   OptimizationGuideDecisionWithMetadata>
-        decisions = GetDecisionsWithCachedInformationForURLAndOptimizationTypes(
-            url, optimization_types);
-
-    bool has_something_to_fetch_for = false;
     if (!hint_cache_->HasURLKeyedEntryForURL(url)) {
       urls_to_fetch.insert(url);
-      has_something_to_fetch_for = true;
+      urls_with_pending_callback.insert(url);
     }
     // We check for the hint being loaded mostly for code simplicity. If we just
     // check for the presence in the cache and the hint wasn't loaded, we need
@@ -1012,14 +1010,21 @@ void HintsManager::CanApplyOptimizationOnDemand(
     if (!hint_cache_->HasHint(url.host()) ||
         (hint_cache_->GetHostKeyedHintIfLoaded(url.host()) == nullptr)) {
       hosts_to_fetch.insert(url.host());
-      has_something_to_fetch_for = true;
+      urls_with_pending_callback.insert(url);
     }
-    if (!has_something_to_fetch_for) {
+
+    if (!urls_with_pending_callback.contains(url)) {
+      // Only get decisions if we know we do not need to fetch for anything.
+      base::flat_map<proto::OptimizationType,
+                     OptimizationGuideDecisionWithMetadata>
+          decisions =
+              GetDecisionsWithCachedInformationForURLAndOptimizationTypes(
+                  url, optimization_types);
       callback.Run(url, decisions);
     }
   }
 
-  if (urls_to_fetch.empty() && hosts_to_fetch.empty()) {
+  if (urls_with_pending_callback.empty()) {
     // Nothing to fetch for.
     return;
   }
@@ -1037,7 +1042,7 @@ void HintsManager::CanApplyOptimizationOnDemand(
                      weak_ptr_factory_.GetWeakPtr(),
                      request_id_and_fetcher.first, request_context,
                      hosts_to_fetch.set(), urls_to_fetch.set(),
-                     optimization_types, callback));
+                     urls_with_pending_callback, optimization_types, callback));
 }
 
 void HintsManager::OnBatchUpdateHintsFetched(
@@ -1045,6 +1050,7 @@ void HintsManager::OnBatchUpdateHintsFetched(
     proto::RequestContext request_context,
     const base::flat_set<std::string>& hosts_requested,
     const base::flat_set<GURL>& urls_requested,
+    const base::flat_set<GURL>& urls_with_pending_callback,
     const base::flat_set<proto::OptimizationType>& optimization_types,
     OnDemandOptimizationGuideDecisionRepeatingCallback callback,
     absl::optional<std::unique_ptr<proto::GetHintsResponse>>
@@ -1052,7 +1058,8 @@ void HintsManager::OnBatchUpdateHintsFetched(
   CleanUpBatchUpdateHintsFetcher(request_id);
 
   if (!get_hints_response.has_value() || !get_hints_response.value()) {
-    OnBatchUpdateHintsStored(urls_requested, optimization_types, callback);
+    OnBatchUpdateHintsStored(urls_with_pending_callback, optimization_types,
+                             callback);
     return;
   }
 
@@ -1063,7 +1070,7 @@ void HintsManager::OnBatchUpdateHintsFetched(
       clock_->Now() + features::GetActiveTabsFetchRefreshDuration(),
       hosts_requested, urls_requested,
       base::BindOnce(&HintsManager::OnBatchUpdateHintsStored,
-                     weak_ptr_factory_.GetWeakPtr(), urls_requested,
+                     weak_ptr_factory_.GetWeakPtr(), urls_with_pending_callback,
                      optimization_types, callback));
 
   if (switches::IsDebugLogsEnabled()) {
