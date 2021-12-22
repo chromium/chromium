@@ -879,9 +879,13 @@ void AutofillPopupItemView::AddSpacerWithSize(int spacer_width,
 std::u16string AutofillPopupItemView::GetVoiceOverString() {
   base::WeakPtr<AutofillPopupController> controller =
       popup_view()->controller();
-  std::vector<std::u16string> text;
 
   auto suggestion = controller->GetSuggestionAt(GetLineNumber());
+
+  if (suggestion.voice_over)
+    return *suggestion.voice_over;
+
+  std::vector<std::u16string> text;
   std::u16string icon_name = GetIconAccessibleName(suggestion.icon);
   if (!icon_name.empty())
     text.push_back(icon_name);

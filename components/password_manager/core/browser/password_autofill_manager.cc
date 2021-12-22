@@ -128,6 +128,8 @@ void AppendSuggestionIfMatching(
     suggestion.label = GetHumanReadableRealm(signon_realm);
     suggestion.additional_label =
         std::u16string(password_length, kPasswordReplacementChar);
+    suggestion.voice_over = l10n_util::GetStringFUTF16(
+        IDS_PASSWORD_MANAGER_PASSWORD_FOR_ACCOUNT, suggestion.label);
     if (from_account_store) {
       suggestion.frontend_id =
           is_password_field

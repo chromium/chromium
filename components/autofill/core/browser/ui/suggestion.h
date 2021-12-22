@@ -10,6 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 namespace autofill {
@@ -85,6 +86,9 @@ struct Suggestion {
   IsLoading is_loading = IsLoading(false);
   // The In-Product-Help feature that should be shown for the suggestion.
   std::string feature_for_iph;
+
+  // If specified, this text will be played back as voice over for a11y.
+  absl::optional<std::u16string> voice_over;
 };
 
 }  // namespace autofill
