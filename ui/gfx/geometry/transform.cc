@@ -485,8 +485,23 @@ bool Transform::TransformRectReverse(RectF* rect) const {
 }
 
 bool Transform::TransformRRectF(RRectF* rrect) const {
+  // We want this to fail only in cases where our
+  // Transform::Preserves2dAxisAlignment returns false.  However,
+  // SkMatrix::preservesAxisAlignment is stricter (it lacks the kEpsilon
+  // test).  So after converting our skia::Matrix44 to SkMatrix, round
+  // relevant values less than kEpsilon to zero.
+  SkMatrix rounded_matrix(matrix_);
+  if (std::abs(rounded_matrix.get(SkMatrix::kMScaleX)) < kEpsilon)
+    rounded_matrix.set(SkMatrix::kMScaleX, 0.0f);
+  if (std::abs(rounded_matrix.get(SkMatrix::kMSkewX)) < kEpsilon)
+    rounded_matrix.set(SkMatrix::kMSkewX, 0.0f);
+  if (std::abs(rounded_matrix.get(SkMatrix::kMSkewY)) < kEpsilon)
+    rounded_matrix.set(SkMatrix::kMSkewY, 0.0f);
+  if (std::abs(rounded_matrix.get(SkMatrix::kMScaleY)) < kEpsilon)
+    rounded_matrix.set(SkMatrix::kMScaleY, 0.0f);
+
   SkRRect result;
-  if (!SkRRect(*rrect).transform(SkMatrix(matrix_), &result))
+  if (!SkRRect(*rrect).transform(rounded_matrix, &result))
     return false;
   *rrect = gfx::RRectF(result);
   return true;

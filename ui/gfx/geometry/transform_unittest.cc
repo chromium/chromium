@@ -2645,6 +2645,14 @@ TEST(XFormTest, TransformRRectF) {
   EXPECT_TRUE(rotation_90_Clock.TransformRRectF(&rrect));
   EXPECT_EQ(expected.ToString(), rrect.ToString());
 
+  Transform rotation_90_unrounded;
+  rotation_90_unrounded.Rotate(90.0);
+  rrect = RRectF(gfx::RectF(0, 0, 20.f, 25.f),
+                 gfx::RoundedCornersF(1.f, 2.f, 3.f, 4.f));
+  EXPECT_TRUE(rotation_90_unrounded.Preserves2dAxisAlignment());
+  EXPECT_TRUE(rotation_90_unrounded.TransformRRectF(&rrect));
+  EXPECT_EQ(expected.ToString(), rrect.ToString());
+
   Transform scale;
   scale.Scale(2.f, 2.f);
   rrect = RRectF(gfx::RectF(0, 0, 20.f, 25.f),
