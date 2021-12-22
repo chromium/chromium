@@ -101,6 +101,7 @@ public class WebPlatformTestsActivityTest {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "https://crbug.com/1282164")
     public void testNestedOpensAndCloses() throws Exception {
         final BlockingQueue<Integer> queue = new LinkedBlockingQueue<>();
         final int depthToTest = 3;
