@@ -359,6 +359,9 @@ chromium-metrics-reviews@google.com.
     Recorded during BrowserProcess teardown. Indicates that a Profile still has
     ScopedProfileKeepAlive objects referencing it, of the given origin. This is
     a sign of a bug, or incorrect usage of the ScopedProfileKeepAlive API.
+
+    Only regular Profiles are considered for this metric (no Incognito, Guest,
+    or System Profiles).
   </summary>
 </histogram>
 
@@ -369,7 +372,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Number of Profiles that are currently loaded in memory, with a non-zero
     refcount. Recorded 30 minutes after startup, and every 30 minutes
-    afterwards.
+    afterwards. Only regular Profiles are considered for this metric (no
+    Incognito, Guest, or System Profiles).
 
     See also Profile.ZombieProfileCount, the number of Profiles with a refcount
     of 0.
@@ -835,9 +839,10 @@ chromium-metrics-reviews@google.com.
   <owner>cbe-eng@google.com</owner>
   <summary>
     Number of Profiles that are in a &quot;zombie&quot; state. Recorded 30
-    minutes after startup, and every 30 minutes afterwards. A &quot;zombie&quot;
-    profile is one of 2 things, depending on the DestroyProfileOnBrowserClose
-    (DPoBC) variation:
+    minutes after startup, and every 30 minutes afterwards. Only regular
+    Profiles are considered for this metric (no Incognito, Guest, or System
+    Profiles). A &quot;zombie&quot; profile is one of 2 things, depending on the
+    DestroyProfileOnBrowserClose (DPoBC) variation:
 
     If DPoBC is false: the Profile has a refcount of 0, but is still loaded in
     memory.

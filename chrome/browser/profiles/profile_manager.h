@@ -589,6 +589,8 @@ class ProfileManager : public Profile::Delegate {
   // Set of profile dirs that were loaded during this browsing session at some
   // point (or are currently loaded). This is used to measure memory savings
   // from DestroyProfileOnBrowserClose.
+  //
+  // Doesn't include the System and Guest profile paths.
   std::set<base::FilePath> ever_loaded_profiles_;
 
   // Runs a task every 30 minutes to record the number of zombie & non-zombie

@@ -518,7 +518,7 @@ ProfileManager::~ProfileManager() {
       const ProfileInfo* profile_info = path_and_profile_info.second.get();
 
       Profile* profile = profile_info->GetRawProfile();
-      if (profile && profile->IsSystemProfile())
+      if (profile && !profile->IsRegularProfile())
         continue;
 
       for (const auto& origin_and_count : profile_info->keep_alives) {
@@ -2109,7 +2109,8 @@ ProfileManager::ProfileInfo* ProfileManager::RegisterOwnedProfile(
   ProfileInfo* info_raw = info.get();
   profiles_info_.insert(
       std::make_pair(profile_ptr->GetPath(), std::move(info)));
-  ever_loaded_profiles_.insert(profile_ptr->GetPath());
+  if (profile_ptr->IsRegularProfile())
+    ever_loaded_profiles_.insert(profile_ptr->GetPath());
   return info_raw;
 }
 
@@ -2120,7 +2121,8 @@ ProfileManager::ProfileInfo* ProfileManager::RegisterUnownedProfile(
   auto info = ProfileInfo::FromUnownedProfile(profile);
   ProfileInfo* info_raw = info.get();
   profiles_info_.insert(std::make_pair(path, std::move(info)));
-  ever_loaded_profiles_.insert(path);
+  if (profile->IsRegularProfile())
+    ever_loaded_profiles_.insert(path);
   return info_raw;
 }
 
