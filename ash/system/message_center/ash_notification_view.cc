@@ -430,7 +430,7 @@ AshNotificationView::~AshNotificationView() = default;
 void AshNotificationView::SetGroupedChildExpanded(bool expanded) {
   collapsed_summary_view_->SetVisible(!expanded);
   main_view_->SetVisible(expanded);
-  control_buttons_view_->SetVisible(expanded);
+  control_buttons_container_->SetVisible(expanded);
 }
 
 void AshNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {
