@@ -75,8 +75,8 @@ class BrowsingDataSettingsFunction : public ExtensionFunction {
   // indicating whether the data type is both selected and permitted to be
   // removed; and a value in the |permitted_dict| with the |data_type| as a
   // key, indicating only whether the data type is permitted to be removed.
-  void SetDetails(base::DictionaryValue* selected_dict,
-                  base::DictionaryValue* permitted_dict,
+  void SetDetails(base::Value* selected_dict,
+                  base::Value* permitted_dict,
                   const char* data_type,
                   bool is_selected);
 

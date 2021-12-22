@@ -161,16 +161,15 @@ ExtensionFunction::ResponseAction BrowsingDataSettingsFunction::Run() {
   // REMOVE_SITE_DATA in browsing_data_remover.h, the former for the unprotected
   // web, the latter for  protected web data. There is no UI control for
   // extension data.
-  std::unique_ptr<base::DictionaryValue> origin_types(
-      new base::DictionaryValue);
-  origin_types->SetBoolean(
+  base::Value origin_types(base::Value::Type::DICTIONARY);
+  origin_types.SetBoolKey(
       extension_browsing_data_api_constants::kUnprotectedWebKey,
       isDataTypeSelected(BrowsingDataType::COOKIES, tab));
-  origin_types->SetBoolean(
+  origin_types.SetBoolKey(
       extension_browsing_data_api_constants::kProtectedWebKey,
       isDataTypeSelected(BrowsingDataType::HOSTED_APPS_DATA, tab));
-  origin_types->SetBoolean(
-      extension_browsing_data_api_constants::kExtensionsKey, false);
+  origin_types.SetBoolKey(extension_browsing_data_api_constants::kExtensionsKey,
+                          false);
 
   // Fill deletion time period.
   int period_pref =
@@ -184,80 +183,77 @@ ExtensionFunction::ResponseAction BrowsingDataSettingsFunction::Run() {
     since = time.ToJsTime();
   }
 
-  std::unique_ptr<base::DictionaryValue> options(new base::DictionaryValue);
-  options->Set(extension_browsing_data_api_constants::kOriginTypesKey,
-               std::move(origin_types));
-  options->SetDoubleKey(extension_browsing_data_api_constants::kSinceKey,
-                        since);
+  base::Value options(base::Value::Type::DICTIONARY);
+  options.SetKey(extension_browsing_data_api_constants::kOriginTypesKey,
+                 std::move(origin_types));
+  options.SetDoubleKey(extension_browsing_data_api_constants::kSinceKey, since);
 
   // Fill dataToRemove and dataRemovalPermitted.
-  std::unique_ptr<base::DictionaryValue> selected(new base::DictionaryValue);
-  std::unique_ptr<base::DictionaryValue> permitted(new base::DictionaryValue);
+  base::Value selected(base::Value::Type::DICTIONARY);
+  base::Value permitted(base::Value::Type::DICTIONARY);
 
   bool delete_site_data =
       isDataTypeSelected(BrowsingDataType::COOKIES, tab) ||
       isDataTypeSelected(BrowsingDataType::HOSTED_APPS_DATA, tab);
 
-  SetDetails(selected.get(), permitted.get(),
+  SetDetails(&selected, &permitted,
              extension_browsing_data_api_constants::kCookiesKey,
              delete_site_data);
-  SetDetails(selected.get(), permitted.get(),
+  SetDetails(&selected, &permitted,
              extension_browsing_data_api_constants::kFileSystemsKey,
              delete_site_data);
-  SetDetails(selected.get(), permitted.get(),
+  SetDetails(&selected, &permitted,
              extension_browsing_data_api_constants::kIndexedDBKey,
              delete_site_data);
-  SetDetails(selected.get(), permitted.get(),
-      extension_browsing_data_api_constants::kLocalStorageKey,
-      delete_site_data);
-  SetDetails(selected.get(), permitted.get(),
+  SetDetails(&selected, &permitted,
+             extension_browsing_data_api_constants::kLocalStorageKey,
+             delete_site_data);
+  SetDetails(&selected, &permitted,
              extension_browsing_data_api_constants::kWebSQLKey,
              delete_site_data);
-  SetDetails(selected.get(), permitted.get(),
+  SetDetails(&selected, &permitted,
              extension_browsing_data_api_constants::kServiceWorkersKey,
              delete_site_data);
-  SetDetails(selected.get(), permitted.get(),
+  SetDetails(&selected, &permitted,
              extension_browsing_data_api_constants::kCacheStorageKey,
              delete_site_data);
   // PluginData is not supported anymore. (crbug.com/1135791)
-  SetDetails(selected.get(), permitted.get(),
+  SetDetails(&selected, &permitted,
              extension_browsing_data_api_constants::kPluginDataKeyDeprecated,
              false);
-  SetDetails(selected.get(), permitted.get(),
+  SetDetails(&selected, &permitted,
              extension_browsing_data_api_constants::kHistoryKey,
              isDataTypeSelected(BrowsingDataType::HISTORY, tab));
-  SetDetails(selected.get(), permitted.get(),
+  SetDetails(&selected, &permitted,
              extension_browsing_data_api_constants::kDownloadsKey,
              isDataTypeSelected(BrowsingDataType::DOWNLOADS, tab));
-  SetDetails(selected.get(), permitted.get(),
+  SetDetails(&selected, &permitted,
              extension_browsing_data_api_constants::kCacheKey,
              isDataTypeSelected(BrowsingDataType::CACHE, tab));
-  SetDetails(selected.get(), permitted.get(),
+  SetDetails(&selected, &permitted,
              extension_browsing_data_api_constants::kFormDataKey,
              isDataTypeSelected(BrowsingDataType::FORM_DATA, tab));
-  SetDetails(selected.get(), permitted.get(),
+  SetDetails(&selected, &permitted,
              extension_browsing_data_api_constants::kPasswordsKey,
              isDataTypeSelected(BrowsingDataType::PASSWORDS, tab));
 
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue);
-  result->Set(extension_browsing_data_api_constants::kOptionsKey,
-              std::move(options));
-  result->Set(extension_browsing_data_api_constants::kDataToRemoveKey,
-              std::move(selected));
-  result->Set(extension_browsing_data_api_constants::kDataRemovalPermittedKey,
-              std::move(permitted));
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetKey(extension_browsing_data_api_constants::kOptionsKey,
+                std::move(options));
+  result.SetKey(extension_browsing_data_api_constants::kDataToRemoveKey,
+                std::move(selected));
+  result.SetKey(extension_browsing_data_api_constants::kDataRemovalPermittedKey,
+                std::move(permitted));
+  return RespondNow(OneArgument(std::move(result)));
 }
 
-void BrowsingDataSettingsFunction::SetDetails(
-    base::DictionaryValue* selected_dict,
-    base::DictionaryValue* permitted_dict,
-    const char* data_type,
-    bool is_selected) {
+void BrowsingDataSettingsFunction::SetDetails(base::Value* selected_dict,
+                                              base::Value* permitted_dict,
+                                              const char* data_type,
+                                              bool is_selected) {
   bool is_permitted = IsRemovalPermitted(MaskForKey(data_type), prefs_);
-  selected_dict->SetBoolean(data_type, is_selected && is_permitted);
-  permitted_dict->SetBoolean(data_type, is_permitted);
+  selected_dict->SetBoolKey(data_type, is_selected && is_permitted);
+  permitted_dict->SetBoolKey(data_type, is_permitted);
 }
 
 BrowsingDataRemoverFunction::BrowsingDataRemoverFunction() = default;
@@ -303,11 +299,9 @@ ExtensionFunction::ResponseAction BrowsingDataRemoverFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(GetRemovalMask(&removal_mask_));
 
   const base::Value* origins =
-      options.FindKeyOfType(extension_browsing_data_api_constants::kOriginsKey,
-                            base::Value::Type::LIST);
-  const base::Value* exclude_origins = options.FindKeyOfType(
-      extension_browsing_data_api_constants::kExcludeOriginsKey,
-      base::Value::Type::LIST);
+      options.FindListKey(extension_browsing_data_api_constants::kOriginsKey);
+  const base::Value* exclude_origins = options.FindListKey(
+      extension_browsing_data_api_constants::kExcludeOriginsKey);
 
   // Check that only |origins| or |excludeOrigins| can be set.
   if (origins && exclude_origins) {

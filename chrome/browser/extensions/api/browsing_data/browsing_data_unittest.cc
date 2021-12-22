@@ -82,12 +82,11 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     return remover_->GetLastUsedOriginTypeMaskForTesting();
   }
 
-  uint64_t GetAsMask(const base::DictionaryValue* dict,
+  uint64_t GetAsMask(const base::Value* dict,
                      std::string path,
                      uint64_t mask_value) {
-    absl::optional<bool> result = dict->FindBoolPath(path);
-    EXPECT_TRUE(result.has_value()) << "for " << path;
-    return result.value() ? mask_value : 0;
+    EXPECT_TRUE(dict->FindBoolKey(path));
+    return *dict->FindBoolKey(path) ? mask_value : 0;
   }
 
   void RunBrowsingDataRemoveFunctionAndCompareRemovalMask(
@@ -142,15 +141,12 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     scoped_refptr<BrowsingDataSettingsFunction> function =
         new BrowsingDataSettingsFunction();
     SCOPED_TRACE("settings");
-    std::unique_ptr<base::Value> result_value(RunFunctionAndReturnSingleResult(
-        function.get(), std::string("[]"), browser()));
+    std::unique_ptr<base::Value> result = RunFunctionAndReturnSingleResult(
+        function.get(), std::string("[]"), browser());
 
-    base::DictionaryValue* result;
-    EXPECT_TRUE(result_value->GetAsDictionary(&result));
-    base::DictionaryValue* options;
-    EXPECT_TRUE(result->GetDictionary("options", &options));
-    absl::optional<double> since = options->FindDoubleKey("since");
-    ASSERT_TRUE(since);
+    EXPECT_TRUE(result->is_dict());
+    EXPECT_TRUE(result->FindDoublePath("options.since"));
+    double since = *result->FindDoublePath("options.since");
 
     double expected_since = 0;
     if (since_pref != browsing_data::TimePeriod::ALL_TIME) {
@@ -162,7 +158,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     // second, so we'll make sure the requested start time is within 10 seconds.
     // Since the smallest selectable period is an hour, that should be
     // sufficient.
-    EXPECT_LE(expected_since, *since + 10.0 * 1000.0);
+    EXPECT_LE(expected_since, since + 10.0 * 1000.0);
   }
 
   void SetPrefsAndVerifySettings(int data_type_flags,
@@ -229,24 +225,21 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     scoped_refptr<BrowsingDataSettingsFunction> function =
         new BrowsingDataSettingsFunction();
     SCOPED_TRACE("settings");
-    std::unique_ptr<base::Value> result_value(RunFunctionAndReturnSingleResult(
+    std::unique_ptr<base::Value> result(RunFunctionAndReturnSingleResult(
         function.get(), std::string("[]"), browser()));
 
-    base::DictionaryValue* result;
-    EXPECT_TRUE(result_value->GetAsDictionary(&result));
+    EXPECT_TRUE(result->is_dict());
 
-    base::DictionaryValue* options;
-    EXPECT_TRUE(result->GetDictionary("options", &options));
-    base::DictionaryValue* origin_types;
-    EXPECT_TRUE(options->GetDictionary("originTypes", &origin_types));
+    base::Value* origin_types = result->FindDictPath("options.originTypes");
+    EXPECT_TRUE(origin_types);
     uint64_t origin_type_mask =
         GetAsMask(origin_types, "unprotectedWeb", UNPROTECTED_WEB) |
         GetAsMask(origin_types, "protectedWeb", PROTECTED_WEB) |
         GetAsMask(origin_types, "extension", EXTENSION);
     EXPECT_EQ(expected_origin_type_mask, origin_type_mask);
 
-    base::DictionaryValue* data_to_remove;
-    EXPECT_TRUE(result->GetDictionary("dataToRemove", &data_to_remove));
+    base::Value* data_to_remove = result->FindDictKey("dataToRemove");
+    EXPECT_TRUE(data_to_remove);
     uint64_t removal_mask =
         GetAsMask(data_to_remove, "cache",
                   content::BrowsingDataRemover::DATA_TYPE_CACHE) |
@@ -471,13 +464,12 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalInputFromSettings) {
     scoped_refptr<BrowsingDataSettingsFunction> settings_function =
         new BrowsingDataSettingsFunction();
     SCOPED_TRACE("settings_json");
-    std::unique_ptr<base::Value> result_value(RunFunctionAndReturnSingleResult(
+    std::unique_ptr<base::Value> result(RunFunctionAndReturnSingleResult(
         settings_function.get(), std::string("[]"), browser()));
 
-    base::DictionaryValue* result;
-    EXPECT_TRUE(result_value->GetAsDictionary(&result));
-    base::DictionaryValue* data_to_remove;
-    EXPECT_TRUE(result->GetDictionary("dataToRemove", &data_to_remove));
+    EXPECT_TRUE(result->is_dict());
+    base::Value* data_to_remove = result->FindDictKey("dataToRemove");
+    EXPECT_TRUE(data_to_remove);
 
     JSONStringValueSerializer serializer(&json);
     EXPECT_TRUE(serializer.Serialize(*data_to_remove));
