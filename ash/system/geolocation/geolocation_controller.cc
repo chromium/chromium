@@ -17,6 +17,8 @@ namespace ash {
 
 namespace {
 
+GeolocationController* g_geolocation_controller = nullptr;
+
 // Delay to wait for a response to our geolocation request, if we get a response
 // after which, we will consider the request a failure.
 constexpr base::TimeDelta kGeolocationRequestTimeout = base::Seconds(60);
@@ -44,10 +46,19 @@ GeolocationController::GeolocationController(
   auto* timezone_settings = chromeos::system::TimezoneSettings::GetInstance();
   current_timezone_id_ = timezone_settings->GetCurrentTimezoneID();
   timezone_settings->AddObserver(this);
+  g_geolocation_controller = this;
 }
 
 GeolocationController::~GeolocationController() {
   chromeos::system::TimezoneSettings::GetInstance()->RemoveObserver(this);
+  DCHECK_EQ(g_geolocation_controller, this);
+  g_geolocation_controller = nullptr;
+}
+
+// static
+GeolocationController* GeolocationController::Get() {
+  DCHECK(g_geolocation_controller);
+  return g_geolocation_controller;
 }
 
 void GeolocationController::AddObserver(Observer* observer) {
@@ -110,12 +121,30 @@ void GeolocationController::OnGeoposition(const Geoposition& position,
     return;
   }
 
-  last_successful_geo_request_time_ = GetNow();
+  absl::optional<base::Time> previous_sunset;
+  absl::optional<base::Time> previous_sunrise;
+  bool possible_change_in_timezone = !geoposition_;
+  if (geoposition_) {
+    previous_sunset = GetSunsetTime();
+    previous_sunrise = GetSunriseTime();
+  }
 
   geoposition_ = std::make_unique<SimpleGeoposition>();
   geoposition_->latitude = position.latitude;
   geoposition_->longitude = position.longitude;
-  NotifyWithCurrentGeoposition(*geoposition_);
+
+  if (previous_sunset && previous_sunrise) {
+    // If the change in geoposition results in an hour or more in either sunset
+    // or sunrise times indicates of a possible timezone change.
+    constexpr base::TimeDelta kOneHourDuration = base::Hours(1);
+    possible_change_in_timezone =
+        (GetSunsetTime() - previous_sunset.value()).magnitude() >
+            kOneHourDuration ||
+        (GetSunriseTime() - previous_sunrise.value()).magnitude() >
+            kOneHourDuration;
+  }
+
+  NotifyGeopositionChange(possible_change_in_timezone);
 
   // On success, reset the backoff delay to its minimum value, and schedule
   // another request.
@@ -132,10 +161,10 @@ void GeolocationController::ScheduleNextRequest(base::TimeDelta delay) {
                 &GeolocationController::RequestGeoposition);
 }
 
-void GeolocationController::NotifyWithCurrentGeoposition(
-    SimpleGeoposition position) {
+void GeolocationController::NotifyGeopositionChange(
+    bool possible_change_in_timezone) {
   for (Observer& observer : observers_)
-    observer.OnGeopositionChanged(position);
+    observer.OnGeopositionChanged(possible_change_in_timezone);
 }
 
 void GeolocationController::RequestGeoposition() {

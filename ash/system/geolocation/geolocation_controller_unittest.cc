@@ -41,7 +41,7 @@ class GeolocationControllerObserver : public GeolocationController::Observer {
 
   // TODO(crbug.com/1269915): Add `sunset_` and `sunrise_` and update their
   // values when receiving the new position.
-  void OnGeopositionChanged(SimpleGeoposition position) override {
+  void OnGeopositionChanged(bool possible_change_in_timezone) override {
     position_received_num_++;
   }
 
