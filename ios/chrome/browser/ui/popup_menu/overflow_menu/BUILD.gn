@@ -81,6 +81,7 @@ swift_source_set("overflow_menu_swift") {
     "overflow_menu_destination_view.swift",
     "overflow_menu_footer.swift",
     "overflow_menu_footer_row.swift",
+    "overflow_menu_hosting_controller.swift",
     "overflow_menu_item.swift",
     "overflow_menu_model.swift",
     "overflow_menu_view.swift",

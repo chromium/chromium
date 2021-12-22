@@ -350,6 +350,10 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
       if (sheetPresentationController) {
         sheetPresentationController.delegate = self;
         sheetPresentationController.prefersGrabberVisible = YES;
+        sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
+        sheetPresentationController
+            .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+
         sheetPresentationController.detents = @[
           [UISheetPresentationControllerDetent mediumDetent],
           [UISheetPresentationControllerDetent largeDetent]
