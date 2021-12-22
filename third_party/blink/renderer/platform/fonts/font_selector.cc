@@ -43,12 +43,8 @@ AtomicString FontSelector::FamilyNameFromSettings(
              !generic_family.FamilyIsGeneric()) {
     // -webkit-standard is set internally only with a kGenericFamily type in
     // FontFallbackList::GetFontData. So that non-generic -webkit-standard has
-    // been specified on the page.
-    // TODO(crbug.com/1065468): Remove this counter when it's no longer
-    // necessary.
-    UseCounter::Count(
-        use_counter,
-        WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixStandard);
+    // been specified on the page. Don't treat it as <generic-family> keyword.
+    return g_empty_atom;
   }
 #if defined(OS_ANDROID)
   // TODO(crbug.com/1228189): Android does not have pre-installed math font.

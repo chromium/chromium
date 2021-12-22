@@ -14,7 +14,7 @@ PASS font-family: -webkit-ui-monospace treated as <font-family>, not <generic-na
 PASS font-family: -webkit-ui-rounded treated as <font-family>, not <generic-name>
 PASS font-family: NonGenericFontFamilyName treated as <font-family>, not <generic-name>
 FAIL font-family: -webkit-body treated as <font-family>, not <generic-name> assert_equals: expected 50 but got 25
-FAIL font-family: -webkit-standard treated as <font-family>, not <generic-name> assert_equals: expected 50 but got 25
+PASS font-family: -webkit-standard treated as <font-family>, not <generic-name>
 PASS font-family: -webkit-pictograph treated as <font-family>, not <generic-name>
 FAIL font-family: BlinkMacSystemFont treated as <font-family>, not <generic-name> assert_equals: expected 50 but got 32
 Harness: the test ran to completion.

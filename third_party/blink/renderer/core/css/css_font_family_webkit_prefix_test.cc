@@ -67,15 +67,6 @@ class CSSFontFamilyWebKitPrefixTest : public SimTest {
 };
 
 TEST_F(CSSFontFamilyWebKitPrefixTest,
-       CSSFontFamilyWebKitPrefixTest_WebKitStandard) {
-  ASSERT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixStandard));
-  LoadPageWithFontFamilyValue("-webkit-standard, serif");
-  ASSERT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kFontSelectorCSSFontFamilyWebKitPrefixStandard));
-}
-
-TEST_F(CSSFontFamilyWebKitPrefixTest,
        CSSFontFamilyWebKitPrefixTest_WebKitBodyFontBuilder) {
   ASSERT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kFontBuilderCSSFontFamilyWebKitPrefixBody));

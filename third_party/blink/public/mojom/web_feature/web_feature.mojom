@@ -3296,7 +3296,7 @@ enum WebFeature {
   kHighlightAPIRegisterHighlight = 3984,
   kReadOrWriteWebDatabaseThirdPartyContext = 3985,
   kOBSOLETE_FontSelectorCSSFontFamilyWebKitPrefixPictograph = 3986,
-  kFontSelectorCSSFontFamilyWebKitPrefixStandard = 3987,
+  kOBSOLETE_FontSelectorCSSFontFamilyWebKitPrefixStandard = 3987,
   kFontSelectorCSSFontFamilyWebKitPrefixBody = 3988,
   kFontBuilderCSSFontFamilyWebKitPrefixBody = 3989,
   kCapabilityDelegationOfPaymentRequest = 3990,
