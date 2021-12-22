@@ -40,10 +40,9 @@ class CastNavigationBrowserTest : public CastBrowserTest {
   void LoadAboutBlank() {
     content::WebContents* web_contents =
         NavigateToURL(GURL(url::kAboutBlankURL));
-    content::TitleWatcher title_watcher(
-        web_contents, base::ASCIIToUTF16(url::kAboutBlankURL));
+    content::TitleWatcher title_watcher(web_contents, url::kAboutBlankURL16);
     std::u16string result = title_watcher.WaitAndGetTitle();
-    EXPECT_EQ(url::kAboutBlankURL, base::UTF16ToASCII(result));
+    EXPECT_EQ(url::kAboutBlankURL16, result);
   }
   void PlayAudio(const std::string& media_file) {
     PlayMedia("audio", media_file);
