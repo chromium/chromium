@@ -222,6 +222,8 @@ class CapturedSitesPasswordManagerBrowserTest
                                   kAutofillUseUnassociatedListedElements},
         {});
     command_line->AppendSwitch(autofill::switches::kShowAutofillSignatures);
+    captured_sites_test_utils::TestRecipeReplayer::SetUpHostResolverRules(
+        command_line);
     captured_sites_test_utils::TestRecipeReplayer::SetUpCommandLine(
         command_line);
   }
