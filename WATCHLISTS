@@ -172,6 +172,7 @@
                   '|chromeos/assistant/'\
                   '|chromeos/services/assistant/'\
                   '|chromeos/services/libassistant/'\
+                  '|chrome/browser/ash/wallpaper_handlers/'\
                   '|chrome/browser/ash/web_applications/personalization_app/'\
                   '|chrome/browser/resources/settings/chromeos/ambient_mode_page/'\
                   '|chrome/browser/ui/ash/.*wallpaper.*/'\
