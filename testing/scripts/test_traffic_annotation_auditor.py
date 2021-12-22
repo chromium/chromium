@@ -108,13 +108,13 @@ def main_run(args):
         annotations_filename,
       ]
       rc = common.run_command(command_line)
+      cleanup_file(config_filename)
     else:
       print("Test failed without updating the annotations sheet.")
   except (valueError, OSError) as e:
     print("Error updating the annotations sheet", e)
   finally:
     cleanup_file(annotations_filename)
-    cleanup_file(config_filename)
     failures = ['Please refer to stdout for errors.'] if rc else []
     common.record_local_script_results(
        'test_traffic_annotation_auditor', args.output, failures, True)
