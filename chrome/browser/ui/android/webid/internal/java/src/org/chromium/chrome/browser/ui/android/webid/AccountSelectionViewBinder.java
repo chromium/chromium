@@ -237,6 +237,17 @@ class AccountSelectionViewBinder {
                     }
                     button.setTextColor(textColor);
                 }
+
+                Bitmap brandIcon = idpMetadata.getBrandIcon();
+                if (brandIcon != null) {
+                    Resources resources = context.getResources();
+                    int avatarSize = resources.getDimensionPixelSize(
+                            R.dimen.account_selection_continue_icon_size);
+                    Drawable croppedBrandIcon =
+                            AvatarGenerator.makeRoundAvatar(resources, brandIcon, avatarSize);
+                    button.setCompoundDrawablesWithIntrinsicBounds(
+                            croppedBrandIcon, null, null, null);
+                }
             }
         } else if (key == ContinueButtonProperties.ACCOUNT) {
             Account account = model.get(ContinueButtonProperties.ACCOUNT);

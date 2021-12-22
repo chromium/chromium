@@ -23,6 +23,8 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_utils.h"
 #include "url/origin.h"
 
@@ -65,6 +67,10 @@ constexpr char kJSONMimeType[] = "application/json";
 // 1 MiB is an arbitrary upper bound that should account for any reasonable
 // response size that is a part of this protocol.
 constexpr int maxResponseSizeInKiB = 1024;
+
+// safe_zone_diameter/icon_size as defined in
+// https://www.w3.org/TR/appmanifest/#icon-masks
+constexpr float kMaskableWebIconSafeZoneRatio = 0.8f;
 
 net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() {
   return net::DefineNetworkTrafficAnnotation("fedcm", R"(
@@ -177,7 +183,10 @@ absl::optional<SkColor> ParseCssColor(const std::string* value) {
 // Parse IdentityProviderMetadata from given value. Overwrites |idp_metadata|
 // with the parsed value.
 void ParseIdentityProviderMetadata(const base::Value& idp_metadata_value,
-                                   IdentityProviderMetadata& idp_metadata) {
+                                   int brand_icon_ideal_size,
+                                   int brand_icon_minimum_size,
+                                   IdentityProviderMetadata& idp_metadata,
+                                   GURL* brand_icon_url) {
   if (!idp_metadata_value.is_dict())
     return;
 
@@ -192,6 +201,37 @@ void ParseIdentityProviderMetadata(const base::Value& idp_metadata_value,
       if (text_contrast_ratio < color_utils::kMinimumReadableContrastRatio)
         idp_metadata.brand_text_color = absl::nullopt;
     }
+  }
+
+  const base::Value* icons_value = idp_metadata_value.FindKey("icons");
+  if (icons_value != nullptr && icons_value->is_list()) {
+    std::vector<blink::Manifest::ImageResource> icons;
+    for (const base::Value& icon_value : icons_value->GetList()) {
+      if (!icon_value.is_dict())
+        continue;
+
+      const std::string* icon_src = icon_value.FindStringKey("url");
+      if (icon_src == nullptr)
+        continue;
+
+      blink::Manifest::ImageResource icon;
+      icon.src = GURL(*icon_src);
+      if (!icon.src.is_valid())
+        continue;
+
+      icon.purpose = {blink::mojom::ManifestImageResource_Purpose::MASKABLE};
+
+      absl::optional<int> icon_size = icon_value.FindIntKey("size");
+      int icon_size_int = icon_size ? icon_size.value() : 0;
+      icon.sizes.emplace_back(icon_size_int, icon_size_int);
+
+      icons.push_back(icon);
+    }
+
+    *brand_icon_url = blink::ManifestIconSelector::FindBestMatchingSquareIcon(
+        icons, brand_icon_ideal_size / kMaskableWebIconSafeZoneRatio,
+        brand_icon_minimum_size / kMaskableWebIconSafeZoneRatio,
+        blink::mojom::ManifestImageResource_Purpose::MASKABLE);
   }
 }
 
@@ -255,7 +295,9 @@ IdpNetworkRequestManager::IdpNetworkRequestManager(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory)
     : provider_(provider),
       relying_party_origin_(relying_party_origin),
-      loader_factory_(loader_factory) {}
+      loader_factory_(loader_factory),
+      idp_brand_icon_ideal_size_(0),
+      idp_brand_icon_minimum_size_(0) {}
 
 IdpNetworkRequestManager::~IdpNetworkRequestManager() = default;
 
@@ -303,10 +345,16 @@ void IdpNetworkRequestManager::SendSigninRequest(
 
 void IdpNetworkRequestManager::SendAccountsRequest(
     const GURL& accounts_url,
+    int idp_brand_icon_ideal_size,
+    int idp_brand_icon_minimum_size,
+    BrandIconDownloader brand_icon_downloader,
     AccountsRequestCallback callback) {
   DCHECK(!url_loader_);
   DCHECK(!accounts_request_callback_);
+  idp_brand_icon_ideal_size_ = idp_brand_icon_ideal_size;
+  idp_brand_icon_minimum_size_ = idp_brand_icon_minimum_size;
   accounts_request_callback_ = std::move(callback);
+  brand_icon_downloader_ = std::move(brand_icon_downloader);
 
   // Use ReferrerPolicy::NO_REFERRER for this request so that relying party
   // identity is not exposed to the Identity provider via referrer.
@@ -590,9 +638,40 @@ void IdpNetworkRequestManager::OnAccountsRequestParsed(
   }
 
   IdentityProviderMetadata idp_metadata;
+  GURL idp_icon_url;
   const base::Value* idp_metadata_value = response.FindKey(kIdpBrandingKey);
   if (idp_metadata_value)
-    ParseIdentityProviderMetadata(*idp_metadata_value, idp_metadata);
+    ParseIdentityProviderMetadata(
+        *idp_metadata_value, idp_brand_icon_ideal_size_,
+        idp_brand_icon_minimum_size_, idp_metadata, &idp_icon_url);
+
+  auto on_icon_fetched_callback = base::BindOnce(
+      &IdpNetworkRequestManager::OnIdentityProviderBrandIconFetched,
+      weak_ptr_factory_.GetWeakPtr(), std::move(account_list),
+      std::move(idp_metadata));
+
+  if (idp_icon_url.is_valid()) {
+    std::move(brand_icon_downloader_)
+        .Run(idp_icon_url, idp_brand_icon_ideal_size_,
+             std::move(on_icon_fetched_callback));
+    return;
+  }
+
+  std::move(on_icon_fetched_callback).Run(0, 404, GURL(), {}, {});
+}
+
+void IdpNetworkRequestManager::OnIdentityProviderBrandIconFetched(
+    AccountList account_list,
+    IdentityProviderMetadata idp_metadata,
+    int id,
+    int http_status_code,
+    const GURL& image_url,
+    const std::vector<SkBitmap>& bitmaps,
+    const std::vector<gfx::Size>& sizes) {
+  if (bitmaps.size() == 1 && bitmaps[0].width() == bitmaps[0].height() &&
+      bitmaps[0].width() >= idp_brand_icon_minimum_size_) {
+    idp_metadata.brand_icon = bitmaps[0];
+  }
 
   std::move(accounts_request_callback_)
       .Run(FetchStatus::kSuccess, std::move(account_list),

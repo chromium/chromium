@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.android.webid.data;
 
+import android.graphics.Bitmap;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -15,15 +17,18 @@ import org.chromium.ui.util.ColorUtils;
 public class IdentityProviderMetadata {
     private final Integer mBrandTextColor;
     private final Integer mBrandBackgroundColor;
+    private final Bitmap mBrandIcon;
 
     @CalledByNative
-    public IdentityProviderMetadata(long brandTextColor, long brandBackgroundColor) {
+    public IdentityProviderMetadata(
+            long brandTextColor, long brandBackgroundColor, Bitmap brandIcon) {
         // Parameters are longs because ColorUtils.INVALID_COLOR does not fit in an int.
         mBrandTextColor =
                 (brandTextColor == ColorUtils.INVALID_COLOR) ? null : (int) brandTextColor;
         mBrandBackgroundColor = (brandBackgroundColor == ColorUtils.INVALID_COLOR)
                 ? null
                 : (int) brandBackgroundColor;
+        mBrandIcon = brandIcon;
     }
 
     public @Nullable Integer getBrandTextColor() {
@@ -32,5 +37,9 @@ public class IdentityProviderMetadata {
 
     public @Nullable Integer getBrandBackgroundColor() {
         return mBrandBackgroundColor;
+    }
+
+    public Bitmap getBrandIcon() {
+        return mBrandIcon;
     }
 }

@@ -48,6 +48,14 @@ IdentityProviderMetadata::~IdentityProviderMetadata() = default;
 IdentityProviderMetadata::IdentityProviderMetadata(
     const IdentityProviderMetadata& other) = default;
 
+int IdentityRequestDialogController::GetBrandIconIdealSize() {
+  return 0;
+}
+
+int IdentityRequestDialogController::GetBrandIconMinimumSize() {
+  return 0;
+}
+
 void IdentityRequestDialogController::ShowInitialPermissionDialog(
     WebContents* rp_web_contents,
     const GURL& idp_url,

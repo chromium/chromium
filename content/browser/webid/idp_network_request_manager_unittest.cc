@@ -5,16 +5,21 @@
 #include "content/browser/webid/idp_network_request_manager.h"
 
 #include <array>
+#include <map>
 #include <string>
 #include <tuple>
+#include <utility>
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "content/public/browser/manifest_icon_downloader.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 using AccountList = content::IdpNetworkRequestManager::AccountList;
@@ -26,6 +31,10 @@ using RevokeResponse = content::IdpNetworkRequestManager::RevokeResponse;
 namespace content {
 
 namespace {
+
+// Values for testing. Real minimum and ideal sizes are different.
+const int kTestIdpBrandIconMinimumSize = 16;
+const int kTestIdpBrandIconIdealSize = 32;
 
 const char kTestIdpUrl[] = "https://idp.test";
 const char kTestRpUrl[] = "https://rp.test";
@@ -42,6 +51,10 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   }
 
   void TearDown() override { manager_.reset(); }
+
+  void SetBitmapSpecsForUrl(const std::string& url, int size, int color) {
+    bitmap_specs_[GURL(url)] = std::make_pair(size, color);
+  }
 
   std::tuple<FetchStatus, AccountList, IdentityProviderMetadata>
   SendAccountsRequestAndWaitForResponse(const char* test_accounts) {
@@ -61,7 +74,12 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
           parsed_idp_metadata = std::move(idp_metadata);
           run_loop.Quit();
         });
-    manager().SendAccountsRequest(accounts_endpoint, std::move(callback));
+    manager().SendAccountsRequest(
+        accounts_endpoint, kTestIdpBrandIconIdealSize,
+        kTestIdpBrandIconMinimumSize,
+        base::BindOnce(&IdpNetworkRequestManagerTest::DownloadBitmap,
+                       base::Unretained(this)),
+        std::move(callback));
     run_loop.Run();
 
     return {parsed_accounts_response, parsed_accounts,
@@ -95,10 +113,31 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   }
 
  private:
+  void DownloadBitmap(const GURL& url,
+                      int ideal_icon_size,
+                      WebContents::ImageDownloadCallback callback) {
+    auto bitmap_specs_it = bitmap_specs_.find(url);
+    CHECK(bitmap_specs_.empty() || bitmap_specs_it != bitmap_specs_.end());
+
+    SkBitmap bitmap;
+    if (bitmap_specs_it != bitmap_specs_.end()) {
+      int bitmap_edge_size = bitmap_specs_it->second.first;
+      int bitmap_color = bitmap_specs_it->second.second;
+
+      bitmap.allocN32Pixels(bitmap_edge_size, bitmap_edge_size);
+      bitmap.eraseColor(bitmap_color);
+    }
+
+    std::move(callback).Run(0, 200, url, {bitmap},
+                            {gfx::Size(bitmap.width(), bitmap.height())});
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<IdpNetworkRequestManager> manager_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
+
+  std::map<GURL, std::pair<int, SkColor>> bitmap_specs_;
 };
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountEmpty) {
@@ -454,6 +493,96 @@ TEST_F(IdpNetworkRequestManagerTest,
   EXPECT_EQ(FetchStatus::kSuccess, accounts_response);
   EXPECT_EQ(absl::nullopt, idp_metadata.brand_background_color);
   EXPECT_EQ(absl::nullopt, idp_metadata.brand_text_color);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountBrandingSelectBestSize) {
+  const char test_accounts_json[] = R"({
+  "accounts" : [
+    {
+      "sub" : "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example"
+    }
+  ],
+  "branding" : {
+    "icons": [
+      {
+        "url": "https://example.com/10.png",
+        "size": 10
+      },
+      {
+        "url": "https://example.com/16.png",
+        "size": 16
+      },
+      {
+        "url": "https://example.com/39.png",
+        "size": 39
+      },
+      {
+        "url": "https://example.com/40.png",
+        "size": 40
+      },
+      {
+        "url": "https://example.com/41.png",
+        "size": 41
+      }
+    ]
+  }
+  })";
+
+  ASSERT_EQ(32, kTestIdpBrandIconIdealSize);
+  // 32 / kMaskableWebIconSafeZoneRatio = 40
+
+  SetBitmapSpecsForUrl("https://example.com/10.png", 10, SK_ColorBLACK);
+  SetBitmapSpecsForUrl("https://example.com/16.png", 16, SK_ColorBLACK);
+  SetBitmapSpecsForUrl("https://example.com/39.png", 39, SK_ColorBLACK);
+  SetBitmapSpecsForUrl("https://example.com/40.png", 40, SK_ColorBLUE);
+  SetBitmapSpecsForUrl("https://example.com/41.png", 41, SK_ColorBLACK);
+
+  FetchStatus accounts_response;
+  AccountList accounts;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(accounts_response, accounts, idp_metadata) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  EXPECT_EQ(FetchStatus::kSuccess, accounts_response);
+  EXPECT_FALSE(idp_metadata.brand_icon.isNull());
+  EXPECT_EQ(SK_ColorBLUE, idp_metadata.brand_icon.getColor(0, 0));
+}
+
+TEST_F(IdpNetworkRequestManagerTest,
+       ParseAccountBrandingIncorrectSizeInMetadata) {
+  const char test_accounts_json[] = R"({
+  "accounts" : [
+    {
+      "sub" : "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example"
+    }
+  ],
+  "branding" : {
+    "icons": [
+      {
+        "url": "https://example.com/icon.png",
+        "size": 32
+      }
+    ]
+  }
+  })";
+
+  SetBitmapSpecsForUrl("https://example.com/icon.png", 1, SK_ColorBLACK);
+
+  FetchStatus accounts_response;
+  AccountList accounts;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(accounts_response, accounts, idp_metadata) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  // Downloaded brand icon should not be used because it is too small.
+  EXPECT_TRUE(idp_metadata.brand_icon.isNull());
+
+  // An invalid brand icon should not prevent sign in.
+  EXPECT_EQ(FetchStatus::kSuccess, accounts_response);
 }
 
 // Tests the revoke implementation.
