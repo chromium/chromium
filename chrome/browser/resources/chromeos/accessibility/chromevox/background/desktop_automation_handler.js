@@ -673,6 +673,18 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
         override = !!walker || override;
       }
 
+      // Autofill popup menu items are always announced on selection events,
+      // independent of focus.
+      // The AutofillPopupSeparatorView is intentionally omitted because it
+      // cannot be focused.
+      if (target.className === 'AutofillPopupSuggestionView' ||
+          target.className === 'PasswordPopupSuggestionView' ||
+          target.className === 'AutofillPopupFooterView' ||
+          target.className === 'AutofillPopupWarningView' ||
+          target.className === 'AutofillPopupBaseView') {
+        override = true;
+      }
+
       // The popup view associated with a datalist element does not descend
       // from the input with which it is associated.
       if (focus.role === RoleType.TEXT_FIELD_WITH_COMBO_BOX &&

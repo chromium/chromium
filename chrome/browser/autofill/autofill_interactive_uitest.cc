@@ -86,6 +86,16 @@
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
+// Includes for ChromeVox accessibility tests.
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/speech_monitor.h"
+#include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "extensions/browser/browsertest_util.h"
+#include "ui/base/test/ui_controls.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
+
 using base::ASCIIToUTF16;
 using content::URLLoaderInterceptor;
 
@@ -3635,5 +3645,95 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          AutofillDynamicFormReplacementInteractiveTest,
                          testing::Bool());
+
+// ChromeVox is only available on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
+
+class AutofillChromeVoxTest : public AutofillInteractiveTestBase {
+ public:
+  AutofillChromeVoxTest() = default;
+  ~AutofillChromeVoxTest() override = default;
+
+  void TearDownOnMainThread() override {
+    // Unload the ChromeVox extension so the browser doesn't try to respond to
+    // in-flight requests during test shutdown. https://crbug.com/923090
+    ash::AccessibilityManager::Get()->EnableSpokenFeedback(false);
+    AutomationManagerAura::GetInstance()->Disable();
+  }
+
+  void EnableChromeVox() {
+    // Test setup.
+    // Enable ChromeVox, disable earcons and wait for key mappings to be
+    // fetched.
+    ASSERT_FALSE(ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+    // TODO(accessibility): fix console error/warnings and insantiate
+    // |console_observer_| here.
+
+    // Load ChromeVox and block until it's fully loaded.
+    ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
+    sm_.ExpectSpeechPattern("*");
+    sm_.Call([this]() { DisableEarcons(); });
+  }
+
+  void DisableEarcons() {
+    // Playing earcons from within a test is not only annoying if you're
+    // running the test locally, but seems to cause crashes
+    // (http://crbug.com/396507). Work around this by just telling
+    // ChromeVox to not ever play earcons (prerecorded sound effects).
+    extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+        browser()->profile(), extension_misc::kChromeVoxExtensionId,
+        "ChromeVox.earcons.playEarcon = function() {};");
+  }
+
+  ash::test::SpeechMonitor sm_;
+};
+
+// Ensure that autofill suggestions are properly read out via ChromeVox.
+// This is a regressions test for crbug.com/1208913.
+IN_PROC_BROWSER_TEST_F(AutofillChromeVoxTest,
+                       TestNotificationOfAutofillDropdown) {
+  CreateTestProfile();
+
+  // Load the test page.
+  SetTestUrlResponse(kTestShippingFormString);
+  ASSERT_NO_FATAL_FAILURE(
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl())));
+
+  EnableChromeVox();
+  content::EnableAccessibilityForWebContents(web_contents());
+
+  // The following contains a sequence of calls to
+  // sm_.ExpectSpeechPattern() and test_delegate()->Wait(). It is essential
+  // to first flush the expected speech patterns, otherwise the two functions
+  // start incompatible RunLoops.
+  sm_.ExpectSpeechPattern("Web Content");
+  sm_.Call([this]() {
+    content::WaitForAccessibilityTreeToContainNodeWithName(web_contents(),
+                                                           "First name:");
+    web_contents()->Focus();
+    test_delegate()->SetExpectations({ObservedUiEvents::kSuggestionShown});
+    FocusFieldByName("firstname");
+  });
+  sm_.ExpectSpeechPattern("First name:");
+  sm_.ExpectSpeechPattern("Edit text");
+  sm_.ExpectSpeechPattern("Region");
+  // Wait for suggestions popup to show up. This needs to happen before we
+  // simulate the cursor down key press.
+  sm_.Call([this]() { test_delegate()->Wait(); });
+  sm_.Call([this]() {
+    test_delegate()->SetExpectations({ObservedUiEvents::kPreviewFormData});
+    ASSERT_TRUE(
+        ui_controls::SendKeyPress(browser()->window()->GetNativeWindow(),
+                                  ui::VKEY_DOWN, false, false, false, false));
+  });
+  sm_.ExpectSpeechPattern("Autofill menu opened");
+  sm_.ExpectSpeechPattern("Milton 4120 Freidrich Lane");
+  sm_.ExpectSpeechPattern("List item");
+  sm_.ExpectSpeechPattern("1 of 2");
+  sm_.Call([this]() { test_delegate()->Wait(); });
+  sm_.Replay();
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace autofill

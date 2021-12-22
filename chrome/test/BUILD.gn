@@ -8517,6 +8517,12 @@ if (!is_android && !is_fuchsia) {
       "//third_party/mesa_headers",
       "//ui/resources:ui_test_pak_data",
     ]
+    if (is_chromeos_ash && enable_extensions) {
+      # For ChromeVox tests.
+      data_deps += [ "//chrome/browser/resources/chromeos/accessibility:build" ]
+      data += [ "$root_out_dir/resources/chromeos/" ]
+    }
+
     if (is_linux || is_chromeos || is_win) {
       data_deps += [ "//chrome:packed_resources" ]
     }

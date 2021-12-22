@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -35,6 +36,11 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/fill_layout.h"
+
+#if DCHECK_IS_ON()
+#include "base/containers/fixed_flat_set.h"
+#include "base/strings/string_piece.h"
+#endif
 
 namespace autofill {
 
@@ -186,6 +192,19 @@ void AutofillPopupBaseView::NotifyAXSelection(View* selected_view) {
     is_ax_menu_start_event_fired_ = true;
   }
   selected_view->GetViewAccessibility().SetPopupFocusOverride();
+#if DCHECK_IS_ON()
+  constexpr auto kDerivedClasses = base::MakeFixedFlatSet<base::StringPiece>(
+      {"AutofillPopupSuggestionView", "PasswordPopupSuggestionView",
+       "AutofillPopupFooterView", "AutofillPopupSeparatorView",
+       "AutofillPopupWarningView", "AutofillPopupBaseView"});
+  DCHECK(kDerivedClasses.contains(selected_view->GetClassName()))
+      << "If you add a new derived class from AutofillPopupRowView, add it "
+         "here and to onSelection(evt) in "
+         "chrome/browser/resources/chromeos/accessibility/chromevox/background/"
+         "desktop_automation_handler.js to ensure that ChromeVox announces "
+         "the item when selected. Missing class: "
+      << selected_view->GetClassName();
+#endif
   selected_view->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
 }
 
