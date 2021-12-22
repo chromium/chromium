@@ -133,7 +133,7 @@ void StatusAreaWidget::Initialize() {
   stop_recording_button_tray_ = stop_recording_button_tray.get();
   AddTrayButton(std::move(stop_recording_button_tray));
 
-  if (features::IsProjectorEnabled()) {
+  if (features::IsProjectorAnnotatorEnabled()) {
     auto projector_annotation_tray =
         std::make_unique<ProjectorAnnotationTray>(shelf_);
     projector_annotation_tray_ = projector_annotation_tray.get();

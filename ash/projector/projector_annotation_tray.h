@@ -45,11 +45,7 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
   // Updates the icon in the status area.
   void UpdateIcon();
 
-  // TODO(b/193579885): Hook up to Pen tools.
-  void OnRedPressed() {}
-  void OnYellowPressed() {}
-  void OnBlackPressed() {}
-  void OnWhitePressed() {}
+  void OnPenColorPressed(SkColor color);
 
   // Image view of the tray icon.
   views::ImageView* const image_view_;

@@ -63,9 +63,11 @@ std::string GetScreencastName() {
 
 ProjectorControllerImpl::ProjectorControllerImpl()
     : projector_session_(std::make_unique<ash::ProjectorSessionImpl>()),
-      ui_controller_(std::make_unique<ash::ProjectorUiController>(this)),
       metadata_controller_(
           std::make_unique<ash::ProjectorMetadataController>()) {
+  if (features::IsProjectorAnnotatorEnabled())
+    ui_controller_ = std::make_unique<ash::ProjectorUiController>(this);
+
   projector_session_->AddObserver(this);
 }
 
@@ -136,11 +138,6 @@ void ProjectorControllerImpl::OnSpeechRecognitionAvailabilityChanged(
 
 void ProjectorControllerImpl::OnTranscription(
     const media::SpeechRecognitionResult& result) {
-  // Render transcription.
-  if (is_caption_on_) {
-    ui_controller_->OnTranscription(result.transcription, result.is_final);
-  }
-
   if (result.is_final && result.timing_information.has_value()) {
     // Records final transcript.
     metadata_controller_->RecordTranscription(result);
@@ -228,28 +225,15 @@ void ProjectorControllerImpl::OnUndoRedoAvailabilityChanged(
   // Projector toolbar.
 }
 
-void ProjectorControllerImpl::SetCaptionBubbleState(bool is_on) {
-  ui_controller_->SetCaptionBubbleState(is_on);
-}
-
-void ProjectorControllerImpl::OnCaptionBubbleModelStateChanged(bool is_on) {
-  is_caption_on_ = is_on;
-}
-
-void ProjectorControllerImpl::MarkKeyIdea() {
-  metadata_controller_->RecordKeyIdea();
-  ui_controller_->OnKeyIdeaMarked();
-}
-
 void ProjectorControllerImpl::OnRecordingStarted(bool is_in_projector_mode) {
   if (!is_in_projector_mode) {
     OnNewScreencastPreconditionChanged();
     return;
   }
+  if (ui_controller_)
+    ui_controller_->ShowToolbar();
 
-  ui_controller_->ShowToolbar();
   StartSpeechRecognition();
-  ui_controller_->OnRecordingStateChanged(true /* started */);
   metadata_controller_->OnRecordingStarted();
 }
 
@@ -262,13 +246,14 @@ void ProjectorControllerImpl::OnRecordingEnded(bool is_in_projector_mode) {
   DCHECK(projector_session_->is_active());
 
   StopSpeechRecognition();
-  ui_controller_->OnRecordingStateChanged(false /* started */);
 
   // TODO(b/197152209): move closing selfie cam to ProjectorUiController.
   if (client_->IsSelfieCamVisible())
     client_->CloseSelfieCam();
-  // Close Projector toolbar.
-  ui_controller_->CloseToolbar();
+
+  // Close Projector toolbar if ui controller is present.
+  if (ui_controller_)
+    ui_controller_->CloseToolbar();
 
   if (projector_session_->screencast_container_path()) {
     // Finish saving the screencast if the container is available. The container
@@ -299,41 +284,26 @@ void ProjectorControllerImpl::OnRecordingStartAborted() {
 }
 
 void ProjectorControllerImpl::OnLaserPointerPressed() {
+  DCHECK(ui_controller_);
   ui_controller_->OnLaserPointerPressed();
 }
 
 void ProjectorControllerImpl::OnMarkerPressed() {
+  DCHECK(ui_controller_);
   ui_controller_->OnMarkerPressed();
 }
 
-void ProjectorControllerImpl::OnClearAllMarkersPressed() {
-  ui_controller_->OnClearAllMarkersPressed();
+void ProjectorControllerImpl::ResetTools() {
+  if (ui_controller_)
+    ui_controller_->ResetTools();
 }
 
-void ProjectorControllerImpl::OnUndoPressed() {
-  ui_controller_->OnUndoPressed();
+bool ProjectorControllerImpl::IsLaserPointerEnabled() {
+  return ui_controller_ && ui_controller_->IsLaserPointerEnabled();
 }
 
-void ProjectorControllerImpl::OnSelfieCamPressed(bool enabled) {
-  ui_controller_->OnSelfieCamPressed(enabled);
-
-  DCHECK_NE(client_, nullptr);
-  if (enabled == client_->IsSelfieCamVisible())
-    return;
-
-  if (enabled) {
-    client_->ShowSelfieCam();
-    return;
-  }
-  client_->CloseSelfieCam();
-}
-
-void ProjectorControllerImpl::OnMagnifierButtonPressed(bool enabled) {
-  ui_controller_->OnMagnifierButtonPressed(enabled);
-}
-
-void ProjectorControllerImpl::OnChangeMarkerColorPressed(SkColor new_color) {
-  ui_controller_->OnChangeMarkerColorPressed(new_color);
+bool ProjectorControllerImpl::IsAnnotatorEnabled() {
+  return ui_controller_ && ui_controller_->is_annotator_enabled();
 }
 
 void ProjectorControllerImpl::OnNewScreencastPreconditionChanged() {

@@ -6,9 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/fast_ink/laser/laser_pointer_controller.h"
-#include "ash/marker/marker_controller.h"
 #include "ash/projector/projector_controller_impl.h"
-#include "ash/projector/ui/projector_bar_view.h"
+#include "ash/projector/ui/projector_color_button.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
@@ -61,27 +60,15 @@ constexpr SkColor kYellowPenColor = SkColorSetRGB(0xFB, 0xBC, 0x04);
 enum ProjectorTool { kToolNone, kToolLaser, kToolPen };
 
 ProjectorTool GetCurrentTool() {
-  // TODO(b/201664243): Use ProjectorControllerImpl to get status.
-  auto* marker_controller = MarkerController::Get();
-  if (marker_controller && marker_controller->is_enabled()) {
-    // TODO(b/193579885): Make sure this queries the pen tool correctly.
+  auto* controller = Shell::Get()->projector_controller();
+  // ProjctorController may not be available yet as the ProjectorAnnotationTray
+  // is created before it.
+  if (!controller)
+    return kToolNone;
+
+  if (controller->IsAnnotatorEnabled())
     return kToolPen;
-  }
-
-  auto* laser_pointer_controller = Shell::Get()->laser_pointer_controller();
-  return laser_pointer_controller && laser_pointer_controller->is_enabled()
-             ? kToolLaser
-             : kToolNone;
-}
-
-void EnableLaserPointer(bool enabled) {
-  auto* laser_pointer_controller = Shell::Get()->laser_pointer_controller();
-  DCHECK(laser_pointer_controller);
-  laser_pointer_controller->SetEnabled(enabled);
-}
-
-void EnablePen(bool enabled) {
-  // TODO(b/193579885): Hook up to Pen tools.
+  return controller->IsLaserPointerEnabled() ? kToolLaser : kToolNone;
 }
 
 const gfx::VectorIcon& GetIconForTool(ProjectorTool tool) {
@@ -246,23 +233,23 @@ void ProjectorAnnotationTray::ShowBubble() {
 
     // TODO(b/201664243): Only draw outer circle on hover or selection.
     marker_view_container->AddChildView(std::make_unique<ProjectorColorButton>(
-        base::BindRepeating(&ProjectorAnnotationTray::OnRedPressed,
-                            base::Unretained(this)),
+        base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
+                            base::Unretained(this), kRedPenColor),
         kRedPenColor, kColorButtonColorViewSize, kColorButtonViewRadius,
         l10n_util::GetStringUTF16(IDS_RED_COLOR_BUTTON)));
     marker_view_container->AddChildView(std::make_unique<ProjectorColorButton>(
-        base::BindRepeating(&ProjectorAnnotationTray::OnYellowPressed,
-                            base::Unretained(this)),
+        base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
+                            base::Unretained(this), kYellowPenColor),
         kYellowPenColor, kColorButtonColorViewSize, kColorButtonViewRadius,
         l10n_util::GetStringUTF16(IDS_YELLOW_COLOR_BUTTON)));
     marker_view_container->AddChildView(std::make_unique<ProjectorColorButton>(
-        base::BindRepeating(&ProjectorAnnotationTray::OnBlackPressed,
-                            base::Unretained(this)),
+        base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
+                            base::Unretained(this), SK_ColorBLACK),
         SK_ColorBLACK, kColorButtonColorViewSize, kColorButtonViewRadius,
         l10n_util::GetStringUTF16(IDS_BLACK_COLOR_BUTTON)));
     marker_view_container->AddChildView(std::make_unique<ProjectorColorButton>(
-        base::BindRepeating(&ProjectorAnnotationTray::OnWhitePressed,
-                            base::Unretained(this)),
+        base::BindRepeating(&ProjectorAnnotationTray::OnPenColorPressed,
+                            base::Unretained(this), SK_ColorWHITE),
         SK_ColorWHITE, kColorButtonColorViewSize, kColorButtonViewRadius,
         l10n_util::GetStringUTF16(IDS_WHITE_COLOR_BUTTON)));
 
@@ -315,24 +302,23 @@ void ProjectorAnnotationTray::OnThemeChanged() {
 }
 
 void ProjectorAnnotationTray::OnViewClicked(views::View* sender) {
+  auto* projector_controller = ProjectorControllerImpl::Get();
+  DCHECK(projector_controller);
+
   if (sender == pen_view_) {
-    auto* projector_controller = ProjectorControllerImpl::Get();
-    DCHECK(projector_controller);
     projector_controller->OnMarkerPressed();
-    CloseBubble();
   } else if (sender == laser_view_) {
-    auto* projector_controller = ProjectorControllerImpl::Get();
-    DCHECK(projector_controller);
     projector_controller->OnLaserPointerPressed();
-    CloseBubble();
   }
+
+  CloseBubble();
   UpdateIcon();
 }
 
 void ProjectorAnnotationTray::DeactivateActiveTool() {
-  // TODO(b/201664243): Use ProjectorControllerImpl to disable.
-  EnablePen(false);
-  EnableLaserPointer(false);
+  auto* controller = Shell::Get()->projector_controller();
+  DCHECK(controller);
+  controller->ResetTools();
   UpdateIcon();
 }
 
@@ -342,6 +328,14 @@ void ProjectorAnnotationTray::UpdateIcon() {
       GetIconForTool(tool),
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary)));
+}
+
+void ProjectorAnnotationTray::OnPenColorPressed(SkColor color) {
+  // TODO(b/201664243) Pass the color for the marker.
+  auto* projector_controller = ProjectorControllerImpl::Get();
+  DCHECK(projector_controller);
+  projector_controller->OnMarkerPressed();
+  CloseBubble();
 }
 
 }  // namespace ash

@@ -64,15 +64,6 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController,
   void CreateScreencastContainerFolder(
       CreateScreencastContainerFolderCallback callback);
 
-  // Sets Caption bubble state to become opened/closed.
-  void SetCaptionBubbleState(bool is_on);
-
-  // Callback on when the caption bubble model state changes.
-  void OnCaptionBubbleModelStateChanged(bool is_on);
-
-  // Mark a key idea.
-  void MarkKeyIdea();
-
   // Called by Capture Mode to notify with the state of a video recording.
   // `is_in_projector_mode` indicates whether it's a projector-initiated video
   // recording.
@@ -88,16 +79,12 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController,
   void OnLaserPointerPressed();
   // Invoked when marker button is pressed.
   void OnMarkerPressed();
-  // Invoked when clear all markers button is pressed.
-  void OnClearAllMarkersPressed();
-  // Invoked when the undo button is pressed.
-  void OnUndoPressed();
-  // Invoked when selfie cam button is pressed.
-  void OnSelfieCamPressed(bool enabled);
-  // Invoked when magnifier button is pressed.
-  void OnMagnifierButtonPressed(bool enabled);
-  // Invoked when the marker color has been requested to change.
-  void OnChangeMarkerColorPressed(SkColor new_color);
+  // Reset and disable the laser pointer and the annotator tools.
+  void ResetTools();
+  // Returns true if laser pointer is active.
+  bool IsLaserPointerEnabled();
+  // Returns true if annotator is active.
+  bool IsAnnotatorEnabled();
 
   // Notifies the ProjectorClient if the Projector SWA can trigger a
   // new Projector session. The preconditions are calculated in
@@ -146,9 +133,6 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController,
   std::unique_ptr<ProjectorSessionImpl> projector_session_;
   std::unique_ptr<ProjectorUiController> ui_controller_;
   std::unique_ptr<ProjectorMetadataController> metadata_controller_;
-
-  // Whether the caption bubble ui is being shown or not.
-  bool is_caption_on_ = false;
 
   // Whether SODA is available on the device.
   SpeechRecognitionAvailability speech_recognition_availability_ =
