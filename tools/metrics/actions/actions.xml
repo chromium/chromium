@@ -19578,6 +19578,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Promo.EnhancedProtectionPromo.Accepted">
+  <obsolete>Removed from code in 2021-12.</obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <description>
@@ -19586,6 +19587,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.Promo.EnhancedProtectionPromo.Dismissed">
+  <obsolete>Removed from code in 2021-12.</obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <description>

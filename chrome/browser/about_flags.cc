@@ -1931,24 +1931,6 @@ const FeatureEntry::FeatureVariation kConditionalTabStripAndroidVariations[] = {
     {"60 minutes", kConditionalTabStripAndroid_60Minutes,
      base::size(kConditionalTabStripAndroid_60Minutes), nullptr},
 };
-
-const FeatureEntry::FeatureParam
-    kEnhancedProtectionPromoCard_SigninPromoImpressions_Count1[] = {
-        {"MaxSigninPromoImpressions", "1"}};
-const FeatureEntry::FeatureParam
-    kEnhancedProtectionPromoCard_SigninPromoImpressions_Count5[] = {
-        {"MaxSigninPromoImpressions", "5"}};
-const FeatureEntry::FeatureVariation kEnhancedProtectionPromoCardVariations[] =
-    {
-        {"Max Impressions 1",
-         kEnhancedProtectionPromoCard_SigninPromoImpressions_Count1,
-         base::size(kEnhancedProtectionPromoCard_SigninPromoImpressions_Count1),
-         nullptr},
-        {"Max Impressions 5",
-         kEnhancedProtectionPromoCard_SigninPromoImpressions_Count5,
-         base::size(kEnhancedProtectionPromoCard_SigninPromoImpressions_Count5),
-         nullptr},
-};
 #endif  // OS_ANDROID
 
 #if defined(OS_ANDROID)
@@ -5907,14 +5889,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSearchHistoryLink)},
 
 #if defined(OS_ANDROID)
-    {"safe-browsing-enhanced-protection-promo-android",
-     flag_descriptions::kEnhancedProtectionPromoAndroidName,
-     flag_descriptions::kEnhancedProtectionPromoAndroidDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kEnhancedProtectionPromoCard,
-         kEnhancedProtectionPromoCardVariations,
-         "EnhancedProtectionPromoCard")},
-
     {"safe-browsing-password-protection-for-signed-in-users",
      flag_descriptions::kPasswordProtectionForSignedInUsersName,
      flag_descriptions::kPasswordProtectionForSignedInUsersDescription,

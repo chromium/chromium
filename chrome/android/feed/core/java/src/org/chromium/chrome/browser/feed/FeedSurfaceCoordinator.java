@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.feed.settings.FeedAutoplaySettingsFragment;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
-import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedProtectionPromoController;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
@@ -111,11 +110,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     private FrameLayout mRootView;
     private boolean mIsActive;
     private int mHeaderCount;
-
-    // Enhanced Protection promo view will be not-null once we have it created, until it is
-    // destroyed.
-    private @Nullable View mEnhancedProtectionPromoView;
-    private @Nullable EnhancedProtectionPromoController mEnhancedProtectionPromoController;
 
     // Used when Feed is enabled.
     private @Nullable Profile mProfile;
@@ -311,11 +305,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
 
         mHandler = new Handler(Looper.getMainLooper());
 
-        if (isEnhancedProtectionPromoEnabled()) {
-            mEnhancedProtectionPromoController =
-                    new EnhancedProtectionPromoController(mActivity, mProfile);
-        }
-
         // MVC setup for feed header.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
             mSectionHeaderView = (SectionHeaderView) LayoutInflater.from(mActivity).inflate(
@@ -372,9 +361,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         stopBubbleTriggering();
         if (mFeedSurfaceLifecycleManager != null) mFeedSurfaceLifecycleManager.destroy();
         mFeedSurfaceLifecycleManager = null;
-        if (mEnhancedProtectionPromoController != null) {
-            mEnhancedProtectionPromoController.destroy();
-        }
         stopScrollTracking();
         if (mSectionHeaderModelChangeProcessor != null) {
             mSectionHeaderModelChangeProcessor.destroy();
@@ -655,9 +641,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         if (mNtpHeader != null) UiUtils.removeViewFromParent(mNtpHeader);
         UiUtils.removeViewFromParent(mSectionHeaderView);
         if (mSigninPromoView != null) UiUtils.removeViewFromParent(mSigninPromoView);
-        if (mEnhancedProtectionPromoView != null) {
-            UiUtils.removeViewFromParent(mEnhancedProtectionPromoView);
-        }
 
         // Directly add header views to content manager.
         List<View> headerList = new ArrayList<>();
@@ -741,12 +724,6 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
             mFeedSurfaceLifecycleManager = null;
             mStream = null;
             mSigninPromoView = null;
-
-            mEnhancedProtectionPromoView = null;
-            if (mEnhancedProtectionPromoController != null) {
-                mEnhancedProtectionPromoController.destroy();
-                mEnhancedProtectionPromoController = null;
-            }
         }
 
         mScrollViewForPolicy = new PolicyScrollView(mActivity);
@@ -793,8 +770,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     /**
      * Update header views in the Feed.
      */
-    void updateHeaderViews(
-            boolean isSignInPromoVisible, @Nullable View enhancedProtectionPromoView) {
+    void updateHeaderViews(boolean isSignInPromoVisible) {
         if (mStream == null) return;
 
         List<View> headers = new ArrayList<>();
@@ -803,25 +779,12 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
             headers.add(mNtpHeader);
         }
 
-        if (enhancedProtectionPromoView != null) {
-            mEnhancedProtectionPromoView = enhancedProtectionPromoView;
-            headers.add(enhancedProtectionPromoView);
-        }
-
         headers.add(mSectionHeaderView);
 
         if (isSignInPromoVisible) {
             headers.add(getSigninPromoView());
         }
         setHeaders(headers);
-    }
-
-    EnhancedProtectionPromoController getEnhancedProtectionPromoController() {
-        return mEnhancedProtectionPromoController;
-    }
-
-    private boolean isEnhancedProtectionPromoEnabled() {
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD);
     }
 
     @VisibleForTesting

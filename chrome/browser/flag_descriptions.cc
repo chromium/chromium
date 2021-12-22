@@ -3456,12 +3456,6 @@ const char kSafeBrowsingClientSideDetectionAndroidName[] =
 const char kSafeBrowsingClientSideDetectionAndroidDescription[] =
     "Enable DOM feature collection on Safe Browsing pings on Android";
 
-const char kEnhancedProtectionPromoAndroidName[] =
-    "Enable enhanced protection promo card on Android on the New Tab Page";
-const char kEnhancedProtectionPromoAndroidDescription[] =
-    "Enable enhanced protection promo card for users that have not signed up "
-    "for enhanced protection.";
-
 const char kScrollCaptureName[] = "Scroll Capture";
 const char kScrollCaptureDescription[] =
     "Enables scrolling screenshot capture for web contents.";

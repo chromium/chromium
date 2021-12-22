@@ -3658,25 +3658,6 @@
             ]
         }
     ],
-    "EnhancedProtectionPromoCard": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "MaxEnhancedProtectionPromoImpressions": "5",
-                        "MaxSigninPromoImpressions": "5"
-                    },
-                    "enable_features": [
-                        "EnhancedProtectionPromoCard"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExperimentalAccessibilityLabels": [
         {
             "platforms": [

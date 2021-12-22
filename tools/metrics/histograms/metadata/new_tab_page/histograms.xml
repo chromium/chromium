@@ -1355,6 +1355,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.Promo.EnhancedProtectionPromo"
     enum="AndroidEnhancedProtectionPromoAction" expires_after="2022-05-15">
+  <obsolete>
+    Removed from code in 2021-12.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-core@google.com</owner>
   <summary>
@@ -1366,6 +1369,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="NewTabPage.Promo.EnhancedProtectionPromo.ImpressionUntilAction"
     units="units" expires_after="2022-05-22">
+  <obsolete>
+    Removed from code in 2021-12.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-core@google.com</owner>
   <summary>
@@ -1378,6 +1384,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="NewTabPage.Promo.EnhancedProtectionPromo.ImpressionUntilDismissal"
     units="units" expires_after="2022-05-29">
+  <obsolete>
+    Removed from code in 2021-12.
+  </obsolete>
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-core@google.com</owner>
   <summary>

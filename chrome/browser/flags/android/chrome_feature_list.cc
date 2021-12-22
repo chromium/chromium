@@ -223,7 +223,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDynamicColorAndroid,
     &kEnableDangerousDownloadDialog,
     &kEnableDuplicateDownloadDialog,
-    &kEnhancedProtectionPromoCard,
     &kExperimentsForAgsa,
     &kExploreSites,
     &kFixedUmaSessionResumeOrder,
@@ -612,9 +611,6 @@ const base::Feature kEnableDuplicateDownloadDialog{
 
 const base::Feature kEnableMixedContentDownloadDialog{
     "EnableMixedContentDownloadDialog", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kEnhancedProtectionPromoCard{
-    "EnhancedProtectionPromoCard", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kExperimentsForAgsa{"ExperimentsForAgsa",
                                         base::FEATURE_ENABLED_BY_DEFAULT};

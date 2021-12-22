@@ -111,8 +111,6 @@ import java.util.List;
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "disable-features=IPH_FeedHeaderMenu"})
 @Features.EnableFeatures(ChromeFeatureList.INTEREST_FEED_V2)
-@Features.
-DisableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD})
 public class FeedV2NewTabPageTest {
     private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
     private static final int SIGNIN_PROMO_POSITION = 2;

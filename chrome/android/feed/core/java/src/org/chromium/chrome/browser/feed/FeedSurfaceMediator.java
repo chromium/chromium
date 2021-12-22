@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.feed.sections.ViewVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
-import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedProtectionPromoController.EnhancedProtectionPromoStateListener;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -77,8 +76,7 @@ import java.util.Locale;
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 public class FeedSurfaceMediator
         implements FeedSurfaceScrollDelegate, TouchEnabledDelegate, TemplateUrlServiceObserver,
-                   ListMenu.Delegate, EnhancedProtectionPromoStateListener,
-                   IdentityManager.Observer {
+                   ListMenu.Delegate, IdentityManager.Observer {
     private static final String TAG = "FeedSurfaceMediator";
     private static final int INTEREST_FEED_HEADER_POSITION = 0;
 
@@ -144,7 +142,7 @@ public class FeedSurfaceMediator
             if (isVisible() == visible) return;
 
             super.setVisibilityInternal(visible);
-            mCoordinator.updateHeaderViews(visible, null);
+            mCoordinator.updateHeaderViews(visible);
             maybeUpdateSignInPromo();
         }
 
@@ -169,7 +167,7 @@ public class FeedSurfaceMediator
         @Override
         public void onDismissPromo() {
             super.onDismissPromo();
-            mCoordinator.updateHeaderViews(false, null);
+            mCoordinator.updateHeaderViews(false);
         }
     }
 
@@ -197,7 +195,6 @@ public class FeedSurfaceMediator
     private @Nullable SignInPromo mSignInPromo;
     private RecyclerViewAnimationFinishDetector mRecyclerViewAnimationFinishDetector =
             new RecyclerViewAnimationFinishDetector();
-    private @Nullable View mEnhancedProtectionPromo;
 
     private boolean mFeedEnabled;
     private boolean mTouchEnabled = true;
@@ -601,12 +598,7 @@ public class FeedSurfaceMediator
 
     private void initStreamHeaderViews() {
         boolean signInPromoVisible = createSignInPromoIfNeeded();
-        mEnhancedProtectionPromo = null;
-        if (!signInPromoVisible) {
-            mEnhancedProtectionPromo = createEnhancedProtectionPromoIfNeeded();
-        }
-        // We are not going to show two promos at the same time.
-        mCoordinator.updateHeaderViews(signInPromoVisible, mEnhancedProtectionPromo);
+        mCoordinator.updateHeaderViews(signInPromoVisible);
     }
 
     /**
@@ -625,19 +617,6 @@ public class FeedSurfaceMediator
             mSignInPromo.setCanShowPersonalizedSuggestions(isSuggestionsVisible());
         }
         return mSignInPromo.isVisible();
-    }
-
-    private View createEnhancedProtectionPromoIfNeeded() {
-        if (mCoordinator.getEnhancedProtectionPromoController() == null) return null;
-
-        View enhancedProtectionPromoView =
-                mCoordinator.getEnhancedProtectionPromoController().getPromoView();
-        if (enhancedProtectionPromoView != null) {
-            mCoordinator.getEnhancedProtectionPromoController()
-                    .setEnhancedProtectionPromoStateListener(this);
-            updatePromoCardPadding(enhancedProtectionPromoView);
-        }
-        return enhancedProtectionPromoView;
     }
 
     private void updatePromoCardPadding(View promoCard) {
@@ -764,9 +743,6 @@ public class FeedSurfaceMediator
 
         if (mSignInPromo != null) {
             mSignInPromo.setCanShowPersonalizedSuggestions(suggestionsVisible);
-        }
-        if (mEnhancedProtectionPromo != null) {
-            updatePromoCardPadding(mEnhancedProtectionPromo);
         }
         if (suggestionsVisible) mCoordinator.getSurfaceLifecycleManager().show();
         mStreamContentChanged = true;
@@ -1063,12 +1039,6 @@ public class FeedSurfaceMediator
             assert false : String.format(Locale.ENGLISH,
                                    "Cannot handle action for item in the menu with id %d", itemId);
         }
-    }
-
-    @Override
-    public void onEnhancedProtectionPromoStateChange() {
-        // If the enhanced protection promo has been dismissed, delete it.
-        mCoordinator.updateHeaderViews(false, null);
     }
 
     // IdentityManager.Observer interface.

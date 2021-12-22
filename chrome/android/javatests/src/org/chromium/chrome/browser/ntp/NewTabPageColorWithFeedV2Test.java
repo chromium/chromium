@@ -86,8 +86,6 @@ public class NewTabPageColorWithFeedV2Test {
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @Features.DisableFeatures({
-            ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD})
     public void testTextBoxBackgroundColor() throws Exception {
         // clang-format on
         RecyclerView recycleView = (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView();
