@@ -300,6 +300,13 @@ std::vector<std::string> GenerateKernelCmdline(
     }
   }
 
+  if (base::FeatureList::IsEnabled(kVmMemoryPSIReports)) {
+    auto period = kVmMemoryPSIReportsPeriod.Get();
+    // Since Android performs parameter validation, not doing it here.
+    result.push_back(base::StringPrintf(
+        "androidboot.arcvm_metrics_mem_psi_period=%d", period));
+  }
+
   if (base::FeatureList::IsEnabled(arc::kUseDalvikMemoryProfile)) {
     switch (start_params.dalvik_memory_profile) {
       case StartParams::DalvikMemoryProfile::DEFAULT:

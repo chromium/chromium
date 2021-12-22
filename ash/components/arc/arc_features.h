@@ -41,6 +41,8 @@ extern const base::Feature kUsbStorageUIFeature;
 extern const base::Feature kUseDalvikMemoryProfile;
 extern const base::Feature kUseDefaultBlockSize;
 extern const base::Feature kVideoDecoder;
+extern const base::Feature kVmMemoryPSIReports;
+extern const base::FeatureParam<int> kVmMemoryPSIReportsPeriod;
 extern const base::Feature kVmMemorySize;
 extern const base::FeatureParam<int> kVmMemorySizeShiftMiB;
 extern const base::FeatureParam<int> kVmMemorySizeMaxMiB;

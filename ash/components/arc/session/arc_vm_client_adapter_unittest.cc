@@ -2289,6 +2289,38 @@ TEST_F(ArcVmClientAdapterTest, ArcVmLogdSizeEnabledValid3) {
       base::Contains(request.params(), "androidboot.arcvm.logd.size=1M"));
 }
 
+// Test that StartArcVmRequest has no matching command line flag
+// when kVmMemoryPSIReports is enabled.
+TEST_F(ArcVmClientAdapterTest, ArcVmMemoryPSIReportsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kVmMemoryPSIReports);
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_FALSE(HasParameterWithPrefix(
+      request, "androidboot.arcvm_metrics_mem_psi_period="));
+}
+
+// Test that StartArcVmRequest has correct  command line flag
+// when kVmMemoryPSIReports is enabled.
+TEST_F(ArcVmClientAdapterTest, ArcVmMemoryPSIReportsEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams params;
+  params["period"] = "300";
+  feature_list.InitAndEnableFeatureWithParameters(kVmMemoryPSIReports, params);
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+  EXPECT_FALSE(is_system_shutdown().has_value());
+  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
+  EXPECT_TRUE(base::Contains(request.params(),
+                             "androidboot.arcvm_metrics_mem_psi_period=300"));
+}
+
 struct DalvikMemoryProfileTestParam {
   // Requested profile.
   StartParams::DalvikMemoryProfile profile;

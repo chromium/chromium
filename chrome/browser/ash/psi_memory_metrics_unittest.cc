@@ -26,11 +26,6 @@ const char kFileContents1[] =
     "some avg10=23.10 avg60=5.06 avg300=15.10 total=417963\n"
     "full avg10=9.00 avg60=19.20 avg300=3.23 total=205933\n";
 
-// Number of decimals not consistent, slightly malformed - but acceptable.
-const char kFileContents2[] =
-    "some avg10=24 avg60=5.06 avg300=15.10 total=417963\n"
-    "full avg10=9.2 avg60=19.20 avg300=3.23 total=205933\n";
-
 }  // namespace
 
 class PSIMemoryMetricsTest : public testing::Test {
@@ -48,7 +43,6 @@ class PSIMemoryMetricsTest : public testing::Test {
   const base::FilePath& GetTestFileName() { return testfilename_; }
   base::HistogramTester& Histograms() { return histogram_tester_; }
   scoped_refptr<PSIMemoryMetrics> Cit() { return cit_; }
-  const std::string& GetMetricPrefix() { return cit_->metric_prefix_; }
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
   }
@@ -63,18 +57,6 @@ class PSIMemoryMetricsTest : public testing::Test {
   base::FilePath testfilename_;
   base::HistogramTester histogram_tester_;
 };
-
-TEST_F(PSIMemoryMetricsTest, CustomInterval) {
-  Init(60);
-
-  EXPECT_EQ(base::Seconds(60), GetCollection());
-}
-
-TEST_F(PSIMemoryMetricsTest, InvalidInterval) {
-  Init(15);
-
-  EXPECT_EQ(base::Seconds(10), GetCollection());
-}
 
 TEST_F(PSIMemoryMetricsTest, SunnyDay1) {
   Init(10);
@@ -190,93 +172,6 @@ TEST_F(PSIMemoryMetricsTest, SunnyDay3) {
                                  1510 /*bucket*/, 1 /*count*/);
   Histograms().ExpectBucketCount("ChromeOS.CWP.PSIMemPressure.Full",
                                  323 /*bucket*/, 1 /*count*/);
-}
-
-TEST_F(PSIMemoryMetricsTest, InternalsA) {
-  Init(10);
-
-  std::string testContent1 = "prefix" + GetMetricPrefix() + "9.37 suffix";
-  EXPECT_EQ(base::Seconds(10), GetCollection());
-
-  size_t s = 0;
-  size_t e = 0;
-
-  EXPECT_EQ(false, internal::FindMiddleString(testContent1, 0, "nothere",
-                                              "suffix", &s, &e));
-
-  EXPECT_EQ(false, internal::FindMiddleString(testContent1, 0, "prefix",
-                                              "notthere", &s, &e));
-
-  EXPECT_EQ(true, internal::FindMiddleString(testContent1, 0, "prefix",
-                                             "suffix", &s, &e));
-  EXPECT_EQ(6, s);
-  EXPECT_EQ(17, e);
-
-  EXPECT_EQ(937, Cit()->GetMetricValue(testContent1, s, e));
-
-  std::string testContent2 = "extra " + testContent1;
-  EXPECT_EQ(true, internal::FindMiddleString(testContent2, 0, "prefix",
-                                             "suffix", &s, &e));
-  EXPECT_EQ(12, s);
-  EXPECT_EQ(23, e);
-
-  EXPECT_EQ(937, Cit()->GetMetricValue(testContent2, s, e));
-}
-
-TEST_F(PSIMemoryMetricsTest, InternalsB) {
-  Init(300);
-
-  int msome;
-  int mfull;
-  PSIMemoryMetrics::ParsePSIMemStatus stat;
-
-  stat = Cit()->ParseMetrics(kFileContents1, &msome, &mfull);
-
-  EXPECT_EQ(PSIMemoryMetrics::ParsePSIMemStatus::kSuccess, stat);
-  EXPECT_EQ(1510, msome);
-  EXPECT_EQ(323, mfull);
-}
-
-TEST_F(PSIMemoryMetricsTest, InternalsC) {
-  Init(60);
-
-  int msome;
-  int mfull;
-  PSIMemoryMetrics::ParsePSIMemStatus stat;
-
-  stat = Cit()->ParseMetrics(kFileContents1, &msome, &mfull);
-
-  EXPECT_EQ(PSIMemoryMetrics::ParsePSIMemStatus::kSuccess, stat);
-  EXPECT_EQ(506, msome);
-  EXPECT_EQ(1920, mfull);
-}
-
-TEST_F(PSIMemoryMetricsTest, InternalsD) {
-  Init(10);
-
-  int msome;
-  int mfull;
-  PSIMemoryMetrics::ParsePSIMemStatus stat;
-
-  stat = Cit()->ParseMetrics(kFileContents1, &msome, &mfull);
-
-  EXPECT_EQ(PSIMemoryMetrics::ParsePSIMemStatus::kSuccess, stat);
-  EXPECT_EQ(2310, msome);
-  EXPECT_EQ(900, mfull);
-}
-
-TEST_F(PSIMemoryMetricsTest, InternalsE) {
-  Init(10);
-
-  int msome;
-  int mfull;
-  PSIMemoryMetrics::ParsePSIMemStatus stat;
-
-  stat = Cit()->ParseMetrics(kFileContents2, &msome, &mfull);
-
-  EXPECT_EQ(PSIMemoryMetrics::ParsePSIMemStatus::kSuccess, stat);
-  EXPECT_EQ(2400, msome);
-  EXPECT_EQ(920, mfull);
 }
 
 }  // namespace ash

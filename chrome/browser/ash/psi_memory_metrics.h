@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_PSI_MEMORY_METRICS_H_
 
 #include <string>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
@@ -13,6 +14,7 @@
 #include "base/task/delayed_task_handle.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
+#include "components/metrics/psi_memory_parser.h"
 
 namespace ash {
 
@@ -44,29 +46,9 @@ class PSIMemoryMetrics : public base::RefCountedThreadSafe<PSIMemoryMetrics> {
 
   // Friend it so it can see private members for testing
   friend class PSIMemoryMetricsTest;
-  FRIEND_TEST_ALL_PREFIXES(PSIMemoryMetricsTest, CustomInterval);
-  FRIEND_TEST_ALL_PREFIXES(PSIMemoryMetricsTest, InvalidInterval);
   FRIEND_TEST_ALL_PREFIXES(PSIMemoryMetricsTest, SunnyDay1);
   FRIEND_TEST_ALL_PREFIXES(PSIMemoryMetricsTest, SunnyDay2);
   FRIEND_TEST_ALL_PREFIXES(PSIMemoryMetricsTest, SunnyDay3);
-  FRIEND_TEST_ALL_PREFIXES(PSIMemoryMetricsTest, InternalsA);
-  FRIEND_TEST_ALL_PREFIXES(PSIMemoryMetricsTest, InternalsB);
-  FRIEND_TEST_ALL_PREFIXES(PSIMemoryMetricsTest, InternalsC);
-  FRIEND_TEST_ALL_PREFIXES(PSIMemoryMetricsTest, InternalsD);
-  FRIEND_TEST_ALL_PREFIXES(PSIMemoryMetricsTest, InternalsE);
-
-  // Enumeration representing success and various failure modes for parsing PSI
-  // memory data. These values are persisted to logs. Entries should not be
-  // renumbered and numeric values should never be reused.
-  enum class ParsePSIMemStatus {
-    kSuccess,
-    kReadFileFailed,
-    kUnexpectedDataFormat,
-    kInvalidMetricFormat,
-    kParsePSIValueFailed,
-    // Magic constant used by the histogram macros.
-    kMaxValue = kParsePSIValueFailed,
-  };
 
   static scoped_refptr<PSIMemoryMetrics> CreateForTesting(
       uint32_t period,
@@ -80,26 +62,7 @@ class PSIMemoryMetrics : public base::RefCountedThreadSafe<PSIMemoryMetrics> {
   // Friend it so it can call our private destructor.
   friend class base::RefCountedThreadSafe<PSIMemoryMetrics>;
 
-  // Retrieves one metric value from |content|, for the currently configured
-  // metrics category (10, 60 or 300 seconds).
-  // Only considers the substring between |start| (inclusive) and |end|
-  // (exclusive).
-  // Returns the floating-point string representation converted into an integer
-  // which has the value multiplied by 100 - (10.20 = 1020), for
-  // histogram usage.
-  int GetMetricValue(const std::string& content, size_t start, size_t end);
-
-  // Parses PSI memory pressure from  |content|, for the currently configured
-  // metrics category (10, 60 or 300 seconds).
-  // The some and full values are output to |metricSome| and |metricFull|,
-  // respectively.
-  // Returns status of the parse operation - ParsePSIMemStatus::kSuccess
-  // or error code otherwise.
-  ParsePSIMemStatus ParseMetrics(const std::string& content,
-                                 int* metric_some,
-                                 int* metric_full);
-
-  ParsePSIMemStatus CollectEvents();
+  void CollectEvents();
 
   // Calls CollectEvents and reschedules a future collection.
   void CollectEventsAndReschedule();
@@ -112,33 +75,14 @@ class PSIMemoryMetrics : public base::RefCountedThreadSafe<PSIMemoryMetrics> {
 
   // Interval between metrics collection.
   std::string memory_psi_file_;
+  metrics::PSIMemoryParser parser_;
   base::TimeDelta collection_interval_;
-  std::string metric_prefix_;
 
   // Task controllers/monitors.
   scoped_refptr<base::SequencedTaskRunner> runner_;
   base::AtomicFlag stopped_;
   base::DelayedTaskHandle last_timer_;
 };
-
-// Items in internal are - as the name implies - NOT for outside consumption.
-// Defined here to allow access to unit test.
-namespace internal {
-
-// Finds the bounds for a substring of |content| which is sandwiched between
-// the given |prefix| and |suffix| indices. Search only considers
-// the portion of the string starting from |search_start|.
-// Returns false if the prefix and/or suffix are not found, true otherwise.
-// |start| and |end| are output parameters populated with the indices
-// for the middle string.
-bool FindMiddleString(const base::StringPiece& content,
-                      size_t search_start,
-                      const base::StringPiece& prefix,
-                      const base::StringPiece& suffix,
-                      size_t* start,
-                      size_t* end);
-
-}  // namespace internal
 
 }  // namespace ash
 

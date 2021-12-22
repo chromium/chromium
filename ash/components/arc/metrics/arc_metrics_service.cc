@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/metrics/stability_metrics_manager.h"
@@ -22,6 +23,7 @@
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/exo/wm_helper.h"
+#include "components/metrics/psi_memory_parser.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -57,6 +59,10 @@ constexpr char kAppTypePlayStore[] = "PlayStore";
 constexpr char kAppTypeSystemServer[] = "SystemServer";
 constexpr char kAppTypeSystem[] = "SystemApp";
 constexpr char kAppTypeOther[] = "Other";
+
+// Memory pressure histograms.
+const char kPSIMemoryPressureSomeARC[] = "ChromeOS.CWP.PSIMemPressure.ArcSome";
+const char kPSIMemoryPressureFullARC[] = "ChromeOS.CWP.PSIMemPressure.ArcFull";
 
 // Logs UMA enum values to facilitate finding feedback reports in Xamine.
 template <typename T>
@@ -175,6 +181,11 @@ ArcMetricsService::ArcMetricsService(content::BrowserContext* context,
 
   StabilityMetricsManager::Get()->SetArcNativeBridgeType(
       NativeBridgeType::UNKNOWN);
+
+  if (base::FeatureList::IsEnabled(kVmMemoryPSIReports)) {
+    psi_parser_ = std::make_unique<metrics::PSIMemoryParser>(
+        kVmMemoryPSIReportsPeriod.Get());
+  }
 }
 
 ArcMetricsService::~ArcMetricsService() {
@@ -527,6 +538,32 @@ void ArcMetricsService::ReportDataRestore(mojom::DataRestoreStatus status,
     return;
   base::UmaHistogramMediumTimes("Arc.DataRestore.Duration",
                                 base::Milliseconds(duration_ms));
+}
+
+void ArcMetricsService::ReportMemoryPressure(
+    const std::vector<uint8_t>& psi_file_contents) {
+  if (!psi_parser_) {
+    LOG(WARNING) << "Unexpected PSI reporting call detected";
+    return;
+  }
+
+  int metric_some;
+  int metric_full;
+
+  auto stat = psi_parser_->ParseMetrics(psi_file_contents.data(),
+                                        psi_file_contents.size(), &metric_some,
+                                        &metric_full);
+  psi_parser_->LogParseStatus(
+      stat);  // Log success and failure, for histograms.
+  if (stat != metrics::ParsePSIMemStatus::kSuccess)
+    return;
+
+  base::UmaHistogramCustomCounts(
+      kPSIMemoryPressureSomeARC, metric_some, metrics::kMemPressureMin,
+      metrics::kMemPressureExclusiveMax, metrics::kMemPressureHistogramBuckets);
+  base::UmaHistogramCustomCounts(
+      kPSIMemoryPressureFullARC, metric_full, metrics::kMemPressureMin,
+      metrics::kMemPressureExclusiveMax, metrics::kMemPressureHistogramBuckets);
 }
 
 void ArcMetricsService::OnWindowActivated(

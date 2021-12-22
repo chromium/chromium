@@ -32,6 +32,10 @@
 
 class BrowserContextKeyedServiceFactory;
 
+namespace metrics {
+class PSIMemoryParser;
+}  // namespace metrics
+
 namespace aura {
 class Window;
 }  // namespace aura
@@ -137,6 +141,7 @@ class ArcMetricsService : public KeyedService,
   void ReportAppPrimaryAbi(mojom::AppPrimaryAbi abi) override;
   void ReportDataRestore(mojom::DataRestoreStatus status,
                          int64_t duration_ms) override;
+  void ReportMemoryPressure(const std::vector<uint8_t>& psiFile) override;
 
   // wm::ActivationChangeObserver overrides.
   // Records to UMA when a user has interacted with an ARC app window.
@@ -282,6 +287,7 @@ class ArcMetricsService : public KeyedService,
   ArcBridgeServiceObserver arc_bridge_service_observer_;
   IntentHelperObserver intent_helper_observer_;
   AppLauncherObserver app_launcher_observer_;
+  std::unique_ptr<metrics::PSIMemoryParser> psi_parser_;
 
   bool was_arc_window_active_ = false;
   std::vector<int32_t> task_ids_;

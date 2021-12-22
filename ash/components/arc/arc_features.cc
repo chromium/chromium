@@ -163,6 +163,14 @@ const base::Feature kUseDefaultBlockSize{"ArcVmUseDefaultBlockSize",
 const base::Feature kVideoDecoder{"ArcVideoDecoder",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Feature to continuously log PSI memory pressure data to Chrome.
+const base::Feature kVmMemoryPSIReports{"ArcVmMemoryPSIReports",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls how frequently memory pressure data is logged
+const base::FeatureParam<int> kVmMemoryPSIReportsPeriod{&kVmMemoryPSIReports,
+                                                        "period", 10};
+
 // Controls whether a custom memory size is used when creating ARCVM. When
 // enabled, ARCVM is sized with the following formula:
 //  min(max_mib, RAM + shift_mib)

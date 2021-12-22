@@ -156,6 +156,8 @@ static_library("metrics") {
   if (is_linux || is_chromeos) {
     sources += [
       "drive_metrics_provider_linux.cc",
+      "psi_memory_parser.h",
+      "psi_memory_parser_linux.cc",
       "system_memory_stats_recorder_linux.cc",
     ]
   }
@@ -513,7 +515,10 @@ source_set("unit_tests") {
   }
 
   if (is_linux || is_chromeos) {
-    sources += [ "serialization/serialization_utils_unittest.cc" ]
+    sources += [
+      "psi_memory_parser_linux_unittest.cc",
+      "serialization/serialization_utils_unittest.cc",
+    ]
     deps += [ ":serialization" ]
   }
 

@@ -616,6 +616,10 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     means &quot;no pressure&quot; - 0%.
   </summary>
   <token key="PType">
+    <variant name="ArcFull"
+        summary="Percentage of time ARC was fully halted waiting on memory"/>
+    <variant name="ArcSome"
+        summary="Percentage of ARC had some blocking on memory"/>
     <variant name="Full"
         summary="Percentage of time fully halted waiting on memory operations"/>
     <variant name="Some"

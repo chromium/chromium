@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 20
+// Next MinVersion: 22
 
 module arc.mojom;
 
@@ -326,7 +326,7 @@ enum MainAccountHashMigrationStatus {
   // tools/metrics/histograms/enums.xml.
 };
 
-// Next method ID: 23
+// Next method ID: 24
 interface MetricsHost {
   // Reports boot progress events from ARC instance.
   ReportBootProgress@0(array<BootProgressEvent> events,
@@ -419,6 +419,10 @@ interface MetricsHost {
   // for ARC++ P container.
   [MinVersion=20] ReportDataRestore@22(DataRestoreStatus status,
                                        int64 duration_ms);
+
+  // Reports raw memory pressure data, as the contents of /proc/pressure/memory.
+  // This is invoked solely by ARCVM.
+  [MinVersion=21] ReportMemoryPressure@23(array<uint8> psi_file_contents);
 };
 
 // Next method ID: 3
