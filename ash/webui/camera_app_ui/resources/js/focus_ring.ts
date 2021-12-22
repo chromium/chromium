@@ -12,46 +12,37 @@ import {getStyleValueInPx} from './util.js';
 
 /**
  * Focus ring element.
- * @type {?HTMLElement}
  */
-let ring = null;
+let ring: HTMLElement|null = null;
 
-/**
- * @type {?CSSStyleDeclaration}
- */
-let ringCSSStyle = null;
+let ringCSSStyle: CSSStyleDeclaration|null = null;
 
 /**
  * All valid values of '--focus-ring-style'.
- * @const {!Set<string>}
  */
 const ringStyleValues = new Set(['circle', 'mode-item-input', 'none', 'pill']);
 
 /**
  * The reference bounding rectangle of focused UI.
- * @type {!DOMRectReadOnly}
  */
 let uiRect = new DOMRectReadOnly();
 
 /**
  * Name of event triggered for calculating bounding rectangle of focused UI.
- * @const {string}
  */
 export const FOCUS_RING_UI_RECT_EVENT_NAME = 'focusringuirect';
 
 /**
  * Sets reference bounding rectangle of focused UI.
- * @param {!DOMRectReadOnly} rect
  */
-export function setUIRect(rect) {
+export function setUIRect(rect: DOMRectReadOnly): void {
   uiRect = rect;
 }
 
 /**
  * Shows focus ring on |el|.
- * @param {!HTMLElement} el
  */
-function showFocus(el) {
+function showFocus(el: HTMLElement) {
   const style = el.computedStyleMap();
   const size = getStyleValueInPx(style, '--focus-ring-size');
   const ringStyleValue = `${style.get('--focus-ring-style')}`;
@@ -70,17 +61,11 @@ function showFocus(el) {
   ringCSSStyle.setProperty('left', `${(uiRect.left + uiRect.right) / 2}px`);
 }
 
-/**
- * @public
- */
-export function initialize() {
+export function initialize(): void {
   ring = dom.get('#focus-ring', HTMLElement);
   ringCSSStyle = cssStyle('#focus-ring');
 
-  /**
-   * @param {!HTMLElement} el
-   */
-  const setup = (el) => {
+  const setup = (el: HTMLElement) => {
     el.addEventListener('focus', () => showFocus(el));
     if (el === document.activeElement) {
       showFocus(el);
