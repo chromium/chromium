@@ -11,8 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
-#include "chromeos/services/bluetooth_config/device_cache.h"
 #include "chromeos/services/bluetooth_config/device_pairing_handler.h"
+#include "chromeos/services/bluetooth_config/discovered_devices_provider.h"
 #include "chromeos/services/bluetooth_config/discovery_session_manager.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
@@ -31,7 +31,7 @@ class DiscoverySessionManagerImpl : public DiscoverySessionManager,
   DiscoverySessionManagerImpl(
       AdapterStateController* adapter_state_controller,
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-      DeviceCache* device_cache);
+      DiscoveredDevicesProvider* discovered_devices_provider);
   ~DiscoverySessionManagerImpl() override;
 
  private:

@@ -16,9 +16,9 @@
 #include "chromeos/services/bluetooth_config/device_pairing_handler_impl.h"
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_bluetooth_discovery_delegate.h"
-#include "chromeos/services/bluetooth_config/fake_device_cache.h"
 #include "chromeos/services/bluetooth_config/fake_device_pairing_delegate.h"
 #include "chromeos/services/bluetooth_config/fake_device_pairing_handler.h"
+#include "chromeos/services/bluetooth_config/fake_discovered_devices_provider.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -75,7 +75,8 @@ class DiscoverySessionManagerImplTest : public testing::Test {
         }));
 
     discovery_session_manager_ = std::make_unique<DiscoverySessionManagerImpl>(
-        &fake_adapter_state_controller_, mock_adapter_, &fake_device_cache_);
+        &fake_adapter_state_controller_, mock_adapter_,
+        &fake_discovered_devices_provider_);
   }
 
   void TearDown() override {
@@ -150,13 +151,14 @@ class DiscoverySessionManagerImplTest : public testing::Test {
             }));
     mock_devices_.push_back(std::move(mock_device));
 
-    // Add the device to the device cache's unpaired devices.
-    std::vector<mojom::BluetoothDevicePropertiesPtr> unpaired_devices;
+    // Add the device to the discovered devices provider's discovered devices.
+    std::vector<mojom::BluetoothDevicePropertiesPtr> discovered_devices;
     for (auto& device : mock_devices_) {
-      unpaired_devices.push_back(
+      discovered_devices.push_back(
           GenerateBluetoothDeviceMojoProperties(device.get()));
     }
-    fake_device_cache_.SetUnpairedDevices(std::move(unpaired_devices));
+    fake_discovered_devices_provider_.SetDiscoveredDevices(
+        std::move(discovered_devices));
     fake_device_pairing_handler_factory_.UpdateActiveHandlerDeviceLists();
     discovery_session_manager_->FlushForTesting();
   }
@@ -228,7 +230,7 @@ class DiscoverySessionManagerImplTest : public testing::Test {
   StopScanCallback stop_scan_callback_;
 
   FakeAdapterStateController fake_adapter_state_controller_;
-  FakeDeviceCache fake_device_cache_{&fake_adapter_state_controller_};
+  FakeDiscoveredDevicesProvider fake_discovered_devices_provider_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   FakeDevicePairingHandlerFactory fake_device_pairing_handler_factory_{*this};
 

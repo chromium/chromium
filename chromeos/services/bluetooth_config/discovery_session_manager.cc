@@ -11,11 +11,12 @@ namespace bluetooth_config {
 
 DiscoverySessionManager::DiscoverySessionManager(
     AdapterStateController* adapter_state_controller,
-    DeviceCache* device_cache)
+    DiscoveredDevicesProvider* discovered_devices_provider)
     : adapter_state_controller_(adapter_state_controller),
-      device_cache_(device_cache) {
+      discovered_devices_provider_(discovered_devices_provider) {
   adapter_state_controller_observation_.Observe(adapter_state_controller_);
-  device_cache_observation_.Observe(device_cache_);
+  discovered_devices_provider_observation_.Observe(
+      discovered_devices_provider_);
   delegates_.set_disconnect_handler(
       base::BindRepeating(&DiscoverySessionManager::OnDelegateDisconnected,
                           base::Unretained(this)));
@@ -47,7 +48,7 @@ void DiscoverySessionManager::StartDiscovery(
     delegates_.Get(id)->OnBluetoothDiscoveryStarted(
         RegisterNewDevicePairingHandler(id));
     delegates_.Get(id)->OnDiscoveredDevicesListChanged(
-        device_cache_->GetUnpairedDevices());
+        discovered_devices_provider_->GetDiscoveredDevices());
   }
 }
 
@@ -81,7 +82,7 @@ bool DiscoverySessionManager::HasAtLeastOneDiscoveryClient() const {
 void DiscoverySessionManager::NotifyDiscoveredDevicesListChanged() {
   for (auto& delegate : delegates_) {
     delegate->OnDiscoveredDevicesListChanged(
-        device_cache_->GetUnpairedDevices());
+        discovered_devices_provider_->GetDiscoveredDevices());
   }
 }
 
@@ -94,7 +95,7 @@ void DiscoverySessionManager::OnAdapterStateChanged() {
   NotifyDiscoveryStoppedAndClearActiveClients();
 }
 
-void DiscoverySessionManager::OnUnpairedDevicesListChanged() {
+void DiscoverySessionManager::OnDiscoveredDevicesListChanged() {
   NotifyDiscoveredDevicesListChanged();
 }
 

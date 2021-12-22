@@ -10,6 +10,7 @@
 #include "chromeos/services/bluetooth_config/fake_device_cache.h"
 #include "chromeos/services/bluetooth_config/fake_device_name_manager.h"
 #include "chromeos/services/bluetooth_config/fake_device_operation_handler.h"
+#include "chromeos/services/bluetooth_config/fake_discovered_devices_provider.h"
 #include "chromeos/services/bluetooth_config/fake_discovery_session_manager.h"
 #include "chromeos/services/bluetooth_config/in_process_instance.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -71,14 +72,23 @@ std::unique_ptr<DeviceCache> ScopedBluetoothConfigTestHelper::CreateDeviceCache(
   return fake_device_cache;
 }
 
+std::unique_ptr<DiscoveredDevicesProvider>
+ScopedBluetoothConfigTestHelper::CreateDiscoveredDevicesProvider(
+    DeviceCache* device_cache) {
+  auto fake_discovered_devices_provider =
+      std::make_unique<FakeDiscoveredDevicesProvider>();
+  fake_discovered_devices_provider_ = fake_discovered_devices_provider.get();
+  return fake_discovered_devices_provider;
+}
+
 std::unique_ptr<DiscoverySessionManager>
 ScopedBluetoothConfigTestHelper::CreateDiscoverySessionManager(
     AdapterStateController* adapter_state_controller,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-    DeviceCache* device_cache) {
+    DiscoveredDevicesProvider* discovered_devices_provider) {
   auto fake_discovery_session_manager =
-      std::make_unique<FakeDiscoverySessionManager>(adapter_state_controller,
-                                                    device_cache);
+      std::make_unique<FakeDiscoverySessionManager>(
+          adapter_state_controller, discovered_devices_provider);
   fake_discovery_session_manager_ = fake_discovery_session_manager.get();
   return fake_discovery_session_manager;
 }

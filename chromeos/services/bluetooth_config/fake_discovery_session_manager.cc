@@ -11,8 +11,9 @@ namespace bluetooth_config {
 
 FakeDiscoverySessionManager::FakeDiscoverySessionManager(
     AdapterStateController* adapter_state_controller,
-    DeviceCache* device_cache)
-    : DiscoverySessionManager(adapter_state_controller, device_cache) {}
+    DiscoveredDevicesProvider* discovered_devices_provider)
+    : DiscoverySessionManager(adapter_state_controller,
+                              discovered_devices_provider) {}
 
 FakeDiscoverySessionManager::~FakeDiscoverySessionManager() = default;
 

@@ -18,8 +18,9 @@ const char kDiscoveryClientName[] = "CrosBluetoothConfig API";
 DiscoverySessionManagerImpl::DiscoverySessionManagerImpl(
     AdapterStateController* adapter_state_controller,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-    DeviceCache* device_cache)
-    : DiscoverySessionManager(adapter_state_controller, device_cache),
+    DiscoveredDevicesProvider* discovered_devices_provider)
+    : DiscoverySessionManager(adapter_state_controller,
+                              discovered_devices_provider),
       bluetooth_adapter_(std::move(bluetooth_adapter)) {
   adapter_observation_.Observe(bluetooth_adapter_.get());
 }
