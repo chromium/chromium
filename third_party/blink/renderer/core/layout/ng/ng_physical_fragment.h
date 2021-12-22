@@ -497,7 +497,7 @@ class CORE_EXPORT NGPhysicalFragment
 
   // Same as |base::span<const NGLink>|, except that:
   // * Each |NGLink| has the latest generation of post-layout. See
-  //   |NGPhysicalFragment::UpdatedFragment()| for more details.
+  //   |NGPhysicalFragment::PostLayout()| for more details.
   // * The iterator skips fragments for destroyed or moved |LayoutObject|.
   class PostLayoutChildLinkList {
     STACK_ALLOCATED();
