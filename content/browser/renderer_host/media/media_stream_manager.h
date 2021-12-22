@@ -442,11 +442,11 @@ class CONTENT_EXPORT MediaStreamManager
   void HandleRequestDone(const std::string& label, DeviceRequest* request);
   // Stop the use of the device associated with |session_id| of type |type| in
   // all |requests_|. The device is removed from the request. If a request
-  /// doesn't use any devices as a consequence, the request is deleted.
+  // doesn't use any devices as a consequence, the request is deleted.
   void StopDevice(blink::mojom::MediaStreamType type,
                   const base::UnguessableToken& session_id);
-  // Calls the correct capture manager and close the device with |session_id|.
-  // All requests that uses the device are updated.
+  // Calls the correct capture manager and closes the device with |session_id|.
+  // All requests that use the device are updated.
   void CloseDevice(blink::mojom::MediaStreamType type,
                    const base::UnguessableToken& session_id);
   // Returns true if a request for devices has been completed and the devices
