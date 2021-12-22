@@ -1005,6 +1005,13 @@ void OverviewSession::HideDesksTemplatesGrids() {
     grid->HideDesksTemplatesGrid(/*exit_overview=*/false);
 }
 
+bool OverviewSession::IsShowingDesksTemplatesGrid() const {
+  // All the grids should show the templates grid at the same time so just check
+  // if the first grid is showing.
+  return grid_list_.empty() ? false
+                            : grid_list_.front()->IsShowingDesksTemplatesGrid();
+}
+
 void OverviewSession::OnDeskAdded(const Desk* desk) {}
 void OverviewSession::OnDeskRemoved(const Desk* desk) {}
 void OverviewSession::OnDeskReordered(int old_index, int new_index) {}

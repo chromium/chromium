@@ -282,6 +282,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // true then we will expand the desks bars.
   void ShowDesksTemplatesGrids(bool was_zero_state);
   void HideDesksTemplatesGrids();
+  bool IsShowingDesksTemplatesGrid() const;
 
   // DesksController::Observer:
   void OnDeskAdded(const Desk* desk) override;

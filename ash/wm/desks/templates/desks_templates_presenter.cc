@@ -25,6 +25,7 @@
 namespace ash {
 
 namespace {
+
 DesksTemplatesPresenter* g_instance = nullptr;
 
 // The amount of time for which the launch template toasts will remain
@@ -37,7 +38,6 @@ constexpr char kMaximumDeskLaunchTemplateToastName[] =
 
 // Helper to get the desk model from the shell delegate. Should always return a
 // usable desk model, either from chrome sync, or a local storage.
-// TODO(sammiequon): Investigate if we can cache this.
 desks_storage::DeskModel* GetDeskModel() {
   auto* desk_model = Shell::Get()->desks_templates_delegate()->GetDeskModel();
   DCHECK(desk_model);
@@ -181,10 +181,20 @@ void DesksTemplatesPresenter::SaveOrUpdateDeskTemplate(
                      weak_ptr_factory_.GetWeakPtr(), is_update));
 }
 
-void DesksTemplatesPresenter::DeskModelLoaded() {}
-
 void DesksTemplatesPresenter::OnDeskModelDestroying() {
   desk_model_observation_.Reset();
+}
+
+void DesksTemplatesPresenter::EntriesAddedOrUpdatedRemotely(
+    const std::vector<const DeskTemplate*>& new_entries) {
+  if (overview_session_->IsShowingDesksTemplatesGrid())
+    GetAllEntries();
+}
+
+void DesksTemplatesPresenter::EntriesRemovedRemotely(
+    const std::vector<std::string>& uuids) {
+  if (overview_session_->IsShowingDesksTemplatesGrid())
+    GetAllEntries();
 }
 
 void DesksTemplatesPresenter::OnGetAllEntries(
@@ -218,8 +228,6 @@ void DesksTemplatesPresenter::OnDeleteEntry(
 
   RecordDeleteTemplateHistogram();
   GetAllEntries();
-
-  UpdateDesksTemplatesUI();
 }
 
 void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
@@ -250,18 +258,17 @@ void DesksTemplatesPresenter::OnAddOrUpdateEntry(
   if (status != desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk)
     return;
 
-  const auto& grid_list = overview_session_->grid_list();
-  DCHECK(!grid_list.empty());
-
   // If the templates grid is already shown, just update the entries.
-  if (grid_list[0]->IsShowingDesksTemplatesGrid()) {
+  if (overview_session_->IsShowingDesksTemplatesGrid()) {
     GetAllEntries();
     return;
   }
 
   // Update the button here in case it has been disabled.
+  const auto& grid_list = overview_session_->grid_list();
+  DCHECK(!grid_list.empty());
   overview_session_->ShowDesksTemplatesGrids(
-      grid_list[0]->desks_bar_view()->IsZeroState());
+      grid_list.front()->desks_bar_view()->IsZeroState());
   for (auto& overview_grid : grid_list)
     overview_grid->UpdateSaveDeskAsTemplateButton();
 
