@@ -529,7 +529,8 @@ GREYLayoutConstraint* BelowConstraint() {
 // Tests that the forced sign-in screen is shown when the policy is enabled.
 // If the user says no during the FRE, then they should be re-prompted at the
 // end of the FRE.
-- (void)testSignInScreenUIWhenForcedByPolicy {
+// TODO(crbug.com/1282047): Re-enable when fixed.
+- (void)DISABLED_testSignInScreenUIWhenForcedByPolicy {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
 
   // Configure the policy to force sign-in.
@@ -813,7 +814,8 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that the user is signed in and that sync is turned on after the user
 // chooses to turn on sync.
-- (void)testSignInAndTurnOnSync {
+// TODO(crbug.com/1282047): Re-enable when fixed.
+- (void)DISABLED_testSignInAndTurnOnSync {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
