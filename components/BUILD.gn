@@ -848,6 +848,22 @@ if (!is_ios) {
         "//build/config/fuchsia/test/present_view_capabilities.test-cmx",
       ]
     }
+
+    # This test won't work as-is on POSIX platforms, where fork()+exec() is
+    # used to launch child processes, failure does not happen until exec().
+    # See also ServiceProcessLauncherTest.FailToLaunchProcess and
+    # UtilityProcessHostBrowserTest.FailToLaunchProcess.
+    if (!is_posix || is_mac) {
+      sources += [
+        "metrics/content/content_stability_metrics_provider_browsertest.cc",
+      ]
+      deps += [
+        "//components/prefs:test_support",
+        "//components/variations",
+        "//content/test:content_test_mojo_bindings",
+        "//sandbox",
+      ]
+    }
   }
 
   test("components_perftests") {

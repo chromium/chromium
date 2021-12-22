@@ -76,6 +76,9 @@ class ContentStabilityMetricsProvider
       const content::ChildProcessTerminationInfo& info) override;
   void BrowserChildProcessLaunchedAndConnected(
       const content::ChildProcessData& data) override;
+  void BrowserChildProcessLaunchFailed(
+      const content::ChildProcessData& data,
+      const content::ChildProcessTerminationInfo& info) override;
 
 #if defined(OS_ANDROID)
   // crash_reporter::CrashMetricsReporter::Observer:

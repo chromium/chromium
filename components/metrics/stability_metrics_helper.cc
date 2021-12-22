@@ -194,6 +194,27 @@ void StabilityMetricsHelper::BrowserUtilityProcessCrashed(
   RecordStabilityEvent(StabilityEventType::kUtilityCrash);
 }
 
+void StabilityMetricsHelper::BrowserUtilityProcessLaunchFailed(
+    const std::string& metrics_name,
+    int launch_error_code
+#if defined(OS_WIN)
+    ,
+    DWORD last_error
+#endif
+) {
+  uint32_t hash = variations::HashName(metrics_name);
+  base::UmaHistogramSparse("ChildProcess.LaunchFailed.UtilityProcessHash",
+                           hash);
+  base::UmaHistogramSparse("ChildProcess.LaunchFailed.UtilityProcessErrorCode",
+                           launch_error_code);
+#if defined(OS_WIN)
+  base::UmaHistogramSparse("ChildProcess.LaunchFailed.WinLastError",
+                           last_error);
+#endif
+  // TODO(wfh): Decide if this utility process launch failure should also
+  // trigger a Stability Event.
+}
+
 void StabilityMetricsHelper::BrowserChildProcessCrashed() {
   IncrementPrefValue(prefs::kStabilityChildProcessCrashCount);
   RecordStabilityEvent(StabilityEventType::kChildProcessCrash);

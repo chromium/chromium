@@ -9,6 +9,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
+#include "build/build_config.h"
+
+#if defined(OS_WIN)
+#include "base/win/windows_types.h"
+#endif
 
 class PrefRegistrySimple;
 class PrefService;
@@ -63,6 +68,17 @@ class StabilityMetricsHelper {
   // Records a utility process crash with name |metrics_name|.
   void BrowserUtilityProcessCrashed(const std::string& metrics_name,
                                     int exit_code);
+
+  // Records that a utility process with name |metrics_name| failed to launch.
+  // The |launch_error_code| is a platform-specific error code. On Windows, a
+  // |last_error| is also supplied to help diagnose the launch failure.
+  void BrowserUtilityProcessLaunchFailed(const std::string& metrics_name,
+                                         int launch_error_code
+#if defined(OS_WIN)
+                                         ,
+                                         DWORD last_error
+#endif
+  );
 
   // Records a browser child process crash.
   void BrowserChildProcessCrashed();

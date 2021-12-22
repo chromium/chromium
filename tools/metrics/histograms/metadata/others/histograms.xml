@@ -2650,13 +2650,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChildProcess.Crashed.UtilityProcessHash"
-    enum="UtilityProcessNameHash" expires_after="2022-06-12">
+    enum="UtilityProcessNameHash" expires_after="never">
+<!-- expires-never: Critical stability metrics. go/chrome-stability-metrics -->
+
   <owner>wfh@chromium.org</owner>
   <owner>chrome-stability-core@google.com</owner>
   <summary>
     Count of child utility process crashes, bucketed by the hash of their
     process name. The process name is typically the service name of the mojo
-    service.
+    service. Recorded when a Utility process crashes.
   </summary>
 </histogram>
 
@@ -2760,6 +2762,44 @@ chromium-metrics-reviews@google.com.
     Count of child utility process launches, bucketed by the hash of their
     process name. The process name is typically the service name of the mojo
     service.
+  </summary>
+</histogram>
+
+<histogram name="ChildProcess.LaunchFailed.UtilityProcessErrorCode"
+    enum="LaunchErrorCodes" expires_after="never">
+<!-- expires-never: Critical stability metrics. go/chrome-stability-metrics -->
+
+  <owner>wfh@chromium.org</owner>
+  <owner>chrome-stability-core@google.com</owner>
+  <summary>
+    A platform-specific error code returned from the attempt to launch a Utility
+    process. Recorded when a Utility process fails to launch.
+  </summary>
+</histogram>
+
+<histogram name="ChildProcess.LaunchFailed.UtilityProcessHash"
+    enum="UtilityProcessNameHash" expires_after="never">
+<!-- expires-never: Critical stability metrics. go/chrome-stability-metrics -->
+
+  <owner>wfh@chromium.org</owner>
+  <owner>chrome-stability-core@google.com</owner>
+  <summary>
+    Count of child utility process launch failures, bucketed by the hash of
+    their process name. The process name is typically the service name of the
+    mojo service. Recorded when a Utility process fails to launch.
+  </summary>
+</histogram>
+
+<histogram name="ChildProcess.LaunchFailed.WinLastError" enum="WinGetLastError"
+    expires_after="never">
+<!-- expires-never: Critical stability metrics. go/chrome-stability-metrics -->
+
+  <owner>wfh@chromium.org</owner>
+  <owner>chrome-stability-core@google.com</owner>
+  <summary>
+    An extended Windows error code returned from GetLastError when failing to
+    launch a utility process. Recorded when a Utility process fails to launch on
+    Windows.
   </summary>
 </histogram>
 

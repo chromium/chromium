@@ -128,6 +128,20 @@ void ContentStabilityMetricsProvider::BrowserChildProcessLaunchedAndConnected(
     helper_.BrowserUtilityProcessLaunched(data.metrics_name);
 }
 
+void ContentStabilityMetricsProvider::BrowserChildProcessLaunchFailed(
+    const content::ChildProcessData& data,
+    const content::ChildProcessTerminationInfo& info) {
+  DCHECK(!data.metrics_name.empty());
+  DCHECK_EQ(info.status, base::TERMINATION_STATUS_LAUNCH_FAILED);
+  if (data.process_type == content::PROCESS_TYPE_UTILITY)
+    helper_.BrowserUtilityProcessLaunchFailed(data.metrics_name, info.exit_code
+#if defined(OS_WIN)
+                                              ,
+                                              info.last_error
+#endif
+    );
+}
+
 #if defined(OS_ANDROID)
 void ContentStabilityMetricsProvider::OnCrashDumpProcessed(
     int rph_id,
