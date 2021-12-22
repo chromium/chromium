@@ -41,6 +41,7 @@
       dark: "$google_blue_300",
       debug: "$google_red_600",
       generate_per_mode: true,
+      generate_inverted: true,
     },
     color_alert: {
       light: "$google_red_600",
@@ -441,6 +442,7 @@
     /* toast */
     /* Toast colors are inverted for contrast. */
     toast_background_color: "$bg_color_elevation_2_inverted",
+    toast_button_color: "$color_prominent_inverted",
     toast_text_color: "$color_primary_inverted",
     toast_icon_color: "$color_primary_inverted",
     toast_icon_color_warning: "$color_warning_inverted",
