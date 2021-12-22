@@ -23,6 +23,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -54,7 +55,8 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     WebContents* web_contents,
     ui::PageTransition ignored_page_transition,
     bool ignored_has_user_gesture,
-    const absl::optional<url::Origin>& initiating_origin) {
+    const absl::optional<url::Origin>& initiating_origin,
+    content::WeakDocumentPtr initiator_document) {
   DCHECK(web_contents);
 
   std::u16string program_name =
@@ -65,8 +67,8 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
   }
 
   // Windowing system takes ownership.
-  new ExternalProtocolDialog(web_contents, url, program_name,
-                             initiating_origin);
+  new ExternalProtocolDialog(web_contents, url, program_name, initiating_origin,
+                             std::move(initiator_document));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -74,11 +76,13 @@ ExternalProtocolDialog::ExternalProtocolDialog(
     WebContents* web_contents,
     const GURL& url,
     const std::u16string& program_name,
-    const absl::optional<url::Origin>& initiating_origin)
+    const absl::optional<url::Origin>& initiating_origin,
+    content::WeakDocumentPtr initiator_document)
     : web_contents_(web_contents->GetWeakPtr()),
       url_(url),
       program_name_(program_name),
-      initiating_origin_(initiating_origin) {
+      initiating_origin_(initiating_origin),
+      initiator_document_(std::move(initiator_document)) {
   SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringFUTF16(
@@ -171,8 +175,8 @@ void ExternalProtocolDialog::OnDialogAccepted() {
                                            profile);
   }
 
-  ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(url_,
-                                                         web_contents_.get());
+  ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
+      url_, web_contents_.get(), initiator_document_);
 }
 
 views::View* ExternalProtocolDialog::GetContentsView() {

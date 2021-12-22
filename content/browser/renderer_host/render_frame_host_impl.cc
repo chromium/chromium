@@ -161,6 +161,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/disallow_activation_reason.h"
+#include "content/public/browser/document_ref.h"
 #include "content/public/browser/document_service_internal.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/global_routing_id.h"
@@ -171,6 +172,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
@@ -2148,6 +2150,15 @@ bool RenderFrameHostImpl::IsErrorDocument() {
   DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kSpeculative);
   DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kPendingCommit);
   return is_error_page_;
+}
+
+DocumentRef RenderFrameHostImpl::GetDocumentRef() {
+  return DocumentRef(document_associated_data_->weak_ptr_factory.GetSafeRef());
+}
+
+WeakDocumentPtr RenderFrameHostImpl::GetWeakDocumentPtr() {
+  return WeakDocumentPtr(
+      document_associated_data_->weak_ptr_factory.GetWeakPtr());
 }
 
 void RenderFrameHostImpl::GetSerializedHtmlWithLocalLinks(
@@ -12842,7 +12853,8 @@ const char* RenderFrameHostImpl::LifecycleStateImplToString(
 }
 
 RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
-    RenderFrameHostImpl& document) {
+    RenderFrameHostImpl& document)
+    : weak_ptr_factory(&document) {
   // Only create page object for the main document as the PageImpl is 1:1 with
   // main document.
   if (!document.GetParent()) {

@@ -269,6 +269,7 @@
 #include "content/public/browser/tts_platform.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
 #include "content/public/browser/vpn_service_proxy.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
@@ -1067,7 +1068,8 @@ void LaunchURL(base::WeakPtr<ChromeContentBrowserClient> client,
                bool is_main_frame,
                network::mojom::WebSandboxFlags sandbox_flags,
                bool has_user_gesture,
-               const absl::optional<url::Origin>& initiating_origin) {
+               const absl::optional<url::Origin>& initiating_origin,
+               content::WeakDocumentPtr initiator_document) {
   // If there is no longer a WebContents, the request may have raced with tab
   // closing. Don't fire the external request. (It may have been a prerender.)
   content::WebContents* web_contents = web_contents_getter.Run();
@@ -1153,11 +1155,12 @@ void LaunchURL(base::WeakPtr<ChromeContentBrowserClient> client,
   // without any additional security checks. Since the URL is allowlisted,
   // we assume it can be executed.
   if (is_allowlisted) {
-    ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(url, web_contents);
+    ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
+        url, web_contents, std::move(initiator_document));
   } else {
-    ExternalProtocolHandler::LaunchUrl(url, std::move(web_contents_getter),
-                                       page_transition, has_user_gesture,
-                                       initiating_origin);
+    ExternalProtocolHandler::LaunchUrl(
+        url, std::move(web_contents_getter), page_transition, has_user_gesture,
+        initiating_origin, std::move(initiator_document));
   }
 }
 
@@ -5507,6 +5510,7 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
     ui::PageTransition page_transition,
     bool has_user_gesture,
     const absl::optional<url::Origin>& initiating_origin,
+    content::RenderFrameHost* initiator_document,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // External protocols are disabled for guests. An exception is made for the
@@ -5529,11 +5533,16 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
     return false;
 #endif  // defined(ANDROID)
 
+  auto weak_initiator_document = initiator_document
+                                     ? initiator_document->GetWeakDocumentPtr()
+                                     : content::WeakDocumentPtr();
+
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&LaunchURL, weak_factory_.GetWeakPtr(), url,
-                                std::move(web_contents_getter), page_transition,
-                                is_main_frame, sandbox_flags, has_user_gesture,
-                                initiating_origin));
+      FROM_HERE,
+      base::BindOnce(&LaunchURL, weak_factory_.GetWeakPtr(), url,
+                     std::move(web_contents_getter), page_transition,
+                     is_main_frame, sandbox_flags, has_user_gesture,
+                     initiating_origin, std::move(weak_initiator_document)));
   return true;
 }
 

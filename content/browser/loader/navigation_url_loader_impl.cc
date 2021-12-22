@@ -670,7 +670,7 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
           request_info_->sandbox_flags,
           static_cast<ui::PageTransition>(resource_request_->transition_type),
           resource_request_->has_user_gesture, initiating_origin,
-          &loader_factory);
+          initiator_document_.AsRenderFrameHostIfValid(), &loader_factory);
 
       if (loader_factory) {
         factory = base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
@@ -1194,6 +1194,7 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
       url_(request_info_->common_params->url),
       frame_tree_node_id_(request_info_->frame_tree_node_id),
       global_request_id_(GlobalRequestID::MakeBrowserInitiated()),
+      initiator_document_(request_info_->initiator_document),
       web_contents_getter_(
           base::BindRepeating(&WebContents::FromFrameTreeNodeId,
                               frame_tree_node_id_)),

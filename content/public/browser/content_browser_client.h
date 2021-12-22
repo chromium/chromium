@@ -1803,6 +1803,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // browser-initiated navigations. The initiating origin is intended to help
   // users make security decisions about whether to allow an external
   // application to launch.
+  //
+  // |initiator_document| refers to the document that initiated the navigation,
+  // if it is still available. Use |initiating_origin| instead for security
+  // decisions.
   virtual bool HandleExternalProtocol(
       const GURL& url,
       base::RepeatingCallback<WebContents*()> web_contents_getter,
@@ -1814,6 +1818,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       ui::PageTransition page_transition,
       bool has_user_gesture,
       const absl::optional<url::Origin>& initiating_origin,
+      RenderFrameHost* initiator_document,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory);
 
   // Creates an OverlayWindow to be used for Picture-in-Picture. This window

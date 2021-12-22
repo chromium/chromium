@@ -8,6 +8,7 @@
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/navigation_interception/navigation_params.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "ui/base/page_transition_types.h"
@@ -20,7 +21,8 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     WebContents* web_contents,
     ui::PageTransition page_transition,
     bool has_user_gesture,
-    const absl::optional<url::Origin>& initiating_origin) {
+    const absl::optional<url::Origin>& initiating_origin,
+    content::WeakDocumentPtr) {
   navigation_interception::InterceptNavigationDelegate* delegate =
       navigation_interception::InterceptNavigationDelegate::Get(web_contents);
   if (!delegate)

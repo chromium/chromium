@@ -45,6 +45,7 @@
 #include "content/public/browser/peak_gpu_memory_tracker.h"
 #include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -1921,9 +1922,9 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationRequest.
   std::vector<ConsoleMessage> console_messages_;
 
-  // The `commit_navigation_sent_counter` of the initiator RenderFrameHost at
-  // the time when this NavigationRequest was created.
-  int initiator_commit_navigation_sent_counter_ = -1;
+  // The initiator RenderFrameHost, if the same document is present as when this
+  // NavigationRequest was created.
+  WeakDocumentPtr initiator_document_;
 
   // Indicates that this navigation is for PDF content in a renderer.
   bool is_pdf_ = false;

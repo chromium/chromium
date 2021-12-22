@@ -15,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_elider.h"
@@ -31,6 +32,7 @@ const int kMessageWidth = 400;
 
 void OnArcHandled(const GURL& url,
                   const absl::optional<url::Origin>& initiating_origin,
+                  content::WeakDocumentPtr initiator_document,
                   int render_process_host_id,
                   int routing_id,
                   bool handled) {
@@ -50,7 +52,7 @@ void OnArcHandled(const GURL& url,
   if (registration) {
     new ExternalProtocolDialog(web_contents, url,
                                base::UTF8ToUTF16(registration->Name()),
-                               initiating_origin);
+                               initiating_origin, initiator_document);
   } else {
     new ash::ExternalProtocolNoHandlersDialog(web_contents, url);
   }
@@ -67,7 +69,8 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
     WebContents* web_contents,
     ui::PageTransition page_transition,
     bool has_user_gesture,
-    const absl::optional<url::Origin>& initiating_origin) {
+    const absl::optional<url::Origin>& initiating_origin,
+    content::WeakDocumentPtr initiator_document) {
   // First, check if ARC version of the dialog is available and run ARC version
   // when possible.
   // TODO(ellyjones): Refactor arc::RunArcExternalProtocolDialog() to take a
@@ -80,7 +83,8 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
       url, initiating_origin, render_process_host_id, routing_id,
       page_transition, has_user_gesture,
       base::BindOnce(&OnArcHandled, url, initiating_origin,
-                     render_process_host_id, routing_id));
+                     std::move(initiator_document), render_process_host_id,
+                     routing_id));
 }
 
 namespace ash {

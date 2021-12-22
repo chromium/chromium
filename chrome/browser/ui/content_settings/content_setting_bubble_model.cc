@@ -67,6 +67,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -887,10 +888,10 @@ void ContentSettingMediaStreamBubbleModel::OnDoneButtonClicked() {
 
     if (CameraAccessed()) {
       ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
-          GURL(kCameraSettingsURI), web_contents());
+          GURL(kCameraSettingsURI), web_contents(), content::WeakDocumentPtr());
     } else if (MicrophoneAccessed()) {
       ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
-          GURL(kMicSettingsURI), web_contents());
+          GURL(kMicSettingsURI), web_contents(), content::WeakDocumentPtr());
     }
     return;
 #endif  // defined(OS_MAC)
@@ -1268,7 +1269,7 @@ void ContentSettingGeolocationBubbleModel::OnDoneButtonClicked() {
     }
 
     ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
-        GURL(kLocationSettingsURI), web_contents());
+        GURL(kLocationSettingsURI), web_contents(), content::WeakDocumentPtr());
     return;
 #endif  // defined(OS_MAC)
   }

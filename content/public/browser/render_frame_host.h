@@ -101,6 +101,7 @@ class Origin;
 namespace content {
 
 class BrowserContext;
+class DocumentRef;
 struct GlobalRenderFrameHostId;
 class RenderProcessHost;
 class RenderViewHost;
@@ -108,6 +109,7 @@ class RenderWidgetHost;
 class RenderWidgetHostView;
 class SiteInstance;
 class StoragePartition;
+class WeakDocumentPtr;
 class WebUI;
 class Page;
 
@@ -1017,6 +1019,12 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // This can't be called for pending commit RFH because the value is set
   // during call to RenderFrameHostImpl::DidNavigate which happens after commit.
   virtual bool IsErrorDocument() = 0;
+
+  // Return checked and weak references, respectively, to the current document
+  // in this RenderFrameHost, which will be no longer valid once the
+  // RenderFrameHost is deleted or navigates to another document.
+  virtual DocumentRef GetDocumentRef() = 0;
+  virtual WeakDocumentPtr GetWeakDocumentPtr() = 0;
 
  private:
   // This interface should only be implemented inside content.

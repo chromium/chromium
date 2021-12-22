@@ -100,7 +100,8 @@ class NavigationURLLoaderTest : public testing::Test {
             net::HttpRequestHeaders() /* cors_exempt_headers */,
             nullptr /* client_security_state */,
             absl::nullopt /* devtools_accepted_stream_types */,
-            false /* is_pdf */));
+            false /* is_pdf */,
+            content::WeakDocumentPtr() /* initiator_document */));
     return NavigationURLLoader::Create(
         browser_context_.get(), storage_partition, std::move(request_info),
         nullptr, nullptr, nullptr, delegate,

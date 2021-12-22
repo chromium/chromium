@@ -19,6 +19,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -41,10 +42,12 @@ ClickToCallUiController* ClickToCallUiController::GetOrCreateFromWebContents(
 void ClickToCallUiController::ShowDialog(
     content::WebContents* web_contents,
     const absl::optional<url::Origin>& initiating_origin,
+    content::WeakDocumentPtr initiator_document,
     const GURL& url,
     bool hide_default_handler) {
   auto* controller = GetOrCreateFromWebContents(web_contents);
   controller->phone_url_ = url;
+  controller->initiator_document_ = std::move(initiator_document);
   controller->hide_default_handler_ = hide_default_handler;
   controller->UpdateAndShowDialog(initiating_origin);
 }
@@ -140,8 +143,8 @@ void ClickToCallUiController::OnAppChosen(const SharingApp& app) {
   if (ukm_recorder_)
     std::move(ukm_recorder_).Run(SharingClickToCallSelection::kApp);
 
-  ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(phone_url_,
-                                                         web_contents());
+  ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
+      phone_url_, web_contents(), initiator_document_);
 }
 
 void ClickToCallUiController::OnDialogShown(bool has_devices, bool has_apps) {

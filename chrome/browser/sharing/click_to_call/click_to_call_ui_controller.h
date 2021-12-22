@@ -14,6 +14,7 @@
 #include "chrome/browser/sharing/sharing_service.h"
 #include "chrome/browser/sharing/sharing_ui_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -31,6 +32,7 @@ class ClickToCallUiController
       content::WebContents* web_contents);
   static void ShowDialog(content::WebContents* web_contents,
                          const absl::optional<url::Origin>& initiating_origin,
+                         content::WeakDocumentPtr initiator_document,
                          const GURL& url,
                          bool hide_default_handler);
 
@@ -76,6 +78,7 @@ class ClickToCallUiController
 
   UKMRecorderCallback ukm_recorder_;
   GURL phone_url_;
+  content::WeakDocumentPtr initiator_document_;
   bool hide_default_handler_ = false;
 
   base::WeakPtrFactory<ClickToCallUiController> weak_ptr_factory_{this};

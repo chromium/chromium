@@ -614,6 +614,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       ui::PageTransition page_transition,
       bool has_user_gesture,
       const absl::optional<url::Origin>& initiating_origin,
+      content::RenderFrameHost* initiator_document,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory)
       override;
   std::unique_ptr<content::OverlayWindow> CreateWindowForPictureInPicture(

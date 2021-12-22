@@ -5,10 +5,13 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -245,4 +248,72 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerSandboxBrowserTest,
                                "iframe.sandbox = 'allow-scripts "
                                "allow-top-navigation-by-user-activation';",
                                /*user-gesture=*/true));
+}
+
+namespace {
+
+class AlwaysBlockedExternalProtocolHandlerDelegate
+    : public ExternalProtocolHandler::Delegate {
+ public:
+  AlwaysBlockedExternalProtocolHandlerDelegate() {
+    ExternalProtocolHandler::SetDelegateForTesting(this);
+  }
+  ~AlwaysBlockedExternalProtocolHandlerDelegate() override {
+    ExternalProtocolHandler::SetDelegateForTesting(nullptr);
+  }
+
+  scoped_refptr<shell_integration::DefaultProtocolClientWorker>
+  CreateShellWorker(const std::string& protocol) override {
+    NOTREACHED();
+    return nullptr;
+  }
+  ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,
+                                                    Profile* profile) override {
+    return ExternalProtocolHandler::BLOCK;
+  }
+  void BlockRequest() override {}
+  void RunExternalProtocolDialog(
+      const GURL& url,
+      content::WebContents* web_contents,
+      ui::PageTransition page_transition,
+      bool has_user_gesture,
+      const absl::optional<url::Origin>& initiating_origin) override {
+    NOTREACHED();
+  }
+  void LaunchUrlWithoutSecurityCheck(
+      const GURL& url,
+      content::WebContents* web_contents) override {
+    NOTREACHED();
+  }
+  void FinishedProcessingCheck() override {}
+};
+
+}  // namespace
+
+// Tests (by forcing a particular scheme to be blocked, regardless of platform)
+// that the console message is attributed to a subframe if one was responsible.
+IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
+                       ProtocolLaunchEmitsConsoleLogInCorrectFrame) {
+  AlwaysBlockedExternalProtocolHandlerDelegate always_blocked;
+  content::RenderFrameHost* main_rfh = ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,<iframe srcdoc=\"Hello!\"></iframe>"));
+  ASSERT_TRUE(main_rfh);
+  content::RenderFrameHost* originating_rfh = ChildFrameAt(main_rfh, 0);
+
+  content::WebContentsConsoleObserver observer(
+      content::WebContents::FromRenderFrameHost(originating_rfh));
+  observer.SetPattern("*aunch*'willfailtolaunch://foo'*");
+  observer.SetFilter(base::BindRepeating(
+      [](content::RenderFrameHost* expected_rfh,
+         const content::WebContentsConsoleObserver::Message& message) {
+        return message.source_frame == expected_rfh;
+      },
+      originating_rfh));
+
+  ASSERT_TRUE(
+      ExecJs(originating_rfh, "location.href = 'willfailtolaunch://foo';"));
+  observer.Wait();
+  ASSERT_EQ(1u, observer.messages().size());
+  EXPECT_EQ("Not allowed to launch 'willfailtolaunch://foo'.",
+            observer.GetMessageAt(0u));
 }

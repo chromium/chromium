@@ -97,6 +97,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -1436,10 +1437,8 @@ NavigationRequest::NavigationRequest(
   if (GetInitiatorFrameToken().has_value()) {
     RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromFrameToken(
         GetInitiatorProcessID(), GetInitiatorFrameToken().value());
-    if (initiator_rfh) {
-      initiator_commit_navigation_sent_counter_ =
-          initiator_rfh->commit_navigation_sent_counter();
-    }
+    if (initiator_rfh)
+      initiator_document_ = initiator_rfh->GetWeakDocumentPtr();
   }
 
   policy_container_navigation_bundle_.emplace(
@@ -3926,7 +3925,7 @@ void NavigationRequest::OnStartChecksComplete(
           devtools_navigation_token(), frame_tree_node_->devtools_frame_token(),
           OriginPolicyThrottle::ShouldRequestOriginPolicy(common_params_->url),
           std::move(cors_exempt_headers), std::move(client_security_state),
-          devtools_accepted_stream_types, is_pdf_),
+          devtools_accepted_stream_types, is_pdf_, initiator_document_),
       std::move(navigation_ui_data), service_worker_handle_.get(),
       std::move(prefetched_signed_exchange_cache_), this, loader_type,
       CreateCookieAccessObserver(),
@@ -6859,24 +6858,8 @@ NavigationRequest::TakeCookieObservers() {
 }
 
 RenderFrameHostImpl* NavigationRequest::GetInitiatorDocumentRenderFrameHost() {
-  if (!initiator_frame_token_.has_value()) {
-    return nullptr;
-  }
-
-  RenderFrameHostImpl* initiator_render_frame_host =
-      RenderFrameHostImpl::FromFrameToken(initiator_process_id_,
-                                          *initiator_frame_token_);
-
-  if (!initiator_render_frame_host ||
-      initiator_render_frame_host->commit_navigation_sent_counter() !=
-          initiator_commit_navigation_sent_counter_) {
-    // Either the initiator RFH has been destroyed, or the initiator document
-    // within that RFH has navigated away since the navigation started. In any
-    // case the initiator document is no longer available.
-    return nullptr;
-  }
-
-  return initiator_render_frame_host;
+  return static_cast<RenderFrameHostImpl*>(
+      initiator_document_.AsRenderFrameHostIfValid());
 }
 
 void NavigationRequest::RecordAddressSpaceFeature() {

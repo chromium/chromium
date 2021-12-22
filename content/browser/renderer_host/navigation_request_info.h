@@ -8,6 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/referrer.h"
 #include "net/base/isolation_info.h"
 #include "net/filter/source_stream.h"
@@ -44,7 +45,8 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       network::mojom::ClientSecurityStatePtr client_security_state,
       const absl::optional<std::vector<net::SourceStream::SourceType>>&
           devtools_accepted_stream_types,
-      bool is_pdf);
+      bool is_pdf,
+      WeakDocumentPtr initiator_document);
   NavigationRequestInfo(const NavigationRequestInfo& other) = delete;
   ~NavigationRequestInfo();
 
@@ -113,6 +115,9 @@ struct CONTENT_EXPORT NavigationRequestInfo {
 
   // Indicates that this navigation is for PDF content in a renderer.
   const bool is_pdf;
+
+  // The initiator document, if still available.
+  const WeakDocumentPtr initiator_document;
 };
 
 }  // namespace content

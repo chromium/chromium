@@ -19,6 +19,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
 #include "ui/base/page_transition_types.h"
@@ -87,7 +88,8 @@ void ChromeBluetoothChooserController::OpenPermissionPreferences() const {
 #if defined(OS_MAC)
   if (web_contents_) {
     ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
-        GURL(kBluetoothSettingsUri), web_contents_.get());
+        GURL(kBluetoothSettingsUri), web_contents_.get(),
+        content::WeakDocumentPtr());
   }
 #else
   NOTREACHED();

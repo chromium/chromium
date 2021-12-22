@@ -19,6 +19,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -100,7 +101,8 @@ class ExternalProtocolDialogBrowserTest
         browser()->tab_strip_model()->GetActiveWebContents();
     dialog_ = new ExternalProtocolDialog(
         web_contents, GURL("telnet://12345"), u"/usr/bin/telnet",
-        url::Origin::Create(GURL(initiating_origin)));
+        url::Origin::Create(GURL(initiating_origin)),
+        web_contents->GetMainFrame()->GetWeakDocumentPtr());
   }
 
   void SetChecked(bool checked) {
