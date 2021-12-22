@@ -188,9 +188,6 @@ TEST_P(PaintLayerTest, SticksToScrollerStickyPositionInsideScroller) {
 }
 
 TEST_P(PaintLayerTest, CompositedScrollingNoNeedsRepaint) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <div id='scroll' style='width: 100px; height: 100px; overflow: scroll;
         will-change: transform'>
@@ -200,10 +197,8 @@ TEST_P(PaintLayerTest, CompositedScrollingNoNeedsRepaint) {
   )HTML");
 
   PaintLayer* scroll_layer = GetPaintLayerByElementId("scroll");
-  EXPECT_EQ(kPaintsIntoOwnBacking, scroll_layer->GetCompositingState());
 
   PaintLayer* content_layer = GetPaintLayerByElementId("content");
-  EXPECT_EQ(kNotComposited, content_layer->GetCompositingState());
   EXPECT_EQ(PhysicalOffset(), content_layer->LocationWithoutPositionOffset());
 
   scroll_layer->GetScrollableArea()->SetScrollOffset(
@@ -237,10 +232,8 @@ TEST_P(PaintLayerTest, NonCompositedScrollingNeedsRepaint) {
                    .PaintProperties()
                    ->ScrollTranslation()
                    ->HasDirectCompositingReasons());
-  EXPECT_EQ(kNotComposited, scroll_layer->GetCompositingState());
 
   PaintLayer* content_layer = GetPaintLayerByElementId("content");
-  EXPECT_EQ(kNotComposited, scroll_layer->GetCompositingState());
   EXPECT_EQ(PhysicalOffset(), content_layer->LocationWithoutPositionOffset());
 
   scroll_layer->GetScrollableArea()->SetScrollOffset(
@@ -2558,19 +2551,6 @@ TEST_P(PaintLayerTest, GlobalRootScrollerHitTest) {
     EXPECT_EQ(result_scrollbar.InnerNode(), &GetDocument());
     EXPECT_NE(result_scrollbar.GetScrollbar(), nullptr);
   }
-}
-
-TEST_P(PaintLayerTest, HasNonEmptyChildLayoutObjectsZeroSizeOverflowVisible) {
-  SetBodyInnerHTML(R"HTML(
-    <div id="layer" style="position: relative">
-      <div style="overflow: visible; height: 0; width: 0">text</div>
-    </div>
-  )HTML");
-
-  auto* layer = GetPaintLayerByElementId("layer");
-  EXPECT_TRUE(layer->HasVisibleContent());
-  EXPECT_FALSE(layer->HasVisibleDescendant());
-  EXPECT_TRUE(layer->HasNonEmptyChildLayoutObjects());
 }
 
 TEST_P(PaintLayerTest, AddLayerNeedsRepaintAndCullRectUpdate) {

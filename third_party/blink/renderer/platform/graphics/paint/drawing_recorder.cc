@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"

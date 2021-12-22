@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 

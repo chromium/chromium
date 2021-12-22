@@ -46,8 +46,6 @@ constexpr CompositingReasonStringMap kCompositingReasonsStringMap[] = {
      "Is sticky position"},
     {CompositingReason::kOverflowScrolling, "overflowScrolling",
      "Is a scrollable overflow element"},
-    {CompositingReason::kOverflowScrollingParent, "overflowScrollingParent",
-     "Scroll parent is not an ancestor"},
     {CompositingReason::kOutOfFlowClipping, "outOfFlowClipping",
      "Has clipping ancestor"},
     {CompositingReason::kVideoOverlay, "videoOverlay",
@@ -74,8 +72,6 @@ constexpr CompositingReasonStringMap kCompositingReasonsStringMap[] = {
      "Overlaps other composited content"},
     {CompositingReason::kNegativeZIndexChildren, "negativeZIndexChildren",
      "Parent with composited negative z-index content"},
-    {CompositingReason::kSquashingDisallowed, "squashingDisallowed",
-     "Layer was separately composited because it could not be squashed."},
     {CompositingReason::kOpacityWithCompositedDescendants,
      "opacityWithCompositedDescendants",
      "Has opacity that needs to be applied by compositor because of composited "

@@ -8,6 +8,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_paint_image_generator.h"
+#include "third_party/blink/renderer/platform/graphics/image.h"
 
 using testing::ReturnRef;
 

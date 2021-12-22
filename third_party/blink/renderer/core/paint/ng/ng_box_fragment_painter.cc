@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
 #include "third_party/blink/renderer/core/paint/box_decoration_data.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_fieldset_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_box_fragment_painter.h"

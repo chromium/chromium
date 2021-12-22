@@ -43,6 +43,7 @@
 #include "cc/input/overscroll_behavior.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/paint_recorder.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/scroll_node.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -169,7 +170,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
@@ -188,7 +188,6 @@
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
@@ -13431,7 +13430,7 @@ static void TestFramePrinting(WebLocalFrameImpl* frame) {
   gfx::Size page_size(500, 500);
   print_params.print_content_area.set_size(page_size);
   EXPECT_EQ(1u, frame->PrintBegin(print_params, WebNode()));
-  PaintRecorder recorder;
+  cc::PaintRecorder recorder;
   frame->PrintPagesForTesting(recorder.beginRecording(SkRect::MakeEmpty()),
                               page_size, page_size);
   frame->PrintEnd();
@@ -13509,7 +13508,7 @@ TEST_F(WebFrameTest, FirstLetterHasDOMNodeIdWhenPrinting) {
   print_params.print_content_area.set_size(page_size);
   WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
   EXPECT_EQ(1u, frame->PrintBegin(print_params, WebNode()));
-  PaintRecorder recorder;
+  cc::PaintRecorder recorder;
   frame->PrintPagesForTesting(recorder.beginRecording(SkRect::MakeEmpty()),
                               page_size, page_size);
   frame->PrintEnd();

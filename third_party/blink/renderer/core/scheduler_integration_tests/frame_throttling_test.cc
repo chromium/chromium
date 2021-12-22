@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
@@ -520,8 +519,6 @@ TEST_P(FrameThrottlingTest, ThrottledFrameCompositing) {
       To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
   auto* frame_view = frame_element->contentDocument()->View();
   EXPECT_FALSE(frame_view->CanThrottleRendering());
-  auto* frame_layout_view = frame_view->GetLayoutView();
-  EXPECT_TRUE(frame_layout_view->Layer()->CanBeComposited());
   auto* root_layer = WebView().MainFrameImpl()->GetFrameView()->RootCcLayer();
   EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "container").size());
   EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner_frame").size());
@@ -542,7 +539,6 @@ TEST_P(FrameThrottlingTest, ThrottledFrameCompositing) {
   ASSERT_TRUE(Compositor().NeedsBeginFrame());
   CompositeFrame();
   EXPECT_FALSE(frame_view->CanThrottleRendering());
-  EXPECT_TRUE(frame_layout_view->Layer()->CanBeComposited());
   EXPECT_EQ(0u, CcLayersByDOMElementId(root_layer, "container").size());
   EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner_frame").size());
 }

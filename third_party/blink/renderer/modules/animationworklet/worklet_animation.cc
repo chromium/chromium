@@ -129,12 +129,6 @@ AnimationTimeline* ConvertAnimationTimeline(
   return nullptr;
 }
 
-bool CheckElementComposited(const Node& target) {
-  return target.GetLayoutObject() &&
-         target.GetLayoutObject()->GetCompositingState() ==
-             kPaintsIntoOwnBacking;
-}
-
 void StartEffectOnCompositor(CompositorAnimation* animation,
                              KeyframeEffect* effect) {
   DCHECK(effect);
@@ -619,9 +613,6 @@ bool WorkletAnimation::CanStartOnCompositor() {
   if (failure_reasons != CompositorAnimations::kNoFailure)
     return false;
 
-  if (!CheckElementComposited(target))
-    return false;
-
   // If the scroll source is not composited, fall back to main thread.
   if (timeline_->IsScrollTimeline() &&
       !CompositorAnimations::CheckUsesCompositedScrolling(
@@ -629,7 +620,10 @@ bool WorkletAnimation::CanStartOnCompositor() {
     return false;
   }
 
-  return true;
+  // TODO(crbug.com/1281413): This function has returned false since the launch
+  // of CompositeAfterPaint, but that may not be intended. Should this return
+  // true?
+  return false;
 }
 
 bool WorkletAnimation::StartOnCompositor() {

@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 
@@ -123,10 +122,8 @@ TEST_P(LayoutSVGRootTest, RectBasedHitTestPartialOverlap) {
   EXPECT_EQ(2, count);
 }
 
-// A PaintLayer is needed for the purposes of creating a GraphicsLayer to limit
-// CompositeSVG to SVG subtrees. This PaintLayer will not be needed with
-// CompositeAfterPaint. If compositing is needed for descendants, the paint
-// layer should be self-painting. Otherwise, it should be non-self-painting.
+// A PaintLayer is needed to ensure the parent layer knows about non-isolated
+// descendants with blend mode.
 TEST_P(LayoutSVGRootTest, PaintLayerType) {
   SetBodyInnerHTML(R"HTML(
     <svg id="root" style="width: 200px; height: 200px;">
