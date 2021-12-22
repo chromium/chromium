@@ -433,7 +433,6 @@ void TerminalPrivateOpenTerminalProcessFunction::RespondOnUIThread(
   }
   auto* contents = GetSenderWebContents();
   if (!contents) {
-    LOG(WARNING) << "content is closed before returning opened process";
     chromeos::ProcessProxyRegistry::GetTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -444,6 +443,9 @@ void TerminalPrivateOpenTerminalProcessFunction::RespondOnUIThread(
               }
             },
             terminal_id));
+    const std::string msg = "Web contents closed during OpenProcess";
+    LOG(WARNING) << msg;
+    Respond(Error(msg));
     return;
   }
 

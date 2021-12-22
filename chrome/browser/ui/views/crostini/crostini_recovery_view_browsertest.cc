@@ -133,8 +133,7 @@ IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, NoViewOnNormalStartup) {
       static_cast<base::HistogramBase::Sample>(kUiSurface), 0);
 }
 
-// TODO(https://crbug.com/1105487): This test is flaky.
-IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, DISABLED_Cancel) {
+IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, Cancel) {
   base::HistogramTester histogram_tester;
 
   SetUncleanStartup();
