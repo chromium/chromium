@@ -11,9 +11,11 @@ namespace bluetooth_config {
 
 DeviceOperationHandlerImpl::DeviceOperationHandlerImpl(
     AdapterStateController* adapter_state_controller,
-    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter)
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+    DeviceNameManager* device_name_manager)
     : DeviceOperationHandler(adapter_state_controller),
-      bluetooth_adapter_(std::move(bluetooth_adapter)) {}
+      bluetooth_adapter_(std::move(bluetooth_adapter)),
+      device_name_manager_(device_name_manager) {}
 
 DeviceOperationHandlerImpl::~DeviceOperationHandlerImpl() = default;
 
@@ -71,6 +73,7 @@ void DeviceOperationHandlerImpl::PerformForget(const std::string& device_id) {
                                         },
                                         device_id));
 
+  device_name_manager_->RemoveDeviceNickname(device_id);
   HandleFinishedOperation(/*success=*/true);
 }
 

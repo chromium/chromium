@@ -96,7 +96,8 @@ ScopedBluetoothConfigTestHelper::CreateDiscoverySessionManager(
 std::unique_ptr<DeviceOperationHandler>
 ScopedBluetoothConfigTestHelper::CreateDeviceOperationHandler(
     AdapterStateController* adapter_state_controller,
-    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+    DeviceNameManager* device_name_manager) {
   auto fake_device_operation_handler =
       std::make_unique<FakeDeviceOperationHandler>(adapter_state_controller);
   fake_device_operation_handler_ = fake_device_operation_handler.get();

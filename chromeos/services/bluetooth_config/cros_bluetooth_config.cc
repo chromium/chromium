@@ -46,7 +46,8 @@ CrosBluetoothConfig::CrosBluetoothConfig(
           discovered_devices_provider_.get())),
       device_operation_handler_(initializer.CreateDeviceOperationHandler(
           adapter_state_controller_.get(),
-          bluetooth_adapter)),
+          bluetooth_adapter,
+          device_name_manager_.get())),
       fast_pair_delegate_(fast_pair_delegate) {
   if (fast_pair_delegate_)
     fast_pair_delegate_->SetDeviceNameManager(device_name_manager_.get());

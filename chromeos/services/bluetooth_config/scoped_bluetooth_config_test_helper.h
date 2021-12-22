@@ -89,7 +89,8 @@ class ScopedBluetoothConfigTestHelper : public Initializer {
       DiscoveredDevicesProvider* discovered_devices_provider) override;
   std::unique_ptr<DeviceOperationHandler> CreateDeviceOperationHandler(
       AdapterStateController* adapter_state_controller,
-      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) override;
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+      DeviceNameManager* device_name_manager) override;
 
   FakeAdapterStateController* fake_adapter_state_controller_;
   FakeBluetoothDeviceStatusNotifier* fake_bluetooth_device_status_notifier_;

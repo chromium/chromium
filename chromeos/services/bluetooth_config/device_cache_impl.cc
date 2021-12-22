@@ -149,9 +149,6 @@ void DeviceCacheImpl::OnDeviceNicknameChanged(
     if (device->GetIdentifier() != device_id)
       continue;
 
-    // The device should be paired or its nickname shouldn't have been able to
-    // be changed.
-    DCHECK(device->IsPaired());
     DeviceChanged(bluetooth_adapter_.get(), device);
     return;
   }

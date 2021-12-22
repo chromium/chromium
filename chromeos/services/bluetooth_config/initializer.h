@@ -55,7 +55,8 @@ class Initializer {
       DiscoveredDevicesProvider* discovered_devices_provider) = 0;
   virtual std::unique_ptr<DeviceOperationHandler> CreateDeviceOperationHandler(
       AdapterStateController* adapter_state_controller,
-      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+      DeviceNameManager* device_name_manager) = 0;
 
  protected:
   Initializer() = default;

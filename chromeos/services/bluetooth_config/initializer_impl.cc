@@ -72,9 +72,11 @@ InitializerImpl::CreateDiscoverySessionManager(
 std::unique_ptr<DeviceOperationHandler>
 InitializerImpl::CreateDeviceOperationHandler(
     AdapterStateController* adapter_state_controller,
-    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+    DeviceNameManager* device_name_manager) {
   return std::make_unique<DeviceOperationHandlerImpl>(
-      adapter_state_controller, std::move(bluetooth_adapter));
+      adapter_state_controller, std::move(bluetooth_adapter),
+      device_name_manager);
 }
 
 }  // namespace bluetooth_config

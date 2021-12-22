@@ -8,6 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
+#include "chromeos/services/bluetooth_config/fake_device_name_manager.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,6 +23,7 @@ using NiceMockDevice =
 
 const uint32_t kTestBluetoothClass = 1337u;
 const char kTestBluetoothName[] = "testName";
+const char kTestBluetoothNickname[] = "testNickname";
 
 }  // namespace
 
@@ -48,7 +50,8 @@ class DeviceOperationHandlerImplTest : public testing::Test {
             this, &DeviceOperationHandlerImplTest::GetMockDevices));
 
     device_operation_handler_ = std::make_unique<DeviceOperationHandlerImpl>(
-        &fake_adapter_state_controller_, mock_adapter_);
+        &fake_adapter_state_controller_, mock_adapter_,
+        &fake_device_name_manager_);
   }
 
   void SetBluetoothSystemState(mojom::BluetoothSystemState system_state) {
@@ -169,6 +172,15 @@ class DeviceOperationHandlerImplTest : public testing::Test {
     forget_callbacks_.reset();
   }
 
+  void SetDeviceNickname(const std::string& device_id) {
+    fake_device_name_manager_.SetDeviceNickname(device_id,
+                                                kTestBluetoothNickname);
+  }
+
+  absl::optional<std::string> GetDeviceNickname(const std::string& device_id) {
+    return fake_device_name_manager_.GetDeviceNickname(device_id);
+  }
+
  private:
   std::vector<const device::BluetoothDevice*> GetMockDevices() {
     std::vector<const device::BluetoothDevice*> devices;
@@ -196,6 +208,7 @@ class DeviceOperationHandlerImplTest : public testing::Test {
 
   FakeAdapterStateController fake_adapter_state_controller_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
+  FakeDeviceNameManager fake_device_name_manager_;
 
   std::unique_ptr<DeviceOperationHandlerImpl> device_operation_handler_;
 };
@@ -256,7 +269,7 @@ TEST_F(DeviceOperationHandlerImplTest, DisconnectNotFoundFailThenSucceed) {
                                           /*success=*/true));
 }
 
-TEST_F(DeviceOperationHandlerImplTest, ForgetNotFoundFailThenSucceed) {
+TEST_F(DeviceOperationHandlerImplTest, ForgetNotFoundThenSucceed) {
   std::string device_id = "testid";
 
   // Forget should fail due to device not being found.
@@ -273,6 +286,21 @@ TEST_F(DeviceOperationHandlerImplTest, ForgetNotFoundFailThenSucceed) {
   // for pending callbacks.
   EXPECT_EQ(results()[1],
             std::make_tuple(device_id, Operation::kForget, /*success=*/true));
+}
+
+TEST_F(DeviceOperationHandlerImplTest, ForgettingDeviceRemovesNickname) {
+  std::string device_id;
+  AddDevice(&device_id);
+
+  SetDeviceNickname(device_id);
+  absl::optional<std::string> nickname = GetDeviceNickname(device_id);
+  EXPECT_TRUE(nickname.has_value());
+  EXPECT_EQ(kTestBluetoothNickname, nickname.value());
+
+  ForgetDevice(device_id);
+  EXPECT_EQ(results()[0],
+            std::make_tuple(device_id, Operation::kForget, /*success=*/true));
+  EXPECT_FALSE(GetDeviceNickname(device_id).has_value());
 }
 
 TEST_F(DeviceOperationHandlerImplTest, SimultaneousOperationsAreQueued) {

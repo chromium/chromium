@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
+#include "chromeos/services/bluetooth_config/device_name_manager.h"
 #include "chromeos/services/bluetooth_config/device_operation_handler.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -20,7 +21,8 @@ class DeviceOperationHandlerImpl : public DeviceOperationHandler {
  public:
   DeviceOperationHandlerImpl(
       AdapterStateController* adapter_state_controller,
-      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+      DeviceNameManager* device_name_manager);
   ~DeviceOperationHandlerImpl() override;
 
  private:
@@ -39,6 +41,7 @@ class DeviceOperationHandlerImpl : public DeviceOperationHandler {
   device::BluetoothDevice* FindDevice(const std::string& device_id) const;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
+  DeviceNameManager* device_name_manager_;
 
   base::WeakPtrFactory<DeviceOperationHandlerImpl> weak_ptr_factory_{this};
 };
