@@ -676,18 +676,18 @@ void FrameSinkManagerImpl::CacheBackBuffer(
     const FrameSinkId& root_frame_sink_id) {
   auto it = root_sink_map_.find(root_frame_sink_id);
 
-  DCHECK(it != root_sink_map_.end());
-  DCHECK(cached_back_buffers_.find(cache_id) == cached_back_buffers_.end());
+  // If creating RootCompositorFrameSinkImpl failed there might not be an entry
+  // in |root_sink_map_|.
+  if (it == root_sink_map_.end())
+    return;
 
+  DCHECK(!base::Contains(cached_back_buffers_, cache_id));
   cached_back_buffers_[cache_id] = it->second->GetCacheBackBufferCb();
 }
 
 void FrameSinkManagerImpl::EvictBackBuffer(uint32_t cache_id,
                                            EvictBackBufferCallback callback) {
-  auto it = cached_back_buffers_.find(cache_id);
-  DCHECK(it != cached_back_buffers_.end());
-
-  cached_back_buffers_.erase(it);
+  cached_back_buffers_.erase(cache_id);
   std::move(callback).Run();
 }
 
