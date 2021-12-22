@@ -35,9 +35,9 @@ BulkPrintersCalculator::AccessMode ConvertToAccessMode(int mode_val) {
   return BulkPrintersCalculator::ALL_ACCESS;
 }
 
-std::vector<std::string> ConvertToVector(const base::ListValue* list) {
+std::vector<std::string> ConvertToVector(const base::Value* list) {
   std::vector<std::string> string_list;
-  if (!list) {
+  if (!list || !list->is_list()) {
     return string_list;
   }
 
@@ -72,7 +72,7 @@ class PrefBinder : public CalculatorsPoliciesBinder {
   }
 
   std::vector<std::string> GetStringList(const char* name) const override {
-    return ConvertToVector(&base::Value::AsListValue(*prefs_->GetList(name)));
+    return ConvertToVector(prefs_->GetList(name));
   }
 
  private:
