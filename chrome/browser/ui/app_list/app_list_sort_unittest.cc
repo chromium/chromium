@@ -6,6 +6,7 @@
 
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/constants/ash_features.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
@@ -378,8 +379,7 @@ TEST_F(TemporaryAppListSortTest, ReparentingItemToRootResetsSortOrder) {
 
 // Verifies that merging two items to form a folder resets the nominal app list
 // sort order (if the app list is sorted at the time).
-// Disabled due to flakiness (https://crbug.com/1281828).
-TEST_F(TemporaryAppListSortTest, DISABLED_MergingItemsResetsSortOrder) {
+TEST_F(TemporaryAppListSortTest, MergingItemsResetsSortOrder) {
   RemoveAllExistingItems();
 
   std::vector<scoped_refptr<extensions::Extension>> apps;
@@ -405,26 +405,44 @@ TEST_F(TemporaryAppListSortTest, DISABLED_MergingItemsResetsSortOrder) {
 
   // Merge two items into a folder.
   ChromeAppListModelUpdater* model_updater = GetChromeModelUpdater();
-  model_updater->model_for_test()->MergeItems(apps[8]->id(), apps[9]->id());
+  const std::string folder_id =
+      model_updater->model_for_test()->MergeItems(apps[8]->id(), apps[9]->id());
 
   // Verify that the app list is no longer considered sorted - new items are
   // added to the first position within the app list.
   EXPECT_FALSE(IsUnderTemporarySort());
   EXPECT_EQ(ash::AppListSortOrder::kCustom, GetSortOrderFromPrefs());
-  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
+  std::vector<std::string> ordered_names = GetOrderedNamesFromSyncableService();
+  // Note that newly created folder will have the same position as the item it
+  // was created from, so order of the original item and the folder may not be
+  // deterministic (both [folder, item], and [item, folder] are acceptable
+  // orders). Remove the folder from the list, and later test that the folder
+  // position is the same as the original item.
+  EXPECT_EQ(1u, base::EraseIf(ordered_names, [](const std::string& item) {
+              return item == "";
+            }));
+  EXPECT_EQ(ordered_names,
             std::vector<std::string>({"Item 0", "Item 1", "Item 2", "Item 3",
                                       "Item 4", "Item 5", "Item 6", "Item 7",
-                                      "Item 8", "", "Item 9"}));
+                                      "Item 8", "Item 9"}));
+  EXPECT_EQ(GetPositionFromSyncData(apps[8]->id()),
+            GetPositionFromSyncData(folder_id));
 
   scoped_refptr<extensions::Extension> new_app = MakeApp(
       "Item 10", GenerateId("new_install"), extensions::Extension::NO_FLAGS);
   InstallExtension(new_app.get());
 
   EXPECT_EQ(ash::AppListSortOrder::kCustom, GetSortOrderFromPrefs());
-  EXPECT_EQ(GetOrderedNamesFromSyncableService(),
+  ordered_names = GetOrderedNamesFromSyncableService();
+  EXPECT_EQ(1u, base::EraseIf(ordered_names, [](const std::string& item) {
+              return item == "";
+            }));
+  EXPECT_EQ(ordered_names,
             std::vector<std::string>({"Item 10", "Item 0", "Item 1", "Item 2",
                                       "Item 3", "Item 4", "Item 5", "Item 6",
-                                      "Item 7", "Item 8", "", "Item 9"}));
+                                      "Item 7", "Item 8", "Item 9"}));
+  EXPECT_EQ(GetPositionFromSyncData(apps[8]->id()),
+            GetPositionFromSyncData(folder_id));
 }
 
 // Verifies that moving an item from a folder to root apps grid resets the
