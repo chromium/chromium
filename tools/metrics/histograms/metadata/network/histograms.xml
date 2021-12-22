@@ -3007,6 +3007,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.Wifi.TimeFromRekeyToFailureSeconds"
+    units="seconds" expires_after="2022-12-01">
+  <owner>billyzhao@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    Time spent between network rekey attempt to connection failure. The metric
+    timer starts when a rekey is initiated and stops once a connection failure
+    is reported or another rekey is initiated. The metric is only reported if
+    the timer is stopped by a connection failure within 180 seconds.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.Wifi.TimeOnline" units="seconds"
     expires_after="2022-04-24">
   <owner>norvez@chromium.org</owner>
