@@ -88,11 +88,10 @@ void DictionaryHashStoreContents::SetSplitMac(const std::string& path,
                                               const std::string& split_path,
                                               const std::string& value) {
   base::DictionaryValue* macs_dict = GetMutableContents(true);
-  base::DictionaryValue* split_dict = nullptr;
-  macs_dict->GetDictionary(path, &split_dict);
+  base::Value* split_dict = macs_dict->FindDictPath(path);
   if (!split_dict) {
-    split_dict = macs_dict->SetDictionary(
-        path, std::make_unique<base::DictionaryValue>());
+    split_dict =
+        macs_dict->SetPath(path, base::Value(base::Value::Type::DICTIONARY));
   }
   split_dict->SetKey(split_path, base::Value(value));
 }
@@ -132,8 +131,8 @@ base::DictionaryValue* DictionaryHashStoreContents::GetMutableContents(
   base::DictionaryValue* macs_dict = NULL;
   storage_->GetDictionary(kPreferenceMACs, &macs_dict);
   if (!macs_dict && create_if_null) {
-    macs_dict = storage_->SetDictionary(
-        kPreferenceMACs, std::make_unique<base::DictionaryValue>());
+    macs_dict = static_cast<base::DictionaryValue*>(storage_->SetPath(
+        kPreferenceMACs, base::Value(base::Value::Type::DICTIONARY)));
   }
   return macs_dict;
 }
