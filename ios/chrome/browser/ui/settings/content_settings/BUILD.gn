@@ -9,8 +9,13 @@ source_set("content_settings") {
     "block_popups_table_view_controller.mm",
     "content_settings_table_view_controller.h",
     "content_settings_table_view_controller.mm",
+    "default_page_mode_coordinator.h",
+    "default_page_mode_coordinator.mm",
+    "default_page_mode_mediator.h",
+    "default_page_mode_mediator.mm",
   ]
   deps = [
+    ":content_settings_ui",
     "//base",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
@@ -20,8 +25,10 @@ source_set("content_settings") {
     "//ios/chrome/browser:pref_names",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/ntp:feature_flags",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings:settings_root",
@@ -34,6 +41,20 @@ source_set("content_settings") {
     "//ios/public/provider/chrome/browser/mailto",
     "//ios/web/common:features",
     "//ui/base",
+  ]
+}
+
+source_set("content_settings_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "default_page_mode_consumer.h",
+    "default_page_mode_table_view_controller.h",
+    "default_page_mode_table_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/ui/table_view/cells",
   ]
 }
 
@@ -51,6 +72,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ui/table_view:test_support",
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/web/public/test",

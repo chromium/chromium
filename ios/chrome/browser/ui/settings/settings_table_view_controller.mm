@@ -1257,8 +1257,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     }
     case SettingsItemTypeContentSettings:
       base::RecordAction(base::UserMetricsAction("Settings.ContentSettings"));
-      controller = [[ContentSettingsTableViewController alloc]
-          initWithBrowserState:_browserState];
+      controller =
+          [[ContentSettingsTableViewController alloc] initWithBrowser:_browser];
       break;
     case SettingsItemTypeBandwidth:
       base::RecordAction(base::UserMetricsAction("Settings.Bandwidth"));

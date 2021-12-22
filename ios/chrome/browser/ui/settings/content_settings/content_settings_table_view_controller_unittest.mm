@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/content_settings/content_settings_table_view_controller.h"
 
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -20,20 +21,17 @@ namespace {
 class ContentSettingsTableViewControllerTest
     : public ChromeTableViewControllerTest {
  protected:
-  void SetUp() override {
-    ChromeTableViewControllerTest::SetUp();
-    TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = test_cbs_builder.Build();
-  }
+  ContentSettingsTableViewControllerTest()
+      : browser_(std::make_unique<TestBrowser>()) {}
 
   ChromeTableViewController* InstantiateController() override {
     return [[ContentSettingsTableViewController alloc]
-        initWithBrowserState:chrome_browser_state_.get()];
+        initWithBrowser:browser_.get()];
   }
 
  private:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
 };
 
 // Tests that there are 2 items in Content Settings.
