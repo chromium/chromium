@@ -89,4 +89,76 @@ TEST_F(WebExposedIsolationInfoTest, Comparisons) {
   EXPECT_FALSE(appB < appA);
 }
 
+TEST_F(WebExposedIsolationInfoTest, AreCompatibleFunctions) {
+  url::Origin originA =
+      url::Origin::CreateFromNormalizedTuple("https", "aaa.example", 443);
+  url::Origin originB =
+      url::Origin::CreateFromNormalizedTuple("https", "bbb.example", 443);
+  WebExposedIsolationInfo nonIsolated =
+      WebExposedIsolationInfo::CreateNonIsolated();
+  WebExposedIsolationInfo isolatedA =
+      WebExposedIsolationInfo::CreateIsolated(originA);
+  WebExposedIsolationInfo isolatedB =
+      WebExposedIsolationInfo::CreateIsolated(originB);
+  WebExposedIsolationInfo appA =
+      WebExposedIsolationInfo::CreateIsolatedApplication(originA);
+  WebExposedIsolationInfo appB =
+      WebExposedIsolationInfo::CreateIsolatedApplication(originB);
+
+  absl::optional<WebExposedIsolationInfo> optionalEmpty = absl::nullopt;
+  EXPECT_TRUE(
+      WebExposedIsolationInfo::AreCompatible(optionalEmpty, nonIsolated));
+  EXPECT_TRUE(WebExposedIsolationInfo::AreCompatible(optionalEmpty, isolatedA));
+  EXPECT_TRUE(WebExposedIsolationInfo::AreCompatible(optionalEmpty, appA));
+  EXPECT_TRUE(
+      WebExposedIsolationInfo::AreCompatible(nonIsolated, optionalEmpty));
+  EXPECT_TRUE(WebExposedIsolationInfo::AreCompatible(isolatedA, optionalEmpty));
+  EXPECT_TRUE(WebExposedIsolationInfo::AreCompatible(appA, optionalEmpty));
+
+  absl::optional<WebExposedIsolationInfo> optionalNonIsolated =
+      WebExposedIsolationInfo::CreateNonIsolated();
+  EXPECT_TRUE(
+      WebExposedIsolationInfo::AreCompatible(optionalNonIsolated, nonIsolated));
+  EXPECT_FALSE(
+      WebExposedIsolationInfo::AreCompatible(optionalNonIsolated, isolatedA));
+  EXPECT_FALSE(
+      WebExposedIsolationInfo::AreCompatible(optionalNonIsolated, appA));
+  EXPECT_TRUE(
+      WebExposedIsolationInfo::AreCompatible(nonIsolated, optionalNonIsolated));
+  EXPECT_FALSE(
+      WebExposedIsolationInfo::AreCompatible(isolatedA, optionalNonIsolated));
+  EXPECT_FALSE(
+      WebExposedIsolationInfo::AreCompatible(appA, optionalNonIsolated));
+
+  absl::optional<WebExposedIsolationInfo> optionalIsolatedA =
+      WebExposedIsolationInfo::CreateIsolated(originA);
+  EXPECT_FALSE(
+      WebExposedIsolationInfo::AreCompatible(optionalIsolatedA, nonIsolated));
+  EXPECT_TRUE(
+      WebExposedIsolationInfo::AreCompatible(optionalIsolatedA, isolatedA));
+  EXPECT_FALSE(
+      WebExposedIsolationInfo::AreCompatible(optionalIsolatedA, isolatedB));
+  EXPECT_FALSE(WebExposedIsolationInfo::AreCompatible(optionalIsolatedA, appA));
+  EXPECT_FALSE(
+      WebExposedIsolationInfo::AreCompatible(nonIsolated, optionalIsolatedA));
+  EXPECT_TRUE(
+      WebExposedIsolationInfo::AreCompatible(isolatedA, optionalIsolatedA));
+  EXPECT_FALSE(
+      WebExposedIsolationInfo::AreCompatible(isolatedB, optionalIsolatedA));
+  EXPECT_FALSE(WebExposedIsolationInfo::AreCompatible(appA, optionalIsolatedA));
+
+  absl::optional<WebExposedIsolationInfo> optionalAppA =
+      WebExposedIsolationInfo::CreateIsolatedApplication(originA);
+  EXPECT_FALSE(
+      WebExposedIsolationInfo::AreCompatible(optionalAppA, nonIsolated));
+  EXPECT_FALSE(WebExposedIsolationInfo::AreCompatible(optionalAppA, isolatedA));
+  EXPECT_TRUE(WebExposedIsolationInfo::AreCompatible(optionalAppA, appA));
+  EXPECT_FALSE(WebExposedIsolationInfo::AreCompatible(optionalAppA, appB));
+  EXPECT_FALSE(
+      WebExposedIsolationInfo::AreCompatible(nonIsolated, optionalAppA));
+  EXPECT_FALSE(WebExposedIsolationInfo::AreCompatible(isolatedA, optionalAppA));
+  EXPECT_TRUE(WebExposedIsolationInfo::AreCompatible(appA, optionalAppA));
+  EXPECT_FALSE(WebExposedIsolationInfo::AreCompatible(appB, optionalAppA));
+}
+
 }  // namespace content

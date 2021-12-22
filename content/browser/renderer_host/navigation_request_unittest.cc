@@ -116,8 +116,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
                        base::Unretained(this)));
 
     GetNavigationRequest()->WillRedirectRequest(
-        GURL(), WebExposedIsolationInfo::CreateNonIsolated(),
-        nullptr /* post_redirect_process */);
+        GURL(), nullptr /* post_redirect_process */);
   }
 
   // Helper function to call WillFailRequest on |handle|. If this function

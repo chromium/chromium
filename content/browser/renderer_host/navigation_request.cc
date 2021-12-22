@@ -2083,8 +2083,7 @@ void NavigationRequest::StartNavigation() {
   // starting SiteInstance.
   starting_site_instance_ =
       frame_tree_node->current_frame_host()->GetSiteInstance();
-  site_info_ = GetSiteInfoForCommonParamsURL(
-      starting_site_instance_->GetWebExposedIsolationInfo());
+  site_info_ = GetSiteInfoForCommonParamsURL();
 
   // Compute the redirect chain.
   // TODO(clamy): Try to simplify this and have the redirects be part of
@@ -2623,8 +2622,7 @@ void NavigationRequest::OnRequestRedirected(
   RenderProcessHost* expected_process =
       site_instance->HasProcess() ? site_instance->GetProcess() : nullptr;
 
-  WillRedirectRequest(common_params_->referrer->url,
-                      ComputeWebExposedIsolationInfo(), expected_process);
+  WillRedirectRequest(common_params_->referrer->url, expected_process);
 }
 
 base::WeakPtr<NavigationRequest> NavigationRequest::GetWeakPtr() {
@@ -4745,14 +4743,12 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnCommitSent() {
 }
 
 void NavigationRequest::UpdateSiteInfo(
-    const WebExposedIsolationInfo& web_exposed_isolation_info,
     RenderProcessHost* post_redirect_process) {
   int post_redirect_process_id = post_redirect_process
                                      ? post_redirect_process->GetID()
                                      : ChildProcessHost::kInvalidUniqueID;
 
-  SiteInfo new_site_info =
-      GetSiteInfoForCommonParamsURL(web_exposed_isolation_info);
+  SiteInfo new_site_info = GetSiteInfoForCommonParamsURL();
   if (new_site_info == site_info_ &&
       post_redirect_process_id == expected_render_process_host_id_) {
     return;
@@ -5481,12 +5477,11 @@ void NavigationRequest::WillStartRequest() {
 
 void NavigationRequest::WillRedirectRequest(
     const GURL& new_referrer_url,
-    const WebExposedIsolationInfo& web_exposed_isolation_info,
     RenderProcessHost* post_redirect_process) {
   EnterChildTraceEvent("WillRedirectRequest", this, "url",
                        common_params_->url.possibly_invalid_spec());
   UpdateStateFollowingRedirect(new_referrer_url);
-  UpdateSiteInfo(web_exposed_isolation_info, post_redirect_process);
+  UpdateSiteInfo(post_redirect_process);
 
   if (IsSelfReferentialURL()) {
     SetState(CANCELING);
@@ -5653,13 +5648,8 @@ void NavigationRequest::DidCommitNavigation(
   }
 }
 
-SiteInfo NavigationRequest::GetSiteInfoForCommonParamsURL(
-    const WebExposedIsolationInfo& web_exposed_isolation_info) {
-  // We typically call this function when we don't yet have response headers, so
-  // the computed WebExposedIsolationInfo is not relevant. We override it with
-  // the value passed in.
+SiteInfo NavigationRequest::GetSiteInfoForCommonParamsURL() {
   UrlInfo url_info = GetUrlInfo();
-  url_info.web_exposed_isolation_info = web_exposed_isolation_info;
 
   // TODO(alexmos): Using |starting_site_instance_|'s IsolationContext may not
   // be correct for cross-BrowsingInstance redirects.
@@ -7255,7 +7245,8 @@ void NavigationRequest::SendDeferredConsoleMessages() {
   console_messages_.clear();
 }
 
-WebExposedIsolationInfo NavigationRequest::ComputeWebExposedIsolationInfo() {
+absl::optional<WebExposedIsolationInfo>
+NavigationRequest::ComputeWebExposedIsolationInfo() {
   // If we are in an iframe, we inherit the isolation state of the top level
   // frame. This can be inferred from the main frame SiteInstance. Note that
   // Iframes have to pass COEP tests in |OnResponseStarted| before being loaded
@@ -7269,6 +7260,11 @@ WebExposedIsolationInfo NavigationRequest::ComputeWebExposedIsolationInfo() {
         ->GetSiteInstance()
         ->GetWebExposedIsolationInfo();
   }
+
+  // If we haven't yet received a definitive network response, it is too early
+  // to guess the isolation state.
+  if (state_ < WILL_PROCESS_RESPONSE)
+    return absl::nullopt;
 
   // We consider navigations to be cross-origin isolated if the response
   // asserts proper COOP and COEP headers.

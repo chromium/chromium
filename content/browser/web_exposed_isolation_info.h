@@ -36,6 +36,25 @@ class CONTENT_EXPORT WebExposedIsolationInfo {
   static WebExposedIsolationInfo CreateIsolatedApplication(
       const url::Origin& origin);
 
+  // These helpers make it easy to compare against an optional
+  // WebExposedIsolationInfo. This is useful because a navigation may return
+  // an empty WebExposedIsolationInfo to the process model, for example when
+  // we do not yet have a final network response. In that case it is considered
+  // compatible with any WebExposedIsolationInfo.
+  //
+  // In details, the underlying logic is as follow:
+  // - Two valid values are compared using the == operator.
+  // - Null and a valid value returns true.
+  // - Two null values returns true.
+  static bool AreCompatible(const WebExposedIsolationInfo& a,
+                            const WebExposedIsolationInfo& b);
+  static bool AreCompatible(const WebExposedIsolationInfo& a,
+                            const absl::optional<WebExposedIsolationInfo>& b);
+  static bool AreCompatible(const absl::optional<WebExposedIsolationInfo>& a,
+                            const WebExposedIsolationInfo& b);
+  static bool AreCompatible(const absl::optional<WebExposedIsolationInfo>& a,
+                            const absl::optional<WebExposedIsolationInfo>& b);
+
   WebExposedIsolationInfo(const WebExposedIsolationInfo& other);
   ~WebExposedIsolationInfo();
 
@@ -94,6 +113,17 @@ class CONTENT_EXPORT WebExposedIsolationInfo {
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
                                         const WebExposedIsolationInfo& info);
+
+// Disable these operators to avoid confusion with AreCompatible() functions.
+CONTENT_EXPORT bool operator==(
+    const absl::optional<WebExposedIsolationInfo>& a,
+    const absl::optional<WebExposedIsolationInfo>& b);
+CONTENT_EXPORT bool operator==(
+    const WebExposedIsolationInfo& a,
+    const absl::optional<WebExposedIsolationInfo>& b);
+CONTENT_EXPORT bool operator==(const absl::optional<WebExposedIsolationInfo>& a,
+                               const WebExposedIsolationInfo& b);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEB_EXPOSED_ISOLATION_INFO_H_

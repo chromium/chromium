@@ -276,7 +276,7 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
 
   if (url_info.url.SchemeIs(kChromeErrorScheme)) {
     // Error pages should never be cross origin isolated.
-    DCHECK(!url_info.web_exposed_isolation_info.is_isolated());
+    DCHECK(!url_info.IsIsolated());
     return CreateForErrorPage(storage_partition_config.value());
   }
   // We should only set |requires_origin_keyed_process| if we are actually
@@ -321,20 +321,22 @@ SiteInfo SiteInfo::CreateForTesting(const IsolationContext& isolation_context,
   return Create(isolation_context, UrlInfo::CreateForTesting(url));
 }
 
-SiteInfo::SiteInfo(const GURL& site_url,
-                   const GURL& process_lock_url,
-                   bool requires_origin_keyed_process,
-                   const StoragePartitionConfig storage_partition_config,
-                   const WebExposedIsolationInfo& web_exposed_isolation_info,
-                   bool is_guest,
-                   bool does_site_request_dedicated_process_for_coop,
-                   bool is_jit_disabled,
-                   bool is_pdf)
+SiteInfo::SiteInfo(
+    const GURL& site_url,
+    const GURL& process_lock_url,
+    bool requires_origin_keyed_process,
+    const StoragePartitionConfig storage_partition_config,
+    const absl::optional<WebExposedIsolationInfo>& web_exposed_isolation_info,
+    bool is_guest,
+    bool does_site_request_dedicated_process_for_coop,
+    bool is_jit_disabled,
+    bool is_pdf)
     : site_url_(site_url),
       process_lock_url_(process_lock_url),
       requires_origin_keyed_process_(requires_origin_keyed_process),
       storage_partition_config_(storage_partition_config),
-      web_exposed_isolation_info_(web_exposed_isolation_info),
+      web_exposed_isolation_info_(web_exposed_isolation_info.value_or(
+          WebExposedIsolationInfo::CreateNonIsolated())),
       is_guest_(is_guest),
       does_site_request_dedicated_process_for_coop_(
           does_site_request_dedicated_process_for_coop),

@@ -480,10 +480,7 @@ class CONTENT_EXPORT NavigationRequest
   // redirects. |post_redirect_process| is the renderer process that should
   // handle the navigation following the redirect if it can be handled by an
   // existing RenderProcessHost. Otherwise, it should be null.
-  // |web_exposed_isolation_info| is the new isolation info extracted from the
-  // redirect response.
-  void UpdateSiteInfo(const WebExposedIsolationInfo& web_exposed_isolation_info,
-                      RenderProcessHost* post_redirect_process);
+  void UpdateSiteInfo(RenderProcessHost* post_redirect_process);
 
   int nav_entry_id() const { return nav_entry_id_; }
 
@@ -1252,12 +1249,8 @@ class CONTENT_EXPORT NavigationRequest
   // no live process that can be used. In that case, a suitable renderer process
   // will be created at commit time.
   //
-  // |web_exposed_isolation_info| is the new isolation info extracted from the
-  // redirect response.
-  void WillRedirectRequest(
-      const GURL& new_referrer_url,
-      const WebExposedIsolationInfo& web_exposed_isolation_info,
-      RenderProcessHost* post_redirect_process);
+  void WillRedirectRequest(const GURL& new_referrer_url,
+                           RenderProcessHost* post_redirect_process);
 
   // Called when the URLRequest will fail.
   void WillFailRequest();
@@ -1286,8 +1279,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // Helper function that computes the SiteInfo for |common_params_.url|.
   // Note: |site_info_| should only be updated with the result of this function.
-  SiteInfo GetSiteInfoForCommonParamsURL(
-      const WebExposedIsolationInfo& cross_origin_isolated_origin_status);
+  SiteInfo GetSiteInfoForCommonParamsURL();
 
   // Updates the state of the navigation handle after encountering a server
   // redirect.
@@ -1452,7 +1444,10 @@ class CONTENT_EXPORT NavigationRequest
 
   // Computes the web-exposed isolation information based on `coop_status_` and
   // current `frame_tree_node_` info.
-  WebExposedIsolationInfo ComputeWebExposedIsolationInfo();
+  // If the return result is nullopt, it means that the WebExposedIsolationInfo
+  // is not relevant or unknown. This can happen for example when we do not have
+  // a network response yet, or when going to an "about:blank" page.
+  absl::optional<WebExposedIsolationInfo> ComputeWebExposedIsolationInfo();
 
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;

@@ -142,7 +142,8 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForUrlInfo(
   DCHECK(browser_context);
   // This will create a new SiteInstance and BrowsingInstance.
   scoped_refptr<BrowsingInstance> instance(new BrowsingInstance(
-      browser_context, url_info.web_exposed_isolation_info));
+      browser_context, url_info.web_exposed_isolation_info.value_or(
+                           WebExposedIsolationInfo::CreateNonIsolated())));
 
   // Note: The |allow_default_instance| value used here MUST match the value
   // used in DoesSiteForURLMatch().
@@ -166,7 +167,8 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForServiceWorker(
   } else {
     // This will create a new SiteInstance and BrowsingInstance.
     scoped_refptr<BrowsingInstance> instance(new BrowsingInstance(
-        browser_context, url_info.web_exposed_isolation_info));
+        browser_context, url_info.web_exposed_isolation_info.value_or(
+                             WebExposedIsolationInfo::CreateNonIsolated())));
 
     // We do NOT want to allow the default site instance here because workers
     // need to be kept separate from other sites.

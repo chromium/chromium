@@ -10115,8 +10115,9 @@ RenderFrameHostImpl::BuildClientSecurityState() const {
 }
 
 bool RenderFrameHostImpl::IsNavigationSameSite(const UrlInfo& dest_url_info) {
-  if (GetSiteInstance()->GetWebExposedIsolationInfo() !=
-      dest_url_info.web_exposed_isolation_info) {
+  if (!WebExposedIsolationInfo::AreCompatible(
+          GetSiteInstance()->GetWebExposedIsolationInfo(),
+          dest_url_info.web_exposed_isolation_info)) {
     return false;
   }
   return GetSiteInstance()->IsNavigationSameSite(

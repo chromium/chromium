@@ -34,6 +34,12 @@ UrlInfo UrlInfo::CreateForTesting(
                      .WithStoragePartitionConfig(storage_partition_config));
 }
 
+bool UrlInfo::IsIsolated() const {
+  if (!web_exposed_isolation_info)
+    return false;
+  return web_exposed_isolation_info->is_isolated();
+}
+
 UrlInfoInit::UrlInfoInit(UrlInfoInit&) = default;
 
 UrlInfoInit::UrlInfoInit(const GURL& url)
@@ -70,7 +76,7 @@ UrlInfoInit& UrlInfoInit::WithStoragePartitionConfig(
 }
 
 UrlInfoInit& UrlInfoInit::WithWebExposedIsolationInfo(
-    const WebExposedIsolationInfo& web_exposed_isolation_info) {
+    absl::optional<WebExposedIsolationInfo> web_exposed_isolation_info) {
   web_exposed_isolation_info_ = web_exposed_isolation_info;
   return *this;
 }

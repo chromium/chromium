@@ -658,8 +658,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool is_same_document,
       bool cross_origin_opener_policy_mismatch,
       bool was_server_redirect,
-      bool should_replace_current_entry,
-      bool is_speculative);
+      bool should_replace_current_entry);
 
   ShouldSwapBrowsingInstance ShouldProactivelySwapBrowsingInstance(
       const UrlInfo& destination_url_info,
@@ -683,7 +682,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool was_server_redirect,
       bool cross_origin_opener_policy_mismatch,
       bool should_replace_current_entry,
-      bool is_speculative,
       std::string* reason);
 
   // Returns a descriptor of the appropriate SiteInstance object for the given
@@ -699,11 +697,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // A is trying to change the src attribute of B, this will cause a navigation
   // where the source SiteInstance is A and B is the current SiteInstance.
   //
-  // `is_speculative` indicates that the SiteInstance is being computed for a
-  // speculative RenderFrameHost, which may change once response is received and
-  // a final RenderFrameHost/SiteInstance is computed. It is true at request
-  // start time, but false for redirects and at OnResponseStarted time.
-  //
   // This is a helper function for GetSiteInstanceForNavigation.
   SiteInstanceDescriptor DetermineSiteInstanceForURL(
       const UrlInfo& dest_url_info,
@@ -716,7 +709,6 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool dest_is_view_source_mode,
       bool force_browsing_instance_swap,
       bool was_server_redirect,
-      bool is_speculative,
       std::string* reason);
 
   // Returns true if a navigation to |dest_url| that uses the specified
@@ -744,18 +736,14 @@ class CONTENT_EXPORT RenderFrameHostManager {
   bool CanUseSourceSiteInstance(const UrlInfo& dest_url_info,
                                 SiteInstance* source_instance,
                                 bool was_server_redirect,
-                                bool is_failure,
-                                bool is_speculative);
+                                bool is_failure);
 
   // Converts a SiteInstanceDescriptor to the actual SiteInstance it describes.
   // If a |candidate_instance| is provided (is not nullptr) and it matches the
   // description, it is returned as is.
-  // |is_speculative| indicates whether we are computing a SiteInstance for a
-  // speculative RenderFrameHost or if have already received a response.
   scoped_refptr<SiteInstance> ConvertToSiteInstance(
       const SiteInstanceDescriptor& descriptor,
-      SiteInstanceImpl* candidate_instance,
-      bool is_speculative);
+      SiteInstanceImpl* candidate_instance);
 
   // Returns true if `candidate` is currently same site with `dest_url_info`.
   // This method is a special case for handling hosted apps in this object. Most
