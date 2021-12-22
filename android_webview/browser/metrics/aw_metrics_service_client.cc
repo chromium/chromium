@@ -105,6 +105,25 @@ int AwMetricsServiceClient::GetSampleRatePerMille() const {
   return kBetaDevCanarySampledInRatePerMille;
 }
 
+std::string AwMetricsServiceClient::GetAppPackageNameIfLoggable() {
+  if (!base::FeatureList::IsEnabled(
+          android_webview::features::kWebViewAppsPackageNamesAllowlist)) {
+    // Revert to the default implementation.
+    return ::metrics::AndroidMetricsServiceClient::
+        GetAppPackageNameIfLoggable();
+  }
+  AndroidMetricsServiceClient::InstallerPackageType installer_type =
+      GetInstallerPackageType();
+  // Always record the app package name of system apps even if it's not in the
+  // allowlist.
+  if (installer_type == InstallerPackageType::SYSTEM_APP ||
+      (installer_type == InstallerPackageType::GOOGLE_PLAY_STORE &&
+       ShouldRecordPackageName())) {
+    return GetAppPackageName();
+  }
+  return std::string();
+}
+
 bool AwMetricsServiceClient::ShouldRecordPackageName() {
   if (!base::FeatureList::IsEnabled(
           android_webview::features::kWebViewAppsPackageNamesAllowlist)) {

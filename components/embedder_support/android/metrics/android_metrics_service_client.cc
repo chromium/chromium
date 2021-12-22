@@ -57,6 +57,9 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace metrics {
+
+using InstallerPackageType = AndroidMetricsServiceClient::InstallerPackageType;
+
 namespace {
 
 // This specifies the amount of time to wait for all renderers to send their
@@ -611,11 +614,16 @@ bool AndroidMetricsServiceClient::IsInSample() const {
   return GetSampleBucketValue() < GetSampleRatePerMille();
 }
 
-bool AndroidMetricsServiceClient::CanRecordPackageNameForAppType() {
+InstallerPackageType AndroidMetricsServiceClient::GetInstallerPackageType() {
   // Check with Java side, to see if it's OK to log the package name for this
   // type of app (see Java side for the specific requirements).
   JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_AndroidMetricsServiceClient_canRecordPackageNameForAppType(env);
+  int type = Java_AndroidMetricsServiceClient_getInstallerPackageType(env);
+  return static_cast<InstallerPackageType>(type);
+}
+
+bool AndroidMetricsServiceClient::CanRecordPackageNameForAppType() {
+  return GetInstallerPackageType() != InstallerPackageType::OTHER;
 }
 
 bool AndroidMetricsServiceClient::ShouldRecordPackageName() {

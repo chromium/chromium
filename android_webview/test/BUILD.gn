@@ -532,6 +532,7 @@ test("android_webview_unittests") {
     "//components/component_updater",
     "//components/component_updater/android:embedded_component_loader",
     "//components/embedder_support/android:util",
+    "//components/embedder_support/android/metrics:metrics",
     "//components/flags_ui:flags_ui",
     "//components/metrics",
     "//components/metrics:component_metrics",
