@@ -79,6 +79,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="supervised_users_denylist"/>
       <traffic_annotation unique_id="tachyon_ice_config_fetcher"/>
       <traffic_annotation unique_id="terms_of_service_fetch"/>
+      <traffic_annotation unique_id="timezone_lookup" />
       <traffic_annotation unique_id="url_icon_source_fetch"/>
       <traffic_annotation unique_id="wallpaper_backdrop_collection_names"/>
       <traffic_annotation unique_id="wallpaper_backdrop_images_info"/>
