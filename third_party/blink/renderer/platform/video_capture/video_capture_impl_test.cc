@@ -759,6 +759,18 @@ TEST_F(VideoCaptureImplTest, ErrorBeforeStop) {
                                       VideoCaptureStartOutcome::kStarted, 1);
 }
 
+TEST_F(VideoCaptureImplTest, WinSystemPermissionsErrorUpdatesCorrectState) {
+  EXPECT_CALL(*this,
+              OnStateUpdate(
+                  blink::VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED));
+  video_capture_impl_->OnStateChanged(
+      media::mojom::blink::VideoCaptureResult::NewErrorCode(
+          media::VideoCaptureError::kWinMediaFoundationSystemPermissionDenied));
+
+  StartCapture(0, params_small_);
+  StopCapture(0);
+}
+
 TEST_F(VideoCaptureImplTest, BufferReceivedBeforeOnStarted) {
   const int kArbitraryBufferId = 16;
 

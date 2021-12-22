@@ -20,6 +20,12 @@
 
 namespace blink {
 
+enum class RunState {
+  kRunning = 0,
+  kStopped,
+  kSystemPermissionsError,
+};
+
 // VideoCapturerSource is an interface representing the source for captured
 // video.  An implementation will periodically call the frame callback with new
 // video frames.
@@ -27,7 +33,7 @@ class PLATFORM_EXPORT VideoCapturerSource {
  public:
   virtual ~VideoCapturerSource();
 
-  using RunningCallback = base::RepeatingCallback<void(bool)>;
+  using RunningCallback = base::RepeatingCallback<void(RunState)>;
 
   // Returns formats that are preferred and can currently be used. May be empty
   // if no formats are available or known.
