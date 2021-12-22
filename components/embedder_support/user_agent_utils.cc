@@ -39,6 +39,7 @@ namespace embedder_support {
 namespace {
 
 constexpr char kVersion100[] = "100";
+constexpr char kVersion99[] = "99";
 
 #if defined(OS_WIN)
 
@@ -136,6 +137,31 @@ const std::string& GetM100VersionNumber() {
     return version_str;
   }());
   return *m100_version_number;
+}
+
+const std::string& GetMajorInMinorVersionNumber() {
+  static const base::NoDestructor<std::string> version_number([] {
+    base::Version version(version_info::GetVersionNumber());
+    std::string version_str;
+    const std::vector<uint32_t>& components = version.components();
+    for (size_t i = 0; i < components.size(); ++i) {
+      if (i > 0) {
+        version_str.append(".");
+      }
+      if (i == 0) {
+        // Hardcode major version to 99
+        version_str.append(kVersion99);
+      } else if (i == 1) {
+        // Force major into minor version
+        version_str.append(base::NumberToString(components[0]));
+      } else {
+        // build and patch stay the same
+        version_str.append(base::NumberToString(components[i]));
+      }
+    }
+    return version_str;
+  }());
+  return *version_number;
 }
 
 const std::string& GetM100InMinorVersionNumber() {
@@ -248,10 +274,20 @@ blink::UserAgentBrandList GetBrandFullVersionList(
 }
 
 std::string GetProduct(const bool allow_version_override) {
+  // FF Priority 1: force major version to 99 and minor version to major version
+  // number.
+  if (allow_version_override &&
+      base::FeatureList::IsEnabled(
+          blink::features::kForceMajorVersionInMinorPositionInUserAgent))
+    return "Chrome/" + GetMajorInMinorVersionNumber();
+
+  // FF Priority 2: Force major version to 100, leave the rest the same.
   if (allow_version_override &&
       base::FeatureList::IsEnabled(
           blink::features::kForceMajorVersion100InUserAgent))
     return "Chrome/" + GetM100VersionNumber();
+
+  // FF Priority 3: Force minor version to 100, leave the rest the same.
   if (allow_version_override &&
       base::FeatureList::IsEnabled(
           blink::features::kForceMinorVersion100InUserAgent))

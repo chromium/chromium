@@ -496,6 +496,10 @@ const char kForceMajorVersionTo100[] = "force-major-version-to-100";
 // Forces the Chrome minor version to 100 in the User-Agent string.
 const char kForceMinorVersionTo100[] = "force-minor-version-to-100";
 
+// Forces the Chrome major version to the minor position in the User-Agent
+// string. Locks major version to 99.
+const char kForceMajorVersionToMinorPosition[] = "force-major-version-to-minor";
+
 // Forces use of hardware overlay for fullscreen video playback. Useful for
 // testing the Android overlay fullscreen functionality on other platforms.
 const char kForceOverlayFullscreenVideo[]   = "force-overlay-fullscreen-video";

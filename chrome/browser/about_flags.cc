@@ -7502,7 +7502,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kU2FSecurityKeyAPIDescription, kOsAll,
      FEATURE_VALUE_TYPE(extensions_features::kU2FSecurityKeyAPI)},
 #endif  // ENABLE_EXTENSIONS
-
+    {"force-major-version-to-minor",
+     flag_descriptions::kForceMajorVersionInMinorPositionInUserAgentName,
+     flag_descriptions::kForceMajorVersionInMinorPositionInUserAgentDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         blink::features::kForceMajorVersionInMinorPositionInUserAgent)},
     {"force-major-version-to-100",
      flag_descriptions::kForceMajorVersion100InUserAgentName,
      flag_descriptions::kForceMajorVersion100InUserAgentDescription, kOsAll,

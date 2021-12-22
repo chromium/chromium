@@ -51685,6 +51685,8 @@ from previous Chrome versions.
   <int value="-843496368" label="AutofillRejectCompanyBirthyear:disabled"/>
   <int value="-842438090" label="enable-md-feedback"/>
   <int value="-839664591" label="enable-web-authentication-testing-api"/>
+  <int value="-838719204"
+      label="ForceMajorVersionInMinorPositionInUserAgent:disabled"/>
   <int value="-837650216" label="DisableCryptAuthV1DeviceSync:disabled"/>
   <int value="-837473047" label="AutofillEnableStickyPaymentsBubble:disabled"/>
   <int value="-836123854" label="wallet-service-use-sandbox"/>
@@ -53980,6 +53982,8 @@ from previous Chrome versions.
   <int value="877432034" label="DisableQuickAnswersV2Translation:enabled"/>
   <int value="877907263" label="StrictExtensionIsolation:disabled"/>
   <int value="878773995" label="ChromeHomeBottomNavLabels:disabled"/>
+  <int value="879538323"
+      label="ForceMajorVersionInMinorPositionInUserAgent:enabled"/>
   <int value="879699575" label="disable-gesture-tap-highlight"/>
   <int value="879992337" label="disable-pull-to-refresh-effect"/>
   <int value="880510010" label="enable-permissions-bubbles"/>

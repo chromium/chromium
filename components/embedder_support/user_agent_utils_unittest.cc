@@ -49,7 +49,7 @@ namespace {
 // the User-Agent string, where the first capture is the {major_version} and the
 // second capture is the {minor_version}.
 static constexpr char kChromeProductVersionRegex[] =
-    "Chrome/([0-9]+)\\.([0-9]+\\.[0-9]+\\.[0-9]+)";
+    "Chrome/([0-9]+).([0-9]+).([0-9]+).([0-9]+)";
 
 void CheckUserAgentStringOrdering(bool mobile_device) {
   std::vector<std::string> pieces;
@@ -762,7 +762,7 @@ TEST_P(UserAgentUtilsTest, GetProduct) {
   EXPECT_TRUE(
       re2::RE2::FullMatch(product, kChromeProductVersionRegex, &major_version));
   // Whether the force M100 experiment is on or not, the product value should
-  // contain the actual major version number.
+  // contain the actual major version number which is 0.
   EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
 }
 
@@ -776,7 +776,8 @@ TEST_P(UserAgentUtilsTest, GetUserAgent) {
     EXPECT_EQ(major_version, "100");
   else
     EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
-  EXPECT_NE(minor_version, "0.0.0");
+  // Minor version should contain the actual minor version number.
+  EXPECT_EQ(minor_version, "0");
 }
 
 class UserAgentUtilsMinorVersionTest
@@ -784,12 +785,12 @@ class UserAgentUtilsMinorVersionTest
       public testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
-    if (ForceMinorVersionTo100())
+    if (ForceMajorInMinorVersion())
       scoped_feature_list_.InitAndEnableFeature(
-          blink::features::kForceMinorVersion100InUserAgent);
+          blink::features::kForceMajorVersionInMinorPositionInUserAgent);
   }
 
-  bool ForceMinorVersionTo100() { return GetParam(); }
+  bool ForceMajorInMinorVersion() { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -797,7 +798,7 @@ class UserAgentUtilsMinorVersionTest
 
 INSTANTIATE_TEST_CASE_P(All,
                         UserAgentUtilsMinorVersionTest,
-                        /*force_minor_version_to_M100*/ testing::Bool());
+                        /*force_major_version_in_minor*/ testing::Bool());
 
 TEST_P(UserAgentUtilsMinorVersionTest, GetUserAgent) {
   const std::string ua = GetUserAgent();
@@ -805,11 +806,54 @@ TEST_P(UserAgentUtilsMinorVersionTest, GetUserAgent) {
   std::string minor_version;
   EXPECT_TRUE(re2::RE2::PartialMatch(ua, kChromeProductVersionRegex,
                                      &major_version, &minor_version));
-  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
-  if (ForceMinorVersionTo100()) {
-    EXPECT_NE(minor_version, "100.0.0");
+  if (ForceMajorInMinorVersion()) {
+    // When enabled major versions should be locked at 99 and minor version
+    // should hold the major version number.
+    EXPECT_EQ(major_version, "99");
+    EXPECT_EQ(minor_version, version_info::GetMajorVersionNumber());
   } else {
-    EXPECT_NE(minor_version, "0.0.0");
+    // When disabled major version should hold major version number and minor
+    // version should be the minor version number which is 0.
+    EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+    EXPECT_EQ(minor_version, "0");
+  }
+}
+
+class UserAgentUtilsMinorVersionM100Test
+    : public testing::Test,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    if (ForceMinorVersion100InUserAgent())
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kForceMinorVersion100InUserAgent);
+  }
+
+  bool ForceMinorVersion100InUserAgent() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_CASE_P(All,
+                        UserAgentUtilsMinorVersionM100Test,
+                        /*force_minor_version_to_M100*/ testing::Bool());
+
+TEST_P(UserAgentUtilsMinorVersionM100Test, GetUserAgent) {
+  const std::string ua = GetUserAgent();
+  std::string major_version;
+  std::string minor_version;
+  EXPECT_TRUE(re2::RE2::PartialMatch(ua, kChromeProductVersionRegex,
+                                     &major_version, &minor_version));
+  if (ForceMinorVersion100InUserAgent()) {
+    // When enabled minor version should be hardcoded to 100.
+    EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+    EXPECT_EQ(minor_version, "100");
+  } else {
+    // When disabled major version should hold major version number and minor
+    // version should be the minor version number which is 0.
+    EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+    EXPECT_EQ(minor_version, "0");
   }
 }
 

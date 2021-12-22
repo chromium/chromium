@@ -1623,6 +1623,9 @@ extern const char kShareContextMenuName[];
 extern const char kShareContextMenuDescription[];
 #endif
 
+extern const char kForceMajorVersionInMinorPositionInUserAgentName[];
+extern const char kForceMajorVersionInMinorPositionInUserAgentDescription[];
+
 extern const char kForceMajorVersion100InUserAgentName[];
 extern const char kForceMajorVersion100InUserAgentDescription[];
 

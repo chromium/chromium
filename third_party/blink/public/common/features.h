@@ -495,6 +495,14 @@ extern const base::FeatureParam<base::TimeDelta> kHttpRttThreshold;
 BLINK_COMMON_EXPORT
 extern const base::FeatureParam<double> kCostReductionOfMultiplexedRequests;
 
+// If enabled, the major version number returned by Chrome will be locked at
+// 99. The minor version number returned by Chrome will be forced to the
+// value of the major version number. The purpose of this
+// feature is a back up plan for if the major version moving from
+// two to three digits breaks unexpected things.
+BLINK_COMMON_EXPORT extern const base::Feature
+    kForceMajorVersionInMinorPositionInUserAgent;
+
 // If enabled, the minor version number returned by Chrome will be forced to
 // 100.  This feature is only applicable for M96-M99 and will be removed after
 // M99.  The purpose of this feature is to allow testing of mitigation
