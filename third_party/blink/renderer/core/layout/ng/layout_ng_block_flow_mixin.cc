@@ -51,6 +51,7 @@ template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style) {
+  Base::CheckIsNotDestroyed();
   Base::StyleDidChange(diff, old_style);
 
   if (diff.NeedsReshape()) {
@@ -58,24 +59,36 @@ void LayoutNGBlockFlowMixin<Base>::StyleDidChange(
   }
 }
 
+#if DCHECK_IS_ON()
+template <typename Base>
+void LayoutNGBlockFlowMixin<Base>::AddLayoutOverflowFromChildren() {
+  Base::CheckIsNotDestroyed();
+  NOTREACHED();
+}
+#endif
+
 template <typename Base>
 NGInlineNodeData* LayoutNGBlockFlowMixin<Base>::TakeNGInlineNodeData() {
+  Base::CheckIsNotDestroyed();
   return ng_inline_node_data_.Release();
 }
 
 template <typename Base>
 NGInlineNodeData* LayoutNGBlockFlowMixin<Base>::GetNGInlineNodeData() const {
+  Base::CheckIsNotDestroyed();
   DCHECK(ng_inline_node_data_);
   return ng_inline_node_data_;
 }
 
 template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::ResetNGInlineNodeData() {
+  Base::CheckIsNotDestroyed();
   ng_inline_node_data_ = MakeGarbageCollected<NGInlineNodeData>();
 }
 
 template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::ClearNGInlineNodeData() {
+  Base::CheckIsNotDestroyed();
   if (ng_inline_node_data_) {
     // ng_inline_node_data_ is not used from now on but exists until GC happens,
     // so it is better to eagerly clear HeapVector to improve memory
@@ -86,10 +99,18 @@ void LayoutNGBlockFlowMixin<Base>::ClearNGInlineNodeData() {
 }
 
 template <typename Base>
+bool LayoutNGBlockFlowMixin<Base>::HasNGInlineNodeData() const {
+  Base::CheckIsNotDestroyed();
+  return ng_inline_node_data_;
+}
+
+template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::AddOutlineRects(
     Vector<PhysicalRect>& rects,
     const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
+  Base::CheckIsNotDestroyed();
+
   // TODO(crbug.com/1145048): Currently |NGBoxPhysicalFragment| does not support
   // NG block fragmentation. Fallback to the legacy code path.
   if (Base::PhysicalFragmentCount() == 1) {
@@ -106,6 +127,8 @@ void LayoutNGBlockFlowMixin<Base>::AddOutlineRects(
 
 template <typename Base>
 LayoutUnit LayoutNGBlockFlowMixin<Base>::FirstLineBoxBaseline() const {
+  Base::CheckIsNotDestroyed();
+
   if (const absl::optional<LayoutUnit> baseline =
           Base::FirstLineBoxBaselineOverride())
     return *baseline;
@@ -131,6 +154,8 @@ LayoutUnit LayoutNGBlockFlowMixin<Base>::FirstLineBoxBaseline() const {
 template <typename Base>
 LayoutUnit LayoutNGBlockFlowMixin<Base>::InlineBlockBaseline(
     LineDirectionMode line_direction) const {
+  Base::CheckIsNotDestroyed();
+
   // Please see |LayoutNGMixin<Base>::Paint()| for these DCHECKs.
   DCHECK(Base::GetNGPaginationBreakability() ==
              LayoutNGBlockFlow::kForbidBreaks ||
@@ -169,6 +194,8 @@ bool LayoutNGBlockFlowMixin<Base>::NodeAtPoint(
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset,
     HitTestAction action) {
+  Base::CheckIsNotDestroyed();
+
   // Please see |LayoutNGMixin<Base>::Paint()| for these DCHECKs.
   DCHECK(Base::GetNGPaginationBreakability() ==
              LayoutNGBlockFlow::kForbidBreaks ||
@@ -199,6 +226,7 @@ bool LayoutNGBlockFlowMixin<Base>::NodeAtPoint(
 template <typename Base>
 PositionWithAffinity LayoutNGBlockFlowMixin<Base>::PositionForPoint(
     const PhysicalOffset& point) const {
+  Base::CheckIsNotDestroyed();
   DCHECK_GE(Base::GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
 
@@ -222,6 +250,7 @@ template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::DirtyLinesFromChangedChild(
     LayoutObject* child,
     MarkingBehavior marking_behavior) {
+  Base::CheckIsNotDestroyed();
   DCHECK_EQ(marking_behavior, kMarkContainerChain);
 
   // We need to dirty line box fragments only if the child is once laid out in
@@ -233,6 +262,8 @@ void LayoutNGBlockFlowMixin<Base>::DirtyLinesFromChangedChild(
 
 template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::UpdateNGBlockLayout() {
+  Base::CheckIsNotDestroyed();
+
   if (Base::IsOutOfFlowPositioned()) {
     LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout();
     return;

@@ -33,6 +33,7 @@ namespace blink {
 
 template <typename Base>
 LayoutNGMixin<Base>::LayoutNGMixin(ContainerNode* node) : Base(node) {
+  Base::CheckIsNotDestroyed();
   static_assert(
       std::is_base_of<LayoutBlock, Base>::value,
       "Base class of LayoutNGMixin must be LayoutBlock or derived class.");
@@ -45,6 +46,8 @@ LayoutNGMixin<Base>::~LayoutNGMixin() = default;
 
 template <typename Base>
 void LayoutNGMixin<Base>::Paint(const PaintInfo& paint_info) const {
+  Base::CheckIsNotDestroyed();
+
   // When |this| is NG block fragmented, the painter should traverse fragments
   // instead of |LayoutObject|, because this function cannot handle block
   // fragmented objects. We can come here only when |this| cannot traverse
@@ -78,6 +81,8 @@ bool LayoutNGMixin<Base>::NodeAtPoint(HitTestResult& result,
                                       const HitTestLocation& hit_test_location,
                                       const PhysicalOffset& accumulated_offset,
                                       HitTestAction action) {
+  Base::CheckIsNotDestroyed();
+
   // See |Paint()|.
   DCHECK(Base::GetNGPaginationBreakability() ==
              LayoutNGBlockFlow::kForbidBreaks ||
@@ -97,6 +102,8 @@ bool LayoutNGMixin<Base>::NodeAtPoint(HitTestResult& result,
 
 template <typename Base>
 RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcLayoutOverflow() {
+  Base::CheckIsNotDestroyed();
+
   RecalcLayoutOverflowResult child_result;
   // Don't attempt to rebuild the fragment tree or recalculate
   // scrollable-overflow, layout will do this for us.
@@ -180,6 +187,7 @@ static void RecalcFragmentLayoutOverflow(RecalcLayoutOverflowResult& result,
 
 template <typename Base>
 RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcChildLayoutOverflow() {
+  Base::CheckIsNotDestroyed();
   DCHECK(Base::ChildNeedsLayoutOverflowRecalc());
   Base::ClearChildNeedsLayoutOverflowRecalc();
 
@@ -212,6 +220,7 @@ RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcChildLayoutOverflow() {
 
 template <typename Base>
 void LayoutNGMixin<Base>::RecalcVisualOverflow() {
+  Base::CheckIsNotDestroyed();
   if (Base::CanUseFragmentsForVisualOverflow()) {
     Base::RecalcFragmentsVisualOverflow();
     return;
@@ -220,7 +229,14 @@ void LayoutNGMixin<Base>::RecalcVisualOverflow() {
 }
 
 template <typename Base>
+bool LayoutNGMixin<Base>::IsLayoutNGObject() const {
+  Base::CheckIsNotDestroyed();
+  return true;
+}
+
+template <typename Base>
 MinMaxSizes LayoutNGMixin<Base>::ComputeIntrinsicLogicalWidths() const {
+  Base::CheckIsNotDestroyed();
   DCHECK(!Base::IsTableCell());
 
   NGBlockNode node(const_cast<LayoutNGMixin<Base>*>(this));
@@ -236,6 +252,7 @@ MinMaxSizes LayoutNGMixin<Base>::ComputeIntrinsicLogicalWidths() const {
 
 template <typename Base>
 NGConstraintSpace LayoutNGMixin<Base>::ConstraintSpaceForMinMaxSizes() const {
+  Base::CheckIsNotDestroyed();
   DCHECK(!Base::IsTableCell());
   const ComputedStyle& style = Base::StyleRef();
 
@@ -251,6 +268,8 @@ NGConstraintSpace LayoutNGMixin<Base>::ConstraintSpaceForMinMaxSizes() const {
 
 template <typename Base>
 void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
+  Base::CheckIsNotDestroyed();
+
   auto* css_container = To<LayoutBoxModelObject>(Base::Container());
   LayoutBox* container = css_container->IsBox() ? To<LayoutBox>(css_container)
                                                 : Base::ContainingBlock();
@@ -370,6 +389,8 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
 template <typename Base>
 scoped_refptr<const NGLayoutResult>
 LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
+  Base::CheckIsNotDestroyed();
+
   scoped_refptr<const NGLayoutResult> previous_result =
       Base::GetCachedLayoutResult();
   bool is_layout_root = !Base::View()->GetLayoutState()->Next();
@@ -410,6 +431,8 @@ LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
 
 template <typename Base>
 void LayoutNGMixin<Base>::UpdateMargins() {
+  Base::CheckIsNotDestroyed();
+
   const LayoutBlock* containing_block = Base::ContainingBlock();
   if (!containing_block || !containing_block->IsLayoutBlockFlow())
     return;

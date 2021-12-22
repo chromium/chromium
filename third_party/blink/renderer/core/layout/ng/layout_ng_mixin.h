@@ -41,7 +41,7 @@ class LayoutNGMixin : public Base {
   RecalcLayoutOverflowResult RecalcChildLayoutOverflow() override;
   void RecalcVisualOverflow() override;
 
-  bool IsLayoutNGObject() const final { return true; }
+  bool IsLayoutNGObject() const final;
 
  protected:
   MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
