@@ -63,7 +63,7 @@ def get_current_platform_from_gn_args(build_path):
       if pattern.search(gn_args):
         return "chromeos"
 
-    except(valueError, OSError) as e:
+    except(ValueError, OSError) as e:
       logger.info(e)
 
   return None
@@ -111,7 +111,7 @@ def main_run(args):
       cleanup_file(config_filename)
     else:
       print("Test failed without updating the annotations sheet.")
-  except (valueError, OSError) as e:
+  except (ValueError, OSError) as e:
     print("Error updating the annotations sheet", e)
   finally:
     cleanup_file(annotations_filename)
