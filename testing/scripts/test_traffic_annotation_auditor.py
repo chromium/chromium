@@ -10,13 +10,14 @@ help it run fast and spam free on trybots are disabled."""
 
 import json
 import os
+import re
 import sys
 import tempfile
 
 
 import common
 
-SHEET_CONFIG = {
+WINDOWS_SHEET_CONFIG = {
   "spreadsheet_id": "1TmBr9jnf1-hrjntiVBzT9EtkINGrtoBYFMWad2MBeaY",
   "annotations_sheet_name": "Annotations",
   "changes_sheet_name": "Changes Stats",
@@ -25,63 +26,106 @@ SHEET_CONFIG = {
 }
 
 
+CHROMEOS_SHEET_CONFIG = {
+  "spreadsheet_id": "1928goWKy6LVdF9Nl5nV1OD260YC10dHsdrnHEGdGsg8",
+  "annotations_sheet_name": "Annotations",
+  "changes_sheet_name": "Changes Stats",
+  "silent_change_columns": [],
+  "last_update_column_name": "Last Update",
+}
+
 def is_windows():
   return os.name == 'nt'
 
+def is_chromeos(build_path):
+  current_platform = get_current_platform_from_gn_args(build_path)
+  return current_platform == "chromeos"
+
+
+def get_sheet_config(build_path):
+  if is_windows():
+    return WINDOWS_SHEET_CONFIG
+  if is_chromeos(build_path):
+    return CHROMEOS_SHEET_CONFIG
+  return None
+
+
+def get_current_platform_from_gn_args(build_path):
+  if sys.platform.startswith("linux") and build_path is not None:
+    try:
+      with open(os.path.join(build_path, "args.gn")) as f:
+        gn_args = f.read()
+      if not gn_args:
+        logger.info("Could not retrieve args.gn")
+
+      pattern = re.compile(r"^\s*target_os\s*=\s*\"chromeos\"\s*$",
+                           re.MULTILINE)
+      if pattern.search(gn_args):
+        return "chromeos"
+
+    except(valueError, OSError) as e:
+      logger.info(e)
+
+  return None
 
 def main_run(args):
   annotations_file = tempfile.NamedTemporaryFile()
   annotations_filename = annotations_file.name
   annotations_file.close()
 
+  build_path = os.path.join(args.paths['checkout'], 'out', args.build_config_fs)
   command_line = [
       sys.executable,
       os.path.join(common.SRC_DIR, 'tools', 'traffic_annotation', 'scripts',
                    'traffic_annotation_auditor_tests.py'),
       '--build-path',
-      os.path.join(args.paths['checkout'], 'out', args.build_config_fs),
+      build_path,
       '--annotations-file',
       annotations_filename,
   ]
   rc = common.run_command(command_line)
 
-  # Update the Google Sheets on success, but only on the Windows trybot.
-  if rc == 0 and is_windows():
-    print("Tests succeeded. Updating annotations sheet...")
-
-    config_file = tempfile.NamedTemporaryFile(delete=False)
-    json.dump(SHEET_CONFIG, config_file, indent=4)
-    config_filename = config_file.name
-    config_file.close()
-
-    command_line = [
-      'vpython.bat',
-      os.path.join(common.SRC_DIR, 'tools', 'traffic_annotation', 'scripts',
-                   'update_annotations_sheet.py'),
-      '--force',
-      '--config-file',
-      config_filename,
-      '--annotations-file',
-      annotations_filename,
-    ]
-    rc = common.run_command(command_line)
-
-    try:
-      os.remove(config_filename)
-    except OSError:
-      pass
-
+  # Update the Google Sheets on success, but only on the Windows and ChromeOS
+  # trybot.
+  sheet_config = get_sheet_config(build_path)
   try:
-    os.remove(annotations_filename)
-  except OSError:
-    pass
+    if rc == 0 and sheet_config is not None:
+      print("Tests succeeded. Updating annotations sheet...")
 
-  failures = ['Please refer to stdout for errors.'] if rc else []
-  common.record_local_script_results(
-      'test_traffic_annotation_auditor', args.output, failures, True)
+      config_file = tempfile.NamedTemporaryFile(delete=False)
+      json.dump(sheet_config, config_file, indent=4)
+      config_filename = config_file.name
+      config_file.close()
+
+      command_line = [
+        'vpython.bat',
+        os.path.join(common.SRC_DIR, 'tools', 'traffic_annotation', 'scripts',
+                   'update_annotations_sheet.py'),
+        '--force',
+        '--config-file',
+        config_filename,
+        '--annotations-file',
+        annotations_filename,
+      ]
+      rc = common.run_command(command_line)
+    else:
+      print("Test failed without updating the annotations sheet.")
+  except (valueError, OSError) as e:
+    print("Error updating the annotations sheet", e)
+  finally:
+    cleanup_file(annotations_filename)
+    cleanup_file(config_filename)
+    failures = ['Please refer to stdout for errors.'] if rc else []
+    common.record_local_script_results(
+       'test_traffic_annotation_auditor', args.output, failures, True)
 
   return rc
 
+def cleanup_file(filename):
+  try:
+    os.remove(filename)
+  except OSError:
+    print("Could not remove file: ", filename)
 
 def main_compile_targets(args):
   json.dump(['traffic_annotation_proto'], args.output)

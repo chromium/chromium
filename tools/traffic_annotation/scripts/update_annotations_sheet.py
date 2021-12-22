@@ -64,8 +64,10 @@ class SheetEditor():
       verbose: bool
           Flag requesting dump of details of actions.
     """
+    print("Getting credential to update annotations report.")
     self.service = self._InitializeService(
         self._GetCredentials(credentials_file_path, client_secret_file_path))
+    print("Successfully got credential to update annotations report.")
     self.spreadsheet_id = spreadsheet_id
     self.annotations_sheet_name = annotations_sheet_name
     self.changes_sheet_name = changes_sheet_name
@@ -211,6 +213,7 @@ class SheetEditor():
     Returns:
       bool Flag specifying if everything was OK or not.
     """
+    print("Generating updates for report.")
     sheet_contents = self.LoadAnnotationsSheet()
     if not sheet_contents:
       print("Could not read previous content.")
@@ -300,6 +303,7 @@ class SheetEditor():
     |self.required_cell_updates| to the sheet.
     """
     # Insert/Remove rows.
+    print("Applying updates for the report.")
     if self.required_row_updates:
       self.service.spreadsheets().batchUpdate(
           spreadsheetId=self.spreadsheet_id,
@@ -377,6 +381,7 @@ def main():
       help='Shows the configurations help.')
   args = parser.parse_args()
 
+  print("Updating annotations sheet.")
   if args.config_help:
     PrintConfigHelp()
     return 0
@@ -401,6 +406,7 @@ def main():
       client_secret_file_path = config.get("client_secret_file_path", None),
       verbose = args.verbose)
   if not sheet_editor.GenerateUpdates(file_content):
+    print("Error generating updates for file content.")
     return -1
 
   if sheet_editor.required_cell_updates or sheet_editor.required_row_updates:
