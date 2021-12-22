@@ -33,10 +33,18 @@ void FakeAccessibilityHelperInstance::PerformAction(
 }
 
 void FakeAccessibilityHelperInstance::
+    SetNativeChromeVoxArcSupportForFocusedWindowDeprecated(
+        bool enabled,
+        SetNativeChromeVoxArcSupportForFocusedWindowDeprecatedCallback
+            callback) {
+  std::move(callback).Run(true);
+}
+
+void FakeAccessibilityHelperInstance::
     SetNativeChromeVoxArcSupportForFocusedWindow(
         bool enabled,
         SetNativeChromeVoxArcSupportForFocusedWindowCallback callback) {
-  std::move(callback).Run(true);
+  std::move(callback).Run(arc::mojom::SetNativeChromeVoxResponse::SUCCESS);
 }
 
 void FakeAccessibilityHelperInstance::SetExploreByTouchEnabled(bool enabled) {

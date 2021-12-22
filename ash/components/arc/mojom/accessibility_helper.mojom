@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 23
+// Next MinVersion: 24
 
 module arc.mojom;
 
@@ -493,9 +493,18 @@ interface AccessibilityHelperHost {
   [MinVersion=18] OnToggleNativeChromeVoxArcSupport@3(bool enabled);
 };
 
+// Response code for SetNativeChromeVoxArcSupportForFocusedWindow.
+[Extensible]
+enum SetNativeChromeVoxResponse {
+  SUCCESS,
+  WINDOW_NOT_FOUND,
+  TALKBACK_NOT_INSTALLED,
+  FAILURE,
+};
+
 // Interface for communicating to Android.
 // Deprecated method IDs: 0, 1, 3, 5
-// Next method ID: 12
+// Next method ID: 13
 interface AccessibilityHelperInstance {
   // Establishes full-duplex communication with the host.
   [MinVersion=9] Init@7(
@@ -510,7 +519,7 @@ interface AccessibilityHelperInstance {
 
   // Sets the focused window's package to use ChromeVox (true) or TalkBack
   // (false).
-  [MinVersion=8] SetNativeChromeVoxArcSupportForFocusedWindow@6(
+  [MinVersion=8] SetNativeChromeVoxArcSupportForFocusedWindowDeprecated@6(
       bool enabled) => (bool processed);
 
   // Requests the service to enable or disable Explore By Touch.
@@ -527,4 +536,9 @@ interface AccessibilityHelperInstance {
   // Requests the whole accessibility tree with the specified window.
   [MinVersion=17] RequestSendAccessibilityTree@11(
       AccessibilityWindowKey window);
+
+  // Sets the focused window's package to use ChromeVox (true) or TalkBack
+  // (false).
+  [MinVersion=24] SetNativeChromeVoxArcSupportForFocusedWindow@12(
+      bool enabled) => (SetNativeChromeVoxResponse response);
 };

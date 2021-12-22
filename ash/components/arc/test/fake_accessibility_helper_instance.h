@@ -27,6 +27,10 @@ class FakeAccessibilityHelperInstance
   void SetFilter(mojom::AccessibilityFilterType filter_type) override;
   void PerformAction(mojom::AccessibilityActionDataPtr action_data_ptr,
                      PerformActionCallback callback) override;
+  void SetNativeChromeVoxArcSupportForFocusedWindowDeprecated(
+      bool enabled,
+      SetNativeChromeVoxArcSupportForFocusedWindowDeprecatedCallback callback)
+      override;
   void SetNativeChromeVoxArcSupportForFocusedWindow(
       bool enabled,
       SetNativeChromeVoxArcSupportForFocusedWindowCallback callback) override;
