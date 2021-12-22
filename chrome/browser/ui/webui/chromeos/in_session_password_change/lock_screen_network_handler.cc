@@ -81,10 +81,14 @@ void NetworkConfigMessageHandler::RegisterMessages() {
 void NetworkConfigMessageHandler::Initialize(base::Value::ConstListView args) {
   AllowJavascript();
 
-  // Notify the main dialog that the network dialog has been loaded.
+  // Check if the main dialog exists and notify that the network dialog has
+  // been loaded.
   auto* password_sync_manager = GetInSessionPasswordSyncManager();
-  password_sync_manager->get_reauth_dialog_for_testing()
-      ->OnNetworkDialogReadyForTesting();
+  LockScreenStartReauthDialog* start_reauth_dialog =
+      password_sync_manager->get_reauth_dialog_for_testing();
+  if (!start_reauth_dialog)
+    return;
+  start_reauth_dialog->OnNetworkDialogReadyForTesting();
 }
 
 void NetworkConfigMessageHandler::ShowNetworkDetails(
