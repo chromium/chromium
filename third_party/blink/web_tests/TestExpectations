@@ -1728,6 +1728,28 @@ crbug.com/490511 external/wpt/html/rendering/non-replaced-elements/the-hr-elemen
 crbug.com/490511 external/wpt/html/rendering/non-replaced-elements/the-hr-element-0/width.html [ Failure ]
 crbug.com/692560 external/wpt/html/semantics/document-metadata/styling/LinkStyle.html [ Failure Pass ]
 
+crbug.com/895846 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-block-margins.html [ Failure ]
+crbug.com/895846 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-block-margins-2.html [ Failure ]
+crbug.com/1223214 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-painting-order.html [ Failure ]
+crbug.com/1223214 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-display-rendering.html [ Failure ]
+crbug.com/1223214 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-tall.html [ Failure ]
+crbug.com/1172023 external/wpt/html/rendering/non-replaced-elements/tables/table-border-3s.html [ Failure ]
+crbug.com/1172023 external/wpt/html/rendering/non-replaced-elements/tables/table-border-3q.html [ Failure ]
+crbug.com/962936 external/wpt/html/rendering/widgets/button-layout/anonymous-button-content-box.html [ Failure ]
+crbug.com/962936 external/wpt/html/rendering/widgets/button-layout/inline-level.html [ Failure ]
+crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-1i.html [ Failure ]
+crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-1j.html [ Failure ]
+crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-1k.html [ Failure ]
+crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-1l.html [ Failure ]
+crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-2i.html [ Failure ]
+crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-2j.html [ Failure ]
+crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-2k.html [ Failure ]
+crbug.com/707210 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-2l.html [ Failure ]
+
+# These were crashing only on DCHECK-enabled release builds, but maybe don't now.
+# crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/margin-collapsing-quirks/multicol-quirks-mode.html [ Crash Pass ]
+# crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/margin-collapsing-quirks/multicol-standards-mode.html [ Crash Failure Pass ]
+
 crbug.com/860211 [ Mac ] external/wpt/editing/run/delete.html [ Failure ]
 
 crbug.com/821455 editing/pasteboard/drag-files-to-editable-element.html [ Failure ]
@@ -4664,8 +4686,6 @@ crbug.com/626703 external/wpt/mediacapture-streams/MediaStream-MediaElement-srcO
 crbug.com/626703 [ Mac10.12 ] external/wpt/preload/download-resources.html [ Failure Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/preload/download-resources.html [ Failure Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/preload/onload-event.html [ Failure Skip Timeout ]
-crbug.com/626703 external/wpt/html/rendering/widgets/button-layout/anonymous-button-content-box.html [ Failure ]
-crbug.com/626703 external/wpt/html/rendering/widgets/button-layout/inline-level.html [ Failure ]
 crbug.com/626703 external/wpt/xhr/abort-after-stop.any.worker.html [ Timeout ]
 crbug.com/626703 external/wpt/speech-api/SpeechSynthesisUtterance-volume-manual.html [ Skip ]
 crbug.com/626703 crbug.com/606367 external/wpt/pointerevents/pointerevent_touch-action-pan-x-pan-y-pan-y_touch.html [ Failure Pass Timeout ]
@@ -4676,8 +4696,6 @@ crbug.com/626703 external/wpt/media-source/mediasource-correct-frames-after-reap
 crbug.com/626703 external/wpt/media-source/mediasource-correct-frames.html [ Failure Pass Skip Timeout ]
 crbug.com/626703 external/wpt/payment-method-basic-card/steps_for_selecting_the_payment_handler.html [ Timeout ]
 crbug.com/626703 external/wpt/payment-method-basic-card/apply_the_modifiers.html [ Timeout ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/tables/table-border-3s.html [ Failure ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/tables/table-border-3q.html [ Failure ]
 crbug.com/626703 external/wpt/screen-orientation/onchange-event.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-tracks.https.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/webrtc/RTCPeerConnection-remote-track-mute.https.html [ Skip Timeout ]
@@ -4734,7 +4752,6 @@ crbug.com/1253971 [ Mac ] external/wpt/html/semantics/forms/the-selectmenu-eleme
 
 
 ### See crbug.com/891427 comment near the top of this file:
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-block-margins-2.html [ Failure ]
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-004.svg [ Failure ]
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-001.svg [ Failure ]
 
@@ -4758,9 +4775,6 @@ crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-bicubic-001.svg
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-005.svg [ Failure ]
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-002.svg [ Failure ]
 crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-003.svg [ Failure ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-block-margins.html [ Failure ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-display-rendering.html [ Failure ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/legend-tall.html [ Failure ]
 crbug.com/626703 external/wpt/speech-api/SpeechSynthesis-pause-resume.tentative.html [ Timeout ]
 crbug.com/626703 external/wpt/css/CSS2/floats/float-nowrap-9.html [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/floats/float-nowrap-8.html [ Failure ]
@@ -4786,7 +4800,6 @@ crbug.com/626703 external/wpt/css/selectors/old-tests/css3-modsel-18b.xml [ Skip
 crbug.com/626703 external/wpt/css/selectors/old-tests/css3-modsel-159.xml [ Skip ]
 crbug.com/626703 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/reload.window.html [ Timeout ]
 crbug.com/626703 external/wpt/quirks/text-decoration-doesnt-propagate-into-tables/quirks.html [ Failure ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/fieldset-painting-order.html [ Failure ]
 crbug.com/626703 external/wpt/html/webappapis/dynamic-markup-insertion/opening-the-input-stream/tasks.window.html [ Timeout ]
 crbug.com/875411 external/wpt/svg/text/reftests/text-complex-002.svg [ Failure ]
 crbug.com/875411 external/wpt/svg/text/reftests/text-shape-inside-001.svg [ Failure ]
@@ -4862,14 +4875,6 @@ crbug.com/626703 [ Linux ] external/wpt/css/css-color/t422-rgba-onscreen-multipl
 crbug.com/626703 [ Linux ] external/wpt/css/css-color/t425-hsla-onscreen-multiple-boxes-c.xht [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-color/t425-hsla-onscreen-b.xht [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/css-color/t425-hsla-onscreen-b.xht [ Failure ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-1i.html [ Failure ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-1j.html [ Failure ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-1k.html [ Failure ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-1l.html [ Failure ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-2i.html [ Failure ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-2j.html [ Failure ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-2k.html [ Failure ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/the-page/body-margin-2l.html [ Failure ]
 crbug.com/626703 external/wpt/acid/acid2/reftest.html [ Failure Pass ]
 crbug.com/626703 external/wpt/acid/acid3/test.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-ui/cursor-auto-006.html [ Skip ]
@@ -5014,8 +5019,6 @@ crbug.com/888443 external/wpt/css/cssom-view/scroll-behavior-subframe-window.htm
 # Crashes with DCHECK enabled, but not on normal Release builds.
 crbug.com/809935 external/wpt/css/css-fonts/variations/font-style-interpolation.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-ui/text-overflow-011.html [ Crash Failure Pass ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/margin-collapsing-quirks/multicol-quirks-mode.html [ Crash Pass ]
-crbug.com/626703 external/wpt/html/rendering/non-replaced-elements/margin-collapsing-quirks/multicol-standards-mode.html [ Crash Failure Pass ]
 
 # Other untriaged test failures, timeouts and crashes from newly-imported WPT tests.
 crbug.com/626703 external/wpt/html/browsers/history/the-location-interface/location-protocol-setter-non-broken.html [ Failure Pass ]
