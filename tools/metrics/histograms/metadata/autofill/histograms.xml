@@ -149,6 +149,18 @@ chromium-metrics-reviews@google.com.
   <variant name=".Reshows" summary="Bubble was reopened after being closed"/>
 </variants>
 
+<variants name="AutofillMeasurementTime">
+  <variant name="">
+    <obsolete>
+      Base histogram. Use suffixes of this histogram instead.
+    </obsolete>
+  </variant>
+  <variant name=".AtFillTime" summary="Recorded at filling time."/>
+  <variant name=".AtSubmissionTime"
+      summary="Recorded at submission time. May be missed due to submission
+               detection problems."/>
+</variants>
+
 <variants name="AutofillRealPanResultGroups">
   <variant name=".Failure" summary="Failure">
     <obsolete>
@@ -809,24 +821,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.CreditCard.NumberFills" units="NumberFills"
-    expires_after="2022-10-31">
+<histogram name="Autofill.CreditCard.NumberFills{AutofillMeasurementTime}"
+    units="Filled" expires_after="2022-10-31">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records for each credit card form submission whether a credit card number
-    has been autofilled.
+    has been autofilled. {AutofillMeasurementTime}
 
     That is, emits 1 if a form contains an autofilled credit card number.
   </summary>
+  <token key="AutofillMeasurementTime" variants="AutofillMeasurementTime"/>
 </histogram>
 
-<histogram name="Autofill.CreditCard.SeamlessFills"
+<histogram name="Autofill.CreditCard.SeamlessFills{AutofillMeasurementTime}"
     enum="CreditCardSeamlessFill" expires_after="2022-10-31">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Records for each credit card form submission the quality of the fill.
+    Records for each credit card form the quality of the fill.
+    {AutofillMeasurementTime}
 
     The fields in question are: cardholder name (full, or first and last),
     credit card number, expiration date (MM/YY, MM/YYYY, MM and YY, or MM and
@@ -850,6 +864,7 @@ chromium-metrics-reviews@google.com.
     Any form that contains at least one credit card field counts as credit card
     form.
   </summary>
+  <token key="AutofillMeasurementTime" variants="AutofillMeasurementTime"/>
 </histogram>
 
 <histogram name="Autofill.CreditCardFillingInfoBar"
