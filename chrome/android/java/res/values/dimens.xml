@@ -157,6 +157,7 @@
     <!-- Should match toolbar_height_no_shadow -->
     <dimen name="control_container_height">56dp</dimen>
     <dimen name="custom_tabs_control_container_height">56dp</dimen>
+    <dimen name="fullscreen_notification_max_width">320dp</dimen>
 
     <!-- The combined height of the tab strip and toolbar. -->
     <dimen name="tab_strip_and_toolbar_height">56dp</dimen>
