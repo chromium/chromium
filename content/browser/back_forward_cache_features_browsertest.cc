@@ -1238,9 +1238,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheSMSService) {
       blink::scheduler::WebSchedulerTrackedFeature::kWebOTPService, FROM_HERE);
 }
 
-// crbug.com/1090223
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       DISABLED_DoesNotCachePaymentManager) {
+                       DoesNotCachePaymentManager) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
 
   // 1) Navigate to a page which includes PaymentManager functionality. Note
