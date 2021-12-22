@@ -56,8 +56,8 @@ class ASH_PUBLIC_EXPORT TestDesksTemplatesDelegate
                        int desired_icon_size,
                        base::OnceCallback<void(apps::IconValuePtr icon_value)>
                            callback) const override;
-  void LaunchAppsFromTemplate(
-      std::unique_ptr<DeskTemplate> desk_template) override;
+  void LaunchAppsFromTemplate(std::unique_ptr<DeskTemplate> desk_template,
+                              base::TimeDelta delay) override;
   bool IsWindowSupportedForDeskTemplate(aura::Window* window) const override;
 
  private:
