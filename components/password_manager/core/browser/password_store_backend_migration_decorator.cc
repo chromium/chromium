@@ -168,6 +168,10 @@ PasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegate() {
   return built_in_backend_->CreateSyncControllerDelegate();
 }
 
+void PasswordStoreBackendMigrationDecorator::ClearAllLocalPasswords() {
+  NOTIMPLEMENTED();
+}
+
 void PasswordStoreBackendMigrationDecorator::StartMigration() {
   migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
       built_in_backend_.get(), android_backend_.get(), prefs_,

@@ -22,6 +22,11 @@ absl::optional<PasswordStoreChangeList> JoinPasswordStoreChanges(
 // holds an error.
 LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result);
 
+// Helper function allowing to bind base::OnceClosure to
+// PasswordStoreChangeListReply.
+PasswordStoreChangeListReply IgnoreChangeListAndRunCallback(
+    base::OnceClosure callback);
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_UTIL_H_

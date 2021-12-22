@@ -71,6 +71,7 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   FieldInfoStore* GetFieldInfoStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
+  void ClearAllLocalPasswords() override;
 
   const raw_ptr<PasswordStoreBackend> main_backend_;
   const raw_ptr<PasswordStoreBackend> shadow_backend_;

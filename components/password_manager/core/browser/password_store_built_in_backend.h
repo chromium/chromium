@@ -113,6 +113,7 @@ class PasswordStoreBuiltInBackend : protected PasswordStoreSync,
   FieldInfoStore* GetFieldInfoStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
+  void ClearAllLocalPasswords() override;
 
   // SmartBubbleStatsStore:
   void AddSiteStats(const InteractionsStats& stats) override;

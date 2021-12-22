@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
+#include "components/password_manager/core/browser/password_store_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -26,15 +27,6 @@ struct IsPasswordLess {
     return PasswordFormUniqueKey(*lhs) < PasswordFormUniqueKey(*rhs);
   }
 };
-
-base::OnceCallback<void(absl::optional<PasswordStoreChangeList>)>
-IgnoreChangeListAndRunCallback(base::OnceClosure callback) {
-  return base::BindOnce(
-      [](base::OnceClosure callback, absl::optional<PasswordStoreChangeList>) {
-        std::move(callback).Run();
-      },
-      std::move(callback));
-}
 
 bool IsInitialMigrationNeeded(PrefService* prefs) {
   return features::kMigrationVersion.Get() >

@@ -258,6 +258,10 @@ TestPasswordStore::CreateSyncControllerDelegate() {
   return nullptr;
 }
 
+void TestPasswordStore::ClearAllLocalPasswords() {
+  NOTIMPLEMENTED();
+}
+
 bool TestPasswordStore::IsAccountStore() const {
   return is_account_store_.value();
 }

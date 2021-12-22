@@ -128,6 +128,9 @@ class PasswordStoreBackend {
   virtual std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() = 0;
 
+  // Clears all the passwords from the local storage.
+  virtual void ClearAllLocalPasswords() = 0;
+
   // Factory function for creating the backend. The Local backend requires the
   // provided `login_db` for storage and Android backend for migration purposes.
   static std::unique_ptr<PasswordStoreBackend> Create(

@@ -439,6 +439,10 @@ PasswordStoreBuiltInBackend::CreateSyncControllerDelegate() {
           weak_ptr_factory_.GetWeakPtr()));
 }
 
+void PasswordStoreBuiltInBackend::ClearAllLocalPasswords() {
+  NOTREACHED();
+}
+
 void PasswordStoreBuiltInBackend::AddSiteStats(const InteractionsStats& stats) {
   DCHECK(!was_shutdown_);
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());

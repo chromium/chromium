@@ -317,10 +317,8 @@ void PasswordStoreAndroidBackend::Shutdown(
 
 void PasswordStoreAndroidBackend::GetAllLoginsAsync(
     LoginsOrErrorReply callback) {
-  JobId job_id = bridge_->GetAllLogins(PasswordStoreOperationTarget::kDefault);
-  QueueNewJob(job_id, JobReturnHandler(
-                          std::move(callback),
-                          MetricsRecorder(MetricInfix("GetAllLoginsAsync"))));
+  GetAllLoginsForTarget(PasswordStoreOperationTarget::kDefault,
+                        std::move(callback));
 }
 
 void PasswordStoreAndroidBackend::GetAutofillableLoginsAsync(
@@ -385,11 +383,8 @@ void PasswordStoreAndroidBackend::UpdateLoginAsync(
 void PasswordStoreAndroidBackend::RemoveLoginAsync(
     const PasswordForm& form,
     PasswordStoreChangeListReply callback) {
-  JobId job_id =
-      bridge_->RemoveLogin(form, PasswordStoreOperationTarget::kDefault);
-  QueueNewJob(job_id, JobReturnHandler(
-                          std::move(callback),
-                          MetricsRecorder(MetricInfix("RemoveLoginAsync"))));
+  RemoveLoginForTarget(form, PasswordStoreOperationTarget::kDefault,
+                       std::move(callback));
 }
 
 void PasswordStoreAndroidBackend::FilterAndRemoveLogins(
@@ -521,6 +516,33 @@ PasswordStoreAndroidBackend::CreateSyncControllerDelegate() {
       base::BindRepeating(
           &PasswordStoreAndroidBackend::GetSyncControllerDelegate,
           base::Unretained(this)));
+}
+
+void PasswordStoreAndroidBackend::ClearAllLocalPasswords() {
+  LoginsOrErrorReply cleaning_callback = base::BindOnce(
+      [](base::WeakPtr<PasswordStoreAndroidBackend> weak_self,
+         LoginsResultOrError logins_or_error) {
+        if (!weak_self ||
+            absl::holds_alternative<PasswordStoreBackendError>(logins_or_error))
+          return;
+
+        base::OnceClosure callbacks_chain = base::DoNothing();
+
+        for (const auto& login : absl::get<LoginsResult>(logins_or_error)) {
+          callbacks_chain = base::BindOnce(
+              &PasswordStoreAndroidBackend::RemoveLoginForTarget, weak_self,
+              std::move(*login), PasswordStoreOperationTarget::kLocalStorage,
+              IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
+        }
+
+        std::move(callbacks_chain).Run();
+      },
+      weak_ptr_factory_.GetWeakPtr());
+
+  // TODO(https://crbug.com/1278748) Record whether the operation was
+  // successful.
+  GetAllLoginsForTarget(PasswordStoreOperationTarget::kLocalStorage,
+                        std::move(cleaning_callback));
 }
 
 void PasswordStoreAndroidBackend::OnCompleteWithLogins(
@@ -674,6 +696,25 @@ PasswordStoreChangeListReply PasswordStoreAndroidBackend::
         std::move(callback).Run(std::move(results));
       },
       MetricsRecorder(metric_infix), std::move(callback));
+}
+
+void PasswordStoreAndroidBackend::GetAllLoginsForTarget(
+    PasswordStoreOperationTarget target,
+    LoginsOrErrorReply callback) {
+  JobId job_id = bridge_->GetAllLogins(target);
+  QueueNewJob(job_id, JobReturnHandler(
+                          std::move(callback),
+                          MetricsRecorder(MetricInfix("GetAllLoginsAsync"))));
+}
+
+void PasswordStoreAndroidBackend::RemoveLoginForTarget(
+    const PasswordForm& form,
+    PasswordStoreOperationTarget target,
+    PasswordStoreChangeListReply callback) {
+  JobId job_id = bridge_->RemoveLogin(form, target);
+  QueueNewJob(job_id, JobReturnHandler(
+                          std::move(callback),
+                          MetricsRecorder(MetricInfix("RemoveLoginAsync"))));
 }
 
 }  // namespace password_manager

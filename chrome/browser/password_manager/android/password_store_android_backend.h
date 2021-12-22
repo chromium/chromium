@@ -189,6 +189,7 @@ class PasswordStoreAndroidBackend
   FieldInfoStore* GetFieldInfoStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
+  void ClearAllLocalPasswords() override;
 
   // Implements PasswordStoreAndroidBackendBridge::Consumer interface.
   void OnCompleteWithLogins(PasswordStoreAndroidBackendBridge::JobId job_id,
@@ -240,6 +241,16 @@ class PasswordStoreAndroidBackend
   ReportMetricsAndInvokeCallbackForStoreModifications(
       const MetricInfix& metric_infix,
       PasswordStoreChangeListReply callback);
+
+  // Returns the complete list of PasswordForms (regardless of their blocklist
+  // status) from specified storage.
+  void GetAllLoginsForTarget(PasswordStoreOperationTarget target,
+                             LoginsOrErrorReply callback);
+
+  // Removes |form| from specified storage.
+  void RemoveLoginForTarget(const PasswordForm& form,
+                            PasswordStoreOperationTarget target,
+                            PasswordStoreChangeListReply callback);
 
   // Observer to propagate remote form changes to.
   RemoteChangesReceived remote_form_changes_received_;

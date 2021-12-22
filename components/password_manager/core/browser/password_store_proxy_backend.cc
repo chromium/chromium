@@ -388,4 +388,8 @@ PasswordStoreProxyBackend::CreateSyncControllerDelegate() {
   return main_backend_->CreateSyncControllerDelegate();
 }
 
+void PasswordStoreProxyBackend::ClearAllLocalPasswords() {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace password_manager

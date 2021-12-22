@@ -25,4 +25,13 @@ LoginsResult GetLoginsOrEmptyListOnFailure(LoginsResultOrError result) {
   return std::move(absl::get<LoginsResult>(result));
 }
 
+PasswordStoreChangeListReply IgnoreChangeListAndRunCallback(
+    base::OnceClosure callback) {
+  return base::BindOnce(
+      [](base::OnceClosure callback, absl::optional<PasswordStoreChangeList>) {
+        std::move(callback).Run();
+      },
+      std::move(callback));
+}
+
 }  // namespace password_manager

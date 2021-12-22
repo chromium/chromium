@@ -555,6 +555,30 @@ TEST_F(PasswordStoreAndroidBackendTest, DisableAutoSignInForOrigins) {
       1);
 }
 
+TEST_F(PasswordStoreAndroidBackendTest, RemoveAllLocalLogins) {
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+
+  base::MockCallback<LoginsReply> mock_logins_reply;
+  const JobId kGetLoginsJobId{13387};
+  EXPECT_CALL(*bridge(),
+              GetAllLogins(PasswordStoreOperationTarget::kLocalStorage))
+      .WillOnce(Return(kGetLoginsJobId));
+  backend().ClearAllLocalPasswords();
+
+  // Imitate login retrieval and check that it triggers the removal of forms.
+  const JobId kRemoveLoginJobId{13388};
+  PasswordForm form_to_delete = CreateTestLogin(
+      kTestUsername, kTestPassword, kTestUrl, base::Time::FromTimeT(1500));
+  EXPECT_CALL(
+      *bridge(),
+      RemoveLogin(form_to_delete, PasswordStoreOperationTarget::kLocalStorage))
+      .WillOnce(Return(kRemoveLoginJobId));
+
+  consumer().OnCompleteWithLogins(kGetLoginsJobId, {form_to_delete});
+  RunUntilIdle();
+}
+
 class PasswordStoreAndroidBackendTestForMetrics
     : public PasswordStoreAndroidBackendTest,
       public testing::WithParamInterface<bool> {

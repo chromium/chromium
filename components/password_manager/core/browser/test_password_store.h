@@ -99,6 +99,7 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   FieldInfoStore* GetFieldInfoStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
+  void ClearAllLocalPasswords() override;
 
  private:
   LoginsResult GetAllLoginsInternal();

@@ -131,6 +131,10 @@ FakePasswordStoreBackend::CreateSyncControllerDelegate() {
   return nullptr;
 }
 
+void FakePasswordStoreBackend::ClearAllLocalPasswords() {
+  NOTIMPLEMENTED();
+}
+
 LoginsResult FakePasswordStoreBackend::GetAllLoginsInternal() {
   LoginsResult result;
   for (const auto& elements : stored_passwords_) {
