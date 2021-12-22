@@ -223,11 +223,13 @@ MEDIA_EXPORT extern const base::Feature kUsePooledSharedImageVideoProvider;
 MEDIA_EXPORT extern const base::Feature kUseRealColorSpaceForAndroidVideo;
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 MEDIA_EXPORT extern const base::Feature kUseChromeOSDirectVideoDecoder;
 
+#if defined(OS_CHROMEOS)
 MEDIA_EXPORT extern const base::Feature kUseAlternateVideoDecoderImplementation;
-#endif  // defined(OS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if defined(OS_MAC)
 MEDIA_EXPORT extern const base::Feature kMultiPlaneVideoToolboxSharedImages;

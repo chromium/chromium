@@ -72,6 +72,11 @@ VideoDecoderType GetPlatformDecoderImplementationType(
 #elif BUILDFLAG(ENABLE_VULKAN)
   if (!base::FeatureList::IsEnabled(kVaapiVideoDecodeLinux))
     return VideoDecoderType::kUnknown;
+  if (!base::FeatureList::IsEnabled(kUseChromeOSDirectVideoDecoder)) {
+    return gpu_preferences.gr_context_type == gpu::GrContextType::kGL
+               ? VideoDecoderType::kVda
+               : VideoDecoderType::kUnknown;
+  }
   if (gpu_preferences.gr_context_type != gpu::GrContextType::kVulkan)
     return VideoDecoderType::kUnknown;
   for (const auto& device : gpu_info.vulkan_info->physical_devices) {

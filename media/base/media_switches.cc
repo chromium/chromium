@@ -704,14 +704,16 @@ const base::Feature kUseRealColorSpaceForAndroidVideo{
 
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 // Enable the hardware-accelerated direct video decoder instead of the one
 // needing the VdaVideoDecoder adapter. This flag is used mainly as a
-// chrome:flag for developers debugging issues. TODO(b/159825227): remove when
-// the direct video decoder is fully launched.
+// chrome:flag for developers debugging issues as well as to be able to
+// experiment with direct VideoDecoder path on Linux Desktop.
+// TODO(b/159825227): remove when the direct video decoder is fully launched.
 const base::Feature kUseChromeOSDirectVideoDecoder{
     "UseChromeOSDirectVideoDecoder", base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if defined(OS_CHROMEOS)
 // ChromeOS has one of two VideoDecoder implementations active based on
 // SoC/board specific configurations that are sent via command line flags. This
 // switch allows using the non default implementation for testing.
@@ -719,7 +721,8 @@ const base::Feature kUseChromeOSDirectVideoDecoder{
 const base::Feature kUseAlternateVideoDecoderImplementation{
     "UseAlternateVideoDecoderImplementation",
     base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // defined(OS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if defined(OS_MAC)
 // Enable binding multiple shared images to a single GpuMemoryBuffer for
