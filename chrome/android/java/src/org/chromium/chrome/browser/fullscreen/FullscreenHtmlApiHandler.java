@@ -355,10 +355,13 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
      * @param controlsHidden {@code true} if the controls are now hidden.
      */
     private void maybeEnterFullscreenFromPendingState(boolean controlsHidden) {
-        if (!controlsHidden) return;
-        if (mTab != null && mPendingFullscreenOptions != null) {
+        if (!controlsHidden || mTab == null) return;
+        if (mPendingFullscreenOptions != null) {
             enterFullscreen(mTab, mPendingFullscreenOptions);
             mPendingFullscreenOptions = null;
+        } else {
+            // Restore browser controls if the fullscreen process got canceled.
+            TabBrowserControlsConstraintsHelper.update(mTab, BrowserControlsState.SHOWN, true);
         }
     }
 
