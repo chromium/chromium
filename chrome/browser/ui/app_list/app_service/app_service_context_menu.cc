@@ -91,6 +91,20 @@ void ShowOptionsPage(AppListControllerDelegate* controller,
   controller->ShowOptionsPage(profile, app_id);
 }
 
+void ExecuteLaunchCommand(app_list::AppContextMenuDelegate* delegate,
+                          int event_flags,
+                          bool post_task) {
+  DCHECK(delegate);
+  if (post_task) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(ExecuteLaunchCommand, delegate, event_flags,
+                                  /*post_task=*/false));
+    return;
+  }
+
+  delegate->ExecuteLaunchCommand(event_flags);
+}
+
 }  // namespace
 
 AppServiceContextMenu::AppServiceContextMenu(
@@ -149,7 +163,7 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
       controller()->GetAppListDisplayId());
   switch (command_id) {
     case ash::LAUNCH_NEW:
-      delegate()->ExecuteLaunchCommand(event_flags);
+      ExecuteLaunchCommand(delegate(), event_flags, /*post_task=*/true);
       ash::full_restore::FullRestoreService::MaybeCloseNotification(profile());
       break;
 
