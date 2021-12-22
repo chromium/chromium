@@ -6,76 +6,52 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {MostVisitedBrowserProxy} from 'chrome://resources/cr_components/most_visited/browser_proxy.js';
 import {MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
-import {MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
+import {MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote, MostVisitedTile} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
 import {MostVisitedWindowProxy} from 'chrome://resources/cr_components/most_visited/window_proxy.js';
-import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
-
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {$$, assertNotStyle, assertStyle, keydown} from './most_visited_test_support.js';
 
-/** @type {!MostVisitedElement} */
-let mostVisited;
+let mostVisited: MostVisitedElement;
+let windowProxy: MostVisitedWindowProxy&TestBrowserProxy;
+let handler: MostVisitedPageHandlerRemote&TestBrowserProxy;
+let callbackRouterRemote: MostVisitedPageCallbackRouter;
+let mediaListenerWideWidth: FakeMediaQueryList;
+let mediaListenerMediumWidth: FakeMediaQueryList;
+let mediaListener: Function;
 
-/** @extends {TestBrowserProxy} */
-let windowProxy;
-
-/** @extends {TestBrowserProxy} */
-let handler;
-
-/** @extends {TestBrowserProxy} */
-let callbackRouterRemote;
-
-/** @type {!MediaQueryList} */
-let mediaListenerWideWidth;
-
-/** @type {!MediaQueryList} */
-let mediaListenerMediumWidth;
-
-/** @type {!Function} */
-let mediaListener;
-
-/**
- * @param {string} q
- * @return {!Array<!Element>}
- */
-function queryAll(q) {
-  return Array.from(mostVisited.shadowRoot.querySelectorAll(q));
+function queryAll<E extends Element = Element>(q: string): E[] {
+  return Array.from(mostVisited.shadowRoot!.querySelectorAll<E>(q));
 }
 
-/** @return {!Array<!Element>} */
-function queryTiles() {
-  return queryAll('.tile');
+function queryTiles(): HTMLAnchorElement[] {
+  return queryAll<HTMLAnchorElement>('.tile');
 }
 
-/** @return {!Array<!Element>} */
-function queryHiddenTiles() {
-  return queryAll('.tile[hidden]');
+function queryHiddenTiles(): HTMLAnchorElement[] {
+  return queryAll<HTMLAnchorElement>('.tile[hidden]');
 }
 
-/** @param {number} length */
-function assertTileLength(length) {
+function assertTileLength(length: number) {
   assertEquals(length, queryTiles().length);
 }
 
-/** @param {number} length */
-function assertHiddenTileLength(length) {
+function assertHiddenTileLength(length: number) {
   assertEquals(length, queryHiddenTiles().length);
 }
 
-/**
- * @param {number|!Array} n
- * @param {boolean=} customLinksEnabled
- * @param {boolean=} visible
- * @return {!Promise<void>}
- */
-async function addTiles(n, customLinksEnabled = true, visible = true) {
-  const tiles = Array.isArray(n) ? n : Array(n).fill(0).map((x, i) => {
+async function addTiles(
+    n: number|MostVisitedTile[], customLinksEnabled: boolean = true,
+    visible: boolean = true) {
+  const tiles = Array.isArray(n) ? n : Array(n).fill(0).map((_x, i) => {
     const char = String.fromCharCode(i + /* 'a' */ 97);
     return {
       title: char,
@@ -97,18 +73,17 @@ async function addTiles(n, customLinksEnabled = true, visible = true) {
 }
 
 function assertAddShortcutHidden() {
-  assertTrue($$(mostVisited, '#addShortcut').hidden);
+  assertTrue(mostVisited.$.addShortcut.hidden);
 }
 
 function assertAddShortcutShown() {
-  assertFalse($$(mostVisited, '#addShortcut').hidden);
+  assertFalse(mostVisited.$.addShortcut.hidden);
 }
 
-/**
- * @suppress {checkTypes}
- */
 function createBrowserProxy() {
-  handler = TestBrowserProxy.fromClass(MostVisitedPageHandlerRemote);
+  handler = TestBrowserProxy.fromClass(MostVisitedPageHandlerRemote) as
+          unknown as MostVisitedPageHandlerRemote &
+      TestBrowserProxy;
   const callbackRouter = new MostVisitedPageCallbackRouter();
   MostVisitedBrowserProxy.setInstance(
       new MostVisitedBrowserProxy(handler, callbackRouter));
@@ -122,20 +97,29 @@ function createBrowserProxy() {
   }));
 }
 
-/**
- * @suppress {checkTypes}
- */
+class FakeMediaQueryList extends EventTarget implements MediaQueryList {
+  matches: boolean = false;
+  media: string;
+
+  constructor(query: string) {
+    super();
+    this.media = query;
+  }
+
+  addListener(listener: () => void) {
+    mediaListener = listener;
+  }
+
+  removeListener() {}
+  onchange() {}
+}
+
 function createWindowProxy() {
-  windowProxy = TestBrowserProxy.fromClass(MostVisitedWindowProxy);
-  windowProxy.setResultMapperFor('matchMedia', query => {
-    const mediaListenerList = /** @type {!MediaQueryList} */ ({
-      matches: false,  // Used to determine the screen width.
-      media: query,
-      addListener(listener) {
-        mediaListener = listener;
-      },
-      removeListener() {},
-    });
+  windowProxy = TestBrowserProxy.fromClass(MostVisitedWindowProxy) as unknown as
+          MostVisitedWindowProxy &
+      TestBrowserProxy;
+  windowProxy.setResultMapperFor('matchMedia', (query: string) => {
+    const mediaListenerList = new FakeMediaQueryList(query);
     if (query === '(min-width: 672px)') {
       mediaListenerWideWidth = mediaListenerList;
     } else if (query === '(min-width: 560px)') {
@@ -148,11 +132,7 @@ function createWindowProxy() {
   MostVisitedWindowProxy.setInstance(windowProxy);
 }
 
-/**
- * @param {boolean} isWide
- * @param {boolean} isMedium
- */
-function updateScreenWidth(isWide, isMedium) {
+function updateScreenWidth(isWide: boolean, isMedium: boolean) {
   assertTrue(!!mediaListenerWideWidth);
   assertTrue(!!mediaListenerMediumWidth);
   mediaListenerWideWidth.matches = isWide;
@@ -169,8 +149,8 @@ function leaveUrlInput() {
 }
 
 suite('General', () => {
-  setup(/** @suppress {checkTypes} */ () => {
-    document.innerHTML = '';
+  setup(() => {
+    document.body.innerHTML = '';
 
     createBrowserProxy();
     createWindowProxy();
@@ -190,35 +170,34 @@ suite('General', () => {
   });
 
   test('clicking on add shortcut opens dialog', () => {
-    assertFalse($$(mostVisited, '#dialog').open);
-    $$(mostVisited, '#addShortcut').click();
-    assertTrue($$(mostVisited, '#dialog').open);
+    assertFalse(mostVisited.$.dialog.open);
+    mostVisited.$.addShortcut.click();
+    assertTrue(mostVisited.$.dialog.open);
   });
 
   test('pressing enter when add shortcut has focus opens dialog', () => {
-    $$(mostVisited, '#addShortcut').focus();
-    assertFalse($$(mostVisited, '#dialog').open);
-    keydown($$(mostVisited, '#addShortcut'), 'Enter');
-    assertTrue($$(mostVisited, '#dialog').open);
+    mostVisited.$.addShortcut.focus();
+    assertFalse(mostVisited.$.dialog.open);
+    keydown(mostVisited.$.addShortcut, 'Enter');
+    assertTrue(mostVisited.$.dialog.open);
   });
 
   test('pressing space when add shortcut has focus opens dialog', () => {
-    $$(mostVisited, '#addShortcut').focus();
-    assertFalse($$(mostVisited, '#dialog').open);
-    $$(mostVisited, '#addShortcut').dispatchEvent(new KeyboardEvent('keydown', {
-      key: ' '
-    }));
-    $$(mostVisited, '#addShortcut').dispatchEvent(new KeyboardEvent('keyup', {
-      key: ' '
-    }));
-    assertTrue($$(mostVisited, '#dialog').open);
+    mostVisited.$.addShortcut.focus();
+    assertFalse(mostVisited.$.dialog.open);
+    mostVisited.$.addShortcut.dispatchEvent(
+        new KeyboardEvent('keydown', {key: ' '}));
+    mostVisited.$.addShortcut.dispatchEvent(
+        new KeyboardEvent('keyup', {key: ' '}));
+    assertTrue(mostVisited.$.dialog.open);
   });
 
   test('four tiles fit on one line with addShortcut', async () => {
     await addTiles(4);
     assertEquals(4, queryTiles().length);
     assertAddShortcutShown();
-    const tops = queryAll('a, #addShortcut').map(({offsetTop}) => offsetTop);
+    const tops = queryAll<HTMLElement>('a, #addShortcut')
+                     .map(({offsetTop}) => offsetTop);
     assertEquals(5, tops.length);
     tops.forEach(top => {
       assertEquals(tops[0], top);
@@ -229,7 +208,8 @@ suite('General', () => {
     await addTiles(5);
     assertEquals(5, queryTiles().length);
     assertAddShortcutShown();
-    const tops = queryAll('a, #addShortcut').map(({offsetTop}) => offsetTop);
+    const tops = queryAll<HTMLElement>('a, #addShortcut')
+                     .map(({offsetTop}) => offsetTop);
     assertEquals(6, tops.length);
     const firstRowTop = tops[0];
     const secondRowTop = tops[3];
@@ -246,7 +226,8 @@ suite('General', () => {
     await addTiles(9);
     assertEquals(9, queryTiles().length);
     assertAddShortcutShown();
-    const tops = queryAll('a, #addShortcut').map(({offsetTop}) => offsetTop);
+    const tops = queryAll<HTMLElement>('a, #addShortcut')
+                     .map(({offsetTop}) => offsetTop);
     assertEquals(10, tops.length);
     const firstRowTop = tops[0];
     const secondRowTop = tops[5];
@@ -263,7 +244,7 @@ suite('General', () => {
     await addTiles(10);
     assertEquals(10, queryTiles().length);
     assertAddShortcutHidden();
-    const tops = queryAll('a:not([hidden])').map(a => a.offsetTop);
+    const tops = queryAll<HTMLElement>('a:not([hidden])').map(a => a.offsetTop);
     assertEquals(10, tops.length);
     const firstRowTop = tops[0];
     const secondRowTop = tops[5];
@@ -310,17 +291,17 @@ suite('General', () => {
     assertEquals(1, queryTiles().length);
     assertEquals(0, queryAll('.tile[hidden]').length);
     assertTrue(mostVisited.hasAttribute('visible_'));
-    assertFalse($$(mostVisited, '#container').hidden);
+    assertFalse(mostVisited.$.container.hidden);
     await addTiles(1, /* customLinksEnabled */ true, /* visible */ false);
     assertEquals(1, queryTiles().length);
     assertEquals(0, queryAll('.tile[hidden]').length);
     assertFalse(mostVisited.hasAttribute('visible_'));
-    assertTrue($$(mostVisited, '#container').hidden);
+    assertTrue(mostVisited.$.container.hidden);
     await addTiles(1, /* customLinksEnabled */ true, /* visible */ true);
     assertEquals(1, queryTiles().length);
     assertEquals(0, queryAll('.tile[hidden]').length);
     assertTrue(mostVisited.hasAttribute('visible_'));
-    assertFalse($$(mostVisited, '#container').hidden);
+    assertFalse(mostVisited.$.container.hidden);
   });
 
   suite('test various widths', () => {
@@ -435,7 +416,7 @@ suite('General', () => {
     await addTiles(1);
 
     // Act.
-    const tileLink = queryTiles()[0];
+    const tileLink = queryTiles()[0]!;
     // Prevent triggering a navigation, which would break the test.
     tileLink.href = '#';
     tileLink.click();
@@ -478,8 +459,8 @@ suite('Modification', () => {
     });
   });
 
-  setup(/** @suppress {checkTypes} */ () => {
-    document.innerHTML = '';
+  setup(() => {
+    document.body.innerHTML = '';
 
     createBrowserProxy();
     createWindowProxy();
@@ -492,24 +473,20 @@ suite('Modification', () => {
   });
 
   suite('add dialog', () => {
-    let dialog;
-    let inputName;
-
-    /** @type {!CrInputElement} */
-    let inputUrl;
-
-    let saveButton;
-    let cancelButton;
+    let dialog: CrDialogElement;
+    let inputName: CrInputElement;
+    let inputUrl: CrInputElement;
+    let saveButton: CrButtonElement;
+    let cancelButton: CrButtonElement;
 
     setup(() => {
-      dialog = $$(mostVisited, '#dialog');
-      inputName = $$(mostVisited, '#dialogInputName');
-      inputUrl =
-          /** @type {!CrInputElement} */ ($$(mostVisited, '#dialogInputUrl'));
-      saveButton = dialog.querySelector('.action-button');
-      cancelButton = dialog.querySelector('.cancel-button');
+      dialog = mostVisited.$.dialog;
+      inputName = $$<CrInputElement>(mostVisited, '#dialogInputName')!;
+      inputUrl = $$<CrInputElement>(mostVisited, '#dialogInputUrl')!;
+      saveButton = dialog.querySelector('.action-button')!;
+      cancelButton = dialog.querySelector('.cancel-button')!;
 
-      $$(mostVisited, '#addShortcut').click();
+      mostVisited.$.addShortcut.click();
       assertTrue(dialog.open);
     });
 
@@ -542,7 +519,7 @@ suite('Modification', () => {
       inputName.value = 'name';
       inputUrl.value = 'url';
       cancelButton.click();
-      $$(mostVisited, '#addShortcut').click();
+      mostVisited.$.addShortcut.click();
       assertEquals('', inputName.value);
       assertEquals('', inputUrl.value);
     });
@@ -551,17 +528,17 @@ suite('Modification', () => {
       inputUrl.value = 'url';
       const addCalled = handler.whenCalled('addMostVisitedTile');
       saveButton.click();
-      const [url, title] = await addCalled;
+      const [_url, title] = await addCalled;
       assertEquals('url', title);
     });
 
     test('toast shown on save', async () => {
       inputUrl.value = 'url';
-      assertFalse($$(mostVisited, '#toast').open);
+      assertFalse(mostVisited.$.toast.open);
       const addCalled = handler.whenCalled('addMostVisitedTile');
       saveButton.click();
       await addCalled;
-      assertTrue($$(mostVisited, '#toast').open);
+      assertTrue(mostVisited.$.toast.open);
     });
 
     test('toast has undo buttons when action successful', async () => {
@@ -572,7 +549,7 @@ suite('Modification', () => {
       saveButton.click();
       await handler.whenCalled('addMostVisitedTile');
       await flushTasks();
-      assertFalse($$(mostVisited, '#undo').hidden);
+      assertFalse($$<HTMLElement>(mostVisited, '#undo')!.hidden);
     });
 
     test('toast has no undo buttons when action successful', async () => {
@@ -607,7 +584,7 @@ suite('Modification', () => {
       inputUrl.value = 'url';
       const addCalled = handler.whenCalled('addMostVisitedTile');
       saveButton.click();
-      const [{url}, title] = await addCalled;
+      const [{url}, _title] = await addCalled;
       assertEquals('https://url/', url);
     });
 
@@ -667,41 +644,36 @@ suite('Modification', () => {
 
   test('open edit dialog', async () => {
     await addTiles(2);
-    const actionMenu = $$(mostVisited, '#actionMenu');
-    const dialog = $$(mostVisited, '#dialog');
+    const actionMenu = mostVisited.$.actionMenu;
+    const dialog = mostVisited.$.dialog;
     assertFalse(actionMenu.open);
-    queryTiles()[0].querySelector('#actionMenuButton').click();
+    queryTiles()[0]!.querySelector<HTMLElement>('#actionMenuButton')!.click();
     assertTrue(actionMenu.open);
     assertFalse(dialog.open);
-    $$(mostVisited, '#actionMenuEdit').click();
+    $$<HTMLElement>(mostVisited, '#actionMenuEdit')!.click();
     assertFalse(actionMenu.open);
     assertTrue(dialog.open);
   });
 
   suite('edit dialog', () => {
-    let actionMenu;
-    let actionMenuButton;
-    let dialog;
-    let inputName;
-    let inputUrl;
-    let saveButton;
-    let cancelButton;
-    let tile;
+    let actionMenuButton: HTMLElement;
+    let inputName: CrInputElement;
+    let inputUrl: CrInputElement;
+    let saveButton: HTMLElement;
+    let tile: HTMLAnchorElement;
 
     setup(async () => {
-      actionMenu = $$(mostVisited, '#actionMenu');
-      dialog = $$(mostVisited, '#dialog');
-      inputName = $$(mostVisited, '#dialogInputName');
-      inputUrl = $$(mostVisited, '#dialogInputUrl');
-      saveButton = dialog.querySelector('.action-button');
-      cancelButton = dialog.querySelector('.cancel-button');
+      inputName = $$<CrInputElement>(mostVisited, '#dialogInputName')!;
+      inputUrl = $$<CrInputElement>(mostVisited, '#dialogInputUrl')!;
+
+      const dialog = mostVisited.$.dialog;
+      saveButton = dialog.querySelector('.action-button')!;
 
       await addTiles(2);
-      tile = queryTiles()[1];
-      actionMenuButton = /** @type {!CrActionMenuElement} */ (
-          tile.querySelector('#actionMenuButton'));
+      tile = queryTiles()[1]!;
+      actionMenuButton = tile.querySelector<HTMLElement>('#actionMenuButton')!;
       actionMenuButton.click();
-      $$(mostVisited, '#actionMenuEdit').click();
+      $$<HTMLElement>(mostVisited, '#actionMenuEdit')!.click();
     });
 
     test('edit a tile URL', async () => {
@@ -709,23 +681,23 @@ suite('Modification', () => {
       const updateCalled = handler.whenCalled('updateMostVisitedTile');
       inputUrl.value = 'updated-url';
       saveButton.click();
-      const [url, newUrl, newTitle] = await updateCalled;
+      const [_url, newUrl, _newTitle] = await updateCalled;
       assertEquals('https://updated-url/', newUrl.url);
     });
 
     test('toast shown when tile editted', async () => {
       inputUrl.value = 'updated-url';
-      assertFalse($$(mostVisited, '#toast').open);
+      assertFalse(mostVisited.$.toast.open);
       saveButton.click();
       await handler.whenCalled('updateMostVisitedTile');
-      assertTrue($$(mostVisited, '#toast').open);
+      assertTrue(mostVisited.$.toast.open);
     });
 
     test('no toast when not editted', async () => {
-      assertFalse($$(mostVisited, '#toast').open);
+      assertFalse(mostVisited.$.toast.open);
       saveButton.click();
       await flushTasks();
-      assertFalse($$(mostVisited, '#toast').open);
+      assertFalse(mostVisited.$.toast.open);
     });
 
     test('edit a tile title', async () => {
@@ -733,7 +705,7 @@ suite('Modification', () => {
       const updateCalled = handler.whenCalled('updateMostVisitedTile');
       inputName.value = 'updated name';
       saveButton.click();
-      const [url, newUrl, newTitle] = await updateCalled;
+      const [_url, _newUrl, newTitle] = await updateCalled;
       assertEquals('updated name', newTitle);
     });
 
@@ -744,10 +716,10 @@ suite('Modification', () => {
       saveButton.click();
       // Reopen dialog and edit URL.
       actionMenuButton.click();
-      $$(mostVisited, '#actionMenuEdit').click();
+      $$<HTMLElement>(mostVisited, '#actionMenuEdit')!.click();
       inputUrl.value = 'updated-url';
       saveButton.click();
-      const [url, newUrl, newTitle] = await updateCalled;
+      const [_url, newUrl, _newTitle] = await updateCalled;
       assertEquals('https://updated-url/', newUrl.url);
     });
 
@@ -767,28 +739,29 @@ suite('Modification', () => {
   });
 
   test('remove with action menu', async () => {
-    const actionMenu = $$(mostVisited, '#actionMenu');
-    const removeButton = $$(mostVisited, '#actionMenuRemove');
+    const actionMenu = mostVisited.$.actionMenu;
+    const removeButton = $$<HTMLElement>(mostVisited, '#actionMenuRemove')!;
     await addTiles(2);
-    const secondTile = queryTiles()[1];
-    const actionMenuButton = secondTile.querySelector('#actionMenuButton');
+    const secondTile = queryTiles()[1]!;
+    const actionMenuButton =
+        secondTile.querySelector<HTMLElement>('#actionMenuButton')!;
     assertFalse(actionMenu.open);
     actionMenuButton.click();
     assertTrue(actionMenu.open);
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
-    assertFalse($$(mostVisited, '#toast').open);
+    assertFalse(mostVisited.$.toast.open);
     removeButton.click();
     assertFalse(actionMenu.open);
     assertEquals('https://b/', (await deleteCalled).url);
-    assertTrue($$(mostVisited, '#toast').open);
+    assertTrue(mostVisited.$.toast.open);
     // Toast buttons are visible.
     assertTrue(!!$$(mostVisited, '#undo'));
     assertTrue(!!$$(mostVisited, '#restore'));
   });
 
   test('remove query with action menu', async () => {
-    const actionMenu = $$(mostVisited, '#actionMenu');
-    const removeButton = $$(mostVisited, '#actionMenuRemove');
+    const actionMenu = mostVisited.$.actionMenu;
+    const removeButton = $$<HTMLElement>(mostVisited, '#actionMenuRemove')!;
     await addTiles([{
       title: 'title',
       titleDirection: TextDirection.LEFT_TO_RIGHT,
@@ -797,15 +770,16 @@ suite('Modification', () => {
       titleSource: 0,
       isQueryTile: true,
     }]);
-    const actionMenuButton = queryTiles()[0].querySelector('#actionMenuButton');
+    const actionMenuButton =
+        queryTiles()[0]!.querySelector<HTMLElement>('#actionMenuButton')!;
     assertFalse(actionMenu.open);
     actionMenuButton.click();
     assertTrue(actionMenu.open);
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
-    assertFalse($$(mostVisited, '#toast').open);
+    assertFalse(mostVisited.$.toast.open);
     removeButton.click();
     assertEquals('https://search-url/', (await deleteCalled).url);
-    assertTrue($$(mostVisited, '#toast').open);
+    assertTrue(mostVisited.$.toast.open);
     // Toast buttons are visible.
     assertTrue(!!$$(mostVisited, '#undo'));
     assertTrue(!!$$(mostVisited, '#restore'));
@@ -813,12 +787,13 @@ suite('Modification', () => {
 
   test('remove with icon button (customLinksEnabled=false)', async () => {
     await addTiles(1, /* customLinksEnabled */ false);
-    const removeButton = queryTiles()[0].querySelector('#removeButton');
+    const removeButton =
+        queryTiles()[0]!.querySelector<HTMLElement>('#removeButton')!;
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
-    assertFalse($$(mostVisited, '#toast').open);
+    assertFalse(mostVisited.$.toast.open);
     removeButton.click();
     assertEquals('https://a/', (await deleteCalled).url);
-    assertTrue($$(mostVisited, '#toast').open);
+    assertTrue(mostVisited.$.toast.open);
     // Toast buttons are visible.
     assertTrue(!!$$(mostVisited, '#undo'));
     assertTrue(!!$$(mostVisited, '#restore'));
@@ -835,12 +810,13 @@ suite('Modification', () => {
           isQueryTile: true,
         }],
         /* customLinksEnabled */ false);
-    const removeButton = queryTiles()[0].querySelector('#removeButton');
+    const removeButton =
+        queryTiles()[0]!.querySelector<HTMLElement>('#removeButton')!;
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
-    assertFalse($$(mostVisited, '#toast').open);
+    assertFalse(mostVisited.$.toast.open);
     removeButton.click();
     assertEquals('https://search-url/', (await deleteCalled).url);
-    assertTrue($$(mostVisited, '#toast').open);
+    assertTrue(mostVisited.$.toast.open);
     // Toast buttons are not visible.
     assertFalse(!!$$(mostVisited, '#undo'));
     assertFalse(!!$$(mostVisited, '#restore'));
@@ -848,27 +824,27 @@ suite('Modification', () => {
 
   test('tile url is set to href of <a>', async () => {
     await addTiles(1);
-    const [tile] = queryTiles();
+    const tile = queryTiles()[0]!;
     assertEquals('https://a/', tile.href);
   });
 
   test('delete first tile', async () => {
     await addTiles(1);
-    const [tile] = queryTiles();
+    const tile = queryTiles()[0]!;
     const deleteCalled = handler.whenCalled('deleteMostVisitedTile');
-    assertFalse($$(mostVisited, '#toast').open);
+    assertFalse(mostVisited.$.toast.open);
     keydown(tile, 'Delete');
     assertEquals('https://a/', (await deleteCalled).url);
-    assertTrue($$(mostVisited, '#toast').open);
+    assertTrue(mostVisited.$.toast.open);
   });
 
   test('ctrl+z triggers undo and hides toast', async () => {
-    const toast = $$(mostVisited, '#toast');
+    const toast = mostVisited.$.toast;
     assertFalse(toast.open);
 
     // Add a tile and remove it to show the toast.
     await addTiles(1);
-    const [tile] = queryTiles();
+    const tile = queryTiles()[0]!;
     keydown(tile, 'Delete');
     await handler.whenCalled('deleteMostVisitedTile');
     assertTrue(toast.open);
@@ -885,18 +861,18 @@ suite('Modification', () => {
   });
 
   test('ctrl+z does nothing if toast buttons are not showing', async () => {
-    const toast = $$(mostVisited, '#toast');
+    const toast = mostVisited.$.toast;
     assertFalse(toast.open);
 
     // A failed attempt at adding a shortcut to show the toast with no buttons.
     handler.setResultFor('addMostVisitedTile', Promise.resolve({
       success: false,
     }));
-    $$(mostVisited, '#addShortcut').click();
-    const dialog = $$(mostVisited, '#dialog');
-    const inputUrl = $$(mostVisited, '#dialogInputUrl');
+    mostVisited.$.addShortcut.click();
+    const inputUrl = $$<CrInputElement>(mostVisited, '#dialogInputUrl')!;
     inputUrl.value = 'url';
-    const saveButton = dialog.querySelector('.action-button');
+    const saveButton =
+        mostVisited.$.dialog.querySelector<HTMLElement>('.action-button')!;
     saveButton.click();
     await handler.whenCalled('addMostVisitedTile');
 
@@ -913,41 +889,43 @@ suite('Modification', () => {
 
   test('toast restore defaults button', async () => {
     const wait = handler.whenCalled('restoreMostVisitedDefaults');
-    const toast = $$(mostVisited, '#toast');
+    const toast = mostVisited.$.toast;
     assertFalse(toast.open);
 
     // Add a tile and remove it to show the toast.
     await addTiles(1);
-    const [tile] = queryTiles();
+    const tile = queryTiles()[0]!;
     keydown(tile, 'Delete');
     await handler.whenCalled('deleteMostVisitedTile');
 
     assertTrue(toast.open);
-    toast.querySelector('#restore').click();
+    toast.querySelector<HTMLElement>('#restore')!.click();
     await wait;
     assertFalse(toast.open);
   });
 
   test('toast undo button', async () => {
     const wait = handler.whenCalled('undoMostVisitedTileAction');
-    const toast = $$(mostVisited, '#toast');
+    const toast = mostVisited.$.toast;
     assertFalse(toast.open);
 
     // Add a tile and remove it to show the toast.
     await addTiles(1);
-    const [tile] = queryTiles();
+    const tile = queryTiles()[0]!;
     keydown(tile, 'Delete');
     await handler.whenCalled('deleteMostVisitedTile');
 
     assertTrue(toast.open);
-    toast.querySelector('#undo').click();
+    toast.querySelector<HTMLElement>('#undo')!.click();
     await wait;
     assertFalse(toast.open);
   });
 
   test('drag first tile to second position', async () => {
     await addTiles(2);
-    const [first, second] = queryTiles();
+    const tiles = queryTiles();
+    const first = tiles[0]!;
+    const second = tiles[1]!;
     assertEquals('https://a/', first.href);
     assertTrue(first.draggable);
     assertEquals('https://b/', second.href);
@@ -968,13 +946,15 @@ suite('Modification', () => {
     assertEquals('https://a/', url.url);
     assertEquals(1, newPos);
     const [newFirst, newSecond] = queryTiles();
-    assertEquals('https://b/', newFirst.href);
-    assertEquals('https://a/', newSecond.href);
+    assertEquals('https://b/', newFirst!.href);
+    assertEquals('https://a/', newSecond!.href);
   });
 
   test('drag second tile to first position', async () => {
     await addTiles(2);
-    const [first, second] = queryTiles();
+    const tiles = queryTiles();
+    const first = tiles[0]!;
+    const second = tiles[1]!;
     assertEquals('https://a/', first.href);
     assertTrue(first.draggable);
     assertEquals('https://b/', second.href);
@@ -995,13 +975,15 @@ suite('Modification', () => {
     assertEquals('https://b/', url.url);
     assertEquals(0, newPos);
     const [newFirst, newSecond] = queryTiles();
-    assertEquals('https://b/', newFirst.href);
-    assertEquals('https://a/', newSecond.href);
+    assertEquals('https://b/', newFirst!.href);
+    assertEquals('https://a/', newSecond!.href);
   });
 
   test('most visited tiles cannot be reordered', async () => {
     await addTiles(2, /* customLinksEnabled= */ false);
-    const [first, second] = queryTiles();
+    const tiles = queryTiles();
+    const first = tiles[0]!;
+    const second = tiles[1]!;
     assertEquals('https://a/', first.href);
     assertTrue(first.draggable);
     assertEquals('https://b/', second.href);
@@ -1019,14 +1001,14 @@ suite('Modification', () => {
     await flushTasks();
     assertEquals(0, handler.getCallCount('reorderMostVisitedTile'));
     const [newFirst, newSecond] = queryTiles();
-    assertEquals('https://a/', newFirst.href);
-    assertEquals('https://b/', newSecond.href);
+    assertEquals('https://a/', newFirst!.href);
+    assertEquals('https://b/', newSecond!.href);
   });
 });
 
 suite('Theming', () => {
-  setup(/** @suppress {checkTypes} */ () => {
-    document.innerHTML = '';
+  setup(() => {
+    document.body.innerHTML = '';
 
     createBrowserProxy();
     createWindowProxy();
@@ -1047,8 +1029,8 @@ suite('Theming', () => {
       titleSource: 0,
       isQueryTile: false,
     }]);
-    const [tile] = queryTiles();
-    const titleElement = tile.querySelector('.tile-title');
+    const tile = queryTiles()[0]!;
+    const titleElement = tile.querySelector('.tile-title')!;
     assertEquals('rtl', window.getComputedStyle(titleElement).direction);
   });
 
@@ -1061,17 +1043,16 @@ suite('Theming', () => {
       titleSource: 0,
       isQueryTile: false,
     }]);
-    const [tile] = queryTiles();
-    const titleElement = tile.querySelector('.tile-title');
+    const tile = queryTiles()[0]!;
+    const titleElement = tile.querySelector('.tile-title')!;
     assertEquals('ltr', window.getComputedStyle(titleElement).direction);
   });
 
   test('setting color styles tile color', () => {
     // Act.
-    $$(mostVisited, '#container')
-        .style.setProperty('--most-visited-text-color', 'blue');
-    $$(mostVisited, '#container')
-        .style.setProperty('--tile-background-color', 'red');
+    mostVisited.$.container.style.setProperty(
+        '--most-visited-text-color', 'blue');
+    mostVisited.$.container.style.setProperty('--tile-background-color', 'red');
 
     // Assert.
     queryAll('.tile-title').forEach(tile => {

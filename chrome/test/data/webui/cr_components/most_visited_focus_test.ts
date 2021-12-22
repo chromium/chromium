@@ -7,32 +7,24 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {MostVisitedBrowserProxy} from 'chrome://resources/cr_components/most_visited/browser_proxy.js';
 import {MostVisitedElement} from 'chrome://resources/cr_components/most_visited/most_visited.js';
 import {MostVisitedPageCallbackRouter, MostVisitedPageHandlerRemote} from 'chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {TextDirection} from 'chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js';
 
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {$$, assertFocus, keydown} from './most_visited_test_support.js';
+import {assertFocus, keydown} from './most_visited_test_support.js';
 
 suite('CrComponentsMostVisitedFocusTest', () => {
-  /** @type {!MostVisitedElement} */
-  let mostVisited;
+  let mostVisited: MostVisitedElement;
+  let callbackRouterRemote: MostVisitedPageCallbackRouter;
 
-  /** @extends {TestBrowserProxy} */
-  let callbackRouterRemote;
-
-  /** @return {!Array<!Element>} */
   function queryTiles() {
-    return Array.from(mostVisited.shadowRoot.querySelectorAll('.tile'));
+    return Array.from(
+        mostVisited.shadowRoot!.querySelectorAll<HTMLElement>('.tile'));
   }
 
-  /**
-   * @param {number} n
-   * @return {!Promise<void>}
-   */
-  async function addTiles(n) {
-    const tiles = Array(n).fill(0).map((x, i) => {
+  async function addTiles(n: number): Promise<void> {
+    const tiles = Array(n).fill(0).map((_x, i) => {
       const char = String.fromCharCode(i + /* 'a' */ 97);
       return {
         title: char,
@@ -52,10 +44,11 @@ suite('CrComponentsMostVisitedFocusTest', () => {
     await tilesRendered;
   }
 
-  setup(/** @suppress {checkTypes} */ () => {
-    document.innerHTML = '';
+  setup(() => {
+    document.body.innerHTML = '';
 
-    const handler = TestBrowserProxy.fromClass(MostVisitedPageHandlerRemote);
+    const handler = TestBrowserProxy.fromClass(MostVisitedPageHandlerRemote) as
+        unknown as MostVisitedPageHandlerRemote;
     const callbackRouter = new MostVisitedPageCallbackRouter();
     MostVisitedBrowserProxy.setInstance(
         new MostVisitedBrowserProxy(handler, callbackRouter));
@@ -67,70 +60,70 @@ suite('CrComponentsMostVisitedFocusTest', () => {
 
   test('right focuses on addShortcut', async () => {
     await addTiles(1);
-    const [tile] = queryTiles();
+    const tile = queryTiles()[0]!;
     tile.focus();
     keydown(tile, 'ArrowRight');
-    assertFocus($$(mostVisited, '#addShortcut'));
+    assertFocus(mostVisited.$.addShortcut);
   });
 
   test('right focuses on addShortcut when menu button focused', async () => {
     await addTiles(1);
-    const [tile] = queryTiles();
-    tile.querySelector('cr-icon-button').focus();
+    const tile = queryTiles()[0]!;
+    tile.querySelector('cr-icon-button')!.focus();
     keydown(tile, 'ArrowRight');
-    assertFocus($$(mostVisited, '#addShortcut'));
+    assertFocus(mostVisited.$.addShortcut);
   });
 
   test('right focuses next tile', async () => {
     await addTiles(2);
-    const [first, second] = queryTiles();
-    first.focus();
-    keydown(first, 'ArrowRight');
-    assertFocus(second);
+    const tiles = queryTiles();
+    tiles[0]!.focus();
+    keydown(tiles[0]!, 'ArrowRight');
+    assertFocus(tiles[1]!);
   });
 
   test('right focuses on next tile when menu button focused', async () => {
     await addTiles(2);
-    const [first, second] = queryTiles();
-    first.querySelector('cr-icon-button').focus();
-    keydown(first, 'ArrowRight');
-    assertFocus(second);
+    const tiles = queryTiles();
+    tiles[0]!.querySelector('cr-icon-button')!.focus();
+    keydown(tiles[0]!, 'ArrowRight');
+    assertFocus(tiles[1]!);
   });
 
   test('down focuses on addShortcut', async () => {
     await addTiles(1);
-    const [tile] = queryTiles();
+    const tile = queryTiles()[0]!;
     tile.focus();
     keydown(tile, 'ArrowDown');
-    assertFocus($$(mostVisited, '#addShortcut'));
+    assertFocus(mostVisited.$.addShortcut);
   });
 
   test('down focuses next tile', async () => {
     await addTiles(2);
-    const [first, second] = queryTiles();
-    first.focus();
-    keydown(first, 'ArrowDown');
-    assertFocus(second);
+    const tiles = queryTiles();
+    tiles[0]!.focus();
+    keydown(tiles[0]!, 'ArrowDown');
+    assertFocus(tiles[1]!);
   });
 
   test('up focuses on previous tile from addShortcut', async () => {
     await addTiles(1);
-    $$(mostVisited, '#addShortcut').focus();
-    keydown($$(mostVisited, '#addShortcut'), 'ArrowUp');
-    assertFocus(queryTiles()[0]);
+    mostVisited.$.addShortcut.focus();
+    keydown(mostVisited.$.addShortcut, 'ArrowUp');
+    assertFocus(queryTiles()[0]!);
   });
 
   test('up focuses on previous tile', async () => {
     await addTiles(2);
-    const [first, second] = queryTiles();
-    second.focus();
-    keydown(second, 'ArrowUp');
-    assertFocus(first);
+    const tiles = queryTiles();
+    tiles[1]!.focus();
+    keydown(tiles[1]!, 'ArrowUp');
+    assertFocus(tiles[0]!);
   });
 
   test('up/left does not change focus when on first tile', async () => {
     await addTiles(1);
-    const [tile] = queryTiles();
+    const tile = queryTiles()[0]!;
     tile.focus();
     keydown(tile, 'ArrowUp');
     assertFocus(tile);
@@ -139,10 +132,10 @@ suite('CrComponentsMostVisitedFocusTest', () => {
 
   test('up/left/right/down addShortcut and no tiles', async () => {
     await addTiles(0);
-    $$(mostVisited, '#addShortcut').focus();
+    mostVisited.$.addShortcut.focus();
     for (const key of ['ArrowUp', 'ArrowLeft', 'ArrowRight', 'ArrowDown']) {
-      keydown($$(mostVisited, '#addShortcut'), key);
-      assertFocus($$(mostVisited, '#addShortcut'));
+      keydown(mostVisited.$.addShortcut, key);
+      assertFocus(mostVisited.$.addShortcut);
     }
   });
 });

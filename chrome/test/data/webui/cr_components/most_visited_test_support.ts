@@ -9,49 +9,39 @@ import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-
 
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 
-/**
- * @param {!Element} element
- * @param {string} query
- * @return {!Element}
- */
-export function $$(element, query) {
-  return element.shadowRoot.querySelector(query);
+export function $$<E extends Element = Element>(
+    element: HTMLElement, query: string): E {
+  return element.shadowRoot!.querySelector<E>(query)!;
 }
 
-/**
- * @param {!Element} element
- * @param {string} key
- */
-export function keydown(element, key) {
-  keyDownOn(element, '', [], key);
+export function keydown(element: Element, key: string) {
+  keyDownOn(element, 0, [], key);
 }
 
 /**
  * Asserts the computed style value for an element.
- * @param {!Element} element The element.
- * @param {string} name The name of the style to assert.
- * @param {string} expected The expected style value.
+ * @param name The name of the style to assert.
+ * @param expected The expected style value.
  */
-export function assertStyle(element, name, expected) {
+export function assertStyle(element: Element, name: string, expected: string) {
   const actual = window.getComputedStyle(element).getPropertyValue(name).trim();
   assertEquals(expected, actual);
 }
 
 /**
  * Asserts the computed style for an element is not value.
- * @param {!Element} element The element.
- * @param {string} name The name of the style to assert.
- * @param {string} not The value the style should not be.
+ * @param name The name of the style to assert.
+ * @param not The value the style should not be.
  */
-export function assertNotStyle(element, name, not) {
+export function assertNotStyle(element: Element, name: string, not: string) {
   const actual = window.getComputedStyle(element).getPropertyValue(name).trim();
   assertNotEquals(not, actual);
 }
 
 /**
  * Asserts that an element is focused.
- * @param {!Element} element The element to test.
+ * @param element The element to test.
  */
-export function assertFocus(element) {
+export function assertFocus(element: Element) {
   assertEquals(element, getDeepActiveElement());
 }

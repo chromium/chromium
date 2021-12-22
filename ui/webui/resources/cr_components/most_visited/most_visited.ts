@@ -82,6 +82,7 @@ const MostVisitedElementBase = I18nMixin(PolymerElement);
 export interface MostVisitedElement {
   $: {
     actionMenu: CrActionMenuElement,
+    container: HTMLElement,
     dialog: CrDialogElement,
     toast: CrToastElement,
     addShortcut: HTMLElement,

@@ -46,9 +46,9 @@ ts_library("build_ts") {
                     rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                                 target_gen_dir) ]
   in_files = [
-    "most_visited_focus_test.js",
-    "most_visited_test.js",
-    "most_visited_test_support.js",
+    "most_visited_focus_test.ts",
+    "most_visited_test.ts",
+    "most_visited_test_support.ts",
   ]
   deps = [ "//ui/webui/resources/cr_components/most_visited:build_ts" ]
   extra_deps = [ "..:generate_definitions" ]
