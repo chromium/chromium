@@ -960,6 +960,11 @@ PaymentsClient::SelectChallengeOptionRequestDetails::
 PaymentsClient::SelectChallengeOptionRequestDetails::
     ~SelectChallengeOptionRequestDetails() = default;
 
+PaymentsClient::GetDetailsForEnrollmentResponseDetails::
+    GetDetailsForEnrollmentResponseDetails() = default;
+PaymentsClient::GetDetailsForEnrollmentResponseDetails::
+    ~GetDetailsForEnrollmentResponseDetails() = default;
+
 PaymentsClient::PaymentsClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,

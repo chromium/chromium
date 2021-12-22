@@ -277,6 +277,26 @@ class PaymentsClient {
     LOCAL_CARD_MIGRATION_SETTINGS_PAGE,
   };
 
+  struct GetDetailsForEnrollmentResponseDetails {
+    GetDetailsForEnrollmentResponseDetails();
+    GetDetailsForEnrollmentResponseDetails(
+        const GetDetailsForEnrollmentResponseDetails&) = delete;
+    GetDetailsForEnrollmentResponseDetails& operator=(
+        const GetDetailsForEnrollmentResponseDetails&) = delete;
+    ~GetDetailsForEnrollmentResponseDetails();
+    // |vcn_context_token_| is used in the sequential Enroll call, where it
+    // allows the server to get the instrument id for this |vcn_context_token_|
+    // and link this specific GetDetailsForEnroll call with its corresponding
+    // enroll call.
+    std::string vcn_context_token_;
+    // Google's legal message lines in the virtual card enroll flow for this
+    // specific card based on |vcn_context_token_|.
+    LegalMessageLines google_legal_message_;
+    // The issuer's legal message lines in the virtual card enroll flow for this
+    // specific card based on |vcn_context_token_|.
+    LegalMessageLines issuer_legal_message_;
+  };
+
   // |url_loader_factory| is reference counted so it has no lifetime or
   // ownership requirements. |identity_manager| and |account_info_getter| must
   // all outlive |this|. Either delegate might be nullptr. |is_off_the_record|
