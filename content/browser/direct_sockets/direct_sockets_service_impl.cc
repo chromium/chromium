@@ -39,6 +39,8 @@
 #include "chromeos/lacros/lacros_service.h"        // nogncheck
 #endif
 
+using blink::mojom::DirectSocketFailureType;
+
 namespace content {
 
 namespace {
@@ -115,7 +117,7 @@ net::Error ValidateAddressAndPort(blink::mojom::DirectSocketOptions& options,
 
   if (options.remote_port == 443) {
     base::UmaHistogramEnumeration(kPermissionDeniedHistogramName,
-                                  DirectSocketsServiceImpl::FailureType::kCORS);
+                                  DirectSocketFailureType::kCORS);
     // TODO(crbug.com/1119601): Issue a CORS preflight request.
     return net::ERR_UNSAFE_PORT;
   }
@@ -254,8 +256,9 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
     if (!is_raw_address_ && !is_mdns_name_ && resolved_addresses &&
         ContainNonPubliclyRoutableAddress(*resolved_addresses)) {
       result = net::Error::ERR_NETWORK_ACCESS_DENIED;
-      base::UmaHistogramEnumeration(kPermissionDeniedHistogramName,
-                                    FailureType::kResolvingToNonPublic);
+      base::UmaHistogramEnumeration(
+          kPermissionDeniedHistogramName,
+          DirectSocketFailureType::kResolvingToNonPublic);
     }
     protocol_ == ProtocolType::kTcp ? OpenTCPSocket(result, resolved_addresses)
                                     : OpenUDPSocket(result, resolved_addresses);
@@ -526,21 +529,6 @@ net::Error DirectSocketsServiceImpl::ValidateOptions(
   if (!IsAllowedRestrictedApiOrigin(frame_host_->GetLastCommittedOrigin()))
     return net::ERR_NETWORK_ACCESS_DENIED;
 
-  // TODO(crbug.com/1119600): Do not consume (or check) transient activation
-  // for reconnection attempts.
-  bool is_consumed =
-      static_cast<RenderFrameHostImpl*>(frame_host_)
-          ->frame_tree_node()
-          ->UpdateUserActivationState(
-              blink::mojom::UserActivationUpdateType::
-                  kConsumeTransientActivation,
-              blink::mojom::UserActivationNotificationType::kNone);
-  if (!is_consumed) {
-    base::UmaHistogramEnumeration(kPermissionDeniedHistogramName,
-                                  FailureType::kTransientActivation);
-    return net::ERR_NETWORK_ACCESS_DENIED;
-  }
-
   if (GetPermissionCallbackForTesting())
     return GetPermissionCallbackForTesting().Run(options);  // IN-TEST
 
@@ -551,7 +539,7 @@ net::Error DirectSocketsServiceImpl::ValidateOptions(
   // policies are in effect.
   if (IsEnterpriseManaged()) {
     base::UmaHistogramEnumeration(kPermissionDeniedHistogramName,
-                                  FailureType::kEnterprisePolicy);
+                                  DirectSocketFailureType::kEnterprisePolicy);
     return net::ERR_NETWORK_ACCESS_DENIED;
   }
 
@@ -570,7 +558,7 @@ void DirectSocketsServiceImpl::OnDialogProceedTcp(
     const std::string& port) {
   if (!accepted && !g_connection_dialog_bypass_for_testing) {
     base::UmaHistogramEnumeration(kPermissionDeniedHistogramName,
-                                  FailureType::kUserDialog);
+                                  DirectSocketFailureType::kUserDialog);
     std::move(callback).Run(net::ERR_ABORTED, absl::nullopt, absl::nullopt,
                             mojo::ScopedDataPipeConsumerHandle(),
                             mojo::ScopedDataPipeProducerHandle());
@@ -607,7 +595,7 @@ void DirectSocketsServiceImpl::OnDialogProceedUdp(
     const std::string& port) {
   if (!accepted && !g_connection_dialog_bypass_for_testing) {
     base::UmaHistogramEnumeration(kPermissionDeniedHistogramName,
-                                  FailureType::kUserDialog);
+                                  DirectSocketFailureType::kUserDialog);
     std::move(callback).Run(net::ERR_ABORTED, absl::nullopt, absl::nullopt);
     return;
   }

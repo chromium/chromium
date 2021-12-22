@@ -13,6 +13,18 @@ import "services/network/public/mojom/mutable_network_traffic_annotation_tag.moj
 import "services/network/public/mojom/tcp_socket.mojom";
 import "services/network/public/mojom/udp_socket.mojom";
 
+// This enum is used to track how often each permission check cause
+// Permission Denied failures. Used for histograms, don't renumber.
+enum DirectSocketFailureType {
+  kPermissionsPolicy = 0,
+  kTransientActivation = 1,
+  kUserDialog = 2,
+  kResolvingToNonPublic = 3,
+  kRateLimiting = 4,
+  kCORS = 5,
+  kEnterprisePolicy = 6
+};
+
 struct DirectSocketOptions {
   string? local_hostname;
   uint16 local_port = 0;
