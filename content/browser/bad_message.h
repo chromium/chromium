@@ -282,6 +282,9 @@ enum BadMessageReason {
   RFPH_FOCUSED_FENCED_FRAME = 255,
   WCI_REQUEST_LOCK_MOUSE_FENCED_FRAME = 256,
   BFSI_CREATE_FOR_FRAME_FENCED_FRAME = 257,
+  PMM_SUBSCRIBE_INVALID_ORIGIN = 259,
+  PMM_UNSUBSCRIBE_INVALID_ORIGIN = 260,
+  PMM_GET_SUBSCRIPTION_INVALID_ORIGIN = 261,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
