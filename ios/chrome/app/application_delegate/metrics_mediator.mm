@@ -386,7 +386,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
         numNTPTabs++;
       }
     }
-    BrowserViewController* bvc = scene.interfaceProvider.currentInterface.bvc;
+    BrowserViewController* bvc = scene.interfaceProvider.mainInterface.bvc;
     numLiveNTPTabs += [bvc liveNTPCount];
   }
 
