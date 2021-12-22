@@ -308,9 +308,6 @@ class DlpContentManagerAsh : public DlpContentManager,
 
   // List of the currently running screen shares.
   std::vector<ScreenShareInfo> running_screen_shares_;
-
-  // TODO(https://crbug.com/1278733): Remove this flag
-  const bool is_screen_share_warning_mode_enabled_ = false;
 };
 
 // Helper class to call SetDlpContentManagerAshForTesting and
