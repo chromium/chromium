@@ -173,11 +173,9 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
                 case AnswerType.SPORTS:
                     return R.drawable.ic_google_round;
                 default:
-                    assert false : "Unsupported answer type";
                     break;
             }
-        } else {
-            assert suggestion.getType() == OmniboxSuggestionType.CALCULATOR;
+        } else if (suggestion.getType() == OmniboxSuggestionType.CALCULATOR) {
             return R.drawable.ic_equals_sign_round;
         }
         return R.drawable.ic_google_round;
