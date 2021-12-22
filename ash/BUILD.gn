@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ash/ambient/resources/resources.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
@@ -163,6 +164,7 @@ component("ash") {
     "ambient/model/ambient_photo_config.h",
     "ambient/model/ambient_slideshow_photo_config.cc",
     "ambient/model/ambient_slideshow_photo_config.h",
+    "ambient/resources/ambient_animation_static_resources.h",
     "ambient/ui/ambient_background_image_view.cc",
     "ambient/ui/ambient_background_image_view.h",
     "ambient/ui/ambient_container_view.cc",
@@ -2206,6 +2208,15 @@ component("ash") {
 
     deps += [ "//chromeos/assistant/internal/ambient" ]
   }
+
+  if (include_ash_ambient_animation_resources) {
+    sources +=
+        [ "ambient/resources/ambient_animation_static_resources_impl.cc" ]
+    deps += [ "//ash/ambient/resources:lottie_resources" ]
+  } else {
+    sources +=
+        [ "ambient/resources/ambient_animation_static_resources_stub.cc" ]
+  }
 }
 
 action("dbus_service_files") {
@@ -2877,6 +2888,12 @@ test("ash_unittests") {
     "//content/public/browser",
     "//content/public/common",
   ]
+
+  if (include_ash_ambient_animation_resources) {
+    sources += [
+      "ambient/resources/ambient_animation_static_resources_impl_unittest.cc",
+    ]
+  }
 }
 
 # TODO(oshima): Remove or migrate to new ash_ui_perftests
