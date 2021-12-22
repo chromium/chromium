@@ -44,6 +44,8 @@ public class AttributionReportingProviderFlushTask implements BackgroundTask {
 
         @Override
         public void run() {
+            AttributionMetrics.recordAttributionEvent(
+                    AttributionMetrics.AttributionEvent.REPORTED_POST_NATIVE, 1);
             reportImpression(mBrowserContext, AttributionReporter.getInstance(), mParams);
         }
     }
@@ -62,7 +64,15 @@ public class AttributionReportingProviderFlushTask implements BackgroundTask {
     public boolean onStartTask(
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
         TraceEvent.startAsync(TASK_TRACE_NAME, 0);
+
         mCallback = callback;
+        final boolean browserStarted =
+                BrowserStartupController.getInstance().isFullBrowserStarted();
+        if (!browserStarted) {
+            BrowserStartupController.getInstance().startBrowserProcessesSync(
+                    LibraryProcessType.PROCESS_BROWSER, false);
+        }
+
         new AsyncTask<List<AttributionParameters>>() {
             @Override
             protected List<AttributionParameters> doInBackground() {
@@ -71,9 +81,7 @@ public class AttributionReportingProviderFlushTask implements BackgroundTask {
 
             @Override
             protected void onPostExecute(List<AttributionParameters> result) {
-                if (!BrowserStartupController.getInstance().isFullBrowserStarted()) {
-                    BrowserStartupController.getInstance().startBrowserProcessesSync(
-                            LibraryProcessType.PROCESS_BROWSER, false);
+                if (!browserStarted) {
                     // Browser wasn't started, so we don't have to worry about doing too much work
                     // on the UI thread.
                     flushSync(Profile.getLastUsedRegularProfile(), result);
@@ -92,6 +100,8 @@ public class AttributionReportingProviderFlushTask implements BackgroundTask {
         for (AttributionParameters params : paramsList) {
             reportImpression(browserContext, reporter, params);
         }
+        AttributionMetrics.recordAttributionEvent(
+                AttributionMetrics.AttributionEvent.REPORTED_POST_NATIVE, paramsList.size());
         taskFinished();
     }
 

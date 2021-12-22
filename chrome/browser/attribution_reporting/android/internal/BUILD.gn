@@ -4,6 +4,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandlerFactory.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionIntentHandlerImpl.java",
+    "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionMetrics.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingJobFactory.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingProviderFlushTask.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionReportingProviderImpl.java",
@@ -14,8 +15,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/attribution_reporting/InputEventValidator.java",
     "java/src/org/chromium/chrome/browser/attribution_reporting/NoopAttributionIntentHandler.java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
     "//chrome/android:base_module_java",
     "//chrome/browser/attribution_reporting/android:java",
     "//chrome/browser/flags:java",
@@ -29,6 +32,19 @@ android_library("java") {
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
+}
+
+source_set("internal") {
+  sources = [ "attribution_metrics_android.cc" ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/attribution_reporting/AttributionMetrics.java" ]
 }
 
 android_library("junit_tests") {
@@ -48,6 +64,7 @@ android_library("junit_tests") {
   deps = [
     ":java",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/android:base_module_java",
     "//chrome/browser/attribution_reporting/android:java",

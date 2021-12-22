@@ -20,8 +20,8 @@ import java.util.List;
  */
 public interface ImpressionPersistentStoreFileManager<W extends DataOutput & Closeable, R
                                                               extends DataInput & Closeable> {
-    public static class FileProperties<R> {
-        public FileProperties(R reader, String packageName, int version) {
+    public static class AttributionFileProperties<R> {
+        public AttributionFileProperties(R reader, String packageName, int version) {
             this.reader = reader;
             this.packageName = packageName;
             this.version = version;
@@ -30,6 +30,18 @@ public interface ImpressionPersistentStoreFileManager<W extends DataOutput & Clo
         public R reader;
         public String packageName;
         public int version;
+    }
+
+    public static class CachedEnumMetric {
+        public CachedEnumMetric(String metricName, int enumValue, int count) {
+            this.metricName = metricName;
+            this.enumValue = enumValue;
+            this.count = count;
+        }
+
+        public String metricName;
+        public int enumValue;
+        public int count;
     }
 
     /**
@@ -45,7 +57,17 @@ public interface ImpressionPersistentStoreFileManager<W extends DataOutput & Clo
      * @return The {@link FileProperties} for each file and the package the file stores Attribution
      *         data for. The caller is responsible for closing the DataInputStream.
      */
-    public List<FileProperties<R>> getAllFiles() throws IOException;
+    public List<AttributionFileProperties<R>> getAllAttributionFiles() throws IOException;
+
+    /**
+     * Increments by one the cached value for the specified metric.
+     */
+    public void incrementEnumMetric(String metricName, int enumValue) throws IOException;
+
+    /**
+     * Returns the current value of all cached enum metrics.
+     */
+    public List<CachedEnumMetric> getCachedEnumMetrics() throws IOException;
 
     /**
      * Clear all persisted Attribution Data files.

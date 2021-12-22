@@ -3839,6 +3839,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.AppToWeb.AttributionEvents"
+    enum="AttributionEvent" expires_after="2022-12-08">
+  <owner>johnidel@chromium.org</owner>
+  <owner>mthiesse@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records events for the App To Web Impressions ContentProvider in order to
+    track how many attributions are received/lost/reported to the native
+    conversions code. Note that reported post-native only counts impressions
+    that were cached pre-native, not all reported impressions.
+
+    A single impression may emit multiple different attribution events.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.ClearDataTime" units="ms" expires_after="M105">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>

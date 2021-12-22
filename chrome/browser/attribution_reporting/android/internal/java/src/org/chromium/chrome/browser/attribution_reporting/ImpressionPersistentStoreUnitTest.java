@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.attribution_reporting;
 
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
@@ -27,8 +28,11 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.attribution_reporting.ImpressionPersistentStoreFileManager.FileProperties;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.attribution_reporting.ImpressionPersistentStoreFileManager.AttributionFileProperties;
+import org.chromium.chrome.browser.attribution_reporting.ImpressionPersistentStoreFileManager.CachedEnumMetric;
 
 import java.io.Closeable;
 import java.io.DataInput;
@@ -65,6 +69,9 @@ public class ImpressionPersistentStoreUnitTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
+    @Rule
+    public final JniMocker mJniMocker = new JniMocker();
+
     interface Writer extends DataOutput, Closeable {}
     interface Reader extends DataInput, Closeable {}
 
@@ -80,11 +87,16 @@ public class ImpressionPersistentStoreUnitTest {
     @Mock
     private ImpressionPersistentStoreFileManager<Writer, Reader> mFileManager;
 
+    @Mock
+    private AttributionMetrics.Natives mMetricsJni;
+
     private ImpressionPersistentStore<Writer, Reader> mImpressionStore;
     private InOrder mInOrder;
 
     @Before
     public void setUp() {
+        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        mJniMocker.mock(AttributionMetricsJni.TEST_HOOKS, mMetricsJni);
         mImpressionStore = new ImpressionPersistentStore(mFileManager);
         mInOrder = inOrder(mOutputStream, mInputStream1, mInputStream2);
     }
@@ -104,6 +116,10 @@ public class ImpressionPersistentStoreUnitTest {
         mInOrder.verify(mOutputStream).close();
         mInOrder.verifyNoMoreInteractions();
         Mockito.verifyNoMoreInteractions(mOutputStream);
+
+        Mockito.verify(mFileManager, Mockito.times(1))
+                .incrementEnumMetric(eq(AttributionMetrics.ATTRIBUTION_EVENTS_NAME),
+                        eq(AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE));
     }
 
     @Test
@@ -122,6 +138,10 @@ public class ImpressionPersistentStoreUnitTest {
         mInOrder.verify(mOutputStream).close();
         mInOrder.verifyNoMoreInteractions();
         Mockito.verifyNoMoreInteractions(mOutputStream);
+
+        Mockito.verify(mFileManager, Mockito.times(1))
+                .incrementEnumMetric(eq(AttributionMetrics.ATTRIBUTION_EVENTS_NAME),
+                        eq(AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE));
     }
 
     @Test
@@ -134,6 +154,12 @@ public class ImpressionPersistentStoreUnitTest {
         mInOrder.verify(mOutputStream).close();
         mInOrder.verifyNoMoreInteractions();
         Mockito.verifyNoMoreInteractions(mOutputStream);
+        Mockito.verify(mFileManager, Mockito.times(1))
+                .incrementEnumMetric(eq(AttributionMetrics.ATTRIBUTION_EVENTS_NAME),
+                        eq(AttributionMetrics.AttributionEvent.DROPPED_STORAGE_FULL));
+        Mockito.verify(mFileManager, Mockito.times(0))
+                .incrementEnumMetric(eq(AttributionMetrics.ATTRIBUTION_EVENTS_NAME),
+                        eq(AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE));
     }
 
     @Test
@@ -147,6 +173,12 @@ public class ImpressionPersistentStoreUnitTest {
         mInOrder.verify(mOutputStream).close();
         mInOrder.verifyNoMoreInteractions();
         Mockito.verifyNoMoreInteractions(mOutputStream);
+        Mockito.verify(mFileManager, Mockito.times(1))
+                .incrementEnumMetric(eq(AttributionMetrics.ATTRIBUTION_EVENTS_NAME),
+                        eq(AttributionMetrics.AttributionEvent.DROPPED_WRITE_FAILED));
+        Mockito.verify(mFileManager, Mockito.times(0))
+                .incrementEnumMetric(eq(AttributionMetrics.ATTRIBUTION_EVENTS_NAME),
+                        eq(AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE));
     }
 
     @Test
@@ -157,37 +189,76 @@ public class ImpressionPersistentStoreUnitTest {
         Assert.assertFalse(mImpressionStore.storeImpression(PARAMS_1));
         mInOrder.verifyNoMoreInteractions();
         Mockito.verifyNoMoreInteractions(mOutputStream);
+        Mockito.verify(mFileManager, Mockito.times(1))
+                .incrementEnumMetric(eq(AttributionMetrics.ATTRIBUTION_EVENTS_NAME),
+                        eq(AttributionMetrics.AttributionEvent.DROPPED_WRITE_FAILED));
+        Mockito.verify(mFileManager, Mockito.times(0))
+                .incrementEnumMetric(eq(AttributionMetrics.ATTRIBUTION_EVENTS_NAME),
+                        eq(AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE));
     }
 
     @Test
     @SmallTest
     public void testReadImpressions_GetFileException() throws Exception {
-        when(mFileManager.getAllFiles()).thenThrow(new IOException());
+        List<CachedEnumMetric> metrics = new ArrayList<CachedEnumMetric>();
+        metrics.add(new CachedEnumMetric(AttributionMetrics.ATTRIBUTION_EVENTS_NAME,
+                AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE, 1234));
+        when(mFileManager.getCachedEnumMetrics()).thenReturn(metrics);
+
+        when(mFileManager.getAllAttributionFiles()).thenThrow(new IOException());
         List<AttributionParameters> params = mImpressionStore.getAndClearStoredImpressions();
         Assert.assertTrue(params.isEmpty());
+
+        Mockito.verify(mMetricsJni, Mockito.times(1))
+                .recordEnumMetrics(eq(AttributionMetrics.ATTRIBUTION_EVENTS_NAME), eq(0L),
+                        eq(AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE),
+                        eq(AttributionMetrics.AttributionEvent.NUM_ENTRIES), eq(1234));
+        Mockito.verify(mMetricsJni, Mockito.times(1))
+                .recordEnumMetrics(eq(AttributionMetrics.ATTRIBUTION_EVENTS_NAME), eq(0L),
+                        eq(AttributionMetrics.AttributionEvent.DROPPED_READ_FAILED),
+                        eq(AttributionMetrics.AttributionEvent.NUM_ENTRIES), eq(1234));
     }
 
     @Test
     @SmallTest
     public void testReadImpressions_VersionTooNew() throws Exception {
-        List<FileProperties<Reader>> files = new ArrayList<>();
-        files.add(new FileProperties<Reader>(
+        List<CachedEnumMetric> metrics = new ArrayList<CachedEnumMetric>();
+        metrics.add(new CachedEnumMetric(AttributionMetrics.ATTRIBUTION_EVENTS_NAME,
+                AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE, 1234));
+        when(mFileManager.getCachedEnumMetrics()).thenReturn(metrics);
+
+        List<AttributionFileProperties<Reader>> files = new ArrayList<>();
+        files.add(new AttributionFileProperties<Reader>(
                 mInputStream1, PACKAGE_1, ImpressionPersistentStore.VERSION + 1));
-        when(mFileManager.getAllFiles()).thenReturn(files);
+        when(mFileManager.getAllAttributionFiles()).thenReturn(files);
         List<AttributionParameters> params = mImpressionStore.getAndClearStoredImpressions();
         mInOrder.verify(mInputStream1).close();
         mInOrder.verifyNoMoreInteractions();
         Mockito.verifyNoMoreInteractions(mInputStream1);
         Assert.assertTrue(params.isEmpty());
+
+        Mockito.verify(mMetricsJni, Mockito.times(1))
+                .recordEnumMetrics(eq(AttributionMetrics.ATTRIBUTION_EVENTS_NAME), eq(0L),
+                        eq(AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE),
+                        eq(AttributionMetrics.AttributionEvent.NUM_ENTRIES), eq(1234));
+        Mockito.verify(mMetricsJni, Mockito.times(1))
+                .recordEnumMetrics(eq(AttributionMetrics.ATTRIBUTION_EVENTS_NAME), eq(0L),
+                        eq(AttributionMetrics.AttributionEvent.DROPPED_READ_FAILED),
+                        eq(AttributionMetrics.AttributionEvent.NUM_ENTRIES), eq(1234));
     }
 
     @Test
     @SmallTest
     public void testReadImpressions_Multiple_SingleFile() throws Exception {
-        List<FileProperties<Reader>> files = new ArrayList<>();
-        files.add(new FileProperties<Reader>(
+        List<CachedEnumMetric> metrics = new ArrayList<CachedEnumMetric>();
+        metrics.add(new CachedEnumMetric(AttributionMetrics.ATTRIBUTION_EVENTS_NAME,
+                AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE, 3));
+        when(mFileManager.getCachedEnumMetrics()).thenReturn(metrics);
+
+        List<AttributionFileProperties<Reader>> files = new ArrayList<>();
+        files.add(new AttributionFileProperties<Reader>(
                 mInputStream1, PACKAGE_1, ImpressionPersistentStore.VERSION));
-        when(mFileManager.getAllFiles()).thenReturn(files);
+        when(mFileManager.getAllAttributionFiles()).thenReturn(files);
         when(mInputStream1.readUTF())
                 .thenReturn(EVENT_ID_1)
                 .thenReturn(DESTINATION_1)
@@ -223,17 +294,31 @@ public class ImpressionPersistentStoreUnitTest {
         Assert.assertEquals(AttributionParameters.forCachedEvent(PACKAGE_1, EVENT_ID_2,
                                     DESTINATION_2, "", EXPIRY_2, EVENT_TIME_2),
                 params.get(1));
+
+        Mockito.verify(mMetricsJni, Mockito.times(1))
+                .recordEnumMetrics(eq(AttributionMetrics.ATTRIBUTION_EVENTS_NAME), eq(0L),
+                        eq(AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE),
+                        eq(AttributionMetrics.AttributionEvent.NUM_ENTRIES), eq(3));
+        Mockito.verify(mMetricsJni, Mockito.times(1))
+                .recordEnumMetrics(eq(AttributionMetrics.ATTRIBUTION_EVENTS_NAME), eq(0L),
+                        eq(AttributionMetrics.AttributionEvent.DROPPED_READ_FAILED),
+                        eq(AttributionMetrics.AttributionEvent.NUM_ENTRIES), eq(1));
     }
 
     @Test
     @SmallTest
     public void testReadImpressions_Multiple_TwoFiles() throws Exception {
-        List<FileProperties<Reader>> files = new ArrayList<>();
-        files.add(new FileProperties<Reader>(
+        List<CachedEnumMetric> metrics = new ArrayList<CachedEnumMetric>();
+        metrics.add(new CachedEnumMetric(AttributionMetrics.ATTRIBUTION_EVENTS_NAME,
+                AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE, 4));
+        when(mFileManager.getCachedEnumMetrics()).thenReturn(metrics);
+
+        List<AttributionFileProperties<Reader>> files = new ArrayList<>();
+        files.add(new AttributionFileProperties<Reader>(
                 mInputStream1, PACKAGE_1, ImpressionPersistentStore.VERSION));
-        files.add(new FileProperties<Reader>(
+        files.add(new AttributionFileProperties<Reader>(
                 mInputStream2, PACKAGE_2, ImpressionPersistentStore.VERSION));
-        when(mFileManager.getAllFiles()).thenReturn(files);
+        when(mFileManager.getAllAttributionFiles()).thenReturn(files);
         when(mInputStream1.readUTF())
                 .thenReturn(EVENT_ID_1)
                 .thenReturn(DESTINATION_1)
@@ -274,15 +359,24 @@ public class ImpressionPersistentStoreUnitTest {
         Assert.assertEquals(AttributionParameters.forCachedEvent(PACKAGE_2, EVENT_ID_2,
                                     DESTINATION_2, "", EXPIRY_2, EVENT_TIME_2),
                 params.get(1));
+
+        Mockito.verify(mMetricsJni, Mockito.times(1))
+                .recordEnumMetrics(eq(AttributionMetrics.ATTRIBUTION_EVENTS_NAME), eq(0L),
+                        eq(AttributionMetrics.AttributionEvent.CACHED_PRE_NATIVE),
+                        eq(AttributionMetrics.AttributionEvent.NUM_ENTRIES), eq(4));
+        Mockito.verify(mMetricsJni, Mockito.times(1))
+                .recordEnumMetrics(eq(AttributionMetrics.ATTRIBUTION_EVENTS_NAME), eq(0L),
+                        eq(AttributionMetrics.AttributionEvent.DROPPED_READ_FAILED),
+                        eq(AttributionMetrics.AttributionEvent.NUM_ENTRIES), eq(2));
     }
 
     @Test
     @SmallTest
     public void testReadImpressions_Multiple_Corruption() throws Exception {
-        List<FileProperties<Reader>> files = new ArrayList<>();
-        files.add(new FileProperties<Reader>(
+        List<AttributionFileProperties<Reader>> files = new ArrayList<>();
+        files.add(new AttributionFileProperties<Reader>(
                 mInputStream1, PACKAGE_1, ImpressionPersistentStore.VERSION));
-        when(mFileManager.getAllFiles()).thenReturn(files);
+        when(mFileManager.getAllAttributionFiles()).thenReturn(files);
         when(mInputStream1.readUTF())
                 .thenReturn(EVENT_ID_1)
                 .thenReturn(DESTINATION_1)
@@ -321,10 +415,10 @@ public class ImpressionPersistentStoreUnitTest {
     @Test
     @SmallTest
     public void testReadImpressions_Multiple_Truncation() throws Exception {
-        List<FileProperties<Reader>> files = new ArrayList<>();
-        files.add(new FileProperties<Reader>(
+        List<AttributionFileProperties<Reader>> files = new ArrayList<>();
+        files.add(new AttributionFileProperties<Reader>(
                 mInputStream1, PACKAGE_1, ImpressionPersistentStore.VERSION));
-        when(mFileManager.getAllFiles()).thenReturn(files);
+        when(mFileManager.getAllAttributionFiles()).thenReturn(files);
         when(mInputStream1.readUTF())
                 .thenReturn(EVENT_ID_1)
                 .thenReturn(DESTINATION_1)

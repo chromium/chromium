@@ -28,6 +28,7 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -162,7 +163,7 @@ public class AttributionReportingProviderFlushTaskTest {
 
     private void startTaskAndVerifyAttributions(BackgroundTask.TaskFinishedCallback callback,
             CallbackHelper callbackHelper) throws Exception {
-        mFlushTask.onStartTask(null, null, callback);
+        ThreadUtils.runOnUiThreadBlocking(() -> { mFlushTask.onStartTask(null, null, callback); });
 
         callbackHelper.waitForCallback(0);
         mInOrder.verify(mAttributionReporter)
@@ -173,5 +174,10 @@ public class AttributionReportingProviderFlushTaskTest {
                         eq(REPORT_TO_2), eq(EXPIRY_2), eq(EVENT_TIME_2));
         mInOrder.verifyNoMoreInteractions();
         Mockito.verifyNoMoreInteractions(mAttributionReporter);
+
+        Assert.assertEquals(2,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        AttributionMetrics.ATTRIBUTION_EVENTS_NAME,
+                        AttributionMetrics.AttributionEvent.REPORTED_POST_NATIVE));
     }
 }
