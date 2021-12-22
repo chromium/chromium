@@ -2014,6 +2014,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/ui/web_applications/app_browser_controller_browsertest.cc",
       "../browser/ui/web_applications/create_shortcut_browsertest.cc",
       "../browser/ui/web_applications/pwa_mixed_content_browsertest.cc",
+      "../browser/ui/web_applications/sub_apps_renderer_host_browsertest.cc",
       "../browser/ui/web_applications/web_app_badging_browsertest.cc",
       "../browser/ui/web_applications/web_app_browsertest.cc",
       "../browser/ui/web_applications/web_app_dark_mode_browsertest.cc",

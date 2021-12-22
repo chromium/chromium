@@ -191,6 +191,9 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Gets the IDs for all apps in `GetApps()`.
   std::vector<AppId> GetAppIds() const;
 
+  // Gets the IDs for all sub-apps of parent app with id |parent_app_id|.
+  std::vector<AppId> GetAllSubAppIds(const AppId& parent_app_id) const;
+
   // Returns the "scope" field from the app manifest, or infers a scope from the
   // "start_url" field if unavailable. Returns an invalid GURL iff the |app_id|
   // does not refer to an installed web app.
