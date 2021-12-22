@@ -7,6 +7,7 @@
 #include <ostream>
 
 #import "base/notreached.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/ui/badges/badge_button.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/badges/badge_delegate.h"
@@ -46,10 +47,20 @@
 
 #pragma mark - Private
 
+// Convenience getter for the URI asset name of the password_key icon, based on
+// finch flag enable/disable status
+- (NSString*)passwordKeyAssetName {
+  return base::FeatureList::IsEnabled(
+             password_manager::features::
+                 kIOSEnablePasswordManagerBrandingUpdate)
+             ? @"password_key"
+             : @"legacy_password_key";
+}
+
 - (BadgeButton*)passwordsSaveBadgeButton {
   BadgeButton* button =
       [self createButtonForType:BadgeType::kBadgeTypePasswordSave
-                     imageNamed:@"password_key"
+                     imageNamed:[self passwordKeyAssetName]
                   renderingMode:UIImageRenderingModeAlwaysTemplate];
   [button addTarget:self.delegate
                 action:@selector(passwordsBadgeButtonTapped:)
@@ -64,7 +75,7 @@
 - (BadgeButton*)passwordsUpdateBadgeButton {
   BadgeButton* button =
       [self createButtonForType:BadgeType::kBadgeTypePasswordUpdate
-                     imageNamed:@"password_key"
+                     imageNamed:[self passwordKeyAssetName]
                   renderingMode:UIImageRenderingModeAlwaysTemplate];
   [button addTarget:self.delegate
                 action:@selector(passwordsBadgeButtonTapped:)

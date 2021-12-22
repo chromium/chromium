@@ -235,7 +235,12 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
         [[SettingsCheckItem alloc] initWithType:PasswordItemType];
     _passwordCheckItem.text =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_PASSWORDS_TITLE);
-    UIImage* passwordCheckIcon = [[UIImage imageNamed:@"password_key"]
+    NSString* imageName =
+        base::FeatureList::IsEnabled(
+            password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
+            ? @"password_key"
+            : @"legacy_password_key";
+    UIImage* passwordCheckIcon = [[UIImage imageNamed:imageName]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _passwordCheckItem.leadingImage = passwordCheckIcon;
     _passwordCheckItem.leadingImageTintColor =

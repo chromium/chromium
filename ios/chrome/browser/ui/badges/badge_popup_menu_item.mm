@@ -7,6 +7,7 @@
 #include <ostream>
 
 #import "base/notreached.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -98,10 +99,15 @@ const CGFloat kBadgeCornerRadius = 5.0;
   cell.titleLabel.text = self.title;
   cell.accessibilityTraits = UIAccessibilityTraitButton;
   UIImage* badgeImage;
+  NSString* imageName =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
+          ? @"password_key"
+          : @"legacy_password_key";
   switch (self.badgeType) {
     case BadgeType::kBadgeTypePasswordSave:
     case BadgeType::kBadgeTypePasswordUpdate:
-      badgeImage = [[UIImage imageNamed:@"password_key"]
+      badgeImage = [[UIImage imageNamed:imageName]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
     case BadgeType::kBadgeTypeSaveAddressProfile:
