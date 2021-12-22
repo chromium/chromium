@@ -476,8 +476,9 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_Success_Hostname) {
   EXPECT_EQ(expected_result, EvalJs(shell(), script));
 }
 
+// TODO(https://crbug.com/1282060): This test is flaky.
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenTcp_TransientActivation) {
+                       DISABLED_OpenTcp_TransientActivation) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
   MockNetworkContext mock_network_context(net::OK);
@@ -674,8 +675,9 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_Success) {
   EXPECT_EQ("openUdp succeeded", EvalJs(shell(), script));
 }
 
+// TODO(https://crbug.com/1282060): This test is flaky.
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
-                       OpenUdp_TransientActivation) {
+                       DISABLED_OpenUdp_TransientActivation) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
   const std::string script = base::StringPrintf(
