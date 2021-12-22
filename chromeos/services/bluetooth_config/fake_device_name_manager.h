@@ -24,6 +24,7 @@ class FakeDeviceNameManager : public DeviceNameManager {
       const std::string& device_id) override;
   void SetDeviceNickname(const std::string& device_id,
                          const std::string& nickname) override;
+  void RemoveDeviceNickname(const std::string& device_id) override;
   void SetPrefs(PrefService* local_state) override {}
 
  private:

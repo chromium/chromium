@@ -142,8 +142,9 @@ void DeviceCacheImpl::DeviceBatteryChanged(
   DeviceChanged(adapter, device);
 }
 
-void DeviceCacheImpl::OnDeviceNicknameChanged(const std::string& device_id,
-                                              const std::string&) {
+void DeviceCacheImpl::OnDeviceNicknameChanged(
+    const std::string& device_id,
+    const absl::optional<std::string>&) {
   for (device::BluetoothDevice* device : bluetooth_adapter_->GetDevices()) {
     if (device->GetIdentifier() != device_id)
       continue;
