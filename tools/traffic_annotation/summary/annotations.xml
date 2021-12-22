@@ -316,7 +316,6 @@ Refer to README.md for content description and update process.
  <item id="app_suggestion_get_favicon" added_in_milestone="98" content_hash_code="07fca800" os_list="chromeos" file_path="chrome/browser/ui/app_list/search/app_service_app_result.cc" />
  <item id="url_icon_source_fetch" added_in_milestone="98" content_hash_code="0297f30b" os_list="chromeos" file_path="chrome/browser/ui/app_list/search/common/url_icon_source.cc" />
  <item id="launcher_item_suggest" added_in_milestone="98" content_hash_code="04a4041e" os_list="chromeos" file_path="chrome/browser/ui/app_list/search/files/item_suggest_cache.cc" />
- <item id="cros_launcher_omnibox" added_in_milestone="98" content_hash_code="04c3a59e" os_list="chromeos" file_path="chrome/browser/ui/app_list/search/omnibox_result.cc" />
  <item id="ambient_client" added_in_milestone="98" content_hash_code="062d821f" os_list="chromeos" file_path="chrome/browser/ui/ash/ambient/ambient_client_impl.cc" />
  <item id="calendar_get_events" added_in_milestone="98" content_hash_code="0108842a" os_list="chromeos" file_path="chrome/browser/ui/ash/calendar/calendar_keyed_service.cc" />
  <item id="side_search_availability_test" added_in_milestone="98" content_hash_code="04410970" os_list="chromeos" file_path="chrome/browser/ui/side_search/side_search_tab_contents_helper.cc" />
