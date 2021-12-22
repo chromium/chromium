@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/test_data_util.h"
 #include "media/base/video_bitrate_allocation.h"
@@ -37,58 +38,71 @@ namespace {
 
 // Video encoder tests usage message. Make sure to also update the documentation
 // under docs/media/gpu/video_encoder_test_usage.md when making changes here.
-// TODO(dstaessens): Add video_encoder_test_usage.md
 constexpr const char* usage_msg =
-    "usage: video_encode_accelerator_tests\n"
-    "           [--codec=<codec>] [--num_temporal_layers=<number>]\n"
-    "           [--num_spatial_layers=<number>] [--reverse]\n"
-    "           [--disable_validator] [--output_bitstream]\n"
-    "           [--output_images=(all|corrupt)] [--output_format=(png|yuv)]\n"
-    "           [--output_folder=<filepath>] [--output_limit=<number>]\n"
-    "           [-v=<level>] [--vmodule=<config>] [--gtest_help] [--help]\n"
-    "           [<video path>] [<video metadata path>]\n";
+    R"(usage: video_encode_accelerator_tests
+           [--codec=<codec>] [--num_temporal_layers=<number>]
+           [--num_spatial_layers=<number>] [--reverse]
+           [--disable_validator] [--output_bitstream]
+           [--output_images=(all|corrupt)] [--output_format=(png|yuv)]
+           [--output_folder=<filepath>] [--output_limit=<number>]
+           [--disable_vaapi_lock]
+           [-v=<level>] [--vmodule=<config>]
+            [--gtest_help] [--help]
+           [<video path>] [<video metadata path>]
+)";
 
 // Video encoder tests help message.
 constexpr const char* help_msg =
-    "Run the video encoder accelerator tests on the video specified by\n"
-    "<video path>. If no <video path> is given the default\n"
-    "\"bear_320x192_40frames.yuv.webm\" video will be used.\n"
-    "\nThe <video metadata path> should specify the location of a json file\n"
-    "containing the video's metadata, such as frame checksums. By default\n"
-    "<video path>.json will be used.\n"
-    "\nThe following arguments are supported:\n"
-    "  --codec               codec profile to encode, \"h264\" (baseline),\n"
-    "                        \"h264main, \"h264high\", \"vp8\" and \"vp9\".\n"
-    "                        H264 Baseline is selected if unspecified.\n"
-    "  --num_temporal_layers the number of temporal layers of the encoded\n"
-    "                        bitstream. Only used in --codec=vp9 and\n"
-    "                        h264(baseline)|h264main|h264high currently.\n"
-    "  --num_spatial_layers  the number of spatial layers of the encoded\n"
-    "                        bitstream. Only used in --codec=vp9 currently.\n"
-    "                        Spatial SVC encoding is applied only in\n"
-    "                        NV12Dmabuf test cases.\n"
-    "  --reverse             the stream plays backwards if the stream reaches\n"
-    "                        end of stream. So the input stream to be encoded\n"
-    "                        is consecutive. By default this is false. \n"
-    "  --disable_validator   disable validation of encoded bitstream.\n"
-    "  --output_bitstream    save the output bitstream in either H264 AnnexB\n"
-    "                        format (for H264) or IVF format (for vp8 and\n"
-    "                        vp9) to <output_folder>/<testname>.\n"
-    "  --output_images       in addition to saving the full encoded,\n"
-    "                        bitstream it's also possible to dump individual\n"
-    "                        frames to <output_folder>/<testname>, possible\n"
-    "                        values are \"all|corrupt\"\n"
-    "  --output_format       set the format of images saved to disk,\n"
-    "                        supported formats are \"png\" (default) and\n"
-    "                        \"yuv\".\n"
-    "  --output_limit        limit the number of images saved to disk.\n"
-    "  --output_folder       set the basic folder used to store test\n"
-    "                        artifacts. The default is the current directory.\n"
-    "   -v                   enable verbose mode, e.g. -v=2.\n"
-    "  --vmodule             enable verbose mode for the specified module,\n"
-    "                        e.g. --vmodule=*media/gpu*=2.\n\n"
-    "  --gtest_help          display the gtest help and exit.\n"
-    "  --help                display this help and exit.\n";
+    R"""(Run the video encoder accelerator tests on the video specified by
+<video path>. If no <video path> is given the default
+"bear_320x192_40frames.yuv.webm" video will be used.
+
+The <video metadata path> should specify the location of a json file
+containing the video's metadata, such as frame checksums. By default
+<video path>.json will be used.
+
+The following arguments are supported:
+   -v                   enable verbose mode, e.g. -v=2.
+  --vmodule             enable verbose mode for the specified module,
+                        e.g. --vmodule=*media/gpu*=2.
+
+  --codec               codec profile to encode, "h264" (baseline),
+                        "h264main, "h264high", "vp8" and "vp9".
+                        H264 Baseline is selected if unspecified.
+  --num_temporal_layers the number of temporal layers of the encoded
+                        bitstream. Only used in --codec=vp9 and
+                        h264(baseline)|h264main|h264high currently.
+  --num_spatial_layers  the number of spatial layers of the encoded
+                        bitstream. Only used in --codec=vp9 currently.
+                        Spatial SVC encoding is applied only in
+                        NV12Dmabuf test cases.
+  --reverse             the stream plays backwards if the stream reaches
+                        end of stream. So the input stream to be encoded
+                        is consecutive. By default this is false.
+  --disable_validator   disable validation of encoded bitstream.
+  --output_bitstream    save the output bitstream in either H264 AnnexB
+                        format (for H264) or IVF format (for vp8 and
+                        vp9) to <output_folder>/<testname>.
+  --output_images       in addition to saving the full encoded,
+                        bitstream it's also possible to dump individual
+                        frames to <output_folder>/<testname>, possible
+                        values are "all|corrupt"
+  --output_format       set the format of images saved to disk,
+                        supported formats are "png" (default) and
+                        "yuv".
+  --output_limit        limit the number of images saved to disk.
+  --output_folder       set the basic folder used to store test
+                        artifacts. The default is the current directory.
+  --disable_vaapi_lock  disable the global VA-API lock if applicable,
+                        i.e., only on devices that use the VA-API with a libva
+                        backend that's known to be thread-safe and only in
+                        portions of the Chrome stack that should be able to
+                        deal with the absence of the lock
+                        (not the VaapiVideoDecodeAccelerator).
+
+  --gtest_help          display the gtest help and exit.
+  --help                display this help and exit.
+)""";
 
 // Default video to be used if no test video was specified.
 constexpr base::FilePath::CharType kDefaultTestVideoPath[] =
@@ -835,6 +849,7 @@ int main(int argc, char** argv) {
   media::test::FrameOutputConfig frame_output_config;
   base::FilePath output_folder =
       base::FilePath(base::FilePath::kCurrentDirectory);
+  std::vector<base::Feature> disabled_features;
 
   // Parse command line arguments.
   bool enable_bitstream_validator = true;
@@ -896,6 +911,8 @@ int main(int argc, char** argv) {
       }
     } else if (it->first == "output_folder") {
       output_folder = base::FilePath(it->second);
+    } else if (it->first == "disable_vaapi_lock") {
+      disabled_features.push_back(media::kGlobalVaapiLock);
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
                 << media::test::usage_msg;
@@ -911,7 +928,8 @@ int main(int argc, char** argv) {
           video_path, video_metadata_path, enable_bitstream_validator,
           output_folder, codec, num_temporal_layers, num_spatial_layers,
           output_bitstream,
-          /*output_bitrate=*/absl::nullopt, reverse, frame_output_config);
+          /*output_bitrate=*/absl::nullopt, reverse, frame_output_config,
+          /*enabled_features=*/{}, disabled_features);
 
   if (!test_environment)
     return EXIT_FAILURE;

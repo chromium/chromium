@@ -5,8 +5,10 @@
 #include "media/gpu/test/video_encoder/video_encoder_test_environment.h"
 
 #include <algorithm>
+#include <iterator>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/strings/pattern.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -48,33 +50,6 @@ constexpr int kSpatialLayersResolutionScaleDenom[][3] = {
     {1, 0, 0},  // For one spatial layer.
     {2, 1, 0},  // For two spatial layers.
     {4, 2, 1},  // For three spatial layers.
-};
-
-const std::vector<base::Feature> kEnabledFeaturesForVideoEncoderTest = {
-#if BUILDFLAG(USE_VAAPI)
-    // TODO(crbug.com/828482): remove once enabled by default.
-    media::kVaapiLowPowerEncoderGen9x,
-    // TODO(crbug.com/811912): remove once enabled by default.
-    kVaapiVP9Encoder,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // TODO(crbug.com/1186051): remove once enabled by default.
-    kVaapiVp9kSVCHWEncoding,
-#endif
-#endif
-};
-
-const std::vector<base::Feature> kDisabledFeaturesForVideoEncoderTest = {
-    // FFmpegVideoDecoder is used for vp8 stream whose alpha mode is opaque in
-    // chromium browser. However, VpxVideoDecoder will be used to decode any vp8
-    // stream for the rightness (b/138840822), and currently be experimented
-    // with this feature flag. We disable the feature to use VpxVideoDecoder to
-    // decode any vp8 stream in BitstreamValidator.
-    kFFmpegDecodeOpaqueVP8,
-#if BUILDFLAG(USE_VAAPI)
-    // Disable this feature so that the encoder test can test a resolution
-    // which is denied for the sake of performance. See crbug.com/1008491.
-    kVaapiEnforceVideoMinMaxResolution,
-#endif
 };
 
 uint32_t GetDefaultTargetBitrate(const gfx::Size& resolution,
@@ -132,7 +107,9 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     bool save_output_bitstream,
     absl::optional<uint32_t> encode_bitrate,
     bool reverse,
-    const FrameOutputConfig& frame_output_config) {
+    const FrameOutputConfig& frame_output_config,
+    const std::vector<base::Feature>& enabled_features,
+    const std::vector<base::Feature>& disabled_features) {
   if (video_path.empty()) {
     LOG(ERROR) << "No video specified";
     return nullptr;
@@ -179,12 +156,35 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     return nullptr;
   }
 
+  // TODO(b/182008564) Add checks to make sure no features are duplicated, and
+  // there is no intersection between the enabled and disabled set.
+  std::vector<base::Feature> combined_enabled_features(enabled_features);
+  std::vector<base::Feature> combined_disabled_features(disabled_features);
+  combined_disabled_features.push_back(media::kFFmpegDecodeOpaqueVP8);
+#if BUILDFLAG(USE_VAAPI)
+  // TODO(crbug.com/828482): remove once enabled by default.
+  combined_enabled_features.push_back(media::kVaapiLowPowerEncoderGen9x);
+  // TODO(crbug.com/811912): remove once enabled by default.
+  combined_enabled_features.push_back(media::kVaapiVP9Encoder);
+
+  // Disable this feature so that the encoder test can test a resolution
+  // which is denied for the sake of performance. See crbug.com/1008491.
+  combined_disabled_features.push_back(
+      media::kVaapiEnforceVideoMinMaxResolution);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_X86_FAMILY)
+  // TODO(crbug.com/1186051): remove once enabled by default.
+  combined_enabled_features.push_back(media::kVaapiVp9kSVCHWEncoding);
+#endif
+
   const uint32_t bitrate = encode_bitrate.value_or(
       GetDefaultTargetBitrate(video->Resolution(), video->FrameRate()));
   return new VideoEncoderTestEnvironment(
       std::move(video), enable_bitstream_validator, output_folder, profile,
       num_temporal_layers, num_spatial_layers, bitrate, save_output_bitstream,
-      reverse, frame_output_config);
+      reverse, frame_output_config, combined_enabled_features,
+      combined_disabled_features);
 }
 
 VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
@@ -197,9 +197,10 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
     uint32_t bitrate,
     bool save_output_bitstream,
     bool reverse,
-    const FrameOutputConfig& frame_output_config)
-    : VideoTestEnvironment(kEnabledFeaturesForVideoEncoderTest,
-                           kDisabledFeaturesForVideoEncoderTest),
+    const FrameOutputConfig& frame_output_config,
+    const std::vector<base::Feature>& enabled_features,
+    const std::vector<base::Feature>& disabled_features)
+    : VideoTestEnvironment(enabled_features, disabled_features),
       video_(std::move(video)),
       enable_bitstream_validator_(enable_bitstream_validator),
       output_folder_(output_folder),

@@ -4,6 +4,8 @@
 
 #include "media/gpu/test/video_player/video_player_test_environment.h"
 
+#include <algorithm>
+#include <iterator>
 #include <utility>
 
 #include "base/system/sys_info.h"
@@ -29,7 +31,9 @@ VideoPlayerTestEnvironment* VideoPlayerTestEnvironment::Create(
     const DecoderImplementation implementation,
     bool linear_output,
     const base::FilePath& output_folder,
-    const FrameOutputConfig& frame_output_config) {
+    const FrameOutputConfig& frame_output_config,
+    const std::vector<base::Feature>& enabled_features,
+    const std::vector<base::Feature>& disabled_features) {
   auto video = std::make_unique<media::test::Video>(
       video_path.empty() ? base::FilePath(kDefaultTestVideoPath) : video_path,
       video_metadata_path);
@@ -38,9 +42,26 @@ VideoPlayerTestEnvironment* VideoPlayerTestEnvironment::Create(
     return nullptr;
   }
 
-  return new VideoPlayerTestEnvironment(std::move(video), validator_type,
-                                        implementation, linear_output,
-                                        output_folder, frame_output_config);
+  // TODO(b/182008564) Add checks to make sure no features are duplicated, and
+  // there is no intersection between the enabled and disabled set.
+  std::vector<base::Feature> combined_enabled_features(enabled_features);
+  combined_enabled_features.push_back(media::kVp9kSVCHWDecoding);
+  std::vector<base::Feature> combined_disabled_features(disabled_features);
+#if BUILDFLAG(USE_VAAPI)
+  // TODO(b/172217032): remove once enabled by default.
+  combined_enabled_features.push_back(media::kVaapiAV1Decoder);
+
+  // Disable this feature so that the decoder test can test a
+  // resolution which is denied for the sake of performance. See
+  // b/171041334.
+  combined_disabled_features.push_back(
+      media::kVaapiEnforceVideoMinMaxResolution);
+#endif
+
+  return new VideoPlayerTestEnvironment(
+      std::move(video), validator_type, implementation, linear_output,
+      output_folder, frame_output_config, combined_enabled_features,
+      combined_disabled_features);
 }
 
 VideoPlayerTestEnvironment::VideoPlayerTestEnvironment(
@@ -49,25 +70,10 @@ VideoPlayerTestEnvironment::VideoPlayerTestEnvironment(
     const DecoderImplementation implementation,
     bool linear_output,
     const base::FilePath& output_folder,
-    const FrameOutputConfig& frame_output_config)
-    : VideoTestEnvironment(
-          /*enabled_features=*/
-          {
-#if BUILDFLAG(USE_VAAPI)
-            // TODO(b/172217032): remove once enabled by default.
-            media::kVaapiAV1Decoder,
-#endif
-                media::kVp9kSVCHWDecoding,
-          },
-          /*disabled_features=*/
-          {
-#if BUILDFLAG(USE_VAAPI)
-            // Disable this feature so that the decoder test can test a
-            // resolution which is denied for the sake of performance. See
-            // b/171041334.
-            kVaapiEnforceVideoMinMaxResolution,
-#endif
-          }),
+    const FrameOutputConfig& frame_output_config,
+    const std::vector<base::Feature>& enabled_features,
+    const std::vector<base::Feature>& disabled_features)
+    : VideoTestEnvironment(enabled_features, disabled_features),
       video_(std::move(video)),
       validator_type_(validator_type),
       implementation_(implementation),
@@ -75,8 +81,7 @@ VideoPlayerTestEnvironment::VideoPlayerTestEnvironment(
       frame_output_config_(frame_output_config),
       output_folder_(output_folder),
       gpu_memory_buffer_factory_(
-          gpu::GpuMemoryBufferFactory::CreateNativeType(nullptr)) {
-}
+          gpu::GpuMemoryBufferFactory::CreateNativeType(nullptr)) {}
 
 VideoPlayerTestEnvironment::~VideoPlayerTestEnvironment() = default;
 

@@ -46,7 +46,9 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       bool save_output_bitstream,
       absl::optional<uint32_t> output_bitrate,
       bool reverse,
-      const FrameOutputConfig& frame_output_config = FrameOutputConfig());
+      const FrameOutputConfig& frame_output_config = FrameOutputConfig(),
+      const std::vector<base::Feature>& enabled_features = {},
+      const std::vector<base::Feature>& disabled_features = {});
 
   ~VideoEncoderTestEnvironment() override;
 
@@ -87,16 +89,19 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   bool IsKeplerUsed() const;
 
  private:
-  VideoEncoderTestEnvironment(std::unique_ptr<media::test::Video> video,
-                              bool enable_bitstream_validator,
-                              const base::FilePath& output_folder,
-                              VideoCodecProfile profile,
-                              size_t num_temporal_layers,
-                              size_t num_spatial_layers,
-                              uint32_t bitrate,
-                              bool save_output_bitstream,
-                              bool reverse,
-                              const FrameOutputConfig& frame_output_config);
+  VideoEncoderTestEnvironment(
+      std::unique_ptr<media::test::Video> video,
+      bool enable_bitstream_validator,
+      const base::FilePath& output_folder,
+      VideoCodecProfile profile,
+      size_t num_temporal_layers,
+      size_t num_spatial_layers,
+      uint32_t bitrate,
+      bool save_output_bitstream,
+      bool reverse,
+      const FrameOutputConfig& frame_output_config,
+      const std::vector<base::Feature>& enabled_features,
+      const std::vector<base::Feature>& disabled_features);
 
   // Video file to be used for testing.
   const std::unique_ptr<media::test::Video> video_;
