@@ -1417,7 +1417,9 @@ int PagedAppsGridView::CalculateMaxRows(int available_height,
         std::ceil((available_height + kMaxVerticalPaddingBetweenTiles) /
                   (tile_height + kMaxVerticalPaddingBetweenTiles));
   }
-  return final_row_count;
+  // Unit tests may create artificially small screens resulting in
+  // `final_row_count` of 0. Return 1 row to avoid divide-by-zero in layout.
+  return std::max(final_row_count, 1);
 }
 
 int PagedAppsGridView::GetTotalTopPaddingOnFirstPage() const {
