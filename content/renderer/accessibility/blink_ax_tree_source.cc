@@ -717,6 +717,14 @@ void BlinkAXTreeSource::AddImageAnnotations(blink::WebAXObject& src,
     return;
   }
 
+  // Skip images that do not have an image_src url (e.g. SVGs), or are in
+  // documents that do not have a document_url.
+  // TODO(accessibility): Remove this check when support for SVGs is added.
+  if (!g_ignore_protocol_checks_for_testing &&
+      (src.Url().GetString().Utf8().empty() ||
+       document().Url().GetString().Utf8().empty()))
+    return;
+
   if (!image_annotator_) {
     if (!first_unlabeled_image_id_.has_value() ||
         first_unlabeled_image_id_.value() == src.AxID()) {

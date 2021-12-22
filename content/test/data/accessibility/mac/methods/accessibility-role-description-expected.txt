@@ -1,4 +1,4 @@
-unlabelled_img.accessibilityRoleDescription='Unlabeled image'
+unlabelled_img.accessibilityRoleDescription='image'
 aria_roledescription.accessibilityRoleDescription='slidy slider button'
 document.accessibilityRoleDescription='HTML content'
 link.accessibilityRoleDescription='link'

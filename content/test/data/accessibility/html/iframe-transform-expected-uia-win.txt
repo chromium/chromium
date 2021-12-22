@@ -1,7 +1,7 @@
 Document
 ++Document
-++++Document Name='To get missing image descriptions, open the context menu.'
-++++++Image Name='To get missing image descriptions, open the context menu.'
+++++Document
+++++++Image
 ++Document
-++++Document Name='To get missing image descriptions, open the context menu.'
-++++++Image Name='To get missing image descriptions, open the context menu.'
+++++Document
+++++++Image
