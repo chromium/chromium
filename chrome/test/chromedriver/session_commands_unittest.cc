@@ -118,8 +118,7 @@ TEST(SessionCommandsTest, ProcessCapabilities_Empty) {
   ASSERT_EQ(kInvalidArgument, status.code());
 
   // Empty "capabilities" is OK
-  params.SetDictionary("capabilities",
-                       std::make_unique<base::DictionaryValue>());
+  params.SetKey("capabilities", base::Value(base::Value::Type::DICTIONARY));
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_TRUE(result.DictEmpty());
@@ -136,8 +135,8 @@ TEST(SessionCommandsTest, ProcessCapabilities_AlwaysMatch) {
   ASSERT_EQ(kInvalidArgument, status.code());
 
   // Empty "alwaysMatch" is OK
-  params.SetDictionary("capabilities.alwaysMatch",
-                       std::make_unique<base::DictionaryValue>());
+  params.SetPath("capabilities.alwaysMatch",
+                 base::Value(base::Value::Type::DICTIONARY));
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_TRUE(result.DictEmpty());
@@ -168,8 +167,8 @@ TEST(SessionCommandsTest, ProcessCapabilities_FirstMatch) {
   base::DictionaryValue result;
 
   // "firstMatch" must be a JSON list
-  params.SetDictionary("capabilities.firstMatch",
-                       std::make_unique<base::DictionaryValue>());
+  params.SetPath("capabilities.firstMatch",
+                 base::Value(base::Value::Type::DICTIONARY));
   Status status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kInvalidArgument, status.code());
 
@@ -490,8 +489,8 @@ TEST(SessionCommandsTest, ConfigureHeadlessSession_dotNotation) {
   caps.SetPath({"goog:chromeOptions", "args"}, base::Value(args));
 
   base::DictionaryValue prefs;
-  prefs.SetKey("download.default_directory",
-               base::Value("/examples/python/downloads"));
+  prefs.SetPath("download.default_directory",
+                base::Value("/examples/python/downloads"));
   caps.SetPath({"goog:chromeOptions", "prefs"}, prefs.Clone());
 
   Status status = capabilities.Parse(caps);
@@ -514,11 +513,11 @@ TEST(SessionCommandsTest, ConfigureHeadlessSession_nestedMap) {
   args.emplace_back("headless");
   caps.SetPath({"goog:chromeOptions", "args"}, base::Value(args));
 
-  base::DictionaryValue prefs;
-  std::unique_ptr<base::DictionaryValue> download(new base::DictionaryValue());
-  download->SetStringPath("default_directory", "/examples/python/downloads");
-  prefs.SetDictionary("download", std::move(download));
-  caps.SetPath({"goog:chromeOptions", "prefs"}, prefs.Clone());
+  base::Value* prefs = caps.SetPath({"goog:chromeOptions", "prefs"},
+                                    base::Value(base::Value::Type::DICTIONARY));
+  base::Value* download =
+      prefs->SetKey("download", base::Value(base::Value::Type::DICTIONARY));
+  download->SetStringKey("default_directory", "/examples/python/downloads");
 
   Status status = capabilities.Parse(caps);
   BrowserInfo binfo;
@@ -555,11 +554,11 @@ TEST(SessionCommandsTest, ConfigureHeadlessSession_noDownloadDir) {
 TEST(SessionCommandsTest, ConfigureHeadlessSession_notHeadless) {
   Capabilities capabilities;
   base::DictionaryValue caps;
-  base::DictionaryValue prefs;
-  std::unique_ptr<base::DictionaryValue> download(new base::DictionaryValue());
-  download->SetStringPath("default_directory", "/examples/python/downloads");
-  prefs.SetDictionary("download", std::move(download));
-  caps.SetPath({"goog:chromeOptions", "prefs"}, prefs.Clone());
+  base::Value* prefs = caps.SetPath({"goog:chromeOptions", "prefs"},
+                                    base::Value(base::Value::Type::DICTIONARY));
+  base::Value* download =
+      prefs->SetKey("download", base::Value(base::Value::Type::DICTIONARY));
+  download->SetStringKey("default_directory", "/examples/python/downloads");
 
   Status status = capabilities.Parse(caps);
   BrowserInfo binfo;

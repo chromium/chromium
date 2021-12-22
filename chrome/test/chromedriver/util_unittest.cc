@@ -272,10 +272,8 @@ TEST(GetOptionalValue, DictionaryNoConversion) {
   base::DictionaryValue dv2;
   dv2.SetString("dv", "2");
 
-  std::unique_ptr<base::DictionaryValue> params(dv1.DeepCopy());
-
   base::DictionaryValue dict;
-  dict.SetDictionary(key, std::move(params));
+  dict.SetKey(key, dv1.Clone());
   const base::DictionaryValue* res = &dv2;
   bool has_value;
   bool has_dict = GetOptionalDictionary(&dict, key, &res, &has_value);

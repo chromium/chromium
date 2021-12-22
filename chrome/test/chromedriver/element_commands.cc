@@ -1148,10 +1148,12 @@ Status ExecuteElementScreenshot(Session* session,
   double device_pixel_ratio =
          browser_info->FindKey("device_pixel_ratio")->GetDouble();
 
-  std::unique_ptr<base::DictionaryValue> clip_dict =
-      base::DictionaryValue::From(std::move(clip));
-  if (!clip_dict)
+  if (!clip->is_dict())
     return Status(kUnknownError, "Element Rect is not a dictionary");
+
+  base::DictionaryValue screenshot_params;
+  base::Value* clip_dict = screenshot_params.SetKey(
+      "clip", base::Value::FromUniquePtrValue(std::move(clip)));
   // |clip_dict| already contains the right width and height of the target
   // element, but its x and y are relative to containing frame. We replace them
   // with the x and y relative to top-level document origin, as expected by
@@ -1166,8 +1168,6 @@ Status ExecuteElementScreenshot(Session* session,
   clip_dict->SetDoubleKey("width",
                           std::min(viewport_width - location.x,
                                    clip_dict->FindKey("width")->GetDouble()));
-  base::DictionaryValue screenshot_params;
-  screenshot_params.SetDictionary("clip", std::move(clip_dict));
 
   std::string screenshot;
   status = web_view->CaptureScreenshot(&screenshot, screenshot_params);

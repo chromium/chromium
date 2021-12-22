@@ -1315,30 +1315,28 @@ Status ProcessInputActionSequence(
 
     session->active_input_sources.Append(std::move(tmp_source));
 
-    base::DictionaryValue tmp_state;
-    tmp_state.SetString("id", id);
+    base::Value* tmp_state = session->input_state_table.SetPath(
+        id, base::Value(base::Value::Type::DICTIONARY));
+    tmp_state->SetStringKey("id", id);
     if (type == "key") {
       // Initialize a key input state object
       // (https://w3c.github.io/webdriver/#dfn-key-input-state).
-      tmp_state.SetDictionary("pressed",
-                              std::make_unique<base::DictionaryValue>());
+      tmp_state->SetKey("pressed", base::Value(base::Value::Type::DICTIONARY));
       // For convenience, we use one integer property to encode four Boolean
       // properties (alt, shift, ctrl, meta) from the spec, using values from
       // enum KeyModifierMask.
-      tmp_state.SetInteger("modifiers", 0);
+      tmp_state->SetIntKey("modifiers", 0);
     } else if (type == "pointer") {
       int x = 0;
       int y = 0;
 
       // "pressed" is stored as a bitmask of pointer buttons.
-      tmp_state.SetInteger("pressed", 0);
-      tmp_state.SetString("subtype", pointer_type);
+      tmp_state->SetIntKey("pressed", 0);
+      tmp_state->SetStringKey("subtype", pointer_type);
 
-      tmp_state.SetInteger("x", x);
-      tmp_state.SetInteger("y", y);
+      tmp_state->SetIntKey("x", x);
+      tmp_state->SetIntKey("y", y);
     }
-    session->input_state_table.SetDictionary(
-        id, std::make_unique<base::DictionaryValue>(std::move(tmp_state)));
   }
 
   const base::ListValue* actions;
@@ -1463,10 +1461,9 @@ Status ProcessInputActionSequence(
             std::string element_id;
             if (!origin_dict->GetString(GetElementKey(), &element_id))
               return Status(kInvalidArgument, "'element' is missing");
-            std::unique_ptr<base::DictionaryValue> origin_result =
-                std::make_unique<base::DictionaryValue>();
-            origin_result->SetString(GetElementKey(), element_id);
-            action->SetDictionary("origin", std::move(origin_result));
+            base::Value* origin_result = action->SetKey(
+                "origin", base::Value(base::Value::Type::DICTIONARY));
+            origin_result->SetStringPath(GetElementKey(), element_id);
           } else {
             if (origin != "viewport" && origin != "pointer")
               return Status(kInvalidArgument,
