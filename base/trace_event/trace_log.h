@@ -552,7 +552,7 @@ class BASE_EXPORT TraceLog :
   void OnFlushTimeout(int generation, bool discard_events);
 
   int generation() const {
-    return static_cast<int>(subtle::NoBarrier_Load(&generation_));
+    return generation_.load(std::memory_order_relaxed);
   }
   bool CheckGeneration(int generation) const {
     return generation == this->generation();
@@ -646,7 +646,7 @@ class BASE_EXPORT TraceLog :
   ArgumentFilterPredicate argument_filter_predicate_;
   MetadataFilterPredicate metadata_filter_predicate_;
   bool record_host_app_package_name_{false};
-  subtle::AtomicWord generation_;
+  std::atomic<int> generation_;
   bool use_worker_thread_;
   std::atomic<AddTraceEventOverrideFunction> add_trace_event_override_{nullptr};
   std::atomic<OnFlushFunction> on_flush_override_{nullptr};

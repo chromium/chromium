@@ -1654,7 +1654,7 @@ void TraceLog::OnFlushTimeout(int generation, bool discard_events) {
 
 void TraceLog::UseNextTraceBuffer() {
   logged_events_.reset(CreateTraceBuffer());
-  subtle::NoBarrier_AtomicIncrement(&generation_, 1);
+  generation_.fetch_add(1, std::memory_order_relaxed);
   thread_shared_chunk_.reset();
   thread_shared_chunk_index_ = 0;
 }
