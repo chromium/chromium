@@ -36,7 +36,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
-#import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_coordinator.h"
@@ -49,6 +48,7 @@
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_menu_commands.h"
+#import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_commands.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
@@ -182,8 +182,7 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
 @property(nonatomic, assign) TemplateURLService* templateURLService;
 
 // Metrics recorder for actions relating to the feed.
-@property(nonatomic, strong)
-    DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
+@property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
 
 @end
 
@@ -255,8 +254,7 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
       DiscoverFeedServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
 
-  self.discoverFeedMetricsRecorder =
-      discoverFeedService->GetDiscoverFeedMetricsRecorder();
+  self.feedMetricsRecorder = discoverFeedService->GetFeedMetricsRecorder();
 
   self.contentSuggestionsCoordinator =
       [self createContentSuggestionsCoordinator];
@@ -323,7 +321,7 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
       ->RemoveFeedViewController(self.discoverFeedViewController);
   self.discoverFeedWrapperViewController = nil;
   self.discoverFeedViewController = nil;
-  self.discoverFeedMetricsRecorder = nil;
+  self.feedMetricsRecorder = nil;
 
   [self.containedViewController willMoveToParentViewController:nil];
   [self.containedViewController.view removeFromSuperview];
@@ -402,8 +400,7 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
       self.feedHeaderViewController;
 
   [self configureMainViewControllerUsing:self.ntpViewController];
-  self.ntpViewController.discoverFeedMetricsRecorder =
-      self.discoverFeedMetricsRecorder;
+  self.ntpViewController.feedMetricsRecorder = self.feedMetricsRecorder;
   self.ntpViewController.bubblePresenter = self.bubblePresenter;
 }
 
@@ -840,8 +837,7 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
 // menu. A hidden feed will continue to show the header, with a modified label.
 - (void)setFeedVisibleFromHeader:(BOOL)visible {
   [self.feedExpandedPref setValue:visible];
-  [self.discoverFeedMetricsRecorder
-      recordDiscoverFeedVisibilityChanged:visible];
+  [self.feedMetricsRecorder recordDiscoverFeedVisibilityChanged:visible];
 }
 
 // Configures and returns the NTP mediator.
@@ -879,8 +875,7 @@ const base::Feature kUpdateNTPForFeedFix{"UpdateNTPForFeedFix",
   contentSuggestionsCoordinator.ntpMediator = self.ntpMediator;
   contentSuggestionsCoordinator.ntpCommandHandler = self;
   contentSuggestionsCoordinator.discoverFeedDelegate = self;
-  contentSuggestionsCoordinator.discoverFeedMetricsRecorder =
-      self.discoverFeedMetricsRecorder;
+  contentSuggestionsCoordinator.feedMetricsRecorder = self.feedMetricsRecorder;
   [contentSuggestionsCoordinator start];
   contentSuggestionsCoordinator.headerController.baseViewController =
       self.baseViewController;

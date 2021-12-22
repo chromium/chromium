@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
@@ -10,7 +10,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/feed/core/v2/public/common_enums.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -195,7 +194,7 @@ const int kMinScrollThreshold = 160;
 const int kMinutesBetweenSessions = 5;
 }  // namespace
 
-@interface DiscoverFeedMetricsRecorder ()
+@interface FeedMetricsRecorder ()
 
 // Tracking property to avoid duplicate recordings of
 // FeedEngagementType::kFeedEngagedSimple.
@@ -211,12 +210,11 @@ const int kMinutesBetweenSessions = 5;
 
 @end
 
-@implementation DiscoverFeedMetricsRecorder
+@implementation FeedMetricsRecorder
 
 #pragma mark - Public
 
 - (void)recordFeedScrolled:(int)scrollDistance {
-  DCHECK(IsDiscoverFeedEnabled());
   [self recordEngagement:scrollDistance interacted:NO];
 
   if (!self.scrolledReported) {
@@ -510,7 +508,6 @@ const int kMinutesBetweenSessions = 5;
 
 // Records any direct interaction with the Feed, this doesn't include scrolling.
 - (void)recordInteraction {
-  DCHECK(IsDiscoverFeedEnabled());
   [self recordEngagement:0 interacted:YES];
   [self recordEngagementTypeHistogram:FeedEngagementType::kFeedInteracted];
 }

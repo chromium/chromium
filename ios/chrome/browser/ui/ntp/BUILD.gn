@@ -15,6 +15,7 @@ source_set("ntp") {
   public_deps = [
     ":constants",
     ":feature_flags",
+    ":metrics",
   ]
   deps = [ "//ios/chrome/browser/ui/util" ]
 }
@@ -126,6 +127,7 @@ source_set("ntp_internal") {
   ]
   deps = [
     ":logo",
+    ":metrics",
     ":ntp",
     "resources:incognito_icon",
     "resources:ntp_opentabs",
@@ -169,7 +171,6 @@ source_set("ntp_internal") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
-    "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/favicon",
     "//ios/chrome/browser/ui/gestures",
@@ -202,6 +203,18 @@ source_set("ntp_internal") {
     "CoreGraphics.framework",
     "QuartzCore.framework",
     "UIKit.framework",
+  ]
+}
+
+source_set("metrics") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "feed_metrics_recorder.h",
+    "feed_metrics_recorder.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/feed/core/v2/public:common",
   ]
 }
 

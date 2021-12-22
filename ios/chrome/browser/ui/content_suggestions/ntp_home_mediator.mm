@@ -42,12 +42,12 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #include "ios/chrome/browser/ui/ntp/metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
@@ -366,17 +366,17 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 - (void)handleFeedManageActivityTapped {
   [self openMenuItemWebPage:GURL(kFeedManageActivityURL)];
-  [self.discoverFeedMetrics recordHeaderMenuManageActivityTapped];
+  [self.feedMetricsRecorder recordHeaderMenuManageActivityTapped];
 }
 
 - (void)handleFeedManageInterestsTapped {
   [self openMenuItemWebPage:GURL(kFeedManageInterestsURL)];
-  [self.discoverFeedMetrics recordHeaderMenuManageInterestsTapped];
+  [self.feedMetricsRecorder recordHeaderMenuManageInterestsTapped];
 }
 
 - (void)handleFeedLearnMoreTapped {
   [self openMenuItemWebPage:GURL(kFeedLearnMoreURL)];
-  [self.discoverFeedMetrics recordHeaderMenuLearnMoreTapped];
+  [self.feedMetricsRecorder recordHeaderMenuLearnMoreTapped];
 }
 
 - (void)openMostRecentTab:(CollectionViewItem*)item {

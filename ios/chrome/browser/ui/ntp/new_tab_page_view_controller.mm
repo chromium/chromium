@@ -11,12 +11,12 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizing.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_layout.h"
-#import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_menu_commands.h"
+#import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -135,7 +135,7 @@ const CGFloat kFeedHeaderTopPaddingWhenStuck = 10;
     [self.contentSuggestionsViewController willMoveToParentViewController:nil];
     [self.contentSuggestionsViewController.view removeFromSuperview];
     [self.contentSuggestionsViewController removeFromParentViewController];
-    [self.discoverFeedMetricsRecorder
+    [self.feedMetricsRecorder
         recordBrokenNTPHierarchy:BrokenNTPHierarchyRelationship::
                                      kContentSuggestionsReset];
   }
@@ -452,7 +452,7 @@ const CGFloat kFeedHeaderTopPaddingWhenStuck = 10;
                                               willDecelerate:decelerate];
   [self.panGestureHandler scrollViewDidEndDragging:scrollView
                                     willDecelerate:decelerate];
-  [self.discoverFeedMetricsRecorder
+  [self.feedMetricsRecorder
       recordFeedScrolled:scrollView.contentOffset.y - self.scrollStartPosition];
 }
 
@@ -739,7 +739,7 @@ const CGFloat kFeedHeaderTopPaddingWhenStuck = 10;
 // Handles device rotation.
 - (void)deviceOrientationDidChange {
   if (self.viewDidAppear) {
-    [self.discoverFeedMetricsRecorder
+    [self.feedMetricsRecorder
         recordDeviceOrientationChanged:[[UIDevice currentDevice] orientation]];
   }
 }
@@ -851,7 +851,7 @@ const CGFloat kFeedHeaderTopPaddingWhenStuck = 10;
         didMoveToParentViewController:self.discoverFeedWrapperViewController
                                           .discoverFeed];
 
-    [self.discoverFeedMetricsRecorder
+    [self.feedMetricsRecorder
         recordBrokenNTPHierarchy:BrokenNTPHierarchyRelationship::
                                      kContentSuggestionsParent];
   }
@@ -879,7 +879,7 @@ const CGFloat kFeedHeaderTopPaddingWhenStuck = 10;
     DCHECK([parentView.subviews containsObject:subView]);
     [subView removeFromSuperview];
     [parentView addSubview:subView];
-    [self.discoverFeedMetricsRecorder recordBrokenNTPHierarchy:relationship];
+    [self.feedMetricsRecorder recordBrokenNTPHierarchy:relationship];
   }
 }
 

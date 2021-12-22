@@ -5,7 +5,7 @@
 #include "ios/chrome/browser/discover_feed/discover_feed_service.h"
 
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_configuration.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
@@ -21,22 +21,21 @@ DiscoverFeedService::DiscoverFeedService(
   if (identity_manager)
     identity_manager_observation_.Observe(identity_manager);
 
-  discover_feed_metrics_recorder_ = [[DiscoverFeedMetricsRecorder alloc] init];
+  feed_metrics_recorder_ = [[FeedMetricsRecorder alloc] init];
 
   DiscoverFeedConfiguration* discover_config =
       [[DiscoverFeedConfiguration alloc] init];
   discover_config.authService = authentication_service;
   discover_config.prefService = pref_service;
-  discover_config.metricsRecorder = discover_feed_metrics_recorder_;
+  discover_config.metricsRecorder = feed_metrics_recorder_;
   ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->StartFeed(
       discover_config);
 }
 
 DiscoverFeedService::~DiscoverFeedService() {}
 
-DiscoverFeedMetricsRecorder*
-DiscoverFeedService::GetDiscoverFeedMetricsRecorder() {
-  return discover_feed_metrics_recorder_;
+FeedMetricsRecorder* DiscoverFeedService::GetFeedMetricsRecorder() {
+  return feed_metrics_recorder_;
 }
 
 void DiscoverFeedService::Shutdown() {
@@ -45,7 +44,7 @@ void DiscoverFeedService::Shutdown() {
   // Stop the Discover feed to disconnects its services.
   ios::GetChromeBrowserProvider().GetDiscoverFeedProvider()->StopFeed();
 
-  discover_feed_metrics_recorder_ = nil;
+  feed_metrics_recorder_ = nil;
 }
 
 void DiscoverFeedService::OnPrimaryAccountChanged(

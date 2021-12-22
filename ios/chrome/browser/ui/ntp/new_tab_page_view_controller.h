@@ -13,7 +13,7 @@
 @class BubblePresenter;
 @class ContentSuggestionsHeaderViewController;
 @class ContentSuggestionsViewController;
-@class DiscoverFeedMetricsRecorder;
+@class FeedMetricsRecorder;
 @class DiscoverFeedWrapperViewController;
 @class FeedHeaderViewController;
 @protocol FeedMenuCommands;
@@ -58,9 +58,8 @@
 @property(nonatomic, strong)
     UICollectionViewController* contentSuggestionsViewController;
 
-// Discover Feed metrics recorder.
-@property(nonatomic, strong)
-    DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
+// Feed metrics recorder.
+@property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
 
 // Whether or not the feed is visible.
 @property(nonatomic, assign, getter=isFeedVisible) BOOL feedVisible;

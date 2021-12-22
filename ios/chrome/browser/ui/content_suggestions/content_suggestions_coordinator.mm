@@ -47,7 +47,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
@@ -55,6 +54,7 @@
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
+#import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_commands.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -239,7 +239,7 @@
   self.ntpMediator.suggestionsViewController = self.suggestionsViewController;
   self.ntpMediator.suggestionsMediator = self.contentSuggestionsMediator;
   [self.ntpMediator setUp];
-  self.ntpMediator.discoverFeedMetrics = self.discoverFeedMetricsRecorder;
+  self.ntpMediator.feedMetricsRecorder = self.feedMetricsRecorder;
 
   [self.suggestionsViewController addChildViewController:self.headerController];
   [self.headerController

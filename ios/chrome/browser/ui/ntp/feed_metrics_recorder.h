@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_DISCOVER_FEED_METRICS_RECORDER_H_
-#define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_DISCOVER_FEED_METRICS_RECORDER_H_
+#ifndef IOS_CHROME_BROWSER_UI_NTP_FEED_METRICS_RECORDER_H_
+#define IOS_CHROME_BROWSER_UI_NTP_FEED_METRICS_RECORDER_H_
 
 #import <UIKit/UIKit.h>
 
@@ -21,9 +21,8 @@ enum class BrokenNTPHierarchyRelationship {
   kMaxValue = 4,
 };
 
-// Records different metrics for the NTP's Discover feed.
-// TODO(crbug.com/1200303): Move this file to */ui/ntp.
-@interface DiscoverFeedMetricsRecorder : NSObject
+// Records different metrics for the NTP feeds.
+@interface FeedMetricsRecorder : NSObject
 
 // Record metrics for when the user has scrolled |scrollDistance| in the Feed.
 - (void)recordFeedScrolled:(int)scrollDistance;
@@ -148,4 +147,4 @@ enum class BrokenNTPHierarchyRelationship {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_DISCOVER_FEED_METRICS_RECORDER_H_
+#endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_METRICS_RECORDER_H_

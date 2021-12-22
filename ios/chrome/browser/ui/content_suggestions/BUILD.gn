@@ -24,7 +24,6 @@ source_set("content_suggestions") {
   deps = [
     ":constants",
     ":feature_flags",
-    ":metrics",
     "//base",
     "//components/favicon/core",
     "//components/favicon/ios",
@@ -95,7 +94,6 @@ source_set("content_suggestions") {
     "//ui/base",
     "//ui/strings",
   ]
-  public_deps = [ ":metrics" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
@@ -141,7 +139,6 @@ source_set("content_suggestions_ui") {
     ":content_suggestions_constant",
     ":content_suggestions_ui_util",
     ":feature_flags",
-    ":metrics",
     "resources:content_suggestions_no_image",
     "resources:content_suggestions_offline",
     "resources:ntp_search_icon",
@@ -175,19 +172,6 @@ source_set("content_suggestions_ui") {
     "//ui/base",
   ]
   public_deps = [ "//ios/third_party/material_components_ios" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
-source_set("metrics") {
-  sources = [
-    "discover_feed_metrics_recorder.h",
-    "discover_feed_metrics_recorder.mm",
-  ]
-  deps = [
-    ":feature_flags",
-    "//base",
-    "//components/feed/core/v2/public:common",
-  ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
