@@ -15,9 +15,8 @@
 #include "base/values.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
-#include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
-#include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/extensions/api/messaging/native_message_port.h"
+#include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
@@ -26,6 +25,7 @@
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension.h"
+#include "net/base/data_url.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -136,22 +136,26 @@ class ThumbnailLoaderNativeMessageHost : public extensions::NativeMessageHost {
 }  // namespace
 
 // Converts a data URL to bitmap.
-class ThumbnailLoader::ThumbnailDecoder : public BitmapFetcherDelegate {
+class ThumbnailLoader::ThumbnailDecoder : public ImageDecoder::ImageRequest {
  public:
-  explicit ThumbnailDecoder(Profile* profile) : profile_(profile) {}
+  ThumbnailDecoder() = default;
 
   ThumbnailDecoder(const ThumbnailDecoder&) = delete;
   ThumbnailDecoder& operator=(const ThumbnailDecoder&) = delete;
   ~ThumbnailDecoder() override = default;
 
-  // BitmapFetcherDelegate:
-  void OnFetchComplete(const GURL& url, const SkBitmap* bitmap) override {
-    std::move(callback_).Run(bitmap, base::File::FILE_OK);
+  // ImageDecoder::ImageRequest:
+  void OnImageDecoded(const SkBitmap& bitmap) override {
+    std::move(callback_).Run(&bitmap, base::File::FILE_OK);
+  }
+
+  // ImageDecoder::ImageRequest:
+  void OnDecodeImageFailed() override {
+    std::move(callback_).Run(/*bitmap=*/nullptr, base::File::FILE_ERROR_FAILED);
   }
 
   void Start(const std::string& data, ThumbnailLoader::ImageCallback callback) {
     DCHECK(!callback_);
-    DCHECK(!bitmap_fetcher_);
 
     // The data sent from the image loader extension should be in form of a data
     // URL.
@@ -162,24 +166,19 @@ class ThumbnailLoader::ThumbnailDecoder : public BitmapFetcherDelegate {
       return;
     }
 
+    std::string mime_type, charset, image_data;
+    if (!net::DataURL::Parse(data_url, &mime_type, &charset, &image_data)) {
+      std::move(callback).Run(/*bitmap=*/nullptr,
+                              base::File::FILE_ERROR_FAILED);
+      return;
+    }
+
     callback_ = std::move(callback);
-
-    // Note that the image downloader will not use network traffic for data
-    // URLs.
-    bitmap_fetcher_ = std::make_unique<BitmapFetcher>(
-        data_url, this, MISSING_TRAFFIC_ANNOTATION);
-
-    bitmap_fetcher_->Init(
-        /*referrer=*/std::string(), net::ReferrerPolicy::NEVER_CLEAR,
-        network::mojom::CredentialsMode::kOmit);
-
-    bitmap_fetcher_->Start(profile_->GetURLLoaderFactory().get());
+    ImageDecoder::Start(this, std::move(image_data));
   }
 
  private:
-  Profile* const profile_;
   ThumbnailLoader::ImageCallback callback_;
-  std::unique_ptr<BitmapFetcher> bitmap_fetcher_;
 };
 
 ThumbnailLoader::ThumbnailLoader(Profile* profile) : profile_(profile) {}
@@ -312,7 +311,7 @@ void ThumbnailLoader::OnThumbnailLoaded(
     return;
   }
 
-  auto thumbnail_decoder = std::make_unique<ThumbnailDecoder>(profile_);
+  auto thumbnail_decoder = std::make_unique<ThumbnailDecoder>();
   ThumbnailDecoder* thumbnail_decoder_ptr = thumbnail_decoder.get();
   thumbnail_decoders_.emplace(request_id, std::move(thumbnail_decoder));
   thumbnail_decoder_ptr->Start(

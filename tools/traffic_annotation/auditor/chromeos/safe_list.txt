@@ -2,7 +2,6 @@
 # Please do not add any new safelist.
 #
 missing,chrome/browser/ash/enhanced_network_tts/enhanced_network_tts_impl.cc
-missing,chrome/browser/ui/ash/thumbnail_loader.cc
 missing,chrome/browser/ash/printing/server_printers_fetcher.cc
 missing,chrome/browser/ash/customization/customization_wallpaper_downloader.cc
 missing,ash/components/device_activity/device_activity_client.cc
