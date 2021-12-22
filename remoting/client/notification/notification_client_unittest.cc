@@ -26,6 +26,7 @@ using ::testing::Return;
 constexpr char kTestEmail[] = "test@example.com";
 constexpr char kTestPlatform[] = "IOS";
 constexpr char kTestVersion[] = "76.0.3809.13";
+constexpr char kTestOsVersion[] = "15.1";
 constexpr char kTestLocale[] = "zh-CN";
 
 class MockJsonFetcher : public JsonFetcher {
@@ -99,9 +100,9 @@ class NotificationClientTest : public ::testing::Test {
   void Reset(bool should_ignore_dev_messages) {
     auto fetcher = std::make_unique<MockJsonFetcher>();
     fetcher_ = fetcher.get();
-    client_ = base::WrapUnique(
-        new NotificationClient(std::move(fetcher), kTestPlatform, kTestVersion,
-                               kTestLocale, should_ignore_dev_messages));
+    client_ = base::WrapUnique(new NotificationClient(
+        std::move(fetcher), kTestPlatform, kTestVersion, kTestOsVersion,
+        kTestLocale, should_ignore_dev_messages));
   }
 
   raw_ptr<MockJsonFetcher> fetcher_;
@@ -156,6 +157,36 @@ TEST_F(NotificationClientTest, VersionNotMatched) {
 
   base::MockCallback<NotificationClient::NotificationCallback> callback;
   EXPECT_CALL(callback, Run(NoMessage()));
+  client_->GetNotification(kTestEmail, callback.Get());
+}
+
+TEST_F(NotificationClientTest, OsVersionNotMatched) {
+  base::Value rule = CreateDefaultRule();
+  rule.SetStringKey("os_version", "(-15.1)");
+  base::Value rules(base::Value::Type::LIST);
+  rules.Append(std::move(rule));
+  EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
+      .WillOnce(ReturnByMove(std::move(rules)));
+
+  base::MockCallback<NotificationClient::NotificationCallback> callback;
+  EXPECT_CALL(callback, Run(NoMessage()));
+  client_->GetNotification(kTestEmail, callback.Get());
+}
+
+TEST_F(NotificationClientTest, OsVersionMatched) {
+  base::Value rule = CreateDefaultRule();
+  rule.SetStringKey("os_version", "[15-)");
+  base::Value rules(base::Value::Type::LIST);
+  rules.Append(std::move(rule));
+  EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
+      .WillOnce(ReturnByMove(std::move(rules)));
+  EXPECT_CALL(*fetcher_, FetchJsonFile("notification/message_text.json"))
+      .WillOnce(ReturnByMove(CreateDefaultTranslations("message")));
+  EXPECT_CALL(*fetcher_, FetchJsonFile("notification/link_text.json"))
+      .WillOnce(ReturnByMove(CreateDefaultTranslations("link")));
+
+  base::MockCallback<NotificationClient::NotificationCallback> callback;
+  EXPECT_CALL(callback, Run(MessageMatches(CreateDefaultNotification())));
   client_->GetNotification(kTestEmail, callback.Get());
 }
 

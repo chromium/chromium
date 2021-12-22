@@ -51,6 +51,7 @@ class NotificationClient final {
   NotificationClient(std::unique_ptr<JsonFetcher> fetcher,
                      const std::string& current_platform,
                      const std::string& current_version,
+                     const std::string& current_os_version,
                      const std::string& locale,
                      bool should_ignore_dev_messages);
 
@@ -75,6 +76,7 @@ class NotificationClient final {
   std::unique_ptr<JsonFetcher> fetcher_;
   std::string current_platform_;
   std::string current_version_;
+  std::string current_os_version_;
   std::string locale_;
   bool should_ignore_dev_messages_;
 };

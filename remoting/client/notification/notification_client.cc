@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringize_macros.h"
+#include "base/system/sys_info.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -195,6 +196,7 @@ NotificationClient::NotificationClient(
           std::make_unique<GstaticJsonFetcher>(network_task_runner),
           kCurrentPlatform,
           kCurrentVersion,
+          base::SysInfo::OperatingSystemVersion(),
 #if defined(OS_ANDROID)
           // GetApplicationLocale() returns empty string on Android since we
           // don't pack any .pak file into the apk, so we need to get the locale
@@ -211,11 +213,13 @@ NotificationClient::~NotificationClient() = default;
 NotificationClient::NotificationClient(std::unique_ptr<JsonFetcher> fetcher,
                                        const std::string& current_platform,
                                        const std::string& current_version,
+                                       const std::string& current_os_version,
                                        const std::string& locale,
                                        bool should_ignore_dev_messages)
     : fetcher_(std::move(fetcher)),
       current_platform_(current_platform),
       current_version_(current_version),
+      current_os_version_(current_os_version),
       locale_(locale),
       should_ignore_dev_messages_(should_ignore_dev_messages) {
   VLOG(1) << "Platform: " << current_platform_
@@ -307,6 +311,21 @@ absl::optional<NotificationMessage> NotificationClient::ParseAndMatchRule(
     VLOG(1) << "Current version " << current_version_ << " not in range "
             << version_spec_string;
     return absl::nullopt;
+  }
+
+  // OS version check is not performed if |os_version| is not specified.
+  std::string os_version_spec_string;
+  if (FindKeyAndGet(rule, "os_version", &os_version_spec_string)) {
+    VersionRange os_version_range(os_version_spec_string);
+    if (!os_version_range.IsValid()) {
+      LOG(ERROR) << "Invalid OS version range: " << os_version_spec_string;
+      return absl::nullopt;
+    }
+    if (!os_version_range.ContainsVersion(current_os_version_)) {
+      VLOG(1) << "Current OS version " << current_os_version_
+              << " not in range " << os_version_spec_string;
+      return absl::nullopt;
+    }
   }
 
   if (!ShouldShowNotificationForUser(user_email, percent)) {
