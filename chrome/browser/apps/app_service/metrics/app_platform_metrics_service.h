@@ -45,6 +45,8 @@ class AppPlatformMetricsService {
   }
 
  private:
+  friend class AppPlatformInputMetricsTest;
+
   // Helper function to check if a new day has arrived.
   void CheckForNewDay();
 

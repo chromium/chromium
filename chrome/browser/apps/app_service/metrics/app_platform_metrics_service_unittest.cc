@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -702,6 +704,10 @@ class AppPlatformMetricsServiceTest : public testing::Test {
 
   std::unique_ptr<AppPlatformMetricsService> GetAppPlatformMetricsService() {
     return std::move(app_platform_metrics_service_);
+  }
+
+  AppPlatformMetricsService* app_platform_metrics_service() {
+    return app_platform_metrics_service_.get();
   }
 
   TestingProfile* profile() { return testing_profile_.get(); }
@@ -1570,6 +1576,202 @@ TEST_F(AppPlatformMetricsServiceTest, UninstallAppUkm) {
       /*app_id=*/"a", apps::mojom::UninstallSource::kAppList);
   VerifyAppsUninstallUkm("app://com.google.A", AppTypeName::kArc,
                          apps::mojom::UninstallSource::kAppList);
+}
+
+// Tests for app platform input metrics.
+class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
+ public:
+  void SetUp() override {
+    AppPlatformMetricsServiceTest::SetUp();
+
+    ash_test_helper_ = std::make_unique<ash::AshTestHelper>();
+    ash_test_helper_->SetUp();
+
+    widget_ = ash::AshTestBase::CreateTestWidget();
+  }
+
+  void TearDown() override {
+    widget_.reset();
+    ash_test_helper_->TearDown();
+    AppPlatformMetricsServiceTest::TearDown();
+  }
+
+  AppPlatformInputMetrics* app_platform_input_metrics() {
+    return app_platform_metrics_service()->app_platform_input_metrics_.get();
+  }
+
+  aura::Window* window() { return widget_->GetNativeWindow(); }
+
+  void CreateInputEvent(InputEventSource event_source) {
+    switch (event_source) {
+      case InputEventSource::kUnknown:
+        break;
+      case InputEventSource::kMouse: {
+        ui::MouseEvent mouse_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
+                                   gfx::Point(), base::TimeTicks(), 0, 0);
+        ui::Event::DispatcherApi(&mouse_event).set_target(window());
+        app_platform_input_metrics()->OnMouseEvent(&mouse_event);
+        break;
+      }
+      case InputEventSource::kStylus: {
+        ui::TouchEvent touch_event(
+            ui::ET_TOUCH_RELEASED, gfx::Point(), base::TimeTicks(),
+            ui::PointerDetails(ui::EventPointerType::kPen, 0));
+        ui::Event::DispatcherApi(&touch_event).set_target(window());
+        app_platform_input_metrics()->OnTouchEvent(&touch_event);
+        break;
+      }
+      case InputEventSource::kTouch: {
+        ui::TouchEvent touch_event(
+            ui::ET_TOUCH_RELEASED, gfx::Point(), base::TimeTicks(),
+            ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+        ui::Event::DispatcherApi(&touch_event).set_target(window());
+        app_platform_input_metrics()->OnTouchEvent(&touch_event);
+        break;
+      }
+      case InputEventSource::kKeyboard: {
+        ui::KeyEvent key_event(ui::ET_KEY_RELEASED, ui::VKEY_MENU,
+                               ui::EF_ALT_DOWN);
+        ui::Event::DispatcherApi(&key_event).set_target(window());
+        app_platform_input_metrics()->OnKeyEvent(&key_event);
+        break;
+      }
+    }
+  }
+
+  void VerifyUkm(const std::string& app_info,
+                 AppTypeName app_type_name,
+                 int event_count,
+                 InputEventSource event_source) {
+    const auto entries =
+        test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
+    ASSERT_EQ(1U, entries.size());
+    const auto* entry = entries[0];
+    test_ukm_recorder()->ExpectEntrySourceHasUrl(entry, GURL(app_info));
+    test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
+                                           (int)app_type_name);
+    test_ukm_recorder()->ExpectEntryMetric(entry, "AppInputEventCount",
+                                           event_count);
+    test_ukm_recorder()->ExpectEntryMetric(entry, "AppInputEventSource",
+                                           (int)event_source);
+  }
+
+ private:
+  std::unique_ptr<ash::AshTestHelper> ash_test_helper_;
+
+  // Where down events are dispatched to.
+  std::unique_ptr<views::Widget> widget_;
+};
+
+// Verify the input event is recorded when the window is inactivated, and no
+// more input event is recorded when the window is destroyed.
+TEST_F(AppPlatformInputMetricsTest, WindowStateChanged) {
+  ModifyInstance(/*app_id=*/"a", window(), kInactiveInstanceState);
+  CreateInputEvent(InputEventSource::kMouse);
+  app_platform_input_metrics()->OnFiveMinutes();
+  VerifyUkm("app://com.google.A", AppTypeName::kArc, /*event_count=*/1,
+            InputEventSource::kMouse);
+
+  ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kDestroyed);
+  CreateInputEvent(InputEventSource::kMouse);
+  app_platform_input_metrics()->OnFiveMinutes();
+  // Verify no more input event is recorded.
+  VerifyUkm("app://com.google.A", AppTypeName::kArc, /*event_count=*/1,
+            InputEventSource::kMouse);
+}
+
+TEST_F(AppPlatformInputMetricsTest, MouseEvent) {
+  ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
+  CreateInputEvent(InputEventSource::kMouse);
+  app_platform_input_metrics()->OnFiveMinutes();
+  VerifyUkm("app://com.google.A", AppTypeName::kArc, /*event_count=*/1,
+            InputEventSource::kMouse);
+}
+
+TEST_F(AppPlatformInputMetricsTest, StylusEvent) {
+  ModifyInstance(/*app_id=*/"w", window(), apps::InstanceState::kActive);
+  CreateInputEvent(InputEventSource::kStylus);
+  app_platform_input_metrics()->OnFiveMinutes();
+  VerifyUkm("https://foo.com", AppTypeName::kWeb, /*event_count=*/1,
+            InputEventSource::kStylus);
+}
+
+TEST_F(AppPlatformInputMetricsTest, TouchEvents) {
+  ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
+  CreateInputEvent(InputEventSource::kTouch);
+  CreateInputEvent(InputEventSource::kTouch);
+  app_platform_input_metrics()->OnFiveMinutes();
+  VerifyUkm("app://com.google.A", AppTypeName::kArc, /*event_count=*/2,
+            InputEventSource::kTouch);
+}
+
+TEST_F(AppPlatformInputMetricsTest, KeyEvents) {
+  ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
+  CreateInputEvent(InputEventSource::kKeyboard);
+  app_platform_input_metrics()->OnFiveMinutes();
+  VerifyUkm("app://com.google.A", AppTypeName::kArc, /*event_count=*/1,
+            InputEventSource::kKeyboard);
+
+  CreateInputEvent(InputEventSource::kKeyboard);
+  CreateInputEvent(InputEventSource::kKeyboard);
+  app_platform_input_metrics()->OnFiveMinutes();
+
+  // Verify 2 input metrics events are recorded.
+  const auto entries =
+      test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
+  ASSERT_EQ(2U, entries.size());
+  std::set<int> counts;
+  for (const auto* entry : entries) {
+    test_ukm_recorder()->ExpectEntrySourceHasUrl(entry,
+                                                 GURL("app://com.google.A"));
+    test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
+                                           (int)AppTypeName::kArc);
+    test_ukm_recorder()->ExpectEntryMetric(entry, "AppInputEventSource",
+                                           (int)InputEventSource::kKeyboard);
+    counts.insert(
+        *(test_ukm_recorder()->GetEntryMetric(entry, "AppInputEventCount")));
+  }
+  EXPECT_TRUE(base::Contains(counts, 1));
+  EXPECT_TRUE(base::Contains(counts, 2));
+}
+
+TEST_F(AppPlatformInputMetricsTest, MultipleEvents) {
+  ModifyInstance(/*app_id=*/"a", window(), apps::InstanceState::kActive);
+  CreateInputEvent(InputEventSource::kMouse);
+  CreateInputEvent(InputEventSource::kMouse);
+  CreateInputEvent(InputEventSource::kKeyboard);
+  CreateInputEvent(InputEventSource::kStylus);
+  app_platform_input_metrics()->OnFiveMinutes();
+
+  // Verify 3 input metrics events are recorded.
+  const auto entries =
+      test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
+  ASSERT_EQ(3U, entries.size());
+  int event_source;
+  int mouse_event_count = 0;
+  int keyboard_event_count = 0;
+  int stylus_event_count = 0;
+  for (const auto* entry : entries) {
+    test_ukm_recorder()->ExpectEntrySourceHasUrl(entry,
+                                                 GURL("app://com.google.A"));
+    test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
+                                           (int)AppTypeName::kArc);
+    event_source =
+        *(test_ukm_recorder()->GetEntryMetric(entry, "AppInputEventSource"));
+    if (event_source == (int)InputEventSource::kMouse) {
+      mouse_event_count =
+          *(test_ukm_recorder()->GetEntryMetric(entry, "AppInputEventCount"));
+    } else if (event_source == (int)InputEventSource::kKeyboard) {
+      keyboard_event_count =
+          *(test_ukm_recorder()->GetEntryMetric(entry, "AppInputEventCount"));
+    } else if (event_source == (int)InputEventSource::kStylus) {
+      stylus_event_count =
+          *(test_ukm_recorder()->GetEntryMetric(entry, "AppInputEventCount"));
+    }
+  }
+  EXPECT_EQ(2, mouse_event_count);
+  EXPECT_EQ(1, keyboard_event_count);
+  EXPECT_EQ(1, stylus_event_count);
 }
 
 }  // namespace apps
