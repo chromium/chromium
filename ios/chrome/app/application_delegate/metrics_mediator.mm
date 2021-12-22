@@ -377,7 +377,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
         numNTPTabs++;
       }
     }
-    BrowserViewController* bvc = scene.interfaceProvider.currentInterface.bvc;
+    BrowserViewController* bvc = scene.interfaceProvider.mainInterface.bvc;
     numLiveNTPTabs += [bvc liveNTPCount];
   }
 

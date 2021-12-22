@@ -1566,8 +1566,10 @@ chromium-metrics-reviews@google.com.
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
-    [iOS] The number of live allocated NTP tabs when the app comes out of a
-    background state. A live NTP is one whose UI classes are initialized.
+    [iOS] The number of live allocated regular (not incognito) NTP tabs when the
+    app comes out of a background state. A live NTP is one whose UI classes are
+    initialized. Prior to M99 this incorrectly counted whichever interface
+    (regular or incognito) was selected.
   </summary>
 </histogram>
 
