@@ -28,10 +28,12 @@ import androidx.annotation.WorkerThread;
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.android_webview.devui.util.ComponentInfo;
 import org.chromium.android_webview.devui.util.ComponentsInfoLoader;
+import org.chromium.android_webview.services.ComponentsProviderPathUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.ui.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -134,7 +136,8 @@ public class ComponentsListFragment extends DevUiBaseFragment {
             @Override
             @WorkerThread
             protected ArrayList<ComponentInfo> doInBackground() {
-                ComponentsInfoLoader componentInfoLoader = new ComponentsInfoLoader();
+                ComponentsInfoLoader componentInfoLoader = new ComponentsInfoLoader(new File(
+                        ComponentsProviderPathUtil.getComponentUpdateServiceDirectoryPath()));
                 ArrayList<ComponentInfo> retrievedComponentInfoList =
                         componentInfoLoader.getComponentsInfo();
 
