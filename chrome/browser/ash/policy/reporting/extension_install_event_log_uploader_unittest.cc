@@ -11,9 +11,11 @@
 
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -96,13 +98,16 @@ class ExtensionInstallEventLogUploaderTest : public testing::Test {
   }
 
   void CreateUploader() {
-    uploader_ = std::make_unique<ExtensionInstallEventLogUploader>(
-        /*profile=*/nullptr);
-    uploader_->SetDelegate(&delegate_);
-
-    auto mock_report_queue = std::make_unique<reporting::MockReportQueue>();
+    ASSERT_TRUE(base::SequencedTaskRunnerHandle::IsSet());
+    auto mock_report_queue = std::unique_ptr<::reporting::MockReportQueue,
+                                             base::OnTaskRunnerDeleter>(
+        new ::reporting::MockReportQueue(),
+        base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
     mock_report_queue_ = mock_report_queue.get();
-    uploader_->SetReportQueue(std::move(mock_report_queue));
+
+    uploader_ = ExtensionInstallEventLogUploader::CreateForTest(
+        /*profile=*/nullptr, std::move(mock_report_queue));
+    uploader_->SetDelegate(&delegate_);
   }
 
   void CompleteSerialize() {

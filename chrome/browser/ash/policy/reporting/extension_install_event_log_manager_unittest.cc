@@ -6,6 +6,7 @@
 
 #include <iterator>
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "ash/components/arc/arc_prefs.h"
@@ -18,10 +19,12 @@
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/reporting/extension_install_event_log.h"
+#include "chrome/browser/ash/policy/reporting/extension_install_event_log_uploader.h"
 #include "chrome/browser/ash/policy/reporting/install_event_log_util.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/test/base/testing_profile.h"
@@ -154,8 +157,7 @@ class TestLogTaskRunnerWrapper
 class ExtensionInstallEventLogManagerTest : public testing::Test {
  protected:
   ExtensionInstallEventLogManagerTest()
-      : uploader_(/*profile=*/nullptr),
-        log_task_runner_(log_task_runner_wrapper_.test_task_runner()),
+      : log_task_runner_(log_task_runner_wrapper_.test_task_runner()),
         log_file_path_(profile_.GetPath().Append(kLogFileName)),
         extension_ids_{std::begin(kExtensionIds), std::end(kExtensionIds)},
         events_value_(base::Value::Type::DICTIONARY),
@@ -165,9 +167,13 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    auto mock_report_queue = std::make_unique<reporting::MockReportQueue>();
+    auto mock_report_queue = std::unique_ptr<::reporting::MockReportQueue,
+                                             base::OnTaskRunnerDeleter>(
+        new ::reporting::MockReportQueue(),
+        base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
     mock_report_queue_ = mock_report_queue.get();
-    uploader_.SetReportQueue(std::move(mock_report_queue));
+    uploader_ = ExtensionInstallEventLogUploader::CreateForTest(
+        /*profile=*/nullptr, std::move(mock_report_queue));
     event_.set_timestamp(0);
     event_.set_event_type(em::ExtensionInstallReportLogEvent::SUCCESS);
 
@@ -188,7 +194,7 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
 
   void CreateManager() {
     manager_ = std::make_unique<ExtensionInstallEventLogManager>(
-        &log_task_runner_wrapper_, &uploader_, &profile_);
+        &log_task_runner_wrapper_, uploader_.get(), &profile_);
     FlushNonDelayedTasks();
   }
 
@@ -308,7 +314,7 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
       disable_purge_for_testing_;
   TestingProfile profile_;
   reporting::MockReportQueue* mock_report_queue_;
-  ExtensionInstallEventLogUploader uploader_;
+  std::unique_ptr<ExtensionInstallEventLogUploader> uploader_;
   std::unique_ptr<base::ScopedMockTimeMessageLoopTaskRunner>
       scoped_main_task_runner_;
 

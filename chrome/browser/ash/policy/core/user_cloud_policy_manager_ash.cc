@@ -276,7 +276,7 @@ void UserCloudPolicyManagerAsh::Connect(
   app_install_event_log_uploader_ =
       std::make_unique<ArcAppInstallEventLogUploader>(client(), profile_);
   extension_install_event_log_uploader_ =
-      std::make_unique<ExtensionInstallEventLogUploader>(profile_);
+      ExtensionInstallEventLogUploader::Create(profile_);
 }
 
 void UserCloudPolicyManagerAsh::OnAccessTokenAvailable(
