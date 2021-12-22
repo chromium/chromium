@@ -47,6 +47,12 @@ class ASH_PUBLIC_EXPORT SessionController {
   virtual void SetUserSessionOrder(
       const std::vector<uint32_t>& user_session_ids) = 0;
 
+  // Prepares ash for lock screen. Currently this ensures the current active
+  // window could not be used to mimic the lock screen. Lock screen is created
+  // after this call returns.
+  using PrepareForLockCallback = base::OnceClosure;
+  virtual void PrepareForLock(PrepareForLockCallback callback) = 0;
+
   // Runs the pre-lock animation to start locking ash. When the call returns,
   // |locked| == true means that the ash post-lock animation is finished and ash
   // is fully locked. Otherwise |locked| is false, which means something is

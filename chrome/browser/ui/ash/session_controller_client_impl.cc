@@ -203,6 +203,10 @@ SessionControllerClientImpl* SessionControllerClientImpl::Get() {
   return g_session_controller_client_instance;
 }
 
+void SessionControllerClientImpl::PrepareForLock(base::OnceClosure callback) {
+  session_controller_->PrepareForLock(std::move(callback));
+}
+
 void SessionControllerClientImpl::StartLock(StartLockCallback callback) {
   session_controller_->StartLock(std::move(callback));
 }

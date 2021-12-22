@@ -34,6 +34,10 @@ void TestSessionController::SetUserSessionOrder(
   ++set_user_session_order_count_;
 }
 
+void TestSessionController::PrepareForLock(PrepareForLockCallback callback) {
+  std::move(callback).Run();
+}
+
 void TestSessionController::StartLock(StartLockCallback callback) {
   std::move(callback).Run(true);
 }
