@@ -4595,6 +4595,8 @@ static_library("browser") {
       "apps/app_service/metrics/app_platform_metrics_service.h",
       "apps/app_service/metrics/app_platform_metrics_utils.cc",
       "apps/app_service/metrics/app_platform_metrics_utils.h",
+      "apps/app_service/metrics/browser_to_tab_list.cc",
+      "apps/app_service/metrics/browser_to_tab_list.h",
       "apps/app_service/publishers/arc_apps.cc",
       "apps/app_service/publishers/arc_apps.h",
       "apps/app_service/publishers/arc_apps_factory.cc",

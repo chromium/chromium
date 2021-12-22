@@ -5,23 +5,19 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_PLATFORM_METRICS_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_PLATFORM_METRICS_H_
 
-#include <list>
 #include <map>
 #include <set>
 #include <string>
 
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
+#include "chrome/browser/apps/app_service/metrics/browser_to_tab_list.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class Profile;
-
-namespace aura {
-class Window;
-}
 
 namespace apps {
 
@@ -157,15 +153,6 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
     bool window_is_closed = false;
   };
 
-  struct BrowserToTab {
-    BrowserToTab(const aura::Window* browser_window,
-                 const base::UnguessableToken& tab_id);
-    const aura::Window* browser_window;
-    base::UnguessableToken tab_id;
-  };
-
-  using BrowserToTabs = std::list<BrowserToTab>;
-
   // AppRegistryCache::Observer:
   void OnAppTypeInitialized(apps::mojom::AppType app_type) override;
   void OnAppRegistryCacheWillBeDestroyed(
@@ -188,22 +175,6 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // Updates the browser window status when the web app tab `update` is
   // inactivated.
   void UpdateBrowserWindowStatus(const InstanceUpdate& update);
-
-  // Returns true if the browser with `browser_window` has activated tabs.
-  // Otherwise, returns false.
-  bool HasActivatedTab(const aura::Window* browser_window);
-
-  // Returns the browser window for `tab_id`.
-  const aura::Window* GetBrowserWindow(
-      const base::UnguessableToken& tab_id) const;
-
-  // Adds an activated `browser_window` and `tab_id` to
-  // `active_browser_to_tabs_`.
-  void AddActivatedTab(const aura::Window* browser_window,
-                       const base::UnguessableToken& tab_id);
-
-  // Removes `tab_id` from `active_browser_to_tabs_`.
-  void RemoveActivatedTab(const base::UnguessableToken& tab_id);
 
   void SetWindowActivated(apps::mojom::AppType app_type,
                           AppTypeName app_type_name,
@@ -246,8 +217,7 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
 
   int user_type_by_device_type_;
 
-  // Records the map from browsers to activated web apps tabs.
-  BrowserToTabs active_browsers_to_tabs_;
+  BrowserToTabList browser_to_tab_list_;
 
   // |running_start_time_| and |running_duration_| are used for accumulating app
   // running duration per each day interval.
