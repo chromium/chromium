@@ -1231,10 +1231,9 @@ const char kEnableSubresourceRedirectDescription[] =
     "Allow subresource compression for data savings";
 
 const char kEnableWebAuthenticationCableV2SupportName[] =
-    "Web Authentication caBLE v2 support";
+    "Web Authentication caBLE v2 QR codes";
 const char kEnableWebAuthenticationCableV2SupportDescription[] =
-    "Enable use of phones that are signed into the same account, with Sync "
-    "enabled, to be used as 2nd-factor security keys.";
+    "Enable display of QR codes for using Android phones as security keys.";
 
 const char kEnableWebAuthenticationChromeOSAuthenticatorName[] =
     "ChromeOS platform Web Authentication support";

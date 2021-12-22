@@ -5107,8 +5107,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-web-authentication-cable-v2-support",
      flag_descriptions::kEnableWebAuthenticationCableV2SupportName,
      flag_descriptions::kEnableWebAuthenticationCableV2SupportDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(device::kWebAuthCableSecondFactor)},
+     kOsDesktop, FEATURE_VALUE_TYPE(device::kWebAuthPhoneSupport)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-web-authentication-chromeos-authenticator",
