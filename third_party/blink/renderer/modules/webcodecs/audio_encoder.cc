@@ -182,7 +182,7 @@ void AudioEncoder::ProcessConfigure(Request* request) {
       WrapCrossThreadPersistent(active_config_.Get()), reset_count_));
 
   auto done_callback = [](AudioEncoder* self, media::AudioCodec codec,
-                          Request* req, media::Status status) {
+                          Request* req, media::EncoderStatus status) {
     if (!self || self->reset_count_ != req->reset_count) {
       req->EndTracing(/*aborted=*/true);
       return;
@@ -190,7 +190,7 @@ void AudioEncoder::ProcessConfigure(Request* request) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
       self->HandleError(
-          self->logger_->MakeException("Encoding error.", status));
+          self->logger_->MakeException("Encoding error.", std::move(status)));
     } else {
       base::UmaHistogramEnumeration("Blink.WebCodecs.AudioEncoder.Codec",
                                     codec);
@@ -227,7 +227,7 @@ void AudioEncoder::ProcessEncode(Request* request) {
   DCHECK(data);
 
   auto done_callback = [](AudioEncoder* self, Request* req,
-                          media::Status status) {
+                          media::EncoderStatus status) {
     if (!self || self->reset_count_ != req->reset_count) {
       req->EndTracing(/*aborted=*/true);
       return;
@@ -235,7 +235,7 @@ void AudioEncoder::ProcessEncode(Request* request) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
       self->HandleError(
-          self->logger_->MakeException("Encoding error.", status));
+          self->logger_->MakeException("Encoding error.", std::move(status)));
     }
 
     req->EndTracing();
@@ -244,12 +244,11 @@ void AudioEncoder::ProcessEncode(Request* request) {
 
   if (data->channel_count() != active_config_->options.channels ||
       data->sample_rate() != active_config_->options.sample_rate) {
-    media::Status error(media::StatusCode::kEncoderFailedEncode);
-    error.WithData("channels", data->channel_count());
-    error.WithData("sampleRate", data->sample_rate());
-
     HandleError(logger_->MakeException(
-        "Input audio buffer is incompatible with codec parameters", error));
+        "Input audio buffer is incompatible with codec parameters",
+        media::EncoderStatus(media::EncoderStatus::Codes::kEncoderFailedEncode)
+            .WithData("channels", data->channel_count())
+            .WithData("sampleRate", data->sample_rate())));
 
     request->EndTracing();
 

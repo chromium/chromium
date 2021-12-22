@@ -158,6 +158,7 @@ source_set("base") {
     "djb2.cc",
     "djb2.h",
     "eme_constants.h",
+    "encoder_status.h",
     "encryption_pattern.cc",
     "encryption_pattern.h",
     "encryption_scheme.cc",

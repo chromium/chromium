@@ -64,8 +64,8 @@ EncoderBase<Traits>::EncoderBase(ScriptState* script_state,
   auto* context = ExecutionContext::From(script_state);
   callback_runner_ = context->GetTaskRunner(TaskType::kInternalMediaRealTime);
 
-  logger_ = std::make_unique<CodecLogger<media::Status>>(GetExecutionContext(),
-                                                         callback_runner_);
+  logger_ = std::make_unique<CodecLogger<media::EncoderStatus>>(
+      GetExecutionContext(), callback_runner_);
 
   media::MediaLog* log = logger_->log();
   logger_->SendPlayerNameInformation(*context, Traits::GetName());
@@ -308,7 +308,7 @@ void EncoderBase<Traits>::ProcessFlush(Request* request) {
   DCHECK_EQ(request->type, Request::Type::kFlush);
 
   auto done_callback = [](EncoderBase<Traits>* self, Request* req,
-                          media::Status status) {
+                          media::EncoderStatus status) {
     DCHECK(req);
     DCHECK(req->resolver);
 
@@ -328,7 +328,7 @@ void EncoderBase<Traits>::ProcessFlush(Request* request) {
       req->resolver.Release()->Resolve();
     } else {
       self->HandleError(
-          self->logger_->MakeException("Flushing error.", status));
+          self->logger_->MakeException("Flushing error.", std::move(status)));
       req->resolver.Release()->Reject();
     }
     req->EndTracing();

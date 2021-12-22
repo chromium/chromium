@@ -26,19 +26,19 @@ class MEDIA_EXPORT OpenH264VideoEncoder : public VideoEncoder {
   void Initialize(VideoCodecProfile profile,
                   const Options& options,
                   OutputCB output_cb,
-                  StatusCB done_cb) override;
+                  EncoderStatusCB done_cb) override;
   void Encode(scoped_refptr<VideoFrame> frame,
               bool key_frame,
-              StatusCB done_cb) override;
+              EncoderStatusCB done_cb) override;
   void ChangeOptions(const Options& options,
                      OutputCB output_cb,
-                     StatusCB done_cb) override;
-  void Flush(StatusCB done_cb) override;
+                     EncoderStatusCB done_cb) override;
+  void Flush(EncoderStatusCB done_cb) override;
 
  private:
-  Status DrainOutputs(const SFrameBSInfo& frame_info,
-                      base::TimeDelta timestamp,
-                      gfx::ColorSpace color_space);
+  EncoderStatus DrainOutputs(const SFrameBSInfo& frame_info,
+                             base::TimeDelta timestamp,
+                             gfx::ColorSpace color_space);
 
   class ISVCEncoderDeleter {
    public:

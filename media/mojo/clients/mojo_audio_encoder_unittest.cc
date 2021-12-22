@@ -106,7 +106,8 @@ class MojoAudioEncoderTest : public ::testing::Test {
     return (ticks - base::TimeTicks()).InMilliseconds();
   }
 
-  AudioEncoder::StatusCB ValidatingStatusCB(base::Location loc = FROM_HERE) {
+  AudioEncoder::EncoderStatusCB ValidatingStatusCB(
+      base::Location loc = FROM_HERE) {
     struct CallEnforcer {
       bool called = false;
       std::string location;
@@ -117,7 +118,7 @@ class MojoAudioEncoderTest : public ::testing::Test {
     auto enforcer = std::make_unique<CallEnforcer>();
     enforcer->location = loc.ToString();
     return base::BindLambdaForTesting(
-        [this, enforcer{std::move(enforcer)}](Status s) {
+        [this, enforcer{std::move(enforcer)}](EncoderStatus s) {
           EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
           EXPECT_TRUE(s.is_ok()) << " Callback created: " << enforcer->location
                                  << " Error: " << s.message();
@@ -149,16 +150,16 @@ TEST_F(MojoAudioEncoderTest, Initialize_Success) {
   EXPECT_CALL(*mock_audio_encoder_, Initialize(_, _, _))
       .WillOnce(Invoke([this](const AudioEncoder::Options& options,
                               AudioEncoder::OutputCB output_cb,
-                              AudioEncoder::StatusCB done_cb) {
+                              AudioEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(service_task_runner_->RunsTasksInCurrentSequence());
-        std::move(done_cb).Run(OkStatus());
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
       }));
 
   AudioEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](EncodedAudioBuffer output,
           absl::optional<AudioEncoder::CodecDescription>) { FAIL(); });
 
-  auto done_cb = base::BindLambdaForTesting([&, this](Status s) {
+  auto done_cb = base::BindLambdaForTesting([&, this](EncoderStatus s) {
     EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
     EXPECT_TRUE(s.is_ok());
     run_loop.QuitWhenIdle();
@@ -175,17 +176,18 @@ TEST_F(MojoAudioEncoderTest, Initialize_Fail) {
   EXPECT_CALL(*mock_audio_encoder_, Initialize(_, _, _))
       .WillOnce(Invoke([](const AudioEncoder::Options& options,
                           AudioEncoder::OutputCB output_cb,
-                          AudioEncoder::StatusCB done_cb) {
-        std::move(done_cb).Run(StatusCode::kEncoderInitializationError);
+                          AudioEncoder::EncoderStatusCB done_cb) {
+        std::move(done_cb).Run(
+            EncoderStatus::Codes::kEncoderInitializationError);
       }));
 
   AudioEncoder::OutputCB output_cb = base::BindLambdaForTesting(
       [&](EncodedAudioBuffer output,
           absl::optional<AudioEncoder::CodecDescription>) { FAIL(); });
 
-  auto done_cb = base::BindLambdaForTesting([&, this](Status s) {
+  auto done_cb = base::BindLambdaForTesting([&, this](EncoderStatus s) {
     EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
-    EXPECT_EQ(s.code(), StatusCode::kEncoderInitializationError);
+    EXPECT_EQ(s.code(), EncoderStatus::Codes::kEncoderInitializationError);
     run_loop.QuitWhenIdle();
   });
 
@@ -201,17 +203,17 @@ TEST_F(MojoAudioEncoderTest, Initialize_Twice) {
   EXPECT_CALL(*mock_audio_encoder_, Initialize(_, _, _))
       .WillRepeatedly(Invoke([](const AudioEncoder::Options& options,
                                 AudioEncoder::OutputCB output_cb,
-                                AudioEncoder::StatusCB done_cb) {
-        std::move(done_cb).Run(OkStatus());
+                                AudioEncoder::EncoderStatusCB done_cb) {
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
       }));
 
-  auto expect_ok = base::BindLambdaForTesting([&](Status s) {
+  auto expect_ok = base::BindLambdaForTesting([&](EncoderStatus s) {
     EXPECT_TRUE(s.is_ok());
     good_init_run_loop.QuitWhenIdle();
   });
 
-  auto expect_error = base::BindLambdaForTesting([&](Status s) {
-    EXPECT_EQ(s.code(), StatusCode::kEncoderInitializeTwice);
+  auto expect_error = base::BindLambdaForTesting([&](EncoderStatus s) {
+    EXPECT_EQ(s.code(), EncoderStatus::Codes::kEncoderInitializeTwice);
     failed_initi_run_loop.QuitWhenIdle();
   });
 
@@ -233,18 +235,18 @@ TEST_F(MojoAudioEncoderTest, Encode) {
   EXPECT_CALL(*mock_audio_encoder_, Initialize(_, _, _))
       .WillOnce(Invoke([&, this](const AudioEncoder::Options& options,
                                  AudioEncoder::OutputCB output_cb,
-                                 AudioEncoder::StatusCB done_cb) {
+                                 AudioEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(service_task_runner_->RunsTasksInCurrentSequence());
         service_output_cb = std::move(output_cb);
-        std::move(done_cb).Run(OkStatus());
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
       }));
 
   EXPECT_CALL(*mock_audio_encoder_, Encode(_, _, _))
       .WillRepeatedly(Invoke([&, this](std::unique_ptr<AudioBus> audio_bus,
                                        base::TimeTicks capture_time,
-                                       AudioEncoder::StatusCB done_cb) {
+                                       AudioEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(service_task_runner_->RunsTasksInCurrentSequence());
-        std::move(done_cb).Run(OkStatus());
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 
         int64_t input_number = ToMilliseconds(capture_time);
         EXPECT_LE(input_number, input_count);
@@ -313,17 +315,17 @@ TEST_F(MojoAudioEncoderTest, EncodeWithEmptyResult) {
   EXPECT_CALL(*mock_audio_encoder_, Initialize(_, _, _))
       .WillOnce(Invoke([&](const AudioEncoder::Options& options,
                            AudioEncoder::OutputCB output_cb,
-                           AudioEncoder::StatusCB done_cb) {
+                           AudioEncoder::EncoderStatusCB done_cb) {
         service_output_cb = std::move(output_cb);
-        std::move(done_cb).Run(OkStatus());
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
       }));
 
   EXPECT_CALL(*mock_audio_encoder_, Encode(_, _, _))
       .WillRepeatedly(Invoke([&, this](std::unique_ptr<AudioBus> audio_bus,
                                        base::TimeTicks capture_time,
-                                       AudioEncoder::StatusCB done_cb) {
+                                       AudioEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(service_task_runner_->RunsTasksInCurrentSequence());
-        std::move(done_cb).Run(OkStatus());
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 
         AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                CHANNEL_LAYOUT_DISCRETE, 8000, 1);
@@ -361,16 +363,16 @@ TEST_F(MojoAudioEncoderTest, Flush) {
   EXPECT_CALL(*mock_audio_encoder_, Initialize(_, _, _))
       .WillOnce(Invoke([&](const AudioEncoder::Options& options,
                            AudioEncoder::OutputCB output_cb,
-                           AudioEncoder::StatusCB done_cb) {
+                           AudioEncoder::EncoderStatusCB done_cb) {
         service_output_cb = std::move(output_cb);
-        std::move(done_cb).Run(OkStatus());
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
       }));
 
   EXPECT_CALL(*mock_audio_encoder_, Encode(_, _, _))
       .WillRepeatedly(Invoke([&](std::unique_ptr<AudioBus> audio_bus,
                                  base::TimeTicks capture_time,
-                                 AudioEncoder::StatusCB done_cb) {
-        std::move(done_cb).Run(OkStatus());
+                                 AudioEncoder::EncoderStatusCB done_cb) {
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 
         AudioParameters params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                CHANNEL_LAYOUT_DISCRETE, options.sample_rate,
@@ -381,9 +383,9 @@ TEST_F(MojoAudioEncoderTest, Flush) {
       }));
 
   EXPECT_CALL(*mock_audio_encoder_, Flush(_))
-      .WillRepeatedly(Invoke([&, this](AudioEncoder::StatusCB done_cb) {
+      .WillRepeatedly(Invoke([&, this](AudioEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(service_task_runner_->RunsTasksInCurrentSequence());
-        std::move(done_cb).Run(OkStatus());
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
       }));
 
   AudioEncoder::OutputCB output_cb = base::BindLambdaForTesting(
@@ -400,7 +402,7 @@ TEST_F(MojoAudioEncoderTest, Flush) {
         ValidatingStatusCB());
   }
 
-  AudioEncoder::StatusCB flush_cb = base::BindLambdaForTesting([&](Status s) {
+  auto flush_cb = base::BindLambdaForTesting([&](EncoderStatus s) {
     EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
     EXPECT_TRUE(s.is_ok());
     EXPECT_EQ(output_count, input_count);
@@ -416,24 +418,24 @@ TEST_F(MojoAudioEncoderTest, Flush) {
 TEST_F(MojoAudioEncoderTest, MojoErrorCallsAllDoneCallbacks) {
   base::RunLoop run_loop;
   AudioEncoder::Options options = MakeOptions();
-  std::vector<AudioEncoder::StatusCB> done_callbacks;
+  std::vector<AudioEncoder::EncoderStatusCB> done_callbacks;
   const int input_count = 5;
   int error_count = 0;
   EXPECT_CALL(*mock_audio_encoder_, Initialize(_, _, _))
       .WillOnce(Invoke([&](const AudioEncoder::Options& options,
                            AudioEncoder::OutputCB output_cb,
-                           AudioEncoder::StatusCB done_cb) {
-        std::move(done_cb).Run(OkStatus());
+                           AudioEncoder::EncoderStatusCB done_cb) {
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
       }));
   EXPECT_CALL(*mock_audio_encoder_, Encode(_, _, _))
       .WillRepeatedly(Invoke([&](std::unique_ptr<AudioBus> audio_bus,
                                  base::TimeTicks capture_time,
-                                 AudioEncoder::StatusCB done_cb) {
+                                 AudioEncoder::EncoderStatusCB done_cb) {
         done_callbacks.push_back(std::move(done_cb));
       }));
 
   EXPECT_CALL(*mock_audio_encoder_, Flush(_))
-      .WillOnce(Invoke([&](AudioEncoder::StatusCB done_cb) {
+      .WillOnce(Invoke([&](AudioEncoder::EncoderStatusCB done_cb) {
         done_callbacks.push_back(std::move(done_cb));
         service_task_runner_->DeleteSoon(FROM_HERE, std::move(receiver_));
       }));
@@ -443,16 +445,16 @@ TEST_F(MojoAudioEncoderTest, MojoErrorCallsAllDoneCallbacks) {
 
   for (int i = 0; i < input_count; i++) {
     auto ts = FromMilliseconds(i);
-    auto done_cb = base::BindLambdaForTesting([&](Status s) {
-      EXPECT_EQ(s.code(), StatusCode::kEncoderMojoConnectionError);
+    auto done_cb = base::BindLambdaForTesting([&](EncoderStatus s) {
+      EXPECT_EQ(s.code(), EncoderStatus::Codes::kEncoderMojoConnectionError);
       error_count++;
     });
     mojo_audio_encoder_->Encode(
         MakeInput(i, options.channels, options.sample_rate), ts,
         std::move(done_cb));
   }
-  AudioEncoder::StatusCB flush_cb = base::BindLambdaForTesting([&](Status s) {
-    EXPECT_EQ(s.code(), StatusCode::kEncoderMojoConnectionError);
+  auto flush_cb = base::BindLambdaForTesting([&](EncoderStatus s) {
+    EXPECT_EQ(s.code(), EncoderStatus::Codes::kEncoderMojoConnectionError);
     run_loop.QuitWhenIdle();
   });
 

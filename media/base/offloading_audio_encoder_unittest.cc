@@ -60,19 +60,20 @@ TEST_F(OffloadingAudioEncoderTest, Initialize) {
         EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
         called_output = true;
       });
-  AudioEncoder::StatusCB done_cb = base::BindLambdaForTesting([&](Status s) {
-    EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
-    called_done = true;
-  });
+  AudioEncoder::EncoderStatusCB done_cb =
+      base::BindLambdaForTesting([&](EncoderStatus s) {
+        EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
+        called_done = true;
+      });
 
   EXPECT_CALL(*mock_audio_encoder_, Initialize(_, _, _))
       .WillOnce(Invoke([this](const AudioEncoder::Options& options,
                               AudioEncoder::OutputCB output_cb,
-                              AudioEncoder::StatusCB done_cb) {
+                              AudioEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(work_runner_->RunsTasksInCurrentSequence());
         AudioParameters params;
         EncodedAudioBuffer buf(params, nullptr, 0, base::TimeTicks());
-        std::move(done_cb).Run(Status());
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 
         // Usually |output_cb| is not called by Initialize() but for this
         // test it doesn't matter. We only care about a task runner used
@@ -89,17 +90,18 @@ TEST_F(OffloadingAudioEncoderTest, Initialize) {
 
 TEST_F(OffloadingAudioEncoderTest, Encode) {
   bool called_done = false;
-  AudioEncoder::StatusCB done_cb = base::BindLambdaForTesting([&](Status s) {
-    EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
-    called_done = true;
-  });
+  AudioEncoder::EncoderStatusCB done_cb =
+      base::BindLambdaForTesting([&](EncoderStatus s) {
+        EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
+        called_done = true;
+      });
 
   EXPECT_CALL(*mock_audio_encoder_, Encode(_, _, _))
       .WillOnce(Invoke([this](std::unique_ptr<AudioBus> audio_bus,
                               base::TimeTicks capture_time,
-                              AudioEncoder::StatusCB done_cb) {
+                              AudioEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(work_runner_->RunsTasksInCurrentSequence());
-        std::move(done_cb).Run(Status());
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
       }));
 
   base::TimeTicks ts;
@@ -110,15 +112,16 @@ TEST_F(OffloadingAudioEncoderTest, Encode) {
 
 TEST_F(OffloadingAudioEncoderTest, Flush) {
   bool called_done = false;
-  AudioEncoder::StatusCB done_cb = base::BindLambdaForTesting([&](Status s) {
-    EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
-    called_done = true;
-  });
+  AudioEncoder::EncoderStatusCB done_cb =
+      base::BindLambdaForTesting([&](EncoderStatus s) {
+        EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
+        called_done = true;
+      });
 
   EXPECT_CALL(*mock_audio_encoder_, Flush(_))
-      .WillOnce(Invoke([this](AudioEncoder::StatusCB done_cb) {
+      .WillOnce(Invoke([this](AudioEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(work_runner_->RunsTasksInCurrentSequence());
-        std::move(done_cb).Run(Status());
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
       }));
 
   offloading_encoder_->Flush(std::move(done_cb));

@@ -33,13 +33,13 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   // AudioEncoder:
   void Initialize(const Options& options,
                   OutputCB output_callback,
-                  StatusCB done_cb) override;
+                  EncoderStatusCB done_cb) override;
 
   void Encode(std::unique_ptr<AudioBus> audio_bus,
               base::TimeTicks capture_time,
-              StatusCB done_cb) override;
+              EncoderStatusCB done_cb) override;
 
-  void Flush(StatusCB done_cb) override;
+  void Flush(EncoderStatusCB done_cb) override;
 
   static constexpr int kMinBitrate = 6000;
 
@@ -50,7 +50,7 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
 
   CodecDescription PrepareExtraData();
 
-  StatusOr<OwnedOpusEncoder> CreateOpusEncoder();
+  EncoderStatus::Or<OwnedOpusEncoder> CreateOpusEncoder();
 
   AudioParameters input_params_;
 
@@ -81,7 +81,7 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
 
   // Callback for reporting completion and status of the current Flush() or
   // Encoder()
-  StatusCB current_done_cb_;
+  EncoderStatusCB current_done_cb_;
 
   // True if the next output needs to have extra_data in it, only happens once.
   bool need_to_emit_extra_data_ = true;

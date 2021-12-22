@@ -100,7 +100,7 @@ class SoftwareVideoEncoderTest
     }
 
     EXPECT_NE(decoder_, nullptr);
-    decoder_->Initialize(config, false, nullptr, ValidatingStatusCB(),
+    decoder_->Initialize(config, false, nullptr, DecoderStatusCB(),
                          std::move(output_cb), base::NullCallback());
     RunUntilIdle();
   }
@@ -187,7 +187,28 @@ class SoftwareVideoEncoderTest
     }
   }
 
-  VideoEncoder::StatusCB ValidatingStatusCB(base::Location loc = FROM_HERE) {
+  VideoEncoder::EncoderStatusCB ValidatingStatusCB(
+      base::Location loc = FROM_HERE) {
+    struct CallEnforcer {
+      bool called = false;
+      std::string location;
+      ~CallEnforcer() {
+        EXPECT_TRUE(called) << "Callback created: " << location;
+      }
+    };
+    auto enforcer = std::make_unique<CallEnforcer>();
+    enforcer->location = loc.ToString();
+    return base::BindLambdaForTesting(
+        [enforcer{std::move(enforcer)}](EncoderStatus s) {
+          EXPECT_TRUE(s.is_ok())
+              << " Callback created: " << enforcer->location
+              << " Code: " << std::hex << static_cast<StatusCodeType>(s.code())
+              << " Error: " << s.message();
+          enforcer->called = true;
+        });
+  }
+
+  VideoDecoder::DecodeCB DecoderStatusCB(base::Location loc = FROM_HERE) {
     struct CallEnforcer {
       bool called = false;
       std::string location;
@@ -403,7 +424,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
             DecoderBuffer::FromArray(std::move(output.data), output.size);
         buffer->set_timestamp(output.timestamp);
         buffer->set_is_key_frame(output.key_frame);
-        decoder_->Decode(std::move(buffer), ValidatingStatusCB());
+        decoder_->Decode(std::move(buffer), DecoderStatusCB());
       });
 
   VideoDecoder::OutputCB decoder_output_cb =

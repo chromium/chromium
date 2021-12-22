@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "media/base/encoder_status.h"
 #include "media/base/media_log.h"
-#include "media/base/status.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_codec_state.h"
@@ -137,7 +137,7 @@ class MODULES_EXPORT EncoderBase
 
   void TraceQueueSizes() const;
 
-  std::unique_ptr<CodecLogger<media::Status>> logger_;
+  std::unique_ptr<CodecLogger<media::EncoderStatus>> logger_;
 
   std::unique_ptr<MediaEncoderType> media_encoder_;
 

@@ -153,7 +153,7 @@ void RecordingEncoderMuxer::InitializeVideoEncoder(
         // Holds on to the old encoder until it flushes its buffers, then
         // destroys it.
         [](std::unique_ptr<media::VpxVideoEncoder> old_encoder,
-           media::Status status) {},
+           media::EncoderStatus status) {},
         std::move(video_encoder_)));
   }
 
@@ -215,7 +215,7 @@ void RecordingEncoderMuxer::FlushAndFinalize(base::OnceClosure on_done) {
         base::BindOnce(&RecordingEncoderMuxer::OnAudioEncoderFlushed,
                        weak_ptr_factory_.GetWeakPtr(), std::move(on_done)));
   } else {
-    OnAudioEncoderFlushed(std::move(on_done), media::OkStatus());
+    OnAudioEncoderFlushed(std::move(on_done), media::EncoderStatus::Codes::kOk);
   }
 }
 
@@ -260,7 +260,8 @@ void RecordingEncoderMuxer::InitializeAudioEncoder(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void RecordingEncoderMuxer::OnAudioEncoderInitialized(media::Status status) {
+void RecordingEncoderMuxer::OnAudioEncoderInitialized(
+    media::EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!status.is_ok()) {
@@ -278,7 +279,7 @@ void RecordingEncoderMuxer::OnAudioEncoderInitialized(media::Status status) {
 
 void RecordingEncoderMuxer::OnVideoEncoderInitialized(
     media::VpxVideoEncoder* encoder,
-    media::Status status) {
+    media::EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Ignore initialization of encoders that were removed as part of
@@ -362,7 +363,7 @@ void RecordingEncoderMuxer::OnAudioEncoded(
 }
 
 void RecordingEncoderMuxer::OnAudioEncoderFlushed(base::OnceClosure on_done,
-                                                  media::Status status) {
+                                                  media::EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!status.is_ok())
@@ -375,7 +376,7 @@ void RecordingEncoderMuxer::OnAudioEncoderFlushed(base::OnceClosure on_done,
 }
 
 void RecordingEncoderMuxer::OnVideoEncoderFlushed(base::OnceClosure on_done,
-                                                  media::Status status) {
+                                                  media::EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!status.is_ok()) {
@@ -388,7 +389,7 @@ void RecordingEncoderMuxer::OnVideoEncoderFlushed(base::OnceClosure on_done,
 }
 
 void RecordingEncoderMuxer::OnEncoderStatus(bool for_video,
-                                            media::Status status) {
+                                            media::EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (status.is_ok())

@@ -294,17 +294,17 @@ class MockAudioEncoder : public AudioEncoder {
               Initialize,
               (const AudioEncoder::Options& options,
                AudioEncoder::OutputCB output_cb,
-               AudioEncoder::StatusCB done_cb),
+               AudioEncoder::EncoderStatusCB done_cb),
               (override));
 
   MOCK_METHOD(void,
               Encode,
               (std::unique_ptr<AudioBus> audio_bus,
                base::TimeTicks capture_time,
-               AudioEncoder::StatusCB done_cb),
+               AudioEncoder::EncoderStatusCB done_cb),
               (override));
 
-  MOCK_METHOD(void, Flush, (AudioEncoder::StatusCB done_cb), (override));
+  MOCK_METHOD(void, Flush, (AudioEncoder::EncoderStatusCB done_cb), (override));
 
   // A function for mocking destructor calls
   MOCK_METHOD(void, OnDestruct, ());
@@ -325,24 +325,24 @@ class MockVideoEncoder : public VideoEncoder {
               (VideoCodecProfile profile,
                const VideoEncoder::Options& options,
                VideoEncoder::OutputCB output_cb,
-               VideoEncoder::StatusCB done_cb),
+               VideoEncoder::EncoderStatusCB done_cb),
               (override));
 
   MOCK_METHOD(void,
               Encode,
               (scoped_refptr<VideoFrame> frame,
                bool key_frame,
-               VideoEncoder::StatusCB done_cb),
+               VideoEncoder::EncoderStatusCB done_cb),
               (override));
 
   MOCK_METHOD(void,
               ChangeOptions,
               (const VideoEncoder::Options& options,
                VideoEncoder::OutputCB output_cb,
-               VideoEncoder::StatusCB done_cb),
+               VideoEncoder::EncoderStatusCB done_cb),
               (override));
 
-  MOCK_METHOD(void, Flush, (VideoEncoder::StatusCB done_cb), (override));
+  MOCK_METHOD(void, Flush, (VideoEncoder::EncoderStatusCB done_cb), (override));
 
   // A function for mocking destructor calls
   MOCK_METHOD(void, Dtor, ());

@@ -51,14 +51,14 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   void Initialize(VideoCodecProfile profile,
                   const Options& options,
                   OutputCB output_cb,
-                  StatusCB done_cb) override;
+                  EncoderStatusCB done_cb) override;
   void Encode(scoped_refptr<VideoFrame> frame,
               bool key_frame,
-              StatusCB done_cb) override;
+              EncoderStatusCB done_cb) override;
   void ChangeOptions(const Options& options,
                      OutputCB output_cb,
-                     StatusCB done_cb) override;
-  void Flush(StatusCB done_cb) override;
+                     EncoderStatusCB done_cb) override;
+  void Flush(EncoderStatusCB done_cb) override;
 
   // VideoEncodeAccelerator::Client implementation
   void RequireBitstreamBuffers(unsigned int input_count,
@@ -87,32 +87,32 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
     PendingOp();
     ~PendingOp();
 
-    StatusCB done_callback;
+    EncoderStatusCB done_callback;
     base::TimeDelta timestamp;
     gfx::ColorSpace color_space;
   };
 
   void FlushCompleted(bool success);
-  void InitCompleted(Status status);
+  void InitCompleted(EncoderStatus status);
   void InitializeOnAcceleratorThread(VideoCodecProfile profile,
                                      const Options& options,
                                      OutputCB output_cb,
-                                     StatusCB done_cb);
+                                     EncoderStatusCB done_cb);
   void InitializeInternalOnAcceleratorThread();
   void EncodeOnAcceleratorThread(scoped_refptr<VideoFrame> frame,
                                  bool key_frame,
-                                 StatusCB done_cb);
-  void FlushOnAcceleratorThread(StatusCB done_cb);
+                                 EncoderStatusCB done_cb);
+  void FlushOnAcceleratorThread(EncoderStatusCB done_cb);
   void ChangeOptionsOnAcceleratorThread(const Options options,
                                         OutputCB output_cb,
-                                        StatusCB done_cb);
+                                        EncoderStatusCB done_cb);
 
   template <class T>
   T WrapCallback(T cb);
-  StatusOr<scoped_refptr<VideoFrame>> PrepareGpuFrame(
+  EncoderStatus::Or<scoped_refptr<VideoFrame>> PrepareGpuFrame(
       const gfx::Size& size,
       scoped_refptr<VideoFrame> src_frame);
-  StatusOr<scoped_refptr<VideoFrame>> PrepareCpuFrame(
+  EncoderStatus::Or<scoped_refptr<VideoFrame>> PrepareCpuFrame(
       const gfx::Size& size,
       scoped_refptr<VideoFrame> src_frame);
 

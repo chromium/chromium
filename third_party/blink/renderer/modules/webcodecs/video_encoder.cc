@@ -84,8 +84,8 @@
 namespace WTF {
 
 template <>
-struct CrossThreadCopier<media::Status>
-    : public CrossThreadCopierPassThrough<media::Status> {
+struct CrossThreadCopier<media::EncoderStatus>
+    : public CrossThreadCopierPassThrough<media::EncoderStatus> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
@@ -582,9 +582,10 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
   if (!media_encoder_) {
     HandleError(logger_->MakeException(
         "Encoder creation error.",
-        media::Status(media::StatusCode::kEncoderInitializationError,
-                      "Unable to create encoder (most likely unsupported "
-                      "codec/acceleration requirement combination)")));
+        media::EncoderStatus(
+            media::EncoderStatus::Codes::kEncoderInitializationError,
+            "Unable to create encoder (most likely unsupported "
+            "codec/acceleration requirement combination)")));
     request->EndTracing();
     return;
   }
@@ -596,7 +597,8 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
       WrapCrossThreadPersistent(active_config_.Get()), reset_count_));
 
   auto done_callback = [](VideoEncoder* self, Request* req,
-                          media::VideoCodec codec, media::Status status) {
+                          media::VideoCodec codec,
+                          media::EncoderStatus status) {
     if (!self || self->reset_count_ != req->reset_count) {
       req->EndTracing(/*aborted=*/true);
       return;
@@ -606,7 +608,7 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
 
     if (!status.is_ok()) {
       self->HandleError(self->logger_->MakeException(
-          "Encoder initialization error.", status));
+          "Encoder initialization error.", std::move(status)));
     } else {
       UMA_HISTOGRAM_ENUMERATION("Blink.WebCodecs.VideoEncoder.Codec", codec,
                                 media::VideoCodec::kMaxValue);
@@ -658,7 +660,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
   request->StartTracingVideoEncode(keyframe);
 
   auto done_callback = [](VideoEncoder* self, Request* req,
-                          media::Status status) {
+                          media::EncoderStatus status) {
     if (!self || self->reset_count_ != req->reset_count) {
       req->EndTracing(/*aborted=*/true);
       return;
@@ -668,7 +670,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
     self->active_encodes_--;
     if (!status.is_ok()) {
       self->HandleError(
-          self->logger_->MakeException("Encoding error.", status));
+          self->logger_->MakeException("Encoding error.", std::move(status)));
     }
     req->EndTracing();
     self->ProcessRequests();
@@ -695,27 +697,27 @@ void VideoEncoder::ProcessEncode(Request* request) {
       // This will execute shortly after CopyRGBATextureToVideoFrame()
       // completes. |blocking_request_in_progress_| = true will ensure that
       // HasPendingActivity() keeps the VideoEncoder alive long enough.
-      auto blit_done_callback = [](VideoEncoder* self, bool keyframe,
-                                   uint32_t reset_count,
-                                   base::TimeDelta timestamp,
-                                   media::VideoFrameMetadata metadata,
-                                   media::VideoEncoder::StatusCB done_callback,
-                                   scoped_refptr<media::VideoFrame> frame) {
-        if (!self || self->reset_count_ != reset_count || !frame)
-          return;
+      auto blit_done_callback =
+          [](VideoEncoder* self, bool keyframe, uint32_t reset_count,
+             base::TimeDelta timestamp, media::VideoFrameMetadata metadata,
+             media::VideoEncoder::EncoderStatusCB done_callback,
+             scoped_refptr<media::VideoFrame> frame) {
+            if (!self || self->reset_count_ != reset_count || !frame)
+              return;
 
-        // CopyRGBATextureToVideoFrame() operates on mailboxes and not frames,
-        // so we must manually copy over properties relevant to the encoder.
-        frame->set_timestamp(timestamp);
-        frame->set_metadata(metadata);
+            // CopyRGBATextureToVideoFrame() operates on mailboxes and not
+            // frames, so we must manually copy over properties relevant to the
+            // encoder.
+            frame->set_timestamp(timestamp);
+            frame->set_metadata(metadata);
 
-        DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
-        --self->requested_encodes_;
-        self->blocking_request_in_progress_ = false;
-        self->media_encoder_->Encode(std::move(frame), keyframe,
-                                     std::move(done_callback));
-        self->ProcessRequests();
-      };
+            DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+            --self->requested_encodes_;
+            self->blocking_request_in_progress_ = false;
+            self->media_encoder_->Encode(std::move(frame), keyframe,
+                                         std::move(done_callback));
+            self->ProcessRequests();
+          };
 
       auto origin = frame->metadata().texture_origin_is_top_left
                         ? kTopLeft_GrSurfaceOrigin
@@ -778,12 +780,13 @@ void VideoEncoder::ProcessEncode(Request* request) {
   }
 
   if (!frame) {
-    auto status = media::Status(media::StatusCode::kEncoderFailedEncode,
-                                "Can't readback frame textures.");
     callback_runner_->PostTask(
         FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce(
                        done_callback, WrapCrossThreadWeakPersistent(this),
-                       WrapCrossThreadPersistent(request), std::move(status))));
+                       WrapCrossThreadPersistent(request),
+                       media::EncoderStatus(
+                           media::EncoderStatus::Codes::kEncoderFailedEncode,
+                           "Can't readback frame textures."))));
     return;
   }
 
@@ -835,7 +838,7 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
   request->StartTracing();
 
   auto reconf_done_callback = [](VideoEncoder* self, Request* req,
-                                 media::Status status) {
+                                 media::EncoderStatus status) {
     if (!self || self->reset_count_ != req->reset_count) {
       req->EndTracing(/*aborted=*/true);
       return;
@@ -859,7 +862,7 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
 
   auto flush_done_callback = [](VideoEncoder* self, Request* req,
                                 decltype(reconf_done_callback) reconf_callback,
-                                media::Status status) {
+                                media::EncoderStatus status) {
     if (!self || self->reset_count_ != req->reset_count) {
       req->EndTracing(/*aborted=*/true);
       return;
@@ -867,7 +870,7 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
       self->HandleError(self->logger_->MakeException(
-          "Encoder initialization error.", status));
+          "Encoder initialization error.", std::move(status)));
       self->blocking_request_in_progress_ = false;
       req->EndTracing();
       return;
@@ -1010,7 +1013,8 @@ static void isConfigSupportedWithSoftwareOnly(
 
   auto done_callback = [](std::unique_ptr<media::VideoEncoder> sw_encoder,
                           ScriptPromiseResolver* resolver,
-                          VideoEncoderSupport* support, media::Status status) {
+                          VideoEncoderSupport* support,
+                          media::EncoderStatus status) {
     support->setSupported(status.is_ok());
     resolver->Resolve(support);
     DeleteLater(resolver->GetScriptState(), std::move(sw_encoder));

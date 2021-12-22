@@ -364,6 +364,10 @@ mojom("mojom") {
           mojom = "media.mojom.Status"
           cpp = "::media::Status"
         },
+        {
+          mojom = "media.mojom.EncoderStatus"
+          cpp = "::media::EncoderStatus"
+        },
       ]
       traits_headers = [ "status_mojom_traits.h" ]
       traits_sources = [ "status_mojom_traits.cc" ]

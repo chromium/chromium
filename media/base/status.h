@@ -24,6 +24,15 @@ template <typename T, typename U>
 struct StructTraits;
 }  // namespace mojo
 
+#define POST_STATUS_AND_RETURN_ON_FAILURE(eval_to_status, cb, ret) \
+  do {                                                             \
+    const auto EVALUATED = (eval_to_status);                       \
+    if (!EVALUATED.is_ok()) {                                      \
+      cb.Run(std::move(EVALUATED));                                \
+      return ret;                                                  \
+    }                                                              \
+  } while (0)
+
 namespace media {
 
 // See media/base/status.md for details and instructions for
@@ -358,6 +367,9 @@ class MEDIA_EXPORT TypedStatus {
 
  private:
   std::unique_ptr<internal::StatusData> data_;
+
+  // Let the status sink talk about the internal data.
+  friend class StatusSink;
 
   template <typename StatusEnum, typename DataView>
   friend struct mojo::StructTraits;

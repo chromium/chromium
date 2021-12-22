@@ -135,13 +135,13 @@ class RecordingEncoderMuxer {
 
   // Called when the audio encoder is initialized to provide the |status| of
   // the initialization.
-  void OnAudioEncoderInitialized(media::Status status);
+  void OnAudioEncoderInitialized(media::EncoderStatus status);
 
   // Called when the video |encoder| is initialized to provide the |status| of
   // the initialization. If initialization failed, |on_failure_callback_| will
   // be triggered.
   void OnVideoEncoderInitialized(media::VpxVideoEncoder* encoder,
-                                 media::Status status);
+                                 media::EncoderStatus status);
 
   // Performs the actual encoding of the given audio |frame|. It should never be
   // called before the audio encoder is initialized. Audio frames received
@@ -169,16 +169,18 @@ class RecordingEncoderMuxer {
   // Called when the audio encoder flushes all its buffered frames, at which
   // point we can flush the video encoder. |on_done| will be passed to
   // OnVideoEncoderFlushed()
-  void OnAudioEncoderFlushed(base::OnceClosure on_done, media::Status status);
+  void OnAudioEncoderFlushed(base::OnceClosure on_done,
+                             media::EncoderStatus status);
 
   // Called when the video encoder flushes all its buffered frames, at which
   // point we can flush the muxer. |on_done| will be called to signal that
   // flushing is complete.
-  void OnVideoEncoderFlushed(base::OnceClosure on_done, media::Status status);
+  void OnVideoEncoderFlushed(base::OnceClosure on_done,
+                             media::EncoderStatus status);
 
   // Called by both the audio and video encoders to provide the |status| of
   // encoding tasks.
-  void OnEncoderStatus(bool for_video, media::Status status);
+  void OnEncoderStatus(bool for_video, media::EncoderStatus status);
 
   // Notifies the owner of this object (via |on_failure_callback_|) that a
   // failure noted by |status| has occurred during audio or video encoding, or

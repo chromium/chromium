@@ -39,13 +39,13 @@ class MEDIA_EXPORT OffloadingAudioEncoder final : public AudioEncoder {
 
   void Initialize(const Options& options,
                   OutputCB output_cb,
-                  StatusCB done_cb) override;
+                  EncoderStatusCB done_cb) override;
 
   void Encode(std::unique_ptr<AudioBus> audio_bus,
               base::TimeTicks capture_time,
-              StatusCB done_cb) override;
+              EncoderStatusCB done_cb) override;
 
-  void Flush(StatusCB done_cb) override;
+  void Flush(EncoderStatusCB done_cb) override;
 
  private:
   template <class T>

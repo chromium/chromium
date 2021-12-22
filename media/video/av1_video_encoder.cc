@@ -54,14 +54,15 @@ int GetNumberOfThreads(int width) {
   return desired_threads;
 }
 
-Status SetUpAomConfig(const VideoEncoder::Options& opts,
-                      aom_codec_enc_cfg_t* config) {
+EncoderStatus SetUpAomConfig(const VideoEncoder::Options& opts,
+                             aom_codec_enc_cfg_t* config) {
   if (opts.frame_size.width() <= 0 || opts.frame_size.height() <= 0)
-    return Status(StatusCode::kEncoderUnsupportedConfig,
-                  "Negative width or height values.");
+    return EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                         "Negative width or height values.");
 
   if (!opts.frame_size.GetCheckedArea().IsValid())
-    return Status(StatusCode::kEncoderUnsupportedConfig, "Frame is too large.");
+    return EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                         "Frame is too large.");
 
   config->g_profile = 0;  // main
   config->g_input_bit_depth = 8;
@@ -114,10 +115,10 @@ Status SetUpAomConfig(const VideoEncoder::Options& opts,
   config->g_h = opts.frame_size.height();
 
   if (opts.scalability_mode.has_value()) {
-    return Status(StatusCode::kEncoderUnsupportedConfig,
-                  "Unsupported number of temporal layers.");
+    return EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                         "Unsupported number of temporal layers.");
   }
-  return OkStatus();
+  return EncoderStatus::Codes::kOk;
 }
 
 }  // namespace
@@ -127,17 +128,17 @@ Av1VideoEncoder::Av1VideoEncoder() : codec_(nullptr, FreeCodecCtx) {}
 void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
                                  const Options& options,
                                  OutputCB output_cb,
-                                 StatusCB done_cb) {
+                                 EncoderStatusCB done_cb) {
   done_cb = BindToCurrentLoop(std::move(done_cb));
   if (codec_) {
-    std::move(done_cb).Run(StatusCode::kEncoderInitializeTwice);
+    std::move(done_cb).Run(EncoderStatus::Codes::kEncoderInitializeTwice);
     return;
   }
   profile_ = profile;
   if (profile < AV1PROFILE_MIN || profile > AV1PROFILE_MAX) {
-    auto status = Status(StatusCode::kEncoderUnsupportedProfile)
-                      .WithData("profile", profile);
-    std::move(done_cb).Run(status);
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedProfile)
+            .WithData("profile", profile));
     return;
   }
 
@@ -146,18 +147,15 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
   auto error = aom_codec_enc_config_default(aom_codec_av1_cx(), &config_,
                                             AOM_USAGE_REALTIME);
   if (error != AOM_CODEC_OK) {
-    auto status = Status(StatusCode::kEncoderInitializationError,
-                         "Failed to get default AOM config.")
-                      .WithData("error_code", error);
-    std::move(done_cb).Run(status);
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
+                      "Failed to get default AOM config.")
+            .WithData("error_code", error));
     return;
   }
 
-  Status status = SetUpAomConfig(options, &config_);
-  if (!status.is_ok()) {
-    std::move(done_cb).Run(status);
-    return;
-  }
+  POST_STATUS_AND_RETURN_ON_FAILURE(SetUpAomConfig(options, &config_),
+                                    std::move(done_cb), );
 
   // Initialize an encoder instance.
   aom_codec_unique_ptr codec(new aom_codec_ctx_t, FreeCodecCtx);
@@ -165,26 +163,26 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
   aom_codec_flags_t flags = 0;
   error = aom_codec_enc_init(codec.get(), aom_codec_av1_cx(), &config_, flags);
   if (error != AOM_CODEC_OK) {
-    status = Status(StatusCode::kEncoderInitializationError,
-                    "aom_codec_enc_init() failed.")
-                 .WithData("error_code", error)
-                 .WithData("error_message", aom_codec_err_to_string(error));
-    std::move(done_cb).Run(status);
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
+                      "aom_codec_enc_init() failed.")
+            .WithData("error_code", error)
+            .WithData("error_message", aom_codec_err_to_string(error)));
     return;
   }
   DCHECK_NE(codec->name, nullptr);
 
-#define CALL_AOM_CONTROL(key, value)                                           \
-  do {                                                                         \
-    error = aom_codec_control(codec.get(), (key), (value));                    \
-    if (error != AOM_CODEC_OK) {                                               \
-      status = Status(StatusCode::kEncoderInitializationError,                 \
-                      "Setting " #key " failed.")                              \
-                   .WithData("error_code", error)                              \
-                   .WithData("error_message", aom_codec_err_to_string(error)); \
-      std::move(done_cb).Run(status);                                          \
-      return;                                                                  \
-    }                                                                          \
+#define CALL_AOM_CONTROL(key, value)                                       \
+  do {                                                                     \
+    error = aom_codec_control(codec.get(), (key), (value));                \
+    if (error != AOM_CODEC_OK) {                                           \
+      std::move(done_cb).Run(                                              \
+          EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError, \
+                        "Setting " #key " failed.")                        \
+              .WithData("error_code", error)                               \
+              .WithData("error_message", aom_codec_err_to_string(error))); \
+      return;                                                              \
+    }                                                                      \
   } while (false)
 
   CALL_AOM_CONTROL(AV1E_SET_ROW_MT, 1);
@@ -227,21 +225,23 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
   originally_configured_size_ = options.frame_size;
   output_cb_ = BindToCurrentLoop(std::move(output_cb));
   codec_ = std::move(codec);
-  std::move(done_cb).Run(OkStatus());
+  std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
 
 void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                              bool key_frame,
-                             StatusCB done_cb) {
+                             EncoderStatusCB done_cb) {
   done_cb = BindToCurrentLoop(std::move(done_cb));
   if (!codec_) {
-    std::move(done_cb).Run(StatusCode::kEncoderInitializeNeverCompleted);
+    std::move(done_cb).Run(
+        EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
     return;
   }
 
   if (!frame) {
-    std::move(done_cb).Run(Status(StatusCode::kEncoderFailedEncode,
-                                  "No frame provided for encoding."));
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+                      "No frame provided for encoding."));
     return;
   }
 
@@ -253,12 +253,12 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                           frame->format() == PIXEL_FORMAT_ARGB;
   if ((!frame->IsMappable() && !frame->HasGpuMemoryBuffer()) ||
       !supported_format) {
-    Status status =
-        Status(StatusCode::kEncoderFailedEncode, "Unexpected frame format.")
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+                      "Unexpected frame format.")
             .WithData("IsMappable", frame->IsMappable())
             .WithData("HasGpuMemoryBuffer", frame->HasGpuMemoryBuffer())
-            .WithData("format", frame->format());
-    std::move(done_cb).Run(std::move(status));
+            .WithData("format", frame->format()));
     return;
   }
 
@@ -266,8 +266,8 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     frame = ConvertToMemoryMappedFrame(frame);
     if (!frame) {
       std::move(done_cb).Run(
-          Status(StatusCode::kEncoderFailedEncode,
-                 "Convert GMB frame to MemoryMappedFrame failed."));
+          EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+                        "Convert GMB frame to MemoryMappedFrame failed."));
       return;
     }
   }
@@ -278,16 +278,20 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
         is_yuv ? frame->format() : PIXEL_FORMAT_I420, options_.frame_size,
         gfx::Rect(options_.frame_size), options_.frame_size,
         frame->timestamp());
-    Status status;
+
     if (resized_frame) {
-      status = ConvertAndScaleFrame(*frame, *resized_frame, resize_buf_);
+      Status conv_status =
+          ConvertAndScaleFrame(*frame, *resized_frame, resize_buf_);
+      if (!conv_status.is_ok()) {
+        std::move(done_cb).Run(
+            EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode)
+                .AddCause(std::move(conv_status)));
+        return;
+      }
     } else {
-      status = Status(StatusCode::kEncoderFailedEncode,
-                      "Can't allocate a resized frame.");
-    }
-    if (!status.is_ok()) {
-      std::move(done_cb).Run(std::move(status));
-      return;
+      std::move(done_cb).Run(
+          EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
+                        "Can't allocate a resized frame."));
     }
     frame = std::move(resized_frame);
   }
@@ -324,24 +328,26 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
         base::StringPrintf("AOM encoding error: %s (%d)",
                            aom_codec_error_detail(codec_.get()), codec_->err);
     DLOG(ERROR) << msg;
-    std::move(done_cb).Run(Status(StatusCode::kEncoderFailedEncode, msg));
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg));
     return;
   }
   DrainOutputs(frame->timestamp(), frame->ColorSpace());
-  std::move(done_cb).Run(OkStatus());
+  std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
 
 void Av1VideoEncoder::ChangeOptions(const Options& options,
                                     OutputCB output_cb,
-                                    StatusCB done_cb) {
+                                    EncoderStatusCB done_cb) {
   done_cb = BindToCurrentLoop(std::move(done_cb));
   if (!codec_) {
-    std::move(done_cb).Run(StatusCode::kEncoderInitializeNeverCompleted);
+    std::move(done_cb).Run(
+        EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
     return;
   }
   // TODO(crbug.com/1208280) Try to actually adjust setting instead of
   // immediately dismissing configuration change.
-  std::move(done_cb).Run(StatusCode::kEncoderUnsupportedConfig);
+  std::move(done_cb).Run(EncoderStatus::Codes::kEncoderUnsupportedConfig);
 }
 
 base::TimeDelta Av1VideoEncoder::GetFrameDuration(const VideoFrame& frame) {
@@ -382,10 +388,11 @@ void Av1VideoEncoder::DrainOutputs(base::TimeDelta ts,
 
 Av1VideoEncoder::~Av1VideoEncoder() = default;
 
-void Av1VideoEncoder::Flush(StatusCB done_cb) {
+void Av1VideoEncoder::Flush(EncoderStatusCB done_cb) {
   done_cb = BindToCurrentLoop(std::move(done_cb));
   if (!codec_) {
-    std::move(done_cb).Run(StatusCode::kEncoderInitializeNeverCompleted);
+    std::move(done_cb).Run(
+        EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
     return;
   }
 
@@ -396,11 +403,12 @@ void Av1VideoEncoder::Flush(StatusCB done_cb) {
         base::StringPrintf("AOM encoding error: %s (%d)",
                            aom_codec_error_detail(codec_.get()), codec_->err);
     DLOG(ERROR) << msg;
-    std::move(done_cb).Run(Status(StatusCode::kEncoderFailedEncode, msg));
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg));
     return;
   }
   DrainOutputs(base::TimeDelta(), gfx::ColorSpace());
-  std::move(done_cb).Run(OkStatus());
+  std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
 
 }  // namespace media

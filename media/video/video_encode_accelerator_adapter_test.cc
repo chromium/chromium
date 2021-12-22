@@ -147,7 +147,8 @@ class VideoEncodeAcceleratorAdapterTest
     }
   }
 
-  VideoEncoder::StatusCB ValidatingStatusCB(base::Location loc = FROM_HERE) {
+  VideoEncoder::EncoderStatusCB ValidatingStatusCB(
+      base::Location loc = FROM_HERE) {
     struct CallEnforcer {
       bool called = false;
       std::string location;
@@ -158,7 +159,7 @@ class VideoEncodeAcceleratorAdapterTest
     auto enforcer = std::make_unique<CallEnforcer>();
     enforcer->location = loc.ToString();
     return base::BindLambdaForTesting(
-        [this, enforcer{std::move(enforcer)}](Status s) {
+        [this, enforcer{std::move(enforcer)}](EncoderStatus s) {
           EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
           EXPECT_TRUE(s.is_ok()) << " Callback created: " << enforcer->location
                                  << " Error: " << s.message();
@@ -298,7 +299,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, FlushDuringInitialize) {
   auto frame =
       CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(1));
   adapter()->Encode(frame, true, ValidatingStatusCB());
-  adapter()->Flush(base::BindLambdaForTesting([&](Status s) {
+  adapter()->Flush(base::BindLambdaForTesting([&](EncoderStatus s) {
     EXPECT_TRUE(s.is_ok());
     EXPECT_EQ(outputs_count, 1);
   }));
@@ -315,8 +316,9 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, InitializationError) {
         outputs_count++;
       });
 
-  VideoEncoder::StatusCB expect_error_done_cb =
-      base::BindLambdaForTesting([&](Status s) { EXPECT_FALSE(s.is_ok()); });
+  VideoEncoder::EncoderStatusCB expect_error_done_cb =
+      base::BindLambdaForTesting(
+          [&](EncoderStatus s) { EXPECT_FALSE(s.is_ok()); });
 
   vea()->SetEncodingCallback(base::BindLambdaForTesting(
       [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {

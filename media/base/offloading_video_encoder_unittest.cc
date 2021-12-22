@@ -62,18 +62,19 @@ TEST_F(OffloadingVideoEncoderTest, Initialize) {
         EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
         called_output = true;
       });
-  VideoEncoder::StatusCB done_cb = base::BindLambdaForTesting([&](Status s) {
-    EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
-    called_done = true;
-  });
+  VideoEncoder::EncoderStatusCB done_cb =
+      base::BindLambdaForTesting([&](EncoderStatus s) {
+        EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
+        called_done = true;
+      });
 
   EXPECT_CALL(*mock_video_encoder_, Initialize(_, _, _, _))
       .WillOnce(Invoke([this](VideoCodecProfile profile,
                               const VideoEncoder::Options& options,
                               VideoEncoder::OutputCB output_cb,
-                              VideoEncoder::StatusCB done_cb) {
+                              VideoEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(work_runner_->RunsTasksInCurrentSequence());
-        std::move(done_cb).Run(Status());
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
         std::move(output_cb).Run(VideoEncoderOutput(), {});
       }));
 
@@ -86,16 +87,17 @@ TEST_F(OffloadingVideoEncoderTest, Initialize) {
 
 TEST_F(OffloadingVideoEncoderTest, Encode) {
   bool called_done = false;
-  VideoEncoder::StatusCB done_cb = base::BindLambdaForTesting([&](Status s) {
-    EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
-    called_done = true;
-  });
+  VideoEncoder::EncoderStatusCB done_cb =
+      base::BindLambdaForTesting([&](EncoderStatus s) {
+        EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
+        called_done = true;
+      });
 
   EXPECT_CALL(*mock_video_encoder_, Encode(_, _, _))
       .WillOnce(Invoke([this](scoped_refptr<VideoFrame> frame, bool key_frame,
-                              VideoEncoder::StatusCB done_cb) {
+                              VideoEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(work_runner_->RunsTasksInCurrentSequence());
-        std::move(done_cb).Run(Status());
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
       }));
 
   offloading_encoder_->Encode(nullptr, false, std::move(done_cb));
@@ -106,10 +108,11 @@ TEST_F(OffloadingVideoEncoderTest, Encode) {
 TEST_F(OffloadingVideoEncoderTest, ChangeOptions) {
   bool called_done = false;
   VideoEncoder::Options options;
-  VideoEncoder::StatusCB done_cb = base::BindLambdaForTesting([&](Status s) {
-    EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
-    called_done = true;
-  });
+  VideoEncoder::EncoderStatusCB done_cb =
+      base::BindLambdaForTesting([&](EncoderStatus s) {
+        EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
+        called_done = true;
+      });
 
   VideoEncoder::OutputCB output_cb = base::BindRepeating(
       [](VideoEncoderOutput, absl::optional<VideoEncoder::CodecDescription>) {
@@ -118,9 +121,9 @@ TEST_F(OffloadingVideoEncoderTest, ChangeOptions) {
   EXPECT_CALL(*mock_video_encoder_, ChangeOptions(_, _, _))
       .WillOnce(Invoke([this](const VideoEncoder::Options& options,
                               VideoEncoder::OutputCB output_cb,
-                              VideoEncoder::StatusCB done_cb) {
+                              VideoEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(work_runner_->RunsTasksInCurrentSequence());
-        std::move(done_cb).Run(Status());
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
       }));
 
   offloading_encoder_->ChangeOptions(options, std::move(output_cb),
@@ -131,15 +134,16 @@ TEST_F(OffloadingVideoEncoderTest, ChangeOptions) {
 
 TEST_F(OffloadingVideoEncoderTest, Flush) {
   bool called_done = false;
-  VideoEncoder::StatusCB done_cb = base::BindLambdaForTesting([&](Status s) {
-    EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
-    called_done = true;
-  });
+  VideoEncoder::EncoderStatusCB done_cb =
+      base::BindLambdaForTesting([&](EncoderStatus s) {
+        EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
+        called_done = true;
+      });
 
   EXPECT_CALL(*mock_video_encoder_, Flush(_))
-      .WillOnce(Invoke([this](VideoEncoder::StatusCB done_cb) {
+      .WillOnce(Invoke([this](VideoEncoder::EncoderStatusCB done_cb) {
         EXPECT_TRUE(work_runner_->RunsTasksInCurrentSequence());
-        std::move(done_cb).Run(Status());
+        std::move(done_cb).Run(EncoderStatus::Codes::kOk);
       }));
 
   offloading_encoder_->Flush(std::move(done_cb));

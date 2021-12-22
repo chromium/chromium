@@ -502,6 +502,10 @@ struct Status {
   StatusData? internal;
 };
 
+struct EncoderStatus {
+  StatusData? internal;
+};
+
 // Types of media stream, categorised by the media stream's source.
 // The enum values are emitted to metrics. Do not reorder.
 enum MediaStreamType {

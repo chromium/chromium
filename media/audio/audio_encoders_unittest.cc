@@ -76,8 +76,8 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
     encoder_ = std::make_unique<AudioOpusEncoder>();
 
     bool called_done = false;
-    AudioEncoder::StatusCB done_cb =
-        base::BindLambdaForTesting([&](Status error) {
+    AudioEncoder::EncoderStatusCB done_cb =
+        base::BindLambdaForTesting([&](EncoderStatus error) {
           if (!error.is_ok())
             FAIL() << error.message();
           called_done = true;
@@ -100,7 +100,7 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
     audio_source_.OnMoreData(base::TimeDelta(), timestamp, 0, audio_bus.get());
 
     bool called_done = false;
-    auto done_cb = base::BindLambdaForTesting([&](Status error) {
+    auto done_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
       if (!error.is_ok())
         FAIL() << error.message();
       called_done = true;
@@ -155,7 +155,7 @@ TEST_P(AudioEncodersTest, OpusTimestamps) {
     }
 
     bool flush_done = false;
-    auto done_cb = base::BindLambdaForTesting([&](Status error) {
+    auto done_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
       if (!error.is_ok())
         FAIL() << error.message();
       flush_done = true;
@@ -248,7 +248,7 @@ TEST_P(AudioEncodersTest, OpusTimeContinuityBreak) {
   EXPECT_EQ(3u, timestamps.size());
   EXPECT_EQ(ts2, timestamps[2]);
 
-  encoder()->Flush(base::BindOnce([](Status error) {
+  encoder()->Flush(base::BindOnce([](EncoderStatus error) {
     if (!error.is_ok())
       FAIL() << error.message();
   }));
@@ -304,7 +304,7 @@ TEST_P(AudioEncodersTest, FullCycleEncodeDecode) {
   // them before we destroy the encoder. Flushing should trigger the encode
   // callback and we should be able to decode the resulting encoded frames.
   if (total_frames > frames_in_60_ms) {
-    encoder()->Flush(base::BindOnce([](Status error) {
+    encoder()->Flush(base::BindOnce([](EncoderStatus error) {
       if (!error.is_ok())
         FAIL() << error.message();
     }));

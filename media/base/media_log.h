@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -95,7 +96,13 @@ class MEDIA_EXPORT MediaLog {
   void NotifyError(PipelineStatus status);
 
   // Notify a non-ok Status. This method Should _not_ be given an OK status.
-  void NotifyError(Status status);
+  template <typename T>
+  void NotifyError(const TypedStatus<T>& status) {
+    DCHECK(!status.is_ok());
+    std::string output_str;
+    base::JSONWriter::Write(MediaSerialize(status), &output_str);
+    AddMessage(MediaLogMessageLevel::kERROR, output_str);
+  }
 
   // Notify the media log that the player is destroyed. Some implementations
   // will want to change event handling based on this.
