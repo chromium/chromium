@@ -172,7 +172,7 @@ TEST_F('CrElementsIconButtonTest', 'All', function() {
 var CrElementsLazyRenderTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_lazy_render_tests.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_lazy_render_tests.js&host=webui-test';
   }
 };
 
@@ -194,7 +194,7 @@ TEST_F('CrElementsLinkRowTest', 'All', function() {
 var CrElementsRadioButtonTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_radio_button_test.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_radio_button_test.js&host=webui-test';
   }
 };
 
@@ -217,7 +217,7 @@ TEST_F('CrElementsCardRadioButtonTest', 'All', function() {
 var CrElementsRadioGroupTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_radio_group_test.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_radio_group_test.js&host=webui-test';
   }
 };
 
@@ -239,7 +239,7 @@ TEST_F('CrElementsScrollableBehaviorTest', 'All', function() {
 var CrElementsSearchFieldTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_search_field_tests.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_search_field_tests.js&host=webui-test';
   }
 };
 
@@ -263,7 +263,7 @@ GEN('#endif');
 var CrElementsSliderTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_slider_test.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_slider_test.js&host=webui-test';
   }
 };
 
@@ -380,7 +380,7 @@ TEST_F('CrElementsAutoImgTest', 'All', function() {
 var CrElementsToolbarTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_toolbar_test.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_toolbar_test.js&host=webui-test';
   }
 };
 

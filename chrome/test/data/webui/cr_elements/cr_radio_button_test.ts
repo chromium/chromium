@@ -4,17 +4,17 @@
 
 // clang-format off
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+
+import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
 suite('cr-radio-button', function() {
-  /** @type {!CrRadioButtonElement} */
-  let radioButton;
+  let radioButton: CrRadioButtonElement;
 
   setup(function() {
     document.body.innerHTML = '';
-    radioButton = /** @type {!CrRadioButtonElement} */ (
-        document.createElement('cr-radio-button'));
+    radioButton = document.createElement('cr-radio-button');
     document.body.appendChild(radioButton);
   });
 
@@ -22,7 +22,7 @@ suite('cr-radio-button', function() {
     assertTrue(radioButton.hasAttribute('checked'));
     assertEquals('true', radioButton.$.button.getAttribute('aria-checked'));
     assertTrue(
-        getComputedStyle(radioButton.$$('.disc')).backgroundColor !==
+        getComputedStyle(radioButton.$$('.disc')!).backgroundColor !==
         'rgba(0, 0, 0, 0)');
   }
 
@@ -31,7 +31,7 @@ suite('cr-radio-button', function() {
     assertEquals('false', radioButton.$.button.getAttribute('aria-checked'));
     assertEquals(
         'rgba(0, 0, 0, 0)',
-        getComputedStyle(radioButton.$$('.disc')).backgroundColor);
+        getComputedStyle(radioButton.$$('.disc')!).backgroundColor);
   }
 
   function assertDisabled() {
@@ -67,11 +67,12 @@ suite('cr-radio-button', function() {
   });
 
   test('Ripple', function() {
-    assertFalse(!!radioButton.$$('paper-ripple'));
+    assertFalse(!!radioButton.shadowRoot!.querySelector('paper-ripple'));
     radioButton.fire('focus');
-    assertTrue(!!radioButton.$$('paper-ripple'));
-    assertTrue(radioButton.$$('paper-ripple').holdDown);
+    assertTrue(!!radioButton.shadowRoot!.querySelector('paper-ripple'));
+    assertTrue(radioButton.shadowRoot!.querySelector('paper-ripple')!.holdDown);
     radioButton.fire('up');
-    assertFalse(radioButton.$$('paper-ripple').holdDown);
+    assertFalse(
+        radioButton.shadowRoot!.querySelector('paper-ripple')!.holdDown);
   });
 });

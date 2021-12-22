@@ -3,25 +3,23 @@
 // found in the LICENSE file.
 
 // clang-format off
+import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
+
 import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from '../chai_assert.js';
-import {flushTasks} from '../test_util.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr-search-field. */
 suite('cr-search-field', function() {
-  /** @type {!CrSearchFieldElement} */
-  let field;
+  let field: CrSearchFieldElement;
+  let searches: string[]|null = null;
 
-  /** @type {?Array<string>} */
-  let searches = null;
-
-  /** @param {string} term */
-  function simulateSearch(term) {
-    field.shadowRoot.querySelector('#searchInput').value = term;
+  function simulateSearch(term: string) {
+    field.$.searchInput.value = term;
     field.onSearchTermInput();
     field.onSearchTermSearch();
   }
@@ -33,11 +31,10 @@ suite('cr-search-field', function() {
     const base = document.createElement('base');
     base.href = 'chrome://resources/cr_elements/';
     document.head.appendChild(base);
-    field = /** @type {!CrSearchFieldElement} */ (
-        document.createElement('cr-search-field'));
+    field = document.createElement('cr-search-field');
     searches = [];
     field.addEventListener('search-changed', function(event) {
-      searches.push(event.detail);
+      searches!.push((event as CustomEvent<string>).detail);
     });
     document.body.appendChild(field);
   });
@@ -68,12 +65,10 @@ suite('cr-search-field', function() {
     flush();
     assertTrue(field.hasSearchText);
 
-    field.shadowRoot.querySelector('#clearSearch').click();
+    field.$.clearSearch.click();
     assertEquals('', field.getValue());
     await flushTasks();
-    assertEquals(
-        field.shadowRoot.querySelector('#searchInput'),
-        field.root.activeElement);
+    assertEquals(field.$.searchInput, field.shadowRoot!.activeElement);
     assertFalse(field.hasSearchText);
   });
 
@@ -84,12 +79,10 @@ suite('cr-search-field', function() {
     flush();
     assertTrue(field.hasSearchText);
 
-    field.shadowRoot.querySelector('#clearSearch').click();
+    field.$.clearSearch.click();
     assertEquals('', field.getValue());
     await flushTasks();
-    assertEquals(
-        field.shadowRoot.querySelector('#searchInput'),
-        field.root.activeElement);
+    assertEquals(field.$.searchInput, field.shadowRoot!.activeElement);
     assertFalse(field.hasSearchText);
   });
 
@@ -99,7 +92,7 @@ suite('cr-search-field', function() {
     flush();
     assertEquals('query1', field.getValue());
 
-    field.shadowRoot.querySelector('#clearSearch').click();
+    field.$.clearSearch.click();
     assertEquals('', field.getValue());
 
     simulateSearch('query2');
@@ -137,6 +130,6 @@ suite('cr-search-field', function() {
     field.setValue(value, true);
     field.setValue(`  ${value}  `);
     assertTrue(calledSetValue);
-    assertEquals(0, searches.length);
+    assertEquals(0, searches!.length);
   });
 });

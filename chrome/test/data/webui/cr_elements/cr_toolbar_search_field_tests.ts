@@ -3,35 +3,32 @@
 // found in the LICENSE file.
 
 // clang-format off
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
+
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr-toolbar-search-field. */
 suite('cr-toolbar-search-field', function() {
-  /** @type {!CrToolbarSearchFieldElement} */
-  let field;
+  let field: CrToolbarSearchFieldElement;
+  let searches: string[]|null = null;
 
-  /** @type {?Array<string>} */
-  let searches = null;
-
-  /** @param {string} term */
-  function simulateSearch(term) {
-    field.shadowRoot.querySelector('#searchInput').value = term;
+  function simulateSearch(term: string) {
+    field.$.searchInput.value = term;
     field.onSearchTermInput();
     field.onSearchTermSearch();
   }
 
   setup(function() {
     document.body.innerHTML = '';
-    field = /** @type {!CrToolbarSearchFieldElement} */ (
-        document.createElement('cr-toolbar-search-field'));
+    field = document.createElement('cr-toolbar-search-field');
     searches = [];
     field.addEventListener('search-changed', function(event) {
-      searches.push(event.detail);
+      searches!.push((event as CustomEvent<string>).detail);
     });
     document.body.appendChild(field);
   });
@@ -59,19 +56,18 @@ suite('cr-toolbar-search-field', function() {
     assertFalse(field.showingSearch);
     field.click();
     assertTrue(field.showingSearch);
-    const searchInput = /** @type {!HTMLElement} */ (
-        field.shadowRoot.querySelector('#searchInput'));
-    assertEquals(searchInput, field.root.activeElement);
+    const searchInput = /** @type {!HTMLElement} */ (field.$.searchInput);
+    assertEquals(searchInput, field.shadowRoot!.activeElement);
 
-    field.shadowRoot.querySelector('#searchInput').blur();
+    field.$.searchInput.blur();
     assertFalse(field.showingSearch);
 
     field.click();
-    assertEquals(searchInput, field.root.activeElement);
+    assertEquals(searchInput, field.shadowRoot!.activeElement);
 
     pressAndReleaseKeyOn(searchInput, 27, '', 'Escape');
     assertFalse(field.showingSearch, 'Pressing escape closes field.');
-    assertNotEquals(searchInput, field.root.activeElement);
+    assertNotEquals(searchInput, field.shadowRoot!.activeElement);
   });
 
   test('clear search button clears and refocuses input', function() {
@@ -80,14 +76,13 @@ suite('cr-toolbar-search-field', function() {
     flush();
     assertTrue(field.hasSearchText);
 
-    const clearSearch = field.shadowRoot.querySelector('#clearSearch');
+    const clearSearch =
+        field.shadowRoot!.querySelector<HTMLElement>('#clearSearch')!;
     clearSearch.focus();
     clearSearch.click();
     assertTrue(field.showingSearch);
     assertEquals('', field.getValue());
-    assertEquals(
-        field.shadowRoot.querySelector('#searchInput'),
-        field.root.activeElement);
+    assertEquals(field.$.searchInput, field.shadowRoot!.activeElement);
     assertFalse(field.hasSearchText);
     assertFalse(field.spinnerActive);
   });
@@ -98,7 +93,7 @@ suite('cr-toolbar-search-field', function() {
     flush();
     assertEquals('query1', field.getValue());
 
-    field.shadowRoot.querySelector('#clearSearch').click();
+    field.shadowRoot!.querySelector<HTMLElement>('#clearSearch')!.click();
     assertTrue(field.showingSearch);
     assertEquals('', field.getValue());
 
@@ -184,7 +179,7 @@ suite('cr-toolbar-search-field', function() {
       counter++;
       // Calling setValue() with the already existing value should not
       // trigger another 'search-changed' event.
-      field.setValue(event.detail);
+      field.setValue((event as CustomEvent<string>).detail);
     });
 
     field.click();
@@ -196,7 +191,7 @@ suite('cr-toolbar-search-field', function() {
   test('blur does not close field when a search is active', function() {
     field.click();
     simulateSearch('test');
-    field.shadowRoot.querySelector('#searchInput').blur();
+    field.$.searchInput.blur();
 
     assertTrue(field.showingSearch);
   });
@@ -210,13 +205,14 @@ suite('cr-toolbar-search-field', function() {
     assertTrue(field.hasSearchText);
     flush();
 
-    const clearSearch = field.shadowRoot.querySelector('#clearSearch');
+    const clearSearch =
+        field.shadowRoot!.querySelector<HTMLElement>('#clearSearch')!;
     assertFalse(clearSearch.hidden);
     assertTrue(field.showingSearch);
   });
 
   test('closes when value is cleared while unfocused', function() {
-    field.shadowRoot.querySelector('#searchInput').focus();
+    field.$.searchInput.focus();
     simulateSearch('test');
     flush();
 
@@ -227,7 +223,7 @@ suite('cr-toolbar-search-field', function() {
 
     // Does close the field if it is blurred before being cleared.
     simulateSearch('test');
-    field.shadowRoot.querySelector('#searchInput').blur();
+    field.$.searchInput.blur();
     field.setValue('');
     assertFalse(field.showingSearch);
   });

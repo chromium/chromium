@@ -3,43 +3,34 @@
 // found in the LICENSE file.
 
 // clang-format off
+import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
+
 import {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 
-import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {assertEquals, assertNotEquals, assertTrue} from '../chai_assert.js';
-import {eventToPromise, flushTasks} from '../test_util.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 suite('cr_tabs_test', function() {
-  /** @type {!CrTabsElement} */
-  let tabs;
+  let tabs: CrTabsElement;
 
   setup(() => {
     document.body.innerHTML = '';
-    tabs = /** @type {!CrTabsElement} */ (document.createElement('cr-tabs'));
+    tabs = document.createElement('cr-tabs');
     tabs.tabNames = ['tab1', 'tab2', 'tab3'];
     tabs.tabIcons = ['chrome://icon1.png'];
     document.body.appendChild(tabs);
     return flushTasks();
   });
 
-  /**
-   * @param {number} index
-   * @return {!HTMLElement}
-   */
-  function getTabElement(index) {
-    return /** @type {!HTMLElement} */ (
-        tabs.shadowRoot.querySelector(`.tab:nth-of-type(${index + 1})`));
+  function getTabElement(index: number): HTMLElement {
+    return tabs.shadowRoot!.querySelector(`.tab:nth-of-type(${index + 1})`)!;
   }
 
-  /**
-   * @param {Function} uiChange
-   * @param {number} initialSelection
-   * @param {number} expectedSelection
-   */
-  async function checkUiChange(uiChange, initialSelection, expectedSelection) {
+  async function checkUiChange(
+      uiChange: Function, initialSelection: number, expectedSelection: number) {
     tabs.selected = initialSelection;
     if (initialSelection === expectedSelection) {
       uiChange();
@@ -53,28 +44,22 @@ suite('cr_tabs_test', function() {
     assertTrue(!!tabElement);
     assertTrue(tabElement.classList.contains('selected'));
     assertEquals('0', tabElement.getAttribute('tabindex'));
-    const notSelected = tabs.shadowRoot.querySelectorAll('.tab:not(.selected)');
+    const notSelected =
+        tabs.shadowRoot!.querySelectorAll('.tab:not(.selected)');
     assertEquals(2, notSelected.length);
     notSelected.forEach(tab => {
       assertEquals('-1', tab.getAttribute('tabindex'));
     });
   }
 
-  /**
-   * @param {string} key
-   * @param {number} initialSelection
-   * @param {number} expectedSelection
-   */
-  async function checkKey(key, initialSelection, expectedSelection) {
+  async function checkKey(
+      key: string, initialSelection: number, expectedSelection: number) {
     await checkUiChange(
         () => keyDownOn(tabs, 0, [], key), initialSelection, expectedSelection);
   }
 
-  /**
-   * @param {number} initialSelection
-   * @param {number} expectedSelection
-   */
-  async function checkClickTab(initialSelection, expectedSelection) {
+  async function checkClickTab(
+      initialSelection: number, expectedSelection: number) {
     await checkUiChange(
         () => getTabElement(expectedSelection).click(), initialSelection,
         expectedSelection);
@@ -98,11 +83,11 @@ suite('cr_tabs_test', function() {
 
   test('tab icons are optional', () => {
     const tab0 = getTabElement(0);
-    const tabIcon0 = tab0.querySelector('.tab-icon');
+    const tabIcon0 = tab0.querySelector('.tab-icon')!;
     assertNotEquals('none', getComputedStyle(tabIcon0).display);
 
     const tab1 = getTabElement(1);
-    const tabIcon1 = tab1.querySelector('.tab-icon');
+    const tabIcon1 = tab1.querySelector('.tab-icon')!;
     assertEquals('none', getComputedStyle(tabIcon1).display);
   });
 

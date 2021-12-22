@@ -167,7 +167,7 @@ export class CrToolbarSearchFieldElement extends
    * @private
    */
   showSearch_(e) {
-    if (e.target !== this.$.clearSearch) {
+    if (e.target !== this.shadowRoot.querySelector('#clearSearch')) {
       this.showingSearch = true;
     }
   }

@@ -6,20 +6,18 @@
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // clang-format on
 
 suite('cr-lazy-render', function() {
-  /** @type {!CrLazyRenderElement} */
-  let lazy;
+  let lazy: CrLazyRenderElement<HTMLElement>;
 
-  let bind;
+  type BindData = {name: string, checked: boolean};
 
-  suiteSetup(function() {
-  });
+  let bind: HTMLElement&BindData;
 
   setup(function() {
     const template = `
@@ -36,9 +34,8 @@ suite('cr-lazy-render', function() {
           </template>
         </dom-bind>`;
     document.body.innerHTML = template;
-    lazy =
-        /** @type {!CrLazyRenderElement} */ (document.getElementById('lazy'));
-    bind = document.querySelector('dom-bind');
+    lazy = document.body.querySelector('cr-lazy-render')!;
+    bind = document.body.querySelector<HTMLElement&BindData>('dom-bind')!;
   });
 
   test('stamps after get()', function() {
@@ -54,16 +51,16 @@ suite('cr-lazy-render', function() {
     bind.name = 'Wings';
 
     const inner = lazy.get();
-    assertNotEquals(-1, inner.textContent.indexOf('Wings'));
+    assertNotEquals(-1, inner.textContent!.indexOf('Wings'));
     bind.name = 'DC';
-    assertNotEquals(-1, inner.textContent.indexOf('DC'));
+    assertNotEquals(-1, inner.textContent!.indexOf('DC'));
   });
 
   test('two-way binding works', function() {
     bind.checked = true;
 
-    const inner = lazy.get();
-    const checkbox = document.querySelector('cr-checkbox');
+    lazy.get();
+    const checkbox = document.querySelector('cr-checkbox')!;
     assertTrue(checkbox.checked);
     checkbox.click();
     assertFalse(checkbox.checked);

@@ -76,7 +76,7 @@ TEST_F('CrElementsProfileAvatarSelectorTest', 'All', function() {
 var CrElementsTabsTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_tabs_test.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_tabs_test.js&host=webui-test';
   }
 };
 
@@ -98,7 +98,7 @@ TEST_F('CrElementsToggleTest', 'All', function() {
 var CrElementsToolbarSearchFieldTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_toolbar_search_field_tests.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_toolbar_search_field_tests.js&host=webui-test';
   }
 };
 
