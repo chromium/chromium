@@ -738,7 +738,8 @@ void RenderThreadImpl::Init() {
     BindHostReceiver(compositing_mode_reporter_.BindNewPipeAndPassReceiver());
 
     compositing_mode_reporter_->AddCompositingModeWatcher(
-        compositing_mode_watcher_receiver_.BindNewPipeAndPassRemote());
+        compositing_mode_watcher_receiver_.BindNewPipeAndPassRemote(
+            main_thread_scheduler_->CompositorTaskRunner()));
   }
 
   variations_observer_ = std::make_unique<VariationsRenderThreadObserver>();
