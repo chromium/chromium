@@ -1098,9 +1098,9 @@ CanvasRenderingContext2D::getContextAttributes() const {
       CanvasRenderingContext2DSettings::Create();
   settings->setAlpha(CreationAttributes().alpha);
   if (RuntimeEnabledFeatures::CanvasColorManagementEnabled())
-    settings->setColorSpace(GetCanvas2DColorParams().GetColorSpaceAsString());
+    settings->setColorSpace(color_params_.GetColorSpaceAsString());
   if (RuntimeEnabledFeatures::CanvasColorManagementV2Enabled())
-    settings->setPixelFormat(GetCanvas2DColorParams().GetPixelFormatAsString());
+    settings->setPixelFormat(color_params_.GetPixelFormatAsString());
   settings->setDesynchronized(Host()->LowLatencyEnabled());
   if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
           canvas()->GetTopExecutionContext()))

@@ -316,7 +316,8 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
 SkColorInfo CanvasRenderingContextHost::GetRenderingContextSkColorInfo() const {
   if (RenderingContext())
     return RenderingContext()->CanvasRenderingContextSkColorInfo();
-  return SkColorInfo(kN32_SkColorType, kPremul_SkAlphaType, nullptr);
+  return SkColorInfo(kN32_SkColorType, kPremul_SkAlphaType,
+                     SkColorSpace::MakeSRGB());
 }
 
 ScriptPromise CanvasRenderingContextHost::convertToBlob(

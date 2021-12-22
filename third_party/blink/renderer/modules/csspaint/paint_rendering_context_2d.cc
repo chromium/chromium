@@ -123,8 +123,11 @@ sk_sp<PaintFilter> PaintRenderingContext2D::StateGetFilter() {
   return GetState().GetFilterForOffscreenCanvas(container_size_, this);
 }
 
-CanvasColorParams PaintRenderingContext2D::GetCanvas2DColorParams() const {
-  return CanvasColorParams();
+PredefinedColorSpace PaintRenderingContext2D::GetDefaultImageDataColorSpace()
+    const {
+  // PaintRenderingContext2D does not call getImageData or createImageData.
+  NOTREACHED();
+  return PredefinedColorSpace::kSRGB;
 }
 
 void PaintRenderingContext2D::WillOverwriteCanvas() {

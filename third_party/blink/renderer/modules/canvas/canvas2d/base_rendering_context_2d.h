@@ -421,9 +421,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   void UnwindStateStack();
 
-  // The implementations of this will query the CanvasColorParams from the
-  // CanvasRenderingContext.
-  virtual CanvasColorParams GetCanvas2DColorParams() const = 0;
+  // Return the default color space to be used for calls to GetImageData or
+  // CreateImageData.
+  virtual PredefinedColorSpace GetDefaultImageDataColorSpace() const = 0;
 
   virtual bool WritePixels(const SkImageInfo& orig_info,
                            const void* pixels,

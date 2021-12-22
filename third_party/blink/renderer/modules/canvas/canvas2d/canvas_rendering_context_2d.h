@@ -213,10 +213,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                                   ImageDataSettings*,
                                   ExceptionState&) final;
 
-  CanvasColorParams ColorParamsForTest() const {
-    return GetCanvas2DColorParams();
-  }
-
   IdentifiableToken IdentifiableTextToken() const override {
     return identifiability_study_helper_.GetToken();
   }
@@ -236,13 +232,11 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   }
 
  protected:
-  // This reports CanvasColorParams to the CanvasRenderingContext interface.
   CanvasColorParams CanvasRenderingContextColorParams() const override {
     return color_params_;
   }
-  // This reports CanvasColorParams to the BaseRenderingContext2D interface.
-  CanvasColorParams GetCanvas2DColorParams() const override {
-    return color_params_;
+  PredefinedColorSpace GetDefaultImageDataColorSpace() const final {
+    return color_params_.ColorSpace();
   }
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,

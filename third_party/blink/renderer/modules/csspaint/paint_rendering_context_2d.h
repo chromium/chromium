@@ -106,7 +106,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   }
 
  protected:
-  CanvasColorParams GetCanvas2DColorParams() const override;
+  PredefinedColorSpace GetDefaultImageDataColorSpace() const final;
   bool IsPaint2D() const override { return true; }
   void WillOverwriteCanvas() override;
 

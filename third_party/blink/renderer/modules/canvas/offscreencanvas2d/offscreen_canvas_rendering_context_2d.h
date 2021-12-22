@@ -164,13 +164,11 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   void FlushCanvas() override;
 
  protected:
-  // This reports CanvasColorParams to the CanvasRenderingContext interface.
   CanvasColorParams CanvasRenderingContextColorParams() const override {
     return color_params_;
   }
-  // This reports CanvasColorParams to the BaseRenderingContext2D interface.
-  CanvasColorParams GetCanvas2DColorParams() const override {
-    return color_params_;
+  PredefinedColorSpace GetDefaultImageDataColorSpace() const final {
+    return color_params_.ColorSpace();
   }
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,

@@ -1899,7 +1899,7 @@ ImageData* BaseRenderingContext2D::createImageData(
     ExceptionState& exception_state) const {
   ImageData::ValidateAndCreateParams params;
   params.context_2d_error_mode = true;
-  params.default_color_space = GetCanvas2DColorParams().ColorSpace();
+  params.default_color_space = GetDefaultImageDataColorSpace();
   return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), absl::nullopt,
                                       /*settings=*/nullptr, params,
                                       exception_state);
@@ -1912,7 +1912,7 @@ ImageData* BaseRenderingContext2D::createImageData(
     ExceptionState& exception_state) const {
   ImageData::ValidateAndCreateParams params;
   params.context_2d_error_mode = true;
-  params.default_color_space = GetCanvas2DColorParams().ColorSpace();
+  params.default_color_space = GetDefaultImageDataColorSpace();
   return ImageData::ValidateAndCreate(std::abs(sw), std::abs(sh), absl::nullopt,
                                       image_data_settings, params,
                                       exception_state);
@@ -1991,7 +1991,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   ImageData::ValidateAndCreateParams validate_and_create_params;
   validate_and_create_params.context_2d_error_mode = true;
   validate_and_create_params.default_color_space =
-      GetCanvas2DColorParams().ColorSpace();
+      GetDefaultImageDataColorSpace();
 
   if (!CanCreateCanvas2dResourceProvider() || isContextLost()) {
     return ImageData::ValidateAndCreate(
@@ -2129,46 +2129,33 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   gfx::Rect source_rect = dest_rect;
   source_rect.Offset(-dest_offset);
 
-  // Color / format convert ImageData to context 2D settings if needed. Color /
-  // format conversion is not needed only if context 2D and ImageData are both
-  // in sRGB color space and use uint8 pixel storage format. We use RGBA pixel
-  // order for both ImageData and CanvasResourceProvider, therefore no
-  // additional swizzling is needed.
   SkPixmap data_pixmap = data->GetSkPixmap();
-  CanvasColorParams data_color_params(
-      data->GetPredefinedColorSpace(),
-      data->GetImageDataStorageFormat() != ImageDataStorageFormat::kUint8
-          ? CanvasPixelFormat::kF16
-          : CanvasPixelFormat::kUint8,
-      kNonOpaque);
-  if (data_color_params.ColorSpace() != GetCanvas2DColorParams().ColorSpace() ||
-      data_color_params.PixelFormat() !=
-          GetCanvas2DColorParams().PixelFormat() ||
-      GetCanvas2DColorParams().PixelFormat() == CanvasPixelFormat::kF16) {
-    SkImageInfo converted_info = data_pixmap.info();
-    converted_info =
-        converted_info.makeColorType(GetCanvas2DColorParams().GetSkColorType());
-    converted_info = converted_info.makeColorSpace(
-        GetCanvas2DColorParams().GetSkColorSpace());
-    if (converted_info.colorType() == kN32_SkColorType)
-      converted_info = converted_info.makeColorType(kRGBA_8888_SkColorType);
 
-    const size_t converted_data_bytes = converted_info.computeMinByteSize();
-    const size_t converted_row_bytes = converted_info.minRowBytes();
-    if (SkImageInfo::ByteSizeOverflowed(converted_data_bytes))
+  // WritePixels (called by PutByteArray) requires that the source and
+  // destination pixel formats have the same bytes per pixel.
+  if (auto* host = GetCanvasRenderingContextHost()) {
+    SkColorType dest_color_type =
+        host->GetRenderingContextSkColorInfo().colorType();
+    if (SkColorTypeBytesPerPixel(dest_color_type) !=
+        SkColorTypeBytesPerPixel(data_pixmap.colorType())) {
+      SkImageInfo converted_info =
+          data_pixmap.info().makeColorType(dest_color_type);
+      SkBitmap converted_bitmap;
+      if (!converted_bitmap.tryAllocPixels(converted_info)) {
+        exception_state.ThrowRangeError("Out of memory in putImageData");
+        return;
+      }
+      if (!converted_bitmap.writePixels(data_pixmap, 0, 0))
+        NOTREACHED() << "Failed to convert ImageData with writePixels.";
+
+      PutByteArray(converted_bitmap.pixmap(), source_rect, dest_offset);
+      GetPaintCanvasForDraw(gfx::RectToSkIRect(dest_rect),
+                            CanvasPerformanceMonitor::DrawType::kImageData);
       return;
-    std::unique_ptr<uint8_t[]> converted_pixels(
-        new uint8_t[converted_data_bytes]);
-    if (data_pixmap.readPixels(converted_info, converted_pixels.get(),
-                               converted_row_bytes)) {
-      PutByteArray(
-          SkPixmap(converted_info, converted_pixels.get(), converted_row_bytes),
-          source_rect, dest_offset);
     }
-  } else {
-    PutByteArray(data_pixmap, source_rect, dest_offset);
   }
 
+  PutByteArray(data_pixmap, source_rect, dest_offset);
   GetPaintCanvasForDraw(gfx::RectToSkIRect(dest_rect),
                         CanvasPerformanceMonitor::DrawType::kImageData);
 }
@@ -2189,7 +2176,7 @@ void BaseRenderingContext2D::PutByteArray(const SkPixmap& source,
 
   SkImageInfo info =
       source.info().makeWH(source_rect.width(), source_rect.height());
-  if (kOpaque == GetCanvas2DColorParams().GetOpacityMode()) {
+  if (!HasAlpha()) {
     // If the surface is opaque, tell it that we are writing opaque
     // pixels.  Writing non-opaque pixels to opaque is undefined in
     // Skia.  There is some discussion about whether it should be
@@ -2199,8 +2186,6 @@ void BaseRenderingContext2D::PutByteArray(const SkPixmap& source,
   } else {
     info = info.makeAlphaType(kUnpremul_SkAlphaType);
   }
-  if (info.colorType() == kN32_SkColorType)
-    info = info.makeColorType(kRGBA_8888_SkColorType);
 
   WritePixels(info, source.addr(source_rect.x(), source_rect.y()),
               source.rowBytes(), dest_x, dest_y);
