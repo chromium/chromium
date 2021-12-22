@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "base/check.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/subapps/sub_apps_provider.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -15,7 +17,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -24,15 +25,25 @@ namespace blink {
 
 namespace {
 
+String SubAppsProviderResultToString(
+    mojom::blink::SubAppsProviderResult value) {
+  switch (value) {
+    case mojom::blink::SubAppsProviderResult::kSuccess:
+      return "success";
+    case mojom::blink::SubAppsProviderResult::kFailure:
+      return "failure";
+  }
+}
+
 // We get called back from the SubAppsProvider mojo service (inside the browser
 // process), pass on the result to the calling context.
 void OnAddSubApp(ScriptPromiseResolver* resolver,
+                 mojo::Remote<mojom::blink::SubAppsProvider> /* ignored */,
                  mojom::blink::SubAppsProviderResult result) {
   if (result == mojom::blink::SubAppsProviderResult::kSuccess) {
-    resolver->Resolve();
+    resolver->Resolve(SubAppsProviderResultToString(result));
   } else {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kOperationError, "Unable to add given sub-app."));
+    resolver->Reject(SubAppsProviderResultToString(result));
   }
 }
 
@@ -58,50 +69,49 @@ void SubApps::Trace(Visitor* visitor) const {
   Supplement<Navigator>::Trace(visitor);
 }
 
-mojo::Remote<mojom::blink::SubAppsProvider>& SubApps::GetProvider() {
-  if (!provider_.is_bound()) {
-    GetSupplementable()
-        ->GetExecutionContext()
-        ->GetBrowserInterfaceBroker()
-        .GetInterface(provider_.BindNewPipeAndPassReceiver());
-  }
-  return provider_;
-}
-
 ScriptPromise SubApps::add(ScriptState* script_state,
-                           const String& install_url,
-                           ExceptionState& exception_state) {
+                           const String& install_url) {
   Navigator* const navigator = GetSupplementable();
   // [SecureContext] from the IDL ensures this.
   DCHECK(ExecutionContext::From(script_state)->IsSecureContext());
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   if (!navigator->DomWindow()) {
-    exception_state.ThrowDOMException(
+    auto* exception = MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "The object is no longer associated to a document.");
-    return ScriptPromise();
+    resolver->Reject(exception);
+    return resolver->Promise();
   }
 
   if (!navigator->DomWindow()->GetFrame()->IsMainFrame()) {
-    exception_state.ThrowDOMException(
+    auto* exception = MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "API is only supported in top-level browsing contexts.");
-    return ScriptPromise();
+    resolver->Reject(exception);
+    return resolver->Promise();
   }
 
   KURL completed_url = KURL(navigator->DomWindow()->Url(), install_url);
   if (!url::Origin::Create(navigator->DomWindow()->Url())
            .IsSameOriginWith(url::Origin::Create(completed_url))) {
-    exception_state.ThrowDOMException(
+    auto* exception = MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "API argument must be a relative path or a fully qualified URL matching"
         " the origin of the caller.");
-    return ScriptPromise();
+    resolver->Reject(exception);
+    return resolver->Promise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  GetProvider()->Add(completed_url.GetPath(),
-                     WTF::Bind(&OnAddSubApp, WrapPersistent(resolver)));
+  mojo::Remote<mojom::blink::SubAppsProvider> provider;
+  ExecutionContext::From(script_state)
+      ->GetBrowserInterfaceBroker()
+      .GetInterface(provider.BindNewPipeAndPassReceiver());
+
+  auto* raw_provider = provider.get();
+  raw_provider->Add(
+      completed_url.GetPath(),
+      WTF::Bind(&OnAddSubApp, WrapPersistent(resolver), std::move(provider)));
 
   return resolver->Promise();
 }

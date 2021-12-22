@@ -718,20 +718,6 @@ std::vector<AppId> WebAppRegistrar::GetAppIds() const {
   return GetAppIdsForAppSet(GetApps());
 }
 
-std::vector<AppId> WebAppRegistrar::GetAllSubAppIds(
-    const AppId& parent_app_id) const {
-  std::vector<AppId> sub_app_ids;
-
-  for (const WebApp& app : GetApps()) {
-    if (app.parent_app_id().has_value() &&
-        *app.parent_app_id() == parent_app_id) {
-      sub_app_ids.push_back(app.app_id());
-    }
-  }
-
-  return sub_app_ids;
-}
-
 RunOnOsLoginMode WebAppRegistrar::GetAppRunOnOsLoginMode(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);

@@ -5,15 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SUBAPPS_SUB_APPS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SUBAPPS_SUB_APPS_H_
 
-#include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/subapps/sub_apps_provider.mojom-blink.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
-class ExceptionState;
 class Navigator;
 class ScriptPromise;
 class ScriptState;
@@ -33,12 +30,7 @@ class SubApps : public ScriptWrappable, public Supplement<Navigator> {
   void Trace(Visitor*) const override;
 
   // SubApps API.
-  ScriptPromise add(ScriptState*, const String& install_url, ExceptionState&);
-
- private:
-  mojo::Remote<mojom::blink::SubAppsProvider>& GetProvider();
-
-  mojo::Remote<mojom::blink::SubAppsProvider> provider_;
+  ScriptPromise add(ScriptState*, const String&);
 };
 
 }  // namespace blink
