@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.js';
-import {CrActionMenuElement, SaveRequestType, ViewerDownloadControlsElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {SaveRequestType, ViewerDownloadControlsElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 const tests = [
   /**
