@@ -104,6 +104,54 @@
   _accountManagerServiceObserver.reset();
 }
 
+- (void)
+    cancelSigninWithIdentitySigninState:(IdentitySigninState)signinStateOnStart
+                  signinIdentityOnStart:(ChromeIdentity*)signinIdentityOnStart {
+  [self.authenticationFlow cancelAndDismissAnimated:NO];
+
+  self.syncService->GetUserSettings()->SetSyncRequested(false);
+  switch (signinStateOnStart) {
+    case IdentitySigninStateSignedOut: {
+      self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
+                                          /*force_clear_browsing_data=*/false,
+                                          nil);
+      break;
+    }
+    case IdentitySigninStateSignedInWithSyncDisabled: {
+      DCHECK(!self.authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSync));
+      if ([self.authenticationService->GetPrimaryIdentity(
+              signin::ConsentLevel::kSignin) isEqual:signinIdentityOnStart]) {
+        // Can't be synced in this option because sync has to be disabled.
+        _syncService->StopAndClear();
+      } else {
+        __weak __typeof(self) weakSelf = self;
+        self.authenticationService->SignOut(
+            signin_metrics::ABORT_SIGNIN,
+            /*force_clear_browsing_data=*/false, ^() {
+              AuthenticationService* authenticationService =
+                  weakSelf.authenticationService;
+              ChromeIdentity* identity = signinIdentityOnStart;
+              ChromeAccountManagerService* accountManagerService =
+                  weakSelf.accountManagerService;
+              if (authenticationService && identity &&
+                  accountManagerService->IsValidIdentity(identity)) {
+                // Sign back in with a valid identity.
+                authenticationService->SignIn(identity);
+              }
+            });
+      }
+      break;
+    }
+    case IdentitySigninStateSignedInWithSyncEnabled: {
+      // This view wouldn't be shown if sync is enabled, so this option
+      // shouldn't be reached.
+      NOTREACHED();
+      break;
+    }
+  }
+}
+
 - (void)startSyncWithConfirmationID:(const int)confirmationID
                          consentIDs:(NSArray<NSNumber*>*)consentIDs
                  authenticationFlow:(AuthenticationFlow*)authenticationFlow {

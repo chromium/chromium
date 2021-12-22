@@ -92,6 +92,9 @@
     SigninCoordinator* advancedSettingsSigninCoordinator;
 // Browser sign-in state to revert to in case sync is canceled.
 @property(nonatomic, assign) IdentitySigninState signinStateOnStart;
+// Sign-in identity when the coordiantor starts. This is used as the identity to
+// revert to in case sync is canceled.
+@property(nonatomic, strong) ChromeIdentity* signinIdentityOnStart;
 
 @end
 
@@ -128,6 +131,11 @@
 
 - (void)start {
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
+
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
+  self.signinIdentityOnStart =
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
   if (!signin::IsSigninAllowedByPolicy() ||
       IsSyncDisabledByPolicy(browserState)) {
@@ -465,6 +473,12 @@
 
   [self.advancedSettingsSigninCoordinator stop];
   self.advancedSettingsSigninCoordinator = nil;
+
+  // Should not stay signed in. Only sign-in the user when they selects the
+  // option to or when they are already signed in.
+  [self.mediator
+      cancelSigninWithIdentitySigninState:self.signinStateOnStart
+                    signinIdentityOnStart:self.signinIdentityOnStart];
 }
 
 @end
