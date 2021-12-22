@@ -13,6 +13,9 @@ import {WindowProxy} from '../window_proxy.js';
 /** @typedef {function(): !Promise<?HTMLElement>} */
 export let InitializeModuleCallback;
 
+/** @typedef {function(): !Promise<!HTMLElement>} */
+export let InitializeModuleCallbackV2;
+
 /** @typedef {{element: !HTMLElement, descriptor: !ModuleDescriptor}} */
 export let Module;
 
@@ -66,5 +69,27 @@ export class ModuleDescriptor {
     recordDuration('NewTabPage.Modules.LoadDuration', duration);
     recordDuration(`NewTabPage.Modules.LoadDuration.${this.id_}`, duration);
     return element;
+  }
+}
+
+export class ModuleDescriptorV2 extends ModuleDescriptor {
+  /**
+   * @param {string} id
+   * @param {string} name
+   * @param {!InitializeModuleCallbackV2} initializeCallback
+   */
+  constructor(id, name, initializeCallback) {
+    super(id, name, initializeCallback);
+  }
+
+  /**
+   * Like |ModuleDescriptor.initialize()| but returns an empty element on
+   * timeout.
+   * @param {number} timeout
+   * @return {!Promise<!HTMLElement>}
+   */
+  async initialize(timeout) {
+    return (await super.initialize(timeout)) ||
+        /** @type {!HTMLElement} */ (document.createElement('div'));
   }
 }

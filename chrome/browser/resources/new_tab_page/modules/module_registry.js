@@ -6,7 +6,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 
 import {Module, ModuleDescriptor} from './module_descriptor.js';
-import {descriptors} from './module_descriptors.js';
+import {descriptors, descriptorsV2} from './module_descriptors.js';
 
 /**
  * @fileoverview The module registry holds the descriptors of NTP modules and
@@ -19,7 +19,11 @@ let instance = null;
 export class ModuleRegistry {
   /** @return {!ModuleRegistry} */
   static getInstance() {
-    return instance || (instance = new ModuleRegistry(descriptors));
+    return instance ||
+        (instance = new ModuleRegistry(
+             loadTimeData.getBoolean('modulesRedesignedEnabled') ?
+                 descriptorsV2 :
+                 descriptors));
   }
 
   /** @param {ModuleRegistry} newInstance */

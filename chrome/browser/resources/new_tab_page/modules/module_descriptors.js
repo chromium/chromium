@@ -15,13 +15,16 @@ import {driveDescriptor as driveV2Descriptor} from './drive_v2/module.js';
 // <if expr="not is_official_build">
 import {dummyDescriptor, dummyDescriptor2} from './dummy/module.js';
 // </if>
-import {ModuleDescriptor} from './module_descriptor.js';
+import {ModuleDescriptor, ModuleDescriptorV2} from './module_descriptor.js';
 import {photosDescriptor} from './photos/module.js';
-import {recipeTasksDescriptor, shoppingTasksDescriptor} from './task_module/module.js';
 import {recipeTasksDescriptor as recipeTasksV2Descriptor} from './recipes_v2/module.js';
+import {recipeTasksDescriptor, shoppingTasksDescriptor} from './task_module/module.js';
 
 /** @type {!Array<!ModuleDescriptor>} */
 export const descriptors = [];
+
+/** @type {!Array<!ModuleDescriptorV2>} */
+export const descriptorsV2 = [];
 
 if (loadTimeData.getBoolean('shoppingTasksModuleEnabled')) {
   descriptors.push(shoppingTasksDescriptor);
@@ -29,7 +32,7 @@ if (loadTimeData.getBoolean('shoppingTasksModuleEnabled')) {
 
 if (loadTimeData.getBoolean('recipeTasksModuleEnabled')) {
   if (loadTimeData.getBoolean('modulesRedesignedEnabled')) {
-    descriptors.push(recipeTasksV2Descriptor);
+    descriptorsV2.push(recipeTasksV2Descriptor);
   } else {
     descriptors.push(recipeTasksDescriptor);
   }
@@ -37,7 +40,7 @@ if (loadTimeData.getBoolean('recipeTasksModuleEnabled')) {
 
 if (loadTimeData.getBoolean('chromeCartModuleEnabled')) {
   if (loadTimeData.getBoolean('modulesRedesignedEnabled')) {
-    descriptors.push(chromeCartV2Descriptor);
+    descriptorsV2.push(chromeCartV2Descriptor);
   } else {
     descriptors.push(chromeCartDescriptor);
   }
@@ -45,7 +48,7 @@ if (loadTimeData.getBoolean('chromeCartModuleEnabled')) {
 
 if (loadTimeData.getBoolean('driveModuleEnabled')) {
   if (loadTimeData.getBoolean('modulesRedesignedEnabled')) {
-    descriptors.push(driveV2Descriptor);
+    descriptorsV2.push(driveV2Descriptor);
   } else {
     descriptors.push(driveDescriptor);
   }

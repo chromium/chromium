@@ -38,7 +38,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       loadTimeData.overrideValues({ruleBasedDiscountEnabled: false});
     });
 
-    test('creates no module if no cart item', async () => {
+    test('creates empty module if no cart item', async () => {
       // Arrange.
       handler.setResultFor('getMerchantCarts', Promise.resolve({carts: []}));
 
@@ -47,10 +47,10 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
       // Assert.
       assertEquals(1, handler.getCallCount('getMerchantCarts'));
-      assertEquals(null, moduleElement);
+      assertTrue(!!moduleElement);
     });
 
-    test('creates module if cart item', async () => {
+    test('creates filled module if cart item', async () => {
       const carts = [
         {
           merchant: 'Amazon',

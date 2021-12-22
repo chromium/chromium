@@ -75,12 +75,12 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     assertEquals('https://caz.com/', urls[2].href);
   });
 
-  test('documents do not show without data', async () => {
+  test('empty module shows without data', async () => {
     handler.setResultFor('getFiles', Promise.resolve({files: []}));
 
     const module = await driveV2Descriptor.initialize(0);
     await handler.whenCalled('getFiles');
-    assertTrue(!module);
+    assertTrue(!!module);
   });
 
   test('module has height of 86 with only one file', async () => {
