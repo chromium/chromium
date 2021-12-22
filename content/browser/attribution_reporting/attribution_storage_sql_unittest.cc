@@ -20,6 +20,7 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/storable_trigger.h"
 #include "sql/database.h"
+#include "sql/meta_table.h"
 #include "sql/test/scoped_error_expecter.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -185,6 +186,29 @@ TEST_F(AttributionStorageSqlTest, CorruptDatabase_RecoveredOnOpen) {
   EXPECT_THAT(storage()->GetAttributionsToReport(clock()->Now()), SizeIs(1));
 
   EXPECT_TRUE(expecter.SawExpectedErrors());
+}
+
+TEST_F(AttributionStorageSqlTest, VersionTooNew_RazesDB) {
+  OpenDatabase();
+  AddReportToStorage();
+  ASSERT_THAT(storage()->GetAttributionsToReport(clock()->Now()), SizeIs(1));
+  CloseDatabase();
+
+  {
+    sql::Database raw_db;
+    EXPECT_TRUE(raw_db.Open(db_path()));
+
+    sql::MetaTable meta;
+    // The values here are irrelevant, as the meta table already exists.
+    ASSERT_TRUE(meta.Init(&raw_db, /*version=*/1, /*compatible_version=*/1));
+
+    meta.SetVersionNumber(meta.GetVersionNumber() + 1);
+    meta.SetCompatibleVersionNumber(meta.GetCompatibleVersionNumber() + 1);
+  }
+
+  // The DB should be razed because the version is too new.
+  ASSERT_NO_FATAL_FAILURE(OpenDatabase());
+  ASSERT_THAT(storage()->GetAttributionsToReport(clock()->Now()), IsEmpty());
 }
 
 //  Create an impression with two conversions (C1 and C2). Craft a query that

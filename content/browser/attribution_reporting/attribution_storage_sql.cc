@@ -1460,6 +1460,7 @@ bool AttributionStorageSql::InitializeSchema(bool db_empty) {
     // Note that this also razes the meta table, so it will need to be
     // initialized again.
     db_->Raze();
+    meta_table_.Reset();
     return CreateSchema();
   }
 
