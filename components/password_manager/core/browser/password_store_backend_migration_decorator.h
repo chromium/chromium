@@ -82,6 +82,10 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
   // Creates 'migrator_' and starts migration process.
   void StartMigration();
 
+  // React on sync changes to keep GMS Core local storage up-to-date.
+  // TODO(https://crbug.com/) Remove this method when no longer needed.
+  void SyncStatusChanged();
+
   std::unique_ptr<PasswordStoreBackend> built_in_backend_;
   std::unique_ptr<PasswordStoreBackend> android_backend_;
 

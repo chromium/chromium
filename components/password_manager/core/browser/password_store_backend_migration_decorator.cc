@@ -5,10 +5,12 @@
 #include "components/password_manager/core/browser/password_store_backend_migration_decorator.h"
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/built_in_backend_to_android_backend_migrator.h"
 #include "components/password_manager/core/browser/field_info_table.h"
 #include "components/password_manager/core/browser/password_store_proxy_backend.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 
@@ -50,6 +52,24 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
+  base::RepeatingClosure handle_sync_status_change = base::BindRepeating(
+      &PasswordStoreBackendMigrationDecorator::SyncStatusChanged,
+      weak_ptr_factory_.GetWeakPtr());
+
+  // |sync_enabled_or_disabled_cb| is called on a background sequence so it
+  // should be posted to the main sequence before invoking
+  // PasswordStoreBackendMigrationDecorator::SyncStatusChanged().
+  base::RepeatingClosure handle_sync_status_change_on_main_thread =
+      base::BindRepeating(
+          base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
+          base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
+          std::move(handle_sync_status_change));
+
+  // Inject nested callback to listen for sync status changes.
+  sync_enabled_or_disabled_cb =
+      std::move(handle_sync_status_change_on_main_thread)
+          .Then(std::move(sync_enabled_or_disabled_cb));
+
   active_backend_->InitBackend(std::move(remote_form_changes_received),
                                std::move(sync_enabled_or_disabled_cb),
                                std::move(completion));
@@ -177,6 +197,18 @@ void PasswordStoreBackendMigrationDecorator::StartMigration() {
       built_in_backend_.get(), android_backend_.get(), prefs_,
       is_syncing_passwords_callback_);
   migrator_->StartMigrationIfNecessary();
+}
+
+void PasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
+  if (is_syncing_passwords_callback_.Run()) {
+    // Sync was enabled. Delete all the passwords from GMS Core local storage.
+    // TODO(https://crbug.com/1278748) Implement.
+  } else {
+    // Clear migration pref to force rerun of initial migration of passwords
+    // from Chrome to GMS Core local storage.
+    prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
+                       0);
+  }
 }
 
 }  // namespace password_manager
