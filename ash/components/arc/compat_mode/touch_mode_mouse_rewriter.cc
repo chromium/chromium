@@ -96,86 +96,29 @@ ui::EventDispatchDetails TouchModeMouseRewriter::RewriteEvent(
   // caption bar.
   if (!target || target->GetType() != aura::client::WINDOW_TYPE_CONTROL)
     return SendEvent(continuation, &event);
-  bool found = false;
-  // TODO(b/202679170): Verify that it does not affect performance before
-  // flipping the flag, and fix it if necessary.
-  while (target != nullptr) {
-    if (enabled_windows_.count(target)) {
-      found = true;
-      break;
-    }
-    target = target->parent();
-  }
-  if (!found)
-    return SendEvent(continuation, &event);
 
-  if (base::FeatureList::IsEnabled(arc::kMouseWheelSmoothScroll) &&
-      event.IsMouseWheelEvent()) {
-    const ui::MouseWheelEvent& wheel_event = *event.AsMouseWheelEvent();
-    const bool started = !scroll_timeout_.is_zero();
-    scroll_y_offset_ += kWheelToSmoothScrollScale * wheel_event.y_offset();
-    scroll_timeout_ = kSmoothScrollTimeout;
-    if (started) {
-      ui::ScrollEvent fling_cancel_event(
-          ui::ET_SCROLL_FLING_CANCEL, wheel_event.location_f(),
-          wheel_event.root_location_f(), wheel_event.time_stamp(), 0, 0, 0, 0,
-          0, 0);
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(&TouchModeMouseRewriter::SendScrollEvent,
-                                    weak_ptr_factory_.GetWeakPtr(), wheel_event,
-                                    continuation));
-      return SendEvent(continuation, &fling_cancel_event);
-    }
-    return DiscardEvent(continuation);
-  }
+  const bool in_resize_locked = IsInResizeLockedWindow(target);
+  if (event.IsMouseWheelEvent()) {
+    if (!base::FeatureList::IsEnabled(arc::kMouseWheelSmoothScroll))
+      return SendEvent(continuation, &event);
 
-  if (!base::FeatureList::IsEnabled(arc::kRightClickLongPress))
-    return SendEvent(continuation, &event);
+    if (!in_resize_locked)
+      return SendEvent(continuation, &event);
+
+    return RewriteMouseWheelEvent(*event.AsMouseWheelEvent(), continuation);
+  }
 
   const ui::MouseEvent& mouse_event = *event.AsMouseEvent();
-  if (mouse_event.IsRightMouseButton()) {
-    // 1. If there is already an ongoing simulated long press, discard the
-    //    subsequent right click.
-    // 2. If the left button is currently pressed, discard the right click.
-    // 3. Discard events that is not a right press.
-    if (release_event_scheduled_ || left_pressed_ ||
-        mouse_event.type() != ui::ET_MOUSE_PRESSED) {
-      return DiscardEvent(continuation);
-    }
-    // Schedule the release event after |kLongPressInterval|.
-    release_event_scheduled_ = true;
-    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&TouchModeMouseRewriter::SendReleaseEvent,
-                       weak_ptr_factory_.GetWeakPtr(), mouse_event,
-                       continuation),
-        kLongPressInterval);
-    // Send the press event now.
-    ui::MouseEvent press_event(
-        ui::ET_MOUSE_PRESSED, mouse_event.location(),
-        mouse_event.root_location(), mouse_event.time_stamp(),
-        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
-    return SendEvent(continuation, &press_event);
-  } else if (mouse_event.IsLeftMouseButton()) {
-    if (mouse_event.type() == ui::ET_MOUSE_PRESSED)
-      left_pressed_ = true;
-    else if (mouse_event.type() == ui::ET_MOUSE_RELEASED)
-      left_pressed_ = false;
-    // Discard a release event that corresponds to a previously discarded press
-    // event.
-    if (discard_next_left_release_ &&
-        mouse_event.type() == ui::ET_MOUSE_RELEASED) {
-      discard_next_left_release_ = false;
-      return DiscardEvent(continuation);
-    }
-    // Discard the left click if there is an ongoing simulated long press.
-    if (release_event_scheduled_) {
-      if (mouse_event.type() == ui::ET_MOUSE_PRESSED)
-        discard_next_left_release_ = true;
-      return DiscardEvent(continuation);
-    }
-    return SendEvent(continuation, &event);
+  if (mouse_event.IsRightMouseButton() || mouse_event.IsLeftMouseButton()) {
+    if (!base::FeatureList::IsEnabled(arc::kRightClickLongPress))
+      return SendEvent(continuation, &event);
+
+    if (!in_resize_locked)
+      return SendEvent(continuation, &event);
+
+    return RewriteMouseClickEvent(mouse_event, continuation);
   }
+
   return SendEvent(continuation, &event);
 }
 
@@ -217,6 +160,84 @@ void TouchModeMouseRewriter::SendScrollEvent(
                        continuation),
         kSmoothScrollEventInterval);
   }
+}
+
+ui::EventDispatchDetails TouchModeMouseRewriter::RewriteMouseWheelEvent(
+    const ui::MouseWheelEvent& event,
+    const Continuation continuation) {
+  const bool started = !scroll_timeout_.is_zero();
+  scroll_y_offset_ += kWheelToSmoothScrollScale * event.y_offset();
+  scroll_timeout_ = kSmoothScrollTimeout;
+  if (started) {
+    ui::ScrollEvent fling_cancel_event(
+        ui::ET_SCROLL_FLING_CANCEL, event.location_f(), event.root_location_f(),
+        event.time_stamp(), 0, 0, 0, 0, 0, 0);
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&TouchModeMouseRewriter::SendScrollEvent,
+                       weak_ptr_factory_.GetWeakPtr(), event, continuation));
+    return SendEvent(continuation, &fling_cancel_event);
+  }
+  return DiscardEvent(continuation);
+}
+
+ui::EventDispatchDetails TouchModeMouseRewriter::RewriteMouseClickEvent(
+    const ui::MouseEvent& event,
+    const Continuation continuation) {
+  if (event.IsRightMouseButton()) {
+    // 1. If there is already an ongoing simulated long press, discard the
+    //    subsequent right click.
+    // 2. If the left button is currently pressed, discard the right click.
+    // 3. Discard events that is not a right press.
+    if (release_event_scheduled_ || left_pressed_ ||
+        event.type() != ui::ET_MOUSE_PRESSED) {
+      return DiscardEvent(continuation);
+    }
+    // Schedule the release event after |kLongPressInterval|.
+    release_event_scheduled_ = true;
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&TouchModeMouseRewriter::SendReleaseEvent,
+                       weak_ptr_factory_.GetWeakPtr(), event, continuation),
+        kLongPressInterval);
+    // Send the press event now.
+    ui::MouseEvent press_event(
+        ui::ET_MOUSE_PRESSED, event.location(), event.root_location(),
+        event.time_stamp(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+    return SendEvent(continuation, &press_event);
+  } else if (event.IsLeftMouseButton()) {
+    if (event.type() == ui::ET_MOUSE_PRESSED)
+      left_pressed_ = true;
+    else if (event.type() == ui::ET_MOUSE_RELEASED)
+      left_pressed_ = false;
+    // Discard a release event that corresponds to a previously discarded press
+    // event.
+    if (discard_next_left_release_ && event.type() == ui::ET_MOUSE_RELEASED) {
+      discard_next_left_release_ = false;
+      return DiscardEvent(continuation);
+    }
+    // Discard the left click if there is an ongoing simulated long press.
+    if (release_event_scheduled_) {
+      if (event.type() == ui::ET_MOUSE_PRESSED)
+        discard_next_left_release_ = true;
+      return DiscardEvent(continuation);
+    }
+    return SendEvent(continuation, &event);
+  }
+
+  return SendEvent(continuation, &event);
+}
+
+bool TouchModeMouseRewriter::IsInResizeLockedWindow(
+    const aura::Window* window) const {
+  // TODO(b/202679170): Verify that it does not affect performance before
+  // flipping the flag, and fix it if necessary.
+  while (window != nullptr) {
+    if (enabled_windows_.count(window))
+      return true;
+    window = window->parent();
+  }
+  return false;
 }
 
 }  // namespace arc
