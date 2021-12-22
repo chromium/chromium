@@ -700,8 +700,11 @@ void ChromeContentRendererClient::RenderFrameCreated(
     new SearchBox(render_frame);
   }
 
+  // We should create CommerceHintAgent only for a primary main frame. A fenced
+  // frame is the main frame as well, so we should check if |render_frame|
+  // is the primary main frame.
   if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule) &&
-      render_frame->IsMainFrame()) {
+      render_frame->IsMainFrame() && !render_frame->IsInFencedFrameTree()) {
     new cart::CommerceHintAgent(render_frame);
   }
 #endif  // !defined(OS_ANDROID)

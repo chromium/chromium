@@ -27,6 +27,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -166,7 +167,7 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
   using FormSubmittedEntry = ukm::builders::Shopping_FormSubmitted;
   using XHREntry = ukm::builders::Shopping_WillSendRequest;
 
-  void SetUpInProcessBrowserTestFixture() override {
+  CommerceHintAgentTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{ntp_features::kNtpChromeCartModule,
           {{"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"},
@@ -1180,4 +1181,42 @@ IN_PROC_BROWSER_TEST_F(CommerceHintOptimizeRendererTest,
 
   WaitForUmaBucketCount("Commerce.Carts.ExtractionTimedOut", 0, 2);
 }
+
+class CommerceHintAgentFencedFrameTest : public CommerceHintAgentTest {
+ public:
+  CommerceHintAgentFencedFrameTest() = default;
+  ~CommerceHintAgentFencedFrameTest() override = default;
+  CommerceHintAgentFencedFrameTest(const CommerceHintAgentFencedFrameTest&) =
+      delete;
+
+  CommerceHintAgentFencedFrameTest& operator=(
+      const CommerceHintAgentFencedFrameTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentFencedFrameTest,
+                       VisitCartInFencedFrame) {
+  // For add-to-cart by URL, normally a URL in that domain has already been
+  // committed.
+  NavigateToURL("https://www.guitarcenter.com/cart.html");
+  WaitForUmaCount("Commerce.Carts.VisitCart", 1);
+
+  // Create a fenced frame.
+  GURL fenced_frame_url =
+      https_server_.GetURL("www.guitarcenter.com", "/cart.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), fenced_frame_url);
+  EXPECT_NE(nullptr, fenced_frame_host);
+
+  // Do not affect counts.
+  WaitForUmaCount("Commerce.Carts.VisitCart", 1);
+}
+
 }  // namespace

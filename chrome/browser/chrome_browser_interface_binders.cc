@@ -343,6 +343,10 @@ void BindImageAnnotator(
 void BindCommerceHintObserver(
     content::RenderFrameHost* const frame_host,
     mojo::PendingReceiver<cart::mojom::CommerceHintObserver> receiver) {
+  DCHECK(!frame_host->GetParentOrOuterDocument());
+  if (frame_host->GetParentOrOuterDocument())
+    return;
+
   // Cart is not available for non-signin single-profile users.
   Profile* profile = Profile::FromBrowserContext(
       frame_host->GetProcess()->GetBrowserContext());
@@ -548,6 +552,8 @@ void PopulateChromeFrameBinders(
       base::BindRepeating(&BindImageAnnotator));
 
 #if !defined(OS_ANDROID)
+  // We should not request this mojo interface's binding for the subframes in
+  // the renderer.
   if (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule) &&
       !render_frame_host->GetParent()) {
     map->Add<cart::mojom::CommerceHintObserver>(
