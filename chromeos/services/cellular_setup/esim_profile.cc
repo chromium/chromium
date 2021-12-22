@@ -4,6 +4,7 @@
 
 #include "chromeos/services/cellular_setup/esim_profile.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -459,6 +460,8 @@ bool ESimProfile::IsProfileInstalled() {
 }
 
 bool ESimProfile::IsProfileManaged() {
+  if (!features::IsESimPolicyEnabled())
+    return false;
   NetworkStateHandler::NetworkStateList networks;
   esim_manager_->network_state_handler()->GetNetworkListByType(
       NetworkTypePattern::Cellular(),
