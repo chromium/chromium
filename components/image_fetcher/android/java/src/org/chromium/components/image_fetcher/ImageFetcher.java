@@ -51,6 +51,15 @@ public abstract class ImageFetcher {
          * Creates image fetcher parameters. The image will not be resized.
          * @See {@link #Params(String, String, int, int, int)}.
          */
+        public static Params create(final GURL url, String clientName) {
+            return create(url.getSpec(), clientName);
+        }
+
+        /**
+         * Creates image fetcher parameters. The image will not be resized.
+         * @See {@link #Params(String, String, int, int, int)}.
+         */
+        @Deprecated
         public static Params create(final String url, String clientName) {
             return new Params(url, clientName, DEFAULT_IMAGE_SIZE, DEFAULT_IMAGE_SIZE,
                     INVALID_EXPIRATION_INTERVAL);
@@ -60,6 +69,15 @@ public abstract class ImageFetcher {
          * Creates image fetcher parameters with image size specified.
          * @See {@link #Params(String, String, int, int, int)}.
          */
+        public static Params create(final GURL url, String clientName, int width, int height) {
+            return create(url.getSpec(), clientName, width, height);
+        }
+
+        /**
+         * Creates image fetcher parameters with image size specified.
+         * @See {@link #Params(String, String, int, int, int)}.
+         */
+        @Deprecated
         public static Params create(final String url, String clientName, int width, int height) {
             return new Params(url, clientName, width, height, INVALID_EXPIRATION_INTERVAL);
         }

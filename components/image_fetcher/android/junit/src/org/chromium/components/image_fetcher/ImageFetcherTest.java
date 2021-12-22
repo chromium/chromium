@@ -36,6 +36,7 @@ import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 @Config(manifest = Config.NONE)
 public class ImageFetcherTest {
     private static final GURL URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
+    private static final GURL URL_2 = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
     private static final String CLIENT_NAME = "client";
     private static final int WIDTH_PX = 100;
     private static final int HEIGHT_PX = 200;
@@ -110,19 +111,17 @@ public class ImageFetcherTest {
 
     @Test
     public void testFetchImageNoDimensionsAlias() {
-        mImageFetcher.fetchImage(
-                ImageFetcher.Params.create(URL.getSpec(), CLIENT_NAME), result -> {});
+        mImageFetcher.fetchImage(ImageFetcher.Params.create(URL, CLIENT_NAME), result -> {});
 
         // No arguments should alias to 0, 0.
         verify(mImageFetcher)
-                .fetchImage(
-                        eq(ImageFetcher.Params.create(URL.getSpec(), CLIENT_NAME, 0, 0)), any());
+                .fetchImage(eq(ImageFetcher.Params.create(URL, CLIENT_NAME, 0, 0)), any());
     }
 
     @Test
     public void testCreateParams() {
         // Verifies params without size specified.
-        ImageFetcher.Params params = ImageFetcher.Params.create(URL.getSpec(), CLIENT_NAME);
+        ImageFetcher.Params params = ImageFetcher.Params.create(URL, CLIENT_NAME);
         assertEquals(URL.getSpec(), params.url);
         assertEquals(CLIENT_NAME, params.clientName);
         assertEquals(0, params.width);
@@ -130,7 +129,7 @@ public class ImageFetcherTest {
         assertEquals(0, params.expirationIntervalMinutes);
 
         // Verifies params with size.
-        params = ImageFetcher.Params.create(URL.getSpec(), CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
+        params = ImageFetcher.Params.create(URL, CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
         assertEquals(URL.getSpec(), params.url);
         assertEquals(CLIENT_NAME, params.clientName);
         assertEquals(WIDTH_PX, params.width);
@@ -153,14 +152,14 @@ public class ImageFetcherTest {
     @Test
     public void testParamsEqual() {
         // Different URLs.
-        ImageFetcher.Params params1 = ImageFetcher.Params.create(URL.getSpec(), CLIENT_NAME);
-        ImageFetcher.Params params2 = ImageFetcher.Params.create("Not the same URL", CLIENT_NAME);
+        ImageFetcher.Params params1 = ImageFetcher.Params.create(URL, CLIENT_NAME);
+        ImageFetcher.Params params2 = ImageFetcher.Params.create(URL_2, CLIENT_NAME);
         assertFalse(params1.equals(params2));
         assertFalse(params2.equals(params1));
         assertNotEquals(params1.hashCode(), params2.hashCode());
 
         // Different width and height.
-        params2 = ImageFetcher.Params.create(URL.getSpec(), CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
+        params2 = ImageFetcher.Params.create(URL, CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
         assertFalse(params1.equals(params2));
         assertFalse(params2.equals(params1));
         assertNotEquals(params1.hashCode(), params2.hashCode());
