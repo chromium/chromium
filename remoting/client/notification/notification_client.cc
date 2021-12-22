@@ -116,7 +116,18 @@ bool ShouldShowNotificationForUser(const std::string& user_email,
                                    int percent_int) {
   DCHECK_GE(percent_int, 0);
   DCHECK_LE(percent_int, 100);
-  return (base::FastHash(user_email) % 100) <
+
+  // If the user is not logged in, we only want to show the notification if the
+  // rollout percentage is 100. `hash("") % 100` could be anything between
+  // [0, 99] and may therefore get selected for a lower percentage, so we add
+  // special-casing for percent_int != 100.
+  // For percent_int == 100, `hash(any_string) % 100` is always smaller than
+  // 100, so no special-casing is needed.
+  if (user_email.empty() && percent_int != 100) {
+    return false;
+  }
+
+  return (base::PersistentHash(user_email) % 100) <
          static_cast<unsigned int>(percent_int);
 }
 

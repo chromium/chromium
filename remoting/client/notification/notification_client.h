@@ -41,6 +41,10 @@ class NotificationClient final {
   // notification is found then absl::nullopt will be returned. |callback| will
   // be silently dropped if |this| is deleted before the notification is
   // fetched.
+  // |user_email| is used to determine if the notification is available to the
+  // user during percentage rollout. If |user_email| is empty (i.e. user not
+  // logged in), the notification percentage must be exactly 100 for the
+  // notification to become available.
   void GetNotification(const std::string& user_email,
                        NotificationCallback callback);
 

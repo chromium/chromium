@@ -65,9 +65,7 @@ void NotificationPresenter::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!user_update_observer_);
 
-  if ([RemotingService.instance.authentication.user isAuthenticated]) {
-    FetchNotificationIfNecessary();
-  }
+  FetchNotification();
   user_update_observer_ = [NSNotificationCenter.defaultCenter
       addObserverForName:kUserDidUpdate
                   object:nil
@@ -75,23 +73,24 @@ void NotificationPresenter::Start() {
               usingBlock:^(NSNotification*) {
                 // This implicitly captures |this|, but should be fine since
                 // |NotificationPresenter| is singleton.
-                FetchNotificationIfNecessary();
+                FetchNotification();
               }];
 }
 
-void NotificationPresenter::FetchNotificationIfNecessary() {
+void NotificationPresenter::FetchNotification() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (state_ != State::NOT_FETCHED) {
+  if (state_ == State::FETCHED) {
     return;
   }
   UserInfo* user = RemotingService.instance.authentication.user;
-  if (![user isAuthenticated]) {
-    // Can't show notification since user email is unknown.
-    return;
-  }
+  std::string user_email = [user isAuthenticated]
+                               ? base::SysNSStringToUTF8(user.userEmail)
+                               : std::string();
 
   state_ = State::FETCHING;
+  // If FetchNotification() is called when the timer is already running, this
+  // will restart the timer with the new user email.
   fetch_notification_timer_.Start(
       FROM_HERE, kFetchNotificationDelay,
       base::BindOnce(
@@ -101,7 +100,7 @@ void NotificationPresenter::FetchNotificationIfNecessary() {
                 base::BindOnce(&NotificationPresenter::OnNotificationFetched,
                                base::Unretained(that)));
           },
-          base::Unretained(this), base::SysNSStringToUTF8(user.userEmail)));
+          base::Unretained(this), user_email));
 }
 
 void NotificationPresenter::OnNotificationFetched(

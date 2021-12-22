@@ -41,7 +41,7 @@ class NotificationPresenter final {
   NotificationPresenter();
   ~NotificationPresenter() = delete;
 
-  void FetchNotificationIfNecessary();
+  void FetchNotification();
   void OnNotificationFetched(absl::optional<NotificationMessage> notification);
 
   NotificationClient notification_client_;

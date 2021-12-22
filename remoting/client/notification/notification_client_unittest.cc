@@ -362,4 +362,36 @@ TEST_F(NotificationClientTest, AllowSilenceNotSet_DefaultToFalse) {
   client_->GetNotification(kTestEmail, callback.Get());
 }
 
+TEST_F(NotificationClientTest,
+       EmptyUserEmailAndNot100PercentRollout_NoNotification) {
+  base::Value rules(base::Value::Type::LIST);
+  base::Value rule = CreateDefaultRule();
+  rule.SetIntKey("percent", 99);
+  rules.Append(std::move(rule));
+  EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
+      .WillOnce(ReturnByMove(std::move(rules)));
+
+  base::MockCallback<NotificationClient::NotificationCallback> callback;
+  EXPECT_CALL(callback, Run(NoMessage()));
+  client_->GetNotification(/* user_email= */ "", callback.Get());
+}
+
+TEST_F(NotificationClientTest,
+       EmptyUserEmailAnd100PercentRollout_ReturnsNotification) {
+  base::Value rules(base::Value::Type::LIST);
+  base::Value rule = CreateDefaultRule();
+  rule.SetIntKey("percent", 100);
+  rules.Append(std::move(rule));
+  EXPECT_CALL(*fetcher_, FetchJsonFile("notification/rules.json"))
+      .WillOnce(ReturnByMove(std::move(rules)));
+  EXPECT_CALL(*fetcher_, FetchJsonFile("notification/message_text.json"))
+      .WillOnce(ReturnByMove(CreateDefaultTranslations("message")));
+  EXPECT_CALL(*fetcher_, FetchJsonFile("notification/link_text.json"))
+      .WillOnce(ReturnByMove(CreateDefaultTranslations("link")));
+
+  base::MockCallback<NotificationClient::NotificationCallback> callback;
+  EXPECT_CALL(callback, Run(MessageMatches(CreateDefaultNotification())));
+  client_->GetNotification(/* user_email= */ "", callback.Get());
+}
+
 }  // namespace remoting
