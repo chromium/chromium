@@ -160,8 +160,4 @@ void FullscreenController::OnLockStateChanged(bool locked) {
     MaybeShowNotification();
 }
 
-void FullscreenController::OnLoginScreenUiWindowClosed() {
-  MaybeShowNotification();
-}
-
 }  // namespace ash
