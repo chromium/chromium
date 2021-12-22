@@ -50,8 +50,7 @@ void TestDesksTemplatesDelegate::GetIconForAppId(
     base::OnceCallback<void(apps::IconValuePtr icon_value)> callback) const {}
 
 void TestDesksTemplatesDelegate::LaunchAppsFromTemplate(
-    std::unique_ptr<DeskTemplate> desk_template,
-    base::TimeDelta delay) {}
+    std::unique_ptr<DeskTemplate> desk_template) {}
 
 bool TestDesksTemplatesDelegate::IsWindowSupportedForDeskTemplate(
     aura::Window* window) const {

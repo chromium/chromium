@@ -47,13 +47,12 @@ desks_storage::DeskModel* GetDeskModel() {
 // Callback ran after creating and activating a new desk for launching a
 // template. Launches apps into the active desk.
 void OnNewDeskCreatedForTemplate(std::unique_ptr<DeskTemplate> desk_template,
-                                 base::TimeDelta delay,
                                  bool on_create_activate_success) {
   if (!on_create_activate_success)
     return;
 
   Shell::Get()->desks_templates_delegate()->LaunchAppsFromTemplate(
-      std::move(desk_template), delay);
+      std::move(desk_template));
 }
 
 }  // namespace
@@ -134,8 +133,7 @@ void DesksTemplatesPresenter::DeleteEntry(const std::string& template_uuid) {
 }
 
 void DesksTemplatesPresenter::LaunchDeskTemplate(
-    const std::string& template_uuid,
-    base::TimeDelta delay) {
+    const std::string& template_uuid) {
   // If we are at the max desk limit (currently is 8), a new desk
   // cannot be created, and a toast will be displayed to the user.
   if (!DesksController::Get()->CanCreateDesks()) {
@@ -156,7 +154,7 @@ void DesksTemplatesPresenter::LaunchDeskTemplate(
   GetDeskModel()->GetEntryByUUID(
       template_uuid,
       base::BindOnce(&DesksTemplatesPresenter::OnGetTemplateForDeskLaunch,
-                     weak_ptr_factory_.GetWeakPtr(), delay));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DesksTemplatesPresenter::MaybeSaveActiveDeskAsTemplate() {
@@ -225,7 +223,6 @@ void DesksTemplatesPresenter::OnDeleteEntry(
 }
 
 void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
-    base::TimeDelta delay,
     desks_storage::DeskModel::GetEntryByUuidStatus status,
     std::unique_ptr<DeskTemplate> entry) {
   if (status != desks_storage::DeskModel::GetEntryByUuidStatus::kOk)
@@ -239,7 +236,7 @@ void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
   const auto template_name = entry->template_name();
   DesksController::Get()->CreateAndActivateNewDeskForTemplate(
       template_name,
-      base::BindOnce(&OnNewDeskCreatedForTemplate, std::move(entry), delay));
+      base::BindOnce(&OnNewDeskCreatedForTemplate, std::move(entry)));
 
   if (on_update_ui_closure_for_testing_)
     std::move(on_update_ui_closure_for_testing_).Run();

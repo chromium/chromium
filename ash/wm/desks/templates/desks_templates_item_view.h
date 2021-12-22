@@ -77,12 +77,7 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   void OnDeleteTemplate();
   void OnDeleteButtonPressed();
 
-  void OnGridItemPressed(const ui::Event& event);
-
-  // Launches the apps associated with the template unless editing the desk
-  // template name is underway. Adds a 3 second delay between each app launch if
-  // `should_delay` is true.
-  void MaybeLaunchTemplate(bool should_delay);
+  void OnGridItemPressed();
 
   // Called when we want to update `name_view_` when the template's name
   // changes.
