@@ -8439,7 +8439,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Linux.Wayland.Shell" enum="LinuxWaylandShellName"
-    expires_after="2021-12-31">
+    expires_after="never">
+<!-- expires-never: Needed to measure Linux ecosystem. -->
+
   <owner>rjkroege@chromium.org</owner>
   <owner>adunaev@igalia.com</owner>
   <summary>
