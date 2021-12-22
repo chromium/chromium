@@ -193,7 +193,11 @@ IN_PROC_BROWSER_TEST_F(ArcAccessibilityHelperBridgeBrowserTest,
 
   // Enable TalkBack. Touch exploration pass through of test_window_1
   // (current active window) would become true.
-  bridge->SetNativeChromeVoxArcSupport(false);
+  bridge->SetNativeChromeVoxArcSupport(
+      false,
+      base::BindOnce(
+          [](extensions::api::accessibility_private::SetNativeChromeVoxResponse
+                 response) {}));
 
   EXPECT_TRUE(
       test_window_1.shell_surface->GetWidget()->GetNativeWindow()->GetProperty(

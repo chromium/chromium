@@ -317,6 +317,16 @@ chrome.accessibilityPrivate.SelectToSpeakPanelAction = {
 };
 
 /**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.SetNativeChromeVoxResponse = {
+  SUCCESS: 'success',
+  TALKBACK_NOT_INSTALLED: 'talkbackNotInstalled',
+  WINDOW_NOT_FOUND: 'windowNotFound',
+  FAILURE: 'failure',
+};
+
+/**
  * Property to indicate whether event source should default to touch.
  * @type {number}
  */
@@ -410,8 +420,11 @@ chrome.accessibilityPrivate.setPointScanState = function(state) {};
 /**
  * Sets current ARC app to use native ARC support.
  * @param {boolean} enabled True for ChromeVox (native), false for TalkBack.
+ * @param {function(!chrome.accessibilityPrivate.SetNativeChromeVoxResponse):
+ *     void} callback
  */
-chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp = function(enabled) {};
+chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp =
+    function(enabled, callback) {};
 
 /**
  * Sends a fabricated key event.

@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/arc/accessibility/accessibility_helper_instance_remote_proxy.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/common/extensions/api/accessibility_private.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -30,6 +31,9 @@ class ArcNotificationSurface;
 }
 
 namespace arc {
+
+using SetNativeChromeVoxCallback = base::OnceCallback<void(
+    extensions::api::accessibility_private::SetNativeChromeVoxResponse)>;
 
 // ArcAccessibilityTreeTracker is responsible for mapping accessibility tree
 // from android to exo window / surfaces.
@@ -90,13 +94,15 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
   void OnToggleNativeChromeVoxArcSupport(bool enabled);
 
   // To be called from chrome automation private API.
-  void SetNativeChromeVoxArcSupport(bool enabled);
+  void SetNativeChromeVoxArcSupport(bool enabled,
+                                    SetNativeChromeVoxCallback callback);
 
   // Receives the result of setting native ChromeVox ARC support.
   void OnSetNativeChromeVoxArcSupportProcessed(
       std::unique_ptr<aura::WindowTracker> window_tracker,
       bool enabled,
-      bool processed);
+      SetNativeChromeVoxCallback callback,
+      arc::mojom::SetNativeChromeVoxResponse response);
 
   // Returns a tree source for the specified AXTreeID.
   AXTreeSourceArc* GetFromTreeId(const ui::AXTreeID& tree_id) const;

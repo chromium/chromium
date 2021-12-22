@@ -34,8 +34,7 @@ class AccessibilityHelperInstanceRemoteProxy {
   bool SetNativeChromeVoxArcSupportForFocusedWindow(
       bool enabled,
       mojom::AccessibilityHelperInstance::
-          SetNativeChromeVoxArcSupportForFocusedWindowDeprecatedCallback
-              callback) const;
+          SetNativeChromeVoxArcSupportForFocusedWindowCallback callback) const;
 
   bool SetExploreByTouchEnabled(bool enabled) const;
 

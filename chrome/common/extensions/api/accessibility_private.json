@@ -242,6 +242,12 @@
         "type": "string",
         "enum": [ "previousParagraph", "previousSentence", "pause", "resume", "nextSentence", "nextParagraph", "exit", "changeSpeed" ],
         "description": "Actions that can be performed in the Select-to-speak panel."
+      },
+      {
+        "id": "SetNativeChromeVoxResponse",
+        "type": "string",
+        "enum": [ "success", "talkbackNotInstalled", "windowNotFound", "failure" ],
+        "description": "Response code for onNativeChromeVoxArcSupportResult"
       }
     ],
     "properties": {
@@ -423,7 +429,18 @@
             "type": "boolean",
             "description": "True for ChromeVox (native), false for TalkBack."
           }
-        ]
+        ],
+	"returns_async": {
+	  "name": "callback",
+	  "desctiprion": "Callback function.",
+	  "parameters": [
+            {
+	      "name": "response",
+	      "$ref": "SetNativeChromeVoxResponse",
+	      "description": "Return Success if successfully toggled. Return error description otherwise."
+	    }
+	  ]
+	}
       },
       {
         "name": "sendSyntheticKeyEvent",

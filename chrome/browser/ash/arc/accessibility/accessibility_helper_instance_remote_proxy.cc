@@ -38,16 +38,16 @@ bool AccessibilityHelperInstanceRemoteProxy::
     SetNativeChromeVoxArcSupportForFocusedWindow(
         bool enabled,
         mojom::AccessibilityHelperInstance::
-            SetNativeChromeVoxArcSupportForFocusedWindowDeprecatedCallback
-                callback) const {
-  auto* const instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->accessibility_helper(),
-      SetNativeChromeVoxArcSupportForFocusedWindowDeprecated);
+            SetNativeChromeVoxArcSupportForFocusedWindowCallback callback)
+        const {
+  auto* const instance =
+      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->accessibility_helper(),
+                                  SetNativeChromeVoxArcSupportForFocusedWindow);
   if (!instance)
     return false;
 
-  instance->SetNativeChromeVoxArcSupportForFocusedWindowDeprecated(
-      enabled, std::move(callback));
+  instance->SetNativeChromeVoxArcSupportForFocusedWindow(enabled,
+                                                         std::move(callback));
   return true;
 }
 

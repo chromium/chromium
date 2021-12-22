@@ -3378,4 +3378,7 @@
   <message desc="Spoken to describe a &lt;abbr&gt; tag. For example, &lt;abbr title='uniform resource locator'&gt;URL/&lt;abbr&gt; would be spoken as 'URL, uniform resource locator, Abbreviation'" name="IDS_CHROMEVOX_TAG_ABBR" is_accessibility_with_no_ui="true">
     Abbreviation
   </message>
+  <message desc="Spoken message asking users to install the Accessibility Suite app from the Play Store when users tried to turn on Talkback without installing Accessibility Suite." name="IDS_CHROMEVOX_ANNOUNCE_INSTALL_TALKBACK" is_accessibility_with_no_ui="true">
+    TalkBack is currently not installed. Please install Android AccessibilitySuite through Play Store and try again.
+  </message>
 </grit-part>

@@ -95,6 +95,27 @@ void UpdateTreeIdOfNotificationSurface(const std::string& notification_key,
   }
 }
 
+extensions::api::accessibility_private::SetNativeChromeVoxResponse
+FromMojomResponseToAutomationResponse(
+    arc::mojom::SetNativeChromeVoxResponse response) {
+  switch (response) {
+    case arc::mojom::SetNativeChromeVoxResponse::SUCCESS:
+      return extensions::api::accessibility_private::
+          SetNativeChromeVoxResponse::SET_NATIVE_CHROME_VOX_RESPONSE_SUCCESS;
+    case arc::mojom::SetNativeChromeVoxResponse::TALKBACK_NOT_INSTALLED:
+      return extensions::api::accessibility_private::
+          SetNativeChromeVoxResponse::
+              SET_NATIVE_CHROME_VOX_RESPONSE_TALKBACKNOTINSTALLED;
+    case arc::mojom::SetNativeChromeVoxResponse::WINDOW_NOT_FOUND:
+      return extensions::api::accessibility_private::
+          SetNativeChromeVoxResponse::
+              SET_NATIVE_CHROME_VOX_RESPONSE_WINDOWNOTFOUND;
+    case arc::mojom::SetNativeChromeVoxResponse::FAILURE:
+      return extensions::api::accessibility_private::
+          SetNativeChromeVoxResponse::SET_NATIVE_CHROME_VOX_RESPONSE_FAILURE;
+  }
+}
+
 }  // namespace
 
 class ArcAccessibilityTreeTracker::FocusChangeObserver
@@ -473,13 +494,23 @@ void ArcAccessibilityTreeTracker::OnToggleNativeChromeVoxArcSupport(
   // OnSetNativeChromeVoxArcSupportProcessed()?
 }
 
-void ArcAccessibilityTreeTracker::SetNativeChromeVoxArcSupport(bool enabled) {
+void ArcAccessibilityTreeTracker::SetNativeChromeVoxArcSupport(
+    bool enabled,
+    SetNativeChromeVoxCallback callback) {
   aura::Window* window = GetFocusedArcWindow();
-  if (!window)
+  if (!window) {
+    std::move(callback).Run(
+        extensions::api::accessibility_private::SetNativeChromeVoxResponse::
+            SET_NATIVE_CHROME_VOX_RESPONSE_FAILURE);
     return;
+  }
 
-  if (!arc::GetWindowTaskId(window).has_value())
+  if (!arc::GetWindowTaskId(window).has_value()) {
+    std::move(callback).Run(
+        extensions::api::accessibility_private::SetNativeChromeVoxResponse::
+            SET_NATIVE_CHROME_VOX_RESPONSE_FAILURE);
     return;
+  }
 
   std::unique_ptr<aura::WindowTracker> window_tracker =
       std::make_unique<aura::WindowTracker>();
@@ -489,15 +520,21 @@ void ArcAccessibilityTreeTracker::SetNativeChromeVoxArcSupport(bool enabled) {
       enabled,
       base::BindOnce(
           &ArcAccessibilityTreeTracker::OnSetNativeChromeVoxArcSupportProcessed,
-          base::Unretained(this), std::move(window_tracker), enabled));
+          base::Unretained(this), std::move(window_tracker), enabled,
+          std::move(callback)));
 }
 
 void ArcAccessibilityTreeTracker::OnSetNativeChromeVoxArcSupportProcessed(
     std::unique_ptr<aura::WindowTracker> window_tracker,
     bool enabled,
-    bool processed) {
-  if (!processed || window_tracker->windows().size() != 1)
+    SetNativeChromeVoxCallback callback,
+    arc::mojom::SetNativeChromeVoxResponse response) {
+  std::move(callback).Run(FromMojomResponseToAutomationResponse(response));
+
+  if (response != arc::mojom::SetNativeChromeVoxResponse::SUCCESS ||
+      window_tracker->windows().size() != 1) {
     return;
+  }
 
   aura::Window* window = window_tracker->Pop();
   auto task_id = arc::GetWindowTaskId(window);

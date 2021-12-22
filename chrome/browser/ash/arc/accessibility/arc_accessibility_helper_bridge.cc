@@ -244,8 +244,10 @@ ArcAccessibilityHelperBridge::ArcAccessibilityHelperBridge(
 
 ArcAccessibilityHelperBridge::~ArcAccessibilityHelperBridge() = default;
 
-void ArcAccessibilityHelperBridge::SetNativeChromeVoxArcSupport(bool enabled) {
-  tree_tracker_.SetNativeChromeVoxArcSupport(enabled);
+void ArcAccessibilityHelperBridge::SetNativeChromeVoxArcSupport(
+    bool enabled,
+    SetNativeChromeVoxCallback callback) {
+  tree_tracker_.SetNativeChromeVoxArcSupport(enabled, std::move(callback));
 }
 
 bool ArcAccessibilityHelperBridge::EnableTree(const ui::AXTreeID& tree_id) {

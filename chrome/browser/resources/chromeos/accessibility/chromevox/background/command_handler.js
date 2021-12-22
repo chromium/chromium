@@ -283,11 +283,20 @@ CommandHandler.onCommand = function(command) {
       return false;
     case 'enableChromeVoxArcSupportForCurrentApp':
       chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp(
-          true);
+          true, (response) => {});
       break;
     case 'disableChromeVoxArcSupportForCurrentApp':
       chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp(
-          false);
+          false, (response) => {
+            if (response ===
+                chrome.accessibilityPrivate.SetNativeChromeVoxResponse
+                    .TALKBACK_NOT_INSTALLED) {
+              ChromeVox.braille.write(NavBraille.fromText(
+                  Msgs.getMsg('announce_install_talkback')));
+              ChromeVox.tts.speak(
+                  Msgs.getMsg('announce_install_talkback'), QueueMode.FLUSH);
+            }
+          });
       break;
     case 'showTtsSettings':
       chrome.accessibilityPrivate.openSettingsSubpage(

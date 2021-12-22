@@ -72,7 +72,8 @@ class ArcAccessibilityHelperBridge
   ~ArcAccessibilityHelperBridge() override;
 
   // Sets ChromeVox or TalkBack active for the current task.
-  void SetNativeChromeVoxArcSupport(bool enabled);
+  void SetNativeChromeVoxArcSupport(bool enabled,
+                                    SetNativeChromeVoxCallback callback);
 
   // Request Android to send the entire tree with the tree id. Returns true if
   // the specified tree is an ARC tree and a request was sent.
