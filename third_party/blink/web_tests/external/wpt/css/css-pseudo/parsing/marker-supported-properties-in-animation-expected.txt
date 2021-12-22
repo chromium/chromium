@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 94 tests; 86 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 94 tests; 88 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Animation of font in ::marker
 PASS Animation of font-family in ::marker
 PASS Animation of font-feature-settings in ::marker
@@ -36,7 +36,7 @@ PASS Animation of word-break in ::marker
 PASS Animation of word-spacing in ::marker
 PASS Animation of text-decoration-skip-ink in ::marker
 FAIL Animation of text-emphasis in ::marker assert_equals: expected "triangle rgb(50, 100, 100)" but got ""
-FAIL Animation of text-emphasis-color in ::marker assert_equals: expected "rgb(50, 100, 100)" but got "rgb(100, 0, 200)"
+PASS Animation of text-emphasis-color in ::marker
 PASS Animation of text-emphasis-position in ::marker
 PASS Animation of text-emphasis-style in ::marker
 PASS Animation of text-shadow in ::marker
@@ -83,7 +83,7 @@ PASS Transition of word-break in ::marker
 PASS Transition of word-spacing in ::marker
 PASS Transition of text-decoration-skip-ink in ::marker
 FAIL Transition of text-emphasis in ::marker assert_equals: expected "triangle rgb(50, 100, 100)" but got ""
-FAIL Transition of text-emphasis-color in ::marker assert_equals: expected "rgb(50, 100, 100)" but got "rgb(100, 0, 200)"
+PASS Transition of text-emphasis-color in ::marker
 PASS Transition of text-emphasis-position in ::marker
 PASS Transition of text-emphasis-style in ::marker
 PASS Transition of text-shadow in ::marker

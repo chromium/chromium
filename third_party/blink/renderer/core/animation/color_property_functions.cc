@@ -158,6 +158,9 @@ void ColorPropertyFunctions::SetUnvisitedColor(const CSSProperty& property,
     case CSSPropertyID::kTextDecorationColor:
       style.SetTextDecorationColor(style_color);
       return;
+    case CSSPropertyID::kTextEmphasisColor:
+      style.SetTextEmphasisColor(style_color);
+      return;
     case CSSPropertyID::kColumnRuleColor:
       style.SetColumnRuleColor(style_color);
       return;
@@ -213,6 +216,9 @@ void ColorPropertyFunctions::SetVisitedColor(const CSSProperty& property,
       return;
     case CSSPropertyID::kTextDecorationColor:
       style.SetInternalVisitedTextDecorationColor(style_color);
+      return;
+    case CSSPropertyID::kTextEmphasisColor:
+      style.SetInternalVisitedTextEmphasisColor(style_color);
       return;
     case CSSPropertyID::kColumnRuleColor:
       style.SetInternalVisitedColumnRuleColor(style_color);

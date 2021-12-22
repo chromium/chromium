@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 329 tests; 311 PASS, 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 329 tests; 317 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testInterpolation function
 PASS isolation uses discrete animation when animating between "auto" and "isolate" with linear easing
@@ -224,12 +224,12 @@ PASS text-decoration-style uses discrete animation when animating between "solid
 PASS text-decoration-style uses discrete animation when animating between "solid" and "dotted" with effect easing
 PASS text-decoration-style uses discrete animation when animating between "solid" and "dotted" with keyframe easing
 PASS text-emphasis-color (type: color) has testInterpolation function
-FAIL text-emphasis-color supports animating as color of rgb() assert_equals: The value should be rgb(128, 0, 128) at 500ms expected "rgb(128, 0, 128)" but got "rgb(0, 0, 255)"
-FAIL text-emphasis-color supports animating as color of #RGB assert_equals: The value should be rgb(128, 0, 128) at 500ms expected "rgb(128, 0, 128)" but got "rgb(0, 0, 255)"
-FAIL text-emphasis-color supports animating as color of hsl() assert_equals: The value should be rgb(128, 0, 128) at 500ms expected "rgb(128, 0, 128)" but got "rgb(0, 0, 255)"
-FAIL text-emphasis-color supports animating as color of #RGBa assert_equals: The value should be rgba(85, 0, 170, 0.6) at 500ms expected "rgba(85, 0, 170, 0.6)" but got "rgba(0, 0, 255, 0.8)"
-FAIL text-emphasis-color supports animating as color of rgba() assert_equals: The value should be rgba(85, 0, 170, 0.6) at 500ms expected "rgba(85, 0, 170, 0.6)" but got "rgba(0, 0, 255, 0.8)"
-FAIL text-emphasis-color supports animating as color of hsla() assert_equals: The value should be rgba(85, 0, 170, 0.6) at 500ms expected "rgba(85, 0, 170, 0.6)" but got "rgba(0, 0, 255, 0.8)"
+PASS text-emphasis-color supports animating as color of rgb()
+PASS text-emphasis-color supports animating as color of #RGB
+PASS text-emphasis-color supports animating as color of hsl()
+PASS text-emphasis-color supports animating as color of #RGBa
+PASS text-emphasis-color supports animating as color of rgba()
+PASS text-emphasis-color supports animating as color of hsla()
 PASS text-emphasis-position (type: discrete) has testInterpolation function
 PASS text-emphasis-position uses discrete animation when animating between "over right" and "under left" with linear easing
 PASS text-emphasis-position uses discrete animation when animating between "over right" and "under left" with effect easing
