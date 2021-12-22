@@ -6889,6 +6889,9 @@ crbug.com/1167309 fast/canvas/canvas-createImageBitmap-drawImage.html [ Failure 
 # Sheriff 2021-01-20
 crbug.com/1168522 external/wpt/focus/iframe-activeelement-after-focusing-out-iframes.html [ Failure Pass ]
 
+# Temporarily skipped to land crrev.com/c/3352118
+crbug.com/1282076 http/tests/devtools/console/console-message-format.js [ Skip ]
+
 # DevTools roll
 crbug.com/1050549 http/tests/devtools/console/console-correct-suggestions.js [ Failure Pass ]
 
