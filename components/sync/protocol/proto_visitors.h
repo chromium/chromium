@@ -674,6 +674,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WebauthnCredentialSpecifics& proto) {
   VISIT(creation_time);
   VISIT(user_name);
   VISIT(user_display_name);
+  VISIT_ENUM(payments_support);
   // |private_key| is deliberately omitted to avoid including sensitive
   // information in debugging output, which might be included in bug reports
   // etc.
