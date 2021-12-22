@@ -972,6 +972,15 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
   </summary>
 </histogram>
 
+<histogram name="Power.IOPMPowerSource.SamplingEventDelta" units="ms"
+    expires_after="2022-03-01">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records the time between each IOPMPowerSource event. Only recorded on MacOS.
+  </summary>
+</histogram>
+
 <histogram name="Power.KernelResumeTimeOnAC" units="ms"
     expires_after="2021-10-17">
   <owner>puthik@chromium.org</owner>

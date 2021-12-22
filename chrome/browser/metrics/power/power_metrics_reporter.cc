@@ -11,7 +11,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/metrics/power/power_details_provider.h"
 #include "chrome/browser/performance_monitor/process_metrics_recorder_util.h"
@@ -105,6 +104,9 @@ PowerMetricsReporter::PowerMetricsReporter(
 
 #if defined(OS_MAC)
   power_details_provider_ = PowerDetailsProvider::Create();
+  iopm_power_source_sampling_event_source_.Start(
+      base::BindRepeating(&PowerMetricsReporter::OnIOPMPowerSourceSamplingEvent,
+                          base::Unretained(this)));
 #endif
 }
 
@@ -405,3 +407,24 @@ PowerMetricsReporter::GetBatteryDischargeRateDuringInterval(
     return {BatteryDischargeMode::kBatteryLevelIncreased, absl::nullopt};
   return {BatteryDischargeMode::kDischarging, discharge_rate};
 }
+
+#if defined(OS_MAC)
+void PowerMetricsReporter::OnIOPMPowerSourceSamplingEvent() {
+  base::TimeTicks now_ticks = base::TimeTicks::Now();
+
+  if (!last_event_time_ticks_) {
+    last_event_time_ticks_ = now_ticks;
+    return;
+  }
+
+  // The delta is expected to be almost always 60 seconds. Split the buckets for
+  // 0.2s granularity (10s interval with 50 buckets + 1 underflow bucket + 1
+  // overflow bucket) around that value.
+  base::HistogramBase* histogram = base::LinearHistogram::FactoryTimeGet(
+      "Power.IOPMPowerSource.SamplingEventDelta",
+      /*min=*/base::Seconds(55), /*max=*/base::Seconds(65), /*buckets=*/52,
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+  histogram->AddTime(now_ticks - *last_event_time_ticks_);
+  *last_event_time_ticks_ = now_ticks;
+}
+#endif  // defined(OS_MAC)
