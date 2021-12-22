@@ -7261,6 +7261,14 @@ NavigationRequest::ComputeWebExposedIsolationInfo() {
         ->GetWebExposedIsolationInfo();
   }
 
+  // This accommodates for web tests that use COOP. They expect an about:blank
+  // page to stay in process, and hang otherwise. In general, it is safe to
+  // allow about:blank pages to stay in process, since scriptability is limited
+  // to the BrowsingInstance and all pages with the same web-exposed isolation
+  // level are trusted.
+  if (common_params_->url.IsAboutBlank())
+    return absl::nullopt;
+
   // If we haven't yet received a definitive network response, it is too early
   // to guess the isolation state.
   if (state_ < WILL_PROCESS_RESPONSE)

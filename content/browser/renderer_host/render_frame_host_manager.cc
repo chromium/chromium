@@ -176,14 +176,6 @@ bool IsSiteInstanceCompatibleWithErrorIsolation(
 bool IsSiteInstanceCompatibleWithWebExposedIsolation(
     SiteInstance* site_instance,
     const UrlInfo& url_info) {
-  // Note: The about blank case is to accommodate web tests that use COOP. They
-  // expect an about:blank page to stay in process, and hang otherwise. In
-  // general, it is safe to allow about:blank pages to stay in process, since
-  // scriptability is limited to the BrowsingInstance and all pages with the
-  // same web-exposed isolation level are trusted.
-  if (url_info.url.IsAboutBlank())
-    return true;
-
   SiteInstanceImpl* site_instance_impl =
       static_cast<SiteInstanceImpl*>(site_instance);
 
