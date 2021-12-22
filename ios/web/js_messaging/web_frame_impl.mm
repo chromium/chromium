@@ -260,6 +260,33 @@ bool WebFrameImpl::CallJavaScriptFunctionInContentWorld(
   return called;
 }
 
+bool WebFrameImpl::ExecuteJavaScript(const std::string& script) {
+  DCHECK(base::ios::IsRunningOnIOS14OrLater());
+  DCHECK(frame_info_);
+
+  if (!IsMainFrame()) {
+    return false;
+  }
+
+  NSString* ns_script = base::SysUTF8ToNSString(script);
+  void (^completion_handler)(id, NSError*) = ^void(id value, NSError* error) {
+    if (error) {
+      DLOG(WARNING) << "Script execution of:"
+                    << base::SysNSStringToUTF16(ns_script)
+                    << "\nfailed with error: "
+                    << base::SysNSStringToUTF16(
+                           error.userInfo[NSLocalizedDescriptionKey]);
+    }
+  };
+
+  if (@available(iOS 14.0, *)) {
+    web::ExecuteJavaScript(frame_info_.webView, WKContentWorld.pageWorld,
+                           frame_info_, ns_script, completion_handler);
+    return true;
+  }
+  return false;
+}
+
 bool WebFrameImpl::ExecuteJavaScriptFunction(
     JavaScriptContentWorld* content_world,
     const std::string& name,

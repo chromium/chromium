@@ -67,6 +67,8 @@ class WebFrameImpl : public WebFrame,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;
 
+  bool ExecuteJavaScript(const std::string& script) override;
+
   // WebFrameContentWorldAPI:
   bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,

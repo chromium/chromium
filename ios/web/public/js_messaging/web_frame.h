@@ -70,6 +70,9 @@ class WebFrame : public base::SupportsUserData {
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) = 0;
 
+  // Executes the given |script| and returns whether the script was run.
+  virtual bool ExecuteJavaScript(const std::string& script) = 0;
+
   // Returns the WebFrameInternal instance for this object.
   virtual WebFrameInternal* GetWebFrameInternal() = 0;
 
