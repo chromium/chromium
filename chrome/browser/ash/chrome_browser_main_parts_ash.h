@@ -73,7 +73,6 @@ class DebugdNotificationHandler;
 class DemoModeResourcesRemover;
 class EventRewriterDelegateImpl;
 class FirmwareUpdateManager;
-class FwupdDownloadClientImpl;
 class GnubbyNotification;
 class IdleActionWarningObserver;
 class LoginScreenExtensionsLifetimeManager;
@@ -229,8 +228,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<BulkPrintersCalculatorFactory>
       bulk_printers_calculator_factory_;
-
-  std::unique_ptr<FwupdDownloadClientImpl> fwupd_download_client_;
 
   std::unique_ptr<SessionTerminationManager> session_termination_manager_;
 
