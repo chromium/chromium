@@ -46,7 +46,7 @@ void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleAccepted(
     raw_ptr<CreditCard> credit_card) {}
 
 void VirtualCardEnrollmentManager::OnDidGetUpdateVirtualCardEnrollmentResponse(
-    CreditCard::VirtualCardEnrollmentState virtual_card_enrollment_state) {}
+    AutofillClient::PaymentsRpcResult result) {}
 
 void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled() {}
 

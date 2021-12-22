@@ -277,6 +277,9 @@ class PaymentsClient {
     LOCAL_CARD_MIGRATION_SETTINGS_PAGE,
   };
 
+  // TODO(crbug.com/1281695): Add GetDetailsForEnrollRequest.
+  // A collection of information received in the response for a
+  // GetDetailsForEnrollRequest.
   struct GetDetailsForEnrollmentResponseDetails {
     GetDetailsForEnrollmentResponseDetails();
     GetDetailsForEnrollmentResponseDetails(
@@ -284,17 +287,17 @@ class PaymentsClient {
     GetDetailsForEnrollmentResponseDetails& operator=(
         const GetDetailsForEnrollmentResponseDetails&) = delete;
     ~GetDetailsForEnrollmentResponseDetails();
-    // |vcn_context_token_| is used in the sequential Enroll call, where it
-    // allows the server to get the instrument id for this |vcn_context_token_|
+    // |vcn_context_token| is used in the sequential Enroll call, where it
+    // allows the server to get the instrument id for this |vcn_context_token|
     // and link this specific GetDetailsForEnroll call with its corresponding
     // enroll call.
-    std::string vcn_context_token_;
+    std::string vcn_context_token;
     // Google's legal message lines in the virtual card enroll flow for this
-    // specific card based on |vcn_context_token_|.
-    LegalMessageLines google_legal_message_;
+    // specific card based on |vcn_context_token|.
+    LegalMessageLines google_legal_message;
     // The issuer's legal message lines in the virtual card enroll flow for this
-    // specific card based on |vcn_context_token_|.
-    LegalMessageLines issuer_legal_message_;
+    // specific card based on |vcn_context_token|.
+    LegalMessageLines issuer_legal_message;
   };
 
   // |url_loader_factory| is reference counted so it has no lifetime or
