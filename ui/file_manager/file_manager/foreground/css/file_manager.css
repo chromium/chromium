@@ -1120,18 +1120,16 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
 /* Container for the ok/cancel buttons. */
 .dialog-footer {
   align-items: center;
-  border-top: 1px solid rgb(225, 225, 225);
+  background-color: var(--cros-bg-color);
+  border-top: 1px solid var(--cros-separator-color);
   display: flex;
   flex: none;
   flex-direction: row;
   outline: none;
-}
-
-body.files-ng .dialog-footer {
   padding: 16px 24px;
 }
 
-body.files-ng .dialog-footer #filename-input-box {
+.dialog-footer #filename-input-box {
   margin-inline-end: 16px;
   margin-inline-start: 16px;
   max-width: 320px;
@@ -1144,7 +1142,7 @@ body.files-ng .dialog-footer #filename-input-box {
 }
 
 /* Copy style from paper-button for buttons on the footer. */
-body.files-ng .dialog-footer button {
+.dialog-footer button {
   border: 0;
   border-image: none;
   border-radius: 4px;
@@ -1172,12 +1170,6 @@ body.files-ng .dialog-footer button {
   border-image: none;  /* Overrides the definition of common.css. */
 }
 
-.dialog-footer button:active {
-  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 14%),
-              0 1px 10px 0 rgba(0, 0, 0, 12%),
-              0 2px 4px -1px rgba(0, 0, 0, 40%);
-}
-
 .dialog-footer cr-button,
 .dialog-footer button {
   height: 32px;
@@ -1189,42 +1181,56 @@ body.files-ng .dialog-footer button {
 .dialog-footer cr-button[disabled]:hover,
 .dialog-footer button[disabled],
 .dialog-footer button[disabled]:hover {
-  background-color: rgb(234, 234, 234);
-  color: rgb(168, 168, 168);
-}
-
-body.files-ng .dialog-footer cr-button[disabled],
-body.files-ng .dialog-footer cr-button[disabled]:hover,
-body.files-ng .dialog-footer button[disabled],
-body.files-ng .dialog-footer button[disabled]:hover {
   background-color:
       var(--cros-button-background-color-primary-disabled);
   color: var(--cros-button-label-color-primary-disabled);
 }
 
-body.files-ng .dialog-footer .primary,
-body.files-ng .dialog-footer .primary:hover {
+.dialog-footer .primary {
   background-color: var(--cros-button-background-color-primary);
   color: var(--cros-button-label-color-primary);
 }
 
-body.files-ng .dialog-footer .secondary {
-  background-color: var(--cros-button-background-color-secondary);
+.dialog-footer .primary:hover {
+   /* TODO(crbug.com/1275388): use blend() instead */
+   background: linear-gradient(rgba(0 0 0 / 8%), rgba(0 0 0 / 8%)),
+                               var(--cros-button-background-color-primary);
+}
+
+.dialog-footer .primary paper-ripple {
+  --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
+  color: var(--cros-button-ripple-color-primary);
+}
+
+.dialog-footer .primary:active {
+  box-shadow: 0 1px 2px var(--cros-button-active-shadow-color-key-primary),
+              0 1px 3px var(--cros-button-active-shadow-color-ambient-primary);
+}
+
+.dialog-footer .secondary {
+  background: transparent;
   border: 1px solid var(--cros-button-stroke-color-secondary);
   color: var(--cros-button-label-color-secondary);
   margin-inline-end: 8px;
 }
 
-body.files-ng .dialog-footer .secondary:hover {
+.dialog-footer .secondary:hover {
   background: var(--cros-button-background-color-secondary-hover);
+  border: 1px solid var(--cros-button-stroke-color-secondary-hover);
 }
 
-body.files-ng .dialog-footer .select {
-  background: -webkit-image-set(
-     url(../images/common/disclosure_arrow_dk_grey_down.png) 1x,
-     url(../images/common/2x/disclosure_arrow_dk_grey_down.png) 2x) no-repeat
-     calc(100% - 10px) transparent;
-  background-color: var(--google-grey-100);
+.dialog-footer .secondary paper-ripple {
+  --paper-ripple-opacity: var(--cros-button-secondary-ripple-opacity);
+  color: var(--cros-button-ripple-color-secondary);
+}
+
+.dialog-footer .secondary:active {
+  box-shadow: 0 1px 2px var(--cros-button-active-shadow-color-key-secondary),
+              0 1px 3px var(--cros-button-active-shadow-color-ambient-secondary);
+}
+
+.dialog-footer .select {
+  background-color: var(--cros-textfield-background-color);
   border: 0;
   border-radius: 4px;
   cursor: pointer;
@@ -1237,12 +1243,24 @@ body.files-ng .dialog-footer .select {
   position: relative;
 }
 
-body.files-ng .dialog-footer div.select:not(:active):focus {
-  box-shadow: 0 0 0 2px rgba(var(--cros-focus-ring-color-rgb),
-              50%);
+.dialog-footer .select::after {
+  -webkit-mask-image: url(../images/files/ui/sort_desc.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  background-color: var(--cros-icon-color-primary);
+  content: '';
+  height: 32px;
+  position: absolute;
+  right: 0;
+  width: 32px;
 }
 
-body.files-ng .dialog-footer div.select > span {
+.dialog-footer div.select:not(:active):focus {
+  box-shadow: 0 0 0 2px var(--cros-focus-ring-color);
+}
+
+.dialog-footer div.select > span {
+  color: var(--cros-text-color-primary);
   display: inline-block;
   line-height: 32px;
   max-width: 100%;
@@ -1252,11 +1270,11 @@ body.files-ng .dialog-footer div.select > span {
   white-space: nowrap;
 }
 
-body.files-ng .dialog-footer div.select > div.options {
-  background-color: white;
+.dialog-footer div.select > div.options {
+  background-color: var(--cros-bg-color-elevation-2);
   border-radius: 4px;
   bottom: calc(100% + 2px);
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 50%);
+  box-shadow: var(--cros-elevation-2-shadow);
   left: 0;
   min-width: max-content;
   padding: 8px 0;
@@ -1265,30 +1283,34 @@ body.files-ng .dialog-footer div.select > div.options {
   z-index: 550;
 }
 
-body.files-ng .dialog-footer div.select > div.options:not([expanded]) {
+.dialog-footer div.select > div.options:not([expanded]) {
   display: none;
 }
 
-body.files-ng .dialog-footer div.select > div.options option {
+.dialog-footer div.select > div.options option {
+  color: var(--cros-menu-label-color);
   line-height: 32px;
   min-height: 32px;
   padding: 0 12px 0 16px;
   vertical-align: middle;
 }
 
-body.files-ng .dialog-footer div.select > div.options option:hover,
-body.files-ng .dialog-footer div.select > div.options:not(:hover) option.selected {
-  background-color: rgba(0, 0, 0, 6%);
+.dialog-footer div.select > div.options option:hover,
+.dialog-footer div.select > div.options:not(:hover) option.selected {
+  background-color: var(--cros-menu-item-background-hover);
 }
 
 .dialog-footer select:hover {
   border-image: none;
 }
 
-/* Draw outline using box-shadow to make them rounded. */
-.dialog-footer .primary:focus:not(:active),
-.dialog-footer .secondary:focus:not(:active),
-.dialog-footer select:focus:not(:active),
+html.focus-outline-visible .dialog-footer .primary:focus,
+html.focus-outline-visible .dialog-footer .secondary:focus,
+html.focus-outline-visible .dialog-footer select:focus {
+  outline: 2px solid var(--cros-focus-ring-color);
+  outline-offset: 2px;
+}
+
 html.focus-outline-visible #cloud-import-details cr-button:focus {
   box-shadow: 0 0 0 2px rgba(51, 103, 214, 50%);
 }

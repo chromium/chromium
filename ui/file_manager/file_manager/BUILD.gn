@@ -67,8 +67,6 @@ generate_grd("build_static_grdp") {
     # Images:
     "foreground/images/common/check_no_box.png",
     "foreground/images/common/2x/check_no_box.png",
-    "foreground/images/common/disclosure_arrow_dk_grey_down.png",
-    "foreground/images/common/2x/disclosure_arrow_dk_grey_down.png",
     "foreground/images/common/dragger.svg",
     "foreground/images/common/ic_close.svg",
     "foreground/images/common/ic_selected.svg",
