@@ -134,5 +134,6 @@
     <color name="menu_chip_background_color_disabled">@color/menu_chip_background_color_disabled_dark</color>
     <color name="iph_highlight_blue">@color/iph_highlight_blue_dark</color>
     <color name="rating_star_yellow">@color/rating_star_yellow_dark</color>
-    <color name="price_drop_annotation_bg_color">@color/google_green_50</color>
+    <color name="price_drop_annotation_bg_color">@color/price_drop_annotation_bg_color_light</color>
+    <color name="price_drop_annotation_text_green">@color/price_drop_annotation_text_green_light</color>
 </resources>

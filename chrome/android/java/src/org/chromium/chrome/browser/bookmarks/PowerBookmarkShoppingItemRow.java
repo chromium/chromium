@@ -157,8 +157,8 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
             ApiCompatibilityUtils.setTextAppearance(
                     primaryText, R.styleable.ChipView_primaryTextAppearance);
             primaryText.setText(formattedCurrentPrice);
-            primaryText.setTextColor(
-                    ApiCompatibilityUtils.getColor(getResources(), R.color.default_green));
+            primaryText.setTextColor(ApiCompatibilityUtils.getColor(
+                    getResources(), R.color.price_drop_annotation_text_green));
 
             // Secondary text displays the original price with a strikethrough.
             TextView secondaryText = cv.getSecondaryTextView();

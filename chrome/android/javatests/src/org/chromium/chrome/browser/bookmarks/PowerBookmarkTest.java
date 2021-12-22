@@ -14,7 +14,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
@@ -39,6 +38,7 @@ import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -59,7 +59,6 @@ public class PowerBookmarkTest extends DummyUiActivityTestCase {
     private static List<ParameterSet> sClassParams = new NightModeParams().getParameters();
 
     private static final long CURRENCY_MUTLIPLIER = 1000000;
-    private final @ColorInt int mFakeBgColor;
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -85,7 +84,6 @@ public class PowerBookmarkTest extends DummyUiActivityTestCase {
 
     public PowerBookmarkTest(boolean nightModeEnabled) {
         // Sets a fake background color to make the screenshots easier to compare with bare eyes.
-        mFakeBgColor = nightModeEnabled ? Color.BLACK : Color.WHITE;
         NightModeTestUtils.setUpNightModeForDummyUiActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
@@ -135,7 +133,8 @@ public class PowerBookmarkTest extends DummyUiActivityTestCase {
                             .getLayoutInflater()
                             .inflate(R.layout.power_bookmark_shopping_item_row, mContentView, true)
                             .findViewById(R.id.power_bookmark_shopping_row);
-            mPowerBookmarkShoppingItemRow.setBackgroundColor(mFakeBgColor);
+            mPowerBookmarkShoppingItemRow.setBackgroundColor(
+                    SemanticColorUtils.getDefaultBgColor(getActivity()));
             ((TextView) mPowerBookmarkShoppingItemRow.findViewById(R.id.title))
                     .setText("Test Bookmark");
             ((TextView) mPowerBookmarkShoppingItemRow.findViewById(R.id.description))
