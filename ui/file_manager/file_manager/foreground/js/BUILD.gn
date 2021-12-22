@@ -121,6 +121,7 @@ js_type_check("closure_compile_jsmodules") {
     ":file_list_model",
     ":file_manager",
     ":file_manager_commands",
+    ":file_rename",
     ":file_selection",
     ":file_tasks",
     ":file_transfer_controller",
@@ -456,6 +457,7 @@ js_library("directory_tree_naming_controller") {
     "ui:directory_tree",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/file_manager/file_manager/foreground/js:file_rename",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js/cr/ui:dialogs.m",
   ]
@@ -596,6 +598,13 @@ js_library("file_manager") {
     "//ui/webui/resources/js/cr/ui:context_menu_handler.m",
     "//ui/webui/resources/js/cr/ui:list.m",
     "//ui/webui/resources/js/cr/ui:menu.m",
+  ]
+}
+
+js_library("file_rename") {
+  deps = [
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
 }
 
@@ -997,6 +1006,7 @@ js_library("naming_controller") {
     ":file_selection",
     "ui:list_container",
     "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/foreground/js:file_rename",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js/cr/ui:dialogs.m",
   ]

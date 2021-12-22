@@ -18,6 +18,7 @@ import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
+import {validateExternalDriveName} from '../js/file_rename.js';
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -61,7 +62,7 @@ Polymer({
   /** @private */
   format_: async function() {
     try {
-      await util.validateExternalDriveName(
+      await validateExternalDriveName(
           this.label_,
           /** @type {!VolumeManagerCommon.FileSystemType} */
           (this.formatType_));

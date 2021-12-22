@@ -9,6 +9,7 @@ import {util} from '../../common/js/util.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {DirectoryModel} from './directory_model.js';
+import {getRenameErrorMessage, renameEntry, validateExternalDriveName, validateFileName} from './file_rename.js';
 import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
 
 /**
@@ -136,9 +137,9 @@ export class DirectoryTreeNamingController {
 
     if (this.isRemovableRoot_) {
       // Validate new name.
-      util.validateExternalDriveName(
-              newName,
-              assert(this.volumeInfo_ && this.volumeInfo_.diskFileSystemType))
+      validateExternalDriveName(
+          newName,
+          assert(this.volumeInfo_ && this.volumeInfo_.diskFileSystemType))
           .then(
               this.performExternalDriveRename_.bind(this, entry, newName),
               errorMessage => {
@@ -150,7 +151,7 @@ export class DirectoryTreeNamingController {
       // Validate new name.
       new Promise(entry.getParent.bind(entry))
           .then(parentEntry => {
-            return util.validateFileName(
+            return validateFileName(
                 parentEntry, newName,
                 !this.directoryModel_.getFileFilter().isHiddenFilesVisible());
           })
@@ -179,7 +180,7 @@ export class DirectoryTreeNamingController {
 
     // TODO(yawano): Rename might take time on some volumes. Optimistically show
     // new name in the UI before actual rename is completed.
-    new Promise(util.rename.bind(null, entry, newName))
+    new Promise(renameEntry.bind(null, entry, newName))
         .then(
             newEntry => {
               // Put the new name in the .label element before detaching the
@@ -206,7 +207,7 @@ export class DirectoryTreeNamingController {
                   false /* not ignore */);
               this.detach_();
 
-              this.alertDialog_.show(util.getRenameErrorMessage(
+              this.alertDialog_.show(getRenameErrorMessage(
                   /** @type {DOMError} */ (error), entry, newName));
             });
   }

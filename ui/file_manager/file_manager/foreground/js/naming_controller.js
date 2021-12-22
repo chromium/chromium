@@ -9,6 +9,7 @@ import {strf, util} from '../../common/js/util.js';
 
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';
+import {getRenameErrorMessage, renameEntry, validateFileName} from './file_rename.js';
 import {FileSelectionHandler} from './file_selection.js';
 import {ListContainer} from './ui/list_container.js';
 
@@ -54,7 +55,7 @@ export class NamingController {
 
   /**
    * Verifies the user entered name for file or folder to be created or
-   * renamed to. See also util.validateFileName.
+   * renamed to. See also validateFileName.
    *
    * @param {!DirectoryEntry} parentEntry The URL of the parent directory entry.
    * @param {string} name New file or folder name.
@@ -63,7 +64,7 @@ export class NamingController {
    *    valid it is passed true, and false otherwise.
    */
   validateFileName(parentEntry, name, onDone) {
-    const fileNameErrorPromise = util.validateFileName(
+    const fileNameErrorPromise = validateFileName(
         parentEntry, name, !this.fileFilter_.isHiddenFilesVisible());
     fileNameErrorPromise
         .then(
@@ -283,13 +284,12 @@ export class NamingController {
         this.listContainer_.renameInput.parentNode.removeChild(
             this.listContainer_.renameInput);
       }
-      renamedItemElement.setAttribute('renaming', 'provisional');
 
       // Optimistically apply new name immediately to avoid flickering in
       // case of success.
       nameNode.textContent = newName;
 
-      util.rename(
+      renameEntry(
           entry, newName,
           newEntry => {
             this.directoryModel_.onRenameEntry(entry, assert(newEntry), () => {
@@ -313,7 +313,7 @@ export class NamingController {
             this.listContainer_.endBatchUpdates();
 
             // Show error dialog.
-            const message = util.getRenameErrorMessage(error, entry, newName);
+            const message = getRenameErrorMessage(error, entry, newName);
             this.alertDialog_.show(message);
           });
     };

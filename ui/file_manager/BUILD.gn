@@ -230,6 +230,7 @@ preprocess_if_expr("preprocess_static") {
     "file_manager/foreground/js/mock_navigation_list_model.js",
     "file_manager/foreground/js/mock_thumbnail_loader.js",
     "file_manager/foreground/js/naming_controller.js",
+    "file_manager/foreground/js/file_rename.js",
     "file_manager/foreground/js/navigation_list_model.js",
     "file_manager/foreground/js/navigation_uma.js",
     "file_manager/foreground/js/path_component.js",
