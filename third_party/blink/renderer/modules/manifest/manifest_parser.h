@@ -315,7 +315,7 @@ class MODULES_EXPORT ManifestParser {
       const JSONObject* object);
 
   // Parses the 'file_handlers' field of a Manifest, as defined in:
-  // https://github.com/WICG/file-handling/blob/master/explainer.md
+  // https://github.com/WICG/file-handling/blob/main/explainer.md
   // Returns the parsed list of FileHandlers. The returned FileHandlers are
   // empty if the field didn't exist, parsing failed, or the input list was
   // empty.
@@ -323,20 +323,20 @@ class MODULES_EXPORT ManifestParser {
       const JSONObject* object);
 
   // Parses a FileHandler from an entry in the 'file_handlers' list, as
-  // defined in: https://github.com/WICG/file-handling/blob/master/explainer.md.
+  // defined in: https://github.com/WICG/file-handling/blob/main/explainer.md.
   // Returns |absl::nullopt| if the FileHandler was invalid, or a
   // FileHandler, if parsing succeeded.
   absl::optional<mojom::blink::ManifestFileHandlerPtr> ParseFileHandler(
       const JSONObject* file_handler_entry);
 
   // Parses the 'accept' field of a FileHandler, as defined in:
-  // https://github.com/WICG/file-handling/blob/master/explainer.md.
+  // https://github.com/WICG/file-handling/blob/main/explainer.md.
   // Returns the parsed accept map. Invalid accept entries are ignored.
   HashMap<String, Vector<String>> ParseFileHandlerAccept(
       const JSONObject* accept);
 
   // Parses an extension in the 'accept' field of a FileHandler, as defined in:
-  // https://github.com/WICG/file-handling/blob/master/explainer.md. Returns
+  // https://github.com/WICG/file-handling/blob/main/explainer.md. Returns
   // whether the parsing was successful and, if so, populates |output| with the
   // parsed extension.
   bool ParseFileHandlerAcceptExtension(const JSONValue* extension,

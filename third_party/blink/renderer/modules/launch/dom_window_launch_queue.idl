@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // TODO(crbug.com/829689): Add link to spec once complete.
-// Explainer: https://github.com/WICG/file-handling/blob/master/explainer.md
+// Explainer: https://github.com/WICG/file-handling/blob/main/explainer.md
 
 [
     ImplementedAs=DOMWindowLaunchQueue,
