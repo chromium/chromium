@@ -23,17 +23,23 @@ public class AccessibilityActionAndEventTracker {
     }
 
     public void addEvent(AccessibilityEvent event) {
-        mEvents.add(eventToString(event));
+        // In rare cases there may be a lingering event, so only add if the test is not complete.
+        if (!mTestComplete) {
+            mEvents.add(eventToString(event));
+        }
     }
 
     public void addAction(int action, Bundle arguments) {
-        mEvents.add(actionToString(action, arguments));
+        // In rare cases there may be a lingering action, so only add if the test is not complete.
+        if (!mTestComplete) {
+            mEvents.add(actionToString(action, arguments));
+        }
     }
 
     public String results() {
         StringBuilder results = new StringBuilder();
 
-        for (String event : mEvents) {
+        for (String event : new LinkedList<String>(mEvents)) {
             if (event != null && !event.isEmpty()) {
                 results.append(event);
                 results.append('\n');
