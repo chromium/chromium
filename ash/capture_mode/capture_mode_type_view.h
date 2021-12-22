@@ -42,8 +42,9 @@ class ASH_EXPORT CaptureModeTypeView : public views::View {
   void OnImageToggle();
   void OnVideoToggle();
 
-  // Owned by the views hierarchy.
-  CaptureModeToggleButton* image_toggle_button_;
+  // Owned by the views hierarchy. Initialize `image_toggle_button_` to nullptr
+  // as it is never created in projector mode.
+  CaptureModeToggleButton* image_toggle_button_ = nullptr;
   CaptureModeToggleButton* video_toggle_button_;
 };
 

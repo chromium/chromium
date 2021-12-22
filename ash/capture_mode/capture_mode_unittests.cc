@@ -4932,24 +4932,19 @@ TEST_F(ProjectorCaptureModeIntegrationTests, WithAdvancedSettings) {
   CaptureModeMenuGroup* save_to_menu_group = test_api.GetSaveToMenuGroup();
   EXPECT_FALSE(save_to_menu_group);
 
-  // The audio-off option should be disabled, unchecked and not interactable
-  // (even when clicked).
-  views::View* audio_off_option = test_api.GetAudioOffOption();
-  EXPECT_FALSE(audio_off_option->GetEnabled());
+  // The audio-off option should never be added.
+  EXPECT_FALSE(test_api.GetAudioOffOption());
+
   CaptureModeMenuGroup* audio_input_menu_group =
       test_api.GetAudioInputMenuGroup();
   EXPECT_TRUE(audio_input_menu_group->IsOptionChecked(kAudioMicrophone));
-  EXPECT_FALSE(audio_input_menu_group->IsOptionChecked(kAudioOff));
-  ClickOnView(audio_off_option, event_generator);
-  EXPECT_TRUE(audio_input_menu_group->IsOptionChecked(kAudioMicrophone));
-  EXPECT_FALSE(audio_input_menu_group->IsOptionChecked(kAudioOff));
   EXPECT_TRUE(controller->enable_audio_recording());
 }
 
 // Tests the keyboard navigation for projector mode with advanced capture mode
 // settings enabled. The `image_toggle_button_` in `CaptureModeTypeView` and the
-// `Off` audio input option in `CaptureModeAdvancedSettingsView` are disabled in
-// projector mode, thus they should be skipped while tabbing though.
+// `Off` audio input option in `CaptureModeAdvancedSettingsView` are not
+// available in projector mode.
 TEST_F(ProjectorCaptureModeIntegrationTests,
        KeyboardNavigationWithAdvancedSettings) {
   base::test::ScopedFeatureList scoped_feature_list{
@@ -4964,9 +4959,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
   CaptureModeSessionTestApi test_api(controller->capture_mode_session());
 
-  EXPECT_FALSE(GetImageToggleButton()->GetEnabled());
-  // Tab once, check the image toggle button is skipped and the current focused
-  // view is the video toggle button.
+  EXPECT_FALSE(GetImageToggleButton());
+  // Tab once, check the current focused view is the video toggle button.
   auto* event_generator = GetEventGenerator();
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(),
@@ -4982,10 +4976,10 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   ASSERT_TRUE(settings_menu);
 
   CaptureModeAdvancedSettingsTestApi advanced_settings_test_api;
-  // Tab twice, check the `Off` option is skipped and remains disabled. The
-  // current focused view is the `Microphone` option.
+  // The `Off` option should not be visible.
+  EXPECT_FALSE(advanced_settings_test_api.GetAudioOffOption());
+  // Tab twice, the current focused view is the `Microphone` option.
   SendKey(ui::VKEY_TAB, event_generator, /*shift_down=*/false, /*count=*/2);
-  EXPECT_FALSE(advanced_settings_test_api.GetAudioOffOption()->GetEnabled());
   EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(),
             advanced_settings_test_api.GetMicrophoneOption());
 }
@@ -4995,10 +4989,9 @@ TEST_F(ProjectorCaptureModeIntegrationTests, BarButtonsState) {
   StartProjectorModeSession();
   EXPECT_TRUE(controller->IsActive());
 
-  // The image toggle button should be disabled, whereas the video toggle button
-  // should be enabled and active.
-  EXPECT_FALSE(GetImageToggleButton()->GetEnabled());
-  EXPECT_FALSE(GetImageToggleButton()->GetToggled());
+  // The image toggle button shouldn't be available, whereas the video toggle
+  // button should be enabled and active.
+  EXPECT_FALSE(GetImageToggleButton());
   EXPECT_TRUE(GetVideoToggleButton()->GetEnabled());
   EXPECT_TRUE(GetVideoToggleButton()->GetToggled());
 }

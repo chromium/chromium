@@ -540,9 +540,10 @@ void CaptureModeSession::Initialize() {
   // the region is not larger than the current display.
   ClampCaptureRegionToRootWindowSize();
 
-  capture_mode_bar_widget_->Init(
-      CreateWidgetParams(parent, CaptureModeBarView::GetBounds(current_root_),
-                         "CaptureModeBarWidget"));
+  capture_mode_bar_widget_->Init(CreateWidgetParams(
+      parent,
+      CaptureModeBarView::GetBounds(current_root_, is_in_projector_mode_),
+      "CaptureModeBarWidget"));
   capture_mode_bar_view_ = capture_mode_bar_widget_->SetContentsView(
       std::make_unique<CaptureModeBarView>(is_in_projector_mode_));
   capture_mode_bar_widget_->GetNativeWindow()->SetTitle(
@@ -1163,7 +1164,7 @@ bool CaptureModeSession::CanShowWidget(views::Widget* widget) const {
 void CaptureModeSession::RefreshBarWidgetBounds() {
   DCHECK(capture_mode_bar_widget_);
   capture_mode_bar_widget_->SetBounds(
-      CaptureModeBarView::GetBounds(current_root_));
+      CaptureModeBarView::GetBounds(current_root_, is_in_projector_mode_));
   auto* parent = GetParentContainer(current_root_);
   parent->StackChildAtTop(capture_mode_bar_widget_->GetNativeWindow());
   if (user_nudge_controller_)

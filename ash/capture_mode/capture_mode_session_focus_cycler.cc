@@ -448,9 +448,10 @@ CaptureModeSessionFocusCycler::GetGroupItems(FocusGroup group) const {
                source_view->fullscreen_toggle_button(),
                source_view->region_toggle_button(),
                source_view->window_toggle_button()};
+
       base::EraseIf(items,
                     [](CaptureModeSessionFocusCycler::HighlightableView* item) {
-                      return !item->GetView()->GetEnabled();
+                      return !item || !item->GetView()->GetEnabled();
                     });
       break;
     }

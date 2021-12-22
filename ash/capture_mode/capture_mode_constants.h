@@ -32,6 +32,9 @@ constexpr int kSpaceBetweenCaptureBarAndSettingsMenu = 8;
 constexpr int kCaptureRegionBorderStrokePx = 1;
 constexpr SkColor kRegionBorderColor = SK_ColorWHITE;
 
+// The space between the `image_toggle_button_` and `video_toggle_button_`.
+constexpr int kSpaceBetweenCaptureModeTypeButtons = 2;
+
 }  // namespace capture_mode
 
 }  // namespace ash

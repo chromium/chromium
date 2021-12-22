@@ -65,9 +65,11 @@ CaptureModeAdvancedSettingsView::CaptureModeAdvancedSettingsView(
               this,
               kCaptureModeMicIcon,
               l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT)))) {
-  audio_input_menu_group_->AddOption(
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_OFF),
-      kAudioOff);
+  if (!is_in_projector_mode) {
+    audio_input_menu_group_->AddOption(
+        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_OFF),
+        kAudioOff);
+  }
   audio_input_menu_group_->AddOption(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_MICROPHONE),
       kAudioMicrophone);
