@@ -18,7 +18,7 @@ class SingleThreadTaskRunner;
 namespace remoting {
 
 // Monitors the local input to notify about keyboard hotkeys. If implemented for
-// the platform, catches the disconnection keyboard shortcut (Ctlr-Alt-Esc) and
+// the platform, catches the disconnection keyboard shortcut (Ctrl-Alt-Esc) and
 // invokes |disconnect_callback| when this key combination is pressed.
 class LocalHotkeyInputMonitor {
  public:

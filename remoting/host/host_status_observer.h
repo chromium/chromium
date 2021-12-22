@@ -27,7 +27,7 @@ class HostStatusObserver {
   // A new client is authenticated.
   virtual void OnClientAuthenticated(const std::string& jid) {}
 
-  // All channels for an autheticated client are connected.
+  // All channels for an authenticated client are connected.
   virtual void OnClientConnected(const std::string& jid) {}
 
   // An authenticated client is disconnected.

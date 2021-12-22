@@ -370,8 +370,8 @@ void WorkerProcessLauncherTest::DoLaunchProcess() {
   PROCESS_INFORMATION temp_process_info = {};
   ASSERT_TRUE(CreateProcess(nullptr,
                             notepad,
-                            nullptr,   // default process attibutes
-                            nullptr,   // default thread attibutes
+                            nullptr,   // default process attributes
+                            nullptr,   // default thread attributes
                             FALSE,  // do not inherit handles
                             CREATE_SUSPENDED,
                             nullptr,   // no environment

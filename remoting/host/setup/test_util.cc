@@ -36,4 +36,4 @@ bool MakePipe(base::File* read_file,
 #endif
 }
 
-}  // namepsace remoting
+}  // namespace remoting

@@ -125,7 +125,7 @@ void Core::Initialize() {
     eagl_context_ =
         [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3];
     if (!eagl_context_) {
-      LOG(WARNING) << "Failed to create GLES3 context. Atempting to create "
+      LOG(WARNING) << "Failed to create GLES3 context. Attempting to create "
                    << "GLES2 context.";
       eagl_context_ =
           [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];

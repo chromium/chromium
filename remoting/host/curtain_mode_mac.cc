@@ -67,7 +67,7 @@ bool IsRunningHeadless() {
 }
 
 // Used to detach the current session from the local console and disconnect
-// the connnection if it gets re-attached.
+// the connection if it gets re-attached.
 //
 // Because the switch-in handler can only called on the main (UI) thread, this
 // class installs the handler and detaches the current session from the console
@@ -135,7 +135,7 @@ void SessionWatcher::Start() {
   // Activate curtain asynchronously since it has to be done on the UI thread.
   // Because the curtain activation is asynchronous, it is possible that
   // the connection will not be curtained for a brief moment. This seems to be
-  // unaviodable as long as the curtain enforcement depends on processing of
+  // unavoidable as long as the curtain enforcement depends on processing of
   // the switch-in notifications.
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SessionWatcher::ActivateCurtain, this));

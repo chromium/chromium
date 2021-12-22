@@ -327,7 +327,7 @@ TEST_F(SecurityKeyIpcClientTest, NonExistentIpcServerChannel) {
       mojo::NamedPlatformChannel::ServerNameFromUTF8(
           kNonexistentIpcChannelName));
 
-  // Attempt to establish the conection (should fail since the IPC channel does
+  // Attempt to establish the connection (should fail since the IPC channel does
   // not exist).
   security_key_ipc_client_.EstablishIpcConnection(
       base::BindOnce(&SecurityKeyIpcClientTest::ConnectionStateHandler,

@@ -28,7 +28,7 @@ class FakeSignalStrategy : public SignalStrategy {
   using PeerCallback = base::RepeatingCallback<void(
       std::unique_ptr<jingle_xmpp::XmlElement> message)>;
 
-  // Calls ConenctTo() to connect |peer1| and |peer2|. Both |peer1| and |peer2|
+  // Calls ConnectTo() to connect |peer1| and |peer2|. Both |peer1| and |peer2|
   // must belong to the current thread.
   static void Connect(FakeSignalStrategy* peer1, FakeSignalStrategy* peer2);
 

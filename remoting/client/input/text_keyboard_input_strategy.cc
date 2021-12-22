@@ -20,7 +20,7 @@ TextKeyboardInputStrategy::~TextKeyboardInputStrategy() = default;
 
 void TextKeyboardInputStrategy::HandleTextEvent(const std::string& text,
                                                 uint8_t modifiers) {
-  // TODO(nicholss): Handle modifers.
+  // TODO(nicholss): Handle modifiers.
   input_injector_->SendTextEvent(text);
 }
 

@@ -93,7 +93,7 @@ namespace remoting {
 // 3. In BeginInitialization(), the Core instance constructs the
 //      VideoEncodeAccelerator using the saved dimensions from the DesktopFrame.
 //      If the VideoEncodeAccelerator is constructed successfully, the state is
-//      set to INITIALIZING. If not, the state isset to INIITALIZATION_ERROR.
+//      set to INITIALIZING. If not, the state isset to INITIALIZATION_ERROR.
 // 4. Some time later, the VideoEncodeAccelerator sets itself up and is ready
 //      to encode. At this point, it calls the Core instance's
 //      RequireBitstreamBuffers() method. Once bitstream buffers are allocated,

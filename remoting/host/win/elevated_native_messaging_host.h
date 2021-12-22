@@ -62,7 +62,7 @@ class ElevatedNativeMessagingHost
   // Handle of the parent window.
   intptr_t parent_window_handle_;
 
-  // Indicates whether the launched process should be elevated when lauinched.
+  // Indicates whether the launched process should be elevated when launched.
   // Note: Binaries with uiaccess run at a higher UIPI level than the launching
   // process so they still need to be launched and controlled by this class but
   // do not require traditional elevation to function.

@@ -41,7 +41,7 @@ class DesktopResizer {
 
   // Restore the original desktop resolution. The caller must provide the
   // original resolution of the desktop, as returned by |GetCurrentResolution|,
-  // as a hint. However, implementaions are free to ignore this. For example,
+  // as a hint. However, implementations are free to ignore this. For example,
   // virtual hosts will typically ignore it to avoid unnecessary resizes.
   virtual void RestoreResolution(const ScreenResolution& original) = 0;
 };

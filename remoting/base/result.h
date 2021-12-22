@@ -29,7 +29,7 @@
 // Result()
 //   Only present when the success value is default constructible. Default
 //   constructs the success value. This is useful for situations like IPC
-//   deserialization where a default-costructed instance is created and the
+//   deserialization where a default-constructed instance is created and the
 //   actual value is filled in later. In general, prefer using the
 //   Result(kSuccessTag) constructor to be explicit.
 //
