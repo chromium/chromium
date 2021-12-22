@@ -362,9 +362,6 @@ enum class BackForwardNavigationType {
                  context:(nullable const web::NavigationContextImpl*)context {
   DCHECK_EQ(web::WKNavigationState::FINISHED,
             self.navigationHandler.navigationState);
-
-  [_delegate webRequestControllerRestoreStateFromHistory:self];
-
   // Placeholder and restore session URLs are implementation details so should
   // not notify WebStateObservers. If |context| is nullptr, don't skip
   // placeholder URLs because this may be the only opportunity to update

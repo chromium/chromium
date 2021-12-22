@@ -117,7 +117,7 @@ using web::wk_navigation_util::IsWKInternalUrl;
   // The web::PageDisplayState recorded when the page starts loading.
   web::PageDisplayState _displayStateOnStartLoading;
   // Whether or not the page has zoomed since the current navigation has been
-  // committed, either by user interaction or via |-restoreStateFromHistory|.
+  // committed by user interaction.
   BOOL _pageHasZoomed;
   // Whether a PageDisplayState is currently being applied.
   BOOL _applyingPageState;
@@ -230,9 +230,6 @@ using web::wk_navigation_util::IsWKInternalUrl;
 // may be called multiple times and thus must be idempotent.
 - (void)loadCompleteWithSuccess:(BOOL)loadSuccess
                      forContext:(web::NavigationContextImpl*)context;
-
-// Restores the state for this page from session history.
-- (void)restoreStateFromHistory;
 // Extracts the current page's viewport tag information and calls |completion|.
 // If the page has changed before the viewport tag is successfully extracted,
 // |completion| is called with nullptr.
@@ -1238,12 +1235,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
 #pragma mark - Page State
 
-- (void)restoreStateFromHistory {
-  web::NavigationItem* item = self.currentNavItem;
-  if (item)
-    self.pageDisplayState = item->GetPageDisplayState();
-}
-
 - (void)extractViewportTagWithCompletion:(ViewportStateCompletion)completion {
   DCHECK(completion);
   web::NavigationItem* currentItem = self.currentNavItem;
@@ -1947,11 +1938,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   // WebKit will trigger a snapshot for each (blank) page, and quickly
   // overload system memory.
   self.webView.allowsBackForwardNavigationGestures = NO;
-}
-
-- (void)webRequestControllerRestoreStateFromHistory:
-    (CRWWebRequestController*)requestController {
-  [self restoreStateFromHistory];
 }
 
 - (CRWWKNavigationHandler*)webRequestControllerNavigationHandler:
