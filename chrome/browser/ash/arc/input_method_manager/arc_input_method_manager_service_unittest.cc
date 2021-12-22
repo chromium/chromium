@@ -304,7 +304,6 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
     tablet_mode_controller_.reset();
     profile_.reset();
     im::InputMethodManager::Shutdown();
-    ui::IMEBridge::Shutdown();
   }
 
  private:

@@ -212,7 +212,6 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     chrome_keyboard_controller_client_test_helper_.reset();
 
     BrowserWithTestWindowTest::TearDown();
-    ui::ShutdownInputMethodForTesting();
 
     candidate_window_controller_ = nullptr;
     keyboard_ = nullptr;

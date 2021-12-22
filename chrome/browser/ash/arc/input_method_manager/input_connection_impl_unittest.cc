@@ -216,7 +216,6 @@ class InputConnectionImplTest : public testing::Test {
     engine_.reset();
     bridge_.reset();
     ash::input_method::InputMethodManager::Shutdown();
-    ui::IMEBridge::Shutdown();
   }
 
  private:

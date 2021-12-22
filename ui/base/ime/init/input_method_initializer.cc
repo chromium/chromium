@@ -9,9 +9,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/base/ime/ash/ime_bridge.h"
-#elif defined(USE_AURA) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_AURA) && \
+    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "base/check.h"
 #include "ui/base/ime/linux/fake_input_method_context_factory.h"
 #elif defined(OS_WIN)
@@ -37,9 +36,7 @@ void InitializeInputMethod() {
 }
 
 void ShutdownInputMethod() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  IMEBridge::Shutdown();
-#elif defined(OS_WIN)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(OS_WIN)
   TSFBridge::Shutdown();
 #endif
 }
@@ -63,9 +60,8 @@ void InitializeInputMethodForTesting() {
 }
 
 void ShutdownInputMethodForTesting() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  IMEBridge::Shutdown();
-#elif defined(USE_AURA) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_AURA) && \
+    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   const LinuxInputMethodContextFactory* factory =
       LinuxInputMethodContextFactory::instance();
   CHECK(!factory || factory == g_linux_input_method_context_factory_for_testing)

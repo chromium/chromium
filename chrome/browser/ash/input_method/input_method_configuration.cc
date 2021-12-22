@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/input_method/input_method_delegate_impl.h"
 #include "chrome/browser/ash/input_method/input_method_manager_impl.h"
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
-#include "ui/base/ime/ash/ime_bridge.h"
 
 namespace ash {
 namespace input_method {
@@ -49,13 +48,8 @@ class InputMethodConfiguration {
 
   void Shutdown() {
     accessibility_.reset();
-
     input_method_persistence_.reset();
-
     InputMethodManager::Shutdown();
-
-    ui::IMEBridge::Shutdown();
-
     DVLOG(1) << "InputMethodManager shutdown";
   }
 
