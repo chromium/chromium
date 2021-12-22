@@ -4173,6 +4173,27 @@ IN_PROC_BROWSER_TEST_F(GreaseEnterprisePolicyTest, GreaseEnterprisePolicyTest) {
     ASSERT_TRUE(ua_ch_result.find(i) == std::string::npos);
   }
 }
+IN_PROC_BROWSER_TEST_F(GreaseEnterprisePolicyTest,
+                       GreaseEnterprisePolicyDynamicRefreshTest) {
+  const GURL gurl = accept_ch_url();
+  // Reset the policy that was already set to false in the setup, then see if
+  // the change is reflected in the sec-ch-ua header without requiring a browser
+  // restart.
+  policy::PolicyMap policies;
+  SetPolicy(&policies, policy::key::kUserAgentClientHintsGREASEUpdateEnabled,
+            absl::optional<base::Value>(true));
+  provider_.UpdateChromePolicy(policies);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
+  std::string ua_ch_result = main_frame_ua_observed();
+  bool seen_updated = false;
+  std::vector<char> updated_grease_chars = {'(', ':', '-', '.',
+                                            '/', ')', '?', '_'};
+  for (auto c : updated_grease_chars) {
+    seen_updated = seen_updated || (ua_ch_result.find(c) != std::string::npos);
+  }
+  ASSERT_TRUE(seen_updated);
+}
+
 // Tests that the Sec-CH-UA-Reduced client hint gets cleared on a redirect if
 // the response doesn't contain the hint in the Accept-CH header.
 class RedirectUaReducedOriginTrialBrowserTest : public InProcessBrowserTest {

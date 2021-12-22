@@ -17,6 +17,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "services/network/public/cpp/client_hints.h"
@@ -84,12 +85,12 @@ ClientHints::ClientHints(
     network::NetworkQualityTracker* network_quality_tracker,
     HostContentSettingsMap* settings_map,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
-    const blink::UserAgentMetadata& user_agent_metadata)
+    PrefService* pref_service)
     : context_(context),
       network_quality_tracker_(network_quality_tracker),
       settings_map_(settings_map),
       cookie_settings_(cookie_settings),
-      user_agent_metadata_(user_agent_metadata) {
+      pref_service_(pref_service) {
   DCHECK(context_);
   DCHECK(network_quality_tracker_);
   DCHECK(settings_map_);
@@ -137,7 +138,7 @@ bool ClientHints::AreThirdPartyCookiesBlocked(const GURL& url) {
 }
 
 blink::UserAgentMetadata ClientHints::GetUserAgentMetadata() {
-  return user_agent_metadata_;
+  return embedder_support::GetUserAgentMetadata(pref_service_);
 }
 
 void ClientHints::PersistClientHints(
