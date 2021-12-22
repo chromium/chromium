@@ -3106,37 +3106,6 @@ TEST_F(WindowEventDispatcherTest, OnCursorMovedToRootLocationUpdatesHover) {
   w->RemovePreTargetHandler(&recorder);
 }
 
-// Tests that we correctly report the fraction of time without user input via
-// UMA.
-TEST_F(WindowEventDispatcherTest, FractionOfTimeWithoutUserInputRecorded) {
-  const char* kHistogram = "Event.FractionOfTimeWithoutUserInput";
-  base::HistogramTester tester;
-
-  std::unique_ptr<aura::Window> window(
-      test::CreateTestWindowWithId(1234, root_window()));
-
-  ui::MouseEvent mouse1(ui::ET_MOUSE_MOVED, gfx::Point(10, 10),
-                        gfx::Point(10, 10), ui::EventTimeStampFromSeconds(4), 0,
-                        0);
-
-  // To flush the idle fraction reporter, we need to dispatch two events. The
-  // first event causes us to record the previous active period, and the second
-  // flushes the previous active period.
-  ui::MouseEvent mouse2(ui::ET_MOUSE_MOVED, gfx::Point(10, 10),
-                        gfx::Point(10, 10), ui::EventTimeStampFromSeconds(16),
-                        0, 0);
-
-  ui::MouseEvent mouse3(ui::ET_MOUSE_MOVED, gfx::Point(10, 10),
-                        gfx::Point(10, 10), ui::EventTimeStampFromSeconds(30),
-                        0, 0);
-
-  DispatchEventUsingWindowDispatcher(&mouse1);
-  DispatchEventUsingWindowDispatcher(&mouse2);
-  DispatchEventUsingWindowDispatcher(&mouse3);
-
-  tester.ExpectTotalCount(kHistogram, 1);
-}
-
 TEST_F(WindowEventDispatcherTest, TouchEventWithScaledWindow) {
   WindowEventDispatcher* dispatcher = host()->dispatcher();
 

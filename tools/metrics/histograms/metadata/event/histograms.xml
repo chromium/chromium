@@ -374,6 +374,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Event.FractionOfTimeWithoutUserInput" units="%"
     expires_after="2021-06-16">
+  <obsolete>
+    Removed December 2021.
+  </obsolete>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>

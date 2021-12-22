@@ -516,11 +516,6 @@ ui::EventDispatchDetails WindowEventDispatcher::PreDispatchEvent(
   Window* target_window = static_cast<Window*>(target);
   CHECK(window()->Contains(target_window));
 
-  if (!(event->flags() & ui::EF_IS_SYNTHESIZED)) {
-    fraction_of_time_without_user_input_recorder_.RecordEventAtTime(
-        event->time_stamp());
-  }
-
   WindowTracker target_window_tracker;
   target_window_tracker.Add(target_window);
   if (!dispatching_held_event_) {

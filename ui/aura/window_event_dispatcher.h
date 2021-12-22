@@ -25,7 +25,6 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/event_processor.h"
 #include "ui/events/event_targeter.h"
-#include "ui/events/fraction_of_time_without_user_input_recorder.h"
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/events/types/event_type.h"
@@ -298,9 +297,6 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
   raw_ptr<Window> touchpad_pinch_handler_ = nullptr;
   raw_ptr<Window> event_dispatch_target_ = nullptr;
   raw_ptr<Window> old_dispatch_target_ = nullptr;
-
-  ui::FractionOfTimeWithoutUserInputRecorder
-      fraction_of_time_without_user_input_recorder_;
 
   bool synthesize_mouse_move_ = false;
 
