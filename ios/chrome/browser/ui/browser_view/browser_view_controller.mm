@@ -887,11 +887,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // directly reference |self.ntpCoordinator|.
 - (NewTabPageCoordinator*)ntpCoordinatorForWebState:(web::WebState*)webState {
   if (IsSingleNtpEnabled()) {
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(webState);
-    BOOL activeNtp = self.isNTPActiveForCurrentWebState ||
-                     (NTPHelper && NTPHelper->IsActive());
-    DCHECK(activeNtp);
     return _ntpCoordinator;
   }
   auto found = _ntpCoordinatorsForWebStates.find(webState);
@@ -3804,7 +3799,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.keyCommandsProvider.canDismissModals = NO;
   [self.sideSwipeController setEnabled:YES];
 
-  if (self.isNTPActiveForCurrentWebState) {
+  if (self.isNTPActiveForCurrentWebState || IsSingleNtpEnabled()) {
     NewTabPageCoordinator* coordinator =
         [self ntpCoordinatorForWebState:self.currentWebState];
     [coordinator locationBarDidResignFirstResponder];
