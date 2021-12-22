@@ -628,7 +628,7 @@ std::string GeneratePlaceholders(size_t count) {
   return result;
 }
 
-#if defined(OS_MAC)
+#if defined(OS_MAC) || defined(OS_LINUX)
 // Fills |form| with necessary data required to be removed from the database
 // and returns it.
 PasswordForm GetFormForRemoval(sql::Statement& statement) {
@@ -1442,9 +1442,10 @@ bool LoginDatabase::DeleteAndRecreateDatabaseFile() {
 }
 
 DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
-#if defined(OS_MAC)
+#if defined(OS_MAC) || defined(OS_LINUX)
   TRACE_EVENT0("passwords", "LoginDatabase::DeleteUndecryptableLogins");
-  // If the Keychain is unavailable, don't delete any logins.
+  // If the Keychain in MacOS or the real secret key in Linux is unavailable,
+  // don't delete any logins.
   if (!OSCrypt::IsEncryptionAvailable()) {
     metrics_util::LogDeleteUndecryptableLoginsReturnValue(
         metrics_util::DeleteCorruptedPasswordsResult::kEncryptionUnavailable);

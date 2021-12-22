@@ -41,6 +41,9 @@ extern const base::Feature kRecoverFromNeverSaveAndroid;
 extern const base::Feature kReparseServerPredictionsFollowingFormChange;
 extern const base::Feature kSecondaryServerFieldPredictions;
 extern const base::Feature kSupportForAddPasswordsInSettings;
+#if defined(OS_LINUX)
+extern const base::Feature kSyncUndecryptablePasswordsLinux;
+#endif
 extern const base::Feature kTreatNewPasswordHeuristicsAsReliable;
 #if defined(OS_ANDROID)
 extern const base::Feature kUnifiedCredentialManagerDryRun;

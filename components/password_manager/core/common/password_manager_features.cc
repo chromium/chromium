@@ -134,6 +134,13 @@ const base::Feature kSecondaryServerFieldPredictions = {
 const base::Feature kSupportForAddPasswordsInSettings = {
     "SupportForAddPasswordsInSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if defined(OS_LINUX)
+// When enabled, all undecryptable passwords are deleted from the local database
+// during initial sync flow.
+const base::Feature kSyncUndecryptablePasswordsLinux = {
+    "SyncUndecryptablePasswordsLinux", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 // Treat heuritistics to find new password fields as reliable. This enables
 // password generation on more forms, but could lead to false positives.
 const base::Feature kTreatNewPasswordHeuristicsAsReliable = {

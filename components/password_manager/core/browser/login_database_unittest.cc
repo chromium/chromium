@@ -2078,8 +2078,9 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(db.Init());
 
-#if defined(OS_MAC)
+#if defined(OS_MAC) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
   // Make sure that we can't get any logins when database is corrupted.
+  // Disabling the checks in chromecast because encryption is unavailable.
   std::vector<std::unique_ptr<PasswordForm>> result;
   EXPECT_FALSE(db.GetAutofillableLogins(&result));
   EXPECT_TRUE(result.empty());
@@ -2095,12 +2096,15 @@ TEST_F(LoginDatabaseUndecryptableLoginsTest, DeleteUndecryptableLoginsTest) {
   EXPECT_THAT(result, IsEmpty());
 
   RunUntilIdle();
+#elif (defined(OS_LINUX) && BUILDFLAG(IS_CHROMECAST))
+  EXPECT_EQ(DatabaseCleanupResult::kEncryptionUnavailable,
+            db.DeleteUndecryptableLogins());
 #else
   EXPECT_EQ(DatabaseCleanupResult::kSuccess, db.DeleteUndecryptableLogins());
 #endif
 
 // Check histograms.
-#if defined(OS_MAC)
+#if defined(OS_MAC) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
   histogram_tester.ExpectUniqueSample("PasswordManager.CleanedUpPasswords", 2,
                                       1);
   histogram_tester.ExpectUniqueSample(

@@ -68,11 +68,11 @@ class PasswordSyncBridge : public syncer::ModelTypeSyncBridge {
       const sync_pb::PasswordSpecificsData& password_data);
 
  private:
-  // On MacOS it may happen that some passwords cannot be decrypted due to
-  // modification of encryption key in Keychain (https://crbug.com/730625). This
-  // method deletes those logins from the store. So during merge, the data in
-  // sync will be added to the password store. This should be called during
-  // MergeSyncData().
+  // On MacOS or Linux it may happen that some passwords cannot be decrypted due
+  // to modification of encryption key in Keychain or Keyring
+  // (https://crbug.com/730625). This method deletes those logins from the
+  // store. So during merge, the data in sync will be added to the password
+  // store. This should be called during MergeSyncData().
   absl::optional<syncer::ModelError> CleanupPasswordStore();
 
   // Retrieves the storage keys of all unsynced passwords in the store.

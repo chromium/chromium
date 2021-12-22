@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -180,6 +181,9 @@ bool ShouldRecoverPasswordsDuringMerge() {
   // Delete the local undecryptable copy when this is MacOS only.
 #if defined(OS_MAC)
   return true;
+#elif defined(OS_LINUX)
+  return base::FeatureList::IsEnabled(
+      features::kSyncUndecryptablePasswordsLinux);
 #else
   return false;
 #endif
@@ -314,7 +318,6 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
   // 3. |F| exists in both the local and the remote models --> both versions
   //    should be merged by accepting the most recently created one, and update
   //    local and remote models accordingly.
-
   base::AutoReset<bool> processing_changes(&is_processing_remote_sync_changes_,
                                            true);
 
