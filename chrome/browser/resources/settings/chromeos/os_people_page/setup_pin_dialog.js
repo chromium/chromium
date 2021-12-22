@@ -11,7 +11,19 @@
  * </settings-setup-pin-dialog>
  */
 
+import '//resources/cr_components/chromeos/quick_unlock/setup_pin_keyboard.m.js';
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '../../settings_shared_css.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-setup-pin-dialog',
 
   behaviors: [I18nBehavior],

@@ -14,7 +14,39 @@
  * </settings-lock-screen>
  */
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
+import '../../controls/settings_toggle_button.js';
+import './setup_pin_dialog.js';
+import './pin_autosubmit_dialog.js';
+import '../../prefs/prefs.js';
+import '../../settings_shared_css.js';
+import '../../settings_vars_css.js';
+import '../multidevice_page/multidevice_smartlock_item.m.js';
+
+import {LockScreenProgress, recordLockScreenProgress} from '//resources/cr_components/chromeos/quick_unlock/lock_screen_constants.m.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {FingerprintAttempt, FingerprintBrowserProxy, FingerprintBrowserProxyImpl, FingerprintInfo, FingerprintResultType, FingerprintScan} from './fingerprint_browser_proxy.js';
+import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorImpl} from './lock_state_behavior.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-lock-screen',
 
   behaviors: [
@@ -22,7 +54,7 @@ Polymer({
     I18nBehavior,
     LockStateBehavior,
     WebUIListenerBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -58,7 +90,7 @@ Polymer({
     writeUma_: {
       type: Object,
       value() {
-        return settings.recordLockScreenProgress;
+        return recordLockScreenProgress;
       },
     },
 
@@ -177,7 +209,7 @@ Polymer({
     },
   },
 
-  /** @private {?settings.FingerprintBrowserProxy} */
+  /** @private {?FingerprintBrowserProxy} */
   fingerprintBrowserProxy_: null,
 
   /** selectedUnlockType is defined in LockStateBehavior. */
@@ -185,8 +217,7 @@ Polymer({
 
   /** @override */
   attached() {
-    this.fingerprintBrowserProxy_ =
-        settings.FingerprintBrowserProxyImpl.getInstance();
+    this.fingerprintBrowserProxy_ = FingerprintBrowserProxyImpl.getInstance();
     this.updateNumFingerprints_();
 
     this.addWebUIListener(
@@ -198,13 +229,13 @@ Polymer({
   },
 
   /**
-   * Overridden from settings.RouteObserverBehavior.
-   * @param {!settings.Route} newRoute
-   * @param {!settings.Route} oldRoute
+   * Overridden from RouteObserverBehavior.
+   * @param {!Route} newRoute
+   * @param {!Route} oldRoute
    * @protected
    */
   currentRouteChanged(newRoute, oldRoute) {
-    if (newRoute === settings.routes.LOCK_SCREEN) {
+    if (newRoute === routes.LOCK_SCREEN) {
       this.updateUnlockType(/*activeModesChanged=*/ false);
       this.updateNumFingerprints_();
       this.attemptDeepLink();
@@ -288,11 +319,11 @@ Polymer({
 
   /** @private */
   focusDefaultElement_() {
-    Polymer.RenderStatus.afterNextRender(this, () => {
+    afterNextRender(this, () => {
       if (!this.$$('#unlockType').disabled) {
-        cr.ui.focusWithoutInk(assert(this.$$('#unlockType')));
+        focusWithoutInk(assert(this.$$('#unlockType')));
       } else {
-        cr.ui.focusWithoutInk(assert(this.$$('#enableLockScreen')));
+        focusWithoutInk(assert(this.$$('#enableLockScreen')));
       }
     });
   },
@@ -305,8 +336,7 @@ Polymer({
       return;
     }
 
-    if (settings.Router.getInstance().getCurrentRoute() ===
-        settings.routes.LOCK_SCREEN) {
+    if (Router.getInstance().getCurrentRoute() === routes.LOCK_SCREEN) {
       // Show deep links again if the user authentication dialog just closed.
       this.attemptDeepLink().then(result => {
         // If there were no supported deep links, focus the default element.
@@ -323,20 +353,20 @@ Polymer({
    */
   onConfigurePin_(e) {
     e.preventDefault();
-    this.writeUma_(settings.LockScreenProgress.CHOOSE_PIN_OR_PASSWORD);
+    this.writeUma_(LockScreenProgress.CHOOSE_PIN_OR_PASSWORD);
     this.showSetupPinDialog_ = true;
   },
 
   /** @private */
   onSetupPinDialogClose_() {
     this.showSetupPinDialog_ = false;
-    cr.ui.focusWithoutInk(assert(this.$$('#setupPinButton')));
+    focusWithoutInk(assert(this.$$('#setupPinButton')));
   },
 
   /** @private */
   onPinAutosubmitDialogClose_() {
     this.showPinAutosubmitDialog_ = false;
-    cr.ui.focusWithoutInk(assert(this.$$('#enablePinAutoSubmit')));
+    focusWithoutInk(assert(this.$$('#enablePinAutoSubmit')));
   },
 
   /**
@@ -375,7 +405,7 @@ Polymer({
 
   /** @private */
   onEditFingerprints_() {
-    settings.Router.getInstance().navigateTo(settings.routes.FINGERPRINT);
+    Router.getInstance().navigateTo(routes.FINGERPRINT);
   },
 
   /**
@@ -383,8 +413,8 @@ Polymer({
    * @private
    */
   requestPasswordIfApplicable_() {
-    const currentRoute = settings.Router.getInstance().getCurrentRoute();
-    if (currentRoute === settings.routes.LOCK_SCREEN && !this.setModes) {
+    const currentRoute = Router.getInstance().getCurrentRoute();
+    if (currentRoute === routes.LOCK_SCREEN && !this.setModes) {
       this.fire('password-requested');
       return true;
     }

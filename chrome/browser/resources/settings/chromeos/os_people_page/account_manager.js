@@ -8,20 +8,45 @@
  * list, add and delete Secondary Google Accounts.
  */
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
+import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '../../settings_shared_css.js';
+
+import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {getImage} from '//resources/js/icon.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {recordSettingChange} from '../metrics_recorder.m.js';
+import {routes} from '../os_route.m.js';
+import {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from '../parental_controls_page/parental_controls_browser_proxy.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {Account, AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-account-manager',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
     WebUIListenerBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
     /**
      * List of Accounts.
-     * @type {!Array<settings.Account>}
+     * @type {!Array<Account>}
      */
     accounts_: {
       type: Array,
@@ -32,13 +57,13 @@ Polymer({
 
     /**
      * Primary / Device account.
-     * @private {?settings.Account}
+     * @private {?Account}
      */
     deviceAccount_: Object,
 
     /**
      * The targeted account for menu operations.
-     * @private {?settings.Account}
+     * @private {?Account}
      */
     actionMenuAccount_: Object,
 
@@ -87,7 +112,7 @@ Polymer({
     },
   },
 
-  /** @private {?settings.AccountManagerBrowserProxy} */
+  /** @private {?AccountManagerBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
@@ -97,16 +122,16 @@ Polymer({
 
   /** @override */
   ready() {
-    this.browserProxy_ = settings.AccountManagerBrowserProxyImpl.getInstance();
+    this.browserProxy_ = AccountManagerBrowserProxyImpl.getInstance();
     this.refreshAccounts_();
   },
 
   /**
-   * @param {!settings.Route} newRoute
-   * @param {settings.Route} oldRoute
+   * @param {!Route} newRoute
+   * @param {Route} oldRoute
    */
   currentRouteChanged(newRoute, oldRoute) {
-    if (newRoute !== settings.routes.ACCOUNT_MANAGER) {
+    if (newRoute !== routes.ACCOUNT_MANAGER) {
       return;
     }
 
@@ -174,7 +199,7 @@ Polymer({
    * @private
    */
   getIconImageSet_(iconUrl) {
-    return cr.icon.getImage(iconUrl);
+    return getImage(iconUrl);
   },
 
   /**
@@ -182,14 +207,14 @@ Polymer({
    * @private
    */
   addAccount_(event) {
-    settings.recordSettingChange(
+    recordSettingChange(
         chromeos.settings.mojom.Setting.kAddAccount,
         {intValue: this.accounts_.length + 1});
     this.browserProxy_.addAccount();
   },
 
   /**
-   * @param {!settings.Account} account
+   * @param {!Account} account
    * @return {boolean} True if the account reauthentication button should be
    *    shown, false otherwise.
    * @private
@@ -271,7 +296,7 @@ Polymer({
 
 
   /**
-   * @param {!settings.Account} account
+   * @param {!Account} account
    * @private
    */
   getAccountManagerSignedOutTitle_(account) {
@@ -281,7 +306,7 @@ Polymer({
   },
 
   /**
-   * @param {!settings.Account} account
+   * @param {!Account} account
    * @private
    */
   getMoreActionsTitle_(account) {
@@ -290,7 +315,7 @@ Polymer({
   },
 
   /**
-   * @return {!Array<settings.Account>} list of accounts.
+   * @return {!Array<Account>} list of accounts.
    * @private
    */
   getSecondaryAccounts_() {
@@ -298,7 +323,7 @@ Polymer({
   },
 
   /**
-   * @param {!CustomEvent<!{model: !{item: !settings.Account}}>} event
+   * @param {!CustomEvent<!{model: !{item: !Account}}>} event
    * @private
    */
   onReauthenticationTap_(event) {
@@ -312,8 +337,7 @@ Polymer({
   /** @private */
   onManagedIconClick_() {
     if (this.isChildUser_) {
-      parental_controls.ParentalControlsBrowserProxyImpl.getInstance()
-          .launchFamilyLinkSettings();
+      ParentalControlsBrowserProxyImpl.getInstance().launchFamilyLinkSettings();
     }
   },
 
@@ -334,7 +358,7 @@ Polymer({
 
   /**
    * Opens the Account actions menu.
-   * @param {!{model: !{item: settings.Account}, target: !Element}} event
+   * @param {!{model: !{item: Account}, target: !Element}} event
    * @private
    */
   onAccountActionsMenuButtonTap_(event) {
@@ -356,7 +380,7 @@ Polymer({
       this.$.removeConfirmationDialog.showModal();
     } else {
       this.browserProxy_.removeAccount(
-          /** @type {?settings.Account} */ (this.actionMenuAccount_));
+          /** @type {?Account} */ (this.actionMenuAccount_));
       this.actionMenuAccount_ = null;
       this.$$('#add-account-button').focus();
     }
@@ -380,7 +404,7 @@ Polymer({
    */
   onRemoveAccountDialogRemoveTap_() {
     this.browserProxy_.removeAccount(
-        /** @type {?settings.Account} */ (this.actionMenuAccount_));
+        /** @type {?Account} */ (this.actionMenuAccount_));
     this.actionMenuAccount_ = null;
     this.$.removeConfirmationDialog.close();
     this.$$('#add-account-button').focus();

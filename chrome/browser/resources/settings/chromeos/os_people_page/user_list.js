@@ -12,13 +12,30 @@
  *    <settings-user-list prefs="{{prefs}}">
  *    </settings-user-list>
  */
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '../../settings_shared_css.js';
+import '../../settings_vars_css.js';
+
+import {CrScrollableBehavior} from '//resources/cr_elements/cr_scrollable_behavior.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {IronA11yAnnouncer} from '//resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, Router} from '../../router.js';
+import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-user-list',
 
   behaviors: [
     CrScrollableBehavior,
     I18nBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -52,7 +69,7 @@ Polymer({
   /** @override */
   attached() {
     // Initialize the announcer once.
-    Polymer.IronA11yAnnouncer.requestAvailability();
+    IronA11yAnnouncer.requestAvailability();
   },
 
   /** @override */
@@ -71,8 +88,7 @@ Polymer({
 
   /** @protected */
   currentRouteChanged() {
-    if (settings.Router.getInstance().getCurrentRoute() ===
-        settings.routes.ACCOUNTS) {
+    if (Router.getInstance().getCurrentRoute() === routes.ACCOUNTS) {
       this.usersPrivate_.getUsers(
           (/** !Array<!chrome.usersPrivate.User> */ users) => {
             this.setUsers_(users);

@@ -6,12 +6,55 @@
  * @fileoverview
  * 'settings-people-page' is the settings page containing sign-in settings.
  */
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '../../controls/settings_toggle_button.js';
+import '../../people_page/signout_dialog.js';
+import '../../people_page/sync_controls.js';
+import '../../people_page/sync_page.js';
+import '../../settings_page/settings_animated_pages.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared_css.js';
+import '../parental_controls_page/parental_controls_page.js';
+import './account_manager.js';
+import './fingerprint_list.js';
+import './lock_screen.js';
+import './lock_screen_password_prompt_dialog.js';
+import './users_page.js';
+import './os_sync_controls.js';
+
+import {convertImageSequenceToPng, isEncodedPngDataUrlAnimated} from '//resources/cr_elements/chromeos/cr_picture/png.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {addWebUIListener, removeWebUIListener, sendWithPromise, WebUIListener} from '//resources/js/cr.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {getImage} from '//resources/js/icon.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {ProfileInfoBrowserProxyImpl} from '../../people_page/profile_info_browser_proxy.js';
+import {StatusAction, SyncBrowserProxyImpl} from '../../people_page/sync_browser_proxy.js';
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.m.js';
+import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {Account, AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
+import {LockStateBehavior} from './lock_state_behavior.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-people-page',
 
   behaviors: [
     DeepLinkingBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
     I18nBehavior,
     WebUIListenerBehavior,
     LockStateBehavior,
@@ -36,7 +79,7 @@ Polymer({
 
     /**
      * The current sync status, supplied by SyncBrowserProxy.
-     * @type {?settings.SyncStatus}
+     * @type {?SyncStatus}
      */
     syncStatus: Object,
 
@@ -121,22 +164,18 @@ Polymer({
       type: Object,
       value() {
         const map = new Map();
-        if (settings.routes.SYNC) {
-          map.set(settings.routes.SYNC.path, '#sync-setup');
+        if (routes.SYNC) {
+          map.set(routes.SYNC.path, '#sync-setup');
         }
-        if (settings.routes.LOCK_SCREEN) {
-          map.set(
-              settings.routes.LOCK_SCREEN.path, '#lock-screen-subpage-trigger');
+        if (routes.LOCK_SCREEN) {
+          map.set(routes.LOCK_SCREEN.path, '#lock-screen-subpage-trigger');
         }
-        if (settings.routes.ACCOUNTS) {
-          map.set(
-              settings.routes.ACCOUNTS.path,
-              '#manage-other-people-subpage-trigger');
+        if (routes.ACCOUNTS) {
+          map.set(routes.ACCOUNTS.path, '#manage-other-people-subpage-trigger');
         }
-        if (settings.routes.ACCOUNT_MANAGER) {
+        if (routes.ACCOUNT_MANAGER) {
           map.set(
-              settings.routes.ACCOUNT_MANAGER.path,
-              '#account-manager-subpage-trigger');
+              routes.ACCOUNT_MANAGER.path, '#account-manager-subpage-trigger');
         }
         return map;
       },
@@ -176,7 +215,7 @@ Polymer({
     },
   },
 
-  /** @private {?settings.SyncBrowserProxy} */
+  /** @private {?SyncBrowserProxy} */
   syncBrowserProxy_: null,
 
   /** @override */
@@ -188,13 +227,13 @@ Polymer({
       this.updateAccounts_();
     } else {
       // Otherwise use the Profile name and icon.
-      settings.ProfileInfoBrowserProxyImpl.getInstance().getProfileInfo().then(
+      ProfileInfoBrowserProxyImpl.getInstance().getProfileInfo().then(
           this.handleProfileInfo_.bind(this));
       this.addWebUIListener(
           'profile-info-changed', this.handleProfileInfo_.bind(this));
     }
 
-    this.syncBrowserProxy_ = settings.SyncBrowserProxyImpl.getInstance();
+    this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
     this.syncBrowserProxy_.getSyncStatus().then(
         this.handleSyncStatus_.bind(this));
     this.addWebUIListener(
@@ -216,7 +255,7 @@ Polymer({
   onPasswordPromptDialogClose_() {
     this.showPasswordPromptDialog_ = false;
     if (!this.setModes_) {
-      settings.Router.getInstance().navigateToPreviousRoute();
+      Router.getInstance().navigateToPreviousRoute();
     }
   },
 
@@ -228,7 +267,7 @@ Polymer({
    */
   afterRenderShowDeepLink_(settingId, getElementCallback) {
     // Wait for element to load.
-    Polymer.RenderStatus.afterNextRender(this, () => {
+    afterNextRender(this, () => {
       const deepLinkElement = getElementCallback();
       if (!deepLinkElement || deepLinkElement.hidden) {
         console.warn(`Element with deep link id ${settingId} not focusable.`);
@@ -264,7 +303,7 @@ Polymer({
               this.$$('settings-sync-page'));
           // Expand the encryption collapse.
           syncPage.forceEncryptionExpanded = true;
-          Polymer.dom.flush();
+          flush();
           return syncPage && syncPage.getEncryptionOptions() &&
               syncPage.getEncryptionOptions().getEncryptionsRadioButtons();
         });
@@ -304,19 +343,18 @@ Polymer({
   },
 
   /**
-   * settings.RouteObserverBehavior
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * RouteObserverBehavior
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    * @protected
    */
   currentRouteChanged(route, oldRoute) {
-    if (settings.Router.getInstance().getCurrentRoute() ===
-        settings.routes.OS_SIGN_OUT) {
+    if (Router.getInstance().getCurrentRoute() === routes.OS_SIGN_OUT) {
       // If the sync status has not been fetched yet, optimistically display
       // the sign-out dialog. There is another check when the sync status is
       // fetched. The dialog will be closed when the user is not signed in.
       if (this.syncStatus && !this.syncStatus.signedIn) {
-        settings.Router.getInstance().navigateToPreviousRoute();
+        Router.getInstance().navigateToPreviousRoute();
       } else {
         this.showSignoutDialog_ = true;
       }
@@ -324,7 +362,7 @@ Polymer({
 
     // The old sync page is a shared subpage, so we handle deep links for
     // both this page and the sync page. Not ideal.
-    if (route === settings.routes.SYNC || route === settings.routes.OS_PEOPLE) {
+    if (route === routes.SYNC || route === routes.OS_PEOPLE) {
       this.attemptDeepLink();
     }
   },
@@ -352,14 +390,14 @@ Polymer({
   /**
    * Handler for when the profile's icon and name is updated.
    * @private
-   * @param {!settings.ProfileInfo} info
+   * @param {!ProfileInfo} info
    */
   handleProfileInfo_(info) {
     this.profileName_ = info.name;
     // Extract first frame from image by creating a single frame PNG using
     // url as input if base64 encoded and potentially animated.
     if (info.iconUrl.startsWith('data:image/png;base64')) {
-      this.profileIconUrl_ = cr.png.convertImageSequenceToPng([info.iconUrl]);
+      this.profileIconUrl_ = convertImageSequenceToPng([info.iconUrl]);
       return;
     }
     this.profileIconUrl_ = info.iconUrl;
@@ -370,9 +408,8 @@ Polymer({
    * @private
    */
   updateAccounts_: async function() {
-    const /** @type {!Array<settings.Account>} */ accounts =
-        await settings.AccountManagerBrowserProxyImpl.getInstance()
-            .getAccounts();
+    const /** @type {!Array<Account>} */ accounts =
+        await AccountManagerBrowserProxyImpl.getInstance().getAccounts();
     // The user might not have any GAIA accounts (e.g. guest mode or Active
     // Directory). In these cases the profile row is hidden, so there's nothing
     // to do.
@@ -387,12 +424,12 @@ Polymer({
   },
 
   /**
-   * @param {!Array<settings.Account>} accounts
+   * @param {!Array<Account>} accounts
    * @private
    */
   async setProfileLabel(accounts) {
     // Template: "$1 Google accounts" with correct plural of "account".
-    const labelTemplate = await cr.sendWithPromise(
+    const labelTemplate = await sendWithPromise(
         'getPluralString', 'profileLabel', accounts.length);
 
     // Final output: "X Google accounts"
@@ -402,7 +439,7 @@ Polymer({
 
   /**
    * Handler for when the sync state is pushed from the browser.
-   * @param {?settings.SyncStatus} syncStatus
+   * @param {?SyncStatus} syncStatus
    * @private
    */
   handleSyncStatus_(syncStatus) {
@@ -419,23 +456,22 @@ Polymer({
   /** @private */
   onDisconnectDialogClosed_(e) {
     this.showSignoutDialog_ = false;
-    cr.ui.focusWithoutInk(assert(this.$$('#disconnectButton')));
+    focusWithoutInk(assert(this.$$('#disconnectButton')));
 
-    if (settings.Router.getInstance().getCurrentRoute() ===
-        settings.routes.OS_SIGN_OUT) {
-      settings.Router.getInstance().navigateToPreviousRoute();
+    if (Router.getInstance().getCurrentRoute() === routes.OS_SIGN_OUT) {
+      Router.getInstance().navigateToPreviousRoute();
     }
   },
 
   /** @private */
   onDisconnectTap_() {
-    settings.Router.getInstance().navigateTo(settings.routes.OS_SIGN_OUT);
+    Router.getInstance().navigateTo(routes.OS_SIGN_OUT);
   },
 
   /** @private */
   onSyncTap_() {
     // Users can go to sync subpage regardless of sync status.
-    settings.Router.getInstance().navigateTo(settings.routes.SYNC);
+    Router.getInstance().navigateTo(routes.SYNC);
   },
 
   /**
@@ -444,7 +480,7 @@ Polymer({
    */
   onAccountManagerTap_(e) {
     if (this.isAccountManagerEnabled_) {
-      settings.Router.getInstance().navigateTo(settings.routes.ACCOUNT_MANAGER);
+      Router.getInstance().navigateTo(routes.ACCOUNT_MANAGER);
     }
   },
 
@@ -454,7 +490,7 @@ Polymer({
    * @private
    */
   getIconImageSet_(iconUrl) {
-    return cr.icon.getImage(iconUrl);
+    return getImage(iconUrl);
   },
 
   /**
@@ -469,7 +505,7 @@ Polymer({
   },
 
   /**
-   * @param {!settings.SyncStatus} syncStatus
+   * @param {!SyncStatus} syncStatus
    * @return {boolean} Whether to show the "Sign in to Chrome" button.
    * @private
    */

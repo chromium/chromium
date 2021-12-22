@@ -1,212 +1,171 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared">
+  cr-policy-indicator {
+    margin-inline-start: auto;
+    /* Align the indicator with the h2 that it is associated with. */
+    padding-bottom: 12px;
+    padding-top: 24px;
+  }
 
-<link rel="import" href="chrome://resources/cr_components/chromeos/quick_unlock/lock_screen_constants.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_radio_group/cr_radio_group.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/plural_string_proxy.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="../../controls/settings_toggle_button.html">
-<link rel="import" href="fingerprint_browser_proxy.html">
-<link rel="import" href="lock_state_behavior.html">
-<link rel="import" href="setup_pin_dialog.html">
-<link rel="import" href="pin_autosubmit_dialog.html">
-<link rel="import" href="../../i18n_setup.html">
-<link rel="import" href="../prefs_behavior.html">
-<link rel="import" href="../../prefs/prefs.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../route_observer_behavior.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../../settings_vars_css.html">
-<link rel="import" href="../multidevice_page/multidevice_smartlock_item.html">
+  cr-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+  }
 
-<dom-module id="settings-lock-screen">
-  <template>
-    <style include="settings-shared">
-      cr-policy-indicator {
-        margin-inline-start: auto;
-        /* Align the indicator with the h2 that it is associated with. */
-        padding-bottom: 12px;
-        padding-top: 24px;
-      }
+  .list-item {
+    width: 100%;
+  }
 
-      cr-radio-group {
-        display: flex;
-        flex-wrap: wrap;
-      }
+  .list-item-end {
+    align-items: center;
+    display: flex;
+  }
 
-      .list-item {
-        width: 100%;
-      }
+  .list-item-start {
+    flex: 1;
+  }
 
-      .list-item-end {
-        align-items: center;
-        display: flex;
-      }
+  #lockOptionsDiv {
+    display: block;
+  }
 
-      .list-item-start {
-        flex: 1;
-      }
+  #pinPasswordLabel,
+  #pinPasswordSecondaryActionDiv {
+    margin: auto;
+  }
 
-      #lockOptionsDiv {
-        display: block;
-      }
+  .underbar {
+    border-bottom: var(--cr-separator-line);
+  }
 
-      #pinPasswordLabel,
-      #pinPasswordSecondaryActionDiv {
-        margin: auto;
-      }
+  #unlockType[disabled] {
+    opacity: var(--settings-disabled-opacity);
+    pointer-events: none;
+  }
 
-      .underbar {
-        border-bottom: var(--cr-separator-line);
-      }
-
-      #unlockType[disabled] {
-        opacity: var(--settings-disabled-opacity);
-        pointer-events: none;
-      }
-
-      #autosubmitToggle {
-        padding-inline-start: 16px;
-        width: 100%;
-      }
-    </style>
-
-    <div>
-      <settings-toggle-button id="enableLockScreen"
-          pref="{{prefs.settings.enable_screen_lock}}"
-          on-settings-boolean-control-change="onScreenLockChange_" no-set-pref
-          label="$i18n{enableScreenlock}"
-          deep-link-focus-id$="[[Setting.kLockScreenV2]]">
-      </settings-toggle-button>
-
-      <template is="dom-if" if="[[quickUnlockEnabled_]]">
-        <div id="lockOptionsDiv">
-          <div class="settings-box">
-            <h2 id=lockScreenOptionsTitle aria-hidden="true">
-              [[selectLockScreenOptionsString(hasPinLogin)]]
-            </h2>
-            <template is="dom-if" if="[[quickUnlockDisabledByPolicy_]]">
-              <cr-policy-indicator indicator-type="userPolicy">
-              </cr-policy-indicator>
-            </template>
-          </div>
-          <div class="list-frame" >
-            <cr-radio-group id="unlockType"
-                disabled$="[[quickUnlockDisabledByPolicy_]]"
-                selected="{{selectedUnlockType}}"
-                aria-labelledby="lockScreenOptionsTitle"
-                deep-link-focus-id$="[[Setting.kChangeAuthPinV2]]">
-              <cr-radio-button name="password" class="list-item underbar"
-                  label=$i18n{lockScreenPasswordOnly}>
-              </cr-radio-button>
-              <cr-radio-button name="pin+password" class="list-item-start"
-                  label=$i18n{lockScreenPinOrPassword}>
-              </cr-radio-button>
-              <template is="dom-if"
-                  if="[[showConfigurePinButton_(selectedUnlockType)]]">
-                <div class="list-item-end">
-                  <div class="separator"></div>
-                  <div id="pinPasswordSecondaryActionDiv"
-                      class="secondary-action">
-                    <!-- Use stop-keyboard-event-propagation to prevent
-                         triggering this when focused after closing the
-                         dialog. -->
-                    <cr-button id="setupPinButton" on-click="onConfigurePin_"
-                        stop-keyboard-event-propagation>
-                      [[getSetupPinText_(hasPin)]]
-                    </cr-button>
-                  </div>
-                </div>
-              </template>
-              <template is="dom-if"
-                  if="[[quickUnlockPinAutosubmitFeatureEnabled_]]">
-                <div id="autosubmitToggle"
-                    hidden="[[!hasPin]]">
-                  <settings-toggle-button id="enablePinAutoSubmit"
-                      pref="{{prefs.pin_unlock_autosubmit_enabled}}" no-set-pref
-                      on-settings-boolean-control-change="onPinAutosubmitChange_"
-                      label="$i18n{lockScreenPinAutoSubmit}">
-                  </settings-toggle-button>
-                </div>
-              </template>
-            </cr-radio-group>
-          </div>
-        </div>
-      </template>
-
-      <template is="dom-if" if="[[lockScreenNotificationsEnabled_]]">
-        <h2 class="settings-box">
-          $i18n{lockScreenNotificationTitle}
+  #autosubmitToggle {
+    padding-inline-start: 16px;
+    width: 100%;
+  }
+</style>
+<div>
+  <settings-toggle-button id="enableLockScreen"
+      pref="{{prefs.settings.enable_screen_lock}}"
+      on-settings-boolean-control-change="onScreenLockChange_" no-set-pref
+      label="$i18n{enableScreenlock}"
+      deep-link-focus-id$="[[Setting.kLockScreenV2]]">
+  </settings-toggle-button>
+  <template is="dom-if" if="[[quickUnlockEnabled_]]">
+    <div id="lockOptionsDiv">
+      <div class="settings-box">
+        <h2 id=lockScreenOptionsTitle aria-hidden="true">
+          [[selectLockScreenOptionsString(hasPinLogin)]]
         </h2>
-        <div class="list-frame">
-          <settings-radio-group
-              pref="{{prefs.ash.message_center.lock_screen_mode}}"
-              group-aria-label="$i18n{lockScreenNotificationTitle}">
-            <template is="dom-if"
-                if="[[lockScreenHideSensitiveNotificationSupported_]]">
-              <cr-radio-button name="hideSensitive" class="list-item underbar"
-                   pref="[[prefs.ash.message_center.lock_screen_mode]]"
-                   label="$i18n{lockScreenNotificationHideSensitive}">
-              </cr-radio-button>
-            </template>
-            <cr-radio-button name="show" class="list-item underbar"
-                 pref="[[prefs.ash.message_center.lock_screen_mode]]"
-                 label="$i18n{lockScreenNotificationShow}">
-            </cr-radio-button>
-            <cr-radio-button name="hide" class="list-item"
-                 pref="[[prefs.ash.message_center.lock_screen_mode]]"
-                 label="$i18n{lockScreenNotificationHide}">
-            </cr-radio-button>
-          </settings-radio-group>
-        </div>
-      </template>
-
-      <template is="dom-if" if="[[fingerprintUnlockEnabled_]]">
-        <div id="fingerprintDiv" class="settings-box two-line">
-          <div class="start">
-            $i18n{lockScreenEditFingerprints}
-            <div class="secondary" id="lockScreenEditFingerprintsSecondary">
-              [[numFingerprintDescription_]]
+        <template is="dom-if" if="[[quickUnlockDisabledByPolicy_]]">
+          <cr-policy-indicator indicator-type="userPolicy">
+          </cr-policy-indicator>
+        </template>
+      </div>
+      <div class="list-frame" >
+        <cr-radio-group id="unlockType"
+            disabled$="[[quickUnlockDisabledByPolicy_]]"
+            selected="{{selectedUnlockType}}"
+            aria-labelledby="lockScreenOptionsTitle"
+            deep-link-focus-id$="[[Setting.kChangeAuthPinV2]]">
+          <cr-radio-button name="password" class="list-item underbar"
+              label=$i18n{lockScreenPasswordOnly}>
+          </cr-radio-button>
+          <cr-radio-button name="pin+password" class="list-item-start"
+              label=$i18n{lockScreenPinOrPassword}>
+          </cr-radio-button>
+          <template is="dom-if"
+              if="[[showConfigurePinButton_(selectedUnlockType)]]">
+            <div class="list-item-end">
+              <div class="separator"></div>
+              <div id="pinPasswordSecondaryActionDiv"
+                  class="secondary-action">
+                <!-- Use stop-keyboard-event-propagation to prevent
+                     triggering this when focused after closing the
+                     dialog. -->
+                <cr-button id="setupPinButton" on-click="onConfigurePin_"
+                    stop-keyboard-event-propagation>
+                  [[getSetupPinText_(hasPin)]]
+                </cr-button>
+              </div>
             </div>
-          </div>
-          <div class="separator"></div>
-          <div class="secondary-action">
-            <cr-button id="editFingerprints" on-click="onEditFingerprints_"
-                aria-label="$i18n{lockScreenEditFingerprints}"
-                aria-descibedby="lockScreenEditFingerprintsSecondary">
-              $i18n{lockScreenSetupFingerprintButton}
-            </cr-button>
-          </div>
-        </div>
-      </template>
-
-      <template is="dom-if" if="[[smartLockUIRevampEnabled_]]">
-        <settings-multidevice-smartlock-item
-          auth-token="[[authToken]]">
-        </settings-multidevice-smartlock-item>
-      </template>
-
-      <template is="dom-if" if="[[showSetupPinDialog_]]" restamp>
-        <settings-setup-pin-dialog id="setupPin" set-modes="[[setModes]]"
-            on-close="onSetupPinDialogClose_">
-        </settings-setup-pin-dialog>
-      </template>
-
-      <template is="dom-if" if="[[showPinAutosubmitDialog_]]" restamp>
-        <settings-pin-autosubmit-dialog id="pinAutosubmitDialog"
-            auth-token="[[authToken]]"
-            on-close="onPinAutosubmitDialogClose_">
-        </settings-pin-autosubmit-dialog>
-      </template>
+          </template>
+          <template is="dom-if"
+              if="[[quickUnlockPinAutosubmitFeatureEnabled_]]">
+            <div id="autosubmitToggle"
+                hidden="[[!hasPin]]">
+              <settings-toggle-button id="enablePinAutoSubmit"
+                  pref="{{prefs.pin_unlock_autosubmit_enabled}}" no-set-pref
+                  on-settings-boolean-control-change="onPinAutosubmitChange_"
+                  label="$i18n{lockScreenPinAutoSubmit}">
+              </settings-toggle-button>
+            </div>
+          </template>
+        </cr-radio-group>
+      </div>
     </div>
   </template>
-  <script src="lock_screen.js"></script>
-</dom-module>
+  <template is="dom-if" if="[[lockScreenNotificationsEnabled_]]">
+    <h2 class="settings-box">
+      $i18n{lockScreenNotificationTitle}
+    </h2>
+    <div class="list-frame">
+      <settings-radio-group
+          pref="{{prefs.ash.message_center.lock_screen_mode}}"
+          group-aria-label="$i18n{lockScreenNotificationTitle}">
+        <template is="dom-if"
+            if="[[lockScreenHideSensitiveNotificationSupported_]]">
+          <cr-radio-button name="hideSensitive" class="list-item underbar"
+               pref="[[prefs.ash.message_center.lock_screen_mode]]"
+               label="$i18n{lockScreenNotificationHideSensitive}">
+          </cr-radio-button>
+        </template>
+        <cr-radio-button name="show" class="list-item underbar"
+             pref="[[prefs.ash.message_center.lock_screen_mode]]"
+             label="$i18n{lockScreenNotificationShow}">
+        </cr-radio-button>
+        <cr-radio-button name="hide" class="list-item"
+             pref="[[prefs.ash.message_center.lock_screen_mode]]"
+             label="$i18n{lockScreenNotificationHide}">
+        </cr-radio-button>
+      </settings-radio-group>
+    </div>
+  </template>
+  <template is="dom-if" if="[[fingerprintUnlockEnabled_]]">
+    <div id="fingerprintDiv" class="settings-box two-line">
+      <div class="start">
+        $i18n{lockScreenEditFingerprints}
+        <div class="secondary" id="lockScreenEditFingerprintsSecondary">
+          [[numFingerprintDescription_]]
+        </div>
+      </div>
+      <div class="separator"></div>
+      <div class="secondary-action">
+        <cr-button id="editFingerprints" on-click="onEditFingerprints_"
+            aria-label="$i18n{lockScreenEditFingerprints}"
+            aria-descibedby="lockScreenEditFingerprintsSecondary">
+          $i18n{lockScreenSetupFingerprintButton}
+        </cr-button>
+      </div>
+    </div>
+  </template>
+  <template is="dom-if" if="[[smartLockUIRevampEnabled_]]">
+    <settings-multidevice-smartlock-item
+      auth-token="[[authToken]]">
+    </settings-multidevice-smartlock-item>
+  </template>
+  <template is="dom-if" if="[[showSetupPinDialog_]]" restamp>
+    <settings-setup-pin-dialog id="setupPin" set-modes="[[setModes]]"
+        on-close="onSetupPinDialogClose_">
+    </settings-setup-pin-dialog>
+  </template>
+  <template is="dom-if" if="[[showPinAutosubmitDialog_]]" restamp>
+    <settings-pin-autosubmit-dialog id="pinAutosubmitDialog"
+        auth-token="[[authToken]]"
+        on-close="onPinAutosubmitDialogClose_">
+    </settings-pin-autosubmit-dialog>
+  </template>
+</div>

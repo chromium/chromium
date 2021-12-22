@@ -1,187 +1,132 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared iron-flex">
+  :host {
+    --icon-width: 40px;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/chromeos/cr_picture/png.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_indicator.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/icon.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="../../controls/settings_toggle_button.html">
-<link rel="import" href="account_manager_browser_proxy.html">
-<link rel="import" href="../../people_page/profile_info_browser_proxy.html">
-<link rel="import" href="../../people_page/signout_dialog.html">
-<link rel="import" href="../../people_page/sync_browser_proxy.html">
-<link rel="import" href="../../people_page/sync_controls.html">
-<link rel="import" href="../../people_page/sync_page.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../route_observer_behavior.html">
-<link rel="import" href="../../settings_page/settings_animated_pages.html">
-<link rel="import" href="../../settings_page/settings_subpage.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../../i18n_setup.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../os_page_visibility.html">
-<link rel="import" href="../parental_controls_page/parental_controls_page.html">
-<link rel="import" href="account_manager.html">
-<link rel="import" href="fingerprint_list.html">
-<link rel="import" href="lock_screen.html">
-<link rel="import" href="lock_screen_password_prompt_dialog.html">
-<link rel="import" href="lock_state_behavior.html">
-<link rel="import" href="users_page.html">
-<link rel="import" href="os_sync_controls.html">
+  .sync-row {
+    align-items: center;
+    flex: auto;
+  }
 
-<dom-module id="os-settings-people-page">
-  <template>
-    <style include="settings-shared iron-flex">
-      :host {
-        --icon-width: 40px;
-      }
+  #profile-icon {
+    background: center / cover no-repeat;
+    border-radius: 20px;
+    flex-shrink: 0;
+    height: 40px;
+    width: 40px;
+  }
 
-      .sync-row {
-        align-items: center;
-        flex: auto;
-      }
+  #sync-setup {
+    --cr-secondary-text-color: var(--cros-text-color-alert);
+  }
 
-      #profile-icon {
-        background: center / cover no-repeat;
-        border-radius: 20px;
-        flex-shrink: 0;
-        height: 40px;
-        width: 40px;
-      }
+  cr-link-row {
+    --cr-link-row-icon-width: var(--icon-width);
+    border-top: var(--cr-separator-line);
+  }
 
-      #sync-setup {
-        --cr-secondary-text-color: var(--cros-text-color-alert);
-      }
+  settings-parental-controls-page {
+    --cr-link-row-icon-width: var(--icon-width);
+  }
 
-      cr-link-row {
-        --cr-link-row-icon-width: var(--icon-width);
-        border-top: var(--cr-separator-line);
-      }
-
-      settings-parental-controls-page {
-        --cr-link-row-icon-width: var(--icon-width);
-      }
-
-      .icon-container {
-        display: flex;
-        flex-shrink: 0;
-        justify-content: center;
-        width: 40px;
-      }
-
-    </style>
-    <settings-animated-pages id="pages" section="osPeople"
-        focus-config="[[focusConfig_]]">
-      <div route-path="default">
-        <div class="settings-box first two-line">
-          <template is="dom-if" if="[[syncStatus]]">
-            <!-- Does not use <cr-link-row> due to custom aria label. -->
-            <div id="profile-icon"
-                style="background-image: [[getIconImageSet_(profileIconUrl_)]]"
-                on-click="onAccountManagerTap_"
-                actionable$="[[isAccountManagerEnabled_]]">
-            </div>
-            <div class="middle two-line no-min-width"
-                id="profile-row"
-                on-click="onAccountManagerTap_"
-                actionable$="[[isAccountManagerEnabled_]]">
-              <div class="flex text-elide settings-box-text">
-                <span id="profile-name" aria-hidden="true">
-                  [[getProfileName_(profileName_)]]
-                </span>
-                <div id="profile-label" class="secondary"
-                    aria-hidden="true">
-                  [[profileLabel_]]
-                </div>
-              </div>
-              <cr-icon-button class="subpage-arrow"
-                  hidden="[[!isAccountManagerEnabled_]]"
-                  id="account-manager-subpage-trigger"
-                  aria-label="$i18n{accountManagerSubMenuLabel}"
-                  aria-describedby="profile-name profile-label"
-                  aria-roledescription="$i18n{subpageArrowRoleDescription}">
-              </cr-icon-button>
-            </div>
-          </template>
+  .icon-container {
+    display: flex;
+    flex-shrink: 0;
+    justify-content: center;
+    width: 40px;
+  }
+</style>
+<settings-animated-pages id="pages" section="osPeople"
+    focus-config="[[focusConfig_]]">
+  <div route-path="default">
+    <div class="settings-box first two-line">
+      <template is="dom-if" if="[[syncStatus]]">
+        <!-- Does not use <cr-link-row> due to custom aria label. -->
+        <div id="profile-icon"
+            style="background-image: [[getIconImageSet_(profileIconUrl_)]]"
+            on-click="onAccountManagerTap_"
+            actionable$="[[isAccountManagerEnabled_]]">
         </div>
-
-        <cr-link-row id="sync-setup"
-            start-icon="cr:sync"
-            label="$i18n{syncAndNonPersonalizedServices}"
-            sub-label="[[getSyncAndGoogleServicesSubtext_(syncStatus)]]"
-            on-click="onSyncTap_"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
-
-        <template is="dom-if" if="[[showParentalControls_]]">
-          <settings-parental-controls-page>
-          </settings-parental-controls-page>
-        </template>
-
-      </div>
-
-      <template is="dom-if" route-path="/syncSetup">
-        <settings-subpage
-            page-title="$i18n{syncPageTitle}"
-            learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
-          <settings-sync-page
-              sync-status="[[syncStatus]]" prefs="{{prefs}}"
-              page-visibility="[[pageVisibility.privacy]]"
-              focus-config="[[focusConfig_]]">
-          </settings-sync-page>
-        </settings-subpage>
+        <div class="middle two-line no-min-width"
+            id="profile-row"
+            on-click="onAccountManagerTap_"
+            actionable$="[[isAccountManagerEnabled_]]">
+          <div class="flex text-elide settings-box-text">
+            <span id="profile-name" aria-hidden="true">
+              [[getProfileName_(profileName_)]]
+            </span>
+            <div id="profile-label" class="secondary"
+                aria-hidden="true">
+              [[profileLabel_]]
+            </div>
+          </div>
+          <cr-icon-button class="subpage-arrow"
+              hidden="[[!isAccountManagerEnabled_]]"
+              id="account-manager-subpage-trigger"
+              aria-label="$i18n{accountManagerSubMenuLabel}"
+              aria-describedby="profile-name profile-label"
+              aria-roledescription="$i18n{subpageArrowRoleDescription}">
+          </cr-icon-button>
+        </div>
       </template>
-
-      <!-- Pre-SyncSettingsCategorization we show the browser's sync controls.
-      -->
-      <template is="dom-if" if="[[!syncSettingsCategorizationEnabled_]]">
-        <template is="dom-if" route-path="/syncSetup/advanced">
-          <settings-subpage page-title="$i18n{syncAdvancedPageTitle}"
-              learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
-            <settings-sync-controls sync-status="[[syncStatus]]">
-            </settings-sync-controls>
-          </settings-subpage>
-        </template>
-      </template>
-
-      <!-- Post-SyncSettingsCategorization we have separate OS sync controls.
-      -->
-      <template is="dom-if" if="[[syncSettingsCategorizationEnabled_]]">
-        <template is="dom-if" route-path="/osSync">
-          <settings-subpage page-title="$i18n{syncAndNonPersonalizedServices}"
-              learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
-            <os-sync-controls sync-status="[[syncStatus]]"
-                profile-icon-url="[[profileIconUrl_]]"
-                profile-name="[[profileName_]]"
-                profile-email="[[profileEmail_]]">
-            </os-sync-controls>
-          </settings-subpage>
-        </template>
-      </template>
-
-      <template is="dom-if" route-path="/accountManager">
-        <settings-subpage page-title="$i18n{accountManagerPageTitle}">
-          <settings-account-manager prefs="[[prefs]]">
-          </settings-account-manager>
-        </settings-subpage>
-      </template>
-    </settings-animated-pages>
-
-    <template is="dom-if" if="[[showSignoutDialog_]]" restamp>
-      <settings-signout-dialog sync-status="[[syncStatus]]"
-          on-close="onDisconnectDialogClosed_">
-      </settings-signout-dialog>
+    </div>
+    <cr-link-row id="sync-setup"
+        start-icon="cr:sync"
+        label="$i18n{syncAndNonPersonalizedServices}"
+        sub-label="[[getSyncAndGoogleServicesSubtext_(syncStatus)]]"
+        on-click="onSyncTap_"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+    <template is="dom-if" if="[[showParentalControls_]]">
+      <settings-parental-controls-page>
+      </settings-parental-controls-page>
     </template>
-
+  </div>
+  <template is="dom-if" route-path="/syncSetup">
+    <settings-subpage
+        page-title="$i18n{syncPageTitle}"
+        learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
+      <settings-sync-page
+          sync-status="[[syncStatus]]" prefs="{{prefs}}"
+          page-visibility="[[pageVisibility.privacy]]"
+          focus-config="[[focusConfig_]]">
+      </settings-sync-page>
+    </settings-subpage>
   </template>
-  <script src="os_people_page.js"></script>
-</dom-module>
+  <!-- Pre-SyncSettingsCategorization we show the browser's sync controls.
+  -->
+  <template is="dom-if" if="[[!syncSettingsCategorizationEnabled_]]">
+    <template is="dom-if" route-path="/syncSetup/advanced">
+      <settings-subpage page-title="$i18n{syncAdvancedPageTitle}"
+          learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
+        <settings-sync-controls sync-status="[[syncStatus]]">
+        </settings-sync-controls>
+      </settings-subpage>
+    </template>
+  </template>
+  <!-- Post-SyncSettingsCategorization we have separate OS sync controls.
+  -->
+  <template is="dom-if" if="[[syncSettingsCategorizationEnabled_]]">
+    <template is="dom-if" route-path="/osSync">
+      <settings-subpage page-title="$i18n{syncAndNonPersonalizedServices}"
+          learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
+        <os-sync-controls sync-status="[[syncStatus]]"
+            profile-icon-url="[[profileIconUrl_]]"
+            profile-name="[[profileName_]]"
+            profile-email="[[profileEmail_]]">
+        </os-sync-controls>
+      </settings-subpage>
+    </template>
+  </template>
+  <template is="dom-if" route-path="/accountManager">
+    <settings-subpage page-title="$i18n{accountManagerPageTitle}">
+      <settings-account-manager prefs="[[prefs]]">
+      </settings-account-manager>
+    </settings-subpage>
+  </template>
+</settings-animated-pages>
+<template is="dom-if" if="[[showSignoutDialog_]]" restamp>
+  <settings-signout-dialog sync-status="[[syncStatus]]"
+      on-close="onDisconnectDialogClosed_">
+  </settings-signout-dialog>
+</template>

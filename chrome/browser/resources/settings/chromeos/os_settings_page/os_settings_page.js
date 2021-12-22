@@ -14,7 +14,7 @@ import '//resources/cr_elements/shared_vars_css.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './settings_idle_load.js';
 import '../os_apps_page/os_apps_page.js';
-import '../os_people_page/os_people_page.m.js';
+import '../os_people_page/os_people_page.js';
 import '../os_privacy_page/os_privacy_page.js';
 import '../os_printing_page/os_printing_page.js';
 import '../os_search_page/os_search_page.js';

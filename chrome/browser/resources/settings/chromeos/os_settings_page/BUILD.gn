@@ -34,7 +34,7 @@ js_library("os_settings_page") {
     "../os_apps_page:os_apps_page",
     "../os_apps_page/app_notifications_page:app_notifications_subpage",
     "../os_bluetooth_page:os_bluetooth_page",
-    "../os_people_page:os_people_page.m",
+    "../os_people_page:os_people_page",
     "../os_printing_page:os_printing_page",
     "../os_privacy_page:os_privacy_page",
     "../os_search_page:os_search_page",

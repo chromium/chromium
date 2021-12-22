@@ -16,10 +16,10 @@ import './peripheral_data_access_protection_dialog.js';
 import '../../controls/settings_toggle_button.js';
 import '../../settings_shared_css.js';
 import '../../settings_page/settings_subpage.js';
-import '../os_people_page/users_page.m.js';
+import '../os_people_page/users_page.js';
 import '../../settings_page/settings_animated_pages.js';
-import '../os_people_page/lock_screen.m.js';
-import '../os_people_page/lock_screen_password_prompt_dialog.m.js';
+import '../os_people_page/lock_screen.js';
+import '../os_people_page/lock_screen_password_prompt_dialog.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';

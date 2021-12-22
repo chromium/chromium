@@ -9,14 +9,40 @@
  */
 const FLASH_DURATION_MS = 500;
 
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/cr_input/cr_input.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
+import '//resources/polymer/v3_0/paper-ripple/paper-ripple.js';
+import {FingerprintInfo, FingerprintBrowserProxy, FingerprintResultType, FingerprintBrowserProxyImpl} from './fingerprint_browser_proxy.js';
+import './setup_fingerprint_dialog.js';
+import {loadTimeData} from '../../i18n_setup.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import {routes} from '../os_route.m.js';
+import {Router, Route} from '../../router.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+import '../../settings_shared_css.js';
+import {recordSettingChange} from '../metrics_recorder.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-fingerprint-list',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
     WebUIListenerBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -66,13 +92,13 @@ Polymer({
     },
   },
 
-  /** @private {?settings.FingerprintBrowserProxy} */
+  /** @private {?FingerprintBrowserProxy} */
   browserProxy_: null,
 
   /** @override */
   attached() {
     this.addWebUIListener('on-screen-locked', this.onScreenLocked_.bind(this));
-    this.browserProxy_ = settings.FingerprintBrowserProxyImpl.getInstance();
+    this.browserProxy_ = FingerprintBrowserProxyImpl.getInstance();
     this.browserProxy_.startAuthentication();
     this.updateFingerprintsList_();
   },
@@ -87,8 +113,8 @@ Polymer({
    * @private
    */
   requestPasswordIfApplicable_() {
-    const currentRoute = settings.Router.getInstance().getCurrentRoute();
-    if (currentRoute === settings.routes.FINGERPRINT && !this.authToken) {
+    const currentRoute = Router.getInstance().getCurrentRoute();
+    if (currentRoute === routes.FINGERPRINT && !this.authToken) {
       this.fire('password-requested');
       return true;
     }
@@ -96,13 +122,13 @@ Polymer({
   },
 
   /**
-   * Overridden from settings.RouteObserverBehavior.
-   * @param {!settings.Route} newRoute
-   * @param {!settings.Route} oldRoute
+   * Overridden from RouteObserverBehavior.
+   * @param {!Route} newRoute
+   * @param {!Route} oldRoute
    * @protected
    */
   currentRouteChanged(newRoute, oldRoute) {
-    if (newRoute !== settings.routes.FINGERPRINT) {
+    if (newRoute !== routes.FINGERPRINT) {
       if (this.browserProxy_) {
         this.browserProxy_.endCurrentAuthentication();
       }
@@ -110,7 +136,7 @@ Polymer({
       return;
     }
 
-    if (oldRoute === settings.routes.LOCK_SCREEN) {
+    if (oldRoute === routes.LOCK_SCREEN) {
       // Start fingerprint authentication when going from LOCK_SCREEN to
       // FINGERPRINT page.
       this.browserProxy_.startAuthentication();
@@ -130,7 +156,7 @@ Polymer({
   },
 
   /**
-   * @param {!settings.FingerprintInfo} fingerprintInfo
+   * @param {!FingerprintInfo} fingerprintInfo
    * @private
    */
   onFingerprintsChanged_(fingerprintInfo) {
@@ -148,7 +174,7 @@ Polymer({
   onFingerprintDeleteTapped_(e) {
     this.browserProxy_.removeEnrollment(e.model.index).then(success => {
       if (success) {
-        settings.recordSettingChange();
+        recordSettingChange();
         this.updateFingerprintsList_();
       }
     });
@@ -178,7 +204,7 @@ Polymer({
   /** @private */
   onSetupFingerprintDialogClose_() {
     this.showSetupFingerprintDialog_ = false;
-    cr.ui.focusWithoutInk(assert(this.$$('#addFingerprint')));
+    focusWithoutInk(assert(this.$$('#addFingerprint')));
     this.browserProxy_.startAuthentication();
   },
 
@@ -189,8 +215,7 @@ Polymer({
    */
   onScreenLocked_(screenIsLocked) {
     if (!screenIsLocked &&
-        settings.Router.getInstance().getCurrentRoute() ===
-            settings.routes.FINGERPRINT) {
+        Router.getInstance().getCurrentRoute() === routes.FINGERPRINT) {
       this.onSetupFingerprintDialogClose_();
     }
   },
@@ -202,8 +227,7 @@ Polymer({
       return;
     }
 
-    if (settings.Router.getInstance().getCurrentRoute() ===
-        settings.routes.FINGERPRINT) {
+    if (Router.getInstance().getCurrentRoute() === routes.FINGERPRINT) {
       // Show deep links again if the user authentication dialog just closed.
       this.attemptDeepLink();
     }
