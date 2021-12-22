@@ -15,7 +15,7 @@ typedef NS_ENUM(NSInteger, FollowActionState) {
   // "Follow" action is shown but disabled.
   FollowActionStateDisabled,
   // "Follow" action is shown and enabled.
-  FollowActionStateEnabld,
+  FollowActionStateEnabled,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FOLLOW_FOLLOW_ACTION_STATE_H_

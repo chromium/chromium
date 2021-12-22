@@ -23,6 +23,9 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/ui/follow/follow_action_state.h"
+#import "ios/chrome/browser/ui/follow/follow_util.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
@@ -37,6 +40,7 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -320,6 +324,12 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
           overlayPresenter;
       self.overflowMenuMediator.browserPolicyConnector =
           GetApplicationContext()->GetBrowserPolicyConnector();
+      self.overflowMenuMediator.followActionState =
+          IsWebChannelsEnabled()
+              ? GetFollowActionState(
+                    self.browser->GetWebStateList()->GetActiveWebState(),
+                    self.browser->GetBrowserState())
+              : FollowActionStateHidden;
 
       // Replace the content blocker's consumer with the overflow menu mediator.
       self.contentBlockerMediator.consumer = self.overflowMenuMediator;

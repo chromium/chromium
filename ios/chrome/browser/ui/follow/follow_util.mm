@@ -37,7 +37,7 @@ FollowActionState GetFollowActionState(web::WebState* webState,
     if (!browserState->IsOffTheRecord() &&
         authenticationService->GetPrimaryIdentity(
             signin::ConsentLevel::kSignin)) {
-      return FollowActionStateEnabld;
+      return FollowActionStateEnabled;
     }
     return FollowActionStateDisabled;
   }

@@ -8,10 +8,12 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/browser_container/browser_container_consumer.h"
+#import "ios/chrome/browser/ui/follow/follow_action_state.h"
 
 namespace bookmarks {
 class BookmarkModel;
 }
+
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
 class BrowserPolicyConnectorIOS;
@@ -64,6 +66,9 @@ class WebStateList;
 // The current browser policy connector.
 @property(nonatomic, assign) BrowserPolicyConnectorIOS* browserPolicyConnector;
 
+// The follow action state. e.g. If the property value is FollowActionStateHide,
+// "Follow" action should be hidden in the overflow menu.
+@property(nonatomic, assign) FollowActionState followActionState;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_OVERFLOW_MENU_OVERFLOW_MENU_MEDIATOR_H_

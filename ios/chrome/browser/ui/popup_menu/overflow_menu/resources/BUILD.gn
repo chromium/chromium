@@ -28,6 +28,14 @@ imageset("overflow_menu_action_edit_bookmark") {
   ]
 }
 
+imageset("overflow_menu_action_follow") {
+  sources = [
+    "overflow_menu_action_follow.imageset/Contents.json",
+    "overflow_menu_action_follow.imageset/overflow_menu_action_follow@2x.png",
+    "overflow_menu_action_follow.imageset/overflow_menu_action_follow@3x.png",
+  ]
+}
+
 imageset("overflow_menu_action_help") {
   sources = [
     "overflow_menu_action_help.imageset/Contents.json",
@@ -121,6 +129,14 @@ imageset("overflow_menu_action_translate") {
     "overflow_menu_action_translate.imageset/Contents.json",
     "overflow_menu_action_translate.imageset/overflow_menu_action_translate@2x.png",
     "overflow_menu_action_translate.imageset/overflow_menu_action_translate@3x.png",
+  ]
+}
+
+imageset("overflow_menu_action_unfollow") {
+  sources = [
+    "overflow_menu_action_unfollow.imageset/Contents.json",
+    "overflow_menu_action_unfollow.imageset/overflow_menu_action_unfollow@2x.png",
+    "overflow_menu_action_unfollow.imageset/overflow_menu_action_unfollow@3x.png",
   ]
 }
 
