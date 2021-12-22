@@ -659,6 +659,8 @@ _BANNED_CPP_FUNCTIONS = (
        '^chrome/services/sharing/nearby/',
        # gRPC provides some C++ libraries that use std::shared_ptr<>.
        '^chromeos/services/libassistant/grpc/',
+       '^chromecast/cast_core/grpc',
+       '^chromecast/cast_core/runtime/browser',
        # Fuchsia provides C++ libraries that use std::shared_ptr<>.
        '.*fuchsia.*test\.(cc|h)',
        _THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
