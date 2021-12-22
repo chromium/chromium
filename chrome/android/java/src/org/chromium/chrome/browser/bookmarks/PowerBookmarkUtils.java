@@ -16,6 +16,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.shopping_list.ShoppingDataProviderBridge;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
+import org.chromium.chrome.browser.power_bookmarks.ProductPrice;
 import org.chromium.chrome.browser.power_bookmarks.ShoppingSpecifics;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
@@ -147,6 +148,31 @@ public class PowerBookmarkUtils {
         };
         setPriceTrackingEnabled(
                 subscriptionsManager, bookmarkBridge, bookmarkId, enabled, wrapperCallback);
+    }
+
+    /**
+     * Update to the given price for the given bookmark id.
+     *
+     * @param bookmarkBridge Used to read/write bookmark data.
+     * @param bookmarkId The bookmark id to update.
+     * @param price The price to update to.
+     */
+    public static void updatePriceForBookmarkId(@NonNull BookmarkBridge bookmarkBridge,
+            @NonNull BookmarkId bookmarkId,
+            @NonNull org.chromium.components.commerce.PriceTracking.ProductPrice price) {
+        PowerBookmarkMeta meta = bookmarkBridge.getPowerBookmarkMeta(bookmarkId);
+        if (meta == null) return;
+        ProductPrice newPrice = ProductPrice.newBuilder()
+                                        .setCurrencyCode(price.getCurrencyCode())
+                                        .setAmountMicros(price.getAmountMicros())
+                                        .build();
+        bookmarkBridge.setPowerBookmarkMeta(bookmarkId,
+                PowerBookmarkMeta.newBuilder(meta)
+                        .setShoppingSpecifics(
+                                ShoppingSpecifics.newBuilder(meta.getShoppingSpecifics())
+                                        .setCurrentPrice(newPrice)
+                                        .build())
+                        .build());
     }
 
     /**

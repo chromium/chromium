@@ -69,8 +69,10 @@
     <color name="baseline_secondary_300_with_neutral_100_alpha_8">#53A7E1</color>
     <color name="baseline_secondary_300_with_neutral_100_alpha_24">#448FC4</color>
     <color name="baseline_secondary_900">#001D35</color>
+    <color name="baseline_tertiary_50">#E7F8ED</color>
     <color name="baseline_tertiary_200">#6DD58C</color>
     <color name="baseline_tertiary_600">#146C2E</color>
+    <color name="baseline_tertiary_800">#0A3818</color>
 
     <!-- Remapped to 2021 color palette. Do not add new references to these. -->
     <color name="modern_white">@color/baseline_neutral_0</color>
@@ -85,8 +87,11 @@
     <color name="modern_blue_600_alpha_65" tools:ignore="UnusedResources">@color/baseline_primary_600_alpha_65</color>
     <color name="modern_blue_700">@color/baseline_primary_700</color>
     <color name="modern_blue_800" tools:ignore="UnusedResources">@color/baseline_primary_800</color>
+
+    <color name="google_green_50">@color/baseline_tertiary_50</color>
     <color name="google_green_300">@color/baseline_tertiary_200</color>
     <color name="google_green_600">@color/baseline_tertiary_600</color>
+    <color name="google_green_800">@color/baseline_tertiary_800</color>
     <color name="modern_grey_50" tools:ignore="UnusedResources">@color/baseline_neutral_50</color>
     <color name="modern_grey_100">@color/baseline_neutral_100</color>
     <color name="modern_grey_100_alpha_38">@color/baseline_neutral_100_alpha_38</color>
