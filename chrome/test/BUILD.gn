@@ -3451,6 +3451,8 @@ if (!is_android && !is_fuchsia) {
         "../browser/chromeos/policy/dlp/mock_dlp_content_observer.h",
         "../browser/chromeos/policy/dlp/mock_dlp_rules_manager.cc",
         "../browser/chromeos/policy/dlp/mock_dlp_rules_manager.h",
+        "../browser/chromeos/policy/dlp/mock_dlp_warn_notifier.cc",
+        "../browser/chromeos/policy/dlp/mock_dlp_warn_notifier.h",
         "../browser/device_api/device_attribute_api_browsertest.cc",
         "../browser/drive/drive_notification_manager_factory_browsertest.cc",
         "../browser/metrics/chromeos_metrics_provider_browsertest.cc",
