@@ -108,6 +108,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/policy_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
 #if defined(OS_MAC)
@@ -151,11 +152,15 @@ void GetUserAffiliationStatus(base::DictionaryValue* dict, Profile* profile) {
   if (!user)
     return;
   dict->SetBoolean("isAffiliated", user->IsAffiliated());
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else
   // Don't show affiliation status if the browser isn't enrolled in CBCM.
-  if (!policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid())
-    return;
-
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!profile->IsMainProfile())
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  {
+    if (!policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid())
+      return;
+  }
   dict->SetBoolean("isAffiliated",
                    chrome::enterprise_util::IsProfileAffiliated(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -250,6 +255,29 @@ class UserCloudPolicyStatusProvider : public CloudPolicyCoreStatusProvider {
  private:
   raw_ptr<Profile> profile_;
 };
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// A cloud policy status provider for device account.
+class UserPolicyStatusProviderLacros : public policy::PolicyStatusProvider {
+ public:
+  UserPolicyStatusProviderLacros(policy::PolicyLoaderLacros* loader,
+                                 Profile* profile);
+
+  UserPolicyStatusProviderLacros(const UserPolicyStatusProviderLacros&) =
+      delete;
+  UserPolicyStatusProviderLacros& operator=(
+      const UserPolicyStatusProviderLacros&) = delete;
+
+  ~UserPolicyStatusProviderLacros() override;
+
+  // CloudPolicyCoreStatusProvider implementation.
+  void GetStatus(base::DictionaryValue* dict) override;
+
+ private:
+  raw_ptr<Profile> profile_;
+  raw_ptr<policy::PolicyLoaderLacros> loader_;
+};
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // A cloud policy status provider for user policy on Chrome OS.
@@ -435,6 +463,40 @@ void UserCloudPolicyStatusProvider::GetStatus(base::DictionaryValue* dict) {
   ExtractDomainFromUsername(dict);
   GetUserAffiliationStatus(dict, profile_);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+UserPolicyStatusProviderLacros::UserPolicyStatusProviderLacros(
+    policy::PolicyLoaderLacros* loader,
+    Profile* profile)
+    : profile_(profile), loader_(loader) {}
+
+UserPolicyStatusProviderLacros::~UserPolicyStatusProviderLacros() = default;
+
+void UserPolicyStatusProviderLacros::GetStatus(base::DictionaryValue* dict) {
+  em::PolicyData* policy = loader_->GetPolicyData();
+  if (!policy)
+    return;
+  GetStatusFromPolicyData(policy, dict);
+  ExtractDomainFromUsername(dict);
+  GetUserAffiliationStatus(dict, profile_);
+
+  // Get last fetched time from policy, since we have no refresh scheduler here.
+  base::Time last_refresh_time =
+      policy && policy->has_timestamp()
+          ? base::Time::FromJavaTime(policy->timestamp())
+          : base::Time();
+  dict->SetString("timeSinceLastRefresh",
+                  GetTimeSinceLastRefreshString(last_refresh_time));
+
+  // TODO(https://crbug.com/1243869): Pass this information from Ash through
+  // Mojo. Assume no error for now.
+  dict->SetBoolean("error", false);
+  dict->SetString("status",
+                  FormatStoreStatus(
+                      policy::CloudPolicyStore::STATUS_OK,
+                      policy::CloudPolicyValidatorBase::Status::VALIDATION_OK));
+}
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 UserCloudPolicyStatusProviderChromeOS::UserCloudPolicyStatusProviderChromeOS(
@@ -751,6 +813,15 @@ void PolicyUIHandler::RegisterMessages() {
   if (user_cloud_policy_manager) {
     user_status_provider_ = std::make_unique<UserCloudPolicyStatusProvider>(
         user_cloud_policy_manager->core(), profile);
+  } else {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    if (profile->IsMainProfile()) {
+      user_status_provider_ = std::make_unique<UserPolicyStatusProviderLacros>(
+          g_browser_process->browser_policy_connector()
+              ->device_account_policy_loader(),
+          profile);
+    }
+#endif
   }
 
   policy::MachineLevelUserCloudPolicyManager* manager =

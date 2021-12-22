@@ -285,6 +285,7 @@ ChromeBrowserPolicyConnector::CreatePlatformProvider() {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
       PolicyPerProfileFilter::kFalse);
+  device_account_policy_loader_ = loader.get();
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
 #elif defined(OS_POSIX) && !defined(OS_ANDROID)

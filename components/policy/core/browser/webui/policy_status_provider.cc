@@ -63,6 +63,7 @@ void PolicyStatusProvider::NotifyStatusChange() {
     callback_.Run();
 }
 
+// static
 void PolicyStatusProvider::GetStatusFromCore(const CloudPolicyCore* core,
                                              base::DictionaryValue* dict) {
   const CloudPolicyStore* store = core->store();
@@ -73,17 +74,7 @@ void PolicyStatusProvider::GetStatusFromCore(const CloudPolicyCore* core,
   const std::u16string status = GetPolicyStatusFromStore(store, client);
 
   const em::PolicyData* policy = store->policy();
-  std::string client_id = policy ? policy->device_id() : std::string();
-  std::string username = policy ? policy->username() : std::string();
-
-  if (policy && policy->has_annotated_asset_id())
-    dict->SetString("assetId", policy->annotated_asset_id());
-  if (policy && policy->has_annotated_location())
-    dict->SetString("location", policy->annotated_location());
-  if (policy && policy->has_directory_api_id())
-    dict->SetString("directoryApiId", policy->directory_api_id());
-  if (policy && policy->has_gaia_id())
-    dict->SetString("gaiaId", policy->gaia_id());
+  GetStatusFromPolicyData(policy, dict);
 
   base::TimeDelta refresh_interval = base::Milliseconds(
       refresh_scheduler ? refresh_scheduler->GetActualRefreshDelay()
@@ -104,14 +95,32 @@ void PolicyStatusProvider::GetStatusFromCore(const CloudPolicyCore* core,
       "policiesPushAvailable",
       refresh_scheduler ? refresh_scheduler->invalidations_available() : false);
   dict->SetString("status", status);
-  dict->SetString("clientId", client_id);
-  dict->SetString("username", username);
   dict->SetString(
       "refreshInterval",
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
                              ui::TimeFormat::LENGTH_SHORT, refresh_interval));
   dict->SetString("timeSinceLastRefresh",
                   GetTimeSinceLastRefreshString(last_refresh_time));
+}
+
+// static
+void PolicyStatusProvider::GetStatusFromPolicyData(
+    const em::PolicyData* policy,
+    base::DictionaryValue* dict) {
+  std::string client_id = policy ? policy->device_id() : std::string();
+  std::string username = policy ? policy->username() : std::string();
+
+  if (policy && policy->has_annotated_asset_id())
+    dict->SetString("assetId", policy->annotated_asset_id());
+  if (policy && policy->has_annotated_location())
+    dict->SetString("location", policy->annotated_location());
+  if (policy && policy->has_directory_api_id())
+    dict->SetString("directoryApiId", policy->directory_api_id());
+  if (policy && policy->has_gaia_id())
+    dict->SetString("gaiaId", policy->gaia_id());
+
+  dict->SetString("clientId", client_id);
+  dict->SetString("username", username);
 }
 
 // CloudPolicyStore errors take precedence to show in the status message.

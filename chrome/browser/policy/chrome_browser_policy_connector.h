@@ -25,6 +25,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/device_settings_lacros.h"
+#include "components/policy/core/common/policy_loader_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class PrefService;
@@ -117,6 +118,10 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 
   // The device settings used in Lacros.
   crosapi::mojom::DeviceSettings* GetDeviceSettings() const;
+
+  PolicyLoaderLacros* device_account_policy_loader() {
+    return device_account_policy_loader_;
+  }
 #endif
 
  protected:
@@ -176,6 +181,8 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<DeviceSettingsLacros> device_settings_ = nullptr;
+  // Owned by |platform_provider_|.
+  PolicyLoaderLacros* device_account_policy_loader_ = nullptr;
 #endif
 
   // Holds a callback to |ChromeBrowserCloudManagementController::Init| so that
