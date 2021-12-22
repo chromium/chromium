@@ -124,9 +124,8 @@ class DirectCompositionSurfaceTest : public testing::Test {
 
     // Without this, the following check always fails.
     gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings*/ true);
-    if (!QueryDirectCompositionDevice(QueryD3D11DeviceObjectFromANGLE())) {
-      LOG(WARNING)
-          << "GL implementation not using DirectComposition, skipping test.";
+    if (!DirectCompositionSurfaceWin::GetDirectCompositionDevice()) {
+      LOG(WARNING) << "DirectComposition not supported, skipping test.";
       return;
     }
     surface_ = CreateDirectCompositionSurfaceWin();

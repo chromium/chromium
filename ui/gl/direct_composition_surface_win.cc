@@ -105,6 +105,8 @@ gfx::Size g_primary_monitor_size;
 // The number of all visible display monitors on a desktop.
 int g_num_of_monitors = 0;
 
+Microsoft::WRL::ComPtr<IDCompositionDevice2> g_dcomp_device;
+
 DirectCompositionSurfaceWin::OverlayHDRInfoUpdateCallback
     g_overlay_hdr_gpu_info_callback;
 
@@ -404,58 +406,100 @@ DirectCompositionSurfaceWin::~DirectCompositionSurfaceWin() {
 }
 
 // static
+void DirectCompositionSurfaceWin::InitializeOneOff() {
+  DCHECK(!g_dcomp_device);
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableDirectComposition))
+    return;
+
+  // Direct composition can only be used with ANGLE.
+  if (gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE)
+    return;
+
+  // Blocklist direct composition if MCTU.dll or MCTUX.dll are injected. These
+  // are user mode drivers for display adapters from Magic Control Technology
+  // Corporation.
+  if (GetModuleHandle(TEXT("MCTU.dll")) || GetModuleHandle(TEXT("MCTUX.dll"))) {
+    DLOG(ERROR) << "Blocklisted due to third party modules";
+    return;
+  }
+
+  // EGL_KHR_no_config_context surface compatibility is required to be able to
+  // MakeCurrent with the default pbuffer surface.
+  if (!GLSurfaceEGL::IsEGLNoConfigContextSupported()) {
+    DLOG(ERROR) << "EGL_KHR_no_config_context not supported";
+    return;
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      QueryD3D11DeviceObjectFromANGLE();
+  if (!d3d11_device) {
+    DLOG(ERROR) << "Failed to retrieve D3D11 device";
+    return;
+  }
+
+  // This will fail if the D3D device is "Microsoft Basic Display Adapter".
+  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
+  if (FAILED(d3d11_device.As(&video_device))) {
+    DLOG(ERROR) << "Failed to retrieve video device";
+    return;
+  }
+
+  // Load DLL at runtime since older Windows versions don't have dcomp.
+  HMODULE dcomp_module = ::GetModuleHandle(L"dcomp.dll");
+  if (!dcomp_module) {
+    DLOG(ERROR) << "Failed to load dcomp.dll";
+    return;
+  }
+
+  using PFN_DCOMPOSITION_CREATE_DEVICE2 = HRESULT(WINAPI*)(
+      IUnknown * renderingDevice, REFIID iid, void** dcompositionDevice);
+  PFN_DCOMPOSITION_CREATE_DEVICE2 create_device_function =
+      reinterpret_cast<PFN_DCOMPOSITION_CREATE_DEVICE2>(
+          ::GetProcAddress(dcomp_module, "DCompositionCreateDevice2"));
+  if (!create_device_function) {
+    DLOG(ERROR) << "GetProcAddress failed for DCompositionCreateDevice2";
+    return;
+  }
+
+  Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
+  d3d11_device.As(&dxgi_device);
+
+  Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> desktop_device;
+  HRESULT hr =
+      create_device_function(dxgi_device.Get(), IID_PPV_ARGS(&desktop_device));
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "DCompositionCreateDevice2 failed with error 0x" << std::hex
+                << hr;
+    return;
+  }
+
+  hr = desktop_device.As(&g_dcomp_device);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to retrieve IDCompositionDevice2 with error 0x"
+                << std::hex << hr;
+    return;
+  }
+  DCHECK(g_dcomp_device);
+}
+
+// static
+void DirectCompositionSurfaceWin::ShutdownOneOff() {
+  g_dcomp_device.Reset();
+}
+
+// static
+const Microsoft::WRL::ComPtr<IDCompositionDevice2>&
+DirectCompositionSurfaceWin::GetDirectCompositionDevice() {
+  return g_dcomp_device;
+}
+
+// static
 bool DirectCompositionSurfaceWin::IsDirectCompositionSupported() {
-  static const bool supported = [] {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(switches::kDisableDirectComposition))
-      return false;
-
-    // Direct composition can only be used with ANGLE.
-    if (gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE)
-      return false;
-
-    // Blocklist direct composition if MCTU.dll or MCTUX.dll are injected. These
-    // are user mode drivers for display adapters from Magic Control Technology
-    // Corporation.
-    if (GetModuleHandle(TEXT("MCTU.dll")) ||
-        GetModuleHandle(TEXT("MCTUX.dll"))) {
-      DLOG(ERROR) << "Blocklisted due to third party modules";
-      return false;
-    }
-
-    // EGL_KHR_no_config_context surface compatibility is required to be able to
-    // MakeCurrent with the default pbuffer surface.
-    if (!GLSurfaceEGL::IsEGLNoConfigContextSupported()) {
-      DLOG(ERROR) << "EGL_KHR_no_config_context not supported";
-      return false;
-    }
-
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-        QueryD3D11DeviceObjectFromANGLE();
-    if (!d3d11_device) {
-      DLOG(ERROR) << "Failed to retrieve D3D11 device";
-      return false;
-    }
-
-    // This will fail if the D3D device is "Microsoft Basic Display Adapter".
-    Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
-    if (FAILED(d3d11_device.As(&video_device))) {
-      DLOG(ERROR) << "Failed to retrieve video device";
-      return false;
-    }
-
-    // This will fail if DirectComposition DLL can't be loaded.
-    Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device =
-        QueryDirectCompositionDevice(d3d11_device);
-    if (!dcomp_device) {
-      DLOG(ERROR) << "Failed to retrieve direct composition device";
-      return false;
-    }
-
-    return true;
-  }();
-  return supported && !DirectCompositionChildSurfaceWin::
-                          IsDirectCompositionSwapChainFailed();
+  bool swap_chain_failed =
+      DirectCompositionChildSurfaceWin::IsDirectCompositionSwapChainFailed();
+  return g_dcomp_device && !swap_chain_failed;
 }
 
 // static
@@ -734,16 +778,8 @@ void DirectCompositionSurfaceWin::
 }
 
 bool DirectCompositionSurfaceWin::Initialize(GLSurfaceFormat format) {
-  d3d11_device_ = QueryD3D11DeviceObjectFromANGLE();
-  if (!d3d11_device_) {
-    DLOG(ERROR) << "Failed to retrieve D3D11 device from ANGLE";
-    return false;
-  }
-
-  dcomp_device_ = QueryDirectCompositionDevice(d3d11_device_);
-  if (!dcomp_device_) {
-    DLOG(ERROR)
-        << "Failed to retrieve direct compostion device from D3D11 device";
+  if (!IsDirectCompositionSupported()) {
+    DLOG(ERROR) << "Direct composition not supported";
     return false;
   }
 
@@ -751,7 +787,7 @@ bool DirectCompositionSurfaceWin::Initialize(GLSurfaceFormat format) {
 
   window_ = child_window_.window();
 
-  if (!layer_tree_->Initialize(window_, d3d11_device_, dcomp_device_))
+  if (!layer_tree_->Initialize(window_))
     return false;
 
   if (!root_surface_->Initialize(GLSurfaceFormat()))
@@ -770,8 +806,8 @@ void DirectCompositionSurfaceWin::Destroy() {
   // that if DWM.exe crashes, the Chromium window will become black until
   // the next Commit.
   layer_tree_.reset();
-  if (dcomp_device_)
-    dcomp_device_->Commit();
+  if (g_dcomp_device)
+    g_dcomp_device->Commit();
 }
 
 gfx::Size DirectCompositionSurfaceWin::GetSize() {
@@ -901,7 +937,7 @@ void DirectCompositionSurfaceWin::OnDisplayAdded() {
   InvalidateOverlayCaps();
   UpdateOverlaySupport();
   UpdateMonitorInfo();
-  layer_tree_->GetHDRMetadataHelper()->UpdateDisplayMetadata(d3d11_device_);
+  layer_tree_->GetHDRMetadataHelper()->UpdateDisplayMetadata();
   RunOverlayHdrGpuInfoUpdateCallback();
 }
 
@@ -909,7 +945,7 @@ void DirectCompositionSurfaceWin::OnDisplayRemoved() {
   InvalidateOverlayCaps();
   UpdateOverlaySupport();
   UpdateMonitorInfo();
-  layer_tree_->GetHDRMetadataHelper()->UpdateDisplayMetadata(d3d11_device_);
+  layer_tree_->GetHDRMetadataHelper()->UpdateDisplayMetadata();
   RunOverlayHdrGpuInfoUpdateCallback();
 }
 

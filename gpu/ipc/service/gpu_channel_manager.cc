@@ -8,6 +8,10 @@
 #include <memory>
 #include <utility>
 
+#if defined(OS_WIN)
+#include <dxgi1_3.h>
+#endif
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"

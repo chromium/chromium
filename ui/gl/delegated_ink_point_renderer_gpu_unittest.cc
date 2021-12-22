@@ -98,7 +98,7 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
   void SetUp() override {
     // Without this, the following check always fails.
     gl::init::InitializeGLNoExtensionsOneOff(/*init_bindings=*/true);
-    if (!QueryDirectCompositionDevice(QueryD3D11DeviceObjectFromANGLE())) {
+    if (!gl::DirectCompositionSurfaceWin::GetDirectCompositionDevice()) {
       LOG(WARNING)
           << "GL implementation not using DirectComposition, skipping test.";
       return;

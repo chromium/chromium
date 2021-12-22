@@ -16,8 +16,9 @@ static constexpr int kMinLuminanceFixedPoint = 10000;
 namespace gl {
 
 HDRMetadataHelperWin::HDRMetadataHelperWin(
-    const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) {
-  UpdateDisplayMetadata(d3d11_device);
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device)
+    : d3d11_device_(std::move(d3d11_device)) {
+  UpdateDisplayMetadata();
 }
 
 HDRMetadataHelperWin::~HDRMetadataHelperWin() = default;
@@ -27,15 +28,14 @@ HDRMetadataHelperWin::GetDisplayMetadata() {
   return hdr_metadata_;
 }
 
-void HDRMetadataHelperWin::UpdateDisplayMetadata(
-    const Microsoft::WRL::ComPtr<ID3D11Device>& d3d11_device) {
+void HDRMetadataHelperWin::UpdateDisplayMetadata() {
   hdr_metadata_.reset();
 
-  if (!d3d11_device)
+  if (!d3d11_device_)
     return;
 
   Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  if (FAILED(d3d11_device.As(&dxgi_device)))
+  if (FAILED(d3d11_device_.As(&dxgi_device)))
     return;
 
   Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
@@ -43,7 +43,7 @@ void HDRMetadataHelperWin::UpdateDisplayMetadata(
     return;
 
   Microsoft::WRL::ComPtr<IDXGIFactory> dxgi_factory;
-  if (FAILED(dxgi_adapter->GetParent(__uuidof(IDXGIFactory), &dxgi_factory)))
+  if (FAILED(dxgi_adapter->GetParent(IID_PPV_ARGS(&dxgi_factory))))
     return;
 
   DXGI_OUTPUT_DESC1 desc_best{};
