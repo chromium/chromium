@@ -129,13 +129,11 @@ SkColor ChromeTypographyProvider::GetColor(const views::View& view,
   if (context == CONTEXT_DOWNLOAD_SHELF ||
       (context == CONTEXT_DOWNLOAD_SHELF_STATUS &&
        style == views::style::STYLE_DISABLED)) {
-    // TODO(pkasting): Instead of reusing COLOR_BOOKMARK_TEXT, use dedicated
-    // values.
     const auto* theme_provider = view.GetThemeProvider();
     if (!theme_provider)
       return gfx::kPlaceholderColor;
     const SkColor base_color =
-        theme_provider->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT);
+        theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR_TEXT);
     // TODO(pkasting): Should use some way of dimming text that's as analogous
     // as possible to e.g. enabled vs. disabled labels.
     const SkColor dimmed_color = SkColorSetA(base_color, 0xC7);

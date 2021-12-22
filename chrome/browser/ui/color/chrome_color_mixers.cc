@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/color/chrome_color_mixers.h"
 
 #include "chrome/browser/ui/color/chrome_color_mixer.h"
+#include "chrome/browser/ui/color/native_chrome_color_mixer.h"
 #include "chrome/browser/ui/color/omnibox_color_mixer.h"
 
 void AddChromeColorMixers(ui::ColorProvider* provider,
                           const ui::ColorProviderManager::Key& key) {
   AddChromeColorMixer(provider, key);
+  AddNativeChromeColorMixer(provider, key);
   AddOmniboxColorMixer(provider, key);
 
   if (key.custom_theme) {

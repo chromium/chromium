@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/color/chrome_color_mixer.h"
 
-#include "base/bind.h"
-#include "build/build_config.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
@@ -22,13 +20,13 @@ void AddBaseColors(bool dark_mode, ui::ColorMixer& mixer) {
   if (dark_mode) {
     mixer[kColorOmniboxBackground] = {gfx::kGoogleGrey900};
     mixer[kColorOmniboxText] = {SK_ColorWHITE};
-
     mixer[kColorToolbar] = {SkColorSetRGB(0x35, 0x36, 0x3A)};
+    mixer[kColorToolbarText] = {SK_ColorWHITE};
   } else {
     mixer[kColorOmniboxBackground] = {gfx::kGoogleGrey100};
     mixer[kColorOmniboxText] = {gfx::kGoogleGrey900};
-
     mixer[kColorToolbar] = {SK_ColorWHITE};
+    mixer[kColorToolbarText] = {gfx::kGoogleGrey800};
   }
 }
 
@@ -40,27 +38,16 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
   ui::ColorMixer& mixer = provider->AddMixer();
 
-#if defined(OS_WIN)
-  const bool high_contrast_mode =
-      key.contrast_mode == ui::ColorProviderManager::ContrastMode::kHigh;
-  if (high_contrast_mode) {
-    // High contrast uses system colors.
-    mixer[kColorOmniboxBackground] = {ui::kColorNativeBtnFace};
-    mixer[kColorOmniboxText] = {ui::kColorNativeBtnText};
-
-    mixer[kColorToolbar] = {ui::kColorNativeWindow};
-  } else {
-    AddBaseColors(dark_mode, mixer);
-  }
-#else
   AddBaseColors(dark_mode, mixer);
-#endif
 
-  // Download shelf colors.
+  mixer[kColorBookmarkText] = {kColorToolbarText};
   mixer[kColorDownloadShelf] = {kColorToolbar};
   mixer[kColorDownloadShelfButtonBackground] = {kColorDownloadShelf};
   mixer[kColorDownloadShelfButtonText] =
       ui::PickGoogleColor(ui::kColorAccent, kColorDownloadShelf,
                           color_utils::kMinimumReadableContrastRatio);
+  mixer[kColorTabForegroundActiveFrameActive] = {kColorToolbarText};
+  mixer[kColorTabForegroundActiveFrameInactive] = {
+      kColorTabForegroundActiveFrameActive};
   mixer[kColorToolbarContentAreaSeparator] = {ui::kColorSeparator};
 }

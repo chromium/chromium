@@ -56,11 +56,17 @@
     ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_SECURE) \
   E(kColorOmniboxText, ThemeProperties::COLOR_OMNIBOX_TEXT) \
   E(kColorOmniboxTextDimmed, ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED) \
+  /* Tab output colors. */ \
+  E(kColorTabForegroundActiveFrameActive, \
+    ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE) \
+  E(kColorTabForegroundActiveFrameInactive, \
+    ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE) \
   /* Toolbar output colors. */ \
   E(kColorToolbar, ThemeProperties::COLOR_TOOLBAR) \
   E(kColorToolbarButtonIcon, ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON) \
   E(kColorToolbarContentAreaSeparator, \
-    ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR)
+    ThemeProperties::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR) \
+  E(kColorToolbarText, ThemeProperties::COLOR_TOOLBAR_TEXT)
 
 #include "ui/color/color_id_macros.inc"
 

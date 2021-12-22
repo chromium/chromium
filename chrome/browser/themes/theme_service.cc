@@ -84,6 +84,7 @@ bool g_dont_write_theme_pack_for_testing = false;
 
 absl::optional<ui::ColorId> ThemeProviderColorIdToColorId(int color_id) {
   static constexpr const auto kMap = base::MakeFixedFlatMap<int, ui::ColorId>({
+      {TP::COLOR_BOOKMARK_TEXT, kColorBookmarkText},
       {TP::COLOR_DOWNLOAD_SHELF, kColorDownloadShelf},
       {TP::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND,
        kColorDownloadShelfButtonBackground},
@@ -116,7 +117,12 @@ absl::optional<ui::ColorId> ThemeProviderColorIdToColorId(int color_id) {
       {TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE, kColorOmniboxSecurityChipSecure},
       {TP::COLOR_OMNIBOX_TEXT, kColorOmniboxText},
       {TP::COLOR_OMNIBOX_TEXT_DIMMED, kColorOmniboxTextDimmed},
+      {TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE,
+       kColorTabForegroundActiveFrameActive},
+      {TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE,
+       kColorTabForegroundActiveFrameInactive},
       {TP::COLOR_TOOLBAR, kColorToolbar},
+      {TP::COLOR_TOOLBAR_TEXT, kColorToolbarText},
   });
   auto* color_it = kMap.find(color_id);
   if (color_it != kMap.cend()) {

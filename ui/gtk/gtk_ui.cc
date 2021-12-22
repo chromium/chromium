@@ -933,11 +933,7 @@ void GtkUi::UpdateColors() {
   colors_[ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON] = tab_text_color;
   colors_[ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_HOVERED] = tab_text_color;
   colors_[ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_PRESSED] = tab_text_color;
-  colors_[ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE] =
-      tab_text_color;
-  colors_[ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE] =
-      tab_text_color;
-  colors_[ThemeProperties::COLOR_BOOKMARK_TEXT] = tab_text_color;
+  colors_[ThemeProperties::COLOR_TOOLBAR_TEXT] = tab_text_color;
 
   colors_[ThemeProperties::COLOR_NTP_LINK] =
       color_provider->GetColor(ui::kColorTextfieldSelectionBackground);

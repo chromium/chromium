@@ -368,7 +368,7 @@ void DownloadShelfView::OnThemeChanged() {
 
   views::SetImageFromVectorIcon(
       close_button_, vector_icons::kCloseRoundedIcon,
-      GetThemeProvider()->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT));
+      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR_TEXT));
 }
 
 views::View* DownloadShelfView::GetDefaultFocusableChild() {

@@ -358,10 +358,14 @@ SkColor ThemeHelper::GetDefaultColor(
                     incognito, theme_supplier);
   };
   switch (id) {
-    case TP::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND: {
+    case TP::COLOR_BOOKMARK_TEXT:
+    case TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE:
+    case TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE:
+      return GetColor(TP::COLOR_TOOLBAR_TEXT, incognito, theme_supplier,
+                      nullptr);
+    case TP::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND:
       return GetColor(TP::COLOR_DOWNLOAD_SHELF, incognito, theme_supplier,
                       nullptr);
-    }
     case TP::COLOR_DOWNLOAD_SHELF_BUTTON_TEXT: {
       const SkColor download_shelf_color =
           GetColor(TP::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND, incognito,

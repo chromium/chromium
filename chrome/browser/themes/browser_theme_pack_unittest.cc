@@ -1085,20 +1085,16 @@ TEST_F(BrowserThemePackTest, BuildFromColor_BasicTestColors) {
     EXPECT_EQ(frame_color, background_tab);
     EXPECT_TRUE(has_readable_contrast(background_tab_text, background_tab));
 
-    SkColor toolbar_color, ntp_background, tab_text, bookmark_text,
-        toolbar_button_icon;
-    EXPECT_TRUE(pack->GetColor(TP::COLOR_TOOLBAR, &toolbar_color));
+    SkColor ntp_background, toolbar_color, toolbar_button_icon, toolbar_text;
     EXPECT_TRUE(pack->GetColor(TP::COLOR_NTP_BACKGROUND, &ntp_background));
-    EXPECT_TRUE(pack->GetColor(TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE,
-                               &tab_text));
+    EXPECT_TRUE(pack->GetColor(TP::COLOR_TOOLBAR, &toolbar_color));
     EXPECT_TRUE(
         pack->GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, &toolbar_button_icon));
-    EXPECT_TRUE(pack->GetColor(TP::COLOR_BOOKMARK_TEXT, &bookmark_text));
+    EXPECT_TRUE(pack->GetColor(TP::COLOR_TOOLBAR_TEXT, &toolbar_text));
 
     EXPECT_EQ(toolbar_color, ntp_background);
-    EXPECT_EQ(tab_text, toolbar_button_icon);
-    EXPECT_EQ(tab_text, bookmark_text);
-    EXPECT_TRUE(has_readable_contrast(tab_text, toolbar_color));
+    EXPECT_EQ(toolbar_text, toolbar_button_icon);
+    EXPECT_TRUE(has_readable_contrast(toolbar_text, toolbar_color));
 
     EXPECT_NE(frame_color, toolbar_color);
     EXPECT_GE(color_utils::GetContrastRatio(frame_color, toolbar_color),

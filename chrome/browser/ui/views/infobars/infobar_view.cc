@@ -62,7 +62,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(LabelType, kLabelType, LabelType::kNone)
 
 // IDs of the colors to use for infobar elements.
 constexpr int kInfoBarLabelBackgroundColor = ThemeProperties::COLOR_INFOBAR;
-constexpr int kInfoBarLabelTextColor = ThemeProperties::COLOR_BOOKMARK_TEXT;
+constexpr int kInfoBarLabelTextColor = ThemeProperties::COLOR_TOOLBAR_TEXT;
 
 constexpr int kSeparatorHeightDip = 1;
 
@@ -243,8 +243,10 @@ void InfoBarView::OnThemeChanged() {
     if (label_type != LabelType::kNone) {
       auto* label = static_cast<views::Label*>(child);
       label->SetBackgroundColor(background_color);
-      if (label_type == LabelType::kLabel)
+      if (label_type == LabelType::kLabel) {
         label->SetEnabledColor(text_color);
+        label->SetAutoColorReadabilityEnabled(false);
+      }
     }
   }
 

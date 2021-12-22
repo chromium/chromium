@@ -64,7 +64,7 @@ bool GetPlatformHighContrastColor(int id, SkColor* color) {
 
     // Button Text Foreground
     case ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON:
-    case ThemeProperties::COLOR_BOOKMARK_TEXT:
+    case ThemeProperties::COLOR_TOOLBAR_TEXT:
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO:
     case ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE:
