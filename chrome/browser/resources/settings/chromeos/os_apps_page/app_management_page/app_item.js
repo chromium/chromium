@@ -1,7 +1,7 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import '//resources/cr_components/app_management/shared_style.js';
+import './shared_style.js';
 import '//resources/cr_components/app_management/shared_vars.js';
 import '//resources/cr_elements/cr_icons_css.m.js';
 

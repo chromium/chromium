@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_components/app_management/shared_style.js';
+import './shared_style.js';
 import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/policy/cr_tooltip_icon.m.js';
 

@@ -27,6 +27,7 @@ js_type_check("closure_compile_module") {
     ":pwa_detail_view",
     ":reducers",
     ":resize_lock_item",
+    ":shared_style",
     ":store",
     ":store_client",
     ":supported_links_dialog",
@@ -201,6 +202,10 @@ js_library("resize_lock_item") {
   ]
 }
 
+js_library("shared_style") {
+  deps = [ "//ui/webui/resources/cr_components/app_management:shared_style" ]
+}
+
 js_library("store") {
   deps = [
     "//ui/webui/resources/js:cr.m",
@@ -284,6 +289,7 @@ html_to_js("web_components") {
     "pin_to_shelf_item.js",
     "pwa_detail_view.js",
     "resize_lock_item.js",
+    "shared_style.js",
     "supported_links_overlapping_apps_dialog.js",
     "supported_links_dialog.js",
     "supported_links_item.js",

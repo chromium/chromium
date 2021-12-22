@@ -5,7 +5,7 @@ import './icons.js';
 import './more_permissions_item.js';
 import './pin_to_shelf_item.js';
 import './supported_links_item.js';
-import '//resources/cr_components/app_management/shared_style.js';
+import './shared_style.js';
 import '//resources/cr_components/app_management/permission_item.js';
 import '//resources/cr_elements/icons.m.js';
 
