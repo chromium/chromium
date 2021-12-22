@@ -115,8 +115,11 @@ class GuestOsRegistryService : public KeyedService {
     bool CanUninstall() const;
 
    private:
-    std::string LocalizedString(base::StringPiece key) const;
-    std::set<std::string> LocalizedList(base::StringPiece key) const;
+    std::string GetString(base::StringPiece key) const;
+    bool GetBool(base::StringPiece key) const;
+    base::Time GetTime(base::StringPiece key) const;
+    std::string GetLocalizedString(base::StringPiece key) const;
+    std::set<std::string> GetLocalizedList(base::StringPiece key) const;
 
     std::string app_id_;
     base::Value pref_;
