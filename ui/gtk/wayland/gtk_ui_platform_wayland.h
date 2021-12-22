@@ -36,12 +36,14 @@ class GtkUiPlatformWayland : public GtkUiPlatform {
   bool PreferGtkIme() override;
 
  private:
+  GdkDisplay* GetDefaultGdkDisplay();
   // Called when xdg-foreign exports a parent window passed in
   // SetGtkWidgetTransientFor.
   void OnHandleSetTransient(GtkWidget* widget, const std::string& handle);
   void OnHandleForward(base::OnceCallback<void(std::string)> callback,
                        const std::string& handle);
 
+  GdkDisplay* default_display_ = nullptr;
   base::WeakPtrFactory<GtkUiPlatformWayland> weak_factory_{this};
 };
 
