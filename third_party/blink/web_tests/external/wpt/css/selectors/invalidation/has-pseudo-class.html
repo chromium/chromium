@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Selector Invalidation: :has() with pseudo-classes</title>
+<link rel="author" title="Antti Koivisto" href="mailto:antti@apple.com">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="help" href="https://drafts.csswg.org/selectors/#relational">
+<style>
+div, main { color: grey }
+main:has(#checkbox:checked) > #subject { color: red }
+main:has(#option:checked) > #subject { color: green }
+</style>
+
+<main id=main>
+    <input type=checkbox id=checkbox></input>
+    <select><option>a</option><option id=option>b</option></select>
+    <div id=subject></div>
+</main>
+
+<script>
+const grey = 'rgb(128, 128, 128)';
+const red = 'rgb(255, 0, 0)';
+const green = 'rgb(0, 128, 0)';
+const blue = 'rgb(0, 0, 255)';
+const yellow = 'rgb(255, 255, 0)';
+const purple = 'rgb(128, 0, 128)';
+const pink = 'rgb(255, 192, 203)';
+
+function testColor(test_name, color) {
+    test(function() {
+        assert_equals(getComputedStyle(subject).color, color);
+    }, test_name);
+}
+
+function testPseudoClassChange(element, property, expectedColor)
+{
+    element[property] = true;
+    testColor(`Set ${property} on ${element.id}`, expectedColor);
+    element[property] = false;
+    testColor(`Unset ${property} on ${element.id}`, grey);
+}
+
+testColor('Initial color', grey);
+
+testPseudoClassChange(checkbox, "checked", red);
+testPseudoClassChange(option, "selected", green);
+</script>

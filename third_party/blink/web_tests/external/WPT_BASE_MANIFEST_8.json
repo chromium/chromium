@@ -31,6 +31,13 @@
        {}
       ]
      ],
+     "aria-owns-reparent.html": [
+      "2eaceb66f6957b0240a4f02b0c23b74e8ca4921a",
+      [
+       null,
+       {}
+      ]
+     ],
      "aria-owns-select.html": [
       "d6cd094041abe5d35d188d580a281324818101ce",
       [
@@ -78118,7 +78125,7 @@
       ]
      ],
      "change-inline-color.html": [
-      "c4334af0d7377ad9cdae4d2c13bf36a6b75554f3",
+      "9da2c8e8f85a28c3a7c93c5c974e55557c307c36",
       [
        null,
        [
@@ -260594,7 +260601,7 @@
        []
       ],
       "marker-supported-properties-in-animation-expected.txt": [
-       "a389ccdc5a6faa2e4d4d4c432825a6c4f3502dd3",
+       "10967acc54685e3b6ee6f454df09641eca9f741a",
        []
       ]
      },
@@ -266826,10 +266833,6 @@
       "text-decoration-valid-expected.txt": [
        "ce9163e42af7cc3a775e7a51246038305ed184b5",
        []
-      ],
-      "text-emphasis-position-computed-expected.txt": [
-       "c2427019bf1bd314e9f23b0ae5af48295182a1e9",
-       []
       ]
      },
      "reference": {
@@ -269400,10 +269403,6 @@
        ],
        "text-decoration-skip-expected.txt": [
         "f2fa17c018cf834a1009b06b84fdedce6f2242cc",
-        []
-       ],
-       "text-emphasis-color-expected.txt": [
-        "772c71bb80d30d1cb0cd222edb7e64eb9b145cdc",
         []
        ],
        "text-justify-expected.txt": [
@@ -275609,6 +275608,10 @@
       ],
       "has-in-sibling-position-expected.txt": [
        "19d2af0cbdca0b5f94813e04c9165480db8f586d",
+       []
+      ],
+      "has-pseudo-class-expected.txt": [
+       "b4036b367e35dc4e3fa4ff39b1a962b359223341",
        []
       ],
       "has-sibling-expected.txt": [
@@ -315318,7 +315321,7 @@
        []
       ],
       "accumulation-per-property-002-expected.txt": [
-       "b508e5abe0c28e9486724ace6bcba15ea0b59d05",
+       "b477cd5cfb940ffef79b82973abbec1c049b66e8",
        []
       ],
       "addition-per-property-001-expected.txt": [
@@ -315326,7 +315329,7 @@
        []
       ],
       "addition-per-property-002-expected.txt": [
-       "2047aeaab037b7606af4b192455278aa63b258a2",
+       "9a5c6364dc42aa14461a5be0b67cc8eb49593b09",
        []
       ],
       "interpolation-per-property-001-expected.txt": [
@@ -315334,7 +315337,7 @@
        []
       ],
       "interpolation-per-property-002-expected.txt": [
-       "9e3c434080bcd9437faa790a11567da6dbffcdb2",
+       "c4a07ae6b232dd902c94032bc86803073cfc67ad",
        []
       ],
       "property-list.js": [
@@ -384075,6 +384078,13 @@
         {}
        ]
       ],
+      "has-pseudo-class.html": [
+       "e74c4e6928ada8c46d5bcd846bc1c4099f5672f6",
+       [
+        null,
+        {}
+       ]
+      ],
       "has-sibling.html": [
        "7c56b2e7b3340f9cba724475751051fe284b44b6",
        [
@@ -445590,6 +445600,13 @@
          {}
         ]
        ],
+       "fieldset-block-size.html": [
+        "e1247637db839ccc977524fba8aecbdd29578dc3",
+        [
+         null,
+         {}
+        ]
+       ],
        "fieldset-border-radius-hittest.html": [
         "9ab10159d8c0b3e23d73c5094961873dd837df7d",
         [
@@ -445716,6 +445733,13 @@
          {}
         ]
        ],
+       "legend-block-position-centering.html": [
+        "a4eda6e3ef41961759154ec6131d44ac0e4aeb01",
+        [
+         null,
+         {}
+        ]
+       ],
        "legend-display-none.html": [
         "689454ac493a05b28658edf549d71c6aa1c7be0e",
         [
@@ -445751,6 +445775,13 @@
          {
           "testdriver": true
          }
+        ]
+       ],
+       "legend-inline-position-with-fieldset-padding.html": [
+        "0b2624859eafe1ecac023b4c14b6bee9d0c3a760",
+        [
+         null,
+         {}
         ]
        ],
        "legend-margin-inline.html": [
