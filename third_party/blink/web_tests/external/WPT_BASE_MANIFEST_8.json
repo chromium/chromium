@@ -1099,6 +1099,13 @@
        {}
       ]
      ],
+     "nested-balanced-monolithic-multicol-crash.html": [
+      "082bf70691c955e1ba7fac9e2c077c71a7d52f84",
+      [
+       null,
+       {}
+      ]
+     ],
      "nested-floated-multicol-with-monolithic-child-crash.html": [
       "f48ae9ff73faf1df5f9ff7247c64391f0c97d006",
       [
@@ -283904,6 +283911,10 @@
          "c50eddd41faba2ecc8928e459288fe612b999170",
          []
         ],
+        "child-navigates-parent-cross-origin-inner.html": [
+         "72b92c8061a995a27442fe071cb78d8af4a42261",
+         []
+        ],
         "child-navigates-parent-destination.html": [
          "bb8ba4e6989597efeb1326c9acddbcfe64074d10",
          []
@@ -311440,6 +311451,20 @@
         []
        ]
       },
+      "secure-context": {
+       "sender.html": [
+        "05e58822a862378b736af1113e2101a4fd587e73",
+        []
+       ],
+       "window.html": [
+        "071a507cb33e95e5b9cfc9a0bbccadab0983efee",
+        []
+       ]
+      },
+      "secure-context-service-worker.js": [
+       "5ba99f075362ea30cb14ca4edf51af594d98917a",
+       []
+      ],
       "service-worker-csp-worker.py": [
        "35a46964a7871a7ab85d4b0b181e5ff2e3f496fc",
        []
@@ -417500,6 +417525,24 @@
          {}
         ]
        ],
+       "child-navigates-parent-cross-origin.window.js": [
+        "c5bed0fd4c9afa85010242bfe6a7085587a3327c",
+        [
+         "html/browsers/browsing-the-web/navigating-across-documents/child-navigates-parent-cross-origin.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ],
+           [
+            "script",
+            "resources/wait-for-messages.js"
+           ]
+          ]
+         }
+        ]
+       ],
        "child-navigates-parent-same-origin.window.js": [
         "a40c412029b4b28ae26691deff0286dfff3ccbcd",
         [
@@ -498365,6 +498408,13 @@
      ],
      "sandboxed-iframe-navigator-serviceworker.https.html": [
       "70be6ef9b0a956707384030b1be17b702663976f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "secure-context.https.html": [
+      "666a5d378760b54fd0f4fa86f9db7a05e2be5b5a",
       [
        null,
        {}
