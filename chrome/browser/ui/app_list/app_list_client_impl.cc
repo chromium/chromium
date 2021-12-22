@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -129,17 +130,32 @@ void AppListClientImpl::OnAppListControllerDestroyed() {
     current_model_updater_->SetActive(false);
 }
 
-void AppListClientImpl::StartZeroStateSearch(base::OnceClosure on_done,
-                                             base::TimeDelta timeout) {
-  // TODO(https://crbug.com/1269115): Refresh the zero state results.
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, std::move(on_done), timeout);
+void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
+  // TODO(crbug.com/1269115): In the productivity launcher we handle empty
+  // queries, eg. from a user deleting a query, by re-routing them to
+  // StartZeroStateSearch. We may want to change this behavior so that ash calls
+  // StartZeroStateSearch directly.
+  if (search_controller_) {
+    if (trimmed_query.empty() &&
+        ash::features::IsProductivityLauncherEnabled()) {
+      // We use a long timeout here because the we don't have an
+      // animation-related deadline for these results, unlike a call to
+      // StartZeroStateSearch.
+      StartZeroStateSearch(base::DoNothing(), base::Seconds(1));
+    } else {
+      search_controller_->StartSearch(trimmed_query);
+    }
+    OnSearchStarted();
+  }
 }
 
-void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
+void AppListClientImpl::StartZeroStateSearch(base::OnceClosure on_done,
+                                             base::TimeDelta timeout) {
   if (search_controller_) {
-    search_controller_->Start(trimmed_query);
+    search_controller_->StartZeroState(std::move(on_done), timeout);
     OnSearchStarted();
+  } else {
+    std::move(on_done).Run();
   }
 }
 
@@ -305,8 +321,11 @@ void AppListClientImpl::GetContextMenuModel(
 
 void AppListClientImpl::OnAppListVisibilityWillChange(bool visible) {
   app_list_target_visibility_ = visible;
-  if (visible && search_controller_)
-    search_controller_->Start(std::u16string());
+  // TODO(crbug.com/1258415): This is only used in the old launcher, and can be
+  // removed once the productivity launcher is launched.
+  if (visible && search_controller_ &&
+      !ash::features::IsProductivityLauncherEnabled())
+    search_controller_->StartSearch(std::u16string());
 }
 
 void AppListClientImpl::OnAppListVisibilityChanged(bool visible) {

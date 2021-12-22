@@ -53,7 +53,9 @@ class SearchControllerImpl : public SearchController {
 
   // SearchController:
   void InitializeRankers() override;
-  void Start(const std::u16string& query) override;
+  void StartSearch(const std::u16string& query) override;
+  void StartZeroState(base::OnceClosure on_done,
+                      base::TimeDelta timeout) override;
   void ViewClosing() override;
   void OpenResult(ChromeSearchResult* result, int event_flags) override;
   void InvokeResultAction(ChromeSearchResult* result,

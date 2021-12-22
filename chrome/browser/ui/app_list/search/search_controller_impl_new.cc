@@ -50,7 +50,7 @@ SearchControllerImplNew::SearchControllerImplNew(
 
 SearchControllerImplNew::~SearchControllerImplNew() {}
 
-void SearchControllerImplNew::Start(const std::u16string& query) {
+void SearchControllerImplNew::StartSearch(const std::u16string& query) {
   session_start_ = base::Time::Now();
 
   // TODO(crbug.com/1199206): We should move this histogram logic somewhere
@@ -66,6 +66,12 @@ void SearchControllerImplNew::Start(const std::u16string& query) {
   ranker_->Start(query, results_, categories_);
   for (const auto& provider : providers_)
     provider->Start(query);
+}
+
+void SearchControllerImplNew::StartZeroState(base::OnceClosure on_done,
+                                             base::TimeDelta timeout) {
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, std::move(on_done), timeout);
 }
 
 void SearchControllerImplNew::OpenResult(ChromeSearchResult* result,

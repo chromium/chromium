@@ -69,7 +69,9 @@ class SearchController {
 
   virtual void InitializeRankers() {}
 
-  virtual void Start(const std::u16string& query) = 0;
+  virtual void StartSearch(const std::u16string& query) = 0;
+  virtual void StartZeroState(base::OnceClosure on_done,
+                              base::TimeDelta timeout) = 0;
   // TODO(crbug.com/1199206): We should rename this to AppListClosing for
   // consistency with AppListShown.
   virtual void ViewClosing() = 0;

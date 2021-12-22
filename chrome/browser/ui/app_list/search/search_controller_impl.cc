@@ -56,7 +56,7 @@ void SearchControllerImpl::InitializeRankers() {
   mixer_->InitializeRankers(profile_);
 }
 
-void SearchControllerImpl::Start(const std::u16string& query) {
+void SearchControllerImpl::StartSearch(const std::u16string& query) {
   session_start_ = base::Time::Now();
   dispatching_query_ = true;
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
@@ -72,6 +72,14 @@ void SearchControllerImpl::Start(const std::u16string& query) {
   query_for_recommendation_ = query.empty();
 
   OnResultsChanged();
+}
+
+void SearchControllerImpl::StartZeroState(base::OnceClosure on_done,
+                                          base::TimeDelta timeout) {
+  // Only used for the productivity launcher.
+  // TODO(crbug.com/1269115): Unimplemented.
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, std::move(on_done), timeout);
 }
 
 void SearchControllerImpl::ViewClosing() {
