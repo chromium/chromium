@@ -227,8 +227,6 @@ void AttributionInternalsHandlerImpl::OnReportSent(
       status = mojom::WebUIAttributionReport::Status::kNetworkError;
       break;
     case SendResult::Status::kTransientFailure:
-    case SendResult::Status::kOffline:
-    case SendResult::Status::kRemovedFromQueue:
       NOTREACHED();
       return;
   }

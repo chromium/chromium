@@ -21,11 +21,6 @@ struct CONTENT_EXPORT SendResult {
     // The report was dropped without ever being sent, e.g. due to embedder
     // disabling the API.
     kDropped,
-    // The report should be retried because the browser is offline. This
-    // shouldn't contribute to the number of report failures.
-    kOffline,
-    // The report was removed from the queue before being sent.
-    kRemovedFromQueue,
   };
 
   SendResult(Status status, int http_response_code)

@@ -1929,7 +1929,6 @@ test("content_unittests") {
     "../browser/attribution_reporting/attribution_manager_impl_unittest.cc",
     "../browser/attribution_reporting/attribution_network_sender_impl_unittest.cc",
     "../browser/attribution_reporting/attribution_policy_unittest.cc",
-    "../browser/attribution_reporting/attribution_reporter_impl_unittest.cc",
     "../browser/attribution_reporting/attribution_storage_delegate_impl_unittest.cc",
     "../browser/attribution_reporting/attribution_storage_sql_migrations_unittest.cc",
     "../browser/attribution_reporting/attribution_storage_sql_unittest.cc",

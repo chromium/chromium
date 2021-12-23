@@ -42,8 +42,10 @@ using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
 using ::testing::AllOf;
 using ::testing::ElementsAre;
+using ::testing::Ge;
 using ::testing::IsEmpty;
 using ::testing::IsTrue;
+using ::testing::Le;
 using ::testing::Property;
 using ::testing::SizeIs;
 
@@ -136,6 +138,9 @@ TEST_F(AttributionStorageTest,
   EXPECT_TRUE(storage->DeleteReport(AttributionReport::Id(0)));
   EXPECT_NO_FATAL_FAILURE(storage->ClearData(
       base::Time::Min(), base::Time::Max(), base::NullCallback()));
+  EXPECT_EQ(
+      storage->AdjustOfflineReportTimes(base::TimeDelta(), base::TimeDelta()),
+      absl::nullopt);
 }
 
 TEST_F(AttributionStorageTest, ImpressionStoredAndRetrieved_ValuesIdentical) {
@@ -1629,6 +1634,105 @@ TEST_F(AttributionStorageTest, ReportID_RoundTrips) {
       storage()->GetAttributionsToReport(clock()->Now());
   EXPECT_EQ(1u, actual_reports.size());
   EXPECT_EQ(DefaultExternalReportID(), actual_reports[0].external_report_id());
+}
+
+TEST_F(AttributionStorageTest, AdjustOfflineReportTimes) {
+  EXPECT_EQ(
+      storage()->AdjustOfflineReportTimes(base::TimeDelta(), base::TimeDelta()),
+      absl::nullopt);
+
+  storage()->StoreSource(SourceBuilder(clock()->Now()).Build());
+  EXPECT_EQ(CreateReportStatus::kSuccess,
+            MaybeCreateAndStoreReport(DefaultTrigger()));
+
+  const base::Time original_report_time =
+      clock()->Now() + base::Milliseconds(kReportTime);
+
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()),
+              ElementsAre(Property(&AttributionReport::report_time,
+                                   original_report_time)));
+
+  clock()->Advance(base::Milliseconds(kReportTime));
+
+  EXPECT_EQ(storage()->AdjustOfflineReportTimes(/*min_delay=*/base::Hours(1),
+                                                /*max_delay=*/base::Hours(1)),
+            original_report_time);
+
+  // The report time should not be changed as it is equal to now, not strictly
+  // less than it.
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()),
+              ElementsAre(Property(&AttributionReport::report_time,
+                                   original_report_time)));
+
+  clock()->Advance(base::Milliseconds(1));
+
+  const base::Time new_report_time = clock()->Now() + base::Hours(1);
+
+  EXPECT_EQ(storage()->AdjustOfflineReportTimes(/*min_delay=*/base::Hours(1),
+                                                /*max_delay=*/base::Hours(1)),
+            new_report_time);
+
+  // The report time should be changed as it is strictly less than now.
+  EXPECT_THAT(
+      storage()->GetAttributionsToReport(base::Time::Max()),
+      ElementsAre(Property(&AttributionReport::report_time, new_report_time)));
+}
+
+TEST_F(AttributionStorageTest, AdjustOfflineReportTimes_Range) {
+  storage()->StoreSource(SourceBuilder(clock()->Now()).Build());
+  EXPECT_EQ(CreateReportStatus::kSuccess,
+            MaybeCreateAndStoreReport(DefaultTrigger()));
+
+  const base::Time original_report_time =
+      clock()->Now() + base::Milliseconds(kReportTime);
+
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()),
+              ElementsAre(Property(&AttributionReport::report_time,
+                                   original_report_time)));
+
+  clock()->Advance(base::Milliseconds(kReportTime + 1));
+
+  storage()->AdjustOfflineReportTimes(/*min_delay=*/base::Hours(1),
+                                      /*max_delay=*/base::Hours(3));
+
+  EXPECT_THAT(
+      storage()->GetAttributionsToReport(base::Time::Max()),
+      ElementsAre(Property(&AttributionReport::report_time,
+                           AllOf(Ge(clock()->Now() + base::Hours(1)),
+                                 Le(clock()->Now() + base::Hours(3))))));
+}
+
+TEST_F(AttributionStorageTest, GetNextReportTime) {
+  const auto origin_a = url::Origin::Create(GURL("https://a.example/"));
+  const auto origin_b = url::Origin::Create(GURL("https://b.example/"));
+
+  EXPECT_EQ(storage()->GetNextReportTime(base::Time::Min()), absl::nullopt);
+
+  storage()->StoreSource(
+      SourceBuilder(clock()->Now()).SetReportingOrigin(origin_a).Build());
+  EXPECT_EQ(CreateReportStatus::kSuccess,
+            MaybeCreateAndStoreReport(
+                TriggerBuilder().SetReportingOrigin(origin_a).Build()));
+
+  const base::Time report_time_a =
+      clock()->Now() + base::Milliseconds(kReportTime);
+
+  EXPECT_EQ(storage()->GetNextReportTime(base::Time::Min()), report_time_a);
+  EXPECT_EQ(storage()->GetNextReportTime(report_time_a), absl::nullopt);
+
+  clock()->Advance(base::Milliseconds(1));
+  storage()->StoreSource(
+      SourceBuilder(clock()->Now()).SetReportingOrigin(origin_b).Build());
+  EXPECT_EQ(CreateReportStatus::kSuccess,
+            MaybeCreateAndStoreReport(
+                TriggerBuilder().SetReportingOrigin(origin_b).Build()));
+
+  const base::Time report_time_b =
+      clock()->Now() + base::Milliseconds(kReportTime);
+
+  EXPECT_EQ(storage()->GetNextReportTime(base::Time::Min()), report_time_a);
+  EXPECT_EQ(storage()->GetNextReportTime(report_time_a), report_time_b);
+  EXPECT_EQ(storage()->GetNextReportTime(report_time_b), absl::nullopt);
 }
 
 }  // namespace content

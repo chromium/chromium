@@ -17,17 +17,22 @@ CreateReportResult::CreateReportResult(
     Status status,
     absl::optional<AttributionReport> dropped_report,
     absl::optional<DeactivatedSource::Reason>
-        dropped_report_source_deactivation_reason)
+        dropped_report_source_deactivation_reason,
+    absl::optional<base::Time> report_time)
     : status_(status),
       dropped_report_(std::move(dropped_report)),
       dropped_report_source_deactivation_reason_(
-          dropped_report_source_deactivation_reason) {
+          dropped_report_source_deactivation_reason),
+      report_time_(report_time) {
   DCHECK_EQ(status_ == Status::kSuccessDroppedLowerPriority ||
                 status_ == Status::kPriorityTooLow ||
                 status_ == Status::kDroppedForNoise,
             dropped_report_.has_value());
   DCHECK(dropped_report_.has_value() ||
          !dropped_report_source_deactivation_reason_);
+  DCHECK_EQ(status_ == Status::kSuccess ||
+                status_ == Status::kSuccessDroppedLowerPriority,
+            report_time_.has_value());
 }
 
 CreateReportResult::~CreateReportResult() = default;
@@ -47,6 +52,10 @@ CreateReportResult::Status CreateReportResult::status() const {
 const absl::optional<AttributionReport>& CreateReportResult::dropped_report()
     const {
   return dropped_report_;
+}
+
+absl::optional<base::Time> CreateReportResult::report_time() const {
+  return report_time_;
 }
 
 absl::optional<DeactivatedSource> CreateReportResult::GetDeactivatedSource()

@@ -89,12 +89,16 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   CreateReportResult MaybeCreateAndStoreReport(
       const StorableTrigger& trigger) override;
   std::vector<AttributionReport> GetAttributionsToReport(
-      base::Time expiry_time,
+      base::Time max_report_time,
       int limit = -1) override;
+  absl::optional<base::Time> GetNextReportTime(base::Time time) override;
   std::vector<StorableSource> GetActiveSources(int limit = -1) override;
   bool DeleteReport(AttributionReport::Id report_id) override;
   bool UpdateReportForSendFailure(AttributionReport::Id report_id,
                                   base::Time new_report_time) override;
+  absl::optional<base::Time> AdjustOfflineReportTimes(
+      base::TimeDelta min_delay,
+      base::TimeDelta max_delay) override;
   void ClearData(
       base::Time delete_begin,
       base::Time delete_end,

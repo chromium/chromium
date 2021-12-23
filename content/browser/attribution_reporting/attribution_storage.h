@@ -171,7 +171,8 @@ class AttributionStorage {
         Status status,
         absl::optional<AttributionReport> dropped_report = absl::nullopt,
         absl::optional<DeactivatedSource::Reason>
-            dropped_report_source_deactivation_reason = absl::nullopt);
+            dropped_report_source_deactivation_reason = absl::nullopt,
+        absl::optional<base::Time> report_time = absl::nullopt);
     ~CreateReportResult();
 
     CreateReportResult(const CreateReportResult&);
@@ -183,6 +184,8 @@ class AttributionStorage {
     Status status() const;
 
     const absl::optional<AttributionReport>& dropped_report() const;
+
+    absl::optional<base::Time> report_time() const;
 
     absl::optional<DeactivatedSource> GetDeactivatedSource() const;
 
@@ -196,6 +199,9 @@ class AttributionStorage {
     // Null unless `dropped_report_`'s source was deactivated.
     absl::optional<DeactivatedSource::Reason>
         dropped_report_source_deactivation_reason_;
+
+    // Null unless `status` is `kSuccess` or `kSuccessDroppedLowerPriority`.
+    absl::optional<base::Time> report_time_;
   };
 
   // Finds all stored sources matching a given `trigger`, and stores the
@@ -211,6 +217,10 @@ class AttributionStorage {
   virtual std::vector<AttributionReport> GetAttributionsToReport(
       base::Time max_report_time,
       int limit = -1) WARN_UNUSED_RESULT = 0;
+
+  // Returns the first report time strictly after `time`.
+  virtual absl::optional<base::Time> GetNextReportTime(base::Time time)
+      WARN_UNUSED_RESULT = 0;
 
   // Returns all active sources in storage. Active sources are all
   // sources that can still convert. Sources that: are past expiry,
@@ -230,6 +240,13 @@ class AttributionStorage {
   // failure to send the report so that it is retried later.
   virtual bool UpdateReportForSendFailure(AttributionReport::Id report_id,
                                           base::Time new_report_time) = 0;
+
+  // Adjusts the report time of all reports that should have been sent while the
+  // browser was offline by a random value between `min_delay` and `max_delay`,
+  // both inclusive. Returns the new first report time in storage, if any.
+  virtual absl::optional<base::Time> AdjustOfflineReportTimes(
+      base::TimeDelta min_delay,
+      base::TimeDelta max_delay) = 0;
 
   // Deletes all data in storage for URLs matching |filter|, between
   // |delete_begin| and |delete_end| time. More specifically, this:

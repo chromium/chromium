@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/values_test_util.h"
@@ -33,6 +34,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "content/public/browser/network_service_instance.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
+#endif
 
 namespace content {
 
@@ -115,6 +121,35 @@ struct ExpectedReportWaiter {
   }
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class ConnectionWaiter
+    : public network::NetworkConnectionTracker::NetworkConnectionObserver {
+ public:
+  static void WaitUntilOnline() {
+    ConnectionWaiter waiter;
+    waiter.run_loop_.Run();
+  }
+
+  ~ConnectionWaiter() override {
+    content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(
+        this);
+  }
+
+ private:
+  ConnectionWaiter() {
+    content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
+  }
+
+  // network::NetworkConnectionTracker::NetworkConnectionObserver:
+  void OnConnectionChanged(network::mojom::ConnectionType type) override {
+    if (!content::GetNetworkConnectionTracker()->IsOffline())
+      run_loop_.Quit();
+  }
+
+  base::RunLoop run_loop_;
+};
+#endif
+
 }  // namespace
 
 class AttributionsBrowserTest : public ContentBrowserTest {
@@ -141,6 +176,14 @@ class AttributionsBrowserTest : public ContentBrowserTest {
     net::test_server::RegisterDefaultHandlers(https_server_.get());
     https_server_->ServeFilesFromSourceDirectory("content/test/data");
     SetupCrossSiteRedirector(https_server_.get());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // On ChromeOS the connection type comes from a fake Shill service, which
+    // is configured with a fake ethernet connection asynchronously. Wait for
+    // the connection type to be available to avoid getting notified of the
+    // connection change halfway through the test. See crrev.com/c/1684295.
+    ConnectionWaiter::WaitUntilOnline();
+#endif
   }
 
   WebContents* web_contents() { return shell()->web_contents(); }

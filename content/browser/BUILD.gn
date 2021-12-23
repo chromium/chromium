@@ -399,8 +399,6 @@ source_set("browser") {
     "attribution_reporting/attribution_policy.h",
     "attribution_reporting/attribution_report.cc",
     "attribution_reporting/attribution_report.h",
-    "attribution_reporting/attribution_reporter_impl.cc",
-    "attribution_reporting/attribution_reporter_impl.h",
     "attribution_reporting/attribution_storage.cc",
     "attribution_reporting/attribution_storage.h",
     "attribution_reporting/attribution_storage_delegate_impl.cc",

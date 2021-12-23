@@ -524,12 +524,6 @@ std::ostream& operator<<(std::ostream& out, SendResult::Status status) {
     case SendResult::Status::kDropped:
       out << "kDropped";
       break;
-    case SendResult::Status::kOffline:
-      out << "kOffline";
-      break;
-    case SendResult::Status::kRemovedFromQueue:
-      out << "kRemovedFromQueue";
-      break;
   }
   return out;
 }

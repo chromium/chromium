@@ -786,7 +786,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
               MaybeReplaceLowerPriorityReportResult::kReplaceOldReport
           ? CreateReportStatus::kSuccessDroppedLowerPriority
           : CreateReportStatus::kSuccess,
-      std::move(replaced_report));
+      std::move(replaced_report),
+      /*dropped_report_source_deactivation_reason=*/absl::nullopt, report_time);
 }
 
 bool AttributionStorageSql::StoreReport(const AttributionReport& report,
@@ -872,7 +873,7 @@ std::vector<AttributionReport> AttributionStorageSql::GetAttributionsToReport(
     return {};
 
   // Get at most |limit| entries in the conversions table with a |report_time|
-  // less than |max_report_time| and their matching information from the
+  // no greater than |max_report_time| and their matching information from the
   // impression table. Negatives are treated as no limit
   // (https://sqlite.org/lang_select.html#limitoffset).
   static constexpr char kGetReportsSql[] =
@@ -900,6 +901,27 @@ std::vector<AttributionReport> AttributionStorageSql::GetAttributionsToReport(
   if (!statement.Succeeded())
     return {};
   return reports;
+}
+
+absl::optional<base::Time> AttributionStorageSql::GetNextReportTime(
+    base::Time time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
+    return absl::nullopt;
+
+  static constexpr char kNextReportTimeSql[] =
+      "SELECT MIN(report_time) FROM conversions "
+      "WHERE report_time > ?";
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kNextReportTimeSql));
+  statement.BindTime(0, time);
+
+  if (statement.Step() &&
+      statement.GetColumnType(0) != sql::ColumnType::kNull) {
+    return statement.ColumnTime(0);
+  }
+
+  return absl::nullopt;
 }
 
 absl::optional<AttributionReport> AttributionStorageSql::GetReport(
@@ -1014,6 +1036,42 @@ bool AttributionStorageSql::UpdateReportForSendFailure(
   statement.BindTime(0, new_report_time);
   statement.BindInt64(1, *conversion_id);
   return statement.Run() && db_->GetLastChangeCount() == 1;
+}
+
+absl::optional<base::Time> AttributionStorageSql::AdjustOfflineReportTimes(
+    base::TimeDelta min_delay,
+    base::TimeDelta max_delay) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GE(min_delay, base::TimeDelta());
+  DCHECK_GE(max_delay, base::TimeDelta());
+  DCHECK_LE(min_delay, max_delay);
+
+  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
+    return absl::nullopt;
+
+  base::Time now = clock_->Now();
+
+  // Set the report time for all reports that should have been sent before now
+  // to now + a random number of microseconds between `min_delay` and
+  // `max_delay`, both inclusive. We use RANDOM, instead of a method on the
+  // delegate, to avoid having to pull all reports into memory and update them
+  // one by one. We use ABS because RANDOM may return a negative integer. We add
+  // 1 to the difference between `max_delay` and `min_delay` to ensure that the
+  // range of generated values is inclusive. If `max_delay == min_delay`, we
+  // take the remainder modulo 1, which is always 0.
+  static constexpr char kSetReportTimeSql[] =
+      "UPDATE conversions "
+      "SET report_time=?+ABS(RANDOM()%?)"
+      "WHERE report_time<?";
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kSetReportTimeSql));
+  statement.BindTime(0, now + min_delay);
+  statement.BindInt64(1, 1 + (max_delay - min_delay).InMicroseconds());
+  statement.BindTime(2, now);
+  if (!statement.Run())
+    return absl::nullopt;
+
+  return GetNextReportTime(base::Time::Min());
 }
 
 void AttributionStorageSql::ClearData(
