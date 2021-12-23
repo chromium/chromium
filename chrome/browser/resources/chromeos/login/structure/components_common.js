@@ -9,8 +9,6 @@ function loadCommonComponents() {
   console.warn('loadCommonComponents() : Starting to load common components.');
 // This inclusion is types-only. No actual code to execute.
 
-// <include src="../gaia_dialog.js">
-
 // <include src="../screen_gaia_signin.js">
 // <include src="../saml_confirm_password.js">
 // <include src="../recommend_apps.js">

@@ -45,6 +45,7 @@ group("closure_compile_module") {
     # Local targets
     ":display_manager_types.m",
     ":gaia_button.m",
+    ":gaia_dialog.m",
     ":gaia_header.m",
     ":gaia_input_form.m",
     ":hd_iron_icon.m",
@@ -79,6 +80,7 @@ group("polymer3_elements") {
 
                   # Local targets
                   ":gaia_button_module",
+                  ":gaia_dialog_module",
                   ":gaia_header_module",
                   ":gaia_input_form_module",
                   ":hd_iron_icon_module",
@@ -161,6 +163,20 @@ js_library("gaia_button.m") {
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
   ]
   extra_deps = [ ":gaia_button_module" ]
+}
+
+js_library("gaia_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_dialog.m.js" ]
+  deps = [
+    "./behaviors:oobe_dialog_host_behavior.m",
+    "./behaviors:oobe_i18n_behavior.m",
+    "./buttons:oobe_back_button.m",
+    "./buttons:oobe_text_button.m",
+    "./dialogs:oobe_content_dialog.m",
+    "//chrome/browser/resources/gaia_auth_host:authenticator.m",
+    "//ui/webui/resources/js:cr.m",
+  ]
+  extra_deps = [ ":gaia_dialog_module" ]
 }
 
 js_library("gaia_header.m") {
@@ -294,6 +310,14 @@ js_library("web_view_loader.m") {
 polymer_modulizer("gaia_button") {
   js_file = "gaia_button.js"
   html_file = "gaia_button.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("gaia_dialog") {
+  js_file = "gaia_dialog.js"
+  html_file = "gaia_dialog.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

@@ -7,161 +7,186 @@
  * authenticator.js and SAML notice handling.
  */
 
-'use strict';
+/* #js_imports_placeholder */
 
-(function() {
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {OobeI18nBehaviorInterface}
+ * @implements {OobeDialogHostBehaviorInterface}
+ */
+const GaiaDialogBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, OobeDialogHostBehavior], Polymer.Element);
 
 const CHROMEOS_GAIA_PASSWORD_METRIC = 'ChromeOS.Gaia.PasswordFlow';
 
-Polymer({
-  is: 'gaia-dialog',
+/**
+ * @polymer
+ */
+class GaiaDialog extends GaiaDialogBase {
+  static get is() {
+    return 'gaia-dialog';
+  }
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior],
+  /* #html_template_placeholder */
 
-  properties: {
+  static get properties() {
+    return {
+      /**
+       * Whether SAML page uses camera.
+       */
+      videoEnabled: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
+
+      /**
+       * Current auth flow. See cr.login.Authenticator.AuthFlow
+       */
+      authFlow: {
+        type: Number,
+        value: 0,
+        notify: true,
+      },
+
+      /**
+       * Whether SAML IdP page is shown
+       */
+      isSamlSsoVisible: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether to hide back button if form can't go back.
+       */
+      hideBackButtonIfCantGoBack: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Used to display SAML notice.
+       * @private
+       */
+      authDomain_: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * Controls navigation buttons enable state.
+       */
+      navigationEnabled: {
+        type: Boolean,
+        value: true,
+        notify: true,
+      },
+
+      /**
+       * Controls navigation buttons visibility.
+       */
+      navigationHidden: {
+        type: Boolean,
+        value: false,
+      },
+
+      /* Defines name of the webview. Useful for tests. To find Guestview for
+       * the JSChecker.
+       */
+      webviewName: {
+        type: String,
+      },
+
+      /**
+       * Controls label on the primary action button.
+       * @private
+       */
+      primaryActionButtonLabel_: {
+        type: String,
+        value: null,
+      },
+
+      /**
+       * Controls availability of the primary action button.
+       * @private
+       */
+      primaryActionButtonEnabled_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
+       * Controls label on the secondary action button.
+       * @private
+       */
+      secondaryActionButtonLabel_: {
+        type: String,
+        value: null,
+      },
+
+      /**
+       * Controls availability of the secondary action button.
+       * @private
+       */
+      secondaryActionButtonEnabled_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
+       * True if Gaia indicates that it can go back (e.g. on the password page)
+       */
+      canGoBack: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
+
+      /**
+       * Whether a pop-up overlay should be shown. This overlay is necessary
+       * when GAIA shows an overlay within their iframe. It covers the parts
+       * of the screen that would otherwise not show an overlay.
+       * @private
+       */
+      isPopUpOverlayVisible_: {
+        type: Boolean,
+        computed: 'showOverlay_(navigationEnabled, isSamlSsoVisible)'
+      },
+    };
+  }
+
+  constructor() {
+    super();
     /**
-     * Whether SAML page uses camera.
-     */
-    videoEnabled: {
-      type: Boolean,
-      value: false,
-      notify: true,
-    },
-
-    /**
-     * Current auth flow. See cr.login.Authenticator.AuthFlow
-     */
-    authFlow: {
-      type: Number,
-      value: 0,
-      notify: true,
-    },
-
-    /**
-     * Whether SAML IdP page is shown
-     */
-    isSamlSsoVisible: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Whether to hide back button if form can't go back.
-     */
-    hideBackButtonIfCantGoBack: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Used to display SAML notice.
+     * Emulate click on the primary action button when it is visible and
+     * enabled.
+     * @type {boolean}
      * @private
      */
-    authDomain_: {
-      type: String,
-      value: '',
-    },
-
+    this.clickPrimaryActionButtonForTesting_ = false;
     /**
-     * Controls navigation buttons enable state.
-     */
-    navigationEnabled: {
-      type: Boolean,
-      value: true,
-      notify: true,
-    },
-
-    /**
-     * Controls navigation buttons visibility.
-     */
-    navigationHidden: {
-      type: Boolean,
-      value: false,
-    },
-
-    /* Defines name of the webview. Useful for tests. To find Guestview for the
-     * JSChecker.
-     */
-    webviewName: {
-      type: String,
-    },
-
-    /**
-     * Controls label on the primary action button.
+     * Emulate click on the primary action button when it is visible and
+     * enabled.
+     * @type {boolean}
      * @private
      */
-    primaryActionButtonLabel_: {
-      type: String,
-      value: null,
-    },
-
+    this.clickPrimaryActionButtonForTesting_ = false;
     /**
-     * Controls availability of the primary action button.
+     * @type {!cr.login.Authenticator|undefined}
      * @private
      */
-    primaryActionButtonEnabled_: {
-      type: Boolean,
-      value: true,
-    },
-
-    /**
-     * Controls label on the secondary action button.
-     * @private
-     */
-    secondaryActionButtonLabel_: {
-      type: String,
-      value: null,
-    },
-
-    /**
-     * Controls availability of the secondary action button.
-     * @private
-     */
-    secondaryActionButtonEnabled_: {
-      type: Boolean,
-      value: true,
-    },
-
-    /**
-     * True if Gaia indicates that it can go back (e.g. on the password page)
-     */
-    canGoBack: {
-      type: Boolean,
-      value: false,
-      notify: true,
-    },
-
-    /**
-     * Whether a pop-up overlay should be shown. This overlay is necessary
-     * when GAIA shows an overlay within their iframe. It covers the parts
-     * of the screen that would otherwise not show an overlay.
-     * @private
-     */
-    isPopUpOverlayVisible_: {
-      type: Boolean,
-      computed: 'showOverlay_(navigationEnabled, isSamlSsoVisible)'
-    },
-  },
-
-  /**
-   * Emulate click on the primary action button when it is visible and enabled.
-   * @type {boolean}
-   * @private
-   */
-  clickPrimaryActionButtonForTesting_: false,
-
-  /**
-   * @type {!cr.login.Authenticator|undefined}
-   * @private
-   */
-  authenticator_: undefined,
+    this.authenticator_ = undefined;
+  }
 
   getAuthenticator() {
     return this.authenticator_;
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
     const webview = this.$['signin-frame'];
     this.authenticator_ = new cr.login.Authenticator(webview);
     /**
@@ -170,20 +195,26 @@ Polymer({
     const authenticatorEventListeners = {
       // Note for the lowercase of fired events.
       'identifierEntered': (e) => {
-        this.fire('identifierentered', e.detail);
+        this.dispatchEvent(new CustomEvent(
+            'identifierentered',
+            {bubbles: true, composed: true, detail: e.detail}));
       },
       'loadAbort': (e) => {
-        this.fire('webviewerror', e.detail);
+        this.dispatchEvent(new CustomEvent(
+            'webviewerror', {bubbles: true, composed: true, detail: e.detail}));
       },
       'ready': (e) => {
-        this.fire('ready', e.detail);
+        this.dispatchEvent(new CustomEvent(
+            'ready', {bubbles: true, composed: true, detail: e.detail}));
       },
       'showView': (e) => {
-        this.fire('showview', e.detail);
+        this.dispatchEvent(new CustomEvent(
+            'showview', {bubbles: true, composed: true, detail: e.detail}));
       },
       'menuItemClicked': (e) => {
         if (e.detail == 'ee') {
-          this.fire('startenrollment');
+          this.dispatchEvent(new CustomEvent(
+              'startenrollment', {bubbles: true, composed: true}));
         }
       },
       'backButton': (e) => {
@@ -228,10 +259,13 @@ Polymer({
         chrome.send('enableShelfButtons', [true]);
       },
       'exit': (e) => {
-        this.fire('exit', e.detail);
+        this.dispatchEvent(new CustomEvent(
+            'exit', {bubbles: true, composed: true, detail: e.detail}));
       },
       'removeUserByEmail': (e) => {
-        this.fire('removeuserbyemail', e.detail);
+        this.dispatchEvent(new CustomEvent(
+            'removeuserbyemail',
+            {bubbles: true, composed: true, detail: e.detail}));
       },
       'apiPasswordAdded': (e) => {
         // Only record the metric for Gaia flow without 3rd-party SAML IdP.
@@ -249,40 +283,42 @@ Polymer({
               'metricsHandler:recordBooleanHistogram',
               [CHROMEOS_GAIA_PASSWORD_METRIC, true]);
         }
-        this.fire('authcompleted', e.detail);
+        this.dispatchEvent(new CustomEvent(
+            'authcompleted',
+            {bubbles: true, composed: true, detail: e.detail}));
       },
     };
 
-    for (var eventName in authenticatorEventListeners) {
+    for (let eventName in authenticatorEventListeners) {
       this.authenticator_.addEventListener(
           eventName, authenticatorEventListeners[eventName].bind(this));
     }
 
     cr.sendWithPromise('getIsSshConfigured')
         .then(this.updateSshWarningVisibility.bind(this));
-  },
+  }
 
   updateSshWarningVisibility(show) {
     this.$.sshWarning.hidden = !show;
-  },
+  }
 
   show() {
     this.navigationEnabled = true;
     chrome.send('enableShelfButtons', [true]);
     this.getFrame().focus();
-  },
+  }
 
   getFrame() {
     // Note: Can't use |this.$|, since it returns cached references to elements
     // originally present in DOM, while the signin-frame is  dynamically
     // recreated (see Authenticator.setWebviewPartition()).
     return this.shadowRoot.querySelector('#signin-frame');
-  },
+  }
 
   clickPrimaryButtonForTesting() {
     this.clickPrimaryActionButtonForTesting_ = true;
     this.maybeClickPrimaryActionButtonForTesting_();
-  },
+  }
 
   maybeClickPrimaryActionButtonForTesting_() {
     if (!this.clickPrimaryActionButtonForTesting_)
@@ -294,7 +330,7 @@ Polymer({
 
     this.clickPrimaryActionButtonForTesting_ = false;
     button.click();
-  },
+  }
 
   /* @private */
   getSamlNoticeMessage_(locale, videoEnabled, authDomain) {
@@ -302,12 +338,13 @@ Polymer({
       return this.i18n('samlNoticeWithVideo', authDomain);
     }
     return this.i18n('samlNotice', authDomain);
-  },
+  }
 
   /* @private */
   close_() {
-    this.fire('closesaml');
-  },
+    this.dispatchEvent(
+        new CustomEvent('closesaml', {bubbles: true, composed: true}));
+  }
 
   /* @private */
   onBackButtonClicked_() {
@@ -315,8 +352,9 @@ Polymer({
       this.getFrame().back();
       return;
     }
-    this.fire('backcancel');
-  },
+    this.dispatchEvent(
+        new CustomEvent('backcancel', {bubbles: true, composed: true}));
+  }
 
   /**
    * Handles clicks on "PrimaryAction" button.
@@ -324,7 +362,7 @@ Polymer({
    */
   onPrimaryActionButtonClicked_() {
     this.authenticator_.sendMessageToWebview('primaryActionHit');
-  },
+  }
 
   /**
    * Handles clicks on "SecondaryAction" button.
@@ -332,7 +370,7 @@ Polymer({
    */
   onSecondaryActionButtonClicked_() {
     this.authenticator_.sendMessageToWebview('secondaryActionHit');
-  },
+  }
 
   /**
    * Whether the button is enabled.
@@ -343,7 +381,7 @@ Polymer({
    */
   isButtonEnabled_(navigationEnabled, buttonEnabled) {
     return navigationEnabled && buttonEnabled;
-  },
+  }
 
   /**
    * Whether the back button is hidden.
@@ -353,7 +391,7 @@ Polymer({
    */
   isBackButtonHidden(hideBackButtonIfCantGoBack, canGoBack) {
     return hideBackButtonIfCantGoBack && !canGoBack;
-  },
+  }
 
   /**
    * Whether popup overlay should be open.
@@ -363,7 +401,7 @@ Polymer({
    */
   showOverlay_(navigationEnabled, isSamlSsoVisible) {
     return !navigationEnabled || isSamlSsoVisible;
-  },
+  }
+}
 
-});
-})();
+customElements.define(GaiaDialog.is, GaiaDialog);
