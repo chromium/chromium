@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "content/browser/devtools/devtools_throttle_handle.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/global_routing_id.h"
@@ -156,7 +157,8 @@ void WillBeginDownload(download::DownloadCreateInfo* info,
 
 void BackForwardCacheNotUsed(
     const NavigationRequest* nav_request,
-    const BackForwardCacheCanStoreDocumentResult* result);
+    const BackForwardCacheCanStoreDocumentResult* result,
+    const BackForwardCacheCanStoreTreeResult* tree_result);
 
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,

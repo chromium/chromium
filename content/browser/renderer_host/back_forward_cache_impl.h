@@ -511,7 +511,7 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
   const bool is_same_origin_;
 
   // See |GetUrl|
-  const GURL& url_;
+  const GURL url_;
 
   // TODO(crbug.com/1278620): Add the value of the id attribute of the iframe
   // element.

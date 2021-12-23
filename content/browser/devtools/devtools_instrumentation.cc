@@ -194,11 +194,12 @@ void OnNavigationResponseReceived(const NavigationRequest& nav_request,
 
 void BackForwardCacheNotUsed(
     const NavigationRequest* nav_request,
-    const BackForwardCacheCanStoreDocumentResult* result) {
+    const BackForwardCacheCanStoreDocumentResult* result,
+    const BackForwardCacheCanStoreTreeResult* tree_result) {
   DCHECK(nav_request);
   FrameTreeNode* ftn = nav_request->frame_tree_node();
   DispatchToAgents(ftn, &protocol::PageHandler::BackForwardCacheNotUsed,
-                   nav_request, result);
+                   nav_request, result, tree_result);
 }
 
 namespace {
