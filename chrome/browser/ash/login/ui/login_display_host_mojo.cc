@@ -683,6 +683,10 @@ void LoginDisplayHostMojo::EnsureOobeDialogLoaded() {
   dialog_->GetOobeUI()->signin_screen_handler()->SetDelegate(
       login_display_.get());
 
+  // It may happen that LoginDisplayHostMojo::SetUserCount was called before
+  // the dialog_ was created. Set number of users once again here.
+  SetUserCount(user_count_);
+
   views::View* web_dialog_view = dialog_->GetWebDialogView();
   scoped_observation_.Observe(web_dialog_view);
 
