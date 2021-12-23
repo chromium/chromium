@@ -20,6 +20,7 @@
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
 #include "ash/wm/desks/templates/desks_templates_name_view.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
+#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
@@ -58,10 +59,6 @@ constexpr int kMinTemplateNameViewWidth = 56;
 // The margin between the grid item contents and the card container.
 constexpr int kGridItemMargin = 24;
 constexpr int kTimeViewHeight = 20;
-
-// Pixel offset for the focus ring around the whole time. Positive values means
-// the focus ring sits outside of the item.
-constexpr int kFocusRingOffset = 2;
 
 constexpr char kAmPmTimeDateFmtStr[] = "%d:%02d%s, %d-%02d-%02d";
 
@@ -158,14 +155,12 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
                                    /*highlight_on_focus=*/false);
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 kCornerRadius);
-  views::FocusRing::Install(this);
-  views::FocusRing* focus_ring = views::FocusRing::Get(this);
+
+  views::FocusRing* focus_ring =
+      StyleUtil::SetUpFocusRingForView(this, kFocusRingHaloInset);
   focus_ring->SetHasFocusPredicate([](views::View* view) {
     return static_cast<DesksTemplatesItemView*>(view)->IsViewHighlighted();
   });
-  focus_ring->SetPathGenerator(
-      std::make_unique<views::RoundRectHighlightPathGenerator>(
-          gfx::Insets(-kFocusRingOffset), kCornerRadius + kFocusRingOffset));
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 }

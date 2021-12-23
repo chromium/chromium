@@ -9,6 +9,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/focus_ring.h"
 
 namespace ash {
 
@@ -88,6 +89,20 @@ void StyleUtil::ConfigureInkDropAttributes(views::View* view,
 
   if (ripple_config_attributes & kHighlightOpacity)
     host->SetHighlightOpacity(base_color_and_opacity.second);
+}
+
+// static
+views::FocusRing* StyleUtil::SetUpFocusRingForView(
+    views::View* view,
+    absl::optional<int> halo_inset) {
+  DCHECK(view);
+  views::FocusRing::Install(view);
+  views::FocusRing* focus_ring = views::FocusRing::Get(view);
+  focus_ring->SetColor(AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kFocusRingColor));
+  if (halo_inset)
+    focus_ring->SetHaloInset(*halo_inset);
+  return focus_ring;
 }
 
 }  // namespace ash

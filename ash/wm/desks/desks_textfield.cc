@@ -5,6 +5,8 @@
 #include "ash/wm/desks/desks_textfield.h"
 
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/style_util.h"
+#include "ash/wm/overview/overview_constants.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -13,7 +15,6 @@
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
-#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/native_cursor.h"
 
 namespace ash {
@@ -24,9 +25,6 @@ namespace {
 constexpr int kDesksTextfieldBorderRadius = 4;
 
 constexpr int kDesksTextfieldMinHeight = 16;
-
-// Inset for the focus ring around the textfield.
-constexpr int kFocusRingHaloInset = -2;
 
 }  // namespace
 
@@ -40,16 +38,12 @@ DesksTextfield::DesksTextfield() {
       .SetProperty(views::kSkipAccessibilityPaintChecks, true)
       .BuildChildren();
 
-  views::FocusRing::Install(this);
-  views::FocusRing* focus_ring = views::FocusRing::Get(this);
+  views::FocusRing* focus_ring =
+      StyleUtil::SetUpFocusRingForView(this, kFocusRingHaloInset);
   focus_ring->SetHasFocusPredicate([](views::View* view) {
     return static_cast<DesksTextfield*>(view)->IsViewHighlighted() ||
            view->HasFocus();
   });
-  focus_ring->SetHaloInset(kFocusRingHaloInset);
-  focus_ring->SetPathGenerator(
-      std::make_unique<views::RoundRectHighlightPathGenerator>(
-          gfx::Insets(), kDesksTextfieldBorderRadius));
 }
 
 DesksTextfield::~DesksTextfield() = default;

@@ -1267,6 +1267,7 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
       return;
 
     cc::PaintFlags focus_ring_flags;
+    focus_ring_flags.setAntiAlias(true);
     focus_ring_flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
         AshColorProvider::ControlsLayerType::kFocusRingColor));
     focus_ring_flags.setStyle(cc::PaintFlags::kStroke_Style);
