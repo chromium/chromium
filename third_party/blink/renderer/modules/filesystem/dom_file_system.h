@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_DOM_FILE_SYSTEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_DOM_FILE_SYSTEM_H_
 
-#include "base/location.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"

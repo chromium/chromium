@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"

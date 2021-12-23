@@ -8,10 +8,9 @@
 #include <dwrite.h>
 #include <dwrite_2.h>
 #include <dwrite_3.h>
+
 #include <set>
 #include <string>
-
-#include "base/location.h"
 
 namespace content {
 

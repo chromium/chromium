@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_VR_TEST_UI_UTILS_H_
 
 #include "base/callback.h"
-#include "base/location.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
 #include "chrome/browser/vr/ui_test_input.h"
