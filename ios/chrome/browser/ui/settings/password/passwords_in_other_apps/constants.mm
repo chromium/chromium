@@ -15,8 +15,6 @@ NSString* const kPasswordsInOtherAppsTitleAccessibilityIdentifier =
     @"kPasswordsInOtherAppsTitleAccessibilityIdentifier";
 NSString* const kPasswordsInOtherAppsSubtitleAccessibilityIdentifier =
     @"kPasswordsInOtherAppsSubtitleAccessibilityIdentifier";
-NSString* const kPasswordsInOtherAppsSecondSubtitleAccessibilityIdentifier =
-    @"kPasswordsInOtherAppsSecondSubtitleAccessibilityIdentifier";
 NSString* const kPasswordsInOtherAppsImageAccessibilityIdentifier =
     @"kPasswordsInOtherAppsImageAccessibilityIdentifier";
 NSString* const kPasswordsInOtherAppsActionAccessibilityIdentifier =
