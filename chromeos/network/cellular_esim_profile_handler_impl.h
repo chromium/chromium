@@ -16,6 +16,12 @@ class PrefRegistrySimple;
 
 namespace chromeos {
 
+namespace network_ui {
+
+class NetworkConfigMessageHandler;
+
+}  // namespace network_ui
+
 // CellularESimProfileHandler implementation which utilizes the local state
 // PrefService to track eSIM profiles.
 //
@@ -49,7 +55,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
 
  private:
   friend class CellularESimProfileHandlerImplTest;
-  friend class NetworkConfigMessageHandler;
+  friend class network_ui::NetworkConfigMessageHandler;
 
   // CellularESimProfileHandler:
   void InitInternal() override;
