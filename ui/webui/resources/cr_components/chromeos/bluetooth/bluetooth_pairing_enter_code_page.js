@@ -111,7 +111,7 @@ export class SettingsBluetoothPairingEnterCodeElement extends
    * @private
    */
   getKeyClass_(index) {
-    if (!this.keys_) {
+    if (!this.keys_ || !this.numKeysEntered) {
       return '';
     }
 

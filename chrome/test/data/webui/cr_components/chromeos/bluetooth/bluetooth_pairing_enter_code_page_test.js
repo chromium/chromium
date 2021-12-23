@@ -72,7 +72,7 @@ suite('CrComponentsBluetoothPairingEnterCodePageTest', function() {
 
     let keys = getKeys();
     assertEquals(keys.length, 6);
-    assertEquals(keys[0].className, nextKeyClass);
+    assertEquals(keys[0].className, defaultKeyClass);
     assertEquals(keys[1].className, defaultKeyClass);
     assertEquals(keys[5].className, defaultKeyClass);
     assertEquals(getEnter().className, defaultEnterClass);
