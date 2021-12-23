@@ -7011,9 +7011,6 @@ crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoin
 crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints-editing-dom-from-inspector.js [ Skip ]
 crbug.com/1190176 [ Linux ] fast/peerconnection/RTCPeerConnection-addMultipleTransceivers.html [ Failure Pass ]
 
-crbug.com/1191068 [ Mac ] external/wpt/resource-timing/iframe-failed-commit.html [ Failure Pass ]
-crbug.com/1191068 [ Win ] external/wpt/resource-timing/iframe-failed-commit.html [ Failure Pass ]
-
 crbug.com/1176039 [ Mac ] virtual/stable/media/stable/video-object-fit-stable.html [ Failure Pass ]
 
 crbug.com/1190905 [ Mac ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Failure Pass ]
