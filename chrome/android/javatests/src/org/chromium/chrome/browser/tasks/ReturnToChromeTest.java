@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS_PARAM;
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.createTabStateFile;
 
@@ -215,6 +216,7 @@ public class ReturnToChromeTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/100000"
             + "/start_surface_variation/single/open_ntp_instead_of_start/true"})
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE) // See crbug.com/1146575.
     @DisableIf.Device(type = {UiDisableIf.TABLET}) // See https://crbug.com/1081754.
     public void testTabSwitcherModeTriggeredWithinThreshold_NoTab() {
         // clang-format on
@@ -452,6 +454,7 @@ public class ReturnToChromeTest {
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS + "/" + TAB_SWITCHER_ON_RETURN_MS_PARAM + "/0"
             + "/start_surface_variation/single"})
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE) // See crbug.com/1146575.
     public void testTabSwitcherModeTriggeredBeyondThreshold_NoTabs() {
         // clang-format on
         // Cannot use ChromeTabbedActivityTestRule.startMainActivityFromLauncher() because
