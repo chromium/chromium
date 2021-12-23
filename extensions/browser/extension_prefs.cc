@@ -2348,15 +2348,15 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
     auto ruleset_prefs = std::make_unique<base::DictionaryValue>();
     for (const declarative_net_request::RulesetInstallPref& install_pref :
          ruleset_install_prefs) {
-      auto ruleset_dict = std::make_unique<base::DictionaryValue>();
-      if (install_pref.checksum)
-        ruleset_dict->SetIntKey(kDNRChecksumKey, *install_pref.checksum);
-
-      ruleset_dict->SetBoolean(kDNRIgnoreRulesetKey, install_pref.ignored);
       std::string id_key =
           base::NumberToString(install_pref.ruleset_id.value());
       DCHECK(!ruleset_prefs->FindKey(id_key));
-      ruleset_prefs->SetDictionary(id_key, std::move(ruleset_dict));
+      auto* ruleset_dict = ruleset_prefs->SetKey(
+          id_key, base::Value(base::Value::Type::DICTIONARY));
+      if (install_pref.checksum)
+        ruleset_dict->SetIntKey(kDNRChecksumKey, *install_pref.checksum);
+
+      ruleset_dict->SetBoolKey(kDNRIgnoreRulesetKey, install_pref.ignored);
     }
 
     extension_dict->SetDictionary(kDNRStaticRulesetPref,
