@@ -153,6 +153,12 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   bool IsEntryMarkedToBeSkipped(int index) override;
   BackForwardCacheImpl& GetBackForwardCache() override;
 
+  // Discards the pending entry if any. If this is caused by a navigation
+  // committing a new entry, `commit_details` will contain the committed
+  // navigation's details.
+  void DiscardNonCommittedEntriesWithCommitDetails(
+      LoadCommittedDetails* commit_details);
+
   // Creates the initial NavigationEntry for the NavigationController when its
   // FrameTree is being initialized. See NavigationEntry::IsInitialEntry() on
   // what this means.
@@ -555,7 +561,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   NavigationType ClassifyNavigation(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
-      NavigationRequest* navigation_request);
+      NavigationRequest* navigation_request,
+      LoadCommittedDetails* load_committed_details);
 
   // Handlers for the different types of navigation types. They will actually
   // handle the navigations corresponding to the different NavClasses above.
@@ -577,27 +584,31 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool is_same_document,
       bool replace_entry,
       bool previous_document_was_activated,
-      NavigationRequest* request);
+      NavigationRequest* request,
+      LoadCommittedDetails* details);
   void RendererDidNavigateToExistingEntry(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
       bool was_restored,
       NavigationRequest* request,
-      bool keep_pending_entry);
+      bool keep_pending_entry,
+      LoadCommittedDetails* details);
   void RendererDidNavigateNewSubframe(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
       bool replace_entry,
       bool previous_document_was_activated,
-      NavigationRequest* request);
+      NavigationRequest* request,
+      LoadCommittedDetails* details);
   bool RendererDidNavigateAutoSubframe(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
       bool was_on_initial_empty_document,
-      NavigationRequest* request);
+      NavigationRequest* request,
+      LoadCommittedDetails* details);
 
   // Allows the derived class to issue notifications that a load has been
   // committed. This will fill in the active entry to the details structure.
@@ -620,7 +631,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void InsertOrReplaceEntry(std::unique_ptr<NavigationEntryImpl> entry,
                             bool replace,
                             bool was_post_commit_error,
-                            bool is_in_fenced_frame_tree);
+                            bool is_in_fenced_frame_tree,
+                            LoadCommittedDetails* details);
 
   // Removes the entry at |index|, as long as it is not the current entry.
   void RemoveEntryAtIndexInternal(int index);
@@ -691,7 +703,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       const mojom::DidCommitProvisionalLoadParams& params,
       NavigationRequest* request,
       NavigationEntryImpl::UpdatePolicy update_policy,
-      bool is_new_entry);
+      bool is_new_entry,
+      LoadCommittedDetails* commit_details);
 
   // Broadcasts this controller's session history offset and length to all
   // renderers involved in rendering the current page. The offset is

@@ -68,6 +68,16 @@ struct CONTENT_EXPORT LoadCommittedDetails {
 
   // The HTTP status code for this entry..
   int http_status_code = 0;
+
+  // True if the navigation used to get "ignored" (committed but won't create a
+  // new NavigationEntry or modify an existing one) because there are no
+  // NavigationEntries yet. Now that we will always have at least the initial
+  // NavigationEntry, these navigations won't get ignored anymore, but Android
+  //  WebView still needs this info to ignore the NavigationStateChanged() call
+  // in some cases to avoid firing onPageFinished etc in more cases than it
+  // previously did.
+  // See also https://crbug.com/1277414.
+  bool used_to_be_ignored_due_to_null_navigation_entry = false;
 };
 
 // Provides the details for a NOTIFICATION_NAV_ENTRY_CHANGED notification.
