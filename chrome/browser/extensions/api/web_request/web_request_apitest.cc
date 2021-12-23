@@ -495,8 +495,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestPublicSession) {
 
 // Test that a request to an OpenSearch description document (OSDD) generates
 // an event with the expected details.
-// Flaky on Windows: https://crbug.com/1218893
-#if defined(OS_WIN)
+// Flaky on Windows and Mac: https://crbug.com/1218893
+#if defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_WebRequestTestOSDD DISABLED_WebRequestTestOSDD
 #else
 #define MAYBE_WebRequestTestOSDD WebRequestTestOSDD
