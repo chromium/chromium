@@ -39,7 +39,6 @@ HttpProxyClientSocket::HttpProxyClientSocket(
     HttpAuthController* http_auth_controller,
     bool tunnel,
     bool using_spdy,
-    NextProto negotiated_protocol,
     ProxyDelegate* proxy_delegate,
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : io_callback_(base::BindRepeating(&HttpProxyClientSocket::OnIOComplete,
@@ -51,7 +50,6 @@ HttpProxyClientSocket::HttpProxyClientSocket(
       auth_(http_auth_controller),
       tunnel_(tunnel),
       using_spdy_(using_spdy),
-      negotiated_protocol_(negotiated_protocol),
       proxy_server_(proxy_server),
       proxy_delegate_(proxy_delegate),
       traffic_annotation_(traffic_annotation),
@@ -88,14 +86,6 @@ int HttpProxyClientSocket::RestartWithAuth(CompletionOnceCallback callback) {
 const scoped_refptr<HttpAuthController>&
 HttpProxyClientSocket::GetAuthController() const {
   return auth_;
-}
-
-bool HttpProxyClientSocket::IsUsingSpdy() const {
-  return using_spdy_;
-}
-
-NextProto HttpProxyClientSocket::GetProxyNegotiatedProtocol() const {
-  return negotiated_protocol_;
 }
 
 const HttpResponseInfo* HttpProxyClientSocket::GetConnectResponseInfo() const {

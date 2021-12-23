@@ -380,10 +380,15 @@ class HttpStreamFactory::Job
 
   const JobType job_type_;
 
-  // True if handling a HTTPS request.
+  // True if handling a HTTPS request. Note this only describes the origin URL.
+  // If false (an HTTP request), the request may still be sent over an HTTPS
+  // proxy. This differs from `using_quic_` and `using_spdy_`, which also
+  // describe some proxy cases.
   const bool using_ssl_;
 
-  // True if Job uses QUIC.
+  // True if Job actually uses HTTP/2. Note this describes both using QUIC
+  // with an HTTPS origin, and proxying a cleartext HTTP request over an QUIC
+  // proxy. This differs from `using_ssl_`, which only describes the origin.
   const bool using_quic_;
 
   // quic::ParsedQuicVersion that should be used to connect to the QUIC
@@ -395,7 +400,9 @@ class HttpStreamFactory::Job
   // the server does not negotiate HTTP/2 on a new socket.
   const bool expect_spdy_;
 
-  // True if Job actually uses HTTP/2.
+  // True if Job actually uses HTTP/2. Note this describes both using HTTP/2
+  // with an HTTPS origin, and proxying a cleartext HTTP request over an HTTP/2
+  // proxy. This differs from `using_ssl_`, which only describes the origin.
   bool using_spdy_;
 
   // True if this job might succeed with a different proxy config.

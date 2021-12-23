@@ -565,7 +565,7 @@ int HttpProxyConnectJob::DoHttpProxyConnect() {
       nested_connect_job_->PassSocket(), GetUserAgent(), params_->endpoint(),
       ProxyServer(GetProxyServerScheme(), GetDestination()),
       http_auth_controller_.get(), params_->tunnel(), using_spdy_,
-      negotiated_protocol_, common_connect_job_params()->proxy_delegate,
+      common_connect_job_params()->proxy_delegate,
       params_->traffic_annotation());
   nested_connect_job_.reset();
   return transport_socket_->Connect(base::BindOnce(

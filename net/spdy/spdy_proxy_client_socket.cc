@@ -87,14 +87,6 @@ int SpdyProxyClientSocket::RestartWithAuth(CompletionOnceCallback callback) {
   return ERR_UNABLE_TO_REUSE_CONNECTION_FOR_PROXY_AUTH;
 }
 
-bool SpdyProxyClientSocket::IsUsingSpdy() const {
-  return true;
-}
-
-NextProto SpdyProxyClientSocket::GetProxyNegotiatedProtocol() const {
-  return spdy_stream_->GetNegotiatedProtocol();
-}
-
 // Ignore priority changes, just use priority of initial request. Since multiple
 // requests are pooled on the SpdyProxyClientSocket, reprioritization doesn't
 // really work.

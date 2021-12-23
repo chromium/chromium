@@ -68,8 +68,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       net::ProxyServer(net::ProxyServer::SCHEME_HTTP,
                        net::HostPortPair("proxy", 42)),
       auth_controller.get(), true /* tunnel */, false /* using_spdy */,
-      net::kProtoUnknown, nullptr /* proxy_delegate */,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      nullptr /* proxy_delegate */, TRAFFIC_ANNOTATION_FOR_TESTS);
   int result = socket.Connect(callback.callback());
   result = callback.GetResult(result);
 

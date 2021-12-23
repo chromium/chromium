@@ -75,14 +75,6 @@ int QuicProxyClientSocket::RestartWithAuth(CompletionOnceCallback callback) {
   return ERR_UNABLE_TO_REUSE_CONNECTION_FOR_PROXY_AUTH;
 }
 
-bool QuicProxyClientSocket::IsUsingSpdy() const {
-  return false;
-}
-
-NextProto QuicProxyClientSocket::GetProxyNegotiatedProtocol() const {
-  return kProtoQUIC;
-}
-
 // Ignore priority changes, just use priority of initial request. Since multiple
 // requests are pooled on the QuicProxyClientSocket, reprioritization doesn't
 // really work.

@@ -20,7 +20,6 @@
 #include "net/base/trace_constants.h"
 #include "net/base/url_util.h"
 #include "net/cert/x509_util.h"
-#include "net/http/http_proxy_client_socket.h"
 #include "net/http/http_proxy_connect_job.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
