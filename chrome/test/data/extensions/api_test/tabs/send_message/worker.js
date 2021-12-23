@@ -22,5 +22,11 @@ chrome.test.runTests([
       chrome.test.assertEq('pong', response);
       chrome.test.succeed();
     });
+  },
+
+  async function sendMessageWithPromise() {
+    const response = await chrome.tabs.sendMessage(testTab.id, 'ping');
+    chrome.test.assertEq('pong', response);
+    chrome.test.succeed();
   }
 ]);

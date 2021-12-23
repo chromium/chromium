@@ -17,6 +17,7 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/value_builder.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
+#include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/message_target.h"
 #include "extensions/renderer/messaging_util.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
@@ -342,10 +343,11 @@ TEST_F(NativeRendererMessagingServiceTest, Connect) {
   EXPECT_FALSE(new_port->is_closed_for_testing());
 }
 
-// Tests sending a one-time message through the messaging service. Note that
-// this is more thoroughly tested in the OneTimeMessageHandler tests; this is
-// just to ensure NativeRendererMessagingService correctly forwards the calls.
-TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessage) {
+// Tests sending a one-time message through the messaging service and getting a
+// response to a callback. Note that this is more thoroughly tested in the
+// OneTimeMessageHandler tests; this is just to ensure
+// NativeRendererMessagingService correctly forwards the calls.
+TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithCallback) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
@@ -357,16 +359,20 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessage) {
   v8::Local<v8::Function> response_callback =
       FunctionFromString(context, kEchoArgs);
 
-  // Send a message and expect a reply. A new port should be created, and should
-  // remain open (waiting for the response).
+  // Send a message and expect a reply to a passed in callback. A new port
+  // should be created, and should remain open until the response is sent.
   const Message message("\"hi\"", SerializationFormat::kJson, false);
   MessageTarget target(MessageTarget::ForExtension(extension()->id()));
   EXPECT_CALL(
       *ipc_message_sender(),
       SendOpenMessageChannel(script_context(), port_id, target, kChannel));
   EXPECT_CALL(*ipc_message_sender(), SendPostMessageToPort(port_id, message));
-  messaging_service()->SendOneTimeMessage(script_context(), target, kChannel,
-                                          message, response_callback);
+  v8::Local<v8::Promise> promise = messaging_service()->SendOneTimeMessage(
+      script_context(), target, kChannel, message,
+      binding::AsyncResponseType::kCallback, response_callback);
+  // Since this is a callback based request, the returned promise should be
+  // empty.
+  EXPECT_TRUE(promise.IsEmpty());
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   EXPECT_TRUE(
       messaging_service()->HasPortForTesting(script_context(), port_id));
@@ -381,6 +387,47 @@ TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessage) {
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
   EXPECT_EQ("[\"reply\"]", GetStringPropertyFromObject(context->Global(),
                                                        context, "replyArgs"));
+  EXPECT_FALSE(
+      messaging_service()->HasPortForTesting(script_context(), port_id));
+}
+
+// Similar to the above test, tests sending a one-time message through the
+// messaging service, but this time using a Promise for the response.
+TEST_F(NativeRendererMessagingServiceTest, SendOneTimeMessageWithPromise) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  const std::string kChannel = "chrome.runtime.sendMessage";
+  PortId port_id(script_context()->context_id(), 0, true,
+                 SerializationFormat::kJson);
+
+  // Send a message and expect a reply fulfilling a promise. A new port should
+  // be created, and should remain open until the response is sent.
+  const Message message("\"hi\"", SerializationFormat::kJson, false);
+  MessageTarget target(MessageTarget::ForExtension(extension()->id()));
+  EXPECT_CALL(
+      *ipc_message_sender(),
+      SendOpenMessageChannel(script_context(), port_id, target, kChannel));
+  EXPECT_CALL(*ipc_message_sender(), SendPostMessageToPort(port_id, message));
+  v8::Local<v8::Promise> promise = messaging_service()->SendOneTimeMessage(
+      script_context(), target, kChannel, message,
+      binding::AsyncResponseType::kPromise, v8::Local<v8::Function>());
+  ASSERT_FALSE(promise.IsEmpty());
+  EXPECT_EQ(v8::Promise::kPending, promise->State());
+  ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
+  EXPECT_TRUE(
+      messaging_service()->HasPortForTesting(script_context(), port_id));
+
+  // Respond to the message. The response callback should be triggered, and the
+  // port should be closed.
+  EXPECT_CALL(*ipc_message_sender(),
+              SendCloseMessagePort(MSG_ROUTING_NONE, port_id, true));
+  messaging_service()->DeliverMessage(
+      script_context_set(), port_id,
+      Message("\"reply\"", SerializationFormat::kJson, false), nullptr);
+  ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
+  EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
+  EXPECT_EQ("\"reply\"", V8ToString(promise->Result(), context));
   EXPECT_FALSE(
       messaging_service()->HasPortForTesting(script_context(), port_id));
 }

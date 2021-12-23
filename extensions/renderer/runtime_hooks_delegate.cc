@@ -15,7 +15,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
-#include "extensions/renderer/bindings/api_signature.h"
+#include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/js_runner.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/get_script_context.h"
@@ -125,7 +125,7 @@ RequestResult RuntimeHooksDelegate::HandleRequest(
     std::vector<v8::Local<v8::Value>>* arguments,
     const APITypeReferenceMap& refs) {
   using Handler = RequestResult (RuntimeHooksDelegate::*)(
-      ScriptContext*, const std::vector<v8::Local<v8::Value>>&);
+      ScriptContext*, const APISignature::V8ParseResult&);
   static const struct {
     Handler handler;
     base::StringPiece method;
@@ -176,7 +176,7 @@ RequestResult RuntimeHooksDelegate::HandleRequest(
     return result;
   }
 
-  return (this->*handler)(script_context, *parse_result.arguments);
+  return (this->*handler)(script_context, parse_result);
 }
 
 void RuntimeHooksDelegate::InitializeTemplate(
@@ -189,8 +189,9 @@ void RuntimeHooksDelegate::InitializeTemplate(
 
 RequestResult RuntimeHooksDelegate::HandleGetManifest(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& parsed_arguments) {
+    const APISignature::V8ParseResult& parse_result) {
   DCHECK(script_context->extension());
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
 
   RequestResult result(RequestResult::HANDLED);
   result.return_value = content::V8ValueConverter::Create()->ToV8Value(
@@ -202,13 +203,15 @@ RequestResult RuntimeHooksDelegate::HandleGetManifest(
 
 RequestResult RuntimeHooksDelegate::HandleGetURL(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
-  return GetURL(script_context, arguments);
+    const APISignature::V8ParseResult& parse_result) {
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
+  return GetURL(script_context, *parse_result.arguments);
 }
 
 RequestResult RuntimeHooksDelegate::HandleSendMessage(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
   DCHECK_EQ(4u, arguments.size());
 
   std::string target_id;
@@ -242,16 +245,26 @@ RequestResult RuntimeHooksDelegate::HandleSendMessage(
   if (!arguments[3]->IsNull())
     response_callback = arguments[3].As<v8::Function>();
 
-  messaging_service_->SendOneTimeMessage(
+  v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForExtension(target_id),
-      messaging_util::kSendMessageChannel, *message, response_callback);
+      messaging_util::kSendMessageChannel, *message, parse_result.async_type,
+      response_callback);
+  DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
+            !promise.IsEmpty())
+      << "SendOneTimeMessage should only return a Promise for promise based "
+         "API calls, otherwise it should be empty";
 
-  return RequestResult(RequestResult::HANDLED);
+  RequestResult result(RequestResult::HANDLED);
+  if (parse_result.async_type == binding::AsyncResponseType::kPromise) {
+    result.return_value = promise;
+  }
+  return result;
 }
 
 RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
   DCHECK_EQ(3u, arguments.size());
 
   std::string application_name =
@@ -276,17 +289,24 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
   if (!arguments[2]->IsNull())
     response_callback = arguments[2].As<v8::Function>();
 
+  // TODO(tjudkins): This API requires some more end to end testing before
+  // converting it to support promises, so for now ensure we are not trying to
+  // send promise based requests through here.
+  DCHECK_NE(binding::AsyncResponseType::kPromise, parse_result.async_type);
+
   messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForNativeApp(application_name),
-      std::string(), *message, response_callback);
+      std::string(), *message, parse_result.async_type, response_callback);
 
   return RequestResult(RequestResult::HANDLED);
 }
 
 RequestResult RuntimeHooksDelegate::HandleConnect(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
   DCHECK_EQ(2u, arguments.size());
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
 
   std::string target_id;
   std::string error;
@@ -310,6 +330,7 @@ RequestResult RuntimeHooksDelegate::HandleConnect(
       options.channel_name,
       messaging_util::GetSerializationFormat(*script_context));
   DCHECK(!port.IsEmpty());
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
 
   RequestResult result(RequestResult::HANDLED);
   result.return_value = port.ToV8();
@@ -318,9 +339,11 @@ RequestResult RuntimeHooksDelegate::HandleConnect(
 
 RequestResult RuntimeHooksDelegate::HandleConnectNative(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
   DCHECK_EQ(1u, arguments.size());
   DCHECK(arguments[0]->IsString());
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
 
   std::string application_name =
       gin::V8ToString(script_context->isolate(), arguments[0]);
@@ -339,8 +362,14 @@ RequestResult RuntimeHooksDelegate::HandleConnectNative(
 
 RequestResult RuntimeHooksDelegate::HandleGetBackgroundPage(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
   DCHECK(script_context->extension());
+
+  // TODO(crbug.com/1276061): This API should be restricted to MV2 as MV3
+  // extensions don't ever use background pages. In the meantime ensure we're
+  // not trying to send promise based request through here.
+  DCHECK_NE(binding::AsyncResponseType::kPromise, parse_result.async_type);
 
   RequestResult result(RequestResult::NOT_HANDLED);
   if (!v8::Function::New(script_context->v8_context(),
@@ -354,7 +383,7 @@ RequestResult RuntimeHooksDelegate::HandleGetBackgroundPage(
 
 RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
   // TODO(devlin): This is basically just copied and translated from
   // the JS bindings, and still relies on the custom JS bindings for
   // getBindDirectoryEntryCallback. This entire API is a bit crazy, and needs

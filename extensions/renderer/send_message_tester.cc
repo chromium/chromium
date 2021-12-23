@@ -26,24 +26,30 @@ SendMessageTester::SendMessageTester(TestIPCMessageSender* ipc_sender,
 
 SendMessageTester::~SendMessageTester() {}
 
-void SendMessageTester::TestSendMessage(const std::string& args,
-                                        const std::string& expected_message,
-                                        const MessageTarget& expected_target,
-                                        PortStatus expected_port_status) {
+v8::Local<v8::Value> SendMessageTester::TestSendMessage(
+    const std::string& args,
+    const std::string& expected_message,
+    const MessageTarget& expected_target,
+    PortStatus expected_port_status) {
   SCOPED_TRACE(base::StringPrintf("Send Message Args: `%s`", args.c_str()));
 
+  v8::Local<v8::Value> output;
   TestSendMessageOrRequest(args, expected_message, expected_target,
-                           expected_port_status, SEND_MESSAGE);
+                           expected_port_status, SEND_MESSAGE, output);
+  return output;
 }
 
-void SendMessageTester::TestSendRequest(const std::string& args,
-                                        const std::string& expected_message,
-                                        const MessageTarget& expected_target,
-                                        PortStatus expected_port_status) {
+v8::Local<v8::Value> SendMessageTester::TestSendRequest(
+    const std::string& args,
+    const std::string& expected_message,
+    const MessageTarget& expected_target,
+    PortStatus expected_port_status) {
   SCOPED_TRACE(base::StringPrintf("Send Request Args: `%s`", args.c_str()));
 
+  v8::Local<v8::Value> output;
   TestSendMessageOrRequest(args, expected_message, expected_target,
-                           expected_port_status, SEND_REQUEST);
+                           expected_port_status, SEND_REQUEST, output);
+  return output;
 }
 
 void SendMessageTester::TestConnect(const std::string& args,
@@ -77,8 +83,10 @@ void SendMessageTester::TestSendMessageOrRequest(
     const std::string& expected_message,
     const MessageTarget& expected_target,
     PortStatus expected_port_status,
-    Method method) {
-  constexpr char kSendMessageTemplate[] = "(function() { chrome.%s.%s(%s); })";
+    Method method,
+    v8::Local<v8::Value>& out_value) {
+  constexpr char kSendMessageTemplate[] =
+      "(function() { return chrome.%s.%s(%s); })";
 
   std::string expected_channel;
   const char* method_name = nullptr;
@@ -112,7 +120,7 @@ void SendMessageTester::TestSendMessageOrRequest(
       v8_context,
       base::StringPrintf(kSendMessageTemplate, api_namespace_.c_str(),
                          method_name, args.c_str()));
-  RunFunction(send_message, v8_context, 0, nullptr);
+  out_value = RunFunction(send_message, v8_context, 0, nullptr);
   ::testing::Mock::VerifyAndClearExpectations(ipc_sender_);
 }
 

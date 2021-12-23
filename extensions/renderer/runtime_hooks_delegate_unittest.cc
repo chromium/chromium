@@ -454,4 +454,50 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, SendNativeMessage) {
       "'native_app', 'some message', {includeTlsChannelId: true}");
 }
 
+class RuntimeHooksDelegateMV3Test : public RuntimeHooksDelegateTest {
+ public:
+  RuntimeHooksDelegateMV3Test() = default;
+  ~RuntimeHooksDelegateMV3Test() override = default;
+
+  scoped_refptr<const Extension> BuildExtension() override {
+    return ExtensionBuilder("foo")
+        .SetManifestKey("manifest_version", 3)
+        .Build();
+  }
+};
+
+TEST_F(RuntimeHooksDelegateMV3Test, SendMessageUsingPromise) {
+  v8::HandleScope handle_scope(isolate());
+
+  SendMessageTester tester(ipc_message_sender(), script_context(), 0,
+                           "runtime");
+
+  // The port remains open here after the call because in MV3 we return a
+  // promise if the callback parameter is omitted, so we can't use the presence/
+  // lack of the callback to determine if the caller is/isn't going to handle
+  // the response.
+  MessageTarget self_target = MessageTarget::ForExtension(extension()->id());
+  tester.TestSendMessage("''", R"("")", self_target, SendMessageTester::OPEN);
+
+  constexpr char kStandardMessage[] = R"({"data":"hello"})";
+  {
+    // Calling sendMessage with a callback should result in no value returned.
+    v8::Local<v8::Value> result = tester.TestSendMessage(
+        "{data: 'hello'}, function() {}", kStandardMessage, self_target,
+        SendMessageTester::OPEN);
+    EXPECT_TRUE(result->IsUndefined());
+  }
+
+  {
+    // Calling sendMessage without the callback should result in a promise
+    // returned.
+    v8::Local<v8::Value> result =
+        tester.TestSendMessage("{data: 'hello'}", kStandardMessage, self_target,
+                               SendMessageTester::OPEN);
+    v8::Local<v8::Promise> promise;
+    ASSERT_TRUE(GetValueAs(result, &promise));
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+  }
+}
+
 }  // namespace extensions

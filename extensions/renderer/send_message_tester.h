@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "v8/include/v8-forward.h"
+
 namespace extensions {
 class ScriptContext;
 class TestIPCMessageSender;
@@ -34,16 +36,16 @@ class SendMessageTester {
   };
 
   // Tests the sendMessage API with the specified expectations.
-  void TestSendMessage(const std::string& args,
-                       const std::string& expected_message,
-                       const MessageTarget& expected_target,
-                       PortStatus expected_port_status);
+  v8::Local<v8::Value> TestSendMessage(const std::string& args,
+                                       const std::string& expected_message,
+                                       const MessageTarget& expected_target,
+                                       PortStatus expected_port_status);
 
   // Tests the sendRequest API with the specified expectations.
-  void TestSendRequest(const std::string& args,
-                       const std::string& expected_message,
-                       const MessageTarget& expected_target,
-                       PortStatus expected_port_status);
+  v8::Local<v8::Value> TestSendRequest(const std::string& args,
+                                       const std::string& expected_message,
+                                       const MessageTarget& expected_target,
+                                       PortStatus expected_port_status);
 
   // Tests the connect API with the specified expectaions.
   void TestConnect(const std::string& args,
@@ -61,7 +63,8 @@ class SendMessageTester {
                                 const std::string& expected_message,
                                 const MessageTarget& expected_target,
                                 PortStatus expected_port_status,
-                                Method method);
+                                Method method,
+                                v8::Local<v8::Value>& out_value);
 
   TestIPCMessageSender* ipc_sender_;
   ScriptContext* script_context_;

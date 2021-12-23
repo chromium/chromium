@@ -24,7 +24,6 @@
 #include "extensions/common/features/feature.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/renderer/api_activity_logger.h"
-#include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/get_per_context_data.h"
 #include "extensions/renderer/get_script_context.h"
@@ -186,14 +185,15 @@ gin::Handle<GinPort> NativeRendererMessagingService::Connect(
   return port;
 }
 
-void NativeRendererMessagingService::SendOneTimeMessage(
+v8::Local<v8::Promise> NativeRendererMessagingService::SendOneTimeMessage(
     ScriptContext* script_context,
     const MessageTarget& target,
     const std::string& method_name,
     const Message& message,
+    binding::AsyncResponseType async_type,
     v8::Local<v8::Function> response_callback) {
   if (!ScriptContextIsValid(script_context))
-    return;
+    return v8::Local<v8::Promise>();
 
   MessagingPerContextData* data = GetPerContextData<MessagingPerContextData>(
       script_context->v8_context(), kCreateIfMissing);
@@ -210,15 +210,9 @@ void NativeRendererMessagingService::SendOneTimeMessage(
   PortId port_id(script_context->context_id(), data->next_port_id++, is_opener,
                  message.format);
 
-  // TODO(tjudkins): The AsyncResponseType will need to be specified by the
-  // callers to this function when we add promise support to the APIs that call
-  // through to here.
-  binding::AsyncResponseType async_type =
-      response_callback.IsEmpty() ? binding::AsyncResponseType::kNone
-                                  : binding::AsyncResponseType::kCallback;
-  one_time_message_handler_.SendMessage(script_context, port_id, target,
-                                        method_name, message, async_type,
-                                        response_callback);
+  return one_time_message_handler_.SendMessage(script_context, port_id, target,
+                                               method_name, message, async_type,
+                                               response_callback);
 }
 
 void NativeRendererMessagingService::PostMessageToPort(
