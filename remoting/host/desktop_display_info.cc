@@ -16,7 +16,7 @@ DesktopDisplayInfo& DesktopDisplayInfo::operator=(DesktopDisplayInfo&&) =
     default;
 DesktopDisplayInfo::~DesktopDisplayInfo() = default;
 
-bool DesktopDisplayInfo::operator==(const DesktopDisplayInfo& other) {
+bool DesktopDisplayInfo::operator==(const DesktopDisplayInfo& other) const {
   if (other.displays_.size() == displays_.size()) {
     for (size_t display = 0; display < displays_.size(); display++) {
       const DisplayGeometry& this_display = displays_[display];
@@ -37,7 +37,7 @@ bool DesktopDisplayInfo::operator==(const DesktopDisplayInfo& other) {
   return false;
 }
 
-bool DesktopDisplayInfo::operator!=(const DesktopDisplayInfo& other) {
+bool DesktopDisplayInfo::operator!=(const DesktopDisplayInfo& other) const {
   return !(*this == other);
 }
 
@@ -61,11 +61,12 @@ void DesktopDisplayInfo::Reset() {
   displays_.clear();
 }
 
-int DesktopDisplayInfo::NumDisplays() {
+int DesktopDisplayInfo::NumDisplays() const {
   return displays_.size();
 }
 
-const DisplayGeometry* DesktopDisplayInfo::GetDisplayInfo(unsigned int id) {
+const DisplayGeometry* DesktopDisplayInfo::GetDisplayInfo(
+    unsigned int id) const {
   if (id < 0 || id >= displays_.size())
     return nullptr;
   return &displays_[id];
@@ -93,7 +94,7 @@ const DisplayGeometry* DesktopDisplayInfo::GetDisplayInfo(unsigned int id) {
 // x = upper left of desktop
 // a,b,c = origin of display A,B,C
 webrtc::DesktopVector DesktopDisplayInfo::CalcDisplayOffset(
-    webrtc::ScreenId disp_id) {
+    webrtc::ScreenId disp_id) const {
   bool full_desktop = (disp_id == webrtc::kFullDesktopScreenId);
   unsigned int disp_index = disp_id;
 

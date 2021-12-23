@@ -35,19 +35,19 @@ class DesktopDisplayInfo {
 
   // Clear out the display info.
   void Reset();
-  int NumDisplays();
-  const DisplayGeometry* GetDisplayInfo(unsigned int id);
+  int NumDisplays() const;
+  const DisplayGeometry* GetDisplayInfo(unsigned int id) const;
 
   // Calculate the offset to the origin (upper left) of the specific display.
-  webrtc::DesktopVector CalcDisplayOffset(webrtc::ScreenId id);
+  webrtc::DesktopVector CalcDisplayOffset(webrtc::ScreenId id) const;
 
   // Add a new display with the given info to the display list.
   void AddDisplay(const DisplayGeometry& display);
 
   void AddDisplayFrom(const protocol::VideoTrackLayout& track);
 
-  bool operator==(const DesktopDisplayInfo& other);
-  bool operator!=(const DesktopDisplayInfo& other);
+  bool operator==(const DesktopDisplayInfo& other) const;
+  bool operator!=(const DesktopDisplayInfo& other) const;
 
   const std::vector<DisplayGeometry>& displays() const { return displays_; }
 
