@@ -4,7 +4,7 @@
 
 // clang-format off
 import 'chrome://settings/settings.js';
-import 'chrome://test/cr_elements/cr_policy_strings.js';
+import 'chrome://webui-test/cr_elements/cr_policy_strings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';

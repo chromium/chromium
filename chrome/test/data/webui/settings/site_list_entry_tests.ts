@@ -5,7 +5,7 @@
 /** @fileoverview Suite of tests for site-list-entry. */
 
 // clang-format off
-import 'chrome://test/cr_elements/cr_policy_strings.js';
+import 'chrome://webui-test/cr_elements/cr_policy_strings.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

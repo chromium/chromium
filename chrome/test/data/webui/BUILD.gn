@@ -609,6 +609,7 @@ generate_grd("build_grd") {
   input_files = [
     "chai_assert.js",
     "fake_chrome_event.js",
+    "mock_controller.js",
     "mock_timer.js",
     "mojo_webui_test_support.js",
     "test_browser_proxy.js",
@@ -671,6 +672,7 @@ ts_definitions("generate_definitions") {
   js_files = [
     "chai_assert.js",
     "fake_chrome_event.js",
+    "mock_controller.js",
     "mock_timer.js",
     "mojo_webui_test_support.js",
     "test_browser_proxy.js",

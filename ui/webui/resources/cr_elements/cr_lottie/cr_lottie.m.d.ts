@@ -4,21 +4,21 @@
 
 import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
 
-interface CrTooltipIconElement extends LegacyElementMixin, HTMLElement {
+export const LOTTIE_JS_URL: string;
+
+interface CrLottieElement extends LegacyElementMixin, HTMLElement {
+  animationUrl: string;
+  autoplay: boolean;
   $: {
-    indicator: HTMLElement,
+    canvas: HTMLCanvasElement,
   };
-  iconAriaLabel: string;
-  iconClass: string;
-  tooltipText: string;
-  tooltipPosition: string;
-  getFocusableElement(): Element;
+  setPlay(shouldPlay: boolean): void;
 }
 
-export {CrTooltipIconElement};
+export {CrLottieElement};
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-tooltip-icon': CrTooltipIconElement;
+    'cr-lottie': CrLottieElement;
   }
 }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://test/cr_elements/cr_policy_strings.js';
+import 'chrome://webui-test/cr_elements/cr_policy_strings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ChooserException, ChooserExceptionListEntryElement, ChooserType, ContentSetting,ContentSettingsTypes, SiteException, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';

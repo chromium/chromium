@@ -5,72 +5,75 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.m.js';
 
-import {FINGEPRINT_TICK_DARK_URL, FINGEPRINT_TICK_LIGHT_URL} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
+import {CrFingerprintProgressArcElement, FINGEPRINT_TICK_DARK_URL, FINGEPRINT_TICK_LIGHT_URL} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals} from '../chai_assert.js';
-import {MockController, MockMethod} from '../mock_controller.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {MockController} from 'chrome://webui-test/mock_controller.js';
 // clang-format on
+
+class FakeMediaQueryList extends EventTarget implements MediaQueryList {
+  matches: boolean = false;
+  media: string;
+  listener: (() => void)|null = null;
+
+  constructor(query: string) {
+    super();
+    this.media = query;
+  }
+
+  addListener(listener: () => void) {
+    this.listener = listener;
+  }
+
+  removeListener(listener: () => void) {
+    assertEquals(listener, this.listener);
+    this.listener = null;
+  }
+  onchange() {}
+}
 
 /** @fileoverview Suite of tests for cr-fingerprint-progress-arc. */
 suite('cr_fingerprint_progress_arc_test', function() {
   /**
    * An object descrbing a 2d point.
-   * @typedef {{
-   *   x: number,
-   *   y: number,
-   * }}
    */
-  let Point;
+  type Point = {
+    x: number,
+    y: number,
+  };
 
   /**
    * An object descrbing a color with r, g and b values.
-   * @typedef {{
-   *   r: number,
-   *   g: number,
-   *   b: number,
-   * }}
    */
-  let Color;
+  type Color = {
+    r: number,
+    g: number,
+    b: number,
+  }
 
-  /** @type {!CrFingerprintProgressArcElement} */
-  let progressArc;
+  let progressArc: CrFingerprintProgressArcElement;
+  let canvas: HTMLCanvasElement;
 
-  /** @type {!HTMLCanvasElement} */
-  let canvas;
+  const black: Color = {r: 0, g: 0, b: 0};
+  const blue: Color = {r: 0, g: 0, b: 255};
+  const white: Color = {r: 255, g: 255, b: 255};
 
-  /** @type {!Color} */
-  const black = {r: 0, g: 0, b: 0};
+  let mockController: MockController;
+  let darkModeQuery: FakeMediaQueryList;
 
-  /** @type {!Color} */
-  const blue = {r: 0, g: 0, b: 255};
-
-  /** @type {!Color} */
-  const white = {r: 255, g: 255, b: 255};
-
-  /** @type {!MockController} */
-  let mockController;
-
-  /** @type {!Object} */
-  let darkModeQuery;
+  function clearCanvas(canvas: HTMLCanvasElement) {
+    const ctx = canvas.getContext('2d')!;
+    ctx.fillStyle = 'rgba(255,255,255,1.0)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
 
   setup(function() {
     mockController = new MockController();
     const matchMediaMock =
         mockController.createFunctionMock(window, 'matchMedia');
     matchMediaMock.addExpectation('(prefers-color-scheme: dark)');
-    darkModeQuery = {
-      listener: null,
-      matches: false,
-
-      addListener: function(listener) {
-        this.listener = listener;
-      },
-      removeListener: function(listener) {
-        assertEquals(listener, this.listener);
-        this.listener = null;
-      },
-    };
+    darkModeQuery = new FakeMediaQueryList('(prefers-color-scheme: dark)');
     matchMediaMock.returnValue = darkModeQuery;
 
     document.body.innerHTML = '';
@@ -86,33 +89,28 @@ suite('cr_fingerprint_progress_arc_test', function() {
     progressArc.canvasCircleStrokeWidth = 3;
     progressArc.canvasCircleBackgroundColor = 'rgba(0,0,0,1.0)';
     progressArc.canvasCircleProgressColor = 'rgba(0,0,255,1.0)';
-    progressArc.clearCanvas = function() {
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = 'rgba(255,255,255,1.0)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    };
-    progressArc.clearCanvas();
+    clearCanvas(progressArc.$.canvas);
     flush();
+  });
+
+  teardown(function() {
+    mockController.reset();
   });
 
   /**
    * Helper function which gets the rgb values at |point| on the canvas.
-   * @param {Point} point
-   * @return {!Color}
    */
-  function getRGBData(point) {
-    const ctx = canvas.getContext('2d');
+  function getRGBData(point: Point): Color {
+    const ctx = canvas.getContext('2d')!;
     const pixel = ctx.getImageData(point.x, point.y, 1, 1).data;
-    return {r: pixel[0], g: pixel[1], b: pixel[2]};
+    return {r: pixel[0]!, g: pixel[1]!, b: pixel[2]!};
   }
 
   /**
    * Helper function which checks if the given color is matches the expected
    * color.
-   * @param {!Color} expectedColor
-   * @param {!Color} actualColor
    */
-  function assertColorEquals(expectedColor, actualColor) {
+  function assertColorEquals(expectedColor: Color, actualColor: Color) {
     assertEquals(expectedColor.r, actualColor.r);
     assertEquals(expectedColor.g, actualColor.g);
     assertEquals(expectedColor.b, actualColor.b);
@@ -121,10 +119,9 @@ suite('cr_fingerprint_progress_arc_test', function() {
   /**
    * Helper function which checks that a list of points match the color the are
    * expected to have on the canvas.
-   * @param {!Color} expectedColor
-   * @param {!Array<!Point>} listOfPoints
    */
-  function assertListOfColorsEqual(expectedColor, listOfPoints) {
+  function assertListOfColorsEqual(
+      expectedColor: Color, listOfPoints: Point[]) {
     for (const point of listOfPoints) {
       assertColorEquals(expectedColor, getRGBData(point));
     }
@@ -145,7 +142,7 @@ suite('cr_fingerprint_progress_arc_test', function() {
     assertListOfColorsEqual(white, expectedPointsNotOnArc);
 
     // After clearing, the points that were blue should be white.
-    progressArc.clearCanvas();
+    clearCanvas(progressArc.$.canvas);
     assertListOfColorsEqual(white, expectedPointsOnArc);
 
     // Verify that by drawing an arc from 3PI/2 to 5PI/2 with radius 50 and
@@ -186,18 +183,17 @@ suite('cr_fingerprint_progress_arc_test', function() {
     assertListOfColorsEqual(white, expectedPointsNotInCircle);
 
     // After clearing, the points that were black should be white.
-    progressArc.clearCanvas();
+    clearCanvas(progressArc.$.canvas);
     assertListOfColorsEqual(white, expectedPointsInCircle);
   });
 
   test('TestSwitchToDarkMode', function() {
-    const scanningAnimation =
-        /** @type {!CrLottieElement} */ (progressArc.$$('#scanningAnimation'));
+    const scanningAnimation = progressArc.$.scanningAnimation;
 
     progressArc.setProgress(0, 1, true);
     assertEquals(FINGEPRINT_TICK_LIGHT_URL, scanningAnimation.animationUrl);
     darkModeQuery.matches = true;
-    darkModeQuery.listener();
+    darkModeQuery.listener!();
 
     assertEquals(FINGEPRINT_TICK_DARK_URL, scanningAnimation.animationUrl);
   });

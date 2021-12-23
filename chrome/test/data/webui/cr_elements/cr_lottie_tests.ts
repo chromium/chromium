@@ -3,21 +3,22 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {LOTTIE_JS_URL} from 'chrome://resources/cr_elements/cr_lottie/cr_lottie.m.js';
+import 'chrome://resources/cr_elements/cr_lottie/cr_lottie.m.js';
+
+import {CrLottieElement, LOTTIE_JS_URL} from 'chrome://resources/cr_elements/cr_lottie/cr_lottie.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {MockController, MockMethod} from '../mock_controller.js';
-import {eventToPromise} from '../test_util.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockController, MockMethod} from 'chrome://webui-test/mock_controller.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr-lottie. */
 suite('cr_lottie_test', function() {
   /**
    * A data url that produces a sample solid green json lottie animation.
-   * @type {string}
    */
-  const SAMPLE_LOTTIE_GREEN =
+  const SAMPLE_LOTTIE_GREEN: string =
       'data:application/json;base64,eyJ2IjoiNC42LjkiLCJmciI6NjAsImlwIjowLCJvc' +
       'CI6MjAwLCJ3Ijo4MDAsImgiOjYwMCwiZGRkIjowLCJhc3NldHMiOltdLCJsYXllcnMiOlt' +
       '7ImluZCI6MSwidHkiOjEsInNjIjoiIzAwZmYwMCIsImFvIjowLCJpcCI6MCwib3AiOjIwM' +
@@ -28,9 +29,8 @@ suite('cr_lottie_test', function() {
 
   /**
    * A data url that produces a sample solid blue json lottie animation.
-   * @type {string}
    */
-  const SAMPLE_LOTTIE_BLUE =
+  const SAMPLE_LOTTIE_BLUE: string =
       'data:application/json;base64,eyJhc3NldHMiOltdLCJkZGQiOjAsImZyIjo2MCwia' +
       'CI6NjAwLCJpcCI6MCwibGF5ZXJzIjpbeyJhbyI6MCwiYm0iOjAsImluZCI6MSwiaXAiOjA' +
       'sImtzIjp7ImEiOnsiYSI6MCwiayI6WzMwMCwyMDAsMF19LCJvIjp7ImEiOjAsImsiOjEwM' +
@@ -41,36 +41,23 @@ suite('cr_lottie_test', function() {
 
   /**
    * A green pixel as returned by samplePixel.
-   * @type {!Array<number>}
    */
-  const GREEN_PIXEL = [0, 255, 0, 255];
+  const GREEN_PIXEL: number[] = [0, 255, 0, 255];
 
   /**
    * A blue pixel as returned by samplePixel.
-   * @type {!Array<number>}
    */
-  const BLUE_PIXEL = [0, 0, 255, 255];
+  const BLUE_PIXEL: number[] = [0, 0, 255, 255];
 
-  /** @type {?MockController} */
-  let mockController;
+  let mockController: MockController;
+  let crLottieElement: CrLottieElement;
 
-  /** @type {!CrLottieElement} */
-  let crLottieElement;
+  let container: HTMLElement;
+  let canvas: HTMLCanvasElement;
+  let lottieWorkerJs: Blob;
 
-  /** @type {!HTMLDivElement} */
-  let container;
-
-  /** @type {?HTMLCanvasElement} */
-  let canvas = null;
-
-  /** @type {?Blob} */
-  let lottieWorkerJs = null;
-
-  /** @type {Promise} */
-  let waitForInitializeEvent;
-
-  /** @type {Promise} */
-  let waitForPlayingEvent;
+  let waitForInitializeEvent: Promise<void>;
+  let waitForPlayingEvent: Promise<void>;
 
   setup(function(done) {
     mockController = new MockController();
@@ -109,7 +96,7 @@ suite('cr_lottie_test', function() {
     document.body.appendChild(container);
     container.appendChild(crLottieElement);
 
-    canvas = /** @type {!HTMLCanvasElement} */ (crLottieElement.$$('canvas'));
+    canvas = crLottieElement.$.canvas;
 
     flush();
   }
@@ -127,7 +114,7 @@ suite('cr_lottie_test', function() {
     // from it.
     const img = document.createElement('img');
     const waitForLoad = eventToPromise('load', img);
-    const canvas = crLottieElement.$$('canvas');
+    const canvas = crLottieElement.$.canvas;
     img.setAttribute('src', canvas.toDataURL());
     await waitForLoad;
 
@@ -135,7 +122,7 @@ suite('cr_lottie_test', function() {
     imgCanvas.width = canvas.width;
     imgCanvas.height = canvas.height;
 
-    const context = imgCanvas.getContext('2d');
+    const context = imgCanvas.getContext('2d')!;
     context.drawImage(img, 0, 0);
 
     return Array.from(
@@ -202,7 +189,7 @@ suite('cr_lottie_test', function() {
     await waitForInitializeEvent;
     await waitForPlayingEvent;
 
-    const waitForFrameRender = new Promise(function(resolve) {
+    const waitForFrameRender = new Promise<void>(function(resolve) {
       window.setTimeout(resolve, kRaceTimeout);
     });
 
@@ -239,7 +226,7 @@ suite('cr_lottie_test', function() {
     await waitForInitializeEvent;
     await waitForPlayingEvent;
 
-    const waitForFrameRender = new Promise(function(resolve) {
+    const waitForFrameRender = new Promise<void>(function(resolve) {
       setTimeout(resolve, kRaceTimeout);
     });
 
@@ -259,35 +246,38 @@ suite('cr_lottie_test', function() {
   test('TestDetachBeforeImageLoaded', async () => {
     const mockXhr = {
       onreadystatechange: () => {},
-    };
-    mockXhr.open = mockController.createFunctionMock(mockXhr, 'open');
-    mockXhr.send = mockController.createFunctionMock(mockXhr, 'send');
-    mockXhr.abort = mockController.createFunctionMock(mockXhr, 'abort');
+    } as unknown as XMLHttpRequest;
+
+    mockXhr.open = mockController.createFunctionMock(mockXhr, 'open') as any;
+    mockXhr.send = mockController.createFunctionMock(mockXhr, 'send') as any;
+    mockXhr.abort = mockController.createFunctionMock(mockXhr, 'abort') as any;
 
     const mockXhrConstructor =
         mockController.createFunctionMock(window, 'XMLHttpRequest');
 
     // Expectations for loading the worker.
     mockXhrConstructor.addExpectation();
-    mockXhr.open.addExpectation(
-        'GET', 'chrome://resources/lottie/lottie_worker.min.js', true);
-    mockXhr.send.addExpectation();
+    (mockXhr.open as unknown as MockMethod)
+        .addExpectation(
+            'GET', 'chrome://resources/lottie/lottie_worker.min.js', true);
+    (mockXhr.send as unknown as MockMethod).addExpectation();
 
     // Expectations for loading the image and aborting it.
     mockXhrConstructor.addExpectation();
-    mockXhr.open.addExpectation('GET', SAMPLE_LOTTIE_GREEN, true);
-    mockXhr.send.addExpectation();
-    mockXhr.abort.addExpectation();
+    (mockXhr.open as unknown as MockMethod)
+        .addExpectation('GET', SAMPLE_LOTTIE_GREEN, true);
+    (mockXhr.send as unknown as MockMethod).addExpectation();
+    (mockXhr.abort as unknown as MockMethod).addExpectation();
 
     mockXhrConstructor.returnValue = mockXhr;
 
     createLottieElement();
 
     // Return the lottie worker.
-    mockXhr.response = lottieWorkerJs;
-    mockXhr.readyState = 4;
-    mockXhr.status = 200;
-    mockXhr.onreadystatechange();
+    Object.defineProperty(mockXhr, 'response', {value: lottieWorkerJs});
+    Object.defineProperty(mockXhr, 'readyState', {value: 4});
+    Object.defineProperty(mockXhr, 'status', {value: 200});
+    mockXhr.onreadystatechange!(new Event('readystatchange'));
 
     // Detaching the element before the image has loaded should abort the
     // request.
@@ -298,40 +288,44 @@ suite('cr_lottie_test', function() {
   test('TestLoadNewImageWhileOldImageIsStillLoading', async () => {
     const mockXhr = {
       onreadystatechange: () => {},
-    };
-    mockXhr.open = mockController.createFunctionMock(mockXhr, 'open');
-    mockXhr.send = mockController.createFunctionMock(mockXhr, 'send');
-    mockXhr.abort = mockController.createFunctionMock(mockXhr, 'abort');
+    } as unknown as XMLHttpRequest;
+
+    mockXhr.open = mockController.createFunctionMock(mockXhr, 'open') as any;
+    mockXhr.send = mockController.createFunctionMock(mockXhr, 'send') as any;
+    mockXhr.abort = mockController.createFunctionMock(mockXhr, 'abort') as any;
 
     const mockXhrConstructor =
         mockController.createFunctionMock(window, 'XMLHttpRequest');
 
     // Expectations for loading the worker.
     mockXhrConstructor.addExpectation();
-    mockXhr.open.addExpectation(
-        'GET', 'chrome://resources/lottie/lottie_worker.min.js', true);
-    mockXhr.send.addExpectation();
+    (mockXhr.open as unknown as MockMethod)
+        .addExpectation(
+            'GET', 'chrome://resources/lottie/lottie_worker.min.js', true);
+    (mockXhr.send as unknown as MockMethod).addExpectation();
 
     // Expectations for loading the first image and aborting it.
     mockXhrConstructor.addExpectation();
-    mockXhr.open.addExpectation('GET', SAMPLE_LOTTIE_GREEN, true);
-    mockXhr.send.addExpectation();
-    mockXhr.abort.addExpectation();
+    (mockXhr.open as unknown as MockMethod)
+        .addExpectation('GET', SAMPLE_LOTTIE_GREEN, true);
+    (mockXhr.send as unknown as MockMethod).addExpectation();
+    (mockXhr.abort as unknown as MockMethod).addExpectation();
 
     // Expectations for loading the second image.
     mockXhrConstructor.addExpectation();
-    mockXhr.open.addExpectation('GET', SAMPLE_LOTTIE_BLUE, true);
-    mockXhr.send.addExpectation();
+    (mockXhr.open as unknown as MockMethod)
+        .addExpectation('GET', SAMPLE_LOTTIE_BLUE, true);
+    (mockXhr.send as unknown as MockMethod).addExpectation();
 
     mockXhrConstructor.returnValue = mockXhr;
 
     createLottieElement();
 
     // Return the lottie worker.
-    mockXhr.response = lottieWorkerJs;
-    mockXhr.readyState = 4;
-    mockXhr.status = 200;
-    mockXhr.onreadystatechange();
+    Object.defineProperty(mockXhr, 'response', {value: lottieWorkerJs});
+    Object.defineProperty(mockXhr, 'readyState', {value: 4});
+    Object.defineProperty(mockXhr, 'status', {value: 200});
+    mockXhr.onreadystatechange!(new Event('readystatchange'));
 
     // Attempting to load a new image should abort the first request and start a
     // new one.

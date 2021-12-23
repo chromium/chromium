@@ -138,7 +138,7 @@ TEST_F('CrElementsFindShortcutMixinTest', 'All', function() {
 var CrElementsFingerprintProgressArcTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_fingerprint_progress_arc_tests.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_fingerprint_progress_arc_tests.js&host=webui-test';
   }
 
   /** @override */
@@ -318,7 +318,7 @@ TEST_F('CrElementsViewManagerTest', 'All', function() {
 var CrElementsPolicyIndicatorTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_policy_indicator_tests.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_policy_indicator_tests.js&host=webui-test';
   }
 };
 
@@ -330,7 +330,7 @@ var CrElementsPolicyPrefIndicatorTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
     // Preload a settings URL, so that the test can access settingsPrivate.
-    return 'chrome://settings/test_loader.html?module=cr_elements/cr_policy_pref_indicator_tests.js';
+    return 'chrome://settings/test_loader.html?module=cr_elements/cr_policy_pref_indicator_tests.js&host=webui-test';
   }
 };
 
@@ -342,7 +342,7 @@ var CrElementsPolicyIndicatorBehaviorTest =
     class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_policy_indicator_behavior_tests.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_policy_indicator_behavior_tests.js&host=webui-test';
   }
 };
 
@@ -353,7 +353,7 @@ TEST_F('CrElementsPolicyIndicatorBehaviorTest', 'All', function() {
 var CrElementsLottieTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_lottie_tests.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_lottie_tests.js&host=webui-test';
   }
 
   /** @override */

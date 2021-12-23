@@ -4,41 +4,39 @@
 
 // clang-format off
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
-import './cr_policy_strings.js';
+
+import {CrPolicyPrefIndicatorElement} from 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
+import {CrPolicyStrings} from './cr_policy_strings.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr_policy-pref-indicator. */
 suite('CrPolicyPrefIndicator', function() {
-  /** @type {!CrPolicyPrefIndicatorElement} */
-  let indicator;
-
-  /** @type {!CrTooltipIconElement} */
-  let icon;
+  let indicator: CrPolicyPrefIndicatorElement;
 
   setup(function() {
     document.body.innerHTML = '';
 
-    indicator = /** @type {!CrPolicyPrefIndicatorElement} */ (
-        document.createElement('cr-policy-pref-indicator'));
+    indicator = document.createElement('cr-policy-pref-indicator');
     document.body.appendChild(indicator);
-    icon =
-        /** @type {!CrTooltipIconElement} */ (indicator.$$('cr-tooltip-icon'));
   });
 
   test('none', function() {
+    const icon = indicator.shadowRoot!.querySelector('cr-tooltip-icon')!;
     assertTrue(icon.hidden);
   });
 
   test('pref', function() {
-    /** @type {!chrome.settingsPrivate.PrefObject} */
     indicator.pref = {
       key: 'foo',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: false,
     };
     flush();
+
+    const icon = indicator.shadowRoot!.querySelector('cr-tooltip-icon')!;
     assertTrue(icon.hidden);
 
     // Check indicator behavior for a preference controlled by the device owner.
@@ -77,8 +75,7 @@ suite('CrPolicyPrefIndicator', function() {
     flush();
     assertFalse(icon.hidden);
     assertEquals('cr20:kite', icon.iconClass);
-    assertEquals(
-        window.CrPolicyStrings.controlledSettingParent, icon.tooltipText);
+    assertEquals(CrPolicyStrings.controlledSettingParent, icon.tooltipText);
 
     // Check indicator behavior for a preference that is enforced by device
     // policy.
@@ -89,8 +86,7 @@ suite('CrPolicyPrefIndicator', function() {
     flush();
     assertFalse(icon.hidden);
     assertEquals('cr20:domain', icon.iconClass);
-    assertEquals(
-        window.CrPolicyStrings.controlledSettingPolicy, icon.tooltipText);
+    assertEquals(CrPolicyStrings.controlledSettingPolicy, icon.tooltipText);
 
     // Check indicator behavior for an preference that is enforced whilst also
     // having a recommended value.
@@ -136,6 +132,5 @@ suite('CrPolicyPrefIndicator', function() {
     indicator.set('pref.value', indicatorPrefValue);
     flush();
     assertEquals('matches', icon.tooltipText);
-
   });
 });

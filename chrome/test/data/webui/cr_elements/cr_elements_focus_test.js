@@ -122,7 +122,7 @@ TEST_F('IronListFocusTest', 'All', function() {
 var CrElementsGridFocusTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_grid_focus_test.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_grid_focus_test.js&host=webui-test';
   }
 };
 

@@ -2,25 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
+
 import {CrGridElement} from 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {assertEquals} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('CrElementsGridFocusTest', () => {
-  /**
-   * @param {number} size
-   * @return {!CrGridElement}
-   */
-  function createGrid(size) {
-    const grid =
-        /** @type {!CrGridElement} */ (document.createElement('cr-grid'));
+  function createGrid(size: number): CrGridElement {
+    const grid = document.createElement('cr-grid');
     for (let i = 0; i < size; i++) {
       const div = document.createElement('div');
-      div.tabIndex = '0';
-      div.id = i;
+      div.tabIndex = 0;
+      div.id = i.toString();
       grid.appendChild(div);
     }
     grid.columns = 6;
@@ -30,17 +27,12 @@ suite('CrElementsGridFocusTest', () => {
 
   /**
    * Asserts that an element is focused.
-   * @param {!Element} element The element to test.
    */
-  function assertFocus(element) {
+  function assertFocus(element: Element) {
     assertEquals(element, getDeepActiveElement());
   }
 
-  /**
-   * @param {!Element} element
-   * @param {string} key
-   */
-  function keydown(element, key) {
+  function keydown(element: Element, key: string) {
     keyDownOn(element, 0, [], key);
   }
 
@@ -53,10 +45,10 @@ suite('CrElementsGridFocusTest', () => {
     const grid = createGrid(12);
 
     // Act.
-    keydown(grid.children[0], 'ArrowRight');
+    keydown(grid.children[0]!, 'ArrowRight');
 
     // Assert.
-    assertFocus(grid.children[1]);
+    assertFocus(grid.children[1]!);
   });
 
   test('right wrap around focuses first item', () => {
@@ -64,10 +56,10 @@ suite('CrElementsGridFocusTest', () => {
     const grid = createGrid(12);
 
     // Act.
-    keydown(grid.children[grid.children.length - 1], 'ArrowRight');
+    keydown(grid.children[grid.children.length - 1]!, 'ArrowRight');
 
     // Assert.
-    assertFocus(grid.children[0]);
+    assertFocus(grid.children[0]!);
   });
 
   test('left focuses left item', () => {
@@ -75,10 +67,10 @@ suite('CrElementsGridFocusTest', () => {
     const grid = createGrid(12);
 
     // Act.
-    keydown(grid.children[1], 'ArrowLeft');
+    keydown(grid.children[1]!, 'ArrowLeft');
 
     // Assert.
-    assertFocus(grid.children[0]);
+    assertFocus(grid.children[0]!);
   });
 
   test('left wrap around focuses last item', () => {
@@ -86,10 +78,10 @@ suite('CrElementsGridFocusTest', () => {
     const grid = createGrid(12);
 
     // Act.
-    keydown(grid.children[0], 'ArrowLeft');
+    keydown(grid.children[0]!, 'ArrowLeft');
 
     // Assert.
-    assertFocus(grid.children[grid.children.length - 1]);
+    assertFocus(grid.children[grid.children.length - 1]!);
   });
 
   test('right focuses left item in RTL', () => {
@@ -98,10 +90,10 @@ suite('CrElementsGridFocusTest', () => {
     grid.dir = 'rtl';
 
     // Act.
-    keydown(grid.children[1], 'ArrowRight');
+    keydown(grid.children[1]!, 'ArrowRight');
 
     // Assert.
-    assertFocus(grid.children[0]);
+    assertFocus(grid.children[0]!);
   });
 
   test('right wrap around focuses last item in RTL', () => {
@@ -110,10 +102,10 @@ suite('CrElementsGridFocusTest', () => {
     grid.dir = 'rtl';
 
     // Act.
-    keydown(grid.children[0], 'ArrowRight');
+    keydown(grid.children[0]!, 'ArrowRight');
 
     // Assert.
-    assertFocus(grid.children[grid.children.length - 1]);
+    assertFocus(grid.children[grid.children.length - 1]!);
   });
 
   test('left focuses right item in RTL', () => {
@@ -122,10 +114,10 @@ suite('CrElementsGridFocusTest', () => {
     grid.dir = 'rtl';
 
     // Act.
-    keydown(grid.children[0], 'ArrowLeft');
+    keydown(grid.children[0]!, 'ArrowLeft');
 
     // Assert.
-    assertFocus(grid.children[1]);
+    assertFocus(grid.children[1]!);
   });
 
   test('left wrap around focuses first item in RTL', () => {
@@ -134,10 +126,10 @@ suite('CrElementsGridFocusTest', () => {
     grid.dir = 'rtl';
 
     // Act.
-    keydown(grid.children[grid.children.length - 1], 'ArrowLeft');
+    keydown(grid.children[grid.children.length - 1]!, 'ArrowLeft');
 
     // Assert.
-    assertFocus(grid.children[0]);
+    assertFocus(grid.children[0]!);
   });
 
 
@@ -161,10 +153,10 @@ suite('CrElementsGridFocusTest', () => {
       grid.columns = param.columns;
 
       // Act.
-      keydown(grid.children[0], 'ArrowDown');
+      keydown(grid.children[0]!, 'ArrowDown');
 
       // Assert.
-      assertFocus(grid.children[param.columns]);
+      assertFocus(grid.children[param.columns]!);
     });
 
     test(`last column down focuses below item for ${param.type} grid`, () => {
@@ -173,12 +165,12 @@ suite('CrElementsGridFocusTest', () => {
       grid.columns = param.columns;
 
       // Act.
-      keydown(grid.children[param.columns - 1], 'ArrowDown');
+      keydown(grid.children[param.columns - 1]!, 'ArrowDown');
 
       // Assert.
       const focusedIndex =
           (param.size % param.columns === 0 ? param.size : param.columns) - 1;
-      assertFocus(grid.children[focusedIndex]);
+      assertFocus(grid.children[focusedIndex]!);
     });
 
     test(`up focuses above item for ${param.type} grid`, () => {
@@ -187,10 +179,10 @@ suite('CrElementsGridFocusTest', () => {
       grid.columns = param.columns;
 
       // Act.
-      keydown(grid.children[param.columns], 'ArrowUp');
+      keydown(grid.children[param.columns]!, 'ArrowUp');
 
       // Assert.
-      assertFocus(grid.children[0]);
+      assertFocus(grid.children[0]!);
     });
 
     test(`last column up focuses above item for ${param.type} grid`, () => {
@@ -199,12 +191,12 @@ suite('CrElementsGridFocusTest', () => {
       grid.columns = param.columns;
 
       // Act.
-      keydown(grid.children[param.columns - 1], 'ArrowUp');
+      keydown(grid.children[param.columns - 1]!, 'ArrowUp');
 
       // Assert.
       const focusedIndex =
           (param.size % param.columns === 0 ? param.size : param.columns) - 1;
-      assertFocus(grid.children[focusedIndex]);
+      assertFocus(grid.children[focusedIndex]!);
     });
 
     test(`down wrap around focuses top item for ${param.type} grid`, () => {
@@ -213,10 +205,10 @@ suite('CrElementsGridFocusTest', () => {
       grid.columns = param.columns;
 
       // Act.
-      keydown(grid.children[param.columns], 'ArrowDown');
+      keydown(grid.children[param.columns]!, 'ArrowDown');
 
       // Assert.
-      assertFocus(grid.children[0]);
+      assertFocus(grid.children[0]!);
     });
 
     test(`up wrap around focuses bottom item for ${param.type} grid`, () => {
@@ -225,21 +217,21 @@ suite('CrElementsGridFocusTest', () => {
       grid.columns = param.columns;
 
       // Act.
-      keydown(grid.children[0], 'ArrowDown');
+      keydown(grid.children[0]!, 'ArrowDown');
 
       // Assert.
-      assertFocus(grid.children[param.columns]);
+      assertFocus(grid.children[param.columns]!);
     });
   });
 
   test('enter clicks focused item', async () => {
     // Arrange.
     const grid = createGrid(1);
-    grid.children[0].focus();
-    const itemClicked = eventToPromise('click', grid.children[0]);
+    (grid.children[0] as HTMLElement).focus();
+    const itemClicked = eventToPromise('click', grid.children[0]!);
 
     // Act.
-    keydown(grid.children[0], 'Enter');
+    keydown(grid.children[0]!, 'Enter');
 
     // Assert.
     await itemClicked;
@@ -248,11 +240,11 @@ suite('CrElementsGridFocusTest', () => {
   test('space clicks focused item', async () => {
     // Arrange.
     const grid = createGrid(1);
-    grid.children[0].focus();
-    const itemClicked = eventToPromise('click', grid.children[0]);
+    (grid.children[0] as HTMLElement).focus();
+    const itemClicked = eventToPromise('click', grid.children[0]!);
 
     // Act.
-    keydown(grid.children[0], ' ');
+    keydown(grid.children[0]!, ' ');
 
     // Assert.
     await itemClicked;

@@ -18,13 +18,6 @@ js_type_check("closure_compile") {
 
   deps = [
     ":cr_container_shadow_behavior_test",
-    ":cr_fingerprint_progress_arc_tests",
-    ":cr_grid_focus_test",
-    ":cr_lottie_tests",
-    ":cr_policy_indicator_behavior_tests",
-    ":cr_policy_indicator_tests",
-    ":cr_policy_pref_indicator_tests",
-    ":cr_policy_strings",
     ":cr_scrollable_behavior_tests",
     ":iron_list_focus_test",
   ]
@@ -41,72 +34,6 @@ js_library("cr_container_shadow_behavior_test") {
     "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_fingerprint_progress_arc_tests") {
-  deps = [
-    "..:chai_assert",
-    "..:mock_controller",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_fingerprint:cr_fingerprint_progress_arc.m",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_grid_focus_test") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util",
-    "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
-    "//ui/webui/resources/cr_elements/cr_grid",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_lottie_tests") {
-  deps = [
-    "..:chai_assert",
-    "..:mock_controller",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_policy_indicator_behavior_tests") {
-  deps = [
-    "..:chai_assert",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_policy_indicator_tests") {
-  deps = [
-    "..:chai_assert",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
-    "//ui/webui/resources/cr_elements/policy:cr_tooltip_icon.m",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_policy_pref_indicator_tests") {
-  deps = [
-    ":cr_policy_strings",
-    "..:chai_assert",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_pref_indicator.m",
-    "//ui/webui/resources/cr_elements/policy:cr_tooltip_icon.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_policy_strings") {
 }
 
 js_library("cr_scrollable_behavior_tests") {
@@ -166,10 +93,17 @@ ts_library("build_ts") {
     "cr_dialog_test.ts",
     "cr_drawer_tests.ts",
     "cr_expand_button_tests.ts",
+    "cr_fingerprint_progress_arc_tests.ts",
+    "cr_grid_focus_test.ts",
     "cr_icon_button_tests.ts",
     "cr_input_test.ts",
     "cr_lazy_render_tests.ts",
     "cr_link_row_tests.ts",
+    "cr_lottie_tests.ts",
+    "cr_policy_indicator_behavior_tests.ts",
+    "cr_policy_indicator_tests.ts",
+    "cr_policy_pref_indicator_tests.ts",
+    "cr_policy_strings.ts",
     "cr_profile_avatar_selector_tests.ts",
     "cr_radio_button_test.ts",
     "cr_radio_group_test.ts",
@@ -185,6 +119,7 @@ ts_library("build_ts") {
     "cr_toolbar_test.ts",
     "cr_view_manager_test.ts",
   ]
+  definitions = [ "//tools/typescript/definitions/settings_private.d.ts" ]
   deps = [ "//ui/webui/resources:library" ]
   extra_deps = [ "..:generate_definitions" ]
 }

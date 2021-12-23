@@ -155,10 +155,12 @@ checked_in_dts_files = [
   "cr_elements/cr_drawer/cr_drawer.d.ts",
   "cr_elements/cr_expand_button/cr_expand_button.m.d.ts",
   "cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.d.ts",
+  "cr_elements/cr_grid/cr_grid.d.ts",
   "cr_elements/cr_icon_button/cr_icon_button.m.d.ts",
   "cr_elements/cr_input/cr_input.m.d.ts",
   "cr_elements/cr_lazy_render/cr_lazy_render.m.d.ts",
   "cr_elements/cr_link_row/cr_link_row.d.ts",
+  "cr_elements/cr_lottie/cr_lottie.m.d.ts",
   "cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.d.ts",
   "cr_elements/cr_radio_button/cr_card_radio_button.m.d.ts",
   "cr_elements/cr_radio_button/cr_radio_button_behavior.m.d.ts",
@@ -225,7 +227,7 @@ ts_library("library") {
     "js/web_ui_listener_mixin.ts",
   ]
 
-  definitions = []
+  definitions = [ "//tools/typescript/definitions/settings_private.d.ts" ]
 
   # Checked-in .d.ts files.
   foreach(_file, checked_in_dts_files) {
@@ -239,11 +241,9 @@ ts_library("library") {
     "$root_dir/cr_elements/cr_fingerprint/cr_fingerprint_icon.m.d.ts",
     "$root_dir/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.d.ts",
     "$root_dir/cr_elements/cr_actionable_row_style.m.d.ts",
-    "$root_dir/cr_elements/cr_grid/cr_grid.d.ts",
     "$root_dir/cr_elements/cr_icons_css.m.d.ts",
     "$root_dir/cr_elements/cr_auto_img/cr_auto_img.d.ts",
     "$root_dir/cr_elements/cr_input/cr_input_style_css.m.d.ts",
-    "$root_dir/cr_elements/cr_lottie/cr_lottie.m.d.ts",
     "$root_dir/cr_elements/cr_menu_selector/cr_menu_selector.d.ts",
     "$root_dir/cr_elements/cr_page_host_style_css.d.ts",
     "$root_dir/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector_grid.d.ts",
@@ -299,11 +299,9 @@ ts_definitions("generate_definitions") {
     "cr_elements/action_link_css.m.js",
     "cr_elements/cr_actionable_row_style.m.js",
     "cr_elements/cr_fingerprint/cr_fingerprint_icon.m.js",
-    "cr_elements/cr_grid/cr_grid.js",
     "cr_elements/cr_icons_css.m.js",
     "cr_elements/cr_auto_img/cr_auto_img.js",
     "cr_elements/cr_input/cr_input_style_css.m.js",
-    "cr_elements/cr_lottie/cr_lottie.m.js",
     "cr_elements/cr_menu_selector/cr_menu_selector.js",
     "cr_elements/cr_page_host_style_css.js",
     "cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector_grid.js",
