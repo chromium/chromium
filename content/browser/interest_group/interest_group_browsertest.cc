@@ -468,15 +468,19 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   }
 
   // Navigates an iframe with the id="test_iframe" to the provided URL and
-  // checks that the last navigated url is the expected url.
+  // checks that the last committed url is the expected url. There must only be
+  // one iframe in the main document.
   void NavigateIframeAndCheckURL(WebContents* web_contents,
                                  const GURL& url,
                                  const GURL& expected_commit_url) {
+    FrameTreeNode* parent = FrameTreeNode::From(web_contents->GetMainFrame());
+    CHECK(parent->child_count() > 0u);
+    FrameTreeNode* iframe = parent->child_at(0);
+    TestFrameNavigationObserver nav_observer(iframe->current_frame_host());
     const std::string kIframeId = "test_iframe";
-    TestNavigationObserver nav_observer(web_contents);
     EXPECT_TRUE(BeginNavigateIframeToURL(web_contents, kIframeId, url));
     nav_observer.Wait();
-    EXPECT_EQ(expected_commit_url, nav_observer.last_navigation_url());
+    EXPECT_EQ(expected_commit_url, nav_observer.last_committed_url());
     EXPECT_TRUE(nav_observer.last_navigation_succeeded());
   }
 
@@ -2184,6 +2188,51 @@ function reportResult(
       https_server_->GetURL("/interest_group/trusted_scoring_signals.json"
                             "?hostname=a.test"
                             "&renderUrls=https%3A%2F%2Fexample.com%2Frender"));
+}
+
+// Test that ad_components in an iframe ad are requested.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       RunAdAuctionWinnerWithComponents) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url =
+      https_server_->GetURL("c.test", "/fenced_frames/ad_with_components.html");
+  GURL component_url = https_server_->GetURL("c.test", "/echo?component");
+
+  EXPECT_TRUE(JoinInterestGroupAndWaitInJs(blink::InterestGroup(
+      /*expiry=*/base::Time(),
+      /*owner=*/test_origin,
+      /*name=*/"cars",
+      /*bidding_url=*/
+      https_server_->GetURL("a.test", "/interest_group/bidding_logic.js"),
+      /*bidding_wasm_helper_url=*/absl::nullopt,
+      /*update_url=*/absl::nullopt,
+      /*trusted_bidding_signals_url=*/
+      https_server_->GetURL("a.test",
+                            "/interest_group/trusted_bidding_signals.json"),
+      /*trusted_bidding_signals_keys=*/{{"key1"}},
+      /*user_bidding_signals=*/"{some: 'json', data: {here: [1, 2]}}",
+      /*ads=*/
+      {{{ad_url, "{ad:'metadata', here:[1,2]}"}}},
+      /*ad_components=*/
+      {{{component_url, "{ad:'component metadata'}"}}})));
+
+  std::string auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicUrl: $2,
+    interestGroupBuyers: [$1],
+    auctionSignals: {x: 1},
+    sellerSignals: {yet: 'more', info: 1},
+    perBuyerSignals: {$1: {even: 'more', x: 4.5}}
+                })",
+      test_origin,
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+
+  // Wait for the component to load.
+  WaitForURL(component_url);
 }
 
 // Make sure correct topFrameHostname is passed in. Check auctions from top
