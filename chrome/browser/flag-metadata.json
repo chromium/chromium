@@ -3984,7 +3984,7 @@
   {
     "name": "nearby-sharing-background-scanning",
     "owners": [ "hansenmichael@google.com", "cvandermerwe@google.com", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 99
   },
   {
     "name": "new-canvas-2d-api",
