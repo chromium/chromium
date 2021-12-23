@@ -6,7 +6,6 @@ import {assertInstanceof} from '../assert.js';
 import * as Comlink from '../lib/comlink.js';
 
 import {clearAsyncInterval, setAsyncInterval} from './async_interval.js';
-// eslint-disable-next-line no-unused-vars
 import {BarcodeWorkerInterface} from './barcode_worker_interface.js';
 
 // The delay interval between consecutive barcode detections.
@@ -24,50 +23,29 @@ const ACTIVE_SCAN_RATIO = 1.0;
  * A barcode scanner to detect barcodes from a camera stream.
  */
 export class BarcodeScanner {
+  private readonly worker = Comlink.wrap<BarcodeWorkerInterface>(
+      new Worker('/js/models/barcode_worker.js', {type: 'module'}));
+  private intervalId: number|null = null;
   /**
-   * @param {!HTMLVideoElement} video The video to be scanned for barcode.
-   * @param {function(string): void} callback The callback for the detected
-   *     barcodes.
+   * @param video The video to be scanned for barcode.
+   * @param callback The callback for the detected barcodes.
    */
-  constructor(video, callback) {
-    /**
-     * @type {!HTMLVideoElement}
-     * @private
-     */
-    this.video_ = video;
-
-    /**
-     * @type {function(string): void}
-     * @private
-     */
-    this.callback_ = callback;
-
-    /**
-     * @type {!BarcodeWorkerInterface}
-     * @private
-     */
-    this.worker_ = Comlink.wrap(
-        new Worker('/js/models/barcode_worker.js', {type: 'module'}));
-
-    /**
-     * The current running interval id.
-     * @type {?number}
-     */
-    this.intervalId_ = null;
-  }
+  constructor(
+      private readonly video: HTMLVideoElement,
+      private readonly callback: (barcode: string) => void) {}
 
   /**
    * Starts scanning barcodes continuously. Calling this method when it's
    * already started would be no-op.
    */
-  start() {
-    if (this.intervalId_ !== null) {
+  start(): void {
+    if (this.intervalId !== null) {
       return;
     }
-    this.intervalId_ = setAsyncInterval(async () => {
-      const code = await this.scan_();
+    this.intervalId = setAsyncInterval(async () => {
+      const code = await this.scan();
       if (code !== null) {
-        this.callback_(code);
+        this.callback(code);
       }
     }, SCAN_INTERVAL);
   }
@@ -75,23 +53,22 @@ export class BarcodeScanner {
   /**
    * Stops scanning barcodes.
    */
-  stop() {
-    if (this.intervalId_ === null) {
+  stop(): void {
+    if (this.intervalId === null) {
       return;
     }
-    clearAsyncInterval(this.intervalId_);
-    this.intervalId_ = null;
+    clearAsyncInterval(this.intervalId);
+    this.intervalId = null;
   }
 
   /**
    * Grabs the current video frame for scanning. If the video resolution is too
    * high, the image would be scaled and/or cropped from the center.
-   * @return {!Promise<!ImageBitmap>}
    */
-  async grabFrameForScan_() {
-    const {videoWidth: vw, videoHeight: vh} = this.video_;
+  private async grabFrameForScan(): Promise<ImageBitmap> {
+    const {videoWidth: vw, videoHeight: vh} = this.video;
     if (vw <= MAX_SCAN_SIZE && vh <= MAX_SCAN_SIZE) {
-      return createImageBitmap(this.video_);
+      return createImageBitmap(this.video);
     }
 
     const scanSize = Math.min(MAX_SCAN_SIZE, vw, vh);
@@ -109,19 +86,17 @@ export class BarcodeScanner {
         OffscreenCanvasRenderingContext2D);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(this.video_, sx, sy, sw, sh, 0, 0, scanSize, scanSize);
+    ctx.drawImage(this.video, sx, sy, sw, sh, 0, 0, scanSize, scanSize);
     return canvas.transferToImageBitmap();
   }
 
   /**
    * Scans barcodes from the current frame.
-   * @return {!Promise<?string>} The detected barcode value, or null if no
-   *     barcode is detected.
-   * @private
+   * @return The detected barcode value, or null if no barcode is detected.
    */
-  async scan_() {
-    const frame = await this.grabFrameForScan_();
-    const value = await this.worker_.detect(Comlink.transfer(frame, [frame]));
+  private async scan(): Promise<string|null> {
+    const frame = await this.grabFrameForScan();
+    const value = await this.worker.detect(Comlink.transfer(frame, [frame]));
     return value;
   }
 }
