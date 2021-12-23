@@ -24,6 +24,8 @@ ALLOWED_LICENSES = [
     ("Unlicense OR MIT", "MIT"),
     ("Unlicense/MIT", "MIT"),
     ("Apache-2.0 OR BSL-1.0", "Apache 2.0"),
+    ("BSD-3-Clause", "BSD 3-Clause"),
+    ("ISC", "ISC"),
 ]
 
 # The subdirectory where crates are found, relative to the current working
