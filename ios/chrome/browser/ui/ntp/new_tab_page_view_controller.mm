@@ -128,6 +128,9 @@ const CGFloat kOffsetToPinOmnibox = 100;
     [self.contentSuggestionsViewController willMoveToParentViewController:nil];
     [self.contentSuggestionsViewController.view removeFromSuperview];
     [self.contentSuggestionsViewController removeFromParentViewController];
+    [self.discoverFeedMetricsRecorder
+        recordBrokenNTPHierarchy:BrokenNTPHierarchyRelationship::
+                                     kContentSuggestionsReset];
   }
 
   [self.contentSuggestionsViewController
@@ -751,23 +754,36 @@ const CGFloat kOffsetToPinOmnibox = 100;
     [self.contentSuggestionsViewController
         didMoveToParentViewController:self.discoverFeedWrapperViewController
                                           .discoverFeed];
+
+    [self.discoverFeedMetricsRecorder
+        recordBrokenNTPHierarchy:BrokenNTPHierarchyRelationship::
+                                     kContentSuggestionsParent];
   }
   [self ensureView:self.collectionView
-       isSubviewOf:self.discoverFeedWrapperViewController.discoverFeed.view];
+             isSubviewOf:self.discoverFeedWrapperViewController.discoverFeed
+                             .view
+      withRelationshipID:BrokenNTPHierarchyRelationship::kELMCollectionParent];
   [self ensureView:self.discoverFeedWrapperViewController.discoverFeed.view
-       isSubviewOf:self.discoverFeedWrapperViewController.view];
+             isSubviewOf:self.discoverFeedWrapperViewController.view
+      withRelationshipID:BrokenNTPHierarchyRelationship::kDiscoverFeedParent];
   [self ensureView:self.discoverFeedWrapperViewController.view
-       isSubviewOf:self.view];
+             isSubviewOf:self.view
+      withRelationshipID:BrokenNTPHierarchyRelationship::
+                             kDiscoverFeedWrapperParent];
 }
 
 // Ensures that |subView| is a descendent of |parentView|. If not, logs a DCHECK
-// and adds the subview.
+// and adds the subview. Includes |relationshipID| for metrics recorder to log
+// which part of the view hierarchy was broken.
 // TODO(crbug.com/1262536): Remove this once bug is fixed.
-- (void)ensureView:(UIView*)subView isSubviewOf:(UIView*)parentView {
+- (void)ensureView:(UIView*)subView
+           isSubviewOf:(UIView*)parentView
+    withRelationshipID:(BrokenNTPHierarchyRelationship)relationship {
   if (![parentView.subviews containsObject:subView]) {
     DCHECK([parentView.subviews containsObject:subView]);
     [subView removeFromSuperview];
     [parentView addSubview:subView];
+    [self.discoverFeedMetricsRecorder recordBrokenNTPHierarchy:relationship];
   }
 }
 

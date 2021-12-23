@@ -7,6 +7,20 @@
 
 #import <UIKit/UIKit.h>
 
+// DO NOT CHANGE. Values are from enums.xml representing what could be broken in
+// the NTP view hierarchy. These values are persisted to logs. Entries should
+// not be renumbered and numeric values should never be reused.
+enum class BrokenNTPHierarchyRelationship {
+  kContentSuggestionsParent = 0,
+  kELMCollectionParent = 1,
+  kDiscoverFeedParent = 2,
+  kDiscoverFeedWrapperParent = 3,
+  kContentSuggestionsReset = 4,
+
+  // Change this to match max value.
+  kMaxValue = 4,
+};
+
 // Records different metrics for the NTP's Discover feed.
 // TODO(crbug.com/1200303): Move this file to */ui/ntp.
 @interface DiscoverFeedMetricsRecorder : NSObject
@@ -123,6 +137,11 @@
 
 // Records the native pull-down menu visibility change.
 - (void)recordNativePulldownMenuVisibilityChanged:(BOOL)shown;
+
+// Records the broken view hierarchy before repairing it.
+// TODO(crbug.com/1262536): Remove this when issue is fixed.
+- (void)recordBrokenNTPHierarchy:
+    (BrokenNTPHierarchyRelationship)brokenRelationship;
 
 @end
 
