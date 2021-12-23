@@ -1386,10 +1386,8 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return std::vector<GURL>{
       GURL(chrome::kChromeUIUntrustedCroshURL),
-      GURL(chrome::kChromeUIOsCroshAppURL), GURL(chrome::kOsUICroshURL),
       GURL(ash::file_manager::kChromeUIFileManagerUntrustedURL),
-      GURL(chrome::kChromeUIUntrustedTerminalURL),
-      GURL(chrome::kOsUITerminalURL), GURL(chrome::kOsUIAboutURL),
+      GURL(chrome::kChromeUIUntrustedTerminalURL), GURL(chrome::kOsUIAboutURL),
       GURL(chrome::kChromeUIAccountManagerErrorURL),
       GURL(chrome::kOsUIAccountManagerErrorURL),
       GURL(chrome::kChromeUIAccountManagerWelcomeURL),
@@ -1415,9 +1413,8 @@ std::vector<GURL> ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
       GURL(chrome::kOsUIDriveInternalsUrl),
       GURL(chrome::kChromeUIEmojiPickerURL), GURL(chrome::kOsUIEmojiPickerURL),
       GURL(ash::file_manager::kChromeUIFileManagerURL),
-      GURL(chrome::kOsUIFileManagerURL), GURL(chrome::kChromeUIFlagsURL),
-      GURL(chrome::kOsUIFlagsURL), GURL(chrome::kOsUIGpuURL),
-      GURL(chrome::kOsUIHistogramsURL),
+      GURL(chrome::kChromeUIFlagsURL), GURL(chrome::kOsUIFlagsURL),
+      GURL(chrome::kOsUIGpuURL), GURL(chrome::kOsUIHistogramsURL),
       GURL(chrome::kChromeUIIntenetConfigDialogURL),
       GURL(chrome::kChromeUIIntenetDetailDialogURL),
       GURL(chrome::kOsUIInvalidationsUrl),

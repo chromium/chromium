@@ -141,7 +141,6 @@ const char kChromeUIOmniboxHost[] = "omnibox";
 const char kChromeUIOmniboxURL[] = "chrome://omnibox/";
 #if defined(OS_CHROMEOS)
 const char kChromeUIAppDisabledURL[] = "chrome://app-disabled";
-const char kChromeUIOsCroshAppURL[] = "chrome://crosh/";
 const char kChromeUIOsFlagsAppURL[] = "chrome://flags/";
 const char kChromeUIOsUrlAppURL[] = "chrome://internal/";
 #endif
@@ -349,9 +348,6 @@ const char kChromeUIUrgentPasswordExpiryNotificationHost[] =
 const char kChromeUIUrgentPasswordExpiryNotificationUrl[] =
     "chrome://urgent-password-expiry-notification/";
 
-const char kOsUICroshURL[] = "os://crosh";
-const char kOsUIFileManagerURL[] = "os://file-manager";
-const char kOsUITerminalURL[] = "os://terminal";
 const char kOsUIAccountManagerErrorURL[] = "os://account-manager-error";
 const char kOsUIAccountManagerWelcomeURL[] = "os://account-manager-welcome";
 const char kOsUIAccountMigrationWelcomeURL[] = "os://account-migration-welcome";
