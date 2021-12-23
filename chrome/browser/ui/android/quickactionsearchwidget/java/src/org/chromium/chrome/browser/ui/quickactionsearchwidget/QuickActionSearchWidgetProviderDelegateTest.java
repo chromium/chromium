@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.ui.quickactionsearchwidget;
 
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
@@ -609,8 +607,8 @@ public class QuickActionSearchWidgetProviderDelegateTest {
         final Configuration c = new Configuration(mContext.getResources().getConfiguration());
         c.setLayoutDirection(Locale.forLanguageTag("ar")); // arabic
 
-        final Resources r = spy(mContext.getResources());
-        when(r.getConfiguration()).thenReturn(c);
+        final Resources r = mContext.getResources();
+        r.updateConfiguration(c, null);
         final float density = r.getDisplayMetrics().density;
 
         // Again, apply half the size of what the widget was designed for.
