@@ -1192,6 +1192,8 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
         break;
     }
     if (app_index < model_->item_count()) {
+      DCHECK_EQ(model_->ItemIndexByID(pref_shelf_id), app_index);
+
       // Found existing pin or running app.
       const ash::ShelfItem item = model_->items()[app_index];
       if (ItemTypeIsPinned(item)) {
@@ -1201,7 +1203,9 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
         PinRunningAppInternal(index, item.id);
       }
       DCHECK_EQ(model_->ItemIndexByID(item.id), index);
+      ++index;
     } else {
+      DCHECK_EQ(model_->ItemIndexByID(pref_shelf_id), -1);
       // app_id may be kChromeAppId. This happens when sync happens,
       // but Lacros becomes the primary browser so that the browser
       // shortcut is unpinned. Do nothing then.
@@ -1214,10 +1218,10 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
         if (success) {
           InsertAppItem(std::move(item_delegate), ash::STATUS_CLOSED, index,
                         ash::TYPE_PINNED_APP, /*title=*/std::u16string());
+          ++index;
         }
       }
     }
-    ++index;
   }
 
   // At second step remove any pin to the right from the current index.
