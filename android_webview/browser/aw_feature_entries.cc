@@ -24,7 +24,7 @@ constexpr flags_ui::FeatureEntry::FeatureParam
     kForceDark_SelectiveImageInversion[] = {
         {"inversion_method", "cielab_based"},
         {"image_behavior", "selective"},
-        {"text_lightness_threshold", "256"},
+        {"foreground_lightness_threshold", "255"},
         {"background_lightness_threshold", "0"}};
 
 // Not like Chrome, WebView only provides a switch in dev ui and uses the

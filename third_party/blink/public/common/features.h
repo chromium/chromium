@@ -159,7 +159,7 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<ForceDarkInversionMethod>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<ForceDarkImageBehavior>
     kForceDarkImageBehaviorParam;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kForceDarkTextLightnessThresholdParam;
+    kForceDarkForegroundLightnessThresholdParam;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kForceDarkBackgroundLightnessThresholdParam;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<

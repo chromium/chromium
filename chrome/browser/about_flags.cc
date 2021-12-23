@@ -483,19 +483,19 @@ const FeatureEntry::FeatureVariation
 const FeatureEntry::FeatureParam kForceDark_SimpleHsl[] = {
     {"inversion_method", "hsl_based"},
     {"image_behavior", "none"},
-    {"text_lightness_threshold", "256"},
+    {"foreground_lightness_threshold", "255"},
     {"background_lightness_threshold", "0"}};
 
 const FeatureEntry::FeatureParam kForceDark_SimpleCielab[] = {
     {"inversion_method", "cielab_based"},
     {"image_behavior", "none"},
-    {"text_lightness_threshold", "256"},
+    {"foreground_lightness_threshold", "255"},
     {"background_lightness_threshold", "0"}};
 
 const FeatureEntry::FeatureParam kForceDark_SimpleRgb[] = {
     {"inversion_method", "rgb_based"},
     {"image_behavior", "none"},
-    {"text_lightness_threshold", "256"},
+    {"foreground_lightness_threshold", "255"},
     {"background_lightness_threshold", "0"}};
 
 // Keep in sync with the kForceDark_SelectiveImageInversion
@@ -503,19 +503,19 @@ const FeatureEntry::FeatureParam kForceDark_SimpleRgb[] = {
 const FeatureEntry::FeatureParam kForceDark_SelectiveImageInversion[] = {
     {"inversion_method", "cielab_based"},
     {"image_behavior", "selective"},
-    {"text_lightness_threshold", "256"},
+    {"foreground_lightness_threshold", "255"},
     {"background_lightness_threshold", "0"}};
 
 const FeatureEntry::FeatureParam kForceDark_SelectiveElementInversion[] = {
     {"inversion_method", "cielab_based"},
     {"image_behavior", "none"},
-    {"text_lightness_threshold", "150"},
+    {"foreground_lightness_threshold", "150"},
     {"background_lightness_threshold", "205"}};
 
 const FeatureEntry::FeatureParam kForceDark_SelectiveGeneralInversion[] = {
     {"inversion_method", "cielab_based"},
     {"image_behavior", "selective"},
-    {"text_lightness_threshold", "150"},
+    {"foreground_lightness_threshold", "150"},
     {"background_lightness_threshold", "205"}};
 
 const FeatureEntry::FeatureParam kForceDark_IncreaseTextContrast[] = {

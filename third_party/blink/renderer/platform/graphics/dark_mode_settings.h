@@ -37,8 +37,8 @@ struct DarkModeSettings {
 
   // Foreground colors with brightness below this threshold will be inverted,
   // and above it will be left as in the original, non-dark-mode page.  Set to
-  // 256 to always invert foreground color or to 0 to never invert text color.
-  int foreground_brightness_threshold = 256;
+  // 255 to always invert foreground color or to 0 to never invert text color.
+  int foreground_brightness_threshold = 255;
 
   // Background elements with brightness above this threshold will be inverted,
   // and below it will be left as in the original, non-dark-mode page.  Set to

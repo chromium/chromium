@@ -509,13 +509,13 @@ const base::FeatureParam<ForceDarkImageBehavior> kForceDarkImageBehaviorParam{
     &forcedark_image_behavior_options};
 
 // Do not invert text lighter than this.
-// Range: 0 (do not invert any text) to 256 (invert all text)
+// Range: 0 (do not invert any text) to 255 (invert all text)
 // Can also set to -1 to let Blink's internal settings control the value
-const base::FeatureParam<int> kForceDarkTextLightnessThresholdParam{
-    &kForceWebContentsDarkMode, "text_lightness_threshold", -1};
+const base::FeatureParam<int> kForceDarkForegroundLightnessThresholdParam{
+    &kForceWebContentsDarkMode, "foreground_lightness_threshold", -1};
 
 // Do not invert backgrounds darker than this.
-// Range: 0 (invert all backgrounds) to 256 (invert no backgrounds)
+// Range: 0 (invert all backgrounds) to 255 (invert no backgrounds)
 // Can also set to -1 to let Blink's internal settings control the value
 const base::FeatureParam<int> kForceDarkBackgroundLightnessThresholdParam{
     &kForceWebContentsDarkMode, "background_lightness_threshold", -1};

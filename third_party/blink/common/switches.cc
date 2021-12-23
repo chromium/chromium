@@ -23,7 +23,7 @@ const char kBlinkSettings[] = "blink-settings";
 // the default dark mode settings is used. Valid params are given below.
 // "InversionAlgorithm" takes int value of DarkModeInversionAlgorithm enum.
 // "ImagePolicy" takes int value of DarkModeImagePolicy enum.
-// "TextBrightnessThreshold" takes 0 to 255 int value.
+// "ForegroundBrightnessThreshold" takes 0 to 255 int value.
 // "BackgroundBrightnessThreshold" takes 0 to 255 int value.
 // "ContrastPercent" takes -1.0 to 1.0 float value. Higher the value, more
 // the contrast.
