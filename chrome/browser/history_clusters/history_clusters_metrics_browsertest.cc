@@ -114,8 +114,14 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
 }
 
+// TODO(crbug.com/1282087): Flaky on Linux and Windows.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_DirectNavigationWithQuery DISABLED_DirectNavigationWithQuery
+#else
+#define MAYBE_DirectNavigationWithQuery DirectNavigationWithQuery
+#endif
 IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
-                       DirectNavigationWithQuery) {
+                       MAYBE_DirectNavigationWithQuery) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
