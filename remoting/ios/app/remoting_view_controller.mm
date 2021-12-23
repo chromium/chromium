@@ -139,6 +139,7 @@ using remoting::HostListService;
 
     self.navigationItem.title =
         l10n_util::GetNSString(IDS_PRODUCT_NAME).lowercaseString;
+    [self.navigationItem setHidesBackButton:YES animated:NO];
 
     _appBarViewController.headerView.backgroundColor =
         RemotingTheme.hostListBackgroundColor;
