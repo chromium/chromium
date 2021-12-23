@@ -6,28 +6,26 @@ import {WaitableEvent} from './waitable_event.js';
 
 /**
  * Audio element status.
- * @enum {string}
  */
-export const Status = {
-  LOADING: 'loading',
-  PLAYING: 'playing',
-  PAUSED: 'paused',
-};
+export enum Status {
+  LOADING = 'loading',
+  PLAYING = 'playing',
+  PAUSED = 'paused',
+}
 
 /**
  * Map of audio elements and their status.
- * @type {!Map<HTMLAudioElement>}
  */
-const elementsStatus = new Map();
+const elementsStatus = new Map<HTMLAudioElement, Status>();
 
 /**
  * Plays a sound.
- * @param {!HTMLAudioElement} el Audio element to play.
- * @return {!Promise<boolean>} Promise which will be resolved once the sound is
- *     stopped. The resolved value will be true if it is ended. Otherwise, it is
- *     just paused due to cancenlation.
+ * @param el Audio element to play.
+ * @return Promise which will be resolved once the sound is stopped. The
+ *     resolved value will be true if it is ended. Otherwise, it is just paused
+ *     due to cancenlation.
  */
-export async function play(el) {
+export async function play(el: HTMLAudioElement): Promise<boolean> {
   await cancel(el);
 
   el.currentTime = 0;
@@ -35,8 +33,7 @@ export async function play(el) {
   await el.play();
   elementsStatus.set(el, Status.PLAYING);
 
-  /** @type {WaitableEvent<boolean>} */
-  const audioStopped = new WaitableEvent();
+  const audioStopped = new WaitableEvent<boolean>();
   const events = ['ended', 'pause'];
   const onAudioStopped = () => {
     elementsStatus.set(el, Status.PAUSED);
@@ -54,10 +51,9 @@ export async function play(el) {
 /**
  * Cancel a sound from playing. If the sound is loading, cancel it right after
  * it start playing. If the sound is paused, do nothing.
- * @param {!HTMLAudioElement} el Audio element to cancel.
- * @return {!Promise}
+ * @param el Audio element to cancel.
  */
-export async function cancel(el) {
+export async function cancel(el: HTMLAudioElement): Promise<void> {
   // We can only pause the element which is currently playing.
   // (Please refer to https://goo.gl/LdLk22)
   const status = elementsStatus.get(el);
