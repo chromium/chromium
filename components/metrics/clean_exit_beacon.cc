@@ -449,10 +449,15 @@ void CleanExitBeacon::WriteBeaconFile(bool exited_cleanly) const {
   DCHECK(success);
   int data_size = static_cast<int>(json_string.size());
   DCHECK_NE(data_size, 0);
+  int bytes_written;
   {
     base::ScopedAllowBlocking allow_io;
-    base::WriteFile(beacon_file_path_, json_string.data(), data_size);
+    // WriteFile() returns -1 on error.
+    bytes_written =
+        base::WriteFile(beacon_file_path_, json_string.data(), data_size);
   }
+  base::UmaHistogramBoolean("Variations.ExtendedSafeMode.BeaconFileWrite",
+                            bytes_written != -1);
 }
 
 }  // namespace metrics

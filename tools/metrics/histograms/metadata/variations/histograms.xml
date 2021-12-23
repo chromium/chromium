@@ -105,6 +105,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Variations.ExtendedSafeMode.BeaconFileWrite"
+    enum="BooleanSuccess" expires_after="2022-06-05">
+  <owner>caitlinfischer@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <component>Internals&gt;Metrics&gt;Variations</component>
+  <summary>
+    Denotes whether the beacon file was successfully written. Note that this
+    file is used by only one branch of the Extended Variations Safe Mode
+    experiment. Recorded immediately after Chrome tries to write the file.
+  </summary>
+</histogram>
+
 <histogram name="Variations.ExtendedSafeMode.GotVariationsFileContents"
     enum="BooleanSuccess" expires_after="2022-06-05">
   <obsolete>

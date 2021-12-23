@@ -464,8 +464,12 @@ TEST_F(CleanExitBeaconTest, WriteBeaconValue_SynchronousWriteDcheck) {
   EXPECT_DCHECK_DEATH(
       clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/false,
                                          /*write_synchronously=*/true));
+
+  // Verify metrics.
   histogram_tester_.ExpectTotalCount(
       "Variations.ExtendedSafeMode.WritePrefsTime", 0);
+  histogram_tester_.ExpectTotalCount(
+      "Variations.ExtendedSafeMode.BeaconFileWrite", 0);
 }
 
 // The below CleanExitBeaconTest.BeaconState_* tests verify that the logic for

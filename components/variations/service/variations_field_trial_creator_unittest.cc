@@ -1147,9 +1147,11 @@ TEST_F(FieldTrialCreatorSafeModeExperimentTest,
             "{\"user_experience_metrics.stability.exited_cleanly\":false,"
             "\"variations_crash_streak\":0}");
 
-  // Verify that the WritePrefsTime metric was recorded.
+  // Verify metrics.
   histogram_tester.ExpectTotalCount(
       "Variations.ExtendedSafeMode.WritePrefsTime", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Variations.ExtendedSafeMode.BeaconFileWrite", 1, 1);
 
   // Check that no prefs were written to the Local State file.
   std::string pref_file_contents;
