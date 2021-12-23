@@ -2012,6 +2012,8 @@ static_library("ui") {
       "app_list/search/search_controller_impl.h",
       "app_list/search/search_controller_impl_new.cc",
       "app_list/search/search_controller_impl_new.h",
+      "app_list/search/search_features.cc",
+      "app_list/search/search_features.h",
       "app_list/search/search_metrics_observer.cc",
       "app_list/search/search_metrics_observer.h",
       "app_list/search/search_provider.cc",

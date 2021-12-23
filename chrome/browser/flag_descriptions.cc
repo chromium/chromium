@@ -4206,6 +4206,13 @@ const char kCategoricalSearchName[] = "Launcher Categorical Search";
 const char kCategoricalSearchDescription[] =
     "Launcher search results grouped by categories";
 
+const char kQuerySearchBurnInPeriodName[] = "Launcher query search burn-in";
+const char kQuerySearchBurnInPeriodDescription[] =
+    "Enables the use of a burn-in period for the display of launcher query "
+    "search results. Display of results in query search are delayed until the "
+    "burn-in period has elapsed. Only valid when categorical search is "
+    "enabled. Burn-in period duration configurable (unit: milliseconds).";
+
 const char kCellularBypassESimInstallationConnectivityCheckName[] =
     "Bypass eSIM installation connectivity check";
 const char kCellularBypassESimInstallationConnectivityCheckDescription[] =

@@ -50845,6 +50845,7 @@ from previous Chrome versions.
   <int value="-1449590570" label="RestrictGamepadAccess:enabled"/>
   <int value="-1449358747" label="RemoveStatusBarInWebApps:enabled"/>
   <int value="-1448511207" label="UseMessagesStagingUrl:disabled"/>
+  <int value="-1447314734" label="QuerySearchBurnInPeriod:enabled"/>
   <int value="-1447147245" label="VideoPlayerNativeControls:enabled"/>
   <int value="-1446625028" label="CrostiniUsbAllowUnsupported:enabled"/>
   <int value="-1446425986" label="ProtectSyncCredentialOnReauth:disabled"/>
@@ -51288,6 +51289,7 @@ from previous Chrome versions.
   <int value="-1142933895" label="ReduceDisplayNotifications:disabled"/>
   <int value="-1142034548" label="BuiltInModuleKvStorage:enabled"/>
   <int value="-1141780291" label="DisplayChangeModal:disabled"/>
+  <int value="-1138851579" label="QuerySearchBurnInPeriod:disabled"/>
   <int value="-1137696948" label="enable-chromeos-account-manager"/>
   <int value="-1137442543" label="enable-slimming-paint"/>
   <int value="-1136627751" label="ignore-autocomplete-off-autofill"/>

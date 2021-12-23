@@ -4629,6 +4629,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "query-search-burn-in-period",
+    "owners": [ "tby", "thanhdng", "wrong", "amandadeacon" ],
+    "expiry_milestone": 103
+  },
+  {
     "name": "query-tiles",
     "owners": [ "shaktisahu", "qinmin" ],
     "expiry_milestone": 100

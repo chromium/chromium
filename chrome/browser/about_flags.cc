@@ -59,6 +59,7 @@
 #include "chrome/browser/sharing/sms/sms_flags.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/site_isolation/about_flags.h"
+#include "chrome/browser/ui/app_list/search/search_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/browser/unexpire_flags_gen.h"
@@ -2454,6 +2455,21 @@ const FeatureEntry::FeatureVariation kCategoricalSearchVariations[] = {
      base::size(kCategoricalSearch_ByItem), nullptr},
     {"By usage", kCategoricalSearch_ByUsage,
      base::size(kCategoricalSearch_ByUsage), nullptr}};
+
+const FeatureEntry::FeatureParam kQuerySearchBurnInPeriod_50ms[] = {
+    {"burnin_period", "50"}};
+const FeatureEntry::FeatureParam kQuerySearchBurnInPeriod_100ms[] = {
+    {"burnin_period", "100"}};
+const FeatureEntry::FeatureParam kQuerySearchBurnInPeriod_150ms[] = {
+    {"burnin_period", "150"}};
+
+const FeatureEntry::FeatureVariation kQuerySearchBurnInPeriodVariations[] = {
+    {"50ms", kQuerySearchBurnInPeriod_50ms,
+     base::size(kQuerySearchBurnInPeriod_50ms), nullptr},
+    {"100ms", kQuerySearchBurnInPeriod_100ms,
+     base::size(kQuerySearchBurnInPeriod_100ms), nullptr},
+    {"150ms", kQuerySearchBurnInPeriod_150ms,
+     base::size(kQuerySearchBurnInPeriod_150ms), nullptr}};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 constexpr FeatureEntry::FeatureParam kPlatformProvidedTrustTokenIssuance[] = {
@@ -6563,6 +6579,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(app_list_features::kCategoricalSearch,
                                     kCategoricalSearchVariations,
                                     "LauncherCategoricalSearch")},
+
+    {"query-search-burn-in-period",
+     flag_descriptions::kQuerySearchBurnInPeriodName,
+     flag_descriptions::kQuerySearchBurnInPeriodDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(search_features::kQuerySearchBurnInPeriod,
+                                    kQuerySearchBurnInPeriodVariations,
+                                    "LauncherQuerySearchBurnInPeriod")},
 
     {"app-discovery-remote-url-search",
      flag_descriptions::kAppDiscoveryRemoteUrlSearchName,
