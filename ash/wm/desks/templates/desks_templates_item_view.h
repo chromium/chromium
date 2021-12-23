@@ -18,6 +18,7 @@
 namespace views {
 class Label;
 class Textfield;
+class ImageView;
 }  // namespace views
 
 namespace ash {
@@ -106,6 +107,9 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   PillButton* launch_button_ = nullptr;
   // Container used for holding all the views that appear on hover.
   views::View* hover_container_ = nullptr;
+
+  // The indicator to show if template is managed by admin.
+  views::ImageView* managed_status_indicator_ = nullptr;
 
   // When the `name_view_` is focused, we select all its text. However, if it is
   // focused via a mouse press event, on mouse release will clear the selection.

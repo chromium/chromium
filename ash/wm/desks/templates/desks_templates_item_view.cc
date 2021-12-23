@@ -26,15 +26,20 @@
 #include "ash/wm/overview/overview_session.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/view.h"
 #include "ui/views/view_targeter_delegate.h"
 
 namespace ash {
@@ -59,6 +64,10 @@ constexpr int kMinTemplateNameViewWidth = 56;
 // The margin between the grid item contents and the card container.
 constexpr int kGridItemMargin = 24;
 constexpr int kTimeViewHeight = 20;
+
+// The margin for the managed status icon.
+constexpr int kManagedStatusIndicatorMargin = 8;
+constexpr int kManagedStatusIndicatorSize = 20;
 
 constexpr char kAmPmTimeDateFmtStr[] = "%d:%02d%s, %d-%02d-%02d";
 
@@ -124,6 +133,16 @@ DesksTemplatesItemView::DesksTemplatesItemView(DeskTemplate* desk_template)
                   views::Builder<views::View>().CopyAddressTo(&spacer),
                   views::Builder<DesksTemplatesIconContainer>().CopyAddressTo(
                       &icon_container_view_)),
+          views::Builder<views::ImageView>()
+              .CopyAddressTo(&managed_status_indicator_)
+              .SetPreferredSize(gfx::Size(kManagedStatusIndicatorSize,
+                                          kManagedStatusIndicatorSize))
+              .SetImage(gfx::CreateVectorIcon(
+                  chromeos::kEnterpriseIcon, kManagedStatusIndicatorSize,
+                  AshColorProvider::Get()->GetContentLayerColor(
+                      AshColorProvider::ContentLayerType::kIconColorSecondary)))
+              .SetVisible(desk_template->source() ==
+                          DeskTemplateSource::kPolicy),
           views::Builder<views::View>().CopyAddressTo(&hover_container_))
       .BuildChildren();
 
@@ -194,6 +213,12 @@ void DesksTemplatesItemView::Layout() {
   views::View::Layout();
 
   LayoutTemplateNameView();
+
+  managed_status_indicator_->SetBoundsRect(
+      gfx::Rect(name_view_->bounds().width() + kHorizontalPaddingDp +
+                    kManagedStatusIndicatorMargin,
+                name_view_->y(), kManagedStatusIndicatorSize,
+                kManagedStatusIndicatorSize));
 
   const gfx::Size delete_button_size = delete_button_->GetPreferredSize();
   DCHECK_EQ(delete_button_size.width(), delete_button_size.height());
@@ -469,9 +494,12 @@ void DesksTemplatesItemView::LayoutTemplateNameView() {
       std::min(kPreferredSize.width(), kMinTemplateNameViewWidth);
   // TODO(crbug.com/1264174): Investigate the best way to get this to work with
   // the enterprise indicator. Possibly wrap both in a `BoxLayoutView`.
-  const int max_width =
-      std::max(kPreferredSize.width() - (kHorizontalPaddingDp * 2),
-               kMinTemplateNameViewWidth);
+  const int max_width = std::max(
+      kPreferredSize.width() - (kHorizontalPaddingDp * 2) -
+          (managed_status_indicator_->GetVisible()
+               ? (kManagedStatusIndicatorMargin + kManagedStatusIndicatorSize)
+               : 0),
+      kMinTemplateNameViewWidth);
   const int text_width =
       base::clamp(name_view_size.width(), min_width, max_width);
   gfx::Rect name_view_bounds{name_view_->bounds()};
