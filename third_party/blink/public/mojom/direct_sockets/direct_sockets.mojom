@@ -5,7 +5,7 @@
 module blink.mojom;
 
 // Explainer for the Direct Sockets API:
-// https://github.com/WICG/raw-sockets/blob/main/docs/explainer.md
+// https://github.com/WICG/direct-sockets/blob/main/docs/explainer.md
 
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
