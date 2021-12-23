@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 # C++ components used by both lacros-chrome and ash-chrome.
 config("crosapi_implementation") {
   defines = [ "IS_CROSAPI_IMPL" ]
@@ -25,6 +27,13 @@ component("cpp") {
     "//chromeos/crosapi/mojom",
     "//mojo/public/cpp/bindings",
   ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "lacros_startup_state.cc",
+      "lacros_startup_state.h",
+    ]
+  }
 }
 
 source_set("unit_tests") {
