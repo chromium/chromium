@@ -27,13 +27,14 @@
     width: 100%;
   }
 
-  .row:not([empty]):hover,
+  :host-context([hover-visible]) .row:not([empty]):hover,
   .row:focus-visible:focus {
     background-color: var(--cr-hover-background-color);
     outline: none;
   }
 
-  .row:not([empty]):active {
+  :host-context([hover-visible]) .row:not([empty]):active,
+  .row:not([empty]):focus-visible:active {
     background-color: var(--cr-active-background-color);
   }
 

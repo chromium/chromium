@@ -35,6 +35,11 @@ export class BookmarksListElement extends PolymerElement {
         value: () => [],
       },
 
+      hoverVisible: {
+        reflectToAttribute: true,
+        value: false,
+      },
+
       openFolders_: {
         type: Array,
         value: () => [],
@@ -50,6 +55,7 @@ export class BookmarksListElement extends PolymerElement {
       ReadLaterApiProxyImpl.getInstance();
   private listeners_ = new Map<string, Function>();
   private folders_: chrome.bookmarks.BookmarkTreeNode[];
+  hoverVisible: boolean;
   private openFolders_: string[];
 
   ready() {
@@ -59,6 +65,8 @@ export class BookmarksListElement extends PolymerElement {
         e => this.onFolderOpenChanged_(
             e as CustomEvent<{id: string, open: boolean}>));
     this.addEventListener('keydown', e => this.onKeydown_(e));
+    this.addEventListener('pointermove', () => this.hoverVisible = true);
+    this.addEventListener('pointerleave', () => this.hoverVisible = false);
   }
 
   connectedCallback() {
@@ -137,6 +145,7 @@ export class BookmarksListElement extends PolymerElement {
     }
 
     this.focusBookmark_(bookmarks[0]!.id);
+    this.hoverVisible = false;
   }
 
   /** BookmarksDragDelegate */
