@@ -110,6 +110,22 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1281645
   "quicksettings.LockScreen",
+
+  # https://crbug.com/1282372
+  "security.SELinuxFilesARC",
+  "security.NetworkListenersARC",
+  "security.SELinuxProcessesARC",
+
+  # https://crbug.com/1282369
+  "apps.LaunchHelpAppOffline",
+
+  # https://crbug.com/1282366
+  "inputs.VirtualKeyboardDeadKeys.french",
+  "inputs.VirtualKeyboardSystemLanguages.es",
+  "inputs.VirtualKeyboardFloat.clamshell",
+
+  # https://crbug.com/1282370
+  "arc.Boot.vm_with_per_vcpu_core_scheduling",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
