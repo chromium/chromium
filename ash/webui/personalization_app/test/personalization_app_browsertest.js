@@ -56,6 +56,7 @@ TEST_F('PersonalizationAppBrowserTest', 'HasRootPageUrl', () => {
   assertEquals(
       'Personalization',
       document.querySelector('personalization-router')
+          .shadowRoot.querySelector('personalization-main')
           .shadowRoot.querySelector('h1')
           .innerText);
   testDone();

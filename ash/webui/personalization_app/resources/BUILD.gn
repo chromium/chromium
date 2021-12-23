@@ -45,6 +45,7 @@ polymer_js_files = [
   "common/icons.js",
   "common/styles.js",
 
+  "trusted/personalization_main_element.ts",
   "trusted/personalization_router_element.ts",
   "trusted/personalization_toast_element.ts",
   "trusted/personalization_breadcrumb_element.ts",

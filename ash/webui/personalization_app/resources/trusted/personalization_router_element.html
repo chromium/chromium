@@ -60,8 +60,7 @@
     params-string="{{query_}}">
   </iron-query-params>
   <template is="dom-if" if="[[shouldShowRootPage_(path_)]]">
-    <!-- TODO(b/202734180) replace this with real content -->
-    <h1>Personalization</h1>
+    <personalization-main></personalization-main>
   </template>
   <template is="dom-if" if="[[shouldShowWallpaperSubpage_(path_)]]">
     <div id="wallpaperContainer">

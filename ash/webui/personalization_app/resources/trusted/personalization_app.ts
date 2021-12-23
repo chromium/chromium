@@ -13,6 +13,7 @@ import './personalization_router_element.js';
 import './personalization_test_api.js';
 import './personalization_toast_element.js';
 import './personalization_breadcrumb_element.js';
+import './personalization_main_element.js';
 import './wallpaper/wallpaper_subpage.js';
 import {emptyState} from './personalization_state.js';
 import {PersonalizationStore} from './personalization_store.js';
