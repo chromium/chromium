@@ -100,12 +100,12 @@ KioskAppLaunchError::Error KioskAppLaunchError::Get() {
     return s_last_error;
   s_last_error = Error::kNone;
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(
-      *local_state->GetDictionary(KioskAppManager::kKioskDictionaryName));
+  const base::Value* dict =
+      local_state->GetDictionary(KioskAppManager::kKioskDictionaryName);
 
-  int error;
-  if (dict->GetInteger(kKeyLaunchError, &error)) {
-    s_last_error = static_cast<KioskAppLaunchError::Error>(error);
+  absl::optional<int> error = dict->FindIntKey(kKeyLaunchError);
+  if (error.has_value()) {
+    s_last_error = static_cast<KioskAppLaunchError::Error>(error.value());
     return s_last_error;
   }
 

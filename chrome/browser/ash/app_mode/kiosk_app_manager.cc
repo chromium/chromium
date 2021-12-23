@@ -837,13 +837,13 @@ void KioskAppManager::OnExtensionDownloadFailed(
 
 KioskAppManager::AutoLoginState KioskAppManager::GetAutoLoginState() const {
   PrefService* prefs = g_browser_process->local_state();
-  const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(
-      *prefs->GetDictionary(KioskAppManager::kKioskDictionaryName));
-  int value;
-  if (!dict->GetInteger(kKeyAutoLoginState, &value))
+  const base::Value* dict =
+      prefs->GetDictionary(KioskAppManager::kKioskDictionaryName);
+  absl::optional<int> value = dict->FindIntKey(kKeyAutoLoginState);
+  if (!value.has_value())
     return AutoLoginState::kNone;
 
-  return static_cast<AutoLoginState>(value);
+  return static_cast<AutoLoginState>(value.value());
 }
 
 void KioskAppManager::SetAutoLoginState(AutoLoginState state) {

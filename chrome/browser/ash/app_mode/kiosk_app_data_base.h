@@ -15,7 +15,7 @@
 #include "ui/gfx/image/image_skia.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace ash {
@@ -55,8 +55,7 @@ class KioskAppDataBase : public KioskAppIconLoader::Delegate {
   // Helper to load name and icon from provided dictionary.
   // if |lazy_icon_load| is set to true, the icon will not be updated, only
   // icon_path_.
-  bool LoadFromDictionary(const base::DictionaryValue& dict,
-                          bool lazy_icon_load = false);
+  bool LoadFromDictionary(const base::Value& dict, bool lazy_icon_load = false);
 
   // Starts loading the icon from |icon_path_|;
   void DecodeIcon();

@@ -167,8 +167,7 @@ bool WebKioskAppData::LoadFromCache() {
   PrefService* local_state = g_browser_process->local_state();
   const base::Value* dict = local_state->GetDictionary(dictionary_name());
 
-  if (!LoadFromDictionary(base::Value::AsDictionaryValue(*dict),
-                          /* lazy_icon_load= */ true))
+  if (!LoadFromDictionary(*dict, /* lazy_icon_load= */ true))
     return false;
 
   // If the icon was previously downloaded using a different url, do not use
