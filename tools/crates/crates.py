@@ -55,4 +55,7 @@ gen_parser.add_argument(
 gen_parser.set_defaults(func=gen.run)
 
 args = parser.parse_args()
-args.func(args)
+if "func" not in args:
+    parser.print_usage()
+else:
+    args.func(args)
