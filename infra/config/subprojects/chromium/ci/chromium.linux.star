@@ -35,18 +35,6 @@ consoles.console_view(
     },
 )
 
-def linux_builder(
-        *,
-        name,
-        notifies = ("chromium.linux",),
-        extra_notifies = None,
-        **kwargs):
-    return ci.builder(
-        name = name,
-        notifies = list(notifies) + (extra_notifies or []),
-        **kwargs
-    )
-
 ci.builder(
     name = "Cast Audio Linux",
     console_view_entry = consoles.console_view_entry(
