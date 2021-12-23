@@ -124,6 +124,12 @@ const CGFloat kOffsetToPinOmnibox = 100;
       self.isFeedVisible ? self.discoverFeedWrapperViewController.discoverFeed
                          : self.discoverFeedWrapperViewController;
 
+  if (self.contentSuggestionsViewController.parentViewController) {
+    [self.contentSuggestionsViewController willMoveToParentViewController:nil];
+    [self.contentSuggestionsViewController.view removeFromSuperview];
+    [self.contentSuggestionsViewController removeFromParentViewController];
+  }
+
   [self.contentSuggestionsViewController
       willMoveToParentViewController:parentViewController];
   [parentViewController
@@ -727,8 +733,25 @@ const CGFloat kOffsetToPinOmnibox = 100;
   // self.discoverFeedWrapperViewController.view ->
   // self.discoverFeedWrapperViewController.discoverFeed.view ->
   // self.collectionView -> self.contentSuggestionsViewController.view.
-  [self ensureView:self.contentSuggestionsViewController.view
-       isSubviewOf:self.collectionView];
+  if (![self.collectionView.subviews
+          containsObject:self.contentSuggestionsViewController.view]) {
+    // Remove child VC from old parent.
+    [self.contentSuggestionsViewController willMoveToParentViewController:nil];
+    [self.contentSuggestionsViewController removeFromParentViewController];
+    [self.contentSuggestionsViewController.view removeFromSuperview];
+    [self.contentSuggestionsViewController didMoveToParentViewController:nil];
+
+    // Add child VC to new parent.
+    [self.contentSuggestionsViewController
+        willMoveToParentViewController:self.discoverFeedWrapperViewController
+                                           .discoverFeed];
+    [self.discoverFeedWrapperViewController.discoverFeed
+        addChildViewController:self.contentSuggestionsViewController];
+    [self.collectionView addSubview:self.contentSuggestionsViewController.view];
+    [self.contentSuggestionsViewController
+        didMoveToParentViewController:self.discoverFeedWrapperViewController
+                                          .discoverFeed];
+  }
   [self ensureView:self.collectionView
        isSubviewOf:self.discoverFeedWrapperViewController.discoverFeed.view];
   [self ensureView:self.discoverFeedWrapperViewController.discoverFeed.view
