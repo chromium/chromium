@@ -119,4 +119,42 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
                    prefs::kCurrentMigrationVersionToGoogleMobileServices));
 }
 
+TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+       LocalAndroidPasswordsClearedWhenSyncEnabled) {
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_completion_callback;
+  base::MockCallback<base::RepeatingCallback<bool()>> is_sync_enabled_callback_;
+  base::RepeatingClosure sync_status_changed_closure;
+
+  Init(is_sync_enabled_callback_.Get());
+
+  EXPECT_CALL(mock_completion_callback, Run(/*success=*/true));
+
+  EXPECT_CALL(*built_in_backend(), InitBackend)
+      .WillOnce(WithArgs<1, 2>(
+          [&sync_status_changed_closure](auto sync_status_changed,
+                                         auto completion_callback) {
+            std::move(completion_callback).Run(/*success=*/true);
+            // Capture |sync_enabled_or_disabled_cb| passed to the
+            // build_in_backend.
+            sync_status_changed_closure = std::move(sync_status_changed);
+          }));
+  EXPECT_CALL(*android_backend(), InitBackend)
+      .WillOnce(WithArg<2>([](auto completion_callback) {
+        std::move(completion_callback).Run(/*success=*/true);
+      }));
+
+  backend_migration_decorator()->InitBackend(
+      /*remote_form_changes_received=*/base::DoNothing(),
+      /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
+      /*completion=*/mock_completion_callback.Get());
+
+  // Invoke sync callback to simulate a change in sync status. Set expectation
+  // for sync to be turned off.
+  EXPECT_CALL(is_sync_enabled_callback_, Run()).WillOnce(testing::Return(true));
+  EXPECT_CALL(*android_backend(), ClearAllLocalPasswords);
+  sync_status_changed_closure.Run();
+
+  RunUntilIdle();
+}
+
 }  // namespace password_manager

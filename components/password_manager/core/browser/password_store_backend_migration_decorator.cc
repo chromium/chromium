@@ -202,7 +202,7 @@ void PasswordStoreBackendMigrationDecorator::StartMigration() {
 void PasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
   if (is_syncing_passwords_callback_.Run()) {
     // Sync was enabled. Delete all the passwords from GMS Core local storage.
-    // TODO(https://crbug.com/1278748) Implement.
+    android_backend_->ClearAllLocalPasswords();
   } else {
     // Clear migration pref to force rerun of initial migration of passwords
     // from Chrome to GMS Core local storage.
