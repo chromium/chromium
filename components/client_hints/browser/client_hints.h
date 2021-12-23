@@ -8,16 +8,19 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
-#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 class GURL;
 class HostContentSettingsMap;
 class PrefService;
+
+namespace blink {
+struct UserAgentMetadata;
+class EnabledClientHints;
+}  // namespace blink
 
 namespace client_hints {
 
