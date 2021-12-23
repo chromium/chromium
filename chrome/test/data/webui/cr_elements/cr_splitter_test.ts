@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
+
 import {CrSplitterElement} from 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('cr-splitter', function() {
-  /** @type {!CrSplitterElement} */
-  let crSplitter;
+  let crSplitter: CrSplitterElement;
 
   setup(function() {
     document.body.innerHTML = `
@@ -16,8 +17,7 @@ suite('cr-splitter', function() {
       <cr-splitter id="splitter"></cr-splitter>
       <div id="next"></div>`;
 
-    crSplitter =
-        /** @type {!CrSplitterElement} */ (document.querySelector('#splitter'));
+    crSplitter = document.querySelector('#splitter')!;
   });
 
   test('ignores right mouse', function() {
@@ -34,7 +34,7 @@ suite('cr-splitter', function() {
   test('resize previous element', function() {
     crSplitter.resizeNextElement = false;
 
-    const previousElement = document.getElementById('previous');
+    const previousElement = document.getElementById('previous')!;
     previousElement.style.width = '0px';
     const beforeWidth = previousElement.getBoundingClientRect().width;
 
@@ -60,7 +60,7 @@ suite('cr-splitter', function() {
 
   test('resize next element', function() {
     crSplitter.resizeNextElement = true;
-    const nextElement = document.getElementById('next');
+    const nextElement = document.getElementById('next')!;
     nextElement.style.width = '0px';
     const beforeWidth = nextElement.getBoundingClientRect().width;
 

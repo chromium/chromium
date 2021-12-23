@@ -17,23 +17,15 @@ js_type_check("closure_compile") {
                   ]
 
   deps = [
-    ":cr_card_radio_button_test",
     ":cr_container_shadow_behavior_test",
     ":cr_fingerprint_progress_arc_tests",
     ":cr_grid_focus_test",
-    ":cr_icon_button_tests",
-    ":cr_input_test",
     ":cr_lottie_tests",
     ":cr_policy_indicator_behavior_tests",
     ":cr_policy_indicator_tests",
     ":cr_policy_pref_indicator_tests",
     ":cr_policy_strings",
-    ":cr_profile_avatar_selector_tests",
     ":cr_scrollable_behavior_tests",
-    ":cr_splitter_test",
-    ":cr_toast_manager_test",
-    ":cr_toast_test",
-    ":cr_toolbar_focus_tests",
     ":iron_list_focus_test",
   ]
 
@@ -58,26 +50,6 @@ js_library("cr_fingerprint_progress_arc_tests") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_fingerprint:cr_fingerprint_progress_arc.m",
     "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_icon_button_tests") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util",
-    "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_input_test") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -137,25 +109,6 @@ js_library("cr_policy_pref_indicator_tests") {
 js_library("cr_policy_strings") {
 }
 
-js_library("cr_profile_avatar_selector_tests") {
-  deps = [
-    "..:chai_assert",
-    "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_profile_avatar_selector:cr_profile_avatar_selector",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_card_radio_button_test") {
-  deps = [
-    "..:chai_assert",
-    "//ui/webui/resources/cr_elements/cr_radio_button:cr_card_radio_button.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
 js_library("cr_scrollable_behavior_tests") {
   deps = [
     "..:chai_assert",
@@ -163,43 +116,6 @@ js_library("cr_scrollable_behavior_tests") {
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_splitter_test") {
-  deps = [
-    "..:chai_assert",
-    "//ui/webui/resources/cr_elements/cr_splitter:cr_splitter",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_toast_manager_test") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_toast_test") {
-  deps = [
-    "..:chai_assert",
-    "..:mock_timer",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_toolbar_focus_tests") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -245,18 +161,26 @@ ts_library("build_ts") {
     "cr_action_menu_test.ts",
     "cr_auto_img_test.ts",
     "cr_button_tests.ts",
+    "cr_card_radio_button_test.ts",
     "cr_checkbox_test.ts",
     "cr_dialog_test.ts",
     "cr_drawer_tests.ts",
     "cr_expand_button_tests.ts",
+    "cr_icon_button_tests.ts",
+    "cr_input_test.ts",
     "cr_lazy_render_tests.ts",
     "cr_link_row_tests.ts",
-    "cr_radio_group_test.ts",
+    "cr_profile_avatar_selector_tests.ts",
     "cr_radio_button_test.ts",
+    "cr_radio_group_test.ts",
     "cr_search_field_tests.ts",
     "cr_slider_test.ts",
+    "cr_splitter_test.ts",
     "cr_tabs_test.ts",
+    "cr_toast_manager_test.ts",
+    "cr_toast_test.ts",
     "cr_toggle_test.ts",
+    "cr_toolbar_focus_tests.ts",
     "cr_toolbar_search_field_tests.ts",
     "cr_toolbar_test.ts",
     "cr_view_manager_test.ts",

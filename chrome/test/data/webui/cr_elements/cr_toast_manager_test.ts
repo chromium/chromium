@@ -3,17 +3,16 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import { CrToastManagerElement,getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {eventToPromise} from '../test_util.js';
+import {CrToastManagerElement, getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
+
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // clang-format on
 
 suite('cr-toast-manager', () => {
-  /** @type {!CrToastManagerElement} */
-  let toastManager;
+  let toastManager: CrToastManagerElement;
 
   suiteSetup(() => {
     document.body.innerHTML = '';
@@ -44,16 +43,14 @@ suite('cr-toast-manager', () => {
     toastManager.showForStringPieces(pieces);
     const elements = toastManager.$.content.querySelectorAll('span');
     assertEquals(3, elements.length);
-    assertFalse(elements[0].classList.contains('collapsible'));
-    assertTrue(elements[1].classList.contains('collapsible'));
-    assertFalse(elements[2].classList.contains('collapsible'));
+    assertFalse(elements[0]!.classList.contains('collapsible'));
+    assertTrue(elements[1]!.classList.contains('collapsible'));
+    assertFalse(elements[2]!.classList.contains('collapsible'));
   });
 
   test('duration passed through to toast', () => {
     toastManager.duration = 3;
-    assertEquals(
-        3, /** @type {!CrToastElement} */
-        (toastManager.shadowRoot.querySelector('#toast').duration));
+    assertEquals(3, toastManager.$.toast.duration);
   });
 
   test('slot hidden or shown based on arg passed into |show()|', () => {

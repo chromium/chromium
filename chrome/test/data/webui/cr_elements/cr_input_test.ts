@@ -5,18 +5,16 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue} from '../chai_assert.js';
-import {eventToPromise, isChildVisible, whenAttributeIs} from '../test_util.js';
+import {assertEquals, assertFalse, assertNotEquals, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, isChildVisible, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 suite('cr-input', function() {
-  /** @type {!CrInputElement} */
-  let crInput;
-
-  /** @type {!HTMLInputElement} */
-  let input;
+  let crInput: CrInputElement;
+  let input: HTMLInputElement;
 
   setup(function() {
     regenerateNewInput();
@@ -24,16 +22,19 @@ suite('cr-input', function() {
 
   function regenerateNewInput() {
     document.body.innerHTML = '';
-    crInput =
-        /** @type {!CrInputElement} */ (document.createElement('cr-input'));
+    crInput = document.createElement('cr-input');
     document.body.appendChild(crInput);
     input = crInput.inputElement;
     flush();
   }
 
   test('AttributesCorrectlySupported', function() {
-    const attributesToTest = [
-      // [externalName, internalName, defaultValue, testValue]
+    // [externalName, internalName, defaultValue, testValue]
+    type AttributeData = [
+      keyof CrInputElement, keyof HTMLInputElement, boolean | number | string,
+      boolean | number | string
+    ];
+    const attributesToTest: AttributeData[] = [
       ['autofocus', 'autofocus', false, true],
       ['disabled', 'disabled', false, true],
       ['max', 'max', '', '100'],
@@ -48,12 +49,14 @@ suite('cr-input', function() {
       ['inputmode', 'inputMode', '', 'none'],
     ];
 
-    attributesToTest.forEach(attr => {
-      regenerateNewInput();
-      assertEquals(attr[2], input[attr[1]]);
-      crInput.setAttribute(attr[0], attr[3]);
-      assertEquals(attr[3], input[attr[1]]);
-    });
+    attributesToTest.forEach(
+        ([externalName, internalName, defaultValue,
+          testValue]: AttributeData) => {
+          regenerateNewInput();
+          assertEquals(defaultValue, input[internalName]);
+          crInput.setAttribute(externalName, testValue.toString());
+          assertEquals(testValue, input[internalName]);
+        });
   });
 
   test('UnsupportedTypeThrows', function() {
@@ -68,8 +71,7 @@ suite('cr-input', function() {
     document.body.innerHTML = `
       <cr-input tabindex="14"></cr-input>
     `;
-    crInput =
-        /** @type {!CrInputElement} */ (document.querySelector('cr-input'));
+    crInput = document.querySelector('cr-input')!;
     input = crInput.$.input;
     flush();
 
@@ -88,8 +90,7 @@ suite('cr-input', function() {
     document.body.innerHTML = `
       <cr-input tabindex="14" disabled></cr-input>
     `;
-    crInput =
-        /** @type {!CrInputElement} */ (document.querySelector('cr-input'));
+    crInput = document.querySelector('cr-input')!;
     input = crInput.$.input;
     flush();
 
@@ -166,7 +167,7 @@ suite('cr-input', function() {
     assertEquals('none', getComputedStyle(crInput.$.label).display);
     crInput.label = 'foobar';
     assertEquals('block', getComputedStyle(crInput.$.label).display);
-    assertEquals('foobar', label.textContent.trim());
+    assertEquals('foobar', label.textContent!.trim());
   });
 
   test('valueSetCorrectly', function() {
@@ -182,13 +183,12 @@ suite('cr-input', function() {
   test('focusState', function() {
     assertFalse(crInput.hasAttribute('focused_'));
 
-    const underline = /** @type {!HTMLElement} */ (crInput.$$('#underline'));
+    const underline = crInput.$.underline;
     const label = crInput.$.label;
     const originalLabelColor = getComputedStyle(label).color;
 
-    /** @return {!Promise<!Array<!Event>>} */
-    function waitForTransitions() {
-      const events = [];
+    function waitForTransitions(): Promise<TransitionEvent[]> {
+      const events: TransitionEvent[] = [];
       return eventToPromise('transitionend', underline)
           .then(e => {
             events.push(e);
@@ -212,8 +212,8 @@ suite('cr-input', function() {
         .then(events => {
           // Ensure transitions finished in the expected order.
           assertEquals(2, events.length);
-          assertEquals('opacity', events[0].propertyName);
-          assertEquals('width', events[1].propertyName);
+          assertEquals('opacity', events[0]!.propertyName);
+          assertEquals('width', events[1]!.propertyName);
 
           assertEquals('1', getComputedStyle(underline).opacity);
           assertNotEquals(0, underline.offsetWidth);
@@ -225,8 +225,8 @@ suite('cr-input', function() {
         .then(events => {
           // Ensure transitions finished in the expected order.
           assertEquals(2, events.length);
-          assertEquals('opacity', events[0].propertyName);
-          assertEquals('width', events[1].propertyName);
+          assertEquals('opacity', events[0]!.propertyName);
+          assertEquals('width', events[1]!.propertyName);
 
           assertFalse(crInput.hasAttribute('focused_'));
           assertEquals('0', getComputedStyle(underline).opacity);
@@ -237,7 +237,7 @@ suite('cr-input', function() {
   test('invalidState', function() {
     crInput.errorMessage = 'error';
     const errorLabel = crInput.$.error;
-    const underline = /** @type {!HTMLElement} */ (crInput.$$('#underline'));
+    const underline = crInput.$.underline;
     const label = crInput.$.label;
     const originalLabelColor = getComputedStyle(label).color;
     const originalLineColor = getComputedStyle(underline).borderBottomColor;
@@ -309,8 +309,8 @@ suite('cr-input', function() {
     // |value| is changed.
     const testMin = 1;
     const testMax = 100;
-    crInput.setAttribute('min', testMin);
-    crInput.setAttribute('max', testMax);
+    crInput.setAttribute('min', testMin.toString());
+    crInput.setAttribute('max', testMax.toString());
     crInput.value = '200';
     assertTrue(crInput.invalid);
     crInput.value = '20';
@@ -350,12 +350,10 @@ suite('cr-input', function() {
 
     /**
      * This function assumes attributes are passed in priority order.
-     * @param {!Array<string>} attributes
      */
-    function testAriaLabel(attributes) {
+    function testAriaLabel(attributes: string[]) {
       document.body.innerHTML = '';
-      crInput =
-          /** @type {!CrInputElement} */ (document.createElement('cr-input'));
+      crInput = document.createElement('cr-input');
       attributes.forEach(attribute => {
         // Using their name as the value out of convenience.
         crInput.setAttribute(attribute, attribute);
@@ -377,21 +375,21 @@ suite('cr-input', function() {
     assertFalse(input.matches(':focus'));
     crInput.select();
     assertTrue(input.matches(':focus'));
-    assertEquals('0123456789', window.getSelection().toString());
+    assertEquals('0123456789', window.getSelection()!.toString());
 
     regenerateNewInput();
     crInput.value = '0123456789';
     assertFalse(input.matches(':focus'));
     crInput.select(2, 6);
     assertTrue(input.matches(':focus'));
-    assertEquals('2345', window.getSelection().toString());
+    assertEquals('2345', window.getSelection()!.toString());
 
     regenerateNewInput();
     crInput.value = '';
     assertFalse(input.matches(':focus'));
     crInput.select();
     assertTrue(input.matches(':focus'));
-    assertEquals('', window.getSelection().toString());
+    assertEquals('', window.getSelection()!.toString());
   });
 
   test('slots', function() {
@@ -403,8 +401,7 @@ suite('cr-input', function() {
       </cr-input>
     `;
     flush();
-    crInput =
-        /** @type {!CrInputElement} */ (document.querySelector('cr-input'));
+    crInput = document.querySelector('cr-input')!;
     assertTrue(isChildVisible(crInput, '#inline-prefix', true));
     assertTrue(isChildVisible(crInput, '#suffix', true));
     assertTrue(isChildVisible(crInput, '#inline-suffix', true));

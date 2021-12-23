@@ -3,21 +3,20 @@
 // found in the LICENSE file.
 
 // clang-format off
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {MockTimer} from '../mock_timer.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 // clang-format on
 
 suite('cr-toast', function() {
-  /** @type {!CrToastElement} */
-  let toast;
-
-  /** @type {!MockTimer} */
-  let mockTimer;
+  let toast: CrToastElement;
+  let mockTimer: MockTimer;
 
   setup(function() {
     document.body.innerHTML = '';
-    toast = /** @type {!CrToastElement} */ (document.createElement('cr-toast'));
+    toast = document.createElement('cr-toast');
     document.body.appendChild(toast);
     mockTimer = new MockTimer();
     mockTimer.install();

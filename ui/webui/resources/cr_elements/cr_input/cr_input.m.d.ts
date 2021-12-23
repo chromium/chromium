@@ -34,6 +34,9 @@ interface CrInputElement extends LegacyElementMixin, HTMLElement {
 
   $: {
     error: HTMLElement,
+    input: HTMLInputElement,
+    label: HTMLElement,
+    underline: HTMLElement,
   };
 }
 

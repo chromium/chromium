@@ -3,56 +3,59 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {CrProfileAvatarSelectorElement} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
+import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import {CrProfileAvatarSelectorElement} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
+import {CrProfileAvatarSelectorGridElement} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector_grid.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr-profile-avatar-selector. */
 suite('cr-profile-avatar-selector', function() {
-  /** @type {CrProfileAvatarSelectorElement} */
-  let avatarSelector = null;
+  let avatarSelector: CrProfileAvatarSelectorElement;
 
-  /** @return {!CrProfileAvatarSelectorElement} */
-  function createElement() {
-    const avatarSelector = /** @type {!CrProfileAvatarSelectorElement} */ (
-        document.createElement('cr-profile-avatar-selector'));
+  function createElement(): CrProfileAvatarSelectorElement {
+    const avatarSelector = document.createElement('cr-profile-avatar-selector');
     avatarSelector.avatars = [
       {
         url: 'chrome://avatar1.png',
         label: 'avatar1',
-        index: '1',
-        selected: false
+        index: 1,
+        selected: false,
+        isGaiaAvatar: false,
       },
       {
         url: 'chrome://avatar2.png',
         label: 'avatar2',
-        index: '2',
-        selected: false
+        index: 2,
+        selected: false,
+        isGaiaAvatar: false,
       },
       {
         url: 'chrome://avatar3.png',
         label: 'avatar3',
-        index: '3',
-        selected: false
+        index: 3,
+        selected: false,
+        isGaiaAvatar: false,
       }
     ];
     return avatarSelector;
   }
 
-  /** @return {!NodeList<!Element>} */
   function getGridItems() {
-    return avatarSelector.shadowRoot.querySelectorAll('.avatar');
+    return avatarSelector.shadowRoot!.querySelectorAll<CrButtonElement>(
+        '.avatar');
   }
 
-  function verifyTabIndex(items, tabIndexArr) {
+  function verifyTabIndex(
+      items: NodeListOf<CrButtonElement>, tabIndexArr: number[]) {
     assertEquals(items.length, tabIndexArr.length);
     for (let i = 0; i < items.length; i++) {
-      assertEquals(items[i].tabIndex, tabIndexArr[i]);
+      assertEquals(items[i]!.tabIndex, tabIndexArr[i]);
     }
   }
 
@@ -90,15 +93,15 @@ suite('cr-profile-avatar-selector', function() {
     verifyTabIndex(items, [0, -1, -1]);
 
     // Tab key should not move the focus.
-    items[0].focus();
-    pressAndReleaseKeyOn(items[0], 9);
+    items[0]!.focus();
+    pressAndReleaseKeyOn(items[0]!, 9);
     assertEquals(getDeepActiveElement(), items[0]);
 
-    keyDownOn(items[0], 39, [], 'ArrowRight');
+    keyDownOn(items[0]!, 39, [], 'ArrowRight');
     assertEquals(getDeepActiveElement(), items[1]);
 
-    items[1].click();
-    assertTrue(items[1].classList.contains('iron-selected'));
+    items[1]!.click();
+    assertTrue(items[1]!.classList.contains('iron-selected'));
     verifyTabIndex(items, [-1, 0, -1]);
   });
 
@@ -109,35 +112,37 @@ suite('cr-profile-avatar-selector', function() {
       {
         url: 'chrome://avatar1.png',
         label: 'avatar1',
-        index: '1',
-        selected: false
+        index: 1,
+        selected: false,
+        isGaiaAvatar: false,
       },
       {
         url: 'chrome://avatar2.png',
         label: 'avatar2',
-        index: '2',
-        selected: true
-      }
+        index: 2,
+        selected: true,
+        isGaiaAvatar: false,
+      },
     ];
     flush();
     items = getGridItems();
-    assertTrue(items[1].classList.contains('iron-selected'));
+    assertTrue(items[1]!.classList.contains('iron-selected'));
     verifyTabIndex(items, [-1, 0]);
 
-    items[0].click();
-    assertTrue(items[0].classList.contains('iron-selected'));
+    items[0]!.click();
+    assertTrue(items[0]!.classList.contains('iron-selected'));
     verifyTabIndex(items, [0, -1]);
   });
 
   test('Avatar selected by setting selectedAvatar', async function() {
     const items = getGridItems();
     verifyTabIndex(items, [0, -1, -1]);
-    avatarSelector.selectedAvatar = avatarSelector.avatars[1];
+    avatarSelector.selectedAvatar = avatarSelector.avatars[1]!;
     flush();
     verifyTabIndex(getGridItems(), [-1, 0, -1]);
 
-    items[0].click();
-    assertTrue(items[0].classList.contains('iron-selected'));
+    items[0]!.click();
+    assertTrue(items[0]!.classList.contains('iron-selected'));
     verifyTabIndex(items, [0, -1, -1]);
   });
 
@@ -145,52 +150,54 @@ suite('cr-profile-avatar-selector', function() {
     const items = getGridItems();
 
     // Simulate tapping the third avatar.
-    items[2].click();
-    assertEquals('chrome://avatar3.png', avatarSelector.selectedAvatar.url);
-    assertFalse(items[0].classList.contains('iron-selected'));
-    assertFalse(items[1].classList.contains('iron-selected'));
-    assertTrue(items[2].classList.contains('iron-selected'));
+    items[2]!.click();
+    assertEquals('chrome://avatar3.png', avatarSelector.selectedAvatar!.url);
+    assertFalse(items[0]!.classList.contains('iron-selected'));
+    assertFalse(items[1]!.classList.contains('iron-selected'));
+    assertTrue(items[2]!.classList.contains('iron-selected'));
   });
 
   test('ignores modified key events', function() {
-    const selector = avatarSelector.$['avatar-grid'];
+    const selector =
+        avatarSelector.shadowRoot!
+            .querySelector<CrProfileAvatarSelectorGridElement>('#avatar-grid')!;
     const items = getGridItems();
 
-    items[0].focus();
+    items[0]!.focus();
     assertEquals(getDeepActiveElement(), items[0]);
 
-    keyDownOn(items[0], 39, [], 'ArrowRight');
+    keyDownOn(items[0]!, 39, [], 'ArrowRight');
     assertEquals(getDeepActiveElement(), items[1]);
 
-    keyDownOn(items[0], 37, [], 'ArrowLeft');
+    keyDownOn(items[0]!, 37, [], 'ArrowLeft');
     assertEquals(getDeepActiveElement(), items[0]);
 
     avatarSelector.ignoreModifiedKeyEvents = true;
 
-    keyDownOn(items[0], 39, 'alt', 'ArrowRight');
+    keyDownOn(items[0]!, 39, 'alt', 'ArrowRight');
     assertEquals(getDeepActiveElement(), items[0]);
 
-    keyDownOn(items[0], 39, 'ctrl', 'ArrowRight');
+    keyDownOn(items[0]!, 39, 'ctrl', 'ArrowRight');
     assertEquals(getDeepActiveElement(), items[0]);
 
-    keyDownOn(items[0], 39, 'meta', 'ArrowRight');
+    keyDownOn(items[0]!, 39, 'meta', 'ArrowRight');
     assertEquals(getDeepActiveElement(), items[0]);
 
-    keyDownOn(items[0], 39, 'shift', 'ArrowRight');
+    keyDownOn(items[0]!, 39, 'shift', 'ArrowRight');
     assertEquals(getDeepActiveElement(), items[0]);
 
     // Test RTL case.
     selector.dir = 'rtl';
-    keyDownOn(items[0], 37, [], 'ArrowLeft');
+    keyDownOn(items[0]!, 37, [], 'ArrowLeft');
     assertEquals(getDeepActiveElement(), items[1]);
 
-    keyDownOn(items[0], 37, [], 'ArrowLeft');
+    keyDownOn(items[0]!, 37, [], 'ArrowLeft');
     assertEquals(getDeepActiveElement(), items[2]);
 
-    keyDownOn(items[0], 37, [], 'ArrowRight');
+    keyDownOn(items[0]!, 37, [], 'ArrowRight');
     assertEquals(getDeepActiveElement(), items[1]);
 
-    keyDownOn(items[0], 37, [], 'ArrowRight');
+    keyDownOn(items[0]!, 37, [], 'ArrowRight');
     assertEquals(getDeepActiveElement(), items[0]);
   });
 });
