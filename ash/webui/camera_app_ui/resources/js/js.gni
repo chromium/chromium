@@ -35,7 +35,7 @@ compile_js_files = [
   "models/async_writer.ts",
   "models/barcode.ts",
   "models/barcode_worker_interface.js",
-  "models/barcode_worker.js",
+  "models/barcode_worker.ts",
   "models/ffmpeg/video_processor_args.js",
   "models/ffmpeg/video_processor.js",
   "models/file_namer.js",
