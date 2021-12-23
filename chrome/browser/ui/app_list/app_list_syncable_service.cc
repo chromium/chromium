@@ -442,13 +442,12 @@ void AppListSyncableService::InitFromLocalStorage() {
   DCHECK(local_items);
 
   for (const auto item : local_items->DictItems()) {
-    const base::DictionaryValue* dict_item;
-    if (!item.second.GetAsDictionary(&dict_item)) {
+    if (!item.second.is_dict()) {
       LOG(ERROR) << "Dictionary not found for " << item.first + ".";
       continue;
     }
 
-    absl::optional<int> type = dict_item->FindIntKey(kTypeKey);
+    absl::optional<int> type = item.second.FindIntKey(kTypeKey);
     if (!type) {
       LOG(ERROR) << "Item type is not set in local storage for " << item.second
                  << ".";
@@ -459,32 +458,38 @@ void AppListSyncableService::InitFromLocalStorage() {
         item.first,
         static_cast<sync_pb::AppListSpecifics::AppListItemType>(*type));
 
-    dict_item->GetString(kNameKey, &sync_item->item_name);
-    dict_item->GetString(kParentIdKey, &sync_item->parent_id);
-    std::string position;
-    std::string pin_position;
-    dict_item->GetString(kPositionKey, &position);
-    dict_item->GetString(kPinPositionKey, &pin_position);
-    if (!position.empty())
-      sync_item->item_ordinal = syncer::StringOrdinal(position);
-    if (!pin_position.empty())
-      sync_item->item_pin_ordinal = syncer::StringOrdinal(pin_position);
+    const std::string* maybe_item_name = item.second.FindStringKey(kNameKey);
+    if (maybe_item_name)
+      sync_item->item_name = *maybe_item_name;
+    const std::string* maybe_parent_id =
+        item.second.FindStringKey(kParentIdKey);
+    if (maybe_item_name)
+      sync_item->parent_id = *maybe_parent_id;
+
+    const std::string* position = item.second.FindStringKey(kPositionKey);
+    const std::string* pin_position =
+        item.second.FindStringKey(kPinPositionKey);
+    if (position && !position->empty())
+      sync_item->item_ordinal = syncer::StringOrdinal(*position);
+    if (pin_position && !pin_position->empty())
+      sync_item->item_pin_ordinal = syncer::StringOrdinal(*pin_position);
 
     // Fetch icon colors from `dict_item` if any.
     if (ash::features::IsLauncherItemColorSyncEnabled() &&
-        dict_item->HasKey(kBackgroundColorKey)) {
+        item.second.FindKey(kBackgroundColorKey)) {
       // Retrieve the background color.
-      std::string background_color_internal_string;
-      dict_item->GetString(kBackgroundColorKey,
-                           &background_color_internal_string);
+      const std::string* background_color_internal_string =
+          item.second.FindStringKey(kBackgroundColorKey);
       sync_pb::AppListSpecifics::ColorGroup background_color;
       sync_pb::AppListSpecifics::ColorGroup_Parse(
-          background_color_internal_string, &background_color);
+          background_color_internal_string ? *background_color_internal_string
+                                           : std::string(),
+          &background_color);
 
       // Retrieve the hue.
-      DCHECK(dict_item->HasKey(kHueKey));
-      int hue = ash::IconColor::kHueInvalid;
-      dict_item->GetInteger(kHueKey, &hue);
+      DCHECK(item.second.FindKey(kHueKey));
+      int hue =
+          item.second.FindIntKey(kHueKey).value_or(ash::IconColor::kHueInvalid);
 
       sync_item->item_color = ash::IconColor(background_color, hue);
 
