@@ -31,9 +31,8 @@ std::unique_ptr<base::Value> Mapper::MapValue(
       break;
     }
     case base::Value::Type::LIST: {
-      const base::ListValue* list = NULL;
-      onc_value.GetAsList(&list);
-      result_value = MapArray(signature, *list, error);
+      result_value =
+          MapArray(signature, base::Value::AsListValue(onc_value), error);
       break;
     }
     default: {
