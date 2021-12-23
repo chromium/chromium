@@ -209,6 +209,15 @@ Polymer({
       computed: 'computeIsDeviceInhibited_(cellularDeviceState,' +
           'cellularDeviceState.inhibitReason)',
     },
+
+    /** @private {boolean} */
+    isESimPolicyEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('esimPolicyEnabled') &&
+            loadTimeData.getBoolean('esimPolicyEnabled');
+      }
+    },
   },
 
   listeners: {
@@ -500,7 +509,10 @@ Polymer({
     if (!this.deviceIsEnabled_(cellularDeviceState)) {
       return false;
     }
-    return globalPolicy && !globalPolicy.allowOnlyPolicyCellularNetworks;
+    if (!this.isESimPolicyEnabled_ || !globalPolicy) {
+      return true;
+    }
+    return !globalPolicy.allowOnlyPolicyCellularNetworks;
   },
 
   /**

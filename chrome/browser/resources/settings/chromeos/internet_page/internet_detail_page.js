@@ -277,6 +277,15 @@ Polymer({
       },
     },
 
+    /** @private {boolean} */
+    isESimPolicyEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('esimPolicyEnabled') &&
+            loadTimeData.getBoolean('esimPolicyEnabled');
+      }
+    },
+
     /**
      * When true, all inputs that allow state to be changed (e.g., toggles,
      * inputs) are disabled.
@@ -1248,7 +1257,8 @@ Polymer({
       return false;
     }
 
-    if (managedProperties.type ===
+    if (this.isESimPolicyEnabled_ &&
+        managedProperties.type ===
             chromeos.networkConfig.mojom.NetworkType.kCellular &&
         !!globalPolicy.allowOnlyPolicyCellularNetworks) {
       return true;

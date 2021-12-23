@@ -66,6 +66,15 @@ Polymer({
       value: '',
     },
 
+    /** @private {boolean} */
+    isESimPolicyEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('esimPolicyEnabled') &&
+            loadTimeData.getBoolean('esimPolicyEnabled');
+      }
+    },
+
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
@@ -201,7 +210,7 @@ Polymer({
    */
   isDotsMenuButtonDisabled_() {
     // Managed eSIM networks cannot be renamed or removed by user.
-    if (this.eSimNetworkState_ &&
+    if (this.isESimPolicyEnabled_ && this.eSimNetworkState_ &&
         this.eSimNetworkState_.source ===
             chromeos.networkConfig.mojom.OncSource.kDevicePolicy) {
       return true;
