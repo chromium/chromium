@@ -457,7 +457,7 @@ third_party/blink/web_tests/external/wpt/payment-method-basic-card 2 2
 third_party/blink/web_tests/external/wpt/payment-request 8 8
 third_party/blink/web_tests/external/wpt/payment-request/payment-response 10 10
 third_party/blink/web_tests/external/wpt/payment-request/PaymentValidationErrors 2 2
-third_party/blink/web_tests/external/wpt/raw-sockets 3 3
+third_party/blink/web_tests/external/wpt/direct-sockets 3 3
 third_party/blink/web_tests/external/wpt/resources 2 2
 third_party/blink/web_tests/external/wpt/resources/chromium 3 2
 third_party/blink/web_tests/external/wpt/service-workers/service-worker 1 1

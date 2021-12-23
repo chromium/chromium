@@ -462,7 +462,7 @@
   },
   {
     "prefix": "direct-sockets",
-    "bases": ["external/wpt/raw-sockets"],
+    "bases": ["external/wpt/direct-sockets"],
     "args": ["--enable-features=DirectSockets"]
   },
   {
