@@ -35,7 +35,8 @@ class MessageSender;
 class CameraRollManagerImpl
     : public CameraRollManager,
       public MessageReceiver::Observer,
-      public multidevice_setup::MultiDeviceSetupClient::Observer {
+      public multidevice_setup::MultiDeviceSetupClient::Observer,
+      public secure_channel::ConnectionManager::Observer {
  public:
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -70,6 +71,9 @@ class CameraRollManagerImpl
   void OnFeatureStatesChanged(
       const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
           feature_states_map) override;
+
+  // ConnectionManager::Observer:
+  void OnConnectionStatusChanged() override;
 
   void SendFetchCameraRollItemsRequest();
   void OnItemThumbnailsDecoded(

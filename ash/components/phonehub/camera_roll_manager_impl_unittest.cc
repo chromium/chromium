@@ -134,6 +134,8 @@ class CameraRollManagerImplTest : public testing::Test {
     RegisterHasDismissedOnBoardingUiPreferences(&pref_service_);
     fake_multidevice_setup_client_ =
         std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
+    fake_connection_manager_ =
+        std::make_unique<secure_channel::FakeConnectionManager>();
     std::unique_ptr<FakeCameraRollDownloadManager>
         fake_camera_roll_download_manager =
             std::make_unique<FakeCameraRollDownloadManager>();
@@ -143,7 +145,7 @@ class CameraRollManagerImplTest : public testing::Test {
     SetCameraRollFeatureState(FeatureState::kEnabledByUser);
     camera_roll_manager_ = std::make_unique<CameraRollManagerImpl>(
         &pref_service_, &fake_message_receiver_, &fake_message_sender_,
-        fake_multidevice_setup_client_.get(), &fake_connection_manager_,
+        fake_multidevice_setup_client_.get(), fake_connection_manager_.get(),
         std::move(fake_camera_roll_download_manager));
     camera_roll_manager_->thumbnail_decoder_ =
         std::make_unique<FakeThumbnailDecoder>();
@@ -235,7 +237,7 @@ class CameraRollManagerImplTest : public testing::Test {
                               FileTransferStatus status,
                               uint64_t total_bytes,
                               uint64_t bytes_transferred) {
-    fake_connection_manager_.SendFileTransferUpdate(
+    fake_connection_manager_->SendFileTransferUpdate(
         chromeos::secure_channel::mojom::FileTransferUpdate::New(
             payload_id, status, total_bytes, bytes_transferred));
   }
@@ -258,8 +260,8 @@ class CameraRollManagerImplTest : public testing::Test {
     return camera_roll_manager_.get();
   }
 
-  secure_channel::FakeConnectionManager& fake_connection_manager() {
-    return fake_connection_manager_;
+  secure_channel::FakeConnectionManager* fake_connection_manager() {
+    return fake_connection_manager_.get();
   }
 
   FakeCameraRollDownloadManager* fake_camera_roll_download_manager() {
@@ -273,7 +275,8 @@ class CameraRollManagerImplTest : public testing::Test {
  private:
   TestingPrefServiceSimple pref_service_;
   FakeMessageSender fake_message_sender_;
-  secure_channel::FakeConnectionManager fake_connection_manager_;
+  std::unique_ptr<secure_channel::FakeConnectionManager>
+      fake_connection_manager_;
   FakeCameraRollDownloadManager* fake_camera_roll_download_manager_;
   std::unique_ptr<CameraRollManagerImpl> camera_roll_manager_;
   FakeObserver fake_observer_;
@@ -653,12 +656,31 @@ TEST_F(CameraRollManagerImplTest, DownloadItemAndRegisterPayloadFileFail) {
   EXPECT_EQ(1UL, GetSentFetchCameraRollItemDataRequestCount());
   EXPECT_EQ("key1", GetRecentFetchCameraRollItemDataRequest().metadata().key());
 
-  fake_connection_manager().set_register_payload_file_result(false);
+  fake_connection_manager()->set_register_payload_file_result(false);
   SendFetchCameraRollItemDataResponse(
       item_to_download.metadata(),
       proto::FetchCameraRollItemDataResponse::AVAILABLE,
       /*payload_id=*/1234);
   EXPECT_EQ(0UL, GetSentInitiateCameraRollItemTransferRequestCount());
+}
+
+TEST_F(CameraRollManagerImplTest, ItemsClearedWhenDeviceDisconnected) {
+  fake_connection_manager()->SetStatus(
+      secure_channel::ConnectionManager::Status::kConnected);
+
+  proto::FetchCameraRollItemsResponse response;
+  PopulateItemProto(response.add_items(), "key3");
+  PopulateItemProto(response.add_items(), "key2");
+  PopulateItemProto(response.add_items(), "key1");
+  fake_message_receiver_.NotifyFetchCameraRollItemsResponseReceived(response);
+  CompleteThumbnailDecoding(BatchDecodeResult::kCompleted);
+
+  EXPECT_EQ(3, GetCurrentItemsCount());
+
+  fake_connection_manager()->SetStatus(
+      secure_channel::ConnectionManager::Status::kDisconnected);
+
+  EXPECT_EQ(0, GetCurrentItemsCount());
 }
 
 }  // namespace phonehub

@@ -59,11 +59,13 @@ CameraRollManagerImpl::CameraRollManagerImpl(
       thumbnail_decoder_(std::make_unique<CameraRollThumbnailDecoderImpl>()) {
   message_receiver->AddObserver(this);
   multidevice_setup_client_->AddObserver(this);
+  connection_manager_->AddObserver(this);
 }
 
 CameraRollManagerImpl::~CameraRollManagerImpl() {
   message_receiver_->RemoveObserver(this);
   multidevice_setup_client_->RemoveObserver(this);
+  connection_manager_->RemoveObserver(this);
 }
 
 void CameraRollManagerImpl::DownloadItem(
@@ -253,6 +255,14 @@ void CameraRollManagerImpl::OnFeatureStatesChanged(
     CancelPendingThumbnailRequests();
   } else {
     ComputeAndUpdateUiState();
+  }
+}
+
+void CameraRollManagerImpl::OnConnectionStatusChanged() {
+  if (connection_manager_->GetStatus() ==
+      secure_channel::ConnectionManager::Status::kDisconnected) {
+    ClearCurrentItems();
+    CancelPendingThumbnailRequests();
   }
 }
 

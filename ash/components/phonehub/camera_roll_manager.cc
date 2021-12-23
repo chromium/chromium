@@ -5,7 +5,6 @@
 #include "ash/components/phonehub/camera_roll_manager.h"
 
 #include "ash/components/phonehub/camera_roll_item.h"
-#include "chromeos/components/multidevice/logging/logging.h"
 
 namespace ash {
 namespace phonehub {
