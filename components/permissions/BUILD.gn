@@ -55,6 +55,8 @@ source_set("permissions") {
     "contexts/wake_lock_permission_context.h",
     "contexts/webxr_permission_context.cc",
     "contexts/webxr_permission_context.h",
+    "contexts/window_placement_permission_context.cc",
+    "contexts/window_placement_permission_context.h",
     "object_permission_context_base.cc",
     "object_permission_context_base.h",
     "permission_actions_history.cc",

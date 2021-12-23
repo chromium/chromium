@@ -1866,8 +1866,6 @@ static_library("browser") {
     "webid/federated_identity_sharing_permission_context.h",
     "webid/federated_identity_sharing_permission_context_factory.cc",
     "webid/federated_identity_sharing_permission_context_factory.h",
-    "window_placement/window_placement_permission_context.cc",
-    "window_placement/window_placement_permission_context.h",
   ]
 
   configs += [

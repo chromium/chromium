@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WINDOW_PLACEMENT_WINDOW_PLACEMENT_PERMISSION_CONTEXT_H_
-#define CHROME_BROWSER_WINDOW_PLACEMENT_WINDOW_PLACEMENT_PERMISSION_CONTEXT_H_
+#ifndef COMPONENTS_PERMISSIONS_CONTEXTS_WINDOW_PLACEMENT_PERMISSION_CONTEXT_H_
+#define COMPONENTS_PERMISSIONS_CONTEXTS_WINDOW_PLACEMENT_PERMISSION_CONTEXT_H_
 
 #include "components/permissions/permission_context_base.h"
 
-class WindowPlacementPermissionContext
-    : public permissions::PermissionContextBase {
+namespace permissions {
+
+class WindowPlacementPermissionContext : public PermissionContextBase {
  public:
   explicit WindowPlacementPermissionContext(
       content::BrowserContext* browser_context);
@@ -20,12 +21,14 @@ class WindowPlacementPermissionContext
       const WindowPlacementPermissionContext&) = delete;
 
  protected:
-  // permissions::PermissionContextBase:
+  // PermissionContextBase:
   bool IsRestrictedToSecureOrigins() const override;
-  void UserMadePermissionDecision(const permissions::PermissionRequestID& id,
+  void UserMadePermissionDecision(const PermissionRequestID& id,
                                   const GURL& requesting_origin,
                                   const GURL& embedding_origin,
                                   ContentSetting content_setting) override;
 };
 
-#endif  // CHROME_BROWSER_WINDOW_PLACEMENT_WINDOW_PLACEMENT_PERMISSION_CONTEXT_H_
+}  // namespace permissions
+
+#endif  // COMPONENTS_PERMISSIONS_CONTEXTS_WINDOW_PLACEMENT_PERMISSION_CONTEXT_H_
