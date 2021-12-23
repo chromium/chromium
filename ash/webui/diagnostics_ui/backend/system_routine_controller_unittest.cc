@@ -16,8 +16,8 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_client.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_service.h"
+#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/dbus/cros_healthd/fake_cros_healthd_service.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -160,7 +160,7 @@ struct FakeRoutineRunner : public mojom::RoutineRunner {
 class SystemRoutineControllerTest : public testing::Test {
  public:
   SystemRoutineControllerTest() {
-    chromeos::cros_healthd::FakeCrosHealthdClient::InitializeFake();
+    chromeos::CrosHealthdClient::InitializeFake();
     system_routine_controller_ = std::make_unique<SystemRoutineController>();
 
     wake_lock_provider_ = std::make_unique<device::TestWakeLockProvider>();

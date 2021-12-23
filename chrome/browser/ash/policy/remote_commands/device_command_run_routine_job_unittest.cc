@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_client.h"
+#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -163,14 +163,15 @@ class DeviceCommandRunRoutineJobTest : public testing::Test {
 };
 
 DeviceCommandRunRoutineJobTest::DeviceCommandRunRoutineJobTest() {
-  chromeos::cros_healthd::FakeCrosHealthdClient::InitializeFake();
+  chromeos::CrosHealthdClient::InitializeFake();
   test_start_time_ = base::TimeTicks::Now();
 }
 
 DeviceCommandRunRoutineJobTest::~DeviceCommandRunRoutineJobTest() {
+  chromeos::CrosHealthdClient::Shutdown();
+
   // Wait for ServiceConnection to observe the destruction of the client.
   chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
-  chromeos::CrosHealthdClient::Shutdown();
 }
 
 void DeviceCommandRunRoutineJobTest::InitializeJob(

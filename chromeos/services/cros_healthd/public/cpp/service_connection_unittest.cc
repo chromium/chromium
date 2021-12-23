@@ -15,7 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_client.h"
+#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
@@ -359,16 +359,13 @@ class CrosHealthdServiceConnectionTest : public testing::Test {
   CrosHealthdServiceConnectionTest& operator=(
       const CrosHealthdServiceConnectionTest&) = delete;
 
-  void SetUp() override {
-    cros_healthd::FakeCrosHealthdClient::InitializeFake();
-  }
+  void SetUp() override { CrosHealthdClient::InitializeFake(); }
 
   void TearDown() override {
     CrosHealthdClient::Shutdown();
 
     // Wait for ServiceConnection to observe the destruction of the client.
     ServiceConnection::GetInstance()->FlushForTesting();
-    ServiceConnection::GetInstance()->ResetCallbacksForTesting();
   }
 
  private:
