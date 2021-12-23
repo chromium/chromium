@@ -31,10 +31,14 @@
 #include "base/dcheck_is_on.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/events/event.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -51,11 +55,19 @@ constexpr int kPreferredTitleTopMargins = 12;
 constexpr int kPreferredTitleBottomMargins = 4;
 
 constexpr base::TimeDelta kImpressionThreshold = base::Seconds(3);
+constexpr static base::TimeDelta kFadeInDuration = base::Milliseconds(100);
+constexpr static base::TimeDelta kIdentityTranslationDuration =
+    base::Milliseconds(200);
 
 // TODO(crbug.com/1199206): Move this into SharedAppListConfig once the UI for
 // categories is more developed.
 constexpr size_t kMaxResultsWithCategoricalSearch = 3;
 constexpr int kAnswerCardMaxResults = 1;
+
+// Show animations for search result views and titles have a translation
+// distance of 'kAnimatedOffsetMultiplier' * i where i is the position of the
+// view in the 'ProductivityLauncherSearchView'.
+constexpr int kAnimatedOffsetMultiplier = 4;
 
 SearchResultIdWithPositionIndices GetSearchResultsForLogging(
     std::vector<SearchResultView*> search_result_views) {
@@ -126,6 +138,10 @@ SearchResultListView::SearchResultListView(
       kPreferredTitleTopMargins, kPreferredTitleHorizontalMargins,
       kPreferredTitleBottomMargins, kPreferredTitleHorizontalMargins));
   title_label_->SetVisible(false);
+  title_label_->SetPaintToLayer();
+  title_label_->layer()->SetFillsBoundsOpaquely(false);
+  title_label_->layer()->SetOpacity(0.0f);
+
   results_container_->AddChildView(title_label_);
 
   size_t result_count =
@@ -136,6 +152,9 @@ SearchResultListView::SearchResultListView(
     search_result_views_.emplace_back(new SearchResultView(
         this, view_delegate_, dialog_controller, search_result_view_type));
     search_result_views_.back()->set_index_in_container(i);
+    search_result_views_.back()->SetPaintToLayer();
+    search_result_views_.back()->layer()->SetFillsBoundsOpaquely(false);
+    search_result_views_.back()->layer()->SetOpacity(0.0f);
     results_container_->AddChildView(search_result_views_.back());
     AddObservedResultView(search_result_views_.back());
   }
@@ -285,23 +304,70 @@ int SearchResultListView::ScheduleResultAnimations(
 
   SetVisible(true);
   if (title_label_->GetVisible()) {
-    // TODO(crbug/1216097) Add animation for title label.
+    ShowViewWithAnimation(title_label_,
+                          preceeding_result_count + animated_view_count);
     animated_view_count += 1;
   }
 
-  for (size_t i = 0; i < search_result_views_.size(); ++i) {
+  for (size_t i = 0; i < num_results_; ++i) {
     SearchResultView* result_view = GetResultViewAt(i);
-    if (result_view->result() != nullptr) {
-      result_view->SizeToPreferredSize();
-      // TODO(crbug/1216097) Add animation for search result view.
-      result_view->SetVisible(true);
-      animated_view_count += 1;
-    } else {
-      result_view->SetVisible(false);
-    }
+    result_view->SizeToPreferredSize();
+    ShowViewWithAnimation(result_view,
+                          preceeding_result_count + animated_view_count);
+    animated_view_count += 1;
   }
 
   return animated_view_count;
+}
+
+void SearchResultListView::ShowViewWithAnimation(views::View* view,
+                                                 int position) {
+  // Abort any in-progress layer animation.
+  DCHECK(view->layer()->GetAnimator());
+  view->layer()->GetAnimator()->AbortAllAnimations();
+
+  // Animation spec:
+  //
+  // Y Position: Down (offset) → End position
+  // offset: position * kAnimatedOffsetMultiplier px
+  // Duration: 200ms
+  // Ease: (0.00, 0.00, 0.20, 1.00)
+
+  // Opacity: 0% -> 100%
+  // Duration: 100 ms
+  // Ease: Linear
+
+  // Reset starting opacity of the view to 0%. Needed when aborting in-progress
+  // layer animations.
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetOpacity(view, 0.0f, gfx::Tween::LINEAR)
+      .SetDuration(base::Milliseconds(0));
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetOpacity(view, 1.0f, gfx::Tween::LINEAR)
+      .SetDuration(kFadeInDuration);
+
+  // Set the initial offset via a layer transform.
+  gfx::Transform translate_down;
+  translate_down.Translate(0, position * kAnimatedOffsetMultiplier);
+  views::AnimationBuilder()
+      .Once()
+      .SetDuration(base::Milliseconds(0))
+      .SetTransform(view, translate_down, gfx::Tween::LINEAR);
+
+  // Animate the transform back to the identity transform.
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(kIdentityTranslationDuration)
+      .SetTransform(view, gfx::Transform(), gfx::Tween::LINEAR_OUT_SLOW_IN);
 }
 
 int SearchResultListView::DoUpdate() {
@@ -552,32 +618,31 @@ std::vector<SearchResult*> SearchResultListView::GetCategorizedSearchResults() {
 }
 
 std::vector<SearchResult*> SearchResultListView::UpdateResultViews() {
+  // Opacity will be animated to 1 by ShowViewWithAnimation() if Productivity
+  // launcher animations are enabled.
+  title_label_->layer()->SetOpacity(
+      features::IsProductivityLauncherAnimationEnabled() ? 0.0f : 1.0f);
   std::vector<SearchResult*> display_results = GetCategorizedSearchResults();
   size_t num_results = display_results.size();
   num_results_ = num_results;
   for (size_t i = 0; i < search_result_views_.size(); ++i) {
     SearchResultView* result_view = GetResultViewAt(i);
+    result_view->layer()->SetOpacity(
+        features::IsProductivityLauncherAnimationEnabled() ? 0.0f : 1.0f);
     if (i < num_results) {
       result_view->SetResult(display_results[i]);
       result_view->SizeToPreferredSize();
-      // Show animations for productivity launcher will be scheduled once all
-      // search result list views are updated.
-      if (!features::IsProductivityLauncherAnimationEnabled())
-        result_view->SetVisible(true);
+      // Opacity will be animated to 1 by ShowViewWithAnimation() if
+      // Productivity launcher animations are enabled.
+      result_view->SetVisible(true);
     } else {
       result_view->SetResult(nullptr);
       result_view->SetVisible(false);
     }
   }
 
-  if (features::IsProductivityLauncherAnimationEnabled()) {
-    // Show animations for productivity launcher will be scheduled once all
-    // search result list views are updated.
-    SetVisible(false);
-  } else {
-    // the search_result_list_view should be hidden if there are no results.
-    SetVisible(num_results > 0);
-  }
+  // the search_result_list_view should be hidden if there are no results.
+  SetVisible(num_results > 0);
   return display_results;
 }
 

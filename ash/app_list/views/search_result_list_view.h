@@ -104,6 +104,10 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   SearchResultView* GetResultViewAt(size_t index) override;
   int ScheduleResultAnimations(int preceeding_result_count) override;
 
+  // Fades the view in and animates a vertical transform based on the view's
+  // position in the overall search container view.
+  void ShowViewWithAnimation(views::View* view, int position);
+
   AppListMainView* app_list_main_view() const { return main_view_; }
 
   // Gets all the SearchResultListTypes that should be used when categorical
@@ -201,7 +205,7 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   std::set<std::string> removed_results_;
 
   // The number of results shown by the list view.
-  int num_results_ = 0;
+  size_t num_results_ = 0;
 };
 
 }  // namespace ash
