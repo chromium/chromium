@@ -54,6 +54,7 @@
 #include "content/public/test/text_input_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/web_contents_observer_test_utils.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -2512,10 +2513,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TreeResult1) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a, b, c)"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
   // 1) Navigate to a(a, b, c).
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh = current_frame_host();
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh(current_frame_host());
 
   // 2) Add a blocking feature to the main frame A and the sub frame B.
   current_frame_host()
@@ -2525,31 +2527,35 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TreeResult1) {
       ->current_frame_host()
       ->UseDummyStickyBackForwardCacheDisablingFeatureForTesting();
 
-  // 3) Initialize the reasons tree.
+  GURL url_subframe_a = ChildFrame(rfh.get(), 0)->GetLastCommittedURL();
+  GURL url_subframe_b = ChildFrame(rfh.get(), 1)->GetLastCommittedURL();
+  GURL url_subframe_c = ChildFrame(rfh.get(), 2)->GetLastCommittedURL();
+
+  // 3) Initialize the reasons tree and navigate away to ensure that everything
+  // from the old frame has been destroyed.
   BackForwardCacheCanStoreDocumentResultWithTree can_store_result =
       web_contents()->GetController().GetBackForwardCache().CanStorePageNow(
-          rfh);
+          rfh.get());
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
 
   // 4) Check IsSameOrigin() and GetUrl().
   // a
   EXPECT_THAT(*can_store_result.tree_reasons,
               MatchesTreeResult(/*same_origin=*/true,
-                                /*url=*/rfh->GetLastCommittedURL()));
+                                /*url=*/url_a));
   // a->a
-  EXPECT_THAT(
-      *can_store_result.tree_reasons->GetChildren().at(0),
-      MatchesTreeResult(/*same_origin=*/true,
-                        /*url=*/ChildFrame(rfh, 0)->GetLastCommittedURL()));
+  EXPECT_THAT(*can_store_result.tree_reasons->GetChildren().at(0),
+              MatchesTreeResult(/*same_origin=*/true,
+                                /*url=*/url_subframe_a));
   // a->b
-  EXPECT_THAT(
-      *can_store_result.tree_reasons->GetChildren().at(1),
-      MatchesTreeResult(/*same_origin=*/false,
-                        /*url=*/ChildFrame(rfh, 1)->GetLastCommittedURL()));
+  EXPECT_THAT(*can_store_result.tree_reasons->GetChildren().at(1),
+              MatchesTreeResult(/*same_origin=*/false,
+                                /*url=*/url_subframe_b));
   // a->c
-  EXPECT_THAT(
-      *can_store_result.tree_reasons->GetChildren().at(2),
-      MatchesTreeResult(/*same_origin=*/false,
-                        /*url=*/ChildFrame(rfh, 2)->GetLastCommittedURL()));
+  EXPECT_THAT(*can_store_result.tree_reasons->GetChildren().at(2),
+              MatchesTreeResult(/*same_origin=*/false,
+                                /*url=*/url_subframe_c));
 
   // 5) Check that the blocking reasons match.
   // a
