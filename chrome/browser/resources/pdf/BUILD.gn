@@ -4,23 +4,21 @@
 
 import("//chrome/common/features.gni")
 import("//pdf/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
 
-preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
-
 assert(enable_pdf, "enable_pdf check failed")
+
+preprocess_folder = "preprocessed"
+tsc_folder = "tsc"
 
 preprocess_if_expr("preprocess") {
   in_folder = "./"
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
   defines = [ "enable_ink=$enable_ink" ]
   in_files = [
     "bookmark_type.js",
@@ -42,7 +40,10 @@ preprocess_if_expr("preprocess") {
   ]
 
   if (enable_ink) {
-    in_files += [ "ink_controller.js" ]
+    in_files += [
+      "annotation_tool.js",
+      "ink_controller.js",
+    ]
   }
 }
 
@@ -50,7 +51,6 @@ preprocess_if_expr("preprocess_generated") {
   deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   defines = [ "enable_ink=$enable_ink" ]
   in_files = [
     "elements/icons.js",
@@ -92,14 +92,13 @@ if (optimize_webui) {
 
   optimize_webui("build") {
     host = "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai"
-    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+    input = rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
     js_out_files = [ "pdf_viewer_wrapper.rollup.js" ]
     js_module_in_files = [ "pdf_viewer_wrapper.js" ]
     out_manifest = "$target_gen_dir/$build_manifest"
 
     deps = [
-      ":preprocess",
-      ":preprocess_generated",
+      ":build_ts",
       "../../../../ui/webui/resources:preprocess",
     ]
     excludes = [
@@ -132,7 +131,6 @@ optimize_webui("build_internal_plugin") {
 
 generate_grd("build_grd") {
   input_files = [
-    "browser_api.js",
     "index.css",
     "index.html",
     "main.js",
@@ -146,19 +144,14 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
 
   if (optimize_webui) {
+    input_files += [ "browser_api.js" ]
     deps = [ ":build" ]
     resource_path_rewrites =
         [ "pdf_viewer_wrapper.rollup.js|pdf_viewer_wrapper.js" ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
   } else {
-    deps = [
-      ":preprocess",
-      ":preprocess_generated",
-    ]
-    manifest_files = [
-      "$target_gen_dir/$preprocess_manifest",
-      "$target_gen_dir/$preprocess_gen_manifest",
-    ]
+    deps = [ ":build_ts" ]
+    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   }
 
   deps += [ ":build_internal_plugin" ]
@@ -202,234 +195,103 @@ html_to_js("web_components_local") {
   ]
 }
 
-group("closure_compile") {
-  deps = [
-    ":closure_compile_local",
-    "elements:closure_compile",
-  ]
+copy("copy_files") {
+  sources = [ "browser_api.js" ]
   if (enable_ink) {
-    deps += [ "ink:closure_compile" ]
+    sources += [
+      "ink/drawing_canvas_externs.js",
+      "ink/ink_api.js",
+    ]
   }
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_target_relative}}" ]
 }
 
-js_library("annotation_tool") {
-}
-
-js_library("bookmark_type") {
-}
-
-js_library("browser_api") {
-  deps = [ "//ui/webui/resources/js:assert.m" ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/mime_handler_private.js",
+# Copies transpiled JS files that are used by Print Preview to the expected
+# location used by Print Preview's build configuration.
+# TODO(crbug.com/1260303): Print Preview is implemented in TS, so figure out a
+# better way expose these files to Print Preview after the PDF viewer migrates
+# to TS.
+copy("copy_print_preview_files") {
+  sources = [
+    "$target_gen_dir/tsc/constants.js",
+    "$target_gen_dir/tsc/controller.js",
+    "$target_gen_dir/tsc/gesture_detector.js",
+    "$target_gen_dir/tsc/metrics.js",
+    "$target_gen_dir/tsc/open_pdf_params_parser.js",
+    "$target_gen_dir/tsc/pdf_scripting_api.js",
+    "$target_gen_dir/tsc/pdf_viewer_base.js",
+    "$target_gen_dir/tsc/pdf_viewer_utils.js",
+    "$target_gen_dir/tsc/viewport.js",
+    "$target_gen_dir/tsc/viewport_scroller.js",
+    "$target_gen_dir/tsc/zoom_manager.js",
   ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+  deps = [ ":build_ts" ]
 }
 
-js_library("constants") {
-}
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/$tsc_folder"
+  tsconfig_base = "tsconfig_base.json"
 
-js_library("gesture_detector") {
-  deps = [
-    ":constants",
-    "//ui/webui/resources/js/cr:event_target.m",
+  # TODO(crbug.com/1260303): Factor out these source files to a .gni file to
+  # reduce redundancy.
+  in_files = [
+    "bookmark_type.js",
+    "browser_api.js",
+    "constants.js",
+    "controller.js",
+    "elements/icons.js",
+    "elements/shared-css.js",
+    "elements/shared-vars.js",
+    "elements/viewer-bookmark.js",
+    "elements/viewer-document-outline.js",
+    "elements/viewer-download-controls.js",
+    "elements/viewer-error-dialog.js",
+    "elements/viewer-page-selector.js",
+    "elements/viewer-password-dialog.js",
+    "elements/viewer-pdf-sidenav.js",
+    "elements/viewer-properties-dialog.js",
+    "elements/viewer-thumbnail-bar.js",
+    "elements/viewer-thumbnail.js",
+    "elements/viewer-toolbar.js",
+    "gesture_detector.js",
+    "local_storage_proxy.js",
+    "metrics.js",
+    "navigator.js",
+    "open_pdf_params_parser.js",
+    "pdf_scripting_api.js",
+    "pdf_viewer_base.js",
+    "pdf_viewer.js",
+    "pdf_viewer_shared_style.js",
+    "pdf_viewer_utils.js",
+    "pdf_viewer_wrapper.js",
+    "viewport.js",
+    "viewport_scroller.js",
+    "zoom_manager.js",
   ]
-}
 
-js_library("open_pdf_params_parser") {
-  deps = [ ":constants" ]
-  externs_list = [ "$externs_path/pending.js" ]
-}
-
-js_library("pdf_scripting_api") {
-}
-
-js_library("viewport_scroller") {
-}
-
-js_library("viewport") {
+  if (enable_ink) {
+    in_files += [
+      "annotation_tool.js",
+      "ink_controller.js",
+      "ink/drawing_canvas_externs.js",
+      "ink/ink_api.js",
+      "elements/viewer-annotations-bar.js",
+      "elements/viewer-annotations-mode-dialog.js",
+      "elements/viewer-ink-host.js",
+      "elements/viewer-pen-options.js",
+      "elements/viewer-toolbar-dropdown.js",
+    ]
+  }
+  definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
   deps = [
-    ":constants",
-    ":gesture_detector",
-    ":internal_plugin",
-    ":zoom_manager",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:util.m",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
   ]
-  externs_list = [ "$externs_path/pending.js" ]
-}
-
-js_library("zoom_manager") {
-  deps = [
-    ":browser_api",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_library("metrics") {
-  deps = [ ":constants" ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("navigator") {
-  deps = [
-    ":browser_api",
-    ":open_pdf_params_parser",
-    ":viewport",
-  ]
-}
-
-js_library("toolbar_manager") {
-  deps = [
-    "elements:viewer-zoom-toolbar",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("ink_controller") {
-  deps = [
-    ":annotation_tool",
-    ":controller",
-    ":viewport",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_library("local_storage_proxy") {
-}
-
-js_library("controller") {
-  deps = [
-    ":gesture_detector",
-    ":internal_plugin",
-    ":viewport",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_library("internal_plugin") {
-}
-
-js_library("pdf_internal_plugin_wrapper") {
-  deps = [ ":gesture_detector" ]
-}
-
-js_library("pdf_viewer_base") {
-  deps = [
-    ":browser_api",
-    ":constants",
-    ":controller",
-    ":metrics",
-    ":pdf_scripting_api",
-    ":pdf_viewer_utils",
-    ":viewport",
-    ":viewport_scroller",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/resources_private.js" ]
-}
-
-js_library("pdf_viewer") {
-  deps = [
-    ":bookmark_type",
-    ":browser_api",
-    ":constants",
-    ":controller",
-    ":ink_controller",
-    ":local_storage_proxy",
-    ":metrics",
-    ":navigator",
-    ":pdf_scripting_api",
-    ":pdf_viewer_base",
-    ":pdf_viewer_utils",
-    "elements:viewer-bookmark",
-    "elements:viewer-error-dialog",
-    "elements:viewer-password-dialog",
-    "elements:viewer-pdf-sidenav",
-    "elements:viewer-properties-dialog",
-    "elements:viewer-toolbar",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/resources_private.js" ]
-}
-
-js_library("pdf_viewer_wrapper") {
-  deps = [ ":pdf_viewer" ]
-}
-
-js_library("pdf_viewer_utils") {
-  deps = [
-    ":controller",
-    ":viewport",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("pdf_viewer_pp") {
-  deps = [
-    ":constants",
-    ":controller",
-    ":pdf_scripting_api",
-    ":pdf_viewer_base",
-    ":pdf_viewer_utils",
-    ":toolbar_manager",
-    ":viewport",
-    "elements:viewer-error-dialog",
-    "elements:viewer-page-indicator",
-    "elements:viewer-zoom-toolbar",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/resources_private.js" ]
-}
-
-js_library("main") {
-  deps = [
-    ":browser_api",
-    ":pdf_viewer",
-  ]
-}
-
-js_type_check("closure_compile_local") {
-  is_polymer3 = true
-  deps = [
-    ":annotation_tool",
-    ":browser_api",
-    ":constants",
-    ":controller",
-    ":gesture_detector",
-    ":ink_controller",
-    ":local_storage_proxy",
-    ":main",
-    ":metrics",
-    ":navigator",
-    ":open_pdf_params_parser",
-    ":pdf_internal_plugin_wrapper",
-    ":pdf_scripting_api",
-    ":pdf_viewer",
-    ":pdf_viewer_base",
-    ":pdf_viewer_pp",
-    ":pdf_viewer_utils",
-    ":pdf_viewer_wrapper",
-    ":toolbar_manager",
-    ":viewport",
-    ":viewport_scroller",
-    ":zoom_manager",
+  extra_deps = [
+    ":copy_files",
+    ":preprocess",
+    ":preprocess_generated",
   ]
 }
