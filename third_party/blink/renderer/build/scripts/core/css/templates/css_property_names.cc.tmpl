@@ -68,4 +68,13 @@ mojom::blink::CSSSampleId GetCSSSampleId(CSSPropertyID id) {
   NOTREACHED();
 }
 
+int ResolveCSSPropertyAlias(int value) {
+  static constexpr uint16_t kLookupTable[] = {
+  {% for p in aliases : %}
+    {{p.aliased_enum_value}},
+  {% endfor %}
+  };
+  return kLookupTable[value - {{alias_offset}}];
+}
+
 }  // namespace blink
