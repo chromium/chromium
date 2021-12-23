@@ -104,10 +104,10 @@ public class AutofillAssistantHeaderUiTest {
     /** Creates a coordinator for use in UI tests, and adds it to the global view hierarchy. */
     private AssistantHeaderCoordinator createCoordinator(AssistantHeaderModel model) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            AssistantDependencies dependencies =
-                    new AssistantDependenciesChrome(mCustomTabActivityTestRule.getActivity());
-            AssistantHeaderCoordinator coordinator = new AssistantHeaderCoordinator(
-                    getActivity(), model, dependencies.getAccessibilityUtil());
+            AssistantDependencies dependencies = new AssistantDependenciesChrome(getActivity());
+            AssistantHeaderCoordinator coordinator = new AssistantHeaderCoordinator(getActivity(),
+                    model, dependencies.getAccessibilityUtil(),
+                    dependencies.getProfileImageUtilOrNull(getActivity()));
 
             CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

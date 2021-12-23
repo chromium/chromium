@@ -63,7 +63,8 @@ public class AssistantTriggerScriptBridge {
 
         mTriggerScript = new AssistantTriggerScript(dependencies.getActivity(), delegate,
                 webContents, dependencies.getBottomSheetController(),
-                dependencies.getBottomInsetProvider(), dependencies.getAccessibilityUtil());
+                dependencies.getBottomInsetProvider(), dependencies.getAccessibilityUtil(),
+                dependencies.getProfileImageUtilOrNull(dependencies.getActivity()));
 
         mKeyboardVisibilityListener = this::safeNativeOnKeyboardVisibilityChanged;
     }

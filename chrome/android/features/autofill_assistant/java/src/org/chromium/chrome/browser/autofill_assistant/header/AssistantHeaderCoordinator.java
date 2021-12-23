@@ -6,41 +6,39 @@ package org.chromium.chrome.browser.autofill_assistant.header;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiController;
+import org.chromium.chrome.browser.autofill_assistant.AssistantProfileImageUtil;
 import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChipAdapter;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderViewBinder.ViewHolder;
-import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.ProfileDataCache;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.util.AccessibilityUtil;
 
 /**
  * Coordinator for the header of the Autofill Assistant.
  */
-public class AssistantHeaderCoordinator implements ProfileDataCache.Observer {
-    private final ProfileDataCache mProfileCache;
+public class AssistantHeaderCoordinator implements AssistantProfileImageUtil.Observer {
     private final ViewGroup mView;
     private final ImageView mProfileView;
-    private final String mSignedInAccountEmail;
     private final ViewHolder mViewHolder;
     private final RecyclerView mChipsContainer;
 
-    public AssistantHeaderCoordinator(
-            Context context, AssistantHeaderModel model, AccessibilityUtil accessibilityUtil) {
+    @Nullable
+    private final AssistantProfileImageUtil mProfileImageUtil;
+
+    public AssistantHeaderCoordinator(Context context, AssistantHeaderModel model,
+            AccessibilityUtil accessibilityUtil,
+            @Nullable AssistantProfileImageUtil profileImageUtil) {
         // Create the poodle and insert it before the status message. We have to create a view
         // bigger than the desired poodle size (24dp) because the actual downstream implementation
         // needs extra space for the animation.
@@ -52,15 +50,12 @@ public class AssistantHeaderCoordinator implements ProfileDataCache.Observer {
                 context.getResources().getDimensionPixelSize(
                         R.dimen.autofill_assistant_poodle_size));
         addPoodle(mView, poodle.getView());
-
-        mProfileCache = ProfileDataCache.createWithoutBadge(
-                context, R.dimen.autofill_assistant_profile_size);
         mProfileView = mView.findViewById(R.id.profile_image);
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                AutofillAssistantUiController.getProfile());
-        mSignedInAccountEmail = CoreAccountInfo.getEmailFrom(
-                identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
-        setupProfileImage();
+
+        mProfileImageUtil = profileImageUtil;
+        if (mProfileImageUtil != null) {
+            mProfileImageUtil.addObserver(this);
+        }
 
         mChipsContainer = new RecyclerView(context);
         final int innerChipSpacing = context.getResources().getDimensionPixelSize(
@@ -113,11 +108,8 @@ public class AssistantHeaderCoordinator implements ProfileDataCache.Observer {
     }
 
     @Override
-    public void onProfileDataUpdated(String accountEmail) {
-        if (!mSignedInAccountEmail.equals(accountEmail)) {
-            return;
-        }
-        setProfileImageFor(mSignedInAccountEmail);
+    public void onProfileImageChanged(Drawable profileImage) {
+        mProfileView.setImageDrawable(profileImage);
     }
 
     /** Return the view associated to this coordinator. */
@@ -134,26 +126,13 @@ public class AssistantHeaderCoordinator implements ProfileDataCache.Observer {
      * Cleanup resources when this goes out of scope.
      */
     public void destroy() {
-        if (mSignedInAccountEmail != null) {
-            mProfileCache.removeObserver(this);
+        if (mProfileImageUtil != null) {
+            mProfileImageUtil.removeObserver(this);
         }
     }
 
     private void addPoodle(View root, View poodleView) {
         ViewGroup parent = root.findViewById(R.id.poodle_wrapper);
         parent.addView(poodleView);
-    }
-
-    // TODO(b/130415092): Use image from AGSA if chrome is not signed in.
-
-    private void setupProfileImage() {
-        if (mSignedInAccountEmail != null) {
-            mProfileCache.addObserver(this);
-        }
-    }
-    private void setProfileImageFor(String signedInAccountName) {
-        DisplayableProfileData profileData =
-                mProfileCache.getProfileDataOrDefault(signedInAccountName);
-        mProfileView.setImageDrawable(profileData.getImage());
     }
 }

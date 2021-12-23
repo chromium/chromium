@@ -139,18 +139,20 @@ public class AutofillAssistantUiController {
         mDependencies = dependencies;
         Supplier<View> rootView = activity.getCompositorViewHolderSupplier();
         mSnackbarFactory = dependencies.getSnackbarFactory();
+        mFeedbackUtil = dependencies.getFeedbackUtil();
+
         // NOTE: Only create one instance of this unless you know what you are doing.
         @Nullable
         AssistantTabObscuringUtil tabObscuringUtil =
                 dependencies.getTabObscuringUtilOrNull(activity.getWindowAndroid());
-        mFeedbackUtil = dependencies.getFeedbackUtil();
 
         mCoordinator = new AssistantCoordinator(activity, controller, tabObscuringUtil,
                 overlayCoordinator, this::safeNativeOnKeyboardVisibilityChanged,
                 activity.getWindowAndroid().getKeyboardDelegate(), rootView.get(),
                 activity.getBrowserControlsManager(),
                 activity.getWindowAndroid().getApplicationBottomInsetProvider(),
-                dependencies.getAccessibilityUtil(), dependencies.getInfoPageUtil());
+                dependencies.getAccessibilityUtil(), dependencies.getInfoPageUtil(),
+                dependencies.getProfileImageUtilOrNull(activity));
         mActivityTabObserver = new ActivityTabProvider.ActivityTabTabObserver(
                 activity.getActivityTabProvider(), /* shouldTrigger = */ true) {
             @Override

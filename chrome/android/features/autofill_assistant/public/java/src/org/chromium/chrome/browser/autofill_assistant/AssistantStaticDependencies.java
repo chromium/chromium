@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import android.content.Context;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -30,4 +32,10 @@ public interface AssistantStaticDependencies {
     AssistantInfoPageUtil getInfoPageUtil();
 
     AssistantFeedbackUtil getFeedbackUtil();
+
+    @Nullable
+    String getSignedInAccountEmailOrNull();
+
+    @Nullable
+    AssistantProfileImageUtil getProfileImageUtilOrNull(Context context);
 }

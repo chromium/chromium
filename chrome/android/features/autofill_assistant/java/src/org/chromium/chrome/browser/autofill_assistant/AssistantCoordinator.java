@@ -35,7 +35,8 @@ public class AssistantCoordinator {
             @NonNull ActivityKeyboardVisibilityDelegate keyboardDelegate, @NonNull View rootView,
             @NonNull BrowserControlsManager browserControlsManager,
             @NonNull ApplicationViewportInsetSupplier applicationBottomInsetProvider,
-            AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil) {
+            AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil,
+            @Nullable AssistantProfileImageUtil profileImageUtil) {
         if (overlayCoordinator != null) {
             mModel = new AssistantModel(overlayCoordinator.getModel());
             mOverlayCoordinator = overlayCoordinator;
@@ -48,7 +49,7 @@ public class AssistantCoordinator {
 
         mBottomBarCoordinator = new AssistantBottomBarCoordinator(activity, mModel,
                 mOverlayCoordinator, controller, applicationBottomInsetProvider, tabObscuringUtil,
-                browserControlsManager, accessibilityUtil, infoPageUtil);
+                browserControlsManager, accessibilityUtil, infoPageUtil, profileImageUtil);
         mKeyboardCoordinator = new AssistantKeyboardCoordinator(activity, keyboardDelegate,
                 rootView, mModel, keyboardCoordinatorDelegate, controller);
     }

@@ -17,6 +17,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantBottomBarDelegate;
 import org.chromium.chrome.browser.autofill_assistant.AssistantBottomSheetContent;
+import org.chromium.chrome.browser.autofill_assistant.AssistantProfileImageUtil;
 import org.chromium.chrome.browser.autofill_assistant.AssistantRootViewContainer;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantDependencyInjector;
 import org.chromium.chrome.browser.autofill_assistant.BottomSheetUtils;
@@ -62,6 +63,8 @@ public class AssistantTriggerScript {
     private final ObservableSupplierImpl<Integer> mInsetSupplier = new ObservableSupplierImpl<>();
     private final ApplicationViewportInsetSupplier mApplicationViewportInsetSupplier;
     private final AccessibilityUtil mAccessibilityUtil;
+    @Nullable
+    private final AssistantProfileImageUtil mProfileImageUtil;
 
     private AssistantHeaderCoordinator mHeaderCoordinator;
     private AssistantHeaderModel mHeaderModel;
@@ -82,7 +85,8 @@ public class AssistantTriggerScript {
     public AssistantTriggerScript(Context context, Delegate delegate, WebContents webContents,
             BottomSheetController controller,
             ApplicationViewportInsetSupplier applicationViewportInsetSupplier,
-            AccessibilityUtil accessibilityUtil) {
+            AccessibilityUtil accessibilityUtil,
+            @Nullable AssistantProfileImageUtil profileImageUtil) {
         assert delegate != null;
         mContext = context;
         mDelegate = delegate;
@@ -91,6 +95,8 @@ public class AssistantTriggerScript {
         mApplicationViewportInsetSupplier = applicationViewportInsetSupplier;
         mApplicationViewportInsetSupplier.addSupplier(mInsetSupplier);
         mAccessibilityUtil = accessibilityUtil;
+        mProfileImageUtil = profileImageUtil;
+
         mBottomSheetObserver = new EmptyBottomSheetObserver() {
             @Override
             public void onSheetClosed(@StateChangeReason int reason) {
@@ -220,8 +226,9 @@ public class AssistantTriggerScript {
         if (mHeaderCoordinator != null) {
             mHeaderCoordinator.destroy();
         }
-        mHeaderCoordinator =
-                new AssistantHeaderCoordinator(mContext, mHeaderModel, mAccessibilityUtil);
+
+        mHeaderCoordinator = new AssistantHeaderCoordinator(
+                mContext, mHeaderModel, mAccessibilityUtil, mProfileImageUtil);
         mHeaderModel.set(
                 AssistantHeaderModel.FEEDBACK_BUTTON_CALLBACK, mDelegate::onFeedbackButtonClicked);
         if (AutofillAssistantDependencyInjector.hasServiceRequestSenderToInject()) {
