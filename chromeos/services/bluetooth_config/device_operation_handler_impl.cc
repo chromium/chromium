@@ -4,9 +4,35 @@
 
 #include "chromeos/services/bluetooth_config/device_operation_handler_impl.h"
 
+#include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "components/device_event_log/device_event_log.h"
+#include "device/bluetooth/bluetooth_common.h"
+#include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 
 namespace chromeos {
+namespace {
+
+device::ConnectionFailureReason GetConnectionFailureReason(
+    device::BluetoothDevice::ConnectErrorCode error_code) {
+  switch (error_code) {
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_AUTH_FAILED:
+      return device::ConnectionFailureReason::kAuthFailed;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_AUTH_TIMEOUT:
+      return device::ConnectionFailureReason::kAuthTimeout;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_FAILED:
+      return device::ConnectionFailureReason::kFailed;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN:
+      return device::ConnectionFailureReason::kUnknownConnectionError;
+    case device::BluetoothDevice::ConnectErrorCode::ERROR_UNSUPPORTED_DEVICE:
+      return device::ConnectionFailureReason::kUnsupportedDevice;
+    default:
+      return device::ConnectionFailureReason::kUnknownError;
+  }
+}
+
+}  // namespace
 namespace bluetooth_config {
 
 DeviceOperationHandlerImpl::DeviceOperationHandlerImpl(
@@ -21,10 +47,15 @@ DeviceOperationHandlerImpl::~DeviceOperationHandlerImpl() = default;
 
 void DeviceOperationHandlerImpl::PerformConnect(const std::string& device_id) {
   device::BluetoothDevice* device = FindDevice(device_id);
+  last_reconnection_attempt_start_ = base::DefaultClock::GetInstance()->Now();
   if (!device) {
     BLUETOOTH_LOG(ERROR) << "Connect failed due to device not being "
                             "found, device id: "
                          << device_id;
+    RecordUserInitiatedReconnectionMetrics(
+        device::BluetoothTransport::BLUETOOTH_TRANSPORT_INVALID,
+        /*reconnection_attempt_start=*/absl::nullopt,
+        device::BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
     HandleFinishedOperation(/*success=*/false);
     return;
   }
@@ -32,7 +63,7 @@ void DeviceOperationHandlerImpl::PerformConnect(const std::string& device_id) {
   device->Connect(
       /*delegate=*/nullptr,
       base::BindOnce(&DeviceOperationHandlerImpl::OnDeviceConnect,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), device->GetType()));
 }
 
 void DeviceOperationHandlerImpl::PerformDisconnect(
@@ -77,19 +108,18 @@ void DeviceOperationHandlerImpl::PerformForget(const std::string& device_id) {
   HandleFinishedOperation(/*success=*/true);
 }
 
-void DeviceOperationHandlerImpl::HandleOperationTimeout() {
+void DeviceOperationHandlerImpl::HandleOperationTimeout(
+    const PendingOperation& operation) {
   // Invalidate all BluetoothDevice callbacks for the current operation.
   weak_ptr_factory_.InvalidateWeakPtrs();
-}
 
-void DeviceOperationHandlerImpl::OnDeviceConnect(
-    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
-  if (error_code.has_value()) {
-    BLUETOOTH_LOG(ERROR) << "Connect failed with error code: "
-                         << error_code.value();
+  if (operation.operation != Operation::kConnect) {
+    return;
   }
 
-  HandleFinishedOperation(!error_code.has_value());
+  RecordUserInitiatedReconnectionMetrics(
+      operation.transport_type, last_reconnection_attempt_start_,
+      device::BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
 }
 
 device::BluetoothDevice* DeviceOperationHandlerImpl::FindDevice(
@@ -100,6 +130,38 @@ device::BluetoothDevice* DeviceOperationHandlerImpl::FindDevice(
     return device;
   }
   return nullptr;
+}
+
+void DeviceOperationHandlerImpl::RecordUserInitiatedReconnectionMetrics(
+    const device::BluetoothTransport transport,
+    absl::optional<base::Time> reconnection_attempt_start,
+    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code)
+    const {
+  absl::optional<device::ConnectionFailureReason> failure_reason =
+      error_code ? absl::make_optional(GetConnectionFailureReason(*error_code))
+                 : absl::nullopt;
+  device::RecordUserInitiatedReconnectionAttemptResult(
+      failure_reason, device::UserInitiatedReconnectionUISurfaces::kSettings);
+  if (reconnection_attempt_start) {
+    device::RecordUserInitiatedReconnectionAttemptDuration(
+        failure_reason, transport,
+        base::DefaultClock::GetInstance()->Now() -
+            reconnection_attempt_start.value());
+  }
+}
+
+void DeviceOperationHandlerImpl::OnDeviceConnect(
+    device::BluetoothTransport transport,
+    absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
+  if (error_code.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "Connect failed with error code: "
+                         << error_code.value();
+  }
+
+  RecordUserInitiatedReconnectionMetrics(
+      transport, last_reconnection_attempt_start_, error_code);
+
+  HandleFinishedOperation(!error_code.has_value());
 }
 
 }  // namespace bluetooth_config

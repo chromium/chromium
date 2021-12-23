@@ -11,6 +11,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
+#include "device/bluetooth/bluetooth_common.h"
+#include "device/bluetooth/bluetooth_device.h"
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -38,6 +40,26 @@ class DeviceOperationHandler : public AdapterStateController::Observer {
   void Forget(const std::string& device_id, OperationCallback callback);
 
  protected:
+  enum class Operation {
+    kConnect,
+    kDisconnect,
+    kForget,
+  };
+
+  struct PendingOperation {
+    PendingOperation(Operation operation_,
+                     const std::string& device_id_,
+                     const device::BluetoothTransport& transport_type,
+                     OperationCallback callback_);
+    PendingOperation(PendingOperation&& other);
+    PendingOperation& operator=(PendingOperation other);
+    ~PendingOperation();
+
+    Operation operation;
+    std::string device_id;
+    device::BluetoothTransport transport_type;
+    OperationCallback callback;
+  };
   explicit DeviceOperationHandler(
       AdapterStateController* adapter_state_controller);
 
@@ -50,7 +72,18 @@ class DeviceOperationHandler : public AdapterStateController::Observer {
   virtual void PerformForget(const std::string& device_id) = 0;
 
   // Informs derived classes the current operation timed out.
-  virtual void HandleOperationTimeout() = 0;
+  virtual void HandleOperationTimeout(const PendingOperation& operation) = 0;
+
+  // Finds a BluetoothDevice* based on device_id. If no device is found, nullptr
+  // is returned.
+  virtual device::BluetoothDevice* FindDevice(
+      const std::string& device_id) const = 0;
+
+  virtual void RecordUserInitiatedReconnectionMetrics(
+      const device::BluetoothTransport transport,
+      absl::optional<base::Time> reconnection_attempt_start,
+      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code)
+      const = 0;
 
  private:
   friend class DeviceOperationHandlerImplTest;
@@ -58,26 +91,8 @@ class DeviceOperationHandler : public AdapterStateController::Observer {
   // Timeout after which an operation is considered to have failed.
   static const base::TimeDelta kOperationTimeout;
 
-  enum class Operation {
-    kConnect,
-    kDisconnect,
-    kForget,
-  };
   friend std::ostream& operator<<(std::ostream& stream,
                                   const Operation& operation);
-
-  struct PendingOperation {
-    PendingOperation(Operation operation_,
-                     const std::string& device_id_,
-                     OperationCallback callback_);
-    PendingOperation(PendingOperation&& other);
-    PendingOperation& operator=(PendingOperation other);
-    ~PendingOperation();
-
-    Operation operation;
-    std::string device_id;
-    OperationCallback callback;
-  };
 
   // AdapterStateController::Observer:
   void OnAdapterStateChanged() override;

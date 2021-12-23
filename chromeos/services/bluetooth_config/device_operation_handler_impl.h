@@ -30,18 +30,24 @@ class DeviceOperationHandlerImpl : public DeviceOperationHandler {
   void PerformConnect(const std::string& device_id) override;
   void PerformDisconnect(const std::string& device_id) override;
   void PerformForget(const std::string& device_id) override;
-  void HandleOperationTimeout() override;
+  void HandleOperationTimeout(const PendingOperation& operation) override;
+  device::BluetoothDevice* FindDevice(
+      const std::string& device_id) const override;
+  void RecordUserInitiatedReconnectionMetrics(
+      const device::BluetoothTransport transport,
+      absl::optional<base::Time> reconnection_attempt_start,
+      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code)
+      const override;
 
   // device::BluetoothDevice::Connect() callback.
   void OnDeviceConnect(
+      device::BluetoothTransport transport,
       absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
-
-  // Finds a BluetoothDevice* based on device_id. If no device is found, nullptr
-  // is returned.
-  device::BluetoothDevice* FindDevice(const std::string& device_id) const;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   DeviceNameManager* device_name_manager_;
+
+  base::Time last_reconnection_attempt_start_;
 
   base::WeakPtrFactory<DeviceOperationHandlerImpl> weak_ptr_factory_{this};
 };

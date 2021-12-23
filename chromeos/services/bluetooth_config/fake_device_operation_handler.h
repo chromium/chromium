@@ -24,7 +24,14 @@ class FakeDeviceOperationHandler : public DeviceOperationHandler {
   void PerformConnect(const std::string& device_id) override;
   void PerformDisconnect(const std::string& device_id) override;
   void PerformForget(const std::string& device_id) override;
-  void HandleOperationTimeout() override {}
+  void HandleOperationTimeout(const PendingOperation& operation) override {}
+  device::BluetoothDevice* FindDevice(
+      const std::string& device_id) const override;
+  void RecordUserInitiatedReconnectionMetrics(
+      const device::BluetoothTransport transport,
+      absl::optional<base::Time> reconnection_attempt_start,
+      absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code)
+      const override {}
 };
 
 }  // namespace bluetooth_config

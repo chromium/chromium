@@ -24,5 +24,10 @@ void FakeDeviceOperationHandler::PerformDisconnect(
 
 void FakeDeviceOperationHandler::PerformForget(const std::string& device_id) {}
 
+device::BluetoothDevice* FakeDeviceOperationHandler::FindDevice(
+    const std::string& device_id) const {
+  return nullptr;
+}
+
 }  // namespace bluetooth_config
 }  // namespace chromeos

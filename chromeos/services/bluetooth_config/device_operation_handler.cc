@@ -5,6 +5,8 @@
 #include "chromeos/services/bluetooth_config/device_operation_handler.h"
 
 #include "components/device_event_log/device_event_log.h"
+#include "device/bluetooth/bluetooth_common.h"
+#include "device/bluetooth/bluetooth_device.h"
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -12,15 +14,18 @@ namespace bluetooth_config {
 DeviceOperationHandler::PendingOperation::PendingOperation(
     Operation operation_,
     const std::string& device_id_,
+    const device::BluetoothTransport& transport_type_,
     OperationCallback callback_)
     : operation(operation_),
       device_id(device_id_),
+      transport_type(transport_type_),
       callback(std::move(callback_)) {}
 
 DeviceOperationHandler::PendingOperation::PendingOperation(
     PendingOperation&& other) {
   operation = other.operation;
   device_id = other.device_id;
+  transport_type = other.transport_type;
   callback = std::move(other.callback);
 }
 
@@ -28,6 +33,7 @@ DeviceOperationHandler::PendingOperation&
 DeviceOperationHandler::PendingOperation::operator=(PendingOperation other) {
   operation = other.operation;
   device_id = other.device_id;
+  transport_type = other.transport_type;
   callback = std::move(other.callback);
   return *this;
 }
@@ -36,7 +42,7 @@ DeviceOperationHandler::PendingOperation::~PendingOperation() = default;
 
 // static
 const base::TimeDelta DeviceOperationHandler::kOperationTimeout =
-    base::Seconds(5);
+    base::Milliseconds(5000);
 
 DeviceOperationHandler::DeviceOperationHandler(
     AdapterStateController* adapter_state_controller)
@@ -98,7 +104,11 @@ void DeviceOperationHandler::EnqueueOperation(Operation operation,
   BLUETOOTH_LOG(DEBUG) << "Device with id: " << device_id
                        << " enqueueing operation: " << operation << " ("
                        << (queue_.size() + 1) << " operations already queued)";
-  queue_.emplace(operation, device_id, std::move(callback));
+  device::BluetoothDevice* device = FindDevice(device_id);
+  device::BluetoothTransport type =
+      device ? device->GetType()
+             : device::BluetoothTransport::BLUETOOTH_TRANSPORT_INVALID;
+  queue_.emplace(operation, device_id, type, std::move(callback));
   ProcessQueue();
 }
 
@@ -126,6 +136,10 @@ void DeviceOperationHandler::PerformNextOperation() {
     BLUETOOTH_LOG(ERROR)
         << "Operation failed due to Bluetooth not being enabled, device id: "
         << current_operation_->device_id;
+    RecordUserInitiatedReconnectionMetrics(
+        device::BluetoothTransport::BLUETOOTH_TRANSPORT_INVALID,
+        /*reconnection_attempt_start=*/absl::nullopt,
+        device::BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
     HandleFinishedOperation(/*success=*/false);
     return;
   }
@@ -154,7 +168,8 @@ void DeviceOperationHandler::PerformNextOperation() {
 void DeviceOperationHandler::OnOperationTimeout() {
   BLUETOOTH_LOG(ERROR) << "Operation for device with id: "
                        << current_operation_->device_id << " timed out.";
-  HandleOperationTimeout();
+  DCHECK(current_operation_);
+  HandleOperationTimeout(current_operation_.value());
   HandleFinishedOperation(/*success=*/false);
 }
 
