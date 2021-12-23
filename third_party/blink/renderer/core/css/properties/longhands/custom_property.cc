@@ -59,6 +59,12 @@ CSSPropertyName CustomProperty::GetCSSPropertyName() const {
   return CSSPropertyName(name_);
 }
 
+bool CustomProperty::HasEqualCSSPropertyName(const CSSProperty& other) const {
+  if (PropertyID() != other.PropertyID())
+    return false;
+  return name_ == other.GetPropertyNameAtomicString();
+}
+
 void CustomProperty::ApplyInitial(StyleResolverState& state) const {
   bool is_inherited_property = IsInherited();
 

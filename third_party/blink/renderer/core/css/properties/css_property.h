@@ -38,6 +38,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   virtual CSSPropertyName GetCSSPropertyName() const {
     return CSSPropertyName(PropertyID());
   }
+  virtual bool HasEqualCSSPropertyName(const CSSProperty& other) const;
 
   bool IDEquals(CSSPropertyID id) const { return PropertyID() == id; }
   bool IsResolvedProperty() const override { return true; }
