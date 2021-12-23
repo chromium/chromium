@@ -11,8 +11,7 @@ import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 // clang-format on
@@ -470,45 +469,40 @@ suite('CrActionMenu', function() {
     const containerLeft = 5000;
     const containerTop = 10000;
     const containerWidth = 500;
-    const containerHeight = 500;
 
     suiteSetup(function() {
-      document.body.innerHTML = `
-        <dom-module id="test-element">
-          <template>
-            <style>
-              #container {
-                overflow: auto;
-                position: absolute;
-                top: ${containerTop}px;
-                left: ${containerLeft}px;
-                right: ${containerLeft}px;
-                height: ${containerHeight}px;
-                width: ${containerWidth}px;
-              }
-
-              #inner-container {
-                height: 1000px;
-                width: 1000px;
-              }
-            </style>
-            <div id="container">
-              <div id="inner-container">
-                <button id="dots">...</button>
-                <cr-action-menu>
-                  <button class="dropdown-item">Un</button>
-                  <hr>
-                  <button class="dropdown-item">Dos</button>
-                  <button class="dropdown-item">Tres</button>
-                </cr-action-menu>
-              </div>
-            </div>
-          </template>
-        </dom-module>
-      `;
-
       Polymer({
         is: 'test-element',
+
+        _template: html`
+          <style>
+            #container {
+              overflow: auto;
+              position: absolute;
+              top: 10000px; /* containerTop */
+              left: 5000px; /* containerLeft */
+              right: 5000px; /* containerLeft */
+              height: 500px; /* containerWidth */
+              width: 500px; /* containerWidth */
+            }
+
+            #inner-container {
+              height: 1000px;
+              width: 1000px;
+            }
+          </style>
+          <div id="container">
+            <div id="inner-container">
+              <button id="dots">...</button>
+              <cr-action-menu>
+                <button class="dropdown-item">Un</button>
+                <hr>
+                <button class="dropdown-item">Dos</button>
+                <button class="dropdown-item">Tres</button>
+              </cr-action-menu>
+            </div>
+          </div>
+        `,
       });
     });
 

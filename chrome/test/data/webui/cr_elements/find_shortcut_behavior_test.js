@@ -59,14 +59,10 @@ suite('find-shortcut', () => {
   };
 
   suiteSetup(() => {
-    document.body.innerHTML = `
-        <dom-module id="find-shortcut-element-manual-listen">
-          <template></template>
-        </dom-module>
-      `;
-
     Polymer({
       is: 'find-shortcut-element-manual-listen',
+      _template: null,
+
       behaviors: [FindShortcutBehavior],
 
       findShortcutListenOnAttach: false,
@@ -83,14 +79,9 @@ suite('find-shortcut', () => {
       }
     });
 
-    document.body.innerHTML = `
-        <dom-module id="find-shortcut-element">
-          <template></template>
-        </dom-module>
-      `;
-
     Polymer({
       is: 'find-shortcut-element',
+      _template: null,
       behaviors: [FindShortcutBehavior],
 
       handledResponse: true,

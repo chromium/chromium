@@ -6,7 +6,7 @@
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {down, pressAndReleaseKeyOn, up} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise, waitAfterNextRender} from 'chrome://test/test_util.js';
 
 // clang-format on
@@ -15,34 +15,14 @@ suite('cr-focus-row-behavior-test', function() {
   /** @type {FocusableIronListItemElement} */ let testElement;
 
   suiteSetup(function() {
-    document.body.innerHTML = `
-      <dom-module id="button-three">
-        <template>
-          <button>
-            fake button three
-          </button>
-        </template>
-      </dom-module>
-
-      <dom-module id="focus-row-element">
-        <template>
-          <div id="container" focus-row-container>
-            <span>fake text</span>
-            <button id="control" focus-row-control focus-type='fake-btn'>
-              fake button
-            </button>
-            <button id="controlTwo" focus-row-control focus-type='fake-btn-two'>
-              fake button two
-            </button>
-            <button-three focus-row-control focus-type='fake-btn-three'>
-            </button-three>
-          </div>
-        </template>
-      </dom-module>
-    `;
-
     Polymer({
       is: 'button-three',
+
+      _template: html`
+        <button>
+          fake button three
+        </button>
+      `,
 
       /** @return {!Element} */
       getFocusableElement: function() {
@@ -52,6 +32,21 @@ suite('cr-focus-row-behavior-test', function() {
 
     Polymer({
       is: 'focus-row-element',
+
+      _template: html`
+        <div id="container" focus-row-container>
+          <span>fake text</span>
+          <button id="control" focus-row-control focus-type='fake-btn'>
+            fake button
+          </button>
+          <button id="controlTwo" focus-row-control focus-type='fake-btn-two'>
+            fake button two
+          </button>
+          <button-three focus-row-control focus-type='fake-btn-three'>
+          </button-three>
+        </div>
+      `,
+
       behaviors: [FocusRowBehavior],
       focusCallCount: 0,
 

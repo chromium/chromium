@@ -16,75 +16,36 @@ suite('cr-scrollable-behavior', function() {
   /** @type {!IronListElement} */ let ironList;
 
   suiteSetup(function() {
-    if (window.location.origin === 'chrome://test') {
-      // Polymer 3 setup
-      Polymer({
-        is: 'test-element',
+    Polymer({
+      is: 'test-element',
 
-        _template: html`
-          <style>
-            #container {
-              height: 30px;
-              overflow-y: auto;
-            }
-          </style>
-          <div id="container" scrollable>
-            <iron-list scroll-target="container" items="[[items]]">
-              <template>
-                <div>[[item]]</div>
-              </template>
-            </iron-list>
-          </div>
-        `,
+      _template: html`
+        <style>
+          #container {
+            height: 30px;
+            overflow-y: auto;
+          }
+        </style>
+        <div id="container" scrollable>
+          <iron-list scroll-target="container" items="[[items]]">
+            <template>
+              <div>[[item]]</div>
+            </template>
+          </iron-list>
+        </div>
+      `,
 
-        properties: {
-          items: {
-            type: Array,
-            value: function() {
-              return ['apple', 'bannana', 'cucumber', 'doughnut'];
-            },
+      properties: {
+        items: {
+          type: Array,
+          value: function() {
+            return ['apple', 'bannana', 'cucumber', 'doughnut'];
           },
         },
+      },
 
-        behaviors: [CrScrollableBehavior],
-      });
-    } else {
-      // Polymer 2 setup
-      document.body.innerHTML = `
-        <dom-module id="test-element">
-          <template>
-            <style>
-              #container {
-                height: 30px;
-                overflow-y: auto;
-              }
-            </style>
-            <div id="container" scrollable>
-              <iron-list scroll-target="container" items="[[items]]">
-                <template>
-                  <div>[[item]]</div>
-                </template>
-              </iron-list>
-            </div>
-          </template>
-        </dom-module>
-      `;
-
-      Polymer({
-        is: 'test-element',
-
-        properties: {
-          items: {
-            type: Array,
-            value: function() {
-              return ['apple', 'bannana', 'cucumber', 'doughnut'];
-            },
-          },
-        },
-
-        behaviors: [CrScrollableBehavior],
-      });
-    }
+      behaviors: [CrScrollableBehavior],
+    });
   });
 
   setup(function(done) {

@@ -11,55 +11,26 @@ import {assertFalse, assertTrue} from '../chai_assert.js';
 
 suite('CrContainerShadowBehavior', function() {
   suiteSetup(function() {
-    if (window.location.origin === 'chrome://test') {
-      // Polymer 3 setup
-      Polymer({
-        is: 'test-element',
+    Polymer({
+      is: 'test-element',
 
-        _template: html`
-          <style>
-            #container {
-              height: 50px;
-            }
-          </style>
-          <div id="before"></div>
-          <div id="container" show-bottom-shadow$="[[showBottomShadow]]"></div>
-          <div id="after"></div>
-        `,
+      _template: html`
+        <style>
+          #container {
+            height: 50px;
+          }
+        </style>
+        <div id="before"></div>
+        <div id="container" show-bottom-shadow$="[[showBottomShadow]]"></div>
+        <div id="after"></div>
+      `,
 
-        properties: {
-          showBottomShadow: Boolean,
-        },
+      properties: {
+        showBottomShadow: Boolean,
+      },
 
-        behaviors: [CrContainerShadowBehavior],
-      });
-    } else {
-      document.body.innerHTML = `
-        <dom-module id="test-element">
-          <template>
-            <style>
-              #container {
-                height: 50px;
-              }
-            </style>
-            <div id="before"></div>
-            <div id="container" show-bottom-shadow$="[[showBottomShadow]]">
-            </div>
-            <div id="after"></div>
-          </template>
-        </dom-module>
-      `;
-
-      Polymer({
-        is: 'test-element',
-
-        properties: {
-          showBottomShadow: Boolean,
-        },
-
-        behaviors: [CrContainerShadowBehavior],
-      });
-    }
+      behaviors: [CrContainerShadowBehavior],
+    });
   });
 
   setup(function() {
