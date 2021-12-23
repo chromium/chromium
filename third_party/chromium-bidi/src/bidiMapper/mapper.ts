@@ -24,6 +24,8 @@ import { ITransport } from '../utils/transport';
 import EVALUATOR_SCRIPT from './scripts/eval.es';
 
 import { log } from '../utils/log';
+import { EventManager } from './domains/events/EventManager';
+
 const logSystem = log('system');
 
 declare global {
@@ -56,6 +58,7 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
   const cdpConnection = _createCdpConnection();
   const cdpClient = cdpConnection.browserClient();
   const bidiServer = _createBidiServer();
+  const eventManager = new EventManager(bidiServer);
 
   // Needed to filter out info related to BiDi target.
   const selfTargetId = await _waitSelfTargetIdPromise;
@@ -65,6 +68,7 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
   CommandProcessor.run(
     cdpConnection,
     bidiServer,
+    eventManager,
     selfTargetId,
     EVALUATOR_SCRIPT
   );

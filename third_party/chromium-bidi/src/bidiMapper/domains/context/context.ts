@@ -23,6 +23,7 @@ import {
   Script,
 } from '../../bidiProtocolTypes';
 import { IBidiServer } from '../../utils/bidiServer';
+import { IEventManager } from '../events/EventManager';
 import ArgumentValue = Script.ArgumentValue;
 
 export class Context {
@@ -38,6 +39,7 @@ export class Context {
     private _contextId: string,
     private _cdpClient: CdpClient,
     private _bidiServer: IBidiServer,
+    private _eventManager: IEventManager,
     private EVALUATOR_SCRIPT: string
   ) {}
 
@@ -45,12 +47,14 @@ export class Context {
     contextId: string,
     cdpClient: CdpClient,
     bidiServer: IBidiServer,
+    eventManager: IEventManager,
     EVALUATOR_SCRIPT: string
   ) {
     const context = new Context(
       contextId,
       cdpClient,
       bidiServer,
+      eventManager,
       EVALUATOR_SCRIPT
     );
     await context._initialize();
@@ -76,23 +80,29 @@ export class Context {
     this._cdpClient.Page.on('lifecycleEvent', async (params) => {
       switch (params.name) {
         case 'DOMContentLoaded':
-          await this._bidiServer.sendMessage({
-            method: 'browsingContext.domContentLoaded',
-            params: {
-              context: this._contextId,
-              navigation: params.loaderId,
+          await this._eventManager.sendEvent(
+            {
+              method: 'browsingContext.domContentLoaded',
+              params: {
+                context: this._contextId,
+                navigation: params.loaderId,
+              },
             },
-          });
+            this._contextId
+          );
           break;
 
         case 'load':
-          await this._bidiServer.sendMessage({
-            method: 'browsingContext.load',
-            params: {
-              context: this._contextId,
-              navigation: params.loaderId,
+          await this._eventManager.sendEvent(
+            {
+              method: 'browsingContext.load',
+              params: {
+                context: this._contextId,
+                navigation: params.loaderId,
+              },
             },
-          });
+            this._contextId
+          );
           break;
       }
     });
@@ -139,8 +149,9 @@ export class Context {
   public async navigate(
     url: string,
     wait: BrowsingContext.ReadinessState
-  ): Promise<BrowsingContext.BrowsingContextNavigateResult> {
+  ): Promise<BrowsingContext.NavigateResult> {
     // TODO: handle loading errors.
+    // noinspection TypeScriptValidateJSTypes
     const cdpNavigateResult = await this._cdpClient.Page.navigate({ url });
 
     // Wait for `wait` condition.
@@ -164,8 +175,10 @@ export class Context {
     }
 
     return {
-      navigation: cdpNavigateResult.loaderId,
-      url: url,
+      result: {
+        navigation: cdpNavigateResult.loaderId,
+        url: url,
+      },
     };
   }
 
@@ -249,7 +262,7 @@ export class Context {
   public async scriptEvaluate(
     expression: string,
     awaitPromise: boolean
-  ): Promise<Script.ScriptEvaluateResult> {
+  ): Promise<Script.EvaluateResult> {
     // The call puts the expression first to keep the stacktrace not dependent
     // on the`EVALUATOR_SCRIPT` length in case of exception. Based on
     // `awaitPromise`, `_serialize` function will wait for the result, or
@@ -321,7 +334,7 @@ export class Context {
     _this: Script.ArgumentValue,
     args: Script.ArgumentValue[],
     awaitPromise: boolean
-  ): Promise<Script.ScriptCallFunctionResult> {
+  ): Promise<Script.CallFunctionResult> {
     const cdpCallFunctionResult = await this._executeCallFunction(
       functionDeclaration,
       _this,
@@ -343,12 +356,12 @@ export class Context {
 
   public async findElement(
     selector: string
-  ): Promise<BrowsingContext.PROTO.BrowsingContextFindElementResult> {
+  ): Promise<CommonDataTypes.NodeRemoteValue> {
     const functionDeclaration =
       '(resultsSelector) => document.querySelector(resultsSelector)';
     const args: ArgumentValue[] = [{ type: 'string', value: selector }];
 
-    const findElemendCommandResult = await this._executeCallFunction(
+    const findElementCommandResult = await this._executeCallFunction(
       functionDeclaration,
       {
         type: 'undefined',
@@ -357,16 +370,15 @@ export class Context {
       true
     );
 
-    if (findElemendCommandResult.exceptionDetails) {
+    if (findElementCommandResult.exceptionDetails) {
       // Serialize exception details.
-      return await this._serializeCdpExceptionDetails(
-        findElemendCommandResult.exceptionDetails,
+      throw await this._serializeCdpExceptionDetails(
+        findElementCommandResult.exceptionDetails,
         this._callFunctionStacktraceLineOffset
       );
     }
 
-    return {
-      result: findElemendCommandResult.result.value,
-    };
+    return findElementCommandResult.result
+      .value as CommonDataTypes.NodeRemoteValue;
   }
 }

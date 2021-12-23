@@ -53,7 +53,7 @@ export class BidiServerRunner {
         response.write(
           JSON.stringify({
             value: {
-              sessionId: 1,
+              sessionId: '1',
               capabilities: {
                 webSocketUrl: 'ws://localhost:' + bidiPort,
               },

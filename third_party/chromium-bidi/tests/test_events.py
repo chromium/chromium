@@ -18,9 +18,8 @@ from _helpers import *
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_consoleLog_logEntryAddedEventEmitted(websocket):
-    context_id = await get_open_context_id(websocket)
-
+async def _ignore_test_consoleLog_logEntryAddedEventEmitted(websocket,
+      context_id):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 33,
@@ -31,29 +30,27 @@ async def _ignore_test_consoleLog_logEntryAddedEventEmitted(websocket):
 
     # Assert "log.entryAdded" event emitted.
     resp = await read_JSON_message(websocket)
-    recursiveCompare(
-        resp,
-        {
-            "method": "log.entryAdded",
-            "params": {
-                # BaseLogEntry
-                "level": "info",
-                "text": "some log message",
-                "timestamp": "__any_value__",
-                "stackTrace": [{
-                    "url": "__any_value__",
-                    "functionName": "",
-                    "lineNumber": 0,
-                    "columnNumber": 8}],
-                # ConsoleLogEntry
-                "type": "console",
-                "method": "log",
-                # TODO: replace `PROTO.context` with `realm`.
-                "PROTO.context": context_id,
-                "args": [{
-                    "type": "string",
-                    "value": "some log message"}]}},
-        ["timestamp", "url"])
+    recursiveCompare({
+        "method": "log.entryAdded",
+        "params": {
+            # BaseLogEntry
+            "level": "info",
+            "text": "some log message",
+            "timestamp": "__any_value__",
+            "stackTrace": [{
+                "url": "__any_value__",
+                "functionName": "",
+                "lineNumber": 0,
+                "columnNumber": 8}],
+            # ConsoleLogEntry
+            "type": "console",
+            "method": "log",
+            # TODO: replace `PROTO.context` with `realm`.
+            "PROTO.context": context_id,
+            "args": [{
+                "type": "string",
+                "value": "some log message"}]}
+    }, resp, ["timestamp", "url"])
 
     # Assert command done.
     resp = await read_JSON_message(websocket)
@@ -64,9 +61,8 @@ async def _ignore_test_consoleLog_logEntryAddedEventEmitted(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_consoleInfo_logEntryWithMethodInfoEmitted(websocket):
-    context_id = await get_open_context_id(websocket)
-
+async def _ignore_test_consoleInfo_logEntryWithMethodInfoEmitted(websocket,
+      context_id):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 43,
@@ -90,9 +86,8 @@ async def _ignore_test_consoleInfo_logEntryWithMethodInfoEmitted(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_consoleError_logEntryWithMethodErrorEmitted(websocket):
-    context_id = await get_open_context_id(websocket)
-
+async def _ignore_test_consoleError_logEntryWithMethodErrorEmitted(websocket,
+      context_id):
     # Send command.
     await send_JSON_command(websocket, {
         "id": 44,

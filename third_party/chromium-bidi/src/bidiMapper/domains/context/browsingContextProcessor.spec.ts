@@ -20,16 +20,18 @@ import { StubTransport } from '../../../tests/stubTransport.spec';
 import * as sinon from 'sinon';
 
 import { BrowsingContextProcessor } from './browsingContextProcessor';
-import { CdpConnection, CdpClient } from '../../../cdp';
+import { CdpClient, CdpConnection } from '../../../cdp';
 import { Context } from './context';
 import { BrowsingContext } from '../../bidiProtocolTypes';
-import { IBidiServer, BidiServer } from '../../utils/bidiServer';
+import { BidiServer, IBidiServer } from '../../utils/bidiServer';
+import { EventManager, IEventManager } from '../events/EventManager';
 
 describe('BrowsingContextProcessor', function () {
   let mockCdpServer: StubTransport;
   let browsingContextProcessor: BrowsingContextProcessor;
   let cdpConnection: CdpConnection;
   let bidiServer: IBidiServer;
+  let eventManager: IEventManager;
 
   const EVALUATOR_SCRIPT = 'EVALUATOR_SCRIPT';
   const NEW_CONTEXT_ID = 'NEW_CONTEXT_ID';
@@ -54,11 +56,13 @@ describe('BrowsingContextProcessor', function () {
     mockCdpServer = new StubTransport();
     cdpConnection = new CdpConnection(mockCdpServer);
     bidiServer = sinon.createStubInstance(BidiServer);
+    eventManager = sinon.createStubInstance(EventManager);
 
     browsingContextProcessor = new BrowsingContextProcessor(
       cdpConnection,
       'SELF_TARGET_ID',
       bidiServer,
+      eventManager,
       EVALUATOR_SCRIPT
     );
 
@@ -81,17 +85,17 @@ describe('BrowsingContextProcessor', function () {
         NEW_CONTEXT_ID,
         sinon.match.any, // cdpClient.
         sinon.match.any, // bidiServer.
+        sinon.match.any, // eventManager.
         EVALUATOR_SCRIPT
       );
     });
   });
 
   describe('handle `process_PROTO_browsingContext_create`', async function () {
-    const BROWSING_CONTEXT_CREATE_COMMAND: BrowsingContext.BrowsingContextCreateCommand =
-      {
-        method: 'browsingContext.create',
-        params: {},
-      };
+    const BROWSING_CONTEXT_CREATE_COMMAND: BrowsingContext.CreateCommand = {
+      method: 'browsingContext.create',
+      params: {},
+    };
 
     const EXPECTED_TARGET_CREATE_TARGET_CALL = {
       id: 0,

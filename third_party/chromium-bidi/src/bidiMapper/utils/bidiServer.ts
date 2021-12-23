@@ -16,43 +16,23 @@
  */
 
 import { log } from '../../utils/log';
-const logBidi = log('bidi');
-
 import { EventEmitter } from 'events';
 
 import { ITransport } from '../../utils/transport';
-import { BrowsingContext, Session, Script } from '../bidiProtocolTypes';
+import { Message } from '../bidiProtocolTypes';
 
-export interface BidiCommandMessage {
-  id: number;
-  method: string;
-  params: object;
-}
-
-export type BidiResponseMessage = {
-  id: number;
-  result: Session.ResultType | BrowsingContext.ResultType | Script.ResultType;
-};
-
-export interface BidiErrorMessage {
-  id?: number;
-}
-
-export type BidiEventMessage = BrowsingContext.EventType;
-
-export type BidiOutgoingMessage =
-  | BidiResponseMessage
-  | BidiErrorMessage
-  | BidiEventMessage;
+const logBidi = log('bidi');
 
 export interface IBidiServer {
-  on(event: 'message', handler: (messageObj: BidiCommandMessage) => void): void;
-  sendMessage: (messageObj: BidiOutgoingMessage) => Promise<void>;
+  on(event: 'message', handler: (messageObj: Message.Command) => void): void;
+
+  sendMessage: (messageObj: Message.OutgoingMessage) => Promise<void>;
+
   close(): void;
 }
 
 interface BidiServerEvents {
-  message: BidiCommandMessage;
+  message: Message.Command;
 }
 
 export declare interface BidiServer {
@@ -74,8 +54,7 @@ export class BidiServer extends EventEmitter implements IBidiServer {
   }
 
   /**
-   * Sends BiDi message. Returns resolved promise.
-   * @param messageObj Message object to be sent. Will be automatically enriched with `id`.
+   * Sends BiDi message.
    */
   async sendMessage(messageObj: object): Promise<void> {
     const messageStr = JSON.stringify(messageObj);
@@ -146,7 +125,7 @@ export class BidiServer extends EventEmitter implements IBidiServer {
     };
   }
 
-  private _parseBidiMessage(messageStr: string): BidiCommandMessage {
+  private _parseBidiMessage(messageStr: string): Message.Command {
     let messageObj: any;
     try {
       messageObj = JSON.parse(messageStr);

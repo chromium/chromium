@@ -19,6 +19,14 @@ import os
 import pytest
 import websockets
 
+_command_counter = 1
+
+
+def get_next_command_id():
+    global _command_counter
+    _command_counter += 1
+    return _command_counter
+
 
 @pytest.fixture
 async def websocket():
@@ -28,20 +36,38 @@ async def websocket():
         yield connection
 
 
+# noinspection PyUnusedFunction
+@pytest.fixture
+async def context_id(websocket):
+    # Note: there can be a race condition between initially created context's
+    # events and following subscription commands. Sometimes subscribe is called
+    # before the initial context emitted `browsingContext.contextCreated`,
+    # `browsingContext.domContentLoaded`, or `browsingContext.load` events,
+    # which makes events verification way harder. Navigation command guarantees
+    # there will be no follow-up events, as it uses `interactive` flag.
+    # TODO: find a way to avoid mentioned race condition properly.
+
+    open_context_id = await get_open_context_id(websocket)
+    await goto_url(websocket, open_context_id, "about:blank")
+    return open_context_id
+
+
 @pytest.fixture(autouse=True)
 async def before_each_test(websocket):
-    # Read initial event `browsingContext.contextCreated`
-    resp = await read_JSON_message(websocket)
-    assert resp['method'] == 'browsingContext.contextCreated'
+    # This method can be used for browser state preparation.
+    assert True
 
-    # TODO: check why the initial event order is different form the navigation.
-    # Read initial event `browsingContext.domContentLoaded`
-    resp = await read_JSON_message(websocket)
-    assert resp['method'] == 'browsingContext.domContentLoaded'
 
-    # Read initial event `browsingContext.load`
-    resp = await read_JSON_message(websocket)
-    assert resp['method'] == 'browsingContext.load'
+async def subscribe(websocket, event_names, context_ids=None):
+    command = {
+        "method": "session.subscribe",
+        "params": {
+            "events": event_names}}
+
+    if context_ids is not None:
+        command["params"]["contexts"] = context_ids
+
+    await execute_command(websocket, command)
 
 
 # Compares 2 objects recursively ignoring values of specific attributes.
@@ -63,18 +89,12 @@ def recursiveCompare(expected, actual, ignore_attributes):
     assert expected == actual
 
 
-# Returns the only open contextID.
-# Throws an exception the context is not unique.
+# Returns an id of an open context.
 async def get_open_context_id(websocket):
-    # Send "browsingContext.getTree" command.
-    command = {"id": 9999, "method": "browsingContext.getTree", "params": {}}
-    await send_JSON_command(websocket, command)
-    # Get open context ID.
-    resp = await read_JSON_message(websocket)
-    assert resp['id'] == 9999
-    [context] = resp['result']['contexts']
-    context_id = context['context']
-    return context_id
+    result = await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": {}})
+    return result['contexts'][0]['context']
 
 
 async def send_JSON_command(websocket, command):
@@ -87,24 +107,24 @@ async def read_JSON_message(websocket):
 
 # Open given URL in the given context.
 async def goto_url(websocket, context_id, url):
-    # Send "browsingContext.navigate" command.
-    command = {
-        "id": 9998,
+    await execute_command(websocket, {
         "method": "browsingContext.navigate",
         "params": {
             "url": url,
             "context": context_id,
-            "wait": "interactive"}}
+            "wait": "interactive"}})
+
+
+# noinspection PySameParameterValue
+async def execute_command(websocket, command, result_field='result'):
+    command_id = get_next_command_id()
+    command['id'] = command_id
+
     await send_JSON_command(websocket, command)
 
-    # Wait for the page events.
-    resp = await read_JSON_message(websocket)
-    assert resp['method'] == 'browsingContext.load'
-    resp = await read_JSON_message(websocket)
-    assert resp['method'] == 'browsingContext.domContentLoaded'
-
-    # Wait the "browsingContext.navigate" command is done.
-    resp = await read_JSON_message(websocket)
-    assert resp["id"] == 9998
-
-    return context_id
+    while True:
+        # Wait for the command to be finished.
+        resp = await read_JSON_message(websocket)
+        if 'id' in resp and resp['id'] == command_id:
+            assert result_field in resp
+            return resp[result_field]

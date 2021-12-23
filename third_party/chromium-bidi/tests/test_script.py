@@ -17,146 +17,109 @@ from _helpers import *
 
 
 @pytest.mark.asyncio
-async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket):
-    context_id = await get_open_context_id(websocket)
-
-    # Send command.
-    await send_JSON_command(websocket, {
+async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket,
+      context_id):
+    exception_details = await execute_command(websocket, {
         "id": 45,
         "method": "script.evaluate",
         "params": {
             "expression": "(()=>{const a=()=>{throw 1;}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
-            "target": {"context": context_id}}})
+            "target": {"context": context_id}}}, "exceptionDetails")
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp["id"] == 45
-
-    # Compare ignoring `objectId`.
     recursiveCompare({
-        "exceptionDetails": {
-            "text": "Uncaught",
-            "columnNumber": 19,
-            "lineNumber": 0,
-            "exception": {
-                "type": "number",
-                "value": 1},
-            "stackTrace": {
-                "callFrames": [{
-                    "url": "",
-                    "functionName": "a",
-                    "lineNumber": 0,
-                    "columnNumber": 19
-                }, {
-                    "url": "",
-                    "functionName": "b",
-                    "lineNumber": 0,
-                    "columnNumber": 43
-                }, {
-                    "url": "",
-                    "functionName": "c",
-                    "lineNumber": 1,
-                    "columnNumber": 13
-                }, {
-                    "url": "",
-                    "functionName": "",
-                    "lineNumber": 1,
-                    "columnNumber": 19
-                }, {
-                    "url": "",
-                    "functionName": "",
-                    "lineNumber": 1,
-                    "columnNumber": 25}]}}},
-        resp["result"], ["objectId"])
+        "text": "Uncaught",
+        "columnNumber": 19,
+        "lineNumber": 0,
+        "exception": {
+            "type": "number",
+            "value": 1},
+        "stackTrace": {
+            "callFrames": [{
+                "url": "",
+                "functionName": "a",
+                "lineNumber": 0,
+                "columnNumber": 19
+            }, {
+                "url": "",
+                "functionName": "b",
+                "lineNumber": 0,
+                "columnNumber": 43
+            }, {
+                "url": "",
+                "functionName": "c",
+                "lineNumber": 1,
+                "columnNumber": 13
+            }, {
+                "url": "",
+                "functionName": "",
+                "lineNumber": 1,
+                "columnNumber": 19
+            }, {
+                "url": "",
+                "functionName": "",
+                "lineNumber": 1,
+                "columnNumber": 25}]}
+    }, exception_details, ["objectId"])
 
 
 @pytest.mark.asyncio
-async def test_script_evaluateDontWaitPromise_promiseReturned(websocket):
-    context_id = await get_open_context_id(websocket)
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 46,
+async def test_script_evaluateDontWaitPromise_promiseReturned(websocket,
+      context_id):
+    result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
             "expression": "Promise.resolve('SOME_RESULT')",
             "awaitPromise": False,
             "target": {"context": context_id}}})
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp["id"] == 46
-
     # Compare ignoring `objectId`.
     recursiveCompare({
         "type": "promise",
         "objectId": "__any_value__"
-    }, resp["result"]["result"], ["objectId"])
+    }, result, ["objectId"])
 
 
 @pytest.mark.asyncio
-async def test_script_evaluateThenableAndWaitPromise_thenableReturned(websocket):
-    context_id = await get_open_context_id(websocket)
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 460,
+async def test_script_evaluateThenableAndWaitPromise_thenableReturned(
+      websocket, context_id):
+    result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
             "expression": "{then: (r)=>{r('SOME_RESULT');}}",
             "awaitPromise": True,
             "target": {"context": context_id}}})
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp["id"] == 460
-
     # Compare ignoring `objectId`.
     recursiveCompare({
-        "id": 460,
-        "result": {
-            "result": {
-                "objectId": "6648989764296027.141631980526024.9376085393313653",
-                "type": "object",
-                "value": [[
-                    "then", {
-                        "objectId": "02303443180265008.08175681580349026.8281562053772789",
-                        "type": "function"}]]}}},
-        resp,
-        ["objectId"])
+        "objectId": "6648989764296027.141631980526024.9376085393313653",
+        "type": "object",
+        "value": [[
+            "then", {
+                "objectId": "02303443180265008.08175681580349026.8281562053772789",
+                "type": "function"}]]
+    }, result, ["objectId"])
 
 
 @pytest.mark.asyncio
-async def test_script_evaluateWaitPromise_resultReturned(websocket):
-    context_id = await get_open_context_id(websocket)
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 46,
+async def test_script_evaluateWaitPromise_resultReturned(websocket, context_id):
+    result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
             "expression": "Promise.resolve('SOME_RESULT')",
             "awaitPromise": True,
             "target": {"context": context_id}}})
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp["id"] == 46
-
     # Compare ignoring `objectId`.
     recursiveCompare({
         "type": "string",
         "value": "SOME_RESULT"
-    }, resp["result"]["result"], ["objectId"])
+    }, result, ["objectId"])
 
 
 @pytest.mark.asyncio
-async def test_script_evaluateChangingObject_resultObjectDidNotChange(websocket):
-    context_id = await get_open_context_id(websocket)
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 47,
+async def test_script_evaluateChangingObject_resultObjectDidNotChange(
+      websocket, context_id):
+    result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
             # Create an object and schedule its property to be changed by
@@ -174,10 +137,6 @@ async def test_script_evaluateChangingObject_resultObjectDidNotChange(websocket)
             "awaitPromise": True,
             "target": {"context": context_id}}})
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp["id"] == 47
-
     # Verify the object wasn't changed.
     recursiveCompare({
         "type": "object",
@@ -187,38 +146,27 @@ async def test_script_evaluateChangingObject_resultObjectDidNotChange(websocket)
                 "value": 0
             }]],
         "objectId": "__any_value__"
-    }, resp["result"]["result"], ["objectId"])
+    }, result, ["objectId"])
 
 
 @pytest.mark.asyncio
-async def test_script_evaluateInteractsWithDom_resultReceived(websocket):
-    context_id = await get_open_context_id(websocket)
-
-    # Send command.
-    await send_JSON_command(websocket, {
+async def test_script_evaluateInteractsWithDom_resultReceived(websocket,
+      context_id):
+    result = await execute_command(websocket, {
         "id": 32,
         "method": "script.evaluate",
         "params": {
             "expression": "'!!@@##, ' + window.location.href",
             "target": {"context": context_id}}})
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "id": 32,
-        "result": {
-            "result": {
-                "type": "string",
-                "value": "!!@@##, about:blank"}}}
+    assert result == {
+        "type": "string",
+        "value": "!!@@##, about:blank"}
 
 
 @pytest.mark.asyncio
-async def test_script_callFunctionWithArgs_resultReturn(websocket):
-    context_id = await get_open_context_id(websocket)
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 48,
+async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
+    result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "(...args)=>{return Promise.resolve(args);}",
@@ -231,30 +179,22 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket):
             }],
             "target": {"context": context_id}}})
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp["id"] == 48
-
     recursiveCompare({
         "type": "array",
         "value": [{
-            'type': 'string',
-            'value': 'ARGUMENT_STRING_VALUE'
+            "type": 'string',
+            "value": 'ARGUMENT_STRING_VALUE'
         }, {
-            'type': 'number',
-            'value': 42}],
+            "type": 'number',
+            "value": 42}],
         "objectId": "__any_value__"
-    }, resp["result"]["result"], ["objectId"])
+    }, result, ["objectId"])
 
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithThenableArgsAndAwaitParam_thenableReturn(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 49,
+      websocket, context_id):
+    result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "(...args)=>({then: (r)=>{r(args);}})",
@@ -268,32 +208,20 @@ async def test_script_callFunctionWithThenableArgsAndAwaitParam_thenableReturn(
             "awaitPromise": True,
             "target": {"context": context_id}}})
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp["id"] == 49
-
     recursiveCompare({
-        "id": 49,
-        "result": {
-            "result": {
-                "objectId": "0017540866018586065.8588900581845549.5556004446288361",
-                "type": "object",
-                "value": [[
-                    "then", {
-                        "objectId": "27880276111744884.36134691065868907.6435355839204784",
-                        "type": "function"}]]}}},
-        resp,
-        ["objectId"])
+        "objectId": "0017540866018586065.8588900581845549.5556004446288361",
+        "type": "object",
+        "value": [[
+            "then", {
+                "objectId": "27880276111744884.36134691065868907.6435355839204784",
+                "type": "function"}]]
+    }, result, ["objectId"])
 
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 49,
+      websocket, context_id):
+    result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "(...args)=>{return Promise.resolve(args);}",
@@ -307,39 +235,25 @@ async def test_script_callFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
             "awaitPromise": False,
             "target": {"context": context_id}}})
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp["id"] == 49
-
     recursiveCompare({
         "type": "promise",
         "objectId": "__any_value__"
-    }, resp["result"]["result"], ["objectId"])
+    }, result, ["objectId"])
 
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithRemoteValueArgument_resultReturn(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 50,
+      websocket, context_id):
+    result = await execute_command(websocket, {
         "method": "script.evaluate",
         "params": {
             "expression": "{SOME_PROPERTY:'SOME_VALUE'}",
             "awaitPromise": True,
             "target": {"context": context_id}}})
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp["id"] == 50
+    object_id = result["objectId"]
 
-    object_id = resp["result"]["result"]["objectId"]
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 51,
+    result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "(obj)=>{return obj.SOME_PROPERTY;}",
@@ -348,23 +262,15 @@ async def test_script_callFunctionWithRemoteValueArgument_resultReturn(
             }],
             "target": {"context": context_id}}})
 
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "id": 51,
-        "result": {
-            "result": {
-                "type": "string",
-                "value": "SOME_VALUE"}}}
+    assert result == {
+        "type": "string",
+        "value": "SOME_VALUE"}
 
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromise_resultReturned(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 52,
+      websocket, context_id):
+    result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "async ()=>{return 'SOME_VALUE'}",
@@ -375,23 +281,15 @@ async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromise_resultRe
             "awaitPromise": True,
             "target": {"context": context_id}}})
 
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "id": 52,
-        "result": {
-            "result": {
-                "type": "string",
-                "value": "SOME_VALUE"}}}
+    assert result == {
+        "type": "string",
+        "value": "SOME_VALUE"}
 
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromiseFalse_promiseReturned(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 53,
+      websocket, context_id):
+    result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "async ()=>{return 'SOME_VALUE'}",
@@ -402,24 +300,16 @@ async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromiseFalse_pro
             "awaitPromise": False,
             "target": {"context": context_id}}})
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp["id"] == 53
-
     recursiveCompare({
         "type": "promise",
         "objectId": "__any_value__"
-    }, resp["result"]["result"], ["objectId"])
+    }, result, ["objectId"])
 
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromise_resultReturned(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 54,
+      websocket, context_id):
+    result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "async function(){return 'SOME_VALUE'}",
@@ -430,23 +320,15 @@ async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromise_result
             "awaitPromise": True,
             "target": {"context": context_id}}})
 
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "id": 54,
-        "result": {
-            "result": {
-                "type": "string",
-                "value": "SOME_VALUE"}}}
+    assert result == {
+        "type": "string",
+        "value": "SOME_VALUE"}
 
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_promiseReturned(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 55,
+      websocket, context_id):
+    result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "async function(){return 'SOME_VALUE'}",
@@ -457,24 +339,16 @@ async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_p
             "awaitPromise": False,
             "target": {"context": context_id}}})
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp["id"] == 55
-
     recursiveCompare({
         "type": "promise",
         "objectId": "__any_value__"
-    }, resp["result"]["result"], ["objectId"])
+    }, result, ["objectId"])
 
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithArrowFunctionAndThisParameter_thisIsIgnoredAndWindowUsedInstead(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 56,
+      websocket, context_id):
+    result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "()=>{return this.constructor.name}",
@@ -484,23 +358,15 @@ async def test_script_callFunctionWithArrowFunctionAndThisParameter_thisIsIgnore
             },
             "target": {"context": context_id}}})
 
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "id": 56,
-        "result": {
-            "result": {
-                "type": "string",
-                "value": "Window"}}}
+    assert result == {
+        "type": "string",
+        "value": "Window"}
 
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed(
-      websocket):
-    context_id = await get_open_context_id(websocket)
-
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 57,
+      websocket, context_id):
+    result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "function(){return this.constructor.name}",
@@ -510,40 +376,29 @@ async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed
             },
             "target": {"context": context_id}}})
 
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "id": 57,
-        "result": {
-            "result": {
-                "type": "string",
-                "value": "Number"}}}
+    assert result == {
+        "type": "string",
+        "value": "Number"}
 
 
 @pytest.mark.asyncio
-async def test_script_evaluateWithNode_resultReceived(websocket):
+async def test_script_evaluateWithNode_resultReceived(websocket, context_id):
     # 1. Get element.
     # 2. Evaluate script on it.
-    context_id = await get_open_context_id(websocket)
     await goto_url(websocket, context_id,
                    "data:text/html,<h2>test</h2>")
 
-    # 1. Get element.
-    await send_JSON_command(websocket, {
-        "id": 30,
+    # 1. Get element.`
+    result = await execute_command(websocket, {
         "method": "PROTO.browsingContext.findElement",
         "params": {
             "selector": "body > h2",
             "context": context_id}})
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp["id"] == 30
-    object_id = resp["result"]["result"]["objectId"]
+    object_id = result["objectId"]
 
     # 2. Evaluate script on it.
-    # Send command.
-    await send_JSON_command(websocket, {
-        "id": 31,
+    result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "(element) => {return '!!@@##, ' + element.innerHTML}",
@@ -551,11 +406,6 @@ async def test_script_evaluateWithNode_resultReceived(websocket):
                 "objectId": object_id}],
             "target": {"context": context_id}}})
 
-    # Assert command done.
-    resp = await read_JSON_message(websocket)
-    assert resp == {
-        "id": 31,
-        "result": {
-            "result": {
-                "type": "string",
-                "value": "!!@@##, test"}}}
+    assert result == {
+        "type": "string",
+        "value": "!!@@##, test"}
