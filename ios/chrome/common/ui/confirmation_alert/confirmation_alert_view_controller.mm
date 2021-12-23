@@ -93,15 +93,14 @@ constexpr CGFloat kContentMaxWidth = 500;
   UIStackView* stackView =
       [self createStackViewWithArrangedSubviews:stackSubviews];
 
-  // UIView that wraps the scrollable content. Needed in order to pin UI
+  // UILayoutGuide that wraps the scrollable content. Needed in order to pin UI
   // elements in view specific content above actions buttons.
-  UIView* scrollContentView = [[UIView alloc] init];
-  scrollContentView.translatesAutoresizingMaskIntoConstraints = NO;
+  UILayoutGuide* scrollContentLayoutGuide = [[UILayoutGuide alloc] init];
 
   UIScrollView* scrollView = [self createScrollView];
-  [scrollContentView addSubview:stackView];
-  [scrollContentView addSubview:self.specificContentView];
-  [scrollView addSubview:scrollContentView];
+  [scrollView addLayoutGuide:scrollContentLayoutGuide];
+  [scrollView addSubview:stackView];
+  [scrollView addSubview:self.specificContentView];
   [self.view addSubview:scrollView];
 
   self.view.preservesSuperviewLayoutMargins = YES;
@@ -127,13 +126,14 @@ constexpr CGFloat kContentMaxWidth = 500;
         constraintLessThanOrEqualToAnchor:margins.widthAnchor],
 
     [stackView.topAnchor
-        constraintGreaterThanOrEqualToAnchor:scrollContentView.topAnchor],
+        constraintGreaterThanOrEqualToAnchor:scrollContentLayoutGuide
+                                                 .topAnchor],
     [stackView.bottomAnchor
         constraintLessThanOrEqualToAnchor:self.specificContentView.topAnchor
                                  constant:-kScrollViewBottomInsets],
 
     [self.specificContentView.bottomAnchor
-        constraintEqualToAnchor:scrollContentView.bottomAnchor],
+        constraintEqualToAnchor:scrollContentLayoutGuide.bottomAnchor],
     [self.specificContentView.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
     [self.specificContentView.widthAnchor
@@ -141,12 +141,12 @@ constexpr CGFloat kContentMaxWidth = 500;
 
     // Constrain its height to at least the scroll view height, so that derived
     // VCs can pin UI elements just above the buttons.
-    [scrollContentView.topAnchor constraintEqualToAnchor:scrollView.topAnchor],
-    [scrollContentView.bottomAnchor
+    [scrollContentLayoutGuide.topAnchor
+        constraintEqualToAnchor:scrollView.topAnchor],
+    [scrollContentLayoutGuide.bottomAnchor
         constraintEqualToAnchor:scrollView.bottomAnchor],
-    [scrollContentView.heightAnchor
+    [scrollContentLayoutGuide.heightAnchor
         constraintGreaterThanOrEqualToAnchor:scrollView.heightAnchor],
-
   ]];
 
   // Width Scroll View constraint for regular mode.
@@ -210,11 +210,12 @@ constexpr CGFloat kContentMaxWidth = 500;
       .active = YES;
 
   if (self.topAlignedLayout) {
-    [stackView.topAnchor constraintEqualToAnchor:scrollContentView.topAnchor]
+    [stackView.topAnchor
+        constraintEqualToAnchor:scrollContentLayoutGuide.topAnchor]
         .active = YES;
   } else {
     [stackView.centerYAnchor
-        constraintEqualToAnchor:scrollContentView.centerYAnchor]
+        constraintEqualToAnchor:scrollContentLayoutGuide.centerYAnchor]
         .active = YES;
   }
 
