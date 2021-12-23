@@ -56,10 +56,10 @@ const size_t kNumAudioInputDevices = 2;
 
 const auto kIgnoreLogMessageCB = base::DoNothing();
 
+std::string salt = "fake_media_device_salt";
 MediaDeviceSaltAndOrigin GetSaltAndOrigin(int /* process_id */,
                                           int /* frame_id */) {
-  return MediaDeviceSaltAndOrigin("fake_media_device_salt",
-                                  "fake_group_id_salt",
+  return MediaDeviceSaltAndOrigin(salt, "fake_group_id_salt",
                                   url::Origin::Create(GURL("https://test.com")),
                                   /*has_focus=*/true, /*is_background=*/false);
 }
@@ -1181,6 +1181,55 @@ TEST_F(MediaDevicesManagerTest, GuessVideoGroupID) {
             repeated_usb1_video.device_id);
   EXPECT_EQ(GuessVideoGroupID(audio_devices, repeated_usb2_video),
             repeated_usb2_video.device_id);
+}
+
+TEST_F(MediaDevicesManagerTest, DeviceIdSaltReset) {
+  EXPECT_CALL(*video_capture_device_factory_, MockGetDevicesInfo()).Times(2);
+  EXPECT_CALL(media_devices_manager_client_, InputDevicesChangedUI(_, _))
+      .Times(1);
+
+  size_t num_video_input_devices = 4;
+  video_capture_device_factory_->SetToDefaultDevicesConfig(
+      num_video_input_devices);
+
+  // Run an enumeration to make sure |media_devices_manager_| has the new
+  // configuration.
+  EXPECT_CALL(*this, MockCallback(_));
+  MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
+  devices_to_enumerate[static_cast<size_t>(
+      MediaDeviceType::MEDIA_VIDEO_INPUT)] = true;
+  base::RunLoop run_loop;
+  media_devices_manager_->EnumerateDevices(
+      devices_to_enumerate,
+      base::BindOnce(&MediaDevicesManagerTest::EnumerateCallback,
+                     base::Unretained(this), &run_loop));
+  run_loop.Run();
+
+  // Add device-change event listener.
+  MockMediaDevicesListener listener_video_input;
+  MediaDevicesManager::BoolDeviceTypes video_input_devices_to_subscribe;
+  video_input_devices_to_subscribe[static_cast<size_t>(
+      MediaDeviceType::MEDIA_VIDEO_INPUT)] = true;
+  media_devices_manager_->SubscribeDeviceChangeNotifications(
+      kRenderProcessId, kRenderFrameId, video_input_devices_to_subscribe,
+      listener_video_input.CreateInterfacePtrAndBind());
+
+  // Expect an OnDevicesChanged event.
+  blink::WebMediaDeviceInfoArray notification_video_input;
+  EXPECT_CALL(listener_video_input,
+              OnDevicesChanged(MediaDeviceType::MEDIA_VIDEO_INPUT, _))
+      .Times(1)
+      .WillOnce(SaveArg<1>(&notification_video_input));
+
+  base::RunLoop().RunUntilIdle();
+
+  // Set a new salt and notify MDM.
+  salt = "new-device-id-salt";
+  media_devices_manager_->OnDevicesChanged(
+      base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(num_video_input_devices, notification_video_input.size());
 }
 
 }  // namespace content
