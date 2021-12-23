@@ -189,7 +189,8 @@ void SharingHubBubbleController::OnActionSelected(
       qrcode_generator::QRCodeGeneratorBubbleController* qrcode_controller =
           qrcode_generator::QRCodeGeneratorBubbleController::Get(
               &GetWebContents());
-      qrcode_controller->ShowBubble(GetWebContents().GetURL(), true);
+      qrcode_controller->ShowBubble(GetWebContents().GetLastCommittedURL(),
+                                    true);
     } else if (command_id == IDC_SEND_TAB_TO_SELF) {
       send_tab_to_self::SendTabToSelfBubbleController*
           send_tab_to_self_controller =
@@ -250,7 +251,7 @@ void SharingHubBubbleController::ShowSharesheet(
     return;
 
   apps::mojom::IntentPtr intent = apps_util::CreateShareIntentFromText(
-      GetWebContents().GetURL().spec(),
+      GetWebContents().GetLastCommittedURL().spec(),
       base::UTF16ToUTF8(GetWebContents().GetTitle()));
   sharesheet_service->ShowBubble(
       &GetWebContents(), std::move(intent),
