@@ -2842,6 +2842,15 @@ crbug.com/626703 [ Mac ] external/wpt/css/css-ruby/ruby-autohide-004.html [ Fail
 crbug.com/626703 [ Mac ] external/wpt/css/css-text/line-breaking/segment-break-transformation-rules-009.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-text/line-breaking/segment-break-transformation-rules-015.html [ Failure ]
 crbug.com/626703 [ Fuchsia ] external/wpt/dom/historical.html [ Skip ]
+crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/document-write/link-rel-alternate-stylesheet.tentative.sub.html [ Failure ]
+crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/document-write/link-rel-stylesheet-nomatch-media.tentative.sub.html [ Failure ]
+crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/page-load/link-rel-alternate-stylesheet.tentative.html [ Failure ]
+crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/page-load/link-rel-stylesheet-disabled.tentative.html [ Failure ]
+crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/page-load/link-rel-stylesheet-nomatch-media.tentative.html [ Failure ]
+crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/page-load/math-font-script-src.tentative.html [ Failure ]
+crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/page-load/math-script-src.tentative.html [ Failure ]
+crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/page-load/meta-viewport-link-stylesheet-media.tentative.html [ Failure ]
+crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/page-load/svg-script-src.tentative.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac10.15 ] external/wpt/css/selectors/invalidation/has-pseudo-class.html [ Failure Crash ]
