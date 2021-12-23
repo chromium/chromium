@@ -129,11 +129,14 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
       int index);
 
   // Creates and adds a menu item for `id` in its corresponding site access
-  // section.
-  void CreateAndInsertSiteAccessItem(const ToolbarActionsModel::ActionId& id);
+  // section if the associated extension has or requests access to the current
+  // site.
+  void MaybeCreateAndInsertSiteAccessItem(
+      const ToolbarActionsModel::ActionId& id);
 
-  // Adds `item` in its corresponding site access section.
-  void InsertSiteAccessItem(std::unique_ptr<ExtensionsMenuItemView> item);
+  // Adds `item` to the items list of `section`.
+  void InsertSiteAccessItem(std::unique_ptr<ExtensionsMenuItemView> item,
+                            SiteAccessSection* section);
 
   // Moves items between site access sections if their site access status
   // changed. Called when one or more items are updated.
@@ -142,6 +145,10 @@ class ExtensionsTabbedMenuView : public views::BubbleDialogDelegateView,
   // Updates the visibility of the site access sections. A given section should
   // be visible if there are any extensions displayed in it.
   void UpdateSiteAccessSectionsVisibility();
+
+  // Returns the section corresponding to `status`, or nullptr.
+  SiteAccessSection* GetSiteAccessSectionForPageStatus(
+      ToolbarActionViewController::PageInteractionStatus status);
 
   // Runs a set of consistency checks on the appearance of the menu. This is a
   // no-op if DCHECKs are disabled.

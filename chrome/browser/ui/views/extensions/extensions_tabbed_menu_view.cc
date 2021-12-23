@@ -255,7 +255,7 @@ void ExtensionsTabbedMenuView::OnToolbarActionAdded(
   auto index = FindIndex(extension_name, installed_items_);
   CreateAndInsertInstalledExtension(action_id, index);
 
-  CreateAndInsertSiteAccessItem(action_id);
+  MaybeCreateAndInsertSiteAccessItem(action_id);
   UpdateSiteAccessSectionsVisibility();
 
   ConsistencyCheck();
@@ -344,7 +344,7 @@ void ExtensionsTabbedMenuView::Populate() {
 
   for (size_t i = 0; i < sorted_ids.size(); ++i) {
     CreateAndInsertInstalledExtension(sorted_ids[i], i);
-    CreateAndInsertSiteAccessItem(sorted_ids[i]);
+    MaybeCreateAndInsertSiteAccessItem(sorted_ids[i]);
   }
 
   UpdateSiteAccessSectionsVisibility();
@@ -436,47 +436,43 @@ void ExtensionsTabbedMenuView::CreateAndInsertInstalledExtension(
   installed_items_->AddChildViewAt(std::move(item), index);
 }
 
-void ExtensionsTabbedMenuView::CreateAndInsertSiteAccessItem(
+void ExtensionsTabbedMenuView::MaybeCreateAndInsertSiteAccessItem(
     const ToolbarActionsModel::ActionId& id) {
   std::unique_ptr<ExtensionActionViewController> controller =
       ExtensionActionViewController::Create(id, browser_,
                                             extensions_container_);
+
+  // Extensions with no current site interaction don't belong to a site access
+  // section and therefore do not need a site access item view.
+  const ToolbarActionViewController::PageInteractionStatus status =
+      controller->GetPageInteractionStatus(
+          browser_->tab_strip_model()->GetActiveWebContents());
+  auto* section = GetSiteAccessSectionForPageStatus(status);
+  if (!section)
+    return;
+
   auto item = std::make_unique<ExtensionsMenuItemView>(
       ExtensionsMenuItemView::MenuItemType::kSiteAccess, browser_,
       std::move(controller), allow_pinning_);
 
-  InsertSiteAccessItem(std::move(item));
+  InsertSiteAccessItem(std::move(item), section);
 }
 
 void ExtensionsTabbedMenuView::InsertSiteAccessItem(
-    std::unique_ptr<ExtensionsMenuItemView> item) {
-  const ToolbarActionViewController::PageInteractionStatus status =
-      item->view_controller()->GetPageInteractionStatus(
-          browser_->tab_strip_model()->GetActiveWebContents());
+    std::unique_ptr<ExtensionsMenuItemView> item,
+    SiteAccessSection* section) {
+  DCHECK(section);
 
-  switch (status) {
-    case ToolbarActionViewController::PageInteractionStatus::kNone:
-      break;
-    case ToolbarActionViewController::PageInteractionStatus::kPending: {
-      int index = FindIndex(item->view_controller()->GetActionName(),
-                            requests_access_.items);
-      requests_access_.items->AddChildViewAt(std::move(item), index);
-      break;
-    }
-    case ToolbarActionViewController::PageInteractionStatus::kActive: {
-      int index = FindIndex(item->view_controller()->GetActionName(),
-                            has_access_.items);
-      has_access_.items->AddChildViewAt(std::move(item), index);
-      break;
-    }
-  }
+  int index =
+      FindIndex(item->view_controller()->GetActionName(), section->items);
+  section->items->AddChildViewAt(std::move(item), index);
 }
 
 void ExtensionsTabbedMenuView::MoveItemsBetweenSectionsIfNecessary() {
   content::WebContents* const web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
 
-  auto move_items_between_sections_if_Necessary =
+  auto move_items_between_sections_if_necessary =
       [web_contents, this](SiteAccessSection* section) {
         // Collect the views to move separately, so that we don't change the
         // children of the view during iteration.
@@ -492,12 +488,18 @@ void ExtensionsTabbedMenuView::MoveItemsBetweenSectionsIfNecessary() {
 
         for (ExtensionsMenuItemView* item_view : items_to_move) {
           auto item_view_to_move = section->items->RemoveChildViewT(item_view);
-          InsertSiteAccessItem(std::move(item_view_to_move));
+          auto* new_section = GetSiteAccessSectionForPageStatus(
+              item_view_to_move->view_controller()->GetPageInteractionStatus(
+                  web_contents));
+          if (!new_section)
+            return;
+
+          InsertSiteAccessItem(std::move(item_view_to_move), new_section);
         }
       };
 
-  move_items_between_sections_if_Necessary(&requests_access_);
-  move_items_between_sections_if_Necessary(&has_access_);
+  move_items_between_sections_if_necessary(&requests_access_);
+  move_items_between_sections_if_necessary(&has_access_);
 }
 
 void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility() {
@@ -515,6 +517,21 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility() {
 
   // TODO(crbug.com/1263310): If user is on a chrome:-scheme page, show
   // respective message.
+}
+
+ExtensionsTabbedMenuView::SiteAccessSection*
+ExtensionsTabbedMenuView::GetSiteAccessSectionForPageStatus(
+    ToolbarActionViewController::PageInteractionStatus status) {
+  switch (status) {
+    case ToolbarActionViewController::PageInteractionStatus::kNone:
+      // Extensions with no interaction with the current site don't belong to a
+      // site access section.
+      return nullptr;
+    case ToolbarActionViewController::PageInteractionStatus::kPending:
+      return &requests_access_;
+    case ToolbarActionViewController::PageInteractionStatus::kActive:
+      return &has_access_;
+  }
 }
 
 void ExtensionsTabbedMenuView::ConsistencyCheck() {
