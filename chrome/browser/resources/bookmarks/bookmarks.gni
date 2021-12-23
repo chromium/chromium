@@ -1,0 +1,35 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# List of files that don't need to be passed to html_to_js().
+non_web_component_files = [
+  "actions.ts",
+  "api_listener.ts",
+  "bookmarks.ts",
+  "browser_proxy.ts",
+  "constants.ts",
+  "debouncer.ts",
+  "dialog_focus_manager.ts",
+  "dnd_manager.ts",
+  "mouse_focus_behavior.ts",
+  "reducers.ts",
+  "store_client_mixin.ts",
+  "store.ts",
+  "types.ts",
+  "util.ts",
+]
+
+# List of files that should be passed to html_to_js().
+web_component_files = [
+  "app.ts",
+  "command_manager.ts",
+  "edit_dialog.ts",
+  "folder_node.ts",
+  "item.ts",
+  "list.ts",
+  "router.ts",
+  "shared_style.ts",
+  "shared_vars.ts",
+  "toolbar.ts",
+]
