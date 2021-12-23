@@ -95,25 +95,25 @@
 
   :host([is-rich-suggestion]) #description,
   .dim {
-    color: var(--search-box-results-dim, var(--google-grey-refresh-700));
+    color: var(--search-box-results-dim, var(--google-grey-700));
   }
 
   :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)):host([is-rich-suggestion]) #description,
   :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) .dim {
-    color: var(--search-box-results-dim-selected, var(--google-grey-refresh-700));
+    color: var(--search-box-results-dim-selected, var(--google-grey-700));
   }
 
   .url {
-    color: var(--search-box-results-url, var(--google-blue-refresh-700));
+    color: var(--search-box-results-url, var(--google-blue-700));
   }
 
   :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) .url {
-    color: var(--search-box-results-url-selected, var(--google-blue-refresh-700));
+    color: var(--search-box-results-url-selected, var(--google-blue-700));
   }
 
   #remove {
     --cr-icon-button-active-background-color: rgba(var(--google-grey-900-rgb), .16);
-    --cr-icon-button-fill-color: var(--search-box-icon, var(--google-grey-refresh-700));
+    --cr-icon-button-fill-color: var(--search-box-icon, var(--google-grey-700));
     --cr-icon-button-focus-outline-color: var(--google-blue-600);
     --cr-icon-button-hover-background-color: rgba(var(--google-grey-900-rgb), .1);
     --cr-icon-button-icon-size: 16px;
@@ -129,7 +129,7 @@
   }
 
   :host-context(ntp-realbox-match:-webkit-any(:focus-within, .selected)) #remove {
-    --cr-icon-button-fill-color: var(--search-box-icon-selected, var(--google-grey-refresh-700));
+    --cr-icon-button-fill-color: var(--search-box-icon-selected, var(--google-grey-700));
     opacity: 1;
   }
 
