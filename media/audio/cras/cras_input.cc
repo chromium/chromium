@@ -355,7 +355,20 @@ bool CrasInputStream::IsMuted() {
 
 void CrasInputStream::SetOutputDeviceForAec(
     const std::string& output_device_id) {
-  // Not supported. Do nothing.
+  DCHECK(client_);
+
+  int echo_ref_id;
+
+  // Default device means to just use the system default output as AEC
+  // reference. CRAS server side requires passing NO_DEVICE in that case.
+  if (AudioDeviceDescription::IsDefaultDevice(output_device_id)) {
+    echo_ref_id = NO_DEVICE;
+  } else {
+    uint64_t cras_node_id;
+    base::StringToUint64(output_device_id, &cras_node_id);
+    echo_ref_id = dev_index_of(cras_node_id);
+  }
+  libcras_client_set_aec_ref(client_, stream_id_, echo_ref_id);
 }
 
 }  // namespace media
