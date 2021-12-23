@@ -2606,7 +2606,7 @@ TEST_F(NetworkStateHandlerTest, GetNetworkListAfterUpdateManagedList) {
   // ManagedStateListChanged call.
   network_state_handler_->UpdateManagedList(
       ManagedState::ManagedType::MANAGED_TYPE_NETWORK,
-      base::Value::AsListValue(manager_test_->GetEnabledServiceList()));
+      manager_test_->GetEnabledServiceList());
   base::RunLoop().RunUntilIdle();
   network_state_handler_->GetNetworkListByType(
       NetworkTypePattern::Cellular(), /*configured_only=*/false,

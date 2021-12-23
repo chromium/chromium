@@ -484,7 +484,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // This adds new entries to |network_list_| or |device_list_| and deletes any
   // entries that are no longer in the list.
   void UpdateManagedList(ManagedState::ManagedType type,
-                         const base::ListValue& entries) override;
+                         const base::Value& entries) override;
 
   // The list of profiles changed (i.e. a user has logged in). Re-request
   // properties for all services since they may have changed.

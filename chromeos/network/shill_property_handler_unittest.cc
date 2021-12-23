@@ -43,7 +43,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
   TestListener() : technology_list_updates_(0), errors_(0) {}
 
   void UpdateManagedList(ManagedState::ManagedType type,
-                         const base::ListValue& entries) override {
+                         const base::Value& entries) override {
     VLOG(1) << "UpdateManagedList[" << ManagedState::TypeToString(type)
             << "]: " << entries.GetList().size();
     UpdateEntries(GetTypeString(type), entries);
@@ -133,7 +133,7 @@ class TestListener : public internal::ShillPropertyHandler::Listener {
     return std::string();
   }
 
-  void UpdateEntries(const std::string& type, const base::ListValue& entries) {
+  void UpdateEntries(const std::string& type, const base::Value& entries) {
     if (type.empty())
       return;
     entries_[type].clear();

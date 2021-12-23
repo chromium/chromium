@@ -1268,8 +1268,10 @@ void NetworkStateHandler::SetDeviceStateUpdatedForTest(
 // ShillPropertyHandler::Delegate overrides
 
 void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
-                                            const base::ListValue& entries) {
+                                            const base::Value& entries) {
   CHECK(!notifying_network_observers_);
+  DCHECK(entries.is_list());
+
   ManagedStateList* managed_list = GetManagedList(type);
   NET_LOG(DEBUG) << "UpdateManagedList: " << ManagedState::TypeToString(type)
                  << ": " << entries.GetList().size();
