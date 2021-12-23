@@ -450,17 +450,14 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
 
   const bool android_accessory_possible =
       base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) ||
-      (cablev2_extension_provided &&
-       base::FeatureList::IsEnabled(device::kWebAuthCableServerLink)) ||
+      cablev2_extension_provided ||
       (!cable_extension_permitted &&
        base::FeatureList::IsEnabled(device::kWebAuthCableSecondFactor));
 
   absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>
       qr_generator_key;
   absl::optional<std::string> qr_string;
-  if (non_extension_cablev2_enabled ||
-      (cablev2_extension_provided &&
-       base::FeatureList::IsEnabled(device::kWebAuthCableServerLink))) {
+  if (non_extension_cablev2_enabled || cablev2_extension_provided) {
     // A QR key is generated for all caBLEv2 cases but whether the QR code is
     // displayed is up to the UI.
     qr_generator_key.emplace();

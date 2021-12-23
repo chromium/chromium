@@ -379,31 +379,23 @@ base::flat_set<device::FidoTransportProtocol> GetWebAuthnTransports(
   }
 
   // caBLE devices don't yet support discoverable credentials and so we
-  // shouldn't offer them for such requests. kWebAuthPhoneSupport is the feature
-  // flag to enable everything for development, and thus overrides this.
-  if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) ||
-      (!uses_discoverable_creds &&
-       base::FeatureList::IsEnabled(features::kWebAuthCable))) {
-    transports.insert(
-        device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
-  }
+  // shouldn't offer them for such requests.
+  if (!uses_discoverable_creds) {
+    if (base::FeatureList::IsEnabled(features::kWebAuthCable)) {
+      transports.insert(
+          device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+    }
 
+    // kAndroidAccessory doesn't work on Windows because of USB stack issues.
+    // Note: even if this value were inserted it wouldn't take effect on Windows
+    // versions with a native API because FidoRequestHandlerBase filters out
+    // non-kCloudAssistedBluetoothLowEnergy transports in that case.
 #if !defined(OS_WIN)
-  // kAndroidAccessory doesn't work on Windows because of USB stack issues.
-  // Note: even if this value were inserted it wouldn't take effect on Windows
-  // versions with a native API because FidoRequestHandlerBase filters out
-  // non-kCloudAssistedBluetoothLowEnergy transports in that case.
-
-  if (base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport) ||
-      (!uses_discoverable_creds &&
-       (base::FeatureList::IsEnabled(device::kWebAuthCableSecondFactor) ||
-        base::FeatureList::IsEnabled(device::kWebAuthCableServerLink)))) {
     // In order for AOA to be active the |AuthenticatorRequestClientDelegate|
-    // must configure a |UsbDeviceManager|, which it'll only do if
-    // |kWebAuthPhoneSupport| is enabled, or if a V2 caBLE extension is seen.
+    // must still configure a |UsbDeviceManager|.
     transports.insert(device::FidoTransportProtocol::kAndroidAccessory);
-  }
 #endif
+  }
 
   return transports;
 }
