@@ -131,6 +131,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Nöqtə klaviatura qısayolu dəyişib. "Daxil et" düyməsindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + Shift + Geri düyməsini basın.</translation>
 <translation id="1770726142253415363">Bura köçürülüb: sıra <ph name="ROW_NUMBER" />, sütun <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Sağa sürüşdürün</translation>
+<translation id="1774796056689732716">Təqvim, <ph name="CURRENT_MONTH_YEAR" />, hazırda <ph name="DATE" /> seçilib.</translation>
 <translation id="1787955149152357925">Deaktiv</translation>
 <translation id="1804572139604454141">Diskdə yer çox az olduğuna görə çəkiliş dayandırıldı</translation>
 <translation id="181103072419391116">Siqnal Gücü <ph name="SIGNAL_STRENGTH" />, Administratorunuz tərəfindən idarə olunur</translation>
@@ -620,6 +621,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5075554201838155866">Bağlanmış subtitrləri başladın</translation>
 <translation id="5078796286268621944">Yanlış PIN</translation>
 <translation id="5083553833479578423">Daha çox Assistent funksiyalarını kiliddən çıxarın.</translation>
+<translation id="5090752371472782287"><ph name="MANAGER" /> cihazında paylaşın</translation>
 <translation id="5106223312672646208">Fərdiləşdirin</translation>
 <translation id="5117590920725113268">Gələn ayı göstərin</translation>
 <translation id="5136175204352732067">Fərqli klaviatura qoşuldu</translation>
@@ -629,6 +631,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5168181903108465623">Mövcud Cast cihazlar</translation>
 <translation id="5170568018924773124">Qovluqda göstərin</translation>
 <translation id="5176318573511391780">Ekranın bir hissəsini çəkin</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> tədbir</translation>
 <translation id="5198715732953550718">Yeni qovluq yaratmaq üçün <ph name="MOVED_APP_NAME" /> <ph name="IN_PLACE_APP" /> ilə birləşdirilib.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Digər 1 bildiriş}other{Digər # bildiriş}}</translation>
@@ -802,6 +805,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="643147933154517414">Tamamlandı</translation>
 <translation id="6431865393913628856">Ekran çəkilişi</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> pəncərəsində <ph name="ROUTE_TITLE" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> tədbir</translation>
 <translation id="6452181791372256707">Rədd edin</translation>
 <translation id="6453179446719226835">Dil dəyişdirilib</translation>
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> üçün ekran genişləndirilir</translation>
@@ -865,6 +869,7 @@ Yeni quraşdırma</translation>
 <translation id="6811454077060061666">Masaüstü kompüter üçün Google Disk əlçatan deyil</translation>
 <translation id="6818242057446442178">Söz üzrə geri qayıdın</translation>
 <translation id="6820676911989879663">Fasilə verin!</translation>
+<translation id="6827049576281411231">Tədbir panelini bağlayın</translation>
 <translation id="6836499262298959512">Təhlükəli fayl</translation>
 <translation id="6837064795450991317">Masaüstü paneli gizlədin</translation>
 <translation id="6852052252232534364">Aktiv etmək üçün klikləyin</translation>
@@ -872,6 +877,7 @@ Yeni quraşdırma</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bir rəqəm qalıb}other{# rəqəm qalıb}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> endirilməsi durdurulub</translation>
 <translation id="6878400149835617132">Qısayol deaktiv edildi</translation>
+<translation id="6884665277231944629">Bugünə qayıdın</translation>
 <translation id="6886172995547742638">Sizin <ph name="DEVICE_TYPE" /> aşağı performans göstərə bilər. Sertifikatlı <ph name="PREFERRED_MINIMUM_POWER" />W və ya daha yüksək USB-C cərəyan yuvasından istifadə edin.</translation>
 <translation id="688631446150864480">Pəncərələri dəyişdirmək üçün Aşağı ox düyməsini basın</translation>
 <translation id="6896758677409633944">Kopyalayın</translation>
@@ -958,6 +964,7 @@ Yeni quraşdırma</translation>
 <translation id="7497767806359279797">Dil və klaviatura seçin</translation>
 <translation id="7509246181739783082">Kimliyinizi doğrulayın</translation>
 <translation id="7513622367902644023">Skrinşot rejimi seçilib</translation>
+<translation id="7513922695575567867">Təqvim, <ph name="DATE" /> həftəsi, hazırda <ph name="SELECTED_DATE" /> seçilib.</translation>
 <translation id="7514365320538308">Endirmə</translation>
 <translation id="7526573455193969409">Şəbəkəyə nəzarət edilə bilər</translation>
 <translation id="7536035074519304529">IP ünvanı: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@ Yeni quraşdırma</translation>
 <translation id="7564874036684306347">Pəncərənin digər masaüstünə köçürülməsi gözlənilməz nəticələr verə bilər. Növbəti bildirişlər, pəncərə və dialoqlar masaüstülər arasında bölüşdürülə bilər.</translation>
 <translation id="7569509451529460200">Brayl və ChromeVox aktiv edildi</translation>
 <translation id="7569983096843329377">Qara</translation>
+<translation id="757941033127302446">Giriş edildi</translation>
 <translation id="7579778809502851308">Ekran çəkimi</translation>
 <translation id="7590883480672980941">Daxiletmə ayarları</translation>
 <translation id="7593891976182323525">Axtarın və ya Dəyişin</translation>
@@ -1040,6 +1048,7 @@ Yeni quraşdırma</translation>
 <translation id="8035152190676905274">Qələm</translation>
 <translation id="8036504271468642248">Əvvəlki cümlə</translation>
 <translation id="8042893070933512245">Əlçatımlılıq ayarları menyusunu açın</translation>
+<translation id="8042925093898452104">Ətraflı məlumatı bağlayın</translation>
 <translation id="8048123526339889627">Bluetooth ayarları</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> adlı şablon artıq mövcuddur</translation>
 <translation id="8052898407431791827">Mübadilə buferinə kopyalandı</translation>

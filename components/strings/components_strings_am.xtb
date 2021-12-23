@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">ቅናሽ ይገኛል</translation>
 <translation id="1312803275555673949">ምን ማስረጃ ይደግፈዋል?</translation>
 <translation id="131405271941274527"><ph name="URL" /> የእርስዎን የNFC መሣሪያ መታ በሚያደርጉበት ጊዜ መረጃ መላክ እና መቀበል ይፈልጋል</translation>
+<translation id="1314311879718644478">የላቀ እውነታ ይዘትን ይመልከቱ</translation>
 <translation id="1314509827145471431">ወደቀኝ እጠፍ</translation>
 <translation id="1318023360584041678">በትር ቡድን ውስጥ ተቀምጧል</translation>
 <translation id="1319245136674974084">ለዚህ መተግበሪያ ዳግም አትጠይቅ</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">ይህን ድረ-ገጽ በማሳየት ላይ ሳለ የሆነ ችግር ተፈጥሯል።</translation>
 <translation id="1586541204584340881">የትኛዎቹ ቅጥያዎች ናቸው እርስዎ የጫኑት</translation>
 <translation id="1588438908519853928">መደበኛ</translation>
+<translation id="1589050138437146318">ARCore ይጫን?</translation>
 <translation id="1592005682883173041">አካባቢያዊ የውሂብ መድረሻ</translation>
 <translation id="1594030484168838125">ምረጥ</translation>
 <translation id="160851722280695521">በChrome ውስጥ የDino አሂድ ጨዋታ አጫውት</translation>
@@ -1384,6 +1386,7 @@
 <translation id="5333022057423422993">Chrome እርስዎ አሁን የተጠቀሙበትን የይለፍ ቃል በውሂብ ጥሰት ውስጥ አግኝቷል። የመለያዎችዎን ደህንነት ለማስጠበቅ የተቀመጡ የይለፍ ቃላትዎን እንዲፈትሹ እንመክራለን።</translation>
 <translation id="5334013548165032829">ዝርዝር የስርዓት ምዝግብ ማስታወሻዎች</translation>
 <translation id="5334145288572353250">አድራሻ ይቀመጥ?</translation>
+<translation id="5335920952954443287">የሚመታ ልብ</translation>
 <translation id="5340250774223869109">መተግበሪያ ታግዷል</translation>
 <translation id="534295439873310000">የNFC መሣሪያዎች</translation>
 <translation id="5344579389779391559">ይህ ገጽ እርስዎን ገንዘብ ለማስከፈል ሊሞክር ይችላል</translation>
@@ -2056,6 +2059,7 @@
 <translation id="7654909834015434372">ማብራሪያዎችን ሲያርትዑ ይህ ሰነድ ወደ መጀመሪያው ማዞር ይመለሳል</translation>
 <translation id="765676359832457558">የላቁ ቅንብሮችን ደብቅ...</translation>
 <translation id="7658239707568436148">ይቅር</translation>
+<translation id="7659878911471462949">የደስታ እንባ</translation>
 <translation id="7662298039739062396">ቅንብር በቅጥያ ቁጥጥር ይደረግበታል</translation>
 <translation id="7663736086183791259">የእውቅና ማረጋገጫ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">ማንነት በማያሳውቅ ውስጥ አይፈቀድም</translation>
@@ -2259,6 +2263,7 @@
 <translation id="830498451218851433">ግማሽ እጠፍ</translation>
 <translation id="8307358339886459768">ትንሽ-ፎቶ</translation>
 <translation id="8307888238279532626">መተግበሪያዎች ተጭነዋል እና ምን ያህል ጊዜ ስራ ላይ የሚውሉ</translation>
+<translation id="8317207217658302555">ARCore ይዘምን?</translation>
 <translation id="831997045666694187">ምሽት</translation>
 <translation id="8321476692217554900">ማሳወቂያዎች</translation>
 <translation id="8328484624016508118">ሁሉንም ማንነት የማያሳውቁ ትሮችን ከዘጋ በኋላ Chrome የሚከተሉትን ያጸዳል፦

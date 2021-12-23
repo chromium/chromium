@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Otetaan yhteyttä Googleen. Tämä voi kestää hetken…</translation>
 <translation id="1416550906796893042">Sovellusversio</translation>
 <translation id="1430915738399379752">Tulosta</translation>
+<translation id="1436784010935106834">Poistettu</translation>
 <translation id="1448440926884431741">Järjestele seurattuja tuotteita kirjanmerkeissä</translation>
 <translation id="1450753235335490080">Jakaminen ei onnistu: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Valitse Chromen kieli</translation>
@@ -203,7 +204,6 @@ Hae napauttamalla sanaa. Jos haluat tarkentaa hakuasi, valitse enemmän tai väh
 <translation id="2172905120685242547">Suljetaanko ikkuna?</translation>
 <translation id="2175927920773552910">QR-koodi</translation>
 <translation id="218608176142494674">Jakaminen</translation>
-<translation id="2195339740518523951">Ota Chromen tehokkain suojaus käyttöön</translation>
 <translation id="2200113223741723867">Valitse käyttödatan jakamisasetukset</translation>
 <translation id="2218567645332692482">Siirtymiset päivitetään HTTPS-protokollaan ja saat varoituksen ennen kuin sitä ei-tukevat sivustot ladataan</translation>
 <translation id="2227444325776770048">Jatka tilillä <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="4170011742729630528">Palvelu ei ole käytettävissä. Yritä myöhemmin uudelleen.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> käytetty</translation>
 <translation id="4181841719683918333">Kielet</translation>
-<translation id="4183868528246477015">Hae Google Lensillä <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Avaa uudelle välilehdelle</translation>
 <translation id="4196597275619698563">Luo kortti</translation>
 <translation id="4198423547019359126">Tallennussijainteja ei ole saatavilla</translation>
@@ -577,7 +576,6 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="4411535500181276704">Yksinkertaistettu tila</translation>
 <translation id="4415276339145661267">Ylläpidä Google-tiliäsi</translation>
 <translation id="4425140285732600465">Hintaa seurataan. Voit saada ilmoituksen, jos hinta laskee jollakin sivustolla.</translation>
-<translation id="4427306783828095590">Parannettu suojaus torjuu tietojenkalastelua ja haittaohjelmia entistä tehokkaammin</translation>
 <translation id="4450672886426705087">Googlen hakutulokset.</translation>
 <translation id="4452411734226507615">Sulje välilehti <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Lisätty kirjanmerkiksi kansioon <ph name="FOLDER_NAME" /></translation>
@@ -1082,6 +1080,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7177466738963138057">Voit muuttaa tätä myöhemmin Asetuksista.</translation>
 <translation id="7177873915659574692">QR-koodin luominen ei onnistu. URL-osoitteessa on yli <ph name="CHARACTER_LIMIT" /> merkkiä.</translation>
 <translation id="7180611975245234373">Päivitä</translation>
+<translation id="718226107353899806">Voit lisätä jopa <ph name="MAX_NUM_REACTIONS" /> reaktiota</translation>
 <translation id="7187993566681480880">Pitää sinut turvassa Chromessa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena.</translation>
 <translation id="718926126787620637">Kirjanmerkkikansioiden lista avattu koko näytön kokoisena</translation>
 <translation id="7191430249889272776">Välilehti avattiin taustalla.</translation>
@@ -1245,7 +1244,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8035133914807600019">Uusi kansio…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> päivää jäljellä</translation>
 <translation id="8037801708772278989">Tarkistettu juuri äsken</translation>
-<translation id="8040831032425909005">Pikatoimintojen hakuwidgetin kuvake</translation>
 <translation id="804335162455518893">SD-korttia ei löydy</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognito-välilehti}other{<ph name="TAB_COUNT_NORMAL" /> incognito-välilehteä}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> Mt käytettävissä</translation>

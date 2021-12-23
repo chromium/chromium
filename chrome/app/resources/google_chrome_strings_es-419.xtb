@@ -171,7 +171,6 @@
 <translation id="5193136243808726294">El Sistema operativo Google Chrome no puede abrir esta página.</translation>
 <translation id="521447420733633466">Si compartes un dispositivo, tus amigos y familiares podrán navegar de forma independiente y configurar Chrome según sus preferencias.</translation>
 <translation id="5251420635869119124">Los invitados pueden utilizar Chrome sin dejar nada detrás.</translation>
-<translation id="5251679006894510177">Ya casi completas la actualización. Reinicia Chrome para completar la actualización. No se volverán a abrir las ventanas de incógnito.</translation>
 <translation id="5334487786912937552">Chrome necesita permiso de acceso al almacenamiento para descargar archivos.</translation>
 <translation id="5386244825306882791">También controla qué página se muestra al iniciar Chrome o al realizar búsquedas desde el cuadro multifunción.</translation>
 <translation id="5394833366792865639">Compartir una pestaña de Chrome</translation>
@@ -302,6 +301,7 @@
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número de <ph name="ORIGIN" /> a tu teléfono Android, accede a Chrome en ambos dispositivos.</translation>
 <translation id="8927704157641862988">Personaliza las opciones de privacidad más importantes de Chrome. Esta guía no incluye todas las opciones ni los parámetros de configuración.</translation>
+<translation id="8983720963221508955">Activaste la Navegación segura mejorada en tu cuenta. Ahora actívala en Chrome.</translation>
 <translation id="8986207147630327271">Estás agregando un perfil de trabajo a este navegador y dándole a tu administrador el control únicamente del perfil de trabajo.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hay una actualización de Chrome disponible}=1{Hay una actualización de Chrome disponible}other{Hay una actualización de Chrome disponible hace # días}}</translation>
 <translation id="9026991721384951619">El Chrome OS no pudo sincronizar los datos porque la información de acceso de la cuenta está desactualizada.</translation>

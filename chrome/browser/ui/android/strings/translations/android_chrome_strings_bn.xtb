@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Google এর সাথে যোগাযোগ করা হচ্ছে। এতে একটু সময় লাগবে…</translation>
 <translation id="1416550906796893042">অ্যাপ্লিকেশন ভার্সন</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
+<translation id="1436784010935106834">সরানো হয়েছে</translation>
 <translation id="1448440926884431741">Bookmarks-এ আপনার ট্র্যাক করা সমস্ত প্রোডাক্ট সাজিয়ে রাখুন</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> শেয়ার করা যাচ্ছে না</translation>
 <translation id="1466383950273130737">Chrome-এর ভাষা বেছে নিন</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">উইন্ডো বন্ধ করবেন?</translation>
 <translation id="2175927920773552910">QR কোড</translation>
 <translation id="218608176142494674">শেয়ার করা সংক্রান্ত বিজ্ঞপ্তি</translation>
-<translation id="2195339740518523951">Chrome-এ সবচেয়ে বেশি সুরক্ষা পান</translation>
 <translation id="2200113223741723867">ব্যবহারের ডেটা শেয়ার করার সেটিংস ম্যানেজ করুন</translation>
 <translation id="2218567645332692482">নেভিগেশন HTTPS-এ আপগ্রেড করুন এবং HTTPS-এ কাজ করে না এমন সাইট লোড করার আগে সতর্কতা পান</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> হিসেবে চালিয়ে যান</translation>
@@ -545,7 +545,6 @@
 <translation id="4170011742729630528">পরিষেবাটি উপলব্ধ নেই, পরে আবার চেষ্টা করুন৷</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ব্যবহার করা হয়েছে</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
-<translation id="4183868528246477015">Google Lens-এর <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> ভার্সন দিয়ে খুুঁজুন</translation>
 <translation id="4195643157523330669">নতুন ট্যাবে খুলুন</translation>
 <translation id="4196597275619698563">কার্ড তৈরি করুন</translation>
 <translation id="4198423547019359126">ডাউনলোড করার জন্য লোকেশন উপলভ্য নেই</translation>
@@ -579,7 +578,6 @@
 <translation id="4411535500181276704">লাইট মোড</translation>
 <translation id="4415276339145661267">আপনার Google অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="4425140285732600465">দাম ট্র্যাক করা হচ্ছে। কোনও সাইটে দাম কমলে সেই বিষয়ে বিজ্ঞপ্তি পান।</translation>
-<translation id="4427306783828095590">ফিশিং ও ম্যালওয়্যার ব্লক করার ব্যাপারে উন্নত সুরক্ষা আরও সাহায্য করে</translation>
 <translation id="4450672886426705087">Google থেকে সার্চ ফলাফল।</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ট্যাবটি বন্ধ করুন</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> এ বুকমার্ক করা হয়েছে</translation>
@@ -1084,6 +1082,7 @@
 <translation id="7177466738963138057">আপনি পরে সেটিংসে এই পরিবর্তন করতে পারবেন</translation>
 <translation id="7177873915659574692">QR কোড তৈরি করা যায়নি। URL-এ <ph name="CHARACTER_LIMIT" />টির বেশি অক্ষর রয়েছে।</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
+<translation id="718226107353899806">আপনি সর্বাধিক <ph name="MAX_NUM_REACTIONS" />টি প্রতিক্রিয়া যোগ করতে পারবেন</translation>
 <translation id="7187993566681480880">এই সুরক্ষা আপনাকে Chrome-এ সাইন-ইন করা অবস্থাতে নিরাপদে রাখে এবং যদি অন্যান্য Google অ্যাপে আপনি সাইন-ইন করে থাকেন, সেখানেও আপনার নিরাপত্তার বিষয়টি উন্নত করতে এটিকে ব্যবহার করা যেতে পারে।</translation>
 <translation id="718926126787620637">সম্পূর্ণ খোলা বুকমার্ক ফোল্ডারের তালিকা</translation>
 <translation id="7191430249889272776">পটভূমিতে ট্যাব খোলা হয়েছে।</translation>
@@ -1247,7 +1246,6 @@
 <translation id="8035133914807600019">নতুন ফোল্ডার...</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> দিন বাকি আছে</translation>
 <translation id="8037801708772278989">এখনই চেক করা হয়েছে</translation>
-<translation id="8040831032425909005">দ্রুত অ্যাকশন সার্চ উইজেট আইকন</translation>
 <translation id="804335162455518893">এসডি কার্ড পাওয়া যায়নি</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" />টি ছদ্মবেশী ট্যাব}one{<ph name="TAB_COUNT_NORMAL" />টি ছদ্মবেশী ট্যাব}other{<ph name="TAB_COUNT_NORMAL" />টি ছদ্মবেশী ট্যাব}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> এমবি উপলভ্য</translation>

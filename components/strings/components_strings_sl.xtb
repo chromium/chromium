@@ -112,6 +112,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1308113895091915999">Ponudba je na voljo</translation>
 <translation id="1312803275555673949">Kateri dokazi to potrjujejo?</translation>
 <translation id="131405271941274527"><ph name="URL" /> želi pošiljati in prejemati podatke, ko se dotaknete telefona v napravi s tehnologijo NFC</translation>
+<translation id="1314311879718644478">Ogled vsebine v razširjeno resničnosti</translation>
 <translation id="1314509827145471431">Vezava na desni</translation>
 <translation id="1318023360584041678">Shranjeno v skupini zavihkov</translation>
 <translation id="1319245136674974084">Ne sprašuj več za to aplikacijo</translation>
@@ -215,6 +216,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1583429793053364125">Med prikazom spletne strani je prišlo do napake.</translation>
 <translation id="1586541204584340881">Katere razširitve ste namestili</translation>
 <translation id="1588438908519853928">Običajen</translation>
+<translation id="1589050138437146318">Želite namestiti ARCore?</translation>
 <translation id="1592005682883173041">Dostop do lokalnih podatkov</translation>
 <translation id="1594030484168838125">Izberi</translation>
 <translation id="160851722280695521">Igranje igre Dino Run v Chromu</translation>
@@ -1392,6 +1394,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5333022057423422993">Chrome je geslo, ki ste ga pravkar uporabili, našel v podatkovni kršitvi. Zaradi zavarovanja računov priporočamo, da preverite shranjena gesla.</translation>
 <translation id="5334013548165032829">Podrobni sistemski dnevniki</translation>
 <translation id="5334145288572353250">Želite shraniti naslov?</translation>
+<translation id="5335920952954443287">Utripajoče srce</translation>
 <translation id="5340250774223869109">Aplikacija je blokirana</translation>
 <translation id="534295439873310000">Naprave s tehnologijo NFC</translation>
 <translation id="5344579389779391559">Ta stran vam bo morda poskusila kaj zaračunati</translation>
@@ -2064,6 +2067,7 @@ Dodatne podrobnosti:
 <translation id="7654909834015434372">Če boste urejali pripise, se bo ta dokument vrnil v prvotno usmerjenost.</translation>
 <translation id="765676359832457558">Skrij dodatne nastavitve ...</translation>
 <translation id="7658239707568436148">Prekliči</translation>
+<translation id="7659878911471462949">Solze sreče</translation>
 <translation id="7662298039739062396">Nastavitev nadzira razširitev</translation>
 <translation id="7663736086183791259">Potrdilo <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">V anonimnem načinu ni dovoljeno</translation>
@@ -2267,6 +2271,7 @@ Dodatne podrobnosti:
 <translation id="830498451218851433">Prepogibanje na pol</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Nameščene aplikacije in pogostost njihove uporabe</translation>
+<translation id="8317207217658302555">Želite posodobiti ARCore?</translation>
 <translation id="831997045666694187">Večer</translation>
 <translation id="8321476692217554900">obvestila</translation>
 <translation id="8328484624016508118">Po zaprtju vseh anonimnih zavihkov Chrome počisti:

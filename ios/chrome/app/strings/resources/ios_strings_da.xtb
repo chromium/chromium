@@ -235,6 +235,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3157387275655328056">Føj til læseliste</translation>
 <translation id="3157684681743766797">Markér alle…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Du kan også bruge gemte adgangskoder på dine andre enheder.</translation>
 <translation id="3175081911749765310">Webtjenester</translation>
 <translation id="3178650076442119961">Aktiv i dag</translation>
 <translation id="3181825792072797598">Aktivér synkronisering</translation>
@@ -328,6 +329,7 @@ Følg vejledningen nedenfor:</translation>
 <translation id="4042870976416480368">Find på siden</translation>
 <translation id="4049507953662678203">Sørg for, at du har forbindelse til et netværk, og prøv igen.</translation>
 <translation id="408404951701638773">Nu er det nemmere at bruge søgefeltet</translation>
+<translation id="4108314971463891922">Følg</translation>
 <translation id="411254640334432676">Download mislykkedes.</translation>
 <translation id="4112644173421521737">Søg</translation>
 <translation id="4113030288477039509">Administreres af din administrator</translation>
@@ -357,6 +359,7 @@ Følg vejledningen nedenfor:</translation>
 <translation id="4389019817280890563">Tryk for at skifte sprog.</translation>
 <translation id="4442550905108052454">Åbn <ph name="BEGIN_BOLD" />Indstillinger<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Tilføj sprog</translation>
+<translation id="4462491365653392320">Følg prisudvikling på faner</translation>
 <translation id="4469418912670346607">Fortsæt konfiguration</translation>
 <translation id="4474494258097106883">Udviklet til din iPhone</translation>
 <translation id="4476574785019001431">Indstillinger</translation>
@@ -420,6 +423,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="4944543191714094452">Find på siden…</translation>
 <translation id="4945756290001680296">Få adgang til indstillinger for adgangskode</translation>
 <translation id="4979397965658815378">Log ind med din Google-konto for at få adgang til dine bogmærker, dine adgangskoder, din historik og andre indstillinger på alle dine enheder.</translation>
+<translation id="4986678885919050584">Fjern fra denne enhed</translation>
 <translation id="5005498671520578047">Kopiér adgangskode</translation>
 <translation id="5017828934289857214">Påmind mig senere</translation>
 <translation id="5037676449506322593">Vælg alle</translation>
@@ -521,6 +525,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5979837087407522202">Søg i adgangskoder</translation>
 <translation id="5982717868370722439">Føj eksisterende data til <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Besøgt for nylig</translation>
+<translation id="5988097621740394599">Se prisfald på dine faner</translation>
 <translation id="5988851877894965432">Åbn webadresser i Chrome</translation>
 <translation id="6012140227487808125">Krypterer...</translation>
 <translation id="6021332621416007159">Åbn i...</translation>
@@ -541,6 +546,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6127379762771434464">Elementet blev fjernet</translation>
 <translation id="6136914049981179737">Sek. siden</translation>
 <translation id="6144589619057374135">Åbn ${url} i inkognito</translation>
+<translation id="6149061208933997199">Brug adgangskoden</translation>
 <translation id="6159839020698489198">valgfrit</translation>
 <translation id="6177442314419606057">Søg i Chrome</translation>
 <translation id="6184086493125982861">Vis faner</translation>
@@ -765,6 +771,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8076014560081431679">Gemte websiteindstillinger slettes ikke og kan afspejle dine søgevaner. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Denne indstilling er administreret. Tryk to gange for at få flere oplysninger.</translation>
 <translation id="8080028325999236607">Luk alle faner</translation>
+<translation id="8101409298456377967">Opret, gem og administrer dine adgangskoder, så du nemt kan logge ind på websites og i apps. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Deaktiver</translation>
 <translation id="8114753159095730575">Filer kan downloades. Se valgmulighederne nederst på skærmen.</translation>
 <translation id="8132598642024322408">Koster nu <ph name="PRICE" />. Førprisen var <ph name="PREVIOUS_PRICE" />.</translation>

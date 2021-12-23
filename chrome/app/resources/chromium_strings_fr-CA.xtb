@@ -120,13 +120,13 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="454579500955453258">Continuer avec un nouveau profil Chromium?</translation>
 <translation id="4567424176335768812">Vous êtes connecté avec l'adresse de courriel <ph name="USER_EMAIL_ADDRESS" />. Vous pouvez maintenant accéder à vos favoris, à votre historique et à vos paramètres sur tous les appareils sur lesquels vous êtes connecté.</translation>
 <translation id="459535195905078186">Applications de Chromium</translation>
+<translation id="4621240073146040695">La mise à jour est presque terminée! Il ne reste plus qu'à relancer Chromium.</translation>
 <translation id="4665829708273112819">Avertissement : Chromium ne peut pas empêcher les extensions d'enregistrer votre historique de navigation. Pour désactiver cette extension en mode de navigation privée, désélectionnez cette option.</translation>
 <translation id="4677944499843243528">Le profil semble être utilisé par un autre processus de Chromium (<ph name="PROCESS_ID" />) sur un autre ordinateur (<ph name="HOST_NAME" />). Chromium a verrouillé ce profil pour éviter qu'il ne soit endommagé. Si vous êtes sûr qu'aucun autre processus n'utilise ce profil, vous pouvez le déverrouiller et relancer Chromium.</translation>
 <translation id="469338717132742108">Obtenir de l'aide pour Chromium OS</translation>
 <translation id="4708774505295300557">Un utilisateur s'est récemment connecté à Chromium sur cet ordinateur en tant que <ph name="ACCOUNT_EMAIL_LAST" />. Veuillez créer un autre utilisateur Chromium pour séparer vos données.</translation>
 <translation id="4746050847053251315">Quitter Chromium quand même?</translation>
 <translation id="4748217263233248895">Une mise à jour de sécurité spéciale pour Chromium vient d'être effectuée. Redémarrez maintenant, et nous restaurerons vos onglets.</translation>
-<translation id="4750035648288509542">La mise à jour est presque terminée! Relancez Chromium pour terminer la mise à jour. Vos fenêtres de navigation privée ne seront pas rouvertes.</translation>
 <translation id="4788777615168560705">Chromium ne peut pas vérifier vos mots de passe. Réessayez après 24 heures ou <ph name="BEGIN_LINK" />effectuez une vérification des mots de passe dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Cela fait appel au même correcteur orthographique que celui qui est utilisé dans la recherche Google. Le texte que vous tapez dans le navigateur est envoyé à Google. Vous pouvez toujours modifier ce comportement dans les paramètres.</translation>
 <translation id="4888717733111232871">Règle de trafic entrant pour Chrome afin d'autoriser le trafic mDNS.</translation>
@@ -238,6 +238,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="7549178288319965365">À propos de Chromium OS</translation>
 <translation id="7561906087460245826">Effacer les données également dans Chromium (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Si un paramètre ne s'affiche pas sur cette page, consultez les <ph name="LINK_BEGIN" />paramètres de Chromium OS<ph name="LINK_END" /></translation>
+<translation id="7597596667193879455">Vous avez activé la navigation sécurisée améliorée dans votre compte. Maintenant, activez-la dans Chromium.</translation>
 <translation id="761356813943268536">Chromium utilise votre caméra et votre microphone</translation>
 <translation id="7617377681829253106">Chrome vient de s'améliorer</translation>
 <translation id="7686590090926151193">Chromium n'est pas votre navigateur par défaut</translation>

@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">加入閱讀清單</translation>
 <translation id="3157684681743766797">全部標示…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">你也可以在其他裝置上使用已儲存的密碼。</translation>
 <translation id="3175081911749765310">網路服務</translation>
 <translation id="3178650076442119961">上次使用時間：今天</translation>
 <translation id="3181825792072797598">開啟同步功能</translation>
@@ -328,6 +329,7 @@
 <translation id="4042870976416480368">在網頁中查找</translation>
 <translation id="4049507953662678203">請確定您已連上網路，然後再試一次。</translation>
 <translation id="408404951701638773">現在使用搜尋列更加方便了</translation>
+<translation id="4108314971463891922">追蹤</translation>
 <translation id="411254640334432676">下載失敗。</translation>
 <translation id="4112644173421521737">搜尋</translation>
 <translation id="4113030288477039509">您的管理員已停用這項功能</translation>
@@ -544,6 +546,7 @@
 <translation id="6127379762771434464">已移除項目</translation>
 <translation id="6136914049981179737">幾秒前</translation>
 <translation id="6144589619057374135">在無痕模式中開啟 ${url}</translation>
+<translation id="6149061208933997199">使用密碼</translation>
 <translation id="6159839020698489198">選填</translation>
 <translation id="6177442314419606057">在 Chrome 中搜尋</translation>
 <translation id="6184086493125982861">顯示分頁</translation>
@@ -768,6 +771,7 @@
 <translation id="8076014560081431679">已儲存的網站設定不會遭到刪除，而且可能會反映您的瀏覽習慣。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">這項設定是由管理員控管，輕觸兩下即可查看更多資訊</translation>
 <translation id="8080028325999236607">關閉所有分頁</translation>
+<translation id="8101409298456377967">建立、儲存及管理密碼，讓你輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">關閉</translation>
 <translation id="8114753159095730575">可下載檔案，相關選項位於畫面底部。</translation>
 <translation id="8132598642024322408">原價 <ph name="PREVIOUS_PRICE" />，現在只要 <ph name="PRICE" />，</translation>

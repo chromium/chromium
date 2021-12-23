@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">वाचन सूचीमध्ये जोडा</translation>
 <translation id="3157684681743766797">सर्व चिन्हांकित करा…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">तुम्ही तुमच्या इतर डिव्हाइसवर सेव्ह केलेले पासवर्डदेखील वापरू शकता.</translation>
 <translation id="3175081911749765310">वेब सेवा</translation>
 <translation id="3178650076442119961">आज ॲक्टिव्ह होते</translation>
 <translation id="3181825792072797598">सिंक सुरू करा</translation>
@@ -328,6 +329,7 @@
 <translation id="4042870976416480368">पेजमध्ये शोधा</translation>
 <translation id="4049507953662678203">आपल्याकडे नेटवर्क कनेक्शन आहे हे सुनिश्चित करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="408404951701638773">शोध बारवर पोहोचणे आता आणखी सोपे आहे</translation>
+<translation id="4108314971463891922">फॉलो करा</translation>
 <translation id="411254640334432676">डाउनलोड अयशस्वी.</translation>
 <translation id="4112644173421521737">शोधा</translation>
 <translation id="4113030288477039509">तुमच्या ॲडमिनिस्ट्रेटरद्वारे व्यवस्थापित</translation>
@@ -345,6 +347,7 @@
 <translation id="4272631900155121838">QR कोड स्कॅन करण्‍यासाठी, सेटिंग्ज मधून कॅमेरा सुरू करा</translation>
 <translation id="4277990410970811858">सुरक्षित ब्राउझिंग</translation>
 <translation id="4281844954008187215">सेवा अटी</translation>
+<translation id="4304713468139749426">पासवर्ड व्यवस्थापक</translation>
 <translation id="430793432425771671">प्रत्येकगोष्ट संंकालित करा</translation>
 <translation id="4309403553630140242">अधिक माहितीसाठी दोनदा टॅप करा</translation>
 <translation id="430967081421617822">सर्व वेळ</translation>
@@ -544,6 +547,7 @@
 <translation id="6127379762771434464">आयटम काढला</translation>
 <translation id="6136914049981179737">सेकंदांपूर्वी</translation>
 <translation id="6144589619057374135">${url} गुप्त मोडमध्ये उघडा</translation>
+<translation id="6149061208933997199">पासवर्ड वापरा</translation>
 <translation id="6159839020698489198">पर्यायी</translation>
 <translation id="6177442314419606057">Chrome मध्ये शोधा</translation>
 <translation id="6184086493125982861">टॅब दर्शवा</translation>
@@ -769,6 +773,7 @@
 <translation id="8076014560081431679">सेव्ह केलेल्या साइट सेटिंग्ज हटविल्या जाणार नाहीत आणि कदाचित आपल्या ब्राउझिंग सवयी दर्शवेल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">हे सेटिंग व्यवस्थापित केले, अधिक माहितीसाठी दोनदा टॅप करा</translation>
 <translation id="8080028325999236607">सर्व टॅब बंद करा</translation>
+<translation id="8101409298456377967">तुमचे पासवर्ड तयार, सेव्ह आणि व्यवस्थापित करा, जेणेकरून तुम्ही साइट आणि अ‍ॅप्समध्ये सहजरीत्या साइन इन करू शकाल. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">बंद करा</translation>
 <translation id="8114753159095730575">फाइल डाउनलोड उपलब्ध आहे. स्क्रीनच्या तळाशी पर्याय उपलब्ध आहेत.</translation>
 <translation id="8132598642024322408">आता <ph name="PRICE" /> आहे, आधी <ph name="PREVIOUS_PRICE" /> होती.</translation>

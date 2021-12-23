@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">הצעה זמינה</translation>
 <translation id="1312803275555673949">האם קיימות ראיות תומכות?</translation>
 <translation id="131405271941274527">‏<ph name="URL" /> רוצה לשלוח ולקבל מידע אחרי כל הקשה של מספר הטלפון שלך במכשיר NFC</translation>
+<translation id="1314311879718644478">הצגת תוכן של מציאות רבודה</translation>
 <translation id="1314509827145471431">כריכה בקצה הימני</translation>
 <translation id="1318023360584041678">הפריט נשמר בקבוצת הכרטיסיות</translation>
 <translation id="1319245136674974084">לא צריך לשאול יותר לגבי האפליקציה הזו</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">משהו השתבש בעת הצגת דף אינטרנט זה.</translation>
 <translation id="1586541204584340881">אילו תוספים התקנת.</translation>
 <translation id="1588438908519853928">רגיל</translation>
+<translation id="1589050138437146318">‏להתקין את ARCore?</translation>
 <translation id="1592005682883173041">גישה לנתונים מקומיים</translation>
 <translation id="1594030484168838125">בחירה</translation>
 <translation id="160851722280695521">‏הפעלת המשחק Dino Run ב-Chrome</translation>
@@ -1394,6 +1396,7 @@ Del</translation>
 <translation id="5333022057423422993">‏Chrome איתר את הסיסמה שבה השתמשת עכשיו בפרצה באבטחת מידע. כדי לאבטח את החשבונות שלך, מומלץ לבדוק את הסיסמאות השמורות.</translation>
 <translation id="5334013548165032829">יומני מערכת מפורטים</translation>
 <translation id="5334145288572353250">לשמור את הכתובת?</translation>
+<translation id="5335920952954443287">לב פועם</translation>
 <translation id="5340250774223869109">האפליקציה חסומה</translation>
 <translation id="534295439873310000">‏מכשירי NFC</translation>
 <translation id="5344579389779391559">ייתכן שהדף הזה ינסה לדרוש ממך תשלום</translation>
@@ -2067,6 +2070,7 @@ Del</translation>
 <translation id="7654909834015434372">המסמך הזה יחזור למצב הסיבוב המקורי שלו בזמן עריכת ההערות</translation>
 <translation id="765676359832457558">הסתרת הגדרות מתקדמות...</translation>
 <translation id="7658239707568436148">ביטול</translation>
+<translation id="7659878911471462949">דמעות של שמחה</translation>
 <translation id="7662298039739062396">ההגדרה נשלטת על-ידי תוסף</translation>
 <translation id="7663736086183791259">אישור <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">אין הרשאה במצב אנונימי</translation>
@@ -2270,6 +2274,7 @@ Del</translation>
 <translation id="830498451218851433">קיפול באמצע</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">את האפליקציות המותקנות ואת תדירות השימוש בהן.</translation>
+<translation id="8317207217658302555">‏לעדכן את ARCore?</translation>
 <translation id="831997045666694187">ערב</translation>
 <translation id="8321476692217554900">התראות</translation>
 <translation id="8328484624016508118">‏אחרי שסוגרים את כל הכרטיסיות במצב אנונימי, יימחקו בדפדפן Chrome:

@@ -112,6 +112,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1308113895091915999">Oferta disponível</translation>
 <translation id="1312803275555673949">Quais são as evidências?</translation>
 <translation id="131405271941274527"><ph name="URL" /> quer enviar e receber informações quando você encostar seu smartphone em um dispositivo NFC</translation>
+<translation id="1314311879718644478">Ver conteúdo de realidade aumentada</translation>
 <translation id="1314509827145471431">Encadernação do lado direito</translation>
 <translation id="1318023360584041678">Salvo no grupo de guias</translation>
 <translation id="1319245136674974084">Não perguntar novamente para este app</translation>
@@ -215,6 +216,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1583429793053364125">Algo deu errado ao exibir esta página da Web.</translation>
 <translation id="1586541204584340881">quais extensões você instalou;</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1589050138437146318">Instalar o ARCore?</translation>
 <translation id="1592005682883173041">Acesso a dados locais</translation>
 <translation id="1594030484168838125">Escolher</translation>
 <translation id="160851722280695521">Iniciar o jogo do Dinossauro do Chrome</translation>
@@ -1383,6 +1385,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5333022057423422993">A senha que você acabou de usar foi encontrada pelo Chrome em uma violação de dados. Para proteger suas contas, recomendamos verificar as senhas salvas.</translation>
 <translation id="5334013548165032829">Registros detalhados do sistema</translation>
 <translation id="5334145288572353250">Salvar endereço?</translation>
+<translation id="5335920952954443287">Coração batendo</translation>
 <translation id="5340250774223869109">O aplicativo foi bloqueado</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5344579389779391559">Esta página pode tentar cobrar pagamento em dinheiro</translation>
@@ -2055,6 +2058,7 @@ Mais detalhes:
 <translation id="7654909834015434372">Quando você editar as anotações, este documento voltará à rotação original</translation>
 <translation id="765676359832457558">Ocultar configurações avançadas...</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7659878911471462949">Lágrimas de alegria</translation>
 <translation id="7662298039739062396">Configuração controlada por uma extensão</translation>
 <translation id="7663736086183791259">Certificado <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Sem permissão na navegação anônima</translation>
@@ -2258,6 +2262,7 @@ Mais detalhes:
 <translation id="830498451218851433">Dobra simples</translation>
 <translation id="8307358339886459768">Small photo</translation>
 <translation id="8307888238279532626">Os apps instalados e a frequência de uso deles</translation>
+<translation id="8317207217658302555">Atualizar o ARCore?</translation>
 <translation id="831997045666694187">Noite</translation>
 <translation id="8321476692217554900">notificações</translation>
 <translation id="8328484624016508118">Após o fechamento de todas as guias anônimas, o Chrome apaga:

@@ -235,6 +235,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3157387275655328056">Afegeix a la llista de lectura</translation>
 <translation id="3157684681743766797">Marca-ho tot com a…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">També pots utilitzar les contrasenyes desades en els teus altres dispositius.</translation>
 <translation id="3175081911749765310">Serveis web</translation>
 <translation id="3178650076442119961">Actiu avui</translation>
 <translation id="3181825792072797598">Activa l'opció Sincronització</translation>
@@ -328,6 +329,7 @@ Segueix aquests passos:</translation>
 <translation id="4042870976416480368">Cerca a la pàgina</translation>
 <translation id="4049507953662678203">Assegureu-vos que teniu una connexió a la xarxa i torneu-ho a provar.</translation>
 <translation id="408404951701638773">Ara és més fàcil accedir a la barra de cerca</translation>
+<translation id="4108314971463891922">Segueix</translation>
 <translation id="411254640334432676">S'ha produït un error durant la baixada.</translation>
 <translation id="4112644173421521737">Cerca</translation>
 <translation id="4113030288477039509">Gestionat per l'administrador</translation>
@@ -345,6 +347,7 @@ Segueix aquests passos:</translation>
 <translation id="4272631900155121838">Per poder escanejar un codi QR, activa la càmera a la configuració</translation>
 <translation id="4277990410970811858">Navegació segura</translation>
 <translation id="4281844954008187215">Condicions del servei</translation>
+<translation id="4304713468139749426">Gestor de contrasenyes</translation>
 <translation id="430793432425771671">Sincronitza-ho tot</translation>
 <translation id="4309403553630140242">Fes doble toc per obtenir més informació</translation>
 <translation id="430967081421617822">Sempre</translation>
@@ -356,6 +359,7 @@ Segueix aquests passos:</translation>
 <translation id="4389019817280890563">Toca per canviar l'idioma.</translation>
 <translation id="4442550905108052454">Obre <ph name="BEGIN_BOLD" />Configuració<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Afegeix un idioma</translation>
+<translation id="4462491365653392320">Seguiment dels preus a les pestanyes</translation>
 <translation id="4469418912670346607">Continua amb la configuració</translation>
 <translation id="4474494258097106883">Creat per a l'iPhone</translation>
 <translation id="4476574785019001431">Configuració</translation>
@@ -419,6 +423,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="4944543191714094452">Cerca a la pàgina…</translation>
 <translation id="4945756290001680296">Accedeix a la configuració de la contrasenya</translation>
 <translation id="4979397965658815378">Inicia la sessió amb el compte de Google per tenir les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració en tots els dispositius.</translation>
+<translation id="4986678885919050584">Suprimeix d'aquest dispositiu</translation>
 <translation id="5005498671520578047">Copia la contrasenya</translation>
 <translation id="5017828934289857214">Recorda-m'ho més tard</translation>
 <translation id="5037676449506322593">Selecciona-ho tot</translation>
@@ -520,6 +525,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5979837087407522202">Cerca contrasenyes</translation>
 <translation id="5982717868370722439">Afegeix les dades existents a <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Visitats recentment</translation>
+<translation id="5988097621740394599">Consulta les baixades de preu a les pestanyes.</translation>
 <translation id="5988851877894965432">Obre els URL a Chrome</translation>
 <translation id="6012140227487808125">S'està encriptant…</translation>
 <translation id="6021332621416007159">Obre a...</translation>
@@ -540,6 +546,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6127379762771434464">S'ha suprimit l'element</translation>
 <translation id="6136914049981179737">Fa segons</translation>
 <translation id="6144589619057374135">Obre ${url} en mode d'incògnit</translation>
+<translation id="6149061208933997199">Fes servir la contrasenya</translation>
 <translation id="6159839020698489198">opcional</translation>
 <translation id="6177442314419606057">Fes cerques a Chrome</translation>
 <translation id="6184086493125982861">Mostra les pestanyes</translation>
@@ -764,6 +771,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8076014560081431679">La configuració desada del lloc no se suprimirà i és possible que reflecteixi els vostres hàbits de navegació. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Aquesta opció de configuració està gestionada. Fes doble toc per obtenir més informació.</translation>
 <translation id="8080028325999236607">Tanca totes les pestanyes</translation>
+<translation id="8101409298456377967">Crea, desa i gestiona les teves contrasenyes de manera que puguis iniciar la sessió fàcilment en llocs web i aplicacions. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Desactiva</translation>
 <translation id="8114753159095730575">La baixada de fitxers està disponible. Opcions disponibles a la part inferior de la pantalla.</translation>
 <translation id="8132598642024322408">Ara val <ph name="PRICE" />, abans valia <ph name="PREVIOUS_PRICE" />.</translation>

@@ -131,6 +131,7 @@
 <translation id="1768366657309696705">「<ph name="LAUNCHER_KEY_NAME" />鍵 + 句號鍵」的鍵盤快速鍵已變更。如要使用 Insert 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + Shift + Backspace 鍵。</translation>
 <translation id="1770726142253415363">已移至第 <ph name="ROW_NUMBER" /> 列，第 <ph name="COLUMN_NUMBER" /> 欄。</translation>
 <translation id="1771761307086386028">向右捲動</translation>
+<translation id="1774796056689732716">日曆，<ph name="CURRENT_MONTH_YEAR" />，目前已選取 <ph name="DATE" />。</translation>
 <translation id="1787955149152357925">關閉</translation>
 <translation id="1804572139604454141">磁碟空間嚴重不足，因此已停止錄製</translation>
 <translation id="181103072419391116">訊號強度 <ph name="SIGNAL_STRENGTH" />，由系統管理員管理</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">啟用隱藏式輔助字幕</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083553833479578423">啟用更多 Google 助理功能。</translation>
+<translation id="5090752371472782287">投放到 <ph name="MANAGER" /> 裝置</translation>
 <translation id="5106223312672646208">個人化</translation>
 <translation id="5117590920725113268">顯示下一個月</translation>
 <translation id="5136175204352732067">已連接其他鍵盤</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">可用的投放裝置</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5176318573511391780">錄製部分螢幕畫面</translation>
+<translation id="5198413532174090167"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
 <translation id="5198715732953550718">已將「<ph name="MOVED_APP_NAME" />」與「<ph name="IN_PLACE_APP" />」合併，並建立新資料夾。</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />，<ph name="NOTIFICATION_TITLE" />：<ph name="MESSAGE" />，<ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{另外 1 則通知}other{另外 # 則通知}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">沒有通知</translation>
 <translation id="6431865393913628856">螢幕畫面錄製</translation>
 <translation id="6445835306623867477">正在透過<ph name="RECEIVER_NAME" />投放「<ph name="ROUTE_TITLE" />」</translation>
+<translation id="6447111710783417522"><ph name="DATE" />，<ph name="NUMBER" /> 個活動</translation>
 <translation id="6452181791372256707">拒絕</translation>
 <translation id="6453179446719226835">語言已變更</translation>
 <translation id="6459472438155181876">正在擴充 <ph name="DISPLAY_NAME" /> 畫面</translation>
@@ -864,6 +868,7 @@
 <translation id="6811454077060061666">無法使用 Google 雲端硬碟電腦版</translation>
 <translation id="6818242057446442178">移至上一個字詞</translation>
 <translation id="6820676911989879663">目前禁止使用裝置！</translation>
+<translation id="6827049576281411231">關閉活動面板</translation>
 <translation id="6836499262298959512">危險檔案</translation>
 <translation id="6837064795450991317">隱藏桌面列</translation>
 <translation id="6852052252232534364">按一下即可啟動</translation>
@@ -871,6 +876,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{剩餘一個位數}other{剩餘 # 個位數}}</translation>
 <translation id="6867938213751067702">已暫停下載 <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">已關閉快速鍵功能</translation>
+<translation id="6884665277231944629">返回今天</translation>
 <translation id="6886172995547742638">你的「<ph name="DEVICE_TYPE" />」可能會有效能低落的問題。請使用 <ph name="PREFERRED_MINIMUM_POWER" /> 瓦以上且符合標準的 USB-C 電源變壓器。</translation>
 <translation id="688631446150864480">按下向下鍵即可切換視窗</translation>
 <translation id="6896758677409633944">複製</translation>
@@ -957,6 +963,7 @@
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
 <translation id="7509246181739783082">驗證身分</translation>
 <translation id="7513622367902644023">已選取螢幕截圖模式</translation>
+<translation id="7513922695575567867">日曆，<ph name="DATE" />當週，目前已選取 <ph name="SELECTED_DATE" /> 日。</translation>
 <translation id="7514365320538308">下載</translation>
 <translation id="7526573455193969409">網路可能會受到監控</translation>
 <translation id="7536035074519304529">IP 位址：<ph name="ADDRESS" /></translation>
@@ -966,6 +973,7 @@
 <translation id="7564874036684306347">將視窗移至其他桌面可能會導致未預期的行為。後續的通知、視窗和對話方塊可能會分開顯示在不同桌面上。</translation>
 <translation id="7569509451529460200">點字模式和 ChromeVox 已啟用</translation>
 <translation id="7569983096843329377">黑色</translation>
+<translation id="757941033127302446">已登入</translation>
 <translation id="7579778809502851308">擷取螢幕畫面</translation>
 <translation id="7590883480672980941">輸入法設定</translation>
 <translation id="7593891976182323525">搜尋鍵或 Shift 鍵</translation>
@@ -1039,6 +1047,7 @@
 <translation id="8035152190676905274">畫筆</translation>
 <translation id="8036504271468642248">上一句</translation>
 <translation id="8042893070933512245">開啟無障礙設定選單</translation>
+<translation id="8042925093898452104">關閉詳細資訊</translation>
 <translation id="8048123526339889627">藍牙設定</translation>
 <translation id="8051716679295756675">已經有名為 <ph name="DESK_TEMPLATE_NAME" /> 的範本</translation>
 <translation id="8052898407431791827">已複製到剪貼簿</translation>

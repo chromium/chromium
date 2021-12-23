@@ -112,6 +112,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1308113895091915999">Penawaran tersedia</translation>
 <translation id="1312803275555673949">Bukti apa yang mendukungnya?</translation>
 <translation id="131405271941274527"><ph name="URL" /> ingin mengirim dan menerima info saat Anda mengetukkan ponsel pada perangkat NFC</translation>
+<translation id="1314311879718644478">Lihat konten augmented reality</translation>
 <translation id="1314509827145471431">Jilid di kanan</translation>
 <translation id="1318023360584041678">Disimpan di grup tab</translation>
 <translation id="1319245136674974084">Jangan tanya lagi untuk aplikasi ini</translation>
@@ -215,6 +216,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1583429793053364125">Terjadi masalah sewaktu menampilkan halaman web ini.</translation>
 <translation id="1586541204584340881">Ekstensi yang telah Anda instal</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1589050138437146318">Instal ARCore?</translation>
 <translation id="1592005682883173041">Akses Data Lokal</translation>
 <translation id="1594030484168838125">Pilih</translation>
 <translation id="160851722280695521">Mainkan game Dino Run di Chrome</translation>
@@ -1382,6 +1384,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5333022057423422993">Chrome menemukan sandi yang baru saja Anda gunakan dalam pelanggaran data. Untuk mengamankan akun, sebaiknya periksa sandi tersimpan Anda.</translation>
 <translation id="5334013548165032829">Log sistem mendetail</translation>
 <translation id="5334145288572353250">Simpan Alamat?</translation>
+<translation id="5335920952954443287">Hati yang Berdebar</translation>
 <translation id="5340250774223869109">Aplikasi diblokir</translation>
 <translation id="534295439873310000">Perangkat NFC</translation>
 <translation id="5344579389779391559">Halaman ini mungkin mencoba menagih Anda</translation>
@@ -2052,6 +2055,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7654909834015434372">Jika Anda mengedit anotasi, dokumen ini akan kembali ke rotasi aslinya</translation>
 <translation id="765676359832457558">Sembunyikan setelan lanjutan...</translation>
 <translation id="7658239707568436148">Batal</translation>
+<translation id="7659878911471462949">Air Mata Kebahagiaan</translation>
 <translation id="7662298039739062396">Setelan yang dikontrol oleh ekstensi</translation>
 <translation id="7663736086183791259">Sertifikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Tidak diizinkan di Samaran</translation>
@@ -2255,6 +2259,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="830498451218851433">Lipatan setengah</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Aplikasi yang diinstal dan seberapa sering digunakan</translation>
+<translation id="8317207217658302555">Update ARCore?</translation>
 <translation id="831997045666694187">Sore</translation>
 <translation id="8321476692217554900">notifikasi</translation>
 <translation id="8328484624016508118">Setelah semua tab Samaran ditutup, Chrome akan menghapus:

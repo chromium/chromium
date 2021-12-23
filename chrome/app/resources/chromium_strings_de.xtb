@@ -118,13 +118,13 @@
 <translation id="454579500955453258">Mit einem neuen Chromium-Profil fortfahren?</translation>
 <translation id="4567424176335768812">Sie sind als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Auf allen Geräten, auf denen Sie angemeldet sind, sind nun Ihre Lesezeichen, Ihr Verlauf und andere Einstellungen verfügbar.</translation>
 <translation id="459535195905078186">Chromium-Apps</translation>
+<translation id="4621240073146040695">Fast fertig! Starten Sie Chromium neu, um die Aktualisierung abzuschließen.</translation>
 <translation id="4665829708273112819">Achtung: Chromium kann nicht verhindern, dass Ihr Browserverlauf von Erweiterungen protokolliert wird. Sie können diese Erweiterung für den Inkognitomodus deaktivieren, indem Sie die Auswahl für die entsprechende Option aufheben.</translation>
 <translation id="4677944499843243528">Das Profil wird offenbar gerade von einem Chromium-Prozess (<ph name="PROCESS_ID" />) auf einem anderen Computer (<ph name="HOST_NAME" />) verwendet. Das Profil wurde von Chromium gesperrt, damit es nicht beschädigt wird. Wenn Sie sicher sind, dass das Profil nicht von anderen Prozessen verwendet wird, können Sie das Profil entsperren und Chromium neu starten.</translation>
 <translation id="469338717132742108">Hilfe für Chromium OS aufrufen</translation>
 <translation id="4708774505295300557">Auf diesem Computer war zuvor ein Nutzer mit dem Konto <ph name="ACCOUNT_EMAIL_LAST" /> in Chromium angemeldet. Erstellen Sie einen neuen Chromium-Nutzer, um Ihre Daten getrennt zu verwenden.</translation>
 <translation id="4746050847053251315">Chromium trotzdem beenden?</translation>
 <translation id="4748217263233248895">Da soeben ein kritisches Sicherheitsupdate für Chromium installiert wurde, sollten Sie jetzt einen Neustart durchführen. Ihre Tabs werden dann automatisch wiederhergestellt.</translation>
-<translation id="4750035648288509542">Fast geschafft! Chromium zum Abschluss der Aktualisierung neu starten. Inkognitofenster werden nicht wieder geöffnet.</translation>
 <translation id="4788777615168560705">Chromium kann Ihre Passwörter nicht prüfen. Versuchen Sie es in 24 Stunden noch einmal oder <ph name="BEGIN_LINK" />prüfen Sie die Passwörter in Ihrem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Es wird dieselbe Rechtschreibprüfung wie in der Google Suche verwendet. Der in den Browser eingegebene Text wird an Google gesendet. Sie können dies jederzeit in den Einstellungen ändern.</translation>
 <translation id="4888717733111232871">Eingangsregel für die Zulassung von mDNS-Verkehr in Chromium</translation>
@@ -236,6 +236,7 @@ Chromium kann Ihre Einstellungen nicht wiederherstellen.</translation>
 <translation id="7549178288319965365">Über Chromium OS</translation>
 <translation id="7561906087460245826">Daten aus Chromium ebenfalls löschen (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Wenn Sie auf dieser Seite eine Einstellung nicht finden können, sehen Sie in den <ph name="LINK_BEGIN" />Einstellungen von Chromium OS<ph name="LINK_END" /> nach</translation>
+<translation id="7597596667193879455">Sie haben das erweiterte Safe Browsing für Ihr Konto aktiviert. Verwenden Sie es jetzt in Chromium.</translation>
 <translation id="761356813943268536">Chromium verwendet Ihre Kamera und Ihr Mikrofon.</translation>
 <translation id="7617377681829253106">Chromium ist jetzt noch besser</translation>
 <translation id="7686590090926151193">Chromium ist nicht als Ihr Standardbrowser festgelegt</translation>

@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">ఆఫర్ అందుబాటులో ఉంది</translation>
 <translation id="1312803275555673949">సమాచారం సరైనదనడానికి ఆధారాలు ఏంటి?</translation>
 <translation id="131405271941274527">మీరు NFC పరికరంలో మీ ఫోన్‌పై నొక్కినప్పుడు సమాచారం పంపడానికి, అందుకోవడానికి <ph name="URL" /> అనుమతి కోరుతోంది</translation>
+<translation id="1314311879718644478">అగ్‌మెంటెడ్ రియాలిటీ కంటెంట్‌ను చూడండి</translation>
 <translation id="1314509827145471431">కుడివైపున బైండ్</translation>
 <translation id="1318023360584041678">ట్యాబ్ గ్రూప్‌లో సేవ్ చేయబడింది</translation>
 <translation id="1319245136674974084">ఈ యాప్‌ కోసం మళ్లీ అడగవద్దు</translation>
@@ -217,6 +218,7 @@
 <translation id="1583429793053364125">ఈ వెబ్ పేజీని ప్రదర్శిస్తున్నప్పుడు ఏదో తప్పు జరిగింది.</translation>
 <translation id="1586541204584340881">మీరు ఏ ఎక్స్‌టెన్షన్‌లను ఇన్ స్టాల్ చేసుకున్నారు</translation>
 <translation id="1588438908519853928">సాధారణ</translation>
+<translation id="1589050138437146318">ARCoreను ఇన్‌స్టాల్ చేయాలా?</translation>
 <translation id="1592005682883173041">స్థానిక డేటా యాక్సెస్</translation>
 <translation id="1594030484168838125">ఎంచుకోండి</translation>
 <translation id="160851722280695521">Chromeలో Dino Run గేమ్‌ను ఆడండి</translation>
@@ -1394,6 +1396,7 @@
 <translation id="5333022057423422993">డేటా ఉల్లంఘనలో మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్‌ను Chrome కనుగొనింది. మీ ఖాతాలను సురక్షించడానికి, మీ సేవ్ చేయబడిన పాస్‌వర్డ్‌లను చెక్ చేయమని మేము సిఫార్సు చేస్తున్నాము.</translation>
 <translation id="5334013548165032829">వివరణాత్మక సిస్టమ్ లాగ్‌లు</translation>
 <translation id="5334145288572353250">అడ్రస్‌ను సేవ్ చేయాలా?</translation>
+<translation id="5335920952954443287">స్పందిస్తున్న గుండె</translation>
 <translation id="5340250774223869109">యాప్ బ్లాక్ చేయబడింది</translation>
 <translation id="534295439873310000">NFC పరికరాలు</translation>
 <translation id="5344579389779391559">ఈ పేజీ మీకు డబ్బు ఛార్జీ చేయడానికి ప్రయత్నించవచ్చు</translation>
@@ -2066,6 +2069,7 @@
 <translation id="7654909834015434372">మీరు అదనపు గమనికలను ఎడిట్ చేసినప్పుడు, ఈ డాక్యుమెంట్, దాని ఒరిజినల్ రొటేషన్‌కు తిరిగి వస్తుంది</translation>
 <translation id="765676359832457558">అధునాతన సెట్టింగ్‌లను దాచు...</translation>
 <translation id="7658239707568436148">రద్దు చేయి</translation>
+<translation id="7659878911471462949">ఆనంద భాష్పాలు</translation>
 <translation id="7662298039739062396">ఎక్స్‌టెన్షన్‌ ద్వారా సెట్టింగ్ నియంత్రించబడుతోంది</translation>
 <translation id="7663736086183791259">సర్టిఫికెట్ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">అజ్ఞాత మోడ్‌లో అనుమతించబడదు</translation>
@@ -2269,6 +2273,7 @@
 <translation id="830498451218851433">సగం ఫోల్డ్</translation>
 <translation id="8307358339886459768">చిన్న-ఫోటో</translation>
 <translation id="8307888238279532626">ఇన్‌స్టాల్ చేయబడిన యాప్‌లు అలాగే వాటిని ఎంత తరచుగా ఉపయోగించినది తెలిపే వివరాలు</translation>
+<translation id="8317207217658302555">ARCoreను అప్‌డేట్ చేయాలా?</translation>
 <translation id="831997045666694187">సాయంత్రం</translation>
 <translation id="8321476692217554900">నోటిఫికేషన్‌లు</translation>
 <translation id="8328484624016508118">అన్ని అజ్ఞాత ట్యాబ్‌లను మూసివేసిన తర్వాత, Chrome వీటిని క్లియర్ చేస్తుంది:

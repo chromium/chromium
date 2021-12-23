@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">Сунуш бар</translation>
 <translation id="1312803275555673949">Кандай далили бар?</translation>
 <translation id="131405271941274527">NFC түзмөгүндө телефонуңузду таптаганда <ph name="URL" /> маалыматты жөнөтүүгө жана алууга уруксат сурап жатат</translation>
+<translation id="1314311879718644478">Кошумчаланган чындык контентин көрүү</translation>
 <translation id="1314509827145471431">Оң жагын байлоо</translation>
 <translation id="1318023360584041678">Өтмөктөр тобунда сакталды</translation>
 <translation id="1319245136674974084">Бул карточка экинчи суралбасын</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">Бул веб-баракча жүктөлүп жатканда бир жерден ката кетти.</translation>
 <translation id="1586541204584340881">Кайсы кеңейтүүлөрдү орнотуп алдыңыз</translation>
 <translation id="1588438908519853928">Кадыресе</translation>
+<translation id="1589050138437146318">ARCore орнотулсунбу?</translation>
 <translation id="1592005682883173041">Жергиликтүү дайындарга мүмкүнчүлүк алуу</translation>
 <translation id="1594030484168838125">Тандоо</translation>
 <translation id="160851722280695521">Dino Run оюнун Chrome'до ойноо</translation>
@@ -1391,6 +1393,7 @@
 <translation id="5333022057423422993">Chrome жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганын аныктады. Аккаунттарыңызды коопсуздандыруу үчүн сакталган сырсөздөрүңүздү текшерүүнү сунуштайбыз.</translation>
 <translation id="5334013548165032829">Чоо-жайы көрсөтүлгөн тутум таржымалдары</translation>
 <translation id="5334145288572353250">Дарек сакталсынбы?</translation>
+<translation id="5335920952954443287">Соккон жүрөк</translation>
 <translation id="5340250774223869109">Колдонмо бөгөттөлдү</translation>
 <translation id="534295439873310000">NFC түзмөктөрү</translation>
 <translation id="5344579389779391559">Бул баракта акы алынышы мүмкүн</translation>
@@ -2063,6 +2066,7 @@
 <translation id="7654909834015434372">Аннотацияны түзөтүүдө бул документ өзүнүн түпнуска айлануусуна кайтып келет</translation>
 <translation id="765676359832457558">Өркүндөтүлгөн жөндөөлөрдү жашыруу…</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
+<translation id="7659878911471462949">Көздөрүнөн жаш чыккыча күлгөн жүз</translation>
 <translation id="7662298039739062396">Жөндөө кеңейтүү тарабынан көзөмөлдөнөт</translation>
 <translation id="7663736086183791259"><ph name="CERTIFICATE_VALIDITY" /> тастыктамасы</translation>
 <translation id="7666397036351755929">Жашыруун режимде тыюу салынат</translation>
@@ -2266,6 +2270,7 @@
 <translation id="830498451218851433">Жарымынан бүктөө</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Орнотулган колдонмолор жана алар канчалык көп колдонулат</translation>
+<translation id="8317207217658302555">ARCore жаңыртылсынбы?</translation>
 <translation id="831997045666694187">Кече</translation>
 <translation id="8321476692217554900">билдирмелер</translation>
 <translation id="8328484624016508118">Жашыруун өтмөктөрдүн баары жабылгандан кийин, Chrome төмөнкүлөрдү тазалайт:

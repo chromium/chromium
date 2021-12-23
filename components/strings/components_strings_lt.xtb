@@ -112,6 +112,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1308113895091915999">Yra galiojantis pasiūlymas</translation>
 <translation id="1312803275555673949">Kokie įrodymai pateikti?</translation>
 <translation id="131405271941274527"><ph name="URL" /> nori siųsti ir gauti informaciją, kai paliečiate telefoną ALR įrenginyje</translation>
+<translation id="1314311879718644478">Žr. išplėstosios realybės turinį</translation>
 <translation id="1314509827145471431">Įrišimas dešinėje</translation>
 <translation id="1318023360584041678">Išsaugota skirtukų grupėje</translation>
 <translation id="1319245136674974084">Daugiau neklausti dėl šios programos</translation>
@@ -215,6 +216,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1583429793053364125">Rodant šį tinklalapį įvyko nenumatyta klaida.</translation>
 <translation id="1586541204584340881">Kuriuos plėtinius įdiegėte</translation>
 <translation id="1588438908519853928">Įprastas</translation>
+<translation id="1589050138437146318">Įdiegti „ARCore“?</translation>
 <translation id="1592005682883173041">Prieiga prie vietinių duomenų</translation>
 <translation id="1594030484168838125">Pasirinkti</translation>
 <translation id="160851722280695521">Žaisti žaidimą „Dino Run“ naršyklėje „Chrome“</translation>
@@ -1393,6 +1395,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5333022057423422993">„Chrome“ aptiko, kad slaptažodis, kurį ką tik naudojote, buvo atskleistas įvykus duomenų saugos pažeidimui. Kad galėtumėte apsaugoti paskyras, rekomenduojame patikrinti išsaugotus slaptažodžius.</translation>
 <translation id="5334013548165032829">Išsamūs sistemos žurnalai</translation>
 <translation id="5334145288572353250">Išsaugoti adresą?</translation>
+<translation id="5335920952954443287">Plakanti širdelė</translation>
 <translation id="5340250774223869109">Programa užblokuota</translation>
 <translation id="534295439873310000">ALR įrenginiai</translation>
 <translation id="5344579389779391559">Šiame puslapyje gali būti bandoma jus apmokestinti</translation>
@@ -2065,6 +2068,7 @@ Papildoma išsami informacija:
 <translation id="7654909834015434372">Kai redaguosite komentarus, bus pateiktas šio dokumento pradinis pasukimas</translation>
 <translation id="765676359832457558">Slėpti išplėstinius nustatymus...</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
+<translation id="7659878911471462949">Džiaugsmo ašaros</translation>
 <translation id="7662298039739062396">Nustatymas valdomas pagal plėtinį</translation>
 <translation id="7663736086183791259">Sertifikatas <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Neleidžiama inkognito režimu</translation>
@@ -2268,6 +2272,7 @@ Papildoma išsami informacija:
 <translation id="830498451218851433">Perlenkimas per pusę</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Įdiegtos programos ir kaip dažnai jos naudojamos</translation>
+<translation id="8317207217658302555">Atnaujinti „ARCore“?</translation>
 <translation id="831997045666694187">Vakaras</translation>
 <translation id="8321476692217554900">pranešimai</translation>
 <translation id="8328484624016508118">Uždarius visus inkognito skirtukus, „Chrome“ išvalo:

@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Googleஐத் தொடர்புகொள்கிறது. இதற்குச் சில வினாடிகள் ஆகலாம்…</translation>
 <translation id="1416550906796893042">ஆப்ஸின் பதிப்பு</translation>
 <translation id="1430915738399379752">அச்சிடுக</translation>
+<translation id="1436784010935106834">அகற்றப்பட்டது</translation>
 <translation id="1448440926884431741">நீங்கள் கண்காணிக்கும் தயாரிப்புகளை Bookmarksஸில் ஒழுங்கமைக்கலாம்</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />ஐப் பகிர முடியவில்லை</translation>
 <translation id="1466383950273130737">Chromeமிற்கான மொழியைத் தேர்வுசெய்யுங்கள்</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">சாளரத்தை மூட வேண்டுமா?</translation>
 <translation id="2175927920773552910">QR குறியீடு</translation>
 <translation id="218608176142494674">பகிர்தல்</translation>
-<translation id="2195339740518523951">Chromeமின் வலிமையான பாதுகாப்பைப் பெறுங்கள்</translation>
 <translation id="2200113223741723867">உபயோகத் தரவுப் பகிர்தலை நிர்வகித்தல்</translation>
 <translation id="2218567645332692482">தளங்களை HTTPS வழியாகக் காட்டும் வகையில் மேம்படுத்துவதுடன் இதை ஆதரிக்காத தளங்களைக் காட்டுவதற்கு முன்பு எச்சரிக்கையையும் வழங்கும்</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ஆகத் தொடர்க</translation>
@@ -543,7 +543,6 @@
 <translation id="4170011742729630528">சேவை கிடைக்கவில்லை; பிறகு முயற்சிக்கவும்.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> பயன்படுத்தப்பட்டுள்ளது</translation>
 <translation id="4181841719683918333">மொழிகள்</translation>
-<translation id="4183868528246477015">Google Lens மூலம் தேடுக <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">புதிய தாவலில் திற</translation>
 <translation id="4196597275619698563">கார்டை உருவாக்கு</translation>
 <translation id="4198423547019359126">பதிவிறக்க இருப்பிடம் எதுவும் இல்லை</translation>
@@ -577,7 +576,6 @@
 <translation id="4411535500181276704">லைட் பயன்முறை</translation>
 <translation id="4415276339145661267">Google கணக்கை நிர்வகி</translation>
 <translation id="4425140285732600465">விலையைக் கண்காணிக்கிறது. எந்தத் தளத்திலாவது விலை குறைந்தால் அதுகுறித்து அறிவிப்பைப் பெறுவீர்கள்.</translation>
-<translation id="4427306783828095590">ஃபிஷிங்கையும் மால்வேரையும் தடுக்க மேம்பட்ட பாதுகாப்பு உதவுகிறது</translation>
 <translation id="4450672886426705087">Google தேடல் முடிவுகள்.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> தாவலை மூடும்</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> இல் புத்தகக்குறியைச் சேர்த்தது</translation>
@@ -678,7 +676,7 @@
 <translation id="4913169188695071480">புதுப்பிக்காதே</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{# பக்கம்}other{# பக்கங்கள்}}</translation>
 <translation id="4925120120285606924">ஸ்கிரீன்ஷாட் <ph name="CURRENT_DATE_ISO" /></translation>
-<translation id="49268022542405662">உங்கள் கடவுச்சொற்கள் உரைக் கோப்பாக ஏற்றப்பட்டுப் பதிவிறக்கப்படும். இலக்கு ஃபோல்டரை அணுகக்கூடிய எந்தவொரு நபரும் ஆப்ஸும் இவற்றைப் பார்க்க முடியும்.</translation>
+<translation id="49268022542405662">உங்கள் கடவுச்சொற்கள் எழுத்துவடிவ ஃபைலாக ஏற்றப்பட்டுப் பதிவிறக்கப்படும். இலக்கு ஃபோல்டரை அணுகக்கூடிய எந்தவொரு நபரும் ஆப்ஸும் இவற்றைப் பார்க்க முடியும்.</translation>
 <translation id="4932247056774066048">நீங்கள் <ph name="DOMAIN_NAME" /> நிர்வகிக்கும் கணக்கிலிருந்து வெளியேறுவதால் உங்கள் Chrome தரவு இந்தச் சாதனத்திலிருந்து நீக்கப்படும். எனினும் இது உங்கள் Google கணக்கில் சேமிக்கப்பட்டிருக்கும்.</translation>
 <translation id="4941179133499732445">குரல் மூலம் தேட, மைக்கைத் தட்டுங்கள்</translation>
 <translation id="4943703118917034429">விர்ச்சுவல் ரியாலிட்டி</translation>
@@ -952,7 +950,7 @@
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{# படம்}other{# படங்கள்}}</translation>
 <translation id="6447558397796644647">அந்த புக்மார்க்கைக் கண்டறிய இயலவில்லை. எழுத்துவரிசையைச் சரிபார்க்கவும் அல்லது புதிய புக்மார்க்கைச் சேர்க்கவும்.</translation>
 <translation id="6459045781120991510">கருத்துக்கணிப்புகள்</translation>
-<translation id="6461962085415701688">கோப்பைத் திறக்க முடியாது</translation>
+<translation id="6461962085415701688">ஃபைலைத் திறக்க முடியாது</translation>
 <translation id="6464977750820128603">Chromeமில் பார்த்தத் தளங்களைக் காணலாம், அவற்றுக்கு டைமர்களையும் அமைக்கலாம்.\n\nடைமர்களை அமைத்தத் தளங்களைப் பற்றிய விவரங்களையும் அவற்றில் செலவழித்த நேரத்தையும் Google சேகரிக்கும். இந்தத் தகவல் டிஜிட்டல் வெல்பீயிங்கை மேம்படுத்தப் பயன்படுத்தப்படும்.</translation>
 <translation id="6473086018775716761">பகிர்தல் விருப்பங்களுக்கான பட்டியல் பாதித் திரையில் காட்டப்படுகிறது.</translation>
 <translation id="6475951671322991020">வீடியோவைப் பதிவிறக்கு</translation>
@@ -1082,6 +1080,7 @@
 <translation id="7177466738963138057">இதைப் பிறகு அமைப்புகளில் மாற்றலாம்</translation>
 <translation id="7177873915659574692">QR குறியீட்டை உருவாக்க முடியவில்லை. URLலில் <ph name="CHARACTER_LIMIT" /> எழுத்துகளுக்கு மேல் உள்ளன.</translation>
 <translation id="7180611975245234373">புதுப்பி</translation>
+<translation id="718226107353899806"><ph name="MAX_NUM_REACTIONS" /> உணர்வு வெளிப்பாடுகள் வரை மட்டுமே சேர்க்க முடியும்</translation>
 <translation id="7187993566681480880">Chromeமைப் பயன்படுத்தும்போது இது பாதுகாப்பை வழங்கும், அத்துடன் நீங்கள் பிற Google ஆப்ஸில் உள்நுழைந்திருக்கும்போது உங்கள் பாதுகாப்பை மேம்படுத்துவதற்காக இதைப் பயன்படுத்தலாம்.</translation>
 <translation id="718926126787620637">புக்மார்க் கோப்புறைகளின் பட்டியல் முழுத் திரையில் காட்டப்படுகிறது</translation>
 <translation id="7191430249889272776">தாவல் பின்புலத்தில் திறக்கப்பட்டது.</translation>
@@ -1245,7 +1244,6 @@
 <translation id="8035133914807600019">புதிய ஃபோல்டர்…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> நாட்கள் மீதமுள்ளன</translation>
 <translation id="8037801708772278989">சரிபார்த்தது: சற்று முன்பு</translation>
-<translation id="8040831032425909005">விரைவான தேடல் விட்ஜெட் ஐகான்</translation>
 <translation id="804335162455518893">SD கார்டு இல்லை</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> மறைநிலைப் பக்கம்}other{<ph name="TAB_COUNT_NORMAL" /> மறைநிலைப் பக்கங்கள்}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> மெ.பை கிடைக்கிறது</translation>
@@ -1370,7 +1368,7 @@
 <translation id="8656747343598256512">இந்தத் தளத்திலும் உங்கள் Google கணக்கிலும் உள்நுழைவீர்கள். ஒத்திசைவைப் பின்னர் இயக்கலாம்.</translation>
 <translation id="8659579665266920523">Chromeமைப் பயன்படுத்தி எப்படித் தேடுவது?</translation>
 <translation id="8662811608048051533">பெரும்பாலான தளங்களிலிருந்து உங்களை வெளியேற்றும்.</translation>
-<translation id="8664979001105139458">கோப்புப் பெயர் ஏற்கனவே உள்ளது</translation>
+<translation id="8664979001105139458">ஃபைல் பெயர் ஏற்கனவே உள்ளது</translation>
 <translation id="8676789164135894283">உள்நுழைவுச் சரிபார்ப்புகள்</translation>
 <translation id="867767487203716855">அடுத்த புதுப்பிப்பு</translation>
 <translation id="8683039184091909753">படம்</translation>

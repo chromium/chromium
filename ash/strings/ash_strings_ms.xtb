@@ -131,6 +131,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1768366657309696705">Pintasan papan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Noktah telah berubah. Untuk menggunakan kekunci Insert, tekan kekunci <ph name="LAUNCHER_KEY_NAME" /> + Shift + Undur Ruang.</translation>
 <translation id="1770726142253415363">Dialihkan ke baris <ph name="ROW_NUMBER" />, lajur <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Tatal ke kanan</translation>
+<translation id="1774796056689732716">Kalendar, <ph name="CURRENT_MONTH_YEAR" />, pada masa ini <ph name="DATE" /> dipilih.</translation>
 <translation id="1787955149152357925">Mati</translation>
 <translation id="1804572139604454141">Rakaman ditamatkan kerana ruang cakera hampir habis</translation>
 <translation id="181103072419391116">Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />, Diurus oleh Pentadbir anda</translation>
@@ -621,6 +622,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5075554201838155866">Mulakan sari kata</translation>
 <translation id="5078796286268621944">PIN salah</translation>
 <translation id="5083553833479578423">Buka kunci pelbagai lagi ciri Assistant.</translation>
+<translation id="5090752371472782287">Hantar ke peranti <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Peribadikan</translation>
 <translation id="5117590920725113268">Tunjukkan bulan seterusnya</translation>
 <translation id="5136175204352732067">Papan kekunci lain disambungkan</translation>
@@ -630,6 +632,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5168181903108465623">Peranti Cast tersedia</translation>
 <translation id="5170568018924773124">Paparkan dalam folder</translation>
 <translation id="5176318573511391780">Rakam skrin separa</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> acara</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> digabungkan dengan <ph name="IN_PLACE_APP" /> untuk membuat folder baharu.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 pemberitahuan lain}other{# pemberitahuan lain}}</translation>
@@ -803,6 +806,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="643147933154517414">Selesai</translation>
 <translation id="6431865393913628856">Rakaman skrin</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> pada <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> acara</translation>
 <translation id="6452181791372256707">Tolak</translation>
 <translation id="6453179446719226835">Bahasa telah ditukar</translation>
 <translation id="6459472438155181876">Melanjutkan skrin ke <ph name="DISPLAY_NAME" /></translation>
@@ -866,6 +870,7 @@ Pemasangan baharu</translation>
 <translation id="6811454077060061666">Google Drive untuk desktop tidak tersedia</translation>
 <translation id="6818242057446442178">Undur satu perkataan</translation>
 <translation id="6820676911989879663">Berehatlah!</translation>
+<translation id="6827049576281411231">Tutup panel acara</translation>
 <translation id="6836499262298959512">Fail berbahaya</translation>
 <translation id="6837064795450991317">Sembunyikan bar meja</translation>
 <translation id="6852052252232534364">Klik untuk aktifkan</translation>
@@ -873,6 +878,7 @@ Pemasangan baharu</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Tinggal satu angka}other{Tinggal # angka}}</translation>
 <translation id="6867938213751067702">Muat turun dijeda <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Pintasan dimatikan</translation>
+<translation id="6884665277231944629">Kembali ke hari ini</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> anda mungkin menunjukkan prestasi yang lebih rendah. Gunakan penyesuai kuasa USB-C <ph name="PREFERRED_MINIMUM_POWER" />W ke atas yang diperakui.</translation>
 <translation id="688631446150864480">Tekan kekunci Anak panah ke bawah untuk menukar tetingkap</translation>
 <translation id="6896758677409633944">Salin</translation>
@@ -959,6 +965,7 @@ Pemasangan baharu</translation>
 <translation id="7497767806359279797">Pilih bahasa dan papan kekunci</translation>
 <translation id="7509246181739783082">Sahkan identiti anda</translation>
 <translation id="7513622367902644023">Mod tangkapan skrin dipilih</translation>
+<translation id="7513922695575567867">Kalendar, minggu <ph name="DATE" />, <ph name="SELECTED_DATE" /> dipilih pada masa ini.</translation>
 <translation id="7514365320538308">Muat Turun</translation>
 <translation id="7526573455193969409">Rangkaian mungkin dipantau</translation>
 <translation id="7536035074519304529">Alamat IP: <ph name="ADDRESS" /></translation>
@@ -968,6 +975,7 @@ Pemasangan baharu</translation>
 <translation id="7564874036684306347">Tindakan memindahkan tetingkap ke desktop lain boleh menyebabkan gelagat yang tidak dijangka. Pemberitahuan, tetingkap dan dialog yang seterusnya mungkin dipisahkan antara desktop.</translation>
 <translation id="7569509451529460200">Braille dan ChromeVox didayakan</translation>
 <translation id="7569983096843329377">Hitam</translation>
+<translation id="757941033127302446">Dilog masuk</translation>
 <translation id="7579778809502851308">Tangkapan skrin</translation>
 <translation id="7590883480672980941">Tetapan input</translation>
 <translation id="7593891976182323525">Search atau Shift</translation>
@@ -1041,6 +1049,7 @@ Pemasangan baharu</translation>
 <translation id="8035152190676905274">Pen</translation>
 <translation id="8036504271468642248">Ayat sebelumnya</translation>
 <translation id="8042893070933512245">Buka menu tetapan kebolehaksesan</translation>
+<translation id="8042925093898452104">Tutup maklumat terperinci</translation>
 <translation id="8048123526339889627">Tetapan Bluetooth</translation>
 <translation id="8051716679295756675">Templat yang bernama <ph name="DESK_TEMPLATE_NAME" /> sudah wujud</translation>
 <translation id="8052898407431791827">Disalin ke papan keratan</translation>

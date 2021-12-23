@@ -112,6 +112,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1308113895091915999">Oferta dispoñible</translation>
 <translation id="1312803275555673949">Que probas demostran a información?</translation>
 <translation id="131405271941274527"><ph name="URL" /> quere enviar e recibir información cando o teu teléfono toque un dispositivo NFC</translation>
+<translation id="1314311879718644478">Goza de contido de realidade aumentada</translation>
 <translation id="1314509827145471431">Encadernación na parte dereita</translation>
 <translation id="1318023360584041678">Elemento gardado nun grupo de pestanas</translation>
 <translation id="1319245136674974084">Non volver preguntar para esta aplicación</translation>
@@ -215,6 +216,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1583429793053364125">Produciuse un erro ao mostrar esta páxina web.</translation>
 <translation id="1586541204584340881">As extensións que teñas instaladas</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1589050138437146318">Queres instalar ARCore?</translation>
 <translation id="1592005682883173041">Acceso aos datos locais</translation>
 <translation id="1594030484168838125">Escoller</translation>
 <translation id="160851722280695521">Xogar a Dino Run en Chrome</translation>
@@ -1391,6 +1393,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5333022057423422993">Chrome atopou o contrasinal que acabas de utilizar entre os datos dunha violación da seguranza dos datos. Para protexer as túas contas, recomendámosche que revises os contrasinais que tes gardados.</translation>
 <translation id="5334013548165032829">Rexistros do sistema detallados</translation>
 <translation id="5334145288572353250">Queres gardar este enderezo?</translation>
+<translation id="5335920952954443287">Corazón que bate</translation>
 <translation id="5340250774223869109">A aplicación está bloqueada</translation>
 <translation id="534295439873310000">Dispositivos con NFC</translation>
 <translation id="5344579389779391559">Esta páxina pode tentar aplicar cargos</translation>
@@ -2063,6 +2066,7 @@ Detalles adicionais:
 <translation id="7654909834015434372">Ao editar as anotacións, este documento volverá á orientación orixinal</translation>
 <translation id="765676359832457558">Ocultar configuración avanzada...</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7659878911471462949">Bágoas de ledicia</translation>
 <translation id="7662298039739062396">Opción de configuración controlada por unha extensión</translation>
 <translation id="7663736086183791259">Certificado <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Non se permite no modo de incógnito</translation>
@@ -2266,6 +2270,7 @@ Detalles adicionais:
 <translation id="830498451218851433">Dobrez á metade</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Aplicacións instaladas e frecuencia de uso</translation>
+<translation id="8317207217658302555">Queres actualizar ARCore?</translation>
 <translation id="831997045666694187">Serán</translation>
 <translation id="8321476692217554900">notificacións</translation>
 <translation id="8328484624016508118">Despois de pechar todas as pestanas do modo de incógnito, Chrome borra:

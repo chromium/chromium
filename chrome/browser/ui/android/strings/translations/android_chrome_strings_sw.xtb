@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Inawasiliana na Google. Huenda ikachukua dakika moja…</translation>
 <translation id="1416550906796893042">Toleo la programu</translation>
 <translation id="1430915738399379752">Chapisha</translation>
+<translation id="1436784010935106834">Zimeondolewa</translation>
 <translation id="1448440926884431741">Panga bidhaa unazofuatilia kwenye Alamisho</translation>
 <translation id="1450753235335490080">Imeshindwa kushiriki <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Chagua lugha ya Chrome</translation>
@@ -203,7 +204,6 @@ Gusa neno lolote ili utafute. Ili uchuje utafutaji wako, gusa na ushikilie ili u
 <translation id="2172905120685242547">Ungependa kufunga dirisha?</translation>
 <translation id="2175927920773552910">Msimbo wa QR</translation>
 <translation id="218608176142494674">Inashiriki</translation>
-<translation id="2195339740518523951">Pata usalama thabiti zaidi kutoka Chrome</translation>
 <translation id="2200113223741723867">Dhibiti mipangilio ya kushiriki data ya matumizi</translation>
 <translation id="2218567645332692482">Husasisha usogezaji uwe HTTPS na hukuonya kabla ya kupakia tovuti ambazo haziwezi kutumia mfumo huo</translation>
 <translation id="2227444325776770048">Endelea ukitumia <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="4170011742729630528">Huduma haipatikani; jaribu tena baadaye.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> imetumika</translation>
 <translation id="4181841719683918333">Lugha</translation>
-<translation id="4183868528246477015">Tumia Lenzi ya Google kutafuta <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Fungua katika kichupo kipya</translation>
 <translation id="4196597275619698563">Weka kadi</translation>
 <translation id="4198423547019359126">Hakuna maeneno ya upakuaji</translation>
@@ -577,7 +576,6 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="4411535500181276704">Hali nyepesi</translation>
 <translation id="4415276339145661267">Dhibiti Akaunti yako ya Google</translation>
 <translation id="4425140285732600465">Unafuatilia bei. Pata arifa bei ikipunguzwa kwenye tovuti yoyote.</translation>
-<translation id="4427306783828095590">Kipengele cha ulinzi wa hali ya juu hufanya mengi zaidi ili kuzuia programu hasidi na wizi wa data binafsi</translation>
 <translation id="4450672886426705087">Matokeo ya utafutaji kutoka Google.</translation>
 <translation id="4452411734226507615">Funga kichupo cha <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Imetia alamishwa kwenye <ph name="FOLDER_NAME" /></translation>
@@ -1246,7 +1244,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="8035133914807600019">Folda mpya…</translation>
 <translation id="8037750541064988519">Zimesalia siku <ph name="DAYS" /></translation>
 <translation id="8037801708772278989">Imekaguliwa sasa hivi</translation>
-<translation id="8040831032425909005">Aikoni ya Wijeti ya Utafutaji wa Haraka</translation>
 <translation id="804335162455518893">Kadi ya SD haikupatikana</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{Kichupo <ph name="TAB_COUNT_ONE" /> fiche}other{Vichupo <ph name="TAB_COUNT_NORMAL" /> fiche}}</translation>
 <translation id="8051695050440594747">MB <ph name="MEGABYTES" /> zinapatikana</translation>

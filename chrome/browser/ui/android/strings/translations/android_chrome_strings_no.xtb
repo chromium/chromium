@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Kontakter Google. Dette kan ta en liten stund.</translation>
 <translation id="1416550906796893042">Programversjon</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
+<translation id="1436784010935106834">Fjernet</translation>
 <translation id="1448440926884431741">Organiser sporede produkter i Bokmerker</translation>
 <translation id="1450753235335490080">Kan ikke dele <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Velg språk for Chrome</translation>
@@ -203,7 +204,6 @@ Trykk på et ord for å søke. For å finstemme søket, trykk og hold inne for �
 <translation id="2172905120685242547">Vil du lukke vinduet?</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="218608176142494674">Deling</translation>
-<translation id="2195339740518523951">Få den sterkeste sikkerheten Chrome tilbyr</translation>
 <translation id="2200113223741723867">Administrer deling av bruksdata</translation>
 <translation id="2218567645332692482">Oppgrader navigeringer til HTTPS og bli varslet før innlasting av nettsteder som ikke støtter dette</translation>
 <translation id="2227444325776770048">Fortsett som <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="4170011742729630528">Tjenesten er ikke tilgjengelig. Prøv på nytt senere.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> brukt</translation>
 <translation id="4181841719683918333">Språk</translation>
-<translation id="4183868528246477015">Søk med Google Lens <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Åpne i ny fane</translation>
 <translation id="4196597275619698563">Opprett et kort</translation>
 <translation id="4198423547019359126">Ingen tilgjengelige nedlastingssteder</translation>
@@ -577,7 +576,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="4411535500181276704">Forenklet modus</translation>
 <translation id="4415276339145661267">Administrer Google-kontoen din</translation>
 <translation id="4425140285732600465">Sporer prisen. Du får varsler hvis prisen settes ned på noe nettsted.</translation>
-<translation id="4427306783828095590">Økt beskyttelse gjør mer for å blokkere nettfisking og skadelig programvare</translation>
 <translation id="4450672886426705087">Søkeresultater fra Google.</translation>
 <translation id="4452411734226507615">Lukk <ph name="TAB_TITLE" />-fanen</translation>
 <translation id="4452548195519783679">Satt som bokmerke i <ph name="FOLDER_NAME" /></translation>
@@ -1082,6 +1080,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7177466738963138057">Du kan endre dette senere i Innstillinger</translation>
 <translation id="7177873915659574692">Kan ikke opprette QR-kode. Nettadressen er lengre enn <ph name="CHARACTER_LIMIT" /> tegn.</translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
+<translation id="718226107353899806">Du kan legge til opptil <ph name="MAX_NUM_REACTIONS" /> reaksjoner</translation>
 <translation id="7187993566681480880">Holder deg trygg i Chrome og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>
 <translation id="718926126787620637">Listen over bokmerkemapper er åpnet i full høyde</translation>
 <translation id="7191430249889272776">En fane ble åpnet i bakgrunnen.</translation>
@@ -1245,7 +1244,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8035133914807600019">Ny mappe</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> dager igjen</translation>
 <translation id="8037801708772278989">Sjekket nettopp</translation>
-<translation id="8040831032425909005">Søkemodul-ikon for hurtighandling</translation>
 <translation id="804335162455518893">Finner ikke SD-kort</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognitofane}other{<ph name="TAB_COUNT_NORMAL" /> inkognitofaner}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB tilgjengelig</translation>

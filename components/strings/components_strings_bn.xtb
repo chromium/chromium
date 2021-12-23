@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">অফার উপলভ্য</translation>
 <translation id="1312803275555673949">কোন প্রমাণ এখানে কাজ করে?</translation>
 <translation id="131405271941274527">NFC ডিভাইসে আপনার ফোন ট্যাপ করলে <ph name="URL" /> তথ্য পাঠাতে এবং পেতে চায়</translation>
+<translation id="1314311879718644478">অগমেন্টেড রিয়েলিটি কন্টেন্ট দেখুন</translation>
 <translation id="1314509827145471431">ডানদিকে বাঁধাই করুন</translation>
 <translation id="1318023360584041678">ট্যাব গ্রুপে সেভ করা হয়েছে</translation>
 <translation id="1319245136674974084">এই অ্যাপের জন্য আর জিজ্ঞাসা করবেন না</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">এই ওয়েবপৃষ্ঠাটি দেখানোর সময় কোনো সমস্যা হয়েছে।</translation>
 <translation id="1586541204584340881">কোন কোন এক্সটেনশন আপনি ইনস্টল করেছেন</translation>
 <translation id="1588438908519853928">সাধারণ</translation>
+<translation id="1589050138437146318">ARCore ইনস্টল করবেন?</translation>
 <translation id="1592005682883173041">স্থানীয় ডেটা অ্যাক্সেস</translation>
 <translation id="1594030484168838125">বেছে নিন</translation>
 <translation id="160851722280695521">Chrome-এ ডাইনো রান গেম খেলুন</translation>
@@ -1393,6 +1395,7 @@
 <translation id="5333022057423422993">Chrome-এর হিসেবে আপনার এখনই ব্যবহার করা পাসওয়ার্ডের তথ্য চুরি হয়ে গেছে। আপনার অ্যাকাউন্ট সুরক্ষিত রাখতে, আপনার সেভ করা পাসওয়ার্ড চেক করার জন্য সাজেস্ট করছি।</translation>
 <translation id="5334013548165032829">বিস্তারিত সিস্টেম লগ</translation>
 <translation id="5334145288572353250">ঠিকানা সেভ করবেন?</translation>
+<translation id="5335920952954443287">স্পন্দিত হৃদয়</translation>
 <translation id="5340250774223869109">অ্যাপ্লিকেশনটি ব্লক করা আছে</translation>
 <translation id="534295439873310000">NFC ডিভাইস</translation>
 <translation id="5344579389779391559">এই পৃষ্ঠাতে আপনাকে চার্জ করা হতে পারে</translation>
@@ -2064,6 +2067,7 @@
 <translation id="7654909834015434372">অ্যানোটেশন এডিট করার সময়, এই ডকুমেন্ট তার আসল রোটেশনে ফিরে যাবে</translation>
 <translation id="765676359832457558">উন্নত সেটিংস লুকান...</translation>
 <translation id="7658239707568436148">বাতিল</translation>
+<translation id="7659878911471462949">আনন্দের অশ্রু</translation>
 <translation id="7662298039739062396">সেটিংস একটি এক্সটেনশন দ্বারা নিয়ন্ত্রিত</translation>
 <translation id="7663736086183791259"><ph name="CERTIFICATE_VALIDITY" /> সার্টিফিকেট</translation>
 <translation id="7666397036351755929">'ছদ্মবেশী মোড'-এ অনুমতি দেওয়া নেই</translation>
@@ -2267,6 +2271,7 @@
 <translation id="830498451218851433">অর্ধেক ফোল্ড করুন</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">কোন কোন অ্যাপ ইনস্টল করা আছে এবং কত ঘন ঘন সেগুলি ব্যবহার করা হয়েছে</translation>
+<translation id="8317207217658302555">ARCore আপডেট করবেন?</translation>
 <translation id="831997045666694187">সন্ধ্যা</translation>
 <translation id="8321476692217554900">বিজ্ঞপ্তি</translation>
 <translation id="8328484624016508118">সব 'ছদ্মবেশী' ট্যাব বন্ধ করার পরে, Chrome এগুলি মুছে ফেলে:

@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Google wird kontaktiert. Das kann einen Moment dauern.</translation>
 <translation id="1416550906796893042">App-Version</translation>
 <translation id="1430915738399379752">Drucken</translation>
+<translation id="1436784010935106834">Entfernt</translation>
 <translation id="1448440926884431741">Sie können Ihre beobachteten Produkte in den Lesezeichen organisieren</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> kann nicht geteilt werden</translation>
 <translation id="1466383950273130737">Sprache für Chrome auswählen</translation>
@@ -203,7 +204,6 @@ Tippen Sie auf ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche 
 <translation id="2172905120685242547">Fenster schließen?</translation>
 <translation id="2175927920773552910">QR-Code</translation>
 <translation id="218608176142494674">Freigabe</translation>
-<translation id="2195339740518523951">Höchste Sicherheit in Chrome erhalten</translation>
 <translation id="2200113223741723867">Freigabe von Nutzungsdaten verwalten</translation>
 <translation id="2218567645332692482">Aufrufe von Websites auf HTTPS umstellen und warnen, bevor Websites geladen werden, die das Protokoll nicht unterstützen</translation>
 <translation id="2227444325776770048">Als <ph name="USER_FULL_NAME" /> fortfahren</translation>
@@ -543,7 +543,6 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="4170011742729630528">Der Dienst ist momentan nicht verfügbar. Bitte versuchen Sie es später erneut.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> verwendet</translation>
 <translation id="4181841719683918333">Sprachen</translation>
-<translation id="4183868528246477015">Mit Google Lens suchen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4196597275619698563">Karte erstellen</translation>
 <translation id="4198423547019359126">Keine verfügbaren Speicherorte für Downloads</translation>
@@ -577,7 +576,6 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="4411535500181276704">Lite-Modus</translation>
 <translation id="4415276339145661267">Google-Konto verwalten</translation>
 <translation id="4425140285732600465">Preis wird beobachtet. Sie werden bei einem Preisnachlass benachrichtigt.</translation>
-<translation id="4427306783828095590">Besserer Schutz vor Phishing und Malware durch erweitertes Safe Browsing</translation>
 <translation id="4450672886426705087">Google-Suchergebnisse.</translation>
 <translation id="4452411734226507615">Tab "<ph name="TAB_TITLE" />" schließen</translation>
 <translation id="4452548195519783679">Als Lesezeichen in "<ph name="FOLDER_NAME" />" gespeichert</translation>
@@ -1082,6 +1080,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7177466738963138057">Dies kann später in den Einstellungen geändert werden</translation>
 <translation id="7177873915659574692">Der QR-Code konnte nicht erstellt werden. Die URL ist länger als <ph name="CHARACTER_LIMIT" /> Zeichen.</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
+<translation id="718226107353899806">Sie können bis zu <ph name="MAX_NUM_REACTIONS" /> Reaktionen hinzufügen</translation>
 <translation id="7187993566681480880">Schützt Sie in Chrome und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn Sie angemeldet sind.</translation>
 <translation id="718926126787620637">Liste der Lesezeichenordner ist vollständig geöffnet</translation>
 <translation id="7191430249889272776">Tab im Hintergrund geöffnet</translation>
@@ -1245,7 +1244,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8035133914807600019">Neuer Ordner…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> Tage übrig</translation>
 <translation id="8037801708772278989">Zuletzt geprüft: gerade eben</translation>
-<translation id="8040831032425909005">Symbol des Widgets für Schnellaktionen und Internetsuchen</translation>
 <translation id="804335162455518893">SD-Karte nicht gefunden</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> Inkognitotab}other{<ph name="TAB_COUNT_NORMAL" /> Inkognitotabs}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB verfügbar</translation>

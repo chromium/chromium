@@ -131,6 +131,7 @@
 <translation id="1768366657309696705">Тастерска пречица <ph name="LAUNCHER_KEY_NAME" /> + тачка је промењена. Да бисте користили тастер за уметање, притисните тастер <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Премештено је у <ph name="ROW_NUMBER" />. ред, <ph name="COLUMN_NUMBER" />. колона.</translation>
 <translation id="1771761307086386028">Помери надесно</translation>
+<translation id="1774796056689732716">Календар, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> је тренутно изабран.</translation>
 <translation id="1787955149152357925">Искључено</translation>
 <translation id="1804572139604454141">Снимање је прекинуто због изузетно мало простора на диску</translation>
 <translation id="181103072419391116">Јачина сигнала <ph name="SIGNAL_STRENGTH" />, управља администратор</translation>
@@ -630,6 +631,7 @@
 <translation id="5168181903108465623">Доступни су уређаји за пребацивање</translation>
 <translation id="5170568018924773124">Прикажи у директоријуму</translation>
 <translation id="5176318573511391780">Сними део екрана</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> догађаја</translation>
 <translation id="5198715732953550718">Апликација <ph name="MOVED_APP_NAME" /> је комбинована са апликацијом <ph name="IN_PLACE_APP" /> да би се направио нови директоријум.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Још 1 обавештење}one{Још # обавештење}few{Још # обавештења}other{Још # обавештења}}</translation>
@@ -803,6 +805,7 @@
 <translation id="643147933154517414">Готово</translation>
 <translation id="6431865393913628856">Снимак екрана</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> на уређају <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> догађај</translation>
 <translation id="6452181791372256707">Одбиј</translation>
 <translation id="6453179446719226835">Језик је промењен</translation>
 <translation id="6459472438155181876">Проширивање екрана у <ph name="DISPLAY_NAME" /></translation>
@@ -866,6 +869,7 @@
 <translation id="6811454077060061666">Google диск за рачунар је недоступан</translation>
 <translation id="6818242057446442178">Реч уназад</translation>
 <translation id="6820676911989879663">Направите паузу!</translation>
+<translation id="6827049576281411231">Затворите окно догађаја</translation>
 <translation id="6836499262298959512">Опасан фајл</translation>
 <translation id="6837064795450991317">Сакриј траку за радне површине</translation>
 <translation id="6852052252232534364">Активирајте</translation>
@@ -873,6 +877,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостала је једна цифра}one{Преостала је # цифра}few{Преостале су # цифре}other{Преостало је # цифара}}</translation>
 <translation id="6867938213751067702">Преузимање је паузирано <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Пречица је искључена</translation>
+<translation id="6884665277231944629">Вратите се на данас</translation>
 <translation id="6886172995547742638">То може негативно да утиче на рад уређаја <ph name="DEVICE_TYPE" />. Користите сертификовани USB-C адаптер од <ph name="PREFERRED_MINIMUM_POWER" /> W или јачи.</translation>
 <translation id="688631446150864480">Притискајте тастер са стрелицом надоле да бисте мењали прозоре</translation>
 <translation id="6896758677409633944">Копирај</translation>
@@ -959,6 +964,7 @@
 <translation id="7497767806359279797">Одаберите језик и тастатуру</translation>
 <translation id="7509246181739783082">Верификујте идентитет</translation>
 <translation id="7513622367902644023">Изабран је режим снимка екрана</translation>
+<translation id="7513922695575567867">Календар, седмица када је <ph name="DATE" />, <ph name="SELECTED_DATE" /> је тренутно изабран.</translation>
 <translation id="7514365320538308">Преузми</translation>
 <translation id="7526573455193969409">Мрежа се можда надгледа</translation>
 <translation id="7536035074519304529">IP адреса: <ph name="ADDRESS" /></translation>
@@ -968,6 +974,7 @@
 <translation id="7564874036684306347">Премештање прозора на други рачунар може да доведе до неочекиваног понашања. Накнадна обавештења, прозори и дијалози ће можда бити подељени између рачунара.</translation>
 <translation id="7569509451529460200">Брајева азбука и ChromeVox су омогућени</translation>
 <translation id="7569983096843329377">Црна</translation>
+<translation id="757941033127302446">Пријављени сте</translation>
 <translation id="7579778809502851308">Снимање екрана</translation>
 <translation id="7590883480672980941">Подешавања уноса</translation>
 <translation id="7593891976182323525">Тастер за претрагу или Shift</translation>
@@ -1008,6 +1015,7 @@
 <translation id="7860671499921112077">Превуците нагоре помоћу три прста да бисте ушли у Преглед</translation>
 <translation id="7866482334467279021">укључено</translation>
 <translation id="7868900307798234037">Откључавање отискoм прста</translation>
+<translation id="7872195908557044066">Администратор ресетује eSIM. Сачекајте неколико минута.</translation>
 <translation id="7872786842639831132">Искључено</translation>
 <translation id="7875575368831396199">Изгледа да је искључен Bluetooth на уређају <ph name="DEVICE_TYPE" />. Укључите Bluetooth да бисте користили Phone Hub.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Промените верзију уређаја у претходну верзију одмах}=1{Промените верзију уређаја у претходну верзију у року од 1 секунде}one{Промените верзију уређаја у претходну верзију у року од # секунде}few{Промените верзију уређаја у претходну верзију у року од # секунде}other{Промените верзију уређаја у претходну верзију у року од # секунди}}</translation>
@@ -1041,6 +1049,7 @@
 <translation id="8035152190676905274">Перо</translation>
 <translation id="8036504271468642248">Претходна реченица</translation>
 <translation id="8042893070933512245">Отвори мени подешавања приступачности</translation>
+<translation id="8042925093898452104">Затворите детаљне информације</translation>
 <translation id="8048123526339889627">Подешавања Bluetooth-а</translation>
 <translation id="8051716679295756675">Шаблон под насловом <ph name="DESK_TEMPLATE_NAME" /> већ постоји</translation>
 <translation id="8052898407431791827">Копирано је у привремену меморију</translation>

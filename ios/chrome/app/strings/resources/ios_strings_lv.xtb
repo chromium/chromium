@@ -7,7 +7,7 @@
 <translation id="1044891598689252897">Vietnes darbosies normāli</translation>
 <translation id="1047726139967079566">Saglabāt šo lapu kā grāmatzīmi...</translation>
 <translation id="1049743911850919806">Inkognito</translation>
-<translation id="105093091697134113">Tālāk norādītajos kontos tiek izmantotas paroles, kas tika atklātas trešās puses datu pārkāpumā vai ievadītas maldinošā vietnē. Nekavējoties nomainiet šīs paroles, lai aizsargātu savus kontus.</translation>
+<translation id="105093091697134113">Tālāk norādītajos kontos tiek izmantotas paroles, kas tika atklātas trešās puses datu aizsardzības pārkāpumā vai ievadītas maldinošā vietnē. Nekavējoties nomainiet šīs paroles, lai aizsargātu savus kontus.</translation>
 <translation id="105214722824962652">Jūs netiksiet izrakstīts no sava Google konta. Kad esat pierakstījies, jūsu Google kontā var saglabāt <ph name="BEGIN_LINK" />arī cita veida darbības<ph name="END_LINK" />. Jebkurā laikā varat tās izdzēst.
 
         
@@ -235,6 +235,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3157387275655328056">Pievienot lasīšanas sarakstam</translation>
 <translation id="3157684681743766797">Atzīmēt visus…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Varat arī izmantot saglabātās paroles citās savās ierīcēs.</translation>
 <translation id="3175081911749765310">Tīm. pak.</translation>
 <translation id="3178650076442119961">Aktīva šodien</translation>
 <translation id="3181825792072797598">Ieslēgt sinhronizāciju</translation>
@@ -328,6 +329,7 @@ Veiciet tālāk norādītās darbības.</translation>
 <translation id="4042870976416480368">Atrast lapā</translation>
 <translation id="4049507953662678203">Pārbaudiet, vai ir izveidots tīkla savienojums, un mēģiniet vēlreiz.</translation>
 <translation id="408404951701638773">Tagad meklēšanas josla ir ērtāk sasniedzama</translation>
+<translation id="4108314971463891922">Sekot</translation>
 <translation id="411254640334432676">Lejupielāde neizdevās.</translation>
 <translation id="4112644173421521737">Meklēt</translation>
 <translation id="4113030288477039509">Pārvalda jūsu administrators</translation>
@@ -345,6 +347,7 @@ Veiciet tālāk norādītās darbības.</translation>
 <translation id="4272631900155121838">Lai skenētu QR kodu, iestatījumos iespējojiet kameru.</translation>
 <translation id="4277990410970811858">Droša pārlūkošana</translation>
 <translation id="4281844954008187215">Google pakalpojumu noteikumi</translation>
+<translation id="4304713468139749426">Paroļu pārvaldnieks</translation>
 <translation id="430793432425771671">Sinhronizēt visu</translation>
 <translation id="4309403553630140242">Veiciet dubultskārienu, lai skatītu plašāku informāciju.</translation>
 <translation id="430967081421617822">Viss periods</translation>
@@ -356,6 +359,7 @@ Veiciet tālāk norādītās darbības.</translation>
 <translation id="4389019817280890563">Pieskarieties, lai mainītu valodu.</translation>
 <translation id="4442550905108052454">Atveriet sadaļu <ph name="BEGIN_BOLD" />Iestatījumi<ph name="END_BOLD" />.</translation>
 <translation id="4454246407045105932">Valodas pievienošana</translation>
+<translation id="4462491365653392320">Cenu izsekošana cilnēs</translation>
 <translation id="4469418912670346607">Turpināt iestatīšanu</translation>
 <translation id="4474494258097106883">Izstrādāts jūsu iPhone tālrunim</translation>
 <translation id="4476574785019001431">Iestatījumi</translation>
@@ -419,6 +423,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="4944543191714094452">Atrast lapā…</translation>
 <translation id="4945756290001680296">Piekļūt paroles iestatījumiem</translation>
 <translation id="4979397965658815378">Pierakstieties Google kontā, lai izmantotu savas grāmatzīmes, paroles, vēsturi un citus Chrome datus visās jūsu ierīcēs.</translation>
+<translation id="4986678885919050584">Noņemt no šīs ierīces</translation>
 <translation id="5005498671520578047">Paroles kopēšana</translation>
 <translation id="5017828934289857214">Atgādināt vēlāk</translation>
 <translation id="5037676449506322593">Atlasīt visu</translation>
@@ -520,6 +525,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5979837087407522202">Meklēt paroles</translation>
 <translation id="5982717868370722439">Pievienot esošos datus kontam <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Nesen apmeklētie</translation>
+<translation id="5988097621740394599">Skatiet cenu kritumu savās cilnēs.</translation>
 <translation id="5988851877894965432">Atvērt vietrāžus URL pārlūkā Chrome</translation>
 <translation id="6012140227487808125">Notiek šifrēšana…</translation>
 <translation id="6021332621416007159">Atvērt...</translation>
@@ -540,6 +546,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6127379762771434464">Vienums ir noņemts</translation>
 <translation id="6136914049981179737">Pirms sek.</translation>
 <translation id="6144589619057374135">Atvērt vietni ${url} inkognito režīmā</translation>
+<translation id="6149061208933997199">Izmantot paroli</translation>
 <translation id="6159839020698489198">neobligāts</translation>
 <translation id="6177442314419606057">Meklēšana pārlūkā Chrome</translation>
 <translation id="6184086493125982861">Rādīt cilnes</translation>
@@ -653,7 +660,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="6979158407327259162">Google disks</translation>
 <translation id="6988572888918530647">Google konta pārvaldība</translation>
 <translation id="6989674195860388998">Mainīt iestatījumos…</translation>
-<translation id="6995899638241819463">Brīdināt, ja paroles tiek atklātas datu noplūdes dēļ</translation>
+<translation id="6995899638241819463">Brīdināt, ja paroles tiek atklātas datu aizsardzības pārkāpums dēļ</translation>
 <translation id="6998989275928107238">Kam</translation>
 <translation id="7004032350256606903">Saskaņā ar jūsu organizācijas politiku tīmeklis ir jāpārlūko privāti.
 <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
@@ -764,6 +771,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8076014560081431679">Saglabātie vietņu iestatījumi netiks dzēsti, un tie var atspoguļot jūsu pārlūkošanas ieradumus. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="8079602123447022758">Šis iestatījums tiek pārvaldīts. Veiciet dubultskārienu, lai skatītu plašāku informāciju.</translation>
 <translation id="8080028325999236607">Aizvērt visas cilnes</translation>
+<translation id="8101409298456377967">Izveidojiet, saglabājiet un pārvaldiet paroles, lai varētu ērti pierakstīties vietnēs un lietotnēs. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="8105368624971345109">Izslēgt</translation>
 <translation id="8114753159095730575">Pieejama failu lejupielāde. Pieejamās opcijas redzamas ekrāna apakšdaļā.</translation>
 <translation id="8132598642024322408">Pašreizējā cena: <ph name="PRICE" />; iepriekšējā cena: <ph name="PREVIOUS_PRICE" />.</translation>

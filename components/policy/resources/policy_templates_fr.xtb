@@ -96,6 +96,7 @@
 <translation id="1099282607296956954">Activer l'isolation des sites pour tous les sites</translation>
 <translation id="1105572260329131950">Utiliser les icônes par défaut pour les connexions sécurisées</translation>
 <translation id="1110426799149444997">Désactiver la recherche par zone <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1117535567637097036">Les gestionnaires de protocoles définis par cette règle ne sont pas utilisés pour gérer les intents Android.</translation>
 <translation id="1118093128235245168">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un appareil USB connecté</translation>
 <translation id="111910763555783249">Paramètres de notification</translation>
@@ -462,6 +463,11 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1553532014072799546">Liste blanche des restrictions temporelles spécifiques à chaque application</translation>
 <translation id="1553956579506604198">Empêche que des extensions externes soient installées</translation>
 <translation id="1555248923316727072">Paramètres de gestion de l'identité des utilisateurs authentifiés via SAML</translation>
+<translation id="1558723461519082860">Cette règle autorise Projector à créer et transcrire un enregistrement d'écran et à l'importer dans Drive.
+
+      Si elle est activée, Projector sera activé.
+      Si elle est désactivée, Projector sera désactivé.
+      Si la règle n'est pas configurée, Projector sera désactivé par défaut.</translation>
 <translation id="1561424797596341174">Remplacements de règle pour les versions de débogage de l'hôte distant</translation>
 <translation id="1561967320164410511">U2F plus extensions pour chaque attestation</translation>
 <translation id="1567718448549957373">Si cette règle est activée ou si elle n'est pas définie, l'authentification <ph name="BASIC_AUTH" /> sera autorisée sur les connexions HTTP non sécurisées.
@@ -803,6 +809,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="1962864958436828230">Définir la taille minimale liée à la restriction du presse-papiers pour prévenir les fuites de données</translation>
 <translation id="1964634611280150550">Mode navigation privée désactivé</translation>
 <translation id="1964802606569741174">Cette règle n'a aucun effet sur l'application YouTube pour Android. Vous ne devez pas autoriser son installation si le mode sécurisé de YouTube doit être appliqué.</translation>
+<translation id="1967334955994230472">Désactiver Projector</translation>
 <translation id="1969212217917526199">Remplace des règles sur les versions de débogage de l'hôte d'accès à distance.
 
           La valeur est analysée sous la forme d'un dictionnaire JSON de correspondances nom de règle/valeur de règle.</translation>
@@ -2024,6 +2031,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="328347261792478720">Par défaut, le navigateur propose à l'utilisateur des recommandations personnalisées de contenus multimédias. Si cette règle est désactivée, l'utilisateur ne bénéficie pas de ces recommandations. Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur peut voir ces recommandations.</translation>
 <translation id="3284094172359247914">Contrôler l'utilisation de l'API WebUSB</translation>
 <translation id="3288595667065905535">Version disponible</translation>
+<translation id="3291318845269544294">Activer Projector</translation>
 <translation id="3294430356898755483">Cette règle permet aux administrateurs de configurer une liste d'imprimantes pour leurs utilisateurs. La sélection de l'imprimante est effectuée la première fois que l'utilisateur lance une impression.
 
       Vous pouvez utiliser cette règle pour effectuer les opérations suivantes :
@@ -2084,6 +2092,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
           La valeur de la règle doit être indiquée en millisecondes. Elle doit également être inférieure ou égale au délai d'inactivité.
 
           Le message d'avertissement ne s'affiche que si le dépassement du délai d'inactivité entraîne une déconnexion ou l'arrêt de l'appareil.</translation>
+<translation id="3360280740977649313">Contrôle les règles liées à Projector.</translation>
 <translation id="3363360928811201045">Ajouter des restrictions aux comptes gérés</translation>
 <translation id="3373381043600809954">Activer <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3374587000313305002">Permet de configurer le répertoire utilisé par <ph name="PRODUCT_NAME" /> pour le stockage des données de l'utilisateur.

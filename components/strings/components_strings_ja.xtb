@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">使用可能なクーポン</translation>
 <translation id="1312803275555673949">それを支持する証拠は何ですか？</translation>
 <translation id="131405271941274527"><ph name="URL" /> が、NFC 搭載のスマートフォンをタップして情報を送受信するよう求めています</translation>
+<translation id="1314311879718644478">拡張現実コンテンツを表示します</translation>
 <translation id="1314509827145471431">製本（右綴じ）</translation>
 <translation id="1318023360584041678">タブグループに保存済み</translation>
 <translation id="1319245136674974084">このアプリでは次回から表示しない</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">このウェブページの表示中に問題が発生しました。</translation>
 <translation id="1586541204584340881">インストールした拡張機能</translation>
 <translation id="1588438908519853928">ノーマル</translation>
+<translation id="1589050138437146318">ARCore をインストールしますか？</translation>
 <translation id="1592005682883173041">ローカルデータへのアクセス</translation>
 <translation id="1594030484168838125">選択</translation>
 <translation id="160851722280695521">Chrome で Dino Run ゲームをプレイします</translation>
@@ -1383,6 +1385,7 @@
 <translation id="5333022057423422993">たった今使用したパスワードがデータ侵害で検出されました。アカウントを保護するため、保存したパスワードを確認することをおすすめします。</translation>
 <translation id="5334013548165032829">詳細なシステムログ</translation>
 <translation id="5334145288572353250">住所を保存しますか？</translation>
+<translation id="5335920952954443287">揺れるハート</translation>
 <translation id="5340250774223869109">アプリケーションがブロックされました</translation>
 <translation id="534295439873310000">NFC デバイス</translation>
 <translation id="5344579389779391559">このページでは課金される恐れがあります</translation>
@@ -2055,6 +2058,7 @@
 <translation id="7654909834015434372">メモを編集すると、ドキュメントは元の向きに戻ります</translation>
 <translation id="765676359832457558">詳細設定を表示しない...</translation>
 <translation id="7658239707568436148">キャンセル</translation>
+<translation id="7659878911471462949">泣き笑い</translation>
 <translation id="7662298039739062396">拡張機能によって指定される設定</translation>
 <translation id="7663736086183791259">証明書 <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">シークレット モードでは許可されていません</translation>
@@ -2258,6 +2262,7 @@
 <translation id="830498451218851433">2 つ折り</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">インストールしたアプリと使用頻度</translation>
+<translation id="8317207217658302555">ARCore を更新しますか？</translation>
 <translation id="831997045666694187">夕方</translation>
 <translation id="8321476692217554900">通知</translation>
 <translation id="8328484624016508118">すべてのシークレット タブを閉じると、Chrome で以下のデータが削除されます。

@@ -131,6 +131,7 @@
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + 마침표 단축키가 변경되었습니다. Insert 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + Shift + Backspace 키를 누르세요.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />행, <ph name="COLUMN_NUMBER" />열로 이동했습니다.</translation>
 <translation id="1771761307086386028">오른쪽으로 스크롤</translation>
+<translation id="1774796056689732716">현재 캘린더에서 <ph name="CURRENT_MONTH_YEAR" />을 표시 중이며 선택된 날짜는 <ph name="DATE" />입니다.</translation>
 <translation id="1787955149152357925">꺼짐</translation>
 <translation id="1804572139604454141">디스크 공간이 매우 부족하여 녹화가 종료되었습니다.</translation>
 <translation id="181103072419391116">신호 강도 <ph name="SIGNAL_STRENGTH" />, 관리자가 관리함</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">자막 사용</translation>
 <translation id="5078796286268621944">잘못된 PIN</translation>
 <translation id="5083553833479578423">더 많은 어시스턴트 기능을 사용해 보세요.</translation>
+<translation id="5090752371472782287"><ph name="MANAGER" /> 기기로 전송</translation>
 <translation id="5106223312672646208">맞춤설정</translation>
 <translation id="5117590920725113268">다음 달 표시</translation>
 <translation id="5136175204352732067">다른 키보드 연결됨</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">전송 기기를 사용할 수 있음</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="5176318573511391780">화면 일부 녹화</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, 일정 <ph name="NUMBER" />개</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> 앱과 <ph name="IN_PLACE_APP" /> 앱이 포함된 새 폴더를 만들었습니다.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{기타 알림 1개}other{기타 알림 #개}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">완료</translation>
 <translation id="6431865393913628856">화면 녹화</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />에 <ph name="ROUTE_TITLE" /> 전송 중</translation>
+<translation id="6447111710783417522"><ph name="DATE" />, 일정 <ph name="NUMBER" />개</translation>
 <translation id="6452181791372256707">거부</translation>
 <translation id="6453179446719226835">언어가 변경됨</translation>
 <translation id="6459472438155181876">화면을 <ph name="DISPLAY_NAME" />(으)로 확장</translation>
@@ -865,6 +869,7 @@
 <translation id="6811454077060061666">데스크톱용 Google Drive를 사용할 수 없습니다.</translation>
 <translation id="6818242057446442178">한 단어 뒤로 이동</translation>
 <translation id="6820676911989879663">잠시 쉬어 가세요.</translation>
+<translation id="6827049576281411231">일정 창 닫기</translation>
 <translation id="6836499262298959512">위험한 파일</translation>
 <translation id="6837064795450991317">데스크바 숨기기</translation>
 <translation id="6852052252232534364">클릭하여 활성화</translation>
@@ -872,6 +877,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1자리 남음}other{#자리 남음}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> 다운로드가 일시중지되었습니다</translation>
 <translation id="6878400149835617132">바로가기 사용 중지됨</translation>
+<translation id="6884665277231944629">오늘로 돌아가기</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> 기기의 성능이 저하될 수 있습니다. 인증된 <ph name="PREFERRED_MINIMUM_POWER" />W 이상의 USB-C 전원 어댑터를 사용하세요.</translation>
 <translation id="688631446150864480">창을 전환하려면 아래쪽 화살표 키를 누르세요.</translation>
 <translation id="6896758677409633944">복사</translation>
@@ -958,6 +964,7 @@
 <translation id="7497767806359279797">언어 및 키보드 선택</translation>
 <translation id="7509246181739783082">본인 확인</translation>
 <translation id="7513622367902644023">스크린샷 모드 선택됨</translation>
+<translation id="7513922695575567867">현재 캘린더에서 <ph name="DATE" />이 속한 주를 표지 중이며 선택된 날짜는 <ph name="SELECTED_DATE" />입니다.</translation>
 <translation id="7514365320538308">다운로드</translation>
 <translation id="7526573455193969409">네트워크가 모니터링될 수 있음</translation>
 <translation id="7536035074519304529">IP 주소: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@
 <translation id="7564874036684306347">창을 다른 데스크톱으로 이동하면 예기치 못한 동작이 나타날 수 있습니다. 이후의 알림, 창, 대화상자가 데스크톱 간에 분할될 수 있습니다.</translation>
 <translation id="7569509451529460200">점자와 ChromeVox가 사용 설정되었습니다.</translation>
 <translation id="7569983096843329377">검정색</translation>
+<translation id="757941033127302446">로그인됨</translation>
 <translation id="7579778809502851308">화면 캡처</translation>
 <translation id="7590883480672980941">입력 설정</translation>
 <translation id="7593891976182323525">검색 또는 Shift 키</translation>
@@ -1040,6 +1048,7 @@
 <translation id="8035152190676905274">펜</translation>
 <translation id="8036504271468642248">이전 문장</translation>
 <translation id="8042893070933512245">접근성 설정 메뉴 열기</translation>
+<translation id="8042925093898452104">세부정보 닫기</translation>
 <translation id="8048123526339889627">블루투스 설정</translation>
 <translation id="8051716679295756675">이름이 <ph name="DESK_TEMPLATE_NAME" />인 템플릿이 이미 있습니다.</translation>
 <translation id="8052898407431791827">클립보드에 복사됨</translation>

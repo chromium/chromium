@@ -235,6 +235,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
 <translation id="3157684681743766797">Tout marquer…</translation>
 <translation id="3169472444629675720">Découvrir</translation>
+<translation id="3174662312949010067">Vous pouvez aussi utiliser des mots de passe enregistrés sur vos autres appareils.</translation>
 <translation id="3175081911749765310">Servic Web</translation>
 <translation id="3178650076442119961">Actif aujourd'hui</translation>
 <translation id="3181825792072797598">Activer la synchronisation</translation>
@@ -328,6 +329,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4042870976416480368">Rechercher dans la page</translation>
 <translation id="4049507953662678203">Assurez-vous d'avoir une connexion réseau et réessayez.</translation>
 <translation id="408404951701638773">La barre de recherche est désormais plus facile à atteindre</translation>
+<translation id="4108314971463891922">Suivre</translation>
 <translation id="411254640334432676">Échec du téléchargement.</translation>
 <translation id="4112644173421521737">Rechercher</translation>
 <translation id="4113030288477039509">Géré par votre administrateur</translation>
@@ -345,6 +347,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4272631900155121838">Pour numériser un code QR, activez la caméra dans les paramètres</translation>
 <translation id="4277990410970811858">Navigation sécurisée</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
+<translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="430793432425771671">Tout synchroniser</translation>
 <translation id="4309403553630140242">Touchez l'écran deux fois pour en savoir plus.</translation>
 <translation id="430967081421617822">Toujours</translation>
@@ -356,6 +359,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4389019817280890563">Toucher pour changer la langue.</translation>
 <translation id="4442550905108052454">Ouvrez <ph name="BEGIN_BOLD" />Paramètres<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Ajouter une langue</translation>
+<translation id="4462491365653392320">Suivi des prix dans des onglets</translation>
 <translation id="4469418912670346607">Poursuivre la configuration</translation>
 <translation id="4474494258097106883">Conçu pour votre iPhone</translation>
 <translation id="4476574785019001431">Paramètres</translation>
@@ -419,6 +423,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4944543191714094452">Rechercher dans la page…</translation>
 <translation id="4945756290001680296">Accéder aux paramètres des mots de passe</translation>
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser vos favoris, vos mots de passe, votre historique et vos autres paramètres sur tous vos appareils</translation>
+<translation id="4986678885919050584">Retirer de cet appareil</translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5017828934289857214">Me le rappeler plus tard</translation>
 <translation id="5037676449506322593">Tout sélectionner</translation>
@@ -520,6 +525,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5979837087407522202">Rechercher des mots de passe</translation>
 <translation id="5982717868370722439">Ajouter les données existantes à <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Dossiers récents</translation>
+<translation id="5988097621740394599">Faites le suivi des réductions dans vos onglets.</translation>
 <translation id="5988851877894965432">Ouvrir les URL dans Chrome</translation>
 <translation id="6012140227487808125">Cryptage en cours…</translation>
 <translation id="6021332621416007159">Ouvrir dans...</translation>
@@ -540,6 +546,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6127379762771434464">Élément supprimé</translation>
 <translation id="6136914049981179737">Qq sec.</translation>
 <translation id="6144589619057374135">Ouvrir ${url} en mode de navigation privée</translation>
+<translation id="6149061208933997199">Utilis. mot de passe</translation>
 <translation id="6159839020698489198">facultatif</translation>
 <translation id="6177442314419606057">Rechercher dans Chrome</translation>
 <translation id="6184086493125982861">Afficher les onglets</translation>
@@ -764,6 +771,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8076014560081431679">Les paramètres de site sauvegardés ne seront pas supprimés et peuvent donner des indications sur vos habitudes de navigation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Ce paramètre est géré; touchez deux fois pour en savoir plus</translation>
 <translation id="8080028325999236607">Ferm ts onglets</translation>
+<translation id="8101409298456377967">Créez, enregistrez et gérez vos mots de passe pour pouvoir vous connecter facilement aux sites et aux applications. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Désactiver</translation>
 <translation id="8114753159095730575">Le téléchargement du fichier est disponible. Options présentées vers le bas de l’écran.</translation>
 <translation id="8132598642024322408">Prix actuel : <ph name="PRICE" />; ancien prix : <ph name="PREVIOUS_PRICE" />.</translation>

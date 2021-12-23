@@ -177,7 +177,6 @@ Puede que algunas funciones no estén disponibles. Especifica otro directorio de
 <translation id="5193136243808726294">Google Chrome OS no puede abrir esta página.</translation>
 <translation id="521447420733633466">Si compartes un dispositivo, tus amigos y familiares pueden navegar de forma independiente y configurar Chrome a su gusto.</translation>
 <translation id="5251420635869119124">Los invitados pueden utilizar Chrome sin dejar nada atrás.</translation>
-<translation id="5251679006894510177">La actualización ya casi ha terminado. Reinicia Chrome para completar la actualización. Las ventanas de incógnito no se volverán a abrir.</translation>
 <translation id="5334487786912937552">Chrome necesita el permiso de acceso al almacenamiento para descargar archivos</translation>
 <translation id="5386244825306882791">También controla qué página se muestra al iniciar Chrome o al hacer búsquedas desde el omnibox.</translation>
 <translation id="5394833366792865639">Compartir una pestaña de Chrome</translation>
@@ -310,6 +309,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="8914504000324227558">Volver a iniciar Chrome</translation>
 <translation id="8922193594870374009">Para enviar un número desde <ph name="ORIGIN" /> a tu teléfono Android, inicia sesión en Chrome con ambos dispositivos.</translation>
 <translation id="8927704157641862988">Personaliza las opciones de privacidad que Chrome considera más importantes. En esta guía, no se incluyen todos los ajustes y opciones.</translation>
+<translation id="8983720963221508955">Has activado la función Navegación segura mejorada en tu cuenta. Habilítala ahora en Chrome.</translation>
 <translation id="8986207147630327271">Vas a añadir un perfil de trabajo a este navegador y le vas a dar a tu administrador el control únicamente sobre este perfil.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Hay una actualización de Chrome disponible}=1{Hay una actualización de Chrome disponible}other{Hay una actualización de Chrome disponible desde hace # días}}</translation>
 <translation id="9026991721384951619">Chrome OS no ha podido sincronizar los datos porque la información de inicio de sesión de tu cuenta está obsoleta.</translation>

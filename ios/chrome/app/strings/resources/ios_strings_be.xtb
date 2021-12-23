@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">Дадаць у спіс чытання</translation>
 <translation id="3157684681743766797">Пазначыць усе…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Захаваныя паролі можна выкарыстоўваць і на іншых прыладах.</translation>
 <translation id="3175081911749765310">Вэб-сэрвісы</translation>
 <translation id="3178650076442119961">Апошнія дзеянні адбываліся сёння</translation>
 <translation id="3181825792072797598">Уключыць сінхранізацыю</translation>
@@ -328,6 +329,7 @@
 <translation id="4042870976416480368">Знайсці на старонцы</translation>
 <translation id="4049507953662678203">Праверце, ці ёсць у вас падключэнне да сеткі, і паўтарыце спробу.</translation>
 <translation id="408404951701638773">Панэллю пошуку цяпер карыстацца лягчэй</translation>
+<translation id="4108314971463891922">Падпісацца</translation>
 <translation id="411254640334432676">Збой спампоўкі.</translation>
 <translation id="4112644173421521737">Пошук</translation>
 <translation id="4113030288477039509">Кіруецца адміністратарам</translation>
@@ -345,6 +347,7 @@
 <translation id="4272631900155121838">Каб сканіраваць QR-код, уключыце камеру ў наладах</translation>
 <translation id="4277990410970811858">Бяспечны прагляд</translation>
 <translation id="4281844954008187215">Умовы выкарыстання</translation>
+<translation id="4304713468139749426">Менеджар пароляў</translation>
 <translation id="430793432425771671">Сінхранізаваць усе</translation>
 <translation id="4309403553630140242">Двойчы націсніце, каб даведацца больш</translation>
 <translation id="430967081421617822">За ўвесь час</translation>
@@ -356,6 +359,7 @@
 <translation id="4389019817280890563">Каб змяніць мову, націсніце.</translation>
 <translation id="4442550905108052454">Адкрыйце <ph name="BEGIN_BOLD" />Налады<ph name="END_BOLD" />.</translation>
 <translation id="4454246407045105932">Дадаванне мовы</translation>
+<translation id="4462491365653392320">Адсочванне цэн на ўкладках</translation>
 <translation id="4469418912670346607">Працягнуць наладку</translation>
 <translation id="4474494258097106883">Распрацавана для iPhone</translation>
 <translation id="4476574785019001431">Налады</translation>
@@ -419,6 +423,7 @@
 <translation id="4944543191714094452">Пошук на старонцы…</translation>
 <translation id="4945756290001680296">Доступ да налад пароля</translation>
 <translation id="4979397965658815378">Каб закладкі, паролі, гісторыя і іншыя налады былі даступнымі на ўсіх вашых прыладах, увайдзіце ва Уліковы запіс Google</translation>
+<translation id="4986678885919050584">Выдаліць з гэтай прылады</translation>
 <translation id="5005498671520578047">Капіраваць пароль</translation>
 <translation id="5017828934289857214">Нагадаць пазней</translation>
 <translation id="5037676449506322593">Выбраць усё</translation>
@@ -520,6 +525,7 @@
 <translation id="5979837087407522202">Пошук пароляў</translation>
 <translation id="5982717868370722439">Дадаць існуючыя даныя ва ўліковы запіс <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Нядаўна наведаныя</translation>
+<translation id="5988097621740394599">Паказваць інфармацыю пра зніжэнне цэн на ўкладках.</translation>
 <translation id="5988851877894965432">Адкрыць URL-адрасы ў Chrome</translation>
 <translation id="6012140227487808125">Ідзе шыфраванне…</translation>
 <translation id="6021332621416007159">Адкрыць у праграме...</translation>
@@ -764,6 +770,7 @@
 <translation id="8076014560081431679">Захаваныя налады сайтаў не будуць выдалены і могуць змяшчаць звесткі аб вашых тыповых дзеяннях у браўзеры. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Гэтай наладай можна кіраваць. Каб даведацца больш, націсніце двойчы.</translation>
 <translation id="8080028325999236607">Закрыць усе ўкладкі</translation>
+<translation id="8101409298456377967">Стварайце паролі, захоўвайце іх і кіруйце імі, каб мець магчымасць з лёгкасцю ўваходзіць ва ўліковыя запісы на сайтах і ў праграмах. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Выключыць</translation>
 <translation id="8114753159095730575">Файл даступны для спампоўвання. Параметры знаходзяцца ў ніжняй частцы экрана.</translation>
 <translation id="8132598642024322408">Цяпер: <ph name="PRICE" />, раней: <ph name="PREVIOUS_PRICE" />.</translation>

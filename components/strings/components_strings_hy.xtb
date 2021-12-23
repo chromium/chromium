@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">Առկա առաջարկ</translation>
 <translation id="1312803275555673949">Ինչո՞վ է դա հաստատվում</translation>
 <translation id="131405271941274527"><ph name="URL" /> կայքը թույլտվություն է խնդրում՝ NFC-ի միջոցով տվյալներ փոխանակելու համար։</translation>
+<translation id="1314311879718644478">Դիտել բովանդակությունը լրացված իրականության ռեժիմում</translation>
 <translation id="1314509827145471431">Ամրակար աջ կողմում</translation>
 <translation id="1318023360584041678">Պահվել է ներդիրների խմբում</translation>
 <translation id="1319245136674974084">Այլևս չհարցնել այս հավելվածի համար</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">Չհաջողվեց բացել վեբէջը:</translation>
 <translation id="1586541204584340881">Ինչ ընդլայնումներ եք դուք տեղադրել</translation>
 <translation id="1588438908519853928">Սովորական</translation>
+<translation id="1589050138437146318">Տեղադրե՞լ ARCore-ը</translation>
 <translation id="1592005682883173041">Տեղային տվյալների օգտագործում</translation>
 <translation id="1594030484168838125">Ընտրել</translation>
 <translation id="160851722280695521">Խաղալ Dino Run խաղը Chrome-ում</translation>
@@ -1393,6 +1395,7 @@
 <translation id="5333022057423422993">Chrome-ը հայտնաբերել է, որ գաղտնաբառը, որ հենց նոր օգտագործեցիք, կոտրվել է տվյալների արտահոսքի պատճառով։ Ձեր հաշիվները պաշտպանելու համար խորհուրդ ենք տալիս ստուգել պահված գաղտնաբառերի անվտանգությունը։</translation>
 <translation id="5334013548165032829">Համակարգի մանրամասն մատյաններ</translation>
 <translation id="5334145288572353250">Պահե՞լ հասցեն</translation>
+<translation id="5335920952954443287">Բաբախող սիրտ</translation>
 <translation id="5340250774223869109">Հավելվածն արգելափակված է</translation>
 <translation id="534295439873310000">NFC սարքեր</translation>
 <translation id="5344579389779391559">Այս էջում հնարավոր է ձեզնից գումար գանձելու փորձ արվի</translation>
@@ -2065,6 +2068,7 @@
 <translation id="7654909834015434372">Երբ դուք խմբագրեք ծանոթագրությունները, փաստաթուղթը կցուցադրվի իր սկզբնական դիրքով</translation>
 <translation id="765676359832457558">Թաքցնել լրացուցիչ կարգավորումները…</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
+<translation id="7659878911471462949">Ուրախության արցունքներ</translation>
 <translation id="7662298039739062396">Կարգավորումը կառավարվում է ընդլայնման կողմից</translation>
 <translation id="7663736086183791259">Հավաստագիր <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Արգելված է ինկոգնիտո ռեժիմում</translation>
@@ -2268,6 +2272,7 @@
 <translation id="830498451218851433">Ծալում կիսով չափ</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Տեղադրված հավելվածները և դրանց օգտագործման հաճախականությունը</translation>
+<translation id="8317207217658302555">Թարմացնե՞լ ARCore-ը</translation>
 <translation id="831997045666694187">Մինչև երեկո</translation>
 <translation id="8321476692217554900">ծանուցումներ</translation>
 <translation id="8328484624016508118">Երբ դուք փակեք բոլոր ինկոգնիտո ներդիրները, Chrome-ում կջնջվեն՝

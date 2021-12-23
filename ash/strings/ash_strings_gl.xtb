@@ -131,6 +131,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1768366657309696705">Cambiouse o atallo de teclado <ph name="LAUNCHER_KEY_NAME" /> + Punto. Para utilizar a tecla Inserir, preme <ph name="LAUNCHER_KEY_NAME" /> + Maiúsculas + Retroceso.</translation>
 <translation id="1770726142253415363">Moveuse á fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Desprazarse á dereita</translation>
+<translation id="1774796056689732716">Calendario, <ph name="CURRENT_MONTH_YEAR" />; nestes momentos está seleccionada a data <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Desactivado</translation>
 <translation id="1804572139604454141">A gravación finalizou porque queda pouquísimo espazo no disco</translation>
 <translation id="181103072419391116">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
@@ -621,6 +622,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5075554201838155866">Iniciar subtítulos</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5083553833479578423">Desbloquea máis funcións do Asistente.</translation>
+<translation id="5090752371472782287">Emitir nun dispositivo de <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Personalizar</translation>
 <translation id="5117590920725113268">Mostrar mes seguinte</translation>
 <translation id="5136175204352732067">Conectouse un teclado diferente</translation>
@@ -630,6 +632,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5168181903108465623">Dispositivos de emisión dispoñibles</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5176318573511391780">Gravar pantalla parcial</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventos</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combinouse con <ph name="IN_PLACE_APP" /> para crear un cartafol novo.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificación máis}other{# notificacións máis}}</translation>
@@ -803,6 +806,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="643147933154517414">Listo</translation>
 <translation id="6431865393913628856">Gravación da pantalla</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> no receptor <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> evento</translation>
 <translation id="6452181791372256707">Rexeitar</translation>
 <translation id="6453179446719226835">Cambiouse o idioma</translation>
 <translation id="6459472438155181876">Ampliando pantalla a <ph name="DISPLAY_NAME" /></translation>
@@ -866,6 +870,7 @@ Nova instalación</translation>
 <translation id="6811454077060061666">Google Drive para ordenadores non está dispoñible</translation>
 <translation id="6818242057446442178">Retroceder unha palabra</translation>
 <translation id="6820676911989879663">Fai unha pausa!</translation>
+<translation id="6827049576281411231">Pechar panel de eventos</translation>
 <translation id="6836499262298959512">Ficheiro perigoso</translation>
 <translation id="6837064795450991317">Ocultar barra de escritorio</translation>
 <translation id="6852052252232534364">Facer clic para activar</translation>
@@ -873,6 +878,7 @@ Nova instalación</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un díxito}other{Faltan # díxitos}}</translation>
 <translation id="6867938213751067702">Púxose en pausa a descarga de <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Desactivouse o atallo</translation>
+<translation id="6884665277231944629">Volver a hoxe</translation>
 <translation id="6886172995547742638">O rendemento do dispositivo (<ph name="DEVICE_TYPE" />) pode empeorar. Usa un adaptador de corrente USB‑C de <ph name="PREFERRED_MINIMUM_POWER" /> W ou máis.</translation>
 <translation id="688631446150864480">Premer frecha abaixo para cambiar de ventá</translation>
 <translation id="6896758677409633944">Copiar</translation>
@@ -959,6 +965,7 @@ Nova instalación</translation>
 <translation id="7497767806359279797">Escoller idioma e teclado</translation>
 <translation id="7509246181739783082">Verifica a túa identidade</translation>
 <translation id="7513622367902644023">Seleccionouse o modo de captura de pantalla</translation>
+<translation id="7513922695575567867">Calendario, semana do <ph name="DATE" />; nestes momentos está seleccionada a data <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7526573455193969409">É posible que se controle a rede</translation>
 <translation id="7536035074519304529">Enderezo IP: <ph name="ADDRESS" /></translation>
@@ -968,6 +975,7 @@ Nova instalación</translation>
 <translation id="7564874036684306347">Ao mover as ventás a outro ordenador pódese provocar un comportamento inesperado. É posible que as notificacións, as ventás e os cadros de diálogo posteriores se dividan entre os ordenadores.</translation>
 <translation id="7569509451529460200">Activouse o braille e ChromeVox</translation>
 <translation id="7569983096843329377">Negro</translation>
+<translation id="757941033127302446">Sesión iniciada</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>
 <translation id="7590883480672980941">Configuración da introdución de texto</translation>
 <translation id="7593891976182323525">Busca ou Maiús</translation>
@@ -1041,6 +1049,7 @@ Nova instalación</translation>
 <translation id="8035152190676905274">Bolígrafo</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Abrir menú da configuración de accesibilidade</translation>
+<translation id="8042925093898452104">Pechar información detallada</translation>
 <translation id="8048123526339889627">Configuración de Bluetooth</translation>
 <translation id="8051716679295756675">Xa existe un modelo chamado <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Copiouse no portapapeis</translation>

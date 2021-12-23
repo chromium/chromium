@@ -131,6 +131,7 @@
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + പീരിയഡ് കീബോർഡ് കുറുക്കുവഴി മാറിയിട്ടുണ്ട്. Insert കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ+ Shift + Backspace അമർത്തുക.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />-ാം വരിയിലെ <ph name="COLUMN_NUMBER" />-ാം കോളത്തിലേക്ക് നീക്കി.</translation>
 <translation id="1771761307086386028">വലത്തോട്ട് സ്ക്രോൾ ചെയ്യുക</translation>
+<translation id="1774796056689732716">കലണ്ടർ, <ph name="CURRENT_MONTH_YEAR" />, നിലവിൽ <ph name="DATE" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു.</translation>
 <translation id="1787955149152357925">ഓഫാണ്</translation>
 <translation id="1804572139604454141">ഡിസ്‌ക് ഇടം വളരെ കുറവായതിനാൽ റെക്കോർഡിംഗ് അവസാനിച്ചു</translation>
 <translation id="181103072419391116">സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">സബ്‌ടൈറ്റിലുകൾ ആരംഭിക്കുക</translation>
 <translation id="5078796286268621944">തെറ്റായ PIN</translation>
 <translation id="5083553833479578423">കൂടുതൽ അസിസ്റ്റന്റ് ഫീച്ചറുകൾ അൺലോക്ക് ചെയ്യുക.</translation>
+<translation id="5090752371472782287"><ph name="MANAGER" /> ഉപകരണത്തിലേക്ക് കാസ്റ്റ് ചെയ്യുക</translation>
 <translation id="5106223312672646208">വ്യക്തിപരമാക്കുക</translation>
 <translation id="5117590920725113268">അടുത്ത മാസം കാണിക്കുക</translation>
 <translation id="5136175204352732067">വ്യത്യസ്ത കീബോർഡ് കണക്‌റ്റ് ചെയ്‌തു</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">Cast ഉപകരണങ്ങൾ ലഭ്യമാണ്.</translation>
 <translation id="5170568018924773124">ഫോള്‍ഡറില്‍ കാണിക്കുക</translation>
 <translation id="5176318573511391780">ഭാഗിക സ്ക്രീൻ റെക്കോർഡ് ചെയ്യുക</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ഇവന്റുകൾ</translation>
 <translation id="5198715732953550718">പുതിയ ഫോൾഡർ സൃഷ്‌ടിക്കുന്നതിനായി <ph name="MOVED_APP_NAME" /> എന്നതിനെ <ph name="IN_PLACE_APP" /> എന്നതുമായി സംയോജിപ്പിച്ചു.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{മറ്റൊരു അറിയിപ്പ്}other{മറ്റ് # അറിയിപ്പുകൾ}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">എല്ലാം ചെയ്‌തു</translation>
 <translation id="6431865393913628856">സ്‌ക്രീൻ റെക്കോർഡ്</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />-ൽ <ph name="ROUTE_TITLE" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ഇവന്റ്</translation>
 <translation id="6452181791372256707">നിരസിക്കുക</translation>
 <translation id="6453179446719226835">ഭാഷ മാറ്റിയിരിക്കുന്നു</translation>
 <translation id="6459472438155181876">സ്‌ക്രീൻ <ph name="DISPLAY_NAME" /> എന്നതിലേക്ക് വികസിപ്പിക്കുന്നു</translation>
@@ -865,6 +869,7 @@
 <translation id="6811454077060061666">ഡെസ്‌ക്‌ടോപ്പിനുള്ള Google Drive ലഭ്യമല്ല</translation>
 <translation id="6818242057446442178">ഒരു വാക്ക് പിന്നിലേക്ക് പോവുക</translation>
 <translation id="6820676911989879663">ഒരു ഇടവേള എടുക്കൂ!</translation>
+<translation id="6827049576281411231">ഇവന്റ് പാനൽ അടയ്ക്കുക</translation>
 <translation id="6836499262298959512">അപകടകരമായ ഫയൽ</translation>
 <translation id="6837064795450991317">ഡെസ്‌ക്ബാർ മറയ്ക്കുക</translation>
 <translation id="6852052252232534364">ക്ലിക്ക് ചെയ്ത് സജീവമാക്കൂ</translation>
@@ -872,6 +877,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ഒരു അക്കം ശേഷിക്കുന്നു}other{# അക്കങ്ങൾ ശേഷിക്കുന്നു}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> ഡൗൺലോഡ് ചെയ്യുന്നത് താൽക്കാലികമായി നിർത്തി</translation>
 <translation id="6878400149835617132">കുറുക്കുവഴി ഓഫാക്കിയിരിക്കുന്നു</translation>
+<translation id="6884665277231944629">ഇന്നത്തെ തീയതിയിലേക്ക് മടങ്ങുക</translation>
 <translation id="6886172995547742638">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണം കുറഞ്ഞ പ്രകടനം കാഴ്‌ച വച്ചേക്കാം. സർട്ടിഫൈ ചെയ്‌ത <ph name="PREFERRED_MINIMUM_POWER" />W അല്ലെങ്കിൽ USB-C പവർ അഡാപ്‌റ്റർ ഉപയോഗിക്കുക.</translation>
 <translation id="688631446150864480">വിന്‍ഡോകോൾക്കിടയിൽ മാറാൻ താഴേക്കുള്ള അമ്പടയാള കീ അമർത്തുക</translation>
 <translation id="6896758677409633944">പകര്‍ത്തുക</translation>
@@ -958,6 +964,7 @@
 <translation id="7497767806359279797">ഭാഷയും കീബോഡും തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7509246181739783082">ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="7513622367902644023">സ്ക്രീൻഷോട്ട് മോഡ് തിരഞ്ഞടുത്തു</translation>
+<translation id="7513922695575567867">കലണ്ടർ, <ph name="DATE" />-ലെ ആഴ്‌ച, നിലവിൽ <ph name="SELECTED_DATE" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു.</translation>
 <translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="7526573455193969409">നെറ്റ്‌വർക്ക് നിരീക്ഷിക്കപ്പെടാം</translation>
 <translation id="7536035074519304529">IP വിലാസം: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@
 <translation id="7564874036684306347">മറ്റൊരു ഡെസ്‌ക്‌ടോപ്പിലേക്ക് വിൻഡോകൾ നീക്കുന്നത് അപ്രതീക്ഷിതമായ പ്രവർത്തനരീതിയ്‌ക്ക് ഇടയാക്കാം. തുടർന്നുള്ള അറിയിപ്പുകൾ, വിൻഡോകൾ, ഡയലോഗുകൾ എന്നിവ ഡെസ്‌ക്‌‌ടോപ്പുകൾക്കിടയിൽ വിഭജിക്കപ്പെടാം.</translation>
 <translation id="7569509451529460200">Braille, ChromeVox എന്നിവ പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="7569983096843329377">കറുപ്പ്</translation>
+<translation id="757941033127302446">സൈൻ ഇൻ ചെയ്‌തു</translation>
 <translation id="7579778809502851308">സ്‌ക്രീൻ ക്യാപ്‌ചർ</translation>
 <translation id="7590883480672980941">ഇൻപുട്ട് ക്രമീകരണം</translation>
 <translation id="7593891976182323525">തിരയൽ അല്ലെങ്കിൽ Shift</translation>
@@ -1007,6 +1015,7 @@
 <translation id="7860671499921112077">അവലോകനത്തിലേക്ക് കടക്കാൻ മൂന്നു വിരലുകൾ ഉപയോഗിച്ച് മുകളിലേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="7866482334467279021">ഓണാണ്</translation>
 <translation id="7868900307798234037">വിരലടയാളം ഉപയോഗിച്ച് അൺലോക്ക് ചെയ്യുന്നു</translation>
+<translation id="7872195908557044066">നിങ്ങളുടെ അഡ്‌മിൻ eSIM റീസെറ്റ് ചെയ്യുകയാണ്. അൽപ്പസമയം കാത്തിരിക്കുക.</translation>
 <translation id="7872786842639831132">ഓഫാണ്</translation>
 <translation id="7875575368831396199">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ Bluetooth ഓഫാണെന്ന് തോന്നുന്നു. ഫോൺ ഹബ് ഉപയോഗിക്കാൻ, Bluetooth ഓണാക്കുക.</translation>
 <translation id="7877557217297072640">{0,plural, =0{ഉപകരണം ഇപ്പോൾ തന്നെ മുമ്പത്തെ പതിപ്പിലേക്ക് മാറ്റുക}=1{ഉപകരണം ഒരു സെക്കൻഡിനുള്ളിൽ മുമ്പത്തെ പതിപ്പിലേക്ക് മാറ്റുക}other{ഉപകരണം # സെക്കൻഡിനുള്ളിൽ മുമ്പത്തെ പതിപ്പിലേക്ക് മാറ്റുക}}</translation>
@@ -1040,6 +1049,7 @@
 <translation id="8035152190676905274">പേന</translation>
 <translation id="8036504271468642248">മുമ്പത്തെ വാചകം</translation>
 <translation id="8042893070933512245">ഉപയോഗസഹായി ക്രമീകരണ മെനു തുറക്കുക</translation>
+<translation id="8042925093898452104">വിശദമായ വിവരങ്ങൾ അടയ്ക്കുക</translation>
 <translation id="8048123526339889627">Bluetooth ക്രമീകരണം</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> എന്ന പേരിലുള്ള ടെംപ്ലേറ്റ് ഇതിനകം നിലവിലുണ്ട്</translation>
 <translation id="8052898407431791827">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</translation>

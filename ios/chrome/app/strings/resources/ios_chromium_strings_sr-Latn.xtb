@@ -44,6 +44,7 @@
 <translation id="3639997914391704523">Chromium može da vam proverava lozinke kada se prijavite pomoću Google naloga.</translation>
 <translation id="3805899903892079518">Chromium ne može da pristupa slikama ili video snimcima. Omogućite pristup u iOS Settings (Podešavanja iOS-a) &gt; Privacy (Privatnost) &gt; Photos (Slike).</translation>
 <translation id="3946918322491238254">I dalje možete da vidite sve obeleživače, istoriju, lozinke i druga podešavanja na ovom uređaju. Ako unesete promene, one se neće sinhronizovati sa nalogom.</translation>
+<translation id="4043291146360695975">Lozinke se čuvaju u Menadžeru lozinki samo na ovom uređaju.</translation>
 <translation id="4099085513035183040">Nije podržano u verziji Chromium beta</translation>
 <translation id="4555020257205549924">Kada je ova funkcija uključena, Chromium će nuditi da prevodi stranice napisane na drugim jezicima pomoću Google prevodioca. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Sada možete da koristite Chromium svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
@@ -76,6 +77,7 @@
 <translation id="6424492062988593837">Chromium je upravo postao bolji! Dostupna je nova verzija.</translation>
 <translation id="6752854822223394465">Vaša organizacija podešava Chromium...</translation>
 <translation id="6820823224820483452">Chromium nije uspeo da proveri sve lozinke. Probajte ponovo sutra.</translation>
+<translation id="7006920032187763988">Možete da koristite lozinke koje ste sačuvali u Menadžeru lozinki u drugim aplikacijama na iPad-u.</translation>
 <translation id="7018284295775193585">Chromium ne može da se ažurira</translation>
 <translation id="7045244423563602563">Prilagodite Chromium sebi</translation>
 <translation id="7099326575020694068">Chromium ne može da koristi kameru u režimu podeljenog prikaza</translation>
@@ -102,11 +104,13 @@
 <translation id="8073677936375100957">Želite li da obrišete Chromium podatke sa ovog uređaja?</translation>
 <translation id="8175055321229419309">Savet: <ph name="BEGIN_LINK" />Premestite Chromium na dok<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ne može da traži ažuriranja. Probajte ponovo kasnije.</translation>
+<translation id="858114650497379505">Možete da koristite lozinke koje ste sačuvali u Menadžeru lozinki u drugim aplikacijama na iPhone-u.</translation>
 <translation id="8586442755830160949">Autorska prava <ph name="YEAR" />. Autori Chromium-a. Sva prava zadržana.</translation>
 <translation id="8663480472502753423">Redovno ažuriraju Chromium</translation>
 <translation id="8776843108004031667">Ovaj nalog i svi nesačuvani podaci ukloniće se iz Chromium-a.</translation>
 <translation id="894437814105052438">Kada se odjavite, Chromium ne sinhronizuje nikakve nove podatke sa Google nalogom. Prethodno sinhronizovani podaci ostaju na nalogu.</translation>
 <translation id="9022552996538154597">Prijavljivanje na Chromium</translation>
+<translation id="9059693977935746710">Ne morate da zapamtite ovu lozinku. Čuva se u Menadžeru lozinki za <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium je zastareo</translation>
 <translation id="9110075932708282655">Podrazumevano koristite Chromium</translation>
 <translation id="921174536258924340">Chromium nije uspeo da proveri sve lozinke. Probajte ponovo sutra ili <ph name="BEGIN_LINK" />proverite lozinke na Google nalogu.<ph name="END_LINK" /></translation>

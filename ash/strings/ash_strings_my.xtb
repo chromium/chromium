@@ -131,6 +131,7 @@
 <translation id="1768366657309696705">‘<ph name="LAUNCHER_KEY_NAME" /> + အစက်’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘ထည့်သွင်းရန်’ ကီးသုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + Shift + ‘နောက်ပြန်ခလုတ်’ နှိပ်ပါ။</translation>
 <translation id="1770726142253415363">အတန်း <ph name="ROW_NUMBER" />၊ ကော်လံ <ph name="COLUMN_NUMBER" /> သို့ ရွှေ့ထားသည်။</translation>
 <translation id="1771761307086386028">ညာသို့ လှိမ့်ရန်</translation>
+<translation id="1774796056689732716">ပြက္ခဒိန်၊ <ph name="CURRENT_MONTH_YEAR" />၊ လက်ရှိ <ph name="DATE" /> ကိုရွေးထားသည်။</translation>
 <translation id="1787955149152357925">ပိတ်ထားသည်</translation>
 <translation id="1804572139604454141">ဒစ်ခ်နေရာ အလွန်နည်းနေသောကြောင့် ရိုက်ကူးမှု ရပ်သွားသည်</translation>
 <translation id="181103072419391116">လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားပါသည်</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">စာတန်းများ စတင်ရန်</translation>
 <translation id="5078796286268621944">မမှန်ကန်သည့် ပင်ကုဒ်</translation>
 <translation id="5083553833479578423">နောက်ထပ် Assistant ဝန်ဆောင်မှုများကို ဖွင့်ပါ</translation>
+<translation id="5090752371472782287"><ph name="MANAGER" /> စက်တစ်ခုသို့ ကာစ်လုပ်ရန်</translation>
 <translation id="5106223312672646208">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြင်ဆင်ရန်</translation>
 <translation id="5117590920725113268">လာမည့် လကို ပြရန်</translation>
 <translation id="5136175204352732067">မတူညီသည့် ကီးဘုတ်ကို ချိတ်ဆက်ထားသည်</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">Cast စက်ကိရိယာများ ရနိုင်၏</translation>
 <translation id="5170568018924773124">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
 <translation id="5176318573511391780">ဖန်သားပြင်တစ်စိတ်တစ်ပိုင်းကို ရိုက်ကူးရန်</translation>
+<translation id="5198413532174090167"><ph name="DATE" />၊ အစီအစဉ် <ph name="NUMBER" /> ခု</translation>
 <translation id="5198715732953550718">ဖိုင်တွဲအသစ်ပြုလုပ်ရန် <ph name="MOVED_APP_NAME" /> သည် <ph name="IN_PLACE_APP" /> နှင့် ပေါင်းစည်းထားသည်။</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />၊ <ph name="NOTIFICATION_TITLE" />- <ph name="MESSAGE" />၊ <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{အခြား အကြောင်းကြားချက် 1 ခု}other{အခြား အကြောင်းကြားချက် # ခု}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">အားလုံးပြီးပါပြီ</translation>
 <translation id="6431865393913628856">ဖန်သားပြင် ရိုက်ကူးရန်</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> တွင် <ph name="ROUTE_TITLE" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />၊ အစီအစဉ် <ph name="NUMBER" /> ခု</translation>
 <translation id="6452181791372256707">ပယ်ချရန်</translation>
 <translation id="6453179446719226835">ဘာသာစကား ပြောင်းထားပါသည်</translation>
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" />သို့ မျက်နှာပြင်ကို တိုးချဲ့နေ</translation>
@@ -865,6 +869,7 @@
 <translation id="6811454077060061666">ဒက်စ်တော့အတွက် Google Drive သုံး၍မရပါ</translation>
 <translation id="6818242057446442178">စာလုံးအလိုက် နောက်ပြန်သွားရန်</translation>
 <translation id="6820676911989879663">ခဏနားပါ။</translation>
+<translation id="6827049576281411231">အစီအစဉ် အကန့်ကို ပိတ်ရန်</translation>
 <translation id="6836499262298959512">အန္တရာယ်ဖိုင်</translation>
 <translation id="6837064795450991317">မျက်နှာပြင်ဘား ဝှက်ရန်</translation>
 <translation id="6852052252232534364">စတင်ရန်နှိပ်ပါ</translation>
@@ -872,6 +877,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ဂဏန်းတစ်လုံး ကျန်သည်}other{ဂဏန်း # လုံး ကျန်သည်}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> ဒေါင်းလုဒ်လုပ်ခြင်း ခဏရပ်ထားသည်</translation>
 <translation id="6878400149835617132">ဖြတ်လမ်းလင့်ခ်ကို ပိတ်ထားသည်</translation>
+<translation id="6884665277231944629">ယနေ့သို့ ပြန်သွားရန်</translation>
 <translation id="6886172995547742638">သင့် <ph name="DEVICE_TYPE" /> သည် စွမ်းဆောင်ရည် နိမ့်နေနိုင်သည်။ အသိအမှတ်ပြုထားသော <ph name="PREFERRED_MINIMUM_POWER" />W သို့မဟုတ် ပိုမြင့်သော USB-C ပါဝါ ကြားခံကိရိယာ အသုံးပြုပါ။</translation>
 <translation id="688631446150864480">ဝင်းဒိုးများပြောင်းရန် 'အောက်ညွှန်မြား' နှိပ်ပါ</translation>
 <translation id="6896758677409633944">ကူးယူရန်</translation>
@@ -958,6 +964,7 @@
 <translation id="7497767806359279797">ဘာသာစကားနှင့် ကီးဘုတ်ကို ရွေးရန်</translation>
 <translation id="7509246181739783082">သင်၏အထောက်အထားကို အတည်ပြုပါ</translation>
 <translation id="7513622367902644023">ဖန်သားပြင်ဓာတ်ပုံမုဒ် ရွေးထားသည်</translation>
+<translation id="7513922695575567867">ပြက္ခဒိန်၊ <ph name="DATE" /> အပတ်၊ <ph name="SELECTED_DATE" /> လက်ရှိတွင် ရွေးထားသည်။</translation>
 <translation id="7514365320538308">ဒေါင်းလုဒ်</translation>
 <translation id="7526573455193969409">ကွန်ရက်ကို စောင့်ကြည့်နိုင်ပါသည်</translation>
 <translation id="7536035074519304529">အိုင်ပီလိပ်စာ− <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@
 <translation id="7564874036684306347">ဝင်းဒိုးများကို အခြားဒက်စ်တော့တစ်ခုသို့ ရွှေ့ခြင်းဖြင့် မျှော်လင့်မထားသည့် လုပ်ဆောင်ပုံများ ဖြစ်ပေါ်စေနိုင်ပါသည်။ နောက်ဆက်တွဲ အကြောင်းကြားချက်များ၊ ဝင်းဒိုးများနှင့် စကားပြောများကို ဒက်စ်တော့များအကြား ခွဲဖွင့်နိုင်ပါသည်။</translation>
 <translation id="7569509451529460200">မျက်မမြင်စာ နှင့် ChromeVox ကို ဖွင့်ထားပါသည်</translation>
 <translation id="7569983096843329377">အနက်ရောင်</translation>
+<translation id="757941033127302446">လက်မှတ်ထိုးဝင်ထားသည်</translation>
 <translation id="7579778809502851308">မျက်နှာပြင် ပုံဖမ်းမှု</translation>
 <translation id="7590883480672980941">ထည့်သွင်းမှု ဆက်တင်များ</translation>
 <translation id="7593891976182323525">ရှာဖွေမည် သို့မဟုတ် ပြောင်းလဲမည်</translation>
@@ -1040,6 +1048,7 @@
 <translation id="8035152190676905274">ဘောပင်</translation>
 <translation id="8036504271468642248">ယခင် ဝါကျ</translation>
 <translation id="8042893070933512245">အများသုံးစွဲနိုင်မှုဆက်တင်များ မီနူးကို ဖွင့်ရန်</translation>
+<translation id="8042925093898452104">အသေးစိတ် အချက်အလက်ကို ပိတ်ရန်</translation>
 <translation id="8048123526339889627">ဘလူးတုသ် ဆက်တင်များ</translation>
 <translation id="8051716679295756675">နမူနာ ပုံစံအမည် <ph name="DESK_TEMPLATE_NAME" /> က ရှိပြီးသားဖြစ်သည်</translation>
 <translation id="8052898407431791827">ကလစ်ဘုတ်သို့ မိတ္တူကူးပြီးပြီ</translation>

@@ -70,6 +70,7 @@
 <translation id="6063091872902370735">Chrome-bejelentkezés engedélyezése</translation>
 <translation id="6181930887571472871">Váltás Chrome-ra</translation>
 <translation id="6238746320622508509">Az inkognitó lapok zárolásának engedélyezése a Chrome számára.</translation>
+<translation id="6387994324662817823">A jelszavakat csak ezen az eszközön menti a rendszer a Google Jelszókezelőbe.</translation>
 <translation id="6427126399757991875">A szervezete beállítja a Chrome-ot…</translation>
 <translation id="6600954340915313787">A Chrome-ba másolva</translation>
 <translation id="6634107063912726160">Ha kijelentkezik, a Chrome nem fogja szinkronizálni az új adatokat az Ön Google-fiókjába. A korábban szinkronizált adatok megmaradnak a fiókban.</translation>
@@ -111,5 +112,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Gondoskodjon biztonságáról a Google Chrome-mal</translation>
 <translation id="8772179140489533211">Értesítéseket jelenít meg a Chrome-ba való bejelentkezéshez</translation>
+<translation id="8788269841521769222">Nem kell emlékeznie erre a jelszóra. Elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Google Jelszókezelőbe.</translation>
 <translation id="9112744793181547300">Beállítja a Chrome-ot alapértelmezettként?</translation>
 </translationbundle>

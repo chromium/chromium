@@ -131,6 +131,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1768366657309696705">La scorciatoia da tastiera <ph name="LAUNCHER_KEY_NAME" /> + Punto è cambiata. Per usare il tasto Ins, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Maiusc + Backspace.</translation>
 <translation id="1770726142253415363">Spostata alla riga <ph name="ROW_NUMBER" />, colonna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Scorri a destra</translation>
+<translation id="1774796056689732716">Calendario, <ph name="CURRENT_MONTH_YEAR" />, è attualmente selezionata la data <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Off</translation>
 <translation id="1804572139604454141">Registrazione terminata a causa dello spazio su disco in esaurimento</translation>
 <translation id="181103072419391116">Intensità del segnale <ph name="SIGNAL_STRENGTH" />, gestita dall'amministratore</translation>
@@ -621,6 +622,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5075554201838155866">Avvia sottotitoli</translation>
 <translation id="5078796286268621944">PIN errato</translation>
 <translation id="5083553833479578423">Sblocca altre funzioni dell'assistente.</translation>
+<translation id="5090752371472782287">Trasmetti a un dispositivo <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Personalizza</translation>
 <translation id="5117590920725113268">Mostra mese successivo</translation>
 <translation id="5136175204352732067">Tastiera diversa collegata</translation>
@@ -630,6 +632,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5168181903108465623">Dispositivi di trasmissione disponibili</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5176318573511391780">Registra schermo parziale</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventi</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combinata con <ph name="IN_PLACE_APP" /> per creare una nuova cartella.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 altra notifica}one{altre # notifiche}other{altre # notifiche}}</translation>
@@ -803,6 +806,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="643147933154517414">Operazioni completate</translation>
 <translation id="6431865393913628856">Registrazione dello schermo</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> su <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> evento</translation>
 <translation id="6452181791372256707">Rifiuto</translation>
 <translation id="6453179446719226835">La lingua è stata modificata</translation>
 <translation id="6459472438155181876">Estensione dello schermo su <ph name="DISPLAY_NAME" /></translation>
@@ -866,6 +870,7 @@ Nuova installazione</translation>
 <translation id="6811454077060061666">Google Drive per desktop non è disponibile</translation>
 <translation id="6818242057446442178">Indietro per parola</translation>
 <translation id="6820676911989879663">Fai una pausa!</translation>
+<translation id="6827049576281411231">Chiudi il riquadro degli eventi</translation>
 <translation id="6836499262298959512">File pericoloso</translation>
 <translation id="6837064795450991317">Nascondi deskbar</translation>
 <translation id="6852052252232534364">Fai clic per attivare</translation>
@@ -873,6 +878,7 @@ Nuova installazione</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Manca una cifra}one{Mancano # cifre}other{Mancano # cifre}}</translation>
 <translation id="6867938213751067702">Download di <ph name="FILENAME" /> sospeso</translation>
 <translation id="6878400149835617132">Scorciatoia disattivata</translation>
+<translation id="6884665277231944629">Torna a oggi</translation>
 <translation id="6886172995547742638">Il tuo <ph name="DEVICE_TYPE" /> potrebbe offrire prestazioni inferiori. Usa un alimentatore USB-C certificato da almeno <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Premi il tasto Freccia giù per cambiare finestra</translation>
 <translation id="6896758677409633944">Copia</translation>
@@ -959,6 +965,7 @@ Nuova installazione</translation>
 <translation id="7497767806359279797">Scegli la lingua e la tastiera</translation>
 <translation id="7509246181739783082">Verifica la tua identità</translation>
 <translation id="7513622367902644023">Modalità screenshot selezionata</translation>
+<translation id="7513922695575567867">Calendario, settimana del <ph name="DATE" />, è attualmente selezionata la data <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Scarica</translation>
 <translation id="7526573455193969409">La rete potrebbe essere monitorata</translation>
 <translation id="7536035074519304529">Indirizzo IP: <ph name="ADDRESS" /></translation>
@@ -968,6 +975,7 @@ Nuova installazione</translation>
 <translation id="7564874036684306347">Lo spostamento delle finestre su un altro desktop potrebbe causare comportamenti imprevisti. Le finestre, le notifiche e le finestre di dialogo successive potrebbero essere divise tra i desktop.</translation>
 <translation id="7569509451529460200">Braille e ChromeVox attivati</translation>
 <translation id="7569983096843329377">Nero</translation>
+<translation id="757941033127302446">Accesso effettuato</translation>
 <translation id="7579778809502851308">Acquisizione schermo</translation>
 <translation id="7590883480672980941">Impostazioni di immissione</translation>
 <translation id="7593891976182323525">Tasto per la ricerca o Maiusc</translation>
@@ -1041,6 +1049,7 @@ Nuova installazione</translation>
 <translation id="8035152190676905274">Penna</translation>
 <translation id="8036504271468642248">Frase precedente</translation>
 <translation id="8042893070933512245">Apri il menu Impostazioni di accessibilità</translation>
+<translation id="8042925093898452104">Chiudi le informazioni dettagliate</translation>
 <translation id="8048123526339889627">Impostazioni Bluetooth</translation>
 <translation id="8051716679295756675">Esiste già un modello con il nome <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Copiato negli appunti</translation>

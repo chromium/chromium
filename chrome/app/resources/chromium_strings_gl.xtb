@@ -120,13 +120,13 @@
 <translation id="454579500955453258">Queres continuar nun perfil de Chromium novo?</translation>
 <translation id="4567424176335768812">Iniciaches sesión como <ph name="USER_EMAIL_ADDRESS" />. Agora podes acceder aos teus marcadores, historial e outras configuracións en todos os dispositivos en que iniciaches sesión.</translation>
 <translation id="459535195905078186">Aplicacións de Chromium</translation>
+<translation id="4621240073146040695">A actualización case rematou. Volve iniciar Chromium para finalizala.</translation>
 <translation id="4665829708273112819">Advertencia: Chromium non pode evitar que as extensións rexistren o teu historial de navegación. Para desactivar esta extensión no modo de incógnito, anula a selección desta opción.</translation>
 <translation id="4677944499843243528">Parece que outro proceso de Chromium (<ph name="PROCESS_ID" />) está utilizando o perfil noutro ordenador (<ph name="HOST_NAME" />). Chromium bloqueou o perfil para que non se dane. Se estás seguro de que ningún outro proceso está utilizando este perfil, podes desbloquear o perfil e volver iniciar Chromium.</translation>
 <translation id="469338717132742108">Obter axuda sobre Chromium OS</translation>
 <translation id="4708774505295300557">Anteriormente, alguén iniciou sesión como <ph name="ACCOUNT_EMAIL_LAST" /> en Chromium neste ordenador. Crea un novo usuario de Chromium para manter a túa información por separado.</translation>
 <translation id="4746050847053251315">Queres saír de Chromium de todas formas?</translation>
 <translation id="4748217263233248895">Acábase de aplicar unha actualización de seguranza especial para Chromium. Reinicia agora e restauraremos as túas pestanas.</translation>
-<translation id="4750035648288509542">A actualización está a piques de rematar. Reinicia Chromium para completala. As ventás do modo de incógnito non se volverán abrir.</translation>
 <translation id="4788777615168560705">Chromium non puido comprobar os teus contrasinais. Téntao de novo dentro de 24 horas ou <ph name="BEGIN_LINK" />comproba os contrasinais na túa Conta de Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Esta función utiliza o mesmo corrector ortográfico que o usado na busca de Google. O texto que escribas no navegador enviarase a Google. Podes cambiar esta opción na configuración cando queiras.</translation>
 <translation id="4888717733111232871">Norma de entrada para Chromium para permitir tráfico mDNS.</translation>
@@ -239,6 +239,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="7561906087460245826">Borrar tamén os datos de Chromium (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Se non se mostra algunha opción de configuración nesta páxina, accede á <ph name="LINK_BEGIN" />
       configuración de Chromium OS<ph name="LINK_END" /></translation>
+<translation id="7597596667193879455">Activaches na túa conta a función Navegación segura mellorada. Agora comeza a utilizala en Chromium.</translation>
 <translation id="761356813943268536">Chromium está utilizando a túa cámara e micrófono.</translation>
 <translation id="7617377681829253106">Chromium introduciu melloras</translation>
 <translation id="7686590090926151193">Chromium non é o teu navegador predeterminado</translation>

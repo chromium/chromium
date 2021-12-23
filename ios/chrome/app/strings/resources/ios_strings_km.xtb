@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">បន្ថែមទៅបញ្ជីអាន</translation>
 <translation id="3157684681743766797">សម្គាល់ទាំងអស់…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">អ្នកក៏អាចប្រើពាក្យសម្ងាត់ដែលបានរក្សាទុកនៅលើឧបករណ៍ផ្សេងទៀតរបស់អ្នកបានផងដែរ។</translation>
 <translation id="3175081911749765310">សេវាកម្មបណ្តាញ</translation>
 <translation id="3178650076442119961">ដំណើរការ​ថ្ងៃនេះ</translation>
 <translation id="3181825792072797598">បើក​សមកាលកម្ម</translation>
@@ -328,6 +329,7 @@
 <translation id="4042870976416480368">ស្វែងរកក្នុងទំព័រ</translation>
 <translation id="4049507953662678203">សូមប្រាកដថាអ្នកមានការតភ្ជាប់បណ្តាញ ហើយសូមព្យាយាមម្តងទៀត។</translation>
 <translation id="408404951701638773">ឥឡូវនេះ របារស្វែងរកផ្ដល់ភាពងាយស្រួលក្នុងការចូល​ប្រើជាងមុន</translation>
+<translation id="4108314971463891922">តាមដាន</translation>
 <translation id="411254640334432676">ការ​ទាញ​យក​បាន​បរាជ័យ​។</translation>
 <translation id="4112644173421521737">ស្វែងរក</translation>
 <translation id="4113030288477039509">បានគ្រប់គ្រងដោយអ្នកគ្រប់គ្រងរបស់អ្នក</translation>
@@ -345,6 +347,7 @@
 <translation id="4272631900155121838">ដើម្បីស្កេនកូដ QR សូមបើកដំណើរការកាមេរ៉ាចេញពីការកំណត់</translation>
 <translation id="4277990410970811858">ការរុករក​ដោយសុវត្ថិភាព</translation>
 <translation id="4281844954008187215">លក្ខខណ្ឌសេវាកម្ម</translation>
+<translation id="4304713468139749426">កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់</translation>
 <translation id="430793432425771671">ធ្វើសមកាលកម្មគ្រប់យ៉ាង</translation>
 <translation id="4309403553630140242">ចុចពីរដង ដើម្បីទទួលបាន​ព័ត៌មានបន្ថែម</translation>
 <translation id="430967081421617822">គ្រប់​ពេល</translation>
@@ -543,6 +546,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6127379762771434464">ធាតុត្រូវបានយកចេញ</translation>
 <translation id="6136914049981179737">វិនាទីមុន</translation>
 <translation id="6144589619057374135">បើក ${url} នៅក្នុង​មុខងារឯកជន</translation>
+<translation id="6149061208933997199">ប្រើពាក្យសម្ងាត់</translation>
 <translation id="6159839020698489198">មិនតម្រូវ</translation>
 <translation id="6177442314419606057">ការស្វែងរកនៅក្នុង Chrome</translation>
 <translation id="6184086493125982861">បង្ហាញផ្ទាំង</translation>
@@ -767,6 +771,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8076014560081431679">ការកំណត់គេហទំព័រដែលបានរក្សាទុកនឹងមិនត្រូវបានលុបនោះទេ ហើយវាអាចនឹងឆ្លុះបញ្ចាំងពីទម្លាប់រុករករបស់អ្នក។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែំម<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">ការកំណត់នេះ​ត្រូវបានគ្រប់គ្រង សូមចុចពីរដង​ ដើម្បីទទួលបាន​ព័ត៌មានបន្ថែម</translation>
 <translation id="8080028325999236607">បិទផ្ទាំងទាំងអស់</translation>
+<translation id="8101409298456377967">បង្កើត រក្សាទុក និងគ្រប់គ្រងពាក្យសម្ងាត់របស់អ្នក ដើម្បីឱ្យអ្នកអាចចូលគេហទំព័រ និងកម្មវិធីបានយ៉ាងងាយស្រួល។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">បិទ</translation>
 <translation id="8114753159095730575">អាចទាញយកឯកសារ​បានហើយ។ មានជម្រើស​នៅ​ក្បែរ​ផ្នែកខាងក្រោមនៃ​អេក្រង់។</translation>
 <translation id="8132598642024322408">ឥឡូវ <ph name="PRICE" /> ពីមុន <ph name="PREVIOUS_PRICE" />។</translation>

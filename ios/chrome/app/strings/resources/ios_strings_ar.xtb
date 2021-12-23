@@ -236,6 +236,7 @@
 <translation id="3157387275655328056">إضافة إلى قائمة القراءة</translation>
 <translation id="3157684681743766797">وضع علامة على الكل...</translation>
 <translation id="3169472444629675720">اقتراحات</translation>
+<translation id="3174662312949010067">يمكنك أيضًا استخدام كلمات المرور المحفوظة على أجهزتك الأخرى.</translation>
 <translation id="3175081911749765310">خدمات الويب</translation>
 <translation id="3178650076442119961">نشط اليوم</translation>
 <translation id="3181825792072797598">تفعيل المزامنة</translation>
@@ -329,6 +330,7 @@
 <translation id="4042870976416480368">البحث في الصفحة</translation>
 <translation id="4049507953662678203">تأكد من اتصالك بالشبكة، وأعد المحاولة.</translation>
 <translation id="408404951701638773">أصبح الوصول إلى شريط البحث أسهل الآن</translation>
+<translation id="4108314971463891922">متابعة</translation>
 <translation id="411254640334432676">فشلت عملية التنزيل</translation>
 <translation id="4112644173421521737">بحث</translation>
 <translation id="4113030288477039509">يديره المسؤول</translation>
@@ -346,6 +348,7 @@
 <translation id="4272631900155121838">لمسح رمز الاستجابة السريعة ضوئيًا، يمكنك تفعيل الكاميرا من الإعدادات</translation>
 <translation id="4277990410970811858">التصفُّح الآمن</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
+<translation id="4304713468139749426">مدير كلمات المرور</translation>
 <translation id="430793432425771671">مزامنة جميع البيانات</translation>
 <translation id="4309403553630140242">يُرجى النقر مرّتَين للحصول على المزيد من المعلومات.</translation>
 <translation id="430967081421617822">جميع الأوقات</translation>
@@ -544,6 +547,7 @@
 <translation id="6127379762771434464">أُزيلَ عنصر</translation>
 <translation id="6136914049981179737">قبل ثانية</translation>
 <translation id="6144589619057374135">‏فتح {url}$ في وضع التصفُّح المتخفي</translation>
+<translation id="6149061208933997199">استخدام كلمة المرور</translation>
 <translation id="6159839020698489198">اختياري</translation>
 <translation id="6177442314419606057">‏البحث في Chrome</translation>
 <translation id="6184086493125982861">إظهار علامات التبويب</translation>
@@ -768,6 +772,7 @@
 <translation id="8076014560081431679">لن يتم حذف إعدادات الموقع الإلكتروني المحفوظة وقد تعكس عادات التصفح. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">تتم إدارة هذا الإعداد. يُرجى النقر مرّتَين للحصول على المزيد من المعلومات.</translation>
 <translation id="8080028325999236607">إغلاق جميع علامات التبويب</translation>
+<translation id="8101409298456377967">يمكنك إنشاء كلمات المرور الخاصة بحسابك وحفظها وإدارتها لتسجيل الدخول إلى المواقع الإلكترونية والتطبيقات بسهولة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">إيقاف</translation>
 <translation id="8114753159095730575">أصبح بالإمكان تنزيل الملف. يمكنك مراجعة الخيارات في أسفل الشاشة.</translation>
 <translation id="8132598642024322408">السعر الآن <ph name="PRICE" /> بعدما كان <ph name="PREVIOUS_PRICE" />.</translation>

@@ -131,6 +131,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1768366657309696705">Klávesová zkratka <ph name="LAUNCHER_KEY_NAME" /> + tečka se změnila. Pokud chcete použít klávesu Insert, stiskněte klávesu <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Přesunuto na řádek <ph name="ROW_NUMBER" /> do sloupce <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Posunout doprava</translation>
+<translation id="1774796056689732716">Kalendář, <ph name="CURRENT_MONTH_YEAR" />, je vybráno datum <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Vyp</translation>
 <translation id="1804572139604454141">Nahrávání bylo ukončeno z důvodu kriticky nízkého místa na disku</translation>
 <translation id="181103072419391116">Síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno vaším administrátorem</translation>
@@ -620,6 +621,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5075554201838155866">Zapnout skryté titulky</translation>
 <translation id="5078796286268621944">Nesprávný kód PIN</translation>
 <translation id="5083553833479578423">Odemkněte další funkce Asistenta.</translation>
+<translation id="5090752371472782287">Odesílání do zařízení <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Personalizace</translation>
 <translation id="5117590920725113268">Zobrazit další měsíc</translation>
 <translation id="5136175204352732067">Je připojena jiná klávesnice</translation>
@@ -629,6 +631,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="5168181903108465623">Dostupná zařízení pro streamování obsahu</translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
 <translation id="5176318573511391780">Zaznamenat část obrazovky</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, počet událostí: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> byla sloučena s aplikací <ph name="IN_PLACE_APP" /> a byla vytvořena nová složka.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 další oznámení}few{# další oznámení}many{# dalšího oznámení}other{# dalších oznámení}}</translation>
@@ -802,6 +805,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="643147933154517414">Vše je hotovo</translation>
 <translation id="6431865393913628856">Záznam obrazovky</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> na přijímači <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> událost</translation>
 <translation id="6452181791372256707">Odmítnout</translation>
 <translation id="6453179446719226835">Jazyk se změnil</translation>
 <translation id="6459472438155181876">Rozšíření obrazovky na displej <ph name="DISPLAY_NAME" /></translation>
@@ -865,6 +869,7 @@ Nová instalace</translation>
 <translation id="6811454077060061666">Disk Google pro počítače není k dispozici</translation>
 <translation id="6818242057446442178">Zpět o slovo</translation>
 <translation id="6820676911989879663">Dejte si pauzu.</translation>
+<translation id="6827049576281411231">Zavřít panel událostí</translation>
 <translation id="6836499262298959512">Nebezpečný soubor</translation>
 <translation id="6837064795450991317">Skrýt plochu</translation>
 <translation id="6852052252232534364">Aktivujte kliknutím</translation>
@@ -872,6 +877,7 @@ Nová instalace</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Zbývá jedna číslice}few{Zbývají # číslice}many{Zbývá # číslice}other{Zbývá # číslic}}</translation>
 <translation id="6867938213751067702">Bylo pozastaveno stahování souboru <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Zkratka je vypnutá</translation>
+<translation id="6884665277231944629">Zpět na dnešek</translation>
 <translation id="6886172995547742638">Výkon zařízení <ph name="DEVICE_TYPE" /> se může snížit. Použijte certifikovaný napájecí adaptér s výkonem <ph name="PREFERRED_MINIMUM_POWER" /> W nebo vyšším.</translation>
 <translation id="688631446150864480">Okna můžete přepnout pomocí šipky dolů</translation>
 <translation id="6896758677409633944">Kopírovat</translation>
@@ -958,6 +964,7 @@ Nová instalace</translation>
 <translation id="7497767806359279797">Vybrat jazyk a klávesnici</translation>
 <translation id="7509246181739783082">Ověření identity</translation>
 <translation id="7513622367902644023">Byl vybrán režim snímku obrazovky</translation>
+<translation id="7513922695575567867">Kalendář, týden od <ph name="DATE" />, je vybráno datum <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Stáhnout</translation>
 <translation id="7526573455193969409">Síť může být sledována</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@ Nová instalace</translation>
 <translation id="7564874036684306347">Přesunutí oken na jinou plochu může vést k neočekávanému chování. Následná oznámení, okna a dialogy mohou být rozděleny mezi plochy.</translation>
 <translation id="7569509451529460200">Jsou zapnuty funkce Braille a ChromeVox</translation>
 <translation id="7569983096843329377">Černá</translation>
+<translation id="757941033127302446">Jste přihlášeni</translation>
 <translation id="7579778809502851308">Snímky obrazovky</translation>
 <translation id="7590883480672980941">Nastavení zadávání</translation>
 <translation id="7593891976182323525">Vyhledávání nebo Shift</translation>
@@ -1040,6 +1048,7 @@ Nová instalace</translation>
 <translation id="8035152190676905274">Pero</translation>
 <translation id="8036504271468642248">Předchozí věta</translation>
 <translation id="8042893070933512245">Otevřít nabídku nastavení usnadnění přístupu</translation>
+<translation id="8042925093898452104">Zavřít podrobné informace</translation>
 <translation id="8048123526339889627">Nastavení Bluetooth</translation>
 <translation id="8051716679295756675">Šablona s názvem <ph name="DESK_TEMPLATE_NAME" /> už existuje</translation>
 <translation id="8052898407431791827">Zkopírováno do schránky</translation>

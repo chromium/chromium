@@ -176,7 +176,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöpp
 <translation id="5193136243808726294">Stýrikerfi Google Chrome getur ekki opnað þessa síðu.</translation>
 <translation id="521447420733633466">Ef nokkrir deila sama tæki geta vinir og fjölskyldumeðlimir vafrað hver á sínum prófíl og sett Chrome upp eins og hverjum og einum líkar best</translation>
 <translation id="5251420635869119124">Gestir geta notað Chrome án þess að skilja eftir sig nokkur spor.</translation>
-<translation id="5251679006894510177">Næstum því uppfært! Endurræstu Chrome til að ljúka við uppfærsluna. Huliðsgluggar opnast ekki aftur.</translation>
 <translation id="5334487786912937552">Chrome verður að fá aðgang að geymslurými til að geta sótt skrár</translation>
 <translation id="5386244825306882791">Þetta stýrir því einnig hvaða síða er birt þegar þú ræsir Chrome eða leitar úr veffangastikunni.</translation>
 <translation id="5394833366792865639">Deila Chrome flipa</translation>
@@ -309,6 +308,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8914504000324227558">Endurræsa Chrome</translation>
 <translation id="8922193594870374009">Til að senda númer úr <ph name="ORIGIN" /> í Android símann þinn skaltu skrá þig inn á Chrome í báðum tækjunum.</translation>
 <translation id="8927704157641862988">Sérsníða valkosti persónuverndar sem taldir eru mikilvægir í Chrome. Þessar leiðbeiningar innihalda ekki allar stillingar eða alla valkosti.</translation>
+<translation id="8983720963221508955">Þú kveiktir á enn öruggari vefskoðun á reikningnum þínum. Þessi valkostur er nú í boði fyrir Chrome.</translation>
 <translation id="8986207147630327271">Þú ert að bæta vinnusniði við þennan vafra og veita stjórnanda þínum leyfi til að stjórna vinnusniðinu eingöngu.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Uppfærsla er í boði fyrir Chrome}=1{Uppfærsla er í boði fyrir Chrome}one{Uppfærsla hefur verið í boði fyrir Chrome í # dag}other{Uppfærsla hefur verið í boði fyrir Chrome í # daga}}</translation>
 <translation id="9026991721384951619">Chrome OS gat ekki samstillt gögnin þín vegna þess að innskráningarupplýsingar reikningsins eru úreltar.</translation>

@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">Offre proposée</translation>
 <translation id="1312803275555673949">Par quelles preuves est-ce appuyé?</translation>
 <translation id="131405271941274527"><ph name="URL" /> souhaite vous envoyer et recevoir de l'information lorsque vous touchez votre téléphone sur un appareil CCP</translation>
+<translation id="1314311879718644478">Affichez les contenus en réalité augmentée</translation>
 <translation id="1314509827145471431">Reliure à droite</translation>
 <translation id="1318023360584041678">Enregistré dans le groupe de l'onglet</translation>
 <translation id="1319245136674974084">Ne plus me poser la question pour cette application</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">Une erreur s'est produite lors de l'affichage de cette page Web.</translation>
 <translation id="1586541204584340881">Les extensions que vous avez installées</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1589050138437146318">Installer ARCore?</translation>
 <translation id="1592005682883173041">Accès aux données locales</translation>
 <translation id="1594030484168838125">Choisir</translation>
 <translation id="160851722280695521">Jouer au jeu du dinosaure dans Chrome</translation>
@@ -1383,6 +1385,7 @@
 <translation id="5333022057423422993">Chrome a trouvé le mot de passe que vous venez juste d'utiliser dans une violation de données. Afin de sécuriser vos comptes, nous vous recommandons de vérifier vos mots de passe enregistrés.</translation>
 <translation id="5334013548165032829">Journaux détaillés du système</translation>
 <translation id="5334145288572353250">Enregistrer l'adresse?</translation>
+<translation id="5335920952954443287">Cœur qui bat</translation>
 <translation id="5340250774223869109">L'application est bloquée</translation>
 <translation id="534295439873310000">Appareils CCP</translation>
 <translation id="5344579389779391559">L'accès à cette page peut engendrer des frais</translation>
@@ -2055,6 +2058,7 @@ Détails supplémentaires :
 <translation id="7654909834015434372">Lorsque vous modifiez des annotations, ce document s'affiche dans son orientation d'origine</translation>
 <translation id="765676359832457558">Masquer les paramètres avancés…</translation>
 <translation id="7658239707568436148">Annuler</translation>
+<translation id="7659878911471462949">Larmes de joie</translation>
 <translation id="7662298039739062396">Paramètre commandé par une extension</translation>
 <translation id="7663736086183791259">Certificat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Non autorisé en navigation privée</translation>
@@ -2258,6 +2262,7 @@ Détails supplémentaires :
 <translation id="830498451218851433">Plier en deux</translation>
 <translation id="8307358339886459768">Petite photo</translation>
 <translation id="8307888238279532626">Les applications installées et leur fréquence d'utilisation</translation>
+<translation id="8317207217658302555">Mettre à jour ARCore?</translation>
 <translation id="831997045666694187">Soirée</translation>
 <translation id="8321476692217554900">Notifications</translation>
 <translation id="8328484624016508118">Lorsque vous fermez tous les onglets de navigation privée, Chrome efface :

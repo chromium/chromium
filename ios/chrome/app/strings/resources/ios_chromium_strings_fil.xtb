@@ -44,6 +44,7 @@
 <translation id="3639997914391704523">Masusuri ng Chromium ang iyong mga password kapag nag-sign in ka sa Google Account mo.</translation>
 <translation id="3805899903892079518">Walang access ang Chromium sa mga larawan o video mo. I-enable ang access sa Mga Setting ng iOS &gt; Privacy &gt; Mga Larawan.</translation>
 <translation id="3946918322491238254">Makikita mo pa rin ang lahat ng iyong bookmark, history, password, at iba pang setting sa device na ito. Kung gagawa ka ng mga pagbabago, hindi masi-sync ang mga ito sa iyong account.</translation>
+<translation id="4043291146360695975">Sine-save ang mga password sa Password Manager sa device lang na ito.</translation>
 <translation id="4099085513035183040">Hindi sinusuportahan sa Chromium Beta</translation>
 <translation id="4555020257205549924">Kapag naka-on ang feature na ito, mag-aalok ang Chromium na magsalin ng mga page na nakasulat sa ibang mga wika gamit ang Google Translate. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Magagamit mo na ngayon ang Chromium sa tuwing magta-tap ka sa mga link sa mga mensahe, dokumento, at iba pang app.</translation>
@@ -107,6 +108,7 @@
 <translation id="8776843108004031667">Aalisin sa Chromium ang account na ito at anumang hindi naka-save na data.</translation>
 <translation id="894437814105052438">Kapag nag-sign out ka, hindi magsi-sync ang Chromium ng anumang bagong data sa iyong Google Account. Mananatili sa account ang data na dati nang na-sync.</translation>
 <translation id="9022552996538154597">Mag-sign in sa Chromium</translation>
+<translation id="9059693977935746710">Hindi mo kailangang tandaan ang password na ito. Mase-save ito sa Password Manager para sa <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Luma na ang Chromium</translation>
 <translation id="9110075932708282655">Gamitin ang Chromium bilang Default</translation>
 <translation id="921174536258924340">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit bukas o <ph name="BEGIN_LINK" />suriin ang mga password sa iyong Google Account.<ph name="END_LINK" /></translation>

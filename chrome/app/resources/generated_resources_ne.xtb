@@ -248,6 +248,7 @@
 <translation id="1244265436519979884">हाल Linux को पुनर्स्थापना हुँदै छ</translation>
 <translation id="1244303850296295656">एक्स्टेन्सन त्रुटि</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> इन्स्टल गर्न सकिएन: इमेजको URL खोल्दा <ph name="HTTP_ERROR" /> नामक त्रुटिको कोड देखियो। कृपया आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
+<translation id="1247071602516579380"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, ट्याब्लेटको नाम: <ph name="DEVICE_NAME" /></translation>
 <translation id="1251366534849411931">बायाँ मझौला कोष्ठक हुनु पर्ने हो: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">यस कार्यले साइट तथा इन्स्टल गरिएका एपहरूले भण्डारण गरेको <ph name="TOTAL_USAGE" /> डेटा मेटाउने छ</translation>
 <translation id="1251578593170406502">मोबाइल डेटा नेटवर्क स्यान गरिँदै छ...</translation>
@@ -391,6 +392,7 @@
 <translation id="1408980562518920698">व्यक्तिगत जानकारी व्यवस्थित गर्नुहोस्</translation>
 <translation id="1410197035576869800">एपको आइकन</translation>
 <translation id="1410616244180625362">तपाईंको क्यामेरा पहुँचका लागि <ph name="HOST" /> लाई अनुमति दिन जारी राख्नुहोस्</translation>
+<translation id="1410797069449661718">स्क्रोल गरेर पहिलो ट्याबमा लगियोस्</translation>
 <translation id="1410806973194718079">नीतिहरू जाँच गर्न सकिएन</translation>
 <translation id="1412681350727866021">थप एक्स्टेन्सनहरू</translation>
 <translation id="1414315029670184034">साइटहरूलाई मेरो क्यामेरा प्रयोग गर्ने अनुमति नदिइयोस्</translation>
@@ -434,6 +436,7 @@
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> चयन गरियो</translation>
 <translation id="1442851588227551435">Kerberos को सक्रिय टिकट सेट गर्नुहोस्</translation>
 <translation id="1444628761356461360">यो सेटिङ यन्त्रको मालिक, <ph name="OWNER_EMAIL" /> द्वारा व्यवस्थत छ।</translation>
+<translation id="1445005312224723356"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, फोनको नाम: <ph name="DEVICE_NAME" /></translation>
 <translation id="144518587530125858">विषयवस्तुको लागि '<ph name="IMAGE_PATH" />' लोड गर्न सकिएन।</translation>
 <translation id="1449191289887455076">की तोक्ने काम पुष्टि गरेर <ph name="RESPONSE" /> "<ph name="CURRENTKEY" />" की फेरि थिच्नुहोस्</translation>
 <translation id="1451375123200651445">वेबपेज, एकल फाइल</translation>
@@ -718,6 +721,7 @@
 <translation id="1725562816265788801">ट्याब स्क्रोलिङ</translation>
 <translation id="1729533290416704613">तपाईंले ओम्निबक्सबाट खोज्दा पनि कुन पृष्ठ देखाइयो भनि यसले नियन्त्रण गर्छ।</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />एप हटाउन, सेटिङहरू &gt; Google Play स्टोर &gt; Android का प्राथमिकताहरू व्यवस्थापन गर्नुहोस् &gt; एपहरू वा एप प्रबन्धक नामक विकल्पमा जानुहोस्। त्यसपछि आफूले स्थापना रद्द गर्न चाहेको एपमा ट्याप गर्नुहोस् (उक्त एप फेला पार्न तपाईंले दायाँ वा बायाँतिर स्वाइप गर्नु पर्ने हुन सक्छ)। त्यसपछि स्थापना रद्द गर्नुहोस् वा असक्षम पार्नुहोस् नामक बटनमा ट्याप गर्नुहोस्।<ph name="END_PARAGRAPH1" /></translation>
+<translation id="1730989807608739928">स्क्रोल गरेर अन्तिम ट्याबमा लगियोस्</translation>
 <translation id="1731911755844941020">अनुरोध पठाउँदै...</translation>
 <translation id="1733383495376208985">सिंक गरिएको डेटालाई तपाईंको आफ्नै <ph name="BEGIN_LINK" />सिंक पासफ्रेज<ph name="END_LINK" />मार्फत इन्क्रिप्ट गर्नुहोस्। यसअन्तर्गत Google Pay का भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्।</translation>
 <translation id="1734212868489994726">हल्का निलो</translation>
@@ -857,6 +861,7 @@
 <translation id="1855079636134697549">क्यामेरा अन गरिएको छ</translation>
 <translation id="1856715684130786728">स्थान थप्नुहोस्...</translation>
 <translation id="1858585891038687145">सफ्टवेयर निर्माताहरूको पहिचान गर्न यस प्रमाणपत्रमाथि विश्वास गर्नुहोस्</translation>
+<translation id="1859787252990099899"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, अज्ञात डिभाइसको नाम: <ph name="DEVICE_NAME" /></translation>
 <translation id="1861262398884155592">यो फोल्डर खाली छ</translation>
 <translation id="1862311223300693744">तपाईंले कुनै पनि विशेष VPN, प्रोक्सी, फायरवाल वा NAS सफ्टवेयर इन्स्टल गर्नुभएको छ?</translation>
 <translation id="1863182668524159459">कुनै पनि सिरियल पोर्ट फेला परेन</translation>
@@ -1231,6 +1236,7 @@
 <translation id="2242687258748107519">फाइल जानकारी</translation>
 <translation id="2246549592927364792">Google बाट छविका विवरणहरू प्राप्त गर्ने हो?</translation>
 <translation id="2247738527273549923">तपाईंको सङ्गठनले तपाईंको यन्त्र व्यवस्थापन गर्छ</translation>
+<translation id="2249061317998743208"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, गेम कन्ट्रोलरको नाम: <ph name="DEVICE_NAME" /></translation>
 <translation id="2249111429176737533">ट्याबमा खोलिने विन्डोका रूपमा खोल्नुहोस्</translation>
 <translation id="2249605167705922988">जस्तै 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">सिस्टम दर्शक मार्फत खोल्नुहोस्</translation>
@@ -1438,6 +1444,7 @@
 <translation id="245322989586167203">साइटहरूले तपाईंको नेटवर्क सेटअप गर्ने जस्ता डेटा स्थानान्तरणसम्बन्धी सुविधाहरू प्रदान गर्न सामान्यतया सिरियल पोर्टहरूमा कनेक्ट गर्छन्</translation>
 <translation id="2453706416476934374"><ph name="SUPERVISED_USER_NAME" /> ले सहायकलाई प्रश्न सोध्दा उनको आवश्यकताअनुसारका जवाफ दिइयोस् भन्ने चाहनुहुन्छ भने Google सहायकलाई <ph name="SUPERVISED_USER_NAME" /> को डिभाइसको स्क्रिनमा देखिने जानकारी प्रयोग गर्न दिनुहोस्। यो जानकारीअन्तर्गत तपाईंले बजाइराख्नुभएको गीत वा भिडियोसम्बन्धी जानकारी पनि समावेश हुन सक्छ।</translation>
 <translation id="2453860139492968684">समाप्त</translation>
+<translation id="2454206500483040640">पार्टिसन गरिएको</translation>
 <translation id="2454247629720664989">कुञ्जीशब्द</translation>
 <translation id="2454264884354864965">क्यामेरा अफ छ</translation>
 <translation id="2454524890947537054">वेबसाइट खोल्न पाऊँ भनी गरिएको अनुरोध अनुमोदन गर्ने हो?</translation>
@@ -1800,6 +1807,7 @@
 <translation id="2806891468525657116">सर्टकट पहिलेदेखि नै विद्यमान छ</translation>
 <translation id="2807517655263062534">तपाईंले डाउनलोड गरेका फाइलहरू यहाँ देखिन्छन्</translation>
 <translation id="2809586584051668049">र <ph name="NUMBER_ADDITIONAL_DISABLED" /> थप</translation>
+<translation id="2810235462964014915"><ph name="SITE_NAME" /> मा भएको जानकारी पढ्ने तथा परिवर्तन गर्ने अनुमति माग्ने एक्स्टेन्सनहरू</translation>
 <translation id="2811205483104563968">खाताहरू</translation>
 <translation id="2812049959647166806">थन्डरबोल्ट प्रयोग गर्न मिल्दैन</translation>
 <translation id="2812989263793994277">कुनैपनि फोटो नदेखाउनुहोस्</translation>
@@ -1991,6 +1999,7 @@
 <translation id="3007771295016901659">प्रतिलिपि गरिएको ट्याब</translation>
 <translation id="3008232374986381779">आफ्नो <ph name="DEVICE_TYPE" /> मा Linux का टुल, एडिटर र IDE हरू चलाउनुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">अनुमतिहरू रिसेट गर्नुहोस्</translation>
+<translation id="3008396025115884998"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, अडियो डिभाइसको नाम: <ph name="DEVICE_NAME" /></translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> का अनुसार तपाईंले आजै Wi-Fi मार्फत अपडेट डाउनलोड गर्नु पर्ने हुन्छ। अथवा, डेटाको सीमा तोकिएको इन्टरनेट प्रयोग गरी डाउनलोड गर्नुहोस् (तोकिएको शुल्क लाग्न सक्छ)।}other{<ph name="MANAGER" /> का अनुसार तपाईंले म्याद सकिनुअघि नै Wi-Fi मार्फत अपडेट डाउनलोड गर्नु पर्ने हुन्छ। अथवा, डेटाको सीमा तोकिएको इन्टरनेट प्रयोग गरी डाउनलोड गर्नुहोस् (तोकिएको शुल्क लाग्न सक्छ)।}}</translation>
 <translation id="3009300415590184725">के तपाइँ यकीन हुनुहुन्छ की तपाइँ मोबाइल लगत सेवा सेटअप प्रक्रिया रद्द गर्न चाहनुहुन्छ?</translation>
 <translation id="3009779501245596802">सूचित डेटाबेसहरू</translation>
@@ -2296,6 +2305,7 @@
 <translation id="3348038390189153836">हटाउन सकिने यन्त्र पत्ता लगाइयो</translation>
 <translation id="3348131053948466246">सुझाव गरिएको इमोजी। नेभिगेट गर्न माथि फर्केको वा तल फर्केको तीर कुञ्जी थिच्नुहोस् अनि इमोजी इन्सर्ट गर्न Enter थिच्नुहोस्।</translation>
 <translation id="3349933790966648062">मेमोरीको इतिहास</translation>
+<translation id="3354972872297836698"><ph name="DEVICE_NAME" /> डिभाइसमा कनेक्ट गर्न सकिएन। तपाईं फेरि कनेक्ट गरी हेर्न चाहनुहुन्छ भने उक्त डिभाइस चयन गर्नुहोस्</translation>
 <translation id="3355936511340229503">जडान त्रुटि</translation>
 <translation id="3356580349448036450">पूर्ण</translation>
 <translation id="3359256513598016054">प्रमाणपत्र नीति अवरोधहरू</translation>
@@ -3108,6 +3118,7 @@
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> वैध सङ्गठनको इमेल ठेगाना होइन। आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्। तपाईं एड्मिन हुनुहुन्छ भने तपाईं निम्न लिंकमा गएर आफ्नो सङ्गठन सेटअप गर्न सक्नुहुन्छ: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4167686856635546851">साइटहरूले भिडियो गेम वा वेब फारम जस्ता अन्तर्क्रियात्मक सुविधाहरू देखाउन सामान्यतया JavaScript प्रयोग गर्छन्</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> का केही सेटिङहरू तपाइँसँग साझा भइरहेको छ। यस सेटिङहरूले बहुविध साइन-इन प्रयोग गर्दै मात्रै तपाइँको खातालाई असर गर्छ।</translation>
+<translation id="4168651806173792090">अन्तिमका अङ्क <ph name="LAST_FOUR_DIGITS" /> भएको <ph name="NETWORK_NAME" /></translation>
 <translation id="4169535189173047238">अनुमति नदिनुहोस्</translation>
 <translation id="4170314459383239649">बाहिर निस्कँदा मेट्नुहोस्‌</translation>
 <translation id="417096670996204801">कुनै प्रोफाइल छनौट गर्नुहोस्</translation>
@@ -3338,6 +3349,7 @@
 <translation id="4432621511648257259">पासवर्ड मिलेन</translation>
 <translation id="443454694385851356">लिगेसी (असुरक्षित)</translation>
 <translation id="443475966875174318">नमिल्दा एपहरू अपडेट गर्नुहोस् वा हटाउनुहोस्</translation>
+<translation id="4435634292635092844">आफ्नो <ph name="DEVICE_TYPE" /> बाट आफ्नो फोनको क्यामेरा रोलमा भएका फोटोहरू हेर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="4438043733494739848">पारदर्शी</translation>
 <translation id="4440097423000553826"><ph name="WEBSITE" /> ले तपाईंको फोनमा एउटा सूचना पठाएको छ। साइन इन गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्न “<ph name="NOTIFICATIONTITLE" />” सूचनामा ट्याप गर्नुहोस् र त्यहाँ दिइएका निर्देशनहरू पालना गर्नुहोस्।</translation>
 <translation id="4441124369922430666">के तपाईं मेसिन खुला हुँदा यो एप्लिकेसन स्वत: सुरु गर्न चाहनुहुन्छ?</translation>
@@ -3634,6 +3646,7 @@
 <translation id="4759238208242260848">डाउनलोडहरू</translation>
 <translation id="4761104368405085019">आफ्नो माइक्रोफोन प्रयोग गर्नुहोस्</translation>
 <translation id="4762718786438001384">यन्त्रको डिस्कमा खाली ठाउँ अत्यन्त कम छ</translation>
+<translation id="4762898026821161650"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, कम्प्युटरको नाम: <ph name="DEVICE_NAME" /></translation>
 <translation id="4763408175235639573">तपाईंले यस पृष्ठ हेर्दा निम्न कुकीहरू सेट गरिए</translation>
 <translation id="4765582662863429759">यसले Android Messages लाई तपाईंको फोनबाट तपाईंको Chromebook मा पाठ प्रसारण गर्न दिन्छ</translation>
 <translation id="4768332406694066911">तपाईँसँग यी संगठनहरूका तपाईँको पहिचान गर्ने प्रमाणपत्रहरू छन्</translation>
@@ -4595,6 +4608,7 @@
 <translation id="5789643057113097023">।</translation>
 <translation id="5790085346892983794">सफलता</translation>
 <translation id="5790651917470750848">यो पोर्टमा पहिलेदेखि नै फरवार्ड गरिँदै छ</translation>
+<translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
 <translation id="5792728279623964091">कृपया आफ्नो पावर बटनमा ट्याप गर्नुहोस्</translation>
 <translation id="5793339252089865437">तपाईंले अद्यावधिक डाउनलोड गर्दा आफ्नो मोबाइल नेटवर्कमार्फत गर्नुभयो भने अधिक शुल्क लाग्न सक्छ।</translation>
 <translation id="5794034487966529952"><ph name="DESK_TITLE" /> नामक डेस्कमा ब्राउजरका <ph name="NUM_BROWSERS" /> वटा विन्डो खोलिएका छन्</translation>
@@ -5150,6 +5164,7 @@
 <translation id="6374469231428023295">फेरि प्रयास गर्नुहोस्</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' को १ परिणाम</translation>
 <translation id="6380143666419481200">स्वीकार्नुहोस् र जारी राख्नुहोस्</translation>
+<translation id="6382616130475191723"><ph name="SITE_NAME" /> मा भएको जानकारी पढ्ने तथा परिवर्तन गर्ने अनुमति पाएका एक्स्टेन्सनहरू</translation>
 <translation id="6382958439467370461">कुनै पनि निष्क्रिय सर्टकट छैन</translation>
 <translation id="638418309848716977">खोल्न मिल्ने लिंकहरू</translation>
 <translation id="6384275966486438344">तपाईंको खोज सेटिङहरूलाई यसमा परिवर्तन गर्नुहोस्: <ph name="SEARCH_HOST" /></translation>
@@ -5814,6 +5829,7 @@
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{१ मिनेटअघि सुरक्षा जाँच गरिएको थियो}other{{NUM_MINS} मिनेटअघि सुरक्षा जाँच गरिएको थियो}}</translation>
 <translation id="7057767408836081338">यो एपको डेटा प्राप्त गर्न नसकिए तापनि यसलाई चलाउने प्रयास गर्दै...</translation>
 <translation id="7058024590501568315">लुकाइएको नेटवर्क</translation>
+<translation id="70582545822664495"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, माउसको नाम: <ph name="DEVICE_NAME" /></translation>
 <translation id="7059858479264779982">स्वत: सुरुवातमा सेट गर्नुहोस्</translation>
 <translation id="7062222374113411376">हालसालै बन्द गरिएका साइटहरूलाई डेटा पठाउने र प्राप्त गर्ने कार्य सम्पन्न गर्ने अनुमति दिनुहोस् (सिफारिस गरिएको)</translation>
 <translation id="7063129466199351735">प्रशोधन सर्टकटहरू...</translation>
@@ -5978,6 +5994,7 @@
 <translation id="7257173066616499747">Wi-Fi नेटवर्क</translation>
 <translation id="725758059478686223">छपाइसम्बन्धी सेवा</translation>
 <translation id="7257666756905341374">तपाईंले प्रतिलिपि बनाएर टाँस्नुहुने डाटा पढ्नुहोस्</translation>
+<translation id="7258006747130724016"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, भिडियो क्यामेराको नाम: <ph name="DEVICE_NAME" /></translation>
 <translation id="7258192266780953209">रूपान्तरणहरू</translation>
 <translation id="7258225044283673131">यो एपले प्रतिक्रिया जनाइरहेको छैन। एप बन्द गर्न "बलपूर्वक बन्द गर्नुहोस्" चयन गर्नुहोस्।</translation>
 <translation id="7262004276116528033">यो साइन इन सेवा <ph name="SAML_DOMAIN" /> द्वारा होस्ट गरिन्छ</translation>
@@ -6773,6 +6790,7 @@
 <translation id="8037117027592400564">बोलिएका सबै पाठहरूलाई संश्लेषण गरिएको बोली प्रयोग गरेर पढ्नुहोस्</translation>
 <translation id="8037357227543935929">सोध्नुहोस् (डिफल्ट मान)</translation>
 <translation id="803771048473350947">फाइल</translation>
+<translation id="8038399858950372766"><ph name="DEVICE_COUNT" /> वटामध्ये <ph name="DEVICE_INDEX" /> औँ डिभाइस, किबोर्डको नाम: <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="8042142357103597104">पाठको अपारदर्शिता</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> ले प्रतिक्रिया जनाइरहेको छैन।</translation>
@@ -6982,11 +7000,13 @@
 <translation id="8244514732452879619">बत्ती निभ्ने बेला भयो</translation>
 <translation id="8246776524656196770">कुनै PIN (व्यक्तिगत पहिचान नम्बर) प्रयोग गरी आफ्नो सुरक्षा साँचो सेभ गर्नुहोस्</translation>
 <translation id="8248050856337841185">&amp;टाँस्नुहोस्</translation>
+<translation id="8248381369318572865">तपाईंको डिभाइसको माइक्रोफोन प्रयोग गर्ने तथा तपाईंको बोलीको विश्लेषण गर्ने अनुमति</translation>
 <translation id="8248887045858762645">Chrome सम्बन्धी सुझाव</translation>
 <translation id="8249048954461686687">OEM फोल्डर</translation>
 <translation id="8249615410597138718">आफ्ना यन्त्रहरूमा पठाउनुहोस्</translation>
 <translation id="8249672078237421304">तपाईंले पढ्नुहुने भाषामा नरहेका पृष्ठहरूलाई अनुवाद गर्न प्रस्ताव गर्नुहोस्</translation>
 <translation id="8251441930213048644">अब पुनः ताजा गर्नुहोस्</translation>
+<translation id="8251509999076836464"><ph name="DEVICE_NAME" /> सँग कनेक्ट गरिँदै छ</translation>
 <translation id="8251578425305135684">थम्बनेल हटाइयो।</translation>
 <translation id="825238165904109940">सँधै पूरा URL हरू देखाइयोस्</translation>
 <translation id="8252569384384439529">अपलोड गर्दै...</translation>
@@ -7002,6 +7022,7 @@
 <translation id="8264024885325823677">तपाईंका प्रशासक यो सेटिङ मिलाउनुहुन्छ।</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" ले फुल स्क्रिन ट्रिगर गर्‍यो।</translation>
 <translation id="826511437356419340">विन्डोको रूपरेखा मोडमा प्रवेश गरियो। तपाईं किबोर्ड प्रयोग गर्दै हुनुहुन्छ भने नेभिगेसन गर्न स्वाइप गर्नुहोस् वा tab थिच्नुहोस्।</translation>
+<translation id="8265671588726449108">{COUNT,plural, =1{तपाईंले "पुनः सुरु गर्नुहोस्" मा क्लिक गर्नुभयो भने तपाईंको इन्कोग्निटो विन्डो फेरि खुल्ने छैन}other{तपाईंले "पुनः सुरु गर्नुहोस्" मा क्लिक गर्नुभयो भने तपाईंका {COUNT} वटा इन्कोग्निटो विन्डो फेरि खुल्ने छैनन्}}</translation>
 <translation id="8266947622852630193">सबै इनपुट विधि</translation>
 <translation id="8267539814046467575">प्रिन्टर थप्नुहोस्</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />यो जानकारी यस यन्त्र र यसको प्रयोग (जस्तै ब्याट्रीको स्तर, प्रणाली तथा एपका क्रियाकलाप र त्रुटिहरू) सम्बन्धी सामान्य जानकारी हो। यो डेटालाई Android मा सुधार गर्ने प्रयोजनका लागि प्रयोग गरिने छ र केही एकत्रित जानकारीले Google का एप तथा Android का विकासकर्ता जस्ता साझेदारहरूलाई तिनका एप र उत्पादनहरू अझ राम्रो बनाउन पनि मद्दत गर्ने छ।<ph name="END_PARAGRAPH1" />

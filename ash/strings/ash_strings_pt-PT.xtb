@@ -131,6 +131,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1768366657309696705">O atalho de teclado <ph name="LAUNCHER_KEY_NAME" /> + ponto final foi alterado. Para utilizar a tecla Inserir, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + Shift + retrocesso.</translation>
 <translation id="1770726142253415363">A app foi movida para a linha <ph name="ROW_NUMBER" />, coluna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Deslocar para a direita</translation>
+<translation id="1774796056689732716">Calendário, <ph name="CURRENT_MONTH_YEAR" />, atualmente, está selecionada a data <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Desativado</translation>
 <translation id="1804572139604454141">A gravação terminou porque o espaço em disco está criticamente baixo.</translation>
 <translation id="181103072419391116">Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, gerida pelo administrador</translation>
@@ -630,6 +631,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5168181903108465623">Dispositivos de transmissão disponíveis</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
 <translation id="5176318573511391780">Gravar ecrã parcial</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventos</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> em combinação com <ph name="IN_PLACE_APP" /> para criar uma nova pasta.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Mais 1 notificação}one{Mais # notificação(ões)}other{Mais # notificações}}</translation>
@@ -803,6 +805,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="643147933154517414">Tudo concluído</translation>
 <translation id="6431865393913628856">Gravação de ecrã</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> no recetor <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> evento</translation>
 <translation id="6452181791372256707">Rejeitar</translation>
 <translation id="6453179446719226835">O idioma foi alterado</translation>
 <translation id="6459472438155181876">A prolongar ecrã para <ph name="DISPLAY_NAME" /></translation>
@@ -866,6 +869,7 @@ Nova instalação</translation>
 <translation id="6811454077060061666">O Google Drive para computador está indisponível</translation>
 <translation id="6818242057446442178">Recuar por palavra</translation>
 <translation id="6820676911989879663">Faça uma pausa!</translation>
+<translation id="6827049576281411231">Fechar painel de eventos</translation>
 <translation id="6836499262298959512">Ficheiro perigoso</translation>
 <translation id="6837064795450991317">Ocultar a barra do espaço de trabalho</translation>
 <translation id="6852052252232534364">Clicar: ativar</translation>
@@ -873,6 +877,7 @@ Nova instalação</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Um dígito restante}one{# dígito(s) restante(s)}other{# dígitos restantes}}</translation>
 <translation id="6867938213751067702">Transferência de <ph name="FILENAME" /> colocada em pausa</translation>
 <translation id="6878400149835617132">Atalho desativado</translation>
+<translation id="6884665277231944629">Voltar a hoje</translation>
 <translation id="6886172995547742638">O dispositivo <ph name="DEVICE_TYPE" /> pode ter um desempenho inferior. Utilize um transformador USB-C certificado de <ph name="PREFERRED_MINIMUM_POWER" /> W ou superior.</translation>
 <translation id="688631446150864480">Prima a seta para baixo para alternar entre janelas.</translation>
 <translation id="6896758677409633944">Copiar</translation>
@@ -959,6 +964,7 @@ Nova instalação</translation>
 <translation id="7497767806359279797">Escolher idioma e teclado</translation>
 <translation id="7509246181739783082">Valide a sua identidade</translation>
 <translation id="7513622367902644023">Modo de captura de ecrã selecionado</translation>
+<translation id="7513922695575567867">Atualmente, está selecionada a semana de <ph name="DATE" />, <ph name="SELECTED_DATE" />, do calendário.</translation>
 <translation id="7514365320538308">Transferir</translation>
 <translation id="7526573455193969409">A rede pode ser monitorizada</translation>
 <translation id="7536035074519304529">Endereço IP: <ph name="ADDRESS" /></translation>
@@ -968,6 +974,7 @@ Nova instalação</translation>
 <translation id="7564874036684306347">A movimentação de janelas para outro ambiente de trabalho pode provocar um comportamento inesperado. É possível dividir as notificações, as janelas e as caixas de diálogo subsequentes entre ambientes de trabalho.</translation>
 <translation id="7569509451529460200">O braille e o ChromeVox estão ativados</translation>
 <translation id="7569983096843329377">Preto</translation>
+<translation id="757941033127302446">Com sessão iniciada</translation>
 <translation id="7579778809502851308">Captura de ecrã</translation>
 <translation id="7590883480672980941">Definições de introdução</translation>
 <translation id="7593891976182323525">Pesquisar ou Shift</translation>
@@ -1041,6 +1048,7 @@ Nova instalação</translation>
 <translation id="8035152190676905274">Caneta</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Abrir menu de definições de acessibilidade</translation>
+<translation id="8042925093898452104">Fechar informações de detalhes</translation>
 <translation id="8048123526339889627">Definições de Bluetooth</translation>
 <translation id="8051716679295756675">O modelo denominado <ph name="DESK_TEMPLATE_NAME" /> já existe</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>

@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">З’єднання з Google. Це може зайняти хвилину…</translation>
 <translation id="1416550906796893042">Версія додатка</translation>
 <translation id="1430915738399379752">Друк</translation>
+<translation id="1436784010935106834">Видалено</translation>
 <translation id="1448440926884431741">Впорядковуйте відстежувані товари в закладках</translation>
 <translation id="1450753235335490080">Не вдалося надіслати: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Виберіть мову Chrome</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">Закрити вікно?</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="218608176142494674">Спільний доступ</translation>
-<translation id="2195339740518523951">Найвищий рівень безпеки в Chrome</translation>
 <translation id="2200113223741723867">Керувати доступом до даних про використання</translation>
 <translation id="2218567645332692482">Трафік переходить на HTTPS, а ви отримуєте сповіщення перед завантаженням сайтів, які не підтримують цей протокол</translation>
 <translation id="2227444325776770048">Продовжити як <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@
 <translation id="4170011742729630528">Служба не доступна. Повторіть спробу пізніше.</translation>
 <translation id="4179980317383591987">Використано <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Мови</translation>
-<translation id="4183868528246477015">Пошук з Об'єктивом <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Відкрити в новій вкладці</translation>
 <translation id="4196597275619698563">Створити картку</translation>
 <translation id="4198423547019359126">Немає доступних місць для завантаження</translation>
@@ -577,7 +576,6 @@
 <translation id="4411535500181276704">Спрощений режим</translation>
 <translation id="4415276339145661267">Керувати обліковим записом Google</translation>
 <translation id="4425140285732600465">Ціна відстежується. Отримуйте сповіщення, коли на якомусь сайті знизиться ціна.</translation>
-<translation id="4427306783828095590">Покращений захист ще ефективніше блокує фішинг і зловмисне програмне забезпечення</translation>
 <translation id="4450672886426705087">Результати з Пошуку Google.</translation>
 <translation id="4452411734226507615">Закрити вкладку <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Закладку збережено в папці "<ph name="FOLDER_NAME" />"</translation>
@@ -1082,6 +1080,7 @@
 <translation id="7177466738963138057">Це можна змінити пізніше в налаштуваннях</translation>
 <translation id="7177873915659574692">Не вдається створити QR-код. URL-адреса перевищує ліміт символів (<ph name="CHARACTER_LIMIT" />).</translation>
 <translation id="7180611975245234373">Оновити</translation>
+<translation id="718226107353899806">Можна додати до стількох реакцій: <ph name="MAX_NUM_REACTIONS" /></translation>
 <translation id="7187993566681480880">Захищає вас у Chrome і може покращувати безпеку в інших додатках Google після входу в обліковий запис.</translation>
 <translation id="718926126787620637">Список папок із закладками відкрито на всю висоту</translation>
 <translation id="7191430249889272776">Вкладку відкрито у фоновому режимі.</translation>
@@ -1245,7 +1244,6 @@
 <translation id="8035133914807600019">Нова папка…</translation>
 <translation id="8037750541064988519">Залишилося <ph name="DAYS" /> дн.</translation>
 <translation id="8037801708772278989">Щойно перевірено</translation>
-<translation id="8040831032425909005">Значок віджета Google Пошуку для швидких дій</translation>
 <translation id="804335162455518893">Карту SD не знайдено</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> анонімна вкладка}one{<ph name="TAB_COUNT_NORMAL" /> анонімна вкладка}few{<ph name="TAB_COUNT_NORMAL" /> анонімні вкладки}many{<ph name="TAB_COUNT_NORMAL" /> анонімних вкладок}other{<ph name="TAB_COUNT_NORMAL" /> анонімної вкладки}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> МБ доступно</translation>

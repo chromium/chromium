@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Menghubungi Google. Mungkin mengambil sedikit masa…</translation>
 <translation id="1416550906796893042">Versi aplikasi</translation>
 <translation id="1430915738399379752">Cetak</translation>
+<translation id="1436784010935106834">Dibuang</translation>
 <translation id="1448440926884431741">Atur produk yang dijejaki dalam Penanda Halaman</translation>
 <translation id="1450753235335490080">Tidak dapat berkongsi <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Pilih bahasa Chrome</translation>
@@ -203,7 +204,6 @@ Ketik mana-mana perkataan untuk mencari. Untuk memperhalus carian anda, sentuh &
 <translation id="2172905120685242547">Tutup tetingkap?</translation>
 <translation id="2175927920773552910">Kod QR</translation>
 <translation id="218608176142494674">Perkongsian</translation>
-<translation id="2195339740518523951">Dapatkan keselamatan Chrome yang paling kukuh</translation>
 <translation id="2200113223741723867">Urus perkongsian data penggunaan</translation>
 <translation id="2218567645332692482">Tingkatkan navigasi kepada HTTPS dan beri anda amaran sebelum memuatkan laman yang tidak menyokong HTTPS</translation>
 <translation id="2227444325776770048">Teruskan sebagai <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="4170011742729630528">Perkhidmatan tidak tersedia; cuba lagi kemudian.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> digunakan</translation>
 <translation id="4181841719683918333">Bahasa</translation>
-<translation id="4183868528246477015">Cari dengan Google Lens <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Buka dalam tab baharu</translation>
 <translation id="4196597275619698563">Buat kad</translation>
 <translation id="4198423547019359126">Tiada lokasi muat turun tersedia</translation>
@@ -577,7 +576,6 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="4411535500181276704">Mod Ringkas</translation>
 <translation id="4415276339145661267">Urus Google Account anda</translation>
 <translation id="4425140285732600465">Menjejaki harga. Dapatkan makluman sekiranya harga jatuh pada mana-mana laman.</translation>
-<translation id="4427306783828095590">Perlindungan yang dipertingkatkan melakukan pelbagai lagi perkara untuk menyekat pancingan data dan perisian hasad</translation>
 <translation id="4450672886426705087">Hasil carian daripada Google.</translation>
 <translation id="4452411734226507615">Tutup tab <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Ditandai halaman ke <ph name="FOLDER_NAME" /></translation>
@@ -1082,6 +1080,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7177466738963138057">Anda boleh menukar perkara ini selepas ini dalam Tetapan</translation>
 <translation id="7177873915659574692">Tidak dapat membuat Kod QR. URL melebihi <ph name="CHARACTER_LIMIT" /> aksara.</translation>
 <translation id="7180611975245234373">Muat semula</translation>
+<translation id="718226107353899806">Anda boleh menambah hingga <ph name="MAX_NUM_REACTIONS" /> reaksi</translation>
 <translation id="7187993566681480880">Memastikan anda selamat pada Chrome dan mungkin digunakan untuk meningkatkan keselamatan anda dalam apl Google yang lain apabila anda log masuk.</translation>
 <translation id="718926126787620637">Senarai folder penanda halaman dibuka pada ketinggian penuh</translation>
 <translation id="7191430249889272776">Tab dibuka di latar belakang.</translation>
@@ -1245,7 +1244,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8035133914807600019">Folder baharu...</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> hari lagi</translation>
 <translation id="8037801708772278989">Disemak sebentar tadi</translation>
-<translation id="8040831032425909005">Ikon Widget Carian Tindakan Pantas</translation>
 <translation id="804335162455518893">Kad SD tidak ditemui</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab inkognito}other{<ph name="TAB_COUNT_NORMAL" /> tab inkognito}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB tersedia</translation>

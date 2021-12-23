@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">ऑफर उपलब्ध आहे</translation>
 <translation id="1312803275555673949">यासाठी काय पुरावा आहे?</translation>
 <translation id="131405271941274527">तुम्ही तुमचा फोन NFC डिव्हाइसवर टॅप करता तेव्हा <ph name="URL" /> ला माहिती पाठवायची आणि मिळवायची असते</translation>
+<translation id="1314311879718644478">ऑगमेंटेड रीअ‍ॅलिटी आशय पहा</translation>
 <translation id="1314509827145471431">बाइंड राइट</translation>
 <translation id="1318023360584041678">टॅबच्या गटामध्ये सेव्ह केला</translation>
 <translation id="1319245136674974084">या अ‍ॅपसाठी पुन्‍हा विचारू नका</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">हे वेबपेज प्रदर्शित करताना काहीतरी चूक झाली.</translation>
 <translation id="1586541204584340881">तुम्ही कोणती एक्स्टेंशन इंस्टॉल केली आहेत</translation>
 <translation id="1588438908519853928">सामान्य</translation>
+<translation id="1589050138437146318">ARCore इंस्टॉल करायचे आहे का?</translation>
 <translation id="1592005682883173041">स्थानिक डेटा ॲक्सेस</translation>
 <translation id="1594030484168838125">निवडा</translation>
 <translation id="160851722280695521">Chrome मध्ये Dino Run गेम खेळा</translation>
@@ -1391,6 +1393,7 @@
 <translation id="5333022057423422993">Chrome ला तुम्ही नुकताच डेटा भंगामध्ये वापरलेला पासवर्ड आढळळा आहे. तुमची खाती सुरक्षित करण्यासाठी, आम्ही तुमचे सेव्ह केलेले पासवर्ड तपासण्याची शिफारस करतो.</translation>
 <translation id="5334013548165032829">तपशीलवार सिस्टम लॉग</translation>
 <translation id="5334145288572353250">पत्ता सेव्ह करायचा आहे का?</translation>
+<translation id="5335920952954443287">धडधडणारे हृदय</translation>
 <translation id="5340250774223869109">अ‍ॅप्लिकेशन ब्लॉक केले आहे</translation>
 <translation id="534295439873310000">NFC डिव्हाइस</translation>
 <translation id="5344579389779391559">या पेजवर कदाचित तुमच्याकडून शुल्क आकारले जाऊ शकते</translation>
@@ -2064,6 +2067,7 @@
 <translation id="7654909834015434372">तुम्ही भाष्ये संपादित करता तेव्हा हा दस्तऐवज त्याच्या मूळ रोटेशनवर परत येईल</translation>
 <translation id="765676359832457558">प्रगत सेटिंग्ज लपवा...</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
+<translation id="7659878911471462949">आनंदाश्रू</translation>
 <translation id="7662298039739062396">सेटिंग एका एक्स्टेंशनद्वारे नियंत्रित केली आहेत</translation>
 <translation id="7663736086183791259">सर्टिफिकेट <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">गुप्त मोडमध्ये अनुमती नाही</translation>
@@ -2267,6 +2271,7 @@
 <translation id="830498451218851433">फोल्ड हाफ</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">इंस्टॉल केलेली अ‍ॅप्स आणि ती किती वेळा वापरली जातात</translation>
+<translation id="8317207217658302555">ARCore अपडेट करायचे आहे का?</translation>
 <translation id="831997045666694187">संध्याकाळी</translation>
 <translation id="8321476692217554900">सूचना</translation>
 <translation id="8328484624016508118">सर्व गुप्त टॅब बंद केल्यानंतर, Chrome हे साफ करते:

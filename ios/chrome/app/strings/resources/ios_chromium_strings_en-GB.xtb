@@ -44,6 +44,7 @@
 <translation id="3639997914391704523">Chromium can check your passwords when you sign in with your Google Account.</translation>
 <translation id="3805899903892079518">Chromium does not have access to your photos or videos. Enable access in iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="3946918322491238254">You can still see all your bookmarks, history, passwords and other settings on this device. If you make changes, they won't sync to your account.</translation>
+<translation id="4043291146360695975">Passwords are saved to Password Manager on this device only.</translation>
 <translation id="4099085513035183040">Not supported on Chromium beta</translation>
 <translation id="4555020257205549924">When this feature is turned on, Chromium will offer to translate pages written in other languages using Google Translate. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">You can now use Chromium whenever you tap on links in messages, documents and other apps.</translation>
@@ -61,7 +62,6 @@
 <translation id="5573014823074921752">Chromium tip. For more tab options, touch and hold the Show Tabs button in the toolbar, which is at the bottom or top of your screen.</translation>
 <translation id="5700709190537129682">Chromium can't check your passwords</translation>
 <translation id="5777187867430702742">Chromium page</translation>
-<translation id="5828714153471158680">To auto-fill your passwords with Password Manager, turn on Chromium in your iOS auto-fill settings:</translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
 <translation id="5945387852661427312">You are signing in with an account managed by <ph name="DOMAIN" /> and giving its administrator control over your Chromium data. Your data will become permanently tied to this account. Signing out of Chromium will delete your data from this device, but it will remain stored in your Google Account.</translation>
 <translation id="602807004951640891">By using Chromium, you agree to the <ph name="BEGIN_LINK_TOS" />Terms of Service<ph name="END_LINK_TOS" />.</translation>
@@ -108,6 +108,7 @@
 <translation id="8776843108004031667">This account and any unsaved data will be removed from Chromium.</translation>
 <translation id="894437814105052438">When you sign out, Chromium won't sync any new data to your Google Account. Data previously synced stays in the account.</translation>
 <translation id="9022552996538154597">Sign in to Chromium</translation>
+<translation id="9059693977935746710">You won't need to remember this password. It will be saved to Password Manager for <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium is out of date</translation>
 <translation id="9110075932708282655">Use Chromium by default</translation>
 <translation id="921174536258924340">Chromium couldn't check all passwords. Try again tomorrow or <ph name="BEGIN_LINK" />check passwords in your Google Account.<ph name="END_LINK" /></translation>

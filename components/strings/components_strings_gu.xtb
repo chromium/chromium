@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">ઑફર ઉપલબ્ધ છે</translation>
 <translation id="1312803275555673949">કયા પુરાવા તેને સપોર્ટ કરે છે?</translation>
 <translation id="131405271941274527">જ્યારે તમે NFC ડિવાઇસ પર તમારા ફોન પર ટૅપ કરો, ત્યારે <ph name="URL" /> માહિતી મોકલવા અને પ્રાપ્ત કરવા માગે છે</translation>
+<translation id="1314311879718644478">ઑગ્મેન્ટેડ રિયાલિટી કન્ટેન્ટ જુઓ</translation>
 <translation id="1314509827145471431">જમણી બાજુએ જોડો</translation>
 <translation id="1318023360584041678">ટૅબ ગ્રૂપમાં સાચવ્યું</translation>
 <translation id="1319245136674974084">આ ઍપ માટે ફરીથી પૂછશો નહીં</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">આ વેબપેજ બતાવતી વખતે કંઈક ખોટું થયું.</translation>
 <translation id="1586541204584340881">તમે કયા એક્સ્ટેંશન ઇન્સ્ટૉલ કર્યા છે</translation>
 <translation id="1588438908519853928">સામાન્ય</translation>
+<translation id="1589050138437146318">ARCore ઇન્સ્ટૉલ કરીએ?</translation>
 <translation id="1592005682883173041">સ્થાનિક ડેટા ઍક્સેસ</translation>
 <translation id="1594030484168838125">પસંદ કરો</translation>
 <translation id="160851722280695521">Chromeમાં Dino Run ગેમ રમો</translation>
@@ -1391,6 +1393,7 @@
 <translation id="5333022057423422993">Chromeને તમે હમણાં જ ડેટા ઉલ્લંઘનમાં ઉપયોગમાં લીધેલો પાસવર્ડ મળ્યો છે. તમારા એકાઉન્ટને સુરક્ષિત રાખવા માટે, અમે તમારા સાચવેલા પાસવર્ડને ચેક કરવાનો સુઝાવ આપીએ છીએ.</translation>
 <translation id="5334013548165032829">વિગતવાર સિસ્ટમ લૉગ</translation>
 <translation id="5334145288572353250">સરનામું સાચવીએ?</translation>
+<translation id="5335920952954443287">ધબકતું હૃદય</translation>
 <translation id="5340250774223869109">ઍપ્લિકેશન બ્લૉક કરેલી છે</translation>
 <translation id="534295439873310000">NFC ડિવાઇસ</translation>
 <translation id="5344579389779391559">આ પેજ કદાચ તમારી પાસેથી શુલ્ક વસૂલ કરવાનો પ્રયાસ કરી શકે છે</translation>
@@ -2063,6 +2066,7 @@
 <translation id="7654909834015434372">જ્યારે તમે ટીકાટિપ્પણીમાં ફેરફાર કરશો, ત્યારે આ દસ્તાવેજ તેના ઑરિજિનલ રોટેશન પર પાછો ફરશે</translation>
 <translation id="765676359832457558">વિગતવાર સેટિંગ છુપાવો...</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
+<translation id="7659878911471462949">ખુશીના આંસુ</translation>
 <translation id="7662298039739062396">એક્સટેન્શન દ્વારા સેટિંગ નિયંત્રિત કરેલ છે</translation>
 <translation id="7663736086183791259">પ્રમાણપત્ર <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">છુપા મોડમાં મંજૂરી નથી</translation>
@@ -2266,6 +2270,7 @@
 <translation id="830498451218851433">અડધું વાળો</translation>
 <translation id="8307358339886459768">નાનો-ફોટો</translation>
 <translation id="8307888238279532626">ઇન્સ્ટૉલ થયેલી ઍપ અને તેમનો ઉપયોગ કેટલી વાર કરવામાં આવે છે</translation>
+<translation id="8317207217658302555">ARCore અપડેટ કરીએ?</translation>
 <translation id="831997045666694187">સાંજ</translation>
 <translation id="8321476692217554900">નોટિફિકેશન</translation>
 <translation id="8328484624016508118">બધી છૂપી ટૅબ બંધ કર્યા પછી, Chrome આ સાફ કરશે:

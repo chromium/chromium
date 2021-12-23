@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Google से संपर्क किया जा रहा है. इसमें कुछ समय लग सकता है…</translation>
 <translation id="1416550906796893042">ऐप्‍लिकेशन वर्शन</translation>
 <translation id="1430915738399379752">प्रिंट करें</translation>
+<translation id="1436784010935106834">निकाला गया</translation>
 <translation id="1448440926884431741">ट्रैक किए गए प्रॉडक्ट को Bookmarks में व्यवस्थित करें</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेयर नहीं किया जा सकता</translation>
 <translation id="1466383950273130737">Chrome की भाषा चुनें</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">क्या आप विंडो बंद करना चाहते हैं?</translation>
 <translation id="2175927920773552910">क्यूआर कोड</translation>
 <translation id="218608176142494674">शेयर किया जा रहा है</translation>
-<translation id="2195339740518523951">Chrome की सबसे मज़बूत सुरक्षा पाएं</translation>
 <translation id="2200113223741723867">इस्तेमाल के बारे में डेटा शेयर करने की सेटिंग प्रबंधित करें</translation>
 <translation id="2218567645332692482">नेविगेशन को एचटीटीपीएस पर अपग्रेड करें. ऐसा करने से, आपको उन साइटों को लोड करने से पहले चेतावनी मिलेगी जो एचटीटीपीएस पर काम नहीं करतीं</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> के रूप में जारी रखें</translation>
@@ -543,7 +543,6 @@
 <translation id="4170011742729630528">सेवा उपलब्ध नहीं है; बाद में फिर से प्रयास करें.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> इस्तेमाल किए गए</translation>
 <translation id="4181841719683918333">भाषाएं</translation>
-<translation id="4183868528246477015">Google Lens से खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">नए टैब में खोलें</translation>
 <translation id="4196597275619698563">कार्ड बनाएं</translation>
 <translation id="4198423547019359126">डाउनलोड करने की कोई जगह उपलब्ध नहीं है</translation>
@@ -577,7 +576,6 @@
 <translation id="4411535500181276704">लाइट मोड</translation>
 <translation id="4415276339145661267">अपना Google खाता मैनेज करें</translation>
 <translation id="4425140285732600465">कीमत ट्रैक की जा रही है. किसी भी साइट पर कीमत में कमी होने पर सूचना पाएं.</translation>
-<translation id="4427306783828095590">बेहतर सुरक्षा की मदद से फ़िशिंग और मैलवेयर को बेहतर तरीके से ब्लॉक किया जाता है</translation>
 <translation id="4450672886426705087">Google Search से मिले खोज के नतीजे.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> टैब बंद करें</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> में बुकमार्क किया गया</translation>
@@ -1082,6 +1080,7 @@
 <translation id="7177466738963138057">आप इसे बाद में सेटिंग में जाकर बदल सकते हैं</translation>
 <translation id="7177873915659574692">क्यूआर कोड नहीं बनाया जा सकता. यूआरएल <ph name="CHARACTER_LIMIT" /> वर्णों से ज़्यादा का है.</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
+<translation id="718226107353899806">ज़्यादा से ज़्यादा <ph name="MAX_NUM_REACTIONS" /> प्रतिक्रियाएं जोड़ी जा सकती हैं</translation>
 <translation id="7187993566681480880">अगर आप Chrome में साइन इन हैं, तो यह सुविधा आपको सुरक्षित रखती है. साथ ही, अन्य Google ऐप्लिकेशन में इसका इस्तेमाल सुरक्षा को बेहतर बनाने में भी हो सकता है.</translation>
 <translation id="718926126787620637">बुकमार्क फ़ोल्डर वाली सूची, पूरी स्क्रीन पर खोली गई</translation>
 <translation id="7191430249889272776">पृष्ठभूमि में टैब खोला गया.</translation>
@@ -1245,7 +1244,6 @@
 <translation id="8035133914807600019">नया फ़ोल्‍डर…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> दिन शेष</translation>
 <translation id="8037801708772278989">अभी-अभी जांच की गई</translation>
-<translation id="8040831032425909005">तेज़ कार्रवाई के लिए 'Search विजेट' आइकॉन</translation>
 <translation id="804335162455518893">SD कार्ड नहीं मिला</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> गुप्त टैब}one{<ph name="TAB_COUNT_NORMAL" /> गुप्त टैब}other{<ph name="TAB_COUNT_NORMAL" /> गुप्त टैब}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> एमबी उपलब्ध</translation>

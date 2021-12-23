@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">Додај во „Списокот за читање“</translation>
 <translation id="3157684681743766797">Означи ги сите…</translation>
 <translation id="3169472444629675720">Откриј</translation>
+<translation id="3174662312949010067">Зачуваните лозинки може да ги користите и на другите ваши уреди.</translation>
 <translation id="3175081911749765310">Веб-услуги</translation>
 <translation id="3178650076442119961">Активен денес</translation>
 <translation id="3181825792072797598">Вклучи синхронизација</translation>
@@ -328,6 +329,7 @@
 <translation id="4042870976416480368">Пронајдете на страницата</translation>
 <translation id="4049507953662678203">Проверете дали имате мрежна врска и обидете се повторно.</translation>
 <translation id="408404951701638773">Сега е полесно да се дојде до лентата за пребарување</translation>
+<translation id="4108314971463891922">Следи</translation>
 <translation id="411254640334432676">Преземањето не успеа.</translation>
 <translation id="4112644173421521737">Пребарај</translation>
 <translation id="4113030288477039509">Управувано од вашиот администратор</translation>
@@ -345,6 +347,7 @@
 <translation id="4272631900155121838">За да скенирате QR код, овозможете ја камерата во „Поставки“</translation>
 <translation id="4277990410970811858">Безбедно прелистување</translation>
 <translation id="4281844954008187215">Услови за користење</translation>
+<translation id="4304713468139749426">Управник со лозинки</translation>
 <translation id="430793432425771671">Синхронизирај сѐ</translation>
 <translation id="4309403553630140242">Допрете двапати за повеќе информации</translation>
 <translation id="430967081421617822">Досега</translation>
@@ -543,6 +546,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6127379762771434464">Ставката е отстранета</translation>
 <translation id="6136914049981179737">Пред секунди</translation>
 <translation id="6144589619057374135">Отвори ${url} во „Инкогнито“</translation>
+<translation id="6149061208933997199">Користи лозинка</translation>
 <translation id="6159839020698489198">изборно</translation>
 <translation id="6177442314419606057">Пребарувајте во Chrome</translation>
 <translation id="6184086493125982861">Прикажи картички</translation>
@@ -767,6 +771,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8076014560081431679">Поставките на зачуваните сајтови нема да се избришат и може да ги отсликуваат вашите навики за прелистување. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Поставкава е управувана, допрете двапати за повеќе информации</translation>
 <translation id="8080028325999236607">Затвори ги сите картички</translation>
+<translation id="8101409298456377967">Создавајте, зачувувајте и управувајте со лозинки за лесно најавување на сајтови и апликации. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Исклучи</translation>
 <translation id="8114753159095730575">Достапна е датотека за преземање. Достапни се опции на дното на екранот.</translation>
 <translation id="8132598642024322408">Сега <ph name="PRICE" />, беше <ph name="PREVIOUS_PRICE" />.</translation>

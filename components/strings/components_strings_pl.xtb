@@ -112,6 +112,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1308113895091915999">Dostępna oferta</translation>
 <translation id="1312803275555673949">Co o tym świadczy?</translation>
 <translation id="131405271941274527"><ph name="URL" /> chce wysyłać i odbierać informacje po dotknięciu telefonem urządzenia z NFC</translation>
+<translation id="1314311879718644478">Oglądaj treści rzeczywistości rozszerzonej</translation>
 <translation id="1314509827145471431">Wiązanie przy prawej krawędzi</translation>
 <translation id="1318023360584041678">Zapisano w grupie kart</translation>
 <translation id="1319245136674974084">Nie pytaj ponownie dla tej aplikacji</translation>
@@ -215,6 +216,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1583429793053364125">Podczas wyświetlania strony wystąpił błąd.</translation>
 <translation id="1586541204584340881">Zainstalowane przez Ciebie rozszerzenia</translation>
 <translation id="1588438908519853928">Normalny</translation>
+<translation id="1589050138437146318">Zainstalować ARCore?</translation>
 <translation id="1592005682883173041">Lokalny dostęp do danych</translation>
 <translation id="1594030484168838125">Wybierz</translation>
 <translation id="160851722280695521">Zagraj w grę Dino Run w Chrome</translation>
@@ -1383,6 +1385,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5333022057423422993">Przeglądarka Chrome znalazła użyte właśnie hasło w naruszeniu bezpieczeństwa danych. W trosce o bezpieczeństwo Twoich kont zalecamy jak najszybsze sprawdzenie zapisanych haseł.</translation>
 <translation id="5334013548165032829">Szczegółowe dzienniki systemowe</translation>
 <translation id="5334145288572353250">Zapisać adres?</translation>
+<translation id="5335920952954443287">Bijące serce</translation>
 <translation id="5340250774223869109">Aplikacja jest zablokowana</translation>
 <translation id="534295439873310000">Urządzenia z funkcją NFC</translation>
 <translation id="5344579389779391559">Ta strona może próbować obciążyć Cię płatnością</translation>
@@ -2055,6 +2058,7 @@ Dodatkowe informacje:
 <translation id="7654909834015434372">Gdy zmodyfikujesz adnotacje, dokument wróci do pierwotnej orientacji</translation>
 <translation id="765676359832457558">Ukryj ustawienia zaawansowane...</translation>
 <translation id="7658239707568436148">Anuluj</translation>
+<translation id="7659878911471462949">Płacz ze szczęścia</translation>
 <translation id="7662298039739062396">Ustawienie kontrolowane przez rozszerzenie</translation>
 <translation id="7663736086183791259">Certyfikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Niedozwolone w trybie incognito</translation>
@@ -2258,6 +2262,7 @@ Dodatkowe informacje:
 <translation id="830498451218851433">Składanie w połowie</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Zainstalowane aplikacje i częstotliwość ich użycia</translation>
+<translation id="8317207217658302555">Zaktualizować ARCore?</translation>
 <translation id="831997045666694187">Wieczorem</translation>
 <translation id="8321476692217554900">powiadomienia</translation>
 <translation id="8328484624016508118">Gdy zamkniesz wszystkie karty incognito, Chrome usunie:

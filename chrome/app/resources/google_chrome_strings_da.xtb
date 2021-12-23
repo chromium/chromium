@@ -171,7 +171,6 @@
 <translation id="5193136243808726294">Google Chrome OS kan ikke åbne denne side.</translation>
 <translation id="521447420733633466">Hvis du deler en enhed, kan venner og familie browse individuelt og konfigurere Chrome hver især</translation>
 <translation id="5251420635869119124">Gæster kan bruge Chrome uden at efterlade noget.</translation>
-<translation id="5251679006894510177">Næsten opdateret. Genstart Chrome for at fuldføre opdateringen. Inkognitovinduer åbnes ikke igen.</translation>
 <translation id="5334487786912937552">Chrome skal have adgangstilladelse til lagerplads for at downloade filer</translation>
 <translation id="5386244825306882791">Den styrer også, hvilken side der vises, når du åbner Chrome eller søger via omnifeltet.</translation>
 <translation id="5394833366792865639">Del en Chrome-fane</translation>
@@ -302,6 +301,7 @@
 <translation id="8914504000324227558">Genstart Chrome</translation>
 <translation id="8922193594870374009">Hvis du vil sende et nummer fra <ph name="ORIGIN" /> til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>
 <translation id="8927704157641862988">Tilpas de privatlivsindstillinger, som Chrome anser for at være de vigtigste. Denne vejledning gennemgår ikke alle indstillinger og valgmuligheder.</translation>
+<translation id="8983720963221508955">Du har aktiveret Udvidet beskyttet browsing på din konto. Nu skal du aktivere funktionen for Chrome.</translation>
 <translation id="8986207147630327271">Du er ved at føje en arbejdsprofil til denne browser, og du giver kun din administrator kontrol over arbejdsprofilen.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Der er en tilgængelig Chrome-opdatering}=1{Der er en tilgængelig Chrome-opdatering}one{En Chrome-opdatering har været tilgængelig i # dag}other{En Chrome-opdatering har været tilgængelig i # dage}}</translation>
 <translation id="9026991721384951619">Chrome OS kunne ikke synkronisere dine data, fordi loginoplysningerne til din konto er forældede.</translation>

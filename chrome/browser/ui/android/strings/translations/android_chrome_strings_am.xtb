@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Googleን በማነጋገር ላይ።  ወደ አንድ ደቂቃ ሊወስድ ይችላል…</translation>
 <translation id="1416550906796893042">የመተግበሪያ ስሪት</translation>
 <translation id="1430915738399379752">አትም</translation>
+<translation id="1436784010935106834">ተወግዷል</translation>
 <translation id="1448440926884431741">ክትትል የሚደረግባቸውን ምርቶች በዕልባቶች ውስጥ ያደራጁ</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ን ማጋራት አይቻልም</translation>
 <translation id="1466383950273130737">የChromeን ቋንቋ ይምረጡ</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">መስኮት ይዘጋ?</translation>
 <translation id="2175927920773552910">የQR ኮድ</translation>
 <translation id="218608176142494674">ማጋራት</translation>
-<translation id="2195339740518523951">የChromeን በጣም ጠንካራ ደህንነት ያግኙ</translation>
 <translation id="2200113223741723867">የአጠቃቀም ውሂብ ማጋራትን ያስተዳድሩ</translation>
 <translation id="2218567645332692482">አሰሳዎችን ወደ ኤችቲቲፒኤስ ያሳድጉ እና የማይደግፉ ጣቢያዎችን ከመጫንዎ በፊት ያስጠነቅቁዎታል</translation>
 <translation id="2227444325776770048">እንደ <ph name="USER_FULL_NAME" /> ሆነው ይቀጥሉ</translation>
@@ -543,7 +543,6 @@
 <translation id="4170011742729630528">አገልግሎቱ አይገኝም፤ ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ጥቅም ላይ ውሏል</translation>
 <translation id="4181841719683918333">ቋንቋዎች</translation>
-<translation id="4183868528246477015">በGoogle ሌንስ ይፈልጉ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">በአዲስ ትር ክፈት</translation>
 <translation id="4196597275619698563">ካርድ ፍጠር</translation>
 <translation id="4198423547019359126">ምንም የማውረጃ አካባቢዎች የሉም</translation>
@@ -577,7 +576,6 @@
 <translation id="4411535500181276704">ቀላል ሁነታ</translation>
 <translation id="4415276339145661267">የGoogle መለያዎን ያቀናብሩ</translation>
 <translation id="4425140285732600465">ዋጋዎችን በመከታተል ላይ። በማንኛውም ጣቢያ ላይ ዋጋው ቢቀንስ ማንቂያዎችን ያግኙ።</translation>
-<translation id="4427306783828095590">የተሻሻለ ጥበቃ ማስገር እና ተንኮል-አዘል ዌር ለማገድ የበለጠ ይሠራል</translation>
 <translation id="4450672886426705087">የፍለጋ ውጤቶችን ከGoogle።</translation>
 <translation id="4452411734226507615">የ<ph name="TAB_TITLE" /> ትር ዝጋ</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> ላይ ዕልባት ተደርጓል</translation>
@@ -1082,6 +1080,7 @@
 <translation id="7177466738963138057">ይሄንን በኋላ ቅንብሮች ውስጥ ሊለውጡት ይችላሉ</translation>
 <translation id="7177873915659574692">የQR ኮድ መፍጠር አልተቻለም። ዩአርኤል ከ<ph name="CHARACTER_LIMIT" /> ቁምፊዎች ይበልጣል።</translation>
 <translation id="7180611975245234373">አድስ</translation>
+<translation id="718226107353899806">እስከ <ph name="MAX_NUM_REACTIONS" /> ምላሾች ማከል ይችላሉ</translation>
 <translation id="7187993566681480880">በChrome ላይ ደህንነትዎን ይጠብቃል፣ እና በመለያ በገቡባቸው ሌሎች የGoogle መተግበሪያዎች ላይ ደህንነትዎን ለማሻሻል ስራ ላይ ሊውል ይችላል።</translation>
 <translation id="718926126787620637">በሙሉ ቁመታቸው ላይ የተከፈቱ የዕልባት አቃፊዎች ዝርዝር</translation>
 <translation id="7191430249889272776">ትር ጀርባ ላይ ተከፍቷል።</translation>
@@ -1245,7 +1244,6 @@
 <translation id="8035133914807600019">አዲስ አቃፊ…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> ቀኖች ይቀራሉ</translation>
 <translation id="8037801708772278989">አሁን ተፈትሿል</translation>
-<translation id="8040831032425909005">የፈጣን እርምጃ ፍለጋ ምግብር አዶ</translation>
 <translation id="804335162455518893">ኤስዲ ካርድ አልተገኘም</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ማንነት የማያሳውቅ ትር}one{<ph name="TAB_COUNT_NORMAL" /> ማንነት የማያሳውቁ ትሮች}other{<ph name="TAB_COUNT_NORMAL" /> ማንነት የማያሳውቁ ትሮች}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> ሜባ አለ</translation>

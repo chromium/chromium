@@ -44,6 +44,7 @@
 <translation id="3639997914391704523">Saioa Google-ko kontu batekin hasten baduzu, Chromium-ek pasahitzak egiazta ditzake.</translation>
 <translation id="3805899903892079518">Chromium-ek ez du argazki eta bideoetarako sarbiderik. Gaitu sarbidea iOS sistemako Settings &gt; Privacy &gt; Photos atalean.</translation>
 <translation id="3946918322491238254">Gailuan dituzu oraindik laster-marka, historia, pasahitz eta bestelako ezarpen guztiak. Aldaketarik eginez gero, ez dira sinkronizatuko kontuarekin.</translation>
+<translation id="4043291146360695975">Pasahitzak gailu honetan soilik gordetzen dira Pasahitz-kudeatzailea atalean.</translation>
 <translation id="4099085513035183040">Ez da bateragarria Chromium Beta-rekin</translation>
 <translation id="4555020257205549924">Eginbide hau aktibatuta dagoenean, Chromium-ek beste hizkuntzetan idatzita dauden orriak Google Translate bidez itzultzea proposatuko dizu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Orain, mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean, Chromium erabili ahalko duzu.</translation>
@@ -107,6 +108,7 @@
 <translation id="8776843108004031667">Kontu hau eta gorde gabeko datuak kendu egingo dira Chromium-etik.</translation>
 <translation id="894437814105052438">Saioa amaitzen duzunean, Chromium-ek ez du datu berririk sinkronizatuko Google-ko kontuarekin. Lehendik sinkronizatuta dauden datuak kontuan geratuko dira.</translation>
 <translation id="9022552996538154597">Hasi saioa Chromium-en</translation>
+<translation id="9059693977935746710">Ez duzu pasahitza gogoratu beharko. <ph name="EMAIL" /> kontuko Pasahitz-kudeatzailea atalean gordeko da.</translation>
 <translation id="9089354809943900324">Chromium zaharkituta dago</translation>
 <translation id="9110075932708282655">Erabili Chromium modu lehenetsian</translation>
 <translation id="921174536258924340">Chromium-ek ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar edo <ph name="BEGIN_LINK" />egiaztatu pasahitzak Google-ko kontuan<ph name="END_LINK" />.</translation>

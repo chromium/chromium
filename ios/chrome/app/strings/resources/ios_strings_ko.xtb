@@ -235,6 +235,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3157387275655328056">읽기 목록에 추가</translation>
 <translation id="3157684681743766797">모두 표시...</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">다른 기기에서도 저장된 비밀번호를 사용할 수 있습니다</translation>
 <translation id="3175081911749765310">웹 서비스</translation>
 <translation id="3178650076442119961">오늘 사용됨</translation>
 <translation id="3181825792072797598">동기화 사용 설정</translation>
@@ -328,6 +329,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4042870976416480368">페이지에서 찾기</translation>
 <translation id="4049507953662678203">네트워크에 연결되었는지 확인한 후 다시 시도해 주세요.</translation>
 <translation id="408404951701638773">검색창을 사용하기가 더욱 쉬워졌습니다.</translation>
+<translation id="4108314971463891922">팔로우</translation>
 <translation id="411254640334432676">다운로드에 실패했습니다.</translation>
 <translation id="4112644173421521737">검색</translation>
 <translation id="4113030288477039509">관리자가 관리합니다.</translation>
@@ -345,6 +347,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4272631900155121838">QR 코드를 스캔하려면 설정에서 카메라를 사용하도록 설정하세요.</translation>
 <translation id="4277990410970811858">세이프 브라우징</translation>
 <translation id="4281844954008187215">서비스 약관</translation>
+<translation id="4304713468139749426">비밀번호 관리자</translation>
 <translation id="430793432425771671">모두 동기화</translation>
 <translation id="4309403553630140242">자세한 정보를 보려면 두 번 탭하세요</translation>
 <translation id="430967081421617822">전체 기간</translation>
@@ -356,6 +359,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4389019817280890563">언어를 변경하려면 탭하세요.</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />Settings(설정)<ph name="END_BOLD" />를 엽니다.</translation>
 <translation id="4454246407045105932">언어 추가</translation>
+<translation id="4462491365653392320">탭에서 가격 추적</translation>
 <translation id="4469418912670346607">설정 계속하기</translation>
 <translation id="4474494258097106883">iPhone을 위한 웹브라우저</translation>
 <translation id="4476574785019001431">설정</translation>
@@ -419,6 +423,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4944543191714094452">페이지에서 찾기…</translation>
 <translation id="4945756290001680296">비밀번호 설정 액세스</translation>
 <translation id="4979397965658815378">Google 계정으로 로그인하면 모든 기기에서 북마크, 비밀번호, 방문 기록 및 기타 설정을 사용할 수 있습니다.</translation>
+<translation id="4986678885919050584">기기에서 삭제</translation>
 <translation id="5005498671520578047">비밀번호 복사</translation>
 <translation id="5017828934289857214">나중에 알림</translation>
 <translation id="5037676449506322593">모두 선택</translation>
@@ -520,6 +525,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5979837087407522202">비밀번호 검색</translation>
 <translation id="5982717868370722439"><ph name="USER_EMAIL" />에 기존 데이터 추가</translation>
 <translation id="5984222099446776634">최근 방문</translation>
+<translation id="5988097621740394599">탭에서 가격 인하 정보를 확인합니다.</translation>
 <translation id="5988851877894965432">Chrome에서 URL 열기</translation>
 <translation id="6012140227487808125">암호화하는 중...</translation>
 <translation id="6021332621416007159">다음에서 열기</translation>
@@ -540,6 +546,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6127379762771434464">항목 삭제됨</translation>
 <translation id="6136914049981179737">초 전</translation>
 <translation id="6144589619057374135">시크릿 모드에서 ${url} 열기</translation>
+<translation id="6149061208933997199">비밀번호 사용</translation>
 <translation id="6159839020698489198">선택사항</translation>
 <translation id="6177442314419606057">Chrome에서 검색</translation>
 <translation id="6184086493125982861">탭 표시</translation>
@@ -764,6 +771,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8076014560081431679">저장된 사이트 설정은 삭제되지 않으며 인터넷 사용 습관이 반영될 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">관리자가 관리하는 설정입니다, 자세한 정보를 보려면 두 번 탭하세요</translation>
 <translation id="8080028325999236607">탭 모두 닫기</translation>
+<translation id="8101409298456377967">사이트와 앱에 쉽게 로그인할 수 있도록 비밀번호를 생성, 저장, 관리하세요. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">사용 중지</translation>
 <translation id="8114753159095730575">파일을 다운로드할 수 있습니다. 화면 하단에서 옵션을 선택할 수 있습니다.</translation>
 <translation id="8132598642024322408">정가 <ph name="PREVIOUS_PRICE" />인 제품을 <ph name="PRICE" />에 판매 중</translation>

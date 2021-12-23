@@ -131,6 +131,7 @@
 <translation id="1768366657309696705">‏מקשי הקיצור <ph name="LAUNCHER_KEY_NAME" /> + נקודה השתנו. כדי להשתמש במקש Insert, יש להקיש על <ph name="LAUNCHER_KEY_NAME" /> + Shift + ‏Backspace.</translation>
 <translation id="1770726142253415363">הועברה אל שורה <ph name="ROW_NUMBER" />, עמודה <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">גלילה ימינה</translation>
+<translation id="1774796056689732716">יומן, <ph name="CURRENT_MONTH_YEAR" />, התאריך שנבחר הוא <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">כבוי</translation>
 <translation id="1804572139604454141">ההקלטה הסתיימה כי נפח האחסון בדיסק כמעט נגמר</translation>
 <translation id="181103072419391116">עוצמת האות: <ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">לפתיחת הכתוביות</translation>
 <translation id="5078796286268621944">‏PIN שגוי</translation>
 <translation id="5083553833479578423">‏אפשר להפעיל תכונות Assistant נוספות.</translation>
+<translation id="5090752371472782287">‏העברה (cast) למכשיר <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">התאמה אישית</translation>
 <translation id="5117590920725113268">הצגת החודש הבא</translation>
 <translation id="5136175204352732067">חוברה מקלדת אחרת</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">מכשירי העברה זמינים</translation>
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="5176318573511391780">הקלטה של מסך חלקי</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> אירועים</translation>
 <translation id="5198715732953550718">האפליקציה <ph name="MOVED_APP_NAME" /> משולבת ביחד עם האפליקציה <ph name="IN_PLACE_APP" /> ליצירת תיקייה חדשה.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{התראה אחת נוספת}two{# התראות נוספות}many{# התראות נוספות}other{# התראות נוספות}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">הפעולה הושלמה</translation>
 <translation id="6431865393913628856">הקלטת המסך</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, אירוע (<ph name="NUMBER" />)</translation>
 <translation id="6452181791372256707">דחייה</translation>
 <translation id="6453179446719226835">שינוי השפה הסתיים</translation>
 <translation id="6459472438155181876">הרחבת המסך אל <ph name="DISPLAY_NAME" /> מתבצעת</translation>
@@ -865,6 +869,7 @@
 <translation id="6811454077060061666">‏האפליקציה 'Google Drive לשולחן העבודה' לא זמינה</translation>
 <translation id="6818242057446442178">מילה אחת אחורה</translation>
 <translation id="6820676911989879663">הגיע הזמן להפסקה</translation>
+<translation id="6827049576281411231">סגירת חלונית האירועים</translation>
 <translation id="6836499262298959512">קובץ מסוכן</translation>
 <translation id="6837064795450991317">הסתרת הסרגל של שולחנות העבודה הווירטואליים</translation>
 <translation id="6852052252232534364">תופעל בלחיצה</translation>
@@ -872,6 +877,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{נשארה ספרה אחת}two{נשארו # ספרות}many{נשארו # ספרות}other{נשארו # ספרות}}</translation>
 <translation id="6867938213751067702">ההורדה של <ph name="FILENAME" /> הושהתה</translation>
 <translation id="6878400149835617132">קיצור הדרך מושבת</translation>
+<translation id="6884665277231944629">חזרה להיום</translation>
 <translation id="6886172995547742638">‏ייתכן שהביצועים של <ph name="DEVICE_TYPE" /> יהיו נמוכים יותר. יש להשתמש במתאם מתח מאושר בהספק של <ph name="PREFERRED_MINIMUM_POWER" /> ואט לפחות, או מסוג USB-C.</translation>
 <translation id="688631446150864480">יש להקיש על מקש החץ למטה כדי לעבור בין חלונות</translation>
 <translation id="6896758677409633944">העתקה</translation>
@@ -958,6 +964,7 @@
 <translation id="7497767806359279797">בחירת שפה ומקלדת</translation>
 <translation id="7509246181739783082">אימות זהות</translation>
 <translation id="7513622367902644023">נבחר מצב של צילום מסך</translation>
+<translation id="7513922695575567867">יומן, השבוע של <ph name="DATE" />, התאריך שנבחר הוא <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">הורדה</translation>
 <translation id="7526573455193969409">ייתכן שהרשת מנוטרת</translation>
 <translation id="7536035074519304529">‏כתובת IP: <ph name="ADDRESS" /></translation>
@@ -969,6 +976,7 @@
 ייתכן שהודעות, חלונות ותיבות דו-שיח יתפצלו בהמשך בין שולחנות עבודה.</translation>
 <translation id="7569509451529460200">‏כתב ברייל ו-ChromeVox מופעלים</translation>
 <translation id="7569983096843329377">שחור</translation>
+<translation id="757941033127302446">מחובר</translation>
 <translation id="7579778809502851308">צילום מסך</translation>
 <translation id="7590883480672980941">הגדרות קלט</translation>
 <translation id="7593891976182323525">‏חיפוש או Shift</translation>
@@ -1042,6 +1050,7 @@
 <translation id="8035152190676905274">עט</translation>
 <translation id="8036504271468642248">המשפט הקודם</translation>
 <translation id="8042893070933512245">פתיחת התפריט של הגדרות הנגישות</translation>
+<translation id="8042925093898452104">סגירת המידע המפורט</translation>
 <translation id="8048123526339889627">‏הגדרות Bluetooth</translation>
 <translation id="8051716679295756675">קיימת כבר תבנית בשם <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">הועתק ללוח</translation>

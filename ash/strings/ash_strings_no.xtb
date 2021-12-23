@@ -127,10 +127,11 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1747827819627189109">Skjermtastaturet er aktivert</translation>
 <translation id="1749109475624620922">Vinduet <ph name="WINDOW_TITLE" /> er tilordnet alle skrivebord</translation>
 <translation id="1750088060796401187">Kun <ph name="MAX_DESK_LIMIT" /> skrivebord er tillatt. Fjern et skrivebord for å åpne et nytt.</translation>
-<translation id="1761222317188459878">Slå av/på nettverkstilkobling. <ph name="STATE_TEXT" /></translation>
+<translation id="1761222317188459878">Slå av eller på nettverkstilkobling. <ph name="STATE_TEXT" /></translation>
 <translation id="1768366657309696705">Hurtigtasten <ph name="LAUNCHER_KEY_NAME" /> + punktum er endret. For å bruke Insert-tasten, trykk på <ph name="LAUNCHER_KEY_NAME" />-tasten + Shift + tilbaketasten.</translation>
 <translation id="1770726142253415363">Flyttet til rad <ph name="ROW_NUMBER" />, kolonne <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Rull til høyre</translation>
+<translation id="1774796056689732716">Kalender – <ph name="CURRENT_MONTH_YEAR" />. For øyeblikket er <ph name="DATE" /> valgt.</translation>
 <translation id="1787955149152357925">Av</translation>
 <translation id="1804572139604454141">Opptaket ble avsluttet på grunn av kritisk lite diskplass</translation>
 <translation id="181103072419391116">Signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>
@@ -620,6 +621,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5075554201838155866">Start teksting</translation>
 <translation id="5078796286268621944">Feil personlig kode</translation>
 <translation id="5083553833479578423">Lås opp flere Assistent-funksjoner.</translation>
+<translation id="5090752371472782287">Cast til en <ph name="MANAGER" />-enhet</translation>
 <translation id="5106223312672646208">Tilpass</translation>
 <translation id="5117590920725113268">Se neste måned</translation>
 <translation id="5136175204352732067">Et annet tastatur er koblet til</translation>
@@ -629,6 +631,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5168181903108465623">Cast-enheter er tilgjengelige</translation>
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="5176318573511391780">Ta opp en del av skjermen</translation>
+<translation id="5198413532174090167"><ph name="DATE" /> – <ph name="NUMBER" /> hendelser</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> er kombinert med <ph name="IN_PLACE_APP" /> for å opprette en ny mappe.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 annet varsel}other{# andre varsler}}</translation>
@@ -802,6 +805,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="643147933154517414">Ingen varsler</translation>
 <translation id="6431865393913628856">Skjermopptak</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" /> – <ph name="NUMBER" /> hendelse</translation>
 <translation id="6452181791372256707">Avslå</translation>
 <translation id="6453179446719226835">Språket er endret</translation>
 <translation id="6459472438155181876">Utvider skjermen til <ph name="DISPLAY_NAME" /></translation>
@@ -865,6 +869,7 @@ Nylig installert</translation>
 <translation id="6811454077060061666">Google Disk for datamaskiner er ikke tilgjengelig</translation>
 <translation id="6818242057446442178">Ett ord tilbake</translation>
 <translation id="6820676911989879663">Ta en pause!</translation>
+<translation id="6827049576281411231">Lukk hendelsespanelet</translation>
 <translation id="6836499262298959512">Farlig fil</translation>
 <translation id="6837064795450991317">Skjul skrivebordslinje</translation>
 <translation id="6852052252232534364">Klikk for å aktivere</translation>
@@ -872,6 +877,7 @@ Nylig installert</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Ett siffer gjenstår}other{# sifre gjenstår}}</translation>
 <translation id="6867938213751067702">Nedlastingen av <ph name="FILENAME" /> er satt på pause</translation>
 <translation id="6878400149835617132">Snarveien er avslått</translation>
+<translation id="6884665277231944629">Gå tilbake til i dag</translation>
 <translation id="6886172995547742638">Ytelsen til <ph name="DEVICE_TYPE" /> kan svekkes. Bruk en sertifisert USB-C-strømadapter på <ph name="PREFERRED_MINIMUM_POWER" /> W eller mer.</translation>
 <translation id="688631446150864480">Trykk på nedoverpiltasten for å bytte vindu</translation>
 <translation id="6896758677409633944">Kopiér</translation>
@@ -958,6 +964,7 @@ Nylig installert</translation>
 <translation id="7497767806359279797">Velg språk og tastatur</translation>
 <translation id="7509246181739783082">Bekreft identiteten din</translation>
 <translation id="7513622367902644023">Skjermdumpmodus er valgt</translation>
+<translation id="7513922695575567867">Kalender – uken som inneholder <ph name="DATE" />. For øyeblikket er <ph name="SELECTED_DATE" /> valgt.</translation>
 <translation id="7514365320538308">Last ned</translation>
 <translation id="7526573455193969409">Nettverket kan være overvåket</translation>
 <translation id="7536035074519304529">IP-adresse: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@ Nylig installert</translation>
 <translation id="7564874036684306347">Flytting av vinduer til et annet skrivebord kan føre til uventet atferd. Følgende varsler, vinduer og dialogbokser kan bli delt mellom skrivebordene.</translation>
 <translation id="7569509451529460200">Braille og ChromeVox er slått på</translation>
 <translation id="7569983096843329377">Svart</translation>
+<translation id="757941033127302446">Pålogget</translation>
 <translation id="7579778809502851308">Skjermdump</translation>
 <translation id="7590883480672980941">Inndatainnstillinger</translation>
 <translation id="7593891976182323525">Søk eller Shift</translation>
@@ -1040,6 +1048,7 @@ Nylig installert</translation>
 <translation id="8035152190676905274">Penn</translation>
 <translation id="8036504271468642248">Forrige setning</translation>
 <translation id="8042893070933512245">Åpne menyen for tilgjengelighetsinnstillinger</translation>
+<translation id="8042925093898452104">Lukk detaljert informasjon</translation>
 <translation id="8048123526339889627">Bluetooth-innstillinger</translation>
 <translation id="8051716679295756675">Det finnes allerede en mal med navnet <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopiert til utklippstavlen</translation>

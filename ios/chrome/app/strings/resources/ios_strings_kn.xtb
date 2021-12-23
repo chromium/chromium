@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="3157684681743766797">ಎಲ್ಲವನ್ನೂ ಗುರುತಿಸಿ…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಉಳಿಸಲಾದ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸಹ ನೀವು ಬಳಸಬಹುದು.</translation>
 <translation id="3175081911749765310">ವೆಬ್‌ ಸೇವೆಗಳು</translation>
 <translation id="3178650076442119961">ಇಂದು ಸಕ್ರಿಯ</translation>
 <translation id="3181825792072797598">ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ</translation>
@@ -328,6 +329,7 @@
 <translation id="4042870976416480368">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ</translation>
 <translation id="4049507953662678203">ನೀವು ನೆಟ್‌‌ವರ್ಕ್ ಸಂಪರ್ಕ ಹೊಂದಿರುವಿರಾ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="408404951701638773">ಇದೀಗ ಹುಡುಕಾಟ ಪಟ್ಟಿಯನ್ನು ತಲುಪುವುದು ಸುಲಭವಾಗಿದೆ</translation>
+<translation id="4108314971463891922">ಫಾಲೋ ಮಾಡಿ</translation>
 <translation id="411254640334432676">ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="4112644173421521737">ಹುಡುಕಿ</translation>
 <translation id="4113030288477039509">ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಂದ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
@@ -345,6 +347,7 @@
 <translation id="4272631900155121838">QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಂದ ಕ್ಯಾಮರಾವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4277990410970811858">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್</translation>
 <translation id="4281844954008187215">ಸೇವೆಯ ನಿಯಮಗಳು</translation>
+<translation id="4304713468139749426">ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="430793432425771671">ಪ್ರತಿಯೊಂದನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="4309403553630140242">ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="430967081421617822">ಎಲ್ಲ ಸಮಯ</translation>
@@ -543,6 +546,7 @@
 <translation id="6127379762771434464">ಐಟಂ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="6136914049981179737">ಸೆಕೆಂಡ್ ಹಿಂದೆ</translation>
 <translation id="6144589619057374135">${url} ಅನ್ನು ಅದೃಶ್ಯ ಮೋಡ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
+<translation id="6149061208933997199">ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ</translation>
 <translation id="6159839020698489198">ಐಚ್ಛಿಕ</translation>
 <translation id="6177442314419606057">Chrome ನಲ್ಲಿ ಹುಡುಕಿ</translation>
 <translation id="6184086493125982861">ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
@@ -767,6 +771,7 @@
 <translation id="8076014560081431679">ಉಳಿಸಲಾದ ಸೈಟ್‌ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗುವುದಿಲ್ಲ ಮತ್ತು ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಹವ್ಯಾಸಗಳನ್ನು ಪ್ರತಿಬಿಂಬಿಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿರ್ವಹಿಸಲಾಗಿದೆ, ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ಡಬಲ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="8080028325999236607">ಎಲ್ಲ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
+<translation id="8101409298456377967">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಿ, ಉಳಿಸಿ ಹಾಗೂ ನಿರ್ವಹಿಸಿ ಇದರಿಂದ ನೀವು ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ಸುಲಭವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">ಆಫ್ ಮಾಡು</translation>
 <translation id="8114753159095730575">ಫೈಲ್‌ ಅನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡುವ ಸೌಲಭ್ಯ ಲಭ್ಯವಿದೆ. ಪರದೆಯ ಕೆಳಗಿನ ಭಾಗದಲ್ಲಿ ಆಯ್ಕೆಗಳು ಲಭ್ಯವಿವೆ.</translation>
 <translation id="8132598642024322408">ಈಗಿನ ಬೆಲೆ <ph name="PRICE" />, ಹಿಂದಿನ ಬೆಲೆ <ph name="PREVIOUS_PRICE" />.</translation>

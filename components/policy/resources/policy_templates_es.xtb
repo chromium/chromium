@@ -96,6 +96,7 @@
 <translation id="1099282607296956954">Habilitar el aislamiento de todos los sitios web</translation>
 <translation id="1105572260329131950">Usar iconos predeterminados en el caso de las conexiones seguras</translation>
 <translation id="1110426799149444997">Inhabilitar la búsqueda por sección de <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1117535567637097036">Los controladores de protocolo configurados a través de esta política no se utilizan al procesar los intents de Android.</translation>
 <translation id="1118093128235245168">Permitir que los sitios pidan permiso al usuario para acceder a un dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configuración de notificaciones</translation>
@@ -462,6 +463,11 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1553532014072799546">Lista blanca de límites de tiempo por aplicación</translation>
 <translation id="1553956579506604198">Bloquea las extensiones externas para que no puedan instalarse</translation>
 <translation id="1555248923316727072">Configuración de gestión de identidades de usuarios de SAML</translation>
+<translation id="1558723461519082860">Esta política concede permiso a Projector para crear y transcribir grabaciones de pantalla y subirlas a Drive.
+
+      Si se habilita esta política, se habilitará Projector.
+      Si se inhabilita esta política, se inhabilitará Projector.
+      Si no se define esta política, se inhabilitará Projector de forma predeterminada.</translation>
 <translation id="1561424797596341174">La política anula las compilaciones de depuración del host de acceso remoto.</translation>
 <translation id="1561967320164410511">U2F y extensiones de confirmación individual</translation>
 <translation id="1567718448549957373">Si se habilita la política o no se establece, se permitirán las solicitudes de autenticación <ph name="BASIC_AUTH" /> recibidas desde conexiones HTTP no seguras.
@@ -812,6 +818,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 <translation id="1962864958436828230">Establecer un límite de tamaño mínimo para la restricción del portapapeles que previene la filtración de datos</translation>
 <translation id="1964634611280150550">Modo de incógnito inhabilitado</translation>
 <translation id="1964802606569741174">Esta política no influye en la aplicación YouTube para Android. Si se debe aplicar el modo seguro en YouTube, deberás inhabilitar la descarga de la aplicación YouTube para Android.</translation>
+<translation id="1967334955994230472">Inhabilitar Projector</translation>
 <translation id="1969212217917526199">Anula las políticas de compilaciones de depuración del host de acceso remoto.
 
           El valor se analiza como un diccionario JSON del nombre de política para las asignaciones de valores de la política.</translation>
@@ -2038,6 +2045,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="328347261792478720">De forma predeterminada, el navegador mostrará recomendaciones de contenido multimedia personalizadas al usuario. Si se inhabilita esta política, no se mostrarán estas recomendaciones al usuario. Si se habilita esta política o no se establece, se mostrarán recomendaciones de contenido multimedia al usuario.</translation>
 <translation id="3284094172359247914">Controlar el uso de la API WebUSB</translation>
 <translation id="3288595667065905535">Canal de lanzamiento</translation>
+<translation id="3291318845269544294">Habilitar Projector</translation>
 <translation id="3294430356898755483">Si se le asigna un valor a esta política, los administradores podrán establecer una lista de impresoras para los usuarios. La impresora se selecciona la primera vez que los usuarios intentan imprimir.
 
       La política funciona de la siguiente manera:
@@ -2102,6 +2110,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
           El valor de esta política debe especificarse en milisegundos. Los valores deben ser inferiores o iguales al retraso de inactividad.
 
           El mensaje de advertencia solo se muestra si el modo de inactividad cierra la sesión o apaga el equipo.</translation>
+<translation id="3360280740977649313">Controla las políticas de Projector.</translation>
 <translation id="3363360928811201045">Añadir restricciones a las cuentas gestionadas</translation>
 <translation id="3373381043600809954">Habilitar <ph name="PRODUCT_NAME" /></translation>
 <translation id="3374587000313305002">Configura el directorio que <ph name="PRODUCT_NAME" /> utilizará para almacenar los datos de usuario.

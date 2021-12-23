@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">이용 가능한 혜택</translation>
 <translation id="1312803275555673949">어떤 근거가 있나요?</translation>
 <translation id="131405271941274527">NFC 기기에 휴대전화를 갖다 댈 때 <ph name="URL" />에서 정보를 보내고 받으려고 합니다.</translation>
+<translation id="1314311879718644478">증강 현실 콘텐츠 보기</translation>
 <translation id="1314509827145471431">오른쪽 바인드</translation>
 <translation id="1318023360584041678">탭 그룹에 저장됨</translation>
 <translation id="1319245136674974084">이 앱에 대해 다시 묻지 않음</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">이 웹페이지를 표시하는 도중 문제가 발생했습니다.</translation>
 <translation id="1586541204584340881">내가 설치한 확장 프로그램</translation>
 <translation id="1588438908519853928">일반</translation>
+<translation id="1589050138437146318">ARCore를 설치하시겠습니까?</translation>
 <translation id="1592005682883173041">로컬 데이터 액세스</translation>
 <translation id="1594030484168838125">선택</translation>
 <translation id="160851722280695521">Chrome 공룡 게임 플레이</translation>
@@ -1383,6 +1385,7 @@
 <translation id="5333022057423422993">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하려면 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
 <translation id="5334013548165032829">세부 시스템 로그</translation>
 <translation id="5334145288572353250">주소를 저장하시겠습니까?</translation>
+<translation id="5335920952954443287">두근거리는 하트</translation>
 <translation id="5340250774223869109">애플리케이션이 차단됨</translation>
 <translation id="534295439873310000">NFC 기기</translation>
 <translation id="5344579389779391559">이 페이지에서 금액을 청구할 수 있습니다.</translation>
@@ -2054,6 +2057,7 @@
 <translation id="7654909834015434372">주석을 수정하면 문서가 원래 방향으로 돌아갑니다.</translation>
 <translation id="765676359832457558">고급 설정 숨기기</translation>
 <translation id="7658239707568436148">취소</translation>
+<translation id="7659878911471462949">기쁨의 눈물</translation>
 <translation id="7662298039739062396">확장 프로그램에서 관리되는 설정</translation>
 <translation id="7663736086183791259">인증서: <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">시크릿 모드에서 허용되지 않음</translation>
@@ -2257,6 +2261,7 @@
 <translation id="830498451218851433">폴드 하프</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">설치된 앱 및 앱의 사용 빈도</translation>
+<translation id="8317207217658302555">ARCore를 업데이트하시겠습니까?</translation>
 <translation id="831997045666694187">저녁</translation>
 <translation id="8321476692217554900">알림</translation>
 <translation id="8328484624016508118">모든 시크릿 탭을 종료하면 Chrome에서 다음 항목을 삭제합니다.

@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Hefur samband við Google. Þetta gæti tekið smástund…</translation>
 <translation id="1416550906796893042">Útgáfa forrits</translation>
 <translation id="1430915738399379752">Prenta</translation>
+<translation id="1436784010935106834">Fjarlægð</translation>
 <translation id="1448440926884431741">Notaðu bókamerki til að flokka vörur sem þú vaktar</translation>
 <translation id="1450753235335490080">Ekki er hægt að deila <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Velja tungumál Chrome</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">Loka glugga?</translation>
 <translation id="2175927920773552910">QR-kóði</translation>
 <translation id="218608176142494674">Deiling</translation>
-<translation id="2195339740518523951">Fá mesta öryggi Chrome</translation>
 <translation id="2200113223741723867">Stjórna deilingu notkunargagna</translation>
 <translation id="2218567645332692482">Uppfæra flettingar í HTTPS og vara þig við áður en vefsvæðum sem ekki styðja það er hlaðið</translation>
 <translation id="2227444325776770048">Halda áfram sem <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="4170011742729630528">Þjónustan er ekki aðgengileg; reyndu aftur síðar.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> notuð</translation>
 <translation id="4181841719683918333">Tungumál</translation>
-<translation id="4183868528246477015">Leita með Google linsu <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Opna í nýjum flipa</translation>
 <translation id="4196597275619698563">Búa til spjald</translation>
 <translation id="4198423547019359126">Engar tiltækar niðurhalsstaðsetningar</translation>
@@ -577,7 +576,6 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="4411535500181276704">Léttútgáfa</translation>
 <translation id="4415276339145661267">Stjórna Google reikningnum</translation>
 <translation id="4425140285732600465">Vaktar verð. Fáðu tilkynningu ef verðlækkun verður á einhverju vefsvæði.</translation>
-<translation id="4427306783828095590">Aukin vernd gengur lengra í að loka á vefveiðar og spilliforrit</translation>
 <translation id="4450672886426705087">Leitarniðurstöður Google.</translation>
 <translation id="4452411734226507615">Loka flipanum <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bókamerki var búið til í <ph name="FOLDER_NAME" /></translation>
@@ -1082,6 +1080,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7177466738963138057">Þú getur breytt þessu síðar í stillingunum</translation>
 <translation id="7177873915659574692">Ekki er hægt að búa til QR-kóða. Vefslóðin er lengri en <ph name="CHARACTER_LIMIT" /> stafir.</translation>
 <translation id="7180611975245234373">Endurnýja</translation>
+<translation id="718226107353899806">Þú getur bætt við allt að <ph name="MAX_NUM_REACTIONS" /> viðbrögðum</translation>
 <translation id="7187993566681480880">Tryggir öryggi þitt í Chrome og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú hefur skráð þig inn.</translation>
 <translation id="718926126787620637">Listi bókamerkjamappa opinn í fullri hæð</translation>
 <translation id="7191430249889272776">Flipi opnaður í bakgrunni.</translation>
@@ -1245,7 +1244,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8035133914807600019">Ný mappa…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> dagar eftir</translation>
 <translation id="8037801708772278989">Athugað rétt í þessu</translation>
-<translation id="8040831032425909005">Tákn flýtiaðgerðar leitargræju</translation>
 <translation id="804335162455518893">SD-kort fannst ekki</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> huliðsflipi}one{<ph name="TAB_COUNT_NORMAL" /> huliðsflipi}other{<ph name="TAB_COUNT_NORMAL" /> huliðsflipar}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB tiltæk</translation>

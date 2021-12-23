@@ -329,6 +329,7 @@
 <translation id="4042870976416480368">ຊອກຫາໃນໜ້າ</translation>
 <translation id="4049507953662678203">ກະລຸນາກວດສອບວ່າທ່ານມີການເຊື່ອມຕໍ່ເຄືອຂ່າຍ ແລ້ວລອງອີກຄັ້ງ.</translation>
 <translation id="408404951701638773">ດຽວນີ້ເຂົ້າຫາແຖບຊອກຫາໄດ້ງ່າຍກວ່າ</translation>
+<translation id="4108314971463891922">ຕິດຕາມ</translation>
 <translation id="411254640334432676">ດາວ​ໂຫລດ​ບໍ່​ສໍາ​ເລັດ​.</translation>
 <translation id="4112644173421521737">ຊອກຫາ</translation>
 <translation id="4113030288477039509">ຈັດການໂດຍຜູ້ຄວບຄຸມຂອງທ່ານ</translation>
@@ -437,7 +438,6 @@
 <translation id="5118764316110575523">ປິດ</translation>
 <translation id="5127805178023152808">ຊິງ​ຄ໌​ປິດ</translation>
 <translation id="5132942445612118989">ຊິ້ງຂໍ້ມູນລະຫັດຜ່ານ, ປະຫວັດຂອງທ່ານ ແລະ ອື່ນໆອີກຢູ່ໃນທຸກອຸປະກອນ</translation>
-<translation id="51339916068413997">ທ່ານສາມາດຕື່ມຂໍ້ມູນລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ອັດຕະໂນມັດໃນແອັບອື່ນໆຢູ່ iPad ຂອງທ່ານໄດ້.</translation>
 <translation id="5140288047769711648">Chrome ຈະຈື່ລະຫັດຜ່ານນີ້ສຳລັບທ່ານ. ທ່ານບໍ່ຈໍາເປັນຕ້ອງຈື່ມັນ.</translation>
 <translation id="5150492518600715772">ສົ່ງຫາອຸປະກອນຂອງທ່ານ</translation>
 <translation id="5168414296986405587">ສ້າງມາສຳລັບ iPadOS</translation>
@@ -476,7 +476,6 @@
 Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງານ​ຢູ່​ໃນ​ພາກ​ທົ່ວ​ໄປ​ຂອງ​ການ​ຕັ້ງ​ຄ່າ​ນຳ​ອີກ, ແລະ​ອຸ​ປະ​ກອນ​ຂອງ​ທ່ານ​ຕ້ອງ​ໃຊ້​ບັນ​ຊີ iCloud ດຽວ​ກັນ​ນຳ.</translation>
 <translation id="5551897871312988470">ໃຫ້ການແປພາສາ</translation>
 <translation id="5556459405103347317">ໂຫຼດຄືນໃໝ່</translation>
-<translation id="5557664881350188277">ທ່ານສາມາດຕື່ມຂໍ້ມູນລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ອັດຕະໂນມັດໃນແອັບອື່ນໆຢູ່ iPhone ຂອງທ່ານໄດ້.</translation>
 <translation id="5580834567471114021">ເພີ່ມໃສ່ລາຍຊື່ການອ່ານສຳລັບພາຍຫຼັງບໍ?</translation>
 <translation id="5592679540098330836">ເປີດການຊິ້ງຂໍ້ມູນສຳລັບ <ph name="NAME" /></translation>
 <translation id="560322036295180549">ຖືກປິດໄວ້ໂດຍອົງການຂອງທ່ານ</translation>
@@ -547,6 +546,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6127379762771434464">ລຶບລາຍການອອກແລ້ວ</translation>
 <translation id="6136914049981179737">ວິ​ນາ​ທີ​ກ່ອນ​​ນີ້</translation>
 <translation id="6144589619057374135">ເປີດ ${url} ໃນໂໝດທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
+<translation id="6149061208933997199">ໃຊ້​ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="6159839020698489198">ບໍ່ບັງຄັບ</translation>
 <translation id="6177442314419606057">ຊອກຫາໃນ Chrome</translation>
 <translation id="6184086493125982861">ສະ​ແດງ​ແຖບ</translation>

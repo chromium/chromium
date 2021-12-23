@@ -44,6 +44,7 @@
 <translation id="3639997914391704523">Chromium može provjeriti vaše zaporke kad se prijavite Google računom.</translation>
 <translation id="3805899903892079518">Chromium nema pristup fotografijama ni videozapisima. Omogućite pristup u Postavkama iOS-a &gt; Privatnost &gt; Fotografije.</translation>
 <translation id="3946918322491238254">Sve vaše oznake, povijest, zaporke i druge postavke i dalje su vam vidljive na ovom uređaju. Ako nešto promijenite, te se promjene neće sinkronizirati s vašim računom.</translation>
+<translation id="4043291146360695975">Zaporke se spremaju u Upravitelj zaporki samo na ovom uređaju.</translation>
 <translation id="4099085513035183040">Nije podržano u beta verziji Chromiuma</translation>
 <translation id="4555020257205549924">Kada je ta značajka uključena, Chromium će ponuditi prijevod stranica napisanih na drugim jezicima pomoću Google prevoditelja. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Sad možete koristiti Chromium svaki put kad dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
@@ -107,6 +108,7 @@
 <translation id="8776843108004031667">Taj račun i svi nespremljeni podaci uklonit će se iz Chromiuma.</translation>
 <translation id="894437814105052438">Kad se odjavite, Chromium neće sinkronizirati nove podatke s vašim Google računom. Ranije sinkronizirani podaci ostat će na računu.</translation>
 <translation id="9022552996538154597">Prijava na Chromium</translation>
+<translation id="9059693977935746710">Nećete morati pamtiti tu zaporku. Spremit će se u Upravitelj zaporki za <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium je zastario</translation>
 <translation id="9110075932708282655">Koristi Chromium prema zadanim postavkama</translation>
 <translation id="921174536258924340">Chromium nije uspio provjeriti sve zaporke. Pokušajte ponovno sutra ili <ph name="BEGIN_LINK" />provjerite zaporke na svojem Google računu<ph name="END_LINK" />.</translation>

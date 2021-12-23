@@ -131,6 +131,7 @@
 <translation id="1768366657309696705">Кратенката од тастатура <ph name="LAUNCHER_KEY_NAME" /> + Точка се промени. За да го користите копчето Insert, притиснете го копчето <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Преместена на ред <ph name="ROW_NUMBER" />, колона <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Лизгај надесно</translation>
+<translation id="1774796056689732716">Календар, <ph name="CURRENT_MONTH_YEAR" />, моментално е избран <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Исклучено</translation>
 <translation id="1804572139604454141">Снимањето заврши бидејќи дискот е речиси полн</translation>
 <translation id="181103072419391116">Јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
@@ -621,6 +622,7 @@
 <translation id="5075554201838155866">Стартувај затворени титлови</translation>
 <translation id="5078796286268621944">Неточен PIN</translation>
 <translation id="5083553833479578423">Отклучете повеќе функции на „Помошникот“.</translation>
+<translation id="5090752371472782287">Емитувајте на уред на <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Персонализација</translation>
 <translation id="5117590920725113268">Прикажи го следниот месец</translation>
 <translation id="5136175204352732067">Поврзана е друга тастатура</translation>
@@ -630,6 +632,7 @@
 <translation id="5168181903108465623">Достапни се уреди за емитување</translation>
 <translation id="5170568018924773124">Прикажи во папка</translation>
 <translation id="5176318573511391780">Делумно снимање екран</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> настани</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> е комбинирана со <ph name="IN_PLACE_APP" /> за да се создаде нова папка.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 друго известување}one{# друго известување}other{# други известувања}}</translation>
@@ -803,6 +806,7 @@
 <translation id="643147933154517414">Готово</translation>
 <translation id="6431865393913628856">Снимање екран</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> се емитува на <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> настан</translation>
 <translation id="6452181791372256707">Отфрли</translation>
 <translation id="6453179446719226835">Јазикот е променет</translation>
 <translation id="6459472438155181876">Проширување екран на <ph name="DISPLAY_NAME" /></translation>
@@ -866,6 +870,7 @@
 <translation id="6811454077060061666">Google Drive за компјутер е недостапна</translation>
 <translation id="6818242057446442178">Назад за еден збор</translation>
 <translation id="6820676911989879663">Направете пауза!</translation>
+<translation id="6827049576281411231">Затворете ја таблата со настани</translation>
 <translation id="6836499262298959512">Опасна датотека</translation>
 <translation id="6837064795450991317">Сокриј ја лентата на работната површина</translation>
 <translation id="6852052252232534364">Кликнете за активирање</translation>
@@ -873,6 +878,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Преостанува уште една цифра}one{Преостанува уште # цифра}other{Преостануваат уште # цифри}}</translation>
 <translation id="6867938213751067702">Преземањето на <ph name="FILENAME" /> е паузирано</translation>
 <translation id="6878400149835617132">Кратенката е исклучена</translation>
+<translation id="6884665277231944629">Вратете се на денешниот датум</translation>
 <translation id="6886172995547742638">Перформансите на вашиот <ph name="DEVICE_TYPE" /> може да бидат послаби. Користете сертифициран адаптер за напојување USB-C од <ph name="PREFERRED_MINIMUM_POWER" /> W или повеќе.</translation>
 <translation id="688631446150864480">Притискајте го копчето со стрелка надолу за да се префрлате меѓу прозорците</translation>
 <translation id="6896758677409633944">Копирај</translation>
@@ -959,6 +965,7 @@
 <translation id="7497767806359279797">Изберете јазик и тастатура</translation>
 <translation id="7509246181739783082">Потврдете го вашиот идентитет</translation>
 <translation id="7513622367902644023">Избран е режимот на слика од екранот</translation>
+<translation id="7513922695575567867">Календар, седмицата што започнува на <ph name="DATE" />, <ph name="SELECTED_DATE" /> е избран моментално.</translation>
 <translation id="7514365320538308">Преземи</translation>
 <translation id="7526573455193969409">Мрежата можеби се следи</translation>
 <translation id="7536035074519304529">IP адреса: <ph name="ADDRESS" /></translation>
@@ -968,6 +975,7 @@
 <translation id="7564874036684306347">Преместувањето на прозорците на друга работна површина може да доведе до неочекувано однесување. Следните известувања, прозорци и дијалози може да се поделат помеѓу работните површини.</translation>
 <translation id="7569509451529460200">Брајовото писмо и ChromeVox се овозможени</translation>
 <translation id="7569983096843329377">Црна</translation>
+<translation id="757941033127302446">Најавена</translation>
 <translation id="7579778809502851308">Снимање на екранот</translation>
 <translation id="7590883480672980941">Поставки за внесување</translation>
 <translation id="7593891976182323525">Search или Shift</translation>
@@ -1041,6 +1049,7 @@
 <translation id="8035152190676905274">Пенкало</translation>
 <translation id="8036504271468642248">Претходна реченица</translation>
 <translation id="8042893070933512245">Отворете го менито со поставки за пристапност</translation>
+<translation id="8042925093898452104">Затворете ги деталите</translation>
 <translation id="8048123526339889627">Поставки за Bluetooth</translation>
 <translation id="8051716679295756675">Веќе постои шаблон со име <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Копирано во привремената меморија</translation>

@@ -250,6 +250,7 @@
 <translation id="1244265436519979884">กำลังดำเนินการคืนค่า Linux</translation>
 <translation id="1244303850296295656">ข้อผิดพลาดของส่วนขยาย</translation>
 <translation id="1246863218384630739">ไม่สามารถติดตั้ง <ph name="VM_NAME" />: URL ของรูปภาพแสดงรหัสข้อผิดพลาด <ph name="HTTP_ERROR" /> โปรดติดต่อผู้ดูแลระบบ</translation>
+<translation id="1247071602516579380">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, แท็บเล็ตชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="1251366534849411931">เครื่องหมายวงเล็บปีกกาเปิดที่ต้องมี: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">การดำเนินการนี้จะล้างข้อมูลที่เว็บไซต์และแอปต่างๆ จัดเก็บไว้รวมทั้งสิ้น <ph name="TOTAL_USAGE" /></translation>
 <translation id="1251578593170406502">กำลังสแกนหาเครือข่ายอินเทอร์เน็ตมือถือ...</translation>
@@ -393,6 +394,7 @@
 <translation id="1408980562518920698">จัดการข้อมูลส่วนบุคคล</translation>
 <translation id="1410197035576869800">ไอคอนของแอป</translation>
 <translation id="1410616244180625362">อนุญาตให้ <ph name="HOST" /> เข้าถึงกล้องต่อไป</translation>
+<translation id="1410797069449661718">เลื่อนไปทางแท็บแรก</translation>
 <translation id="1410806973194718079">ตรวจสอบนโยบายไม่ได้</translation>
 <translation id="1412681350727866021">ส่วนขยายเพิ่มเติม</translation>
 <translation id="1414315029670184034">ไม่อนุญาตให้เว็บไซต์ใช้กล้องของคุณ</translation>
@@ -436,6 +438,7 @@
 <translation id="144283815522798837">เลือกไว้ <ph name="NUMBER_OF_ITEMS_SELECTED" /> รายการ</translation>
 <translation id="1442851588227551435">ตั้งค่าตั๋ว Kerberos ที่ใช้งานอยู่</translation>
 <translation id="1444628761356461360"><ph name="OWNER_EMAIL" /> ซึ่งเป็นเจ้าของอุปกรณ์เป็นผู้จัดการการตั้งค่านี้</translation>
+<translation id="1445005312224723356">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, โทรศัพท์ชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="144518587530125858">ไม่สามารถโหลดธีมจาก "<ph name="IMAGE_PATH" />"</translation>
 <translation id="1449191289887455076">กด "<ph name="CURRENTKEY" />" อีกครั้งเพื่อยืนยันการกำหนดและ<ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">หน้าเว็บ ไฟล์เดียว</translation>
@@ -721,6 +724,7 @@
 <translation id="1725562816265788801">การเลื่อนแท็บ</translation>
 <translation id="1729533290416704613">อีกทั้งยังควบคุมหน้าที่จะแสดงเมื่อคุณทำการค้นหาจากแถบอเนกประสงค์ด้วย</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />หากต้องการนำแอปออก ให้ไปที่การตั้งค่า &gt; Google Play Store &gt; จัดการค่ากำหนด Android &gt; ตัวจัดการแอปหรือแอปพลิเคชัน แล้วแตะแอปที่คุณต้องการถอนการติดตั้ง (อาจต้องเลื่อนไปทางขวาหรือทางซ้ายเพื่อค้นหาแอป) และแตะถอนการติดตั้ง หรือปิดใช้<ph name="END_PARAGRAPH1" /></translation>
+<translation id="1730989807608739928">เลื่อนไปทางแท็บสุดท้าย</translation>
 <translation id="1731911755844941020">กำลังส่งคำขอ...</translation>
 <translation id="1733383495376208985">เข้ารหัสลับข้อมูลที่ซิงค์ด้วย<ph name="BEGIN_LINK" />รหัสผ่านการซิงค์<ph name="END_LINK" />ของคุณเอง ข้อมูลนี้ไม่รวมถึงวิธีการชำระเงินและที่อยู่จาก Google Pay</translation>
 <translation id="1734212868489994726">สีฟ้าอ่อน</translation>
@@ -860,6 +864,7 @@
 <translation id="1855079636134697549">กล้องเปิดอยู่</translation>
 <translation id="1856715684130786728">เพิ่มตำแหน่ง...</translation>
 <translation id="1858585891038687145">เชื่อถือใบรับรองนี้ในการระบุตัวตนผู้ผลิตซอฟต์แวร์</translation>
+<translation id="1859787252990099899">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, อุปกรณ์ที่ไม่รู้จักชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="1861262398884155592">โฟลเดอร์นี้ว่างเปล่า</translation>
 <translation id="1862311223300693744">คุณได้ติดตั้ง VPN, พร็อกซี, ไฟร์วอลล์ หรือซอฟต์แวร์ NAS พิเศษไว้ไหม</translation>
 <translation id="1863182668524159459">ไม่พบพอร์ตอนุกรม</translation>
@@ -1233,6 +1238,7 @@
 <translation id="2242687258748107519">ข้อมูลไฟล์</translation>
 <translation id="2246549592927364792">รับคำอธิบายรูปภาพจาก Google ไหม</translation>
 <translation id="2247738527273549923">อุปกรณ์นี้จัดการโดยองค์กรของคุณ</translation>
+<translation id="2249061317998743208">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, อุปกรณ์ควบคุมเกมชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="2249111429176737533">เปิดเป็นหน้าต่างแท็บ</translation>
 <translation id="2249605167705922988">เช่น 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">เปิดด้วยเครื่องมือดูระบบ</translation>
@@ -1440,6 +1446,7 @@
 <translation id="245322989586167203">โดยปกติแล้วเว็บไซต์จะเชื่อมต่อกับพอร์ตอนุกรมเพื่อดำเนินการตามฟีเจอร์ในการโอนข้อมูล เช่น การตั้งค่าเครือข่าย</translation>
 <translation id="2453706416476934374">หากต้องการคำตอบที่ปรับเปลี่ยนให้เหมาะกับบุตรหลานเมื่อ <ph name="SUPERVISED_USER_NAME" /> ถามคำถาม โปรดอนุญาตให้ Assistant เข้าถึงภาพสิ่งที่อยู่บนหน้าจอของ <ph name="SUPERVISED_USER_NAME" /> ซึ่งอาจรวมถึงข้อมูลเกี่ยวกับเพลงหรือวิดีโอที่กำลังเล่นอยู่ด้วย</translation>
 <translation id="2453860139492968684">เสร็จสิ้น</translation>
+<translation id="2454206500483040640">แบ่งพาร์ติชันแล้ว</translation>
 <translation id="2454247629720664989">คีย์เวิร์ด</translation>
 <translation id="2454264884354864965">กล้องปิดอยู่</translation>
 <translation id="2454524890947537054">ต้องการอนุมัติคำขอเว็บหรือไม่</translation>
@@ -1802,6 +1809,7 @@
 <translation id="2806891468525657116">มีทางลัดนี้อยู่แล้ว</translation>
 <translation id="2807517655263062534">ไฟล์ที่คุณดาวน์โหลดจะปรากฏที่นี่</translation>
 <translation id="2809586584051668049">และอีก <ph name="NUMBER_ADDITIONAL_DISABLED" /> รายการ</translation>
+<translation id="2810235462964014915">ได้ขออ่านและเปลี่ยนแปลง <ph name="SITE_NAME" /></translation>
 <translation id="2811205483104563968">บัญชี</translation>
 <translation id="2812049959647166806">ไม่รองรับ Thunderbolt</translation>
 <translation id="2812989263793994277">ไม่ต้องแสดงภาพใดๆ</translation>
@@ -1992,6 +2000,7 @@
 <translation id="3007771295016901659">ทำซ้ำแท็บ</translation>
 <translation id="3008232374986381779">เรียกใช้เครื่องมือ ตัวแก้ไข และ IDE ของ Linux ใน <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">รีเซ็ตสิทธิ์</translation>
+<translation id="3008396025115884998">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, อุปกรณ์เสียงชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> กำหนดให้คุณเชื่อมต่อ Wi-Fi วันนี้เพื่อดาวน์โหลดอัปเดต หรือดาวน์โหลดจากการเชื่อมต่อที่มีการวัดปริมาณอินเทอร์เน็ต (อาจมีค่าบริการ)}other{<ph name="MANAGER" /> กำหนดให้คุณเชื่อมต่อ Wi-Fi และดาวน์โหลดอัปเดตก่อนเวลาที่กำหนด หรือดาวน์โหลดจากการเชื่อมต่อที่มีการวัดปริมาณอินเทอร์เน็ต (อาจมีค่าบริการ)}}</translation>
 <translation id="3009300415590184725">คุณแน่ใจหรือไม่ว่าต้องการยกเลิกขั้นตอนการตั้งค่าบริการข้อมูลโทรศัพท์มือถือ</translation>
 <translation id="3009779501245596802">ฐานข้อมูลที่มีการจัดทำดัชนี</translation>
@@ -2297,6 +2306,7 @@
 <translation id="3348038390189153836">พบอุปกรณ์แบบถอดออกได้</translation>
 <translation id="3348131053948466246">มีการแนะนำอีโมจิ กดขึ้นหรือลงเพื่อไปยังอีโมจิที่ต้องการแล้วกด Enter เพื่อแทรก</translation>
 <translation id="3349933790966648062">หน่วยความจำที่ใช้</translation>
+<translation id="3354972872297836698">จับคู่กับอุปกรณ์ <ph name="DEVICE_NAME" /> ไม่ได้ เลือกอุปกรณ์เพื่อลองอีกครั้ง</translation>
 <translation id="3355936511340229503">ข้อผิดพลาดในการเชื่อมต่อ</translation>
 <translation id="3356580349448036450">เสร็จสมบูรณ์</translation>
 <translation id="3359256513598016054">ข้อจำกัดนโยบายใบรับรอง</translation>
@@ -3110,6 +3120,7 @@
 <translation id="4165942112764990069"><ph name="USER_EMAIL" /> ไม่ได้เป็นขององค์กรที่ถูกต้อง โปรดติดต่อผู้ดูแลระบบ หากคุณเป็นผู้ดูแลระบบ ให้ตั้งค่าองค์กรโดยไปที่ g.co/ChromeEnterpriseAccount</translation>
 <translation id="4167686856635546851">โดยปกติแล้วเว็บไซต์จะใช้ JavaScript เพื่อแสดงฟีเจอร์แบบอินเทอร์แอกทีฟ เช่น วิดีโอเกมหรือเว็บฟอร์ม</translation>
 <translation id="4168015872538332605">การตั้งค่าบางอย่างที่เป็นของ <ph name="PRIMARY_EMAIL" /> กำลังมีการแชร์กับคุณ การตั้งค่าเหล่านี้มีผลกับบัญชีของคุณเมื่อมีการใช้การลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชีเท่านั้น</translation>
+<translation id="4168651806173792090"><ph name="NETWORK_NAME" /> ลงท้ายด้วย <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">ไม่อนุญาต</translation>
 <translation id="4170314459383239649">ล้างเมื่อออก</translation>
 <translation id="417096670996204801">เลือกโปรไฟล์</translation>
@@ -3340,6 +3351,7 @@
 <translation id="4432621511648257259">รหัสผ่านไม่ถูกต้อง</translation>
 <translation id="443454694385851356">แบบเดิม (ไม่ปลอดภัย)</translation>
 <translation id="443475966875174318">อัปเดตหรือนำแอปพลิเคชันที่ใช้ร่วมกันไม่ได้ออก</translation>
+<translation id="4435634292635092844">ดูรูปภาพจากอัลบั้มรูปภาพจากกล้องของโทรศัพท์ใน <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="4438043733494739848">โปร่งใส</translation>
 <translation id="4440097423000553826"><ph name="WEBSITE" /> ได้ส่งการแจ้งเตือนไปยังโทรศัพท์ของคุณ แตะการแจ้งเตือน "<ph name="NOTIFICATIONTITLE" />" และทำตามขั้นตอนต่างๆ เพื่อยืนยันว่าเป็นคุณ</translation>
 <translation id="4441124369922430666">คุณต้องการเริ่มแอปนี้โดยอัตโนมัติเมื่อเครื่องเปิดไหม</translation>
@@ -3596,7 +3608,7 @@
 <translation id="4697071790493980729">ไม่พบผลการค้นหา</translation>
 <translation id="4697551882387947560">เมื่อเซสชันการเรียกดูสิ้นสุดลง</translation>
 <translation id="469838979880025581">เว็บไซต์ขอใช้ไมโครโฟนของคุณได้</translation>
-<translation id="4699172675775169585">รูปภาพและไฟล์ในแคช</translation>
+<translation id="4699172675775169585">รูปภาพและไฟล์ที่แคชไว้</translation>
 <translation id="4699357559218762027">(เรียกใช้อัตโนมัติ)</translation>
 <translation id="4701025263201366865">การลงชื่อเข้าใช้ของผู้ปกครอง</translation>
 <translation id="4708794300267213770">แสดงหน้าจอล็อกเมื่อปลุกให้ทำงานจากโหมดสลีป</translation>
@@ -3636,6 +3648,7 @@
 <translation id="4759238208242260848">ดาวน์โหลด</translation>
 <translation id="4761104368405085019">ใช้ไมโครโฟนของคุณ</translation>
 <translation id="4762718786438001384">พื้นที่ดิสก์ของอุปกรณ์ใกล้จะเต็มแล้ว</translation>
+<translation id="4762898026821161650">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, คอมพิวเตอร์ชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="4763408175235639573">มีการวางคุกกี้ต่อไปนี้เมื่อคุณดูหน้าเว็บนี้</translation>
 <translation id="4765582662863429759">อนุญาตให้ Android Messages นำส่งข้อความจากโทรศัพท์ไปยัง Chromebook ของคุณ</translation>
 <translation id="4768332406694066911">คุณมีใบรับรองจากองค์กรเหล่านี้ซึ่งระบุถึงตัวคุณ</translation>
@@ -4597,6 +4610,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">สำเร็จ</translation>
 <translation id="5790651917470750848">มีการส่งต่อพอร์ตอยู่แล้ว</translation>
+<translation id="5792295754950501287">การดำเนินการเพิ่มเติมสำหรับ<ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">โปรดแตะปุ่มเปิด/ปิด</translation>
 <translation id="5793339252089865437">หากดาวน์โหลดอัปเดตผ่านเครือข่ายมือถือ อาจทำให้มีค่าบริการเน็ตมือถือเพิ่มเติม</translation>
 <translation id="5794034487966529952">เดสก์ <ph name="DESK_TITLE" /> มีเบราว์เซอร์เปิดอยู่ <ph name="NUM_BROWSERS" /> หน้าต่าง</translation>
@@ -5153,6 +5167,7 @@
 <translation id="6374469231428023295">ลองอีกครั้ง</translation>
 <translation id="6377268785556383139">มีผลการค้นหา "<ph name="SEARCH_TEXT" />" 1 รายการ</translation>
 <translation id="6380143666419481200">ยอมรับและดำเนินการต่อ</translation>
+<translation id="6382616130475191723">ได้รับอนุญาตให้อ่านและเปลี่ยนแปลง <ph name="SITE_NAME" /></translation>
 <translation id="6382958439467370461">ไม่มีทางลัดที่ไม่ได้ใช้งาน</translation>
 <translation id="638418309848716977">ลิงก์ที่รองรับ</translation>
 <translation id="6384275966486438344">เปลี่ยนการตั้งค่าการค้นหาของคุณเป็น: <ph name="SEARCH_HOST" /></translation>
@@ -5817,6 +5832,7 @@
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{เรียกใช้การตรวจสอบความปลอดภัยเมื่อ 1 นาทีที่ผ่านมา}other{เรียกใช้การตรวจสอบความปลอดภัยเมื่อ {NUM_MINS} นาทีที่ผ่านมา}}</translation>
 <translation id="7057767408836081338">รับข้อมูลแอปไม่สำเร็จ ยังพยายามเรียกใช้แอปอยู่...</translation>
 <translation id="7058024590501568315">เครือข่ายที่ซ่อนอยู่</translation>
+<translation id="70582545822664495">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, เมาส์ชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="7059858479264779982">ตั้งค่าเป็นเรียกใช้อัตโนมัติ</translation>
 <translation id="7062222374113411376">อนุญาตให้เว็บไซต์ที่ปิดล่าสุดดำเนินการส่งและรับข้อมูลต่อจนเสร็จ (แนะนำ)</translation>
 <translation id="7063129466199351735">กำลังประมวลผลทางลัด...</translation>
@@ -5981,6 +5997,7 @@
 <translation id="7257173066616499747">เครือข่าย Wi-Fi</translation>
 <translation id="725758059478686223">บริการการพิมพ์</translation>
 <translation id="7257666756905341374">อ่านข้อมูลที่คุณคัดลอกและวาง</translation>
+<translation id="7258006747130724016">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, กล้องวิดีโอชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="7258192266780953209">Transformations</translation>
 <translation id="7258225044283673131">แอปพลิเคชันไม่ตอบสนอง เลือก "บังคับปิด" เพื่อปิดแอป</translation>
 <translation id="7262004276116528033">บริการลงชื่อเข้าใช้นี้โฮสต์โดย <ph name="SAML_DOMAIN" /></translation>
@@ -6328,7 +6345,7 @@
 <translation id="7616214729753637086">กำลังลงทะเบียนอุปกรณ์...</translation>
 <translation id="7617263010641145920">เปิด Play Store</translation>
 <translation id="7617366389578322136">กำลังเชื่อมต่อกับ "<ph name="DEVICE_NAME" />"</translation>
-<translation id="7617648809369507487">ใช้การแสดงข้อความที่ไม่มีการแจ้งเตือน</translation>
+<translation id="7617648809369507487">ใช้การส่งข้อความแบบไม่มีการแจ้งเตือน</translation>
 <translation id="7618774594543487847">ปานกลาง</translation>
 <translation id="7621382409404463535">ระบบบันทึกการกำหนดค่าอุปกรณ์ไม่สำเร็จ</translation>
 <translation id="7622114377921274169">กำลังชาร์จ</translation>
@@ -6775,6 +6792,7 @@
 <translation id="8037117027592400564">อ่านข้อความทั้งหมดที่พูดโดยใช้เสียงสังเคราะห์</translation>
 <translation id="8037357227543935929">ขอ (ค่าเริ่มต้น)</translation>
 <translation id="803771048473350947">ไฟล์</translation>
+<translation id="8038399858950372766">อุปกรณ์ที่ <ph name="DEVICE_INDEX" /> จาก <ph name="DEVICE_COUNT" />, แป้นพิมพ์ชื่อ <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">ส่งความคิดเห็น</translation>
 <translation id="8042142357103597104">ความทึบแสงของข้อความ</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> ไม่ตอบสนอง</translation>
@@ -6984,11 +7002,13 @@
 <translation id="8244514732452879619">อีกสักพักก็นอนได้แล้ว</translation>
 <translation id="8246776524656196770">ปกป้องคีย์ความปลอดภัยด้วย PIN (หมายเลขประจำตัวส่วนบุคคล)</translation>
 <translation id="8248050856337841185">&amp;วาง</translation>
+<translation id="8248381369318572865">เข้าถึงไมโครโฟนและวิเคราะห์คำพูด</translation>
 <translation id="8248887045858762645">เคล็ดลับสำหรับ Chrome</translation>
 <translation id="8249048954461686687">โฟลเดอร์ OEM</translation>
 <translation id="8249615410597138718">ส่งไปยังอุปกรณ์</translation>
 <translation id="8249672078237421304">เสนอให้แปลหน้าที่ไม่ได้อยู่ในภาษาที่คุณอ่านได้</translation>
 <translation id="8251441930213048644">รีเฟรชเลย</translation>
+<translation id="8251509999076836464">กำลังจับคู่กับ <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">รูปภาพขนาดย่อถูกลบแล้ว</translation>
 <translation id="825238165904109940">แสดง URL แบบเต็มเสมอ</translation>
 <translation id="8252569384384439529">กำลังอัปโหลด...</translation>
@@ -7004,6 +7024,7 @@
 <translation id="8264024885325823677">การตั้งค่านี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" เรียกใช้หน้าจอแบบเต็ม</translation>
 <translation id="826511437356419340">เข้าสู่โหมดภาพรวมหน้าต่างแล้ว เลื่อนเพื่อไปยังส่วนต่างๆ หรือกด Tab หากใช้แป้นพิมพ์</translation>
+<translation id="8265671588726449108">{COUNT,plural, =1{หน้าต่างที่ไม่ระบุตัวตนจะไม่เปิดหลังจากคลิกเปิดอีกครั้ง}other{หน้าต่างที่ไม่ระบุตัวตน {COUNT} หน้าต่างจะไม่เปิดขึ้นมาใหม่หลังจากคลิกเปิดอีกครั้ง}}</translation>
 <translation id="8266947622852630193">วิธีการป้อนข้อมูลทั้งหมด</translation>
 <translation id="8267539814046467575">เพิ่มเครื่องพิมพ์</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />นี่คือข้อมูลทั่วไปเกี่ยวกับอุปกรณ์นี้และวิธีใช้อุปกรณ์ (เช่น ระดับแบตเตอรี่ กิจกรรมในระบบและแอป และข้อผิดพลาด) ระบบจะใช้ข้อมูลดังกล่าวเพื่อปรับปรุง Android และข้อมูลแบบสรุปรวมบางอย่างจะช่วยให้แอป Google และพาร์ทเนอร์ต่างๆ เช่น นักพัฒนาแอป Android ปรับปรุงแอปและผลิตภัณฑ์ของตนให้ดีขึ้นได้อีกด้วย<ph name="END_PARAGRAPH1" />

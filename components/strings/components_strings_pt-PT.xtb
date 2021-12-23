@@ -112,6 +112,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1308113895091915999">Oferta disponível</translation>
 <translation id="1312803275555673949">Que provas existem?</translation>
 <translation id="131405271941274527"><ph name="URL" /> pretende enviar e receber informações quando toca no telemóvel num dispositivo NFC</translation>
+<translation id="1314311879718644478">Veja conteúdo de realidade aumentada</translation>
 <translation id="1314509827145471431">Encadernar à direita</translation>
 <translation id="1318023360584041678">Guardado no grupo de separadores</translation>
 <translation id="1319245136674974084">Não voltar a perguntar para esta app</translation>
@@ -215,6 +216,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1583429793053364125">Ocorreu um erro ao apresentar esta página Web.</translation>
 <translation id="1586541204584340881">As extensões que instalou.</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1589050138437146318">Instalar o ARCore?</translation>
 <translation id="1592005682883173041">Acesso aos dados locais</translation>
 <translation id="1594030484168838125">Escolher</translation>
 <translation id="160851722280695521">Jogue o Dino Run no Chrome</translation>
@@ -1392,6 +1394,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5333022057423422993">O Chrome encontrou a palavra-passe que acabou de utilizar numa violação de dados. Para proteger as suas contas, recomendamos que verifique as suas palavras-passe guardadas.</translation>
 <translation id="5334013548165032829">Registos de sistema detalhados</translation>
 <translation id="5334145288572353250">Pretende guardar o endereço?</translation>
+<translation id="5335920952954443287">Coração a bater</translation>
 <translation id="5340250774223869109">A app está bloqueada</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5344579389779391559">Esta página pode tentar cobrar-lhe dinheiro</translation>
@@ -2063,6 +2066,7 @@ Detalhes adicionais:
 <translation id="7654909834015434372">Quando edita anotações, este documento volta à respetiva rotação original.</translation>
 <translation id="765676359832457558">Ocultar definições avançadas...</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7659878911471462949">Lágrimas de alegria</translation>
 <translation id="7662298039739062396">Definição controlada por uma extensão</translation>
 <translation id="7663736086183791259">Certificado <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Não permitida na Navegação anónima</translation>
@@ -2266,6 +2270,7 @@ Detalhes adicionais:
 <translation id="830498451218851433">Dobrar a meio</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Apps instaladas e a frequência com que são utilizadas.</translation>
+<translation id="8317207217658302555">Atualizar o ARCore?</translation>
 <translation id="831997045666694187">Noite</translation>
 <translation id="8321476692217554900">notificações</translation>
 <translation id="8328484624016508118">Após fechar todos os separadores de navegação anónima, o Chrome limpa:

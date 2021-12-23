@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Се воспоставува контакт со Google… Ова може да потрае</translation>
 <translation id="1416550906796893042">Верзија на апликација</translation>
 <translation id="1430915738399379752">Печати</translation>
+<translation id="1436784010935106834">Отстрането</translation>
 <translation id="1448440926884431741">Организирајте ги следените производи во „Обележувачи“</translation>
 <translation id="1450753235335490080">Не може да се сподели <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Изберете јазик за Chrome</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">Да се затвори прозорецот?</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="218608176142494674">Се споделува</translation>
-<translation id="2195339740518523951">Добијте ја најсилната безбедност на Chrome</translation>
 <translation id="2200113223741723867">Управувајте со споделувањето податоци за користењето</translation>
 <translation id="2218567645332692482">Ги надградува навигациите на HTTPS и ве предупредува пред вчитувањето сајтови што не го поддржуваат</translation>
 <translation id="2227444325776770048">Продолжи како <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@
 <translation id="4170011742729630528">Услугата не е достапна, обидете се повторно подоцна.</translation>
 <translation id="4179980317383591987">Искористено: <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Јазици</translation>
-<translation id="4183868528246477015">Пребарувајте со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
 <translation id="4196597275619698563">Создај картичка</translation>
 <translation id="4198423547019359126">Нема достапни локации за преземање</translation>
@@ -577,7 +576,6 @@
 <translation id="4411535500181276704">Лесен режим</translation>
 <translation id="4415276339145661267">Управувајте со сметката на Google</translation>
 <translation id="4425140285732600465">Цената се следи. Добивајте предупредувања ако цената се намали на кој било сајт.</translation>
-<translation id="4427306783828095590">„Подобрената заштита“ помага при блокирање кражби на идентитетот и злонамерен софтвер</translation>
 <translation id="4450672886426705087">Резултати од пребарувањето од Google.</translation>
 <translation id="4452411734226507615">Затвори ја картичката <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Додаден е обележувач во <ph name="FOLDER_NAME" /></translation>
@@ -1082,6 +1080,7 @@
 <translation id="7177466738963138057">Може да го промените ова подоцна во „Поставки“</translation>
 <translation id="7177873915659574692">Не може да се создаде QR-код. URL-адресата има повеќе од <ph name="CHARACTER_LIMIT" /> знаци.</translation>
 <translation id="7180611975245234373">Освежи</translation>
+<translation id="718226107353899806">Може да додадете најмногу <ph name="MAX_NUM_REACTIONS" /> реакции.</translation>
 <translation id="7187993566681480880">Ја чува вашата безбедност на Chrome и може да се користи за да ја подобри безбедноста на други апликации на Google кога сте најавени.</translation>
 <translation id="718926126787620637">Список со папки за обележувачи отворени на цел екран</translation>
 <translation id="7191430249889272776">Отворена е картичка во заднина.</translation>
@@ -1245,7 +1244,6 @@
 <translation id="8035133914807600019">Нова папка…</translation>
 <translation id="8037750541064988519">Останаа <ph name="DAYS" /> дена</translation>
 <translation id="8037801708772278989">Тукушто проверено</translation>
-<translation id="8040831032425909005">Икона за виџетот за пребарување брзи дејства</translation>
 <translation id="804335162455518893">SD-картичката не е најдена</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> картичка „Инкогнито“}one{<ph name="TAB_COUNT_NORMAL" /> картичка „Инкогнито“}other{<ph name="TAB_COUNT_NORMAL" /> картички „Инкогнито“}}</translation>
 <translation id="8051695050440594747">Достапни се <ph name="MEGABYTES" /> MB</translation>

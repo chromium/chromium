@@ -235,6 +235,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3157387275655328056">Lägg till i läslistan</translation>
 <translation id="3157684681743766797">Markera alla …</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Du kan även använda de sparade lösenorden på andra enheter.</translation>
 <translation id="3175081911749765310">Webbtjänster</translation>
 <translation id="3178650076442119961">Aktiv i dag</translation>
 <translation id="3181825792072797598">Aktivera synkronisering</translation>
@@ -328,6 +329,7 @@ Följ stegen nedan:</translation>
 <translation id="4042870976416480368">Sök på sidan</translation>
 <translation id="4049507953662678203">Kontrollera att du är ansluten till nätverket och försök igen.</translation>
 <translation id="408404951701638773">Nu är det enklare att komma åt sökfältet</translation>
+<translation id="4108314971463891922">Följ</translation>
 <translation id="411254640334432676">Nedladdningen misslyckades.</translation>
 <translation id="4112644173421521737">Sök</translation>
 <translation id="4113030288477039509">Hanteras av administratören</translation>
@@ -345,6 +347,7 @@ Följ stegen nedan:</translation>
 <translation id="4272631900155121838">Om du vill skanna en QR-kod aktiverar du kameran i inställningarna</translation>
 <translation id="4277990410970811858">Säker webbsökning</translation>
 <translation id="4281844954008187215">Användarvillkor</translation>
+<translation id="4304713468139749426">Lösenordshantering</translation>
 <translation id="430793432425771671">Synkronisera allt</translation>
 <translation id="4309403553630140242">Tryck snabbt två gånger för mer information</translation>
 <translation id="430967081421617822">Sedan kontot skapades</translation>
@@ -543,6 +546,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6127379762771434464">Objektet har tagits bort</translation>
 <translation id="6136914049981179737">Nyss</translation>
 <translation id="6144589619057374135">Öppna ${url} i inkognitoläget</translation>
+<translation id="6149061208933997199">Använd lösenordet</translation>
 <translation id="6159839020698489198">valfritt</translation>
 <translation id="6177442314419606057">Sök i Chrome</translation>
 <translation id="6184086493125982861">Visa flikar</translation>
@@ -767,6 +771,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8076014560081431679">Sparade webbplatsinställningar raderas inte och kan visa dina surfvanor. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Den här inställningen hanteras – tryck snabbt två gånger för mer information</translation>
 <translation id="8080028325999236607">Stäng alla flikar</translation>
+<translation id="8101409298456377967">Skapa, spara och hantera dina lösenord så att du enkelt kan logga in på webbplatser och i appar. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Inaktivera</translation>
 <translation id="8114753159095730575">En filnedladdning är tillgänglig. Alternativ visas nära skärmens nederkant.</translation>
 <translation id="8132598642024322408">Nedsatt från <ph name="PREVIOUS_PRICE" /> till <ph name="PRICE" />.</translation>

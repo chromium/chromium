@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">ဖတ်ရန်စာရင်းသို့ ထည့်ပါ</translation>
 <translation id="3157684681743766797">အားလုံးကို အမှတ်အသားလုပ်ရန်…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">သင်၏ အခြားစက်များတွင် သိမ်းထားသော စကားဝှက်များကိုလည်း သုံးနိုင်ပါသည်။</translation>
 <translation id="3175081911749765310">ဝဘ် ဝန်ဆောင်မှုများ</translation>
 <translation id="3178650076442119961">ယနေ့ အသုံးပြုထားသည်</translation>
 <translation id="3181825792072797598">စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ</translation>
@@ -328,6 +329,7 @@
 <translation id="4042870976416480368">စာမျက်နှာတွင် ရှာရန်</translation>
 <translation id="4049507953662678203">ကွန်ယက်ချိတ်ဆက်မှု ရှိမရှိသေချာစေပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="408404951701638773">ရှာဖွေမှုဘားတန်းကို ယခုအခါ ပိုမိုလွယ်ကူစွာ အသုံးပြုနိုင်ပါပြီ</translation>
+<translation id="4108314971463891922">လိုက်ကြည့်ရန်</translation>
 <translation id="411254640334432676">ဒေါင်းလုဒ် မအောင်မြင်ခဲ့</translation>
 <translation id="4112644173421521737">ရှာဖွေရန်</translation>
 <translation id="4113030288477039509">သင်၏ စီမံအုပ်ချုပ်သူမှ စီမံကွပ်ကဲသည်</translation>
@@ -345,6 +347,7 @@
 <translation id="4272631900155121838">QR ကုဒ်ကို ဖတ်ရန် ဆက်တင်ထဲတွင် ကင်မရာကို ဖွင့်ပါ</translation>
 <translation id="4277990410970811858">လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း</translation>
 <translation id="4281844954008187215">ဝန်ဆောင်မှု စည်းမျဉ်းများ</translation>
+<translation id="4304713468139749426">စကားဝှက်မန်နေဂျာ</translation>
 <translation id="430793432425771671">အားလုံး စင့်ခ်မည်</translation>
 <translation id="4309403553630140242">နောက်ထပ်အချက်အလက်အတွက် နှစ်ချက်တို့ပါ</translation>
 <translation id="430967081421617822">အစအဆုံး</translation>
@@ -356,6 +359,7 @@
 <translation id="4389019817280890563">ဘာသာစကားပြောင်းရန်အတွက် တို့ပါ</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />ဆက်တင်များ<ph name="END_BOLD" /> ဖွင့်ပါ</translation>
 <translation id="4454246407045105932">ဘာသာစကား ထည့်ခြင်း</translation>
+<translation id="4462491365653392320">‘တဘ်’ များတွင် ‘ဈေးနှုန်းများ’ စောင့်ကြည့်ရန်</translation>
 <translation id="4469418912670346607">စနစ်ထည့်သွင်းမှု ဆက်လက်ပြုလုပ်ရန်</translation>
 <translation id="4474494258097106883">သင့် iPhone အတွက် ပြုလုပ်ထားသည်</translation>
 <translation id="4476574785019001431">ဆက်တင်များ</translation>
@@ -419,6 +423,7 @@
 <translation id="4944543191714094452">စာမျက်နှာတွင် ရှာရန်…</translation>
 <translation id="4945756290001680296">စကားဝှက် ဆက်တင်များသို့ ဝင်ခြင်း</translation>
 <translation id="4979397965658815378">သင့်စက်ပစ္စည်းများအားလုံးပေါ်တွင် စာညှပ်များ၊ စကားဝှက်များ၊ မှတ်တမ်းနှင့် အခြားဆက်တင်များ ရယူအသုံးပြုနိုင်ရန် သင့် Google အကောင့်ဖြင့် လက်မှတ်ထိုးဝင်ပါ</translation>
+<translation id="4986678885919050584">ဤ ‘စက်’ မှဖယ်ရှားရန်</translation>
 <translation id="5005498671520578047">စကားဝှက်ကို ကူးယူပါ</translation>
 <translation id="5017828934289857214">နောက်မှ သတိပေးရန်</translation>
 <translation id="5037676449506322593">အားလုံးကို ရွေးရန်</translation>
@@ -519,6 +524,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="5979837087407522202">စကားဝှက်များ ရှာရန်</translation>
 <translation id="5982717868370722439">လက်ရှိဒေတာများကို <ph name="USER_EMAIL" /> သို့ ထည့်ပါ။</translation>
 <translation id="5984222099446776634">မကြာသေးခင်က လည်ပတ်ခဲ့သော</translation>
+<translation id="5988097621740394599">သင့်တဘ်များတွင် ဈေးကျသွားသည်များကို ကြည့်နိုင်သည်။</translation>
 <translation id="5988851877894965432">Chrome တွင် URL များ ဖွင့်ရန်</translation>
 <translation id="6012140227487808125">လျှို့ဝှက်သည့်အသွင်သို့ ပြောင်းနေသည်…</translation>
 <translation id="6021332621416007159">...တွင်ဖွင့်မည်</translation>
@@ -539,6 +545,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6127379762771434464">အကြောင်းအရာကို ဖယ်ရှားလိုက်ပါပြီ</translation>
 <translation id="6136914049981179737">ပြီးခဲ့သော စက္ကန့်</translation>
 <translation id="6144589619057374135">ရုပ်ဖျက်မုဒ်တွင် ${url} ဖွင့်ရန်</translation>
+<translation id="6149061208933997199">စကားဝှက်အသုံးပြုမည်</translation>
 <translation id="6159839020698489198">ချန်လှပ်ထားနိုင်သည်</translation>
 <translation id="6177442314419606057">Chrome တွင် ရှာဖွေရန်</translation>
 <translation id="6184086493125982861">တဲဘ်များ ပြမည်</translation>
@@ -763,6 +770,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8076014560081431679">သိမ်းဆည်းထားသည့် ဆိုက်ဆက်တင်များကိုတော့ ဖျက်လိုက်မည် မဟုတ်ဘဲ သင်အင်တာနက် အသုံးပြုမှု အမူအကျင့်များကို ဖော်ပြပါလိမ့်မည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">ဤဆက်တင်ကို စီမံခန့်ခွဲထားသည်၊ နောက်ထပ်အချက်အလက်အတွက် နှစ်ချက်တို့ပါ</translation>
 <translation id="8080028325999236607">တဘ်အားလုံး ပိတ်မည်</translation>
+<translation id="8101409298456377967">ဝဘ်ဆိုက်နှင့် အက်ပ်များသို့ လွယ်ကူစွာလက်မှတ်ထိုးဝင်နိုင်ရန် စကားဝှက်များ ပြုလုပ်ပြီး သိမ်းကာစီမံပါ။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">ပိတ်ပါ</translation>
 <translation id="8114753159095730575">ဖိုင်ကို ဒေါင်းလုဒ်လုပ်နိုင်ပါပြီ။ မျက်နှာပြင်အောက်ခြေနားတွင် ရွေးချယ်စရာများ ရှိပါသည်။</translation>
 <translation id="8132598642024322408">ယခင် <ph name="PREVIOUS_PRICE" /> ယခု <ph name="PRICE" />။</translation>

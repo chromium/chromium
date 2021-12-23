@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Google ಅನ್ನು ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ. ಇದು ಒಂದು ನಿಮಿಷದಷ್ಟು ಸಮಯ ತೆಗೆದುಕೊಳ್ಳಬಹುದು...</translation>
 <translation id="1416550906796893042">ಅಪ್ಲಿಕೇಶನ್ ಆವೃತ್ತಿ</translation>
 <translation id="1430915738399379752">ಮುದ್ರಿಸು</translation>
+<translation id="1436784010935106834">ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="1448440926884431741">ನಿಮ್ಮ ಟ್ರ್ಯಾಕ್ ಮಾಡಿದ ಉತ್ಪನ್ನಗಳನ್ನು Bookmarks ನಲ್ಲಿ ಆಯೋಜಿಸಿ</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />ವನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="1466383950273130737">Chrome ನ ಭಾಷೆಯನ್ನು ಆರಿಸಿ</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">ವಿಂಡೋವನ್ನು ಮುಚ್ಚಬೇಕೆ?</translation>
 <translation id="2175927920773552910">QR ಕೋಡ್</translation>
 <translation id="218608176142494674">ಹಂಚಿಕೆ</translation>
-<translation id="2195339740518523951">Chrome ನ ಪ್ರಬಲ ಭದ್ರತೆಯನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="2200113223741723867">ಬಳಕೆಯ ಡೇಟಾ ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2218567645332692482">ನ್ಯಾವಿಗೇಶನ್‌ಗಳನ್ನು HTTPS ಗೆ ಅಪ್‌ಗ್ರೇಡ್‌ ಮಾಡಿ ಮತ್ತು ಅದನ್ನು ಬೆಂಬಲಿಸದ ಸೈಟ್‌ಗಳನ್ನು ಲೋಡ್ ಮಾಡುವ ಮೊದಲು ನಿಮಗೆ ಎಚ್ಚರಿಸಲಿ</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ನಂತೆ ಮುಂದುವರಿಸಿ</translation>
@@ -543,7 +543,6 @@
 <translation id="4170011742729630528">ಈ ಸೇವೆಯು ಲಭ್ಯವಿಲ್ಲ; ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ಬಳಸಲಾಗಿದೆ</translation>
 <translation id="4181841719683918333">ಭಾಷೆಗಳು</translation>
-<translation id="4183868528246477015">Google Lens ಬಳಸಿ ಚಿತ್ರವನ್ನು ಹುಡುಕಿ<ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="4196597275619698563">ಕಾರ್ಡ್ ರಚಿಸಿ</translation>
 <translation id="4198423547019359126">ಡೌನ್‌ಲೋಡ್ ಸ್ಥಳಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
@@ -577,7 +576,6 @@
 <translation id="4411535500181276704">ಲೈಟ್ ಮೋಡ್</translation>
 <translation id="4415276339145661267">ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="4425140285732600465">ದರವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ. ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಾದರೆ ಅಲರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ.</translation>
-<translation id="4427306783828095590">ಫಿಶಿಂಗ್ ಮತ್ತು ಮಾಲ್‌ವೇರ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲು ವರ್ಧಿತ ಸುರಕ್ಷತೆ ಹೆಚ್ಚಿನ ಸಹಾಯ ಮಾಡುತ್ತದೆ</translation>
 <translation id="4450672886426705087">Google ನಿಂದ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳು.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ಟ್ಯಾಬ್‌ ಮುಚ್ಚಿ</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> ಗೆ ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -1081,6 +1079,7 @@
 <translation id="7177466738963138057">ನೀವು ಇದನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಂತರ ಬದಲಾಯಿಸಬಹುದು</translation>
 <translation id="7177873915659574692">QR ಕೋಡ್‌ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. URL, <ph name="CHARACTER_LIMIT" /> ಕ್ಕಿಂತ ಹೆಚ್ಚು ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="7180611975245234373">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
+<translation id="718226107353899806">ನೀವು ಗರಿಷ್ಠ <ph name="MAX_NUM_REACTIONS" /> ಪ್ರತಿಕ್ರಿಯೆಗಳನ್ನು ಸೇರಿಸಬಹುದು</translation>
 <translation id="7187993566681480880">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, Chrome ನಲ್ಲಿ ನಿಮ್ಮನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸುತ್ತದೆ ಮತ್ತು ಇತರ Google ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಸುರಕ್ಷತೆಯನ್ನು ಸುಧಾರಿಸಲು ಬಳಸಬಹುದು.</translation>
 <translation id="718926126787620637">ಬುಕ್‌ಮಾರ್ಕ್ ಫೋಲ್ಡರ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="7191430249889272776">ಟ್ಯಾಬ್ ಅನ್ನು ಹಿನ್ನೆಲೆಯಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
@@ -1244,7 +1243,6 @@
 <translation id="8035133914807600019">ಹೊಸ ಫೋಲ್ಡರ್‌…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> ದಿನಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="8037801708772278989">ಈಗಷ್ಟೇ ಪರಿಶೀಲಿಸಲಾಗಿದೆ</translation>
-<translation id="8040831032425909005">ತ್ವರಿತ ಕ್ರಮದ ವಿಜೆಟ್ ಹುಡುಕಾಟ ಐಕಾನ್</translation>
 <translation id="804335162455518893">SD ಕಾರ್ಡ್ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌}one{<ph name="TAB_COUNT_NORMAL" /> ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="TAB_COUNT_NORMAL" /> ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB  ಲಭ್ಯವಿದೆ</translation>

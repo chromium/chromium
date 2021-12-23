@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">กำลังติดต่อ Google อาจใช้เวลาประมาณ 1 นาที…</translation>
 <translation id="1416550906796893042">เวอร์ชันของแอปพลิเคชัน</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
+<translation id="1436784010935106834">ลบออกแล้ว</translation>
 <translation id="1448440926884431741">จัดระเบียบผลิตภัณฑ์ที่ติดตามในบุ๊กมาร์ก</translation>
 <translation id="1450753235335490080">แชร์<ph name="CONTENT_TYPE" />ไม่สำเร็จ</translation>
 <translation id="1466383950273130737">เลือกภาษาของ Chrome</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">ปิดหน้าต่างใช่ไหม</translation>
 <translation id="2175927920773552910">คิวอาร์โค้ด</translation>
 <translation id="218608176142494674">การแชร์</translation>
-<translation id="2195339740518523951">ให้ Chrome รักษาความปลอดภัยอย่างเข้มงวดที่สุด</translation>
 <translation id="2200113223741723867">จัดการการแชร์ข้อมูลการใช้งาน</translation>
 <translation id="2218567645332692482">อัปเกรดการนำทางให้เป็นแบบ HTTPS และเตือนคุณก่อนโหลดเว็บไซต์ที่ไม่รองรับโปรโตคอลนี้</translation>
 <translation id="2227444325776770048">ดำเนินการต่อในชื่อ <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@
 <translation id="4170011742729630528">บริการนี้ยังไม่สามารถใช้ได้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="4179980317383591987">ใช้ไปแล้ว <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">ภาษา</translation>
-<translation id="4183868528246477015">ค้นหาด้วย Google Lens <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">เปิดในแท็บใหม่</translation>
 <translation id="4196597275619698563">สร้างการ์ด</translation>
 <translation id="4198423547019359126">ไม่มีตำแหน่งการดาวน์โหลดที่ใช้ได้</translation>
@@ -577,7 +576,6 @@
 <translation id="4411535500181276704">โหมด Lite</translation>
 <translation id="4415276339145661267">จัดการบัญชี Google</translation>
 <translation id="4425140285732600465">กำลังติดตามราคา รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม</translation>
-<translation id="4427306783828095590">การปกป้องที่ปรับปรุงแล้วทำได้มากกว่าบล็อกฟิชชิงและมัลแวร์</translation>
 <translation id="4450672886426705087">ผลการค้นหาจาก Google</translation>
 <translation id="4452411734226507615">ปิดแท็บ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">เพิ่มบุ๊กมาร์กไปยัง <ph name="FOLDER_NAME" /> แล้ว</translation>
@@ -627,7 +625,7 @@
 <translation id="4684427112815847243">ซิงค์ทุกอย่าง</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ตัวเลือก}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ตัวเลือก}}</translation>
 <translation id="4696983787092045100">ส่งข้อความไปยังอุปกรณ์ของคุณ</translation>
-<translation id="4699172675775169585">รูปภาพและไฟล์ในแคช</translation>
+<translation id="4699172675775169585">รูปภาพและไฟล์ที่แคชไว้</translation>
 <translation id="4714588616299687897">ประหยัดการใช้ข้อมูลถึง 60%</translation>
 <translation id="471759387343966120">การดำเนินการต่อหมายความว่าคุณยอมรับ<ph name="BEGIN_TOS_LINK" />ข้อกำหนดในการให้บริการ<ph name="END_TOS_LINK" />และ<ph name="BEGIN_PRIVACY_LINK" />นโยบายความเป็นส่วนตัว<ph name="END_PRIVACY_LINK" />\nChrome จะส่งข้อมูลการใช้งานและข้อขัดข้องไปยัง Google เพื่อช่วยปรับปรุงแอป <ph name="BEGIN_UMA_LINK" />จัดการ<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">เสนอการแปล</translation>
@@ -1082,6 +1080,7 @@
 <translation id="7177466738963138057">คุณสามารถเปลี่ยนค่านี้ภายหลังใน "การตั้งค่า"</translation>
 <translation id="7177873915659574692">สร้างคิวอาร์โค้ดไม่ได้ URL มีจำนวนอักขระมากกว่า <ph name="CHARACTER_LIMIT" /> ตัว</translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
+<translation id="718226107353899806">คุณเพิ่มความรู้สึกได้สูงสุด <ph name="MAX_NUM_REACTIONS" /> รายการ</translation>
 <translation id="7187993566681480880">รักษาความปลอดภัยของคุณใน Chrome และอาจใช้เพื่อปรับปรุงความปลอดภัยในแอปอื่นๆ ของ Google เมื่อลงชื่อเข้าใช้</translation>
 <translation id="718926126787620637">รายการโฟลเดอร์บุ๊กมาร์กเปิดอยู่ที่ระดับเต็มความสูงของหน้าจอ</translation>
 <translation id="7191430249889272776">แท็บเปิดในพื้นหลัง</translation>
@@ -1245,7 +1244,6 @@
 <translation id="8035133914807600019">โฟลเดอร์ใหม่…</translation>
 <translation id="8037750541064988519">เหลือ <ph name="DAYS" /> วัน</translation>
 <translation id="8037801708772278989">เพิ่งตรวจสอบเมื่อสักครู่นี้</translation>
-<translation id="8040831032425909005">ไอคอนวิดเจ็ต Search ของการใช้งานแบบลัด</translation>
 <translation id="804335162455518893">ไม่พบการ์ด SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> แท็บที่ไม่ระบุตัวตน}other{<ph name="TAB_COUNT_NORMAL" /> แท็บที่ไม่ระบุตัวตน}}</translation>
 <translation id="8051695050440594747">สามารถใช้งานได้ <ph name="MEGABYTES" /> MB</translation>

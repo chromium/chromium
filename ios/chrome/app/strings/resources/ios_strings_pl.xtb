@@ -25,6 +25,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1145536944570833626">Usuń istniejące dane.</translation>
 <translation id="1147031633655575115">Używasz konta <ph name="USER" /></translation>
 <translation id="1154984953698510061">Zobacz inne karty</translation>
+<translation id="1164064664035028907">Użyj silnego hasła:</translation>
 <translation id="1165039591588034296">Błąd</translation>
 <translation id="1172898394251786223">Następne pole</translation>
 <translation id="1176932207622159128">Nie można zapisać</translation>
@@ -235,6 +236,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3157387275655328056">Dodaj do listy Do przeczytania</translation>
 <translation id="3157684681743766797">Oznacz wszystko…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Z zapisanych haseł możesz też korzystać na innych urządzeniach.</translation>
 <translation id="3175081911749765310">Usługi internetowe</translation>
 <translation id="3178650076442119961">Aktywność dzisiaj</translation>
 <translation id="3181825792072797598">Włącz synchronizację</translation>
@@ -326,6 +328,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4042870976416480368">Znajdź na stronie</translation>
 <translation id="4049507953662678203">Upewnij się, że masz połączenie z siecią, i spróbuj ponownie.</translation>
 <translation id="408404951701638773">Pasek wyszukiwania jest teraz łatwiej dostępny</translation>
+<translation id="4108314971463891922">Obserwuj</translation>
 <translation id="411254640334432676">Błąd pobierania.</translation>
 <translation id="4112644173421521737">Szukaj</translation>
 <translation id="4113030288477039509">Zarządzany przez administratora</translation>
@@ -343,6 +346,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4272631900155121838">Aby zeskanować kod QR, włącz aparat w ustawieniach</translation>
 <translation id="4277990410970811858">Bezpieczne przeglądanie</translation>
 <translation id="4281844954008187215">Warunki korzystania z usługi</translation>
+<translation id="4304713468139749426">Menedżer haseł</translation>
 <translation id="430793432425771671">Synchronizuj wszystko</translation>
 <translation id="4309403553630140242">Kliknij dwukrotnie, by dowiedzieć się więcej</translation>
 <translation id="430967081421617822">Od początku</translation>
@@ -541,6 +545,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6127379762771434464">Element został usunięty</translation>
 <translation id="6136914049981179737">Przed chwilą</translation>
 <translation id="6144589619057374135">Otwórz ${url} w trybie incognito</translation>
+<translation id="6149061208933997199">Użyj hasła</translation>
 <translation id="6159839020698489198">opcjonalnie</translation>
 <translation id="6177442314419606057">Szukaj w Chrome</translation>
 <translation id="6184086493125982861">Pokaż karty</translation>
@@ -633,6 +638,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6807889908376551050">Pokaż wszystkie...</translation>
 <translation id="681368974849482173">Utworzono element</translation>
 <translation id="681450999322335505">Twoja organizacja wyłączyła synchronizację.</translation>
+<translation id="683022620450280906">Zapisanych haseł możesz używać na dowolnym urządzeniu. Menedżer haseł Google przechowuje je na koncie <ph name="EMAIL" /></translation>
 <translation id="6830804042318138535">Więcej informacji</translation>
 <translation id="6831043979455480757">Tłumacz</translation>
 <translation id="6842136130964845393">Aby zapewnić sobie stały dostęp do zapisanych haseł, potwierdź swoją tożsamość</translation>
@@ -765,6 +771,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8076014560081431679">Zapisane ustawienia witryn nie zostaną usunięte i mogą zawierać informacje o Twoim korzystaniu z przeglądarki. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">To ustawienie jest zarządzenie. Kliknij dwukrotnie, by dowiedzieć się więcej.</translation>
 <translation id="8080028325999236607">Zamknij wszystkie karty</translation>
+<translation id="8101409298456377967">Twórz i zapisuj hasła oraz nimi zarządzaj, aby łatwo logować się na stronach i w aplikacjach. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Wyłącz</translation>
 <translation id="8114753159095730575">Pobrany plik jest dostępny. Opcje są dostępne u dołu ekranu.</translation>
 <translation id="8132598642024322408">Teraz <ph name="PRICE" />, wcześniej <ph name="PREVIOUS_PRICE" />.</translation>

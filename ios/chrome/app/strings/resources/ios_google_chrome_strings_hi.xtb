@@ -70,6 +70,7 @@
 <translation id="6063091872902370735">Chrome में साइन-इन करने की अनुमति दें</translation>
 <translation id="6181930887571472871">Chrome पर स्विच करें</translation>
 <translation id="6238746320622508509">Chrome को आपके गुप्त टैब लॉक करने दें.</translation>
+<translation id="6387994324662817823">पासवर्ड, सिर्फ़ इस डिवाइस में Google पासवर्ड मैनेजर में सेव हैं.</translation>
 <translation id="6427126399757991875">आपका संगठन Chrome सेट अप कर रहा है...</translation>
 <translation id="6600954340915313787">Chrome पर कॉपी किया गया</translation>
 <translation id="6634107063912726160">साइन आउट करने पर, Chrome आपके Google खाते में नए डेटा को सिंक नहीं करेगा. पहले सिंक किया गया डेटा, खाते में सेव रहेगा.</translation>
@@ -111,5 +112,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chrome की मदद से सुरक्षित रहें</translation>
 <translation id="8772179140489533211">Chrome में साइन इन करने के निर्देश दिखाता है.</translation>
+<translation id="8788269841521769222">आपको यह पासवर्ड याद रखने की ज़रूरत नहीं पड़ेगी. इसे <ph name="EMAIL" /> के लिए, Google पासवर्ड मैनेजर में सेव किया जाएगा</translation>
 <translation id="9112744793181547300">Chrome को डिफ़ॉल्ट ब्राउज़र के तौर पर सेट करना चाहते हैं?</translation>
 </translationbundle>

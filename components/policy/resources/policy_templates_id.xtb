@@ -96,6 +96,7 @@
 <translation id="1099282607296956954">Aktifkan Isolasi Situs untuk setiap situs</translation>
 <translation id="1105572260329131950">Gunakan ikon default untuk koneksi aman</translation>
 <translation id="1110426799149444997">Nonaktifkan penelusuran region <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1117535567637097036">Penanganan protokol yang disetel melalui kebijakan ini tidak digunakan ketika menangani maksud Android.</translation>
 <translation id="1118093128235245168">Izinkan situs meminta pengguna memberikan akses ke perangkat USB yang terhubung</translation>
 <translation id="111910763555783249">Setelan notifikasi</translation>
@@ -461,6 +462,11 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1553532014072799546">Daftar yang Diizinkan terkait Batas Waktu per Aplikasi</translation>
 <translation id="1553956579506604198">Memblokir ekstensi eksternal sehingga tidak dapat diinstal</translation>
 <translation id="1555248923316727072">Setelan pengelolaan identitas pengguna SAML</translation>
+<translation id="1558723461519082860">Kebijakan ini memberi Projector izin untuk membuat dan mentranskripsikan rekaman layar dan mengupload ke Drive.
+
+      Jika kebijakan ini disetel ke aktif, Projector akan diaktifkan.
+      Jika kebijakan ini disetel ke nonaktif, Projector akan dinonaktifkan.
+      Jika kebijakan ini tidak disetel, Projector akan dinonaktifkan secara default.</translation>
 <translation id="1561424797596341174">Penggantian kebijakan untuk versi Debug host akses jarak jauh</translation>
 <translation id="1561967320164410511">U2F ditambah beberapa ekstensi untuk masing-masing pengesahan</translation>
 <translation id="1567718448549957373">Jika kebijakan disetel ke Aktif atau tidak disetel, verifikasi autentikasi <ph name="BASIC_AUTH" /> akan diizinkan diterima melalui HTTP yang tidak aman.
@@ -812,6 +818,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="1962864958436828230">Menyetel batas ukuran minimal untuk batasan papan klip pencegahan kebocoran data</translation>
 <translation id="1964634611280150550">Mode samaran dinonaktifkan</translation>
 <translation id="1964802606569741174">Kebijakan ini tidak memengaruhi aplikasi YouTube Android. Jika Mode Perlindungan di YouTube harus diterapkan, pemasangan aplikasi YouTube Android harus dilarang.</translation>
+<translation id="1967334955994230472">Nonaktifkan Projector</translation>
 <translation id="1969212217917526199">Menggantikan kebijakan pada versi Debug untuk host akses jarak jauh.
 
           Nilainya diuraikan dalam bentuk kamus nama kebijakan JSON untuk pemetaan nilai kebijakan.</translation>
@@ -2038,6 +2045,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="328347261792478720">Secara default, browser akan menampilkan rekomendasi media yang dipersonalisasi kepada pengguna. Jika kebijakan ini disetel ke Nonaktif, rekomendasi ini akan disembunyikan dari pengguna. Jika kebijakan ini disetel ke Aktif atau tidak disetel, rekomendasi media akan ditampilkan kepada pengguna.</translation>
 <translation id="3284094172359247914">Penggunaan kontrol WebUSB API</translation>
 <translation id="3288595667065905535">Saluran rilis</translation>
+<translation id="3291318845269544294">Aktifkan Projector</translation>
 <translation id="3294430356898755483">Jike kebijakan disetel, administrator dapat menyiapkan daftar printer bagi pengguna mereka. Pemilihan printer dilakukan pada saat pengguna mencoba mencetak untuk pertama kalinya.
 
       Menggunakan kebijakan:
@@ -2102,6 +2110,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci ke kurang dari atau sama dengan penundaan waktu tidak ada aktivitas.
 
           Pesan peringatan hanya ditampilkan jika tindakan tidak ada aktivitas adalah logout atau matikan.</translation>
+<translation id="3360280740977649313">Mengontrol kebijakan untuk Projector.</translation>
 <translation id="3363360928811201045">Menambahkan batasan di akun terkelola</translation>
 <translation id="3373381043600809954">Mengaktifkan <ph name="PRODUCT_NAME" /></translation>
 <translation id="3374587000313305002">Mengonfigurasi direktori yang akan digunakan <ph name="PRODUCT_NAME" /> untuk menyimpan data pengguna.

@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Kapcsolatfelvétel a Google-lal… ez eltarthat pár percig…</translation>
 <translation id="1416550906796893042">Alkalmazás verziószáma</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
+<translation id="1436784010935106834">Eltávolítva</translation>
 <translation id="1448440926884431741">A nyomon követett termékeket a Könyvjelzők között rendszerezheti</translation>
 <translation id="1450753235335490080">Nem sikerült a(z) <ph name="CONTENT_TYPE" /> megosztása</translation>
 <translation id="1466383950273130737">Chrome nyelvének kiválasztása</translation>
@@ -203,7 +204,6 @@ A kereséshez koppintson a kívánt szóra. A keresés finomításához ujja nyo
 <translation id="2172905120685242547">Bezárja az ablakot?</translation>
 <translation id="2175927920773552910">QR-kód</translation>
 <translation id="218608176142494674">Megosztás</translation>
-<translation id="2195339740518523951">Állítsa be a Chrome legerősebb védelmét</translation>
 <translation id="2200113223741723867">Használati adatok megosztásának kezelése</translation>
 <translation id="2218567645332692482">Minden navigációt HTTPS-re frissít, és figyelmezteti Önt a protokollt nem támogató webhelyek betöltése előtt</translation>
 <translation id="2227444325776770048">Folytatás mint <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="4170011742729630528">A szolgáltatás nem érhető el, próbálja újra később.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> felhasználva</translation>
 <translation id="4181841719683918333">Nyelvek</translation>
-<translation id="4183868528246477015">Keresés a Google Lensszel <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Megnyitás új lapon</translation>
 <translation id="4196597275619698563">Kártya létrehozása</translation>
 <translation id="4198423547019359126">Nem áll rendelkezésre letöltési hely</translation>
@@ -577,7 +576,6 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="4411535500181276704">Egyszerűsített mód</translation>
 <translation id="4415276339145661267">Google-fiók kezelése</translation>
 <translation id="4425140285732600465">Ár nyomon követve. Értesítést kaphat, ha valamelyik webhelyen csökken az ár.</translation>
-<translation id="4427306783828095590">A Speciális védelem még többet tesz annak érdekében, hogy letiltsa az adathalászatot és a rosszindulatú programokat</translation>
 <translation id="4450672886426705087">Keresési találatok a Google-tól.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> lap bezárása</translation>
 <translation id="4452548195519783679">Könyvjelzők közé téve itt: <ph name="FOLDER_NAME" /></translation>
@@ -1082,6 +1080,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7177466738963138057">Ezt később módosíthatja a beállítások között.</translation>
 <translation id="7177873915659574692">Nem lehet létrehozni a QR-kódot. Az URL több mint <ph name="CHARACTER_LIMIT" /> karakterből áll.</translation>
 <translation id="7180611975245234373">Frissítés</translation>
+<translation id="718226107353899806">Legfeljebb <ph name="MAX_NUM_REACTIONS" /> reakciót adhat hozzá</translation>
 <translation id="7187993566681480880">Gondoskodik a biztonságáról a Chrome-ban, és használható a biztonság növelésére más Google-alkalmazásokban olyankor, amikor Ön be van jelentkezve.</translation>
 <translation id="718926126787620637">Könyvjelzőmappák listája teljes magasságban megnyitva</translation>
 <translation id="7191430249889272776">A lap megnyílt a háttérben.</translation>
@@ -1245,7 +1244,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8035133914807600019">Új mappa…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> nap van hátra</translation>
 <translation id="8037801708772278989">Most volt ellenőrizve</translation>
-<translation id="8040831032425909005">Gyorsműveletekhez tartozó Kereső modul ikonja</translation>
 <translation id="804335162455518893">Az SD-kártya nem található</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognitó lap}other{<ph name="TAB_COUNT_NORMAL" /> inkognitó lap}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB áll rendelkezésre</translation>

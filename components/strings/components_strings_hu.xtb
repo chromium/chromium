@@ -112,6 +112,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1308113895091915999">Ajánlat áll rendelkezésre</translation>
 <translation id="1312803275555673949">Milyen bizonyíték támasztja alá?</translation>
 <translation id="131405271941274527">A(z) <ph name="URL" /> adatokat akar küldeni, amikor Ön rákoppint telefonjára egy NFC-eszközön</translation>
+<translation id="1314311879718644478">Kiterjesztett valóságot használó tartalmak megtekintése</translation>
 <translation id="1314509827145471431">Kötés a jobb oldalon</translation>
 <translation id="1318023360584041678">Lapcsoportba mentve</translation>
 <translation id="1319245136674974084">Ne legyen több kérdés ennél az alkalmazásnál</translation>
@@ -215,6 +216,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1583429793053364125">Valami nem sikerült a weboldal megjelenítése során.</translation>
 <translation id="1586541204584340881">Ön milyen bővítményeket telepített.</translation>
 <translation id="1588438908519853928">Normál</translation>
+<translation id="1589050138437146318">Biztosan telepíti az ARCore platformot?</translation>
 <translation id="1592005682883173041">Helyi adatok elérése</translation>
 <translation id="1594030484168838125">Kiválaszt</translation>
 <translation id="160851722280695521">A Dino Run játék elindítása a Chrome-ban</translation>
@@ -1390,6 +1392,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5333022057423422993">A Chrome észlelte, hogy a most használt jelszava adatvédelmi incidensben volt érintett. Fiókjai biztonsága érdekében javasoljuk a mentett jelszavak ellenőrzését.</translation>
 <translation id="5334013548165032829">Részletes rendszernaplók</translation>
 <translation id="5334145288572353250">Menti a címet?</translation>
+<translation id="5335920952954443287">Dobogó szív</translation>
 <translation id="5340250774223869109">Alkalmazás letiltva</translation>
 <translation id="534295439873310000">NFC-eszközök</translation>
 <translation id="5344579389779391559">Ez az oldal fizetésre próbálhatja meg rávenni</translation>
@@ -2062,6 +2065,7 @@ További részletek:
 <translation id="7654909834015434372">A jelölések szerkesztésekor a dokumentum visszaáll az eredeti tájolásba</translation>
 <translation id="765676359832457558">Speciális beállítások elrejtése...</translation>
 <translation id="7658239707568436148">Mégse</translation>
+<translation id="7659878911471462949">Örömkönnyek</translation>
 <translation id="7662298039739062396">A beállítást bővítmény vezérli</translation>
 <translation id="7663736086183791259"><ph name="CERTIFICATE_VALIDITY" /> tanúsítvány</translation>
 <translation id="7666397036351755929">Nem engedélyezett inkognitó módban</translation>
@@ -2265,6 +2269,7 @@ További részletek:
 <translation id="830498451218851433">Félbehajtás</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Telepített alkalmazások és a használatuk gyakorisága</translation>
+<translation id="8317207217658302555">Biztosan frissíti az ARCore platformot?</translation>
 <translation id="831997045666694187">Este</translation>
 <translation id="8321476692217554900">értesítések</translation>
 <translation id="8328484624016508118">Az összes inkognitó lap bezárása után a Chrome törli a következőket:

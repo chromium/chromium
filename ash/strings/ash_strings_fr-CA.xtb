@@ -131,6 +131,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1768366657309696705">Le raccourci-clavier <ph name="LAUNCHER_KEY_NAME" />+Point a changé. Pour utiliser la touche Insertion, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+Majuscule+Retour arrière.</translation>
 <translation id="1770726142253415363">Déplacée à la ligne <ph name="ROW_NUMBER" />, colonne <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Faire défiler vers la droite</translation>
+<translation id="1774796056689732716">Agenda, <ph name="CURRENT_MONTH_YEAR" />, le <ph name="DATE" /> est actuellement sélectionné.</translation>
 <translation id="1787955149152357925">Désactivé</translation>
 <translation id="1804572139604454141">L'enregistrement a pris fin parce que l'espace de stockage du disque est presque plein</translation>
 <translation id="181103072419391116">Force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
@@ -620,6 +621,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5075554201838155866">Activer les sous-titres</translation>
 <translation id="5078796286268621944">NIP incorrect</translation>
 <translation id="5083553833479578423">Déverrouillez davantage de fonctionnalités de l'Assistant Google.</translation>
+<translation id="5090752371472782287">Diffuser sur un appareil <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Personnaliser</translation>
 <translation id="5117590920725113268">Afficher le mois suivant</translation>
 <translation id="5136175204352732067">Autre clavier branché</translation>
@@ -629,6 +631,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5168181903108465623">Appareils de diffusion disponibles</translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
 <translation id="5176318573511391780">Enregistrer une partie de l'écran</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> événements</translation>
 <translation id="5198715732953550718">Les applications <ph name="MOVED_APP_NAME" /> et <ph name="IN_PLACE_APP" /> ont été combinées pour créer un dossier.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" /> : <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 autre notification}one{# autre notification}other{# autres notifications}}</translation>
@@ -802,6 +805,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="643147933154517414">Tout est terminé</translation>
 <translation id="6431865393913628856">Enregistrement d'écran</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> sur <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> événement</translation>
 <translation id="6452181791372256707">Refuser</translation>
 <translation id="6453179446719226835">La langue a été modifiée</translation>
 <translation id="6459472438155181876">Extension de l'écran à <ph name="DISPLAY_NAME" /></translation>
@@ -865,6 +869,7 @@ Nouvelle installation</translation>
 <translation id="6811454077060061666">Google Disque pour ordinateur de bureau n'est pas accessible</translation>
 <translation id="6818242057446442178">Déplacer un mot vers l'arrière</translation>
 <translation id="6820676911989879663">Prenez une pause!</translation>
+<translation id="6827049576281411231">Fermer le panneau d'événements</translation>
 <translation id="6836499262298959512">Fichier dangereux</translation>
 <translation id="6837064795450991317">Masquer deskbar</translation>
 <translation id="6852052252232534364">Cliquer pour activer</translation>
@@ -872,6 +877,7 @@ Nouvelle installation</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Il reste 1 chiffre}one{Il reste # chiffre}other{Il reste # chiffres}}</translation>
 <translation id="6867938213751067702">Téléchargement de <ph name="FILENAME" /> interrompu</translation>
 <translation id="6878400149835617132">Raccourci désactivé</translation>
+<translation id="6884665277231944629">Revenir à aujourd'hui</translation>
 <translation id="6886172995547742638">Cela peut nuire aux performances de votre <ph name="DEVICE_TYPE" />. Utilisez un adaptateur d'alimentation USB-C de<ph name="PREFERRED_MINIMUM_POWER" /> W ou plus.</translation>
 <translation id="688631446150864480">Appuyez sur la flèche vers le bas pour changer de fenêtre</translation>
 <translation id="6896758677409633944">Copier</translation>
@@ -958,6 +964,7 @@ Nouvelle installation</translation>
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
 <translation id="7509246181739783082">Vérifier votre identité</translation>
 <translation id="7513622367902644023">Mode de capture d'écran sélectionné</translation>
+<translation id="7513922695575567867">Agenda, semaine du <ph name="DATE" />, le <ph name="SELECTED_DATE" /> est actuellement sélectionné.</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7526573455193969409">Le réseau peut être surveillé</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@ Nouvelle installation</translation>
 <translation id="7564874036684306347">Si vous déplacez des fenêtres sur un autre bureau, elles peuvent présenter des comportements inattendus. À la suite d'une telle opération, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
 <translation id="7569509451529460200">Braille et ChromeVox activés</translation>
 <translation id="7569983096843329377">Noir</translation>
+<translation id="757941033127302446">Connecté</translation>
 <translation id="7579778809502851308">Capture d'écran</translation>
 <translation id="7590883480672980941">Paramètres d'entrée</translation>
 <translation id="7593891976182323525">Recherche ou Majuscule</translation>
@@ -1040,6 +1048,7 @@ Nouvelle installation</translation>
 <translation id="8035152190676905274">Stylo</translation>
 <translation id="8036504271468642248">Phrase précédente</translation>
 <translation id="8042893070933512245">Ouvrir le menu des paramètres d'accessibilité</translation>
+<translation id="8042925093898452104">Fermer les informations détaillées</translation>
 <translation id="8048123526339889627">Paramètres Bluetooth</translation>
 <translation id="8051716679295756675">Le modèle intitulé <ph name="DESK_TEMPLATE_NAME" /> existe déjà</translation>
 <translation id="8052898407431791827">Copiée dans le presse-papiers</translation>

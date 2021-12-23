@@ -25,6 +25,7 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="1145536944570833626">Mövcud datanı silin.</translation>
 <translation id="1147031633655575115"><ph name="USER" /> olaraq giriş edilib</translation>
 <translation id="1154984953698510061">Digər tablara baxın</translation>
+<translation id="1164064664035028907">Güclü Paroldan istifadə edin:</translation>
 <translation id="1165039591588034296">Xəta</translation>
 <translation id="1172898394251786223">Növbəti sahə</translation>
 <translation id="1176932207622159128">Təsvir Saxlanıla Bilmir</translation>
@@ -235,6 +236,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3157387275655328056">Oxu Siyahısına əlavə edin</translation>
 <translation id="3157684681743766797">Hamısını Qeyd Edin…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Yadda saxlanmış parolları digər cihazlarınızda da istifadə edə bilərsiniz.</translation>
 <translation id="3175081911749765310">Veb Xidmətlər</translation>
 <translation id="3178650076442119961">Bu Gün Aktiv Olub</translation>
 <translation id="3181825792072797598">Sinxronizasiyanı aktiv edin</translation>
@@ -328,6 +330,7 @@ Aşağıdakı addımları izləyin:</translation>
 <translation id="4042870976416480368">Səhifədə tapın</translation>
 <translation id="4049507953662678203">Şəbəkə bağlantısının olmasına əmin olun və yenidən cəhd edin.</translation>
 <translation id="408404951701638773">İndi axtarış panelinə daxil olmaq daha asandır</translation>
+<translation id="4108314971463891922">İzləyin</translation>
 <translation id="411254640334432676">Endirmə uğursuz oldu.</translation>
 <translation id="4112644173421521737">Axtarın</translation>
 <translation id="4113030288477039509">Administrator tərəfindən idarə olunur</translation>
@@ -345,6 +348,7 @@ Aşağıdakı addımları izləyin:</translation>
 <translation id="4272631900155121838">QR kodu skan etmək üçün, ayarlar bölməsindən kameranı aktiv edin</translation>
 <translation id="4277990410970811858">Təhlükəsiz Baxış</translation>
 <translation id="4281844954008187215">Xidmət Şərtləri</translation>
+<translation id="4304713468139749426">Parol Meneceri</translation>
 <translation id="430793432425771671">Hər şeyi Sinxronlaşdırın</translation>
 <translation id="4309403553630140242">Ətraflı məlumat üçün iki dəfə toxunun</translation>
 <translation id="430967081421617822">Bütün Vaxt</translation>
@@ -543,6 +547,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6127379762771434464">Element silindi</translation>
 <translation id="6136914049981179737">Saniyələr əvvəl</translation>
 <translation id="6144589619057374135">${url} keçidini Anonim rejimdə açın</translation>
+<translation id="6149061208933997199">Parol istifadə edin</translation>
 <translation id="6159839020698489198">istəyə görə</translation>
 <translation id="6177442314419606057">Chrome'da axtarın</translation>
 <translation id="6184086493125982861">Panelləri Göstərin</translation>
@@ -635,6 +640,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6807889908376551050">Hamısını göstərin...</translation>
 <translation id="681368974849482173">Element yaradılmışdır</translation>
 <translation id="681450999322335505">Təşkilatınız sinxronizasiyanı deaktiv etdi.</translation>
+<translation id="683022620450280906">İstənilən cihazda saxlanmış parollarınızı istifadə edə bilərsiniz. Onlar <ph name="EMAIL" /> üçün Google Parol Menecerində saxlanacaq</translation>
 <translation id="6830804042318138535">Ətraflı Oxuyun</translation>
 <translation id="6831043979455480757">Tərcümə et</translation>
 <translation id="6842136130964845393">Həmişə yadda saxlanmış parollarınıza girişinizin olduğuna əmin olmaq üçün kimliyinizi doğrulayın</translation>
@@ -767,6 +773,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8076014560081431679">Yadda saxlanmış sayt ayarları silinməyəcək və axtarış təcrübənizə təsir edə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Bu ayar idarə edilir, ətraflı məlumat üçün iki dəfə toxununThis setting is managed, double tap for more information</translation>
 <translation id="8080028325999236607">Bütün Panelləri Qapadın</translation>
+<translation id="8101409298456377967">Saytlara və tətbiqlərə asanlıqla daxil olmaq üçün parollarınızı yaradın, saxlayın və idarə edin/ <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Deaktiv Edin</translation>
 <translation id="8114753159095730575">Fayl endirilməsi əlçatandır. Seçimlər ekranın aşağısında əlçatandır.</translation>
 <translation id="8132598642024322408"><ph name="PREVIOUS_PRICE" /> olan məhsul indi <ph name="PRICE" /> qiymətinədir.</translation>

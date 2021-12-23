@@ -235,6 +235,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3157387275655328056">Pridėti prie skaitomų sąrašo</translation>
 <translation id="3157684681743766797">Pažymėti visus...</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Be to, išsaugotus slaptažodžius galite naudoti kituose įrenginiuose.</translation>
 <translation id="3175081911749765310">Žin. pasl.</translation>
 <translation id="3178650076442119961">Aktyvus šiandien</translation>
 <translation id="3181825792072797598">Įjungti sinchronizavimą</translation>
@@ -328,6 +329,7 @@ Atlikite toliau nurodytus veiksmus.</translation>
 <translation id="4042870976416480368">Rasti puslapyje</translation>
 <translation id="4049507953662678203">Įsitikinkite, kad yra tinklo ryšys ir bandykite dar kartą.</translation>
 <translation id="408404951701638773">Dabar paieškos juostą pasiekti lengviau</translation>
+<translation id="4108314971463891922">Stebėti</translation>
 <translation id="411254640334432676">Nepavyko atsisiųsti.</translation>
 <translation id="4112644173421521737">Ieškoti</translation>
 <translation id="4113030288477039509">Tvarko jūsų administratorius</translation>
@@ -345,6 +347,7 @@ Atlikite toliau nurodytus veiksmus.</translation>
 <translation id="4272631900155121838">Jei norite nuskaityti QR kodą, nustatymuose įgalinkite fotoaparatą</translation>
 <translation id="4277990410970811858">Saugus naršymas</translation>
 <translation id="4281844954008187215">Paslaugų teikimo sąlygos</translation>
+<translation id="4304713468139749426">Slaptažodžių tvarkytuvė</translation>
 <translation id="430793432425771671">Sinchronizuoti viską</translation>
 <translation id="4309403553630140242">Norėdami gauti daugiau informacijos, dukart palieskite.</translation>
 <translation id="430967081421617822">Visas laikotarpis</translation>
@@ -356,6 +359,7 @@ Atlikite toliau nurodytus veiksmus.</translation>
 <translation id="4389019817280890563">Palieskite, kad pakeistumėte kalbą.</translation>
 <translation id="4442550905108052454">Atidarykite skiltį <ph name="BEGIN_BOLD" />Nustatymai<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Pridėti kalbą</translation>
+<translation id="4462491365653392320">Stebėti kainas skirtukuose</translation>
 <translation id="4469418912670346607">Tęsti sąranką</translation>
 <translation id="4474494258097106883">Sukurta specialiai „iPhone“</translation>
 <translation id="4476574785019001431">Nustatymai</translation>
@@ -419,6 +423,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="4944543191714094452">Rasti puslapyje…</translation>
 <translation id="4945756290001680296">Pasiekite slaptažodžio nustatymus</translation>
 <translation id="4979397965658815378">Prisijunkite naudodami „Google“ paskyrą, kad gautumėte žymes, slaptažodžius, istoriją ir kitus nustatymus visuose įrenginiuose</translation>
+<translation id="4986678885919050584">Pašalinti iš šio įrenginio</translation>
 <translation id="5005498671520578047">Kopijuoti slaptažodį</translation>
 <translation id="5017828934289857214">Priminti vėliau</translation>
 <translation id="5037676449506322593">Pasirinkti viską</translation>
@@ -520,6 +525,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5979837087407522202">Ieškoti slaptažodžių</translation>
 <translation id="5982717868370722439">Pridėti esamus duomenis prie <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Neseniai lankyta</translation>
+<translation id="5988097621740394599">Žr. sumažintas kainas skirtukuose.</translation>
 <translation id="5988851877894965432">Atidaryti URL naršyklėje „Chrome“</translation>
 <translation id="6012140227487808125">Šifruojama...</translation>
 <translation id="6021332621416007159">Atidaryti...</translation>
@@ -540,6 +546,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6127379762771434464">Elementas pašalintas</translation>
 <translation id="6136914049981179737">Prieš sek.</translation>
 <translation id="6144589619057374135">Atidaryti ${url} inkognito režimu</translation>
+<translation id="6149061208933997199">Naudoti slaptažodį</translation>
 <translation id="6159839020698489198">nebūtinas</translation>
 <translation id="6177442314419606057">Paieška naršyklėje „Chrome“</translation>
 <translation id="6184086493125982861">Rodyti skirtukus</translation>
@@ -764,6 +771,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8076014560081431679">Išsaugoti svetainių nustatymai nebus ištrinti ir gali nurodyti naršymo įpročius. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Šis nustatymas tvarkomas, norėdami gauti daugiau informacijos dukart palieskite</translation>
 <translation id="8080028325999236607">Uždaryti visus skirtukus</translation>
+<translation id="8101409298456377967">Kurkite, saugokite ir tvarkykite slaptažodžius, kad galėtumėte lengvai prisijungti prie svetainių ir programų. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Išjungti</translation>
 <translation id="8114753159095730575">Galima atsisiųsti failą. Parinktys pasiekiamos netoli ekrano apačios.</translation>
 <translation id="8132598642024322408">Dabar <ph name="PRICE" />, buvo <ph name="PREVIOUS_PRICE" />.</translation>

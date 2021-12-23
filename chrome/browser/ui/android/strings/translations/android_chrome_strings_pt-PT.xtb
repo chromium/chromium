@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">A contactar a Google… Isto pode demorar um pouco…</translation>
 <translation id="1416550906796893042">Versão da aplicação</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1436784010935106834">Removido</translation>
 <translation id="1448440926884431741">Organize os produtos monitorizados nos Marcadores</translation>
 <translation id="1450753235335490080">Não é possível partilhar <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Escolha o idioma do Chrome</translation>
@@ -203,7 +204,6 @@ Toque em qualquer palavra para pesquisar. Para refinar a sua pesquisa, tocar sem
 <translation id="2172905120685242547">Pretende fechar a janela?</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="218608176142494674">Partilha</translation>
-<translation id="2195339740518523951">Obtenha a segurança mais avançada do Chrome</translation>
 <translation id="2200113223741723867">Efetue a gestão da partilha dos dados de utilização</translation>
 <translation id="2218567645332692482">Atualizar as navegações para HTTPS e avisar antes de carregar sites que não o suportam</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="4170011742729630528">O serviço não está disponível. Tente novamente mais tarde.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> utilizado(s)</translation>
 <translation id="4181841719683918333">Idiomas</translation>
-<translation id="4183868528246477015">Pesquisar com Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Abrir num novo separador</translation>
 <translation id="4196597275619698563">Criar cartão</translation>
 <translation id="4198423547019359126">Não existem localizações de transferência disponíveis.</translation>
@@ -577,7 +576,6 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="4411535500181276704">Modo Lite</translation>
 <translation id="4415276339145661267">Gerir a sua Conta Google</translation>
 <translation id="4425140285732600465">A monitorizar o preço. Obtenha alertas se o preço descer em qualquer site.</translation>
-<translation id="4427306783828095590">A proteção melhorada vai mais além para bloquear o phishing e o software malicioso.</translation>
 <translation id="4450672886426705087">Resultados da pesquisa do Google.</translation>
 <translation id="4452411734226507615">Fechar o separador <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Adicionado aos marcadores em <ph name="FOLDER_NAME" /></translation>
@@ -1246,7 +1244,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8035133914807600019">Nova pasta…</translation>
 <translation id="8037750541064988519">Faltam <ph name="DAYS" /> dias</translation>
 <translation id="8037801708772278989">Última verificação agora mesmo</translation>
-<translation id="8040831032425909005">Ícone do widget de Pesquisa das Ações rápidas</translation>
 <translation id="804335162455518893">Cartão SD não encontrado.</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> separador de navegação anónima}one{<ph name="TAB_COUNT_NORMAL" /> separador(es) de navegação anónima}other{<ph name="TAB_COUNT_NORMAL" /> separadores de navegação anónima}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB disponíveis</translation>

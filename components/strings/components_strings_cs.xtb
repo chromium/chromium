@@ -112,6 +112,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1308113895091915999">Je k dispozici nabídka</translation>
 <translation id="1312803275555673949">Jaké důkazy to dokládají?</translation>
 <translation id="131405271941274527">Web <ph name="URL" /> chce odesílat a přijímat informace, když se telefonem dotknete zařízení NFC</translation>
+<translation id="1314311879718644478">Zobrazit obsah rozšířené reality</translation>
 <translation id="1314509827145471431">Vazba vpravo</translation>
 <translation id="1318023360584041678">Uloženo do skupiny karet</translation>
 <translation id="1319245136674974084">U této aplikace se již příště neptat</translation>
@@ -215,6 +216,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1583429793053364125">Při zobrazování této webové stránky došlo k chybě.</translation>
 <translation id="1586541204584340881">Která rozšíření máte nainstalovaná</translation>
 <translation id="1588438908519853928">Normální</translation>
+<translation id="1589050138437146318">Nainstalovat ARCore?</translation>
 <translation id="1592005682883173041">Přístup k místním datům</translation>
 <translation id="1594030484168838125">Zvolit</translation>
 <translation id="160851722280695521">Spustit v Chromu dinosauří hru</translation>
@@ -1379,6 +1381,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5333022057423422993">Chrome zjistil, že právě použité heslo bylo vyzrazeno při porušení zabezpečení údajů. Pokud svá hesla chcete zabezpečit, doporučujeme vám zkontrolovat uložená hesla.</translation>
 <translation id="5334013548165032829">Podrobné systémové protokoly</translation>
 <translation id="5334145288572353250">Uložit adresu?</translation>
+<translation id="5335920952954443287">Tlukoucí srdce</translation>
 <translation id="5340250774223869109">Aplikace je blokována</translation>
 <translation id="534295439873310000">Zařízení NFC</translation>
 <translation id="5344579389779391559">Tato stránka se vám může pokusit naúčtovat poplatky</translation>
@@ -2049,6 +2052,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7654909834015434372">Když upravíte poznámky, obnoví se původní orientace tohoto dokumentu</translation>
 <translation id="765676359832457558">Skrýt rozšířená nastavení...</translation>
 <translation id="7658239707568436148">Zrušit</translation>
+<translation id="7659878911471462949">Slzy štěstí</translation>
 <translation id="7662298039739062396">Nastavení je spravováno rozšířením</translation>
 <translation id="7663736086183791259">Certifikát <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Není povoleno v anonymním režimu</translation>
@@ -2252,6 +2256,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="830498451218851433">Přeložení napůl</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Nainstalované aplikace a četnost jejich používání</translation>
+<translation id="8317207217658302555">Aktualizovat ARCore?</translation>
 <translation id="831997045666694187">Večer</translation>
 <translation id="8321476692217554900">oznámení</translation>
 <translation id="8328484624016508118">Po zavření všech anonymních karet smaže Chrome:

@@ -253,6 +253,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1244265436519979884">Kasalukuyang isinasagawa ang pag-restore ng Linux</translation>
 <translation id="1244303850296295656">Error sa extension</translation>
 <translation id="1246863218384630739">Hindi ma-install ang <ph name="VM_NAME" />: Nagbalik ang URL ng Larawan ng code ng error na <ph name="HTTP_ERROR" />. Makipag-ugnayan sa iyong administrator.</translation>
+<translation id="1247071602516579380">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, Tablet na may pangalang <ph name="DEVICE_NAME" /></translation>
 <translation id="1251366534849411931">Inaasahang opening curly brace: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">Iki-clear nito ang <ph name="TOTAL_USAGE" /> ng data na na-store ng mga site at naka-install na app</translation>
 <translation id="1251578593170406502">Nagsa-scan para sa mga mobile data network...</translation>
@@ -396,6 +397,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1408980562518920698">Pamahalaan ang personal na impormasyon</translation>
 <translation id="1410197035576869800">Icon ng App</translation>
 <translation id="1410616244180625362">Ipagpatuloy ang pagpapahintulot sa <ph name="HOST" /> na i-access ang iyong camera</translation>
+<translation id="1410797069449661718">Mag-scroll papunta sa unang tab</translation>
 <translation id="1410806973194718079">Hindi masuri ang mga patakaran</translation>
 <translation id="1412681350727866021">Mga karagdagang extension</translation>
 <translation id="1414315029670184034">Huwag payagan ang mga site na gamitin ang iyong camera</translation>
@@ -416,6 +418,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
            • Made-delete ang cookies at iba pang pansamantalang data ng site
             <ph name="LINE_BREAKS" />
            Hindi maaapektuhan ang mga bookmark, history, at naka-save na password.</translation>
+<translation id="1425233109861512854">Hindi nakilala ang access code</translation>
 <translation id="1426410128494586442">Oo</translation>
 <translation id="142655739075382478">Naka-block ang <ph name="APP_NAME" /></translation>
 <translation id="1426870617281699524">I-click ang Subukang Muli at tanggapin ang prompt sa iyong computer</translation>
@@ -438,6 +441,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> ang napili</translation>
 <translation id="1442851588227551435">Itakda ang aktibong ticket ng Kerberos</translation>
 <translation id="1444628761356461360">Ang setting na ito ay pinamamahalaan ng may-ari ng device, <ph name="OWNER_EMAIL" />.</translation>
+<translation id="1445005312224723356">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, Teleponong may pangalang <ph name="DEVICE_NAME" /></translation>
 <translation id="144518587530125858">Maaaring hindi mai-load ang '<ph name="IMAGE_PATH" />' para sa tema.</translation>
 <translation id="1449191289887455076">Pindutin ulit ang “<ph name="CURRENTKEY" />” para kumpirmahin ang pagtatalaga at <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Webpage, Iisang File</translation>
@@ -583,6 +587,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1593926297800505364">I-save ang paraan ng pagbabayad</translation>
 <translation id="1595492813686795610">Ina-upgrade ang Linux</translation>
 <translation id="1596286373007273895">Available</translation>
+<translation id="1596709061955594992">Naka-off ang Bluetooth. Para makita ang mga available na device, i-on ang Bluetooth.</translation>
 <translation id="1598233202702788831">Na-disable ng iyong administrator ang mga update.</translation>
 <translation id="1600857548979126453">I-access ang backend ng debugger ng pahina</translation>
 <translation id="1601560923496285236">Ilapat</translation>
@@ -731,6 +736,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1725562816265788801">Pag-scroll ng Tab</translation>
 <translation id="1729533290416704613">Kinokontrol din nito kung anong pahina ang ipinapakita kapag naghanap ka mula sa Omnibox.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Para mag-alis ng mga app, pumunta sa Mga Setting &gt; Google Play Store &gt; Pamahalaan ang mga kagustuhan sa Android &gt; Mga App o Application manager. Pagkatapos ay i-tap ang app na gusto mong i-uninstall (maaaring kailanganin mong mag-swipe pakanan o pakaliwa para mahanap ang app). Pagkatapos, i-tap ang I-uninstall o I-disable.<ph name="END_PARAGRAPH1" /></translation>
+<translation id="1730989807608739928">Mag-scroll papunta sa huling tab</translation>
 <translation id="1731911755844941020">Ipinapadala ang paghiling...</translation>
 <translation id="1733383495376208985">I-encrypt ang naka-sync na data gamit ang iyong sariling <ph name="BEGIN_LINK" />passphrase sa pag-sync<ph name="END_LINK" />. Hindi kasama rito ang mga paraan ng pagbabayad at address mula sa Google Pay.</translation>
 <translation id="1734212868489994726">Light blue</translation>
@@ -870,6 +876,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1855079636134697549">Naka-on ang camera</translation>
 <translation id="1856715684130786728">Magdagdag ng lokasyon...</translation>
 <translation id="1858585891038687145">Pagkatiwalaan ang certificate na ito para sa pagtukoy sa mga gumawa ng software</translation>
+<translation id="1859787252990099899">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, Hindi kilalang device na may pangalang <ph name="DEVICE_NAME" /></translation>
 <translation id="1861262398884155592">Walang laman ang folder na ito</translation>
 <translation id="1862311223300693744">Mayroon ka bang anumang espesyal na software ng VPN, proxy, firewall, o NAS
     na naka-install?</translation>
@@ -1144,6 +1151,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2148892889047469596">I-cast ang tab</translation>
 <translation id="2149973817440762519">I-edit ang Bookmark</translation>
 <translation id="2150139952286079145">Maghanap ng mga patutunguhan</translation>
+<translation id="2150491840563706000">Wala kang pahintulot na mag-cast sa display na ito</translation>
 <translation id="2150661552845026580">Idagdag ang "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2151576029659734873">Di-wastong index ng tab ang ipinasok.</translation>
 <translation id="2152281589789213846">Magdagdag ng mga printer sa iyong profile</translation>
@@ -1244,6 +1252,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2242687258748107519">Info ng File</translation>
 <translation id="2246549592927364792">Kumuha ng mga paglalarawan ng larawan mula sa Google?</translation>
 <translation id="2247738527273549923">Pinapamahalaan ng iyong organisasyon ang device mo</translation>
+<translation id="2249061317998743208">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, Game controller na may pangalang <ph name="DEVICE_NAME" /></translation>
 <translation id="2249111429176737533">Buksan bilang naka-tab na window</translation>
 <translation id="2249605167705922988">hal. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Buksan gamit ang system viewer</translation>
@@ -1454,6 +1463,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="245322989586167203">Karaniwang kumokonekta ang mga site sa mga serial port para sa mga feature sa paglilipat ng data, gaya ng pag-set up ng iyong network</translation>
 <translation id="2453706416476934374">Para makakuha ng mga iniangkop na sagot kapag nagtatanong si <ph name="SUPERVISED_USER_NAME" />, payagan ang Assistant na mag-access ng screenshot ng kung ano ang nasa screen ni <ph name="SUPERVISED_USER_NAME" />. Puwedeng kasama rin dito ang impormasyon tungkol sa mga kanta o video na nagpe-play.</translation>
 <translation id="2453860139492968684">Tapos na</translation>
+<translation id="2454206500483040640">Naka-partition</translation>
 <translation id="2454247629720664989">Keyword</translation>
 <translation id="2454264884354864965">Naka-off ang camera</translation>
 <translation id="2454524890947537054">Aprubahan ang kahilingan sa web?</translation>
@@ -1816,6 +1826,7 @@ at Ctrl+Alt+Bawasan ang liwanag para mag-zoom out.</translation>
 <translation id="2806891468525657116">Mayroon nang ganitong shortcut</translation>
 <translation id="2807517655263062534">Dito lalabas ang mga file na iyong ida-download</translation>
 <translation id="2809586584051668049">at <ph name="NUMBER_ADDITIONAL_DISABLED" /> pa</translation>
+<translation id="2810235462964014915">Hiniling na basahin at baguhin ang <ph name="SITE_NAME" /></translation>
 <translation id="2811205483104563968">Mga Account</translation>
 <translation id="2812049959647166806">Hindi sinusuportahan ang thunderbolt</translation>
 <translation id="2812989263793994277">Huwag magpakita ng anumang mga larawan</translation>
@@ -2006,6 +2017,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3007771295016901659">I-duplicate ang Tab</translation>
 <translation id="3008232374986381779">Paganahin sa iyong <ph name="DEVICE_TYPE" /> ang mga tool, editor, at IDE ng Linux. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">I-reset ang mga pahintulot</translation>
+<translation id="3008396025115884998">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, Audio device na may pangalang <ph name="DEVICE_NAME" /></translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{Hinihiling sa iyo ng <ph name="MANAGER" /> na kumonekta sa Wi-Fi ngayong araw para mag-download ng update. O kaya, mag-download mula sa isang nakametrong koneksyon (posibleng magkaroon ng mga singil).}one{Hinihiling sa iyo ng <ph name="MANAGER" /> na kumonekta sa Wi-Fi at mag-download ng update bago ang deadline. O kaya, mag-download mula sa isang nakametrong koneksyon (posibleng magkaroon ng mga singil).}other{Hinihiling sa iyo ng <ph name="MANAGER" /> na kumonekta sa Wi-Fi at mag-download ng update bago ang deadline. O kaya, mag-download mula sa isang nakametrong koneksyon (posibleng magkaroon ng mga singil).}}</translation>
 <translation id="3009300415590184725">Sigurado ka bang gusto mong kanselahin ang proseso ng pag-setup ng serbisyo ng mobile data?</translation>
 <translation id="3009779501245596802">Mga naka-index na database</translation>
@@ -2311,6 +2323,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3348038390189153836">Natuklasan ang natatanggal na device</translation>
 <translation id="3348131053948466246">Iminumungkahi ang emoji Pindutin ang up o down para mag-navigate at ang enter para maglagay.</translation>
 <translation id="3349933790966648062">Footprint ng Memory</translation>
+<translation id="3354972872297836698">Hindi maipares sa device na <ph name="DEVICE_NAME" />; piliin ang device para subukan ulit</translation>
 <translation id="3355936511340229503">Error sa koneksyon</translation>
 <translation id="3356580349448036450">Kumpleto na</translation>
 <translation id="3359256513598016054">Mga Limitasyon sa Patakaran ng Certificate</translation>
@@ -2612,6 +2625,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3654045516529121250">Basahin ang iyong mga setting ng pagiging naa-access</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{May permanenteng access ito sa isang file.}one{May permanenteng access ito sa # file.}other{May permanenteng access ito sa # na file.}}</translation>
 <translation id="3658871634334445293">Pag-accelerate ng TrackPoint</translation>
+<translation id="3659929705630080526">Masyadong maraming beses ka nang naglagay ng maling access code. Subukan ulit sa ibang pagkakataon</translation>
 <translation id="3660234220361471169">Hindi pinagkakatiwalaan</translation>
 <translation id="3664511988987167893">Icon ng Extension</translation>
 <translation id="3665589677786828986">Natunton ng Chrome na ilan sa iyong mga setting ay nasira ng isa pang program at ni-reset ang mga ito sa kanilang mga orihinal na default.</translation>
@@ -2695,6 +2709,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3743842571276656710">Ilagay ang PIN para maipares sa <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Para mag-alis ng mga app, pumunta sa Mga Setting &gt; Google Play Store &gt; Pamahalaan ang mga kagustuhan sa Android &gt; Mga App o Application manager. Pagkatapos ay i-tap ang app na gusto mong i-uninstall (maaaring kailanganin mong mag-swipe pakanan o pakaliwa para mahanap ang app). Pagkatapos, i-tap ang I-uninstall o I-disable.</translation>
 <translation id="3747220812138541072">Magpakita ng inline na mga suhestyon sa pagsusulat na lalabas habang nagta-type ka</translation>
+<translation id="3747603683749989726">I-on ang pinahusay na seguridad?</translation>
 <translation id="3748706263662799310">Mag-ulat ng bug</translation>
 <translation id="3750562496035670393">Na-save ng Chrome ang iyong password sa device na ito, pero puwede mong i-save na lang ito sa iyong Google Account. Pagkatapos ay magiging available rin ang lahat ng iyong password sa Google Account mo habang naka-sign in ka.</translation>
 <translation id="3752253558646317685">Utusan ang iyong anak na panatilihing nakaangat ang kanyang daliri para ma-save ang fingerprint</translation>
@@ -3122,6 +3137,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4165942112764990069">Hindi nabibilang sa valid na organisasyon ang <ph name="USER_EMAIL" />. Makipag-uganayan sa iyong administrator. Kung isa kang administrator, puwede mong i-set up ang iyong organisasyon sa pamamagitan ng pagbisita sa: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4167686856635546851">Karaniwang gumagamit ang mga site ng Javascript para magpakita ng mga interactive na feature, gaya ng mga video game o web form</translation>
 <translation id="4168015872538332605">Ang ilang setting ni <ph name="PRIMARY_EMAIL" /> ay ibinabahagi sa iyo. Naaapektuhan lang ng mga setting na ito ang iyong account kapag gumagamit ng multiple na pag-sign in.</translation>
+<translation id="4168651806173792090"><ph name="NETWORK_NAME" /> na nagtatapos sa <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="4169535189173047238">Huwag payagan</translation>
 <translation id="4170314459383239649">I-clear sa Paglabas</translation>
 <translation id="417096670996204801">Pumili ng profile</translation>
@@ -3210,6 +3226,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4279129444466079448">Puwede kang mag-install nang hanggang <ph name="PROFILE_LIMIT" /> (na) profile ng eSIM sa device na ito. Para magdagdag ng isa pang profile, mag-alis muna ng dati nang profile.</translation>
 <translation id="4281844954008187215">Mga Tuntunin ng Serbisyo</translation>
 <translation id="4282196459431406533">Naka-on ang Smart Lock</translation>
+<translation id="4284755288573763878">I-off ang pinahusay na seguridad?</translation>
 <translation id="4285418559658561636">I-update ang Password</translation>
 <translation id="4285498937028063278">I-unpin</translation>
 <translation id="428565720843367874">Hindi inaasahang nabigo ang software ng anti-virus habang ini-scan ang file na ito.</translation>
@@ -3351,6 +3368,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4432621511648257259">Mali ang password</translation>
 <translation id="443454694385851356">Legacy (hindi secure)</translation>
 <translation id="443475966875174318">I-update o alisin ang mga hindi compatible na application</translation>
+<translation id="4435634292635092844">Tingnan ang mga larawan sa camera roll ng iyong telepono sa <ph name="DEVICE_TYPE" /> mo. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="4438043733494739848">Transparent</translation>
 <translation id="4440097423000553826">Nagpadala ng notification ang <ph name="WEBSITE" /> sa iyong telepono. Para kumpirmahing ikaw ito, i-tap ang notification na “<ph name="NOTIFICATIONTITLE" />” at sundin ang mga hakbang.</translation>
 <translation id="4441124369922430666">Nais mo bang awtomatikong simulan ang app na ito kapag nag-on ang makina?</translation>
@@ -3648,6 +3666,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4759238208242260848">Mga Download </translation>
 <translation id="4761104368405085019">Gamitin ang iyong mikropono</translation>
 <translation id="4762718786438001384">Sobrang kaunti na lang ang espasyo sa disk ng device</translation>
+<translation id="4762898026821161650">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, Computer na may pangalang <ph name="DEVICE_NAME" /></translation>
 <translation id="4763408175235639573">Itinakda ang sumusunod na cookies noong tiningnan mo ang page na ito</translation>
 <translation id="4765582662863429759">Binibigyang-daan ang Android Messages na mag-relay ng mga text mula sa iyong telepono papunta sa Chromebook mo</translation>
 <translation id="4768332406694066911">Mayroon kang mga certificate mula sa mga organisasyong ito na tutukoy sa iyo</translation>
@@ -4609,6 +4628,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">Tagumpay</translation>
 <translation id="5790651917470750848">Mayroon nang forward ng port</translation>
+<translation id="5792295754950501287">Higit pang aksyon para sa <ph name="CARD_DESCRIPTION" /></translation>
 <translation id="5792728279623964091">Paki-tap ang iyong power button</translation>
 <translation id="5793339252089865437">Kung ida-download mo ang update sa pamamagitan ng iyong mobile network, maaaring magkaroon ng mga overage na singil.</translation>
 <translation id="5794034487966529952">Mayroong nakabukas na <ph name="NUM_BROWSERS" /> (na) window ng browser sa desk na <ph name="DESK_TITLE" /></translation>
@@ -4683,6 +4703,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5865508026715185451">Malapit nang mag-pause ang <ph name="APP_NAME" /></translation>
 <translation id="586567932979200359">Pinapatakbo mo ang <ph name="PRODUCT_NAME" /> mula sa larawan nito sa disk. Ang pag-install nito ay magbibigay-daan sa iyong patakbuhin ito nang walang larawan ng disk, at makakatiyak na pananatilihin itong napapanahon.</translation>
 <translation id="5865733239029070421">Awtomatikong nagpapadala sa Google ng mga istatistika ng paggamit at ulat ng pag-crash</translation>
+<translation id="5865848066829891215">Mga isyu sa komunikasyon ng network</translation>
 <translation id="5867841422488265304">Maghanap o mag-type ng web address</translation>
 <translation id="5869029295770560994">OK, Nakuha Ko</translation>
 <translation id="5869522115854928033">Mga naka-save na password</translation>
@@ -5164,6 +5185,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6374469231428023295">Subukang Muli</translation>
 <translation id="6377268785556383139">1 resulta para sa '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380143666419481200">Tanggapin at magpatuloy</translation>
+<translation id="6382616130475191723">Pinayagang basahin at baguhin ang <ph name="SITE_NAME" /></translation>
 <translation id="6382958439467370461">Walang hindi aktibong shortcut</translation>
 <translation id="638418309848716977">Mga sinusuportahang link</translation>
 <translation id="6384275966486438344">Gawing ito ang iyong mga setting ng paghahanap: <ph name="SEARCH_HOST" /></translation>
@@ -5828,6 +5850,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Nagpatakbo ng pag-check sa kaligtasan 1 minuto ang nakalipas}one{Nagpatakbo ng pag-check sa kaligtasan {NUM_MINS} minuto ang nakalipas}other{Nagpatakbo ng pag-check sa kaligtasan {NUM_MINS} na minuto ang nakalipas}}</translation>
 <translation id="7057767408836081338">Hindi nakuha ang data ng app, sinusubukan pa ring patakbuhin ang app...</translation>
 <translation id="7058024590501568315">Nakatagong network</translation>
+<translation id="70582545822664495">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, Mouse na may pangalang <ph name="DEVICE_NAME" /></translation>
 <translation id="7059858479264779982">Itakdang awtomatikong ilunsad</translation>
 <translation id="7062222374113411376">Payagan ang mga kamakailang isinarang site na tapusin ang pagpapadala at pagtanggap ng data</translation>
 <translation id="7063129466199351735">Kasalukuyang pinoproseso ang mga shortcut...</translation>
@@ -5976,6 +5999,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7243784282103630670">Nagka-error habang ina-upgrade ang Linux. Ire-restore namin ang container gamit ang iyong backup.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Pinakamainam)</translation>
 <translation id="7246230585855757313">Muling ipasok ang iyong security key at subukan ulit</translation>
+<translation id="7249197363678284330">Baguhin ang setting na ito sa address bar.</translation>
 <translation id="7250616558727237648">Hindi tumugon ang device kung saan ka nagbabahagi. Pakisubukan ulit.</translation>
 <translation id="725109152065019550">Paumanhin, hindi pinagana ng iyong administrator ang panlabas na storage sa iyong account.</translation>
 <translation id="7251346854160851420">Default na wallpaper</translation>
@@ -5991,6 +6015,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7257173066616499747">Mga Wi-Fi network</translation>
 <translation id="725758059478686223">Serbisyo sa Pag-print</translation>
 <translation id="7257666756905341374">Basahin ang data na iyong kinokopya at pine-paste</translation>
+<translation id="7258006747130724016">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, Video camera na may pangalang <ph name="DEVICE_NAME" /></translation>
 <translation id="7258192266780953209">Mga Pagbabago</translation>
 <translation id="7258225044283673131">Hindi tumutugon ang application. Piliin ang "Puwersahang isara" para isara ang app.</translation>
 <translation id="7262004276116528033">Hino-host ng <ph name="SAML_DOMAIN" /> ang serbisyo sa pag-sign in</translation>
@@ -6787,6 +6812,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8037117027592400564">Basahin ang lahat ng binigkas na text gamit ang naka-synthesize na pagsasalita</translation>
 <translation id="8037357227543935929">Magtanong (default)</translation>
 <translation id="803771048473350947">File</translation>
+<translation id="8038399858950372766">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, Keyboard na may pangalang <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">Magpadala ng Feedback</translation>
 <translation id="8042142357103597104">Opacity ng text</translation>
 <translation id="8044262338717486897">Hindi tumutugon ang <ph name="LINUX_APP_NAME" />.</translation>
@@ -6996,11 +7022,13 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8244514732452879619">Malapit nang magpatay ng ilaw</translation>
 <translation id="8246776524656196770">Protektahan ang iyong security key gamit ang PIN (Personal Identification Number)</translation>
 <translation id="8248050856337841185">I-&amp;paste</translation>
+<translation id="8248381369318572865">I-access ang iyong mikropono at suriin ang pagsasalita mo</translation>
 <translation id="8248887045858762645">Tip sa Chrome</translation>
 <translation id="8249048954461686687">Folder ng OEM</translation>
 <translation id="8249615410597138718">Ipadala sa Iyong Mga Device</translation>
 <translation id="8249672078237421304">Mag-alok na isalin ang mga page na wala sa wikang nababasa mo</translation>
 <translation id="8251441930213048644">I-refresh ngayon</translation>
+<translation id="8251509999076836464">Ipinapares sa <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Naalis ang thumbnail.</translation>
 <translation id="825238165904109940">Palaging Ipakita ang Mga Buong URL</translation>
 <translation id="8252569384384439529">Ina-upload...</translation>
@@ -7016,6 +7044,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8264024885325823677">Pinapamahalaan ng iyong administrator ang setting na ito.</translation>
 <translation id="8264718194193514834">Nag-trigger ang "<ph name="EXTENSION_NAME" />" ng full screen.</translation>
 <translation id="826511437356419340">Pumasok sa overview mode ng window. Mag-swipe para mag-navigate, o pindutin ang tab kung gumagamit ng keyboard.</translation>
+<translation id="8265671588726449108">{COUNT,plural, =1{Hindi bubukas ang iyong Incognito window pagkatapos mong maglunsad ulit}one{Hindi bubukas ang iyong {COUNT} Incognito window pagkatapos mong maglunsad ulit}other{Hindi bubukas ang iyong {COUNT} na Incognito window pagkatapos mong maglunsad ulit}}</translation>
 <translation id="8266947622852630193">Lahat ng pamamaraan ng pag-input</translation>
 <translation id="8267539814046467575">Magdagdag ng printer</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />Ito ay pangkalahatang impormasyon tungkol sa device na ito at kung paano ito ginagamit (gaya ng antas ng baterya, aktibidad ng system at app, at mga error). Gagamitin ang data para pahusayin ang Android, at makakatulong din ang ilang pinagsama-samang impormasyon sa mga app at partner ng Google, gaya ng mga developer ng Android, na mapahusay ang mga app at produkto ng mga ito.<ph name="END_PARAGRAPH1" />
@@ -7733,6 +7762,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9026731007018893674">i-download</translation>
 <translation id="9026852570893462412">Maaaring abutin nang ilang minuto ang prosesong ito. Dina-download ang virtual machine.</translation>
 <translation id="9027459031423301635">Buksan ang Link sa Bagong &amp;Tab</translation>
+<translation id="9029667986262585240">Na-off mo ang Pinahusay na Ligtas na Pag-browse sa iyong account.</translation>
 <translation id="9030515284705930323">Hindi na-enable ng iyong organisasyon ang Google Play Store para sa iyong account. Makipag-ugnayan sa iyong administrator para sa higit pang impormasyon.</translation>
 <translation id="9030754204056345429">Mas mabilis</translation>
 <translation id="9030785788945687215">Gmail</translation>

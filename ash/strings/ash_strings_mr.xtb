@@ -131,6 +131,7 @@
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + पीरियड कीबोर्ड शॉर्टकट बदलला आहे. Insert की वापरण्यासाठी, <ph name="LAUNCHER_KEY_NAME" /> की + Shift + Backspace दाबा.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" /> पंक्ती, <ph name="COLUMN_NUMBER" /> स्तंभ वर हलवली.</translation>
 <translation id="1771761307086386028">उजवीकडे स्क्रोल करा</translation>
+<translation id="1774796056689732716">कॅलेंडर, <ph name="CURRENT_MONTH_YEAR" />, सध्या <ph name="DATE" /> निवडली आहे.</translation>
 <translation id="1787955149152357925">बंद करा</translation>
 <translation id="1804572139604454141">डिस्कमध्ये अत्यंत कमी जागा असल्यामुळे रेकॉर्डिंग समाप्त करण्यात आले</translation>
 <translation id="181103072419391116">सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">सबटायटल सुरू करा</translation>
 <translation id="5078796286268621944">चुकीचा पिन</translation>
 <translation id="5083553833479578423">असिस्टंटची आणखी वैशिष्ट्ये अनलॉक करा.</translation>
+<translation id="5090752371472782287"><ph name="MANAGER" /> डिव्हाइसवर कास्ट करा</translation>
 <translation id="5106223312672646208">पर्सनलाइझ करा</translation>
 <translation id="5117590920725113268">पुढील महिना दर्शवा</translation>
 <translation id="5136175204352732067">वेगळा कीबोर्ड कनेक्ट केला आहे</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">कास्‍ट डिव्‍हाइसेस उपलब्‍ध</translation>
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
 <translation id="5176318573511391780">स्क्रीन अंशतः रेकॉर्ड करा</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> इव्हेंट</translation>
 <translation id="5198715732953550718">नवीन फोल्डर तयार करण्यासाठी <ph name="IN_PLACE_APP" /> सोबत <ph name="MOVED_APP_NAME" /> एकत्रित केले गेले.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{एक इतर सूचना}other{# इतर सूचना}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">सर्व पूर्ण झाले</translation>
 <translation id="6431865393913628856">स्क्रीन रेकॉर्ड करा</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> वर <ph name="ROUTE_TITLE" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> इव्हेंट</translation>
 <translation id="6452181791372256707">नाकारा</translation>
 <translation id="6453179446719226835">भाषा बदलण्यात आली आहे</translation>
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> मध्ये स्क्रीन विस्तृत करत आहे</translation>
@@ -865,6 +869,7 @@
 <translation id="6811454077060061666">Google Drive for desktop उपलब्ध नाही</translation>
 <translation id="6818242057446442178">एक शब्द मागे जा</translation>
 <translation id="6820676911989879663">ब्रेक घ्या!</translation>
+<translation id="6827049576281411231">इव्हेंट पॅनल बंद करा</translation>
 <translation id="6836499262298959512">धोकादायक फाइल</translation>
 <translation id="6837064795450991317">डेस्कबार लपवा</translation>
 <translation id="6852052252232534364">अ‍ॅक्टिव्हेट करण्यासाठी क्लिक करा</translation>
@@ -872,6 +877,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{एक अंक शिल्लक आहे}other{# अंक शिल्लक आहेत}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> चे डाउनलोड थांबले</translation>
 <translation id="6878400149835617132">शॉर्टकट बंद केला आहे</translation>
+<translation id="6884665277231944629">आजवर जा</translation>
 <translation id="6886172995547742638">तुमच्या <ph name="DEVICE_TYPE" /> चा परफॉर्मन्स कमी होऊ शकतो. प्रमाणित <ph name="PREFERRED_MINIMUM_POWER" />W किंवा त्यावरील USB-C पॉवर अडॅप्टर वापरा.</translation>
 <translation id="688631446150864480">विंडो स्विच करण्यासाठी डाउन अ‍ॅरो की दाबा</translation>
 <translation id="6896758677409633944">कॉपी करा</translation>
@@ -958,6 +964,7 @@
 <translation id="7497767806359279797">भाषा आणि कीबोर्ड निवडा</translation>
 <translation id="7509246181739783082">तुमच्या ओळखीची पडताळणी करा</translation>
 <translation id="7513622367902644023">स्क्रीनशॉट मोड निवडला आहे</translation>
+<translation id="7513922695575567867">कॅलेंडर, सध्या <ph name="DATE" /> आठवड्यामधील, <ph name="SELECTED_DATE" /> निवडली आहे.</translation>
 <translation id="7514365320538308">डाउनलोड करा</translation>
 <translation id="7526573455193969409">नेटवर्कचे परीक्षण केले जाऊ शकते</translation>
 <translation id="7536035074519304529">IP पत्ता: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@
 <translation id="7564874036684306347">दुसऱ्या डेस्कटॉपवर विंडो हलवण्याने अनपेक्षित वर्तन घडू शकते. नंतर येणाऱ्या सूचना, विंडो आणि डायलॉग हे डेस्कटॉपच्या दरम्यान विभाजित केले जाऊ शकतात.</translation>
 <translation id="7569509451529460200">ब्रेल आणि ChromeVox सुरू केलेले आहेत</translation>
 <translation id="7569983096843329377">काळा</translation>
+<translation id="757941033127302446">साइन इन केले आहे</translation>
 <translation id="7579778809502851308">स्‍क्रीन कॅप्‍चर</translation>
 <translation id="7590883480672980941">इनपुट सेटिंग्ज</translation>
 <translation id="7593891976182323525">Search किंवा Shift</translation>
@@ -1040,6 +1048,7 @@
 <translation id="8035152190676905274">पेन</translation>
 <translation id="8036504271468642248">मागील वाक्य</translation>
 <translation id="8042893070933512245">अ‍ॅक्सेसिबिलिटी सेटिंग्ज मेनू उघडा</translation>
+<translation id="8042925093898452104">तपशीलवार माहिती बंद करा</translation>
 <translation id="8048123526339889627">ब्लूटूथ सेटिंग्ज</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> नावाचे टेंप्लेट आधीपासून अस्तित्वात आहे</translation>
 <translation id="8052898407431791827">क्लिपबोर्डवर कॉपी केले</translation>

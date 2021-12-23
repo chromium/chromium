@@ -44,6 +44,7 @@
 <translation id="3639997914391704523">O Chromium pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="3805899903892079518">O Chromium não tem acesso aos seus vídeos ou fotos. Ative o acesso nas Definições do iOS &gt; Privacidade &gt; Fotos.</translation>
 <translation id="3946918322491238254">Ainda pode ver todos os seus marcadores, histórico, palavras-passe e outras definições neste dispositivo. Se efetuar alterações, estes não serão sincronizadas com a sua conta.</translation>
+<translation id="4043291146360695975">As palavras-passe são guardadas no Gestor de palavras-passe apenas neste dispositivo.</translation>
 <translation id="4099085513035183040">Opção não suportada no Chromium Beta.</translation>
 <translation id="4555020257205549924">Se esta funcionalidade estiver ativada, o Chromium oferecer-se-á para traduzir páginas escritas noutros idiomas com o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Agora, pode utilizar o Chromium sempre que tocar em links de mensagens, documentos e outras apps.</translation>
@@ -107,6 +108,7 @@
 <translation id="8776843108004031667">Esta conta e quaisquer dados não guardados serão removidos do Chromium.</translation>
 <translation id="894437814105052438">Quando terminar sessão, o Chromium não irá sincronizar quaisquer dados novos com a sua Conta Google. Os dados anteriormente sincronizados mantêm-se na conta.</translation>
 <translation id="9022552996538154597">Iniciar sessão no Chromium</translation>
+<translation id="9059693977935746710">Não terá de memorizar esta palavra-passe. Será guardada no Gestor de palavras-passe de <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">O Chromium está desatualizado</translation>
 <translation id="9110075932708282655">Utilize o Chromium por predefinição</translation>
 <translation id="921174536258924340">O Chromium não conseguiu verificar todas as palavras-passe. Tente novamente amanhã ou <ph name="BEGIN_LINK" />verifique as palavras-passe na sua Conta Google<ph name="END_LINK" />.</translation>

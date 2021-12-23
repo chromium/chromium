@@ -131,6 +131,7 @@
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + የጊዜ የቁልፍ ሰሌዳ አቋራጭ ተለውጧል። አስገባ ቁልፍን ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + ቀያይር + የኋሊት መደምሰሻን ይጫኑ።</translation>
 <translation id="1770726142253415363">ወደ <ph name="ROW_NUMBER" /> ረድፍ፣ <ph name="COLUMN_NUMBER" /> አምድ ተንቀሳቅሷል።</translation>
 <translation id="1771761307086386028">ወደ ቀኝ ይሸብልሉ</translation>
+<translation id="1774796056689732716">ቀን መቁጠሪያ፣ <ph name="CURRENT_MONTH_YEAR" />፣ በአሁኑ ጊዜ <ph name="DATE" /> ተመርጧል።</translation>
 <translation id="1787955149152357925">አጥፋ</translation>
 <translation id="1804572139604454141">እጅግ አነስተኛ በሆነ የዲስክ ቦታ ምክንያት ቀረጻ አልቋል</translation>
 <translation id="181103072419391116">የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ በየእርስዎ አስተዳዳሪ የሚተዳደር</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">ዝግ መግለጫ ፅሁፎችን ይጀምሩ</translation>
 <translation id="5078796286268621944">የተሳሳተ ፒን</translation>
 <translation id="5083553833479578423">ተጨማሪ የረዳት ባህሪያትን ያስከፍቱ።</translation>
+<translation id="5090752371472782287">ወደ <ph name="MANAGER" /> መሣሪያ Cast ያድርጉ</translation>
 <translation id="5106223312672646208">ግላዊነት ያላብሱ</translation>
 <translation id="5117590920725113268">ቀጣዩን ወር አሳይ</translation>
 <translation id="5136175204352732067">የተለየ የቁልፍ ሰሌዳ ተገናኝቷል</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">የCast መሣሪያዎች ይገኛሉ</translation>
 <translation id="5170568018924773124">በአቃፊ አሳይ</translation>
 <translation id="5176318573511391780">ከፊል የማያ ገጽን ቅረጽ</translation>
+<translation id="5198413532174090167"><ph name="DATE" />፣ <ph name="NUMBER" /> ክስተቶች</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> ከ<ph name="IN_PLACE_APP" /> ጋር አዲስ አቃፊ ለመፍጠር ተጣምሯል።</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />፣ <ph name="NOTIFICATION_TITLE" />፦ <ph name="MESSAGE" />፣ <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 ሌላ ማሳወቂያ}one{# ሌሎች ማሳወቂያዎች}other{# ሌሎች ማሳወቂያዎች}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">ሁሉም ተከናውኗል</translation>
 <translation id="6431865393913628856">የማያ ገጽ ቀረጻ</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> በ<ph name="RECEIVER_NAME" /> ላይ</translation>
+<translation id="6447111710783417522"><ph name="DATE" />፣ <ph name="NUMBER" /> ክስተት</translation>
 <translation id="6452181791372256707">አይቀበሉ</translation>
 <translation id="6453179446719226835">ቋንቋ ተለውጧል</translation>
 <translation id="6459472438155181876">ማያ ገጽ ወደ <ph name="DISPLAY_NAME" /> በመቀጠል ላይ</translation>
@@ -865,6 +869,7 @@
 <translation id="6811454077060061666">Google Drive ለዴስክቶፕ አይገኝም</translation>
 <translation id="6818242057446442178">በቃል ይመለሱ</translation>
 <translation id="6820676911989879663">እረፍት ይውሰዱ!</translation>
+<translation id="6827049576281411231">የክስተት ፓነልን ዝጋ</translation>
 <translation id="6836499262298959512">አደገኛ ፋይል</translation>
 <translation id="6837064795450991317">የዴስክ አሞሌን ደብቅ</translation>
 <translation id="6852052252232534364">ለማግበር ጠቅ ያድርጉ</translation>
@@ -872,6 +877,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{አንድ አሃዝ ይቀራል}one{# አሃዞች ይቀራሉ}other{# አሃዞች ይቀራሉ}}</translation>
 <translation id="6867938213751067702">ማውረድ ባለበት ቆሟል <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">አቋራጭ ጠፍቷል</translation>
+<translation id="6884665277231944629">ወደ ዛሬ ተመለስ</translation>
 <translation id="6886172995547742638">የእርስዎ <ph name="DEVICE_TYPE" /> ያነሰ አፈጻጸም ሊያጋጥመው ይችላል። የእውቅና ማረጋገጫ ያለው <ph name="PREFERRED_MINIMUM_POWER" /> ዋ ወይም ከዚያ በላይ የሆነ የUSB-C ኃይል አስማሚን ይጠቀሙ።</translation>
 <translation id="688631446150864480">መስኮቶችን ለመቀያየር የታች ቀስትን ይጫኑ</translation>
 <translation id="6896758677409633944">ቅዳ</translation>
@@ -958,6 +964,7 @@
 <translation id="7497767806359279797">ቋንቋ እና ቁልፍ ሰሌዳን ይምረጡ</translation>
 <translation id="7509246181739783082">ማንነትዎን ያረጋግጡ</translation>
 <translation id="7513622367902644023">የቅጽበታዊ ገጽ እይታ ሁነታ ተመርጧል</translation>
+<translation id="7513922695575567867">ቀን መቁጠሪያ፣ የ<ph name="DATE" /> ሳምንት፣ <ph name="SELECTED_DATE" /> በአሁኑ ጊዜ ተመርጧል።</translation>
 <translation id="7514365320538308">አውርድ</translation>
 <translation id="7526573455193969409">አውታረ መረብ ክትትል የሚደረግበት ሊሆን ይችላል</translation>
 <translation id="7536035074519304529">የአይፒ አድራሻ፦ <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@
 <translation id="7564874036684306347">መስኮትን ወደ ሌላ ዴስክቶፕ መውሰድ ያልተጠበቀ ባህሪን ሊያስከትል ይችላል። ተከትለው የሚመጡ ማሳወቂያዎችን፣ መስኮቶች እና መገናኛዎች በዴስክቶፖች መካከል ሊከፈሉ ይችላሉ።</translation>
 <translation id="7569509451529460200">ብሬይል እና ChromeVox ነቅተዋል</translation>
 <translation id="7569983096843329377">ጥቁር</translation>
+<translation id="757941033127302446">በመለያ ገብቷል</translation>
 <translation id="7579778809502851308">የማያ ገጽ ቀረጻ</translation>
 <translation id="7590883480672980941">የግቤት ቅንብሮች</translation>
 <translation id="7593891976182323525">Search ወይም Shift</translation>
@@ -1040,6 +1048,7 @@
 <translation id="8035152190676905274">ብዕር</translation>
 <translation id="8036504271468642248">ቀዳሚ ዓረፍተ ነገር</translation>
 <translation id="8042893070933512245">የተደራሽነት ቅንብሮች ምናሌን ክፈት</translation>
+<translation id="8042925093898452104">ዝርዝር መረጃን ዝጋ</translation>
 <translation id="8048123526339889627">የብሉቱዝ ቅንብሮች</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> ተብሎ የተሰየመ ቅንብር ደንብ አስቀድሞ አለ።</translation>
 <translation id="8052898407431791827">ወደ ቅንጥብ ሰሌዳ ተቀድቷል</translation>

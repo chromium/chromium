@@ -252,6 +252,7 @@
 <translation id="1244265436519979884">현재 Linux 복원이 진행 중입니다.</translation>
 <translation id="1244303850296295656">확장 프로그램 오류</translation>
 <translation id="1246863218384630739"><ph name="VM_NAME" /> VM을 설치할 수 없습니다. 이미지 URL이 <ph name="HTTP_ERROR" /> 오류 코드를 반환했습니다. 관리자에게 문의해 주세요.</translation>
+<translation id="1247071602516579380">기기 <ph name="DEVICE_COUNT" />대 중 <ph name="DEVICE_INDEX" />번째, 이름이 <ph name="DEVICE_NAME" />인 태블릿</translation>
 <translation id="1251366534849411931">열림 중괄호 누락: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">사이트 및 설치된 앱에서 저장한 <ph name="TOTAL_USAGE" />의 데이터가 삭제됩니다.</translation>
 <translation id="1251578593170406502">모바일 데이터 네트워크를 스캔하는 중...</translation>
@@ -395,6 +396,7 @@
 <translation id="1408980562518920698">개인정보 관리</translation>
 <translation id="1410197035576869800">앱 아이콘</translation>
 <translation id="1410616244180625362"><ph name="HOST" />에서 카메라에 액세스하도록 계속 허용</translation>
+<translation id="1410797069449661718">첫 번째 탭으로 스크롤</translation>
 <translation id="1410806973194718079">정책을 확인할 수 없습니다.</translation>
 <translation id="1412681350727866021">추가 확장 프로그램</translation>
 <translation id="1414315029670184034">사이트에서 카메라를 사용하도록 허용하지 않음</translation>
@@ -415,6 +417,7 @@
            • 쿠키 및 기타 임시 사이트 데이터 삭제
             <ph name="LINE_BREAKS" />
            북마크, 기록, 저장된 비밀번호는 영향을 받지 않습니다.</translation>
+<translation id="1425233109861512854">액세스 코드를 인식할 수 없습니다.</translation>
 <translation id="1426410128494586442">예</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> 앱이 차단됨</translation>
 <translation id="1426870617281699524">다시 시도를 클릭하고 컴퓨터에 표시된 메시지를 수락하세요</translation>
@@ -437,6 +440,7 @@
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" />개가 선택되었습니다</translation>
 <translation id="1442851588227551435">활성 Kerberos 티켓 설정</translation>
 <translation id="1444628761356461360">기기 소유자인 <ph name="OWNER_EMAIL" />이(가) 관리하는 설정입니다.</translation>
+<translation id="1445005312224723356">기기 <ph name="DEVICE_COUNT" />대 중 <ph name="DEVICE_INDEX" />번째, 이름이 <ph name="DEVICE_NAME" />인 휴대전화</translation>
 <translation id="144518587530125858">테마('<ph name="IMAGE_PATH" />')를 로드하지 못했습니다.</translation>
 <translation id="1449191289887455076">할당을 확인하고 <ph name="RESPONSE" />하려면 “<ph name="CURRENTKEY" />” 키를 다시 누르세요.</translation>
 <translation id="1451375123200651445">웹페이지, 단일 파일</translation>
@@ -582,6 +586,7 @@
 <translation id="1593926297800505364">결제 수단 저장</translation>
 <translation id="1595492813686795610">Linux 업그레이드 중</translation>
 <translation id="1596286373007273895">사용 가능</translation>
+<translation id="1596709061955594992">블루투스가 사용 중지되어 있습니다. 사용 가능한 기기를 보려면 블루투스를 사용 설정하세요</translation>
 <translation id="1598233202702788831">관리자가 업데이트를 사용 중지했습니다.</translation>
 <translation id="1600857548979126453">페이지 디버거 백엔드에 액세스</translation>
 <translation id="1601560923496285236">적용</translation>
@@ -730,6 +735,7 @@
 <translation id="1725562816265788801">탭 스크롤</translation>
 <translation id="1729533290416704613">또한 검색주소창에서 검색할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />앱을 삭제하려면 설정 &gt; Google Play 스토어 &gt; Android 환경설정 관리 &gt; 앱 또는 애플리케이션 관리자로 이동합니다. 그런 다음 제거하려는 앱을 탭합니다(앱을 찾으려면 오른쪽이나 왼쪽으로 스와이프해야 할 수 있음). 그런 다음 제거 또는 사용 중지를 탭합니다.<ph name="END_PARAGRAPH1" /></translation>
+<translation id="1730989807608739928">마지막 탭으로 스크롤</translation>
 <translation id="1731911755844941020">요청하는 중...</translation>
 <translation id="1733383495376208985">나만의 <ph name="BEGIN_LINK" />동기화 암호<ph name="END_LINK" />로 동기화된 데이터를 암호화합니다. Google Pay의 결제 수단 및 주소는 암호화되지 않습니다.</translation>
 <translation id="1734212868489994726">연한 파란색</translation>
@@ -869,6 +875,7 @@
 <translation id="1855079636134697549">카메라 켜짐</translation>
 <translation id="1856715684130786728">위치 추가...</translation>
 <translation id="1858585891038687145">소프트웨어 제작자를 식별하기 위해 이 인증서 신뢰</translation>
+<translation id="1859787252990099899">기기 <ph name="DEVICE_COUNT" />대 중 <ph name="DEVICE_INDEX" />번째, 이름이 <ph name="DEVICE_NAME" />인 알 수 없는 기기</translation>
 <translation id="1861262398884155592">폴더가 비어 있습니다.</translation>
 <translation id="1862311223300693744">특별히 설치한 VPN, 프록시, 방화벽 또는 NAS 소프트웨어가
     있나요?</translation>
@@ -1143,6 +1150,7 @@
 <translation id="2148892889047469596">탭 전송</translation>
 <translation id="2149973817440762519">북마크 수정</translation>
 <translation id="2150139952286079145">대상 검색</translation>
+<translation id="2150491840563706000">이 디스플레이로 전송할 권한이 없습니다.</translation>
 <translation id="2150661552845026580">'<ph name="EXTENSION_NAME" />'을(를) 추가하시겠습니까?</translation>
 <translation id="2151576029659734873">잘못된 탭 색인을 입력했습니다.</translation>
 <translation id="2152281589789213846">프로필에 프린터 추가</translation>
@@ -1243,6 +1251,7 @@
 <translation id="2242687258748107519">파일 정보</translation>
 <translation id="2246549592927364792">Google에서 이미지 설명을 가져올까요?</translation>
 <translation id="2247738527273549923">조직에서 관리하는 기기입니다</translation>
+<translation id="2249061317998743208">기기 <ph name="DEVICE_COUNT" />대 중 <ph name="DEVICE_INDEX" />번째, 이름이 <ph name="DEVICE_NAME" />인 게임 컨트롤러</translation>
 <translation id="2249111429176737533">탭 창으로 열기</translation>
 <translation id="2249605167705922988">예: 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">시스템 뷰어로 열기</translation>
@@ -1453,6 +1462,7 @@
 <translation id="245322989586167203">사이트에서는 일반적으로 네트워크 설정과 같은 데이터 전송 기능을 사용하기 위해 직렬 포트에 연결합니다.</translation>
 <translation id="2453706416476934374"><ph name="SUPERVISED_USER_NAME" />님이 질문할 때 맞춤 답변을 들을 수 있게 하고 싶다면 어시스턴트가 <ph name="SUPERVISED_USER_NAME" />님의 화면에 표시된 항목의 스크린샷에 액세스하도록 허용하세요. 여기에는 재생 중인 노래나 동영상에 관한 정보도 포함됩니다.</translation>
 <translation id="2453860139492968684">완료</translation>
+<translation id="2454206500483040640">분할됨</translation>
 <translation id="2454247629720664989">키워드</translation>
 <translation id="2454264884354864965">카메라 꺼짐</translation>
 <translation id="2454524890947537054">웹 요청을 승인할까요?</translation>
@@ -1815,6 +1825,7 @@
 <translation id="2806891468525657116">바로가기가 이미 존재합니다.</translation>
 <translation id="2807517655263062534">다운로드한 파일이 여기에 표시됩니다.</translation>
 <translation id="2809586584051668049">외 <ph name="NUMBER_ADDITIONAL_DISABLED" />개</translation>
+<translation id="2810235462964014915"><ph name="SITE_NAME" /> 사이트를 읽고 변경할 수 있도록 요청함</translation>
 <translation id="2811205483104563968">계정</translation>
 <translation id="2812049959647166806">Thunderbolt가 지원되지 않음</translation>
 <translation id="2812989263793994277">이미지 표시 안함</translation>
@@ -2005,6 +2016,7 @@
 <translation id="3007771295016901659">탭 복사</translation>
 <translation id="3008232374986381779"><ph name="DEVICE_TYPE" />에서 Linux 도구, 편집기, IDE를 실행합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">권한 재설정</translation>
+<translation id="3008396025115884998">기기 <ph name="DEVICE_COUNT" />대 중 <ph name="DEVICE_INDEX" />번째, 이름이 <ph name="DEVICE_NAME" />인 오디오 기기</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" />에서 오늘 Wi-Fi에 연결하거나 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.}other{<ph name="MANAGER" />에서 기한 전에 Wi-Fi에 연결하거나 종량제 연결(요금이 부과될 수 있음)을 통해 업데이트를 다운로드할 것을 요청합니다.}}</translation>
 <translation id="3009300415590184725">모바일 데이터 서비스 설정 과정을 취소하시겠습니까?</translation>
 <translation id="3009779501245596802">색인화된 데이터베이스</translation>
@@ -2310,6 +2322,7 @@
 <translation id="3348038390189153836">이동식 기기가 검색됨</translation>
 <translation id="3348131053948466246">추천 그림 이모티콘이 표시되어 있습니다. 위 또는 아래를 눌러 이동하고 Enter를 눌러 입력합니다.</translation>
 <translation id="3349933790966648062">메모리 사용량</translation>
+<translation id="3354972872297836698"><ph name="DEVICE_NAME" /> 기기와 페어링할 수 없음, 기기를 선택하여 다시 시도</translation>
 <translation id="3355936511340229503">연결 오류</translation>
 <translation id="3356580349448036450">완료</translation>
 <translation id="3359256513598016054">인증서 정책 제약조건</translation>
@@ -2611,6 +2624,7 @@
 <translation id="3654045516529121250">접근성 설정 확인</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{파일 1개에 영구적으로 액세스할 수 있습니다.}other{파일 #개에 영구적으로 액세스할 수 있습니다.}}</translation>
 <translation id="3658871634334445293">TrackPoint 가속</translation>
+<translation id="3659929705630080526">잘못된 액세스 코드를 너무 여러 번 입력했습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="3660234220361471169">신뢰할 수 없음</translation>
 <translation id="3664511988987167893">확장 프로그램 아이콘</translation>
 <translation id="3665589677786828986">Chrome에서 다른 프로그램이 브라우저 설정을 일부 손상시키고 원래 기본값으로 재설정했음을 감지했습니다.</translation>
@@ -2694,6 +2708,7 @@
 <translation id="3743842571276656710"><ph name="DEVICE_NAME" /> 기기와 페어링하려면 PIN을 입력하세요.</translation>
 <translation id="3747077776423672805">앱을 삭제하려면 설정 &gt; Google Play 스토어 &gt; Android 환경설정 관리 &gt; 앱 또는 애플리케이션 관리자로 이동합니다. 그런 다음 제거하려는 앱을 탭합니다(앱을 찾으려면 오른쪽이나 왼쪽으로 스와이프해야 할 수 있음). 그런 다음 제거 또는 사용 중지를 탭합니다.</translation>
 <translation id="3747220812138541072">입력할 때 추천 단어를 인라인으로 표시합니다.</translation>
+<translation id="3747603683749989726">강력한 보안 기능을 사용 설정하시겠습니까?</translation>
 <translation id="3748706263662799310">버그 신고</translation>
 <translation id="3750562496035670393">Chrome에서 비밀번호를 이 기기에 저장했으나, 대신 Google 계정에 저장해도 됩니다. 그렇게 하면 로그인한 상태에서 Google 계정에 저장된 모든 비밀번호를 사용할 수도 있습니다.</translation>
 <translation id="3752253558646317685">지문을 저장하려면 자녀가 손가락을 계속 들고 있게 하세요.</translation>
@@ -3119,6 +3134,7 @@
 <translation id="4165942112764990069"><ph name="USER_EMAIL" />님이 유효한 조직에 속해 있지 않습니다. 관리자에게 문의하세요. 관리자인 경우 g.co/ChromeEnterpriseAccount를 방문하여 조직을 설정할 수 있습니다.</translation>
 <translation id="4167686856635546851">사이트에서는 일반적으로 비디오 게임 또는 웹 양식과 같은 대화형 기능을 실행하는 데 자바스크립트를 사용합니다.</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" />의 설정 중 일부가 나와 공유됩니다. 이러한 설정은 멀티 로그인을 사용하는 경우에만 계정에 적용됩니다.</translation>
+<translation id="4168651806173792090"><ph name="NETWORK_NAME" />(마지막 4자리: <ph name="LAST_FOUR_DIGITS" />)</translation>
 <translation id="4169535189173047238">허용 안함</translation>
 <translation id="4170314459383239649">종료 시 삭제</translation>
 <translation id="417096670996204801">프로필 선택</translation>
@@ -3207,6 +3223,7 @@
 <translation id="4279129444466079448">이 기기에 최대 <ph name="PROFILE_LIMIT" />개의 eSIM 프로필을 설치할 수 있습니다. 다른 프로필을 추가하려면 먼저 기존 프로필을 삭제하세요.</translation>
 <translation id="4281844954008187215">서비스 약관</translation>
 <translation id="4282196459431406533">Smart Lock이 사용 설정됨</translation>
+<translation id="4284755288573763878">강력한 보안 기능을 사용 중지하시겠습니까?</translation>
 <translation id="4285418559658561636">비밀번호 업데이트</translation>
 <translation id="4285498937028063278">고정 해제</translation>
 <translation id="428565720843367874">파일을 검사하는 동안 바이러스 백신 소프트웨어에 예기치 않은 오류가 발생했습니다.</translation>
@@ -3348,6 +3365,7 @@
 <translation id="4432621511648257259">비밀번호가 잘못됨</translation>
 <translation id="443454694385851356">이전(안전하지 않음)</translation>
 <translation id="443475966875174318">호환되지 않는 애플리케이션 업데이트 또는 삭제</translation>
+<translation id="4435634292635092844"><ph name="DEVICE_TYPE" />에서 휴대전화의 카메라 롤 사진을 확인하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4438043733494739848">투명</translation>
 <translation id="4440097423000553826"><ph name="WEBSITE" />에서 휴대전화로 알림을 보냈습니다. 본인 인증을 하려면 "<ph name="NOTIFICATIONTITLE" />" 알림을 탭하고 단계를 따르세요.</translation>
 <translation id="4441124369922430666">컴퓨터를 켤 때 이 앱을 자동으로 시작하시겠습니까?</translation>
@@ -3644,6 +3662,7 @@
 <translation id="4759238208242260848">다운로드</translation>
 <translation id="4761104368405085019">마이크 사용</translation>
 <translation id="4762718786438001384">기기에 디스크 저장 공간 매우 부족</translation>
+<translation id="4762898026821161650">기기 <ph name="DEVICE_COUNT" />대 중 <ph name="DEVICE_INDEX" />번째, 이름이 <ph name="DEVICE_NAME" />인 컴퓨터</translation>
 <translation id="4763408175235639573">페이지를 열었을 때 다음 쿠키가 설정됨</translation>
 <translation id="4765582662863429759">Android 메시지가 휴대전화의 문자 메시지를 Chromebook으로 전달하도록 허용합니다.</translation>
 <translation id="4768332406694066911">다음 기관에 사용자의 신원을 확인하는 인증서가 있습니다.</translation>
@@ -4605,6 +4624,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">완료</translation>
 <translation id="5790651917470750848">포트 전달이 이미 존재합니다.</translation>
+<translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" />의 작업 더보기</translation>
 <translation id="5792728279623964091">전원 버튼을 탭하세요.</translation>
 <translation id="5793339252089865437">모바일 네트워크를 통해 업데이트를 다운로드하면 요금이 과도하게 부과될 수 있습니다.</translation>
 <translation id="5794034487966529952"><ph name="DESK_TITLE" /> 데스크에 브라우저 창 <ph name="NUM_BROWSERS" />개가 열려 있음</translation>
@@ -4679,6 +4699,7 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> 앱이 곧 일시중지됨</translation>
 <translation id="586567932979200359">디스크 이미지에서 <ph name="PRODUCT_NAME" />을(를) 실행 중입니다. 컴퓨터에 설치하면 디스크 이미지가 없어도 실행이 가능하며 최신 상태로 유지됩니다.</translation>
 <translation id="5865733239029070421">사용 통계 및 비정상 종료 보고서를 Google로 자동 전송</translation>
+<translation id="5865848066829891215">네트워크 통신 문제가 있습니다.</translation>
 <translation id="5867841422488265304">웹 주소 검색 또는 입력</translation>
 <translation id="5869029295770560994">확인</translation>
 <translation id="5869522115854928033">저장된 비밀번호</translation>
@@ -5160,6 +5181,7 @@
 <translation id="6374469231428023295">다시 시도</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' 검색결과 1개</translation>
 <translation id="6380143666419481200">동의 및 계속</translation>
+<translation id="6382616130475191723"><ph name="SITE_NAME" /> 사이트를 읽고 변경할 수 있도록 허용됨</translation>
 <translation id="6382958439467370461">비활성 바로가기 없음</translation>
 <translation id="638418309848716977">지원되는 링크</translation>
 <translation id="6384275966486438344">다음으로 검색 설정 변경: <ph name="SEARCH_HOST" /></translation>
@@ -5824,6 +5846,7 @@
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{안전 확인이 1분 전에 실행됨}other{안전 확인이 {NUM_MINS}분 전에 실행됨}}</translation>
 <translation id="7057767408836081338">앱 데이터를 가져올 수 없지만 무시하고 앱 실행을 시도 중입니다.</translation>
 <translation id="7058024590501568315">숨겨진 네트워크</translation>
+<translation id="70582545822664495">기기 <ph name="DEVICE_COUNT" />대 중 <ph name="DEVICE_INDEX" />번째, 이름이 <ph name="DEVICE_NAME" />인 마우스</translation>
 <translation id="7059858479264779982">자동 실행 설정</translation>
 <translation id="7062222374113411376">최근에 닫은 사이트에서 데이터 전송 및 수신을 완료하도록 허용(권장)</translation>
 <translation id="7063129466199351735">바로가기 처리 중...</translation>
@@ -5972,6 +5995,7 @@
 <translation id="7243784282103630670">Linux를 업그레이드하는 중에 오류가 발생했습니다. 백업을 사용해 컨테이너를 복원합니다.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" />x<ph name="HEIGHT" />(최고)</translation>
 <translation id="7246230585855757313">보안 키를 다시 삽입하고 한번 더 시도해 보세요.</translation>
+<translation id="7249197363678284330">주소 표시줄에서 이 설정을 변경하세요.</translation>
 <translation id="7250616558727237648">공유하려는 기기가 응답하지 않습니다. 다시 시도해 주세요.</translation>
 <translation id="725109152065019550">관리자가 계정에서 외부 저장소를 사용 중지했습니다.</translation>
 <translation id="7251346854160851420">기본 배경화면</translation>
@@ -5987,6 +6011,7 @@
 <translation id="7257173066616499747">Wi-Fi 네트워크</translation>
 <translation id="725758059478686223">인쇄 서비스</translation>
 <translation id="7257666756905341374">복사하여 붙여넣은 데이터 조회</translation>
+<translation id="7258006747130724016">기기 <ph name="DEVICE_COUNT" />대 중 <ph name="DEVICE_INDEX" />번째, 이름이 <ph name="DEVICE_NAME" />인 비디오 카메라</translation>
 <translation id="7258192266780953209">Transformations(변환)</translation>
 <translation id="7258225044283673131">애플리케이션이 응답하지 않습니다. '강제 종료'를 선택하여 앱을 닫으세요.</translation>
 <translation id="7262004276116528033">이 로그인 서비스는 <ph name="SAML_DOMAIN" />에서 호스팅됩니다.</translation>
@@ -6783,6 +6808,7 @@
 <translation id="8037117027592400564">음성 출력 기능을 사용한 모든 음성 텍스트 조회</translation>
 <translation id="8037357227543935929">요청(기본값)</translation>
 <translation id="803771048473350947">파일</translation>
+<translation id="8038399858950372766">기기 <ph name="DEVICE_COUNT" />대 중 <ph name="DEVICE_INDEX" />번째, 이름이 <ph name="DEVICE_NAME" />인 키보드</translation>
 <translation id="8041089156583427627">의견 보내기</translation>
 <translation id="8042142357103597104">텍스트 불투명도</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" />이(가) 응답하지 않음</translation>
@@ -6992,11 +7018,13 @@
 <translation id="8244514732452879619">곧 잘 시간입니다</translation>
 <translation id="8246776524656196770">개인 식별 번호(PIN)를 사용해 보안 키를 보호합니다.</translation>
 <translation id="8248050856337841185">붙여넣기(&amp;P)</translation>
+<translation id="8248381369318572865">마이크에 액세스하여 음성을 분석합니다.</translation>
 <translation id="8248887045858762645">Chrome 도움말</translation>
 <translation id="8249048954461686687">OEM 폴더</translation>
 <translation id="8249615410597138718">기기로 전송</translation>
 <translation id="8249672078237421304">이 언어로 된 페이지에 대한 번역 옵션 제공</translation>
 <translation id="8251441930213048644">지금 새로고침</translation>
+<translation id="8251509999076836464"><ph name="DEVICE_NAME" /> 기기와 페어링 중</translation>
 <translation id="8251578425305135684">미리보기 이미지가 삭제되었습니다.</translation>
 <translation id="825238165904109940">항상 전체 URL 표시</translation>
 <translation id="8252569384384439529">업로드 중...</translation>
@@ -7012,6 +7040,7 @@
 <translation id="8264024885325823677">관리자가 관리하는 설정입니다.</translation>
 <translation id="8264718194193514834"><ph name="EXTENSION_NAME" />에서 전체 화면을 실행합니다.</translation>
 <translation id="826511437356419340">창 개요 모드를 시작했습니다. 이동하려면 스와이프하거나 키보드를 사용하는 경우에는 Tab 키를 누르세요.</translation>
+<translation id="8265671588726449108">{COUNT,plural, =1{다시 실행한 후 시크릿 창이 열리지 않습니다.}other{다시 실행한 후 시크릿 창 {COUNT}개가 다시 열리지 않습니다.}}</translation>
 <translation id="8266947622852630193">모든 입력 방법</translation>
 <translation id="8267539814046467575">프린터 추가</translation>
 <translation id="8267961145111171918"><ph name="BEGIN_PARAGRAPH1" />기기 및 기기 사용 방식(예: 배터리 잔량, 시스템 및 앱 활동, 오류)에 관한 일반 정보입니다. 이 데이터는 Android를 개선하는 데 사용되며, 집계된 일부 정보는 Android 개발자 등의 Google 앱 및 파트너가 앱과 제품을 개선하는 데도 사용됩니다.<ph name="END_PARAGRAPH1" />
@@ -7726,6 +7755,7 @@
 <translation id="9026731007018893674">다운로드</translation>
 <translation id="9026852570893462412">이 과정은 몇 분 정도 걸릴 수 있습니다. 가상 머신을 다운로드합니다.</translation>
 <translation id="9027459031423301635">새 탭에서 링크 열기(&amp;T)</translation>
+<translation id="9029667986262585240">계정에서 향상된 세이프 브라우징을 사용 중지했습니다.</translation>
 <translation id="9030515284705930323">조직에서 내 계정이 Google Play 스토어를 사용하도록 설정하지 않았습니다. 자세한 정보는 관리자에게 문의하세요.</translation>
 <translation id="9030754204056345429">조금 빠르게</translation>
 <translation id="9030785788945687215">Gmail</translation>

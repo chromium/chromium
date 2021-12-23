@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Nakikipag-ugnayan sa Google. Maaari itong umabot nang isang minuto…</translation>
 <translation id="1416550906796893042">Bersyon ng application</translation>
 <translation id="1430915738399379752">I-print</translation>
+<translation id="1436784010935106834">Inalis</translation>
 <translation id="1448440926884431741">Ayusin ang mga sinusubaybayan mong produkto sa Mga Bookmark</translation>
 <translation id="1450753235335490080">Hindi maibahagi ang <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Piliin ang wika ng Chrome</translation>
@@ -203,7 +204,6 @@ Mag-tap ng anumang salita para maghanap. Para pinuhin ang iyong paghahanap, pind
 <translation id="2172905120685242547">Isara ang window?</translation>
 <translation id="2175927920773552910">QR Code</translation>
 <translation id="218608176142494674">Pagbabahagi</translation>
-<translation id="2195339740518523951">Kunin ang pinakamahusay na seguridad ng Chrome</translation>
 <translation id="2200113223741723867">Pamahalaan ang pagbabahagi ng data ng paggamit</translation>
 <translation id="2218567645332692482">I-upgrade ang mga navigation sa HTTPS at para mabalaan ka bago mag-load ang mga site na hindi sumusuporta rito</translation>
 <translation id="2227444325776770048">Magpatuloy bilang si <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="4170011742729630528">Hindi available ang serbisyo; subukang muli sa ibang pagkakataon.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ang nagamit</translation>
 <translation id="4181841719683918333">Mga Wika</translation>
-<translation id="4183868528246477015">Hanapin gamit ang Google Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Buksan sa bagong tab</translation>
 <translation id="4196597275619698563">Gumawa ng card</translation>
 <translation id="4198423547019359126">Walang available na lokasyon ng pag-download</translation>
@@ -577,7 +576,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="4411535500181276704">Lite mode</translation>
 <translation id="4415276339145661267">Pamahalaan ang iyong Google Account</translation>
 <translation id="4425140285732600465">Sinusubaybayan ang presyo. Makatanggap ng mga alerto kapag bumaba ang presyo sa alinmang site.</translation>
-<translation id="4427306783828095590">Mas maraming magagawa ang pinahusay na proteksyon para mag-block ng phishing and malware</translation>
 <translation id="4450672886426705087">Mga resulta ng paghahanap mula sa Google.</translation>
 <translation id="4452411734226507615">Isara ang tab na <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Na-bookmark sa <ph name="FOLDER_NAME" /></translation>
@@ -1082,6 +1080,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7177466738963138057">Maaari mo itong baguhin sa ibang pagkakataon sa Mga Setting</translation>
 <translation id="7177873915659574692">Hindi makagawa ng QR Code. Mahigit sa <ph name="CHARACTER_LIMIT" /> (na) character ang URL.</translation>
 <translation id="7180611975245234373">I-refresh</translation>
+<translation id="718226107353899806">Puwede kang magdagdag ng hanggang <ph name="MAX_NUM_REACTIONS" /> (na) reaksyon</translation>
 <translation id="7187993566681480880">Pinapanatili kang ligtas sa Chrome at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka.</translation>
 <translation id="718926126787620637">Listahan ng mga folder ng bookmark na binuksan nang buo ang taas</translation>
 <translation id="7191430249889272776">Binuksan ang tab sa background.</translation>
@@ -1245,7 +1244,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8035133914807600019">Bagong folder…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> (na) araw na lang ang natitira</translation>
 <translation id="8037801708772278989">Kakasuri lang</translation>
-<translation id="8040831032425909005">Icon ng Search Widget para sa Mabilisang Pagkilos</translation>
 <translation id="804335162455518893">Hindi nakita ang SD card</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab na incognito}one{<ph name="TAB_COUNT_NORMAL" /> tab na incognito}other{<ph name="TAB_COUNT_NORMAL" /> na tab na incognito}}</translation>
 <translation id="8051695050440594747">Available ang <ph name="MEGABYTES" /> MB</translation>

@@ -131,6 +131,7 @@
 <translation id="1768366657309696705">Клавишната комбинация <ph name="LAUNCHER_KEY_NAME" /> + точка се промени. За да използвате клавиша Insert, натиснете клавиша <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Преместено на ред <ph name="ROW_NUMBER" />, колона <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Превъртане надясно</translation>
+<translation id="1774796056689732716">Календар, текущата дата е <ph name="CURRENT_MONTH_YEAR" />, а понастоящем е избрана <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Изкл.</translation>
 <translation id="1804572139604454141">Записът завърши, тъй като мястото на диска е критично малко</translation>
 <translation id="181103072419391116">Сила на сигнала <ph name="SIGNAL_STRENGTH" />, управлява се от администратора ви</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">Стартиране на надписите</translation>
 <translation id="5078796286268621944">Неправилен ПИН</translation>
 <translation id="5083553833479578423">Отключете още функции на Асистент.</translation>
+<translation id="5090752371472782287">Предаване към устройство от <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Персонализиране</translation>
 <translation id="5117590920725113268">Показване на следващия месец</translation>
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">Налице са устройства Cast</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="5176318573511391780">Записване на част от екрана</translation>
+<translation id="5198413532174090167"><ph name="NUMBER" /> събития на <ph name="DATE" /></translation>
 <translation id="5198715732953550718">Приложението <ph name="MOVED_APP_NAME" /> бе комбинирано със <ph name="IN_PLACE_APP" /> и бе създадена нова папка.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Още 1 известие}other{Още # известия}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">Всичко е готово</translation>
 <translation id="6431865393913628856">Записване на екрана</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> се предава към „<ph name="RECEIVER_NAME" />“</translation>
+<translation id="6447111710783417522"><ph name="NUMBER" /> събитие на <ph name="DATE" /></translation>
 <translation id="6452181791372256707">Отхвърляне</translation>
 <translation id="6453179446719226835">Езикът е променен</translation>
 <translation id="6459472438155181876">Екранът се разширява на „<ph name="DISPLAY_NAME" />“</translation>
@@ -865,6 +869,7 @@
 <translation id="6811454077060061666">Google Диск за компютри не е налице</translation>
 <translation id="6818242057446442178">Придвижване назад с една дума</translation>
 <translation id="6820676911989879663">Време е за почивка!</translation>
+<translation id="6827049576281411231">Затваряне на панела за събития</translation>
 <translation id="6836499262298959512">Опасен файл</translation>
 <translation id="6837064795450991317">Скриване на лентата с работни кътове</translation>
 <translation id="6852052252232534364">Кликнете за активиране</translation>
@@ -872,6 +877,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Остава една цифра}other{Остават # цифри}}</translation>
 <translation id="6867938213751067702">Изтеглянето на <ph name="FILENAME" /> е на пауза</translation>
 <translation id="6878400149835617132">Прекият път е изключен</translation>
+<translation id="6884665277231944629">Към днешната дата</translation>
 <translation id="6886172995547742638">Възможно е вашият <ph name="DEVICE_TYPE" /> да работи с намалена производителност. Използвайте сертифициран захранващ адаптер с USB-C и мощност от <ph name="PREFERRED_MINIMUM_POWER" /> W или повече.</translation>
 <translation id="688631446150864480">Натиснете клавиша със стрелка за надолу, за да превключите прозорците</translation>
 <translation id="6896758677409633944">Копиране</translation>
@@ -958,6 +964,7 @@
 <translation id="7497767806359279797">Избор на език и клавиатура</translation>
 <translation id="7509246181739783082">Потвърждаване на самоличността ви</translation>
 <translation id="7513622367902644023">Избран е режимът за екранна снимка</translation>
+<translation id="7513922695575567867">Календар, седмицата на <ph name="DATE" />, понастоящем е избрана датата <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="7526573455193969409">Мрежата може да е под наблюдение</translation>
 <translation id="7536035074519304529">IP адрес: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@
 <translation id="7564874036684306347">Преместването на прозорци към друг работен плот може да предизвика неочаквано поведение. Последващите известия, прозорци и диалогови прозорци може да бъдат разделени между работните плотове.</translation>
 <translation id="7569509451529460200">Активирахте функцията за брайлово писмо и ChromeVox</translation>
 <translation id="7569983096843329377">черно</translation>
+<translation id="757941033127302446">Влезли сте в профила си</translation>
 <translation id="7579778809502851308">Заснемане на екрана</translation>
 <translation id="7590883480672980941">Настройки за въвеждане</translation>
 <translation id="7593891976182323525">„търсене“ или „Shift“</translation>
@@ -1040,6 +1048,7 @@
 <translation id="8035152190676905274">Писалка</translation>
 <translation id="8036504271468642248">Предишно изречение</translation>
 <translation id="8042893070933512245">Отваряне на менюто с настройки за достъпност</translation>
+<translation id="8042925093898452104">Затваряне на подробната информация</translation>
 <translation id="8048123526339889627">Настройки за Bluetooth</translation>
 <translation id="8051716679295756675">Вече съществува шаблон с името „<ph name="DESK_TEMPLATE_NAME" />“</translation>
 <translation id="8052898407431791827">Копирано в буферната памет</translation>

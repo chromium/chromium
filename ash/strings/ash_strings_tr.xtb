@@ -131,6 +131,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Nokta klavye kısayolu değişti. Insert tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> tuşu + Üst Karakter + Geri Tuşu'na basın.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />. satır, <ph name="COLUMN_NUMBER" />. sütuna taşındı.</translation>
 <translation id="1771761307086386028">Sağa kaydır</translation>
+<translation id="1774796056689732716">Takvim, <ph name="CURRENT_MONTH_YEAR" />, şu anda <ph name="DATE" /> seçili.</translation>
 <translation id="1787955149152357925">Kapalı</translation>
 <translation id="1804572139604454141">Diskte boş alan kritik düzeyde olduğundan kayıt sonlandırıldı</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor</translation>
@@ -620,6 +621,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5075554201838155866">Altyazıları başlat</translation>
 <translation id="5078796286268621944">Yanlış PIN</translation>
 <translation id="5083553833479578423">Diğer Asistan özelliklerinin kilidini açın.</translation>
+<translation id="5090752371472782287">Bir <ph name="MANAGER" /> adlı cihaza yayınla</translation>
 <translation id="5106223312672646208">Kişiselleştir</translation>
 <translation id="5117590920725113268">Sonraki ayı göster</translation>
 <translation id="5136175204352732067">Farklı klavye bağlandı</translation>
@@ -629,6 +631,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5168181903108465623">Yayın cihazları kullanılabilir</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="5176318573511391780">Kısmi ekranı kaydet</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> etkinlik</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> ile <ph name="IN_PLACE_APP" /> birleştirilerek yeni bir klasör oluşturuldu.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 diğer bildirim}other{# diğer bildirim}}</translation>
@@ -803,6 +806,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="643147933154517414">Tümü bitti</translation>
 <translation id="6431865393913628856">Ekran kaydı</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> adlı alıcıya <ph name="ROUTE_TITLE" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> etkinlik</translation>
 <translation id="6452181791372256707">Reddet</translation>
 <translation id="6453179446719226835">Dil değiştirildi</translation>
 <translation id="6459472438155181876">Ekran şuraya genişletiliyor: <ph name="DISPLAY_NAME" /></translation>
@@ -866,6 +870,7 @@ Yeni yüklenmiş</translation>
 <translation id="6811454077060061666">Masaüstü için Google Drive kullanılamıyor</translation>
 <translation id="6818242057446442178">Kelime bazında geri git</translation>
 <translation id="6820676911989879663">Mola verin!</translation>
+<translation id="6827049576281411231">Etkinlik panelini kapatın</translation>
 <translation id="6836499262298959512">Tehlikeli dosya</translation>
 <translation id="6837064795450991317">Masa çubuğunu gizle</translation>
 <translation id="6852052252232534364">Etkinleştirmek için tıklayın</translation>
@@ -873,6 +878,7 @@ Yeni yüklenmiş</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bir rakam kaldı}other{# rakam kaldı}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> dosyasını indirme işlemi duraklatıldı</translation>
 <translation id="6878400149835617132">Kısayol kapalı</translation>
+<translation id="6884665277231944629">Bugüne geri dönün</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> cihazınız daha düşük performans gösterebilir. <ph name="PREFERRED_MINIMUM_POWER" /> W veya daha güçlü ve uyumlu bir USB-C güç adaptörü kullanın.</translation>
 <translation id="688631446150864480">Pencereler arasında geçiş yapmak için Aşağı ok tuşuna basın</translation>
 <translation id="6896758677409633944">Kopyala</translation>
@@ -959,6 +965,7 @@ Yeni yüklenmiş</translation>
 <translation id="7497767806359279797">Dil ve klavye seçin</translation>
 <translation id="7509246181739783082">Kimliğinizi doğrulayın</translation>
 <translation id="7513622367902644023">Ekran görüntüsü modu seçildi</translation>
+<translation id="7513922695575567867">Takvim, <ph name="DATE" /> haftası, şu anda <ph name="SELECTED_DATE" /> seçili.</translation>
 <translation id="7514365320538308">İndir</translation>
 <translation id="7526573455193969409">Ağ trafiği izleniyor olabilir</translation>
 <translation id="7536035074519304529">IP adresi: <ph name="ADDRESS" /></translation>
@@ -968,6 +975,7 @@ Yeni yüklenmiş</translation>
 <translation id="7564874036684306347">Pencereleri başka bir masaüstüne taşımak, beklenmeyen davranışlara neden olabilir. Pencereler taşındıktan sonra gelen bildirimler, pencereler ve iletişim kutuları masaüstleri arasında bölünebilir.</translation>
 <translation id="7569509451529460200">Braille ve ChromeVox etkinleştirildi</translation>
 <translation id="7569983096843329377">Siyah</translation>
+<translation id="757941033127302446">Oturum açıldı</translation>
 <translation id="7579778809502851308">Ekran görüntüsü</translation>
 <translation id="7590883480672980941">Giriş ayarları</translation>
 <translation id="7593891976182323525">Arama veya Üst Karakter</translation>
@@ -1041,6 +1049,7 @@ Yeni yüklenmiş</translation>
 <translation id="8035152190676905274">Kalem</translation>
 <translation id="8036504271468642248">Önceki cümle</translation>
 <translation id="8042893070933512245">Erişilebilirlik ayarları menüsünü aç</translation>
+<translation id="8042925093898452104">Ayrıntılı bilgiyi kapat</translation>
 <translation id="8048123526339889627">Bluetooth Ayarları</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> adlı şablon zaten var</translation>
 <translation id="8052898407431791827">Panoya kopyalandı</translation>

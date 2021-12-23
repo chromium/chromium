@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">Добавяне към списъка за четене</translation>
 <translation id="3157684681743766797">Означаване на всички…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Имате възможност да използвате запазените си пароли и на другите си устройства.</translation>
 <translation id="3175081911749765310">Уеб услуги</translation>
 <translation id="3178650076442119961">Активно днес</translation>
 <translation id="3181825792072797598">Включване на синхронизирането</translation>
@@ -328,6 +329,7 @@
 <translation id="4042870976416480368">Търсене в страницата</translation>
 <translation id="4049507953662678203">Уверете се, че сте свързани с мрежа, и опитайте отново.</translation>
 <translation id="408404951701638773">До лентата за търсене вече се стига по-лесно</translation>
+<translation id="4108314971463891922">Следване</translation>
 <translation id="411254640334432676">Изтеглянето не бе успешно.</translation>
 <translation id="4112644173421521737">Търсене</translation>
 <translation id="4113030288477039509">Управлява се от администратора ви</translation>
@@ -345,6 +347,7 @@
 <translation id="4272631900155121838">За да сканирате код за бърза реакция, активирайте камерата от настройките</translation>
 <translation id="4277990410970811858">Безопасно сърфиране</translation>
 <translation id="4281844954008187215">Условия за ползване</translation>
+<translation id="4304713468139749426">Мениджър на паролите</translation>
 <translation id="430793432425771671">Синхронизиране на всичко</translation>
 <translation id="4309403553630140242">Докоснете два пъти за повече информация</translation>
 <translation id="430967081421617822">За цялото време</translation>
@@ -356,6 +359,7 @@
 <translation id="4389019817280890563">Докоснете за смяна на езика.</translation>
 <translation id="4442550905108052454">Отворете <ph name="BEGIN_BOLD" />настройките<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Добавяне на език</translation>
+<translation id="4462491365653392320">Проследяване на цените в разделите</translation>
 <translation id="4469418912670346607">Продължаване с настройването</translation>
 <translation id="4474494258097106883">Създаден за вашия iPhone</translation>
 <translation id="4476574785019001431">Настройки</translation>
@@ -419,6 +423,7 @@
 <translation id="4944543191714094452">Търсене в страницата…</translation>
 <translation id="4945756290001680296">Достъп до настройките за паролите</translation>
 <translation id="4979397965658815378">Влезте с профила си в Google, за да получите своите отметки, пароли, история и други настройки на всичките си устройства</translation>
+<translation id="4986678885919050584">Премахване от това устройство</translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>
 <translation id="5017828934289857214">Напомняне по-късно</translation>
 <translation id="5037676449506322593">Избиране на всички</translation>
@@ -520,6 +525,7 @@
 <translation id="5979837087407522202">Търсене в паролите</translation>
 <translation id="5982717868370722439">Добавяне на съществуващите данни към <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Наскоро посетени</translation>
+<translation id="5988097621740394599">Преглед на пониженията на цените в разделите ви.</translation>
 <translation id="5988851877894965432">Отваряне на URL адреси в Chrome</translation>
 <translation id="6012140227487808125">Шифрова се…</translation>
 <translation id="6021332621416007159">Отваряне във...</translation>
@@ -540,6 +546,7 @@
 <translation id="6127379762771434464">Елементът бе премахнат</translation>
 <translation id="6136914049981179737">Току-що</translation>
 <translation id="6144589619057374135">Отваряне на ${url} в режим „инкогнито“</translation>
+<translation id="6149061208933997199">Ползване на паролата</translation>
 <translation id="6159839020698489198">незадължително</translation>
 <translation id="6177442314419606057">Търсене в Chrome</translation>
 <translation id="6184086493125982861">Показване на разделите</translation>
@@ -764,6 +771,7 @@
 <translation id="8076014560081431679">Запазените настройки за сайтове няма да бъдат изтрити и може да отразяват навиците ви при сърфиране. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Тази настройка се управлява. За повече информация докоснете два пъти</translation>
 <translation id="8080028325999236607">Затваряне на разделите</translation>
+<translation id="8101409298456377967">Създавайте, запазвайте и управлявайте паролите си, така че лесно да можете да влизате в сайтовете и приложенията. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Изключване</translation>
 <translation id="8114753159095730575">Наличен е файл за изтегляне. Съответните опции са достъпни в долната част на екрана.</translation>
 <translation id="8132598642024322408">Сега цената е <ph name="PRICE" />, беше <ph name="PREVIOUS_PRICE" />.</translation>

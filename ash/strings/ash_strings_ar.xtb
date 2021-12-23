@@ -132,6 +132,7 @@
 <translation id="1768366657309696705">‏تم تغيير اختصار لوحة المفاتيح <ph name="LAUNCHER_KEY_NAME" /> + مفتاح Period. لاستخدام مفتاح Insert، اضغط على مفتاح <ph name="LAUNCHER_KEY_NAME" /> + Shift + مفتاح Backspace.</translation>
 <translation id="1770726142253415363">تم النقل إلى الصف رقم <ph name="ROW_NUMBER" />، العمود رقم <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">التمرير لليمين</translation>
+<translation id="1774796056689732716">التقويم، <ph name="CURRENT_MONTH_YEAR" />، التاريخ المُحدّد حاليًا هو <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">غير مُفعَّل</translation>
 <translation id="1804572139604454141">تم إنهاء التسجيل نتيجة لانخفاض مساحة القرص.</translation>
 <translation id="181103072419391116">قوة الإشارة <ph name="SIGNAL_STRENGTH" />، يديرها المشرف</translation>
@@ -621,6 +622,7 @@
 <translation id="5075554201838155866">تفعيل الترجمة والشرح</translation>
 <translation id="5078796286268621944">رقم التعريف الشخصي غير صحيح</translation>
 <translation id="5083553833479578423">‏الاستفادة من المزيد من ميزات "مساعد Google"</translation>
+<translation id="5090752371472782287">البث على أحد أجهزة <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">تخصيص</translation>
 <translation id="5117590920725113268">عرض الشهر التالي</translation>
 <translation id="5136175204352732067">تم توصيل لوحة مفاتيح مختلفة</translation>
@@ -630,6 +632,7 @@
 <translation id="5168181903108465623">أجهزة البث متاحة</translation>
 <translation id="5170568018924773124">العرض في المجلد</translation>
 <translation id="5176318573511391780">تسجيل جزء من الشاشة</translation>
+<translation id="5198413532174090167"><ph name="DATE" />، <ph name="NUMBER" /> حدث</translation>
 <translation id="5198715732953550718">تم جمع <ph name="MOVED_APP_NAME" /> مع <ph name="IN_PLACE_APP" /> لإنشاء مجلد جديد.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />، <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />، <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{إشعار واحد آخر}zero{# إشعار آخر}two{إشعاران آخران}few{# إشعارات أخرى}many{# إشعارًا آخر}other{# إشعار آخر}}</translation>
@@ -803,6 +806,7 @@
 <translation id="643147933154517414">ليس لديك أي إشعارات</translation>
 <translation id="6431865393913628856">تسجيل الشاشة</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> في <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />، حدث واحد (<ph name="NUMBER" />)</translation>
 <translation id="6452181791372256707">رفض</translation>
 <translation id="6453179446719226835">تم تغيير اللغة</translation>
 <translation id="6459472438155181876">تمديد الشاشة إلى <ph name="DISPLAY_NAME" /></translation>
@@ -866,6 +870,7 @@
 <translation id="6811454077060061666">‏لا يتوفّر Google Drive للكمبيوتر المكتبي.</translation>
 <translation id="6818242057446442178">الرجوع بمقدار كلمة واحدة</translation>
 <translation id="6820676911989879663">حان وقت الاستراحة</translation>
+<translation id="6827049576281411231">إغلاق لوحة الأحداث</translation>
 <translation id="6836499262298959512">ملف ضار</translation>
 <translation id="6837064795450991317">إخفاء شريط سطح المكتب</translation>
 <translation id="6852052252232534364">انقر للتفعيل.</translation>
@@ -873,6 +878,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{يتبقى رقم واحد}zero{يتبقى # رقم}two{يتبقى رقمان}few{يتبقى # أرقام}many{يتبقى # رقمًا}other{يتبقى # رقم}}</translation>
 <translation id="6867938213751067702">تم إيقاف تنزيل <ph name="FILENAME" /> مؤقتًا.</translation>
 <translation id="6878400149835617132">تم إيقاف الاختصار</translation>
+<translation id="6884665277231944629">العودة إلى تاريخ اليوم</translation>
 <translation id="6886172995547742638">‏قد يواجه جهاز <ph name="DEVICE_TYPE" /> انخفاضًا في الأداء. يمكنك استخدام محوِّل طاقة متوافق بقدرة <ph name="PREFERRED_MINIMUM_POWER" /> واط أو محوِّل طاقة USB-C بقدرة أعلى.</translation>
 <translation id="688631446150864480">اضغط على مفتاح السهم المتّجه للأسفل للتبديل بين النوافذ.</translation>
 <translation id="6896758677409633944">نسخ</translation>
@@ -959,6 +965,7 @@
 <translation id="7497767806359279797">اختيار اللغة ولوحة المفاتيح</translation>
 <translation id="7509246181739783082">إثبات هويتك</translation>
 <translation id="7513622367902644023">تم اختيار وضع لقطة الشاشة.</translation>
+<translation id="7513922695575567867">التقويم، الأسبوع الذي يبدأ من <ph name="DATE" />، التاريخ المُحدّد حاليًا هو <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">تنزيل</translation>
 <translation id="7526573455193969409">قد تكون الشبكة خاضعة للمراقبة</translation>
 <translation id="7536035074519304529">‏عنوان IP: ‏<ph name="ADDRESS" /></translation>
@@ -968,6 +975,7 @@
 <translation id="7564874036684306347">قد ينتج عن نقل النوافذ إلى سطح مكتب آخر سلوك غير متوقع. من الممكن أن يتم تقسيم مربعات الحوار والنوافذ والإشعارات المتتالية بين سطحَي المكتب.</translation>
 <translation id="7569509451529460200">‏تم تفعيل Braille وChromeVox</translation>
 <translation id="7569983096843329377">أسود</translation>
+<translation id="757941033127302446">تم تسجيل الدخول</translation>
 <translation id="7579778809502851308">لقطة الشاشة</translation>
 <translation id="7590883480672980941">إعدادات الإدخال</translation>
 <translation id="7593891976182323525">‏مفتاح البحث أو Shift</translation>
@@ -1041,6 +1049,7 @@
 <translation id="8035152190676905274">قلم</translation>
 <translation id="8036504271468642248">الجملة السابقة</translation>
 <translation id="8042893070933512245">فتح قائمة إعدادات "أدوات تمكين الوصول"</translation>
+<translation id="8042925093898452104">إغلاق المعلومات التفصيلية</translation>
 <translation id="8048123526339889627">إعدادات البلوتوث</translation>
 <translation id="8051716679295756675">سبق وأن تم إدخال نموذج باسم <ph name="DESK_TEMPLATE_NAME" />.</translation>
 <translation id="8052898407431791827">تمّ النسخ إلى الحافظة.</translation>

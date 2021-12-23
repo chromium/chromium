@@ -112,6 +112,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="1308113895091915999">Angebot verfügbar</translation>
 <translation id="1312803275555673949">Welche Hinweise unterstützen dies?</translation>
 <translation id="131405271941274527"><ph name="URL" /> möchte Informationen senden und empfangen, wenn Sie Ihr Smartphone an NFC-Geräte halten</translation>
+<translation id="1314311879718644478">Augmented-Reality-Inhalte anzeigen</translation>
 <translation id="1314509827145471431">Bindung rechts</translation>
 <translation id="1318023360584041678">In Tabgruppe gespeichert</translation>
 <translation id="1319245136674974084">Für diese App nicht mehr nachfragen</translation>
@@ -215,6 +216,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="1583429793053364125">Fehler beim Anzeigen dieser Webseite.</translation>
 <translation id="1586541204584340881">Welche Erweiterungen Sie installiert haben</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1589050138437146318">ARCore installieren?</translation>
 <translation id="1592005682883173041">Zugriff auf lokale Daten</translation>
 <translation id="1594030484168838125">Auswählen</translation>
 <translation id="160851722280695521">Chrome Dino in Chrome spielen</translation>
@@ -1381,6 +1383,7 @@ Sie werden sonst gemäß Ihren Datenschutzeinstellungen blockiert. Wenn Cookies 
 <translation id="5333022057423422993">Chrome hat das Passwort, das Sie gerade verwendet haben, in einer Datenpanne gefunden. Wir empfehlen Ihnen, Ihre gespeicherten Passwörter zu prüfen, um Ihre Konten besser zu schützen.</translation>
 <translation id="5334013548165032829">Detaillierte Systemprotokolle</translation>
 <translation id="5334145288572353250">Adresse speichern?</translation>
+<translation id="5335920952954443287">Schlagendes Herz</translation>
 <translation id="5340250774223869109">Die App ist blockiert</translation>
 <translation id="534295439873310000">NFC-Geräte</translation>
 <translation id="5344579389779391559">Auf dieser Seite wird möglicherweise versucht, Ihnen etwas in Rechnung zu stellen</translation>
@@ -2053,6 +2056,7 @@ Weitere Details:
 <translation id="7654909834015434372">Wenn Sie Anmerkungen bearbeiten, wechselt das Dokument zu seiner ursprünglichen Ausrichtung zurück</translation>
 <translation id="765676359832457558">Erweiterte Einstellungen ausblenden</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
+<translation id="7659878911471462949">Freudentränen</translation>
 <translation id="7662298039739062396">Einstellung wird von einer Erweiterung gesteuert</translation>
 <translation id="7663736086183791259">Zertifikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Nicht zulässig im Inkognitomodus</translation>
@@ -2256,6 +2260,7 @@ Weitere Details:
 <translation id="830498451218851433">Zur Hälfte falten</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Installierte Apps und Häufigkeit ihrer Verwendung</translation>
+<translation id="8317207217658302555">ARCore aktualisieren?</translation>
 <translation id="831997045666694187">Abends</translation>
 <translation id="8321476692217554900">Benachrichtigungen</translation>
 <translation id="8328484624016508118">Nach dem Schließen aller Inkognitotabs löscht Chrome Folgendes:

@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">Ұсыныс қолжетімді</translation>
 <translation id="1312803275555673949">Оған қандай дәлел бар?</translation>
 <translation id="131405271941274527">NFC құрылғыңыздағы телефоныңызды түрткенде, <ph name="URL" /> ақпарат алмасуға рұқсат сұрайды.</translation>
+<translation id="1314311879718644478">Толықтырылған шындық мазмұнын көру</translation>
 <translation id="1314509827145471431">Оң жақты байлау</translation>
 <translation id="1318023360584041678">Қойынды тобында сақталған</translation>
 <translation id="1319245136674974084">Бұдан былай бұл қолданба үшін сұралмасын</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">Бұл веб-бетті көрсету кезінде қате кетті.</translation>
 <translation id="1586541204584340881">қай кеңейтімдерді орнатқаныңызды;</translation>
 <translation id="1588438908519853928">Қалыпты</translation>
+<translation id="1589050138437146318">ARCore орнатылсын ба?</translation>
 <translation id="1592005682883173041">Жергілікті деректерге кіру</translation>
 <translation id="1594030484168838125">Таңдау</translation>
 <translation id="160851722280695521">Chrome-да Dino Run ойынын ойнау</translation>
@@ -1391,6 +1393,7 @@
 <translation id="5333022057423422993">Chrome деректер қолды болған кезде пайдаланылған құпия сөзді тапты. Аккаунттарды қорғау үшін сақталған құпия сөздерді тексеруге кеңес береміз.</translation>
 <translation id="5334013548165032829">Жүйе журналдары туралы мәліметтер</translation>
 <translation id="5334145288572353250">Мекенжайды сақтау керек пе?</translation>
+<translation id="5335920952954443287">Соғып тұрған жүрек</translation>
 <translation id="5340250774223869109">Қолданба бөгелген</translation>
 <translation id="534295439873310000">NFC функциясы бар құрылғылар</translation>
 <translation id="5344579389779391559">Бетті ашсаңыз, ақы алынуы мүмкін</translation>
@@ -2063,6 +2066,7 @@
 <translation id="7654909834015434372">Аннотацияларды өзгерткенде, бұл құжат бастапқыдағыдай бұрылып тұрады.</translation>
 <translation id="765676359832457558">Қосымша параметрлерді жасыру…</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
+<translation id="7659878911471462949">Қуаныштың көз жасы</translation>
 <translation id="7662298039739062396">Кеңейтім арқылы реттелетін параметр</translation>
 <translation id="7663736086183791259">Сертификат: <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Incognito режимінде рұқсат етілмеген.</translation>
@@ -2266,6 +2270,7 @@
 <translation id="830498451218851433">Жартылай бүктеу</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Орнатылған қолданбалар және олардың пайдаланылу жиілігі</translation>
+<translation id="8317207217658302555">ARCore жаңартылсын ба?</translation>
 <translation id="831997045666694187">Кеш</translation>
 <translation id="8321476692217554900">хабарландырулар</translation>
 <translation id="8328484624016508118">Барлық инкогнито қойындыcы жабылғанда, Chrome келесілерді жояды:

@@ -131,6 +131,7 @@
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + ․ (միջակետ) ստեղնային դյուրանցումը փոփոխվել է։ Insert ստեղնն օգտագործելու համար սեղմեք <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace։</translation>
 <translation id="1770726142253415363">Տեղափոխվեց տող <ph name="ROW_NUMBER" />, սյունակ <ph name="COLUMN_NUMBER" />։</translation>
 <translation id="1771761307086386028">Ոլորել աջ</translation>
+<translation id="1774796056689732716">Օրացույց, <ph name="CURRENT_MONTH_YEAR" />, այժմ ընտրված է՝ <ph name="DATE" />։</translation>
 <translation id="1787955149152357925">Անջատված է</translation>
 <translation id="1804572139604454141">Ձայնագրումն ավարտվեց սկավառակում ոչ բավարար տարածքի պատճառով</translation>
 <translation id="181103072419391116">Ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">Ցույց տալ ենթագրերը</translation>
 <translation id="5078796286268621944">Սխալ PIN կոդ</translation>
 <translation id="5083553833479578423">Օգտվեք Օգնականի այլ գործառույթներից</translation>
+<translation id="5090752371472782287">Հեռարձակել <ph name="MANAGER" />-ի սարքին</translation>
 <translation id="5106223312672646208">Անհատականացնել</translation>
 <translation id="5117590920725113268">Ցուցադրել հաջորդ ամիսը</translation>
 <translation id="5136175204352732067">Այլ ստեղնաշար է միացվել</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">Առկա են հեռարձակման սարքեր</translation>
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
 <translation id="5176318573511391780">Տեսագրել էկրանի մի մասը</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> միջոցառում</translation>
 <translation id="5198715732953550718">Նոր պանակ ստեղծելու համար «<ph name="MOVED_APP_NAME" />» և «<ph name="IN_PLACE_APP" />» հավելվածները միավորվեցին։</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />․ <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Եվս 1 ծանուցում}one{Եվս # ծանուցում}other{Եվս # ծանուցում}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">Ամեն ինչ պատրաստ է</translation>
 <translation id="6431865393913628856">Էկրանի տեսագրում</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> ներդիրը հեռարձակվում է «<ph name="RECEIVER_NAME" />» սարքին</translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> միջոցառում</translation>
 <translation id="6452181791372256707">Մերժել</translation>
 <translation id="6453179446719226835">Լեզուն փոխվել է</translation>
 <translation id="6459472438155181876">Էկրանի ընդլայնում մինչև <ph name="DISPLAY_NAME" /></translation>
@@ -865,6 +869,7 @@
 <translation id="6811454077060061666">Google Drive-ի համակարգչային տարբերակը հասանելի չէ</translation>
 <translation id="6818242057446442178">Մեկ բառով հետ</translation>
 <translation id="6820676911989879663">Ընդմիջեք</translation>
+<translation id="6827049576281411231">Փակել միջոցառումների վահանակը</translation>
 <translation id="6836499262298959512">Վտանգավոր ֆայլ</translation>
 <translation id="6837064795450991317">Թաքցնել աշխատասեղանների տողը</translation>
 <translation id="6852052252232534364">Ակտիվացնել</translation>
@@ -872,6 +877,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Մնաց 1 թվանշան}one{Մնաց # թվանշան}other{Մնաց # թվանշան}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> ֆայլի ներբեռնումը դադարեցված է</translation>
 <translation id="6878400149835617132">Դյուրանցումն անջատված է</translation>
+<translation id="6884665277231944629">Վերադառնալ այսօրվա ամսաթվին</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> սարքի արդյունավետությունը կարող է նվազել։ Օգտագործեք հավաստագրված <ph name="PREFERRED_MINIMUM_POWER" />Վ կամ ավելի բարձր USB-C սնուցման ադապտեր։</translation>
 <translation id="688631446150864480">Մյուս պատուհան անցնելու համար սեղմեք վար սլաքը</translation>
 <translation id="6896758677409633944">Պատճենել</translation>
@@ -958,6 +964,7 @@
 <translation id="7497767806359279797">Ընտրել լեզու և ստեղնաշար</translation>
 <translation id="7509246181739783082">Հաստատեք ձեր ինքնությունը</translation>
 <translation id="7513622367902644023">Ընտրված է սքրինշոթի ռեժիմը</translation>
+<translation id="7513922695575567867">Օրացույց, <ph name="DATE" /> ամսաթվի շաբաթը, այժմ ընտրված է՝ <ph name="SELECTED_DATE" />։</translation>
 <translation id="7514365320538308">Ներբեռնել</translation>
 <translation id="7526573455193969409">Ցանցը կարող է վերահսկվել</translation>
 <translation id="7536035074519304529">IP հասցե՝ <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@
 <translation id="7564874036684306347">Պատուհանների տեղափոխումն այլ աշխատասեղան կարող է անսպասելի արդյունքներ ունենալ: Հետագա ծանուցումները, պատուհանները և երկխոսությունները կարող են տրոհվել աշխատասեղանների միջև:</translation>
 <translation id="7569509451529460200">Բրայլյան գրատիպն ու ChromeVox-ը միացված են</translation>
 <translation id="7569983096843329377">Սև</translation>
+<translation id="757941033127302446">Դուք մուտք եք գործել</translation>
 <translation id="7579778809502851308">Էկրանի լուսանկարում</translation>
 <translation id="7590883480672980941">Ներածման կարգավորումներ</translation>
 <translation id="7593891976182323525">Search կամ Shift</translation>
@@ -1040,6 +1048,7 @@
 <translation id="8035152190676905274">Գրիչ</translation>
 <translation id="8036504271468642248">Նախորդ նախադասությունը</translation>
 <translation id="8042893070933512245">Բացել հատուկ գործառույթների կարգավորումների ընտրացանկը</translation>
+<translation id="8042925093898452104">Փակել մանրամասն տեղեկությունները</translation>
 <translation id="8048123526339889627">Bluetooth-ի կարգավորումներ</translation>
 <translation id="8051716679295756675">«<ph name="DESK_TEMPLATE_NAME" />» անունով ձևանմուշ արդեն գոյություն ունի</translation>
 <translation id="8052898407431791827">Պատճենվեց սեղմատախտակին</translation>

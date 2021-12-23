@@ -131,6 +131,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1768366657309696705">Skrót klawiszowy <ph name="LAUNCHER_KEY_NAME" /> + kropka został zmieniony. Aby użyć klawisza Insert, naciśnij <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Przeniesiono do wiersza <ph name="ROW_NUMBER" />, kolumny <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Przewiń w prawo</translation>
+<translation id="1774796056689732716">Kalendarz, <ph name="CURRENT_MONTH_YEAR" />, obecnie wybrana jest data <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Wyłączono</translation>
 <translation id="1804572139604454141">Nagrywanie zostało zakończone z powodu krytycznie małej ilości miejsca na dysku</translation>
 <translation id="181103072419391116">Siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>
@@ -620,6 +621,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5075554201838155866">Włącz napisy</translation>
 <translation id="5078796286268621944">Błędny kod PIN</translation>
 <translation id="5083553833479578423">Poznaj więcej funkcji Asystenta.</translation>
+<translation id="5090752371472782287">Przesyłaj na urządzenie <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Personalizacja</translation>
 <translation id="5117590920725113268">Pokaż przyszły miesiąc</translation>
 <translation id="5136175204352732067">Podłączono inną klawiaturę</translation>
@@ -629,6 +631,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5168181903108465623">Dostępne są urządzenia przesyłające</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5176318573511391780">Nagraj fragment ekranu</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, zdarzenia: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718">Aplikacja <ph name="MOVED_APP_NAME" /> została połączona z aplikacją <ph name="IN_PLACE_APP" />, by utworzyć nowy folder.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 inne powiadomienie}few{# inne powiadomienia}many{# innych powiadomień}other{# innego powiadomienia}}</translation>
@@ -802,6 +805,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="643147933154517414">Wszystko gotowe</translation>
 <translation id="6431865393913628856">Nagrywanie ekranu</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> na urządzeniu <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> zdarzenie</translation>
 <translation id="6452181791372256707">Odrzuć</translation>
 <translation id="6453179446719226835">Język został zmieniony</translation>
 <translation id="6459472438155181876">Rozszerzanie ekranu na <ph name="DISPLAY_NAME" /></translation>
@@ -864,6 +868,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6811454077060061666">Dysk Google na komputer jest niedostępny</translation>
 <translation id="6818242057446442178">Cofnij o jedno słowo</translation>
 <translation id="6820676911989879663">Zrób sobie przerwę</translation>
+<translation id="6827049576281411231">Zamknij panel wydarzeń</translation>
 <translation id="6836499262298959512">Niebezpieczny plik</translation>
 <translation id="6837064795450991317">Ukryj pasek</translation>
 <translation id="6852052252232534364">Kliknij, by włączyć</translation>
@@ -871,6 +876,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Pozostała 1 cyfra}few{Pozostały # cyfry}many{Pozostało # cyfr}other{Pozostało # cyfry}}</translation>
 <translation id="6867938213751067702">Pobieranie wstrzymane: <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Skrót wyłączony</translation>
+<translation id="6884665277231944629">Wróć do dzisiaj</translation>
 <translation id="6886172995547742638">Twoje urządzenie <ph name="DEVICE_TYPE" /> może mieć gorszą wydajność. Używaj certyfikowanego zasilacza USB-C o mocy co najmniej <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Aby przełączać okna, naciskaj klawisz strzałki w dół</translation>
 <translation id="6896758677409633944">Kopiuj</translation>
@@ -957,6 +963,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7497767806359279797">Wybierz język i klawiaturę</translation>
 <translation id="7509246181739783082">Weryfikacja tożsamości</translation>
 <translation id="7513622367902644023">Wybrano tryb zrzutu ekranu</translation>
+<translation id="7513922695575567867">Kalendarz, tydzień do <ph name="DATE" />, obecnie wybrana jest data <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Pobierz</translation>
 <translation id="7526573455193969409">Sieć może być monitorowana</translation>
 <translation id="7536035074519304529">Adres IP: <ph name="ADDRESS" /></translation>
@@ -966,6 +973,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7564874036684306347">Przenoszenie okien na inny pulpit może spowodować nieoczekiwane zachowanie. Kolejne powiadomienia, okna i okna dialogowe mogą pojawiać się na różnych pulpitach.</translation>
 <translation id="7569509451529460200">Włączono Braille'a i ChromeVox</translation>
 <translation id="7569983096843329377">Czarny</translation>
+<translation id="757941033127302446">Zalogowano</translation>
 <translation id="7579778809502851308">Zrzut ekranu</translation>
 <translation id="7590883480672980941">Ustawienia wprowadzania</translation>
 <translation id="7593891976182323525">Szukaj lub Shift</translation>
@@ -1039,6 +1047,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8035152190676905274">Pióro</translation>
 <translation id="8036504271468642248">Poprzednie zdanie</translation>
 <translation id="8042893070933512245">Otwórz menu ustawień ułatwień dostępu</translation>
+<translation id="8042925093898452104">Zamknij szczegóły</translation>
 <translation id="8048123526339889627">Ustawienia Bluetootha</translation>
 <translation id="8051716679295756675">Szablon o nazwie <ph name="DESK_TEMPLATE_NAME" /> już istnieje</translation>
 <translation id="8052898407431791827">Skopiowano do schowka</translation>

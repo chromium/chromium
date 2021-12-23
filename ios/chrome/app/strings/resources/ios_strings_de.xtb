@@ -235,6 +235,7 @@ Informationen zum Löschen Ihres Suchverlaufs finden Sie in der Anleitung Ihrer 
 <translation id="3157387275655328056">Zur Leseliste hinzufügen</translation>
 <translation id="3157684681743766797">Alle markieren…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Sie können gespeicherte Passwörter auch auf Ihren anderen Geräten verwenden.</translation>
 <translation id="3175081911749765310">Webdienste</translation>
 <translation id="3178650076442119961">Heute aktiv</translation>
 <translation id="3181825792072797598">Synchronisierung aktivieren</translation>
@@ -328,6 +329,7 @@ Gehen Sie so vor:</translation>
 <translation id="4042870976416480368">Auf Seite suchen</translation>
 <translation id="4049507953662678203">Überprüfen Sie Ihre Netzwerkverbindung und versuchen Sie es noch einmal.</translation>
 <translation id="408404951701638773">Auf die Suchleiste kann jetzt noch einfacher zugegriffen werden</translation>
+<translation id="4108314971463891922">Folgen</translation>
 <translation id="411254640334432676">Fehler beim Download</translation>
 <translation id="4112644173421521737">Suche</translation>
 <translation id="4113030288477039509">Von Ihrem Administrator verwaltet</translation>
@@ -345,6 +347,7 @@ Gehen Sie so vor:</translation>
 <translation id="4272631900155121838">Um einen QR-Code zu scannen, aktivieren Sie in den Einstellungen die Kamera</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
+<translation id="4304713468139749426">Passwortmanager</translation>
 <translation id="430793432425771671">Alles synchronisieren</translation>
 <translation id="4309403553630140242">Für weitere Informationen doppeltippen</translation>
 <translation id="430967081421617822">Gesamter Zeitraum</translation>
@@ -356,6 +359,7 @@ Gehen Sie so vor:</translation>
 <translation id="4389019817280890563">Zum Ändern der Sprache hier tippen.</translation>
 <translation id="4442550905108052454">Öffnen Sie die <ph name="BEGIN_BOLD" />Einstellungen<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Sprache hinzufügen</translation>
+<translation id="4462491365653392320">Preise auf Tabs beobachten</translation>
 <translation id="4469418912670346607">Einrichtung fortsetzen</translation>
 <translation id="4474494258097106883">Für Ihr iPhone entwickelt</translation>
 <translation id="4476574785019001431">Einstellungen</translation>
@@ -419,6 +423,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="4944543191714094452">Auf Seite suchen…</translation>
 <translation id="4945756290001680296">Auf Passworteinstellungen zugreifen</translation>
 <translation id="4979397965658815378">Melden Sie sich mit Ihrem Google-Konto an, um Ihre Lesezeichen, Ihre Passwörter, Ihren Verlauf und Ihre anderen Einstellungen auf allen Geräten abrufen zu können</translation>
+<translation id="4986678885919050584">Von diesem Gerät entfernen</translation>
 <translation id="5005498671520578047">Passwort kopieren</translation>
 <translation id="5017828934289857214">Später erinnern</translation>
 <translation id="5037676449506322593">Alles auswählen</translation>
@@ -520,6 +525,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="5979837087407522202">Passwörter suchen</translation>
 <translation id="5982717868370722439">Vorhandene Daten zu <ph name="USER_EMAIL" /> hinzufügen</translation>
 <translation id="5984222099446776634">Kürzlich besucht</translation>
+<translation id="5988097621740394599">Sie sehen Preisnachlässe auf Ihren Tabs.</translation>
 <translation id="5988851877894965432">URLs in Chrome öffnen</translation>
 <translation id="6012140227487808125">Wird verschlüsselt…</translation>
 <translation id="6021332621416007159">Öffnen in...</translation>
@@ -540,6 +546,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="6127379762771434464">Eintrag entfernt</translation>
 <translation id="6136914049981179737">Gerade eben</translation>
 <translation id="6144589619057374135">${url} im Inkognitomodus öffnen</translation>
+<translation id="6149061208933997199">Passwort verwenden</translation>
 <translation id="6159839020698489198">optional</translation>
 <translation id="6177442314419606057">Suche in Chrome</translation>
 <translation id="6184086493125982861">Tabs anzeigen</translation>
@@ -764,6 +771,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8076014560081431679">Gespeicherte Website-Einstellungen werden nicht gelöscht und können möglicherweise Ihre Surfgewohnheiten wiedergeben. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Diese Einstellung wird verwaltet – für weitere Informationen doppeltippen</translation>
 <translation id="8080028325999236607">Alle Tabs schließen</translation>
+<translation id="8101409298456377967">Sie können Passwörter erstellen, speichern und verwalten, damit Sie sich auf Websites und in Apps einfach anmelden können. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Deaktivieren</translation>
 <translation id="8114753159095730575">Dateidownload verfügbar. Optionen stehen unten auf dem Bildschirm zur Verfügung.</translation>
 <translation id="8132598642024322408">Jetzt: <ph name="PRICE" /> – zuvor: <ph name="PREVIOUS_PRICE" />.</translation>

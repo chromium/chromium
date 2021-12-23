@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">הוסף לרשימת הקריאה</translation>
 <translation id="3157684681743766797">סימון הכול…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">יש לך גם אפשרות להשתמש בסיסמאות שמורות במכשירים אחרים.</translation>
 <translation id="3175081911749765310">שירותי אינטרנט</translation>
 <translation id="3178650076442119961">פעילות אחרונה: היום</translation>
 <translation id="3181825792072797598">הפעלת סנכרון</translation>
@@ -328,6 +329,7 @@
 <translation id="4042870976416480368">חיפוש בדף</translation>
 <translation id="4049507953662678203">צריך לוודא שיש חיבור לרשת ולנסות שוב.</translation>
 <translation id="408404951701638773">עכשיו קל יותר להגיע אל סרגל החיפוש</translation>
+<translation id="4108314971463891922">מעקב</translation>
 <translation id="411254640334432676">ההורדה נכשלה.</translation>
 <translation id="4112644173421521737">חיפוש</translation>
 <translation id="4113030288477039509">מנוהל על ידי מנהל המערכת שלך</translation>
@@ -357,6 +359,7 @@
 <translation id="4389019817280890563">צריך להקיש לשינוי שפה</translation>
 <translation id="4442550905108052454">פותחים את ה<ph name="BEGIN_BOLD" />הגדרות<ph name="END_BOLD" />.</translation>
 <translation id="4454246407045105932">הוספת שפה</translation>
+<translation id="4462491365653392320">מעקב אחר המחירים בכרטיסיות</translation>
 <translation id="4469418912670346607">להמשך ההגדרה</translation>
 <translation id="4474494258097106883">‏מותאם ל-iPhone שלך</translation>
 <translation id="4476574785019001431">הגדרות</translation>
@@ -420,6 +423,7 @@
 <translation id="4944543191714094452">חיפוש בדף…</translation>
 <translation id="4945756290001680296">גישה להגדרות הסיסמה</translation>
 <translation id="4979397965658815378">‏יש להיכנס באמצעות חשבון Google כדי לקבל גישה אל הסימניות, הסיסמאות, ההיסטוריה והגדרות נוספות בכל המכשירים שלך.</translation>
+<translation id="4986678885919050584">הסרה מהמכשיר הזה</translation>
 <translation id="5005498671520578047">העתקת הסיסמה</translation>
 <translation id="5017828934289857214">אני רוצה תזכורת מאוחר יותר</translation>
 <translation id="5037676449506322593">הכול</translation>
@@ -521,6 +525,7 @@
 <translation id="5979837087407522202">חיפוש בסיסמאות</translation>
 <translation id="5982717868370722439">הוספת נתונים קיימים אל <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">ביקרת לאחרונה</translation>
+<translation id="5988097621740394599">יוצגו הנחות בכרטיסיות.</translation>
 <translation id="5988851877894965432">‏פתיחת כתובות URL ב-Chrome</translation>
 <translation id="6012140227487808125">ההצפנה מתבצעת…</translation>
 <translation id="6021332621416007159">פתיחה ב...</translation>
@@ -541,6 +546,7 @@
 <translation id="6127379762771434464">הפריט הוסר</translation>
 <translation id="6136914049981179737">שניות</translation>
 <translation id="6144589619057374135">‏פתיחת ${urls} במצב אנונימי</translation>
+<translation id="6149061208933997199">השתמש בסיסמה</translation>
 <translation id="6159839020698489198">אופציונלי</translation>
 <translation id="6177442314419606057">‏חיפוש ב-Chrome</translation>
 <translation id="6184086493125982861">הצגת כרטיסיות</translation>
@@ -765,6 +771,7 @@
 <translation id="8076014560081431679">הגדרות אתרים שנשמרו לא יימחקו ועשויות לשקף את הרגלי הגלישה שלך. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">ההגדרה הזו מנוהלת. יש ללחוץ פעמיים לקבלת מידע נוסף</translation>
 <translation id="8080028325999236607">סגור את כל הכרטיסיות</translation>
+<translation id="8101409298456377967">ניתן ליצור, לנהל ולשמור סיסמאות כדי להיכנס בקלות לאתרים ולאפליקציות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">כיבוי</translation>
 <translation id="8114753159095730575">יש קובץ זמין להורדה. האפשרויות זמינות בחלק התחתון של המסך.</translation>
 <translation id="8132598642024322408">עכשיו במחיר <ph name="PRICE" />, היה <ph name="PREVIOUS_PRICE" />.</translation>

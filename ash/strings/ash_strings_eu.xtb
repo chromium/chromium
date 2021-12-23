@@ -131,6 +131,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + puntua lasterbidea aldatu egin da. "Txertatu" tekla erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + Maius + Atzera tekla.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />garren errenkadako <ph name="COLUMN_NUMBER" />garren zutabera eraman da.</translation>
 <translation id="1771761307086386028">Egin eskuinera</translation>
+<translation id="1774796056689732716">Egutegia, <ph name="CURRENT_MONTH_YEAR" />, une honetan <ph name="DATE" /> dago hautatuta.</translation>
 <translation id="1787955149152357925">Desaktibatuta</translation>
 <translation id="1804572139604454141">Utzi egin zaio grabatzeari, oso toki gutxi dagoelako memorian</translation>
 <translation id="181103072419391116">Seinalearen indarra: <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua.</translation>
@@ -621,6 +622,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5075554201838155866">Abiarazi azpitituluak</translation>
 <translation id="5078796286268621944">Okerra da PINa</translation>
 <translation id="5083553833479578423">Lortu Laguntzailea eginbidearen aukera gehiago.</translation>
+<translation id="5090752371472782287">Igorri <ph name="MANAGER" /> helbideko gailu batera</translation>
 <translation id="5106223312672646208">Pertsonalizatu</translation>
 <translation id="5117590920725113268">Erakutsi hurrengo hilabetea</translation>
 <translation id="5136175204352732067">Beste teklatu bat konektatu duzu</translation>
@@ -630,6 +632,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5168181903108465623">Igorpen-gailuak erabilgarri</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
 <translation id="5176318573511391780">Grabatu pantailaren zati bat</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> gertaera</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> eta <ph name="IN_PLACE_APP" /> aplikazioak karpeta berri batean taldekatu dira.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Beste jakinarazpen bat}other{Beste # jakinarazpen}}</translation>
@@ -803,6 +806,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="643147933154517414">Ez dago jakinarazpenik</translation>
 <translation id="6431865393913628856">Pantaila-grabaketa</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> (<ph name="RECEIVER_NAME" />) hargailura</translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> gertaera</translation>
 <translation id="6452181791372256707">Baztertu</translation>
 <translation id="6453179446719226835">Hizkuntza aldatu da</translation>
 <translation id="6459472438155181876">Pantaila <ph name="DISPLAY_NAME" /> gailura zabaltzen</translation>
@@ -866,6 +870,7 @@ Berriki instalatu da</translation>
 <translation id="6811454077060061666">Ordenagailuetarako Google Drive ez dago erabilgarri</translation>
 <translation id="6818242057446442178">Joan aurreko hitzera</translation>
 <translation id="6820676911989879663">Hartu atseden</translation>
+<translation id="6827049576281411231">Itxi gertaeren panela</translation>
 <translation id="6836499262298959512">Fitxategi arriskutsua</translation>
 <translation id="6837064795450991317">Ezkutatu lan-eremuen barra</translation>
 <translation id="6852052252232534364">Sakatu aktibatzeko</translation>
@@ -873,6 +878,7 @@ Berriki instalatu da</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 zenbaki geratzen da}other{# zenbaki geratzen dira}}</translation>
 <translation id="6867938213751067702">Pausatu da <ph name="FILENAME" /> fitxategiaren deskarga</translation>
 <translation id="6878400149835617132">Lasterbidea desaktibatu da</translation>
+<translation id="6884665277231944629">Itzuli gaurko egunera</translation>
 <translation id="6886172995547742638">Baliteke <ph name="DEVICE_TYPE" /> gailuaren errendimendua txikiagoa izatea. Erabili <ph name="PREFERRED_MINIMUM_POWER" /> W-eko edo gehiagoko USB-C egokigailu bat.</translation>
 <translation id="688631446150864480">Leihoz aldatzeko, sakatu behera egiteko gezi-tekla</translation>
 <translation id="6896758677409633944">Kopiatu</translation>
@@ -959,6 +965,7 @@ Berriki instalatu da</translation>
 <translation id="7497767806359279797">Aukeratu hizkuntza eta teklatua</translation>
 <translation id="7509246181739783082">Egiaztatu zeu zarela</translation>
 <translation id="7513622367902644023">Pantaila-argazkiak ateratzeko modua hautatu da</translation>
+<translation id="7513922695575567867">Egutegia, <ph name="DATE" /> egunari dagokion astea, une honetan <ph name="SELECTED_DATE" /> dago hautatuta.</translation>
 <translation id="7514365320538308">Deskargatu</translation>
 <translation id="7526573455193969409">Baliteke sarea gainbegiratuta egotea</translation>
 <translation id="7536035074519304529">IP helbidea: <ph name="ADDRESS" /></translation>
@@ -968,6 +975,7 @@ Berriki instalatu da</translation>
 <translation id="7564874036684306347">Leihoak beste mahaigain batera eramaten badira, baliteke ustekabeko portaerak izatea. Aurrerantzeko jakinarazpenak, baliteke leihoak eta elkarrizketa-koadroak bi mahaigainen artean banatuta agertzea.</translation>
 <translation id="7569509451529460200">Braillea eta ChromeVox gaituta daude</translation>
 <translation id="7569983096843329377">Beltza</translation>
+<translation id="757941033127302446">Saioa hasita</translation>
 <translation id="7579778809502851308">Pantaila-argazkia edo -bideoa</translation>
 <translation id="7590883480672980941">Idazketa-metodoaren ezarpenak</translation>
 <translation id="7593891976182323525">Bilatu edo aldatu</translation>
@@ -1041,6 +1049,7 @@ Berriki instalatu da</translation>
 <translation id="8035152190676905274">Bolaluma</translation>
 <translation id="8036504271468642248">Aurreko esaldia</translation>
 <translation id="8042893070933512245">Ireki Erabilerraztasun-ezarpenak menua</translation>
+<translation id="8042925093898452104">Itxi informazio xehatua</translation>
 <translation id="8048123526339889627">Bluetooth-aren ezarpenak</translation>
 <translation id="8051716679295756675">Badago "<ph name="DESK_TEMPLATE_NAME" />" izeneko txantiloi bat</translation>
 <translation id="8052898407431791827">Kopiatu da arbelean</translation>

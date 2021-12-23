@@ -96,6 +96,7 @@
 <translation id="1099282607296956954">Bật chính sách Cô lập trang web cho mọi trang web</translation>
 <translation id="1105572260329131950">Sử dụng biểu tượng mặc định cho các kết nối an toàn</translation>
 <translation id="1110426799149444997">Tắt tính năng tìm kiếm khu vực của <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
+<translation id="1111781754511998498">Máy chiếu</translation>
 <translation id="1117535567637097036">Trình xử lý giao thức được đặt qua chính sách này không được sử dụng khi xử lý các cơ chế của Android.</translation>
 <translation id="1118093128235245168">Cho phép các trang web yêu cầu người dùng cấp quyền truy cập vào một thiết bị USB đã kết nối</translation>
 <translation id="111910763555783249">Cài đặt thông báo</translation>
@@ -462,6 +463,11 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 <translation id="1553532014072799546">Danh sách cho phép về giới hạn thời gian cho mỗi ứng dụng</translation>
 <translation id="1553956579506604198">Chặn không cho cài đặt các tiện ích bên ngoài</translation>
 <translation id="1555248923316727072">Các tùy chọn cài đặt quản lý danh tính người dùng Saml</translation>
+<translation id="1558723461519082860">Chính sách này cấp quyền Máy chiếu để tạo và chép lời trình ghi màn hình rồi tải lên Drive.
+
+      Nếu bật chính sách này, Máy chiếu sẽ được bật.
+      Nếu bật chính sách này, Máy chiếu sẽ được tắt.
+      Nếu không đặt chính sách này, Máy chiếu sẽ được tắt theo mặc định.</translation>
 <translation id="1561424797596341174">Chính sách ghi đè dành cho bản dựng Gỡ lỗi của máy chủ truy cập từ xa</translation>
 <translation id="1561967320164410511">Tiện ích U2F+ để chứng thực cá nhân</translation>
 <translation id="1567718448549957373">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì người dùng sẽ nhận được các thử thách xác thực <ph name="BASIC_AUTH" /> qua HTTP không an toàn.
@@ -802,6 +808,7 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 <translation id="1962864958436828230">Đặt giới hạn kích thước tối thiểu để ngăn chặn rò rỉ dữ liệu theo quy tắc hạn chế khay nhớ tạm</translation>
 <translation id="1964634611280150550">Đã tắt chế độ ẩn danh</translation>
 <translation id="1964802606569741174">Chính sách này không ảnh hưởng đến ứng dụng YouTube trên Android. Nếu bị buộc phải sử dụng Chế độ an toàn trên YouTube thì việc cài đặt ứng dụng YouTube trên Android sẽ không được cho phép.</translation>
+<translation id="1967334955994230472">Tắt Máy chiếu</translation>
 <translation id="1969212217917526199">Ghi đè chính sách trên bản dựng Gỡ lỗi của máy chủ truy cập từ xa.
 
           Giá trị được phân tích cú pháp như từ điển JSON của tên chính sách đối với các ánh xạ giá trị chính sách.</translation>
@@ -2026,6 +2033,7 @@ Khi chính sách này được đặt thành false hoặc không được địn
 <translation id="328347261792478720">Theo mặc định, trình duyệt sẽ hiển thị các mục đề xuất nội dung nghe nhìn phù hợp với người dùng. Nếu bạn đặt chính sách này thành Tắt, thì các mục đề xuất này sẽ không hiển thị với người dùng. Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì các mục đề xuất nội dung nghe nhìn sẽ hiển thị cho người dùng.</translation>
 <translation id="3284094172359247914">Kiểm soát việc sử dụng API WebUSB</translation>
 <translation id="3288595667065905535">Kênh phát hành</translation>
+<translation id="3291318845269544294">Bật Máy chiếu</translation>
 <translation id="3294430356898755483">Nếu bạn đặt chính sách này, quản trị viên có thể thiết lập một danh sách máy in cho người dùng của họ. Máy in sẽ được chọn ngay trong lần đầu tiên người dùng cố gắng in.
 
       Bạn có thể sử dụng chính sách này cho các mục đích sau:
@@ -2090,6 +2098,7 @@ Khi chính sách này được đặt thành false hoặc không được địn
           Bạn phải chỉ định giá trị của chính sách bằng mili giây. Các giá trị được giới hạn ở mức nhỏ hơn hoặc bằng thời gian chờ khi ở chế độ tạm vắng.
 
           Thông báo cảnh báo chỉ hiển thị nếu hành động ở chế độ tạm vắng là hành động đăng xuất hoặc tắt nguồn.</translation>
+<translation id="3360280740977649313">Chính sách kiểm soát cho Máy chiếu.</translation>
 <translation id="3363360928811201045">Thêm các quy định hạn chế đối với tài khoản được quản lý</translation>
 <translation id="3373381043600809954">Bật <ph name="PRODUCT_NAME" /></translation>
 <translation id="3374587000313305002">Định cấu hình thư mục mà <ph name="PRODUCT_NAME" /> sẽ dùng để lưu trữ dữ liệu của người dùng.

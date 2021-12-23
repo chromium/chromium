@@ -112,6 +112,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1308113895091915999">Oferta disponible</translation>
 <translation id="1312803275555673949">Quines proves hi ha?</translation>
 <translation id="131405271941274527"><ph name="URL" /> vol enviar i rebre informació quan el teu telèfon toca un dispositiu NFC</translation>
+<translation id="1314311879718644478">Mostra el contingut de realitat augmentada</translation>
 <translation id="1314509827145471431">Enquadernació a la dreta</translation>
 <translation id="1318023360584041678">S'ha desat al grup de pestanyes</translation>
 <translation id="1319245136674974084">No ho tornis a preguntar per a aquesta aplicació</translation>
@@ -215,6 +216,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1583429793053364125">S'ha produït un error en mostrar aquesta pàgina web.</translation>
 <translation id="1586541204584340881">Quines extensions has instal·lat</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1589050138437146318">Vols instal·lar ARCore?</translation>
 <translation id="1592005682883173041">Accés a les dades locals</translation>
 <translation id="1594030484168838125">Tria</translation>
 <translation id="160851722280695521">Juga al joc del dinosaure de Chrome</translation>
@@ -1383,6 +1385,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5333022057423422993">Chrome ha trobat la contrasenya que acabes de fer servir en una violació de les dades. Per protegir els teus comptes, et recomanem que comprovis les teves contrasenyes desades.</translation>
 <translation id="5334013548165032829">Registres detallats del sistema</translation>
 <translation id="5334145288572353250">Vols desar l'adreça?</translation>
+<translation id="5335920952954443287">Cor que batega</translation>
 <translation id="5340250774223869109">L'aplicació està bloquejada</translation>
 <translation id="534295439873310000">Dispositius amb NFC</translation>
 <translation id="5344579389779391559">És possible que aquesta pàgina provi de fer-te algun càrrec</translation>
@@ -2055,6 +2058,7 @@ Detalls addicionals:
 <translation id="7654909834015434372">Quan editis anotacions, aquest document tornarà a la seva rotació original</translation>
 <translation id="765676359832457558">Amaga la configuració avançada...</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
+<translation id="7659878911471462949">Llàgrimes d'alegria</translation>
 <translation id="7662298039739062396">Configuració controlada per una extensió</translation>
 <translation id="7663736086183791259">Certificat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">No es permet en mode d'incògnit</translation>
@@ -2258,6 +2262,7 @@ Detalls addicionals:
 <translation id="830498451218851433">Plegat per la meitat</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Aplicacions instal·lades i freqüència d'utilització</translation>
+<translation id="8317207217658302555">Vols actualitzar ARCore?</translation>
 <translation id="831997045666694187">Tarda</translation>
 <translation id="8321476692217554900">notificacions</translation>
 <translation id="8328484624016508118">Quan s'han tancat totes les pestanyes d'incògnit, Chrome esborra:

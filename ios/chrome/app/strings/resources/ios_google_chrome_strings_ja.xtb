@@ -70,6 +70,7 @@
 <translation id="6063091872902370735">Chrome へのログインを許可する</translation>
 <translation id="6181930887571472871">Chrome に切り替え</translation>
 <translation id="6238746320622508509">Chrome でシークレット タブをロックできるようにします。</translation>
+<translation id="6387994324662817823">パスワードは、このデバイスの Google パスワード マネージャーにのみ保存されます。</translation>
 <translation id="6427126399757991875">組織で Chrome を設定しています...</translation>
 <translation id="6600954340915313787">Chrome にコピー済み</translation>
 <translation id="6634107063912726160">ログアウトすると、Chrome で新しいデータが Google アカウントと同期されなくなります。これまでに同期されたデータはアカウントに残ります。</translation>
@@ -111,5 +112,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chrome でいつでも安全にブラウジング</translation>
 <translation id="8772179140489533211">Chrome へのログインを促すメッセージが表示されます。</translation>
+<translation id="8788269841521769222">このパスワードを覚えておく必要はありません。パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます</translation>
 <translation id="9112744793181547300">Chrome を既定に設定しますか？</translation>
 </translationbundle>

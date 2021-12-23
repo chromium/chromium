@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Vzpostavljanje stika z Googlom. To lahko traja kakšno minuto …</translation>
 <translation id="1416550906796893042">Različica aplikacije</translation>
 <translation id="1430915738399379752">Natisni</translation>
+<translation id="1436784010935106834">Odstranjeno</translation>
 <translation id="1448440926884431741">Organizirajte spremljane izdelke v zaznamkih.</translation>
 <translation id="1450753235335490080">Ni mogoče deliti tega: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Izbierite Chromov jezik</translation>
@@ -203,7 +204,6 @@ Dotaknite se poljubne besede, če želite iskati. Če želite izboljšati iskanj
 <translation id="2172905120685242547">Želite zapreti okno?</translation>
 <translation id="2175927920773552910">Koda QR</translation>
 <translation id="218608176142494674">Deljenje z drugimi</translation>
-<translation id="2195339740518523951">Izberite Chromovo najmočnejšo varnost</translation>
 <translation id="2200113223741723867">Upravljanje deljenja podatkov o uporabi</translation>
 <translation id="2218567645332692482">Nadgraditev krmarjenj do HTTPS-ja in opozorilo pred nalaganjem spletnih mest, ki ga ne podpirajo.</translation>
 <translation id="2227444325776770048">Nadaljujte kot <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="4170011742729630528">Storitev ni na voljo; poskusite znova pozneje.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> prenesenih podatkov</translation>
 <translation id="4181841719683918333">Jeziki</translation>
-<translation id="4183868528246477015">Iskanje z Googlom Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Odpri v novem zavihku</translation>
 <translation id="4196597275619698563">Ustvari kartico</translation>
 <translation id="4198423547019359126">Ni razpoložljivih mest za prenos</translation>
@@ -577,7 +576,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="4411535500181276704">Lahki način</translation>
 <translation id="4415276339145661267">Upravljanje računa Google</translation>
 <translation id="4425140285732600465">Spremljanje cene. Prejmite opozorila, če se cena zniža na katerem koli spletnem mestu.</translation>
-<translation id="4427306783828095590">Izboljšana zaščita učinkoviteje blokira lažno predstavljanje in zlonamerno programsko opremo.</translation>
 <translation id="4450672886426705087">Rezultati iskanja v Googlu.</translation>
 <translation id="4452411734226507615">Zapiranje zavihka <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Zaznamek ustvarjen v mapi <ph name="FOLDER_NAME" /></translation>
@@ -1082,6 +1080,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7177466738963138057">To lahko pozneje spremenite v nastavitvah</translation>
 <translation id="7177873915659574692">Kode QR ni mogoče ustvariti. URL vsebuje več kot toliko znakov: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="7180611975245234373">Osveži</translation>
+<translation id="718226107353899806">Dodate lahko največ toliko reakcij: <ph name="MAX_NUM_REACTIONS" /></translation>
 <translation id="7187993566681480880">Skrbi za vašo varnost v Chromu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>
 <translation id="718926126787620637">Seznam map z zaznamki, odprt pri polni višini.</translation>
 <translation id="7191430249889272776">Zavihek se je odprl v ozadju.</translation>
@@ -1245,7 +1244,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8035133914807600019">Nova mapa …</translation>
 <translation id="8037750541064988519">Še <ph name="DAYS" /> dni</translation>
 <translation id="8037801708772278989">Pravkar preverjeno</translation>
-<translation id="8040831032425909005">Ikona za hitra dejanja pripomočka za iskanje</translation>
 <translation id="804335162455518893">Kartice SD ni bilo mogoče najti</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> anonimni zavihek}one{<ph name="TAB_COUNT_NORMAL" /> anonimni zavihek}two{<ph name="TAB_COUNT_NORMAL" /> anonimna zavihka}few{<ph name="TAB_COUNT_NORMAL" /> anonimni zavihki}other{<ph name="TAB_COUNT_NORMAL" /> anonimnih zavihkov}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB na voljo</translation>

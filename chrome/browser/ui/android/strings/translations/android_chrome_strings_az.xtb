@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Google ilə əlaqə yaradılır. Bir dəqiqə vaxt ala bilər...</translation>
 <translation id="1416550906796893042">Tətbiq versiyası</translation>
 <translation id="1430915738399379752">Çap edin</translation>
+<translation id="1436784010935106834">Silindi</translation>
 <translation id="1448440926884431741">Əlfəcinlərdə izlədiyiniz məhsulları təşkil edin</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> paylaşmaq mümkün deyil</translation>
 <translation id="1466383950273130737">Chrome dilini seçin</translation>
@@ -203,7 +204,6 @@ Axtarmaq üçün istənilən sözə toxunun. Axtarışı dəqiqləşdirmək üç
 <translation id="2172905120685242547">Pəncərə bağlansın?</translation>
 <translation id="2175927920773552910">QR Kod</translation>
 <translation id="218608176142494674">Paylaşım</translation>
-<translation id="2195339740518523951">Chrome’un ən güclü təhlükəsizlik səviyyəsini əldə edin</translation>
 <translation id="2200113223741723867">İstifadə datasının paylaşılmasını idarə edin</translation>
 <translation id="2218567645332692482">Naviqasiyaları HTTPS-ə yüksəltmək və dəstəkləməyən saytları yükləmədən əvvəl sizi xəbərdar etmək</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> kimi davam edin</translation>
@@ -543,7 +543,6 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="4170011742729630528">Xidmət əlçatmazdır. Yenidən cəhd edin.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> istifadə edildi</translation>
 <translation id="4181841719683918333">Dillər</translation>
-<translation id="4183868528246477015">Google Linza ilə axtarın <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Yeni tabda açın</translation>
 <translation id="4196597275619698563">Kart yaradın</translation>
 <translation id="4198423547019359126">Əlçatan endirmə məkanı yoxdur</translation>
@@ -577,7 +576,6 @@ Axtarmaq üçün istənilən sözə toxunub saxlayın. Axtarışınızı dəqiql
 <translation id="4411535500181276704">Layt rejimi</translation>
 <translation id="4415276339145661267">Google Hesabını idarə edin</translation>
 <translation id="4425140285732600465">Qiymət izlənilir. Hər hansı bir saytda qiymət enərsə, bildiriş alın</translation>
-<translation id="4427306783828095590">Təkmil qoruma ilə fişinq və zərərli proqramların bloklanması üçün daha çox iş görülür</translation>
 <translation id="4450672886426705087">Google'dan nəticələri axtarın.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> tabını bağlayın</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> qovluğuna əlfəcinləndi</translation>
@@ -1080,6 +1078,7 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="7177466738963138057">Bunu daha sonra Ayarlar bölməsində dəyişə bilərsiniz</translation>
 <translation id="7177873915659574692">QR kod yaratmaq olmur. URL'də <ph name="CHARACTER_LIMIT" /> ədəddən çox simvol var.</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
+<translation id="718226107353899806">Maksimum <ph name="MAX_NUM_REACTIONS" /> reaksiya əlavə edə bilərsiniz</translation>
 <translation id="7187993566681480880">Daxil olduğunuzda Chrome'da sizi qoruyur və digər Google tətbiqlərində təhlükəsizliyinizi artırmaq üçün istifadə edilə bilər.</translation>
 <translation id="718926126787620637">Tam açılmış əlfəcin qovluqlarının siyahısı</translation>
 <translation id="7191430249889272776">Panel arxa fonda açıldı.</translation>
@@ -1243,7 +1242,6 @@ Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir
 <translation id="8035133914807600019">Yeni qovluq...</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> gün qaldı</translation>
 <translation id="8037801708772278989">İndicə yoxlanılıb</translation>
-<translation id="8040831032425909005">Cəld Əməliyyat Axtarış Vidceti İkonası</translation>
 <translation id="804335162455518893">SD kart tapılmadı</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> anonim tab}other{<ph name="TAB_COUNT_NORMAL" /> anonim tab}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB əlçatandır</translation>

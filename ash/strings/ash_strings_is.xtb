@@ -131,6 +131,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1768366657309696705">Flýtilyklinum <ph name="LAUNCHER_KEY_NAME" /> + punktur hefur verið breytt. Til að nota Insert-lykilinn ýtirðu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + Shift + bakklykilinn.</translation>
 <translation id="1770726142253415363">Fært í línu <ph name="ROW_NUMBER" />, dálk <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Fletta til hægri</translation>
+<translation id="1774796056689732716">Dagatal, <ph name="CURRENT_MONTH_YEAR" />, núverandi val er <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Slökkt</translation>
 <translation id="1804572139604454141">Upptöku lauk vegna mjög lítils diskpláss</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> sendistyrkur, stjórnað af kerfisstjóra</translation>
@@ -620,6 +621,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5075554201838155866">Ræsa skjátexta</translation>
 <translation id="5078796286268621944">Rangt PIN-númer</translation>
 <translation id="5083553833479578423">Opnaðu fyrir fleiri eiginleika hjálparans.</translation>
+<translation id="5090752371472782287">Senda út í <ph name="MANAGER" /> tæki</translation>
 <translation id="5106223312672646208">Sérsníða</translation>
 <translation id="5117590920725113268">Sýna næsta mánuð</translation>
 <translation id="5136175204352732067">Annað lyklaborð tengt</translation>
@@ -629,6 +631,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5168181903108465623">Útsendingartæki í boði</translation>
 <translation id="5170568018924773124">Sýna í möppu</translation>
 <translation id="5176318573511391780">Upptaka á hluta skjás</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> viðburðir</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> var sameinað við <ph name="IN_PLACE_APP" /> til að búa til nýja möppu.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 tilkynning í viðbót}one{# tilkynning í viðbót}other{# tilkynningar í viðbót}}</translation>
@@ -802,6 +805,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="643147933154517414">Allt búið</translation>
 <translation id="6431865393913628856">Skjáupptaka</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> í <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> viðburður</translation>
 <translation id="6452181791372256707">Hafna</translation>
 <translation id="6453179446719226835">Tungumálinu hefur verið breytt</translation>
 <translation id="6459472438155181876">Stækkar skjá yfir á <ph name="DISPLAY_NAME" /></translation>
@@ -865,6 +869,7 @@ Ný uppsetning</translation>
 <translation id="6811454077060061666">Google Drive fyrir skjáborð er ekki tiltækt</translation>
 <translation id="6818242057446442178">Til baka um orð</translation>
 <translation id="6820676911989879663">Taktu pásu!</translation>
+<translation id="6827049576281411231">Loka viðburðasvæði</translation>
 <translation id="6836499262298959512">Hættuleg skrá</translation>
 <translation id="6837064795450991317">Fela verkstiku</translation>
 <translation id="6852052252232534364">Smelltu til að kveikja</translation>
@@ -872,6 +877,7 @@ Ný uppsetning</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Ein tala eftir}one{# tala eftir}other{# tölur eftir}}</translation>
 <translation id="6867938213751067702">Hlé gert á niðurhali <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Slökkt á flýtileið</translation>
+<translation id="6884665277231944629">Fara til baka til dagsins í dag</translation>
 <translation id="6886172995547742638">Afköst <ph name="DEVICE_TYPE" /> gætu minnkað. Notaðu vottaðan USB-C straumbreyti með <ph name="PREFERRED_MINIMUM_POWER" /> W eða meira.</translation>
 <translation id="688631446150864480">Ýttu á ör niður til að skipta á milli glugga</translation>
 <translation id="6896758677409633944">Afrita</translation>
@@ -958,6 +964,7 @@ Ný uppsetning</translation>
 <translation id="7497767806359279797">Velja tungumál og lyklaborð</translation>
 <translation id="7509246181739783082">Staðfestu hver þú ert</translation>
 <translation id="7513622367902644023">Skjámyndastilling valin</translation>
+<translation id="7513922695575567867">Dagatal, vikan <ph name="DATE" />, núverandi val er <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Sækja</translation>
 <translation id="7526573455193969409">Hugsanlega er fylgst með netinu</translation>
 <translation id="7536035074519304529">IP-tala: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@ Ný uppsetning</translation>
 <translation id="7564874036684306347">Ef gluggar eru færðir á annað skjáborð getur það valdið óvæntri hegðun. Frekari tilkynningum, gluggum og svargluggum verður hugsanlega deilt á milli skjáborða.</translation>
 <translation id="7569509451529460200">Kveikt á blindraletri og ChromeVox</translation>
 <translation id="7569983096843329377">Svartur</translation>
+<translation id="757941033127302446">Innskráð(ur)</translation>
 <translation id="7579778809502851308">Skjámyndataka</translation>
 <translation id="7590883480672980941">Inntaksstillingar</translation>
 <translation id="7593891976182323525">Leit eða Shift</translation>
@@ -1040,6 +1048,7 @@ Ný uppsetning</translation>
 <translation id="8035152190676905274">Penni</translation>
 <translation id="8036504271468642248">Fyrri setning</translation>
 <translation id="8042893070933512245">Opna valmynd aðgengisstillinga</translation>
+<translation id="8042925093898452104">Loka ítarlegum upplýsingum</translation>
 <translation id="8048123526339889627">Bluetooth-stillingar</translation>
 <translation id="8051716679295756675">Sniðmát sem heitir <ph name="DESK_TEMPLATE_NAME" /> er þegar til</translation>
 <translation id="8052898407431791827">Afritað á klippiborð</translation>

@@ -131,6 +131,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1768366657309696705">Tastaturgenvejen <ph name="LAUNCHER_KEY_NAME" />+punktum er blevet ændret. Hvis du vil bruge Insert-knappen, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+Shift+Backspace.</translation>
 <translation id="1770726142253415363">Flyttet til række <ph name="ROW_NUMBER" />, kolonne <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Rul til højre</translation>
+<translation id="1774796056689732716">Kalender for <ph name="CURRENT_MONTH_YEAR" /> – <ph name="DATE" /> er valgt.</translation>
 <translation id="1787955149152357925">Fra</translation>
 <translation id="1804572139604454141">Optagelsen blev afsluttet på grund af kritisk lav diskplads</translation>
 <translation id="181103072419391116">Signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>
@@ -620,6 +621,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5075554201838155866">Start undertekster</translation>
 <translation id="5078796286268621944">Forkert pinkode</translation>
 <translation id="5083553833479578423">Få adgang til endnu flere Assistent-funktioner.</translation>
+<translation id="5090752371472782287">Cast til en <ph name="MANAGER" />-enhed</translation>
 <translation id="5106223312672646208">Tilpas</translation>
 <translation id="5117590920725113268">Vis næste måned</translation>
 <translation id="5136175204352732067">Du har tilsluttet et andet tastatur</translation>
@@ -629,6 +631,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5168181903108465623">Tilgængelige Cast-enheder</translation>
 <translation id="5170568018924773124">Vis i mappe</translation>
 <translation id="5176318573511391780">Optag dele af skærmen</translation>
+<translation id="5198413532174090167"><ph name="DATE" /> – <ph name="NUMBER" /> begivenheder</translation>
 <translation id="5198715732953550718">En ny mappe blev oprettet ved at slå <ph name="MOVED_APP_NAME" /> og <ph name="IN_PLACE_APP" /> sammen.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 anden notifikation}one{# anden notifikation}other{# andre notifikationer}}</translation>
@@ -802,6 +805,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="643147933154517414">Færdig</translation>
 <translation id="6431865393913628856">Skærmoptagelse</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> på <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" /> – <ph name="NUMBER" /> begivenhed</translation>
 <translation id="6452181791372256707">Afvis</translation>
 <translation id="6453179446719226835">Sproget er blevet ændret</translation>
 <translation id="6459472438155181876">Udvider skærmen til <ph name="DISPLAY_NAME" /></translation>
@@ -865,6 +869,7 @@ Installeret for nylig</translation>
 <translation id="6811454077060061666">Google Drev til computer er ikke tilgængelig</translation>
 <translation id="6818242057446442178">Et ord tilbage</translation>
 <translation id="6820676911989879663">Hold en pause</translation>
+<translation id="6827049576281411231">Luk panelet for begivenheder</translation>
 <translation id="6836499262298959512">Farlig fil</translation>
 <translation id="6837064795450991317">Skjul diskbjælke</translation>
 <translation id="6852052252232534364">Aktivér</translation>
@@ -872,6 +877,7 @@ Installeret for nylig</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Der skal angives ét ciffer mere}one{Der skal angives # ciffer mere}other{Der skal angives # cifre mere}}</translation>
 <translation id="6867938213751067702">Download af <ph name="FILENAME" /> er sat på pause</translation>
 <translation id="6878400149835617132">Genvejen er deaktiveret</translation>
+<translation id="6884665277231944629">Gå tilbage til i dag</translation>
 <translation id="6886172995547742638">Din <ph name="DEVICE_TYPE" />-enhed præsterer muligvis dårligere. Brug en certificeret USB-C-strømadapter på minimum <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Tryk på pil ned for at skifte vindue</translation>
 <translation id="6896758677409633944">Kopiér</translation>
@@ -958,6 +964,7 @@ Installeret for nylig</translation>
 <translation id="7497767806359279797">Vælg sprog og tastatur</translation>
 <translation id="7509246181739783082">Bekræft din identitet</translation>
 <translation id="7513622367902644023">Screenshottilstand er valgt</translation>
+<translation id="7513922695575567867">Kalender for ugen med <ph name="DATE" /> – <ph name="SELECTED_DATE" /> er valgt.</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7526573455193969409">Netværket kan være overvåget</translation>
 <translation id="7536035074519304529">IP-adresse: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@ Installeret for nylig</translation>
 <translation id="7564874036684306347">Hvis du flytter vinduer til et andet skrivebord, kan det resultere i uventet adfærd. Efterfølgende notifikationer, vinduer og dialogbokse kan blive delt mellem skriveborde.</translation>
 <translation id="7569509451529460200">Braille og ChromeVox er aktiveret</translation>
 <translation id="7569983096843329377">Sort</translation>
+<translation id="757941033127302446">Logget ind</translation>
 <translation id="7579778809502851308">Screenshot</translation>
 <translation id="7590883480672980941">Indstillinger for indtastning</translation>
 <translation id="7593891976182323525">Søg eller Shift</translation>
@@ -1040,6 +1048,7 @@ Installeret for nylig</translation>
 <translation id="8035152190676905274">Pen</translation>
 <translation id="8036504271468642248">Forrige sætning</translation>
 <translation id="8042893070933512245">Åbn menuen med indstillinger for hjælpefunktioner</translation>
+<translation id="8042925093898452104">Luk detaljer</translation>
 <translation id="8048123526339889627">Bluetooth-indstillinger</translation>
 <translation id="8051716679295756675">Der findes allerede en skabelon med navnet <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kopieret til udklipsholder</translation>

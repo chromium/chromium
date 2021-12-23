@@ -235,6 +235,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
 <translation id="3157684681743766797">Tout marquer…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Vous pouvez aussi utiliser des mots de passe enregistrés sur vos autres appareils.</translation>
 <translation id="3175081911749765310">Services Web</translation>
 <translation id="3178650076442119961">Actif aujourd'hui</translation>
 <translation id="3181825792072797598">Activer la synchronisation</translation>
@@ -328,6 +329,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4042870976416480368">Rechercher sur la page</translation>
 <translation id="4049507953662678203">Vérifiez si vous disposez bien d'une connexion réseau, puis réessayez.</translation>
 <translation id="408404951701638773">La barre de recherche est désormais accessible plus facilement</translation>
+<translation id="4108314971463891922">Suivre</translation>
 <translation id="411254640334432676">Échec du téléchargement.</translation>
 <translation id="4112644173421521737">Rechercher</translation>
 <translation id="4113030288477039509">Géré par votre administrateur</translation>
@@ -345,6 +347,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4272631900155121838">Pour scanner un code QR, activez l'appareil photo depuis les paramètres</translation>
 <translation id="4277990410970811858">Navigation sécurisée</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
+<translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="430793432425771671">Tout synchroniser</translation>
 <translation id="4309403553630140242">Appuyez deux fois pour obtenir plus d'informations</translation>
 <translation id="430967081421617822">Toutes les données</translation>
@@ -356,6 +359,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="4389019817280890563">Appuyez pour modifier la langue.</translation>
 <translation id="4442550905108052454">Accédez aux <ph name="BEGIN_BOLD" />Réglages<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Ajouter une langue</translation>
+<translation id="4462491365653392320">Suivi des prix dans les onglets</translation>
 <translation id="4469418912670346607">Poursuivre la configuration</translation>
 <translation id="4474494258097106883">Conçu pour votre iPhone</translation>
 <translation id="4476574785019001431">Paramètres</translation>
@@ -419,6 +423,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4944543191714094452">Rechercher sur la page…</translation>
 <translation id="4945756290001680296">Accéder aux paramètres des mots de passe</translation>
 <translation id="4979397965658815378">Connectez-vous à votre compte Google pour synchroniser favoris, mots de passe, historique et autres paramètres sur tous vos appareils.</translation>
+<translation id="4986678885919050584">Supprimer de cet appareil</translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5017828934289857214">Me le rappeler plus tard</translation>
 <translation id="5037676449506322593">Tout sélectionner</translation>
@@ -464,7 +469,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5489208564673669003">Pour gérer les cookies de l'ensemble des sites, consultez la page <ph name="BEGIN_LINK" />Paramètres relatifs aux cookies<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Bloquer tous les cookies (non recommandé)</translation>
 <translation id="5513681519188741830">Il y a <ph name="TIME" /> h</translation>
-<translation id="5523579157975978438">Pour désactiver cela, ouvrez les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />, puis accédez à "Mots de passe".</translation>
+<translation id="5523579157975978438">Pour désactiver cela, ouvrez les <ph name="BEGIN_LINK" />Réglages<ph name="END_LINK" />, puis accédez à "Mots de passe".</translation>
 <translation id="5525269841082836315">Créer une phrase secrète</translation>
 <translation id="5548760955356983418">Avec Handoff, vous pouvez commencer à consulter un site Web sur cet appareil et poursuivre votre lecture facilement sur votre Mac. Le site Web actuellement ouvert apparaît alors dans le Dock.
 
@@ -520,6 +525,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5979837087407522202">Rechercher des mots de passe</translation>
 <translation id="5982717868370722439">Ajoutez les données existantes au compte <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Consultations récentes</translation>
+<translation id="5988097621740394599">Les prix en baisse s'affichent dans les onglets.</translation>
 <translation id="5988851877894965432">Ouvrir les URL dans Chrome</translation>
 <translation id="6012140227487808125">Chiffrement…</translation>
 <translation id="6021332621416007159">Ouvrir dans…</translation>
@@ -540,6 +546,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6127379762771434464">Élément supprimé</translation>
 <translation id="6136914049981179737">À l'instant.</translation>
 <translation id="6144589619057374135">Ouvrir ${url} en mode navigation privée</translation>
+<translation id="6149061208933997199">Utiliser mot de passe</translation>
 <translation id="6159839020698489198">facultatif</translation>
 <translation id="6177442314419606057">Effectuer une recherche dans Chrome</translation>
 <translation id="6184086493125982861">Afficher les onglets</translation>
@@ -765,6 +772,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8076014560081431679">Les paramètres de site enregistrés ne seront pas supprimés et peuvent donner des indications sur vos habitudes de navigation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Il s'agit d'un paramètre géré, appuyez deux fois pour plus d'informations</translation>
 <translation id="8080028325999236607">Fermer tous les onglets</translation>
+<translation id="8101409298456377967">Créez, enregistrez et gérez vos mots de passe pour vous connecter facilement à des sites et à des applis. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Désactiver</translation>
 <translation id="8114753159095730575">Vous pouvez télécharger des fichiers. Différentes options sont disponibles au bas de l'écran.</translation>
 <translation id="8132598642024322408"><ph name="PRICE" /> (précédemment à <ph name="PREVIOUS_PRICE" />).</translation>
@@ -774,7 +782,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8205564605687841303">Annuler</translation>
 <translation id="8206354486702514201">Ce paramètre est appliqué par votre administrateur.</translation>
 <translation id="8225985093977202398">Img/fich. en cache</translation>
-<translation id="8237382152611443140">Ouvrez les paramètres de saisie automatique des mots de passe</translation>
+<translation id="8237382152611443140">Accédez à "Préremplir les mots de passe"</translation>
 <translation id="8261506727792406068">Supprimer</translation>
 <translation id="8271720166617117963">Accepter et se connecter</translation>
 <translation id="8281781826761538115">Par défaut : <ph name="DEFAULT_LOCALE" /></translation>

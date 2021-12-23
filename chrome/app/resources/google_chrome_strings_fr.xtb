@@ -176,7 +176,6 @@ Certaines fonctionnalités peuvent être indisponibles. Veuillez spécifier un r
 <translation id="5193136243808726294">Google Chrome OS ne peut pas ouvrir cette page</translation>
 <translation id="521447420733633466">Si vous partagez un appareil avec vos proches, ceux-ci peuvent configurer Chrome selon leurs préférences et naviguer sur le Web de façon indépendante.</translation>
 <translation id="5251420635869119124">Les invités peuvent utiliser Chrome sans laisser aucune trace.</translation>
-<translation id="5251679006894510177">Presque à jour ! Relancez Chrome pour terminer la mise à jour. Sachez que les fenêtres de navigation privée ne seront pas rouvertes.</translation>
 <translation id="5334487786912937552">Pour télécharger des fichiers, Chrome a besoin d'accéder à l'espace de stockage</translation>
 <translation id="5386244825306882791">Elle contrôle également la page qui s'affiche au démarrage de Chrome ou lorsque vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="5394833366792865639">Partager un onglet Chrome</translation>
@@ -308,6 +307,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8914504000324227558">Relancer Google Chrome</translation>
 <translation id="8922193594870374009">Pour envoyer un numéro depuis <ph name="ORIGIN" /> vers votre téléphone Android, connectez-vous à Chrome sur les deux appareils.</translation>
 <translation id="8927704157641862988">Personnalisez les paramètres de confidentialité que Chrome considère comme les plus importants. Ce guide n'inclut ni tous les paramètres, ni toutes les options.</translation>
+<translation id="8983720963221508955">Vous avez activé la navigation sécurisée avec protection renforcée dans votre compte. Activez-la maintenant dans Chrome.</translation>
 <translation id="8986207147630327271">Vous êtes sur le point d'ajouter un profil professionnel à ce navigateur et d'en donner le contrôle à votre administrateur.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Une mise à jour de Chrome est disponible}=1{Une mise à jour de Chrome est disponible}one{Une mise à jour de Chrome est disponible depuis # jour}other{Une mise à jour de Chrome est disponible depuis # jours}}</translation>
 <translation id="9026991721384951619">Impossible de synchroniser vos données dans Chrome OS, car les informations de connexion de votre compte ne sont plus à jour.</translation>

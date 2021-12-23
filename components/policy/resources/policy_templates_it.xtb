@@ -97,6 +97,7 @@
 </translation>
 <translation id="1105572260329131950">Vengono usate icone predefinite per le connessioni sicure</translation>
 <translation id="1110426799149444997">Disattiva la ricerca area geografica di <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
+<translation id="1111781754511998498">Proiettore</translation>
 <translation id="1117535567637097036">I gestori di protocollo impostati tramite questa norma non sono utilizzati durante la gestione degli intent di Android.</translation>
 <translation id="1118093128235245168">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo USB collegato</translation>
 <translation id="111910763555783249">Impostazioni di notifica</translation>
@@ -462,6 +463,11 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1553532014072799546">Whitelist limiti di utilizzo per app</translation>
 <translation id="1553956579506604198">Blocca l'installazione delle estensioni esterne</translation>
 <translation id="1555248923316727072">Impostazioni di gestione dell'identità degli utenti SAML</translation>
+<translation id="1558723461519082860">Questo criterio consente di autorizzare Proiettore a creare e trascrivere la registrazione dello schermo e a caricarla su Drive.
+
+      Se il criterio viene attivato, Proiettore verrà attivato.
+      Se il criterio viene disattivato, Proiettore verrà disattivato.
+      Se il criterio non viene configurato, Proiettore sarà disattivato per impostazione predefinita.</translation>
 <translation id="1561424797596341174">La norma sostituisce le build di debug dell'host di accesso remoto</translation>
 <translation id="1561967320164410511">U2F più estensioni per singola attestazione</translation>
 <translation id="1567718448549957373">Se il criterio viene impostato su Attivato o se non viene configurato, le richieste di autenticazione <ph name="BASIC_AUTH" /> ricevute tramite connessioni HTTP non sicure sono consentite.
@@ -796,6 +802,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
 <translation id="1962864958436828230">Imposta le dimensioni minime dei dati per la limitazione relativa agli appunti, al fine di impedire la fuga di dati</translation>
 <translation id="1964634611280150550">Modalità di navigazione in incognito non attiva</translation>
 <translation id="1964802606569741174">Questa norma non ha effetto sull'app YouTube per Android. Se è necessario applicare la modalità di protezione di YouTube, l'installazione dell'app YouTube per Android non deve essere consentita.</translation>
+<translation id="1967334955994230472">Disattiva Proiettore</translation>
 <translation id="1969212217917526199">Sostituisce le build di debug dell'host di accesso remoto.
 
           Il valore viene analizzato come un dizionario JSON di associazioni tra nomi e valori di norme.</translation>
@@ -2022,6 +2029,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="328347261792478720">Per impostazione predefinita, nel browser vengono mostrati consigli di contenuti multimediali personalizzati in base agli interessi dell'utente. Se questo criterio viene impostato su Disattivato, questi consigli vengono nascosti all'utente. Se il criterio viene impostato su Attivato o se non viene configurato, i consigli di contenuti multimediali vengono mostrati all'utente.</translation>
 <translation id="3284094172359247914">Controlla l'utilizzo dell'API WebUSB</translation>
 <translation id="3288595667065905535">Canale di rilascio</translation>
+<translation id="3291318845269544294">Attiva Proiettore</translation>
 <translation id="3294430356898755483">La configurazione del criterio consente agli amministratori di impostare un elenco di stampanti per i loro utenti. La selezione della stampante viene effettuata la prima volta che gli utenti provano a stampare.
 
       Se viene usato il criterio:
@@ -2083,6 +2091,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di inattività.
 
           L'avviso viene mostrato solo se l'azione stabilita in caso di inattività è la disconnessione o lo spegnimento.</translation>
+<translation id="3360280740977649313">Consente di controllare i criteri relativi a Proiettore.</translation>
 <translation id="3363360928811201045">Aggiungi limitazioni agli account gestiti</translation>
 <translation id="3373381043600809954">Attiva <ph name="PRODUCT_NAME" /></translation>
 <translation id="3374587000313305002">Consente di configurare la directory che <ph name="PRODUCT_NAME" /> utilizza per memorizzare i dati utente.

@@ -112,6 +112,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1308113895091915999">Tarjous saatavilla</translation>
 <translation id="1312803275555673949">Mikä todiste tukee sitä?</translation>
 <translation id="131405271941274527"><ph name="URL" /> haluaa lähettää ja vastaanottaa tietoja, kun kosketat puhelimella NFC-laitetta</translation>
+<translation id="1314311879718644478">Katsele lisätyn todellisuuden sisältöä</translation>
 <translation id="1314509827145471431">Oikealla sidottu</translation>
 <translation id="1318023360584041678">Tallennettu välilehtiryhmään</translation>
 <translation id="1319245136674974084">Älä kysy uudestaan tämän sovelluksen kohdalla</translation>
@@ -215,6 +216,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1583429793053364125">Jotain meni pieleen. tätä verkkosivua näytettäessä.</translation>
 <translation id="1586541204584340881">Asentamasi laajennukset</translation>
 <translation id="1588438908519853928">Normaali</translation>
+<translation id="1589050138437146318">Asennetaanko ARCore?</translation>
 <translation id="1592005682883173041">Tietojen paikallinen käyttö</translation>
 <translation id="1594030484168838125">Valitse</translation>
 <translation id="160851722280695521">Pelaa Dino Run ‑peliä Chromessa</translation>
@@ -1393,6 +1395,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5333022057423422993">Chrome löysi juuri käyttämäsi salasanan tietosuojaloukkauksesta. Suosittelemme tarkistamaan tallennetut salasanasi tilisi suojaamiseksi.</translation>
 <translation id="5334013548165032829">Yksityiskohtaiset järjestelmälokit</translation>
 <translation id="5334145288572353250">Tallennetaanko osoite?</translation>
+<translation id="5335920952954443287">Sykkivä sydän</translation>
 <translation id="5340250774223869109">Sovellus on estetty</translation>
 <translation id="534295439873310000">NFC-laitteet</translation>
 <translation id="5344579389779391559">Tämä sivu voi yrittää veloittaa sinua</translation>
@@ -2065,6 +2068,7 @@ Lisätietoja:
 <translation id="7654909834015434372">Kun muokkaat merkintöjä, tämä dokumentti palaa alkuperäiseen asentoon</translation>
 <translation id="765676359832457558">Piilota lisäasetukset...</translation>
 <translation id="7658239707568436148">Peru</translation>
+<translation id="7659878911471462949">Ilon kyyneleet</translation>
 <translation id="7662298039739062396">Laajennuksen hallinnoima asetus</translation>
 <translation id="7663736086183791259">Varmenne <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Ei sallittu incognito-tilassa</translation>
@@ -2268,6 +2272,7 @@ Lisätietoja:
 <translation id="830498451218851433">Keskitaite</translation>
 <translation id="8307358339886459768">Pieni kuva</translation>
 <translation id="8307888238279532626">Asennetut sovellukset ja se, miten usein niitä käytetään</translation>
+<translation id="8317207217658302555">Päivitetäänkö ARCore?</translation>
 <translation id="831997045666694187">Ilta</translation>
 <translation id="8321476692217554900">ilmoitukset</translation>
 <translation id="8328484624016508118">Suljettuasi kaikki incognito-välilehdet Chrome poistaa:

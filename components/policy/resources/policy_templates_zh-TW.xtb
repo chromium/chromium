@@ -96,6 +96,7 @@
 <translation id="1099282607296956954">為所有網站啟用網站隔離</translation>
 <translation id="1105572260329131950">使用預設圖示代表安全連線</translation>
 <translation id="1110426799149444997">停用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />的區域搜尋功能。</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1117535567637097036">處理 Android 意圖時，系統不會使用透過這項政策設定的通訊協定處理常式。</translation>
 <translation id="1118093128235245168">允許網站要求使用者授權存取已連線的 USB 裝置</translation>
 <translation id="111910763555783249">通知設定</translation>
@@ -458,6 +459,11 @@
 <translation id="1553532014072799546">個別應用程式時間限制許可清單</translation>
 <translation id="1553956579506604198">禁止系統安裝外部擴充功能</translation>
 <translation id="1555248923316727072">SAML 使用者身分管理設定</translation>
+<translation id="1558723461519082860">這項政策會授予權限，讓 Projector 能建立及轉錄螢幕畫面錄製內容，並上傳至雲端硬碟。
+
+      如果啟用這項政策，系統就會啟用 Projector。
+      如果停用這項政策，則系統會停用 Projector。
+      如果不設定這項政策，系統預設會停用 Projector。</translation>
 <translation id="1561424797596341174">針對遠端存取主機的偵錯版本覆寫政策</translation>
 <translation id="1561967320164410511">用於個人認證的 U2F 和擴充功能</translation>
 <translation id="1567718448549957373">如果將這項政策設為啟用或不設定，將可透過不安全的 HTTP 連線接收 <ph name="BASIC_AUTH" /> 驗證要求。
@@ -798,6 +804,7 @@
 <translation id="1962864958436828230">設定防止資料外洩的剪貼簿資料大小最低限制</translation>
 <translation id="1964634611280150550">無痕模式已停用</translation>
 <translation id="1964802606569741174">這項政策對 Android YouTube 應用程式沒有影響。如要強制採用 YouTube 安全模式，則必須禁止下載 Android YouTube 應用程式。</translation>
+<translation id="1967334955994230472">停用 Projector</translation>
 <translation id="1969212217917526199">覆寫遠端存取主機的偵錯版本政策。
 
           系統會以政策名稱 JSON 字典形式剖析這個值，以對應政策值。</translation>
@@ -2001,6 +2008,7 @@
 <translation id="328347261792478720">在預設狀態下，瀏覽器會根據使用者顯示個人化的媒體推薦內容。如果將這項政策設為停用，瀏覽器會向使用者隱藏這類推薦內容。如果將這項政策設為啟用或不設定，瀏覽器會向使用者顯示媒體推薦內容。</translation>
 <translation id="3284094172359247914">控制 WebUSB API 使用權限</translation>
 <translation id="3288595667065905535">發布頻道</translation>
+<translation id="3291318845269544294">啟用 Projector</translation>
 <translation id="3294430356898755483">你可以透過這項政策，讓管理員為使用者設定印表機清單。印表機選取作業會在使用者第一次嘗試列印時啟動。
 
       這項政策的用途如下：
@@ -2058,6 +2066,7 @@
           指定政策值時需以毫秒為單位。設定值必須小於或等於閒置延遲時間。
 
           只有當閒置動作設為登出或關機時，系統才會顯示警告訊息。</translation>
+<translation id="3360280740977649313">控制 Projector 的各項政策。</translation>
 <translation id="3363360928811201045">對受管理帳戶設定限制</translation>
 <translation id="3373381043600809954">啟用「<ph name="PRODUCT_NAME" />」</translation>
 <translation id="3374587000313305002">設定 <ph name="PRODUCT_NAME" /> 用來儲存使用者資料的目錄。

@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Contacting Google. This may take a minute…</translation>
 <translation id="1416550906796893042">Application version</translation>
 <translation id="1430915738399379752">Print</translation>
+<translation id="1436784010935106834">Removed</translation>
 <translation id="1448440926884431741">Organise your tracked products in Bookmarks</translation>
 <translation id="1450753235335490080">Can't share <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Pick Chrome’s language</translation>
@@ -203,7 +204,6 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2172905120685242547">Close window?</translation>
 <translation id="2175927920773552910">QR code</translation>
 <translation id="218608176142494674">Sharing</translation>
-<translation id="2195339740518523951">Get Chrome’s strongest security</translation>
 <translation id="2200113223741723867">Manage usage data sharing</translation>
 <translation id="2218567645332692482">Upgrade navigations to HTTPS and warn you before loading sites that don’t support it</translation>
 <translation id="2227444325776770048">Continue as <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4170011742729630528">The service is not available; try again later.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> used</translation>
 <translation id="4181841719683918333">Languages</translation>
-<translation id="4183868528246477015">Search with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Open in new tab</translation>
 <translation id="4196597275619698563">Create card</translation>
 <translation id="4198423547019359126">No available download locations</translation>
@@ -577,7 +576,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4411535500181276704">Lite mode</translation>
 <translation id="4415276339145661267">Manage your Google Account</translation>
 <translation id="4425140285732600465">Tracking price. Get alerts if the price drops on any site.</translation>
-<translation id="4427306783828095590">Enhanced protection does more to block phishing and malware</translation>
 <translation id="4450672886426705087">Search results from Google.</translation>
 <translation id="4452411734226507615">Close <ph name="TAB_TITLE" /> tab</translation>
 <translation id="4452548195519783679">Bookmarked to <ph name="FOLDER_NAME" /></translation>
@@ -1246,7 +1244,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8035133914807600019">New folder…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> days left</translation>
 <translation id="8037801708772278989">Checked just now</translation>
-<translation id="8040831032425909005">Quick action Search widget icon</translation>
 <translation id="804335162455518893">SD card not found</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognito tab}other{<ph name="TAB_COUNT_NORMAL" /> incognito tabs}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB available</translation>

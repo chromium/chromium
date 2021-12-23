@@ -235,6 +235,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3157387275655328056">Pridať do čitateľského zoznamu</translation>
 <translation id="3157684681743766797">Označiť všetko…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Uložené heslá môžete používať aj v iných zariadeniach.</translation>
 <translation id="3175081911749765310">Web. služ.</translation>
 <translation id="3178650076442119961">Aktívne dnes</translation>
 <translation id="3181825792072797598">Zapnúť synchronizáciu</translation>
@@ -328,6 +329,7 @@ Postupujte podľa krokov nižšie:</translation>
 <translation id="4042870976416480368">Nájsť na stránke</translation>
 <translation id="4049507953662678203">Uistite sa, že máte pripojenie k sieti, a skúste to znova.</translation>
 <translation id="408404951701638773">Vyhľadávací panel je teraz dostupnejší</translation>
+<translation id="4108314971463891922">Sledovať</translation>
 <translation id="411254640334432676">Sťahovanie zlyhalo.</translation>
 <translation id="4112644173421521737">Hľadať</translation>
 <translation id="4113030288477039509">Spravované vaším správcom</translation>
@@ -345,6 +347,7 @@ Postupujte podľa krokov nižšie:</translation>
 <translation id="4272631900155121838">Ak chcete naskenovať QR kód, povoľte v nastaveniach fotoaparát</translation>
 <translation id="4277990410970811858">Bezpečné prehliadanie</translation>
 <translation id="4281844954008187215">Zmluvné podmienky</translation>
+<translation id="4304713468139749426">Správca hesiel</translation>
 <translation id="430793432425771671">Synchronizovať všetko</translation>
 <translation id="4309403553630140242">Ďalšie informácie získate dvojitým klepnutím</translation>
 <translation id="430967081421617822">Za celé obdobie</translation>
@@ -543,6 +546,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6127379762771434464">Položka bola odstránená</translation>
 <translation id="6136914049981179737">Pred chvíľou</translation>
 <translation id="6144589619057374135">Otvoriť adresu ${url} v režime inkognito</translation>
+<translation id="6149061208933997199">Použiť heslo</translation>
 <translation id="6159839020698489198">nepovinné</translation>
 <translation id="6177442314419606057">Hľadať v Chrome</translation>
 <translation id="6184086493125982861">Zobraziť karty</translation>
@@ -767,6 +771,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8076014560081431679">Uložené nastavenia webov sa neodstránia a môžu odrážať vaše návyky prehliadania. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Toto nastavenie je spravované. Viac sa dozviete po dvojitom klepnutí.</translation>
 <translation id="8080028325999236607">Zavrieť všetky karty</translation>
+<translation id="8101409298456377967">Vytvárajte, ukladajte a spravujte svoje heslá, aby ste sa mohli jednoducho prihlasovať na weboch a v aplikáciách. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Vypnúť</translation>
 <translation id="8114753159095730575">Súbor je k dispozícii na stiahnutie. Možnosti sú k dispozícii v dolnej časti obrazovky.</translation>
 <translation id="8132598642024322408">Teraz za <ph name="PRICE" />, predtým <ph name="PREVIOUS_PRICE" />.</translation>

@@ -235,6 +235,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3157387275655328056">Ongeza kwenye Orodha ya Kusoma</translation>
 <translation id="3157684681743766797">Tia Zote Alama...</translation>
 <translation id="3169472444629675720">Gundua</translation>
+<translation id="3174662312949010067">Unaweza pia kutumia manenosiri uliyohifadhi, kwenye vifaa vyako vingine.</translation>
 <translation id="3175081911749765310">Huduma za Wavuti</translation>
 <translation id="3178650076442119961">Kimetumika Leo</translation>
 <translation id="3181825792072797598">Washa kipengele cha Kusawazisha</translation>
@@ -328,6 +329,7 @@ Fuata hatua zifuatazo:</translation>
 <translation id="4042870976416480368">Pata katika Ukurasa</translation>
 <translation id="4049507953662678203">Hakikisha una muunganisho wa mtandao, kisha ujaribu tena.</translation>
 <translation id="408404951701638773">Sasa unaweza kufikia upau wa kutafutia kwa urahisi</translation>
+<translation id="4108314971463891922">Fuatilia</translation>
 <translation id="411254640334432676">Upakuaji haujafaulu.</translation>
 <translation id="4112644173421521737">Tafuta</translation>
 <translation id="4113030288477039509">Inadhibitiwa na msimamizi wako</translation>
@@ -544,6 +546,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6127379762771434464">Kipengee kimeondolewa</translation>
 <translation id="6136914049981179737">Sekunde chache</translation>
 <translation id="6144589619057374135">Fungua ${url} katika Hali Fiche</translation>
+<translation id="6149061208933997199">Tumia Nenosiri</translation>
 <translation id="6159839020698489198">si lazima</translation>
 <translation id="6177442314419606057">Tafuta katika Chrome</translation>
 <translation id="6184086493125982861">Onyesha Vichupo</translation>
@@ -768,6 +771,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8076014560081431679">Mipangilio ya tovuti iliyohifadhiwa haitafutwa na inaweza kuonyesha mtindo wako wa kuvinjari. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Mipangilio hii inadhibitiwa, gusa mara mbili ili upate maelezo zaidi</translation>
 <translation id="8080028325999236607">Funga Vichupo Vyote</translation>
+<translation id="8101409298456377967">Tunga, hifadhi na udhibiti manenosiri yako ili uweze kuingia katika akaunti kwenye tovuti na programu kwa urahisi. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Zima</translation>
 <translation id="8114753159095730575">Unaweza kupakua faili. Chaguo zinapatikana karibu na sehemu ya chini ya skrini.</translation>
 <translation id="8132598642024322408">Bei ya sasa ni <ph name="PRICE" />, awali ilikuwa <ph name="PREVIOUS_PRICE" />.</translation>

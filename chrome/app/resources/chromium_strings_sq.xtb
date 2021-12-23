@@ -120,13 +120,13 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="454579500955453258">Të vazhdohet te një profil i ri i Chromium?</translation>
 <translation id="4567424176335768812">Je identifikuar si <ph name="USER_EMAIL_ADDRESS" />. Tani mund të qasesh te faqeshënuesit, historiku dhe cilësime të tjera në të gjitha pajisjet ku je identifikuar.</translation>
 <translation id="459535195905078186">Aplikacionet Chromium</translation>
+<translation id="4621240073146040695">Pothuajse i përditësuar! Hape përsëri Chromium për të përfunduar përditësimin.</translation>
 <translation id="4665829708273112819">Paralajmërim: Chromium nuk mund të parandalojë regjistrimin e historikut të shfletimit nga shtesat. Për të çaktivizuar këtë shtesë në modalitetin "e fshehtë", anulo zgjedhjen e këtij opsioni.</translation>
 <translation id="4677944499843243528">Profili duket të jetë në përdorim nga një tjetër proces i Chromium (<ph name="PROCESS_ID" />) në një tjetër kompjuter (<ph name="HOST_NAME" />). Chromium ka kyçur profilin që të mos dëmtohet. Nëse je i sigurt që asnjë proces tjetër nuk po e përdor këtë profil, mund të shkyçësh profilin dhe ta rinisësh Chromium.</translation>
 <translation id="469338717132742108">Merr ndihmë me Chromium OS</translation>
 <translation id="4708774505295300557">Dikush është identifikuar më parë në Chromium në këtë kompjuter si <ph name="ACCOUNT_EMAIL_LAST" />. Krijo një përdorues të ri të Chromium për t'i mbajtur të ndara informacionet e tua.</translation>
 <translation id="4746050847053251315">Dëshiron ta mbyllësh Chromium gjithsesi?</translation>
 <translation id="4748217263233248895">Sapo është zbatuar një përditësim special i sigurisë për Chromium. Rinise tani dhe do të restaurojmë skedat e tua.</translation>
-<translation id="4750035648288509542">Pothuajse u përditësua! Hap përsëri Chromium për të përfunduar përditësimin. Dritaret "e fshehta" nuk do të hapen.</translation>
 <translation id="4788777615168560705">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri pas 24 orësh ose <ph name="BEGIN_LINK" />kontrollo fjalëkalimet në "Llogarinë tënde të Google"<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Kjo përdor të njëjtin kontrollues drejtshkrimor që përdoret në kërkimin e Google. Teksti që shkruan në shfletues dërgohet te Google. Mund ta ndryshosh këtë sjellje gjithmonë te cilësimet.</translation>
 <translation id="4888717733111232871">Rregulli hyrës për Chromium për të lejuar trafikun mDNS.</translation>
@@ -239,6 +239,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7561906087460245826">Pastro po ashtu të dhënat nga Chromium (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Nëse cilësimi nuk shfaqet në këtë faqe, shiko te <ph name="LINK_BEGIN" />
       cilësimet e sistemit operativ të Chromium<ph name="LINK_END" /></translation>
+<translation id="7597596667193879455">Ke aktivizuar "Shfletimin e sigurt të përmirësuar" në llogarinë tënde. Tani merre për Chromium.</translation>
 <translation id="761356813943268536">Chromium po përdor kamerën dhe mikrofonin tënd.</translation>
 <translation id="7617377681829253106">Chromium sapo është përmirësuar</translation>
 <translation id="7686590090926151193">Chromium nuk është shfletuesi i parazgjedhur</translation>

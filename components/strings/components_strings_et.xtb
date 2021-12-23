@@ -112,6 +112,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1308113895091915999">Pakkumine on saadaval</translation>
 <translation id="1312803275555673949">Millised tõendid seda toetavad?</translation>
 <translation id="131405271941274527"><ph name="URL" /> soovib andmeid saata ja vastu võtta, kui puudutate telefoniga NFC-seadet</translation>
+<translation id="1314311879718644478">Liitreaalse sisu vaatamine</translation>
 <translation id="1314509827145471431">Köide paremal</translation>
 <translation id="1318023360584041678">Salvestati vahelehtede gruppi</translation>
 <translation id="1319245136674974084">Ära enam selle rakenduse kohta küsi</translation>
@@ -215,6 +216,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1583429793053364125">Veebilehe kuvamisel läks midagi valesti.</translation>
 <translation id="1586541204584340881">Millised laiendused olete installinud</translation>
 <translation id="1588438908519853928">Tavaline</translation>
+<translation id="1589050138437146318">Kas installida ARCore?</translation>
 <translation id="1592005682883173041">Juurdepääs kohalikele andmetele</translation>
 <translation id="1594030484168838125">Vali</translation>
 <translation id="160851722280695521">Chrome'is mängu Dino Run mängimine</translation>
@@ -1391,6 +1393,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5333022057423422993">Chrome leidis äsja kasutatud parooli andmetega seotud rikkumisest. Oma kontode turvalisuse tagamiseks soovitame teil oma salvestatud paroole kontrollida.</translation>
 <translation id="5334013548165032829">Üksikasjalikud süsteemilogid</translation>
 <translation id="5334145288572353250">Kas salvestada aadress?</translation>
+<translation id="5335920952954443287">Tuksuv süda</translation>
 <translation id="5340250774223869109">Rakendus on blokeeritud</translation>
 <translation id="534295439873310000">NFC-seadmed</translation>
 <translation id="5344579389779391559">Leht võib üritada teilt tasu võtta</translation>
@@ -2063,6 +2066,7 @@ Lisateave:
 <translation id="7654909834015434372">Märkuste muutmisel naaseb see dokument algsesse asendisse</translation>
 <translation id="765676359832457558">Peida täpsemad seaded ...</translation>
 <translation id="7658239707568436148">Tühista</translation>
+<translation id="7659878911471462949">Rõõmupisarad</translation>
 <translation id="7662298039739062396">Seadet juhib laiendus</translation>
 <translation id="7663736086183791259">Sertifikaat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Pole inkognito režiimis lubatud</translation>
@@ -2266,6 +2270,7 @@ Lisateave:
 <translation id="830498451218851433">Pooleks volditud</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Installitud rakendused ja nende kasutussagedus</translation>
+<translation id="8317207217658302555">Kas värskendada ARCore'i?</translation>
 <translation id="831997045666694187">Õhtu</translation>
 <translation id="8321476692217554900">märguanded</translation>
 <translation id="8328484624016508118">Pärast kõigi inkognito vahelehtede sulgemist kustutab Chrome järgmised andmed.

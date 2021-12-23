@@ -43,6 +43,7 @@
 <translation id="3639997914391704523">Google hisobingizga kirsangiz, Chromium parollaringizni tekshira oladi.</translation>
 <translation id="3805899903892079518">Chromium rasm va videolaringizni ko‘ra olmayapti. “Sozlamalar &gt; Maxfiylik &gt; Rasmlar” oynasi orqali ruxsat bering.</translation>
 <translation id="3946918322491238254">Bu qurilmadagi bukmarklar, tarix, parollar va boshqa sozlamalarni koʻrishingiz mumkin. Oʻzgartirish kiritilsa, ular hisobingizga sinxronlanmaydi.</translation>
+<translation id="4043291146360695975">Parollar faqat shu qurilmadagi Parollar menejeriga saqlanadi.</translation>
 <translation id="4099085513035183040">Chromium Beta nashrida ishlamaydi</translation>
 <translation id="4555020257205549924">Agar bu funksiya yoniq bo‘lsa, Chromium sahifalarni Google Tarjimon xizmati yordamida tarjima qilishni taklif qiladi. <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
@@ -60,7 +61,6 @@
 <translation id="5573014823074921752">Chromium maslahati. Ko‘proq varaqlarni tanlash uchun ekranning quyi yoki yuqorisida joylashgan asboblar panelidan Varaqlarni ko‘rsatish tugmasi ustiga bosib turing.</translation>
 <translation id="5700709190537129682">Chromium parollaringizni tekshira olmadi</translation>
 <translation id="5777187867430702742">Chromium sahifasi</translation>
-<translation id="5828714153471158680">Saqlangan parollaringizni Parollar menejeri avtomatik kiritishi uchun iOS avtomatik kiritish sozlamalarida Chromiumni yoqing:</translation>
 <translation id="5862307444128926510">Chromium brauzeriga xush kelibsiz</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> domenida boshqariladigan hisobga kirish bilan siz administratorga Chromium ma’lumotlaringizni boshqarishiga rozilik bildirasiz. Barcha Chromium ma’lumotlaringiz bu hisobga butunlay bog‘langan. Agar hisobdan chiqadigan bo‘lsangiz, bu qurilmadagi barcha ma’lumotlaringiz o‘chib ketadi, lekin Google hisobingizda saqlanib qoladi.</translation>
 <translation id="602807004951640891">Chromium ishlatish orqali siz <ph name="BEGIN_LINK_TOS" />Xizmat shartlariga<ph name="END_LINK_TOS" /> rozilik bildirgan hisoblanasiz.</translation>
@@ -107,6 +107,7 @@
 <translation id="8776843108004031667">Bu hisob va uning barcha saqlanmagan maʼlumotlari Chromiumdan olib tashlanadi.</translation>
 <translation id="894437814105052438">Hisobingizdan chiqsangiz, Chromium yangi maʼlumotlarni Google hisobingizga sinxronlamaydi. Oldin sinxronlangan maʼlumotlar hisobingizda qoladi.</translation>
 <translation id="9022552996538154597">Chromium‘ga kirish</translation>
+<translation id="9059693977935746710">Bu parolni eslab qolishingiz shart emas. U Parollar menejerida <ph name="EMAIL" /> hisobiga saqlanadi.</translation>
 <translation id="9089354809943900324">Chromium versiyasi eskirdi</translation>
 <translation id="9110075932708282655">Chromium birlamchi boʻlsin</translation>
 <translation id="921174536258924340">Chromium barcha parollarni tekshira olmadi. Ertaga qaytadan urining yoki <ph name="BEGIN_LINK" />Google hisobingizdagi parollarni tekshiring.<ph name="END_LINK" /></translation>

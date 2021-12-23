@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">ਪੇਸ਼ਕਸ਼ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="1312803275555673949">ਕਿਹੜਾ ਸਬੂਤ ਇਸ ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ?</translation>
 <translation id="131405271941274527">ਜਦੋਂ ਤੁਸੀਂ ਆਪਣੇ ਫ਼ੋਨ ਨੂੰ ਕਿਸੇ NFC ਡੀਵਾਈਸ 'ਤੇ ਟੈਪ ਕਰਦੇ ਹੋ ਤਾਂ <ph name="URL" /> ਜਾਣਕਾਰੀ ਭੇਜਣਾ ਅਤੇ ਪ੍ਰਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ</translation>
+<translation id="1314311879718644478">ਆਗਮੈਂਟਿਡ ਰਿਐਲਿਟੀ ਸੰਬੰਧੀ ਸਮੱਗਰੀ ਦੇਖੋ</translation>
 <translation id="1314509827145471431">ਸੱਜੇ ਜਿਲਦਬੰਦ</translation>
 <translation id="1318023360584041678">ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ</translation>
 <translation id="1319245136674974084">ਇਸ ਐਪ ਲਈ ਦੁਬਾਰਾ ਨਾ ਪੁੱਛੋ</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">ਇਹ ਵੈਬਸਫ਼ਾ ਪ੍ਰਦਰਸ਼ਿਤ ਕਰਦੇ ਸਮੇਂ ਕੁਝ ਗ਼ਲਤ ਹੋਇਆ ਸੀ।</translation>
 <translation id="1586541204584340881">ਤੁਸੀਂ ਕਿਹੜੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਸਥਾਪਤ ਕੀਤੀਆਂ ਹੋਈਆਂ ਹਨ</translation>
 <translation id="1588438908519853928">ਸਧਾਰਨ</translation>
+<translation id="1589050138437146318">ਕੀ ARCore ਨੂੰ ਸਥਾਪਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1592005682883173041">ਸਥਾਨਕ  ਡਾਟਾ  ਪਹੁੰਚ</translation>
 <translation id="1594030484168838125">ਚੁਣੋ</translation>
 <translation id="160851722280695521">Chrome ਵਿੱਚ Dino Run ਗੇਮ ਖੇਡੋ</translation>
@@ -1380,6 +1382,7 @@
 <translation id="5333022057423422993">Chrome ਨੂੰ ਉਹ ਪਾਸਵਰਡ ਮਿਲਿਆ ਹੈ ਜਿਸਦੀ ਵਰਤੋਂ ਤੁਸੀਂ ਹੁਣੇ-ਹੁਣੇ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਕੀਤੀ ਹੈ। ਤੁਹਾਡੇ ਖਾਤਿਆਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਅਸੀਂ ਤੁਹਾਡੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦੇ ਹਾਂ।</translation>
 <translation id="5334013548165032829">ਵੇਰਵੇ ਸਹਿਤ ਸਿਸਟਮ ਲੌਗ</translation>
 <translation id="5334145288572353250">ਕੀ ਪਤਾ ਰੱਖਿਅਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
+<translation id="5335920952954443287">ਧੜਕਦਾ ਦਿਲ</translation>
 <translation id="5340250774223869109">ਐਪਲੀਕੇਸ਼ਨ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="534295439873310000">NFC ਡੀਵਾਈਸਾਂ</translation>
 <translation id="5344579389779391559">ਸ਼ਾਇਦ ਇਸ ਪੰਨੇ 'ਤੇ ਤੁਹਾਡੇ ਤੋਂ ਖਰਚਾ ਲਿਆ ਜਾਵੇ</translation>
@@ -2051,6 +2054,7 @@
 <translation id="7654909834015434372">ਜਦੋਂ ਤੁਸੀਂ ਐਨੋਟੇਸ਼ਨਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਦੇ ਹੋ, ਤਾਂ ਇਹ ਦਸਤਾਵੇਜ਼ ਆਪਣੇ ਮੂਲ ਘੁਮਾਅ 'ਤੇ ਵਾਪਸ ਆ ਜਾਵੇਗਾ</translation>
 <translation id="765676359832457558">ਉੱਨਤ ਸੈਟਿੰਗਾਂ ਲੁਕਾਓ...</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
+<translation id="7659878911471462949">ਖੁਸ਼ੀ ਦੇ ਹੰਝੂ</translation>
 <translation id="7662298039739062396">ਸੈਟਿੰਗ ਕਿਸੇ ਐਕਸਟੈਂਸ਼ਨ ਵੱਲੋਂ ਕੰਟਰੋਲ ਕੀਤੀ ਗਈ</translation>
 <translation id="7663736086183791259">ਪ੍ਰਮਾਣ-ਪੱਤਰ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
@@ -2254,6 +2258,7 @@
 <translation id="830498451218851433">ਅੱਧੀ ਤਹਿ</translation>
 <translation id="8307358339886459768">ਛੋਟੀ-ਫ਼ੋਟੋ</translation>
 <translation id="8307888238279532626">ਸਥਾਪਤ ਐਪਾਂ ਅਤੇ ਐਪਾਂ ਵਰਤਣ ਦਾ ਸਮਾਂ</translation>
+<translation id="8317207217658302555">ਕੀ ARCore ਨੂੰ ਅੱਪਡੇਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="831997045666694187">ਸ਼ਾਮ</translation>
 <translation id="8321476692217554900">ਸੂਚਨਾਵਾਂ</translation>
 <translation id="8328484624016508118">ਸਾਰੀਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰਨ ਤੋਂ ਬਾਅਦ, Chrome ਇਨ੍ਹਾਂ ਚੀਜ਼ਾਂ ਨੂੰ ਕਲੀਅਰ ਕਰਦਾ ਹੈ:

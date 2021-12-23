@@ -235,6 +235,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3157387275655328056">Shto te lista e leximit</translation>
 <translation id="3157684681743766797">Shëno të gjitha…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Fjalëkalimet e ruajtura mund t'i përdorësh edhe në pajisjet e tua të tjera.</translation>
 <translation id="3175081911749765310">Shërbimet e uebit</translation>
 <translation id="3178650076442119961">Aktiv sot</translation>
 <translation id="3181825792072797598">Aktivizo "Sinkronizimin"</translation>
@@ -328,6 +329,7 @@ Ndiq hapat më poshtë:</translation>
 <translation id="4042870976416480368">Gjej brenda faqes</translation>
 <translation id="4049507953662678203">Sigurohu që ke një lidhje interneti dhe provo përsëri.</translation>
 <translation id="408404951701638773">Shiriti i kërkimit mund të arrihet tani më lehtë</translation>
+<translation id="4108314971463891922">Ndiq</translation>
 <translation id="411254640334432676">Shkarkimi dështoi.</translation>
 <translation id="4112644173421521737">Kërko</translation>
 <translation id="4113030288477039509">Menaxhuar nga administratori yt</translation>
@@ -345,6 +347,7 @@ Ndiq hapat më poshtë:</translation>
 <translation id="4272631900155121838">Për të skanuar një kod QR, aktivizo kamerën nga cilësimet</translation>
 <translation id="4277990410970811858">Shfletimi i sigurt</translation>
 <translation id="4281844954008187215">Kushtet e shërbimit</translation>
+<translation id="4304713468139749426">Menaxheri i fjalëkalimeve</translation>
 <translation id="430793432425771671">Sinkronizo gjithçka</translation>
 <translation id="4309403553630140242">Trokit dy herë për më shumë informacion</translation>
 <translation id="430967081421617822">Gjatë të gjithë kohës</translation>
@@ -356,6 +359,7 @@ Ndiq hapat më poshtë:</translation>
 <translation id="4389019817280890563">Trokit për ta ndryshuar gjuhën.</translation>
 <translation id="4442550905108052454">Hap <ph name="BEGIN_BOLD" />Cilësimet<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Shto gjuhën</translation>
+<translation id="4462491365653392320">Monitoro çmimet në skeda</translation>
 <translation id="4469418912670346607">Vazhdo konfigurimin</translation>
 <translation id="4474494258097106883">Krijuar për iPhone tënd</translation>
 <translation id="4476574785019001431">Cilësimet</translation>
@@ -419,6 +423,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="4944543191714094452">Gjej në faqe…</translation>
 <translation id="4945756290001680296">Qasu te cilësimet e fjalëkalimit</translation>
 <translation id="4979397965658815378">Identifikohu me llogarinë e Google për të marrë faqeshënuesit, fjalëkalimet, historikun dhe cilësime të tjera në të gjitha pajisjet e tua.</translation>
+<translation id="4986678885919050584">Hiq nga kjo pajisje</translation>
 <translation id="5005498671520578047">Kopjo fjalëkalimin</translation>
 <translation id="5017828934289857214">Më kujto më vonë</translation>
 <translation id="5037676449506322593">Përzgjidhi të gjitha</translation>
@@ -520,6 +525,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5979837087407522202">Kërko për fjalëkalime</translation>
 <translation id="5982717868370722439">Shto të dhënat ekzistuese te <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Vizituar kohët e fundit</translation>
+<translation id="5988097621740394599">Shiko uljet e çmimeve në skeda.</translation>
 <translation id="5988851877894965432">Hap URL-të në Chrome</translation>
 <translation id="6012140227487808125">Po shifron…</translation>
 <translation id="6021332621416007159">Hape në...</translation>
@@ -540,6 +546,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6127379762771434464">Artikulli u hoq</translation>
 <translation id="6136914049981179737">Sekonda më parë</translation>
 <translation id="6144589619057374135">Hap ${url} në modalitetin "I fshehtë"</translation>
+<translation id="6149061208933997199">Përdor fjalëkalimin</translation>
 <translation id="6159839020698489198">opsionale</translation>
 <translation id="6177442314419606057">Kërko në Chrome</translation>
 <translation id="6184086493125982861">Trego skedat</translation>
@@ -764,6 +771,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8076014560081431679">Cilësimet e ruajtura të sajteve nuk do të fshihen dhe mund të pasqyrojnë zakonet e tua të shfletimit. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Ky cilësim menaxhohet, trokit dy herë për më shumë informacion</translation>
 <translation id="8080028325999236607">Mbyll të gjitha skedat</translation>
+<translation id="8101409298456377967">Krijo, ruaj dhe menaxho fjalëkalimet e tua që të mund të identifikohesh me lehtësi në sajte dhe aplikacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Çaktivizo</translation>
 <translation id="8114753159095730575">Ofrohet shkarkimi i skedarit. Opsionet ofrohen pranë fundit të ekranit.</translation>
 <translation id="8132598642024322408">Tani <ph name="PRICE" />, ishte <ph name="PREVIOUS_PRICE" />.</translation>

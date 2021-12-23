@@ -120,13 +120,13 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="454579500955453258">Halda áfram á nýjum Chromium prófíl?</translation>
 <translation id="4567424176335768812">Þú ert skráð(ur) inn sem <ph name="USER_EMAIL_ADDRESS" />. Nú hefur þú aðgang að bókamerkjunum þínum, vefferlinum þínum og öðrum stillingum í öllum tækjum sem þú ert skráð(ur) inn á.</translation>
 <translation id="459535195905078186">Chromium forrit</translation>
+<translation id="4621240073146040695">Næstum uppfært! Endurræstu Chromium til að ljúka uppfærslunni.</translation>
 <translation id="4665829708273112819">Viðvörun: Chromium getur ekki komið í veg fyrir að viðbætur skrái vafraferilinn þinn. Afturkallaðu þennan valkost til að gera þessa viðbót óvirka í huliðsstillingu.</translation>
 <translation id="4677944499843243528">Annað Chromium ferli (<ph name="PROCESS_ID" />) virðist vera að nota þennan prófíl í annarri tölvu (<ph name="HOST_NAME" />). Chromium hefur læst prófílnum svo hann skemmist ekki. Ef þú ert viss um að engin önnur ferli séu að nota þennan prófíl geturðu tekið hann úr lás og endurræst Chromium.</translation>
 <translation id="469338717132742108">Fá hjálp með Chromium OS</translation>
 <translation id="4708774505295300557">Einhver skráði sig inn á Chromium úr þessari tölvu sem <ph name="ACCOUNT_EMAIL_LAST" />. Stofnaðu nýjan notanda í Chromium til að halda þínum upplýsingum aðskildum frá hinum notandanum.</translation>
 <translation id="4746050847053251315">Viltu samt loka Chromium?</translation>
 <translation id="4748217263233248895">Sérstök öryggisuppfærsla fyrir Chromium var tekin í notkun. Endurræstu núna og við opnum flipana þína aftur.</translation>
-<translation id="4750035648288509542">Næstum því uppfært! Endurræstu Chromium til að ljúka við uppfærslu. Huliðsgluggar enduropnast ekki.</translation>
 <translation id="4788777615168560705">Chromium getur ekki athugað aðgangsorðin þín. Reyndu aftur eftir sólarhring eða <ph name="BEGIN_LINK" />athugaðu aðgangsorðin á Google reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Þetta notar sömu ritvilluleit og er notuð í Google leit. Textinn sem þú skrifar í vafranum er sendur til Google. Þú getur alltaf breytt þessu í stillingunum.</translation>
 <translation id="4888717733111232871">Regla á innleið til að láta Chromium leyfa mDNS-umferð.</translation>
@@ -240,6 +240,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7561906087460245826">Hreinsa líka gögn úr Chromium (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Ef stilling sést ekki á þessari síðu skaltu athuga <ph name="LINK_BEGIN" />
       stillingar Chromium OS<ph name="LINK_END" /></translation>
+<translation id="7597596667193879455">Þú kveiktir á enn öruggari vefskoðun á reikningnum þínum. Þessi valkostur er núna í boði fyrir Chromium.</translation>
 <translation id="761356813943268536">Chromium er að nota myndavélina þína og hljóðnema.</translation>
 <translation id="7617377681829253106">Chromium er nú enn betra</translation>
 <translation id="7686590090926151193">Chromium er ekki sjálfgefinn vafri</translation>

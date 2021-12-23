@@ -252,6 +252,7 @@
 <translation id="1244265436519979884">Linux restore currently in progress</translation>
 <translation id="1244303850296295656">Extension error</translation>
 <translation id="1246863218384630739">Couldn't install <ph name="VM_NAME" />: Image URL returned a <ph name="HTTP_ERROR" /> error code. Please contact your administrator.</translation>
+<translation id="1247071602516579380">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />; tablet named <ph name="DEVICE_NAME" /></translation>
 <translation id="1251366534849411931">Expected opening curly bracket: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">This will clear <ph name="TOTAL_USAGE" /> of data stored by sites and installed apps</translation>
 <translation id="1251578593170406502">Scanning for mobile data networks…</translation>
@@ -439,6 +440,7 @@
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> selected</translation>
 <translation id="1442851588227551435">Set active Kerberos ticket</translation>
 <translation id="1444628761356461360">This setting is managed by the device owner, <ph name="OWNER_EMAIL" />.</translation>
+<translation id="1445005312224723356">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />; phone named <ph name="DEVICE_NAME" /></translation>
 <translation id="144518587530125858">Could not load '<ph name="IMAGE_PATH" />' for theme.</translation>
 <translation id="1449191289887455076">Press '<ph name="CURRENTKEY" />' again to confirm assignment and <ph name="RESPONSE" /></translation>
 <translation id="1451375123200651445">Web page, Single File</translation>
@@ -873,6 +875,7 @@
 <translation id="1855079636134697549">Camera is turned on</translation>
 <translation id="1856715684130786728">Add location...</translation>
 <translation id="1858585891038687145">Trust this certificate for identifying software makers</translation>
+<translation id="1859787252990099899">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />; unknown device named <ph name="DEVICE_NAME" /></translation>
 <translation id="1861262398884155592">This folder is empty</translation>
 <translation id="1862311223300693744">Do you have any special VPN, proxy, firewall or NAS software
     installed?</translation>
@@ -1248,6 +1251,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2242687258748107519">File Info</translation>
 <translation id="2246549592927364792">Get image descriptions from Google?</translation>
 <translation id="2247738527273549923">Your device is managed by your organisation</translation>
+<translation id="2249061317998743208">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />; game controller named <ph name="DEVICE_NAME" /></translation>
 <translation id="2249111429176737533">Open as tabbed window</translation>
 <translation id="2249605167705922988">e.g. 1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">Open with system viewer</translation>
@@ -2012,6 +2016,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3007771295016901659">Duplicate tab</translation>
 <translation id="3008232374986381779">Run Linux tools, editors and IDEs on your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">Reset permissions</translation>
+<translation id="3008396025115884998">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />; audio device named <ph name="DEVICE_NAME" /></translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to connect to Wi-Fi today to download an update. Or, download from a metered connection (charges may apply).}other{<ph name="MANAGER" /> requires you to connect to Wi-Fi and download an update before the deadline. Or, download from a metered connection (charges may apply).}}</translation>
 <translation id="3009300415590184725">Are you sure you want to cancel the mobile data service set-up process?</translation>
 <translation id="3009779501245596802">Indexed Databases</translation>
@@ -2317,6 +2322,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3348038390189153836">Removable device detected</translation>
 <translation id="3348131053948466246">Emoji suggested. Press up or down to navigate, and enter to insert.</translation>
 <translation id="3349933790966648062">Memory footprint</translation>
+<translation id="3354972872297836698">Couldn't pair to device <ph name="DEVICE_NAME" />; select device to try again</translation>
 <translation id="3355936511340229503">Connection error</translation>
 <translation id="3356580349448036450">Complete</translation>
 <translation id="3359256513598016054">Certificate Policy Constraints</translation>
@@ -3659,6 +3665,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4761104368405085019">Use your microphone</translation>
 <translation id="4762718786438001384">Device disk space critically low</translation>
+<translation id="4762898026821161650">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />; computer named <ph name="DEVICE_NAME" /></translation>
 <translation id="4763408175235639573">The following cookies were set when you viewed this page</translation>
 <translation id="4765582662863429759">Allows Android Messages to relay texts from your phone to your Chromebook</translation>
 <translation id="4768332406694066911">You have certificates from these organisations that identify you</translation>
@@ -5842,6 +5849,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Safety check ran 1 minute ago}other{Safety check ran {NUM_MINS} minutes ago}}</translation>
 <translation id="7057767408836081338">Failed to obtain app data. Trying to run the app anyway…</translation>
 <translation id="7058024590501568315">Hidden network</translation>
+<translation id="70582545822664495">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />; mouse named <ph name="DEVICE_NAME" /></translation>
 <translation id="7059858479264779982">Set to auto-launch</translation>
 <translation id="7062222374113411376">Allow recently closed sites to finish sending and receiving data (recommended)</translation>
 <translation id="7063129466199351735">Processing shortcuts...</translation>
@@ -6006,6 +6014,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7257173066616499747">Wi-Fi networks</translation>
 <translation id="725758059478686223">Printing Service</translation>
 <translation id="7257666756905341374">Read data that you copy and paste</translation>
+<translation id="7258006747130724016">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />; video camera named <ph name="DEVICE_NAME" /></translation>
 <translation id="7258192266780953209">Transformations</translation>
 <translation id="7258225044283673131">The application is not responding. Select 'Force close' to close the app.</translation>
 <translation id="7262004276116528033">This sign-in service is hosted by <ph name="SAML_DOMAIN" /></translation>
@@ -6802,6 +6811,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8037117027592400564">Read all text spoken using synthesised speech</translation>
 <translation id="8037357227543935929">Ask (default)</translation>
 <translation id="803771048473350947">File</translation>
+<translation id="8038399858950372766">Device <ph name="DEVICE_INDEX" /> of <ph name="DEVICE_COUNT" />; keyboard named <ph name="DEVICE_NAME" /></translation>
 <translation id="8041089156583427627">Send Feedback</translation>
 <translation id="8042142357103597104">Text opacity</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> not responding.</translation>
@@ -7017,6 +7027,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8249615410597138718">Send to your devices</translation>
 <translation id="8249672078237421304">Offer to translate pages that aren't in a language you read</translation>
 <translation id="8251441930213048644">Refresh now</translation>
+<translation id="8251509999076836464">Pairing to <ph name="DEVICE_NAME" /></translation>
 <translation id="8251578425305135684">Thumbnail removed.</translation>
 <translation id="825238165904109940">Always Show Full URLs</translation>
 <translation id="8252569384384439529">Uploading…</translation>

@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">ხელმისაწვდომია შემოთავაზება</translation>
 <translation id="1312803275555673949">რა ასაბუთებს?</translation>
 <translation id="131405271941274527"><ph name="URL" /> ითხოვს ინფორმაციის გაგზავნას/მიღებას NFC მოწყობილობაზე თქვენს ტელეფონზე შეხებისას</translation>
+<translation id="1314311879718644478">აუგმენტური რეალობის კონტენტის ნახვა</translation>
 <translation id="1314509827145471431">აკინძვა მარჯვნივ</translation>
 <translation id="1318023360584041678">შენახულია ჩანართების ჯგუფში</translation>
 <translation id="1319245136674974084">ამ აპისთვის აღარასოდეს კითხვა</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">ამ ვებგვერდის ჩვენებისას პრობლემა წარმოიქმნა.</translation>
 <translation id="1586541204584340881">თქვენ მიერ დაინსტალირებული გაფართოებები</translation>
 <translation id="1588438908519853928">ნორმალური</translation>
+<translation id="1589050138437146318">გსურთ, დააინსტალიროთ ARCore?</translation>
 <translation id="1592005682883173041">ადგილობრივ მონაცემებზე წვდომა</translation>
 <translation id="1594030484168838125">არჩევა</translation>
 <translation id="160851722280695521">დინოზავრის გარბენის თამაშის თამაში Chrome-ში</translation>
@@ -1383,6 +1385,7 @@
 <translation id="5333022057423422993">თქვენ მიერ ახლახან გამოყენებული პაროლი Chrome-მა გაჟონილ მონაცემებში იპოვა. თქვენი ანგარიშების დაცვის მიზნით, გირჩევთ, შეამოწმოთ თქვენი შენახული პაროლები.</translation>
 <translation id="5334013548165032829">სისტემის დეტალური ჟურნალები</translation>
 <translation id="5334145288572353250">გსურთ, შეინახოთ მისამართი?</translation>
+<translation id="5335920952954443287">მფეთქავი გული</translation>
 <translation id="5340250774223869109">აპლიკაცია დაბლოკილია</translation>
 <translation id="534295439873310000">NFC მოწყობილობები</translation>
 <translation id="5344579389779391559">ამ გვერდმა შეიძლება დაგაკისროთ თანხის გადახდა</translation>
@@ -2055,6 +2058,7 @@
 <translation id="7654909834015434372">ანოტაციების რედაქტირებისას ეს დოკუმენტი შეტრიალდება თავდაპირველი ვერსიის მიხედვით</translation>
 <translation id="765676359832457558">დამალეთ გაფართოებული პარამეტრები…</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
+<translation id="7659878911471462949">სიხარულის ცრემლები</translation>
 <translation id="7662298039739062396">პარამეტრს აკონტროლებს გაფართოება</translation>
 <translation id="7663736086183791259">სერტიფიკატი <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">დაუშვებელია ინკოგნიტო რეჟიმში</translation>
@@ -2258,6 +2262,7 @@
 <translation id="830498451218851433">დაკეცვა ნახევრად</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">დაინსტალირებული აპები და მათი გამოყენების სიხშირე</translation>
+<translation id="8317207217658302555">გსურთ, განაახლოთ ARCore?</translation>
 <translation id="831997045666694187">საღამო</translation>
 <translation id="8321476692217554900">შეტყობინებები</translation>
 <translation id="8328484624016508118">ყველა ინკოგნიტო ჩანართის დახურვის შემდეგ Chrome-ის მიერ გასუფთავდება:

@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">Təklif əlçatandır</translation>
 <translation id="1312803275555673949">Hansı dəlillər bunu dəstəkləyir?</translation>
 <translation id="131405271941274527">NFC cihazında telefonunuza toxunan zaman <ph name="URL" /> məlumat göndərmək və qəbul etmək istəyir</translation>
+<translation id="1314311879718644478">Artırılmış reallıq məzmununa baxın</translation>
 <translation id="1314509827145471431">Sağdan uclarını qovuşdurun</translation>
 <translation id="1318023360584041678">Tab qrupunda saxlanıldı</translation>
 <translation id="1319245136674974084">Bu tətbiq haqqında bir daha soruşmayın</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">Bu veb səhifəni göstərərkən xəta baş verdi.</translation>
 <translation id="1586541204584340881">Quraşdırdığınız artırmalar</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1589050138437146318">ARCore quraşdırılsın?</translation>
 <translation id="1592005682883173041">Yerli Data Girişi</translation>
 <translation id="1594030484168838125">Seçin</translation>
 <translation id="160851722280695521">Chrome'da Dinozavr Qaçış oyununu oynayın</translation>
@@ -1387,6 +1389,7 @@
 <translation id="5333022057423422993">Chrome indicə istifadə etdiyiniz parolu bir data pozuntusunda tapıb. Hesablarınızı qorumaq üçün yadda saxlanmış parollarınızı yoxlamağınızı tövsiyə edirik.</translation>
 <translation id="5334013548165032829">Ətraflı sistem qeydləri</translation>
 <translation id="5334145288572353250">Ünvan saxlanılsın?</translation>
+<translation id="5335920952954443287">Ürək döyüntüsü</translation>
 <translation id="5340250774223869109">Tətbiq bloklanıb</translation>
 <translation id="534295439873310000">NFC cihazları</translation>
 <translation id="5344579389779391559">Bu səhifədə Sizdən ödəniş tutula bilər</translation>
@@ -2059,6 +2062,7 @@
 <translation id="7654909834015434372">Annotasiyaları redaktə etdiyiniz zaman bu sənəd ilkin vəziyyətinə qayıdacaq</translation>
 <translation id="765676359832457558">Qabaqcıl ayarları gizlədin...</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
+<translation id="7659878911471462949">Sevinc göz yaşları</translation>
 <translation id="7662298039739062396">Ayara artırma tərəfindən nəzarət edildi</translation>
 <translation id="7663736086183791259">Sertifikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Anonim rejimdə icazə verilmir</translation>
@@ -2262,6 +2266,7 @@
 <translation id="830498451218851433">Yarımçıq qatlayın</translation>
 <translation id="8307358339886459768">Kiçik Ölçülü Foto</translation>
 <translation id="8307888238279532626">Quraşdırılmış tətbiqlər və nə zaman istifadə edildikləri</translation>
+<translation id="8317207217658302555">ARCore güncəllənsin?</translation>
 <translation id="831997045666694187">Axşam</translation>
 <translation id="8321476692217554900">bildirişlər</translation>
 <translation id="8328484624016508118">Bütün Anonim tabları bağladıqdan sonra Chrome bunları təmizləyəcək:

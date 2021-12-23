@@ -70,6 +70,7 @@
 <translation id="6063091872902370735">Chrome hisobiga kirishga ruxsat berish</translation>
 <translation id="6181930887571472871">Chrome brauzeriga almashing</translation>
 <translation id="6238746320622508509">Chrome bilan Inkognito varaqlarni himoyalang.</translation>
+<translation id="6387994324662817823">Parollar faqat shu qurilmadagi Google Parollar menejeriga saqlanadi.</translation>
 <translation id="6427126399757991875">Chrome tashkilotingiz tomonidan sozlanmoqda...</translation>
 <translation id="6600954340915313787">Chrome’ga nusxalandi</translation>
 <translation id="6634107063912726160">Hisobingizdan chiqsangiz, Chrome yangi maʼlumotlarni Google hisobingizga sinxronlamaydi. Oldin sinxronlangan maʼlumotlar hisobingizda qoladi.</translation>
@@ -109,8 +110,8 @@
   2. Asosiy brauzer ilovasi ustiga bosing
   3. Chrome brauzerini tanlang.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="8699528222318351168">Saqlangan parollaringizni Google Parollar menejeri avtomatik kiritishi uchun iOS avtomatik kiritish sozlamalarida Chromeni yoqing:</translation>
 <translation id="8736550665979974340">Google Chrome bilan himoyalaning</translation>
 <translation id="8772179140489533211">Chrome orqali kirish oynasi chiqadi.</translation>
+<translation id="8788269841521769222">Bu parolni eslab qolishingiz shart emas. U Google Parollar menejerida <ph name="EMAIL" /> hisobiga saqlanadi.</translation>
 <translation id="9112744793181547300">Chrome asosiy brauzer sifatida tanlansinmi?</translation>
 </translationbundle>

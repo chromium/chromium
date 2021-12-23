@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="3157684681743766797">ทำเครื่องหมายทั้งหมด…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">คุณยังใช้รหัสผ่านที่บันทึกไว้ในอุปกรณ์อื่นๆ ได้ด้วย</translation>
 <translation id="3175081911749765310">บริการทางเว็บ</translation>
 <translation id="3178650076442119961">ใช้งานวันนี้</translation>
 <translation id="3181825792072797598">เปิดการซิงค์</translation>
@@ -328,6 +329,7 @@
 <translation id="4042870976416480368">ค้นหาในหน้าเว็บ</translation>
 <translation id="4049507953662678203">ตรวจสอบว่าคุณมีการเชื่อมต่อเครือข่าย และลองอีกครั้ง</translation>
 <translation id="408404951701638773">เข้าถึงแถบค้นหาได้ง่ายขึ้นแล้ว</translation>
+<translation id="4108314971463891922">ติดตาม</translation>
 <translation id="411254640334432676">การดาวน์โหลดล้มเหลว</translation>
 <translation id="4112644173421521737">ค้นหา</translation>
 <translation id="4113030288477039509">มีการจัดการโดยผู้ดูแลระบบ</translation>
@@ -345,6 +347,7 @@
 <translation id="4272631900155121838">หากต้องการสแกนโค้ด QR ให้เปิดใช้กล้องถ่ายรูปจากการตั้งค่า</translation>
 <translation id="4277990410970811858">Google Safe Browsing</translation>
 <translation id="4281844954008187215">ข้อกำหนดในการให้บริการ</translation>
+<translation id="4304713468139749426">เครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="430793432425771671">ซิงค์ทุกอย่าง</translation>
 <translation id="4309403553630140242">แตะสองครั้งเพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="430967081421617822">ตั้งแต่ต้น</translation>
@@ -543,6 +546,7 @@
 <translation id="6127379762771434464">นำรายการออกแล้ว</translation>
 <translation id="6136914049981179737">วินาทีแล้ว</translation>
 <translation id="6144589619057374135">เปิด ${url} ในโหมดไม่ระบุตัวตน</translation>
+<translation id="6149061208933997199">ใช้รหัสผ่าน</translation>
 <translation id="6159839020698489198">ไม่บังคับ</translation>
 <translation id="6177442314419606057">ค้นหาใน Chrome</translation>
 <translation id="6184086493125982861">แสดงแท็บ</translation>
@@ -767,6 +771,7 @@
 <translation id="8076014560081431679">การตั้งค่าเว็บไซต์ที่บันทึกไว้จะไม่ถูกลบและอาจส่งผลกับลักษณะการท่องเว็บของคุณ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">การตั้งค่านี้ได้รับการจัดการ แตะสองครั้งเพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="8080028325999236607">ปิดแท็บทั้งหมด</translation>
+<translation id="8101409298456377967">สร้าง บันทึก และจัดการรหัสผ่านเพื่อจะได้ลงชื่อเข้าใช้เว็บไซต์และแอปได้โดยง่าย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">ปิด</translation>
 <translation id="8114753159095730575">การดาวน์โหลดไฟล์พร้อมใช้งาน มีตัวเลือกอยู่ทางด้านล่างของหน้าจอ</translation>
 <translation id="8132598642024322408">ลดจาก <ph name="PREVIOUS_PRICE" /> เหลือ <ph name="PRICE" /></translation>

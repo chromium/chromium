@@ -131,6 +131,7 @@
 <translation id="1768366657309696705">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: <ph name="LAUNCHER_KEY_NAME" /> + Period. Insert பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + Shift + Backspace பட்டன்களை அழுத்தவும்.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />வது வரிசையில் <ph name="COLUMN_NUMBER" />வது நெடுவரிசைக்கு ஆப்ஸ் நகர்த்தப்பட்டது.</translation>
 <translation id="1771761307086386028">வலப்புறம் செல்</translation>
+<translation id="1774796056689732716">கேலெண்டர், <ph name="CURRENT_MONTH_YEAR" />, தற்போது <ph name="DATE" /> என்ற தேதி தேர்ந்தெடுக்கப்பட்டுள்ளது.</translation>
 <translation id="1787955149152357925">முடக்கு</translation>
 <translation id="1804572139604454141">டிஸ்க்கில் சேமிப்பிடம் மிகக் குறைவாக இருப்பதால் ரெக்கார்டிங் முடிந்தது</translation>
 <translation id="181103072419391116">சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">வசனங்களைக் காட்டு</translation>
 <translation id="5078796286268621944">தவறான PIN</translation>
 <translation id="5083553833479578423">மேலும் பல அசிஸ்டண்ட் அம்சங்களைப் பெறுக.</translation>
+<translation id="5090752371472782287"><ph name="MANAGER" /> சாதனத்திற்கு அலைபரப்பு</translation>
 <translation id="5106223312672646208">பிரத்தியேகமாக்குதல்</translation>
 <translation id="5117590920725113268">அடுத்த மாதத்தைக் காட்டு</translation>
 <translation id="5136175204352732067">வேறொரு கீபோர்டு இணைக்கப்பட்டது</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">Cast சாதனங்கள் உள்ளன</translation>
 <translation id="5170568018924773124">ஃபோல்டரில் காண்பி</translation>
 <translation id="5176318573511391780">திரையைப் பகுதியளவு ரெக்கார்டு செய்யும்</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> நிகழ்வுகள்</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> மற்றும் <ph name="IN_PLACE_APP" /> ஆப்ஸை ஒருங்கிணைத்து புதிய ஃபோல்டர் உருவாக்கப்பட்டது.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{மேலும் ஒரு அறிவிப்பு}other{மேலும் # அறிவிப்புகள்}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">அனைத்தும் காட்டப்பட்டன</translation>
 <translation id="6431865393913628856">திரையை ரெக்கார்டு செய்யும்</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />க்கு <ph name="ROUTE_TITLE" />ஐ அனுப்புகிறது</translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> நிகழ்வு</translation>
 <translation id="6452181791372256707">நிராகரி</translation>
 <translation id="6453179446719226835">மொழி மாற்றப்பட்டது</translation>
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> க்கு திரை விரிவாக்கப்படுகிறது</translation>
@@ -865,6 +869,7 @@
 <translation id="6811454077060061666">Google Drive for desktop கிடைக்கவில்லை</translation>
 <translation id="6818242057446442178">சொல் வாரியாகப் பின்செல்</translation>
 <translation id="6820676911989879663">சிறிது நேரம் இடைவேளை எடுத்துக்கொள்ளவும்!</translation>
+<translation id="6827049576281411231">நிகழ்வுப் பேனலை மூடும்</translation>
 <translation id="6836499262298959512">ஆபத்தான ஃபைல்</translation>
 <translation id="6837064795450991317">டெஸ்க்பாரை மறை</translation>
 <translation id="6852052252232534364">இயக்க கிளிக் செய்யவும்</translation>
@@ -872,6 +877,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{இன்னும் ஓர் இலக்கத்தை உள்ளிட வேண்டும்}other{இன்னும் # இலக்கங்களை உள்ளிட வேண்டும்}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்குவது இடைநிறுத்தப்பட்டது</translation>
 <translation id="6878400149835617132">ஷார்ட்கட் முடக்கப்பட்டுள்ளது</translation>
+<translation id="6884665277231944629">இன்றைய தேதிக்குச் செல்லும்</translation>
 <translation id="6886172995547742638">உங்கள் <ph name="DEVICE_TYPE" /> இன் செயல்திறன் குறையலாம். சான்றளிக்கப்பட்ட <ph name="PREFERRED_MINIMUM_POWER" />W அல்லது அதற்கும் அதிகமான USB-C பவர் அடாப்டரைப் பயன்படுத்தவும்.</translation>
 <translation id="688631446150864480">சாளரங்களுக்கு இடையே மாற கீழ்நோக்கிய அம்புக்குறி விசையை அழுத்துக</translation>
 <translation id="6896758677409633944">நகலெடு</translation>
@@ -958,6 +964,7 @@
 <translation id="7497767806359279797">மொழியையும் கீபோர்ட்டையும் தேர்வுசெய்யவும்</translation>
 <translation id="7509246181739783082">உங்கள் அடையாளத்தைச் சரிபார்த்தல்</translation>
 <translation id="7513622367902644023">ஸ்கிரீன்ஷாட் பயன்முறை தேர்ந்தெடுக்கப்பட்டது</translation>
+<translation id="7513922695575567867">கேலெண்டர், <ph name="DATE" />ன் வாரம், தற்போது <ph name="SELECTED_DATE" />ம் தேதி தேர்ந்தெடுக்கப்பட்டுள்ளது.</translation>
 <translation id="7514365320538308">பதிவிறக்கு</translation>
 <translation id="7526573455193969409">நெட்வொர்க் கண்காணிக்கப்படலாம்</translation>
 <translation id="7536035074519304529">IP முகவரி: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@
 <translation id="7564874036684306347">சாளரத்தை வேறு டெஸ்க்டாப்க்கு மாற்றினால், அது எதிர்பாராதவிதமாகச் செயல்படக் கூடும். அடுத்தடுத்து வரும் அறிவிப்புகளும் சாளரங்களும் உரையாடல்களும் டெஸ்க்டாப்களுக்கு இடையே பிரிக்கப்படலாம்.</translation>
 <translation id="7569509451529460200">பிரெய்லி மற்றும் ChromeVox இயக்கப்பட்டன</translation>
 <translation id="7569983096843329377">கருப்பு</translation>
+<translation id="757941033127302446">உள்நுழைந்துள்ளீர்கள்</translation>
 <translation id="7579778809502851308">திரையைப் படமெடு</translation>
 <translation id="7590883480672980941">உள்ளீட்டு அமைப்புகள்</translation>
 <translation id="7593891976182323525">தேடல் அல்லது Shift</translation>
@@ -1040,6 +1048,7 @@
 <translation id="8035152190676905274">பேனா</translation>
 <translation id="8036504271468642248">முந்தைய வாக்கியம்</translation>
 <translation id="8042893070933512245">அணுகல்தன்மை அமைப்புகள் மெனுவைத் திற</translation>
+<translation id="8042925093898452104">விரிவான தகவல்கள் காட்சியை மூடும்</translation>
 <translation id="8048123526339889627">புளூடூத் அமைப்புகள்</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> என்ற பெயரில் ஏற்கெனவே ஒரு டெம்ப்ளேட் உள்ளது</translation>
 <translation id="8052898407431791827">கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது</translation>

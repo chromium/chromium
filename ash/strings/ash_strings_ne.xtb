@@ -131,6 +131,7 @@
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + पिरियड किबोर्ड सर्टकट परिवर्तन गरिएको छ। Insert की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + Shift + Backspace थिच्नुहोस्।</translation>
 <translation id="1770726142253415363">यो एप सारेर रो <ph name="ROW_NUMBER" />, कलम <ph name="COLUMN_NUMBER" /> मा लगिएको छ।</translation>
 <translation id="1771761307086386028">दायाँतिर स्क्रोल गर्नुहोस्</translation>
+<translation id="1774796056689732716">पात्रो, <ph name="CURRENT_MONTH_YEAR" />, हाल चयन गरिएको मिति: <ph name="DATE" />।</translation>
 <translation id="1787955149152357925">अफ छ</translation>
 <translation id="1804572139604454141">डिस्कमा अत्यन्तै कम खाली ठाउँ भएकाले रेकर्डिङ बन्द भयो</translation>
 <translation id="181103072419391116">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">क्लोज्ड क्याप्सन अन गर्नुहोस्</translation>
 <translation id="5078796286268621944">गलत PIN</translation>
 <translation id="5083553833479578423">सहायकका थप सुविधाहरू अनलक गर्नुहोस्।</translation>
+<translation id="5090752371472782287"><ph name="MANAGER" /> को डिभाइसमा कास्ट गर्नुहोस्</translation>
 <translation id="5106223312672646208">पर्सनलाइज गर्नुहोस्</translation>
 <translation id="5117590920725113268">अर्को महिना देखाउनुहोस्</translation>
 <translation id="5136175204352732067">भिन्न किबोर्ड जडान गरियो</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">Cast यन्त्रहरू उपलब्ध</translation>
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
 <translation id="5176318573511391780">स्क्रिनको केही भागको भिडियो रेकर्ड गर्नुहोस्</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> वटा कार्यक्रम</translation>
 <translation id="5198715732953550718">नयाँ फोल्डर सिर्जना गर्न <ph name="MOVED_APP_NAME" /> <ph name="IN_PLACE_APP" /> सँग समायोजन गरियो</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{अन्य १ सूचना}other{अन्य # वटा सूचना}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">सबै सम्पन्न भयो</translation>
 <translation id="6431865393913628856">स्क्रिन रेकर्ड</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> मा <ph name="ROUTE_TITLE" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> कार्यक्रम</translation>
 <translation id="6452181791372256707">अस्वीकार</translation>
 <translation id="6453179446719226835">भाषा परिवर्तन गरिएको छ</translation>
 <translation id="6459472438155181876">स्क्रिनलाई <ph name="DISPLAY_NAME" /> मा विस्तार गर्दै</translation>
@@ -865,6 +869,7 @@
 <translation id="6811454077060061666">Google Drive को डेस्कटप संस्करण उपलब्ध छैन</translation>
 <translation id="6818242057446442178">कर्सरलाई एक शब्द पछाडि लैजानुहोस्</translation>
 <translation id="6820676911989879663">विश्राम लिनुहोस्!</translation>
+<translation id="6827049576281411231">इभेन्ट प्यानल बन्द गर्नुहोस्</translation>
 <translation id="6836499262298959512">खतरनाक फाइल</translation>
 <translation id="6837064795450991317">डेस्कबार लुकाइयोस्</translation>
 <translation id="6852052252232534364">सक्रिय गर्न क्लिक गर्नुहोस्</translation>
@@ -872,6 +877,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{एउटा अङ्क बाँकी छ}other{# वटा अङ्क बाँकी छन्}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> डाउनलोड गर्ने कार्य केही समयका लागि रोकिएको छ</translation>
 <translation id="6878400149835617132">सर्टकट निष्क्रिय पारियो</translation>
+<translation id="6884665277231944629">आजको मितिमा फर्कनुहोस्</translation>
 <translation id="6886172995547742638">तपाईंको <ph name="DEVICE_TYPE" /> को कार्यक्षमता घट्न सक्छ। <ph name="PREFERRED_MINIMUM_POWER" />W वा सोभन्दा बढी क्षमताको आधिकारिक USB-C पावर एड्याप्टर प्रयोग गर्नुहोस्।</translation>
 <translation id="688631446150864480">एउटा विन्डोबाट अर्को विन्डोमा जान डाउन एरो की थिच्नुहोस्</translation>
 <translation id="6896758677409633944">प्रतिलिपि गर्नुहोस्</translation>
@@ -958,6 +964,7 @@
 <translation id="7497767806359279797">भाषा तथा किबोर्ड छनौट गर्नुहोस्</translation>
 <translation id="7509246181739783082">आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="7513622367902644023">स्क्रिनसट मोड चयन गरियो</translation>
+<translation id="7513922695575567867">पात्रो, <ph name="DATE" /> को हप्ता, हाल चयन गरिएको मिति: <ph name="SELECTED_DATE" />।</translation>
 <translation id="7514365320538308">डाउनलोड गर्नुहोस्</translation>
 <translation id="7526573455193969409">नेटवर्कको अनुगमन गरिने सम्भावना छ</translation>
 <translation id="7536035074519304529">IP एड्रेस: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@
 <translation id="7564874036684306347">विन्डोलाई अर्को डेस्कटपमा सार्नुले अनपेक्षित व्यवहार देखाउन सक्छ। यसपछि आउने सूचना, विन्डो र संवादहरू डेस्कटपहरूका बीचमा विभाजित हुन सक्छन्।</translation>
 <translation id="7569509451529460200">Braille र ChromeVox सक्षम पारिएका छन्</translation>
 <translation id="7569983096843329377">कालो</translation>
+<translation id="757941033127302446">साइन इन गरिएको</translation>
 <translation id="7579778809502851308">स्क्रिन क्याप्चर</translation>
 <translation id="7590883480672980941">इनपुटसम्बन्धी सेटिङ</translation>
 <translation id="7593891976182323525">सिफ्टको लागि खोज्नुहोस्</translation>
@@ -1040,6 +1048,7 @@
 <translation id="8035152190676905274">कलम</translation>
 <translation id="8036504271468642248">अघिल्लो वाक्य</translation>
 <translation id="8042893070933512245">पहुँचसम्बन्धी सेटिङको मेनु खोल्नुहोस्</translation>
+<translation id="8042925093898452104">विस्तृत जानकारी बन्द गर्नुहोस्</translation>
 <translation id="8048123526339889627">ब्लुटुथका सेटिङहरू</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> नाम गरेको टेम्प्लेट पहिल्यैदेखि छ</translation>
 <translation id="8052898407431791827">कपी गरेर क्लिपबोर्डमा पेस्ट गरियो</translation>

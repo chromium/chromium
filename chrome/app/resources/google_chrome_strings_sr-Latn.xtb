@@ -66,6 +66,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2467438592969358367">Google Chrome želi da izveze lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
 <translation id="2534507159460261402">Google Pay (kopirano u Chrome)</translation>
+<translation id="2563121210305478421">Želite ponovo da pokrenete Chrome?</translation>
 <translation id="2574930892358684005">Korisnik <ph name="EXISTING_USER" /> je već prijavljen na ovaj Chrome profil. Da bi vam pregledanje bilo razdvojeno, Chrome može da napravi zaseban profil za vas.</translation>
 <translation id="2580411288591421699">Nije moguće instalirati verziju Google Chrome pregledača koja je ista kao trenutno pokrenuta verzija. Zatvorite Google Chrome i pokušajte ponovo.</translation>
 <translation id="2586406160782125153">Ovim ćete izbrisati podatke pregledanja sa uređaja. Da biste kasnije vratili podatke, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
@@ -177,7 +178,6 @@ Neke funkcije su možda nedostupne. Navedite drugi direktorijum profila ili kori
 <translation id="5193136243808726294">Google Chrome OS ne može da otvori ovu stranicu.</translation>
 <translation id="521447420733633466">Ako delite uređaj, prijatelji i porodica mogu zasebno da pregledaju i da podese Chrome baš onako kako žele</translation>
 <translation id="5251420635869119124">Gosti mogu da koriste Chrome a da ne ostavljaju nikakve tragove.</translation>
-<translation id="5251679006894510177">Skoro je ažuriran! Ponovo pokrenite Chrome da biste završili ažuriranje. Prozori bez arhiviranja se neće ponovo otvoriti.</translation>
 <translation id="5334487786912937552">Chrome-u treba pristup memorijskom prostoru da bi preuzimao fajlove</translation>
 <translation id="5386244825306882791">Kontroliše i stranicu koja se prikazuje kada pokrenete Chrome ili pretražujete iz omniboksa.</translation>
 <translation id="5394833366792865639">Delite Chrome karticu</translation>
@@ -302,6 +302,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="8669527147644353129">Google Chrome pomoćnik</translation>
 <translation id="8679801911857917785">Kontroliše i stranicu koja se prikazuje kada pokrenete Chrome.</translation>
 <translation id="8686817260976772516">Pomoću Chrome profila možete da razdvojite sve Chrome sadržaje. Napravite profile za prijatelje i porodicu ili razdvojite posao i zabavu.</translation>
+<translation id="8712767363896337380">Skoro je ažuriran! Ponovo pokrenite Chrome da biste završili ažuriranje.</translation>
 <translation id="873133009373065397">Google Chrome ne može da odredi ni da podesi podrazumevani pregledač</translation>
 <translation id="8823341990149967727">Chrome je zastareo</translation>
 <translation id="8834965163890861871">Google Chrome pokušava da izmeni lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>

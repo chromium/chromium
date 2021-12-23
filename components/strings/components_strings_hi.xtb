@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">ऑफ़र उपलब्ध है</translation>
 <translation id="1312803275555673949">कौनसा सबूत इस बात की पुष्टि करता है?</translation>
 <translation id="131405271941274527">किसी NFC डिवाइस में आपके फ़ोन पर टैप किए जाने पर, <ph name="URL" /> जानकारी भेजना और पाना चाहता है</translation>
+<translation id="1314311879718644478">ऑगमेंटेड रिएलिटी (एआर) वाला कॉन्टेंट देखें</translation>
 <translation id="1314509827145471431">दाईं ओर बाइंड</translation>
 <translation id="1318023360584041678">टैब ग्रुप में सेव किया गया</translation>
 <translation id="1319245136674974084">इस ऐप्लिकेशन के लिए फिर से न पूछें</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">इस वेबपेज को दिखाने के दौरान कुछ गड़बड़ी हुई है.</translation>
 <translation id="1586541204584340881">आपने कौनसे एक्सटेंशन इंस्टॉल किए हैं</translation>
 <translation id="1588438908519853928">सामान्य</translation>
+<translation id="1589050138437146318">ARCore इंस्टॉल करें?</translation>
 <translation id="1592005682883173041">स्थानीय डेटा एक्सेस</translation>
 <translation id="1594030484168838125">चुनें</translation>
 <translation id="160851722280695521">Chrome में Dino Run गेम चलाएं</translation>
@@ -1392,6 +1394,7 @@
 <translation id="5333022057423422993">Chrome के मुताबिक, आपने अभी जो पासवर्ड इस्तेमाल किया है वह लीक हो चुका है. आपके खातों को सुरक्षित रखने के लिए, हमारा सुझाव है कि आप अपने सेव किए गए पासवर्ड की जांच करें.</translation>
 <translation id="5334013548165032829">सिस्टम लॉग की ज़्यादा जानकारी</translation>
 <translation id="5334145288572353250">क्या आप पता सेव करना चाहते हैं?</translation>
+<translation id="5335920952954443287">धड़कता दिल</translation>
 <translation id="5340250774223869109">ऐप्लिकेशन को ब्लॉक किया गया है</translation>
 <translation id="534295439873310000">NFC डिवाइस</translation>
 <translation id="5344579389779391559">यह पेज आपसे शुल्क लेने की कोशिश कर सकता है</translation>
@@ -2064,6 +2067,7 @@
 <translation id="7654909834015434372">जब आप वीडियो के ऊपर टेक्स्ट, लिंक वगैरह में बदलाव करते हैं, तो दस्तावेज़ अपने मूल रोटेशन पर वापस चला जाएगा</translation>
 <translation id="765676359832457558">बेहतर सेटिंग छिपाएं...</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
+<translation id="7659878911471462949">खुशी के आंसू</translation>
 <translation id="7662298039739062396">सेटिंग किसी एक्सटेंशन से नियंत्रित है</translation>
 <translation id="7663736086183791259">प्रमाणपत्र <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">गुप्त मोड में अनुमति नहीं है</translation>
@@ -2267,6 +2271,7 @@
 <translation id="830498451218851433">फ़ोल्ड हाल्फ़</translation>
 <translation id="8307358339886459768">छोटे आकार वाली फ़ोटो</translation>
 <translation id="8307888238279532626">इंस्टॉल किए गए ऐप्लिकेशन और उनका कितनी बार इस्तेमाल किया जाता है</translation>
+<translation id="8317207217658302555">ARCore को अपडेट करें?</translation>
 <translation id="831997045666694187">शाम</translation>
 <translation id="8321476692217554900">सूचनाएं</translation>
 <translation id="8328484624016508118">सभी गुप्त टैब बंद करने के बाद, Chrome इन चीज़ों को मिटाता है:

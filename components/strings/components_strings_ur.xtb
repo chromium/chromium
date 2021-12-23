@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">پیشکش دستیاب ہے</translation>
 <translation id="1312803275555673949">کون سا ثبوت اس کو سپورٹ کرتا ہے؟</translation>
 <translation id="131405271941274527">‏آپ کے NFC آلہ پر تھپتھپاتے وقت <ph name="URL" /> معلومات بھیجنا اور وصول کرنا چاہتا ہے</translation>
+<translation id="1314311879718644478">افزودہ حقیقت کا مواد دیکھیں</translation>
 <translation id="1314509827145471431">دائیں طرف باندھیں</translation>
 <translation id="1318023360584041678">ٹیب گروپ مں محفوظ کردہ</translation>
 <translation id="1319245136674974084">اس ایپ کیلئے دوبارہ نہ پوچھیں</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">یہ ویب صفحہ ڈسپلے کرتے ہوئے کچھ غلط ہو گیا۔</translation>
 <translation id="1586541204584340881">آپ نے کن ایکسٹینشنز کو انسٹال کیا ہے</translation>
 <translation id="1588438908519853928">حسب معمول</translation>
+<translation id="1589050138437146318">‏ARCore انسٹال کریں؟</translation>
 <translation id="1592005682883173041">مقامی ڈیٹا تک رسائی</translation>
 <translation id="1594030484168838125">منتخب کریں</translation>
 <translation id="160851722280695521">‏Chrome میں Dino Run گیم کھیلیں</translation>
@@ -1393,6 +1395,7 @@
 <translation id="5333022057423422993">‏Chrome کو وہ پاس ورڈ مل گیا جو آپ نے ابھی ڈیٹا کی خلاف ورزی میں استعمال کیا ہے۔ اپنے اکاؤنٹس کو محفوظ کرنے کے لیے ہم آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتے ہیں۔</translation>
 <translation id="5334013548165032829">مفصل سسٹم لاگز</translation>
 <translation id="5334145288572353250">پتہ محفوظ کریں؟</translation>
+<translation id="5335920952954443287">دھڑکتا دل</translation>
 <translation id="5340250774223869109">ایپلیکیشن مسدود ہے</translation>
 <translation id="534295439873310000">‏NFC آلات</translation>
 <translation id="5344579389779391559">یہ صفحہ آپ سے رقم چارج کرنے کی کوشش کر سکتا ہے</translation>
@@ -2066,6 +2069,7 @@
 <translation id="7654909834015434372">آپ کے تشریحات میں ترمیم کرنے پر، یہ دستاویز اپنے اصل گھماؤ پر واپس آ جائے گا</translation>
 <translation id="765676359832457558">اعلی ترتیبات چھپائیں…</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
+<translation id="7659878911471462949">خوشی کے آنسو</translation>
 <translation id="7662298039739062396">ترتیب کو ایک ایکسٹینشن سے کنٹرول کیا جاتا ہے</translation>
 <translation id="7663736086183791259">سرٹیفیکیٹ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">پوشیدگی وضع میں اجازت نہیں ہے</translation>
@@ -2269,6 +2273,7 @@
 <translation id="830498451218851433">آدھا فولڈ کریں</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">ایپس انسٹال ہو گئی ہیں اور کتنی بار استعمال ہوتی ہیں</translation>
+<translation id="8317207217658302555">‏ARCore کو اپ ڈیٹ کریں؟</translation>
 <translation id="831997045666694187">شام</translation>
 <translation id="8321476692217554900">اطلاعات</translation>
 <translation id="8328484624016508118">‏تمام پوشیدگی ٹیبز کو بند کرنے کے بعد، Chrome درج ذیل صاف کرتا ہے:

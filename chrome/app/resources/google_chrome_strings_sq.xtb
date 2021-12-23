@@ -176,7 +176,6 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër të profil
 <translation id="5193136243808726294">Sistemi operativ Google Chrome nuk mund ta hapë këtë faqe.</translation>
 <translation id="521447420733633466">Nëse e ndan një pajisje, miqtë dhe familja mund të shfletojnë veçmas dhe ta konfigurojnë Chrome pikërisht ashtu si dëshirojnë.</translation>
 <translation id="5251420635869119124">Vizitorët mund të përdorin Chrome pa lënë asgjë prapa.</translation>
-<translation id="5251679006894510177">Pothuajse u përditësua! Rihap Chrome për të përfunduar përditësimin. Dritaret "e fshehta" nuk do të hapen.</translation>
 <translation id="5334487786912937552">Chrome ka nevojë për leje qasjeje te hapësira ruajtëse për të shkarkuar skedarë</translation>
 <translation id="5386244825306882791">Kontrollon po ashtu se cila faqe shfaqet kur nis Chrome ose kur kërkon nga Omnibox.</translation>
 <translation id="5394833366792865639">Ndaj një skedë të Chrome</translation>
@@ -309,6 +308,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8914504000324227558">Rinis Chrome</translation>
 <translation id="8922193594870374009">Për të dërguar një numër nga <ph name="ORIGIN" /> te telefoni yt Android, identifikohu në Chrome në të dyja pajisjet.</translation>
 <translation id="8927704157641862988">Personalizo zgjedhjet e privatësisë që Chrome konsideron si më të rëndësishmet. Ky udhëzues nuk përfshin çdo cilësim dhe opsion.</translation>
+<translation id="8983720963221508955">Ke aktivizuar "Shfletimin e sigurt të përmirësuar" në llogarinë tënde. Tani merre për Chrome.</translation>
 <translation id="8986207147630327271">Po shton një profil pune në këtë shfletues dhe po i jep administratorit tënd kontrollin vetëm mbi profilin e punës.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ofrohet një përditësim i Chrome}=1{Ofrohet një përditësim i Chrome}other{Një përditësim i Chrome ofrohet prej # ditësh}}</translation>
 <translation id="9026991721384951619">Sistemi operativ Chrome nuk mund të sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>

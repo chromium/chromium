@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Google に問い合わせています。これには 1 分ほどかかる場合があります…</translation>
 <translation id="1416550906796893042">アプリケーションのバージョン</translation>
 <translation id="1430915738399379752">印刷</translation>
+<translation id="1436784010935106834">削除しました</translation>
 <translation id="1448440926884431741">ブックマークでトラッキングしている商品を整理できます</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> を共有できません</translation>
 <translation id="1466383950273130737">Chrome の言語を選択</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">ウィンドウを閉じますか？</translation>
 <translation id="2175927920773552910">QR コード</translation>
 <translation id="218608176142494674">共有</translation>
-<translation id="2195339740518523951">Chrome の最高水準のセキュリティで保護する</translation>
 <translation id="2200113223741723867">使用状況データの共有の管理</translation>
 <translation id="2218567645332692482">移動先を HTTPS にアップグレードし、HTTPS をサポートしていないサイトは読み込む前に警告を表示します</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> として続行</translation>
@@ -543,7 +543,6 @@
 <translation id="4170011742729630528">このサービスはご利用になれません。しばらくしてからもう一度お試しください。</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> 使用</translation>
 <translation id="4181841719683918333">言語</translation>
-<translation id="4183868528246477015">Google レンズで検索<ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
 <translation id="4196597275619698563">カードを作成</translation>
 <translation id="4198423547019359126">ダウンロードの保存先はありません</translation>
@@ -577,7 +576,6 @@
 <translation id="4411535500181276704">ライトモード</translation>
 <translation id="4415276339145661267">Google アカウントの管理</translation>
 <translation id="4425140285732600465">価格をトラッキングします。値下げしたサイトがある場合に通知します。</translation>
-<translation id="4427306783828095590">保護強化機能により、フィッシングを防ぎ、不正なソフトウェアをより強力にブロックします</translation>
 <translation id="4450672886426705087">Google 検索結果。</translation>
 <translation id="4452411734226507615">「<ph name="TAB_TITLE" />」タブを閉じます</translation>
 <translation id="4452548195519783679">「<ph name="FOLDER_NAME" />」にブックマークしました</translation>
@@ -1082,6 +1080,7 @@
 <translation id="7177466738963138057">これは後から [設定] で変更できます</translation>
 <translation id="7177873915659574692">QR コードを作成できません。URL が <ph name="CHARACTER_LIMIT" /> 文字を超えています。</translation>
 <translation id="7180611975245234373">更新</translation>
+<translation id="718226107353899806">最大 <ph name="MAX_NUM_REACTIONS" /> 件のリアクションを追加できます</translation>
 <translation id="7187993566681480880">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>
 <translation id="718926126787620637">ブックマーク フォルダのリストが画面全体に表示されています</translation>
 <translation id="7191430249889272776">バックグラウンドでタブを開きました。</translation>
@@ -1245,7 +1244,6 @@
 <translation id="8035133914807600019">新しいフォルダ...</translation>
 <translation id="8037750541064988519">残り <ph name="DAYS" /> 日</translation>
 <translation id="8037801708772278989">前回の確認: たった今</translation>
-<translation id="8040831032425909005">クイック操作の検索ウィジェット アイコン</translation>
 <translation id="804335162455518893">SD カードが見つかりません</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個のシークレット タブ}other{<ph name="TAB_COUNT_NORMAL" /> 個のシークレット タブ}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB 利用可</translation>

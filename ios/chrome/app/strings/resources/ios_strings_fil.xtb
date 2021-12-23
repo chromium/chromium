@@ -25,6 +25,7 @@
 <translation id="1145536944570833626">I-delete ang kasalukuyang data.</translation>
 <translation id="1147031633655575115">Naka-sign in bilang <ph name="USER" /></translation>
 <translation id="1154984953698510061">Tingnan ang Iba pang Tab</translation>
+<translation id="1164064664035028907">Gumamit ng Mahirap Hulaang Password:</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Susunod na field</translation>
 <translation id="1176932207622159128">Di Ma-save Larawan</translation>
@@ -235,6 +236,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3157387275655328056">Idagdag sa Listahan ng Babasahin</translation>
 <translation id="3157684681743766797">Markahan Lahat...</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Puwede mo ring gamitin ang mga naka-save na password sa iba mo pang device.</translation>
 <translation id="3175081911749765310">Web Services</translation>
 <translation id="3178650076442119961">Aktibo Ngayong Araw</translation>
 <translation id="3181825792072797598">I-on ang I-sync</translation>
@@ -328,6 +330,7 @@ Sundin ang mga hakbang sa ibaba:</translation>
 <translation id="4042870976416480368">Hanapin sa Page</translation>
 <translation id="4049507953662678203">Tiyaking mayroon kang koneksyon sa network, at subukang muli.</translation>
 <translation id="408404951701638773">Mas madali nang puntahan ang search bar</translation>
+<translation id="4108314971463891922">Subaybayan</translation>
 <translation id="411254640334432676">Hindi na-download.</translation>
 <translation id="4112644173421521737">Maghanap</translation>
 <translation id="4113030288477039509">Pinamamahalaan ng iyong administrator</translation>
@@ -345,6 +348,7 @@ Sundin ang mga hakbang sa ibaba:</translation>
 <translation id="4272631900155121838">Upang mag-scan ng QR code, i-enable ang camera mula sa mga setting</translation>
 <translation id="4277990410970811858">Ligtas na Pagba-browse</translation>
 <translation id="4281844954008187215">Mga Tuntunin ng Serbisyo</translation>
+<translation id="4304713468139749426">Password Manager</translation>
 <translation id="430793432425771671">I-sync Lahat</translation>
 <translation id="4309403553630140242">Mag-double tap para sa higit pang impormasyon</translation>
 <translation id="430967081421617822">Lahat ng Oras</translation>
@@ -356,6 +360,7 @@ Sundin ang mga hakbang sa ibaba:</translation>
 <translation id="4389019817280890563">I-tap para baguhin ang wika.</translation>
 <translation id="4442550905108052454">Buksan ang <ph name="BEGIN_BOLD" />Mga Setting<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Magdagdag ng Wika</translation>
+<translation id="4462491365653392320">Subaybayan ang mga Presyo sa Mga Tab</translation>
 <translation id="4469418912670346607">Ituloy ang Pag-set up</translation>
 <translation id="4474494258097106883">Ginawa Para sa Iyong iPhone</translation>
 <translation id="4476574785019001431">Mga Setting</translation>
@@ -419,6 +424,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="4944543191714094452">Hanapin sa Page…</translation>
 <translation id="4945756290001680296">I-access ang mga setting ng password</translation>
 <translation id="4979397965658815378">Mag-sign in gamit ang Google Account mo para makuha ang iyong mga bookmark, password, history at iba pang mga setting sa lahat ng device mo</translation>
+<translation id="4986678885919050584">Alisin sa Device na ito</translation>
 <translation id="5005498671520578047">Kopyahin password</translation>
 <translation id="5017828934289857214">Paalalahanan Ako Sa Ibang Pagkakataon</translation>
 <translation id="5037676449506322593">Select All</translation>
@@ -520,6 +526,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="5979837087407522202">Maghanap ng Mga Password</translation>
 <translation id="5982717868370722439">Idagdag ang kasalukuyang data sa <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Kamakailang Binisita</translation>
+<translation id="5988097621740394599">Tingnan ang mga pagbaba ng presyo sa iyong mga tab.</translation>
 <translation id="5988851877894965432">Buksan ang mga URL sa Chrome</translation>
 <translation id="6012140227487808125">Ine-encrypt…</translation>
 <translation id="6021332621416007159">Buksan sa...</translation>
@@ -540,6 +547,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6127379762771434464">Inalis ang item</translation>
 <translation id="6136914049981179737">Segundo</translation>
 <translation id="6144589619057374135">Buksan ang ${url} sa Incognito</translation>
+<translation id="6149061208933997199">Gamitin ang Password</translation>
 <translation id="6159839020698489198">opsyonal</translation>
 <translation id="6177442314419606057">Search in Chrome</translation>
 <translation id="6184086493125982861">Ipakita ang Mga Tab</translation>
@@ -632,6 +640,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="6807889908376551050">Ipakita Lahat...</translation>
 <translation id="681368974849482173">Nagawa ang item</translation>
 <translation id="681450999322335505">Na-off ng iyong organisasyon ang pag-sync.</translation>
+<translation id="683022620450280906">Puwede mong gamitin ang mga naka-save na password sa anumang device. Nase-save ang mga ito sa Google Password Manager para sa <ph name="EMAIL" /></translation>
 <translation id="6830804042318138535">Magbasa Pa</translation>
 <translation id="6831043979455480757">Isalin</translation>
 <translation id="6842136130964845393">Para matiyak na maa-access mo anumang oras ang iyong mga naka-save na password, i-verify na ikaw ito</translation>
@@ -764,6 +773,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8076014560081431679">Hindi made-delete ang mga naka-save na setting ng site at maaari nitong ipakita ang iyong mga gawi sa pagba-browse. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Pinapamahalaan ang setting na ito, mag-double tap para sa higit pang impormasyon</translation>
 <translation id="8080028325999236607">Isara ang Lahat ng Tab</translation>
+<translation id="8101409298456377967">Gawin, i-save, at pamahalaan ang iyong mga password para madali kang makapag-sign in sa mga site at app. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">I-off</translation>
 <translation id="8114753159095730575">Available ang pag-download ng file. Available ang mga opsyon malapit sa ibaba ng screen.</translation>
 <translation id="8132598642024322408"><ph name="PRICE" /> na lang ngayon ang dating <ph name="PREVIOUS_PRICE" />.</translation>

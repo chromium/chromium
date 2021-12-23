@@ -131,6 +131,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1768366657309696705">De sneltoets <ph name="LAUNCHER_KEY_NAME" /> + punt is veranderd. Als je de toets Insert wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Verplaatst naar rij <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Naar rechts scrollen</translation>
+<translation id="1774796056689732716">Agenda, <ph name="CURRENT_MONTH_YEAR" />, momenteel is <ph name="DATE" /> geselecteerd.</translation>
 <translation id="1787955149152357925">Uit</translation>
 <translation id="1804572139604454141">Opname beëindigd omdat er zeer weinig schijfruimte beschikbaar is</translation>
 <translation id="181103072419391116">Signaalsterkte <ph name="SIGNAL_STRENGTH" />, beheerd door je beheerder</translation>
@@ -630,6 +631,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5168181903108465623">Cast-apparaten beschikbaar</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
 <translation id="5176318573511391780">Opname van gedeeltelijk scherm maken</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> afspraken</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> is gecombineerd met <ph name="IN_PLACE_APP" /> om een nieuwe map te maken.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 andere melding}other{# andere meldingen}}</translation>
@@ -803,6 +805,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="643147933154517414">Klaar</translation>
 <translation id="6431865393913628856">Schermopname</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> in <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> afspraak</translation>
 <translation id="6452181791372256707">Weigeren</translation>
 <translation id="6453179446719226835">Taal is gewijzigd</translation>
 <translation id="6459472438155181876">Scherm uitbreiden naar <ph name="DISPLAY_NAME" /></translation>
@@ -866,6 +869,7 @@ Nieuwe installatie</translation>
 <translation id="6811454077060061666">Google Drive voor desktop is niet beschikbaar</translation>
 <translation id="6818242057446442178">Terug per woord</translation>
 <translation id="6820676911989879663">Neem een pauze</translation>
+<translation id="6827049576281411231">Afsprakenvenster sluiten</translation>
 <translation id="6836499262298959512">Gevaarlijk bestand</translation>
 <translation id="6837064795450991317">Bureaubladbalk verbergen</translation>
 <translation id="6852052252232534364">Klik om te activeren</translation>
@@ -873,6 +877,7 @@ Nieuwe installatie</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Nog 1 cijfer nodig}other{Nog # cijfers nodig}}</translation>
 <translation id="6867938213751067702">Download van <ph name="FILENAME" /> is onderbroken</translation>
 <translation id="6878400149835617132">Snelkoppeling staat uit</translation>
+<translation id="6884665277231944629">Terug naar vandaag</translation>
 <translation id="6886172995547742638">Je <ph name="DEVICE_TYPE" /> kan slechtere prestaties leveren. Gebruik een gecertificeerde USB-C-voedingsadapter van <ph name="PREFERRED_MINIMUM_POWER" /> W of hoger.</translation>
 <translation id="688631446150864480">Druk op de pijl-omlaag om tussen vensters te schakelen</translation>
 <translation id="6896758677409633944">Kopieer</translation>
@@ -959,6 +964,7 @@ Nieuwe installatie</translation>
 <translation id="7497767806359279797">Taal en toetsenbord kiezen</translation>
 <translation id="7509246181739783082">Je identiteit verifiëren</translation>
 <translation id="7513622367902644023">Screenshotmodus geselecteerd</translation>
+<translation id="7513922695575567867">Agenda, week van <ph name="DATE" />, momenteel is <ph name="SELECTED_DATE" /> geselecteerd.</translation>
 <translation id="7514365320538308">Downloaden</translation>
 <translation id="7526573455193969409">Netwerk kan worden bijgehouden</translation>
 <translation id="7536035074519304529">IP-adres: <ph name="ADDRESS" /></translation>
@@ -968,6 +974,7 @@ Nieuwe installatie</translation>
 <translation id="7564874036684306347">Verplaatsing van vensters naar een ander bureaublad kan leiden tot onverwacht gedrag. Verdere meldingen, vensters en dialoogvensters worden mogelijk verdeeld over de bureaubladen.</translation>
 <translation id="7569509451529460200">Braille en ChromeVox staan aan</translation>
 <translation id="7569983096843329377">Zwart</translation>
+<translation id="757941033127302446">Ingelogd</translation>
 <translation id="7579778809502851308">Schermopname</translation>
 <translation id="7590883480672980941">Invoerinstellingen</translation>
 <translation id="7593891976182323525">Zoeken of Shift</translation>
@@ -1041,6 +1048,7 @@ Nieuwe installatie</translation>
 <translation id="8035152190676905274">Pen</translation>
 <translation id="8036504271468642248">Vorige zin</translation>
 <translation id="8042893070933512245">Menu met toegankelijkheidsinstellingen openen</translation>
+<translation id="8042925093898452104">Detailinformatie sluiten</translation>
 <translation id="8048123526339889627">Bluetooth-instellingen</translation>
 <translation id="8051716679295756675">Er bestaat al een template met de naam <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Gekopieerd naar klembord</translation>

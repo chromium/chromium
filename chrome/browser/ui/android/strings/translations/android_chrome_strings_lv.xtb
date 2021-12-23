@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Notiek sazināšanās ar Google. Tas var ilgt kādu minūti...</translation>
 <translation id="1416550906796893042">Lietojumprogrammas versija</translation>
 <translation id="1430915738399379752">Drukāt</translation>
+<translation id="1436784010935106834">Noņemts</translation>
 <translation id="1448440926884431741">Kārtojiet savus izsekotos produktus grāmatzīmēs</translation>
 <translation id="1450753235335490080">Nevar kopīgot: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Izvēlieties pārlūka Chrome valodu</translation>
@@ -203,7 +204,6 @@ Pieskarieties jebkuram vārdam, lai to meklētu. Ja vēlaties precizēt meklēš
 <translation id="2172905120685242547">Vai aizvērt logu?</translation>
 <translation id="2175927920773552910">QR kods</translation>
 <translation id="218608176142494674">Kopīgošana</translation>
-<translation id="2195339740518523951">Visaugstākais Chrome drošības līmenis</translation>
 <translation id="2200113223741723867">Pārvaldīt lietojuma datu kopīgošanu</translation>
 <translation id="2218567645332692482">Navigācijai izmantot HTTPS un brīdināt pirms tādu vietņu ielādes, kas to neatbalsta</translation>
 <translation id="2227444325776770048">Turpināt kā: <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="4170011742729630528">Pakalpojums nav pieejams. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="4179980317383591987">Izmantots: <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Valodas</translation>
-<translation id="4183868528246477015">Meklēšana ar Google Lens <ph name="BEGIN_NEW" />Jauns<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Atvērt jaunā cilnē</translation>
 <translation id="4196597275619698563">Izveidot kartīti</translation>
 <translation id="4198423547019359126">Nav pieejamu lejupielādes atrašanās vietu.</translation>
@@ -577,7 +576,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="4411535500181276704">Vienkāršais režīms</translation>
 <translation id="4415276339145661267">Google konta pārvaldība</translation>
 <translation id="4425140285732600465">Notiek cenas izsekošana. Saņemiet paziņojumus, ja kādā vietnē tiek konstatēts cenas kritums.</translation>
-<translation id="4427306783828095590">Uzlabotā aizsardzība labāk bloķē pikšķerēšanas mēģinājumus un ļaunprātīgu programmatūru</translation>
 <translation id="4450672886426705087">Google meklēšanas rezultāti.</translation>
 <translation id="4452411734226507615">Aizvērt cilni <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Grāmatzīme saglabāta mapē <ph name="FOLDER_NAME" /></translation>
@@ -1052,7 +1050,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6979737339423435258">Visā periodā</translation>
 <translation id="6981982820502123353">Pieejamība</translation>
 <translation id="6987047470128880212">Inkognito režīms šajā ierīcē nav pieejams.</translation>
-<translation id="6995899638241819463">Brīdināt, ja paroles tiek atklātas datu noplūdes dēļ</translation>
+<translation id="6995899638241819463">Brīdināt, ja paroles tiek atklātas datu aizsardzības pārkāpums dēļ</translation>
 <translation id="7001056293070445572">Šis fails ir liels (<ph name="FILE_SIZE" />).</translation>
 <translation id="7020741890149022655">Iekļaut lasīš. sarakstā <ph name="BEGIN_NEW" />Jauns<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Atvērt pārlūkā</translation>
@@ -1082,6 +1080,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7177466738963138057">Vēlāk varēsiet to mainīt iestatījumos</translation>
 <translation id="7177873915659574692">Nevar izveidot QR kodu. URL garums pārsniedz <ph name="CHARACTER_LIMIT" /> rakstzīmes.</translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
+<translation id="718226107353899806">Varat pievienot ne vairāk kā <ph name="MAX_NUM_REACTIONS" /> reakcijas.</translation>
 <translation id="7187993566681480880">Tiek nodrošināta jūsu aizsardzība pārlūkprogrammā Chrome. Šis režīms var tikt izmantots jūsu drošības uzlabošanai citās Google lietotnēs, kad esat pierakstījies.</translation>
 <translation id="718926126787620637">Grāmatzīmju mapju saraksts atvērts pilna ekrāna augstumā</translation>
 <translation id="7191430249889272776">Cilne tika atvērta fonā.</translation>
@@ -1221,7 +1220,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7925590027513907933">{FILE_COUNT,plural, =1{Notiek faila lejupielāde.}zero{Notiek # failu lejupielāde.}one{Notiek # faila lejupielāde.}other{Notiek # failu lejupielāde.}}</translation>
 <translation id="7926975587469166629">Kredītkartes apzīmējums</translation>
 <translation id="7929962904089429003">Atvērt izvēlni</translation>
-<translation id="7930998711684428189">Jūs saņemat brīdinājumu, ja paroles tiek atklātas datu pārkāpuma dēļ.</translation>
+<translation id="7930998711684428189">Jūs saņemat brīdinājumu, ja paroles tiek atklātas datu aizsardzības pārkāpuma dēļ.</translation>
 <translation id="7939485076072265087">Izveidot stilizētu kartīti ar izcēlumu</translation>
 <translation id="7942131818088350342">Spraudnis <ph name="PRODUCT_NAME" /> ir novecojis.</translation>
 <translation id="7944772052836377867">Sinhronizēšanai nepieciešams apstiprināt jūsu identitāti</translation>
@@ -1245,7 +1244,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8035133914807600019">Jauna mape…</translation>
 <translation id="8037750541064988519">Atlikušas <ph name="DAYS" /> dienas</translation>
 <translation id="8037801708772278989">Pārbaudīts: tikko</translation>
-<translation id="8040831032425909005">Ātrās darbības un logrīka Meklēšana ikona</translation>
 <translation id="804335162455518893">SD karte nav atrasta</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> inkognito cilne}zero{<ph name="TAB_COUNT_NORMAL" /> inkognito ciļņu}one{<ph name="TAB_COUNT_NORMAL" /> inkognito cilne}other{<ph name="TAB_COUNT_NORMAL" /> inkognito cilnes}}</translation>
 <translation id="8051695050440594747">Ir pieejami <ph name="MEGABYTES" /> MB</translation>

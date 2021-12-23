@@ -176,7 +176,6 @@
 <translation id="5193136243808726294">Google Chrome 作業系統無法開啟此網頁。</translation>
 <translation id="521447420733633466">如果您與親朋好友共用裝置，每人都能各自瀏覽網頁，並按需求設定 Chrome</translation>
 <translation id="5251420635869119124">以訪客身分使用 Chrome 不會留下任何記錄。</translation>
-<translation id="5251679006894510177">即將更新至最新版本！請重新啟動 Chrome 以完成更新。無痕式視窗不會重新開啟。</translation>
 <translation id="5334487786912937552">Chrome 需要儲存空間存取權才能下載檔案</translation>
 <translation id="5386244825306882791">這個擴充功能也會控管 Chrome 啟動時或您使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="5394833366792865639">分享 Chrome 分頁</translation>
@@ -308,7 +307,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8914504000324227558">重新啟動 Chrome</translation>
 <translation id="8922193594870374009">如要將號碼從 <ph name="ORIGIN" /> 傳送至 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
 <translation id="8927704157641862988">自訂 Chrome 最重視的的私隱選項。此指南並未涵蓋所有設定和選項。</translation>
-<translation id="8983720963221508955">你已開啟帳戶的安全瀏覽強化防護功能。現在請為 Chrome 開啟這項功能。</translation>
+<translation id="8983720963221508955">您已開啟帳戶的「強化安全瀏覽」功能。現在請為 Chrome 開啟此功能。</translation>
 <translation id="8986207147630327271">您即將在此瀏覽器中新增工作設定檔，並只將工作設定檔的控制權授予管理員。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發佈 # 天}}</translation>
 <translation id="9026991721384951619">您的帳戶登入詳情尚未更新，因此 Chrome 作業系統無法同步處理您的數據。</translation>

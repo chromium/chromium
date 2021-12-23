@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">অফাৰ উপলব্ধ</translation>
 <translation id="1312803275555673949">এইটোৰ সমৰ্থনত কি প্ৰমাণ আছে?</translation>
 <translation id="131405271941274527">আপুনি নিজৰ ফ’নটো কোনো NFC ডিভাইচত লগালে <ph name="URL" />এ তথ্য পঠিয়াব আৰু গ্ৰহণ কৰিবলৈ বিচাৰে</translation>
+<translation id="1314311879718644478">পৰিৱৰ্ধিত বাস্তৱিকতাৰ সমল চাওক</translation>
 <translation id="1314509827145471431">সোঁফালে সংযুক্ত কৰক</translation>
 <translation id="1318023360584041678">টেবৰ গোটত ছেভ কৰা হৈছে</translation>
 <translation id="1319245136674974084">এই এপ্‌টোৰ বাবে পুনৰাই নুসুধিব</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">এই ৱেবপৃষ্ঠাটো প্ৰদর্শন কৰোঁতে কিবা আসোঁৱাহ হ’ল।</translation>
 <translation id="1586541204584340881">আপুনি ইনষ্টল কৰা এক্সটেনশ্বনসমূহ</translation>
 <translation id="1588438908519853928">সাধাৰণ</translation>
+<translation id="1589050138437146318">ARCore ইনষ্টল কৰিবনে?</translation>
 <translation id="1592005682883173041">স্থানীয় ডেটাৰ এক্সেছ</translation>
 <translation id="1594030484168838125">বাছনি কৰক</translation>
 <translation id="160851722280695521">Chromeত Dino Run গে’মটো খেলক</translation>
@@ -1388,6 +1390,7 @@
 <translation id="5333022057423422993">Chromeএ আপুনি এইমাত্ৰ ডেটা উলংঘনত ব্যৱহাৰ কৰা পাছৱৰ্ডটো বিচাৰি পাইছে। আপোনাৰ একাউণ্ট সুৰক্ষিত কৰিবলৈ, আপুনি নিজৰ ছেভ কৰি ৰখা পাছৱৰ্ড পৰীক্ষা কৰাটো আমি চুপাৰিছ কৰোঁ।</translation>
 <translation id="5334013548165032829">ছিষ্টেমৰ সূক্ষ্মাতিসূক্ষ্ম লগ</translation>
 <translation id="5334145288572353250">ঠিকনা ছেভ কৰিবনে?</translation>
+<translation id="5335920952954443287">স্পন্দিত হৃদয়</translation>
 <translation id="5340250774223869109">এপ্লিকেশ্বনটো অৱৰোধ কৰা হৈছে</translation>
 <translation id="534295439873310000">NFC ডিভাইচসমূহ</translation>
 <translation id="5344579389779391559">এই পৃষ্ঠাটোৱে আপোনাৰ পৰা মাচুল লোৱাৰ চেষ্টা কৰিব পাৰে</translation>
@@ -2059,6 +2062,7 @@
 <translation id="7654909834015434372">আপুনি এন’টেশ্বন সম্পাদনা কৰিলে, এই নথিখন ইয়াৰ মূল ঘূৰ্ণনলৈ পুনৰ সলনি হ’ব</translation>
 <translation id="765676359832457558">উন্নত ছেটিংসমূহ লুকুৱাওক...</translation>
 <translation id="7658239707568436148">বাতিল কৰক</translation>
+<translation id="7659878911471462949">আনন্দৰ চকুলো</translation>
 <translation id="7662298039739062396">এটা এক্সটেনশ্বনে ছেটিংটো নিয়ন্ত্ৰণ কৰিছে</translation>
 <translation id="7663736086183791259">প্ৰমাণপত্ৰ <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">ইনক’গনিট’ত অনুমতি নাই</translation>
@@ -2262,6 +2266,7 @@
 <translation id="830498451218851433">আধা ফ'ল্ড কৰক</translation>
 <translation id="8307358339886459768">সৰু-ফট’</translation>
 <translation id="8307888238279532626">কি এপ্‌ ইনষ্টল কৰা হৈছে আৰু সেইবোৰ কিমান সঘনাই ব্যৱহাৰ কৰা হৈছে</translation>
+<translation id="8317207217658302555">ARCore আপডে’ট কৰিবনে?</translation>
 <translation id="831997045666694187">সন্ধিয়া</translation>
 <translation id="8321476692217554900">জাননী</translation>
 <translation id="8328484624016508118">আটাইবোৰ ইনক’গনিট’ টেব বন্ধ কৰাৰ পাছত, Chromeএ তলত দিয়া তথ্যসমূহ মচে:

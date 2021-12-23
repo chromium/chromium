@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">افزودن به فهرست خواندن</translation>
 <translation id="3157684681743766797">علامت‌گذاری همه...</translation>
 <translation id="3169472444629675720">کشف کردن</translation>
+<translation id="3174662312949010067">همچنین می‌توانید از گذرواژه‌های ذخیره‌شده در دیگر دستگاه‌هایتان استفاده کنید.</translation>
 <translation id="3175081911749765310">خدمات وب</translation>
 <translation id="3178650076442119961">آخرین فعالیت: امروز</translation>
 <translation id="3181825792072797598">روشن کردن همگام‌سازی</translation>
@@ -328,6 +329,7 @@
 <translation id="4042870976416480368">یافتن در صفحه</translation>
 <translation id="4049507953662678203">مطمئن شوید اتصال شبکه دارید و دوباره امتحان کنید.</translation>
 <translation id="408404951701638773">اکنون دسترسی به نوار جستجو آسان‌تر است</translation>
+<translation id="4108314971463891922">دنبال کردن</translation>
 <translation id="411254640334432676">بارگیری نشد.</translation>
 <translation id="4112644173421521737">جستجو</translation>
 <translation id="4113030288477039509">مدیریت شده توسط سرپرست‌تان</translation>
@@ -345,6 +347,7 @@
 <translation id="4272631900155121838">برای اسکن کردن رمزینه پاسخ‌سریع، دوربین را در تنظیمات فعال کنید</translation>
 <translation id="4277990410970811858">مرور ایمن</translation>
 <translation id="4281844954008187215">شرایط استفاده از سرویس</translation>
+<translation id="4304713468139749426">مدیر گذرواژه</translation>
 <translation id="430793432425771671">همگام‌سازی همه چیز</translation>
 <translation id="4309403553630140242">برای اطلاعات بیشتر دو ضربه بزنید</translation>
 <translation id="430967081421617822">از ابتدا تا الآن</translation>
@@ -543,6 +546,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6127379762771434464">مورد برداشته شد</translation>
 <translation id="6136914049981179737">ثانیه‌هایی قبل</translation>
 <translation id="6144589619057374135">‏باز کردن ${url} در حالت ناشناس</translation>
+<translation id="6149061208933997199">استفاده از گذرواژه</translation>
 <translation id="6159839020698489198">اختیاری</translation>
 <translation id="6177442314419606057">‏جستجو در Chrome</translation>
 <translation id="6184086493125982861">نمایش برگه‌ها</translation>
@@ -767,6 +771,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8076014560081431679">تنظیمات ذخیره‌شده سایت حذف نمی‌شوند و احتمالاً عادات مرور شما را نشان می‌دهند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">این تنظیم مدیریت می‌شود، برای اطلاعات بیشتر دو ضربه بزنید</translation>
 <translation id="8080028325999236607">بستن همه برگه‌ها</translation>
+<translation id="8101409298456377967">گذرواژه‌هایتان را ایجاد، ذخیره، و مدیریت کنید تا بتوانید به‌راحتی به سیستم سایت‌ها و برنامه‌ها وارد شوید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">خاموش کردن</translation>
 <translation id="8114753159095730575">بارگیری فایل دردسترس است. گزینه‌ها نزدیک انتهای صفحه دردسترس است.</translation>
 <translation id="8132598642024322408">قیمت فعلی <ph name="PRICE" /> است، قیمت قبلی <ph name="PREVIOUS_PRICE" /> بود.</translation>

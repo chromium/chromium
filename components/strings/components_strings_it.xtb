@@ -112,6 +112,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1308113895091915999">Offerta disponibile</translation>
 <translation id="1312803275555673949">Quali prove ci sono a supporto?</translation>
 <translation id="131405271941274527"><ph name="URL" /> vuole inviare e ricevere informazioni su un dispositivo NFC quando tocchi il tuo telefono</translation>
+<translation id="1314311879718644478">Visualizza contenuti di realtà aumentata</translation>
 <translation id="1314509827145471431">Rilegatura a destra</translation>
 <translation id="1318023360584041678">Salvato nel gruppo di schede</translation>
 <translation id="1319245136674974084">Non chiedere più per questa app</translation>
@@ -215,6 +216,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1583429793053364125">Si è verificato un problema durante la visualizzazione della pagina web.</translation>
 <translation id="1586541204584340881">Le estensioni che hai installato</translation>
 <translation id="1588438908519853928">Normale</translation>
+<translation id="1589050138437146318">Vuoi installare ARCore?</translation>
 <translation id="1592005682883173041">Accesso ai dati locali</translation>
 <translation id="1594030484168838125">Scegli</translation>
 <translation id="160851722280695521">Gioca a Dino in Chrome</translation>
@@ -1389,6 +1391,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5333022057423422993">Chrome ha rilevato che la password appena usata è stata esposta a una violazione dei dati. Per proteggere i tuoi account, ti consigliamo di controllare le password che hai salvato.</translation>
 <translation id="5334013548165032829">Log di sistema dettagliati</translation>
 <translation id="5334145288572353250">Vuoi salvare l'indirizzo?</translation>
+<translation id="5335920952954443287">Cuore che batte</translation>
 <translation id="5340250774223869109">L'applicazione è bloccata</translation>
 <translation id="534295439873310000">Dispositivi NFC</translation>
 <translation id="5344579389779391559">Questa pagina potrebbe tentare di addebitarti dei costi</translation>
@@ -2060,6 +2063,7 @@ Ulteriori dettagli:
 <translation id="7654909834015434372">Quando modifichi le annotazioni, questo documento torna alla sua rotazione originale</translation>
 <translation id="765676359832457558">Nascondi impostazioni avanzate...</translation>
 <translation id="7658239707568436148">Annulla</translation>
+<translation id="7659878911471462949">Lacrime di gioia</translation>
 <translation id="7662298039739062396">Impostazione controllata da un'estensione</translation>
 <translation id="7663736086183791259">Certificato <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Non consentita in incognito</translation>
@@ -2263,6 +2267,7 @@ Ulteriori dettagli:
 <translation id="830498451218851433">Piegatura a metà</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">App installate e frequenza di utilizzo</translation>
+<translation id="8317207217658302555">Vuoi aggiornare ARCore?</translation>
 <translation id="831997045666694187">Sera</translation>
 <translation id="8321476692217554900">notifiche</translation>
 <translation id="8328484624016508118">Dopo aver chiuso tutte le schede di navigazione in incognito, Chrome cancella:

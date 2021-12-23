@@ -25,6 +25,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="1145536944570833626">Vee bestaande data uit.</translation>
 <translation id="1147031633655575115">Aangemeld as <ph name="USER" /></translation>
 <translation id="1154984953698510061">Sien ander oortjies</translation>
+<translation id="1164064664035028907">Gebruik sterk wagwoord:</translation>
 <translation id="1165039591588034296">Fout</translation>
 <translation id="1172898394251786223">Volgende veld</translation>
 <translation id="1176932207622159128">Kan nie prent stoor nie</translation>
@@ -235,6 +236,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3157387275655328056">Voeg by leeslys</translation>
 <translation id="3157684681743766797">Merk alles …</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Jy kan gestoorde wagwoorde ook op jou ander toestelle gebruik.</translation>
 <translation id="3175081911749765310">Webdienste</translation>
 <translation id="3178650076442119961">Vandag aktief</translation>
 <translation id="3181825792072797598">Skakel Sinkronisering aan</translation>
@@ -328,6 +330,7 @@ Volg die stappe hieronder:</translation>
 <translation id="4042870976416480368">Soek in bladsy</translation>
 <translation id="4049507953662678203">Maak seker jy het 'n netwerkverbinding en probeer weer.</translation>
 <translation id="408404951701638773">Soekbalk kan nou makliker bereik word</translation>
+<translation id="4108314971463891922">Volg</translation>
 <translation id="411254640334432676">Kon nie aflaai nie.</translation>
 <translation id="4112644173421521737">Soek</translation>
 <translation id="4113030288477039509">Deur jou administrateur bestuur</translation>
@@ -345,6 +348,7 @@ Volg die stappe hieronder:</translation>
 <translation id="4272631900155121838">Aktiveer die kamera in instellings om 'n QR-kode te skandeer</translation>
 <translation id="4277990410970811858">Veiligblaai</translation>
 <translation id="4281844954008187215">Diensbepalings</translation>
+<translation id="4304713468139749426">Wagwoordbestuurder</translation>
 <translation id="430793432425771671">Sinkroniseer alles</translation>
 <translation id="4309403553630140242">Dubbeltik vir meer inligting</translation>
 <translation id="430967081421617822">Alle tye</translation>
@@ -543,6 +547,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6127379762771434464">Item is verwyder</translation>
 <translation id="6136914049981179737">Sekondes gelede</translation>
 <translation id="6144589619057374135">Maak ${url} in Incognitomodus oop</translation>
+<translation id="6149061208933997199">Gebruik wagwoord</translation>
 <translation id="6159839020698489198">opsioneel</translation>
 <translation id="6177442314419606057">Soek in Chrome</translation>
 <translation id="6184086493125982861">Wys oortjies</translation>
@@ -635,6 +640,7 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6807889908376551050">Wys alles …</translation>
 <translation id="681368974849482173">Item is geskep</translation>
 <translation id="681450999322335505">Jou organisasie het sinkronisering afgeskakel.</translation>
+<translation id="683022620450280906">Jy kan gestoorde wagwoorde op enige toestel gebruik. Hulle word vir <ph name="EMAIL" /> in Google Wagwoordbestuurder gestoor</translation>
 <translation id="6830804042318138535">Lees meer</translation>
 <translation id="6831043979455480757">Vertaal</translation>
 <translation id="6842136130964845393">Verifieer dis jy om seker te maak dat jy altyd toegang tot jou gestoorde wagwoorde het</translation>
@@ -767,6 +773,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8076014560081431679">Gestoorde werfinstellings sal nie uitgevee word nie en sal dalk jou blaaigewoontes weerspieël. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Hierdie instelling word bestuur. Dubbeltik vir meer inligting.</translation>
 <translation id="8080028325999236607">Maak alle oortjies toe</translation>
+<translation id="8101409298456377967">Skep, stoor en bestuur jou wagwoorde sodat jy maklik by webwerwe en programme kan aanmeld. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Skakel af</translation>
 <translation id="8114753159095730575">Lêer kan afgelaai word. Opsies is naby die onderkant van die skerm beskikbaar.</translation>
 <translation id="8132598642024322408">Nou <ph name="PRICE" />, was <ph name="PREVIOUS_PRICE" />.</translation>

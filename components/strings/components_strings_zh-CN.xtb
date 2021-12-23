@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">有优惠可用</translation>
 <translation id="1312803275555673949">有何证据能证明这项信息属实？</translation>
 <translation id="131405271941274527"><ph name="URL" /> 想在您的手机与 NFC 设备触碰时发送和接收信息</translation>
+<translation id="1314311879718644478">查看增强现实内容</translation>
 <translation id="1314509827145471431">装订（右侧）</translation>
 <translation id="1318023360584041678">已保存在标签页组中</translation>
 <translation id="1319245136674974084">对于此应用不再询问</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">显示此网页时出了点问题。</translation>
 <translation id="1586541204584340881">您已安装的扩展程序</translation>
 <translation id="1588438908519853928">正常</translation>
+<translation id="1589050138437146318">安装 ARCore？</translation>
 <translation id="1592005682883173041">本地数据访问权限</translation>
 <translation id="1594030484168838125">选择</translation>
 <translation id="160851722280695521">在 Chrome 中玩《Dino Run》游戏</translation>
@@ -1379,6 +1381,7 @@
 <translation id="5333022057423422993">Chrome 发现您刚才使用的密码已遭遇数据泄露。为确保您的帐号安全，建议您检查您保存的密码。</translation>
 <translation id="5334013548165032829">详细的系统日志</translation>
 <translation id="5334145288572353250">保存地址？</translation>
+<translation id="5335920952954443287">跳动的心</translation>
 <translation id="5340250774223869109">此应用已被禁用</translation>
 <translation id="534295439873310000">NFC 设备</translation>
 <translation id="5344579389779391559">此页面可能会向您收取费用</translation>
@@ -2050,6 +2053,7 @@
 <translation id="7654909834015434372">当您修改注释时，此文档会恢复为原始方向</translation>
 <translation id="765676359832457558">隐藏高级设置...</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7659878911471462949">喜极而泣</translation>
 <translation id="7662298039739062396">设置由某款扩展程序控制</translation>
 <translation id="7663736086183791259">证书<ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">不得在无痕模式下使用</translation>
@@ -2253,6 +2257,7 @@
 <translation id="830498451218851433">对折</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">已安装的应用及其使用频率</translation>
+<translation id="8317207217658302555">更新 ARCore？</translation>
 <translation id="831997045666694187">晚上</translation>
 <translation id="8321476692217554900">通知</translation>
 <translation id="8328484624016508118">关闭所有无痕式标签页之后，Chrome 会清除：

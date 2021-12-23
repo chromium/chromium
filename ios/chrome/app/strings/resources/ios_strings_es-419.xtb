@@ -235,6 +235,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3157387275655328056">Agregar a la lista de lectura</translation>
 <translation id="3157684681743766797">Marcar todas…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">También puedes usar las contraseñas guardadas en tus otros dispositivos.</translation>
 <translation id="3175081911749765310">Servicios web</translation>
 <translation id="3178650076442119961">Activo hoy</translation>
 <translation id="3181825792072797598">Activar la sincronización</translation>
@@ -328,6 +329,7 @@ Realiza los siguientes pasos:</translation>
 <translation id="4042870976416480368">Buscar en la página</translation>
 <translation id="4049507953662678203">Asegúrate de tener una conexión de red y vuelve a intentarlo.</translation>
 <translation id="408404951701638773">La barra de búsqueda ahora está al alcance de la mano</translation>
+<translation id="4108314971463891922">Seguir</translation>
 <translation id="411254640334432676">Se produjo un error durante la descarga.</translation>
 <translation id="4112644173421521737">Buscar</translation>
 <translation id="4113030288477039509">Administrado por tu administrador</translation>
@@ -345,6 +347,7 @@ Realiza los siguientes pasos:</translation>
 <translation id="4272631900155121838">Habilita la cámara en la configuración para escanear un código QR</translation>
 <translation id="4277990410970811858">Navegación segura</translation>
 <translation id="4281844954008187215">Condiciones del Servicio</translation>
+<translation id="4304713468139749426">Administrador de contraseñas</translation>
 <translation id="430793432425771671">Sincronizar todo</translation>
 <translation id="4309403553630140242">Presiona dos veces para obtener más información</translation>
 <translation id="430967081421617822">Todo el tiempo</translation>
@@ -356,6 +359,7 @@ Realiza los siguientes pasos:</translation>
 <translation id="4389019817280890563">Presiona aquí para cambiar el idioma.</translation>
 <translation id="4442550905108052454">Abre la <ph name="BEGIN_BOLD" />Configuración<ph name="END_BOLD" />.</translation>
 <translation id="4454246407045105932">Agregar idioma</translation>
+<translation id="4462491365653392320">Realizar seguimiento de precios en las pestañas</translation>
 <translation id="4469418912670346607">Continuar con la configuración</translation>
 <translation id="4474494258097106883">Diseñado para tu iPhone</translation>
 <translation id="4476574785019001431">Configuración</translation>
@@ -419,6 +423,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4944543191714094452">Buscar en la página…</translation>
 <translation id="4945756290001680296">Accede a la configuración de contraseñas</translation>
 <translation id="4979397965658815378">Accede con tu cuenta de Google para obtener tus favoritos, contraseñas, historial y otras opciones de configuración en todos tus dispositivos</translation>
+<translation id="4986678885919050584">Quitar de este dispositivo</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5017828934289857214">Recordarme más tarde</translation>
 <translation id="5037676449506322593">Seleccionar todo</translation>
@@ -520,6 +525,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5979837087407522202">Buscar contraseñas</translation>
 <translation id="5982717868370722439">Agrega datos existentes a <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Visitados recientemente</translation>
+<translation id="5988097621740394599">Visualiza los descuentos en las pestañas.</translation>
 <translation id="5988851877894965432">Abrir URL en Chrome</translation>
 <translation id="6012140227487808125">Encriptando...</translation>
 <translation id="6021332621416007159">Abrir en...</translation>
@@ -540,6 +546,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6127379762771434464">Se eliminó el elemento</translation>
 <translation id="6136914049981179737">Hace seg.</translation>
 <translation id="6144589619057374135">Abrir ${url} en modo Incógnito</translation>
+<translation id="6149061208933997199">Usar contraseña</translation>
 <translation id="6159839020698489198">opcional</translation>
 <translation id="6177442314419606057">Buscar en Chrome</translation>
 <translation id="6184086493125982861">Mostrar las pestañas</translation>
@@ -764,6 +771,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8076014560081431679">Las opciones de configuración de sitios guardadas no se borrarán y es posible que reflejen tus hábitos de navegación. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Esta configuración está administrada; presiona dos veces para obtener más información</translation>
 <translation id="8080028325999236607">Cerrar todas las pestañas</translation>
+<translation id="8101409298456377967">Crea, guarda y administra tus contraseñas para acceder fácilmente a sitios y apps. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Desactivar</translation>
 <translation id="8114753159095730575">El archivo ya se puede descargar. Las opciones disponibles se muestran junto a la parte inferior de la pantalla.</translation>
 <translation id="8132598642024322408">El precio actual es <ph name="PRICE" />; antes costaba <ph name="PREVIOUS_PRICE" />.</translation>

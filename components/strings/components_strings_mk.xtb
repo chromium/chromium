@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">Достапна понуда</translation>
 <translation id="1312803275555673949">Има докази како поддршка на ова?</translation>
 <translation id="131405271941274527"><ph name="URL" /> сака да испраќа и прима информации кога ќе го допрете телефонот врз уред со NFC</translation>
+<translation id="1314311879718644478">Прегледајте ги содржините за проширена реалност</translation>
 <translation id="1314509827145471431">Врзување десно</translation>
 <translation id="1318023360584041678">Зачувано во група картички</translation>
 <translation id="1319245136674974084">Не прашувај повторно за апликацијава</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">Нешто тргна наопаку при прикажувањето на оваа веб-страница.</translation>
 <translation id="1586541204584340881">кои екстензии сте ги инсталирале</translation>
 <translation id="1588438908519853928">Нормален</translation>
+<translation id="1589050138437146318">Да се инсталира ARCore?</translation>
 <translation id="1592005682883173041">Локален пристап до податоците</translation>
 <translation id="1594030484168838125">Избери</translation>
 <translation id="160851722280695521">Играјте ја играта „Трчање на диносаурусот“ во Chrome</translation>
@@ -1392,6 +1394,7 @@
 <translation id="5333022057423422993">Chrome ја најде лозинката која штотуку ја употребивте меѓу лозинките откриени при упад во податоците. За да ги заштитите сметките, препорачуваме да ги проверите зачуваните лозинки.</translation>
 <translation id="5334013548165032829">Детални системски дневници</translation>
 <translation id="5334145288572353250">Да се зачува адресата?</translation>
+<translation id="5335920952954443287">Срце што чука</translation>
 <translation id="5340250774223869109">Апликацијата е блокирана</translation>
 <translation id="534295439873310000">NFC-уреди</translation>
 <translation id="5344579389779391559">Страницава можеби ќе се обиде да ви наплати пари</translation>
@@ -2064,6 +2067,7 @@
 <translation id="7654909834015434372">Кога ќе ги изменувате прибелешките, документов ќе се врати на својата оригинална ротација</translation>
 <translation id="765676359832457558">Сокриј напредни поставки...</translation>
 <translation id="7658239707568436148">Откажи</translation>
+<translation id="7659878911471462949">Солзи радосници</translation>
 <translation id="7662298039739062396">Поставка контролирана од екстензија</translation>
 <translation id="7663736086183791259">Сертификат <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Не е дозволено во „Инкогнито“</translation>
@@ -2267,6 +2271,7 @@
 <translation id="830498451218851433">Превиткување на половина</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Инсталирани апликации и колку често се користат</translation>
+<translation id="8317207217658302555">Да се ажурира ARCore?</translation>
 <translation id="831997045666694187">Приквечер</translation>
 <translation id="8321476692217554900">известувања</translation>
 <translation id="8328484624016508118">Откако ќе ги затворите сите картички „Инкогнито“, Chrome ги брише:

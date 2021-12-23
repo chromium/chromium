@@ -131,6 +131,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1768366657309696705">Comanda rapidă de la tastatură <ph name="LAUNCHER_KEY_NAME" /> + punct s-a schimbat. Pentru a folosi tasta Insert, apasă tasta <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">S-a mutat pe rândul <ph name="ROW_NUMBER" />, în coloana <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Derulează la dreapta</translation>
+<translation id="1774796056689732716">Calendar, <ph name="CURRENT_MONTH_YEAR" />, momentan s-a selectat <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Dezactivată</translation>
 <translation id="1804572139604454141">Înregistrarea s-a oprit din cauza epuizării spațiului pe disc</translation>
 <translation id="181103072419391116">Puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
@@ -620,6 +621,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5075554201838155866">Pornește subtitrările</translation>
 <translation id="5078796286268621944">Cod PIN incorect</translation>
 <translation id="5083553833479578423">Deblochează mai multe funcții ale Asistentului.</translation>
+<translation id="5090752371472782287">Proiectează pe un dispozitiv <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Personalizează</translation>
 <translation id="5117590920725113268">Afișează luna următoare</translation>
 <translation id="5136175204352732067">Altă tastatură conectată</translation>
@@ -629,6 +631,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5168181903108465623">Dispozitive de proiecție disponibile</translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
 <translation id="5176318573511391780">Înregistrează ecranul parțial</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> evenimente</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> a fost combinată cu <ph name="IN_PLACE_APP" /> pentru a crea un dosar nou.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Încă o notificare}few{Încă # notificări}other{Încă # de notificări}}</translation>
@@ -802,6 +805,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="643147933154517414">Gata</translation>
 <translation id="6431865393913628856">Înregistrarea ecranului</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> pe <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> eveniment</translation>
 <translation id="6452181791372256707">Respingeți</translation>
 <translation id="6453179446719226835">Limba a fost schimbată</translation>
 <translation id="6459472438155181876">Se extinde ecranul pe <ph name="DISPLAY_NAME" /></translation>
@@ -865,6 +869,7 @@ Instalare nouă</translation>
 <translation id="6811454077060061666">Google Drive pentru computer nu este disponibil</translation>
 <translation id="6818242057446442178">Înapoi cu un cuvânt</translation>
 <translation id="6820676911989879663">Fă o pauză!</translation>
+<translation id="6827049576281411231">Închide panoul de evenimente</translation>
 <translation id="6836499262298959512">Fișier periculos</translation>
 <translation id="6837064795450991317">Ascunde bara de pe desktop</translation>
 <translation id="6852052252232534364">Dă clic pentru activare</translation>
@@ -872,6 +877,7 @@ Instalare nouă</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Încă o cifră}few{Încă # cifre}other{Încă # de cifre}}</translation>
 <translation id="6867938213751067702">Descărcarea a fost întreruptă pentru <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Comanda rapidă a fost dezactivată</translation>
+<translation id="6884665277231944629">Revino la ziua de azi</translation>
 <translation id="6886172995547742638">Dispozitivul <ph name="DEVICE_TYPE" /> poate avea o performanță mai slabă. Folosește un adaptor de curent USB-C certificat de minimum <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Apasă tasta săgeată în jos pentru a comuta între ferestre</translation>
 <translation id="6896758677409633944">Copiază</translation>
@@ -958,6 +964,7 @@ Instalare nouă</translation>
 <translation id="7497767806359279797">Alege limba și tastatura</translation>
 <translation id="7509246181739783082">Confirmă-ți identitatea</translation>
 <translation id="7513622367902644023">Modul Captură de ecran selectat</translation>
+<translation id="7513922695575567867">Calendar, săptămâna <ph name="DATE" />, data de <ph name="SELECTED_DATE" /> momentan selectată.</translation>
 <translation id="7514365320538308">Descarcă</translation>
 <translation id="7526573455193969409">Este posibil ca rețeaua să fie monitorizată</translation>
 <translation id="7536035074519304529">Adresă IP: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@ Instalare nouă</translation>
 <translation id="7564874036684306347">Mutarea ferestrelor pe alt desktop poate duce la un comportament neașteptat. Notificările, ferestrele și casetele de dialog ulterioare ar putea fi împărțite între ecrane.</translation>
 <translation id="7569509451529460200">Braille și ChromeVox sunt activate</translation>
 <translation id="7569983096843329377">Negru</translation>
+<translation id="757941033127302446">Te-ai conectat</translation>
 <translation id="7579778809502851308">Captură de ecran</translation>
 <translation id="7590883480672980941">Setări de introducere a textului</translation>
 <translation id="7593891976182323525">Căutare sau Shift</translation>
@@ -1040,6 +1048,7 @@ Instalare nouă</translation>
 <translation id="8035152190676905274">Stilou</translation>
 <translation id="8036504271468642248">Propoziția anterioară</translation>
 <translation id="8042893070933512245">Deschide meniul cu setări de accesibilitate</translation>
+<translation id="8042925093898452104">Închide informațiile detaliate</translation>
 <translation id="8048123526339889627">Setări Bluetooth</translation>
 <translation id="8051716679295756675">Șablonul numit <ph name="DESK_TEMPLATE_NAME" /> există deja</translation>
 <translation id="8052898407431791827">S-a copiat în clipboard</translation>

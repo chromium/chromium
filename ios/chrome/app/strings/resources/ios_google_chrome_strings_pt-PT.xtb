@@ -70,6 +70,7 @@
 <translation id="6063091872902370735">Permitir o início de sessão no Chrome</translation>
 <translation id="6181930887571472871">Mude para o Chrome</translation>
 <translation id="6238746320622508509">Permita que o Chrome bloqueie os seus separadores de navegação anónima.</translation>
+<translation id="6387994324662817823">As palavras-passe são guardadas no Gestor de palavras-passe da Google apenas neste dispositivo.</translation>
 <translation id="6427126399757991875">A sua entidade está a configurar o Chrome…</translation>
 <translation id="6600954340915313787">Copiado para o Chrome</translation>
 <translation id="6634107063912726160">Quando terminar sessão, o Chrome não irá sincronizar quaisquer dados novos com a sua Conta Google. Os dados anteriormente sincronizados mantêm-se na conta.</translation>
@@ -111,5 +112,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Proteja-se com o Google Chrome</translation>
 <translation id="8772179140489533211">Mostra pedidos para iniciar sessão no Chrome.</translation>
+<translation id="8788269841521769222">Não terá de memorizar esta palavra-passe. Será guardada no Gestor de palavras-passe da Google de <ph name="EMAIL" /></translation>
 <translation id="9112744793181547300">Pretende definir o Chrome como a predefinição?</translation>
 </translationbundle>

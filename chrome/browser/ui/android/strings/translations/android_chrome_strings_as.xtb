@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Googleৰ সৈতে যোগাযোগ কৰি থকা হৈছে। এই কার্যৰ বাবে অলপ সময় লাগিব পাৰে…</translation>
 <translation id="1416550906796893042">এপ্লিকেশ্বন সংস্কৰণ</translation>
 <translation id="1430915738399379752">প্ৰিণ্ট কৰক</translation>
+<translation id="1436784010935106834">আঁতৰোৱা হ’ল</translation>
 <translation id="1448440926884431741">আপুনি ট্ৰেক কৰা প্ৰ’ডাক্টসমূহ বুকমাৰ্কত শৃংখলাবদ্ধ কৰক</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> শ্বেয়াৰ কৰিব নোৱাৰি</translation>
 <translation id="1466383950273130737">Chromeৰ ভাষা বাছনি কৰক</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">ৱিণ্ড’ বন্ধ কৰিবনে?</translation>
 <translation id="2175927920773552910">কিউআৰ ক’ড</translation>
 <translation id="218608176142494674">শ্বেয়াৰ কৰি থকা হৈছে</translation>
-<translation id="2195339740518523951">Chromeৰ আটাইতকৈ শক্তিশালী সুৰক্ষা লাভ কৰক</translation>
 <translation id="2200113223741723867">ব্যৱহাৰৰ ডেটা শ্বেয়াৰ কৰাটো পৰিচালনা কৰক</translation>
 <translation id="2218567645332692482">HTTPSলৈ আটাইবোৰ নেভিগেশ্বন আপগ্ৰে’ড কৰক আৰু এইটো সমৰ্থন নকৰা ছাইট ল’ড কৰাৰ পূৰ্বে আপোনাক সতৰ্ক কৰক</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> হিচাপে অব্যাহত ৰাখক</translation>
@@ -543,7 +543,6 @@
 <translation id="4170011742729630528">সেৱাটো উপলব্ধ নহয়, পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ব্যৱহাৰ কৰা হৈছে</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
-<translation id="4183868528246477015">Google Lensৰে সন্ধান কৰক <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">নতুন টেবত খোলক</translation>
 <translation id="4196597275619698563">কাৰ্ড সৃষ্টি কৰক</translation>
 <translation id="4198423547019359126">ডাউনল’ড কৰিবলৈ কোনো অৱস্থান নাই</translation>
@@ -577,7 +576,6 @@
 <translation id="4411535500181276704">লাইট ম’ড</translation>
 <translation id="4415276339145661267">আপোনাৰ Google একাউণ্ট পৰিচালনা কৰক</translation>
 <translation id="4425140285732600465">মূল্য ট্ৰেক কৰাটো সক্ষম কৰা হ’ল। কোনো ছাইটত মূল্য কমিলে সতৰ্কবাৰ্তা পাওক।</translation>
-<translation id="4427306783828095590">বৰ্ধিত সুৰক্ষাৰ সুবিধাটোৱে ফিশ্বিং আৰু মালৱেৰ অৱৰোধ কৰিবলৈ অধিক কাৰ্য কৰে</translation>
 <translation id="4450672886426705087">Googleত ফলাফল সন্ধান কৰক।</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> টেব বন্ধ কৰক</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" />লৈ বুকমার্ক কৰা হৈছে</translation>
@@ -1082,6 +1080,7 @@
 <translation id="7177466738963138057">আপুনি এইটো পিছত ছেটিংসমূহ-লৈ গৈ সলনি কৰিব পাৰে</translation>
 <translation id="7177873915659574692">কিউআৰ ক’ড সৃষ্টি কৰিব নোৱাৰি। URLটোত <ph name="CHARACTER_LIMIT" /> টাতকৈ অধিক বৰ্ণ আছে।</translation>
 <translation id="7180611975245234373">ৰিফ্ৰেশ্ব কৰক</translation>
+<translation id="718226107353899806">আপুনি <ph name="MAX_NUM_REACTIONS" /> টা পৰ্যন্ত প্ৰতিক্ৰিয়া যোগ দিব পাৰে</translation>
 <translation id="7187993566681480880">আপোনাক Chromeত সুৰক্ষিত কৰি ৰাখে আৰু আপুনি ছাইন ইন হৈ থকা অৱস্থাত Googleৰ অন্য এপ্‌সমূহত আপোনাৰ সুৰক্ষা উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ’ব পাৰে।</translation>
 <translation id="718926126787620637">পূৰ্ণ উচ্চতাত খোলা বুকমাৰ্ক ফ'ল্ডাৰৰ সূচী</translation>
 <translation id="7191430249889272776">নেপথ্যত খোলা থকা টেব।</translation>
@@ -1245,7 +1244,6 @@
 <translation id="8035133914807600019">নতুন ফ’ল্ডাৰ…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> দিন বাকী আছে</translation>
 <translation id="8037801708772278989">এইমাত্ৰ পৰীক্ষা কৰা হৈছে</translation>
-<translation id="8040831032425909005">দ্ৰুতভাৱে কাৰ্যৰ সন্ধান কৰিব পৰা ৱিজেটৰ আইকন</translation>
 <translation id="804335162455518893">SD কাৰ্ড বিচাৰি পোৱা নগ’ল</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> টা ইনক’গ্নিট’ টেব}one{<ph name="TAB_COUNT_NORMAL" /> টা ইনক’গ্নিট’ টেব}other{<ph name="TAB_COUNT_NORMAL" /> টা ইনক’গ্নিট’ টেব}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> এম.বি. উপলব্ধ</translation>

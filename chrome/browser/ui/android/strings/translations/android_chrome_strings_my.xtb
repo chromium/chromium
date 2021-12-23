@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Google ကို ဆက်သွယ်နေပါသည်။ အချိန်တစ်မိနစ်ခန့် ကြာနိုင်သည်...</translation>
 <translation id="1416550906796893042">အပလီကေးရှင်း ဗားရှင်း</translation>
 <translation id="1430915738399379752">ပရင့်</translation>
+<translation id="1436784010935106834">ဖယ်ရှားပစ်ခဲ့</translation>
 <translation id="1448440926884431741">သင်စောင့်ကြည့်ထားသော ထုတ်ကုန်များကို ‘လိပ်စာများ’ တွင် စုစည်းနိုင်သည်</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ကို မျှဝေ၍ မရပါ</translation>
 <translation id="1466383950273130737">Chrome ၏ ဘာသာစကား ရွေးပါ</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">ဝင်ဒိုး ပိတ်မလား။</translation>
 <translation id="2175927920773552910">QR ကုဒ်</translation>
 <translation id="218608176142494674">မျှဝေခြင်း</translation>
-<translation id="2195339740518523951">Chrome ၏ အခိုင်မာဆုံးလုံခြုံရေးကို ရယူခြင်း</translation>
 <translation id="2200113223741723867">သုံးစွဲမှုဒေတာ မျှဝေခြင်းကို စီမံရန်</translation>
 <translation id="2218567645332692482">HTTPS သို့ သွားရောက်မှုများကို အဆင့်မြှင့်ပြီး ၎င်းကို မပံ့ပိုးသောဝဘ်ဆိုက်များ မဖွင့်မီ သင့်အား သတိပေးသည်</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> အဖြစ် ရှေ့ဆက်ရန်</translation>
@@ -543,7 +543,6 @@
 <translation id="4170011742729630528">ဝန်ဆောင်မှု မရနိုင်ပါ; နောက်မှထပ်မံကြိုးစားပါ။</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> ကို အသုံးပြုထားသည်</translation>
 <translation id="4181841719683918333">ဘာသာစကားများ</translation>
-<translation id="4183868528246477015">Google Lens <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /> ဖြင့်ရှာခြင်း</translation>
 <translation id="4195643157523330669">တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="4196597275619698563">ကတ်ပြုလုပ်ရန်</translation>
 <translation id="4198423547019359126">ဒေါင်းလုဒ်တည်နေရာ မရှိပါ</translation>
@@ -577,7 +576,6 @@
 <translation id="4411535500181276704">အပေါ့စားမုဒ်</translation>
 <translation id="4415276339145661267">သင့် Google Account ကို စီမံခြင်း</translation>
 <translation id="4425140285732600465">ဈေးနှုန်း စောင့်ကြည့်နေသည်။ ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရယူနိုင်သည်။</translation>
-<translation id="4427306783828095590">အဆင့်မြှင့်တင်ထားသော ကာကွယ်မှုက ဖြားယောင်းမှုနှင့် မဲလ်ဝဲများကို ပိုမိုပိတ်ဆို့ပေးသည်</translation>
 <translation id="4450672886426705087">Google မှ ရှာဖွေမှု ရလဒ်များ။</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> တဘ်ကို ပိတ်ရန်</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" />သို့ စာညှပ်ကို သိမ်းထားပါသည်</translation>
@@ -1081,6 +1079,7 @@
 <translation id="7177466738963138057">၎င်းကို နောက်ပိုင်းတွင် ဆက်တင်များထဲ၌ ပြန်ပြောင်းနိုင်ပါသည်</translation>
 <translation id="7177873915659574692">QR ကုဒ် ပြုလုပ်၍မရပါ။ URL သည် စာလုံးရေ <ph name="CHARACTER_LIMIT" /> လုံးထက်များသည်။</translation>
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
+<translation id="718226107353899806">တုံ့ပြန်မှု <ph name="MAX_NUM_REACTIONS" /> ခုအထိ ထည့်နိုင်သည်</translation>
 <translation id="7187993566681480880">Chrome တွင် ဘေးကင်းစေပြီး အခြား Google အက်ပ်များတွင် သင်လက်မှတ်ထိုးဝင်ထားသည့်အခါ လုံခြုံရေး ပိုကောင်းမွန်စေရန်လည်း သုံးနိုင်သည်။</translation>
 <translation id="718926126787620637">လိပ်စာဖိုင်တွဲများစာရင်းကို မြင်ကွင်းအပြည့်ဖွင့်ထားသည်</translation>
 <translation id="7191430249889272776">တဲဘ်ကို နောက်ခံမှာ ဖွင့်ထား။</translation>
@@ -1244,7 +1243,6 @@
 <translation id="8035133914807600019">ဖိုင်တွဲ အသစ်...</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> ရက် ကျန်သည်</translation>
 <translation id="8037801708772278989">ယခုလေးတင် စစ်ဆေးခဲ့သည်</translation>
-<translation id="8040831032425909005">အမြန်လုပ်ဆောင်ချက် ရှာဖွေမှု ဝိဂျက်သင်္ကေတ</translation>
 <translation id="804335162455518893">SD ကတ် မတွေ့ပါ</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{ရုပ်ဖျက်တဘ် <ph name="TAB_COUNT_ONE" /> ခု}other{ရုပ်ဖျက်တဘ် <ph name="TAB_COUNT_NORMAL" /> ခု}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> မီဂါဘိုက် (MB) သိမ်းနိုင်သည်</translation>

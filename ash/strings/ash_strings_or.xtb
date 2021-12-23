@@ -131,6 +131,7 @@
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + Period କୀବୋର୍ଡ ସର୍ଟକଟ୍ ବଦଳି ଯାଇଛି। Insert କୀକୁ ବ୍ୟବହାର କରିବା ପାଇଁ, <ph name="LAUNCHER_KEY_NAME" /> କୀ + Shift + Backspace ଦବାନ୍ତୁ।</translation>
 <translation id="1770726142253415363">ଧାଡ଼ି <ph name="ROW_NUMBER" />, ସ୍ତମ୍ଭ <ph name="COLUMN_NUMBER" />କୁ ମୁଭ କରାଯାଇଛି।</translation>
 <translation id="1771761307086386028">ଡାହାଣକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
+<translation id="1774796056689732716">କ୍ୟାଲେଣ୍ଡର, <ph name="CURRENT_MONTH_YEAR" />, ବର୍ତ୍ତମାନ <ph name="DATE" />କୁ ଚୟନ କରାଯାଇଛି।</translation>
 <translation id="1787955149152357925">ବନ୍ଦ ଅଛି</translation>
 <translation id="1804572139604454141">ଡିସ୍କ ସ୍ପେସ୍ ଅତ୍ୟନ୍ତ କମ୍ ଥିବା ଯୋଗୁଁ ରେକର୍ଡିଂ ସମାପ୍ତ ହୋଇଛି</translation>
 <translation id="181103072419391116">ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">କ୍ଲୋଜ୍ଡ କ୍ୟାପସନଗୁଡ଼ିକ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="5078796286268621944">ଭୁଲ ପିନ୍</translation>
 <translation id="5083553833479578423">ଆହୁରି ଆସିଷ୍ଟାଣ୍ଟ ବୈଶିଷ୍ଟ୍ୟଗୁଡ଼ିକ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>
+<translation id="5090752371472782287">ଏକ <ph name="MANAGER" /> ଡିଭାଇସକୁ କାଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="5106223312672646208">ପର୍ସନାଲାଇଜ କରନ୍ତୁ</translation>
 <translation id="5117590920725113268">ପରବର୍ତ୍ତୀ ମାସ ଦେଖାନ୍ତୁ</translation>
 <translation id="5136175204352732067">ଅଲଗା କୀବୋର୍ଡ ସଂଯୁକ୍ତ ହୋ‍ଇଛି</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">କାଷ୍ଟ ଡିଭାଇସ୍ ଉପଲବ୍ଧ</translation>
 <translation id="5170568018924773124">ଫୋଲ୍ଡରରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="5176318573511391780">ଆଂଶିକ ସ୍କ୍ରିନ୍ ରେକର୍ଡ କରନ୍ତୁ</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" />ଟି ଇଭେଣ୍ଟ</translation>
 <translation id="5198715732953550718">ନୂଆ ଫୋଲ୍ଡର୍ ତିଆରି କରିବାକୁ<ph name="MOVED_APP_NAME" /> <ph name="IN_PLACE_APP" /> ସହ ସମ୍ମିଳିତ ହୋଇଛି।</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1ଟି ଅନ୍ୟ ବିଜ୍ଞପ୍ତି}other{#ଟି ଅନ୍ୟ ବିଜ୍ଞପ୍ତି}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">ସମସ୍ତ କାମ ହୋଇଗଲା!</translation>
 <translation id="6431865393913628856">ସ୍କ୍ରିନ୍ ରେକର୍ଡ</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />ରେ<ph name="ROUTE_TITLE" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" />ଟି ଇଭେଣ୍ଟ</translation>
 <translation id="6452181791372256707">ଅଗ୍ରାହ୍ୟ କରନ୍ତୁ</translation>
 <translation id="6453179446719226835">ଭାଷା ପରିବର୍ତ୍ତନ କରାଯାଇଛି</translation>
 <translation id="6459472438155181876">ସ୍କ୍ରିନ୍ <ph name="DISPLAY_NAME" />କୁ ପ୍ରସାରିତ ହୋଇଛି</translation>
@@ -864,6 +868,7 @@
 <translation id="6811454077060061666">ଡେସ୍କଟପ ପାଇଁ Google Drive ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="6818242057446442178">ଗୋଟିଏ ଶବ୍ଦ ପଛକୁ ଫେରନ୍ତୁ</translation>
 <translation id="6820676911989879663">ଏକ ବିରତି ନିଅନ୍ତୁ!</translation>
+<translation id="6827049576281411231">ଇଭେଣ୍ଟ ପ୍ୟାନେଲ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6836499262298959512">ବିପଦଜନକ ଫାଇଲ୍</translation>
 <translation id="6837064795450991317">ଡେସ୍କବାରକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="6852052252232534364">ସକ୍ରିୟ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
@@ -871,6 +876,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ଗୋଟିଏ ଅଙ୍କ ବାକି ଅଛି}other{#ଟି ଅଙ୍କ ବାକି ଅଛି}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" />ର ଡାଉନଲୋଡକୁ ବିରତ କରାଯାଇଛି</translation>
 <translation id="6878400149835617132">ସର୍ଟକଟ୍ ବନ୍ଦ କରାଯାଇଛି</translation>
+<translation id="6884665277231944629">ଆଜିକୁ ଫେରନ୍ତୁ</translation>
 <translation id="6886172995547742638">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ର କାର୍ଯ୍ୟଦକ୍ଷତା କମ୍ ହୋଇପାରେ। ଏକ ସ୍ୱୀକୃତିପ୍ରାପ୍ତ <ph name="PREFERRED_MINIMUM_POWER" />W କିମ୍ବା ଉଚ୍ଚତର USB-C ପାୱାର ଆଡପ୍ଟର୍ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="688631446150864480">ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ସ୍ୱିଚ୍ କରିବା ପାଇଁ ଡାଉନ୍ ତୀର କୀ'କୁ ଦବାନ୍ତୁ</translation>
 <translation id="6896758677409633944">କପି କରନ୍ତୁ</translation>
@@ -957,6 +963,7 @@
 <translation id="7497767806359279797">ଭାଷା ଏବଂ କୀବୋର୍ଡ ବାଛନ୍ତୁ</translation>
 <translation id="7509246181739783082">ଆପଣଙ୍କ ପରିଚୟ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="7513622367902644023">ସ୍କ୍ରିନସଟ୍ ମୋଡ୍ ଚୟନ କରାଯାଇଛି</translation>
+<translation id="7513922695575567867">କ୍ୟାଲେଣ୍ଡର, <ph name="DATE" />ର ସପ୍ତାହ, ବର୍ତ୍ତମାନ <ph name="SELECTED_DATE" />କୁ ଚୟନ କରାଯାଇଛି।</translation>
 <translation id="7514365320538308">ଡାଉନ୍‌‌ଲୋଡ୍‌ କରନ୍ତୁ</translation>
 <translation id="7526573455193969409">ନେଟ୍‌ୱର୍କ ଉପରେ ହୁଏତ ନଜର ରଖାଯାଇପାରେ</translation>
 <translation id="7536035074519304529">IP ଠିକଣା: <ph name="ADDRESS" /></translation>
@@ -966,6 +973,7 @@
 <translation id="7564874036684306347">ୱିଣ୍ଡୋକୁ ଅନ୍ୟ ଡେକ୍ସଟପ୍‌କୁ ତ୍ୱରିତ କରିବା ଦ୍ୱାରା ଅପ୍ରତ୍ୟାଶିତ ଆଚରଣ ହୋଇପାରେ। ଏହା ପରବର୍ତ୍ତୀ ବିଜ୍ଞପ୍ତି, ୱିଣ୍ଡୋ ଏବଂ ଡାଏଲଗ୍‌ଗୁଡ଼ିକ ଡେକ୍ସଟପ୍‌ଗୁଡ଼ିକ ମଧ୍ୟରେ ଅଲଗା ହୋଇପାରେ।</translation>
 <translation id="7569509451529460200">Braille ଏବଂ ChromeVoxକୁ ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="7569983096843329377">କଳା</translation>
+<translation id="757941033127302446">ସାଇନ୍ ଇନ୍ କରିଛନ୍ତି</translation>
 <translation id="7579778809502851308">ସ୍କ୍ରିନ୍ କ୍ୟାପଚର୍</translation>
 <translation id="7590883480672980941">ଇନପୁଟ୍ ସେଟିଂସ୍</translation>
 <translation id="7593891976182323525">Search କିମ୍ବା Shift</translation>
@@ -1039,6 +1047,7 @@
 <translation id="8035152190676905274">ପେନ୍</translation>
 <translation id="8036504271468642248">ପୂର୍ବବର୍ତ୍ତୀ ବାକ୍ୟ</translation>
 <translation id="8042893070933512245">ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ୍ ମେନୁ ଖୋଲନ୍ତୁ</translation>
+<translation id="8042925093898452104">ସବିଶେଷ ସୂଚନା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8048123526339889627">ବ୍ଲୁଟୁଥ୍ ସେଟିଂସ୍</translation>
 <translation id="8051716679295756675">ପୂର୍ବରୁ <ph name="DESK_TEMPLATE_NAME" /> ନାମକ ଟେମ୍ପଲେଟଟି ଅଛି</translation>
 <translation id="8052898407431791827">କ୍ଲିପବୋର୍ଡକୁ କପି କରାଯାଇଛି</translation>

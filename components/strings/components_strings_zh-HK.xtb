@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">適用優惠</translation>
 <translation id="1312803275555673949">有什麼證據證明資訊屬實？</translation>
 <translation id="131405271941274527"><ph name="URL" /> 想在您以手機觸踫 NFC 裝置時傳送和接收資料</translation>
+<translation id="1314311879718644478">查看擴張實境內容</translation>
 <translation id="1314509827145471431">釘裝 (右側)</translation>
 <translation id="1318023360584041678">已儲存至分頁群組</translation>
 <translation id="1319245136674974084">使用這個應用程式時不要再問我</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">顯示此網頁時發生錯誤。</translation>
 <translation id="1586541204584340881">您已安裝的擴充程式</translation>
 <translation id="1588438908519853928">一般</translation>
+<translation id="1589050138437146318">要安裝 ARCore 嗎？</translation>
 <translation id="1592005682883173041">本地資料存取</translation>
 <translation id="1594030484168838125">選擇</translation>
 <translation id="160851722280695521">暢玩 Chrome 恐龍遊戲</translation>
@@ -1382,6 +1384,7 @@
 <translation id="5333022057423422993">Chrome 發現您剛才使用的密碼因資料外洩而被洩露。如要確保帳戶安全，建議您檢查已儲存的密碼。</translation>
 <translation id="5334013548165032829">詳細系統記錄</translation>
 <translation id="5334145288572353250">要儲存地址嗎？</translation>
+<translation id="5335920952954443287">跳緊嘅心</translation>
 <translation id="5340250774223869109">已封鎖應用程式</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
 <translation id="5344579389779391559">此網頁可能會向您收取費用</translation>
@@ -2054,6 +2057,7 @@
 <translation id="7654909834015434372">在您編輯註解時，此文件將會轉回原本的方向</translation>
 <translation id="765676359832457558">隱藏進階設定…</translation>
 <translation id="7658239707568436148">取消</translation>
+<translation id="7659878911471462949">喜極而泣</translation>
 <translation id="7662298039739062396">由擴充程式控制的設定</translation>
 <translation id="7663736086183791259">憑證 <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">不允許用於無痕模式</translation>
@@ -2257,6 +2261,7 @@
 <translation id="830498451218851433">對摺</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">已安裝的應用程式及使用頻率</translation>
+<translation id="8317207217658302555">要更新 ARCore 嗎？</translation>
 <translation id="831997045666694187">傍晚</translation>
 <translation id="8321476692217554900">通知</translation>
 <translation id="8328484624016508118">關閉所有無痕式分頁後，Chrome 就會清除以下資料：

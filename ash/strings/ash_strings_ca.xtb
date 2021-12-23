@@ -131,6 +131,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1768366657309696705">Les tecles de drecera <ph name="LAUNCHER_KEY_NAME" />+punt han canviat. Per utilitzar la tecla d'inserció, prem <ph name="LAUNCHER_KEY_NAME" />+Maj+Retrocés.</translation>
 <translation id="1770726142253415363">S'ha mogut a la fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Desplaça't cap a la dreta</translation>
+<translation id="1774796056689732716">Calendari, <ph name="CURRENT_MONTH_YEAR" />, actualment està seleccionat el dia <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Desactivat</translation>
 <translation id="1804572139604454141">La gravació ha finalitzat perquè queda molt poc espai de disc</translation>
 <translation id="181103072419391116"><ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
@@ -620,6 +621,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5075554201838155866">Inicia els subtítols</translation>
 <translation id="5078796286268621944">PIN incorrecte</translation>
 <translation id="5083553833479578423">Desbloqueja més funcions de l'Assistent.</translation>
+<translation id="5090752371472782287">Emet a un dispositiu de <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Personalitza</translation>
 <translation id="5117590920725113268">Mostra el mes següent</translation>
 <translation id="5136175204352732067">S'ha connectat un altre teclat</translation>
@@ -629,6 +631,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5168181903108465623">Dispositius d'emissió disponibles</translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5176318573511391780">Grava una part de la pantalla</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> esdeveniments</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> i <ph name="IN_PLACE_APP" /> s'han combinat per crear una carpeta nova.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificació més}other{# notificacions més}}</translation>
@@ -802,6 +805,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="643147933154517414">Fet</translation>
 <translation id="6431865393913628856">Gravació de pantalla</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> a <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> esdeveniment</translation>
 <translation id="6452181791372256707">Rebutja</translation>
 <translation id="6453179446719226835">S'ha canviat l'idioma</translation>
 <translation id="6459472438155181876">S'està ampliant la pantalla a <ph name="DISPLAY_NAME" /></translation>
@@ -865,6 +869,7 @@ Instal·lació nova</translation>
 <translation id="6811454077060061666">Google Drive per a ordinadors no està disponible</translation>
 <translation id="6818242057446442178">Enrere per paraula</translation>
 <translation id="6820676911989879663">Fes una pausa</translation>
+<translation id="6827049576281411231">Tanca el tauler d'esdeveniments</translation>
 <translation id="6836499262298959512">Fitxer perillós</translation>
 <translation id="6837064795450991317">Amaga la barra d'escriptori</translation>
 <translation id="6852052252232534364">Clic per activar</translation>
@@ -872,6 +877,7 @@ Instal·lació nova</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un dígit}other{Falten # dígits}}</translation>
 <translation id="6867938213751067702">La baixada del fitxer <ph name="FILENAME" /> s'ha posat en pausa</translation>
 <translation id="6878400149835617132">S'ha desactivat la drecera</translation>
+<translation id="6884665277231944629">Torna a avui</translation>
 <translation id="6886172995547742638">És possible que el rendiment del teu dispositiu <ph name="DEVICE_TYPE" /> es vegi disminuït. Utilitza un adaptador de corrent USB-C certificat de <ph name="PREFERRED_MINIMUM_POWER" /> W o superior.</translation>
 <translation id="688631446150864480">Prem la tecla de fletxa avall per canviar de finestra</translation>
 <translation id="6896758677409633944">Copia</translation>
@@ -958,6 +964,7 @@ Instal·lació nova</translation>
 <translation id="7497767806359279797">Tria l'idioma i el teclat</translation>
 <translation id="7509246181739783082">Verifica la teva identitat</translation>
 <translation id="7513622367902644023">S'ha seleccionat el mode de captura de pantalla</translation>
+<translation id="7513922695575567867">Calendari, setmana del <ph name="DATE" />, actualment està seleccionat el dia <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Baixa</translation>
 <translation id="7526573455193969409">És possible que la xarxa estigui supervisada</translation>
 <translation id="7536035074519304529">Adreça IP: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@ Instal·lació nova</translation>
 <translation id="7564874036684306347">Moure finestres a un altre escriptori pot provocar un comportament imprevist. És possible que les notificacions, les finestres i els quadres de diàleg següents quedin dividits entre escriptoris.</translation>
 <translation id="7569509451529460200">S'ha activat el braille i ChromeVox</translation>
 <translation id="7569983096843329377">Negre</translation>
+<translation id="757941033127302446">Sessió iniciada</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>
 <translation id="7590883480672980941">Configuració de l'entrada</translation>
 <translation id="7593891976182323525">Cerca o Maj</translation>
@@ -1040,6 +1048,7 @@ Instal·lació nova</translation>
 <translation id="8035152190676905274">Bolígraf</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Obre el menú de configuració d'accessibilitat</translation>
+<translation id="8042925093898452104">Tanca la informació detallada</translation>
 <translation id="8048123526339889627">Configuració del Bluetooth</translation>
 <translation id="8051716679295756675">La plantilla anomenada <ph name="DESK_TEMPLATE_NAME" /> ja existeix</translation>
 <translation id="8052898407431791827">S'ha copiat al porta-retalls</translation>

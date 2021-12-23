@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">มีข้อเสนอพิเศษ</translation>
 <translation id="1312803275555673949">ดูหลักฐานสนับสนุน</translation>
 <translation id="131405271941274527"><ph name="URL" /> ต้องการส่งและรับข้อมูลเมื่อคุณแตะโทรศัพท์กับอุปกรณ์ NFC</translation>
+<translation id="1314311879718644478">ดูเนื้อหา Augmented Reality</translation>
 <translation id="1314509827145471431">เย็บเล่มด้านขวา</translation>
 <translation id="1318023360584041678">บันทึกไว้ในกลุ่มแท็บ</translation>
 <translation id="1319245136674974084">ไม่ต้องถามอีกสำหรับแอปนี้</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">มีสิ่งผิดปกติเกิดขึ้นในขณะที่แสดงหน้าเว็บนี้</translation>
 <translation id="1586541204584340881">ส่วนขยายที่คุณติดตั้ง</translation>
 <translation id="1588438908519853928">ปกติ</translation>
+<translation id="1589050138437146318">ติดตั้ง ARCore ไหม</translation>
 <translation id="1592005682883173041">การเข้าถึงข้อมูลในเครื่อง</translation>
 <translation id="1594030484168838125">เลือก</translation>
 <translation id="160851722280695521">เล่นเกมไดโนเสาร์วิ่งใน Chrome</translation>
@@ -458,7 +460,7 @@
 <translation id="2384307209577226199">ค่าเริ่มต้นขององค์กร</translation>
 <translation id="2385809941344967209">อัปเดต Chrome จากการตั้งค่า Chrome</translation>
 <translation id="2386255080630008482">ใบรับรองของเซิร์ฟเวอร์ถูกเพิกถอนแล้ว</translation>
-<translation id="2392959068659972793">แสดงนโยบายโดยที่ไม่ได้ตั้งค่า</translation>
+<translation id="2392959068659972793">แสดงนโยบายที่ไม่ได้ตั้งค่าเอาไว้</translation>
 <translation id="239429038616798445">วิธีการจัดส่งสินค้านี้ไม่พร้อมให้บริการ โปรดลองใช้วิธีการอื่น</translation>
 <translation id="2396249848217231973">&amp;เลิกทำการนำออก</translation>
 <translation id="2400600116338235695">สามารถขอเชื่อมต่อกับพอร์ตอนุกรมได้</translation>
@@ -1382,6 +1384,7 @@
 <translation id="5333022057423422993">Chrome พบว่ารหัสผ่านที่คุณเพิ่งใช้รั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เราขอแนะนำให้ตรวจสอบรหัสผ่านที่บันทึกไว้เพื่อรักษาความปลอดภัยของบัญชี</translation>
 <translation id="5334013548165032829">บันทึกของระบบโดยละเอียด</translation>
 <translation id="5334145288572353250">บันทึกที่อยู่ไหม</translation>
+<translation id="5335920952954443287">หัวใจเต้น</translation>
 <translation id="5340250774223869109">แอปพลิเคชันถูกบล็อก</translation>
 <translation id="534295439873310000">อุปกรณ์ NFC</translation>
 <translation id="5344579389779391559">อาจมีการพยายามเรียกเก็บเงินจากคุณในหน้านี้</translation>
@@ -2054,6 +2057,7 @@
 <translation id="7654909834015434372">เมื่อคุณแก้ไขคำอธิบายประกอบ เอกสารนี้จะกลับไปใช้การหมุนแบบเดิม</translation>
 <translation id="765676359832457558">ซ่อนการตั้งค่าขั้นสูง...</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
+<translation id="7659878911471462949">น้ำตาแห่งความสุข</translation>
 <translation id="7662298039739062396">การตั้งค่าควบคุมโดยส่วนขยาย</translation>
 <translation id="7663736086183791259">ใบรับรอง <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">ไม่อนุญาตในโหมดไม่ระบุตัวตน</translation>
@@ -2257,6 +2261,7 @@
 <translation id="830498451218851433">พับครึ่ง</translation>
 <translation id="8307358339886459768">รูปภาพขนาดเล็ก</translation>
 <translation id="8307888238279532626">แอปที่ติดตั้งและความถี่ในการใช้</translation>
+<translation id="8317207217658302555">อัปเดต ARCore ไหม</translation>
 <translation id="831997045666694187">ตอนเย็น</translation>
 <translation id="8321476692217554900">การแจ้งเตือน</translation>
 <translation id="8328484624016508118">หลังจากที่ปิดแท็บที่ไม่ระบุตัวตนทั้งหมด Chrome จะล้าง

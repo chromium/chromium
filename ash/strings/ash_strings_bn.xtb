@@ -131,6 +131,7 @@
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + পিরিয়ড কীবোর্ড শর্টকাট পরিবর্তিত হয়েছে। Insert বোতাম ব্যবহার করার জন্য, <ph name="LAUNCHER_KEY_NAME" /> বোতাম + Shift + Backspace প্রেস করুন।</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" /> নম্বর সারির <ph name="COLUMN_NUMBER" /> নম্বর কলামে সরানো হয়েছে।</translation>
 <translation id="1771761307086386028">ডান দিকে স্ক্রল করুন</translation>
+<translation id="1774796056689732716">ক্যালেন্ডার, <ph name="CURRENT_MONTH_YEAR" />, বর্তমানে <ph name="DATE" /> বেছে নেওয়া হয়েছে।</translation>
 <translation id="1787955149152357925">বন্ধ আছে</translation>
 <translation id="1804572139604454141">ডিস্কে খুব কম জায়গা রয়েছে, তাই রেকর্ডিং বন্ধ হয়ে গেছে</translation>
 <translation id="181103072419391116">সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">ক্লোজড ক্যাপশন শুরু করুন</translation>
 <translation id="5078796286268621944">ভুল পিন</translation>
 <translation id="5083553833479578423">অ্যাসিস্ট্যান্ট-এর আরও বৈশিষ্ট্য আনলক করুন।</translation>
+<translation id="5090752371472782287"><ph name="MANAGER" /> ডিভাইসে কাস্ট করুন</translation>
 <translation id="5106223312672646208">পছন্দমতো</translation>
 <translation id="5117590920725113268">পরবর্তী মাস দেখান</translation>
 <translation id="5136175204352732067">বিভিন্ন কীবোর্ড কানেক্ট করা হয়েছে</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">কাস্ট ডিভাইসগুলি উপলব্ধ</translation>
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
 <translation id="5176318573511391780">আংশিক স্ক্রিন রেকর্ড করুন</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" />টি ইভেন্ট</translation>
 <translation id="5198715732953550718">নতুন ফোল্ডার তৈরি করতে <ph name="MOVED_APP_NAME" /> অ্যাপ <ph name="IN_PLACE_APP" /> অ্যাপের সঙ্গে যোগ করা হয়েছে।</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{অন্যান্য ১টি বিজ্ঞপ্তি}one{অন্যান্য #টি বিজ্ঞপ্তি}other{অন্যান্য #টি বিজ্ঞপ্তি}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">সব সম্পন্ন!</translation>
 <translation id="6431865393913628856">স্ক্রিন রেকর্ড</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" />-এ <ph name="ROUTE_TITLE" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" />টি ইভেন্ট</translation>
 <translation id="6452181791372256707">প্রত্যাখ্যান</translation>
 <translation id="6453179446719226835">ভাষা পরিবর্তন করা হয়েছে</translation>
 <translation id="6459472438155181876">স্ক্রিন <ph name="DISPLAY_NAME" /> তে প্রসারিত হচ্ছে</translation>
@@ -865,6 +869,7 @@
 <translation id="6811454077060061666">ডেস্কটপের জন্য Google Drive উপলভ্য নেই</translation>
 <translation id="6818242057446442178">শব্দ অনুযায়ী পেছনে যান</translation>
 <translation id="6820676911989879663">বিরতি নিন!</translation>
+<translation id="6827049576281411231">ইভেন্টের প্যানেল বন্ধ করুন</translation>
 <translation id="6836499262298959512">বিপজ্জনক ফাইল</translation>
 <translation id="6837064795450991317">ডেস্কবার লুকান</translation>
 <translation id="6852052252232534364">চালু করতে ক্লিক করুন</translation>
@@ -872,6 +877,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{আরও ১টি সংখ্যা লিখতে হবে}one{আরও #টি সংখ্যা লিখতে হবে}other{আরও #টি সংখ্যা লিখতে হবে}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> ডাউনলোড পজ করা হয়েছে</translation>
 <translation id="6878400149835617132">শর্টকাট বন্ধ করা আছে</translation>
+<translation id="6884665277231944629">আজকের তারিখ বেছে নিন</translation>
 <translation id="6886172995547742638">আপনার <ph name="DEVICE_TYPE" />-এর পারফর্ম্যান্স আশানুরূপ নাও হতে পারে। একটি <ph name="PREFERRED_MINIMUM_POWER" />W অথবা আরও ভাল USB-C পাওয়ার অ্যাডাপ্টার ব্যবহার করুন।</translation>
 <translation id="688631446150864480">উইন্ডো পাল্টাতে, 'নিম্নমুখী তীরচিহ্ন' কী প্রেস করুন</translation>
 <translation id="6896758677409633944">কপি</translation>
@@ -958,6 +964,7 @@
 <translation id="7497767806359279797">ভাষা এবং কীবোর্ড বেছে নিন</translation>
 <translation id="7509246181739783082">আপনার পরিচয় যাচাই করুন</translation>
 <translation id="7513622367902644023">স্ক্রিনশট মোড বেছে নেওয়া হয়েছে</translation>
+<translation id="7513922695575567867">ক্যালেন্ডার, <ph name="DATE" /> তারিখের সপ্তাহ, <ph name="SELECTED_DATE" /> তারিখ বর্তমানে বেছে নেওয়া হয়েছে।</translation>
 <translation id="7514365320538308">ডাউনলোড করুন</translation>
 <translation id="7526573455193969409">নেটওয়ার্কের উপরে নজর রাখা হতে পারে</translation>
 <translation id="7536035074519304529">আইপি অ্যাড্রেস: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@
 <translation id="7564874036684306347">কোনও উইন্ডো অন্য ডেস্কটপে সরানো হলে সেটির আচরণে অপ্রত্যাশিত পরিবর্তন হতে পারে। পরবর্তী বিজ্ঞপ্তি, উইন্ডো এবং ডায়ালগ দুটি ডেস্কটপ মিলিয়ে দেখানো হতে পারে।</translation>
 <translation id="7569509451529460200">ব্রেল এবং ChromeVox সক্ষম করেছেন</translation>
 <translation id="7569983096843329377">কালো</translation>
+<translation id="757941033127302446">সাইন-ইন করা হয়েছে</translation>
 <translation id="7579778809502851308">স্ক্রিন ক্যাপচার করুন</translation>
 <translation id="7590883480672980941">ইনপুট সেটিংস</translation>
 <translation id="7593891976182323525">Search অথবা Shift</translation>
@@ -1040,6 +1048,7 @@
 <translation id="8035152190676905274">কলম</translation>
 <translation id="8036504271468642248">আগের বাক্য</translation>
 <translation id="8042893070933512245">অ্যাক্সেসিবিলিটি সেটিংস মেনু খুলুন</translation>
+<translation id="8042925093898452104">বিস্তারিত তথ্যের ভিউ বন্ধ করুন</translation>
 <translation id="8048123526339889627">ব্লুটুথ সেটিংস</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> নামের টেমপ্লেট আগে থেকেই আছে</translation>
 <translation id="8052898407431791827">ক্লিপবোর্ডে কপি করা হয়েছে</translation>

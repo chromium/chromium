@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="3157684681743766797">તમામને આ રીતે ચિહ્નિત કરો…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">તમે તમારા અન્ય ડિવાઇસ પર પણ સાચવેલા પાસવર્ડનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="3175081911749765310">વેબ સેવાઓ</translation>
 <translation id="3178650076442119961">આજે સક્રિય છે</translation>
 <translation id="3181825792072797598">સિંક ચાલુ કરો</translation>
@@ -328,6 +329,7 @@
 <translation id="4042870976416480368">પેજમાં શોધો</translation>
 <translation id="4049507953662678203">તમારી પાસે નેટવર્ક કનેક્શન છે તેની ખાતરી કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="408404951701638773">શોધ બાર સુધી પહોંચવું હવે વધુ સરળ છે</translation>
+<translation id="4108314971463891922">ફૉલો કરો</translation>
 <translation id="411254640334432676">ડાઉનલોડ નિષ્ફળ થયું.</translation>
 <translation id="4112644173421521737">શોધો</translation>
 <translation id="4113030288477039509">તમારા વ્યવસ્થાપક દ્વારા મેનેજ થયેલ</translation>
@@ -345,6 +347,7 @@
 <translation id="4272631900155121838">QR કોડને સ્કૅન કરવા માટે, સેટિંગમાંથી કૅમેરા ચાલુ કરો</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4281844954008187215">સેવાની શરતો</translation>
+<translation id="4304713468139749426">પાસવર્ડ મેનેજર</translation>
 <translation id="430793432425771671">બધાને સમન્વયિત કરો</translation>
 <translation id="4309403553630140242">વધુ માહિતી માટે બે વાર ટૅપ કરો</translation>
 <translation id="430967081421617822">હંમેશાં</translation>
@@ -543,6 +546,7 @@
 <translation id="6127379762771434464">આઇટમ દૂર કરી</translation>
 <translation id="6136914049981179737">સેકંડ પહેલાં</translation>
 <translation id="6144589619057374135">છૂપા મોડમાં ${url} ખોલો</translation>
+<translation id="6149061208933997199">પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="6159839020698489198">વૈકલ્પિક</translation>
 <translation id="6177442314419606057">Chromeમાં શોધો</translation>
 <translation id="6184086493125982861">ટૅબ્સ બતાવો</translation>
@@ -767,6 +771,7 @@
 <translation id="8076014560081431679">સાચવેલા સાઇટ સેટિંગ ડિલીટ કરવામાં આવશે નહીં અને તે તમારી બ્રાઉઝિંગ ટેવોને પ્રતિબિંબિત કરી શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">આ સેટિંગ મેનેજ કરવામાં આવે છે, વધુ માહિતી માટે બે વાર ટૅપ કરો</translation>
 <translation id="8080028325999236607">બધા ટૅબ્સ બંધ કરો</translation>
+<translation id="8101409298456377967">તમારા પાસવર્ડ બનાવો, સાચવો અને મેનેજ કરો, જેથી તમે સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરી શકો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">બંધ કરો</translation>
 <translation id="8114753159095730575">ફાઇલ ડાઉનલોડ માટે ઉપલબ્ધ છે. સ્ક્રીનના તળિયે વિકલ્પો ઉપલબ્ધ છે.</translation>
 <translation id="8132598642024322408">હવે <ph name="PRICE" /> છે, પહેલાં <ph name="PREVIOUS_PRICE" /> હતી.</translation>

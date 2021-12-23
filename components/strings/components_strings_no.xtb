@@ -112,6 +112,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1308113895091915999">Et tilbud er tilgjengelig</translation>
 <translation id="1312803275555673949">Hvilke beviser finnes?</translation>
 <translation id="131405271941274527"><ph name="URL" /> vil sende og motta info når du berører NFC-enheter med telefonen</translation>
+<translation id="1314311879718644478">Se utvidet virkelighet-innhold</translation>
 <translation id="1314509827145471431">Innbinding høyre</translation>
 <translation id="1318023360584041678">Lagret i fanegruppe</translation>
 <translation id="1319245136674974084">Ikke spør igjen for denne appen</translation>
@@ -215,6 +216,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1583429793053364125">Noe gikk galt da denne nettsiden skulle åpnes.</translation>
 <translation id="1586541204584340881">hvilke utvidelser du har installert</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1589050138437146318">Vil du installere ARCore?</translation>
 <translation id="1592005682883173041">Tilgang til lokale data</translation>
 <translation id="1594030484168838125">Velg</translation>
 <translation id="160851722280695521">Spill Dino Run-spillet i Chrome</translation>
@@ -1392,6 +1394,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5333022057423422993">Chrome har funnet passordet du nettopp brukte, i et databrudd. For å sikre kontoene dine anbefaler vi at du sjekker de lagrede passordene dine.</translation>
 <translation id="5334013548165032829">Detaljerte systemlogger</translation>
 <translation id="5334145288572353250">Lagre adresse?</translation>
+<translation id="5335920952954443287">Bankende hjerte</translation>
 <translation id="5340250774223869109">Programmet er blokkert</translation>
 <translation id="534295439873310000">NFC-enheter</translation>
 <translation id="5344579389779391559">Denne siden kan prøve å belaste deg for penger</translation>
@@ -2063,6 +2066,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7654909834015434372">Når du redigerer annoteringer, går dette dokumentet tilbake til den opprinnelige rotasjonen</translation>
 <translation id="765676359832457558">Skjul avanserte innstillinger</translation>
 <translation id="7658239707568436148">Avbryt</translation>
+<translation id="7659878911471462949">Gledestårer</translation>
 <translation id="7662298039739062396">Innstillingen kontrolleres av en utvidelse</translation>
 <translation id="7663736086183791259">Sertifikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Ikke tillatt i Inkognito</translation>
@@ -2266,6 +2270,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="830498451218851433">Halvfals</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">hvilke apper som er installert, og hvor ofte de brukes</translation>
+<translation id="8317207217658302555">Vil du oppdatere ARCore?</translation>
 <translation id="831997045666694187">Kveld</translation>
 <translation id="8321476692217554900">varsler</translation>
 <translation id="8328484624016508118">Når du lukker alle inkognitofaner, sletter Chrome

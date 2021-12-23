@@ -120,13 +120,13 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="454579500955453258">Pokračovat v novém profilu Chromium?</translation>
 <translation id="4567424176335768812">Jste přihlášeni pomocí účtu <ph name="USER_EMAIL_ADDRESS" />. Nyní můžete přistupovat ke všem svým záložkám, historii a dalším nastavením ve všech přihlášených zařízeních.</translation>
 <translation id="459535195905078186">Aplikace Chromium</translation>
+<translation id="4621240073146040695">Aktualizace je téměř hotova. Dokončíte ji restartováním prohlížeče Chromium.</translation>
 <translation id="4665829708273112819">Upozornění: Chromium nemůže rozšířením zabránit v zaznamenávání vaší historie prohlížení. Pokud toto rozšíření chcete v anonymním režimu deaktivovat, zrušte výběr této možnosti.</translation>
 <translation id="4677944499843243528">Profil je zřejmě využíván jiným procesem aplikace Chromium (<ph name="PROCESS_ID" />) nebo v jiném počítači (<ph name="HOST_NAME" />). Aplikace Chromium profil uzamkla, aby nedošlo k jeho poškození. Pokud jste si jisti, že žádný jiný proces tento profil nevyužívá, můžete jej odemknout a aplikaci Chromium znovu spustit.</translation>
 <translation id="469338717132742108">Pomoc se systémem Chromium OS</translation>
 <translation id="4708774505295300557">Prohlížeč Chromium v tomto počítači je již přihlášen k účtu <ph name="ACCOUNT_EMAIL_LAST" />. Chcete-li své informace uchovat odděleně, vytvořte nového uživatele prohlížeče Chromium.</translation>
 <translation id="4746050847053251315">Přesto Chromium ukončit?</translation>
 <translation id="4748217263233248895">Právě byla nainstalována mimořádná bezpečnostní aktualizace prohlížeče Chromium. Restartujte jej, vaše karty budou obnoveny.</translation>
-<translation id="4750035648288509542">Aktualizace je téměř dokončena. Aktualizaci dokončíte restartováním prohlížeče Chromium. Anonymní okna se neobnoví.</translation>
 <translation id="4788777615168560705">Chromium nemůže zkontrolovat hesla. Zkuste to znovu zítra, případně <ph name="BEGIN_LINK" />hesla zkontrolujte v účtu Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Tato funkce využívá stejnou službu kontroly pravopisu, jaká se používá ve vyhledávání Google. Text, který v prohlížeči zadáte, se odešle do Googlu. Toto chování můžete kdykoliv změnit v nastavení.</translation>
 <translation id="4888717733111232871">Pravidlo příchozího provozu pro prohlížeč Chromium, které povolí provoz mDNS.</translation>

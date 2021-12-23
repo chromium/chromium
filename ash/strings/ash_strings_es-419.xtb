@@ -131,6 +131,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1768366657309696705">Se modificó la combinación de teclas <ph name="LAUNCHER_KEY_NAME" /> + signo de punto. Para usar la tecla Insertar, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + Mayúsculas + retroceso.</translation>
 <translation id="1770726142253415363">Se movió a la fila <ph name="ROW_NUMBER" />, columna <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Desplazar hacia la derecha</translation>
+<translation id="1774796056689732716">Calendario, <ph name="CURRENT_MONTH_YEAR" />, se seleccionó <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">No</translation>
 <translation id="1804572139604454141">Finalizó la grabación porque hay muy poco espacio disponible en el disco</translation>
 <translation id="181103072419391116">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
@@ -621,6 +622,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5075554201838155866">Activar subtítulos</translation>
 <translation id="5078796286268621944">Número de PIN incorrecto</translation>
 <translation id="5083553833479578423">Desbloquea más funciones del Asistente.</translation>
+<translation id="5090752371472782287">Transmitir a un dispositivo de <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Personalizar</translation>
 <translation id="5117590920725113268">Mostrar el mes siguiente</translation>
 <translation id="5136175204352732067">Se conectó otro teclado</translation>
@@ -630,6 +632,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5168181903108465623">Dispositivos de transmisión disponibles</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5176318573511391780">Grabar parte de la pantalla</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventos</translation>
 <translation id="5198715732953550718">Se combinó <ph name="MOVED_APP_NAME" /> con <ph name="IN_PLACE_APP" /> para crear una nueva carpeta.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificación más}other{# notificaciones más}}</translation>
@@ -803,6 +806,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="643147933154517414">Todo listo</translation>
 <translation id="6431865393913628856">Grabación de pantalla</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> evento</translation>
 <translation id="6452181791372256707">Rechazar</translation>
 <translation id="6453179446719226835">Se cambió el idioma</translation>
 <translation id="6459472438155181876">Ampliando pantalla para <ph name="DISPLAY_NAME" /></translation>
@@ -866,6 +870,7 @@ Nueva instalación</translation>
 <translation id="6811454077060061666">Google Drive para escritorio no está disponible</translation>
 <translation id="6818242057446442178">Volver palabra por palabra</translation>
 <translation id="6820676911989879663">Toma un descanso</translation>
+<translation id="6827049576281411231">Cerrar el panel de eventos</translation>
 <translation id="6836499262298959512">Archivo peligroso</translation>
 <translation id="6837064795450991317">Ocultar la barra de escritorio</translation>
 <translation id="6852052252232534364">Clic para activar</translation>
@@ -873,6 +878,7 @@ Nueva instalación</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Queda un dígito}other{Quedan # dígitos}}</translation>
 <translation id="6867938213751067702">Descarga detenida: <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Se desactivó la combinación de teclas</translation>
+<translation id="6884665277231944629">Volver al día de hoy</translation>
 <translation id="6886172995547742638">Es posible que tu dispositivo <ph name="DEVICE_TYPE" /> tenga un rendimiento deficiente. Usa un adaptador de alimentación con conexión USB tipo C de <ph name="PREFERRED_MINIMUM_POWER" /> W o más.</translation>
 <translation id="688631446150864480">Presiona la tecla de flecha hacia abajo para cambiar de ventana</translation>
 <translation id="6896758677409633944">Copiar</translation>
@@ -959,6 +965,7 @@ Nueva instalación</translation>
 <translation id="7497767806359279797">Elegir idioma y teclado</translation>
 <translation id="7509246181739783082">Verifica tu identidad</translation>
 <translation id="7513622367902644023">Se seleccionó el modo de captura de pantalla</translation>
+<translation id="7513922695575567867">Calendario, semana del <ph name="DATE" />, se seleccionó <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Descargar</translation>
 <translation id="7526573455193969409">Es posible que la red esté supervisada</translation>
 <translation id="7536035074519304529">Dirección IP: <ph name="ADDRESS" /></translation>
@@ -968,6 +975,7 @@ Nueva instalación</translation>
 <translation id="7564874036684306347">Si mueves las ventanas a otro escritorio, puede producirse un comportamiento inesperado. Es posible que las próximas notificaciones, ventanas y cuadros de diálogo se dividan entre los escritorios.</translation>
 <translation id="7569509451529460200">Se habilitaron el braille y ChromeVox</translation>
 <translation id="7569983096843329377">Negro</translation>
+<translation id="757941033127302446">Accediste a tu cuenta</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>
 <translation id="7590883480672980941">Configuración de entradas</translation>
 <translation id="7593891976182323525">Tecla de búsqueda o Mayús</translation>
@@ -1041,6 +1049,7 @@ Nueva instalación</translation>
 <translation id="8035152190676905274">Lápiz</translation>
 <translation id="8036504271468642248">Oración anterior</translation>
 <translation id="8042893070933512245">Abrir el menú de configuración de accesibilidad</translation>
+<translation id="8042925093898452104">Cerrar la información detallada</translation>
 <translation id="8048123526339889627">Configuración de Bluetooth</translation>
 <translation id="8051716679295756675">Ya existe una plantilla con el nombre <ph name="DESK_TEMPLATE_NAME" />.</translation>
 <translation id="8052898407431791827">Se copió el elemento en el portapapeles</translation>

@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">ወደ የንባብ ዝርዝር አክል</translation>
 <translation id="3157684681743766797">ሁሉንም ምልክት አድርግባቸው…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">እንዲሁም በሌሎች መሳሪያዎችዎ ላይ የተቀመጡ የይለፍ ቃላትን መጠቀም ይችላሉ።</translation>
 <translation id="3175081911749765310">የድር አገልግሎቶች</translation>
 <translation id="3178650076442119961">ገባሪ ዛሬ</translation>
 <translation id="3181825792072797598">አስምርን አብራ</translation>
@@ -328,6 +329,7 @@
 <translation id="4042870976416480368">በዚህ ገጽ ውስጥ አግኝ</translation>
 <translation id="4049507953662678203">የአውታረ መረብ ግንኙነት እንዳለዎት ያረጋግጡና እንደገና ይሞክሩ።</translation>
 <translation id="408404951701638773">የፍለጋ አሞሌ አሁን ለማግኘት ይበልጥ ይቀልላል</translation>
+<translation id="4108314971463891922">ተከተል</translation>
 <translation id="411254640334432676">ማውረድ አልተሳካም።</translation>
 <translation id="4112644173421521737">ፍለጋ</translation>
 <translation id="4113030288477039509">በእርስዎ አስተዳዳሪ የሚቀናበር</translation>
@@ -345,6 +347,7 @@
 <translation id="4272631900155121838">የQR ኮድን ለመቃኘት፣ ካሜራውን በቅንብሮች ውስጥ ያንቁ</translation>
 <translation id="4277990410970811858">የጥንቃቄ አሰሳ</translation>
 <translation id="4281844954008187215">የአግልግሎት ውል</translation>
+<translation id="4304713468139749426">የይለፍ ቃል አስተዳዳሪ</translation>
 <translation id="430793432425771671">ሁሉንም ያመሳስሉ</translation>
 <translation id="4309403553630140242">ለተጨማሪ መረጃ ሁለቴ መታ ያድርጉ</translation>
 <translation id="430967081421617822">የምንጊዜም</translation>
@@ -543,6 +546,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6127379762771434464">ንጥል ተወግዷል</translation>
 <translation id="6136914049981179737">ከሰከንዶች በፊት</translation>
 <translation id="6144589619057374135">ማንነት በማያሳውቅ ሁነታ ላይ ${url}ን ይክፈቱ</translation>
+<translation id="6149061208933997199">የይለፍ ቃል ይጠቀሙ</translation>
 <translation id="6159839020698489198">የግድ አይደለም</translation>
 <translation id="6177442314419606057">በChrome ውስጥ ይፈልጉ</translation>
 <translation id="6184086493125982861">ትሮችን አሳይ</translation>
@@ -767,6 +771,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8076014560081431679">የተቀመጡ ጣቢያ ቅንብሮች አይሰረዙም፣ እና የእርስዎን የአሰሳ ልማዶች ሊያንጸባርቁ ይችሉ ይሆናል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">ይህ ቅንብር የሚተዳደር ነው፣ ለተጨማሪ መረጃ ሁለቴ መታ ያድርጉ</translation>
 <translation id="8080028325999236607">ሁሉንም ትሮች ይዝጉ</translation>
+<translation id="8101409298456377967">በቀላሉ ወደ ጣቢያዎች እና መተግበሪያዎች መግባት እንዲችሉ የይለፍ ቃላትዎን ይፍጠሩ፣ ያስቀምጡ እና ያቀናብሩ <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">አጥፋ</translation>
 <translation id="8114753159095730575">ፋይል ለመውረድ ይገኛል። አማራጮች ከማያ ገጹ ግርጌ አጠገብ ይገኛሉ።</translation>
 <translation id="8132598642024322408">አሁን <ph name="PRICE" /> <ph name="PREVIOUS_PRICE" /> ነበር።</translation>

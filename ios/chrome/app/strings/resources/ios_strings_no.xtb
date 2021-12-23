@@ -235,6 +235,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3157387275655328056">Legg til i leselisten</translation>
 <translation id="3157684681743766797">Merk alle…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Du kan også bruke lagrede passord på de andre enhetene dine.</translation>
 <translation id="3175081911749765310">Nettjenester</translation>
 <translation id="3178650076442119961">Aktiv i dag</translation>
 <translation id="3181825792072797598">Slå på synkronisering</translation>
@@ -328,6 +329,7 @@ Følg fremgangsmåten under:</translation>
 <translation id="4042870976416480368">Finn på siden</translation>
 <translation id="4049507953662678203">Sørg for at du er koblet til et nettverk, og prøv igjen.</translation>
 <translation id="408404951701638773">Søkefeltet er nå enklere å finne</translation>
+<translation id="4108314971463891922">Følg</translation>
 <translation id="411254640334432676">Nedlastingen mislyktes.</translation>
 <translation id="4112644173421521737">Søk</translation>
 <translation id="4113030288477039509">Styres av administratoren din</translation>
@@ -345,6 +347,7 @@ Følg fremgangsmåten under:</translation>
 <translation id="4272631900155121838">For å skanne QR-koder, slå på kameraet i innstillingene</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4281844954008187215">Vilkår for bruk</translation>
+<translation id="4304713468139749426">Passordlagring</translation>
 <translation id="430793432425771671">Synkroniser alt</translation>
 <translation id="4309403553630140242">Dobbelttrykk for å se mer informasjon</translation>
 <translation id="430967081421617822">Alle datoer</translation>
@@ -543,6 +546,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6127379762771434464">Elementet er fjernet</translation>
 <translation id="6136914049981179737">For noen sekunder siden</translation>
 <translation id="6144589619057374135">Åpne ${url} i inkognitomodus</translation>
+<translation id="6149061208933997199">Bruk passord</translation>
 <translation id="6159839020698489198">valgfritt</translation>
 <translation id="6177442314419606057">Søk i Chrome</translation>
 <translation id="6184086493125982861">Vis faner</translation>
@@ -767,6 +771,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8076014560081431679">Lagrede nettstedsinnstillinger slettes ikke og kan gjenspeile nettleserbruken din. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Denne innstillingen er administrert – dobbelttrykk for mer informasjon</translation>
 <translation id="8080028325999236607">Lukk alle faner</translation>
+<translation id="8101409298456377967">Opprett, lagre og administrer passordene dine, slik at det blir enkelt å logge på nettsteder og apper. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Slå av</translation>
 <translation id="8114753159095730575">Filnedlasting er tilgjengelig. Du finner alternativer på nedre del av skjermen.</translation>
 <translation id="8132598642024322408">Nå <ph name="PRICE" /> – før <ph name="PREVIOUS_PRICE" />.</translation>

@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">添加到阅读清单</translation>
 <translation id="3157684681743766797">全部标为…</translation>
 <translation id="3169472444629675720">探索</translation>
+<translation id="3174662312949010067">您还可在其他设备上使用已存密码。</translation>
 <translation id="3175081911749765310">网络服务</translation>
 <translation id="3178650076442119961">今天曾有活动</translation>
 <translation id="3181825792072797598">开启同步功能</translation>
@@ -328,6 +329,7 @@
 <translation id="4042870976416480368">在网页上查找</translation>
 <translation id="4049507953662678203">请确保已连接到网络，然后重试。</translation>
 <translation id="408404951701638773">现在可以更方便地使用搜索栏</translation>
+<translation id="4108314971463891922">关注</translation>
 <translation id="411254640334432676">下载失败。</translation>
 <translation id="4112644173421521737">搜索</translation>
 <translation id="4113030288477039509">由您的管理员管理</translation>
@@ -345,6 +347,7 @@
 <translation id="4272631900155121838">要扫描 QR 码，请从设置中启用相机功能</translation>
 <translation id="4277990410970811858">安全浏览</translation>
 <translation id="4281844954008187215">服务条款</translation>
+<translation id="4304713468139749426">密码管理器</translation>
 <translation id="430793432425771671">同步所有内容</translation>
 <translation id="4309403553630140242">点按两次可了解详情</translation>
 <translation id="430967081421617822">时间不限</translation>
@@ -356,6 +359,7 @@
 <translation id="4389019817280890563">点按此行即可更改语言。</translation>
 <translation id="4442550905108052454">打开<ph name="BEGIN_BOLD" />设置<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">添加语言</translation>
+<translation id="4462491365653392320">跟踪各个标签页上的价格</translation>
 <translation id="4469418912670346607">继续设置</translation>
 <translation id="4474494258097106883">专为 iPhone 打造</translation>
 <translation id="4476574785019001431">设置</translation>
@@ -419,6 +423,7 @@
 <translation id="4944543191714094452">在网页中查找…</translation>
 <translation id="4945756290001680296">访问密码设置</translation>
 <translation id="4979397965658815378">登录 Google 帐号，即可获取您在任何登录过的设备上的书签、密码、历史记录及其他设置</translation>
+<translation id="4986678885919050584">从此设备中移除</translation>
 <translation id="5005498671520578047">复制密码</translation>
 <translation id="5017828934289857214">稍后提醒我</translation>
 <translation id="5037676449506322593">全选</translation>
@@ -520,6 +525,7 @@
 <translation id="5979837087407522202">搜索密码</translation>
 <translation id="5982717868370722439">将现有数据添加到 <ph name="USER_EMAIL" />。</translation>
 <translation id="5984222099446776634">最近访问过的内容</translation>
+<translation id="5988097621740394599">查看您打开的标签页上的降价商品。</translation>
 <translation id="5988851877894965432">在 Chrome 中打开网址</translation>
 <translation id="6012140227487808125">正在加密…</translation>
 <translation id="6021332621416007159">打开方式...</translation>
@@ -540,6 +546,7 @@
 <translation id="6127379762771434464">该项已移除</translation>
 <translation id="6136914049981179737">几秒前</translation>
 <translation id="6144589619057374135">在无痕模式下打开 ${url}</translation>
+<translation id="6149061208933997199">使用密码</translation>
 <translation id="6159839020698489198">可选</translation>
 <translation id="6177442314419606057">在 Chrome 中搜索</translation>
 <translation id="6184086493125982861">显示标签页</translation>
@@ -764,6 +771,7 @@
 <translation id="8076014560081431679">已保存的网站设置将不会遭到删除，并且可能会反映您的浏览习惯。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">此设置处于受管状态，点按两次可了解详情</translation>
 <translation id="8080028325999236607">关闭所有标签页</translation>
+<translation id="8101409298456377967">您可创建、保存和管理您的密码，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">关闭</translation>
 <translation id="8114753159095730575">已可下载文件。选项位于屏幕底部附近。</translation>
 <translation id="8132598642024322408">现价 <ph name="PRICE" />，原价 <ph name="PREVIOUS_PRICE" />。</translation>

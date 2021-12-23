@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Επικοινωνία με Google… Αυτή η διαδικασία μπορεί να διαρκέσει μερικά λεπτά…</translation>
 <translation id="1416550906796893042">Έκδοση εφαρμογής</translation>
 <translation id="1430915738399379752">Εκτύπωση</translation>
+<translation id="1436784010935106834">Καταργήθηκαν</translation>
 <translation id="1448440926884431741">Οργανώστε τα προϊόντα παρακολούθησης σε Σελιδοδείκτες</translation>
 <translation id="1450753235335490080">Δεν είναι δυνατή η κοινοποίηση <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Επιλέξτε τη γλώσσα του Chrome</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">Κλείσιμο παραθύρου;</translation>
 <translation id="2175927920773552910">Κωδικός QR</translation>
 <translation id="218608176142494674">Κοινοποίηση</translation>
-<translation id="2195339740518523951">Λάβετε την ισχυρότερη ασφάλεια του Chrome</translation>
 <translation id="2200113223741723867">Διαχείριση κοινοποίησης δεδομένων χρήσης</translation>
 <translation id="2218567645332692482">Αναβάθμιση των πλοηγήσεων σε HTTPS και ειδοποίηση πριν από τη φόρτωση ιστοτόπων που δεν το υποστηρίζουν</translation>
 <translation id="2227444325776770048">Συνέχεια ως <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@
 <translation id="4170011742729630528">Η υπηρεσία δεν είναι διαθέσιμη. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="4179980317383591987">Χρησιμοποιήθηκαν <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Γλώσσες</translation>
-<translation id="4183868528246477015">Αναζήτηση με Google Lens <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Άνοιγμα σε νέα καρτέλα</translation>
 <translation id="4196597275619698563">Δημιουργία κάρτας</translation>
 <translation id="4198423547019359126">Δεν υπάρχουν διαθέσιμες τοποθεσίες λήψης</translation>
@@ -577,7 +576,6 @@
 <translation id="4411535500181276704">Λειτουργία Lite</translation>
 <translation id="4415276339145661267">Διαχείριση Λογαριασμού Google</translation>
 <translation id="4425140285732600465">Παρακολούθηση τιμής. Λάβετε ειδοποιήσεις σε περίπτωση πτώσης τιμής σε οποιονδήποτε ιστότοπο.</translation>
-<translation id="4427306783828095590">Η βελτιωμένη προστασία κάνει περισσότερα για τον αποκλεισμό ηλεκτρονικού ψαρέματος (phishing) και κακόβουλων προγραμμάτων</translation>
 <translation id="4450672886426705087">Αποτελέσματα αναζήτησης από την Google.</translation>
 <translation id="4452411734226507615">Κλείσιμο καρτέλας <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Ο σελιδοδείκτης είναι στο "<ph name="FOLDER_NAME" />"</translation>
@@ -1082,6 +1080,7 @@
 <translation id="7177466738963138057">Μπορείτε να αλλάξετε αργότερα αυτήν την επιλογή στην περιοχή "Ρυθμίσεις"</translation>
 <translation id="7177873915659574692">Δεν είναι δυνατή η δημιουργία κωδικού QR. Το URL περιέχει περισσότερους από <ph name="CHARACTER_LIMIT" /> χαρακτήρες.</translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
+<translation id="718226107353899806">Μπορείτε να προσθέσετε έως <ph name="MAX_NUM_REACTIONS" /> αντιδράσεις.</translation>
 <translation id="7187993566681480880">Διατηρεί την ασφάλειά σας στο Chrome και μπορεί να χρησιμοποιηθεί για τη βελτίωση της ασφάλειάς σας σε άλλες εφαρμογές Google όταν είστε συνδεδεμένοι.</translation>
 <translation id="718926126787620637">Η λίστα φακέλων σελιδοδεικτών άνοιξε σε πλήρες ύψος</translation>
 <translation id="7191430249889272776">Η καρτέλα άνοιξε στο παρασκήνιο.</translation>
@@ -1245,7 +1244,6 @@
 <translation id="8035133914807600019">Νέος φάκελος…</translation>
 <translation id="8037750541064988519">Απομένουν <ph name="DAYS" /> ημέρες</translation>
 <translation id="8037801708772278989">Ελέγχθηκε μόλις τώρα</translation>
-<translation id="8040831032425909005">Εικονίδιο γραφικού στοιχείου αναζήτησης Γρήγορων ενεργειών</translation>
 <translation id="804335162455518893">Δεν βρέθηκε κάρτα SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> καρτέλα ανώνυμης περιήγησης}other{<ph name="TAB_COUNT_NORMAL" /> καρτέλες ανώνυμης περιήγησης}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB διαθέσιμα</translation>

@@ -180,7 +180,7 @@
 <translation id="2704491540504985681">பதிவிறக்கங்கள்</translation>
 <translation id="2704606927547763573">நகலெடுக்கப்பட்டது</translation>
 <translation id="2709516037105925701">தானாகநிரப்பு</translation>
-<translation id="2712127207578915686">கோப்பைத் திறக்க முடியவில்லை</translation>
+<translation id="2712127207578915686">ஃபைலைத் திறக்க முடியவில்லை</translation>
 <translation id="2718352093833049315">வைஃபையில் மட்டும்</translation>
 <translation id="2747003861858887689">முந்தைய புலம்</translation>
 <translation id="2764831210418622012">சற்றுமுன்</translation>
@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">வாசிப்புப் பட்டியலில் சேர்</translation>
 <translation id="3157684681743766797">அனைத்தையும் குறி…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">சேமித்துள்ள கடவுச்சொற்களை பிற சாதனங்களிலும் பயன்படுத்தலாம்.</translation>
 <translation id="3175081911749765310">இணைய சேவைகள்</translation>
 <translation id="3178650076442119961">இன்று பயன்படுத்தியுள்ளார்</translation>
 <translation id="3181825792072797598">ஒத்திசைவை இயக்கு</translation>
@@ -324,10 +325,11 @@
 <translation id="4004204301268239848">கடவுச்சொற்களை வேறு சாதனங்களிலும் பயன்படுத்த ஏதுவாக, அவை உங்கள் Google கணக்கில் சேமிக்கப்பட்டுள்ளன.</translation>
 <translation id="4006921758705478413">என் சாதனங்களுக்கு அனுப்பு</translation>
 <translation id="4018310736049373830">செயல்பாட்டை நிர்வகியுங்கள்</translation>
-<translation id="4038354071007134711">கோப்பைத் திறக்கக்கூடிய ஆப்ஸ் சாதனத்தில் இல்லை.</translation>
+<translation id="4038354071007134711">ஃபைலைத் திறக்கக்கூடிய ஆப்ஸ் சாதனத்தில் இல்லை.</translation>
 <translation id="4042870976416480368">பக்கத்தில் கண்டறிக</translation>
 <translation id="4049507953662678203">இணைய இணைப்பு இருப்பதை உறுதிசெய்து, மீண்டும் முயலவும்.</translation>
 <translation id="408404951701638773">தேடல் பட்டியை இப்போது எளிதாக அணுகலாம்</translation>
+<translation id="4108314971463891922">பின்தொடர்</translation>
 <translation id="411254640334432676">பதிவிறக்கம் தோல்வி.</translation>
 <translation id="4112644173421521737">தேடுக</translation>
 <translation id="4113030288477039509">உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
@@ -345,6 +347,7 @@
 <translation id="4272631900155121838">QR குறியீட்டை ஸ்கேன் செய்ய, அமைப்புகளிலிருந்து கேமராவை இயக்கவும்</translation>
 <translation id="4277990410970811858">பாதுகாப்பு உலாவல்</translation>
 <translation id="4281844954008187215">சேவை விதிமுறைகள்</translation>
+<translation id="4304713468139749426">கடவுச்சொல் நிர்வாகி</translation>
 <translation id="430793432425771671">எல்லாவற்றையும் ஒத்திசை</translation>
 <translation id="4309403553630140242">மேலும் தகவல்களுக்கு இருமுறை தட்டவும்</translation>
 <translation id="430967081421617822">முழுமையும்</translation>
@@ -356,6 +359,7 @@
 <translation id="4389019817280890563">மொழியை மாற்ற தட்டவும்.</translation>
 <translation id="4442550905108052454"><ph name="BEGIN_BOLD" />அமைப்புகளைத்<ph name="END_BOLD" /> திறக்கவும்</translation>
 <translation id="4454246407045105932">மொழியைச் சேர்த்தல்</translation>
+<translation id="4462491365653392320">உலாவிப் பக்கங்களில் விலைகளைக் கண்காணித்தல்</translation>
 <translation id="4469418912670346607">அமைவைத் தொடர்க</translation>
 <translation id="4474494258097106883">iPhoneனுக்காக உருவாக்கப்பட்டது</translation>
 <translation id="4476574785019001431">அமைப்புகள்</translation>
@@ -419,6 +423,7 @@
 <translation id="4944543191714094452">பக்கத்தில் கண்டறிக…</translation>
 <translation id="4945756290001680296">கடவுச்சொல் அமைப்புகளைப் பயன்படுத்தும்</translation>
 <translation id="4979397965658815378">உங்கள் எல்லா சாதனங்களிலும் புக்மார்க்குகள், கடவுச்சொற்கள், வரலாறு மற்றும் பிற அமைப்புகளைப் பெற, உங்கள் Google கணக்கு மூலம் உள்நுழையவும்</translation>
+<translation id="4986678885919050584">இந்தச் சாதனத்திலிருந்து அகற்று</translation>
 <translation id="5005498671520578047">கடவுச்சொல்லை நகலெடு</translation>
 <translation id="5017828934289857214">பின்னர் நினைவூட்டு</translation>
 <translation id="5037676449506322593">எல்லாம் தேர்ந்தெடு</translation>
@@ -520,6 +525,7 @@
 <translation id="5979837087407522202">கடவுச்சொற்களைத் தேடு</translation>
 <translation id="5982717868370722439">ஏற்கனவே உள்ள தரவை <ph name="USER_EMAIL" /> இல் சேர்.</translation>
 <translation id="5984222099446776634">சமீபத்தில் பார்த்தவை</translation>
+<translation id="5988097621740394599">உலாவிப் பக்கங்களில் விலைச் சரிவு குறித்துக் காட்டப்படும்.</translation>
 <translation id="5988851877894965432">URLகளை Chromeமில் திற</translation>
 <translation id="6012140227487808125">முறைமையாக்குகிறது...</translation>
 <translation id="6021332621416007159">இதில் திற...</translation>
@@ -540,6 +546,7 @@
 <translation id="6127379762771434464">உருப்படி அகற்றப்பட்டது</translation>
 <translation id="6136914049981179737">வினாடிகள் முன்பு</translation>
 <translation id="6144589619057374135">${url} இணைப்பை மறைநிலையில் திற</translation>
+<translation id="6149061208933997199">கடவுச்சொல்லைப் பயன்படுத்து</translation>
 <translation id="6159839020698489198">விரும்பினால்</translation>
 <translation id="6177442314419606057">Chromeமில் தேடு</translation>
 <translation id="6184086493125982861">தாவல்களைக் காண்பி</translation>
@@ -764,6 +771,7 @@
 <translation id="8076014560081431679">சேமித்த தள அமைப்புகள் நீக்கப்படாது, அவை உங்கள் உலாவல் தகவல்களைப் பிரதிபலிக்கக்கூடும். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">இந்த அமைப்பு நிர்வகிக்கப்படுகிறது. மேலும் தகவல்களுக்கு இருமுறை தட்டவும்</translation>
 <translation id="8080028325999236607">எல்லா தாவல்களையும் மூடு</translation>
+<translation id="8101409298456377967">தளங்களிலும் ஆப்ஸிலும் எளிதாக உள்நுழைய, கடவுச்சொற்களை உருவாக்கலாம் சேமிக்கலாம் நிர்வகிக்கலாம். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">முடக்கு</translation>
 <translation id="8114753159095730575">ஃபைலைப் பதிவிறக்கிக்கொள்ளலாம். திரையின் அடிப்பகுதிக்கு அருகில், விருப்பங்கள் உள்ளன.</translation>
 <translation id="8132598642024322408">தற்போதைய விலை: <ph name="PRICE" />, முந்தைய விலை: <ph name="PREVIOUS_PRICE" />.</translation>

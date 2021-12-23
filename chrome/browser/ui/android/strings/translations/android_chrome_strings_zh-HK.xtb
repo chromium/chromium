@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">正在連線至 Google。可能需要一分鐘的時間…</translation>
 <translation id="1416550906796893042">應用程式版本</translation>
 <translation id="1430915738399379752">列印</translation>
+<translation id="1436784010935106834">已移除</translation>
 <translation id="1448440926884431741">在「書籤」中整理追蹤的產品</translation>
 <translation id="1450753235335490080">無法分享<ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">選取 Chrome 的語言</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">要關閉視窗嗎？</translation>
 <translation id="2175927920773552910">二維條碼</translation>
 <translation id="218608176142494674">共用</translation>
-<translation id="2195339740518523951">取得 Chrome 最強大的安全防護</translation>
 <translation id="2200113223741723867">管理使用情況資料分享設定</translation>
 <translation id="2218567645332692482">將瀏覽升級為採用 HTTPS，並在載入不支援該協定的網站前發出警告</translation>
 <translation id="2227444325776770048">以<ph name="USER_FULL_NAME" />的身分繼續</translation>
@@ -543,7 +543,6 @@
 <translation id="4170011742729630528">服務無法使用，請稍後再試。</translation>
 <translation id="4179980317383591987">已使用 <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">語言</translation>
-<translation id="4183868528246477015">使用「Google 智能鏡頭」的搜尋功能<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4196597275619698563">建立資訊卡</translation>
 <translation id="4198423547019359126">沒有可用的下載位置</translation>
@@ -577,7 +576,6 @@
 <translation id="4411535500181276704">精簡模式</translation>
 <translation id="4415276339145661267">管理您的 Google 帳戶</translation>
 <translation id="4425140285732600465">正在追蹤價格。如果產品在任何網站上降價，系統將通知您。</translation>
-<translation id="4427306783828095590">強化保護功能可進一步封鎖仿冒詐騙和惡意軟件</translation>
 <translation id="4450672886426705087">Google 的搜尋結果。</translation>
 <translation id="4452411734226507615">關閉 <ph name="TAB_TITLE" /> 分頁</translation>
 <translation id="4452548195519783679">已將書籤加入到「<ph name="FOLDER_NAME" />」</translation>
@@ -1082,6 +1080,7 @@
 <translation id="7177466738963138057">您稍後可在「設定」中作出變更</translation>
 <translation id="7177873915659574692">無法建立 QR 碼。網址超過 <ph name="CHARACTER_LIMIT" /> 個字元。</translation>
 <translation id="7180611975245234373">重新整理</translation>
+<translation id="718226107353899806">您可新增最多 <ph name="MAX_NUM_REACTIONS" /> 個反應</translation>
 <translation id="7187993566681480880">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性。</translation>
 <translation id="718926126787620637">書籤資料夾清單宜家顯示喺成個畫面</translation>
 <translation id="7191430249889272776">已在背景開啟分頁。</translation>
@@ -1245,7 +1244,6 @@
 <translation id="8035133914807600019">新增資料夾…</translation>
 <translation id="8037750541064988519">尚餘 <ph name="DAYS" /> 天</translation>
 <translation id="8037801708772278989">剛檢查過</translation>
-<translation id="8040831032425909005">快速操作與搜尋小工具的圖示</translation>
 <translation id="804335162455518893">找不到 SD 卡</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> 個無痕式分頁}other{<ph name="TAB_COUNT_NORMAL" /> 個無痕式分頁}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB 可用空間</translation>

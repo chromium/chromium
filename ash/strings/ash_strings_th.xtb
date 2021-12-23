@@ -131,6 +131,7 @@
 <translation id="1768366657309696705">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด <ph name="LAUNCHER_KEY_NAME" /> + จุด หากต้องการใช้แป้น Insert ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace</translation>
 <translation id="1770726142253415363">ย้ายไปที่แถว <ph name="ROW_NUMBER" /> คอลัมน์ <ph name="COLUMN_NUMBER" /></translation>
 <translation id="1771761307086386028">เลื่อนไปทางขวา</translation>
+<translation id="1774796056689732716">ปฏิทิน, <ph name="CURRENT_MONTH_YEAR" />, เลือกวันที่ <ph name="DATE" /> อยู่</translation>
 <translation id="1787955149152357925">ปิด</translation>
 <translation id="1804572139604454141">การบันทึกสิ้นสุดแล้วเนื่องจากพื้นที่ในดิสก์เกือบเต็มแล้ว</translation>
 <translation id="181103072419391116">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">เริ่มคำอธิบายภาพ</translation>
 <translation id="5078796286268621944">PIN ไม่ถูกต้อง</translation>
 <translation id="5083553833479578423">ใช้ฟีเจอร์จาก Assistant ได้มากขึ้น</translation>
+<translation id="5090752371472782287">แคสต์ไปยังอุปกรณ์ <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">ปรับเปลี่ยนในแบบของคุณ</translation>
 <translation id="5117590920725113268">แสดงเดือนถัดไป</translation>
 <translation id="5136175204352732067">เชื่อมต่อกับแป้นพิมพ์อื่นแล้ว</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">เครื่องส่งพร้อมใช้งาน</translation>
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
 <translation id="5176318573511391780">บันทึกหน้าจอบางส่วน</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> กิจกรรม</translation>
 <translation id="5198715732953550718">รวม <ph name="MOVED_APP_NAME" /> กับ <ph name="IN_PLACE_APP" /> เพื่อสร้างโฟลเดอร์ใหม่แล้ว</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{การแจ้งเตือนอื่น 1 รายการ}other{การแจ้งเตือนอื่น # รายการ}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">เสร็จเรียบร้อย</translation>
 <translation id="6431865393913628856">บันทึกหน้าจอ</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> กิจกรรม</translation>
 <translation id="6452181791372256707">ปฏิเสธ</translation>
 <translation id="6453179446719226835">เปลี่ยนภาษาแล้ว</translation>
 <translation id="6459472438155181876">ขยายหน้าจอไปยัง <ph name="DISPLAY_NAME" /></translation>
@@ -865,6 +869,7 @@
 <translation id="6811454077060061666">Google ไดรฟ์สำหรับเดสก์ท็อปไม่พร้อมใช้งาน</translation>
 <translation id="6818242057446442178">ถอยกลับทีละคำ</translation>
 <translation id="6820676911989879663">พักสายตาหน่อย</translation>
+<translation id="6827049576281411231">ปิดแผงกิจกรรม</translation>
 <translation id="6836499262298959512">ไฟล์นี้ไม่ปลอดภัย</translation>
 <translation id="6837064795450991317">ซ่อนเดสก์บาร์</translation>
 <translation id="6852052252232534364">คลิกเพื่อเปิดใช้</translation>
@@ -872,6 +877,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{เหลือตัวเลขอีก 1 หลัก}other{เหลือตัวเลขอีก # หลัก}}</translation>
 <translation id="6867938213751067702">หยุดดาวน์โหลด <ph name="FILENAME" /> ไว้ชั่วคราว</translation>
 <translation id="6878400149835617132">ทางลัดปิดอยู่</translation>
+<translation id="6884665277231944629">กลับไปที่วันนี้</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> อาจมีประสิทธิภาพลดลง ใช้อะแดปเตอร์ USB-C <ph name="PREFERRED_MINIMUM_POWER" /> วัตต์ขึ้นไปที่ได้รับการรับรอง</translation>
 <translation id="688631446150864480">กดปุ่มลูกศรลงเพื่อเปลี่ยนหน้าต่าง</translation>
 <translation id="6896758677409633944">คัดลอก</translation>
@@ -958,6 +964,7 @@
 <translation id="7497767806359279797">เลือกภาษาและแป้นพิมพ์</translation>
 <translation id="7509246181739783082">ยืนยันตัวตนของคุณ</translation>
 <translation id="7513622367902644023">เลือกโหมดภาพหน้าจอแล้ว</translation>
+<translation id="7513922695575567867">ปฏิทิน, สัปดาห์วันที่ <ph name="DATE" />, เลือกวันที่ <ph name="SELECTED_DATE" /> อยู่</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="7526573455193969409">อาจมีการตรวจสอบเครือข่าย</translation>
 <translation id="7536035074519304529">ที่อยู่ IP: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@
 <translation id="7564874036684306347">การย้ายหน้าต่างไปยังเดสก์ท็อปอื่นอาจส่งผลให้ลักษณะการทำงานผิกปกติ การแจ้งเตือน หน้าต่าง และกล่องโต้ตอบที่ตามมาอาจแสดงแยกส่วนในเดสก์ท็อปทั้งสอง</translation>
 <translation id="7569509451529460200">เปิดใช้เบรลล์และ ChromeVox แล้ว</translation>
 <translation id="7569983096843329377">สีดำ</translation>
+<translation id="757941033127302446">ลงชื่อเข้าใช้อยู่</translation>
 <translation id="7579778809502851308">จับภาพหน้าจอ</translation>
 <translation id="7590883480672980941">การตั้งค่าการป้อนข้อมูล</translation>
 <translation id="7593891976182323525">ค้นหาหรือ Shift</translation>
@@ -1040,6 +1048,7 @@
 <translation id="8035152190676905274">ปากกา</translation>
 <translation id="8036504271468642248">ประโยคก่อนหน้า</translation>
 <translation id="8042893070933512245">เปิดเมนูการตั้งค่าการช่วยเหลือพิเศษ</translation>
+<translation id="8042925093898452104">ปิดข้อมูลรายละเอียด</translation>
 <translation id="8048123526339889627">การตั้งค่าบลูทูธ</translation>
 <translation id="8051716679295756675">มีเทมเพลตชื่อ <ph name="DESK_TEMPLATE_NAME" /> อยู่แล้ว</translation>
 <translation id="8052898407431791827">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>

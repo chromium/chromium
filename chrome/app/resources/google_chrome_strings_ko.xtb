@@ -177,7 +177,6 @@
 <translation id="5193136243808726294">Chrome OS에서 이 페이지를 열 수 없음</translation>
 <translation id="521447420733633466">기기를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chrome을 설정할 수 있습니다.</translation>
 <translation id="5251420635869119124">게스트로 사용 기록을 남기지 않고 Chrome을 사용할 수 있습니다.</translation>
-<translation id="5251679006894510177">업데이트가 거의 완료되었습니다. 업데이트를 마치려면 Chrome을 다시 실행하세요. 시크릿 창은 다시 열리지 않습니다</translation>
 <translation id="5334487786912937552">파일을 다운로드하려면 Chrome에 저장소 액세스 권한이 필요합니다.</translation>
 <translation id="5386244825306882791">또한 Chrome을 시작하거나 검색주소창에서 검색할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="5394833366792865639">Chrome 탭 공유</translation>
@@ -310,6 +309,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8914504000324227558">Chrome 다시 시작</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
 <translation id="8927704157641862988">Chrome에서 가장 중요하게 간주되는 개인 정보 보호 항목을 맞춤설정합니다. 이 가이드에서 다루지 않는 설정과 옵션도 있습니다.</translation>
+<translation id="8983720963221508955">계정에서 향상된 세이프 브라우징을 사용 설정했습니다. Chrome에서도 사용하세요.</translation>
 <translation id="8986207147630327271">직장 프로필을 이 브라우저에 추가하고 직장 프로필 제어 권한을 관리자에게 부여합니다.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome 업데이트 출시}=1{Chrome 업데이트 출시}other{Chrome 업데이트가 출시된 지 #일 지남}}</translation>
 <translation id="9026991721384951619">계정의 로그인 세부정보가 오래되어 Chrome OS에서 데이터를 동기화하지 못했습니다.</translation>

@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">Υπάρχει διαθέσιμη προσφορά</translation>
 <translation id="1312803275555673949">Υπάρχουν αποδεικτικά στοιχεία;</translation>
 <translation id="131405271941274527">Η διεύθυνση <ph name="URL" /> θέλει να στέλνει και να λαμβάνει πληροφορίες όταν ακουμπάτε το τηλέφωνό σας σε μια συσκευή NFC</translation>
+<translation id="1314311879718644478">Προβολή περιεχομένου επαυξημένης πραγματικότητας</translation>
 <translation id="1314509827145471431">Δέσιμο δεξιά</translation>
 <translation id="1318023360584041678">Αποθηκεύτηκε στην ομάδα καρτελών</translation>
 <translation id="1319245136674974084">Να μην ερωτηθώ ξανά για αυτήν την εφαρμογή</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">Παρουσιάστηκε πρόβλημα κατά την εμφάνιση αυτής της ιστοσελίδας.</translation>
 <translation id="1586541204584340881">Ποιες επεκτάσεις έχετε εγκαταστήσει</translation>
 <translation id="1588438908519853928">Κανονική λειτουργία</translation>
+<translation id="1589050138437146318">Εγκατάσταση ARCore;</translation>
 <translation id="1592005682883173041">Πρόσβαση σε τοπικά δεδομένα</translation>
 <translation id="1594030484168838125">Επιλογή</translation>
 <translation id="160851722280695521">Παίξτε το παιχνίδι Dino Run στο Chrome</translation>
@@ -1395,6 +1397,7 @@
 <translation id="5333022057423422993">Το Chrome εντόπισε σε μια παραβίαση δεδομένων τον κωδικό πρόσβασης που μόλις χρησιμοποιήσατε. Για να προστατέψετε τους λογαριασμούς σας, συνιστούμε να ελέγξετε τους αποθηκευμένους κωδικούς πρόσβασής σας.</translation>
 <translation id="5334013548165032829">Λεπτομερή αρχεία καταγραφής συστήματος</translation>
 <translation id="5334145288572353250">Αποθήκευση διεύθυνσης;</translation>
+<translation id="5335920952954443287">Καρδιά που πάλλεται</translation>
 <translation id="5340250774223869109">Η εφαρμογή αποκλείστηκε</translation>
 <translation id="534295439873310000">Συσκευές NFC</translation>
 <translation id="5344579389779391559">Αυτή η σελίδα μπορεί να προσπαθήσει να σας χρεώσει</translation>
@@ -2068,6 +2071,7 @@
 <translation id="7654909834015434372">Όταν επεξεργάζεστε σχολιασμούς, αυτό το έγγραφο θα επιστρέφει στην αρχική του περιστροφή.</translation>
 <translation id="765676359832457558">Απόκρυψη σύνθετων ρυθμίσεων…</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
+<translation id="7659878911471462949">Δάκρυα χαράς</translation>
 <translation id="7662298039739062396">Η ρύθμιση ελέγχεται από μια επέκταση</translation>
 <translation id="7663736086183791259">Πιστοποιητικό <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Δεν επιτρέπεται στην Ανώνυμη περιήγηση</translation>
@@ -2272,6 +2276,7 @@
 <translation id="830498451218851433">Δίπλωση στη μέση</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Εγκατεστημένες εφαρμογές και η συχνότητα χρήσης τους</translation>
+<translation id="8317207217658302555">Ενημέρωση ARCore;</translation>
 <translation id="831997045666694187">Βράδυ</translation>
 <translation id="8321476692217554900">ειδοποιήσεις</translation>
 <translation id="8328484624016508118">Μετά το κλείσιμο όλων των καρτελών ανώνυμης περιήγησης, το Chrome διαγράφει:

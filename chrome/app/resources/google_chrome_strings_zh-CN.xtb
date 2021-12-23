@@ -170,7 +170,6 @@
 <translation id="5193136243808726294">Google Chrome 操作系统无法打开此网页。</translation>
 <translation id="521447420733633466">如果您是与亲朋好友共用一部设备，他们将能够使用单独的帐号进行浏览，并可随心所欲地设置 Chrome</translation>
 <translation id="5251420635869119124">访客使用Chrome不会留下任何痕迹。</translation>
-<translation id="5251679006894510177">离最新版本只有一步之遥了！重新启动 Chrome 即可完成更新。无痕式窗口不会自动重新打开。</translation>
 <translation id="5334487786912937552">Chrome 需要获得存储空间使用权限才能下载文件</translation>
 <translation id="5386244825306882791">它还能够控制您启动Chrome后或通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="5394833366792865639">共享 Chrome 标签页</translation>
@@ -301,6 +300,7 @@
 <translation id="8914504000324227558">重启 Chrome</translation>
 <translation id="8922193594870374009">若要从 <ph name="ORIGIN" /> 向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chrome。</translation>
 <translation id="8927704157641862988">自定义 Chrome 认为最重要的隐私权选项。本指南并未涵盖所有设置和选项。</translation>
+<translation id="8983720963221508955">您已在自己的帐号中开启了“增强型安全浏览”功能。现在，为 Chrome 启用该功能吧。</translation>
 <translation id="8986207147630327271">您将要向此浏览器添加工作资料并允许您的管理员仅控制此工作资料。</translation>
 <translation id="8999208279178790196">{0,plural, =0{有一项可用的 Chrome 更新}=1{有一项可用的 Chrome 更新}other{有一项可用的 Chrome 更新（已发布 # 天）}}</translation>
 <translation id="9026991721384951619">您的帐号登录详细信息已过期，Chrome操作系统无法同步您的数据。</translation>

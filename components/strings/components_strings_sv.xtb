@@ -112,6 +112,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1308113895091915999">Tillgängligt erbjudande</translation>
 <translation id="1312803275555673949">Vad finns det för belägg för detta?</translation>
 <translation id="131405271941274527"><ph name="URL" /> vill skicka och ta emot information när du snuddar vid en NFC-enhet med telefonen</translation>
+<translation id="1314311879718644478">Visa innehåll med förstärkt verklighet</translation>
 <translation id="1314509827145471431">Bindning till höger</translation>
 <translation id="1318023360584041678">Sparades i en flikgrupp</translation>
 <translation id="1319245136674974084">Fråga inte igen för den här appen</translation>
@@ -215,6 +216,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1583429793053364125">Ett fel uppstod när webbsidan skulle visas.</translation>
 <translation id="1586541204584340881">Vilka tillägg du har installerat</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1589050138437146318">Vill du installera ARCore?</translation>
 <translation id="1592005682883173041">Lokal dataåtkomst</translation>
 <translation id="1594030484168838125">Välj</translation>
 <translation id="160851722280695521">Spela Dino Run-spelet i Chrome</translation>
@@ -1392,6 +1394,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5333022057423422993">Chrome upptäckte att lösenordet som du precis använde har läckt ut vid ett dataintrång. Vi rekommenderar att du kontrollerar dina sparade lösenord för att skydda dina konton.</translation>
 <translation id="5334013548165032829">Detaljerade systemloggar</translation>
 <translation id="5334145288572353250">Vill du spara adressen?</translation>
+<translation id="5335920952954443287">Hjärta som slår</translation>
 <translation id="5340250774223869109">Appen blockeras</translation>
 <translation id="534295439873310000">NFC-enheter</translation>
 <translation id="5344579389779391559">Den här sidan kan försöka debitera dig</translation>
@@ -2064,6 +2067,7 @@ Mer information.
 <translation id="7654909834015434372">När du redigerar kommentarer aktiveras den ursprungliga rotationen igen för dokumentet</translation>
 <translation id="765676359832457558">Dölj avancerade inställningar ...</translation>
 <translation id="7658239707568436148">Avbryt</translation>
+<translation id="7659878911471462949">Glädjetårar</translation>
 <translation id="7662298039739062396">Inställningen styrs av ett tillägg</translation>
 <translation id="7663736086183791259">Certifikat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Tillåts inte i inkognitoläge</translation>
@@ -2267,6 +2271,7 @@ Mer information.
 <translation id="830498451218851433">Enkelfalsning</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Vilka appar som har installerats och hur ofta de används</translation>
+<translation id="8317207217658302555">Vill du uppdatera ARCore?</translation>
 <translation id="831997045666694187">kvällen</translation>
 <translation id="8321476692217554900">aviseringar</translation>
 <translation id="8328484624016508118">När du har stängt alla inkognitoflikar i Chrome raderas följande:

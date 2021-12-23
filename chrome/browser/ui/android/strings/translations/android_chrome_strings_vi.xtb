@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Đang liên hệ với Google. Quá trình này có thể mất ít phút…</translation>
 <translation id="1416550906796893042">Phiên bản ứng dụng</translation>
 <translation id="1430915738399379752">In</translation>
+<translation id="1436784010935106834">Đã xóa</translation>
 <translation id="1448440926884431741">Sắp xếp các sản phẩm bạn theo dõi trong phần Dấu trang</translation>
 <translation id="1450753235335490080">Không thể chia sẻ <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Chọn ngôn ngữ cho Chrome</translation>
@@ -203,7 +204,6 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 <translation id="2172905120685242547">Đóng cửa sổ?</translation>
 <translation id="2175927920773552910">Mã QR</translation>
 <translation id="218608176142494674">Chia sẻ</translation>
-<translation id="2195339740518523951">Tận dụng mức bảo mật mạnh nhất của Chrome</translation>
 <translation id="2200113223741723867">Quản lý cách chia sẻ dữ liệu sử dụng</translation>
 <translation id="2218567645332692482">Nâng các hình thức chuyển hướng lên giao thức HTTPS và cảnh báo bạn trước khi tải những trang web không hỗ trợ giao thức HTTPS</translation>
 <translation id="2227444325776770048">Tiếp tục bằng <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="4170011742729630528">Dịch vụ không khả dụng; thử lại sau.</translation>
 <translation id="4179980317383591987">Đã dùng <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Ngôn ngữ</translation>
-<translation id="4183868528246477015">Tìm bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Mở trong thẻ mới</translation>
 <translation id="4196597275619698563">Tạo thẻ</translation>
 <translation id="4198423547019359126">Không có vị trí tải xuống</translation>
@@ -577,7 +576,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="4411535500181276704">Chế độ thu gọn</translation>
 <translation id="4415276339145661267">Quản lý Tài khoản Google của bạn</translation>
 <translation id="4425140285732600465">Đang theo dõi giá. Nhận thông báo nếu có chương trình giảm giá trên một trang web bất kỳ.</translation>
-<translation id="4427306783828095590">Chế độ bảo vệ tăng cường giúp chặn phần mềm độc hại và hành vi lừa đảo hiệu quả hơn</translation>
 <translation id="4450672886426705087">Kết quả tìm kiếm của Google.</translation>
 <translation id="4452411734226507615">Đóng thẻ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Đã đánh dấu trang vào <ph name="FOLDER_NAME" /></translation>
@@ -1082,6 +1080,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7177466738963138057">Bạn có thể thay đổi cài đặt này sau trong Cài đặt</translation>
 <translation id="7177873915659574692">Không thể tạo mã QR. URL chứa nhiều hơn <ph name="CHARACTER_LIMIT" /> ký tự.</translation>
 <translation id="7180611975245234373">Làm mới</translation>
+<translation id="718226107353899806">Bạn có thể thêm tối đa <ph name="MAX_NUM_REACTIONS" /> phản ứng</translation>
 <translation id="7187993566681480880">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập.</translation>
 <translation id="718926126787620637">Danh sách thư mục dấu trang đã được mở ở toàn độ cao</translation>
 <translation id="7191430249889272776">Thẻ được mở dưới nền.</translation>
@@ -1245,7 +1244,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8035133914807600019">Thư mục mới...</translation>
 <translation id="8037750541064988519">Còn <ph name="DAYS" /> ngày</translation>
 <translation id="8037801708772278989">Vừa kiểm tra xong</translation>
-<translation id="8040831032425909005">Biểu tượng Tiện ích Tìm kiếm Thao tác nhanh</translation>
 <translation id="804335162455518893">Không tìm thấy thẻ SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> thẻ ẩn danh}other{<ph name="TAB_COUNT_NORMAL" /> thẻ ẩn danh}}</translation>
 <translation id="8051695050440594747">Còn <ph name="MEGABYTES" /> MB</translation>

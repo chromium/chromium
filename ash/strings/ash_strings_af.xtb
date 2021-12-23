@@ -131,6 +131,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1768366657309696705">Die kortpadsleutel <ph name="LAUNCHER_KEY_NAME" /> + punt het verander. Om die Insert-sleutel te gebruik, moet jy die <ph name="LAUNCHER_KEY_NAME" />-sleutel + Shift + Backspace druk.</translation>
 <translation id="1770726142253415363">Geskuif na ry <ph name="ROW_NUMBER" />, kolom <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Rollees regs</translation>
+<translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> is tans gekies.</translation>
 <translation id="1787955149152357925">Af</translation>
 <translation id="1804572139604454141">Opname het geëindig weens kritiek min skyfspasie</translation>
 <translation id="181103072419391116">Seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
@@ -621,6 +622,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5075554201838155866">Begin onderskrifte</translation>
 <translation id="5078796286268621944">Verkeerde PIN</translation>
 <translation id="5083553833479578423">Ontsluit meer Assistent-kenmerke.</translation>
+<translation id="5090752371472782287">Saai uit na 'n <ph name="MANAGER" />-toestel</translation>
 <translation id="5106223312672646208">Personaliseer</translation>
 <translation id="5117590920725113268">Wys volgende maand</translation>
 <translation id="5136175204352732067">Ander sleutelbord is gekoppel</translation>
@@ -630,6 +632,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="5168181903108465623">Uitsaaitoestelle is beskikbaar</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
 <translation id="5176318573511391780">Neem gedeeltelike skerm op</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> geleenthede</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> is met <ph name="IN_PLACE_APP" /> gekombineer om 'n nuwe vouer te skep.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 ander kennisgewing}other{# ander kennisgewings}}</translation>
@@ -803,6 +806,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="643147933154517414">Als klaar</translation>
 <translation id="6431865393913628856">Skermopnemer</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> op <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> geleentheid</translation>
 <translation id="6452181791372256707">Verwerp</translation>
 <translation id="6453179446719226835">Taal is verander</translation>
 <translation id="6459472438155181876">Brei skerm na <ph name="DISPLAY_NAME" /> uit</translation>
@@ -866,6 +870,7 @@ Nuwe installasie</translation>
 <translation id="6811454077060061666">Google Drive vir Rekenaars is nie beskikbaar nie</translation>
 <translation id="6818242057446442178">Terug per woord</translation>
 <translation id="6820676911989879663">Geniet 'n blaaskans!</translation>
+<translation id="6827049576281411231">Maak geleentheidpaneel toe</translation>
 <translation id="6836499262298959512">Gevaarlike lêer</translation>
 <translation id="6837064795450991317">Versteek werkskermbalk</translation>
 <translation id="6852052252232534364">Klik om te aktiveer</translation>
@@ -873,6 +878,7 @@ Nuwe installasie</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Een syfer bly oor}other{# syfers bly oor}}</translation>
 <translation id="6867938213751067702">Aflaai is onderbreek <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Kortpad is afgeskakel</translation>
+<translation id="6884665277231944629">Gaan terug na vandag</translation>
 <translation id="6886172995547742638">Jou <ph name="DEVICE_TYPE" /> kan dalk laer werkverrigting ervaar. Gebruik 'n gesertifiseerde <ph name="PREFERRED_MINIMUM_POWER" />W- of hoër USB-C-kragprop.</translation>
 <translation id="688631446150864480">Druk die afpyl om tussen vensters te wissel</translation>
 <translation id="6896758677409633944">Kopieer</translation>
@@ -959,6 +965,7 @@ Nuwe installasie</translation>
 <translation id="7497767806359279797">Kies taal en sleutelbord</translation>
 <translation id="7509246181739783082">Verifieer jou identiteit</translation>
 <translation id="7513622367902644023">Skermkiekiemodus gekies</translation>
+<translation id="7513922695575567867">Kalender, week van <ph name="DATE" />, <ph name="SELECTED_DATE" /> is tans gekies.</translation>
 <translation id="7514365320538308">Laai af</translation>
 <translation id="7526573455193969409">Netwerk kan gemonitor word</translation>
 <translation id="7536035074519304529">IP-adres: <ph name="ADDRESS" /></translation>
@@ -968,6 +975,7 @@ Nuwe installasie</translation>
 <translation id="7564874036684306347">Om vensters na 'n ander werkskerm te skuif, kan lei tot onverwagte gedrag. Opeenvolgende kennisgewings, vensters en dialoë kan tussen werkskerms verdeel word.</translation>
 <translation id="7569509451529460200">Braille en ChromeVox is geaktiveer</translation>
 <translation id="7569983096843329377">Swart</translation>
+<translation id="757941033127302446">Aangemeld</translation>
 <translation id="7579778809502851308">Skermskoot</translation>
 <translation id="7590883480672980941">Invoerinstellings</translation>
 <translation id="7593891976182323525">Search of Shift</translation>
@@ -1041,6 +1049,7 @@ Nuwe installasie</translation>
 <translation id="8035152190676905274">Pen</translation>
 <translation id="8036504271468642248">Vorige sin</translation>
 <translation id="8042893070933512245">Maak toeganklikheidinstellingskieslys oop</translation>
+<translation id="8042925093898452104">Maak gedetailleerde inligting toe</translation>
 <translation id="8048123526339889627">Bluetooth-instellings</translation>
 <translation id="8051716679295756675">Templaat genaamd <ph name="DESK_TEMPLATE_NAME" /> bestaan reeds</translation>
 <translation id="8052898407431791827">Gekopieer na knipbord</translation>

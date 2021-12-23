@@ -118,13 +118,13 @@
 <translation id="454579500955453258">Vil du fortsætte på en ny Chromium-profil?</translation>
 <translation id="4567424176335768812">Du er logget ind som <ph name="USER_EMAIL_ADDRESS" />. Nu kan du få adgang til dine bogmærker, din historik og andre indstillinger på alle de enheder, hvor du er logget ind.</translation>
 <translation id="459535195905078186">Chromium-apps</translation>
+<translation id="4621240073146040695">Næsten opdateret. Genstart Chromium for at afslutte opdateringen.</translation>
 <translation id="4665829708273112819">Advarsel! Chromium kan ikke forhindre udvidelser i at registrere din browserhistorik. Fjern markeringen af denne valgmulighed for at deaktivere denne udvidelse i inkognitotilstand.</translation>
 <translation id="4677944499843243528">Profilen ser ud til at være i brug i en anden Chromium-proces (<ph name="PROCESS_ID" />) på en anden computer (<ph name="HOST_NAME" />). Chromium har låst profilen, så den ikke bliver beskadiget. Hvis du er sikker på, at ingen andre processer anvender denne profil, kan du fjerne blokeringen af profilen og genstarte Chromium.</translation>
 <translation id="469338717132742108">Få hjælp til Chromium OS</translation>
 <translation id="4708774505295300557">Nogen har tidligere logget ind på Chromium på denne computer som <ph name="ACCOUNT_EMAIL_LAST" />. Opret en ny Chromium-bruger for at holde dine oplysninger adskilt.</translation>
 <translation id="4746050847053251315">Vil du slutte Chromium alligevel?</translation>
 <translation id="4748217263233248895">En særlig sikkerhedsopdatering til Chromium blev netop anvendt. Genstart nu, hvorefter vi gendanner dine faner.</translation>
-<translation id="4750035648288509542">Næsten opdateret! Genstart Chromium for at fuldføre opdateringen. Inkognitovinduer åbnes ikke igen.</translation>
 <translation id="4788777615168560705">Chromium kan ikke tjekke dine adgangskoder. Prøv igen efter 24 timer, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Dette anvender den samme stavekontrol, som anvendes i Google Søgning. Tekst, som du angiver i browseren, sendes til Google. Du kan altid ændre denne adfærd i indstillingerne.</translation>
 <translation id="4888717733111232871">Indgående regel for Chromium om at tillade mDNS-trafik.</translation>
@@ -238,6 +238,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7561906087460245826">Ryd også data fra Chromium (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Hvis en indstilling ikke vises på denne side, kan du kigge i <ph name="LINK_BEGIN" />
       indstillingerne for Chromium OS<ph name="LINK_END" /></translation>
+<translation id="7597596667193879455">Du har aktiveret Udvidet beskyttet browsing på din konto. Nu skal du aktivere funktionen for Chromium.</translation>
 <translation id="761356813943268536">Chromium bruger dit kamera og din mikrofon.</translation>
 <translation id="7617377681829253106">Chromium er blevet bedre</translation>
 <translation id="7686590090926151193">Chromium er ikke din standardbrowser</translation>

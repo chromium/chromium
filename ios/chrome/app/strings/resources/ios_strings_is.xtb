@@ -235,6 +235,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3157387275655328056">Bæta við leslista</translation>
 <translation id="3157684681743766797">Merkja allt…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Þú getur einnig notað vistuð aðgangsorð í öðrum tækjum.</translation>
 <translation id="3175081911749765310">Vefþjónusta</translation>
 <translation id="3178650076442119961">Virkt í dag</translation>
 <translation id="3181825792072797598">Kveikja á samstillingu</translation>
@@ -328,6 +329,7 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="4042870976416480368">Finna á síðu</translation>
 <translation id="4049507953662678203">Gakktu úr skugga um að þú sért tengd(ur) netinu og reyndu svo aftur.</translation>
 <translation id="408404951701638773">Nú er auðveldara að nálgast leitarstikuna</translation>
+<translation id="4108314971463891922">Fylgja</translation>
 <translation id="411254640334432676">Niðurhal mistókst.</translation>
 <translation id="4112644173421521737">Leita</translation>
 <translation id="4113030288477039509">Stjórnað af kerfisstjóra</translation>
@@ -345,6 +347,7 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="4272631900155121838">Til að skanna QR-kóða skaltu virkja myndavélina í stillingunum</translation>
 <translation id="4277990410970811858">Örugg vefnotkun</translation>
 <translation id="4281844954008187215">Þjónustuskilmálar</translation>
+<translation id="4304713468139749426">Aðgangsorðastjórnun</translation>
 <translation id="430793432425771671">Samstilla allt</translation>
 <translation id="4309403553630140242">Ýttu tvisvar til að fá frekari upplýsingar.</translation>
 <translation id="430967081421617822">Frá upphafi</translation>
@@ -356,6 +359,7 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="4389019817280890563">Ýttu til að skipta um tungumál.</translation>
 <translation id="4442550905108052454">Opnaðu <ph name="BEGIN_BOLD" />stillingar<ph name="END_BOLD" /></translation>
 <translation id="4454246407045105932">Bæta við tungumáli</translation>
+<translation id="4462491365653392320">Fylgjast með verði á flipum</translation>
 <translation id="4469418912670346607">Halda uppsetningu áfram</translation>
 <translation id="4474494258097106883">Sérhannað fyrir iPhone</translation>
 <translation id="4476574785019001431">Stillingar</translation>
@@ -419,6 +423,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="4944543191714094452">Finna á síðu…</translation>
 <translation id="4945756290001680296">Opna stillingar fyrir aðgangsorð</translation>
 <translation id="4979397965658815378">Skráðu þig inn með Google reikningnum þínum til að fá bókamerkin þín, ferilinn, aðgangsorð og aðrar stillingar í öll tækin þín</translation>
+<translation id="4986678885919050584">Fjarlægja úr þessu tæki</translation>
 <translation id="5005498671520578047">Afrita aðgangsorð</translation>
 <translation id="5017828934289857214">Minna mig á seinna</translation>
 <translation id="5037676449506322593">Velja allt</translation>
@@ -520,6 +525,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5979837087407522202">Leita að aðgangsorðum</translation>
 <translation id="5982717868370722439">Bæta fyrirliggjandi gögnum við <ph name="USER_EMAIL" />.</translation>
 <translation id="5984222099446776634">Nýlega heimsótt</translation>
+<translation id="5988097621740394599">Sjá verðlækkanir á flipum.</translation>
 <translation id="5988851877894965432">Opna vefslóðir í Chrome</translation>
 <translation id="6012140227487808125">Dulkóðar…</translation>
 <translation id="6021332621416007159">Opna í...</translation>
@@ -540,6 +546,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6127379762771434464">Atriði fjarlægt</translation>
 <translation id="6136914049981179737">sekúndur síðan</translation>
 <translation id="6144589619057374135">Opna ${url} í huliðsstillingu</translation>
+<translation id="6149061208933997199">Nota aðgangsorð</translation>
 <translation id="6159839020698489198">valfrjálst</translation>
 <translation id="6177442314419606057">Leita í Chrome</translation>
 <translation id="6184086493125982861">Sýna flipa</translation>
@@ -764,6 +771,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8076014560081431679">Vistuðum stillingum vefsvæða verður ekki eytt og þær kunna að endurspegla vefnotkun þína. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Þessari stillingu er stjórnað, ýttu tvisvar til að fá frekari upplýsingar</translation>
 <translation id="8080028325999236607">Loka öllum flipum</translation>
+<translation id="8101409298456377967">Búðu til, vistaðu og stjórnaðu aðgangsorðunum þínum til að skrá þig inn á vefsvæði og forrit á einfaldan hátt. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Slökkva</translation>
 <translation id="8114753159095730575">Hægt er að sækja skrá. Valkostir eru í boði neðarlega á skjánum.</translation>
 <translation id="8132598642024322408">Verð nú <ph name="PRICE" />, verð áður <ph name="PREVIOUS_PRICE" />.</translation>

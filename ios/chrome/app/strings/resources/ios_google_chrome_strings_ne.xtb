@@ -70,6 +70,7 @@
 <translation id="6063091872902370735">Chrome मा साइन इन गर्ने अनुमति दिनुहोस्</translation>
 <translation id="6181930887571472871">Chrome प्रयोग गर्न थाल्नुहोस्</translation>
 <translation id="6238746320622508509">Chrome लाई आफ्ना इन्कोग्निटो ट्याबहरू लक गर्ने अनुमति दिनुहोस्।</translation>
+<translation id="6387994324662817823">पासवर्डहरू यो डिभाइसको Google पासवर्ड म्यानेजरमा मात्र सेभ गरिन्छन्।</translation>
 <translation id="6427126399757991875">तपाईंको सङ्गठनले Chrome सेटअप गर्दै छ...</translation>
 <translation id="6600954340915313787">Chrome मा प्रतिलिपि गरियो</translation>
 <translation id="6634107063912726160">तपाईंले साइन आउट गर्नुभयो भने Chrome ले तपाईंको Google खातामा कुनै पनि नयाँ डेटा सिंक गर्ने छैन। यसअघि सिंक भएका डेटा खातामा सुरक्षित रहिरहन्छन्।</translation>
@@ -111,5 +112,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chrome प्रयोग गरी सुरक्षित रहनुहोस्</translation>
 <translation id="8772179140489533211">Chrome मा साइन इन गर्ने निर्देशन देखाउँछ।</translation>
+<translation id="8788269841521769222">तपाईंले यो पासवर्ड याद गरिराख्नु पर्दैन। यो पासवर्ड <ph name="EMAIL" /> को Google पासवर्ड म्यानेजरमा सेभ गरिने छ</translation>
 <translation id="9112744793181547300">Chrome लाई डिफल्ट ब्राउजरका रूपमा प्रयोग गर्ने हो?</translation>
 </translationbundle>

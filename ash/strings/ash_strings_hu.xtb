@@ -131,6 +131,7 @@
 <translation id="1768366657309696705">A(z) <ph name="LAUNCHER_KEY_NAME" /> + pont billentyűkombináció módosult. A Beillesztés billentyű használatához nyomja le a(z) <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace billentyűkombinációt.</translation>
 <translation id="1770726142253415363">Áthelyezve ide: <ph name="ROW_NUMBER" />. sor, <ph name="COLUMN_NUMBER" />. oszlop.</translation>
 <translation id="1771761307086386028">Görgetés jobbra</translation>
+<translation id="1774796056689732716">Naptár, <ph name="CURRENT_MONTH_YEAR" />, jelenleg kijelölt dátum: <ph name="DATE" /></translation>
 <translation id="1787955149152357925">Ki</translation>
 <translation id="1804572139604454141">Felvétel megszakítva a kritikusan kevés lemezterület miatt</translation>
 <translation id="181103072419391116">Jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
@@ -621,6 +622,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5075554201838155866">Feliratok indítása</translation>
 <translation id="5078796286268621944">Helytelen PIN-kód</translation>
 <translation id="5083553833479578423">Hozzáférés a Segéd további funkcióihoz</translation>
+<translation id="5090752371472782287">Átküldés <ph name="MANAGER" />-eszközre</translation>
 <translation id="5106223312672646208">Személyre szabás</translation>
 <translation id="5117590920725113268">A következő hónap megjelenítése</translation>
 <translation id="5136175204352732067">Új billentyűzet lett csatlakoztatva</translation>
@@ -630,6 +632,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5168181903108465623">Cast-eszközök állnak rendelkezésre</translation>
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
 <translation id="5176318573511391780">Részleges képernyő rögzítése</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> esemény</translation>
 <translation id="5198715732953550718">A következő alkalmazások össze lettek vonva egy új mappába: <ph name="MOVED_APP_NAME" /> és <ph name="IN_PLACE_APP" />.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 egyéb értesítés}other{# egyéb értesítés}}</translation>
@@ -803,6 +806,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="643147933154517414">Elkészült</translation>
 <translation id="6431865393913628856">Képernyőrögzítés</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> itt: <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> esemény</translation>
 <translation id="6452181791372256707">Elutasítás</translation>
 <translation id="6453179446719226835">A nyelv módosult</translation>
 <translation id="6459472438155181876">Képernyő kiterjesztése erre: <ph name="DISPLAY_NAME" /></translation>
@@ -866,6 +870,7 @@ Frissen telepítve</translation>
 <translation id="6811454077060061666">Az asztali Google Drive nem áll rendelkezésre</translation>
 <translation id="6818242057446442178">Visszalépés szavanként</translation>
 <translation id="6820676911989879663">Tartson egy kis szünetet!</translation>
+<translation id="6827049576281411231">Eseménypanel bezárása</translation>
 <translation id="6836499262298959512">Veszélyes fájl</translation>
 <translation id="6837064795450991317">Deskbar elrejtése</translation>
 <translation id="6852052252232534364">Aktiválás</translation>
@@ -873,6 +878,7 @@ Frissen telepítve</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 számjegy maradt}other{# számjegy maradt}}</translation>
 <translation id="6867938213751067702">A következő letöltése szünetel: <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">A billentyűparancs ki van kapcsolva</translation>
+<translation id="6884665277231944629">Vissza a mai napra</translation>
 <translation id="6886172995547742638">A(z) <ph name="DEVICE_TYPE" /> eszközön a teljesítmény csökkenése észlelhető. Használjon tanúsítvánnyal rendelkező, <ph name="PREFERRED_MINIMUM_POWER" /> W-os vagy nagyobb teljesítményű USB-C tápcsatlakozót.</translation>
 <translation id="688631446150864480">Ablakváltáshoz nyomja le a lefelé mutató nyilat</translation>
 <translation id="6896758677409633944">Másolás</translation>
@@ -959,6 +965,7 @@ Frissen telepítve</translation>
 <translation id="7497767806359279797">Nyelv és billentyűzet kiválasztása</translation>
 <translation id="7509246181739783082">Személyazonosság igazolása</translation>
 <translation id="7513622367902644023">Képernyőkép mód kiválasztva</translation>
+<translation id="7513922695575567867">Naptár, <ph name="DATE" />-i hét, jelenleg kijelölt dátum: <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Letöltés</translation>
 <translation id="7526573455193969409">Elképzelhető, hogy figyelik a hálózatot</translation>
 <translation id="7536035074519304529">IP-cím: <ph name="ADDRESS" /></translation>
@@ -968,6 +975,7 @@ Frissen telepítve</translation>
 <translation id="7564874036684306347">Az ablakok másik asztalra történő áthelyezése váratlan viselkedést eredményezhet. Az ezt követő értesítéseket, ablakokat és párbeszédpaneleket a rendszer megoszthatja az asztalok között.</translation>
 <translation id="7569509451529460200">Braille és ChromeVox bekapcsolva</translation>
 <translation id="7569983096843329377">Fekete</translation>
+<translation id="757941033127302446">Bejelentkezve</translation>
 <translation id="7579778809502851308">Képernyőfelvétel</translation>
 <translation id="7590883480672980941">Beviteli beállítások</translation>
 <translation id="7593891976182323525">Keresés vagy Shift</translation>
@@ -1041,6 +1049,7 @@ Frissen telepítve</translation>
 <translation id="8035152190676905274">Toll</translation>
 <translation id="8036504271468642248">Előző mondat</translation>
 <translation id="8042893070933512245">A kisegítő lehetőségekhez tartozó beállítások menüjének megnyitása</translation>
+<translation id="8042925093898452104">A részletes adatok bezárása</translation>
 <translation id="8048123526339889627">Bluetooth-beállítások</translation>
 <translation id="8051716679295756675">A(z) <ph name="DESK_TEMPLATE_NAME" /> nevű sablon már létezik.</translation>
 <translation id="8052898407431791827">Vágólapra másolva</translation>

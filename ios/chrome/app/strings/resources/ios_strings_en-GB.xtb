@@ -25,6 +25,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1145536944570833626">Delete existing data.</translation>
 <translation id="1147031633655575115">Signed in as <ph name="USER" /></translation>
 <translation id="1154984953698510061">See other tabs</translation>
+<translation id="1164064664035028907">Use strong password:</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Next field</translation>
 <translation id="1176932207622159128">Cannot Save Image</translation>
@@ -329,6 +330,7 @@ Follow the steps below:</translation>
 <translation id="4042870976416480368">Find in Page</translation>
 <translation id="4049507953662678203">Make sure you have a network connection, and try again.</translation>
 <translation id="408404951701638773">Search bar is now easier to reach</translation>
+<translation id="4108314971463891922">Follow</translation>
 <translation id="411254640334432676">Download failed.</translation>
 <translation id="4112644173421521737">Search</translation>
 <translation id="4113030288477039509">Managed by your administrator</translation>
@@ -437,7 +439,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5118764316110575523">Off</translation>
 <translation id="5127805178023152808">Sync is off</translation>
 <translation id="5132942445612118989">Sync your passwords, history and more on all devices</translation>
-<translation id="51339916068413997">You can auto-fill saved passwords in other apps on your iPad.</translation>
 <translation id="5140288047769711648">Chrome will remember this password for you. You don't have to remember it.</translation>
 <translation id="5150492518600715772">Send to your device</translation>
 <translation id="5168414296986405587">Built for iPadOS</translation>
@@ -476,7 +477,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 Handoff must also be enabled in the General section of Settings, and your devices must use the same iCloud account.</translation>
 <translation id="5551897871312988470">Offer to translate</translation>
 <translation id="5556459405103347317">Reload</translation>
-<translation id="5557664881350188277">You can auto-fill saved passwords in other apps on your iPhone.</translation>
 <translation id="5580834567471114021">Add to reading list for later?</translation>
 <translation id="5592679540098330836">Turn on sync for <ph name="NAME" /></translation>
 <translation id="560322036295180549">Turned off by your organisation</translation>
@@ -547,6 +547,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6127379762771434464">Item removed</translation>
 <translation id="6136914049981179737">Seconds ago</translation>
 <translation id="6144589619057374135">Open ${url} in Incognito</translation>
+<translation id="6149061208933997199">Use Password</translation>
 <translation id="6159839020698489198">optional</translation>
 <translation id="6177442314419606057">Search in Chrome</translation>
 <translation id="6184086493125982861">Show Tabs</translation>
@@ -639,6 +640,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6807889908376551050">Show All...</translation>
 <translation id="681368974849482173">Item created</translation>
 <translation id="681450999322335505">Your organisation turned off sync.</translation>
+<translation id="683022620450280906">You can use saved passwords on any device. They're saved to Google Password Manager for <ph name="EMAIL" /></translation>
 <translation id="6830804042318138535">Read more</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6842136130964845393">To make sure that you can always access your saved passwords, verify that it's you</translation>

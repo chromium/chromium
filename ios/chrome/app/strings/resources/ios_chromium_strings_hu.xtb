@@ -44,6 +44,7 @@
 <translation id="3639997914391704523">A Chromium ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
 <translation id="3805899903892079518">A Chromium nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
 <translation id="3946918322491238254">Továbbra is láthatja könyvjelzőit, előzményeit, jelszavait és más beállításait ezen az eszközön. A módosításokat azonban a böngésző nem szinkronizálja az Ön fiókjába.</translation>
+<translation id="4043291146360695975">A jelszavakat csak ezen az eszközön menti a rendszer a Jelszókezelőbe.</translation>
 <translation id="4099085513035183040">A Chromium bétaverziója nem támogatja</translation>
 <translation id="4555020257205549924">Ha a funkció be van kapcsolva, a Chromium felajánlja a más nyelveken írt oldalak lefordítását a Google Fordító segítségével. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="4585809515399340748">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre koppint.</translation>
@@ -107,6 +108,7 @@
 <translation id="8776843108004031667">Ezzel a fiók és a nem mentett adatok eltávolításra kerülnek a Chromiumból.</translation>
 <translation id="894437814105052438">Ha kijelentkezik, a Chromium nem fogja szinkronizálni az új adatokat az Ön Google-fiókjába. A korábban szinkronizált adatok megmaradnak a fiókban.</translation>
 <translation id="9022552996538154597">Bejelentkezés a Chromiumba</translation>
+<translation id="9059693977935746710">Nem kell emlékeznie erre a jelszóra. Elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Jelszókezelőbe.</translation>
 <translation id="9089354809943900324">A Chromium elavult</translation>
 <translation id="9110075932708282655">A Chromium alapértelmezett használata</translation>
 <translation id="921174536258924340">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap, vagy <ph name="BEGIN_LINK" />ellenőrizze jelszavait a Google-fiókjában<ph name="END_LINK" />.</translation>

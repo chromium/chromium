@@ -131,6 +131,7 @@
 <translation id="1768366657309696705">Η συντόμευση πληκτρολογίου <ph name="LAUNCHER_KEY_NAME" /> + τελεία έχει αλλάξει. Για να χρησιμοποιήσετε το κουμπί Insert, πατήστε το πλήκτρο <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Μετακινήθηκε στη σειρά <ph name="ROW_NUMBER" />, στήλη <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Κύλιση δεξιά</translation>
+<translation id="1774796056689732716">Ημερολόγιο, <ph name="CURRENT_MONTH_YEAR" />, αυτήν τη στιγμή είναι επιλεγμένη η ημερομηνία <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Ανενεργό</translation>
 <translation id="1804572139604454141">Η εγγραφή ολοκληρώθηκε λόγω του εξαιρετικά χαμηλού χώρου στον δίσκο.</translation>
 <translation id="181103072419391116">Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Διαχειριζόμενο από τον διαχειριστή σας</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">Έναρξη υποτίτλων</translation>
 <translation id="5078796286268621944">Εσφαλμένο PIN</translation>
 <translation id="5083553833479578423">Ξεκλειδώστε περισσότερες λειτουργίες του Βοηθού.</translation>
+<translation id="5090752371472782287">Μετάδοση σε συσκευή <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Εξατομίκευση</translation>
 <translation id="5117590920725113268">Εμφάνιση επόμενου μήνα</translation>
 <translation id="5136175204352732067">Συνδέθηκε διαφορετικό πληκτρολόγιο</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">Διαθέσιμες συσκευές μετάδοσης</translation>
 <translation id="5170568018924773124">Εμφάνιση στο φάκελο</translation>
 <translation id="5176318573511391780">Εγγραφή μέρους της οθόνης</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> συμβάντα</translation>
 <translation id="5198715732953550718">Η εφαρμογή <ph name="MOVED_APP_NAME" /> συνδυάστηκε με την εφαρμογή <ph name="IN_PLACE_APP" /> για τη δημιουργία νέου φακέλου.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 ακόμη ειδοποίηση}other{# ακόμη ειδοποιήσεις}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">Όλα έτοιμα</translation>
 <translation id="6431865393913628856">Εγγραφή οθόνης</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> σε <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> συμβάν</translation>
 <translation id="6452181791372256707">Απόρριψη</translation>
 <translation id="6453179446719226835">Η γλώσσα άλλαξε</translation>
 <translation id="6459472438155181876">Επέκταση οθόνης σε <ph name="DISPLAY_NAME" /></translation>
@@ -865,6 +869,7 @@
 <translation id="6811454077060061666">Το Google Drive για υπολογιστές δεν είναι διαθέσιμο</translation>
 <translation id="6818242057446442178">Πίσω ανά λέξη</translation>
 <translation id="6820676911989879663">Κάντε ένα διάλειμμα!</translation>
+<translation id="6827049576281411231">Κλείσιμο πλαισίου συμβάντων</translation>
 <translation id="6836499262298959512">Επικίνδυνο αρχείο</translation>
 <translation id="6837064795450991317">Απόκρυψη της γραμμής γραφείων</translation>
 <translation id="6852052252232534364">Κλικ για ενεργ.</translation>
@@ -872,6 +877,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Απομένει ένα ψηφίο}other{Απομένουν # ψηφία}}</translation>
 <translation id="6867938213751067702">Η λήψη του αρχείου <ph name="FILENAME" /> τέθηκε σε παύση προσωρινά</translation>
 <translation id="6878400149835617132">Η συντόμευση απενεργοποιήθηκε</translation>
+<translation id="6884665277231944629">Επιστροφή στη σημερινή ημέρα</translation>
 <translation id="6886172995547742638">Η απόδοση της συσκευής <ph name="DEVICE_TYPE" /> μπορεί να είναι μειωμένη. Χρησιμοποιήστε έναν πιστοποιημένο μετασχηματιστή USB-C <ph name="PREFERRED_MINIMUM_POWER" /> W ή υψηλότερης ισχύος.</translation>
 <translation id="688631446150864480">Πατήστε το πλήκτρο κάτω βέλους για εναλλαγή παραθύρων.</translation>
 <translation id="6896758677409633944">Αντιγραφή</translation>
@@ -958,6 +964,7 @@
 <translation id="7497767806359279797">Επιλογή γλώσσας και πληκτρολογίου</translation>
 <translation id="7509246181739783082">Επαλήθευση της ταυτότητάς σας</translation>
 <translation id="7513622367902644023">Επιλέχτηκε λειτουργία στιγμιότυπου οθόνης.</translation>
+<translation id="7513922695575567867">Ημερολόγιο, εβδομάδα <ph name="DATE" />, αυτήν τη στιγμή είναι επιλεγμένη η ημερομηνία <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Λήψη</translation>
 <translation id="7526573455193969409">Το δίκτυο ενδέχεται να παρακολουθείται</translation>
 <translation id="7536035074519304529">Διεύθυνση IP: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@
 <translation id="7564874036684306347">Η μετακίνηση των παραθύρων σε άλλη επιφάνεια εργασίας ενδέχεται να οδηγήσει σε μη αναμενόμενη συμπεριφορά. Ενδέχεται να γίνει διαχωρισμός μεταγενέστερων ειδοποιήσεων, παραθύρων και παραθύρων διαλόγου μεταξύ των επιφανειών εργασίας.</translation>
 <translation id="7569509451529460200">Το Braille και το ChromeVox ενεργοποιήθηκαν</translation>
 <translation id="7569983096843329377">Μαύρο</translation>
+<translation id="757941033127302446">Σε σύνδεση</translation>
 <translation id="7579778809502851308">Λήψη οθόνης</translation>
 <translation id="7590883480672980941">Ρυθμίσεις εισαγωγής</translation>
 <translation id="7593891976182323525">Search ή Shift</translation>
@@ -1040,6 +1048,7 @@
 <translation id="8035152190676905274">Πένα</translation>
 <translation id="8036504271468642248">Προηγούμενη πρόταση</translation>
 <translation id="8042893070933512245">Άνοιγμα μενού ρυθμίσεων προσβασιμότητας</translation>
+<translation id="8042925093898452104">Κλείσιμο λεπτομερών πληροφοριών</translation>
 <translation id="8048123526339889627">Ρυθμίσεις Bluetooth</translation>
 <translation id="8051716679295756675">Το πρότυπο με την ονομασία <ph name="DESK_TEMPLATE_NAME" /> υπάρχει ήδη.</translation>
 <translation id="8052898407431791827">Αντιγράφηκε στο πρόχειρο</translation>

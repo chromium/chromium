@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Установява се връзка с Google. Това може да отнеме известно време…</translation>
 <translation id="1416550906796893042">Версия на приложението</translation>
 <translation id="1430915738399379752">Печат</translation>
+<translation id="1436784010935106834">Премахнато</translation>
 <translation id="1448440926884431741">Организирайте проследяваните от вас продукти в „Отметки“</translation>
 <translation id="1450753235335490080">Споделянето на <ph name="CONTENT_TYPE" /> не е възможно</translation>
 <translation id="1466383950273130737">Изберете език за Chrome</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">Да се затвори ли прозорецът?</translation>
 <translation id="2175927920773552910">Код за бърза реакция</translation>
 <translation id="218608176142494674">Споделяне</translation>
-<translation id="2195339740518523951">Получете най-високото ниво на сигурност на Chrome</translation>
 <translation id="2200113223741723867">Управление на споделянето на данни за употребата</translation>
 <translation id="2218567645332692482">Надстройва трафика до HTTPS и ви предупреждава, преди да бъдат заредени сайтове, които не поддържат този протокол</translation>
 <translation id="2227444325776770048">Продължаване като <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@
 <translation id="4170011742729630528">Няма достъп до услугата. Опитайте отново по-късно.</translation>
 <translation id="4179980317383591987">Използвани: <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Езици</translation>
-<translation id="4183868528246477015">Търсене с Google Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
 <translation id="4196597275619698563">Създаване на карта</translation>
 <translation id="4198423547019359126">Няма местоположения за изтегляне</translation>
@@ -577,7 +576,6 @@
 <translation id="4411535500181276704">Олекотен режим</translation>
 <translation id="4415276339145661267">Управление на профила ви в Google</translation>
 <translation id="4425140285732600465">Цената се проследява. Ще получавате сигнали, когато има понижение в който и да е сайт.</translation>
-<translation id="4427306783828095590">Режимът за подобрена защита предприема повече действия за блокиране на фишинг атаки и злонамерен софтуер</translation>
 <translation id="4450672886426705087">Резултати от търсенето с Google.</translation>
 <translation id="4452411734226507615">Затваряне на раздела „<ph name="TAB_TITLE" />“</translation>
 <translation id="4452548195519783679">Отметката бе запазена в/ъв „<ph name="FOLDER_NAME" />“</translation>
@@ -1082,6 +1080,7 @@
 <translation id="7177466738963138057">Можете да промените това по-късно от настройките</translation>
 <translation id="7177873915659574692">Не може да се създаде QR код. URL адресът е по-дълъг от <ph name="CHARACTER_LIMIT" /> знака.</translation>
 <translation id="7180611975245234373">Опресняване</translation>
+<translation id="718226107353899806">Можете да добавите до <ph name="MAX_NUM_REACTIONS" /> реакции</translation>
 <translation id="7187993566681480880">Осигурява безопасността ви в Chrome и може да се използва с цел подобряване на сигурността ви в други приложения на Google, докато сте в профила си.</translation>
 <translation id="718926126787620637">Списъкът с папките с отметки е отворен на пълната височина</translation>
 <translation id="7191430249889272776">Разделът е отворен на заден план.</translation>
@@ -1245,7 +1244,6 @@
 <translation id="8035133914807600019">Нова папка…</translation>
 <translation id="8037750541064988519">Остават <ph name="DAYS" /> дни</translation>
 <translation id="8037801708772278989">Проверено току-що</translation>
-<translation id="8040831032425909005">Икона на приспособлението за търсене в панела за бързи действия</translation>
 <translation id="804335162455518893">SD картата не е намерена</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> раздел в режим „инкогнито“}other{<ph name="TAB_COUNT_NORMAL" /> раздела в режим „инкогнито“}}</translation>
 <translation id="8051695050440594747">Налице: <ph name="MEGABYTES" /> МБ</translation>

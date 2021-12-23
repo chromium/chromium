@@ -171,7 +171,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="5193136243808726294">O Google Chrome OS não consegue abrir esta página.</translation>
 <translation id="521447420733633466">Se partilhar um dispositivo, os amigos e os familiares podem navegar separadamente e configurar o Chrome da forma que quiserem.</translation>
 <translation id="5251420635869119124">Os convidados podem utilizar o Chrome sem perder qualquer funcionalidade.</translation>
-<translation id="5251679006894510177">Quase atualizado! Reinicie o Chrome para concluir a atualização. Não é possível reabrir as suas janelas de navegação anónima.</translation>
 <translation id="5334487786912937552">O Chrome necessita da autorização de acesso ao armazenamento para transferir ficheiros</translation>
 <translation id="5386244825306882791">Também controla a página apresentada quando inicia o Chrome ou pesquisa a partir da Caixa geral.</translation>
 <translation id="5394833366792865639">Partilhe um separador do Chrome</translation>
@@ -302,6 +301,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="8914504000324227558">Reiniciar o Chrome</translation>
 <translation id="8922193594870374009">Para enviar um número de <ph name="ORIGIN" /> para o seu telemóvel Android, inicie sessão no Chrome em ambos os dispositivos.</translation>
 <translation id="8927704157641862988">Personalize as escolhas de privacidade que o Chrome considera serem mais importantes. Este guia não inclui todas as definições e opções.</translation>
+<translation id="8983720963221508955">Ativou a Navegação segura melhorada na sua conta. Agora, ative-a para o Chrome.</translation>
 <translation id="8986207147630327271">Está a adicionar um perfil de trabalho a este navegador e a conceder ao seu administrador controlo apenas sobre o perfil de trabalho.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Está disponível uma atualização do Chrome}=1{Está disponível uma atualização do Chrome}one{Está disponível uma atualização do Chrome há # dia(s)}other{Está disponível uma atualização do Chrome há # dias}}</translation>
 <translation id="9026991721384951619">O Chrome OS não conseguiu sincronizar os dados porque os detalhes de início de sessão da sua conta estão desatualizados.</translation>

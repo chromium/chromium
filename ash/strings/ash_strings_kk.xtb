@@ -131,6 +131,7 @@
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + нүкте пернелер тіркесімінің функциясы өзгерді. Insert пернесінің әрекетін орындау үшін <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace пернелер тіркесімін басыңыз.</translation>
 <translation id="1770726142253415363"><ph name="ROW_NUMBER" />-жолға, <ph name="COLUMN_NUMBER" />-бағанға жылжытылды.</translation>
 <translation id="1771761307086386028">Оңға айналдыру</translation>
+<translation id="1774796056689732716">Күнтізбе, <ph name="CURRENT_MONTH_YEAR" />, ағымдағы <ph name="DATE" /> таңдалды.</translation>
 <translation id="1787955149152357925">Өшірулі</translation>
 <translation id="1804572139604454141">Дискідегі орынның аз болуына байланысты жазу тоқтатылды.</translation>
 <translation id="181103072419391116">Сигнал күші – <ph name="SIGNAL_STRENGTH" />, Әкімші басқарады</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">Субтитрді қосу</translation>
 <translation id="5078796286268621944">PIN коды дұрыс емес</translation>
 <translation id="5083553833479578423">Басқа да Assistant мүмкіндіктерін ашыңыз.</translation>
+<translation id="5090752371472782287"><ph name="MANAGER" /> құрылғысына трансляциялау</translation>
 <translation id="5106223312672646208">Жекелендіру</translation>
 <translation id="5117590920725113268">Келесі айды көрсету</translation>
 <translation id="5136175204352732067">Басқа пернетақта жалғанды</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">Трансляциялау құрылғылары қолжетімді</translation>
 <translation id="5170568018924773124">Қалтада көрсету</translation>
 <translation id="5176318573511391780">Экранның бір бөлігін жазу</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> іс-шара</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> және <ph name="IN_PLACE_APP" /> қолданбалары қосылып, бір қалта жасалды.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Тағы 1 хабарландыру}other{Тағы # хабарландыру}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">Дайын</translation>
 <translation id="6431865393913628856">Экранды жазу</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> қабылдағышындағы <ph name="ROUTE_TITLE" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> іс-шара</translation>
 <translation id="6452181791372256707">Қабылдамау</translation>
 <translation id="6453179446719226835">Тіл өзгерді</translation>
 <translation id="6459472438155181876">Экранды <ph name="DISPLAY_NAME" /> дисплейіне кеңейту</translation>
@@ -865,6 +869,7 @@
 <translation id="6811454077060061666">Компьютерге арналған Google Drive қолжетімді емес.</translation>
 <translation id="6818242057446442178">Бір сөзге артқа жылжу</translation>
 <translation id="6820676911989879663">Үзіліс жасаңыз!</translation>
+<translation id="6827049576281411231">Іс-шара панелін жабу</translation>
 <translation id="6836499262298959512">Қауіпті файл</translation>
 <translation id="6837064795450991317">Іздеу жолағын жасыру</translation>
 <translation id="6852052252232534364">Іске қосу үшін басыңыз.</translation>
@@ -872,6 +877,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Бір цифр қалды.}other{# цифр қалды.}}</translation>
 <translation id="6867938213751067702"><ph name="FILENAME" /> файлын жүктеп алу кідіртілді</translation>
 <translation id="6878400149835617132">Таңбаша өшірілді</translation>
+<translation id="6884665277231944629">Бүгінге оралу</translation>
 <translation id="6886172995547742638"><ph name="DEVICE_TYPE" /> құрылғысы нашар жұмыс істеуі мүмкін. Сертификаты бар <ph name="PREFERRED_MINIMUM_POWER" /> Вт немесе одан жоғары кернеулі USB-C қуат адаптерін пайдаланыңыз.</translation>
 <translation id="688631446150864480">Терезелерді ауыстыру үшін төменге бағыттауыш пернені басыңыз.</translation>
 <translation id="6896758677409633944">Көшіру</translation>
@@ -958,6 +964,7 @@
 <translation id="7497767806359279797">Тілді және пернетақтаны таңдау</translation>
 <translation id="7509246181739783082">Жеке басыңызды растаңыз</translation>
 <translation id="7513622367902644023">Скриншот режимі таңдалды.</translation>
+<translation id="7513922695575567867">Күнтізбе, <ph name="DATE" /> аптасы, <ph name="SELECTED_DATE" /> қазір таңдалды.</translation>
 <translation id="7514365320538308">Жүктеу</translation>
 <translation id="7526573455193969409">Желі бақылануы мүмкін</translation>
 <translation id="7536035074519304529">IP мекенжайы: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@
 <translation id="7564874036684306347">Терезелерді басқа жұмыс үстеліне ауыстырғанда, күтпеген қате шығуы мүмкін. Хабарландырулар, терезелер мен диалогтік терезелер түрлі жұмыс үстелдерінде көрсетілуі ықтимал.</translation>
 <translation id="7569509451529460200">Брайль және ChromeVox қосулы</translation>
 <translation id="7569983096843329377">Қара</translation>
+<translation id="757941033127302446">Аккаунтқа кірген</translation>
 <translation id="7579778809502851308">Экран суреті</translation>
 <translation id="7590883480672980941">Енгізу параметрлері</translation>
 <translation id="7593891976182323525">Search немесе Shift</translation>
@@ -1040,6 +1048,7 @@
 <translation id="8035152190676905274">Қалам</translation>
 <translation id="8036504271468642248">Алдыңғы сөйлем</translation>
 <translation id="8042893070933512245">Арнайы мүмкіндіктер параметрлері мәзірін ашу</translation>
+<translation id="8042925093898452104">Толық ақпаратты жабу</translation>
 <translation id="8048123526339889627">Bluetooth параметрлері</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> атты үлгі бұрыннан бар.</translation>
 <translation id="8052898407431791827">Буферге көшірілді.</translation>

@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">Προσθήκη στη λίστα ανάγνωσης</translation>
 <translation id="3157684681743766797">Επισήμανση όλων…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">Μπορείτε επίσης να αποθηκεύσετε κωδικούς πρόσβασης σε άλλες συσκευές σας.</translation>
 <translation id="3175081911749765310">Υπηρ.ιστού</translation>
 <translation id="3178650076442119961">Ενεργή σήμερα</translation>
 <translation id="3181825792072797598">Ενεργοποίηση συγχρονισμού</translation>
@@ -328,6 +329,7 @@
 <translation id="4042870976416480368">Εύρεση στη σελίδα</translation>
 <translation id="4049507953662678203">Βεβαιωθείτε ότι έχετε μια σύνδεση δικτύου και δοκιμάστε ξανά.</translation>
 <translation id="408404951701638773">Η πρόσβαση στη γραμμή αναζήτησης είναι πλέον πιο εύκολη</translation>
+<translation id="4108314971463891922">Παρακολούθηση</translation>
 <translation id="411254640334432676">Αποτυχία λήψης.</translation>
 <translation id="4112644173421521737">Αναζήτηση</translation>
 <translation id="4113030288477039509">Διαχειρίζεται από το διαχειριστή σας</translation>
@@ -345,6 +347,7 @@
 <translation id="4272631900155121838">Για να σαρώσετε έναν κώδικα QR, ενεργοποιήστε την κάμερα από τις ρυθμίσεις</translation>
 <translation id="4277990410970811858">Ασφαλής περιήγηση</translation>
 <translation id="4281844954008187215">Όροι Παροχής Υπηρεσιών</translation>
+<translation id="4304713468139749426">Διαχειριστής κωδικών πρόσβασης</translation>
 <translation id="430793432425771671">Συγχρονισμός όλων</translation>
 <translation id="4309403553630140242">Πατήστε δύο φορές για περισσότερες πληροφορίες.</translation>
 <translation id="430967081421617822">Από την αρχή</translation>
@@ -543,6 +546,7 @@
 <translation id="6127379762771434464">Το στοιχείο καταργήθηκε</translation>
 <translation id="6136914049981179737">Δευτ.πριν</translation>
 <translation id="6144589619057374135">Άνοιγμα ${url} σε ανώνυμη περιήγηση</translation>
+<translation id="6149061208933997199">Χρήση κωδικού πρόσβ.</translation>
 <translation id="6159839020698489198">προαιρετικό</translation>
 <translation id="6177442314419606057">Αναζήτηση στο Chrome</translation>
 <translation id="6184086493125982861">Εμφάνιση καρτελών</translation>
@@ -768,6 +772,7 @@
 <translation id="8076014560081431679">Οι αποθηκευμένες ρυθμίσεις ιστότοπου δεν θα διαγραφούν και ενδέχεται να υποδεικνύουν τις συνήθειες περιήγησής σας. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Αυτή η ρύθμιση είναι διαχειριζόμενη. Πατήστε δύο φορές για περισσότερες πληροφορίες.</translation>
 <translation id="8080028325999236607">Κλείσ. όλων των καρτελών</translation>
+<translation id="8101409298456377967">Δημιουργήστε, αποθηκεύστε και διαχειριστείτε τους κωδικούς πρόσβασής σας, ώστε να μπορείτε να συνδεθείτε εύκολα σε ιστοτόπους και εφαρμογές. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Απενεργοποίηση</translation>
 <translation id="8114753159095730575">Η λήψη του αρχείου είναι διαθέσιμη. Οι διαθέσιμες επιλογές βρίσκονται κοντά στο κάτω μέρος της οθόνης.</translation>
 <translation id="8132598642024322408">Τώρα <ph name="PRICE" /> από <ph name="PREVIOUS_PRICE" />.</translation>

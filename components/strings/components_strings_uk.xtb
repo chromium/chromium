@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">Доступна пропозиція</translation>
 <translation id="1312803275555673949">Які є докази?</translation>
 <translation id="131405271941274527">Сайт <ph name="URL" /> хоче обмінюватися даними з телефоном через NFC</translation>
+<translation id="1314311879718644478">Перегляньте контент у режимі доповненої реальності</translation>
 <translation id="1314509827145471431">Зшити праворуч</translation>
 <translation id="1318023360584041678">Збережено в групі вкладок</translation>
 <translation id="1319245136674974084">Не запитувати знову для цього додатка</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">Під час завантаженння цієї сторінки сталася помилка.</translation>
 <translation id="1586541204584340881">встановлені розширення;</translation>
 <translation id="1588438908519853928">Звичайний</translation>
+<translation id="1589050138437146318">Установити ARCore?</translation>
 <translation id="1592005682883173041">Доступ до локальних даних</translation>
 <translation id="1594030484168838125">Вибрати</translation>
 <translation id="160851722280695521">Грайте в гру Dino Run у Chrome</translation>
@@ -1392,6 +1394,7 @@
 <translation id="5333022057423422993">Веб-переглядач Chrome виявив, що введений пароль розкрито через порушення безпеки даних. Щоб захистити свої облікові записи, радимо перевірити надійність збережених паролів.</translation>
 <translation id="5334013548165032829">Докладні журнали системи</translation>
 <translation id="5334145288572353250">Зберегти адресу?</translation>
+<translation id="5335920952954443287">Пульсуюче серце</translation>
 <translation id="5340250774223869109">Додаток заблоковано</translation>
 <translation id="534295439873310000">Пристрої NFC</translation>
 <translation id="5344579389779391559">Ця сторінка може спробувати стягнути плату</translation>
@@ -2064,6 +2067,7 @@
 <translation id="7654909834015434372">Коли ви редагуєте примітки, відновлюється початкова орієнтація документа</translation>
 <translation id="765676359832457558">Сховати розширені налаштування...</translation>
 <translation id="7658239707568436148">Скасувати</translation>
+<translation id="7659878911471462949">Сльози радості</translation>
 <translation id="7662298039739062396">Налаштуванням керує розширення</translation>
 <translation id="7663736086183791259">Сертифікат <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Заборонено в анонімному режимі</translation>
@@ -2267,6 +2271,7 @@
 <translation id="830498451218851433">Зігнути посередині</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Установлені додатки та як часто ними користуються</translation>
+<translation id="8317207217658302555">Оновити ARCore?</translation>
 <translation id="831997045666694187">Увечері</translation>
 <translation id="8321476692217554900">сповіщення</translation>
 <translation id="8328484624016508118">Коли ви закриєте всі анонімні вкладки, у Chrome буде видалено:

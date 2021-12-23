@@ -96,6 +96,7 @@
 <translation id="1099282607296956954">为所有网站启用网站隔离功能</translation>
 <translation id="1105572260329131950">使用默认图标表示安全连接</translation>
 <translation id="1110426799149444997">停用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索。</translation>
+<translation id="1111781754511998498">投影仪</translation>
 <translation id="1117535567637097036">通过此政策设置的协议处理程序不会被用于处理 Android intent。</translation>
 <translation id="1118093128235245168">允许网站请求用户授权其访问所连接的 USB 设备</translation>
 <translation id="111910763555783249">通知设置</translation>
@@ -459,6 +460,11 @@
 <translation id="1553532014072799546">应用级使用时间限制白名单</translation>
 <translation id="1553956579506604198">禁止安装外部扩展程序</translation>
 <translation id="1555248923316727072">SAML 用户身份管理设置</translation>
+<translation id="1558723461519082860">此政策旨在授权投影仪创建录屏、转录所录内容并将其上传到云端硬盘。
+
+      如果此政策已启用，系统将启用投影仪。
+      如果此政策已停用，系统将停用投影仪。
+      如果此政策未设置，系统将默认停用投影仪。</translation>
 <translation id="1561424797596341174">覆盖与远程访问主机的调试版本号相关的政策</translation>
 <translation id="1561967320164410511">用于个人认证的 U2F 和扩展程序</translation>
 <translation id="1567718448549957373">如果此政策已启用或未设置，系统将会允许通过不安全的 HTTP 接收<ph name="BASIC_AUTH" />身份验证请求。
@@ -796,6 +802,7 @@
 <translation id="1962864958436828230">设定数据大小下限以与旨在预防数据泄露的剪贴板限制规则搭配使用</translation>
 <translation id="1964634611280150550">隐身模式已停用</translation>
 <translation id="1964802606569741174">此政策对 Android 版 YouTube 应用没有任何影响。如果应在 YouTube 中强制启用安全模式，则应禁止安装 Android 版 YouTube 应用。</translation>
+<translation id="1967334955994230472">停用投影仪</translation>
 <translation id="1969212217917526199">覆盖与远程访问主机的调试版本号相关的政策。
 
           此政策的值会被解析为“政策名称-政策值”对应关系的 JSON 字典条目。</translation>
@@ -2005,6 +2012,7 @@
 <translation id="328347261792478720">默认情况下，浏览器会显示为用户量身定制的媒体推荐内容。如果此政策已停用，系统将对用户隐藏这些推荐内容。如果此政策已启用或未设置，系统则会向用户显示媒体推荐内容。</translation>
 <translation id="3284094172359247914">控制对 WebUSB API 的使用</translation>
 <translation id="3288595667065905535">发布版</translation>
+<translation id="3291318845269544294">启用投影仪</translation>
 <translation id="3294430356898755483">通过设置此政策，管理员可以为用户配置打印机列表。当用户首次尝试打印时，需要选择打印机。
 
       使用此政策可以：
@@ -2062,6 +2070,7 @@
           指定的政策值应以毫秒为单位，且不得大于闲置延迟时间。
 
           仅当闲置操作为注销或关机时，系统才会显示警告消息。</translation>
+<translation id="3360280740977649313">控制有关投影仪的政策。</translation>
 <translation id="3363360928811201045">针对受管理的帐号添加限制</translation>
 <translation id="3373381043600809954">启用“<ph name="PRODUCT_NAME" />”。</translation>
 <translation id="3374587000313305002">配置供 <ph name="PRODUCT_NAME" /> 用于存储用户数据的目录。

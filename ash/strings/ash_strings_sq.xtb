@@ -131,6 +131,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1768366657309696705">Shkurtorja e tastierës për <ph name="LAUNCHER_KEY_NAME" /> + Pikë është ndryshuar. Për të përdorur tastin Insert, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Është zhvendosur në rreshtin <ph name="ROW_NUMBER" />, kolonën <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Lëviz djathtas</translation>
+<translation id="1774796056689732716">Kalendari, <ph name="CURRENT_MONTH_YEAR" />, aktualisht është zgjedhur <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Joaktive</translation>
 <translation id="1804572139604454141">Regjistrimi u mbyll për shkak të nivelit jashtëzakonisht të ulët të hapësirës së diskut</translation>
 <translation id="181103072419391116">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
@@ -620,6 +621,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5075554201838155866">Fillo titrat</translation>
 <translation id="5078796286268621944">Kod i pasaktë PIN</translation>
 <translation id="5083553833479578423">Shkyç më shumë funksione të "Asistentit".</translation>
+<translation id="5090752371472782287">Transmeto te një pajisje <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Personalizo</translation>
 <translation id="5117590920725113268">Trego muajin e ardhshëm</translation>
 <translation id="5136175204352732067">Është lidhur një tastierë tjetër</translation>
@@ -629,6 +631,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5168181903108465623">Pajisjet e transmetimit janë të disponueshme</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5176318573511391780">Regjistro ekranin e pjesshëm</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> ngjarje</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> kombinuar me <ph name="IN_PLACE_APP" /> për të krijuar dosje të re.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 njoftim tjetër}other{# njoftime të tjera}}</translation>
@@ -802,6 +805,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="643147933154517414">Të gjitha në rregull</translation>
 <translation id="6431865393913628856">Regjistrimi i ekranit</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> në <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> ngjarje</translation>
 <translation id="6452181791372256707">Refuzo</translation>
 <translation id="6453179446719226835">Gjuha është ndryshuar</translation>
 <translation id="6459472438155181876">Po zgjeron ekranin në <ph name="DISPLAY_NAME" /></translation>
@@ -865,6 +869,7 @@ Instalim i ri</translation>
 <translation id="6811454077060061666">"Disku i Google" për desktop nuk ofrohet</translation>
 <translation id="6818242057446442178">Një fjalë pas</translation>
 <translation id="6820676911989879663">Bëj një pushim!</translation>
+<translation id="6827049576281411231">Mbyll panelin e ngjarjes</translation>
 <translation id="6836499262298959512">Skedar i rrezikshëm</translation>
 <translation id="6837064795450991317">Fshihe panelin e fushës</translation>
 <translation id="6852052252232534364">Kliko për ta aktivizuar</translation>
@@ -872,6 +877,7 @@ Instalim i ri</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Një shifër e mbetur}other{# shifra të mbetura}}</translation>
 <translation id="6867938213751067702">Shkarkimi u vendos në pauzë <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Shkurtorja është çaktivizuar</translation>
+<translation id="6884665277231944629">Kthehu te dita e sotme</translation>
 <translation id="6886172995547742638">Pajisja jote <ph name="DEVICE_TYPE" /> mund të ketë një cilësi funksionimi më të ulët. Përdor një përshtatës elektrik të certifikuar të tipit USB-C me fuqi <ph name="PREFERRED_MINIMUM_POWER" /> W ose më shumë.</translation>
 <translation id="688631446150864480">Shtyp tastin "Shigjeta poshtë" për të ndërruar dritaret</translation>
 <translation id="6896758677409633944">Kopjo</translation>
@@ -958,6 +964,7 @@ Instalim i ri</translation>
 <translation id="7497767806359279797">Zgjidh gjuhën dhe tastierën</translation>
 <translation id="7509246181739783082">Verifiko identitetin</translation>
 <translation id="7513622367902644023">U zgjodh modaliteti i pamjes së ekranit</translation>
+<translation id="7513922695575567867">Kalendari, java e datës <ph name="DATE" />, aktualisht është zgjedhur <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Shkarko</translation>
 <translation id="7526573455193969409">Rrjeti mund të jetë i monitoruar</translation>
 <translation id="7536035074519304529">Adresa IP: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@ Instalim i ri</translation>
 <translation id="7564874036684306347">Zhvendosja e dritareve te një desktop tjetër mund të shkaktojë një sjellje të papritur. Njoftimet pasuese, dritarja dhe dialogët mund të ndahen mes desktopëve.</translation>
 <translation id="7569509451529460200">Braille dhe ChromeVox janë aktivizuar</translation>
 <translation id="7569983096843329377">E zezë</translation>
+<translation id="757941033127302446">Identifikuar</translation>
 <translation id="7579778809502851308">Regjistrimi i ekranit</translation>
 <translation id="7590883480672980941">Cilësimet e hyrjes</translation>
 <translation id="7593891976182323525">Kërko ose Shift</translation>
@@ -1040,6 +1048,7 @@ Instalim i ri</translation>
 <translation id="8035152190676905274">Pena</translation>
 <translation id="8036504271468642248">Fjalia e mëparshme</translation>
 <translation id="8042893070933512245">Hap menynë e cilësimeve të qasshmërisë</translation>
+<translation id="8042925093898452104">Mbyll informacionet e detajuara</translation>
 <translation id="8048123526339889627">Cilësimet e Bluetooth-it</translation>
 <translation id="8051716679295756675">Shablloni me emrin "<ph name="DESK_TEMPLATE_NAME" />" ekziston tashmë</translation>
 <translation id="8052898407431791827">U kopjua në kujtesën e fragmenteve</translation>

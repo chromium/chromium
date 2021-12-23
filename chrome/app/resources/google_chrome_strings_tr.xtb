@@ -172,7 +172,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5193136243808726294">Google Chrome OS bu sayfayı açamıyor.</translation>
 <translation id="521447420733633466">Bir cihazı paylaşıyorsanız arkadaşlarınız ve aileniz web'e ayrı olarak göz atabilir ve Chrome'u tam olarak istedikleri şekilde ayarlayabilirler.</translation>
 <translation id="5251420635869119124">Misafirler Chrome'u geride hiçbir şey bırakmadan kullanabilirler.</translation>
-<translation id="5251679006894510177">Güncel hale gelmek üzere. Güncellemenin tamamlanması için Chrome'u yeniden başlatın. Gizli pencereler yeniden açılmayacak.</translation>
 <translation id="5334487786912937552">Dosya indirmek için Chrome'un depolama alanına erişmesi gerekiyor</translation>
 <translation id="5386244825306882791">Ayrıca, Chrome'u başlattığınızda veya Çok Amaçlı Adres Çubuğu'ndan arama yaptığınızda gösterilecek sayfayı da denetler.</translation>
 <translation id="5394833366792865639">Chrome sekmesi paylaşın</translation>
@@ -303,6 +302,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8914504000324227558">Chrome'u Yeniden Başlat</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> sitesinden Android telefonunuza numara göndermek için iki cihazdan da Chrome'da oturum açın.</translation>
 <translation id="8927704157641862988">Chrome'un en önemli olduğunu düşündüğü gizlilik seçeneklerini özelleştirin. Bu kılavuzda her ayar ve seçenek yer almaz.</translation>
+<translation id="8983720963221508955">Hesabınızda Gelişmiş Güvenli Tarama'yı etkinleştirdiniz. Artık Chrome'da kullanabilirsiniz.</translation>
 <translation id="8986207147630327271">Bu tarayıcıya bir iş profili ekliyor ve yöneticinize yalnızca iş profilini kontrol etme yetkisi veriyorsunuz.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Bir Chrome güncellemesi var}=1{Bir Chrome güncellemesi var}other{# gün önce kullanıma sunulmuş bir Chrome güncellemesi var}}</translation>
 <translation id="9026991721384951619">Hesap oturum açma ayrıntılarınız güncel olmadığından Chrome OS, verilerinizi senkronize edemedi.</translation>

@@ -131,6 +131,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1768366657309696705">Klávesová skratka <ph name="LAUNCHER_KEY_NAME" /> + bodka bola zmenená. Ak chcete použiť kláves Insert, stlačte klávesy <ph name="LAUNCHER_KEY_NAME" /> + Shift + backspace.</translation>
 <translation id="1770726142253415363">Presunuté do <ph name="ROW_NUMBER" />. riadka a <ph name="COLUMN_NUMBER" />. stĺpca.</translation>
 <translation id="1771761307086386028">Posunúť doprava</translation>
+<translation id="1774796056689732716">Kalendár, <ph name="CURRENT_MONTH_YEAR" />, momentálne je vybraný dátum <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Vypnuté</translation>
 <translation id="1804572139604454141">Nahrávanie bolo ukončené, pretože sa takmer úplne minul voľný priestor na disku</translation>
 <translation id="181103072419391116">Sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
@@ -620,6 +621,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5075554201838155866">Spustiť skryté titulky</translation>
 <translation id="5078796286268621944">Nesprávny kód PIN</translation>
 <translation id="5083553833479578423">Odblokujte ďalšie funkcie Asistenta.</translation>
+<translation id="5090752371472782287">Prenášať do zariadenia <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Prispôsobiť</translation>
 <translation id="5117590920725113268">Zobraziť ďalší mesiac</translation>
 <translation id="5136175204352732067">Bola pripojená iná klávesnica</translation>
@@ -629,6 +631,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5168181903108465623">Dostupné zariadenia na prenos</translation>
 <translation id="5170568018924773124">Zobraziť v priečinku</translation>
 <translation id="5176318573511391780">Nahrať časť obrazovky</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, udalosti: <ph name="NUMBER" /></translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> spolu s aplikáciou <ph name="IN_PLACE_APP" /> vytvorili nový priečinok.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 ďalšie upozornenie}few{# ďalšie upozornenia}many{# other notifications}other{# ďalších upozornení}}</translation>
@@ -802,6 +805,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="643147933154517414">Všetko je hotové</translation>
 <translation id="6431865393913628856">Rekordér obrazovky</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> do zariadenia <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> udalosť</translation>
 <translation id="6452181791372256707">Odmietnuť</translation>
 <translation id="6453179446719226835">Bol zmenený jazyk.</translation>
 <translation id="6459472438155181876">Rozšírenie obrazovky na displej <ph name="DISPLAY_NAME" /></translation>
@@ -865,6 +869,7 @@ Nová inštalácia</translation>
 <translation id="6811454077060061666">Disk Google pre počítače nie je k dispozícii</translation>
 <translation id="6818242057446442178">Dozadu o slovo</translation>
 <translation id="6820676911989879663">Urobte si prestávku.</translation>
+<translation id="6827049576281411231">Zavrieť panel udalosti</translation>
 <translation id="6836499262298959512">Nebezpečný súbor</translation>
 <translation id="6837064795450991317">Skryť panel na ploche</translation>
 <translation id="6852052252232534364">Aktivovať kliknutím</translation>
@@ -872,6 +877,7 @@ Nová inštalácia</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Zostáva jedna číslica}few{Zostávajú # číslice}many{# digits remaining}other{Zostáva # číslic}}</translation>
 <translation id="6867938213751067702">Sťahovanie súboru <ph name="FILENAME" /> bolo pozastavené</translation>
 <translation id="6878400149835617132">Skratka je vypnutá</translation>
+<translation id="6884665277231944629">Prejsť späť na dnešok</translation>
 <translation id="6886172995547742638">Vaše zariadenie <ph name="DEVICE_TYPE" /> môže mať nižší výkon. Používajte nabíjačku s portom USB-C, ktorá má certifikovaný výkon minimálne <ph name="PREFERRED_MINIMUM_POWER" /> W</translation>
 <translation id="688631446150864480">Ak chcete prepnúť okná, stlačte kláves so šípkou nadol</translation>
 <translation id="6896758677409633944">Kopírovať</translation>
@@ -958,6 +964,7 @@ Nová inštalácia</translation>
 <translation id="7497767806359279797">Vybrať jazyk a klávesnicu</translation>
 <translation id="7509246181739783082">Overenie totožnosti</translation>
 <translation id="7513622367902644023">Bol vybraný režim snímky obrazovky</translation>
+<translation id="7513922695575567867">Kalendár, týždeň s dátumom <ph name="DATE" />, momentálne je vybraný dátum <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Stiahnuť</translation>
 <translation id="7526573455193969409">Sieť môže byť sledovaná</translation>
 <translation id="7536035074519304529">Adresa IP: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@ Nová inštalácia</translation>
 <translation id="7564874036684306347">Presunutie okien na inú obrazovku môže spôsobiť neočakávané správanie. Nasledujúce upozornenia, okná a dialógové okná sa môžu zobraziť rozdelené na viacerých pracovných plochách.</translation>
 <translation id="7569509451529460200">Funkcie Braille a ChromeVox sú povolené</translation>
 <translation id="7569983096843329377">Čierna</translation>
+<translation id="757941033127302446">Prihlásili ste sa</translation>
 <translation id="7579778809502851308">Snímanie obrazovky</translation>
 <translation id="7590883480672980941">Nastavenia vstupu</translation>
 <translation id="7593891976182323525">Hľadať alebo Shift</translation>
@@ -1040,6 +1048,7 @@ Nová inštalácia</translation>
 <translation id="8035152190676905274">Pero</translation>
 <translation id="8036504271468642248">Predchádzajúca veta</translation>
 <translation id="8042893070933512245">Otvoriť ponuku nastavení dostupnosti</translation>
+<translation id="8042925093898452104">Zavrieť podrobné informácie</translation>
 <translation id="8048123526339889627">Nastavenia Bluetooth</translation>
 <translation id="8051716679295756675">Šablóna s názvom <ph name="DESK_TEMPLATE_NAME" /> už existuje</translation>
 <translation id="8052898407431791827">Skopírované do schránky</translation>

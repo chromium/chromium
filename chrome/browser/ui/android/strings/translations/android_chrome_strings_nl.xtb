@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Contact opnemen met Google. Dit kan even duren…</translation>
 <translation id="1416550906796893042">Appversie</translation>
 <translation id="1430915738399379752">Afdrukken</translation>
+<translation id="1436784010935106834">Verwijderd</translation>
 <translation id="1448440926884431741">Orden je gevolgde producten in Bookmarks</translation>
 <translation id="1450753235335490080">Kan <ph name="CONTENT_TYPE" /> niet delen</translation>
 <translation id="1466383950273130737">Kies de taal voor Chromium</translation>
@@ -203,7 +204,6 @@ Tik op een woord om te zoeken. Je kunt je zoekopdracht verfijnen door te tikken 
 <translation id="2172905120685242547">Venster sluiten?</translation>
 <translation id="2175927920773552910">QR-code</translation>
 <translation id="218608176142494674">Delen</translation>
-<translation id="2195339740518523951">Gebruik het hoogste beveiligingsniveau van Chrome</translation>
 <translation id="2200113223741723867">Delen van gebruiksgegevens beheren</translation>
 <translation id="2218567645332692482">Upgrade navigaties naar HTTPS en krijg een waarschuwing als er sites worden geladen die dit niet ondersteunen</translation>
 <translation id="2227444325776770048">Doorgaan als <ph name="USER_FULL_NAME" /></translation>
@@ -440,7 +440,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3507132249039706973">Standaardbeveiliging staat aan</translation>
 <translation id="3509330069915219067">Offline. Chrome kan niet checken op updates.</translation>
 <translation id="3513704683820682405">Augmented reality</translation>
-<translation id="3518985090088779359">Accept. en doorgaan</translation>
+<translation id="3518985090088779359">Accepteren en doorgaan</translation>
 <translation id="3522247891732774234">Update beschikbaar. Meer opties</translation>
 <translation id="3524138585025253783">UI voor ontwikkelaars</translation>
 <translation id="3524334353996115845"><ph name="ORIGIN" /> laten verifiëren dat jij het bent</translation>
@@ -543,7 +543,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="4170011742729630528">De service is niet beschikbaar. Probeer het later opnieuw.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> gebruikt</translation>
 <translation id="4181841719683918333">Talen</translation>
-<translation id="4183868528246477015">Zoeken met Google Lens <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Openen op nieuw tabblad</translation>
 <translation id="4196597275619698563">Kaart maken</translation>
 <translation id="4198423547019359126">Geen beschikbare downloadlocaties</translation>
@@ -577,7 +576,6 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="4411535500181276704">Lite-versie</translation>
 <translation id="4415276339145661267">Je Google-account beheren</translation>
 <translation id="4425140285732600465">Prijs wordt gevolgd. Krijg meldingen bij een prijsdaling op een site.</translation>
-<translation id="4427306783828095590">Geoptimaliseerde beveiliging die je nog beter beschermt tegen phishing en malware</translation>
 <translation id="4450672886426705087">Zoekresultaten van Google.</translation>
 <translation id="4452411734226507615">Tabblad <ph name="TAB_TITLE" /> sluiten</translation>
 <translation id="4452548195519783679">Bookmark gemaakt in <ph name="FOLDER_NAME" /></translation>
@@ -1246,7 +1244,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8035133914807600019">Nieuwe map…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> dagen resterend</translation>
 <translation id="8037801708772278989">Zojuist gecheckt</translation>
-<translation id="8040831032425909005">Icoon voor snelle acties en zoekwidget</translation>
 <translation id="804335162455518893">SD-kaart niet gevonden</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognitotabblad}other{<ph name="TAB_COUNT_NORMAL" /> incognitotabbladen}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB beschikbaar</translation>

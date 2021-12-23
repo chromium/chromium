@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Kontaktiranje Googlea. Ovo može potrajati neko vrijeme…</translation>
 <translation id="1416550906796893042">Verzija aplikacije</translation>
 <translation id="1430915738399379752">Štampaj</translation>
+<translation id="1436784010935106834">Uklonjeno</translation>
 <translation id="1448440926884431741">Organizirajte praćene proizvode u Oznakama</translation>
 <translation id="1450753235335490080">Nije moguće podijeliti sadržaj <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Odaberite jezik Chromea</translation>
@@ -203,7 +204,6 @@ Dodirnite bilo koju riječ da je pretražite. Za fino podešavanje pretraživanj
 <translation id="2172905120685242547">Zatvoriti prozor?</translation>
 <translation id="2175927920773552910">QR kôd</translation>
 <translation id="218608176142494674">Dijeljenje</translation>
-<translation id="2195339740518523951">Odaberite maksimalnu sigurnost koju nudi Chrome</translation>
 <translation id="2200113223741723867">Upravljajte dijeljenjem podataka o korištenju</translation>
 <translation id="2218567645332692482">Nadogradite navigacije na HTTPS i primite upozorenje prije učitavanja web lokacija koje ga ne podržavaju</translation>
 <translation id="2227444325776770048">Nastavite kao <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="4170011742729630528">Ova usluge nije dostupna. Pokušajte ponovo kasnije.</translation>
 <translation id="4179980317383591987">Iskorišteno <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Jezici</translation>
-<translation id="4183868528246477015">Pretraživanje uz Google Objektiv <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Otvori u novoj kartici</translation>
 <translation id="4196597275619698563">Kreiraj karticu</translation>
 <translation id="4198423547019359126">Nema dostupnih lokacija za preuzimanje</translation>
@@ -577,7 +576,6 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="4411535500181276704">Jednostavni način rada</translation>
 <translation id="4415276339145661267">Upravljajte Google računom</translation>
 <translation id="4425140285732600465">Praćenje cijene. Primajte obavještenja ako cijena padne na bilo kojoj web lokaciji.</translation>
-<translation id="4427306783828095590">Poboljšana zaštita vas još bolje čuva od krađe identiteta i zlonamjernog softvera</translation>
 <translation id="4450672886426705087">Rezultati pretraživanja s Googlea.</translation>
 <translation id="4452411734226507615">Zatvori karticu <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Označeno u folderu <ph name="FOLDER_NAME" /></translation>
@@ -1082,6 +1080,7 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="7177466738963138057">Ovo možete kasnije promijeniti u meniju Postavke</translation>
 <translation id="7177873915659574692">Nije moguće kreirati QR kôd. Broj znakova u URL-u je veći od <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="7180611975245234373">Osvježi</translation>
+<translation id="718226107353899806">Maksimalni broj reakcija koje možete dodati je <ph name="MAX_NUM_REACTIONS" /></translation>
 <translation id="7187993566681480880">Štiti vas na Chromeu i može se koristiti da poboljša vašu sigurnost u drugim Googleovim aplikacijama kada ste prijavljeni.</translation>
 <translation id="718926126787620637">Lista foldera s oznakama je otvorena u punoj visini</translation>
 <translation id="7191430249889272776">Kartica je otvorena u pozadini.</translation>
@@ -1245,7 +1244,6 @@ Naprimjer, neke web lokacije mogu reagirati na ovaj zahtjev prikazivanjem oglasa
 <translation id="8035133914807600019">Novi folder…</translation>
 <translation id="8037750541064988519">Preostalo dana: <ph name="DAYS" /></translation>
 <translation id="8037801708772278989">Upravo provjereno</translation>
-<translation id="8040831032425909005">Ikona brze radnje Vidžeta za pretraživanje</translation>
 <translation id="804335162455518893">SD kartica nije pronađena</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> anonimna kartica}one{<ph name="TAB_COUNT_NORMAL" /> anonimna kartica}few{<ph name="TAB_COUNT_NORMAL" /> anonimne kartice}other{<ph name="TAB_COUNT_NORMAL" /> anonimnih kartica}}</translation>
 <translation id="8051695050440594747">Dostupno je <ph name="MEGABYTES" /> MB</translation>

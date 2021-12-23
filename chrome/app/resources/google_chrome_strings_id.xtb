@@ -171,7 +171,6 @@
 <translation id="5193136243808726294">Google Chrome OS tidak dapat membuka halaman ini.</translation>
 <translation id="521447420733633466">Jika Anda berbagi perangkat, teman dan keluarga dapat menjelajah secara terpisah dan menyiapkan Chrome sesuai keinginannya</translation>
 <translation id="5251420635869119124">Tamu dapat menggunakan Chrome tanpa meninggalkan apa pun.</translation>
-<translation id="5251679006894510177">Update hampir selesai. Luncurkan kembali Chrome untuk menyelesaikan update. Jendela Samaran tidak akan dibuka kembali.</translation>
 <translation id="5334487786912937552">Chrome memerlukan izin akses penyimpanan untuk mendownload file</translation>
 <translation id="5386244825306882791">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chrome atau menelusuri dari Omnibox.</translation>
 <translation id="5394833366792865639">Bagikan tab Chrome</translation>
@@ -302,6 +301,7 @@
 <translation id="8914504000324227558">Luncurkan Ulang Chrome</translation>
 <translation id="8922193594870374009">Untuk mengirimkan nomor dari <ph name="ORIGIN" /> ke ponsel Android Anda, login ke Chrome di kedua perangkat.</translation>
 <translation id="8927704157641862988">Sesuaikan pilihan privasi yang dianggap paling penting oleh Chrome. Panduan ini tidak mencakup semua setelan dan opsi.</translation>
+<translation id="8983720963221508955">Anda mengaktifkan Safe Browsing yang Disempurnakan di akun Anda. Sekarang, aktifkan juga untuk Chrome.</translation>
 <translation id="8986207147630327271">Anda menambahkan profil kerja ke browser ini dan memberikan kontrol kepada administrator hanya untuk profil kerja.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Update Chrome tersedia}=1{Update Chrome tersedia}other{Update Chrome telah tersedia selama # hari}}</translation>
 <translation id="9026991721384951619">Chrome OS tidak dapat menyinkronkan data karena detail ID masuk akun Anda belum diperbarui.</translation>

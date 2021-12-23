@@ -96,6 +96,7 @@
 <translation id="1099282607296956954">Website-Isolierung für jede Website aktivieren</translation>
 <translation id="1105572260329131950">Standardsymbole für sichere Verbindungen verwenden</translation>
 <translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" />-Ausschnittsuche deaktivieren.</translation>
+<translation id="1111781754511998498">Projector</translation>
 <translation id="1117535567637097036">Die über diese Richtlinie festgelegten Protokoll-Handler werden bei der Verarbeitung von Android-Intents nicht verwendet.</translation>
 <translation id="1118093128235245168">Websites dürfen den Nutzer um Zugriff auf ein angeschlossenes USB-Gerät bitten</translation>
 <translation id="111910763555783249">Benachrichtigungseinstellungen</translation>
@@ -460,6 +461,11 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
 <translation id="1553532014072799546">Zulassungsliste für App-Zeitbeschränkungen</translation>
 <translation id="1553956579506604198">Installation externer Erweiterungen blockieren</translation>
 <translation id="1555248923316727072">SAML-Einstellungen zur Verwaltung der Nutzeridentität</translation>
+<translation id="1558723461519082860">Diese Richtlinie berechtigt Projector dazu, Bildschirmaufzeichnungen zu erstellen, zu transkribieren und in Drive hochzuladen.
+
+      Wenn die Richtlinie aktiviert ist, ist Projector aktiviert.
+      Wenn die Richtlinie deaktiviert ist, ist Projector deaktiviert.
+      Ist die Richtlinie nicht konfiguriert, ist Projector standardmäßig deaktiviert.</translation>
 <translation id="1561424797596341174">Überschreiben von Richtlinien für Fehlerbehebungs-Builds des Hosts für den Remotezugriff</translation>
 <translation id="1561967320164410511">U2F plus Erweiterungen zur individuellen Bestätigung</translation>
 <translation id="1567718448549957373">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, sind <ph name="BASIC_AUTH" />-Authentifizierungsherausforderungen zulässig, die über nicht sicheres HTTP empfangen wurden.
@@ -810,6 +816,7 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 <translation id="1962864958436828230">Mindestgrößenbeschränkung zur Zwischenablagenbeschränkung für die Verhinderung von Datenlecks festlegen</translation>
 <translation id="1964634611280150550">Inkognitomodus deaktiviert</translation>
 <translation id="1964802606569741174">Diese Richtlinie hat keine Auswirkungen auf die Android YouTube App. Wenn der Sicherheitsmodus in YouTube erzwungen werden soll, darf das Installieren der Android YouTube App nicht zugelassen werden.</translation>
+<translation id="1967334955994230472">Projector deaktivieren</translation>
 <translation id="1969212217917526199">Überschreibt Richtlinien auf Fehlerbehebungs-Builds des Hosts für den Remotezugriff
 
           Der Wert wird als JSON-Wörterbuch für die Verknüpfung zwischen Richtliniennamen und Richtlinienwerten geparst.</translation>
@@ -2018,6 +2025,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 <translation id="328347261792478720">Der Browser zeigt standardmäßig für den Nutzer personalisierte Empfehlungen zu Medien an. Wenn diese Richtlinie deaktiviert ist, sind diese Empfehlungen für den Nutzer nicht sichtbar. Wenn sie aktiviert oder nicht konfiguriert ist, werden dem Nutzer die Empfehlungen zu Medien angezeigt.</translation>
 <translation id="3284094172359247914">Verwendung der WebUSB API steuern</translation>
 <translation id="3288595667065905535">Release-Kanal</translation>
+<translation id="3291318845269544294">Projector aktivieren</translation>
 <translation id="3294430356898755483">Mit dieser Richtlinie können Administratoren eine Liste von Druckern für die Nutzer festlegen. Die Druckerauswahl wird angezeigt, wenn die Nutzer zum ersten Mal einen Druckauftrag ausführen.
 
       So können Sie die Richtlinie verwenden:
@@ -2082,6 +2090,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden. Werte müssen kleiner oder gleich dem Wert für die Inaktivitätsverzögerung sein.
 
           Die Warnung wird nur eingeblendet, wenn infolge der Inaktivität der Nutzer abgemeldet oder das Gerät heruntergefahren wird.</translation>
+<translation id="3360280740977649313">Hiermit werden Richtlinien für Projector gesteuert.</translation>
 <translation id="3363360928811201045">Einschränkungen für verwaltete Konten hinzufügen</translation>
 <translation id="3373381043600809954">"<ph name="PRODUCT_NAME" />" aktivieren</translation>
 <translation id="3374587000313305002">Hiermit wird das Verzeichnis konfiguriert, in dem <ph name="PRODUCT_NAME" /> die Nutzerdaten speichert.

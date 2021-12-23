@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Подключение к Google. Подождите…</translation>
 <translation id="1416550906796893042">Версия приложения</translation>
 <translation id="1430915738399379752">Печать</translation>
+<translation id="1436784010935106834">Удалено</translation>
 <translation id="1448440926884431741">Упорядочивайте отслеживаемые товары в закладках</translation>
 <translation id="1450753235335490080">Не удается отправить: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Выбор языка для Chrome</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">Закрыть окно?</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="218608176142494674">Совместный доступ</translation>
-<translation id="2195339740518523951">Обеспечьте максимальную защиту в Chrome</translation>
 <translation id="2200113223741723867">Управление передачей данных об использовании</translation>
 <translation id="2218567645332692482">Использовать протокол HTTPS и предупреждать, если загружаемые сайты его не поддерживают</translation>
 <translation id="2227444325776770048">Продолжить как <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@
 <translation id="4170011742729630528">Сервис недоступен. Повторите попытку позже.</translation>
 <translation id="4179980317383591987">Использовано: <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Языки</translation>
-<translation id="4183868528246477015">Найти через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
 <translation id="4196597275619698563">Создать карточку</translation>
 <translation id="4198423547019359126">Нет доступных мест для скачивания</translation>
@@ -577,7 +576,6 @@
 <translation id="4411535500181276704">Упрощенный режим</translation>
 <translation id="4415276339145661267">Перейти в настройки аккаунта Google</translation>
 <translation id="4425140285732600465">Вы отслеживаете цену на этот товар. Если на одном из сайтов она снизится, вы получите уведомление.</translation>
-<translation id="4427306783828095590">В режиме "Улучшенная защита" фишинговые атаки и вредоносное ПО блокируются ещё эффективнее.</translation>
 <translation id="4450672886426705087">Результаты поиска в Google.</translation>
 <translation id="4452411734226507615">Закрыть вкладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="4452548195519783679">Закладка добавлена в папку "<ph name="FOLDER_NAME" />"</translation>
@@ -1082,6 +1080,7 @@
 <translation id="7177466738963138057">Вы всегда можете изменить свой выбор в настройках</translation>
 <translation id="7177873915659574692">Не удалось создать QR-код. Количество символов в URL превышает <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="7180611975245234373">Обновить</translation>
+<translation id="718226107353899806">Превышено максимально допустимое число откликов: <ph name="MAX_NUM_REACTIONS" />.</translation>
 <translation id="7187993566681480880">Позволяет избегать угроз при работе в браузере Chrome и может использоваться для повышения уровня безопасности в других приложениях Google, когда выполнен вход в аккаунт.</translation>
 <translation id="718926126787620637">Список папок с закладками открыт на весь экран</translation>
 <translation id="7191430249889272776">Вкладка открыта в фоновом режиме</translation>
@@ -1234,7 +1233,7 @@
 <translation id="7975379999046275268">Просмотреть страницу <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
 <translation id="7986497153528221272">Чтобы просматривать пароли, включите на устройстве блокировку экрана.</translation>
 <translation id="799576009106109668">Работа браузера станет быстрее благодаря автоматической загрузке контента с учетом просматриваемой в настоящий момент страницы.</translation>
-<translation id="7998918019931843664">Восстановить закрытую вкладку</translation>
+<translation id="7998918019931843664">Открыть закрытую вкладку</translation>
 <translation id="8004582292198964060">Браузер</translation>
 <translation id="8006818846907410687">Блокировать в режиме инкогнито</translation>
 <translation id="8013372441983637696">Удалить данные Chrome с этого устройства</translation>
@@ -1245,7 +1244,6 @@
 <translation id="8035133914807600019">Создать папку…</translation>
 <translation id="8037750541064988519">Осталось <ph name="DAYS" /> дн.</translation>
 <translation id="8037801708772278989">Проверено только что.</translation>
-<translation id="8040831032425909005">Значок виджета Поиска на панели действий</translation>
 <translation id="804335162455518893">SD-карта не найдена</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка инкогнито}one{<ph name="TAB_COUNT_NORMAL" /> вкладка инкогнито}few{<ph name="TAB_COUNT_NORMAL" /> вкладки инкогнито}many{<ph name="TAB_COUNT_NORMAL" /> вкладок инкогнито}other{<ph name="TAB_COUNT_NORMAL" /> вкладки инкогнито}}</translation>
 <translation id="8051695050440594747">Доступно <ph name="MEGABYTES" /> МБ</translation>

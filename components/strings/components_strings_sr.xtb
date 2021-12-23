@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">Понуда је доступна</translation>
 <translation id="1312803275555673949">Који докази подржавају ово?</translation>
 <translation id="131405271941274527"><ph name="URL" /> жели да шаље и добија информације када телефоном додирнете NFC уређај</translation>
+<translation id="1314311879718644478">Прегледајте садржај са проширеном реалношћу</translation>
 <translation id="1314509827145471431">Повез на десној страни</translation>
 <translation id="1318023360584041678">Сачувано је у групи картица</translation>
 <translation id="1319245136674974084">Не питај поново за ову апликацију</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">Дошло је до грешке при приказивању ове веб-странице.</translation>
 <translation id="1586541204584340881">додатке које сте инсталирали</translation>
 <translation id="1588438908519853928">Нормалан</translation>
+<translation id="1589050138437146318">Желите да инсталирате ARCore?</translation>
 <translation id="1592005682883173041">Приступ локалним подацима</translation>
 <translation id="1594030484168838125">Одабери</translation>
 <translation id="160851722280695521">Играјте игру Диносаурус у Chrome-у</translation>
@@ -1392,6 +1394,7 @@
 <translation id="5333022057423422993">Chrome је пронашао лозинку коју сте управо користили при повреди података. Да бисте заштитили налоге, препоручујемо вам да проверите сачуване лозинке.</translation>
 <translation id="5334013548165032829">Детаљне евиденције система</translation>
 <translation id="5334145288572353250">Желите да сачувате адресу?</translation>
+<translation id="5335920952954443287">Срце које куца</translation>
 <translation id="5340250774223869109">Апликација је блокирана</translation>
 <translation id="534295439873310000">NFC уређаји</translation>
 <translation id="5344579389779391559">Ова страница може да покуша да вам нешто наплати</translation>
@@ -2063,6 +2066,7 @@
 <translation id="7654909834015434372">Када измените коментаре, овај документ се враћа у првобитни положај.</translation>
 <translation id="765676359832457558">Сакриј напредна подешавања...</translation>
 <translation id="7658239707568436148">Откажи</translation>
+<translation id="7659878911471462949">Сузе радоснице</translation>
 <translation id="7662298039739062396">Подешавање контролише додатак</translation>
 <translation id="7663736086183791259">Сертификат <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Није дозвољено у режиму без архивирања</translation>
@@ -2266,6 +2270,7 @@
 <translation id="830498451218851433">Пресавијање напола</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">Инсталиране апликације и колико често се користе</translation>
+<translation id="8317207217658302555">Желите да ажурирате ARCore?</translation>
 <translation id="831997045666694187">Увече</translation>
 <translation id="8321476692217554900">обавештења</translation>
 <translation id="8328484624016508118">Када затворите све картице без архивирања, Chrome брише:

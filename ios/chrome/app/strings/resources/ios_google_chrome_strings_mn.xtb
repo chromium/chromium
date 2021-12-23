@@ -70,6 +70,7 @@
 <translation id="6063091872902370735">Chrome-д нэвтрэхийг зөвшөөрөх</translation>
 <translation id="6181930887571472871">Chrome руу сэлгэнэ үү</translation>
 <translation id="6238746320622508509">Chrome-д таны Нууцлалтай табуудыг түгжихийг зөвшөөрнө үү.</translation>
+<translation id="6387994324662817823">Зөвхөн энэ төхөөрөмж дээр нууц үгийг Google-н Нууц үгний менежерт хадгалдаг.</translation>
 <translation id="6427126399757991875">Танай байгууллага Chrome-г тохируулж байна...</translation>
 <translation id="6600954340915313787">Chrome руу хуулсан</translation>
 <translation id="6634107063912726160">Та гарсан үед Chrome таны Google Бүртгэлд ямар ч шинэ өгөгдөл синк хийхгүй. Өмнө нь синк хийсэн өгөгдөл бүртгэлд үлдэнэ.</translation>
@@ -111,5 +112,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chrome-н тусламжтай аюулгүй байгаарай</translation>
 <translation id="8772179140489533211">Chrome-д нэвтрэх сануулгыг харуулна.</translation>
+<translation id="8788269841521769222">Та энэ нууц үгийг санах шаардлагагүй. Үүнийг <ph name="EMAIL" />-д зориулж Google-н Нууц үгний менежерт хадгална</translation>
 <translation id="9112744793181547300">Chrome-г өгөгдмөлөөр тохируулах уу?</translation>
 </translationbundle>

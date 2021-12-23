@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">Ofertă disponibilă</translation>
 <translation id="1312803275555673949">Ce dovezi există?</translation>
 <translation id="131405271941274527"><ph name="URL" /> dorește să trimită și să primească informații când atingi telefonul de pe un dispozitiv NFC</translation>
+<translation id="1314311879718644478">Vezi conținutul în realitatea augmentată</translation>
 <translation id="1314509827145471431">Legare în dreapta</translation>
 <translation id="1318023360584041678">Salvată în grupul de file</translation>
 <translation id="1319245136674974084">Nu mai întreba pentru această aplicație</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">A apărut o eroare la afișarea paginii web.</translation>
 <translation id="1586541204584340881">extensiile instalate;</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1589050138437146318">Instalezi ARCore?</translation>
 <translation id="1592005682883173041">Accesul la datele locale</translation>
 <translation id="1594030484168838125">Alegeți</translation>
 <translation id="160851722280695521">Joacă jocul Dino Run în Chrome</translation>
@@ -1392,6 +1394,7 @@
 <translation id="5333022057423422993">Chrome a găsit parola pe care tocmai ai folosit-o într-o încălcare a securității datelor. Pentru a-ți securiza conturile, verifică parolele salvate.</translation>
 <translation id="5334013548165032829">Jurnale de sistem detaliate</translation>
 <translation id="5334145288572353250">Salvezi adresa?</translation>
+<translation id="5335920952954443287">Inimă bătând</translation>
 <translation id="5340250774223869109">Aplicația a fost blocată</translation>
 <translation id="534295439873310000">Dispozitive NFC</translation>
 <translation id="5344579389779391559">Această pagină poate să genereze costuri</translation>
@@ -2064,6 +2067,7 @@ Detalii suplimentare:
 <translation id="7654909834015434372">Când editezi adnotări, acest document va reveni la orientarea inițială</translation>
 <translation id="765676359832457558">Ascundeți setările avansate...</translation>
 <translation id="7658239707568436148">Anulează</translation>
+<translation id="7659878911471462949">Lacrimi de bucurie</translation>
 <translation id="7662298039739062396">Setare controlată de o extensie</translation>
 <translation id="7663736086183791259">Certificat <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Nu sunt permise în modul Incognito</translation>
@@ -2267,6 +2271,7 @@ Detalii suplimentare:
 <translation id="830498451218851433">Îndoire la jumătate</translation>
 <translation id="8307358339886459768">Fotografie-Mic</translation>
 <translation id="8307888238279532626">Aplicațiile instalate și frecvența de folosire a acestora</translation>
+<translation id="8317207217658302555">Actualizezi ARCore?</translation>
 <translation id="831997045666694187">Seara</translation>
 <translation id="8321476692217554900">Notificări</translation>
 <translation id="8328484624016508118">După ce închizi toate filele incognito, Chrome șterge:

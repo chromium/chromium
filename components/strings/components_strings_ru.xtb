@@ -112,6 +112,7 @@
 <translation id="1308113895091915999">Есть предложение</translation>
 <translation id="1312803275555673949">Чем это подтверждается?</translation>
 <translation id="131405271941274527">Сайт <ph name="URL" /> запрашивает разрешение на обмен информацией через NFC.</translation>
+<translation id="1314311879718644478">Смотрите контент в режиме дополненной реальности.</translation>
 <translation id="1314509827145471431">Скрепление справа</translation>
 <translation id="1318023360584041678">Сохранено в группе вкладок</translation>
 <translation id="1319245136674974084">Больше не спрашивать для этого приложения</translation>
@@ -215,6 +216,7 @@
 <translation id="1583429793053364125">При загрузке этой страницы возникли неполадки.</translation>
 <translation id="1586541204584340881">Установленные расширения.</translation>
 <translation id="1588438908519853928">Обычный</translation>
+<translation id="1589050138437146318">Установить ARCore?</translation>
 <translation id="1592005682883173041">Доступ к данным на устройстве</translation>
 <translation id="1594030484168838125">Выбрать</translation>
 <translation id="160851722280695521">Играть в Chrome Dino</translation>
@@ -1382,6 +1384,7 @@
 <translation id="5333022057423422993">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Чтобы защитить свои аккаунты, проверьте надежность сохраненных паролей.</translation>
 <translation id="5334013548165032829">Подробные системные журналы.</translation>
 <translation id="5334145288572353250">Сохранить адрес?</translation>
+<translation id="5335920952954443287">Бьющееся сердце</translation>
 <translation id="5340250774223869109">Приложение заблокировано</translation>
 <translation id="534295439873310000">Устройства с NFC</translation>
 <translation id="5344579389779391559">Если вы откроете эту страницу, с вашего счета могут быть списаны средства</translation>
@@ -2054,6 +2057,7 @@
 <translation id="7654909834015434372">При редактировании заметок будет возвращена исходная ориентация документа.</translation>
 <translation id="765676359832457558">Скрыть дополнительные настройки</translation>
 <translation id="7658239707568436148">Отмена</translation>
+<translation id="7659878911471462949">Слезы счастья</translation>
 <translation id="7662298039739062396">Эта настройка управляется расширением</translation>
 <translation id="7663736086183791259">Сертификат <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Запрещено в режиме инкогнито</translation>
@@ -2257,6 +2261,7 @@
 <translation id="830498451218851433">Фальцовка книжкой</translation>
 <translation id="8307358339886459768">Small-Photo</translation>
 <translation id="8307888238279532626">установленные приложения и частоту их использования.</translation>
+<translation id="8317207217658302555">Обновить ARCore?</translation>
 <translation id="831997045666694187">До вечера</translation>
 <translation id="8321476692217554900">Уведомления</translation>
 <translation id="8328484624016508118">После закрытия всех вкладок инкогнито Chrome удаляет:<ph name="BEGIN_LIST" />

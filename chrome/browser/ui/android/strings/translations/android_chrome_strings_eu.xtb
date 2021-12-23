@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Google-rekin konektatzen. Denbora pixka bat behar izan daiteke…</translation>
 <translation id="1416550906796893042">Aplikazioaren bertsioa</translation>
 <translation id="1430915738399379752">Inprimatu</translation>
+<translation id="1436784010935106834">Kendu egin da</translation>
 <translation id="1448440926884431741">Antolatu jarraipena egiten diezun produktuak Laster-markak atalean</translation>
 <translation id="1450753235335490080">Ezin da partekatu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Hautatu Chrome-ren hizkuntza</translation>
@@ -203,7 +204,6 @@ Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta ha
 <translation id="2172905120685242547">Leihoa itxi nahi duzu?</translation>
 <translation id="2175927920773552910">QR kodea</translation>
 <translation id="218608176142494674">Partekatzea</translation>
-<translation id="2195339740518523951">Lortu Chrome-ren segurtasun-neurri sendoenak</translation>
 <translation id="2200113223741723867">Kudeatu erabilera-datuak partekatzeko aukerak</translation>
 <translation id="2218567645332692482">HTTPS ezartzen du protokolo bakar gisa, eta abisuak bidaltzen dizkizu hura onartzen ez duten webguneak kargatu aurretik</translation>
 <translation id="2227444325776770048">Jarraitu <ph name="USER_FULL_NAME" /> gisa</translation>
@@ -543,7 +543,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="4170011742729630528">Zerbitzua ez dago erabilgarri. Saiatu berriro geroago.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> erabili dira</translation>
 <translation id="4181841719683918333">Hizkuntzak</translation>
-<translation id="4183868528246477015">Bilatu Google Lens-ekin <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Ireki fitxa berri batean</translation>
 <translation id="4196597275619698563">Sortu txartel bat</translation>
 <translation id="4198423547019359126">Ez dago deskarga-kokapenik eskuragarri</translation>
@@ -577,7 +576,6 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="4411535500181276704">Oinarrizko modua</translation>
 <translation id="4415276339145661267">Kudeatu Google-ko kontua</translation>
 <translation id="4425140285732600465">Prezioaren jarraipena egiten ari zara. Jaso alertak webguneren batean prezioa jaisten bada.</translation>
-<translation id="4427306783828095590">Babes handiagoa eskaintzen du phishingaren eta malwarearen aurka</translation>
 <translation id="4450672886426705087">Google-ren bilaketa-emaitzak.</translation>
 <translation id="4452411734226507615">Itxi <ph name="TAB_TITLE" /> fitxa</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> karpetan gehitu da laster-marka</translation>
@@ -1082,6 +1080,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7177466738963138057">Nahi duzunean alda dezakezu Ezarpenak atalean</translation>
 <translation id="7177873915659574692">Ezin da sortu QR kodea. URLak <ph name="CHARACTER_LIMIT" /> karaktere baino gehiago ditu.</translation>
 <translation id="7180611975245234373">Freskatu</translation>
+<translation id="718226107353899806"><ph name="MAX_NUM_REACTIONS" /> erreakzioraino gehi ditzakezu</translation>
 <translation id="7187993566681480880">Babestuta mantentzen zaitu Chrome-n, eta segurtasuna hobetzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean.</translation>
 <translation id="718926126787620637">Laster-marken karpeten zerrenda altuera osoan irekita dago</translation>
 <translation id="7191430249889272776">Atzeko planoan ireki da fitxa.</translation>
@@ -1245,7 +1244,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8035133914807600019">Karpeta berria…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> egun gelditzen dira</translation>
 <translation id="8037801708772278989">Oraintxe bertan egiaztatu da</translation>
-<translation id="8040831032425909005">Ekintza bizkorretako Bilaketa-widgetaren ikonoa</translation>
 <translation id="804335162455518893">Ez da aurkitu SD txartela</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{Ezkutuko moduko <ph name="TAB_COUNT_ONE" /> fitxa}other{Ezkutuko moduko <ph name="TAB_COUNT_NORMAL" /> fitxa}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB erabilgarri</translation>

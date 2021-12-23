@@ -25,6 +25,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="1145536944570833626">Brisanje postojećih podataka.</translation>
 <translation id="1147031633655575115">Prijavljeni ste kao <ph name="USER" /></translation>
 <translation id="1154984953698510061">Prikaži druge kartice</translation>
+<translation id="1164064664035028907">Koristite jaku lozinku:</translation>
 <translation id="1165039591588034296">Greška</translation>
 <translation id="1172898394251786223">Sljedeća rubrika</translation>
 <translation id="1176932207622159128">Nije moguće sačuvati sliku</translation>
@@ -235,6 +236,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3157387275655328056">Dodaj na popis za čitanje</translation>
 <translation id="3157684681743766797">Označi sve…</translation>
 <translation id="3169472444629675720">Otkrijte</translation>
+<translation id="3174662312949010067">Također možete koristiti sačuvane lozinke na drugim uređajima.</translation>
 <translation id="3175081911749765310">Web usluge</translation>
 <translation id="3178650076442119961">Aktivan danas</translation>
 <translation id="3181825792072797598">Uključi Sinkronizaciju</translation>
@@ -328,6 +330,7 @@ Slijedite korake u nastavku:</translation>
 <translation id="4042870976416480368">Pronađi na ovoj stranici</translation>
 <translation id="4049507953662678203">Provjerite imate li mrežnu vezu i pokušajte ponovo.</translation>
 <translation id="408404951701638773">Sada je lakše prići traci za pretraživanje</translation>
+<translation id="4108314971463891922">Prati</translation>
 <translation id="411254640334432676">Preuzimanje nije uspjelo.</translation>
 <translation id="4112644173421521737">Pretraži</translation>
 <translation id="4113030288477039509">Upravlja vaš administrator</translation>
@@ -345,6 +348,7 @@ Slijedite korake u nastavku:</translation>
 <translation id="4272631900155121838">Omogućite kameru u postavkama da skenirate QR kôd</translation>
 <translation id="4277990410970811858">Sigurno pregledanje</translation>
 <translation id="4281844954008187215">Uslovi korištenja usluge</translation>
+<translation id="4304713468139749426">Upravitelj lozinki</translation>
 <translation id="430793432425771671">Sinhroniziraj sve</translation>
 <translation id="4309403553630140242">Dodirnite dvaput za više informacija</translation>
 <translation id="430967081421617822">Sve vrijeme</translation>
@@ -543,6 +547,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6127379762771434464">Stavka je uklonjena</translation>
 <translation id="6136914049981179737">Prije nekoliko sekundi</translation>
 <translation id="6144589619057374135">Otvorite ${url} u anonimnom načinu rada</translation>
+<translation id="6149061208933997199">Upotrijebi zaporku</translation>
 <translation id="6159839020698489198">nije obavezno</translation>
 <translation id="6177442314419606057">Pretražite u Chromeu</translation>
 <translation id="6184086493125982861">Prikaz kartica</translation>
@@ -635,6 +640,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="6807889908376551050">Prikaži sve…</translation>
 <translation id="681368974849482173">Stavka je kreirana</translation>
 <translation id="681450999322335505">Vaša organizacija je isključila sinhronizaciju.</translation>
+<translation id="683022620450280906">Sačuvane lozinke možete koristiti na bilo kojem uređaju. Pohranjuju se u Googleovom Upravitelju lozinki za račun <ph name="EMAIL" /></translation>
 <translation id="6830804042318138535">Pročitajte više</translation>
 <translation id="6831043979455480757">Prevedi</translation>
 <translation id="6842136130964845393">Potvrdite svoj identitet da uvijek možete pristupati sačuvanim lozinkama</translation>
@@ -767,6 +773,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8076014560081431679">Sačuvane postavke web lokacije se neće izbrisati i one mogu odražavati vaše navike prilikom pregledanja. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Ovo je upravljana postavka. Dodirnite dvaput za više informacija</translation>
 <translation id="8080028325999236607">Zatvori sve kartice</translation>
+<translation id="8101409298456377967">Kreirajte i sačuvajte lozinke te upravljajte njima da se možete jednostavno prijaviti na web lokacije i u aplikacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">Isključi</translation>
 <translation id="8114753159095730575">Dostupno je preuzimanje fajla. Opcije koje su dostupne pri dnu ekrana.</translation>
 <translation id="8132598642024322408">Sada je <ph name="PRICE" />, bilo je <ph name="PREVIOUS_PRICE" />.</translation>

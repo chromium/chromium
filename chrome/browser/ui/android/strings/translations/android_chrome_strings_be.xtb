@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Ідзе падключэнне да Google. Пачакайце…</translation>
 <translation id="1416550906796893042">Версія праграмы</translation>
 <translation id="1430915738399379752">Друк</translation>
+<translation id="1436784010935106834">Выдалены</translation>
 <translation id="1448440926884431741">Упарадкоўвайце тавары, за якімі сочыце, у Закладках</translation>
 <translation id="1450753235335490080">Не ўдалося абагуліць наступнае змесціва: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Выберыце мову Chrome</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">Закрыць акно?</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="218608176142494674">Абагульванне</translation>
-<translation id="2195339740518523951">Засцеражыце браўзер Chrome ад небяспек</translation>
 <translation id="2200113223741723867">Кіруйце наладамі абагульвання даных пра выкарыстанне</translation>
 <translation id="2218567645332692482">Выкарыстоўваць пратакол HTTPS пры наведванні сайтаў і папярэджваць, калі ён не падтрымліваецца, перад тым як іх загружаць</translation>
 <translation id="2227444325776770048">Працягнуць як <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@
 <translation id="4170011742729630528">Сэрвіс недаступны. Паўтарыце спробу пазней.</translation>
 <translation id="4179980317383591987">Выкарыстана: <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Мовы</translation>
-<translation id="4183868528246477015">Пошук праз Google Аб'ектыў <ph name="BEGIN_NEW" />Новае<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Адкрыць у новай укладцы</translation>
 <translation id="4196597275619698563">Стварыць картку</translation>
 <translation id="4198423547019359126">Няма месца для спампоўкі</translation>
@@ -577,7 +576,6 @@
 <translation id="4411535500181276704">Спрошчаны рэжым</translation>
 <translation id="4415276339145661267">Кіраванне Уліковым запісам Google</translation>
 <translation id="4425140285732600465">Цана адсочваецца. Пры зніжэнні цаны на любым з сайтаў вы будзеце атрымліваць абвесткі.</translation>
-<translation id="4427306783828095590">Функцыя палепшанай абароны яшчэ надзейней блакіруе фішынг і шкодныя праграмы</translation>
 <translation id="4450672886426705087">Вынікі пошуку ў Google.</translation>
 <translation id="4452411734226507615">Закрыць укладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="4452548195519783679">Закладка дададзена ў папку "<ph name="FOLDER_NAME" />"</translation>
@@ -1082,6 +1080,7 @@
 <translation id="7177466738963138057">Вы можаце змяніць гэта пазней у Наладах</translation>
 <translation id="7177873915659574692">Не ўдалося стварыць QR-код. URL-адрас перавышае дапушчальную колькасць знакаў (<ph name="CHARACTER_LIMIT" />).</translation>
 <translation id="7180611975245234373">Абнавіць</translation>
+<translation id="718226107353899806">Максімальная колькасць рэакцый, якую можна дадаць: <ph name="MAX_NUM_REACTIONS" /></translation>
 <translation id="7187993566681480880">Абараняе вас у браўзеры Chrome і можа выкарыстоўвацца для паляпшэння бяспекі ў іншых праграмах Google, калі вы ўвайшлі ва ўліковы запіс.</translation>
 <translation id="718926126787620637">Спіс папак з закладкамі разгорнуты на ўвесь экран</translation>
 <translation id="7191430249889272776">Укладка адкрыта ў фоне.</translation>
@@ -1245,7 +1244,6 @@
 <translation id="8035133914807600019">Новая папка…</translation>
 <translation id="8037750541064988519">Засталося дзён: <ph name="DAYS" /></translation>
 <translation id="8037801708772278989">Праверка праводзілася толькі што</translation>
-<translation id="8040831032425909005">Значок віджэта Пошуку ў Хуткіх дзеяннях</translation>
 <translation id="804335162455518893">SD-карта не знойдзена</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка ў рэжыме інкогніта}one{<ph name="TAB_COUNT_NORMAL" /> укладка ў рэжыме інкогніта}few{<ph name="TAB_COUNT_NORMAL" /> укладкі ў рэжыме інкогніта}many{<ph name="TAB_COUNT_NORMAL" /> укладак у рэжыме інкогніта}other{<ph name="TAB_COUNT_NORMAL" /> укладкі ў рэжыме інкогніта}}</translation>
 <translation id="8051695050440594747">Даступна <ph name="MEGABYTES" /> МБ</translation>

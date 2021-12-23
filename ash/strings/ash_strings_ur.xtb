@@ -131,6 +131,7 @@
 <translation id="1768366657309696705">‏Period + <ph name="LAUNCHER_KEY_NAME" /> کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ انسرٹ کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + شفٹ + بیک اسپیس کو دبائیں۔</translation>
 <translation id="1770726142253415363">قطار <ph name="ROW_NUMBER" /> کالم <ph name="COLUMN_NUMBER" /> میں منتقل کر دیا گیا۔</translation>
 <translation id="1771761307086386028">دائیں اسکرول کریں</translation>
+<translation id="1774796056689732716">کیلنڈر، <ph name="CURRENT_MONTH_YEAR" />، فی الحال <ph name="DATE" /> کو منتخب کیا گیا ہے۔</translation>
 <translation id="1787955149152357925">آف</translation>
 <translation id="1804572139604454141">ڈسک اسپیس انتہائی کم ہونے کی وجہ ریکارڈنگ ختم ہو گئی</translation>
 <translation id="181103072419391116">سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
@@ -620,6 +621,7 @@
 <translation id="5075554201838155866">سب ٹائٹلز شروع کریں</translation>
 <translation id="5078796286268621944">‏غلط PIN</translation>
 <translation id="5083553833479578423">اسسٹنٹ کی مزید خصوصیات کو غیر مقفل کریں۔</translation>
+<translation id="5090752371472782287"><ph name="MANAGER" /> آلے میں کاسٹ کریں</translation>
 <translation id="5106223312672646208">ذاتی نوعیت کا بنائیں</translation>
 <translation id="5117590920725113268">اگلا مہینہ دکھائیں</translation>
 <translation id="5136175204352732067">مختلف کی بورڈ منسلک کر دیا گیا</translation>
@@ -629,6 +631,7 @@
 <translation id="5168181903108465623">کاسٹ آلات دستیاب ہیں</translation>
 <translation id="5170568018924773124">فولڈر میں دکھائیں</translation>
 <translation id="5176318573511391780">جزوی اسکرین کو ریکارڈ کریں</translation>
+<translation id="5198413532174090167"><ph name="DATE" />، <ph name="NUMBER" /> ایونٹس</translation>
 <translation id="5198715732953550718">نیا فولڈر بنانے کے لیے <ph name="MOVED_APP_NAME" /> کو <ph name="IN_PLACE_APP" /> کے ساتھ جوڑ دیا گیا ہے۔</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />، <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />، <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 دیگر اطلاع}other{# دیگر اطلاعات}}</translation>
@@ -802,6 +805,7 @@
 <translation id="643147933154517414">سب ہو گیا</translation>
 <translation id="6431865393913628856">اسکرین ریکارڈر</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> پر <ph name="ROUTE_TITLE" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />، <ph name="NUMBER" /> ایونٹ</translation>
 <translation id="6452181791372256707">مسترد کریں</translation>
 <translation id="6453179446719226835">زبان تبدیل ہو گئی ہے</translation>
 <translation id="6459472438155181876">اسکرین کو <ph name="DISPLAY_NAME" /> میں پھیلایا جا رہا ہے</translation>
@@ -864,6 +868,7 @@
 <translation id="6811454077060061666">‏ڈیسک ٹاپ کے لیے Google Drive دستیاب نہیں ہے</translation>
 <translation id="6818242057446442178">ایک لفظ پیچھے جائیں</translation>
 <translation id="6820676911989879663">تھوڑا وقفہ لیں!</translation>
+<translation id="6827049576281411231">ایونٹ پینل بند کریں</translation>
 <translation id="6836499262298959512">خطرناک فائل</translation>
 <translation id="6837064795450991317">ڈیسک بار چھپائیں</translation>
 <translation id="6852052252232534364">کلک برائے فعال</translation>
@@ -871,6 +876,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ایک ہندسہ باقی ہے}other{# ہندسے باقی ہیں}}</translation>
 <translation id="6867938213751067702">ڈاؤن لوڈ موقوف ہو گیا <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">شارٹ کٹ آف ہے</translation>
+<translation id="6884665277231944629">آج کی تاریخ پر واپس جائیں</translation>
 <translation id="6886172995547742638">‏آپ کے <ph name="DEVICE_TYPE" /> کی کارکردگی کم ہو سکتی ہے سندیافتہ <ph name="PREFERRED_MINIMUM_POWER" />W یا اعلی USB-C پاور ایڈاپٹر استعمال کریں۔</translation>
 <translation id="688631446150864480">ونڈوز کو سوئچ کرنے کیلئے نیچے تیر کے نشان والی کلید کو دبائیں</translation>
 <translation id="6896758677409633944">کاپی کریں</translation>
@@ -957,6 +963,7 @@
 <translation id="7497767806359279797">زبان اور کی بورڈ منتخب کریں</translation>
 <translation id="7509246181739783082">اپنی شناخت کی توثیق کریں</translation>
 <translation id="7513622367902644023">اسکرین شاٹ وضع کا انتخاب کیا گیا</translation>
+<translation id="7513922695575567867">کیلنڈر، <ph name="DATE" /> والا ہفتہ، فی الحال <ph name="SELECTED_DATE" /> کو منتخب کیا گیا ہے۔</translation>
 <translation id="7514365320538308">ڈاؤن لوڈ کریں</translation>
 <translation id="7526573455193969409">ممکن ہے نیٹ ورک کو مانیٹر کیا جا رہا ہو</translation>
 <translation id="7536035074519304529">‏IP پتہ: <ph name="ADDRESS" /></translation>
@@ -966,6 +973,7 @@
 <translation id="7564874036684306347">ونڈوز کو کسی دوسرے ڈیسک ٹاپ پر منتقل کرنا غیر متوقع برتاؤ کا سبب بن سکتا ہے۔ بعد کی اطلاعات، ونڈوز اور ڈائیلاگز ڈیسک ٹاپ کے بیچ منقسم ہو سکتے ہیں۔</translation>
 <translation id="7569509451529460200">‏بریل اور ChromeVox فعال ہیں</translation>
 <translation id="7569983096843329377">سیاہ</translation>
+<translation id="757941033127302446">سائن ان ہے</translation>
 <translation id="7579778809502851308">اسکرین کیپچر</translation>
 <translation id="7590883480672980941">ان پٹ کی ترتیبات</translation>
 <translation id="7593891976182323525">تلاش یا شفٹ</translation>
@@ -1039,6 +1047,7 @@
 <translation id="8035152190676905274">قلم</translation>
 <translation id="8036504271468642248">پچھلا جملہ</translation>
 <translation id="8042893070933512245">ایکسیسبیلٹی ترتیبات کا مینو کھولیں</translation>
+<translation id="8042925093898452104">تفصیلی معلومات بند کریں</translation>
 <translation id="8048123526339889627">بلوٹوتھ کی ترتیبات</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> کے نام والی تمثیل پہلے سے موجود ہے</translation>
 <translation id="8052898407431791827">کلپ بورڈ پر کاپی ہو گیا</translation>

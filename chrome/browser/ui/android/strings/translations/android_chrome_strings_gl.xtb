@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Contactando con Google. É posible que esta acción tarde un minuto…</translation>
 <translation id="1416550906796893042">Versión da aplicación</translation>
 <translation id="1430915738399379752">Imprimir</translation>
+<translation id="1436784010935106834">Eliminados</translation>
 <translation id="1448440926884431741">Organiza os produtos dos que fagas un seguimento en Marcadores</translation>
 <translation id="1450753235335490080">Non se puido compartir este contido: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Escolle o idioma de Chrome</translation>
@@ -203,7 +204,6 @@ Toca calquera palabra para buscala. Mantena premida para seleccionar máis ou me
 <translation id="2172905120685242547">Queres pechar a ventá?</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="218608176142494674">Uso compartido</translation>
-<translation id="2195339740518523951">Goza da máxima seguranza de Chrome</translation>
 <translation id="2200113223741723867">Xestionar uso compartido dos datos de uso</translation>
 <translation id="2218567645332692482">Usa HTTPS cando navegas e mostra unha advertencia antes de cargar sitios que non o admiten</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4170011742729630528">O servizo non está dispoñible. Téntao de novo máis tarde.</translation>
 <translation id="4179980317383591987">Datos usados: <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Idiomas</translation>
-<translation id="4183868528246477015">Buscar con Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Abrir en pestana nova</translation>
 <translation id="4196597275619698563">Crear tarxeta</translation>
 <translation id="4198423547019359126">Non hai localizacións de descarga dispoñibles</translation>
@@ -577,7 +576,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4411535500181276704">Modo básico</translation>
 <translation id="4415276339145661267">Xestionar a túa Conta de Google</translation>
 <translation id="4425140285732600465">Estase facendo un seguimento do prezo. Recibe alertas se baixa o prezo en calquera sitio.</translation>
-<translation id="4427306783828095590">A protección mellorada é máis eficaz á hora de bloquear o phishing e o software malicioso</translation>
 <translation id="4450672886426705087">Resultados da busca de Google.</translation>
 <translation id="4452411734226507615">Pecha a pestana <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marcador engadido a <ph name="FOLDER_NAME" /></translation>
@@ -1082,6 +1080,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7177466738963138057">Podes cambiar esta opción máis tarde en Configuración</translation>
 <translation id="7177873915659574692">Non se puido crear o código QR. O URL contén máis de <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
+<translation id="718226107353899806">Podes engadir ata <ph name="MAX_NUM_REACTIONS" /> reaccións</translation>
 <translation id="7187993566681480880">Protéxete en Chrome e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas a sesión iniciada.</translation>
 <translation id="718926126787620637">A lista de cartafoles de marcadores está aberta completamente</translation>
 <translation id="7191430249889272776">Abriuse a pestana en segundo plano.</translation>
@@ -1245,7 +1244,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8035133914807600019">Cartafol novo...</translation>
 <translation id="8037750541064988519">Quedan <ph name="DAYS" /> días</translation>
 <translation id="8037801708772278989">A comprobación realizouse agora mesmo</translation>
-<translation id="8040831032425909005">Icona do widget da busca de accións rápidas</translation>
 <translation id="804335162455518893">Non se atopou a tarxeta SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> pestana do modo de incógnito}other{<ph name="TAB_COUNT_NORMAL" /> pestanas do modo de incógnito}}</translation>
 <translation id="8051695050440594747">Almacenamento dispoñible: <ph name="MEGABYTES" /> MB</translation>

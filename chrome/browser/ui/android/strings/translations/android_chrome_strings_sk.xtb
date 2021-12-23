@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Kontaktuje sa Google. Môže to chvíľu trvať…</translation>
 <translation id="1416550906796893042">Verzia aplikácie</translation>
 <translation id="1430915738399379752">Tlačiť</translation>
+<translation id="1436784010935106834">Odstránené</translation>
 <translation id="1448440926884431741">Organizujte svoje sledované produkty v Záložkách</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> sa nedá zdieľať</translation>
 <translation id="1466383950273130737">Vyberte jazyk Chromu</translation>
@@ -203,7 +204,6 @@ Vyhľadávanie spustíte klepnutím na ľubovoľné slovo. Spresníte ho pridrž
 <translation id="2172905120685242547">Chcete zavrieť okno?</translation>
 <translation id="2175927920773552910">QR kód</translation>
 <translation id="218608176142494674">Zdieľanie</translation>
-<translation id="2195339740518523951">Získajte najsilnejšie zabezpečenie Chromu</translation>
 <translation id="2200113223741723867">Správa zdieľania údajov o používaní</translation>
 <translation id="2218567645332692482">Inovujte navigácie na protokol HTTPS a dostávajte upozornenia pred načítaním webov, ktoré ho nepodporujú</translation>
 <translation id="2227444325776770048">Pokračovať ako <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="4170011742729630528">Služba nie je k dispozícii. Skúste to neskôr.</translation>
 <translation id="4179980317383591987">Využité: <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Jazyky</translation>
-<translation id="4183868528246477015">Hľadať cez Google Lens <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Otvoriť na novej karte</translation>
 <translation id="4196597275619698563">Vytvoriť kartu</translation>
 <translation id="4198423547019359126">Nie sú k dispozícii žiadne umiestnenia stiahnutých súborov</translation>
@@ -577,7 +576,6 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="4411535500181276704">Zjednodušený režim</translation>
 <translation id="4415276339145661267">Spravovať účet Google</translation>
 <translation id="4425140285732600465">Cenu sledujete. Dostávajte upozornenia, keď na ľubovoľnom webe poklesne.</translation>
-<translation id="4427306783828095590">Rozšírená ochrana efektívnejšie blokuje phishing aj malvér</translation>
 <translation id="4450672886426705087">Výsledky vyhľadávania od Googlu.</translation>
 <translation id="4452411734226507615">Zavrieť kartu <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Uložené ako záložka v priečinku <ph name="FOLDER_NAME" /></translation>
@@ -1082,6 +1080,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7177466738963138057">Zmeniť to môžete neskôr v časti Nastavenia</translation>
 <translation id="7177873915659574692">QR kód sa nedá vytvoriť. Webová adresa obsahuje viac ako <ph name="CHARACTER_LIMIT" /> znakov.</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
+<translation id="718226107353899806">Maximálne môžete pridať <ph name="MAX_NUM_REACTIONS" /> reakcií</translation>
 <translation id="7187993566681480880">Chráni vás v Chrome a môže zlepšiť zabezpečenie v ďalších aplikáciách Google, keď sa prihlásite.</translation>
 <translation id="718926126787620637">Zoznam priečinkov so záložkami je otvorený na úplnú výšku</translation>
 <translation id="7191430249889272776">Karta je otvorená na pozadí.</translation>
@@ -1245,7 +1244,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8035133914807600019">Nový priečinok…</translation>
 <translation id="8037750541064988519">Zostáva: <ph name="DAYS" /> d</translation>
 <translation id="8037801708772278989">Kontrola prebehla pred chvíľou</translation>
-<translation id="8040831032425909005">Ikona miniaplikácie Vyhľadávanie v rýchlych akciách</translation>
 <translation id="804335162455518893">SD karta sa nenašla</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta inkognito}few{<ph name="TAB_COUNT_NORMAL" /> karty inkognito}many{<ph name="TAB_COUNT_NORMAL" /> incognito tabs}other{<ph name="TAB_COUNT_NORMAL" /> kariet inkognito}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB k dispozícii</translation>

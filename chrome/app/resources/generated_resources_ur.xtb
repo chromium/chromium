@@ -250,6 +250,7 @@
 <translation id="1244265436519979884">‏Linux بحالی فی الحال جاری ہے</translation>
 <translation id="1244303850296295656">ایکسٹینشن میں خرابی</translation>
 <translation id="1246863218384630739">‏<ph name="VM_NAME" /> کو انسٹال نہیں کیا جا سکا: تصویری URL نے <ph name="HTTP_ERROR" /> خرابی کا کوڈ واپس کر دیا۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
+<translation id="1247071602516579380"><ph name="DEVICE_COUNT" /> میں سے <ph name="DEVICE_INDEX" /> آلہ، <ph name="DEVICE_NAME" /> نام والا ٹیبلیٹ</translation>
 <translation id="1251366534849411931">ابتدائی خمیدہ قوسین کی توقع ہے: <ph name="ERROR_LINE" /></translation>
 <translation id="1251480783646955802">اس سے سائٹس اور انسٹال کردہ ایپس کا <ph name="TOTAL_USAGE" /> اسٹور کردہ ڈیٹا صاف ہو جائے گا</translation>
 <translation id="1251578593170406502">موبائل ڈیٹا نیٹ ورکس کو اسکین کیا جا رہا ہے...</translation>
@@ -393,6 +394,7 @@
 <translation id="1408980562518920698">ذاتی معلومات کا نظم کریں</translation>
 <translation id="1410197035576869800">‏App کا آئیکن</translation>
 <translation id="1410616244180625362"><ph name="HOST" /> کو اپنے کیمرے تک رسائی کی اجازت دینا جاری رکھیں</translation>
+<translation id="1410797069449661718">پہلے ٹیب کی طرف اسکرول کریں</translation>
 <translation id="1410806973194718079">پالیسیز کو چیک کرنے سے قاصر</translation>
 <translation id="1412681350727866021">اضافی ایکسٹینشنز</translation>
 <translation id="1414315029670184034">سائٹس کو اپنا کیمرا استعمال کرنے کی اجازت نہ دیں</translation>
@@ -436,6 +438,7 @@
 <translation id="144283815522798837"><ph name="NUMBER_OF_ITEMS_SELECTED" /> کو منتخب کیا گیا</translation>
 <translation id="1442851588227551435">‏Kerberos کا فعال ٹکٹ سیٹ کریں</translation>
 <translation id="1444628761356461360">یہ ترتیب آلہ کے مالک، <ph name="OWNER_EMAIL" /> کے زیر انتظام ہے۔</translation>
+<translation id="1445005312224723356"><ph name="DEVICE_COUNT" /> میں سے <ph name="DEVICE_INDEX" /> آلہ، <ph name="DEVICE_NAME" /> نام والا فون</translation>
 <translation id="144518587530125858">تھیم کیلئے '<ph name="IMAGE_PATH" />' کو لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="1449191289887455076">تفویض اور <ph name="RESPONSE" /> کی تصدیق کرنے کے لیے "<ph name="CURRENTKEY" />" دوبارہ دبائيں</translation>
 <translation id="1451375123200651445">ویب صفحہ، واحد فائل</translation>
@@ -721,6 +724,7 @@
 <translation id="1725562816265788801">ٹیب اسکرولنگ</translation>
 <translation id="1729533290416704613">یہ آپ کی جانب سے اومنی باکس سے تلاش کیے جانے پر دکھائی دینے والے صفحہ کو کنٹرول بھی کرتا ہے۔</translation>
 <translation id="1730917990259790240">‏<ph name="BEGIN_PARAGRAPH1" />ایپس ہٹانے کے لیے، ترتیبات &gt; Google Play اسٹور &gt; Android کی ترجیحات کا نظم کریں &gt; ایپس یا ایپلیکیشن مینیجر پر جائیں۔ پھر اس ایپ پر تھپتھپائیں جسے آپ اَن انسٹال کرنا چاہتے ہیں (ایپ تلاش کرنے کے لیے آپ کو دائیں یا بائیں سوائپ کرنا پڑ سکتا ہے)۔ پھر 'اَن انسٹال کریں' یا 'غیر فعال کریں' پر تھپتھپائیں۔<ph name="END_PARAGRAPH1" /></translation>
+<translation id="1730989807608739928">آخری ٹیب کی طرف اسکرول کریں</translation>
 <translation id="1731911755844941020">درخواست بھیجی جا رہی ہے…</translation>
 <translation id="1733383495376208985">‏اپنے ذاتی <ph name="BEGIN_LINK" />مطابقت پذیر پاس فریز<ph name="END_LINK" /> کے ساتھ مطابقت پذیر کردہ ڈیٹا کی مرموزکاری کریں۔ اس میں Google Pay سے ادائیگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔</translation>
 <translation id="1734212868489994726">ہلکا نیلا</translation>
@@ -860,6 +864,7 @@
 <translation id="1855079636134697549">کیمرا آن ہے</translation>
 <translation id="1856715684130786728">مقام شامل کریں…</translation>
 <translation id="1858585891038687145">سافٹ ویئر بنانے والوں کی شناخت کرنے کیلئے اس سرٹیفیکیٹ پر بھروسہ کریں</translation>
+<translation id="1859787252990099899"><ph name="DEVICE_COUNT" /> میں سے <ph name="DEVICE_INDEX" /> آلہ، <ph name="DEVICE_NAME" /> نام والا نامعلوم آلہ</translation>
 <translation id="1861262398884155592">یہ فولڈر خالی ہے</translation>
 <translation id="1862311223300693744">‏کیا آپ نے کوئی خصوصی VPN، پراکسی، فائروال یا NAS سافٹ ویئر انسٹال کیا ہوا ہے؟</translation>
 <translation id="1863182668524159459">کوئی سیریل پورٹ نہیں ملا</translation>
@@ -1234,6 +1239,7 @@
 <translation id="2242687258748107519">فائل کی معلومات</translation>
 <translation id="2246549592927364792">‏Google سے تصویر کی تفصیلات حاصل کریں؟</translation>
 <translation id="2247738527273549923">آپ کا آلہ آپ کی تنظیم کے زیر انتظام ہے</translation>
+<translation id="2249061317998743208"><ph name="DEVICE_COUNT" /> میں سے <ph name="DEVICE_INDEX" /> آلہ، <ph name="DEVICE_NAME" /> نام والا گیم کنٹرولر</translation>
 <translation id="2249111429176737533">ٹیب کردہ ونڈو کے طور پر کھولیں</translation>
 <translation id="2249605167705922988">‏مثلاً ‎1-5, 8, 11-13</translation>
 <translation id="2251218783371366160">سسٹم ویور کے ساتھ کھولیں</translation>
@@ -1441,6 +1447,7 @@
 <translation id="245322989586167203">سائٹس عام طور پر ڈیٹا کی منتقلی کی نیٹ ورک سیٹ اپ کرنے جیسی خصوصیات کیلئے سیریل پورٹس سے منسلک ہوتی ہیں</translation>
 <translation id="2453706416476934374">جب <ph name="SUPERVISED_USER_NAME" /> سوالات پوچھتا ہے تو مناسب جوابات حاصل کرنے کے لیے <ph name="SUPERVISED_USER_NAME" /> کی اسکرین پر موجود چیزوں کی اسکرین شاٹ تک اپنی اسسٹنٹ کو رسائی حاصل کرنے دیں۔ اس میں ان گانوں یا ویڈیوز کے بارے میں معلومات بھی شامل ہو سکتی ہیں جو چل رہے ہیں۔</translation>
 <translation id="2453860139492968684">مکمل کریں</translation>
+<translation id="2454206500483040640">تقسیم کی گئی</translation>
 <translation id="2454247629720664989">کلیدی لفظ</translation>
 <translation id="2454264884354864965">کیمرا آف ہے</translation>
 <translation id="2454524890947537054">ویب کی درخواست کو منظوری دیں؟</translation>
@@ -1802,6 +1809,7 @@
 <translation id="2806891468525657116">شارٹ کٹ پہلے سے موجود ہے</translation>
 <translation id="2807517655263062534">آپ کی ڈاؤن لوڈ کردہ فائلز یہاں ظاہر ہوتی ہیں</translation>
 <translation id="2809586584051668049">اور <ph name="NUMBER_ADDITIONAL_DISABLED" /> مزید</translation>
+<translation id="2810235462964014915"><ph name="SITE_NAME" /> پڑھنے اور تبدیل کرنے کی درخواست کی گئی</translation>
 <translation id="2811205483104563968">اکاؤنٹس</translation>
 <translation id="2812049959647166806">‏Thunderbolt تعاون یافتہ نہیں ہے</translation>
 <translation id="2812989263793994277">کوئی تصاویر نہ دکھائیں</translation>
@@ -1992,6 +2000,7 @@
 <translation id="3007771295016901659">ڈپلیکیٹ ٹیب</translation>
 <translation id="3008232374986381779">‏اپنے <ph name="DEVICE_TYPE" /> پر Linux ٹولز، ایڈیٹرز اور IDEs چلائیں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="3008272652534848354">اجازتیں دوبارہ ترتیب دیں</translation>
+<translation id="3008396025115884998"><ph name="DEVICE_COUNT" /> میں سے <ph name="DEVICE_INDEX" /> آلہ، <ph name="DEVICE_NAME" /> نام والا آڈیو آلہ</translation>
 <translation id="3008694618228964140">{NUM_DAYS,plural, =1{‏<ph name="MANAGER" /> کا تقاضہ ہے کہ آج آپ Wi-Fi سے منسلک ہوں اور ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ یا میٹرڈ کنکشن سے ڈاؤن لوڈ کریں (چارجز لاگو ہو سکتے ہیں)۔}other{‏<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ آخری تاریخ سے پہلے Wi-Fi سے منسلک ہوں اور ایک اپ ڈیٹ ڈاؤن لوڈ کریں۔ یا میٹرڈ کنکشن سے ڈاؤن لوڈ کریں (چارجز لاگو ہو سکتے ہیں)۔}}</translation>
 <translation id="3009300415590184725">کیا آپ واقعی موبائل ڈیٹا سروس سیٹ اپ کارروائی کو منسوخ کرنا چاہتے ہیں؟</translation>
 <translation id="3009779501245596802">انڈیکس کردہ ڈیٹا بیسز</translation>
@@ -2297,6 +2306,7 @@
 <translation id="3348038390189153836">ہٹانے لائق آلہ کا پتا چلا</translation>
 <translation id="3348131053948466246">تجویز کردہ ایموجی۔ نیویگیٹ کرنے کے لیے اوپر یا نیچے کا تیر دبائیں اور داخل کرنے کے لیے اینٹر دبائیں۔</translation>
 <translation id="3349933790966648062">میموری فوٹ پرنٹ</translation>
+<translation id="3354972872297836698"><ph name="DEVICE_NAME" /> آلے سے جوڑا نہیں بنایا جا سکا؛ دوبارہ کوشش کرنے کے لیے آلہ منتخب کریں</translation>
 <translation id="3355936511340229503">کنکشن کی خرابی</translation>
 <translation id="3356580349448036450">مکمل</translation>
 <translation id="3359256513598016054">سرٹیفکیٹ کی پالیسی کی پابندیاں</translation>
@@ -3110,6 +3120,7 @@
 <translation id="4165942112764990069">‏<ph name="USER_EMAIL" /> ایک درست تنظیم سے تعلق نہیں رکھتا۔ اپنے منتظم سے رابطہ کریں۔ اگر آپ منتظم ہیں تو آپ مندرجہ ذیل لنک کو ملاحظہ کر کے اپنی تنظیم کو سیٹ اپ کر سکتے ہیں: g.co/ChromeEnterpriseAccount</translation>
 <translation id="4167686856635546851">‏سائٹس عام طور پر ویڈیو گیمز یا ویب فارمز جیسی انٹراکٹیو خصوصیات دکھانے کے لیے JavaScript استعمال کرتی ہیں</translation>
 <translation id="4168015872538332605"><ph name="PRIMARY_EMAIL" /> سے متعلق کچھ ترتیبات کا آپ کے ساتھ اشتراک کیا جا رہا ہے۔ یہ ترتیبات آپ کے اکاؤنٹ کو صرف متعدد سائن ان استعمال کرتے ہوئے متاثر کرتی ہیں۔</translation>
+<translation id="4168651806173792090"><ph name="LAST_FOUR_DIGITS" /> پر ختم ہونے والا <ph name="NETWORK_NAME" /></translation>
 <translation id="4169535189173047238">اجازت نہ دیں</translation>
 <translation id="4170314459383239649">باہر نکلنے پر صاف کریں</translation>
 <translation id="417096670996204801">ایک پروفائل منتخب کریں</translation>
@@ -3340,6 +3351,7 @@
 <translation id="4432621511648257259">پاس ورڈ غلط ہے</translation>
 <translation id="443454694385851356">پرانا (غیر محفوظ)</translation>
 <translation id="443475966875174318">ناموافق ایپلیکیشنز کو اپ ڈیٹ کریں یا ہٹائیں</translation>
+<translation id="4435634292635092844">اپنے فون کے کیمرا رول سے اپنے <ph name="DEVICE_TYPE" /> پر تصاویر دیکھیں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="4438043733494739848">شفاف</translation>
 <translation id="4440097423000553826"><ph name="WEBSITE" /> نے آپ کے فون پر ایک اطلاع بھیجی ہے۔ اس بات کی تصدیق کرنے کیلئے کہ یہ آپ ہی ہیں، "<ph name="NOTIFICATIONTITLE" />" کی اطلاع پر تھپتھپائیں اور مراحل کی پیروی کریں۔</translation>
 <translation id="4441124369922430666">کیا آپ مشین آن ہونے پر اس ایپ کو خودکار طور پر شروع کرنا چاہتے ہیں؟</translation>
@@ -3636,6 +3648,7 @@
 <translation id="4759238208242260848">ڈاؤن لوڈز</translation>
 <translation id="4761104368405085019">اپنا مائیکروفون استعمال کریں</translation>
 <translation id="4762718786438001384">آلہ کے ڈسک کی جگہ انتہائی کم ہے</translation>
+<translation id="4762898026821161650"><ph name="DEVICE_COUNT" /> میں سے <ph name="DEVICE_INDEX" /> آلہ، <ph name="DEVICE_NAME" /> نام والا کمپیوٹر</translation>
 <translation id="4763408175235639573">جب آپ نے یہ صفحہ ملاحظہ کیا تو مندرجہ ذیل کوکیز سیٹ کی گئی تھیں</translation>
 <translation id="4765582662863429759">‏Android پیغامات کو آپ کے فون سے آپ کے Chromebook پر متنی پیغامت بھیجنے کی اجازت دیتی ہے</translation>
 <translation id="4768332406694066911">آپ کی شناخت کرنے والی ان تنظیموں کی جانب سے آپ کے پاس سرٹیفیکیٹس ہیں</translation>
@@ -4596,6 +4609,7 @@
 <translation id="5789643057113097023">.</translation>
 <translation id="5790085346892983794">کامیاب</translation>
 <translation id="5790651917470750848">پورٹ فارورڈ پہلے سے ہی دستیاب ہے</translation>
+<translation id="5792295754950501287"><ph name="CARD_DESCRIPTION" /> کے لیے مزید کارروائیاں</translation>
 <translation id="5792728279623964091">براہ کرم اپنے پاور بٹن پر تھپتھپائیں</translation>
 <translation id="5793339252089865437">اگر آپ اپنے موبائل نیٹ ورک پر اپ ڈیٹ ڈاؤن لوڈ کرتے ہیں تو زیادہ معاوضہ دینا پڑ سکتا ہے۔</translation>
 <translation id="5794034487966529952">ڈیسک <ph name="DESK_TITLE" /> میں <ph name="NUM_BROWSERS" /> براؤزر ونڈوز کھلی ہیں</translation>
@@ -5152,6 +5166,7 @@
 <translation id="6374469231428023295">دوبارہ کوشش کریں</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' کا 1 نتیجہ</translation>
 <translation id="6380143666419481200">قبول کریں اور جاری رکھیں</translation>
+<translation id="6382616130475191723"><ph name="SITE_NAME" /> پڑھنے اور تبدیل کرنے کی اجازت دی گئی</translation>
 <translation id="6382958439467370461">کوئی غیر فعال شارٹ کٹ نہیں</translation>
 <translation id="638418309848716977">تعاون یافتہ لنکس</translation>
 <translation id="6384275966486438344">اپنی تلاش کی ترتیبات کو اس سے تبدیل کریں: <ph name="SEARCH_HOST" /></translation>
@@ -5816,6 +5831,7 @@
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{سیفٹی چیک 1 منٹ پہلے کیا گیا}other{سیفٹی چیک {NUM_MINS} منٹ پہلے کیا گیا}}</translation>
 <translation id="7057767408836081338">ایپ کا ڈیٹا حاصل کرنے میں ناکام، بہر صورت ایپ کو چلانے کی کوشش کی جار رہی ہے...</translation>
 <translation id="7058024590501568315">پوشیدہ نیٹ ورک</translation>
+<translation id="70582545822664495"><ph name="DEVICE_COUNT" /> میں سے <ph name="DEVICE_INDEX" /> آلہ، <ph name="DEVICE_NAME" /> نام والا ماؤس</translation>
 <translation id="7059858479264779982">خود کار طور پر شروع کریں پر سیٹ کریں</translation>
 <translation id="7062222374113411376">حال ہی میں بند کی گئی سائٹس کو ڈیٹا بھیجنے اور حاصل کرنے کو مکمل کرنے کی اجازت دیں (تجویز کردہ)</translation>
 <translation id="7063129466199351735">شارٹ کٹس پر کارروائی کی جا رہی ہے…</translation>
@@ -5980,6 +5996,7 @@
 <translation id="7257173066616499747">‏Wi-Fi نیٹ ورکس</translation>
 <translation id="725758059478686223">پرنٹنگ سروس</translation>
 <translation id="7257666756905341374">آپ جو ڈیٹا کاپی اور پیسٹ کرتے ہیں اسے پڑھیں</translation>
+<translation id="7258006747130724016"><ph name="DEVICE_COUNT" /> میں سے <ph name="DEVICE_INDEX" /> آلہ، <ph name="DEVICE_NAME" /> نام والا ویڈیو کیمرا</translation>
 <translation id="7258192266780953209">تبدیلیاں</translation>
 <translation id="7258225044283673131">ایپلیکیشن جواب نہیں دے رہی ہے۔ ایپ بند کرنے کیلئے، "زبردستی بند کریں" منتخب کریں۔</translation>
 <translation id="7262004276116528033">اس سائن ان سروس کی میزبانی <ph name="SAML_DOMAIN" />  کرتا ہے</translation>
@@ -6775,6 +6792,7 @@
 <translation id="8037117027592400564">سنتھیسائز کردہ اسپیچ کا استعمال کر کے بولے گئے سبھی متن کو پڑھیں</translation>
 <translation id="8037357227543935929">پوچھیں (ڈیفالٹ)</translation>
 <translation id="803771048473350947">فائل</translation>
+<translation id="8038399858950372766"><ph name="DEVICE_COUNT" /> میں سے <ph name="DEVICE_INDEX" /> آلہ، <ph name="DEVICE_NAME" /> نام والا کی بورڈ</translation>
 <translation id="8041089156583427627">تاثرات بھیجیں</translation>
 <translation id="8042142357103597104">متن کا دھندلا پن</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> جواب نہیں دے رہی ہے۔</translation>
@@ -6984,11 +7002,13 @@
 <translation id="8244514732452879619">جلد ہی روشنی بند ہونے والی ہے</translation>
 <translation id="8246776524656196770">‏ایک PIN (ذاتی شناختی نمبر) کی مدد سے اپنی سیکیورٹی کلید کا تحفظ کریں</translation>
 <translation id="8248050856337841185">&amp;پیسٹ کریں</translation>
+<translation id="8248381369318572865">اپنے مائیکروفون تک رسائی حاصل کریں اور اپنی اسپیچ کا تجزیہ کریں</translation>
 <translation id="8248887045858762645">‏Chrome تجویز</translation>
 <translation id="8249048954461686687">‏OEM فولڈر</translation>
 <translation id="8249615410597138718">اپنے آلات پر بھیجیں</translation>
 <translation id="8249672078237421304">ان صفحات کا ترجمہ کرنے کی پیشکش کریں جو آپ کے مطالعہ کی زبان میں نہیں ہیں</translation>
 <translation id="8251441930213048644">اب ریفریش کریں</translation>
+<translation id="8251509999076836464"><ph name="DEVICE_NAME" /> سے جوڑا بنایا جا رہا ہے</translation>
 <translation id="8251578425305135684">تھمب نیل کو ہٹا دیا گیا۔</translation>
 <translation id="825238165904109940">‏ہمیشہ مکمل URLs دکھائیں</translation>
 <translation id="8252569384384439529">اپ لوڈ ہو رہی ہے...</translation>
@@ -7004,6 +7024,7 @@
 <translation id="8264024885325823677">یہ ترتیب آپ کے منتظم کے زیر انتظام ہے۔</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" نے پوری اسکرین کو تحریک دی۔</translation>
 <translation id="826511437356419340">ونڈو کے عمومی جائزہ کی وضع میں داخل ہوگئے۔ نیویگیٹ کرنے کے لیے سوائپ کریں، یا اگر آپ کی بورڈ استعمال کر رہے ہیں تو ٹیب کو دبائیں۔</translation>
+<translation id="8265671588726449108">{COUNT,plural, =1{آپ کے بند کر کے دوبارہ چلانے کے بعد آپ کی پوشیدگی ونڈو نہیں کھلے گی}other{آپ کے بند کر کے دوبارہ چلانے کے بعد آپ کی {COUNT} پوشیدگی ونڈوز نہیں کھلیں گی}}</translation>
 <translation id="8266947622852630193">سبھی اندراج کے طریقے</translation>
 <translation id="8267539814046467575">پرنٹر شامل کریں</translation>
 <translation id="8267961145111171918">‏<ph name="BEGIN_PARAGRAPH1" />یہ اس آلہ اور اس کے طریقۂ استعمال (جیسے بیٹری کی سطح، سسٹم، ایپ کی سرگرمی اور خرابیوں) کے بارے میں عام معلومات ہے۔ Android کو بہتر بنانے کی خاطر ڈیٹا کا استعمال کیا جائے گا اور کچھ مجموعی معلومات سے Google ایپس اور پارٹنرز، جیسے کہ Android ڈیولپرز، کو ان کی ایپس اور پروڈکٹس کو بہتر بنانے میں بھی مدد ملے گی۔<ph name="END_PARAGRAPH1" />

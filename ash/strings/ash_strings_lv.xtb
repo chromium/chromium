@@ -131,6 +131,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1768366657309696705"><ph name="LAUNCHER_KEY_NAME" /> + punkta taustiņa īsinājumtaustiņš ir mainīts. Lai izmantotu ievietošanas taustiņu, nospiediet taustiņu <ph name="LAUNCHER_KEY_NAME" /> + Shift + atkāpšanās taustiņu</translation>
 <translation id="1770726142253415363">Pārvietota uz <ph name="ROW_NUMBER" />. rindu, <ph name="COLUMN_NUMBER" />. sleju.</translation>
 <translation id="1771761307086386028">Ritināt pa labi</translation>
+<translation id="1774796056689732716">Kalendārs, <ph name="CURRENT_MONTH_YEAR" />, pašlaik atlasītais datums ir <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Izslēgts</translation>
 <translation id="1804572139604454141">Ierakstīšana tika pārtraukta, jo vairs nepietiek vietas diskā.</translation>
 <translation id="181103072419391116">Signāla stiprums: <ph name="SIGNAL_STRENGTH" />, pārvalda jūsu administrators</translation>
@@ -620,6 +621,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5075554201838155866">Ieslēgt subtitrus</translation>
 <translation id="5078796286268621944">Nepareizs PIN</translation>
 <translation id="5083553833479578423">Piekļūstiet citām Asistenta funkcijām</translation>
+<translation id="5090752371472782287">Apraidīt uz <ph name="MANAGER" /> ierīci</translation>
 <translation id="5106223312672646208">Personalizēt</translation>
 <translation id="5117590920725113268">Rādīt nākamo mēnesi</translation>
 <translation id="5136175204352732067">Ir pievienota cita tastatūra</translation>
@@ -629,6 +631,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5168181903108465623">Pieejamas apraides ierīces</translation>
 <translation id="5170568018924773124">Rādīt mapē</translation>
 <translation id="5176318573511391780">Ierakstīt daļu ekrāna</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> pasākumi</translation>
 <translation id="5198715732953550718">Lietotne <ph name="MOVED_APP_NAME" /> kombinēta ar lietotni <ph name="IN_PLACE_APP" />, lai izveidotu jaunu mapi.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 cits paziņojums}zero{# citu paziņojumu}one{# cits paziņojums}other{# citi paziņojumi}}</translation>
@@ -802,6 +805,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="643147933154517414">Viss gatavs</translation>
 <translation id="6431865393913628856">Ierakstīt ekrānu</translation>
 <translation id="6445835306623867477">“<ph name="ROUTE_TITLE" />” apraide ierīcē “<ph name="RECEIVER_NAME" />”</translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> pasākums</translation>
 <translation id="6452181791372256707">Noraidīt</translation>
 <translation id="6453179446719226835">Valodas maiņa</translation>
 <translation id="6459472438155181876">Paplašina ekrānu uz: <ph name="DISPLAY_NAME" /></translation>
@@ -865,6 +869,7 @@ Jauna instalācija</translation>
 <translation id="6811454077060061666">Google disks datoram nav pieejams.</translation>
 <translation id="6818242057446442178">Pāriet atpakaļ pa vārdam</translation>
 <translation id="6820676911989879663">Laiks pārtraukumam</translation>
+<translation id="6827049576281411231">Aizvērt pasākumu paneli</translation>
 <translation id="6836499262298959512">Bīstams fails</translation>
 <translation id="6837064795450991317">Paslēpt uzdevumjoslā iegulto rīkjoslu</translation>
 <translation id="6852052252232534364">Noklikšķiniet</translation>
@@ -872,6 +877,7 @@ Jauna instalācija</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Vēl viens cipars}zero{Vēl # ciparu}one{Vēl # cipars}other{Vēl # cipari}}</translation>
 <translation id="6867938213751067702">Faila <ph name="FILENAME" /> lejupielāde ir pārtraukta</translation>
 <translation id="6878400149835617132">Īsinājumtaustiņš izslēgts</translation>
+<translation id="6884665277231944629">Atgriezties uz šodienu</translation>
 <translation id="6886172995547742638">Ierīces <ph name="DEVICE_TYPE" /> veiktspēja var pasliktināties. Izmantojiet sertificētu USB-C strāvas adapteri, kura jauda ir vismaz <ph name="PREFERRED_MINIMUM_POWER" /> vatu.</translation>
 <translation id="688631446150864480">Lai pārslēgtu logus, nospiediet lejupvērsto bulttaustiņu.</translation>
 <translation id="6896758677409633944">Kopēt</translation>
@@ -958,6 +964,7 @@ Jauna instalācija</translation>
 <translation id="7497767806359279797">Izvēlēties valodu un tastatūru</translation>
 <translation id="7509246181739783082">Identitātes apstiprināšana</translation>
 <translation id="7513622367902644023">Atlasīts ekrānuzņēmuma režīms</translation>
+<translation id="7513922695575567867">Kalendārs, nedēļa, kas sākas datumā <ph name="DATE" />, pašlaik atlasītais datums ir <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Lejupielādēt</translation>
 <translation id="7526573455193969409">Var tikt pārraudzītas tīklā veiktās darbības</translation>
 <translation id="7536035074519304529">IP adrese: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@ Jauna instalācija</translation>
 <translation id="7564874036684306347">Logu pārvietošana uz citu darbvirsmu var izraisīt neparedzētu darbību. Turpmākie paziņojumi, logi un dialoglodziņi var tikt sadalīti pa darbvirsmām.</translation>
 <translation id="7569509451529460200">Braila raksts un ChromeVox ir iespējoti</translation>
 <translation id="7569983096843329377">Melna</translation>
+<translation id="757941033127302446">Pierakstījies</translation>
 <translation id="7579778809502851308">Veidot ekrānuzņēmumu</translation>
 <translation id="7590883480672980941">Ievades iestatījumi</translation>
 <translation id="7593891976182323525">Meklēt vai Shift</translation>
@@ -1040,6 +1048,7 @@ Jauna instalācija</translation>
 <translation id="8035152190676905274">Pildspalva</translation>
 <translation id="8036504271468642248">Iepriekšējais teikums</translation>
 <translation id="8042893070933512245">Atvērt pieejamības iestatījumu izvēlni</translation>
+<translation id="8042925093898452104">Aizvērt detalizētu informāciju</translation>
 <translation id="8048123526339889627">Bluetooth iestatījumi</translation>
 <translation id="8051716679295756675">Veidne ar nosaukumu “<ph name="DESK_TEMPLATE_NAME" />” jau pastāv.</translation>
 <translation id="8052898407431791827">Kopēts starpliktuvē</translation>

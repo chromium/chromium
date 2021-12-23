@@ -131,6 +131,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1768366657309696705">Phím tắt <ph name="LAUNCHER_KEY_NAME" /> + Dấu chấm đã thay đổi. Để sử dụng phím Insert, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Đã di chuyển sang hàng <ph name="ROW_NUMBER" />, cột <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="1771761307086386028">Cuộn sang phải</translation>
+<translation id="1774796056689732716">Lịch, <ph name="CURRENT_MONTH_YEAR" />, đang chọn <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Tắt</translation>
 <translation id="1804572139604454141">Quá trình ghi đã kết thúc do dung lượng ổ đĩa quá thấp</translation>
 <translation id="181103072419391116">Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
@@ -620,6 +621,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5075554201838155866">Bắt đầu phụ đề</translation>
 <translation id="5078796286268621944">Mã PIN không chính xác</translation>
 <translation id="5083553833479578423">Mở khóa các tính năng khác của Trợ lý.</translation>
+<translation id="5090752371472782287">Truyền tới thiết bị <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Cá nhân hoá</translation>
 <translation id="5117590920725113268">Hiển thị tháng tiếp theo</translation>
 <translation id="5136175204352732067">Đã kết nối bàn phím khác</translation>
@@ -629,6 +631,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5168181903108465623">Có thiết bị truyền</translation>
 <translation id="5170568018924773124">Hiển thị trong thư mục</translation>
 <translation id="5176318573511391780">Ghi một phần màn hình</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> sự kiện</translation>
 <translation id="5198715732953550718">Đã kết hợp <ph name="MOVED_APP_NAME" /> với <ph name="IN_PLACE_APP" /> để tạo thư mục mới.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 thông báo khác}other{# thông báo khác}}</translation>
@@ -802,6 +805,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="643147933154517414">Đã xong</translation>
 <translation id="6431865393913628856">Ghi màn hình</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> trên <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> sự kiện</translation>
 <translation id="6452181791372256707">Từ chối</translation>
 <translation id="6453179446719226835">Đã thay đổi ngôn ngữ</translation>
 <translation id="6459472438155181876">Đang mở rộng màn hình tới <ph name="DISPLAY_NAME" /></translation>
@@ -865,6 +869,7 @@ Mới cài đặt</translation>
 <translation id="6811454077060061666">Google Drive cho máy tính hiện không dùng được</translation>
 <translation id="6818242057446442178">Lùi một từ</translation>
 <translation id="6820676911989879663">Hãy nghỉ giải lao!</translation>
+<translation id="6827049576281411231">Đóng bảng điều khiển sự kiện</translation>
 <translation id="6836499262298959512">Tệp nguy hiểm</translation>
 <translation id="6837064795450991317">Ẩn thanh không gian làm việc</translation>
 <translation id="6852052252232534364">Nhấp để kích hoạt</translation>
@@ -872,6 +877,7 @@ Mới cài đặt</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Còn lại một số}other{Còn lại # số}}</translation>
 <translation id="6867938213751067702">Đã tạm dừng tải <ph name="FILENAME" /> xuống</translation>
 <translation id="6878400149835617132">Đã tắt phím tắt</translation>
+<translation id="6884665277231944629">Quay lại hôm nay</translation>
 <translation id="6886172995547742638">Hiệu suất của <ph name="DEVICE_TYPE" /> của bạn có thể bị giảm. Hãy dùng bộ sạc USB-C được chứng nhận có công suất <ph name="PREFERRED_MINIMUM_POWER" />W trở lên.</translation>
 <translation id="688631446150864480">Nhấn phím Mũi tên xuống để chuyển đổi giữa các cửa sổ</translation>
 <translation id="6896758677409633944">Sao chép</translation>
@@ -958,6 +964,7 @@ Mới cài đặt</translation>
 <translation id="7497767806359279797">Chọn ngôn ngữ và bàn phím</translation>
 <translation id="7509246181739783082">Xác minh danh tính của bạn</translation>
 <translation id="7513622367902644023">Đã chọn chế độ chụp ảnh màn hình</translation>
+<translation id="7513922695575567867">Lịch, tuần tính từ ngày <ph name="DATE" />, đang chọn <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Tải xuống</translation>
 <translation id="7526573455193969409">Mạng có thể được giám sát</translation>
 <translation id="7536035074519304529">Địa chỉ IP: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@ Mới cài đặt</translation>
 <translation id="7564874036684306347">Di chuyển cửa sổ sang màn hình khác có thể gây ra hoạt động không mong muốn. Các thông báo, cửa sổ và hộp thoại tiếp theo có thể bị phân tách giữa các màn hình.</translation>
 <translation id="7569509451529460200">Đã bật chữ nổi Braille và ChromeVox</translation>
 <translation id="7569983096843329377">Đen</translation>
+<translation id="757941033127302446">Đã đăng nhập</translation>
 <translation id="7579778809502851308">Chụp ảnh màn hình</translation>
 <translation id="7590883480672980941">Cài đặt phương thức nhập</translation>
 <translation id="7593891976182323525">Search hoặc Shift</translation>
@@ -1040,6 +1048,7 @@ Mới cài đặt</translation>
 <translation id="8035152190676905274">Bút</translation>
 <translation id="8036504271468642248">Câu trước</translation>
 <translation id="8042893070933512245">Mở trình đơn cài đặt hỗ trợ tiếp cận</translation>
+<translation id="8042925093898452104">Đóng thông tin chi tiết</translation>
 <translation id="8048123526339889627">Cài đặt Bluetooth</translation>
 <translation id="8051716679295756675">Mẫu có tên <ph name="DESK_TEMPLATE_NAME" /> đã tồn tại</translation>
 <translation id="8052898407431791827">Đã sao chép vào bảng nhớ tạm</translation>

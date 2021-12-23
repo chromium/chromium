@@ -131,6 +131,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1768366657309696705">Bližnjica na tipkovnici <ph name="LAUNCHER_KEY_NAME" /> + pika je spremenjena. Če želite uporabiti tipko za vstavljanje, pritisnite tipko <ph name="LAUNCHER_KEY_NAME" /> + Shift + vračalko.</translation>
 <translation id="1770726142253415363">Premaknjeno na <ph name="ROW_NUMBER" />. vrstico, <ph name="COLUMN_NUMBER" />. stolpec.</translation>
 <translation id="1771761307086386028">Pomik desno</translation>
+<translation id="1774796056689732716">Koledar, <ph name="CURRENT_MONTH_YEAR" />, trenutno izbran datum: <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Izklopljeno</translation>
 <translation id="1804572139604454141">Snemanje se je končalo, ker na disku kritično primanjkuje prostora.</translation>
 <translation id="181103072419391116">Moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>
@@ -620,6 +621,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5075554201838155866">Začni podnapise</translation>
 <translation id="5078796286268621944">Napačen PIN</translation>
 <translation id="5083553833479578423">Odklenite več funkcij Pomočnika.</translation>
+<translation id="5090752371472782287">Predvajanje v napravi <ph name="MANAGER" /></translation>
 <translation id="5106223312672646208">Osebno prilagajanje</translation>
 <translation id="5117590920725113268">Prikaz naslednjega meseca</translation>
 <translation id="5136175204352732067">Priklopljena je druga tipkovnica</translation>
@@ -629,6 +631,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5168181903108465623">Naprave za predvajanje so na voljo</translation>
 <translation id="5170568018924773124">Prikaži v mapi</translation>
 <translation id="5176318573511391780">Snemanje delnega zaslona</translation>
+<translation id="5198413532174090167"><ph name="DATE" />, dogodki (<ph name="NUMBER" />)</translation>
 <translation id="5198715732953550718">Zaradi ustvarjanja nove mape je bila aplikacija <ph name="MOVED_APP_NAME" /> združena z aplikacijo <ph name="IN_PLACE_APP" />.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 drugo obvestilo}one{# drugo obvestilo}two{# drugi obvestili}few{# druga obvestila}other{# drugih obvestil}}</translation>
@@ -802,6 +805,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="643147933154517414">Končano</translation>
 <translation id="6431865393913628856">Snemanje zaslona</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> na <ph name="RECEIVER_NAME" /></translation>
+<translation id="6447111710783417522"><ph name="DATE" />, dogodki (<ph name="NUMBER" />)</translation>
 <translation id="6452181791372256707">Zavrni</translation>
 <translation id="6453179446719226835">Jezik je spremenjen</translation>
 <translation id="6459472438155181876">Razširitev zaslon na <ph name="DISPLAY_NAME" /></translation>
@@ -865,6 +869,7 @@ Nova namestitev</translation>
 <translation id="6811454077060061666">Google Drive za namizne računalnike ni na voljo.</translation>
 <translation id="6818242057446442178">Nazaj po besedo</translation>
 <translation id="6820676911989879663">Čas za odmor!</translation>
+<translation id="6827049576281411231">Zapri podokno dogodka</translation>
 <translation id="6836499262298959512">Nevarna datoteka</translation>
 <translation id="6837064795450991317">Skrij namizno vrstico</translation>
 <translation id="6852052252232534364">Klik. za akt.</translation>
@@ -872,6 +877,7 @@ Nova namestitev</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Še ena števka}one{Še # števka}two{Še # števki}few{Še # števke}other{Še # števk}}</translation>
 <translation id="6867938213751067702">Prenos je začasno zaustavljen (<ph name="FILENAME" />)</translation>
 <translation id="6878400149835617132">Bližnjica je izklopljena</translation>
+<translation id="6884665277231944629">Nazaj na današnji dan</translation>
 <translation id="6886172995547742638">Naprava <ph name="DEVICE_TYPE" /> morda deluje slabše. Uporabite potrjen napajalnik USB-C z močjo <ph name="PREFERRED_MINIMUM_POWER" /> W ali več.</translation>
 <translation id="688631446150864480">Za preklapljanje med okni pritisnite tipko s puščico dol</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
@@ -958,6 +964,7 @@ Nova namestitev</translation>
 <translation id="7497767806359279797">Izbira jezika in tipkovnice</translation>
 <translation id="7509246181739783082">Preverjanje identitete</translation>
 <translation id="7513622367902644023">Izbran je način posnetka zaslona</translation>
+<translation id="7513922695575567867">Koledar, v tednu <ph name="DATE" />, trenutno izbran datum: <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Prenos</translation>
 <translation id="7526573455193969409">Omrežje je morda nadzorovano</translation>
 <translation id="7536035074519304529">Naslov IP: <ph name="ADDRESS" /></translation>
@@ -967,6 +974,7 @@ Nova namestitev</translation>
 <translation id="7564874036684306347">Če okna premaknete na drugo namizje, lahko pride do nepričakovanega delovanja. Nadaljnja obvestila, okna in pogovorna okna so lahko razdeljena med namizji.</translation>
 <translation id="7569509451529460200">Omogočena sta braillova pisava in ChromeVox</translation>
 <translation id="7569983096843329377">Črna</translation>
+<translation id="757941033127302446">Prijavljen</translation>
 <translation id="7579778809502851308">Zajemanje slike</translation>
 <translation id="7590883480672980941">Nastavitve vnosa</translation>
 <translation id="7593891976182323525">Iskanje ali Shift</translation>
@@ -1040,6 +1048,7 @@ Nova namestitev</translation>
 <translation id="8035152190676905274">Pisalo</translation>
 <translation id="8036504271468642248">Prejšnji stavek</translation>
 <translation id="8042893070933512245">Odpiranje menija z nastavitvami funkcij za ljudi s posebnimi potrebami</translation>
+<translation id="8042925093898452104">Zapri podrobne informacije</translation>
 <translation id="8048123526339889627">Nastavitve za Bluetooth</translation>
 <translation id="8051716679295756675">Predloga <ph name="DESK_TEMPLATE_NAME" /> že obstaja.</translation>
 <translation id="8052898407431791827">Kopirano v odložišče</translation>

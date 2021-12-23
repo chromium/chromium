@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Łączę się z Google. Może to chwilę potrwać…</translation>
 <translation id="1416550906796893042">Wersja aplikacji</translation>
 <translation id="1430915738399379752">Drukuj</translation>
+<translation id="1436784010935106834">Usunięto</translation>
 <translation id="1448440926884431741">Porządkuj obserwowane produkty w Zakładkach</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />: nie udało się udostępnić</translation>
 <translation id="1466383950273130737">Wybierz język Chrome</translation>
@@ -203,7 +204,6 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2172905120685242547">Zamknąć okno?</translation>
 <translation id="2175927920773552910">Kod QR</translation>
 <translation id="218608176142494674">Udostępnianie</translation>
-<translation id="2195339740518523951">Korzystaj z najlepszych zabezpieczeń Chrome</translation>
 <translation id="2200113223741723867">Zarządzanie udostępnianiem danych o korzystaniu</translation>
 <translation id="2218567645332692482">Uaktualnij elementy nawigacyjne do protokołu HTTPS i wyświetlaj ostrzeżenia przed wczytaniem stron, które go nie obsługują</translation>
 <translation id="2227444325776770048">Kontynuuj jako <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4170011742729630528">Usługa jest niedostępna. Spróbuj ponownie później.</translation>
 <translation id="4179980317383591987">Wykorzystano <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">Języki</translation>
-<translation id="4183868528246477015">Szukaj z Obiektywem Google <ph name="BEGIN_NEW" />Nowe<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
 <translation id="4196597275619698563">Utwórz kartę</translation>
 <translation id="4198423547019359126">Brak dostępnych miejsc zapisu pobieranych plików</translation>
@@ -577,7 +576,6 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4411535500181276704">Wersja uproszczona</translation>
 <translation id="4415276339145661267">Zarządzaj kontem Google</translation>
 <translation id="4425140285732600465">Monitoruję cenę. Jeśli na którejkolwiek stronie produkt stanieje, otrzymasz alert.</translation>
-<translation id="4427306783828095590">Silniejsza ochrona lepiej chroni przed phishingiem i złośliwym oprogramowaniem</translation>
 <translation id="4450672886426705087">Wyniki z wyszukiwarki Google.</translation>
 <translation id="4452411734226507615">Zamknij kartę <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Utworzono zakładkę w folderze <ph name="FOLDER_NAME" /></translation>
@@ -1082,6 +1080,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7177466738963138057">Możesz zmienić to później w Ustawieniach</translation>
 <translation id="7177873915659574692">Nie udało się utworzyć kodu QR. URL ma za dużo znaków – ponad <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="7180611975245234373">Odśwież</translation>
+<translation id="718226107353899806">Nie możesz dodać więcej reakcji niż <ph name="MAX_NUM_REACTIONS" />.</translation>
 <translation id="7187993566681480880">Dba o Twoje bezpieczeństwo w Chrome i może poprawiać Twoje bezpieczeństwo w innych aplikacjach Google, gdy się w nich zalogujesz.</translation>
 <translation id="718926126787620637">Lista folderów zakładek otwarta na całą wysokość</translation>
 <translation id="7191430249889272776">Karta otwarta w tle.</translation>
@@ -1245,7 +1244,6 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="8035133914807600019">Nowy folder…</translation>
 <translation id="8037750541064988519">Pozostało: <ph name="DAYS" /> dni</translation>
 <translation id="8037801708772278989">Sprawdzano przed chwilą</translation>
-<translation id="8040831032425909005">Ikona widżetu skrótów i wyszukiwania</translation>
 <translation id="804335162455518893">Nie znaleziono karty SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> karta incognito}few{<ph name="TAB_COUNT_NORMAL" /> karty incognito}many{<ph name="TAB_COUNT_NORMAL" /> kart incognito}other{<ph name="TAB_COUNT_NORMAL" /> karty incognito}}</translation>
 <translation id="8051695050440594747">Dostępne: <ph name="MEGABYTES" /> MB</translation>

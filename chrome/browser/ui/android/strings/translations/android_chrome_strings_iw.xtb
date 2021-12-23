@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">‏המערכת יוצרת קשר עם Google. עוד מעט מסיימים…</translation>
 <translation id="1416550906796893042">גרסת אפליקציה</translation>
 <translation id="1430915738399379752">הדפסה</translation>
+<translation id="1436784010935106834">הוסר</translation>
 <translation id="1448440926884431741">‏יש לך אפשרות לארגן את המוצרים שבמעקב ב-Bookmarks</translation>
 <translation id="1450753235335490080">לא ניתן לשתף את ה<ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">‏בחירת השפה ב-Chrome</translation>
@@ -203,7 +204,6 @@
 <translation id="2172905120685242547">לסגור את החלון?</translation>
 <translation id="2175927920773552910">‏קוד QR</translation>
 <translation id="218608176142494674">שיתוף</translation>
-<translation id="2195339740518523951">‏רוצה ליהנות מהאבטחה החזקה ביותר של Chrome?</translation>
 <translation id="2200113223741723867">ניהול השיתוף של נתוני השימוש במכשיר</translation>
 <translation id="2218567645332692482">‏הניווטים ישודרגו ל-HTTPS ותוצג אזהרה לפני טעינת אתרים שלא תומכים ב-HTTPS</translation>
 <translation id="2227444325776770048">המשך בשם <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@
 <translation id="4170011742729630528">השירות אינו זמין. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="4179980317383591987">נעשה שימוש ב-<ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">שפות</translation>
-<translation id="4183868528246477015">‏חיפוש בעזרת Google Lens <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
 <translation id="4196597275619698563">ליצירת כרטיס</translation>
 <translation id="4198423547019359126">אין מיקומים זמינים להורדה</translation>
@@ -577,7 +576,6 @@
 <translation id="4411535500181276704">מצב טעינה מהירה</translation>
 <translation id="4415276339145661267">‏ניהול חשבון Google שלך</translation>
 <translation id="4425140285732600465">המחיר נמצא במעקב. קבלת התראות על הנחות באתר כלשהו.</translation>
-<translation id="4427306783828095590">עם ההגנה המשופרת, החסימה של פישינג ותוכנות זדוניות מקיפה יותר</translation>
 <translation id="4450672886426705087">‏תוצאות חיפוש מ-Google.</translation>
 <translation id="4452411734226507615">סגירת הכרטיסייה <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">התווסף לסימניות ב-<ph name="FOLDER_NAME" /></translation>
@@ -1082,6 +1080,7 @@
 <translation id="7177466738963138057">אפשר לשנות את ההגדרה הזו מאוחר יותר ב'הגדרות'</translation>
 <translation id="7177873915659574692">‏לא ניתן ליצור קוד QR. כתובת ה-URL מכילה יותר מ-<ph name="CHARACTER_LIMIT" /> תווים.</translation>
 <translation id="7180611975245234373">רענון</translation>
+<translation id="718226107353899806">אפשר להוסיף עד <ph name="MAX_NUM_REACTIONS" /> תגובות</translation>
 <translation id="7187993566681480880">‏מגינה עליך ב-Chrome ועשויה לשפר את האבטחה שלך באפליקציות אחרות של Google. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
 <translation id="718926126787620637">רשימת תיקיות הסימניות שפתוחות בגובה מלא</translation>
 <translation id="7191430249889272776">הכרטיסייה נפתחה ברקע.</translation>
@@ -1245,7 +1244,6 @@
 <translation id="8035133914807600019">תיקייה חדשה…</translation>
 <translation id="8037750541064988519">נותרו <ph name="DAYS" /> ימים</translation>
 <translation id="8037801708772278989">התבצעה בדיקה עכשיו</translation>
-<translation id="8040831032425909005">סמל של ווידג'ט החיפוש בפעולות המהירות</translation>
 <translation id="804335162455518893">‏לא נמצא כרטיס SD</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{כרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) של מצב אנונימי}two{<ph name="TAB_COUNT_NORMAL" /> כרטיסיות של מצב אנונימי}many{<ph name="TAB_COUNT_NORMAL" /> כרטיסיות של מצב אנונימי}other{<ph name="TAB_COUNT_NORMAL" /> כרטיסיות של מצב אנונימי}}</translation>
 <translation id="8051695050440594747">‏‎<ph name="MEGABYTES" />MB זמינים</translation>

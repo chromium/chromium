@@ -235,6 +235,7 @@
 <translation id="3157387275655328056">পড়ার তালিকায় যোগ করুন</translation>
 <translation id="3157684681743766797">সবগুলি চিহ্নিত করুন…</translation>
 <translation id="3169472444629675720">আবিষ্কার করুন</translation>
+<translation id="3174662312949010067">এছাড়াও আপনার অন্যান্য ডিভাইসে সেভ করা পাসওয়ার্ড ব্যবহার করতে পারেন।</translation>
 <translation id="3175081911749765310">ওয়েব পরিষেবা</translation>
 <translation id="3178650076442119961">আজ ব্যবহার করা হয়েছে</translation>
 <translation id="3181825792072797598">সিঙ্ক চালু করুন</translation>
@@ -328,6 +329,7 @@
 <translation id="4042870976416480368">পৃষ্ঠাতে খুঁজুন</translation>
 <translation id="4049507953662678203">আপনি একটি নেটওয়ার্ক সংযোগে আছেন কিনা তা নিশ্চিত করুন এবং আবার চেষ্টা করুন।</translation>
 <translation id="408404951701638773">সার্চ বারে কাজ করা এখন সহজ</translation>
+<translation id="4108314971463891922">ফলো করুন</translation>
 <translation id="411254640334432676">ডাউনলোড করা যায়নি।</translation>
 <translation id="4112644173421521737">Search</translation>
 <translation id="4113030288477039509">আপনার প্রশাসকের দ্বারা পরিচালিত</translation>
@@ -345,6 +347,7 @@
 <translation id="4272631900155121838">একটি QR কোড স্ক্যান করতে, সেটিংস থেকে ক্যামেরা চালু করুন</translation>
 <translation id="4277990410970811858">নিরাপদ ব্রাউজিং</translation>
 <translation id="4281844954008187215">পরিষেবার শর্তাদি</translation>
+<translation id="4304713468139749426">পাসওয়ার্ড ম্যানেজার</translation>
 <translation id="430793432425771671">সবকিছু সিঙ্ক করুন</translation>
 <translation id="4309403553630140242">আরও তথ্য জানতে ডবল ট্যাপ করুন</translation>
 <translation id="430967081421617822">সব সময়</translation>
@@ -544,6 +547,7 @@
 <translation id="6127379762771434464">আইটেম সরানো হয়েছে</translation>
 <translation id="6136914049981179737">সেকেন্ড আগে</translation>
 <translation id="6144589619057374135">'ছদ্মবেশী মোডে' ${url} খুলুন</translation>
+<translation id="6149061208933997199">পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="6159839020698489198">ঐচ্ছিক</translation>
 <translation id="6177442314419606057">Chrome-এ সার্চ করুন</translation>
 <translation id="6184086493125982861">ট্যাব দেখান</translation>
@@ -768,6 +772,7 @@
 <translation id="8076014560081431679">সংরক্ষিত সাইটের সেটিংস মোছা হবে না এবং আপনার ব্রাউজিং অভ্যাস প্রতিফলিত হতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">এই সেটিং ম্যানেজ করা হয়েছে, আরও তথ্য জানতে ডবল ট্যাপ করুন</translation>
 <translation id="8080028325999236607">সমস্ত ট্যাব বন্ধ করুন</translation>
+<translation id="8101409298456377967">পাসওয়ার্ড তৈরি, সেভ ও ম্যানেজ করুন যাতে আপনি সহজেই সাইট ও অ্যাপে সাইন-ইন করতে পারেন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">বন্ধ করুন</translation>
 <translation id="8114753159095730575">ফাইল ডাউনলোড করা যাবে। স্ক্রিনের নিচের দিকে বিকল্পগুলি উপলভ্য।</translation>
 <translation id="8132598642024322408">আগে <ph name="PREVIOUS_PRICE" /> ছিল এখন <ph name="PRICE" />।</translation>

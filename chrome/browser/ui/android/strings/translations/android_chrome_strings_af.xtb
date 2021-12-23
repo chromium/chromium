@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Kontak tans Google. Dit kan dalk 'n minuut neem …</translation>
 <translation id="1416550906796893042">Programweergawe</translation>
 <translation id="1430915738399379752">Druk uit</translation>
+<translation id="1436784010935106834">Verwyder</translation>
 <translation id="1448440926884431741">Organiseer jou nagespoorde produkte in Boekmerke</translation>
 <translation id="1450753235335490080">Kan nie <ph name="CONTENT_TYPE" /> deel nie</translation>
 <translation id="1466383950273130737">Kies Chrome se taal</translation>
@@ -203,7 +204,6 @@ Tik op enige woord om te soek. Raak en hou om meer of minder woorde te kies as j
 <translation id="2172905120685242547">Maak venster toe?</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="218608176142494674">Deling</translation>
-<translation id="2195339740518523951">Kry Chrome se sterkste beskerming</translation>
 <translation id="2200113223741723867">Bestuur deling van gebruikdata</translation>
 <translation id="2218567645332692482">Gradeer navigasie op na HTTPS en waarsku jou voordat werwe gelaai word wat dit nie ondersteun nie</translation>
 <translation id="2227444325776770048">Gaan voort as <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="4170011742729630528">Die diens is nie beskikbaar nie, probeer later weer.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> gebruik</translation>
 <translation id="4181841719683918333">Tale</translation>
-<translation id="4183868528246477015">Soek met Google Lens <ph name="BEGIN_NEW" />Nuut<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">Maak in nuwe oortjie oop</translation>
 <translation id="4196597275619698563">Skep kaart</translation>
 <translation id="4198423547019359126">Geen beskikbare aflaailiggings nie</translation>
@@ -577,7 +576,6 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="4411535500181276704">Ligte modus</translation>
 <translation id="4415276339145661267">Bestuur jou Google-rekening</translation>
 <translation id="4425140285732600465">Spoor tans prys na. Kry kennisgewings as die prys op enige werf daal.</translation>
-<translation id="4427306783828095590">Verbeterde beskerming doen meer om uitvissing en wanware te blokkeer</translation>
 <translation id="4450672886426705087">Soekresultate van Google af</translation>
 <translation id="4452411734226507615">Maak <ph name="TAB_TITLE" />-oortjie toe</translation>
 <translation id="4452548195519783679">Geboekmerk in <ph name="FOLDER_NAME" /></translation>
@@ -1082,6 +1080,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7177466738963138057">Jy kan dit later verander in Instellings</translation>
 <translation id="7177873915659574692">Kan nie QR-kode skep nie. URL is meer as <ph name="CHARACTER_LIMIT" /> karakters.</translation>
 <translation id="7180611975245234373">Herlaai</translation>
+<translation id="718226107353899806">Jy kan tot <ph name="MAX_NUM_REACTIONS" /> reaksies byvoeg</translation>
 <translation id="7187993566681480880">Hou jou veilig op Chrome en kan gebruik word om jou sekuriteit in ander Google-programme te verbeter wanneer jy aangemeld is.</translation>
 <translation id="718926126787620637">Lys boekmerkvouers wat teen volle hoogte oopgemaak is</translation>
 <translation id="7191430249889272776">Oortjie is op die agtergrond oopgemaak.</translation>
@@ -1245,7 +1244,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8035133914807600019">Nuwe vouer …</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> dae oor</translation>
 <translation id="8037801708772278989">Sopas nagegaan</translation>
-<translation id="8040831032425909005">Ikoon vir kitshandeling-en-websoek-legstuk</translation>
 <translation id="804335162455518893">Kon nie SD-kaart kry nie</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> incognito-oortjie}other{<ph name="TAB_COUNT_NORMAL" /> incognito-oortjies}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB beskikbaar</translation>

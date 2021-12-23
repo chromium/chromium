@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Google bilan aloqa o‘rnatilmoqda. Iltimos, kuting…</translation>
 <translation id="1416550906796893042">Ilova versiyasi</translation>
 <translation id="1430915738399379752">Chop etish</translation>
+<translation id="1436784010935106834">Olib tashlangan</translation>
 <translation id="1448440926884431741">Kuzatiladigan mahsulotlarni bukmarklarda tartiblang</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> yuborilmadi</translation>
 <translation id="1466383950273130737">Chrome tilini tanlang</translation>
@@ -203,7 +204,6 @@ Qidiruvni boshlash uchun istalgan soʻz ustiga bosing. Soʻrovni aniqlashtirish 
 <translation id="2172905120685242547">Oyna yopilsinmi?</translation>
 <translation id="2175927920773552910">QR kod</translation>
 <translation id="218608176142494674">Ulashish</translation>
-<translation id="2195339740518523951">Chrome brauzerining kuchli xavfsizligidan foydalaning</translation>
 <translation id="2200113223741723867">Foydalanish statistikasi yuborilishini boshqarish</translation>
 <translation id="2218567645332692482">Barcha sahifalar HTTPS orqali ochilsin va saytlarni yuklashdan oldin ularning protokolga mosligi haqida ogohlantirilsin</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> sifatida davom etish</translation>
@@ -543,7 +543,6 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="4170011742729630528">Xizmat ish faoliyatida emas. Keyinroq qaytadan urinib ko‘ring.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> trafik sarflandi</translation>
 <translation id="4181841719683918333">Tillar</translation>
-<translation id="4183868528246477015"><ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /> Google Lens bilan qidiring</translation>
 <translation id="4195643157523330669">Yangi varaqda ochish</translation>
 <translation id="4196597275619698563">Karta yaratish</translation>
 <translation id="4198423547019359126">Yuklab olish uchun bo‘sh joy mavjud emas</translation>
@@ -577,7 +576,6 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="4411535500181276704">Lite rejimi</translation>
 <translation id="4415276339145661267">Google hisobingizni boshqaring</translation>
 <translation id="4425140285732600465">Narxi kuzatiladi. Har qaysi saytda narxi tushganda xabar olish.</translation>
-<translation id="4427306783828095590">Kengaytirilgan himoya fishing va zararli dasturlarni bloklaydi</translation>
 <translation id="4450672886426705087">Google orqali qidiruv natijalari.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> nomli varaqni yopish</translation>
 <translation id="4452548195519783679">Xatcho‘p “<ph name="FOLDER_NAME" />” jildiga saqlandi</translation>
@@ -1082,6 +1080,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7177466738963138057">Buni keyinroq “Sozlamalar” orqali o‘zgartirishingiz mumkin</translation>
 <translation id="7177873915659574692">QR kod yaratilmadi. URL manzilda <ph name="CHARACTER_LIMIT" /> tadan ortiq belgi kiritildi.</translation>
 <translation id="7180611975245234373">Yangilash</translation>
+<translation id="718226107353899806">Maksimum <ph name="MAX_NUM_REACTIONS" /> ta munosabat qoʻshishingiz mumkin.</translation>
 <translation id="7187993566681480880">Hisobingizga kirganingizda Chrome va boshqa Google ilovalaridan xavfsiz foydalanishingizni taʼminlaydi.</translation>
 <translation id="718926126787620637">Bukmark jildlari roʻyxati toʻliq hajmda ochildi</translation>
 <translation id="7191430249889272776">Ichki oyna orqa fonda ochildi.</translation>
@@ -1245,7 +1244,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8035133914807600019">Yangi jild qo‘shish…</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> kun qoldi</translation>
 <translation id="8037801708772278989">Hozirgina tekshirildi</translation>
-<translation id="8040831032425909005">Tezkor amallar panelidagi qidiruv vidjeti belgisi</translation>
 <translation id="804335162455518893">SD karta topilmadi</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ta inkognito varaq}other{<ph name="TAB_COUNT_NORMAL" /> ta inkognito varaq}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> MB bo‘sh</translation>

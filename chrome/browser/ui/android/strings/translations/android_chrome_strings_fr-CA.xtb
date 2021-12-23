@@ -83,6 +83,7 @@
 <translation id="1414981605391750300">Communication avec Google en cours… Cette opération peut prendre une minute…</translation>
 <translation id="1416550906796893042">Version de l'application</translation>
 <translation id="1430915738399379752">Imprimer</translation>
+<translation id="1436784010935106834">Supprimés</translation>
 <translation id="1448440926884431741">Organisez vos produits suivis dans vos favoris</translation>
 <translation id="1450753235335490080">Impossible de partager l'élément suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1466383950273130737">Choisir la langue de Chrome</translation>
@@ -203,7 +204,6 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <translation id="2172905120685242547">Fermer la fenêtre?</translation>
 <translation id="2175927920773552910">Code QR</translation>
 <translation id="218608176142494674">Partage</translation>
-<translation id="2195339740518523951">Profitez de la sécurité la plus robuste de Chrome</translation>
 <translation id="2200113223741723867">Gérer le partage des données d'utilisation</translation>
 <translation id="2218567645332692482">Met à niveau les navigations vers le protocole HTTPS et vous avertit avant de charger des sites qui ne le prennent pas en charge</translation>
 <translation id="2227444325776770048">Continuer comme <ph name="USER_FULL_NAME" /></translation>
@@ -543,7 +543,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="4170011742729630528">Le service n'est pas disponible. Veuillez réessayer plus tard.</translation>
 <translation id="4179980317383591987"><ph name="AMOUNT" /> utilisé(s)</translation>
 <translation id="4181841719683918333">Langues</translation>
-<translation id="4183868528246477015"><ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /> Rech. avec Lentille Google</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4196597275619698563">Créer une carte</translation>
 <translation id="4198423547019359126">Aucun dossier de téléchargement n'est disponible</translation>
@@ -577,7 +576,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="4411535500181276704">Mode simplifié</translation>
 <translation id="4415276339145661267">Gérer votre compte Google</translation>
 <translation id="4425140285732600465">Suivi des prix activé. Obtenez des alertes si le prix est réduit sur un site.</translation>
-<translation id="4427306783828095590">La protection renforcée en fait plus pour bloquer l'hameçonnage et les logiciels nuisibles</translation>
 <translation id="4450672886426705087">Résultats de la recherche Google.</translation>
 <translation id="4452411734226507615">Fermer l'onglet <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Marqué comme favori dans <ph name="FOLDER_NAME" /></translation>
@@ -1082,6 +1080,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7177466738963138057">Vous pourrez modifier cet élément plus tard dans les paramètres</translation>
 <translation id="7177873915659574692">Impossible de créer un code QR. L'URL contient plus de <ph name="CHARACTER_LIMIT" /> caractères.</translation>
 <translation id="7180611975245234373">Actualiser</translation>
+<translation id="718226107353899806">Vous pouvez ajouter jusqu'à <ph name="MAX_NUM_REACTIONS" /> réactions</translation>
 <translation id="7187993566681480880">Il vous protège dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte.</translation>
 <translation id="718926126787620637">Liste des dossiers de favoris ouverte à pleine hauteur</translation>
 <translation id="7191430249889272776">Onglet ouvert en arrière-plan.</translation>
@@ -1245,7 +1244,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8035133914807600019">Nouveau dossier...</translation>
 <translation id="8037750541064988519">Il reste <ph name="DAYS" /> jours</translation>
 <translation id="8037801708772278989">Dernière vérification : à l'instant</translation>
-<translation id="8040831032425909005">Icône du widget de recherche Actions rapides</translation>
 <translation id="804335162455518893">Carte SD introuvable</translation>
 <translation id="8048533522416101084">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet de navigation privée}one{<ph name="TAB_COUNT_NORMAL" /> onglet de navigation privée}other{<ph name="TAB_COUNT_NORMAL" /> onglets de navigation privée}}</translation>
 <translation id="8051695050440594747"><ph name="MEGABYTES" /> Mo disponible(s)</translation>

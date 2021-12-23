@@ -25,6 +25,7 @@
 <translation id="1145536944570833626">विद्यमान डेटा मेट्नुहोस्।</translation>
 <translation id="1147031633655575115">तपाईंले <ph name="USER" /> का नामबाट साइन इन गर्नुभएको छ</translation>
 <translation id="1154984953698510061">अन्य ट्याबहरू हेर्नुहोस्</translation>
+<translation id="1164064664035028907">भरपर्दो पासवर्ड प्रयोग गर्नुहोस्:</translation>
 <translation id="1165039591588034296">त्रुटि</translation>
 <translation id="1172898394251786223">अर्को क्षेत्र</translation>
 <translation id="1176932207622159128">छविलाई सुरक्षित गर्न सकिदैन</translation>
@@ -235,6 +236,7 @@
 <translation id="3157387275655328056">पाठ्य सूचीमा थप्नुहोस्</translation>
 <translation id="3157684681743766797">सबैलाई चिन्ह लगाउनुहोस्…</translation>
 <translation id="3169472444629675720">पत्ता लगाउनुहोस्</translation>
+<translation id="3174662312949010067">तपाईं सेभ गरिएका पासवर्डहरू अन्य डिभाइसहरूमा पनि प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="3175081911749765310">वेब सेवाहरू</translation>
 <translation id="3178650076442119961">आज सक्रिय</translation>
 <translation id="3181825792072797598">सिंकलाई सक्रिय गर्नुहोस्</translation>
@@ -328,6 +330,7 @@
 <translation id="4042870976416480368">पृष्ठमा खोज्नुहोस्</translation>
 <translation id="4049507953662678203">तपाईँसँग नेटवर्क जडान छ भनी निश्चित गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="408404951701638773">खोज पट्टीमा पुग्न अब सजिलो छ</translation>
+<translation id="4108314971463891922">फलो गर्नुहोस्</translation>
 <translation id="411254640334432676">डाउनलोड असफल भयो।</translation>
 <translation id="4112644173421521737">खोज्नुहोस्</translation>
 <translation id="4113030288477039509">तपाईंको व्यवस्थापकबाट व्यवस्थित गरिएको</translation>
@@ -345,6 +348,7 @@
 <translation id="4272631900155121838">QR कोड स्क्यान गर्न, सेटिङहरूबाट क्यामेरालाई सक्षम गर्नुहोस्</translation>
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4281844954008187215">सेवाका सर्तहरू</translation>
+<translation id="4304713468139749426">पासवर्ड म्यानेजर</translation>
 <translation id="430793432425771671">सबैकुरा सिंक गर्नुहोस्</translation>
 <translation id="4309403553630140242">थप जानकारीका लागि डबल ट्याप गर्नुहोस्</translation>
 <translation id="430967081421617822">सर्वकालीन</translation>
@@ -543,6 +547,7 @@
 <translation id="6127379762771434464">वस्तुलाई हटाइयो</translation>
 <translation id="6136914049981179737">सेकेन्ड अघि</translation>
 <translation id="6144589619057374135">${url} इन्कोग्निटो मोडमा खोल्नुहोस्</translation>
+<translation id="6149061208933997199">पासवर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="6159839020698489198">ऐच्छिक</translation>
 <translation id="6177442314419606057">Chrome मा खोज्नुहोस्</translation>
 <translation id="6184086493125982861">ट्याबहरू देखाउनुहोस्</translation>
@@ -635,6 +640,7 @@
 <translation id="6807889908376551050">सबै देखाउनुहोस्...</translation>
 <translation id="681368974849482173">वस्तु सिर्जना गरियो</translation>
 <translation id="681450999322335505">तपाईंको सङ्गठनले सिंक गर्ने सुविधा अफ गरेको छ।</translation>
+<translation id="683022620450280906">तपाईं सेभ गरिएका पासवर्डहरू जुनसुकै डिभाइसमा प्रयोग गर्न सक्नुहुन्छ। ती पासवर्डहरू <ph name="EMAIL" /> को Google पासवर्ड म्यानेजरमा सेभ गरिन्छन्</translation>
 <translation id="6830804042318138535">थप पढ्नुहोस्</translation>
 <translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>
 <translation id="6842136130964845393">तपाईं आफूले सेभ गरेका पासवर्डहरू जुनसुकै बेला हेर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्न साइन इन गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
@@ -767,6 +773,7 @@
 <translation id="8076014560081431679">सुरक्षित गरिएका साइटका सेटिङहरूलाई मेटाइने छैन र त्यसले तपाईँको ब्राउज गर्ने बानीलाई झल्काउन सक्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">यो सेटिङ व्यवस्थापन गरिएको छ। थप जानकारीका लागि डबल ट्याप गर्नुहोस्</translation>
 <translation id="8080028325999236607">सबै ट्याबहरू बन्द गर्नुहोस्</translation>
+<translation id="8101409298456377967">तपाईं साइट र एपहरूमा सजिलै साइन इन गर्न चाहनुहुन्छ भने पासवर्ड सिर्जना गर्नुहोस्, सेभ गर्नुहोस् र व्यवस्थापन गर्नुहोस्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8105368624971345109">निष्क्रिय पार्नुहोस्</translation>
 <translation id="8114753159095730575">डाउनलोड गर्न फाइल उपलब्ध छ। स्क्रिनको फेदनजिकै विकल्पहरू उपलब्ध छन्।</translation>
 <translation id="8132598642024322408">अहिले <ph name="PRICE" /> पर्छ, पहिले <ph name="PREVIOUS_PRICE" /> पर्थ्यो।</translation>
