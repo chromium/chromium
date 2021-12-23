@@ -83,8 +83,15 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   EXPECT_EQ(0u, entries.size());
 }
 
+// Flaky on Win and Linux. http://crbug.com/1282122
+#if defined(OS_WIN) || defined(OS_LINUX)
+#define MAYBE_DirectNavigationNoInteraction \
+  DISABLED_DirectNavigationNoInteraction
+#else
+#define MAYBE_DirectNavigationNoInteraction DirectNavigationNoInteraction
+#endif
 IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
-                       DirectNavigationNoInteraction) {
+                       MAYBE_DirectNavigationNoInteraction) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
