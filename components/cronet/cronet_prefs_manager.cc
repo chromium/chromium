@@ -179,6 +179,7 @@ class NetworkQualitiesPrefDelegateImpl
             weak_ptr_factory_.GetWeakPtr()),
         base::Seconds(kUpdatePrefsDelaySeconds));
   }
+  // TODO(crbug.com/1187061): Refactor this to remove DictionaryValue.
   std::unique_ptr<base::DictionaryValue> GetDictionaryValue() override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     UMA_HISTOGRAM_EXACT_LINEAR("NQE.Prefs.ReadCount", 1, 2);
