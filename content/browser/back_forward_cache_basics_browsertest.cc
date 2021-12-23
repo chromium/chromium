@@ -967,37 +967,30 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   EXPECT_TRUE(ExecJs(rfh_1, R"(
     window.onpagehide = (e) => {
-      if (e.persisted) {
-        window.domAutomationController.send('pagehide.persisted');
-      }
+      console.log("onagepagehide", e.persisted);
+      localStorage.setItem('pagehide_persisted',
+        e.persisted ? 'true' : 'false');
     }
     document.onvisibilitychange = () => {
-      if (document.visibilityState == 'hidden') {
-        window.domAutomationController.send('visibilitychange.hidden');
-      }
+      localStorage.setItem('visibilitychange',
+        document.visibilityState);
     }
     window.onunload = () => {
-      window.domAutomationController.send('unload');
+      localStorage.setItem('unload', true);
     }
   )"));
 
-  DOMMessageQueue dom_message_queue(shell()->web_contents());
   // 3) Navigate to |url_2|.
   EXPECT_TRUE(NavigateToURL(shell(), url_2));
   // |rfh_1| will not get into the back-forward cache and eventually get deleted
   // because it uses a blocklisted feature.
   delete_observer_rfh_1.WaitUntilDeleted();
 
-  // Only the pagehide and visibilitychange events will be dispatched.
-  int num_messages_received = 0;
-  std::string expected_messages[] = {"\"pagehide.persisted\"",
-                                     "\"visibilitychange.hidden\""};
-  std::string message;
-  while (dom_message_queue.PopMessage(&message)) {
-    EXPECT_EQ(expected_messages[num_messages_received], message);
-    num_messages_received++;
-  }
-  EXPECT_EQ(num_messages_received, 2);
+  EXPECT_EQ("true",
+            GetLocalStorage(current_frame_host(), "pagehide_persisted"));
+  EXPECT_EQ("hidden",
+            GetLocalStorage(current_frame_host(), "visibilitychange"));
+  EXPECT_EQ(nullptr, GetLocalStorage(current_frame_host(), "unload"));
 }
 
 // Track the events dispatched when a page is deemed ineligible for back-forward
