@@ -908,7 +908,11 @@ void TextFinder::Trace(Visitor* visitor) const {
 }
 
 void TextFinder::Scroll(std::unique_ptr<AsyncScrollContext> context) {
-  AutoExpandSearchableHiddenElementsUpFrameTree(context->range);
+  // AutoExpandSearchableHiddenElementsUpFrameTree assumes that the range has
+  // nodes in it.
+  if (!context->range->collapsed() && context->range->IsConnected()) {
+    AutoExpandSearchableHiddenElementsUpFrameTree(context->range);
+  }
 
   // During the async step or AutoExpandSearchableHiddenElementsUpFrameTree, the
   // match may have been removed from the dom, gotten DisplayLocked, etc.
