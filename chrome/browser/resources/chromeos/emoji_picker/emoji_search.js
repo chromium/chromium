@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EmojiButton} from './emoji_button.js';
+import {EmojiCategoryButton} from './emoji_category_button.js';
 import Fuse from './fuse.js';
 import {EmojiGroupData, EmojiVariants} from './types.js';
 

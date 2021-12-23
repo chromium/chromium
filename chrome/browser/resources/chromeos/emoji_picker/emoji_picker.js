@@ -175,6 +175,8 @@ export class EmojiPicker extends PolymerElement {
     /** @private {boolean} */
     this.groupTabsMoving = false;
 
+    /** @private {boolean} */
+    this.v2Enabled = false;
 
     this.addEventListener(
         GROUP_BUTTON_CLICK, ev => this.selectGroup(ev.detail.group));
@@ -242,7 +244,7 @@ export class EmojiPicker extends PolymerElement {
    * @param {!Array<!Feature>} featureList
    */
   setActiveFeatures(featureList) {
-    // TODO(b/207451560): Handle active features.
+    this.v2Enabled = featureList.includes(Feature.EMOJI_PICKER_EXTENSION);
   }
 
   fetchEmojiData() {

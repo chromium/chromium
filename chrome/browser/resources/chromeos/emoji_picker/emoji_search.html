@@ -2,6 +2,7 @@
   :host {
     --emoji-picker-search-margins: 14px;
     --emoji-picker-search-height: 40px;
+    --emoji-picker-top-bar-bottom-margin: 8px;
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
@@ -28,7 +29,6 @@
     border: 2px solid transparent;
     border-radius: 40px;
     height: var(--emoji-picker-search-height);
-    margin-bottom: 8px;
   }
 
   cr-search-field:focus-within {
@@ -84,6 +84,7 @@
   }
   #search-shadow {
     background-color: var(--cros-bg-color);
+    margin-bottom: var(--emoji-picker-top-bar-bottom-margin);
     margin-inline-end: calc(0px - var(--emoji-picker-side-padding));
     margin-inline-start: calc(0px - var(--emoji-picker-side-padding));
     padding-inline-end: var(--emoji-picker-side-padding);
@@ -91,6 +92,10 @@
     position: sticky;
     top:0;
     width: calc(var(--emoji-picker-width) - 2*var(--emoji-picker-side-padding));
+  }
+
+  [extension-v2]#search-shadow {
+    display: flex;
   }
 
   #results {
@@ -103,10 +108,32 @@
   #no-emoji-image {
     display: block;
   }
+
+  #category-button-group {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-inline-start: 20px;
+  }
+
+  [extension-v2] #search {
+    width: 240px;
+  }
 </style>
 
-<div id="search-shadow">
-<cr-search-field id="search" label="Search" autofocus="true"></cr-search-field>
+<div id="search-shadow" extension-v2$="[[v2Enabled]]">
+  <cr-search-field id="search" label="Search" autofocus="true">
+  </cr-search-field>
+  <template is="dom-if" if="[[v2Enabled]]">
+    <div id="category-button-group">
+      <emoji-category-button icon="emoji_picker:insert_emoticon">
+      </emoji-category-button>
+      <emoji-category-button icon="emoji_picker_v2:symbol_omega">
+      </emoji-category-button>
+      <emoji-category-button icon="emoji_picker_v2:emoticon_gssmiley">
+      </emoji-category-button>
+    </div>
+  </template>
 </div>
 
 <template is="dom-if" if="[[search]]">

@@ -1,0 +1,23 @@
+<style>
+  :host {
+    height: 32px;
+    width: 32px;
+  }
+
+  #category-button {
+    --cr-icon-button-fill-color: var(--cros-icon-color-primary);
+    border-radius: 50%;
+    display: block;
+    height: 100%;
+    /* cancel internal margin-inline-start of cr-icon-button */
+    margin: 0;
+    width: 100%;
+  }
+</style>
+
+
+<cr-icon-button
+  id="category-button"
+  iron-icon="[[icon]]"
+>
+</cr-icon-button>
