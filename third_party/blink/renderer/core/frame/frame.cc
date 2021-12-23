@@ -573,6 +573,14 @@ Frame* Frame::Top(FrameTreeBoundary frame_tree_boundary) {
   return parent;
 }
 
+Frame* Frame::FirstChild(FrameTreeBoundary frame_tree_boundary) const {
+  if (frame_tree_boundary == FrameTreeBoundary::kFenced && first_child_ &&
+      first_child_->Owner()->GetFramePolicy().is_fenced) {
+    return nullptr;
+  }
+  return first_child_;
+}
+
 bool Frame::Swap(WebFrame* new_web_frame) {
   DCHECK(IsAttached());
 

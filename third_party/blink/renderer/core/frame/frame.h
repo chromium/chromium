@@ -352,7 +352,8 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
       FrameTreeBoundary frame_tree_boundary = FrameTreeBoundary::kIgnoreFence);
 
   // Returns the first child frame.
-  Frame* FirstChild() const { return first_child_; }
+  Frame* FirstChild(FrameTreeBoundary frame_tree_boundary =
+                        FrameTreeBoundary::kIgnoreFence) const;
 
   // Returns the previous sibling frame.
   Frame* PreviousSibling() const { return previous_sibling_; }

@@ -129,8 +129,8 @@ Frame* FrameTree::NextSibling() const {
   return this_frame_->NextSibling();
 }
 
-Frame* FrameTree::FirstChild() const {
-  return this_frame_->FirstChild();
+Frame* FrameTree::FirstChild(FrameTreeBoundary frame_tree_boundary) const {
+  return this_frame_->FirstChild(frame_tree_boundary);
 }
 
 Frame* FrameTree::ScopedChild(unsigned index) const {
@@ -262,7 +262,8 @@ Frame* FrameTree::FindFrameForNavigationInternal(const AtomicString& name,
 
   // Search subtree starting with this frame first.
   for (Frame* frame = this_frame_; frame;
-       frame = frame->Tree().TraverseNext(this_frame_)) {
+       frame = frame->Tree().TraverseNext(this_frame_,
+                                          FrameTreeBoundary::kFenced)) {
     if (frame->Tree().GetName() == name &&
         To<LocalFrame>(this_frame_.Get())->CanNavigate(*frame, url)) {
       return frame;
@@ -328,8 +329,9 @@ bool FrameTree::IsDescendantOf(const Frame* ancestor) const {
 }
 
 DISABLE_CFI_PERF
-Frame* FrameTree::TraverseNext(const Frame* stay_within) const {
-  Frame* child = FirstChild();
+Frame* FrameTree::TraverseNext(const Frame* stay_within,
+                               FrameTreeBoundary frame_tree_boundary) const {
+  Frame* child = FirstChild(frame_tree_boundary);
   if (child) {
     DCHECK(!stay_within || child->Tree().IsDescendantOf(stay_within));
     return child;

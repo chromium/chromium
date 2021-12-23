@@ -69,10 +69,13 @@ class CORE_EXPORT FrameTree final {
   Frame& Top(FrameTreeBoundary frame_tree_boundary =
                  FrameTreeBoundary::kIgnoreFence) const;
   Frame* NextSibling() const;
-  Frame* FirstChild() const;
+  Frame* FirstChild(FrameTreeBoundary frame_tree_boundary =
+                        FrameTreeBoundary::kIgnoreFence) const;
 
   bool IsDescendantOf(const Frame* ancestor) const;
-  Frame* TraverseNext(const Frame* stay_within = nullptr) const;
+  Frame* TraverseNext(const Frame* stay_within = nullptr,
+                      FrameTreeBoundary frame_tree_boundary =
+                          FrameTreeBoundary::kIgnoreFence) const;
 
   // For plugins and tests only.
   Frame* FindFrameByName(const AtomicString& name) const;
