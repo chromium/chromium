@@ -643,6 +643,12 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Returns true if |process_id| is a controllee process ID of this version.
   bool IsControlleeProcessID(int process_id) const;
 
+  // Executes the given `script` in the associated worker. If `callback` is
+  // non-empty, invokes `callback` with the result of the script after
+  // execution. See also service_worker.mojom.
+  void ExecuteScriptForTest(const std::string& script,
+                            ServiceWorkerScriptExecutionCallback callback);
+
  private:
   friend class base::RefCounted<ServiceWorkerVersion>;
   friend class EmbeddedWorkerInstanceTest;

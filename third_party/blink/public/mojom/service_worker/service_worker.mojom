@@ -7,6 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/background_fetch/background_fetch.mojom";
@@ -307,4 +308,19 @@ interface ServiceWorker {
 
   // Adds a message to DevTools console which is associated with this worker.
   AddMessageToConsole(ConsoleMessageLevel level, string message);
+
+  // Executes the given `javascript` in the context of the running worker.
+  // `wants_result` indicates whether a result from the executing `javascript`
+  // should be returned via the provided callback.
+  // Currently, this only supports synchronous script execution, and the
+  // returned value is the result of the final execution in the provided
+  // javascript.
+  // If an exception is thrown, a stringified version is returned through the
+  // error parameter.
+  // TODO(devlin): Expand this to allow returning a promise for asynchronous
+  // execution.
+  ExecuteScriptForTest(
+      mojo_base.mojom.BigString16 javascript,
+      bool wants_result)
+      => (mojo_base.mojom.Value result, string? error);
 };

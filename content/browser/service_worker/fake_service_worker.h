@@ -134,6 +134,9 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
   void SetIdleDelay(base::TimeDelta delay) override;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                            const std::string& message) override;
+  void ExecuteScriptForTest(const std::u16string& script,
+                            bool wants_result,
+                            ExecuteScriptForTestCallback callback) override;
 
   virtual void OnConnectionError();
 

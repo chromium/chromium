@@ -1079,6 +1079,17 @@ bool ServiceWorkerVersion::IsControlleeProcessID(int process_id) const {
   return false;
 }
 
+void ServiceWorkerVersion::ExecuteScriptForTest(
+    const std::string& script,
+    ServiceWorkerScriptExecutionCallback callback) {
+  DCHECK(running_status() == EmbeddedWorkerStatus::STARTING ||
+         running_status() == EmbeddedWorkerStatus::RUNNING)
+      << "Cannot execute a script in a non-running worker!";
+  bool wants_result = !callback.is_null();
+  endpoint()->ExecuteScriptForTest(  // IN-TEST
+      base::UTF8ToUTF16(script), wants_result, std::move(callback));
+}
+
 void ServiceWorkerVersion::SetValidOriginTrialTokens(
     const blink::TrialTokenValidator::FeatureToTokensMap& tokens) {
   origin_trial_tokens_ = validator_.GetValidTokens(

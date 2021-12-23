@@ -516,6 +516,21 @@ ServiceWorkerContextWrapper::StartingExternalRequest(
   return version->StartExternalRequest(request_uuid);
 }
 
+bool ServiceWorkerContextWrapper::ExecuteScriptForTest(
+    const std::string& script,
+    int64_t service_worker_version_id,
+    ServiceWorkerScriptExecutionCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!context())
+    return false;
+  scoped_refptr<ServiceWorkerVersion> version =
+      context()->GetLiveVersion(service_worker_version_id);
+  if (!version)
+    return false;
+  version->ExecuteScriptForTest(script, std::move(callback));  // IN-TEST
+  return true;
+}
+
 ServiceWorkerExternalRequestResult
 ServiceWorkerContextWrapper::FinishedExternalRequest(
     int64_t service_worker_version_id,

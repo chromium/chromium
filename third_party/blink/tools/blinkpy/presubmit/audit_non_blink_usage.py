@@ -1641,6 +1641,15 @@ _CONFIG = [
             'net::RedirectInfo',
         ],
     },
+    {
+        # base::Value is used in test-only script execution in worker contexts.
+        'paths': [
+            'third_party/blink/renderer/modules/service_worker/service_worker_global_scope.cc',
+        ],
+        'allowed': [
+            'base::Value',
+        ],
+    },
 ]
 
 

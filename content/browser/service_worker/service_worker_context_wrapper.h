@@ -173,6 +173,10 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       int64_t service_worker_version_id,
       const std::string& request_uuid) override;
   size_t CountExternalRequestsForTest(const blink::StorageKey& key) override;
+  bool ExecuteScriptForTest(
+      const std::string& script,
+      int64_t service_worker_version_id,
+      ServiceWorkerScriptExecutionCallback callback) override;
   bool MaybeHasRegistrationForStorageKey(const blink::StorageKey& key) override;
   void GetAllOriginsInfo(GetUsageInfoCallback callback) override;
   void DeleteForStorageKey(const blink::StorageKey& key,

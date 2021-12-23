@@ -486,6 +486,9 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   void SetIdleDelay(base::TimeDelta delay) override;
   void AddMessageToConsole(mojom::blink::ConsoleMessageLevel,
                            const String& message) override;
+  void ExecuteScriptForTest(const String& script,
+                            bool wants_result,
+                            ExecuteScriptForTestCallback callback) override;
 
   void NoteNewFetchEvent(const mojom::blink::FetchAPIRequest& request);
   void NoteRespondedToFetchEvent(const KURL& request_url, bool range_request);

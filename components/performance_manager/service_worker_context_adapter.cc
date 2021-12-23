@@ -140,6 +140,14 @@ size_t ServiceWorkerContextAdapter::CountExternalRequestsForTest(
   return 0u;
 }
 
+bool ServiceWorkerContextAdapter::ExecuteScriptForTest(
+    const std::string& script,
+    int64_t version_id,
+    content::ServiceWorkerScriptExecutionCallback callback) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 bool ServiceWorkerContextAdapter::MaybeHasRegistrationForStorageKey(
     const blink::StorageKey& key) {
   NOTIMPLEMENTED();

@@ -243,6 +243,13 @@ void FakeServiceWorker::AddMessageToConsole(
   NOTIMPLEMENTED();
 }
 
+void FakeServiceWorker::ExecuteScriptForTest(
+    const std::u16string& script,
+    bool wants_result,
+    ExecuteScriptForTestCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 void FakeServiceWorker::OnConnectionError() {
   // Destroys |this|.
   helper_->RemoveServiceWorker(this);

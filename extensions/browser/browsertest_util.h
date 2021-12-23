@@ -7,6 +7,12 @@
 
 #include <string>
 
+#include "base/callback_forward.h"
+
+namespace base {
+class Value;
+}  // namespace base
+
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -41,6 +47,15 @@ std::string ExecuteScriptInBackgroundPage(
 bool ExecuteScriptInBackgroundPageNoWait(content::BrowserContext* context,
                                          const std::string& extension_id,
                                          const std::string& script);
+
+// Executes the given `script` in the context of the background service worker
+// registered by the extension with the given `extension_id`. If non-empty,
+// `callback` is invoked with the result of the execution.
+void ExecuteScriptInServiceWorker(
+    content::BrowserContext* browser_context,
+    const std::string& extension_id,
+    const std::string& script,
+    base::OnceCallback<void(base::Value)> callback);
 
 }  // namespace browsertest_util
 }  // namespace extensions

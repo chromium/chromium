@@ -14,6 +14,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_external_request_result.h"
 #include "content/public/browser/service_worker_running_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
@@ -62,6 +63,12 @@ enum class StartServiceWorkerForNavigationHintResult {
   // Add new result to record here.
   kMaxValue = FAILED,
 };
+
+// A callback invoked with the result of executing script in a service worker
+// context.
+using ServiceWorkerScriptExecutionCallback =
+    base::OnceCallback<void(base::Value value,
+                            const absl::optional<std::string>& error)>;
 
 // Represents the per-StoragePartition service worker data.
 //
@@ -153,6 +160,14 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // Returns the pending external request count for the worker with the
   // specified `key`.
   virtual size_t CountExternalRequestsForTest(const blink::StorageKey& key) = 0;
+
+  // Executes the given `script` in the context of the worker specified by the
+  // given `service_worker_version_id`. If non-empty, `callback` is invoked
+  // with the result of the script. See also service_worker.mojom.
+  virtual bool ExecuteScriptForTest(
+      const std::string& script,
+      int64_t service_worker_version_id,
+      ServiceWorkerScriptExecutionCallback callback) = 0;
 
   // Whether `key` has any registrations. Uninstalling and uninstalled
   // registrations do not cause this to return true, that is, only registrations

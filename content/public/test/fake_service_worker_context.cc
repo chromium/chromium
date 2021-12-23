@@ -58,6 +58,13 @@ size_t FakeServiceWorkerContext::CountExternalRequestsForTest(
   NOTREACHED();
   return 0u;
 }
+bool FakeServiceWorkerContext::ExecuteScriptForTest(
+    const std::string& script,
+    int64_t version_id,
+    ServiceWorkerScriptExecutionCallback callback) {
+  NOTREACHED();
+  return false;
+}
 bool FakeServiceWorkerContext::MaybeHasRegistrationForStorageKey(
     const blink::StorageKey& key) {
   return registered_storage_keys_.find(key) != registered_storage_keys_.end();
