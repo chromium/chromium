@@ -292,6 +292,9 @@ class PageLifecycleStateManagerTestDelegate
   base::OnceClosure disable_eviction_sent_;
 };
 
+// Gets the value of a key in local storage by evaluating JS.
+EvalJsResult GetLocalStorage(RenderFrameHostImpl* rfh, std::string key);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_BACK_FORWARD_CACHE_BROWSERTEST_H_

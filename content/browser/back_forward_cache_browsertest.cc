@@ -121,6 +121,10 @@ void WaitForDOMContentLoaded(RenderFrameHostImpl* rfh) {
   observer.Wait();
 }
 
+EvalJsResult GetLocalStorage(RenderFrameHostImpl* rfh, std::string key) {
+  return EvalJs(rfh, JsReplace("localStorage.getItem($1)", key));
+}
+
 BackForwardCacheBrowserTest::BackForwardCacheBrowserTest() = default;
 
 BackForwardCacheBrowserTest::~BackForwardCacheBrowserTest() {
@@ -1879,9 +1883,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
     }
   )"));
   // |visibilitychange_storage| should be set to its initial correct value.
-  EXPECT_EQ(
-      "not_dispatched",
-      EvalJs(main_frame_1, "localStorage.getItem('visibilitychange_storage')"));
+  EXPECT_EQ("not_dispatched",
+            GetLocalStorage(main_frame_1, "visibilitychange_storage"));
 
   // 2) Navigate cross-site to |url_2|. We need to navigate cross-site to make
   // sure we won't run pagehide and visibilitychange during new page's commit,
@@ -1899,10 +1902,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Check that the value for 'pagehide_storage' and 'visibilitychange_storage'
   // are set correctly.
   EXPECT_EQ("dispatched_once",
-            EvalJs(main_frame_3, "localStorage.getItem('pagehide_storage')"));
-  EXPECT_EQ(
-      "not_dispatched",
-      EvalJs(main_frame_3, "localStorage.getItem('visibilitychange_storage')"));
+            GetLocalStorage(main_frame_3, "pagehide_storage"));
+  EXPECT_EQ("not_dispatched",
+            GetLocalStorage(main_frame_3, "visibilitychange_storage"));
 }
 
 // Tests that we're getting the correct TextInputState and focus updates when a

@@ -1129,8 +1129,7 @@ IN_PROC_BROWSER_TEST_P(
   // usage, so pagehide's persisted is true, since the page might still get into
   // BFCache.
   EXPECT_EQ(use_sticky_feature == StickinessType::kSticky ? "false" : "true",
-            EvalJs(current_frame_host(),
-                   "localStorage.getItem('pagehide_persisted')"));
+            GetLocalStorage(current_frame_host(), "pagehide_persisted"));
 
   // 7) Confirm that the page was not restored from the BFCache in both the
   // sticky and non-sticky cases.
@@ -1499,10 +1498,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // Check that the value for 'pagehide_storage' and 'visibilitychange_storage'
   // are set correctly.
   EXPECT_EQ("dispatched_once",
-            EvalJs(main_frame_3, "localStorage.getItem('pagehide_storage')"));
-  EXPECT_EQ(
-      "dispatched_once",
-      EvalJs(main_frame_3, "localStorage.getItem('visibilitychange_storage')"));
+            GetLocalStorage(main_frame_3, "pagehide_storage"));
+  EXPECT_EQ("dispatched_once",
+            GetLocalStorage(main_frame_3, "visibilitychange_storage"));
 }
 
 // Tests that the history value saved in the renderer is updated correctly when
