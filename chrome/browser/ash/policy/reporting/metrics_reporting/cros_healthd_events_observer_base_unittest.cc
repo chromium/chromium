@@ -12,7 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -64,7 +64,9 @@ class CrosHealthdEventsObserverBaseTest : public ::testing::Test {
 
   ~CrosHealthdEventsObserverBaseTest() override = default;
 
-  void SetUp() override { ::chromeos::CrosHealthdClient::InitializeFake(); }
+  void SetUp() override {
+    ::chromeos::cros_healthd::FakeCrosHealthdClient::InitializeFake();
+  }
 
   void TearDown() override {
     ::chromeos::CrosHealthdClient::Shutdown();
@@ -104,7 +106,7 @@ TEST_F(CrosHealthdEventsObserverBaseTest, Default) {
   chromeos::CrosHealthdClient::Shutdown();
   chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
   // Restart cros_healthd.
-  chromeos::CrosHealthdClient::InitializeFake();
+  chromeos::cros_healthd::FakeCrosHealthdClient::InitializeFake();
   audio_observer.FlushForTesting();
   chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
 

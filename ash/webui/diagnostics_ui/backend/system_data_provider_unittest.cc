@@ -22,9 +22,9 @@
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -487,7 +487,7 @@ class SystemDataProviderTest : public testing::Test {
  public:
   SystemDataProviderTest() {
     chromeos::PowerManagerClient::InitializeFake();
-    chromeos::CrosHealthdClient::InitializeFake();
+    chromeos::cros_healthd::FakeCrosHealthdClient::InitializeFake();
     system_data_provider_ = std::make_unique<SystemDataProvider>();
   }
 

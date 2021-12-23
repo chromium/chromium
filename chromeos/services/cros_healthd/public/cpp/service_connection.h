@@ -377,6 +377,9 @@ class ServiceConnection {
   // observe destruction of the cros_healthd client.
   virtual void FlushForTesting() = 0;
 
+  // Reset the callbacks for testing.
+  virtual void ResetCallbacksForTesting() = 0;
+
  protected:
   ServiceConnection() = default;
   virtual ~ServiceConnection() = default;

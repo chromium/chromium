@@ -83,6 +83,7 @@ source_set("browser_tests") {
     "//chromeos/dbus/cros_healthd",
     "//chromeos/dbus/debug_daemon",
     "//chromeos/services/cros_healthd/public/cpp",
+    "//chromeos/services/cros_healthd/public/cpp:test",
     "//chromeos/services/cros_healthd/public/mojom",
     "//components/user_manager",
     "//extensions:test_support",
