@@ -264,7 +264,7 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRun) {
                               TestSchemeClassifier());
   ExpectPlatformSpecificDefaultZeroSuggestBehavior(
       ntp_input,
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if defined(OS_IOS)
       /*remote_no_url_allowed=*/false);
 #else
       /*remote_no_url_allowed=*/true);
