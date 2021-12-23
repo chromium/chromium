@@ -42955,6 +42955,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 <enum name="HomedirEncryptionType">
   <int value="1" label="Ecryptfs"/>
   <int value="2" label="Ext4 Dir Encryption"/>
+  <int value="3" label="Dmcrypt"/>
 </enum>
 
 <enum name="HomepageLocationType">
