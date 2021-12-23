@@ -32,10 +32,10 @@
 
 namespace {
 
-const char kExpirationPath[] = "expiration";
-const char kSessionModelPath[] = "model";
-const char kSettingPath[] = "setting";
-const char kLastModifiedPath[] = "last_modified";
+const char kExpirationKey[] = "expiration";
+const char kSessionModelKey[] = "model";
+const char kSettingKey[] = "setting";
+const char kLastModifiedKey[] = "last_modified";
 
 bool IsValueAllowedForType(const base::Value* value, ContentSettingsType type) {
   const content_settings::ContentSettingsInfo* info =
@@ -59,10 +59,10 @@ std::string GetString(const base::Value& dict, const char* key) {
   return value ? *value : std::string();
 }
 
-// Extract a timestamp from |dictionary[kLastModifiedPath]|.
+// Extract a timestamp from |dictionary[kLastModifiedKey]|.
 // Will return base::Time() if no timestamp exists.
-base::Time GetTimeStamp(const base::DictionaryValue* dictionary) {
-  std::string timestamp_str = GetString(*dictionary, kLastModifiedPath);
+base::Time GetTimeStamp(const base::Value& dictionary) {
+  std::string timestamp_str = GetString(dictionary, kLastModifiedKey);
   int64_t timestamp = 0;
   base::StringToInt64(timestamp_str, &timestamp);
   base::Time last_modified =
@@ -70,11 +70,10 @@ base::Time GetTimeStamp(const base::DictionaryValue* dictionary) {
   return last_modified;
 }
 
-// Extract a timestamp from |dictionary[kExpirationPath]|. Will return
+// Extract a timestamp from |dictionary[kExpirationKey]|. Will return
 // base::Time() if no timestamp exists.
-base::Time GetExpiration(const base::DictionaryValue* dictionary) {
-  std::string expiration_timestamp_str =
-      GetString(*dictionary, kExpirationPath);
+base::Time GetExpiration(const base::Value& dictionary) {
+  std::string expiration_timestamp_str = GetString(dictionary, kExpirationKey);
   int64_t expiration_timestamp = 0;
   base::StringToInt64(expiration_timestamp_str, &expiration_timestamp);
   base::Time expiration = base::Time::FromDeltaSinceWindowsEpoch(
@@ -82,11 +81,10 @@ base::Time GetExpiration(const base::DictionaryValue* dictionary) {
   return expiration;
 }
 
-// Extract a SessionModel from |dictionary[kSessionModelPath]|. Will return
+// Extract a SessionModel from |dictionary[kSessionModelKey]|. Will return
 // SessionModel::Durable if no model exists.
-content_settings::SessionModel GetSessionModel(
-    const base::DictionaryValue* dictionary) {
-  int model_int = dictionary->FindIntKey(kSessionModelPath).value_or(0);
+content_settings::SessionModel GetSessionModel(const base::Value& dictionary) {
+  int model_int = dictionary.FindIntKey(kSessionModelKey).value_or(0);
   if ((model_int >
        static_cast<int>(content_settings::SessionModel::kMaxValue)) ||
       (model_int < 0)) {
@@ -262,8 +260,8 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
   value_map_.clear();
 
   // The returned value could be nullptr if the pref has never been set.
-  const base::DictionaryValue* all_settings_dictionary =
-      &base::Value::AsDictionaryValue(*prefs_->GetDictionary(pref_name_));
+  const base::Value* all_settings_dictionary =
+      prefs_->GetDictionary(pref_name_);
   if (!all_settings_dictionary)
     return;
 
@@ -281,9 +279,8 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
   // patterns is to be re-keyed under the canonical pattern.
   base::StringPairs non_canonical_patterns_to_canonical_pattern;
 
-  for (base::DictionaryValue::Iterator i(*all_settings_dictionary);
-       !i.IsAtEnd(); i.Advance()) {
-    const std::string& pattern_str(i.key());
+  for (const auto i : all_settings_dictionary->DictItems()) {
+    const std::string& pattern_str(i.first);
     PatternPair pattern_pair = ParsePatternString(pattern_str);
     if (!pattern_pair.first.IsValid() || !pattern_pair.second.IsValid()) {
       // TODO: Change this to DFATAL when crbug.com/132659 is fixed.
@@ -295,7 +292,7 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
         CreatePatternString(pattern_pair.first, pattern_pair.second);
     DCHECK(!canonicalized_pattern_str.empty());
     if (canonicalized_pattern_str != pattern_str) {
-      if (all_settings_dictionary->HasKey(canonicalized_pattern_str)) {
+      if (all_settings_dictionary->FindKey(canonicalized_pattern_str)) {
         non_canonical_patterns_to_remove.push_back(pattern_str);
         continue;
       } else {
@@ -310,9 +307,8 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
 
     // Get settings dictionary for the current pattern string, and read
     // settings from the dictionary.
-    const base::DictionaryValue* settings_dictionary = nullptr;
-    bool is_dictionary = i.value().GetAsDictionary(&settings_dictionary);
-    DCHECK(is_dictionary);
+    DCHECK(i.second.is_dict());
+    const base::Value& settings_dictionary = i.second;
 
     // Check to see if the setting is expired or not. This may be due to a past
     // expiration date or a SessionModel of UserSession.
@@ -324,7 +320,7 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
       continue;
     }
 
-    const base::Value* value = settings_dictionary->FindKey(kSettingPath);
+    const base::Value* value = settings_dictionary.FindKey(kSettingKey);
     if (value) {
       base::Time last_modified = GetTimeStamp(settings_dictionary);
       DCHECK(IsValueAllowedForType(value, content_type_));
@@ -406,27 +402,27 @@ void ContentSettingsPref::UpdatePref(
     if (settings_dictionary) {
       // Update settings dictionary.
       if (value == nullptr) {
-        settings_dictionary->RemoveWithoutPathExpansion(kSettingPath, nullptr);
-        settings_dictionary->RemoveWithoutPathExpansion(kLastModifiedPath,
+        settings_dictionary->RemoveWithoutPathExpansion(kSettingKey, nullptr);
+        settings_dictionary->RemoveWithoutPathExpansion(kLastModifiedKey,
                                                         nullptr);
-        settings_dictionary->RemoveWithoutPathExpansion(kExpirationPath,
+        settings_dictionary->RemoveWithoutPathExpansion(kExpirationKey,
                                                         nullptr);
-        settings_dictionary->RemoveWithoutPathExpansion(kSessionModelPath,
+        settings_dictionary->RemoveWithoutPathExpansion(kSessionModelKey,
                                                         nullptr);
       } else {
         settings_dictionary->SetWithoutPathExpansion(
-            kSettingPath, base::Value::ToUniquePtrValue(value->Clone()));
+            kSettingKey, base::Value::ToUniquePtrValue(value->Clone()));
         settings_dictionary->SetKey(
-            kLastModifiedPath,
+            kLastModifiedKey,
             base::Value(base::NumberToString(
                 last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds())));
         settings_dictionary->SetKey(
-            kExpirationPath,
+            kExpirationKey,
             base::Value(base::NumberToString(
                 constraints.expiration.ToDeltaSinceWindowsEpoch()
                     .InMicroseconds())));
         settings_dictionary->SetKey(
-            kSessionModelPath,
+            kSessionModelKey,
             base::Value(static_cast<int>(constraints.session_model)));
       }
 
