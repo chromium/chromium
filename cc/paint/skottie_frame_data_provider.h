@@ -28,8 +28,7 @@ namespace cc {
 // ImageAssets shall always be invoked from the same sequence).
 class CC_PAINT_EXPORT SkottieFrameDataProvider {
  public:
-  class CC_PAINT_EXPORT ImageAsset
-      : public base::RefCountedThreadSafe<ImageAsset> {
+  class CC_PAINT_EXPORT ImageAsset : public base::RefCounted<ImageAsset> {
    public:
     // Returns the image to use for an asset in a frame of a skottie animation.
     // If absl::nullopt is returned, the most recently provided image for this
@@ -50,7 +49,7 @@ class CC_PAINT_EXPORT SkottieFrameDataProvider {
     virtual ~ImageAsset() = default;
 
    private:
-    friend class base::RefCountedThreadSafe<ImageAsset>;
+    friend class base::RefCounted<ImageAsset>;
   };
 
   virtual ~SkottieFrameDataProvider() = default;
