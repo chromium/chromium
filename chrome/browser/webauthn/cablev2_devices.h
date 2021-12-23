@@ -93,6 +93,17 @@ void DeletePairingByPublicKey(
     PrefService* pref_service,
     std::array<uint8_t, device::kP256X962Length> public_key);
 
+// RenamePairing updates the linked phone from `pref_service` with the given
+// public key so that its name is `new_name`. If `new_name` collides with
+// `existing_names`, however, then it'll be updated so that it doesn't. Returns
+// true on success and false if no linked phone matching `public_key` was
+// found.
+bool RenamePairing(
+    PrefService* pref_service,
+    const std::array<uint8_t, device::kP256X962Length>& public_key,
+    const std::string& new_name,
+    base::span<const base::StringPiece> existing_names);
+
 }  // namespace cablev2
 
 #endif  // CHROME_BROWSER_WEBAUTHN_CABLEV2_DEVICES_H_

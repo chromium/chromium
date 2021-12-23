@@ -255,4 +255,38 @@ TEST_F(CableV2DevicesProfileTest, NameCollision) {
   EXPECT_EQ(known_devices->linked_devices[0]->name, "collision (3)");
 }
 
+TEST_F(CableV2DevicesProfileTest, Rename) {
+  TestingProfile profile;
+  PrefService* const prefs = profile.GetPrefs();
+  cablev2::AddPairing(prefs, LinkedDevice("one", kPubKey1), {});
+  cablev2::AddPairing(prefs, LinkedDevice("two", kPubKey2), {});
+  cablev2::AddPairing(prefs, LinkedDevice("three", kPubKey3), {});
+  std::unique_ptr<KnownDevices> known_devices =
+      KnownDevices::FromProfile(&profile);
+
+  std::array<uint8_t, device::kP256X962Length> public_key = {0};
+  public_key[0] = kPubKey2;
+  // Since a device with the name "three" already exists, the new name should
+  // be mapped to "three (1)" to avoid it.
+  EXPECT_TRUE(cablev2::RenamePairing(prefs, public_key, "three",
+                                     known_devices->Names()));
+
+  known_devices = KnownDevices::FromProfile(&profile);
+  EXPECT_EQ(known_devices->synced_devices.size(), 0u);
+  ASSERT_EQ(known_devices->linked_devices.size(), 3u);
+
+  std::sort(known_devices->linked_devices.begin(),
+            known_devices->linked_devices.end(),
+            [](auto&& a, auto&& b) -> bool { return a->name < b->name; });
+  EXPECT_EQ(known_devices->linked_devices[0]->name, "one");
+  EXPECT_EQ(known_devices->linked_devices[1]->name, "three");
+  EXPECT_EQ(known_devices->linked_devices[2]->name, "three (1)");
+
+  public_key[0] = kPubKey4;
+  // This shouldn't do anything and should return false because the public key
+  // is unknown.
+  EXPECT_FALSE(cablev2::RenamePairing(prefs, public_key, "three",
+                                      known_devices->Names()));
+}
+
 }  // namespace

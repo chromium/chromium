@@ -405,4 +405,30 @@ void DeletePairingByPublicKey(
   DeletePairingByPublicKey(update.Get(), base::Base64Encode(public_key));
 }
 
+bool RenamePairing(
+    PrefService* pref_service,
+    const std::array<uint8_t, device::kP256X962Length>& public_key,
+    const std::string& new_name,
+    base::span<const base::StringPiece> existing_names) {
+  const std::string name = FindUniqueName(new_name, existing_names);
+  const std::string public_key_base64 = base::Base64Encode(public_key);
+
+  ListPrefUpdate update(pref_service, kWebAuthnCablePairingsPrefName);
+  base::Value::ListView list = update.Get()->GetList();
+
+  for (base::Value& value : list) {
+    if (!value.is_dict()) {
+      continue;
+    }
+    const std::string* pref_public_key =
+        value.FindStringKey(kPairingPrefPublicKey);
+    if (pref_public_key && *pref_public_key == public_key_base64) {
+      value.SetKey(kPairingPrefName, base::Value(std::move(name)));
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace cablev2
