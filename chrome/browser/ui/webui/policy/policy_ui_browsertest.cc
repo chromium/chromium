@@ -431,12 +431,12 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
                     std::string(), false, base::Value(2));
 
   // This also checks that we save complex policies correctly.
-  base::DictionaryValue unknown_policy;
-  base::DictionaryValue body;
-  body.SetInteger("first", 0);
-  body.SetBoolean("second", true);
-  unknown_policy.SetInteger("head", 12);
-  unknown_policy.SetDictionary("body", body.CreateDeepCopy());
+  base::Value unknown_policy(base::Value::Type::DICTIONARY);
+  base::Value* body =
+      unknown_policy.SetKey("body", base::Value(base::Value::Type::DICTIONARY));
+  body->SetIntKey("first", 0);
+  body->SetBoolKey("second", true);
+  unknown_policy.SetIntKey("head", 12);
   const std::string kUnknownPolicy = "NoSuchThing";
   values.Set(kUnknownPolicy, policy::POLICY_LEVEL_RECOMMENDED,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
@@ -447,15 +447,14 @@ IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
 
   // Set the extension policies to an empty dictionary as we haven't added any
   // such policies.
-  expected_values.SetDictionary("extensionPolicies",
-                                std::make_unique<base::DictionaryValue>());
-  expected_values.SetDictionary("status",
-                                std::make_unique<base::DictionaryValue>());
+  expected_values.SetKey("extensionPolicies",
+                         base::Value(base::Value::Type::DICTIONARY));
+  expected_values.SetKey("status", base::Value(base::Value::Type::DICTIONARY));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  expected_values.SetDictionary("loginScreenExtensionPolicies",
-                                std::make_unique<base::DictionaryValue>());
-  expected_values.SetDictionary("deviceLocalAccountPolicies",
-                                std::make_unique<base::DictionaryValue>());
+  expected_values.SetKey("loginScreenExtensionPolicies",
+                         base::Value(base::Value::Type::DICTIONARY));
+  expected_values.SetKey("deviceLocalAccountPolicies",
+                         base::Value(base::Value::Type::DICTIONARY));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   provider_.UpdateChromePolicy(values);

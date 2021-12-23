@@ -4903,9 +4903,10 @@ std::unique_ptr<base::DictionaryValue> BuildSetWindowBoundsResult(
     const gfx::Rect& bounds_in_display,
     int64_t display_id) {
   auto result = std::make_unique<base::DictionaryValue>();
-  result->SetDictionary("bounds",
-                        ToBoundsDictionary(bounds_in_display).ToValue());
-  result->SetString("displayId", base::NumberToString(display_id));
+  result->SetKey("bounds",
+                 base::Value::FromUniquePtrValue(
+                     ToBoundsDictionary(bounds_in_display).ToValue()));
+  result->SetStringKey("displayId", base::NumberToString(display_id));
   return result;
 }
 

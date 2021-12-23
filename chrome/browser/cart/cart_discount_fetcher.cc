@@ -458,9 +458,9 @@ std::string CartDiscountFetcher::generatePostData(
 
     auto cart_dict = std::make_unique<base::DictionaryValue>();
     // Set merchantIdentifier.
-    auto merchant_dict = std::make_unique<base::DictionaryValue>();
-    merchant_dict->SetString("cartUrl", cart_proto.merchant_cart_url());
-    cart_dict->SetDictionary("merchantIdentifier", std::move(merchant_dict));
+    auto* merchant_dict = cart_dict->SetKey(
+        "merchantIdentifier", base::Value(base::Value::Type::DICTIONARY));
+    merchant_dict->SetStringKey("cartUrl", cart_proto.merchant_cart_url());
 
     // Set CartAbandonedTimeMinutes.
     int cart_abandoned_time_mintues =

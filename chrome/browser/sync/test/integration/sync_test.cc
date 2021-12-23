@@ -786,8 +786,8 @@ void SyncTest::SetUpInvalidations(int index) {
       DictionaryPrefUpdate update(
           GetProfile(index)->GetPrefs(),
           "invalidation.per_sender_registered_for_invalidation");
-      update->SetDictionary(kInvalidationGCMSenderId,
-                            std::make_unique<base::DictionaryValue>());
+      update->SetKey(kInvalidationGCMSenderId,
+                     base::Value(base::Value::Type::DICTIONARY));
       for (syncer::ModelType model_type :
            GetSyncService(index)->GetPreferredDataTypes()) {
         std::string notification_type;
