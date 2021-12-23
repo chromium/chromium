@@ -1128,9 +1128,12 @@ static cc::RenderSurfaceReason GetRenderSurfaceCandidateReason(
   if (effect.opacity != 1.f)
     return cc::RenderSurfaceReason::kOpacity;
   if (static_cast<wtf_size_t>(effect.id) < blink_effects.size() &&
-      blink_effects[effect.id] &&
-      blink_effects[effect.id]->HasActiveOpacityAnimation())
-    return cc::RenderSurfaceReason::kOpacityAnimation;
+      blink_effects[effect.id]) {
+    if (blink_effects[effect.id]->RequiresCompositingForWillChangeOpacity())
+      return cc::RenderSurfaceReason::kOpacity;
+    if (blink_effects[effect.id]->HasActiveOpacityAnimation())
+      return cc::RenderSurfaceReason::kOpacityAnimation;
+  }
   // Applying a rounded corner clip to more than one layer descendant
   // with highest quality requires a render surface, due to the possibility
   // of antialiasing issues on the rounded corner edges.
