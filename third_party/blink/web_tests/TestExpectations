@@ -6890,6 +6890,9 @@ crbug.com/1164459 [ Mac10.15 ] external/wpt/preload/download-resources.html [ Fa
 crbug.com/1167222 http/tests/websocket/multiple-connections-throttled.html [ Failure Pass ]
 crbug.com/1167309 fast/canvas/canvas-createImageBitmap-drawImage.html [ Failure Pass ]
 
+# Temporarily disabled to unblock crrev.com/c/3354896
+crbug.com/1282076 http/tests/devtools/components/geometry.js [ Skip ]
+
 # Sheriff 2021-01-20
 crbug.com/1168522 external/wpt/focus/iframe-activeelement-after-focusing-out-iframes.html [ Failure Pass ]
 
