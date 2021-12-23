@@ -29,6 +29,7 @@ import {ariaLabel, ItemData, TabData, TabGroupData, TabItemType, tokenEquals, to
 import {ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 import {TabSearchSearchField} from './tab_search_search_field.js';
+import {tabHasMediaAlerts} from './tab_search_utils.js';
 import {TitleItem} from './title_item.js';
 
 // The minimum number of list items we allow viewing regardless of browser
@@ -141,6 +142,7 @@ export class TabSearchAppElement extends PolymerElement {
   private openTabs_: Array<TabData> = [];
   private recentlyClosedTabs_: Array<TabData> = [];
   private windowShownTimestamp_: number = Date.now();
+  private mediaTabsTitleItem_: TitleItem;
   private openTabsTitleItem_: TitleItem;
   private recentlyClosedTitleItem_: TitleItem;
   private filteredOpenTabsCount_: number = 0;
@@ -158,6 +160,9 @@ export class TabSearchAppElement extends PolymerElement {
         this.onDocumentHidden_();
       }
     };
+
+    this.mediaTabsTitleItem_ =
+        new TitleItem(loadTimeData.getString('mediaTabs'));
 
     this.openTabsTitleItem_ = new TitleItem(loadTimeData.getString('openTabs'));
 
@@ -584,9 +589,29 @@ export class TabSearchAppElement extends PolymerElement {
               tabA.lastActiveTimeTicks.internalValue) :
           0;
     });
-    const filteredOpenTabs =
+
+    let mediaTabs: Array<TabData> = [];
+    // Audio & Video section will not be added when search criteria is applied
+    // if media tabs are also shown in Open Tabs section.
+    if (this.searchText_.length == 0 ||
+        !loadTimeData.getBoolean('alsoShowMediaTabsinOpenTabsSection')) {
+      mediaTabs = this.openTabs_.filter(
+          tabData => tabHasMediaAlerts(tabData.tab as Tab));
+    }
+
+    const filteredMediaTabs =
+        fuzzySearch(this.searchText_, mediaTabs, this.fuzzySearchOptions_);
+
+    let filteredOpenTabs =
         fuzzySearch(this.searchText_, this.openTabs_, this.fuzzySearchOptions_);
-    this.filteredOpenTabsCount_ = filteredOpenTabs.length;
+
+    if (!loadTimeData.getBoolean('alsoShowMediaTabsinOpenTabsSection')) {
+      filteredOpenTabs = filteredOpenTabs.filter(
+          tabData => !tabHasMediaAlerts(tabData.tab as Tab));
+    }
+
+    this.filteredOpenTabsCount_ =
+        filteredOpenTabs.length + filteredMediaTabs.length;
 
     const recentlyClosedItems: Array<TabData|TabGroupData> =
         [...this.recentlyClosedTabs_, ...this.recentlyClosedTabGroups_];
@@ -628,6 +653,7 @@ export class TabSearchAppElement extends PolymerElement {
 
     this.filteredItems_ =
         ([
+          [this.mediaTabsTitleItem_, filteredMediaTabs],
           [this.openTabsTitleItem_, filteredOpenTabs],
           [this.recentlyClosedTitleItem_, filteredRecentlyClosedItems],
         ] as Array<[TitleItem, Array<TabData|TabGroupData>]>)

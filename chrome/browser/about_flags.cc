@@ -1355,6 +1355,15 @@ const FeatureEntry::FeatureVariation kTabScrollingVariations[] = {
     {" - tabs don't shrink", kMinimumTabWidthSettingFull,
      base::size(kMinimumTabWidthSettingFull), nullptr}};
 
+const FeatureEntry::FeatureParam kAlsoShowMediaTabsinOpenTabsSection[] = {
+    {features::kTabSearchAlsoShowMediaTabsinOpenTabsSectionParameterName,
+     "true"}};
+
+const FeatureEntry::FeatureVariation kTabSearchMediaTabsVariations[] = {
+    {" - media tabs also shown in open tabs",
+     kAlsoShowMediaTabsinOpenTabsSection,
+     base::size(kAlsoShowMediaTabsinOpenTabsSection), nullptr}};
+
 const FeatureEntry::FeatureParam kTabSearchSearchThresholdSmall[] = {
     {features::kTabSearchSearchThresholdName, "0.3"}};
 const FeatureEntry::FeatureParam kTabSearchSearchThresholdMedium[] = {
@@ -7073,7 +7082,9 @@ const FeatureEntry kFeatureEntries[] = {
     {flag_descriptions::kTabSearchMediaTabsId,
      flag_descriptions::kTabSearchMediaTabsName,
      flag_descriptions::kTabSearchMediaTabsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabSearchMediaTabs)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabSearchMediaTabs,
+                                    kTabSearchMediaTabsVariations,
+                                    "TabSearchMediaTabs")},
 
     {"enable-tflite-language-detection",
      flag_descriptions::kTFLiteLanguageDetectionName,

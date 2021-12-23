@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
-import {ProfileData, RecentlyClosedTab, Tab, Window} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {ProfileData, RecentlyClosedTab, Tab, TabAlertState, Window} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 export const SAMPLE_WINDOW_HEIGHT: number = 448;
 
@@ -26,6 +26,29 @@ export function createTab(overrides: Partial<Tab>): Tab {
       },
       overrides);
 }
+
+export const SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB: Window[] = [{
+  active: true,
+  height: SAMPLE_WINDOW_HEIGHT,
+  tabs: [
+    createTab({
+      alertStates: [TabAlertState.kMediaRecording],
+      index: 0,
+      tabId: 1,
+      title: 'Meet',
+      url: {url: 'https://meet.google.com/'},
+      lastActiveTimeTicks: {internalValue: BigInt(3)},
+    }),
+    createTab({
+      index: 1,
+      tabId: 2,
+      title: 'Google',
+      url: {url: 'https://www.google.com'},
+      lastActiveTimeTicks: {internalValue: BigInt(5)},
+    }),
+  ],
+}];
+
 
 export const SAMPLE_WINDOW_DATA: Window[] = [
   {

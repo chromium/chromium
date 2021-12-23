@@ -47,6 +47,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"a11yRecentlyClosedTab", IDS_TAB_SEARCH_A11Y_RECENTLY_CLOSED_TAB},
       {"a11yRecentlyClosedTabGroup",
        IDS_TAB_SEARCH_A11Y_RECENTLY_CLOSED_TAB_GROUP},
+      {"mediaTabs", IDS_TAB_SEARCH_MEDIA_TABS},
       {"openTabs", IDS_TAB_SEARCH_OPEN_TABS},
       {"oneTab", IDS_TAB_SEARCH_ONE_TAB},
       {"tabCount", IDS_TAB_SEARCH_TAB_COUNT},
@@ -60,6 +61,12 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   // Add the configuration parameters for fuzzy search.
   source->AddBoolean("useFuzzySearch", base::FeatureList::IsEnabled(
                                            features::kTabSearchFuzzySearch));
+  source->AddBoolean(
+      "alsoShowMediaTabsinOpenTabsSection",
+      GetFieldTrialParamByFeatureAsBool(
+          features::kTabSearchMediaTabs,
+          features::kTabSearchAlsoShowMediaTabsinOpenTabsSectionParameterName,
+          false));
   source->AddBoolean("searchIgnoreLocation",
                      features::kTabSearchSearchIgnoreLocation.Get());
   source->AddInteger("searchDistance",

@@ -17,7 +17,7 @@ import {get as deepGet, html, PolymerElement} from 'chrome://resources/polymer/v
 import {ariaLabel, TabData, TabItemType} from './tab_data.js';
 import {colorName} from './tab_group_color_helper.js';
 import {Tab} from './tab_search.mojom-webui.js';
-import {highlightText} from './tab_search_utils.js';
+import {highlightText, tabHasMediaAlerts} from './tab_search_utils.js';
 import {TabAlertState} from './tabs.mojom-webui.js';
 
 export interface TabSearchItem {
@@ -88,8 +88,7 @@ export class TabSearchItem extends TabSearchItemBase {
 
   private isOpenTabAndHasMediaAlert_(tabData: TabData): boolean {
     return tabData.type == TabItemType.OPEN_TAB &&
-        (tabData.tab as Tab).alertStates &&
-        (tabData.tab as Tab).alertStates.length > 0;
+        tabHasMediaAlerts(tabData.tab as Tab);
   }
 
   /**

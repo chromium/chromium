@@ -5,11 +5,11 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {ProfileData, RecentlyClosedTab, Tab, TabGroupColor, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {ProfileData, RecentlyClosedTab, Tab, TabAlertState, TabGroupColor, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
-import {createProfileData, createTab, generateSampleDataFromSiteNames, generateSampleRecentlyClosedTabs, generateSampleRecentlyClosedTabsFromSiteNames, generateSampleTabsFromSiteNames, SAMPLE_RECENTLY_CLOSED_DATA, SAMPLE_WINDOW_HEIGHT, sampleToken} from './tab_search_test_data.js';
+import {createProfileData, createTab, generateSampleDataFromSiteNames, generateSampleRecentlyClosedTabs, generateSampleRecentlyClosedTabsFromSiteNames, generateSampleTabsFromSiteNames, SAMPLE_RECENTLY_CLOSED_DATA, SAMPLE_WINDOW_DATA, SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB, SAMPLE_WINDOW_HEIGHT, sampleToken} from './tab_search_test_data.js';
 import {initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
@@ -27,6 +27,10 @@ suite('TabSearchAppTest', () => {
   function queryRows(): NodeListOf<HTMLElement> {
     return tabSearchApp.$.tabsList.querySelectorAll(
         'tab-search-item, tab-search-group-item');
+  }
+
+  function queryListTitle(): NodeListOf<HTMLElement> {
+    return tabSearchApp.$.tabsList.querySelectorAll('.list-section-title');
   }
 
   /**
@@ -701,8 +705,7 @@ suite('TabSearchAppTest', () => {
     }));
     assertEquals(3, queryRows().length);
 
-    const recentlyClosedTitleItem =
-        tabSearchApp.$.tabsList.querySelectorAll('.list-section-title')[1];
+    const recentlyClosedTitleItem = queryListTitle()[1];
     assertTrue(!!recentlyClosedTitleItem);
 
     const recentlyClosedTitleExpandButton =
@@ -721,4 +724,170 @@ suite('TabSearchAppTest', () => {
     assertEquals(2, testProxy.getCallCount('saveRecentlyClosedExpandedPref'));
     assertEquals(3, queryRows().length);
   });
+
+  test('Show media tab in Audio & Video section', async () => {
+    await setupTest(
+        createProfileData({
+          windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB,
+        }),
+        {alsoShowMediaTabsinOpenTabsSection: false});
+    // One media tab and one non-media tab.
+    assertEquals(2, queryRows().length);
+    // "Audio and Video" and "Open Tabs" section should both exist.
+    assertEquals(2, queryListTitle().length);
+  });
+
+  test(
+      'Show media tab in Audio & Video section and Open Tabs section',
+      async () => {
+        await setupTest(
+            createProfileData({
+              windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB,
+            }),
+            {alsoShowMediaTabsinOpenTabsSection: true});
+        // Only the two media tabs should be duplicated.
+        assertEquals(3, queryRows().length);
+        // "Audio and Video" and "Open Tabs" section should both exist.
+        assertEquals(2, queryListTitle().length);
+      });
+
+  test('Tab is no longer media tab', async () => {
+    await setupTest(
+        createProfileData({
+          windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB,
+        }),
+        {alsoShowMediaTabsinOpenTabsSection: false});
+
+    const updatedTab: Tab = createTab({
+      alertStates: [],
+      tabId: 1,
+      lastActiveTimeTicks: {internalValue: BigInt(5)},
+    });
+
+    const tabUpdateInfo = {
+      inActiveWindow: true,
+      tab: updatedTab,
+    };
+    testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
+    await flushTasks();
+    // Two non-media tabs
+    assertEquals(2, queryRows().length);
+    // Only "Open Tabs" section should exist.
+    assertEquals(1, queryListTitle().length);
+  });
+
+  test(
+      'Tab is no longer media tab with media tabs also shown in Open Tabs section ',
+      async () => {
+        await setupTest(
+            createProfileData({
+              windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB,
+            }),
+            {alsoShowMediaTabsinOpenTabsSection: true});
+
+        const updatedTab: Tab = createTab({
+          alertStates: [],
+          tabId: 1,
+          lastActiveTimeTicks: {internalValue: BigInt(1)},
+        });
+
+        const tabUpdateInfo = {
+          inActiveWindow: true,
+          tab: updatedTab,
+        };
+        testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
+        await flushTasks();
+        // Two non-media tabs
+        assertEquals(2, queryRows().length);
+        // Only "Open Tabs" section should exist.
+        assertEquals(1, queryListTitle().length);
+      });
+
+  test('Non-media tab becomes media tab', async () => {
+    await setupTest(
+        createProfileData({
+          windows: SAMPLE_WINDOW_DATA,
+        }),
+        {alsoShowMediaTabsinOpenTabsSection: false});
+
+    assertEquals(1, queryListTitle().length);
+
+    const updatedTab: Tab = createTab({
+      alertStates: [TabAlertState.kAudioPlaying],
+      tabId: 5,
+      lastActiveTimeTicks: {internalValue: BigInt(1)},
+    });
+
+    const tabUpdateInfo = {
+      inActiveWindow: true,
+      tab: updatedTab,
+    };
+    testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
+    await flushTasks();
+    // One media tab, the rest are non-media tabs.
+    assertEquals(6, queryRows().length);
+    // "Audio and Video" and "Open Tabs" section should both exist.
+    assertEquals(2, queryListTitle().length);
+  });
+
+  test(
+      'Non-media tab becomes media tab with media tabs also shown in Open Tabs section ',
+      async () => {
+        await setupTest(
+            createProfileData({
+              windows: SAMPLE_WINDOW_DATA,
+            }),
+            {alsoShowMediaTabsinOpenTabsSection: true});
+
+        assertEquals(1, queryListTitle().length);
+
+        const updatedTab: Tab = createTab({
+          alertStates: [TabAlertState.kAudioPlaying],
+          tabId: 5,
+          lastActiveTimeTicks: {internalValue: BigInt(1)},
+        });
+
+        const tabUpdateInfo = {
+          inActiveWindow: true,
+          tab: updatedTab,
+        };
+
+        testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
+        await flushTasks();
+        // One media tab is duplicated, the rest are non-media tabs.
+        assertEquals(7, queryRows().length);
+        // "Audio and Video" and "Open Tabs" section should both exist.
+        assertEquals(2, queryListTitle().length);
+      });
+
+  test('Search for media tab', async () => {
+    await setupTest(
+        createProfileData({
+          windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB,
+        }),
+        {alsoShowMediaTabsinOpenTabsSection: false});
+
+    const searchField = tabSearchApp.$.searchField;
+    searchField.setValue('meet');
+    await flushTasks();
+    assertEquals(1, queryListTitle().length);
+  });
+
+  test(
+      'Search for media tab with media tabs also shown in Open Tabs section',
+      async () => {
+        await setupTest(
+            createProfileData({
+              windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB,
+            }),
+            {alsoShowMediaTabsinOpenTabsSection: true});
+
+        const searchField = tabSearchApp.$.searchField;
+        searchField.setValue('meet');
+        await flushTasks();
+        // Media tab is only shown in the Open Tabs section when a search
+        // criteria is applied.
+        assertEquals(1, queryListTitle().length);
+      });
+
 });

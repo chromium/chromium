@@ -180,6 +180,11 @@ const base::FeatureParam<bool> kTabSearchSearchIgnoreLocation{
 const base::Feature kTabSearchMediaTabs{"TabSearchMediaTabs",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If this feature parameter is enabled, show media tabs in both "Audio & Video"
+// section and "Open Tabs" section.
+const char kTabSearchAlsoShowMediaTabsinOpenTabsSectionParameterName[] =
+    "Also show Media Tabs in Open Tabs Section";
+
 const base::FeatureParam<int> kTabSearchSearchDistance{
     &kTabSearchFuzzySearch, "TabSearchSearchDistance", 200};
 
