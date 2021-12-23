@@ -68,7 +68,7 @@ void BrowserAppShelfController::OnBrowserWindowAdded(
     const apps::BrowserWindowInstance& instance) {
   ash::ShelfID id(instance.GetAppId());
   CreateOrUpdateShelfItem(id, ash::STATUS_RUNNING);
-  MaybeUpdateBrowserWindowProperties(instance.window);
+  MaybeUpdateWindowProperties(instance.window);
 }
 
 void BrowserAppShelfController::OnBrowserWindowRemoved(
@@ -99,13 +99,13 @@ void BrowserAppShelfController::OnBrowserAppAdded(
       }
       break;
   }
-  MaybeUpdateBrowserWindowProperties(instance.window);
+  MaybeUpdateWindowProperties(instance.window);
 }
 
 void BrowserAppShelfController::OnBrowserAppUpdated(
     const apps::BrowserAppInstance& instance) {
   // Active tab may have changed.
-  MaybeUpdateBrowserWindowProperties(instance.window);
+  MaybeUpdateWindowProperties(instance.window);
 }
 
 void BrowserAppShelfController::OnBrowserAppRemoved(
@@ -113,7 +113,7 @@ void BrowserAppShelfController::OnBrowserAppRemoved(
   if (instance.type == apps::BrowserAppInstance::Type::kAppTab) {
     // If a tab is closed, browser window may still remain, so it needs its
     // properties updated.
-    MaybeUpdateBrowserWindowProperties(instance.window);
+    MaybeUpdateWindowProperties(instance.window);
   }
   if (!browser_app_instance_registry_.IsAppRunning(instance.app_id)) {
     ash::ShelfID id(instance.app_id);
@@ -132,6 +132,7 @@ void BrowserAppShelfController::ShelfItemAdded(int index) {
                      : browser_app_instance_registry_.IsAppRunning(app_id);
   UpdateShelfItemStatus(item,
                         running ? ash::STATUS_RUNNING : ash::STATUS_CLOSED);
+  MaybeUpdateWindowPropertiesForApp(app_id);
 }
 
 void BrowserAppShelfController::UpdateShelfItemStatus(
@@ -176,7 +177,7 @@ void BrowserAppShelfController::SetShelfItemClosed(const ash::ShelfID& id) {
   }
 }
 
-void BrowserAppShelfController::MaybeUpdateBrowserWindowProperties(
+void BrowserAppShelfController::MaybeUpdateWindowProperties(
     aura::Window* window) {
   const apps::BrowserAppInstance* active_instance =
       browser_app_instance_registry_.FindAppInstanceIf(
@@ -221,4 +222,20 @@ void BrowserAppShelfController::MaybeUpdateBrowserWindowProperties(
   }
   MaybeUpdateStringProperty(window, ash::kAppIDKey, app_id);
   MaybeUpdateStringProperty(window, ash::kShelfIDKey, shelf_id.Serialize());
+}
+
+void BrowserAppShelfController::MaybeUpdateWindowPropertiesForApp(
+    const std::string& app_id) {
+  std::set<const apps::BrowserAppInstance*> instances =
+      browser_app_instance_registry_.SelectAppInstances(
+          [&app_id](const apps::BrowserAppInstance& instance) {
+            return instance.app_id == app_id;
+          });
+  std::set<aura::Window*> windows;
+  for (const auto* instance : instances) {
+    windows.insert(instance->window);
+  }
+  for (auto* window : windows) {
+    MaybeUpdateWindowProperties(window);
+  }
 }

@@ -75,7 +75,9 @@ class BrowserAppShelfController : public apps::BrowserAppInstanceObserver,
                              ash::ShelfItemStatus status);
   // Updates Aura window's app-related keys when the active app associated with
   // this window changes.
-  void MaybeUpdateBrowserWindowProperties(aura::Window* window);
+  void MaybeUpdateWindowProperties(aura::Window* window);
+  // Updates app-related properties of all the windows containing this app.
+  void MaybeUpdateWindowPropertiesForApp(const std::string& app_id);
 
   Profile* profile_;
   ash::ShelfModel& model_;
