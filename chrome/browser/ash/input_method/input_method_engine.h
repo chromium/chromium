@@ -340,37 +340,12 @@ class InputMethodEngine : virtual public ui::IMEEngineHandlerInterface,
                          uint32_t cursor_pos,
                          bool is_visible);
 
-  // Notifies InputContextHandler to change the composition range.
-  bool SetCompositionRange(uint32_t before,
-                           uint32_t after,
-                           const std::vector<ui::ImeTextSpan>& text_spans);
-
-  bool SetComposingRange(uint32_t start,
-                         uint32_t end,
-                         const std::vector<ui::ImeTextSpan>& text_spans);
-
-  gfx::Rect GetAutocorrectCharacterBounds();
-
-  gfx::Rect GetTextFieldBounds();
-
-  // Notifies the InputContextHandler to change the selection range.
-  bool SetSelectionRange(uint32_t start, uint32_t end);
-
   // Notifies InputContextHandler to commit |text|.
   void CommitTextToInputContext(int context_id, const std::u16string& text);
-
-  // Sends the key event to the window tree host.
-  bool SendKeyEvent(const ui::KeyEvent& event, std::string* error);
-
-  // Enables overriding input view page to Virtual Keyboard window.
-  void EnableInputView();
 
   // Converts MenuItem to InputMethodMenuItem.
   void MenuItemToProperty(const InputMethodManager::MenuItem& item,
                           ui::ime::InputMethodMenuItem* property);
-
-  // Notifies InputContextHandler to delete surrounding text.
-  void DeleteSurroundingTextToInputContext(int offset, size_t number_of_chars);
 
   // The current candidate window.
   ui::CandidateWindow candidate_window_;

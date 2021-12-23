@@ -179,7 +179,11 @@ bool InputMethodEngine::DeleteSurroundingText(int context_id,
 
   // TODO(nona): Return false if there is ongoing composition.
 
-  DeleteSurroundingTextToInputContext(offset, number_of_chars);
+  ui::IMEInputContextHandlerInterface* input_context =
+      ui::IMEBridge::Get()->GetInputContextHandler();
+  if (input_context) {
+    input_context->DeleteSurroundingText(offset, number_of_chars);
+  }
 
   return true;
 }
@@ -213,9 +217,27 @@ bool InputMethodEngine::SendKeyEvents(int context_id,
   }
 
   for (const auto& event : events) {
-    if (!SendKeyEvent(event, error))
-      return false;
+    ui::KeyEvent event_copy = event;
+
+    // Marks the simulated key event is from the Virtual Keyboard.
+    ui::Event::Properties properties;
+    properties[ui::kPropertyFromVK] =
+        std::vector<uint8_t>(ui::kPropertyFromVKSize);
+    properties[ui::kPropertyFromVK][ui::kPropertyFromVKIsMirroringIndex] =
+        (uint8_t)is_mirroring_;
+    event_copy.SetProperties(properties);
+
+    ui::IMEInputContextHandlerInterface* input_context =
+        ui::IMEBridge::Get()->GetInputContextHandler();
+    if (input_context) {
+      input_context->SendKeyEvent(&event_copy);
+      continue;
+    }
+
+    *error = kErrorWrongContext;
+    return false;
   }
+
   return true;
 }
 
@@ -323,9 +345,16 @@ bool InputMethodEngine::SetCompositionRange(
                                 selection_after);
     return false;
   }
-  return SetCompositionRange(static_cast<uint32_t>(selection_before),
-                             static_cast<uint32_t>(selection_after),
-                             text_spans);
+
+  ui::IMEInputContextHandlerInterface* input_context =
+      ui::IMEBridge::Get()->GetInputContextHandler();
+  if (!input_context) {
+    return false;
+  }
+
+  return input_context->SetCompositionRange(
+      static_cast<uint32_t>(selection_before),
+      static_cast<uint32_t>(selection_after), text_spans);
 }
 
 bool InputMethodEngine::SetComposingRange(
@@ -378,8 +407,15 @@ bool InputMethodEngine::SetComposingRange(
     *error = base::StringPrintf(kErrorInvalidValue, "end", end);
     return false;
   }
-  return SetComposingRange(static_cast<uint32_t>(start),
-                           static_cast<uint32_t>(end), text_spans);
+
+  ui::IMEInputContextHandlerInterface* input_context =
+      ui::IMEBridge::Get()->GetInputContextHandler();
+  if (!input_context) {
+    return false;
+  }
+
+  return input_context->SetComposingRange(
+      static_cast<uint32_t>(start), static_cast<uint32_t>(end), text_spans);
 }
 
 gfx::Range InputMethodEngine::GetAutocorrectRange(int context_id,
@@ -409,7 +445,14 @@ gfx::Rect InputMethodEngine::GetAutocorrectCharacterBounds(int context_id,
         kErrorWrongContext, context_id, context_id_);
     return gfx::Rect();
   }
-  return GetAutocorrectCharacterBounds();
+
+  ui::IMEInputContextHandlerInterface* input_context =
+      ui::IMEBridge::Get()->GetInputContextHandler();
+  if (!input_context) {
+    return gfx::Rect();
+  }
+
+  return input_context->GetAutocorrectCharacterBounds();
 }
 
 gfx::Rect InputMethodEngine::GetTextFieldBounds(int context_id,
@@ -424,7 +467,14 @@ gfx::Rect InputMethodEngine::GetTextFieldBounds(int context_id,
         kErrorWrongContext, context_id, context_id_);
     return gfx::Rect();
   }
-  return GetTextFieldBounds();
+
+  ui::IMEInputContextHandlerInterface* input_context =
+      ui::IMEBridge::Get()->GetInputContextHandler();
+  if (!input_context) {
+    return gfx::Rect();
+  }
+
+  return input_context->GetTextFieldBounds();
 }
 
 bool InputMethodEngine::SetAutocorrectRange(int context_id,
@@ -466,8 +516,14 @@ bool InputMethodEngine::SetSelectionRange(int context_id,
     return false;
   }
 
-  return SetSelectionRange(static_cast<uint32_t>(start),
-                           static_cast<uint32_t>(end));
+  ui::IMEInputContextHandlerInterface* input_context =
+      ui::IMEBridge::Get()->GetInputContextHandler();
+  if (!input_context) {
+    return false;
+  }
+
+  return input_context->SetSelectionRange(static_cast<uint32_t>(start),
+                                          static_cast<uint32_t>(end));
 }
 
 void InputMethodEngine::KeyEventHandled(const std::string& extension_id,
@@ -554,7 +610,13 @@ void InputMethodEngine::Enable(const std::string& component_id) {
       ui::IMEBridge::Get()->GetCurrentInputContext();
   current_input_type_ = input_context.type;
   FocusIn(input_context);
-  EnableInputView();
+
+  InputMethodManager::Get()->GetActiveIMEState()->EnableInputView();
+  auto* keyboard_client = ChromeKeyboardControllerClient::Get();
+  if (keyboard_client->is_keyboard_enabled()) {
+    keyboard_client->ReloadKeyboardIfNeeded();
+  }
+
   // Resets candidate_window_property_ whenever a new component_id (aka
   // engine_id) is enabled.
   candidate_window_property_ = {component_id,
@@ -1006,28 +1068,6 @@ void InputMethodEngine::UpdateComposition(
   }
 }
 
-bool InputMethodEngine::SetCompositionRange(
-    uint32_t before,
-    uint32_t after,
-    const std::vector<ui::ImeTextSpan>& text_spans) {
-  ui::IMEInputContextHandlerInterface* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context)
-    return false;
-  return input_context->SetCompositionRange(before, after, text_spans);
-}
-
-bool InputMethodEngine::SetComposingRange(
-    uint32_t start,
-    uint32_t end,
-    const std::vector<ui::ImeTextSpan>& text_spans) {
-  ui::IMEInputContextHandlerInterface* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context)
-    return false;
-  return input_context->SetComposingRange(start, end, text_spans);
-}
-
 gfx::Range InputMethodEngine::GetAutocorrectRange() {
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
@@ -1036,36 +1076,12 @@ gfx::Range InputMethodEngine::GetAutocorrectRange() {
   return input_context->GetAutocorrectRange();
 }
 
-gfx::Rect InputMethodEngine::GetAutocorrectCharacterBounds() {
-  ui::IMEInputContextHandlerInterface* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context)
-    return gfx::Rect();
-  return input_context->GetAutocorrectCharacterBounds();
-}
-
-gfx::Rect InputMethodEngine::GetTextFieldBounds() {
-  ui::IMEInputContextHandlerInterface* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context)
-    return gfx::Rect();
-  return input_context->GetTextFieldBounds();
-}
-
 bool InputMethodEngine::SetAutocorrectRange(const gfx::Range& range) {
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
   if (!input_context)
     return false;
   return input_context->SetAutocorrectRange(range);
-}
-
-bool InputMethodEngine::SetSelectionRange(uint32_t start, uint32_t end) {
-  ui::IMEInputContextHandlerInterface* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context)
-    return false;
-  return input_context->SetSelectionRange(start, end);
 }
 
 void InputMethodEngine::CommitTextToInputContext(int context_id,
@@ -1085,36 +1101,6 @@ void InputMethodEngine::CommitTextToInputContext(int context_id,
     UMA_HISTOGRAM_CUSTOM_COUNTS("InputMethod.CommitLength", text.length(), 1,
                                 25, 25);
   }
-}
-
-bool InputMethodEngine::SendKeyEvent(const ui::KeyEvent& event,
-                                     std::string* error) {
-  ui::KeyEvent event_copy = event;
-
-  // Marks the simulated key event is from the Virtual Keyboard.
-  ui::Event::Properties properties;
-  properties[ui::kPropertyFromVK] =
-      std::vector<uint8_t>(ui::kPropertyFromVKSize);
-  properties[ui::kPropertyFromVK][ui::kPropertyFromVKIsMirroringIndex] =
-      (uint8_t)is_mirroring_;
-  event_copy.SetProperties(properties);
-
-  ui::IMEInputContextHandlerInterface* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (input_context) {
-    input_context->SendKeyEvent(&event_copy);
-    return true;
-  }
-
-  *error = kErrorWrongContext;
-  return false;
-}
-
-void InputMethodEngine::EnableInputView() {
-  InputMethodManager::Get()->GetActiveIMEState()->EnableInputView();
-  auto* keyboard_client = ChromeKeyboardControllerClient::Get();
-  if (keyboard_client->is_keyboard_enabled())
-    keyboard_client->ReloadKeyboardIfNeeded();
 }
 
 // TODO(uekawa): rename this method to a more reasonable name.
@@ -1151,15 +1137,6 @@ void InputMethodEngine::MenuItemToProperty(
   }
 
   // TODO(nona): Support item.children.
-}
-
-void InputMethodEngine::DeleteSurroundingTextToInputContext(
-    int offset,
-    size_t number_of_chars) {
-  ui::IMEInputContextHandlerInterface* input_context =
-      ui::IMEBridge::Get()->GetInputContextHandler();
-  if (input_context)
-    input_context->DeleteSurroundingText(offset, number_of_chars);
 }
 
 InputMethodEngine::PendingKeyEvent::PendingKeyEvent(
