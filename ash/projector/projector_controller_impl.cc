@@ -69,10 +69,12 @@ ProjectorControllerImpl::ProjectorControllerImpl()
     ui_controller_ = std::make_unique<ash::ProjectorUiController>(this);
 
   projector_session_->AddObserver(this);
+  CrasAudioHandler::Get()->AddAudioObserver(this);
 }
 
 ProjectorControllerImpl::~ProjectorControllerImpl() {
   projector_session_->RemoveObserver(this);
+  CrasAudioHandler::Get()->RemoveAudioObserver(this);
 }
 
 // static
@@ -209,6 +211,12 @@ ProjectorControllerImpl::GetNewScreencastPrecondition() const {
     return result;
   }
 
+  if (!IsInputDeviceAvailable()) {
+    result.state = NewScreencastPreconditionState::kDisabled;
+    result.reasons = {NewScreencastPreconditionReason::kNoMic};
+    return result;
+  }
+
   result.state = NewScreencastPreconditionState::kEnabled;
   return result;
 }
@@ -320,9 +328,20 @@ void ProjectorControllerImpl::SetProjectorMetadataControllerForTest(
   metadata_controller_ = std::move(metadata_controller);
 }
 
+void ProjectorControllerImpl::OnAudioNodesChanged() {
+  OnNewScreencastPreconditionChanged();
+}
+
 void ProjectorControllerImpl::OnProjectorSessionActiveStateChanged(
     bool active) {
   OnNewScreencastPreconditionChanged();
+}
+
+bool ProjectorControllerImpl::IsInputDeviceAvailable() const {
+  uint64_t input_id = CrasAudioHandler::Get()->GetPrimaryActiveInputNode();
+  const AudioDevice* input_device =
+      CrasAudioHandler::Get()->GetDeviceFromId(input_id);
+  return input_device != nullptr;
 }
 
 void ProjectorControllerImpl::StartSpeechRecognition() {

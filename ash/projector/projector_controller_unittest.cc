@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/constants/ash_features.h"
 #include "ash/projector/model/projector_session_impl.h"
 #include "ash/projector/test/mock_projector_client.h"
@@ -24,6 +25,8 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chromeos/dbus/audio/audio_node.h"
+#include "chromeos/dbus/audio/fake_cras_audio_client.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -32,6 +35,14 @@ namespace ash {
 namespace {
 using testing::_;
 using testing::ElementsAre;
+
+struct AudioNodeInfo {
+  bool is_input;
+  uint64_t id;
+  const char* const device_name;
+  const char* const type;
+  const char* const name;
+};
 
 void NotifyControllerForFinalSpeechResult(ProjectorControllerImpl* controller) {
   media::SpeechRecognitionResult result;
@@ -119,6 +130,34 @@ TEST_F(ProjectorControllerTest, OnTranscriptionPartialResult) {
   // called since it is not a final result.
   EXPECT_CALL(*mock_metadata_controller_, RecordTranscription(_)).Times(0);
   NotifyControllerForPartialSpeechResult(controller_);
+}
+
+TEST_F(ProjectorControllerTest, OnAudioNodesChanged) {
+  ON_CALL(mock_client_, IsDriveFsMounted())
+      .WillByDefault(testing::Return(true));
+
+  const AudioNodeInfo kInternalMic[] = {
+      {true, 55555, "Fake Mic", "INTERNAL_MIC", "Internal Mic"}};
+  const chromeos::AudioNode audio_node = chromeos::AudioNode(
+      kInternalMic->is_input, kInternalMic->id,
+      /*has_v2_stable_device_id=*/false, kInternalMic->id,
+      /*stable_device_id_v2=*/0, kInternalMic->device_name, kInternalMic->type,
+      kInternalMic->name, /*active=*/false,
+      /*plugged_time=*/0, /*max_supported_channels=*/1, /*audio_effect=*/1);
+  chromeos::FakeCrasAudioClient::Get()->SetAudioNodesForTesting({audio_node});
+
+  CrasAudioHandler::Get()->SetActiveInputNodes({kInternalMic->id});
+  EXPECT_CALL(mock_client_,
+              OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
+                  NewScreencastPreconditionState::kEnabled, {})));
+  controller_->OnAudioNodesChanged();
+
+  CrasAudioHandler::Get()->SetActiveInputNodes({});
+  EXPECT_CALL(mock_client_,
+              OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
+                  NewScreencastPreconditionState::kDisabled,
+                  {NewScreencastPreconditionReason::kNoMic})));
+  controller_->OnAudioNodesChanged();
 }
 
 TEST_F(ProjectorControllerTest, OnSpeechRecognitionAvailabilityChanged) {

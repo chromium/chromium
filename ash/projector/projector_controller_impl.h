@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "ash/projector/model/projector_session_impl.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -24,8 +25,10 @@ class ProjectorUiController;
 class ProjectorMetadataController;
 
 // A controller to handle projector functionalities.
-class ASH_EXPORT ProjectorControllerImpl : public ProjectorController,
-                                           public ProjectorSessionObserver {
+class ASH_EXPORT ProjectorControllerImpl
+    : public ProjectorController,
+      public ProjectorSessionObserver,
+      public CrasAudioHandler::AudioObserver {
  public:
   // Callback that should be executed when the screencast container directory is
   // created. `screencast_file_path_no_extension` is the path of screencast file
@@ -104,9 +107,14 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController,
   ProjectorUiController* ui_controller() { return ui_controller_.get(); }
   ProjectorSessionImpl* projector_session() { return projector_session_.get(); }
 
+  // CrasAudioHandler::AudioObserver:
+  void OnAudioNodesChanged() override;
+
  private:
   // ProjectorSessionObserver:
   void OnProjectorSessionActiveStateChanged(bool active) override;
+
+  bool IsInputDeviceAvailable() const;
 
   // Starts or stops the speech recognition session.
   void StartSpeechRecognition();
