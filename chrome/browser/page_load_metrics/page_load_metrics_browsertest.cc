@@ -2582,8 +2582,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
   waiter->Wait();
 
   // Verify no resources were cached for the first load.
-  histogram_tester_->ExpectBucketCount(
-      internal::kHistogramCacheCompletedResources, 0, 1);
   histogram_tester_->ExpectBucketCount(internal::kHistogramPageLoadCacheBytes,
                                        0, 1);
 
@@ -2592,36 +2590,8 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
   // Verify that the cached resource from the memory cache is recorded
   // correctly.
-  histogram_tester_->ExpectBucketCount(
-      internal::kHistogramCacheCompletedResources, 1, 1);
   histogram_tester_->ExpectBucketCount(internal::kHistogramPageLoadCacheBytes,
                                        10, 1);
-}
-
-// Verifies that css image resources shared across document do not cause a
-// crash, and are only counted once per context. https://crbug.com/979459.
-// TODO(crbug.com/1108534): Disabled due to flakiness.
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       DISABLED_MemoryCacheResources_RecordedOncePerContext) {
-  embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
-  content::SetupCrossSiteRedirector(embedded_test_server());
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  auto waiter = CreatePageLoadMetricsTestWaiter();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL(
-          "/page_load_metrics/document_with_css_image_sharing.html")));
-
-  waiter->AddMinimumCompleteResourcesExpectation(7);
-  waiter->Wait();
-
-  // Force histograms to record.
-  NavigateToUntrackedUrl();
-
-  // Verify that cached resources are only reported once per context.
-  histogram_tester_->ExpectBucketCount(
-      internal::kHistogramCacheCompletedResources, 2, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, InputEventsForClick) {

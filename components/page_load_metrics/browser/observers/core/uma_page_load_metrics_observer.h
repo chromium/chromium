@@ -118,10 +118,6 @@ extern const char kHistogramLoadTypeTotalBytesNewNavigation[];
 extern const char kHistogramLoadTypeNetworkBytesNewNavigation[];
 extern const char kHistogramLoadTypeCacheBytesNewNavigation[];
 
-extern const char kHistogramTotalCompletedResources[];
-extern const char kHistogramNetworkCompletedResources[];
-extern const char kHistogramCacheCompletedResources[];
-
 extern const char kHistogramInputToNavigation[];
 extern const char kBackgroundHistogramInputToNavigation[];
 extern const char kHistogramInputToNavigationLinkClick[];
@@ -279,10 +275,6 @@ class UmaPageLoadMetricsObserver
 
   ui::PageTransition transition_;
   bool was_no_store_main_resource_;
-
-  // Number of complete resources loaded by the page.
-  int num_cache_resources_;
-  int num_network_resources_;
 
   // The number of body (not header) prefilter bytes consumed by completed
   // requests for the page.

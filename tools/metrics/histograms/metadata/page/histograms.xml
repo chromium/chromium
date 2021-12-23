@@ -1299,6 +1299,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.Experimental.CompletedResources.Cache2"
     units="resources" expires_after="2020-05-30">
+  <obsolete>
+    Removed 12/2021.
+  </obsolete>
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -1310,6 +1313,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.Experimental.CompletedResources.Network"
     units="resources" expires_after="M77">
+  <obsolete>
+    Removed 12/2021.
+  </obsolete>
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -1320,6 +1326,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.Experimental.CompletedResources.Total2"
     units="resources" expires_after="2020-05-30">
+  <obsolete>
+    Removed 12/2021.
+  </obsolete>
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>

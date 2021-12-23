@@ -687,12 +687,6 @@ TEST_F(UmaPageLoadMetricsObserverTest, BytesAndResourcesCounted) {
       internal::kHistogramPageLoadCacheBytes, 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramPageLoadNetworkBytesIncludingHeaders, 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramTotalCompletedResources, 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramNetworkCompletedResources, 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramCacheCompletedResources, 1);
 }
 
 TEST_F(UmaPageLoadMetricsObserverTest, CpuUsageCounted) {
