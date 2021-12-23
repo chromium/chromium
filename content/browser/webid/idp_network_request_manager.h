@@ -12,13 +12,10 @@
 #include "base/callback.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
-#include "content/public/browser/web_contents.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-class SkBitmap;
 
 namespace net {
 enum class ReferrerPolicy;
@@ -107,10 +104,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   static constexpr char kWellKnownFilePath[] = ".well-known/fedcm";
 
   using AccountList = std::vector<content::IdentityRequestAccount>;
-  using BrandIconDownloader =
-      base::OnceCallback<void(const GURL& /*icon_url*/,
-                              int /*ideal_icon_size*/,
-                              WebContents::ImageDownloadCallback)>;
   using FetchWellKnownCallback =
       base::OnceCallback<void(FetchStatus, Endpoints)>;
   using FetchClientIdMetadataCallback =
@@ -152,10 +145,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   // Fetch accounts list for this user from the IDP.
   virtual void SendAccountsRequest(const GURL& accounts_url,
-                                   int idp_brand_icon_ideal_size,
-                                   int idp_brand_icon_minimum_size,
-                                   BrandIconDownloader icon_downloader,
-                                   AccountsRequestCallback callback);
+                                   AccountsRequestCallback);
 
   // Request a new token for this user account and RP from the IDP.
   virtual void SendTokenRequest(const GURL& token_url,
@@ -181,13 +171,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   void OnSigninRequestParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnAccountsRequestResponse(std::unique_ptr<std::string> response_body);
   void OnAccountsRequestParsed(data_decoder::DataDecoder::ValueOrError result);
-  void OnIdentityProviderBrandIconFetched(AccountList account_list,
-                                          IdentityProviderMetadata idp_metadata,
-                                          int id,
-                                          int http_status_code,
-                                          const GURL& image_url,
-                                          const std::vector<SkBitmap>& bitmaps,
-                                          const std::vector<gfx::Size>& sizes);
   void OnTokenRequestResponse(std::unique_ptr<std::string> response_body);
   void OnTokenRequestParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnRevokeResponse(std::unique_ptr<std::string> response_body);
@@ -215,11 +198,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   RevokeCallback revoke_callback_;
   LogoutCallback logout_callback_;
 
-  int idp_brand_icon_ideal_size_;
-  int idp_brand_icon_minimum_size_;
-
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  BrandIconDownloader brand_icon_downloader_;
 
   base::WeakPtrFactory<IdpNetworkRequestManager> weak_ptr_factory_{this};
 };

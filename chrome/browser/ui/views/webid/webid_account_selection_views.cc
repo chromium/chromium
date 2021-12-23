@@ -9,12 +9,3 @@ std::unique_ptr<AccountSelectionView> AccountSelectionView::Create(
     AccountSelectionView::Delegate* delegate) {
   return nullptr;
 }
-
-// static
-int AccountSelectionView::GetBrandIconMinimumSize() {
-  return 0;
-}
-
-int AccountSelectionView::GetBrandIconIdealSize() {
-  return 0;
-}
