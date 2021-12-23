@@ -506,7 +506,10 @@ HeapLinkedHashSet<WeakMember<Element>>* GetExplicitlySetElementsForAttr(
   ExplicitlySetAttrElementsMap* element_attribute_map =
       element->GetDocument().GetExplicitlySetAttrElementsMap(element);
   auto it = element_attribute_map->find(name);
-  return it != element_attribute_map->end() ? it->value : nullptr;
+  if (it == element_attribute_map->end())
+    return nullptr;
+  const auto& elements = it->value;
+  return elements->size() ? elements : nullptr;
 }
 
 // Checks that the given element |candidate| is a descendant of
