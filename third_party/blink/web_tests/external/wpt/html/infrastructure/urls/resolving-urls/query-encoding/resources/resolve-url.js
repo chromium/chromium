@@ -24,7 +24,6 @@
 *   https://html.spec.whatwg.org/multipage/#dom-workerglobalscope-importscripts
 *   https://html.spec.whatwg.org/multipage/#parse-a-websocket-url's-components
 *   https://html.spec.whatwg.org/multipage/#dom-websocket-url
-*   https://html.spec.whatwg.org/multipage/#parse-a-manifest
 *   https://www.w3.org/Bugs/Public/show_bug.cgi?id=23968
 *   http://dev.w3.org/csswg/cssom/#requirements-on-user-agents-implementing-the-xml-stylesheet-processing-instruction
 *   http://url.spec.whatwg.org/#dom-url
