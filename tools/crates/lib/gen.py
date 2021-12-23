@@ -169,6 +169,10 @@ class PerCrateData:
         self.arch_specific = False
         # The set of files generated from the crate's build.rs build script.
         self.build_script_outputs: set[str] = set()
+        # The map of full version numbers that Cargo has requested for the crate
+        # + epoch to the path where Cargo said it has found them. The path will
+        # be missing if there's no local crate that matches.
+        self.cargo_full_versions: map[str, str] = {}
 
 
 class DepSet:
@@ -480,27 +484,60 @@ def _look_for_missing_or_blocked_deps(build_data_set: BuildData,
     If a problem is found, this function will terminate the program with
     `exit(1)`.
     """
-    missing = []
-    blocked = []
+    missing: list[tuple[str, str]] = []
+    missing_version: list[tuple[str, str, str]] = []
+    blocked: list[tuple[str, str]] = []
     # Every crate appears in all 3 CrateUsage entries, so we can just look at
     # one.
     for crate_key in build_data_set.for_normal.all_crates():
         name = crate_key.name
         epoch = crate_key.epoch
-        path = common.os_crate_cargo_dir(name, epoch, rel_path=["Cargo.toml"])
-        if not os.path.exists(path) and not name in consts.BLOCKED_CRATES:
-            missing += [(name, epoch)]
-        if find_blocked and name in consts.BLOCKED_CRATES:
-            reason = consts.BLOCKED_CRATES[name]
-            blocked += [(name, reason)]
-    if missing:
+        if name in consts.BLOCKED_CRATES:
+            if find_blocked:
+                reason = consts.BLOCKED_CRATES[name]
+                blocked += [(name, reason)]
+            continue
+
+        with build_data_set.for_normal.per_crate(crate_key) as data:
+            for (ver, dir) in data.cargo_full_versions.items():
+                if dir:
+                    continue  # If cargo gave a path then it was found locally.
+                epoch_path = common.os_crate_cargo_dir(name,
+                                                       epoch,
+                                                       rel_path=["Cargo.toml"])
+                if not os.path.exists(epoch_path):
+                    missing += [(name, ver, epoch)]
+                else:
+                    missing_version += [(name, ver, epoch)]
+
+    if missing or missing_version or blocked:
         print(file=sys.stderr)
+        print(file=sys.stderr)
+
+    if missing_version:
+        print("Missing correct version for {} dependencies:".format(
+            len(missing_version)),
+              file=sys.stderr)
+        for (name, ver, epoch) in missing_version:
+            print("Cargo wants version \"{}\" for crate \"{}\". But a different"
+                  " version is downloaded for epoch v{}.".format(
+                      ver, name, epoch),
+                  file=sys.stderr)
+        print(
+            "To resolve these errors, remove the epoch and download the exact"
+            " version by specifying it in third_party.toml. If multiple exact"
+            " versions are required, we will need some sort of extension to"
+            " third_party.toml to support this.",
+            file=sys.stderr)
+        print(file=sys.stderr)
+    if missing:
         print("Missing {} dependencies. To download:".format(len(missing)),
               file=sys.stderr)
-        for (name, ver) in missing:
+        for (name, ver, epoch) in missing:
             print("{} download {} {} --security-critical=yes_or_no".format(
                 sys.argv[0], name, ver),
                   file=sys.stderr)
+        print(file=sys.stderr)
     if blocked:
         for (name, reason) in blocked:
             found_from = []
@@ -513,7 +550,6 @@ def _look_for_missing_or_blocked_deps(build_data_set: BuildData,
                                 if (dep_key.name in consts.BLOCKED_CRATES
                                         and not from_key in found_from):
                                     found_from += [from_key]
-            print(file=sys.stderr)
             print("Found dependency on blocked crate \"{}\" from:".format(name),
                   file=sys.stderr)
             for crate_key in found_from:
@@ -530,8 +566,9 @@ def _look_for_missing_or_blocked_deps(build_data_set: BuildData,
             "Note: You will also need to remove usage of the blocked "
             "crate from the dependent crate(s) as well.",
             file=sys.stderr)
+        print(file=sys.stderr)
 
-    if missing or blocked:
+    if missing or missing_version or blocked:
         exit(1)
 
 
@@ -653,11 +690,15 @@ def _crate_features_on_target_arch(crate_usage_data: PerCrateData,
 class CargoTreeDependency:
     def __init__(self,
                  key: cargo.CrateKey,
+                 full_version: str = None,
+                 crate_path: str = None,
                  features: list[str] = [],
                  is_proc_macro: bool = False,
                  is_for_first_party_code: bool = False,
                  build_script_outputs: set[str] = set()):
         self.key = key
+        self.full_version = full_version
+        self.crate_path = crate_path
         self.features = features
         self.is_proc_macro = is_proc_macro
         self.is_for_first_party_code = is_for_first_party_code
@@ -665,28 +706,36 @@ class CargoTreeDependency:
 
     def __eq__(self, other: CargoTreeDependency) -> bool:
         return (self.key == other.key
+                and self.full_version == other.full_version
+                and self.crate_path == other.crate_path
                 and self.features == other.features
-                and self.is_proc_macro == other.is_proc_macro
-                and self.is_for_first_party_code == \
-                    other.is_for_first_party_code
+                and self.is_proc_macro == other.is_proc_macro and
+                self.is_for_first_party_code == other.is_for_first_party_code
                 and self.build_script_outputs == other.build_script_outputs)
 
     def __repr__(self) -> str:
-        return "CargoTreeDependency(key={}, features={}, " \
-                "is_proc_macro={}, is_for_first_party_code={}, " \
-                "build_script_outputs={})".format(
-                    self.key, self.features, self.is_proc_macro,
-                    self.is_for_first_party_code, self.build_script_outputs)
+        return "CargoTreeDependency(key={}, full_version={}, crate_path={}, " \
+            "features={}, " \
+            "is_proc_macro={}, is_for_first_party_code={}, " \
+            "build_script_outputs={})".format(
+                self.key, self.full_version, self.crate_path, self.features,
+                self.is_proc_macro, self.is_for_first_party_code,
+                self.build_script_outputs)
 
 
-def _parse_cargo_tree_dependency_line(cargo_toml: dict,
+def _parse_cargo_tree_dependency_line(args: argparse.Namespace,
+                                      cargo_toml: dict,
                                       is_third_party_toml: bool,
                                       line: str) -> CargoTreeDependency:
     m = re.search(consts.CARGO_DEPS_REGEX, line)
-    if not m: return None
+    if not m:
+        return None
+    if args.verbose:
+        print(m.group(0))
 
     dep_name = m.group("name")
     dep_version = m.group("version")
+    dep_path = m.group("path") if "path" in m.groupdict() else None
     dep_key = cargo.CrateKey(dep_name, dep_version)
 
     dep_features = m.group("features").split(",") if m.group("features") else []
@@ -712,6 +761,8 @@ def _parse_cargo_tree_dependency_line(cargo_toml: dict,
                                                   for_first_party_code)
 
     return CargoTreeDependency(dep_key,
+                               full_version=dep_version,
+                               crate_path=dep_path,
                                features=dep_features,
                                is_proc_macro=dep_isprocmacro,
                                is_for_first_party_code=for_first_party_code,
@@ -757,6 +808,8 @@ def _add_edges_for_dep_on_target_arch(
         with build_data_set.per_crate_for_usage(u, dep.key) as crate_data:
             crate_data.for_first_party |= dep.is_for_first_party_code
             crate_data.build_script_outputs |= dep.build_script_outputs
+            crate_data.cargo_full_versions.update(
+                {dep.full_version: dep.crate_path})
 
     # The parent crate may use a dependency in various ways: to produce normal
     # output, a build script, or tests. We examine just one in this function.
@@ -863,6 +916,7 @@ def _collect_deps_for_crate(args: argparse.Namespace,
     # The crate can have a few different types of output: normal output like a
     # library, its build script, and its tests. We walk over and construct
     # the dependency graph for each.
+    first = True
     for output_type in cargo.CrateBuildOutput:
         if output_type == cargo.CrateBuildOutput.TESTS and not args.with_tests:
             continue
@@ -876,13 +930,18 @@ def _collect_deps_for_crate(args: argparse.Namespace,
                     build_data_set.get_per_crate_data_copy(usage, crate_key),
                     target_arch)
 
+            if args.verbose:
+                if first:
+                    first = False
+                    print()
+                print("output: {} target: {}".format(output_type, target_arch))
             cargo_tree_output = cargo.run_cargo_tree(cargo_toml_path,
                                                      output_type, target_arch,
                                                      depth,
                                                      crate_derived_features)
             for line in cargo_tree_output:
                 tree_dependency = _parse_cargo_tree_dependency_line(
-                    cargo_toml, is_third_party_toml, line)
+                    args, cargo_toml, is_third_party_toml, line)
                 if not tree_dependency:
                     # Some lines of `cargo tree` output may not point at a
                     # dependency.

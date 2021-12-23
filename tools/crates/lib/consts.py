@@ -59,7 +59,7 @@ BLOCKED_CRATES = {
 _CARGO_DEPS = \
     r"(?:├──|└──) (?P<name>.*?) v(?P<version>[0-9]+.[0-9]+.[0-9]+)" \
     r"(?P<isprocmacro> \(proc-macro\))?" \
-    r"(?P<patchedpath> \([\/].*?\))?" \
+    r"(?: \((?P<path>[\/].*?)\))?" \
     r"(?: (?P<features>[^( ][^ ]*))?(?: \(\*\))?"
 CARGO_DEPS_REGEX = re.compile(_CARGO_DEPS)
 
