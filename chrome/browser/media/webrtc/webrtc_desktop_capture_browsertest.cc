@@ -305,8 +305,15 @@ IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
   RunP2PScreenshareWhileSharing(base::BindOnce(GetDesktopMediaIDForScreen));
 }
 
+// TODO(crbug.com/1282292): Test is flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_RunP2PScreenshareWhileSharingTab \
+  DISABLED_RunP2PScreenshareWhileSharingTab
+#else
+#define MAYBE_RunP2PScreenshareWhileSharingTab RunP2PScreenshareWhileSharingTab
+#endif
 IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
-                       RunP2PScreenshareWhileSharingTab) {
+                       MAYBE_RunP2PScreenshareWhileSharingTab) {
   RunP2PScreenshareWhileSharing(
       base::BindOnce(GetDesktopMediaIDForTab, base::Unretained(browser()), 2));
 }
