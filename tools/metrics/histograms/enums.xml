@@ -27591,6 +27591,7 @@ Called by update_document_policy_enum.py.-->
   <int value="933" label="OriginAgentClusterDefaultEnabled"/>
   <int value="934" label="DeviceLoginWebUILazyLoading"/>
   <int value="935" label="ProjectorEnabled"/>
+  <int value="936" label="PhoneHubCameraRollAllowed"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

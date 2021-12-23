@@ -18626,6 +18626,37 @@
       If this policy is left not set, the default is not allowed for enterprise-managed users and allowed for non-managed users.''',
     },
     {
+      'name': 'PhoneHubCameraRollAllowed',
+      'owners': ['jasonsun@google.com', 'jonmann@google.com', 'better-together-dev@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': True,
+      'default': True,
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allows users who have opted in to Phone Hub to access recent photos and videos taken on their phone',
+        },
+        {
+          'value': False,
+          'caption': 'Disallows users who have opted in to Phone Hub to access recent photos and videos taken on their phone',
+        },
+      ],
+      'id': 936,
+      'caption': '''Allow recent photos and videos taken on the phone to be accessed via Phone Hub.''',
+      'tags': ['local-data-access', 'google-sharing'],
+      'desc': '''If this setting is enabled, users who have already opted in to Phone Hub will be able to view and download recent photos and videos taken on their phone on Chrome OS.
+
+      If this setting is disabled, users will not be allowed to use this feature. If the <ph name="PHONE_HUB_ALLOWED_POLICY_NAME">PhoneHubAllowed</ph> policy is disabled, users also will not be allowed to use this feature.
+
+      If this policy is left not set, the default is allowed for both enterprise-managed users and non-managed users.''',
+    },
+    {
       'name': 'PhoneHubNotificationsAllowed',
       'owners': ['khorimoto@google.com', 'danlee@google.com', 'better-together-dev@google.com'],
       'type': 'main',
@@ -30128,6 +30159,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 935,
+  'highest_id_currently_used': 936,
   'highest_atomic_group_id_currently_used': 41
 }
