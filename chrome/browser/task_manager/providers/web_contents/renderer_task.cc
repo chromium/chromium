@@ -183,7 +183,7 @@ std::u16string RendererTask::GetTitleFromWebContents(
   DCHECK(web_contents);
   std::u16string title = web_contents->GetTitle();
   if (title.empty()) {
-    GURL url = web_contents->GetURL();
+    GURL url = web_contents->GetLastCommittedURL();
     title = base::UTF8ToUTF16(url.spec());
     // Force URL to be LTR.
     title = base::i18n::GetDisplayStringInLTRDirectionality(title);
