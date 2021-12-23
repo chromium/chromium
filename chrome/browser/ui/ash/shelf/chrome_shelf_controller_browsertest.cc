@@ -2564,7 +2564,7 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppPolicyNonExistentApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WebAppInstallForceList) {
-  constexpr char kAppUrl[] = "https://example.site/";
+  constexpr char kAppUrl[] = "https://example.site";
   base::RunLoop run_loop;
   web_app::WebAppProvider::GetForTest(browser()->profile())
       ->policy_manager()
