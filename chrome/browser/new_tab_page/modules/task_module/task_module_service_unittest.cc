@@ -545,3 +545,64 @@ TEST_F(TaskModuleServiceTest, NoLogIfCached) {
                    "NewTabPage.Modules.DataRequest",
                    base::PersistentHash("shopping_tasks")));
 }
+
+class TaskModuleServiceModulesRedesignedTest : public TaskModuleServiceTest {
+ public:
+  TaskModuleServiceModulesRedesignedTest() {
+    features_.InitAndEnableFeature(ntp_features::kNtpModulesRedesigned);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+// Verifies that dismiss is ignored.
+TEST_F(TaskModuleServiceModulesRedesignedTest, IgnoresDismiss) {
+  test_url_loader_factory_.AddResponse(
+      "https://www.google.com/async/newtab_recipe_tasks?hl=en-US",
+      R"()]}'
+{
+  "update": {
+    "recipe_tasks": [
+      {
+        "title": "task title",
+        "task_name": "task name",
+        "recipes": [
+          {
+            "name": "foo",
+            "image_url": "https://foo.com",
+            "viewed_timestamp": {
+              "seconds": 123
+            },
+            "site_name": "bar",
+            "target_url": "https://google.com/foo"
+          }
+        ],
+        "related_searches": [
+          {
+            "text": "baz",
+            "target_url": "https://google.com/baz"
+          }
+        ]
+      }
+    ]
+  }
+})");
+
+  bool passed_data = false;
+  base::MockCallback<TaskModuleService::TaskModuleCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(
+          testing::Invoke([&passed_data](task_module::mojom::TaskPtr arg) {
+            passed_data = (arg.get() != nullptr);
+          }));
+
+  service_->DismissTask(task_module::mojom::TaskModuleType::kRecipe,
+                        "task name");
+  service_->GetPrimaryTask(task_module::mojom::TaskModuleType::kRecipe,
+                           callback.Get());
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(passed_data);
+}

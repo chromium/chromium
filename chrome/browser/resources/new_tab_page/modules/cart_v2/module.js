@@ -245,25 +245,6 @@ class ChromeCartModuleElement extends mixinBehaviors
   }
 
   /** @private */
-  onDismissButtonClick_() {
-    ChromeCartProxy.getHandler().hideCartModule();
-    this.dispatchEvent(new CustomEvent('dismiss-module', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        message:
-            loadTimeData.getString('modulesCartModuleMenuHideToastMessage'),
-        restoreCallback: () => {
-          ChromeCartProxy.getHandler().restoreHiddenCartModule();
-          chrome.metricsPrivate.recordUserAction(
-              'NewTabPage.Carts.UndoHideModule');
-        },
-      },
-    }));
-    chrome.metricsPrivate.recordUserAction('NewTabPage.Carts.HideModule');
-  }
-
-  /** @private */
   onDisableButtonClick_() {
     this.dispatchEvent(new CustomEvent('disable-module', {
       bubbles: true,

@@ -58,21 +58,6 @@ class DriveModuleElement extends mixinBehaviors
     this.dispatchEvent(disableEvent);
   }
 
-  /** @private */
-  onDismissButtonClick_() {
-    DriveProxy.getHandler().dismissModule();
-    const dismissEvent = new CustomEvent('dismiss-module', {
-      composed: true,
-      detail: {
-        message: loadTimeData.getStringF(
-            'dismissModuleToastMessage',
-            loadTimeData.getString('modulesDriveFilesSentence')),
-        restoreCallback: () => DriveProxy.getHandler().restoreModule(),
-      },
-    });
-    this.dispatchEvent(dismissEvent);
-  }
-
   /**
    * @param {!Event} e
    * @private

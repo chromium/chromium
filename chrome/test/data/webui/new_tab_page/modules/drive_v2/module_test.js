@@ -175,38 +175,4 @@ suite('NewTabPageModulesDriveModuleTest', () => {
             'You won\'t see Drive files again on this page',
             disable.event.detail.message);
       });
-
-  test('backend is notified when module is dismissed or restored', async () => {
-    // Arrange.
-    const data = {
-      files: [
-        {
-          justificationText: 'Edited yesterday',
-          title: 'Abc',
-          id: '012',
-          mimeType: 'application/vnd.google-apps.presentation',
-          itemUrl: {url: 'https://abc.com'},
-        },
-      ]
-    };
-    handler.setResultFor('getFiles', Promise.resolve(data));
-    const driveModule = assert(await driveV2Descriptor.initialize(0));
-    document.body.append(driveModule);
-
-    // Act.
-    const dismiss = {event: null};
-    driveModule.addEventListener('dismiss-module', (e) => dismiss.event = e);
-    const dismissEvent = new Event('dismiss-button-click');
-    $$(driveModule, 'ntp-module-header').dispatchEvent(dismissEvent);
-
-    // Assert.
-    assertEquals('Files hidden', dismiss.event.detail.message);
-    assertEquals(1, handler.getCallCount('dismissModule'));
-
-    // Act.
-    dismiss.event.detail.restoreCallback();
-
-    // Assert.
-    assertEquals(1, handler.getCallCount('restoreModule'));
-  });
 });

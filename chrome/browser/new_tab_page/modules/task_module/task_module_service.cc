@@ -400,6 +400,9 @@ void TaskModuleService::OnJsonParsed(
 bool TaskModuleService::IsTaskDismissed(
     task_module::mojom::TaskModuleType task_module_type,
     const std::string& task_name) {
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
+    return false;
+  }
   const base::Value* dismissed_tasks = profile_->GetPrefs()->GetList(
       GetDismissedTasksPrefName(task_module_type));
   DCHECK(dismissed_tasks);

@@ -137,14 +137,16 @@ export class ModulesElement extends mixinBehaviors
             this.onDragStart_(/** @type {!DragEvent} */ (event));
           });
         }
-        moduleWrapper.addEventListener('dismiss-module', event => {
-          this.onDismissModule_(
-              /**
-                 @type {!CustomEvent<{message: string, restoreCallback:
-                     function()}>}
-               */
-              (event));
-        });
+        if (!loadTimeData.getBoolean('modulesRedesignedEnabled')) {
+          moduleWrapper.addEventListener('dismiss-module', event => {
+            this.onDismissModule_(
+                /**
+                   @type {!CustomEvent<{message: string, restoreCallback:
+                      function()}>}
+                */
+                (event));
+          });
+        }
         moduleWrapper.addEventListener('disable-module', event => {
           this.onDisableModule_(
               /**

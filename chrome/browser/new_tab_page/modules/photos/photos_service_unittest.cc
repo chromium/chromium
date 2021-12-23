@@ -573,3 +573,48 @@ TEST_F(PhotosServiceFakeDataTest, ReturnsFakeData) {
 
   EXPECT_FALSE(fake_memories.empty());
 }
+
+class PhotosServiceModulesRedesignedTest : public PhotosServiceTest {
+ public:
+  PhotosServiceModulesRedesignedTest() {
+    features_.InitAndEnableFeature(ntp_features::kNtpModulesRedesigned);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(PhotosServiceModulesRedesignedTest, IgnoresDismiss) {
+  bool passed_data = false;
+  base::MockCallback<PhotosService::GetMemoriesCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&passed_data](std::vector<photos::mojom::MemoryPtr> memories) {
+            passed_data = !memories.empty();
+          }));
+  identity_test_env.SetAutomaticIssueOfAccessTokens(/*grant=*/true);
+  test_url_loader_factory_.AddResponse(
+      "https://photosfirstparty-pa.googleapis.com/v1/ntp/memories:read",
+      R"(
+        {
+          "memory": [
+            {
+              "memoryMediaKey": "key",
+              "title": {
+                "header": "Title",
+                "subheader": "Something something"
+              },
+              "coverMediaKey": "coverKey",
+              "coverUrl": "https://photos.google.com/img/coverKey"
+            }
+          ]
+        }
+      )");
+
+  service_->DismissModule();
+  service_->GetMemories(callback.Get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(passed_data);
+}

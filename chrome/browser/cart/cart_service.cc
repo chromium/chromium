@@ -186,7 +186,8 @@ void CartService::RestoreHidden() {
 }
 
 bool CartService::IsHidden() {
-  return profile_->GetPrefs()->GetBoolean(prefs::kCartModuleHidden);
+  return !base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned) &&
+         profile_->GetPrefs()->GetBoolean(prefs::kCartModuleHidden);
 }
 
 void CartService::LoadCart(const std::string& domain,

@@ -281,13 +281,9 @@
 <div id="module">
   <ntp-module-header
       chip-text="[[headerChipText]]"
-      dismiss-text="[[i18nRecursive('',
-                                    'modulesDismissButtonText',
-                                    'modulesCartLowerThese')]]"
       disable-text="[[i18nRecursive('',
                                     'modulesDisableButtonText',
                                     'modulesCartLower')]]"
-      show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
       on-disable-button-click="onDisableButtonClick_"
       icon-src="modules/cart/icons/cart_logo.svg">
     [[i18n('modulesCartSentenceV2')]]
