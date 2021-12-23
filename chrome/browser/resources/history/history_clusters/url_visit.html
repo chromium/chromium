@@ -121,11 +121,6 @@
   :host([is-top-visit]) #actionMenuButton {
     --cr-icon-button-icon-size: 24px;
   }
-
-  :host(:not([has-related-visits])) #removeAllButton,
-  :host(:not([has-related-visits])) #openAllButton {
-    display: none;
-  }
 </style>
 <div id="header" on-click="onClick_" on-auxclick="onAuxClick_"
     on-keydown="onKeydown_">
@@ -160,14 +155,16 @@
   <template>
     <cr-action-menu role-description="$i18n{actionMenuDescription}">
       <button id="openAllButton" class="dropdown-item"
-          on-click="onOpenAllButtonClick_">
+          on-click="onOpenAllButtonClick_"
+          hidden="[[!visit.relatedVisits.length]]">
         $i18n{openAllInTabGroup}
       </button>
       <button class="dropdown-item" on-click="onRemoveSelfButtonClick_">
         $i18n{removeFromHistory}
       </button>
       <button id="removeAllButton" class="dropdown-item"
-          on-click="onRemoveAllButtonClick_">
+          on-click="onRemoveAllButtonClick_"
+          hidden="[[!visit.relatedVisits.length]]">
         $i18n{removeAllFromHistory}
       </button>
     </cr-action-menu>
