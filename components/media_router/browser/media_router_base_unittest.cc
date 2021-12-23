@@ -120,8 +120,8 @@ TEST_F(MediaRouterBaseTest, NotifyCallbacks) {
 TEST_F(MediaRouterBaseTest, GetCurrentRoutes) {
   MediaSource source1("source_1");
   MediaSource source2("source_1");
-  MediaRoute route1("route_1", source1, "sink_1", "", false, false);
-  MediaRoute route2("route_2", source2, "sink_2", "", true, false);
+  MediaRoute route1("route_1", source1, "sink_1", "", false);
+  MediaRoute route2("route_2", source2, "sink_2", "", true);
   std::vector<MediaRoute> routes = {route1, route2};
 
   EXPECT_TRUE(router_.GetCurrentRoutes().empty());

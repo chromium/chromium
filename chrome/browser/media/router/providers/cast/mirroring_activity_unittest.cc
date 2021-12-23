@@ -97,8 +97,7 @@ class MirroringActivityTest
     CastSinkExtraData cast_data;
     cast_data.cast_channel_id = kChannelId;
     cast_data.capabilities = cast_channel::AUDIO_OUT | cast_channel::VIDEO_OUT;
-    MediaRoute route(kRouteId, source, kSinkId, kDescription, route_is_local_,
-                     true);
+    MediaRoute route(kRouteId, source, kSinkId, kDescription, route_is_local_);
     route.set_presentation_id(kPresentationId);
     activity_ = std::make_unique<MirroringActivity>(
         route, kAppId, &message_handler_, &session_tracker_, kTabId, cast_data,

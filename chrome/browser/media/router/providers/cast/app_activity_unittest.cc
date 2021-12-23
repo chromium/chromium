@@ -51,7 +51,7 @@ class AppActivityTest : public CastActivityTestBase {
     CastActivityTestBase::SetUp();
 
     activity_ = std::make_unique<AppActivity>(
-        MediaRoute(kRouteId, MediaSource(), kSinkId, "", false, false), kAppId,
+        MediaRoute(kRouteId, MediaSource(), kSinkId, "", false), kAppId,
         &message_handler_, &session_tracker_);
   }
 

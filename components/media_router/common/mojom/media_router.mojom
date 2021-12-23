@@ -119,8 +119,6 @@ struct MediaRoute {
   // The type of route controller that can be created for this route. See
   // media_controller.mojom for details.
   RouteControllerType controller_type;
-  // Set to true if this route should be displayed for |media_sink_id| in UI.
-  bool for_display;
   // Set to true if this route was created by an OffTheRecord profile.
   bool is_off_the_record;
   // Set to true if this route corresponds to a local presentation.

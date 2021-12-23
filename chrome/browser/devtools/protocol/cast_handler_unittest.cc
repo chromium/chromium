@@ -39,7 +39,7 @@ const media_router::MediaSink sink2{CreateCastSink(kSinkId2, kSinkName2)};
 media_router::MediaRoute Route1() {
   return media_router::MediaRoute(
       kRouteId1, media_router::MediaSource("https://example.com/"), kSinkId1,
-      "", true, true);
+      "", true);
 }
 
 class MockStartDesktopMirroringCallback

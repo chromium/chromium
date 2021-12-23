@@ -74,18 +74,16 @@ MediaRoute::MediaRoute(const MediaRoute::Id& media_route_id,
                        const MediaSource& media_source,
                        const MediaSink::Id& media_sink_id,
                        const std::string& description,
-                       bool is_local,
-                       bool for_display)
+                       bool is_local)
     : media_route_id_(media_route_id),
       media_source_(media_source),
       media_sink_id_(media_sink_id),
       description_(description),
-      is_local_(is_local),
-      for_display_(for_display) {}
+      is_local_(is_local) {}
 
 MediaRoute::MediaRoute(const MediaRoute& other) = default;
 
-MediaRoute::MediaRoute() {}
+MediaRoute::MediaRoute() = default;
 MediaRoute::~MediaRoute() = default;
 
 bool MediaRoute::operator==(const MediaRoute& other) const {
@@ -96,7 +94,6 @@ bool MediaRoute::operator==(const MediaRoute& other) const {
          media_sink_name_ == other.media_sink_name_ &&
          description_ == other.description_ && is_local_ == other.is_local_ &&
          controller_type_ == other.controller_type_ &&
-         for_display_ == other.for_display_ &&
          is_off_the_record_ == other.is_off_the_record_ &&
          is_local_presentation_ == other.is_local_presentation_ &&
          is_connecting_ == other.is_connecting_;

@@ -54,7 +54,7 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
 
     routes_ = {MediaRoute("routeId1",
                           MediaSource("urn:x-org.chromium.media:source:tab:*"),
-                          "sinkId1", "description", true, true)};
+                          "sinkId1", "description", true)};
   }
 
   // Returns the dialog controller for the active WebContents.

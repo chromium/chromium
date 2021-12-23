@@ -88,7 +88,7 @@ void TestMediaRouteProvider::CreateRoute(const std::string& media_source,
     DVLOG(2) << "CreateRoute with origin: " << origin << " and tab ID "
              << tab_id;
     MediaRoute route(presentation_id, MediaSource(media_source), sink_id,
-                     std::string("Test Route"), true, true);
+                     std::string("Test Route"), true);
     route.set_presentation_id(presentation_id);
     route.set_controller_type(RouteControllerType::kGeneric);
     route.set_off_the_record(incognito);

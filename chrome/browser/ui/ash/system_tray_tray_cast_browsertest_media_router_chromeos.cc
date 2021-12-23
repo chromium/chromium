@@ -44,7 +44,7 @@ media_router::MediaRoute MakeRoute(const std::string& route_id,
                                    bool is_local) {
   return media_router::MediaRoute(
       route_id, media_router::MediaSource::ForUnchosenDesktop(), sink_id,
-      "description", is_local, true /*for_display*/);
+      "description", is_local);
 }
 
 class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {

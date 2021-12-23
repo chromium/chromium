@@ -97,8 +97,7 @@ IssueInfo CreateIssueInfo(const std::string& title) {
 
 // Creates a media route whose ID is |kRouteId|.
 MediaRoute CreateMediaRoute() {
-  MediaRoute route(kRouteId, MediaSource(kSource), kSinkId, kDescription, true,
-                   true);
+  MediaRoute route(kRouteId, MediaSource(kSource), kSinkId, kDescription, true);
   route.set_presentation_id(kPresentationId);
   route.set_controller_type(RouteControllerType::kGeneric);
   return route;
@@ -106,7 +105,7 @@ MediaRoute CreateMediaRoute() {
 
 // Creates a media route whose ID is |kRouteId2|.
 MediaRoute CreateMediaRoute2() {
-  MediaRoute route(kRouteId2, MediaSource(kSource), kSinkId, kDescription, true,
+  MediaRoute route(kRouteId2, MediaSource(kSource), kSinkId, kDescription,
                    true);
   route.set_presentation_id(kPresentationId);
   route.set_controller_type(RouteControllerType::kGeneric);
@@ -236,7 +235,7 @@ TEST_F(MediaRouterMojoImplTest, RouteRecognizedAfterCreation) {
 TEST_F(MediaRouterMojoImplTest, CreateIncognitoRoute) {
   ProvideTestSink(mojom::MediaRouteProviderId::CAST, kSinkId);
   MediaSource media_source(kSource);
-  MediaRoute expected_route(kRouteId, media_source, kSinkId, "", false, false);
+  MediaRoute expected_route(kRouteId, media_source, kSinkId, "", false);
   expected_route.set_off_the_record(true);
 
   // Use a lambda function as an invocation target here to work around
@@ -672,10 +671,10 @@ TEST_F(MediaRouterMojoImplTest, RegisteredObserversGetMediaRouteUpdates) {
 
   MediaSource media_source(kSource);
   std::vector<MediaRoute> expected_routes{
-      MediaRoute(kRouteId, media_source, kSinkId, kDescription, false, false)};
+      MediaRoute(kRouteId, media_source, kSinkId, kDescription, false)};
 
   MediaRoute incognito_expected_route(kRouteId2, media_source, kSinkId,
-                                      kDescription, false, false);
+                                      kDescription, false);
   incognito_expected_route.set_off_the_record(true);
   expected_routes.push_back(incognito_expected_route);
 
@@ -1026,11 +1025,11 @@ TEST_F(MediaRouterMojoImplTest, ObserveSinksFromMultipleProviders) {
 TEST_F(MediaRouterMojoImplTest, ObserveRoutesFromMultipleProviders) {
   const MediaSource source(kSource);
   // Routes for the Cast MRP.
-  const MediaRoute route1a("route1a", source, "sink 1a", "", true, true);
-  const MediaRoute route1b("route1b", source, "sink 1b", "", true, true);
+  const MediaRoute route1a("route1a", source, "sink 1a", "", true);
+  const MediaRoute route1b("route1b", source, "sink 1b", "", true);
   // Routes for the wired display MRP.
-  const MediaRoute route2a("route2a", source, "sink 2a", "", true, true);
-  const MediaRoute route2b("route2b", source, "sink 2b", "", true, true);
+  const MediaRoute route2a("route2a", source, "sink 2a", "", true);
+  const MediaRoute route2b("route2b", source, "sink 2b", "", true);
   RegisterWiredDisplayProvider();
   MockMediaRoutesObserver observer(router());
 

@@ -106,7 +106,7 @@ std::unique_ptr<DialActivity> DialActivity::From(
   MediaRoute route(
       MediaRoute::GetMediaRouteId(presentation_id, sink_id, source), source,
       sink_id, app_name,
-      /* is_local */ true, /* for_display */ true);
+      /* is_local */ true);
   route.set_presentation_id(presentation_id);
   route.set_off_the_record(off_the_record);
   return std::make_unique<DialActivity>(launch_info, route, sink,

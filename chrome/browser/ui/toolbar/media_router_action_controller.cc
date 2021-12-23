@@ -67,17 +67,15 @@ void MediaRouterActionController::OnRoutesUpdated(
                    [this](const media_router::MediaRoute& route) {
                      // The Cast icon should be hidden if there only are
                      // non-local and non-display routes.
-                     if (!route.is_local() || !route.for_display()) {
+                     if (!route.is_local()) {
                        return false;
                      }
-
                      // When this feature is disabled, we show the Cast icon
                      // regardless of the media source.
                      if (!media_router::GlobalMediaControlsCastStartStopEnabled(
                              this->profile_)) {
                        return true;
                      }
-
                      // When the feature is enabled, presentation routes are
                      // controlled through the global media controls most of the
                      // time. So we do not request to show the Cast icon when

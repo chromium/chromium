@@ -60,11 +60,9 @@ class MediaRouterActionControllerUnitTest : public BrowserWithTestWindowTest {
     SetAlwaysShowActionPref(false);
 
     local_display_route_list_.emplace_back("routeId1", source1_, "sinkId1",
-                                           "description", true, true);
+                                           "description", true);
     non_local_display_route_list_.emplace_back("routeId2", source1_, "sinkId2",
-                                               "description", false, true);
-    non_local_display_route_list_.emplace_back("routeId3", source2_, "sinkId3",
-                                               "description", true, false);
+                                               "description", false);
   }
 
   void TearDown() override {
@@ -111,10 +109,10 @@ class MediaRouterActionControllerGMCUnitTest
     feature_list_.InitAndEnableFeature(
         media_router::kGlobalMediaControlsCastStartStop);
 
-    local_display_cast_route_list_.emplace_back(
-        "routeId4", cast_source_, "sinkId4", "description", true, true);
+    local_display_cast_route_list_.emplace_back("routeId4", cast_source_,
+                                                "sinkId4", "description", true);
     local_display_mirroring_route_list_.emplace_back(
-        "routeId5", mirroring_source_, "sinkId5", "description", true, true);
+        "routeId5", mirroring_source_, "sinkId5", "description", true);
   }
 
  protected:

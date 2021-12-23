@@ -378,10 +378,6 @@ struct StructTraits<media_router::mojom::MediaRouteDataView,
     return route.controller_type();
   }
 
-  static bool for_display(const media_router::MediaRoute& route) {
-    return route.for_display();
-  }
-
   static bool is_off_the_record(const media_router::MediaRoute& route) {
     return route.is_off_the_record();
   }

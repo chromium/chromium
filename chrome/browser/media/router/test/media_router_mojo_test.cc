@@ -38,8 +38,7 @@ MATCHER_P(Equals, value, "") {
 
 // Creates a media route whose ID is |kRouteId|.
 MediaRoute CreateMediaRoute() {
-  MediaRoute route(kRouteId, MediaSource(kSource), kSinkId, kDescription, true,
-                   true);
+  MediaRoute route(kRouteId, MediaSource(kSource), kSinkId, kDescription, true);
   route.set_presentation_id(kPresentationId);
   route.set_controller_type(RouteControllerType::kGeneric);
   return route;
@@ -165,7 +164,7 @@ void MediaRouterMojoTest::ProvideTestSink(
 
 void MediaRouterMojoTest::TestCreateRoute() {
   MediaSource media_source(kSource);
-  MediaRoute expected_route(kRouteId, media_source, kSinkId, kDescription, true,
+  MediaRoute expected_route(kRouteId, media_source, kSinkId, kDescription,
                             true);
   expected_route.set_presentation_id(kPresentationId);
   expected_route.set_controller_type(RouteControllerType::kGeneric);
@@ -201,7 +200,7 @@ void MediaRouterMojoTest::TestCreateRoute() {
 
 void MediaRouterMojoTest::TestJoinRoute(const std::string& presentation_id) {
   MediaSource media_source(kSource);
-  MediaRoute expected_route(kRouteId, media_source, kSinkId, kDescription, true,
+  MediaRoute expected_route(kRouteId, media_source, kSinkId, kDescription,
                             true);
   expected_route.set_presentation_id(kPresentationId);
   expected_route.set_controller_type(RouteControllerType::kGeneric);

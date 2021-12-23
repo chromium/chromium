@@ -219,7 +219,7 @@ class PresentationServiceDelegateImplTest
         content::GlobalRenderFrameHostId(100, 200), {presentation_url2_},
         frame_origin_);
     MediaRoute media_route("differentRouteId", source2_, "mediaSinkId", "",
-                           true, true);
+                           true);
     media_route.set_off_the_record(off_the_record);
     result =
         RouteRequestResult::FromSuccess(media_route, "differentPresentationId");
@@ -229,7 +229,7 @@ class PresentationServiceDelegateImplTest
 
     // Should trigger callback since request matches.
     EXPECT_CALL(*this, OnDefaultPresentationStarted(_)).Times(1);
-    MediaRoute media_route2("routeId", source1_, "mediaSinkId", "", true, true);
+    MediaRoute media_route2("routeId", source1_, "mediaSinkId", "", true);
     media_route2.set_off_the_record(off_the_record);
     result = RouteRequestResult::FromSuccess(media_route2, "presentationId");
     delegate_impl_->OnPresentationResponse(request, /** connection */ nullptr,
@@ -453,8 +453,7 @@ TEST_F(PresentationServiceDelegateImplTest, NotifyMediaRoutesChanged) {
   content::PresentationRequest request(
       content::GlobalRenderFrameHostId(render_process_id, render_frame_id),
       {presentation_url1_}, frame_origin_);
-  MediaRoute media_route("differentRouteId", source1_, "mediaSinkId", "", true,
-                         true);
+  MediaRoute media_route("differentRouteId", source1_, "mediaSinkId", "", true);
   std::unique_ptr<RouteRequestResult> result =
       RouteRequestResult::FromSuccess(media_route, kPresentationId);
   StrictMock<MockWebContentsPresentationObserver> observer(GetWebContents());
@@ -502,7 +501,7 @@ TEST_F(PresentationServiceDelegateImplTest, ListenForConnnectionStateChange) {
   EXPECT_CALL(mock_create_connection_callbacks, OnCreateConnectionSuccess(_))
       .Times(1);
   std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromSuccess(
-      MediaRoute(route_id, source1_, "mediaSinkId", "description", true, true),
+      MediaRoute(route_id, source1_, "mediaSinkId", "description", true),
       kPresentationId);
   std::move(route_response_callback).Run(/** connection */ nullptr, *result);
 
@@ -528,7 +527,7 @@ TEST_F(PresentationServiceDelegateImplTest, GetMediaRoutes) {
       content::GlobalRenderFrameHostId(main_frame_process_id_,
                                        main_frame_routing_id_),
       {presentation_url1_}, frame_origin_);
-  MediaRoute media_route("differentRouteId1", source1_, "mediaSinkId", "", true,
+  MediaRoute media_route("differentRouteId1", source1_, "mediaSinkId", "",
                          true);
   std::unique_ptr<RouteRequestResult> result =
       RouteRequestResult::FromSuccess(media_route, kPresentationId);
@@ -599,7 +598,7 @@ TEST_F(PresentationServiceDelegateImplTest,
                                           main_frame_routing_id_);
   MediaRoute media_route("route_id",
                          MediaSource::ForPresentationUrl(presentation_url),
-                         "mediaSinkId", "", true, true);
+                         "mediaSinkId", "", true);
   media_route.set_local_presentation(true);
 
   auto& mock_local_manager = GetMockLocalPresentationManager();
@@ -626,7 +625,7 @@ TEST_F(PresentationServiceDelegateImplTest,
        TestReconnectPresentationForLocalPresentation) {
   MediaRoute media_route("route_id",
                          MediaSource::ForPresentationUrl(presentation_url1_),
-                         "mediaSinkId", "", true, true);
+                         "mediaSinkId", "", true);
   media_route.set_local_presentation(true);
 
   auto& mock_local_manager = GetMockLocalPresentationManager();
@@ -656,7 +655,7 @@ TEST_F(PresentationServiceDelegateImplTest, ConnectToLocalPresentation) {
 
   MediaRoute media_route("route_id",
                          MediaSource::ForPresentationUrl(presentation_info.url),
-                         "mediaSinkId", "", true, true);
+                         "mediaSinkId", "", true);
   media_route.set_local_presentation(true);
 
   mojo::Remote<PresentationConnection> receiver_remote;
@@ -721,7 +720,7 @@ TEST_F(PresentationServiceDelegateImplTest, ConnectToPresentation) {
 
   MediaRoute media_route("route_id",
                          MediaSource::ForPresentationUrl(presentation_info.url),
-                         "mediaSinkId", "", true, true);
+                         "mediaSinkId", "", true);
 
   mojo::Remote<PresentationConnection> connection_remote;
   NiceMock<MockPresentationConnectionProxy> mock_proxy;

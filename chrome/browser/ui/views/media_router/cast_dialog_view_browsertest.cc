@@ -33,7 +33,7 @@ media_router::UIMediaSink CreateConnectedSink() {
   sink.cast_modes = {media_router::TAB_MIRROR, media_router::DESKTOP_MIRROR};
   sink.route = media_router::MediaRoute(
       "route_id", media_router::MediaSource("https://example.com"), sink.id, "",
-      true, true);
+      true);
   return sink;
 }
 

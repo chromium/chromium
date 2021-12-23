@@ -804,7 +804,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsCastSession) {
   const std::string route_description = "Casting: Big Buck Bunny";
   const std::string sink_name = "My Sink";
   media_router::MediaRoute route("id", media_router::MediaSource("source_id"),
-                                 "sink_id", route_description, true, true);
+                                 "sink_id", route_description, true);
   route.set_media_sink_name(sink_name);
   route.set_controller_type(media_router::RouteControllerType::kGeneric);
   media_router_->NotifyMediaRoutesChanged({route});

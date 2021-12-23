@@ -338,7 +338,7 @@ TEST_F(MediaItemUIDeviceSelectorViewTest, CastDeviceButtonClickStartsCasting) {
       media_router::mojom::MediaRouteProviderId::DIAL;
   dial_connected_sink.route =
       media_router::MediaRoute("routeId1", media_router::MediaSource("source1"),
-                               "sinkId1", "description", true, true);
+                               "sinkId1", "description", true);
   view_->OnModelUpdated(CreateModelWithSinks({dial_connected_sink}));
   EXPECT_CALL(*cast_controller_ptr, StopCasting("routeId1"));
   for (views::View* child : GetDeviceEntryViewsContainer()->children()) {

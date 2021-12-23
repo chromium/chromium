@@ -60,7 +60,7 @@ UIMediaSink CreateConnectedSink() {
   sink.state = UIMediaSinkState::CONNECTED;
   sink.cast_modes = {TAB_MIRROR};
   sink.route = MediaRoute("route_id", MediaSource("https://example.com"),
-                          sink.id, "", true, true);
+                          sink.id, "", true);
   return sink;
 }
 

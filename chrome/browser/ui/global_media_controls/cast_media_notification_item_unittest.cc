@@ -41,7 +41,7 @@ constexpr char kSinkName[] = "My Sink";
 media_router::MediaRoute CreateMediaRoute() {
   media_router::MediaRoute route(
       kRouteId, media_router::MediaSource("source_id"), "sink_id", kRouteDesc,
-      /* is_local */ true, /* for_display */ true);
+      /* is_local */ true);
   route.set_media_sink_name(kSinkName);
   return route;
 }

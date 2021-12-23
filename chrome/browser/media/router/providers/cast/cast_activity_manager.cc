@@ -132,7 +132,7 @@ void CastActivityManager::LaunchSessionParsed(
   MediaRoute::Id route_id =
       MediaRoute::GetMediaRouteId(presentation_id, sink_id, source);
   MediaRoute route(route_id, source, sink_id, /* description */ std::string(),
-                   /* is_local */ true, /* for_display */ true);
+                   /* is_local */ true);
   route.set_presentation_id(presentation_id);
   route.set_local_presentation(true);
   route.set_off_the_record(off_the_record);
@@ -717,7 +717,7 @@ void CastActivityManager::AddNonLocalActivity(const MediaSinkInternal& sink,
                    MediaRoute::GetPresentationIdFromMediaRouteId(route_id));
   // Route description is set in SetOrUpdateSession().
   MediaRoute route(route_id, source, sink_id, /* description */ std::string(),
-                   /* is_local */ false, /* for_display */ true);
+                   /* is_local */ false);
   route.set_media_sink_name(sink.sink().name());
 
   CastActivity* activity_ptr = nullptr;

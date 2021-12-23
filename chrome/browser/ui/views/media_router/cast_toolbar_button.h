@@ -85,7 +85,7 @@ class CastToolbarButton : public ToolbarButton,
 
   std::unique_ptr<MediaRouterContextualMenu> context_menu_;
 
-  bool has_local_display_route_ = false;
+  bool has_local_route_ = false;
 
   raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
 

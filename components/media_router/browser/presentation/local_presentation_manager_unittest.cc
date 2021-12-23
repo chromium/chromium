@@ -41,8 +41,7 @@ class LocalPresentationManagerTest : public content::RenderViewHostTestHarness {
   LocalPresentationManagerTest()
       : render_frame_host_id_(1, 1),
         presentation_info_(GURL(kPresentationUrl), kPresentationId),
-        route_("route_1", MediaSource("source_1"), "sink_1", "", false, false) {
-  }
+        route_("route_1", MediaSource("source_1"), "sink_1", "", false) {}
 
   LocalPresentationManager* manager() { return &manager_; }
 
@@ -337,7 +336,7 @@ TEST_F(LocalPresentationManagerTest, TestIsLocalPresentationWithWebContents) {
 
 TEST_F(LocalPresentationManagerTest, TestRegisterAndGetRoute) {
   MediaSource source("source_1");
-  MediaRoute route("route_1", source, "sink_1", "", false, false);
+  MediaRoute route("route_1", source, "sink_1", "", false);
 
   EXPECT_FALSE(manager()->GetRoute(kPresentationId));
   mojo::PendingRemote<blink::mojom::PresentationConnection> controller;

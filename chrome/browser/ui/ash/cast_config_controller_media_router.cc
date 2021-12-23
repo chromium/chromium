@@ -221,9 +221,6 @@ void CastConfigControllerMediaRouter::RequestDeviceRefresh() {
   }
 
   for (const media_router::MediaRoute& route : device_cache()->routes()) {
-    if (!route.for_display())
-      continue;
-
     for (ash::SinkAndRoute& device : devices_) {
       if (device.sink.id == route.media_sink_id()) {
         device.route.id = route.media_route_id();

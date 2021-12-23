@@ -855,19 +855,17 @@ void MediaRouterUI::OnRoutesUpdated(const std::vector<MediaRoute>& routes) {
   routes_.clear();
 
   for (const MediaRoute& route : routes) {
-    if (route.for_display()) {
 #ifndef NDEBUG
-      for (const MediaRoute& existing_route : routes_) {
-        if (existing_route.media_sink_id() == route.media_sink_id()) {
-          DVLOG(2) << "Received another route for display with the same sink"
-                   << " id as an existing route. " << route.media_route_id()
-                   << " has the same sink id as "
-                   << existing_route.media_sink_id() << ".";
-        }
+    for (const MediaRoute& existing_route : routes_) {
+      if (existing_route.media_sink_id() == route.media_sink_id()) {
+        DVLOG(2) << "Received another route for display with the same sink"
+                 << " id as an existing route. " << route.media_route_id()
+                 << " has the same sink id as "
+                 << existing_route.media_sink_id() << ".";
       }
-#endif
-      routes_.push_back(route);
     }
+#endif
+    routes_.push_back(route);
   }
 
   if (terminating_route_id_ &&

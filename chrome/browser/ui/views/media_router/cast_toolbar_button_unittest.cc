@@ -48,17 +48,12 @@ std::unique_ptr<KeyedService> BuildUIService(content::BrowserContext* context) {
 
 MediaRoute CreateLocalDisplayRoute() {
   return MediaRoute("routeId1", MediaSource("source1"), "sinkId1",
-                    "description", true, true);
+                    "description", true);
 }
 
 MediaRoute CreateNonLocalDisplayRoute() {
   return MediaRoute("routeId2", MediaSource("source2"), "sinkId2",
-                    "description", false, true);
-}
-
-MediaRoute CreateLocalNonDisplayRoute() {
-  return MediaRoute("routeId3", MediaSource("source3"), "sinkId3",
-                    "description", true, false);
+                    "description", false);
 }
 
 class MockContextMenuObserver : public MediaRouterContextualMenu::Observer {
@@ -150,7 +145,7 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
   const std::vector<MediaRoute> local_display_route_list_ = {
       CreateLocalDisplayRoute()};
   const std::vector<MediaRoute> non_local_display_route_list_ = {
-      CreateNonLocalDisplayRoute(), CreateLocalNonDisplayRoute()};
+      CreateNonLocalDisplayRoute()};
 };
 
 TEST_F(CastToolbarButtonTest, ShowAndHideButton) {

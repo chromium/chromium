@@ -112,7 +112,7 @@ void WiredDisplayMediaRouteProvider::CreateRoute(
   // Use |presentation_id| as the route ID. This MRP creates only one route per
   // presentation ID.
   MediaRoute route(presentation_id, MediaSource(media_source), sink_id,
-                   GetRouteDescription(media_source), true, true);
+                   GetRouteDescription(media_source), true);
   route.set_local_presentation(true);
   route.set_off_the_record(profile_->IsOffTheRecord());
   route.set_controller_type(RouteControllerType::kGeneric);
