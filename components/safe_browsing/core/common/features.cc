@@ -31,7 +31,7 @@ const base::Feature kBetterTelemetryAcrossReports{
     base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kClientSideDetectionDocumentScanning{
-    "ClientSideDetectionDocumentScanning", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ClientSideDetectionDocumentScanning", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kClientSideDetectionForAndroid{
     "ClientSideDetectionModelOnAndroid", base::FEATURE_ENABLED_BY_DEFAULT};

@@ -3267,19 +3267,22 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadDocumentSizeLogged) {
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
   base::HistogramTester histograms;
   NiceMockDownloadItem item;
-  PrepareBasicDownloadItem(&item, {"http://www.evil.test/a.exe"},  // url_chain
-                           "http://www.google.com/",               // referrer
-                           FILE_PATH_LITERAL("a.tmp"),             // tmp_path
-                           FILE_PATH_LITERAL("a.docx"));           // final_path
+  PrepareBasicDownloadItem(&item, {"http://www.example.com/a.docx"},  // url_chain
+                           "http://www.google.com/",                // referrer
+                           FILE_PATH_LITERAL("a.tmp"),              // tmp_path
+                           FILE_PATH_LITERAL("a.docx"));  // final_path
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
+
+#if !defined(OS_LINUX)  && !defined(OS_WIN)
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
   EXPECT_CALL(*binary_feature_extractor_.get(),
               ExtractImageFeatures(
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
+#endif
 
   RunLoop run_loop;
   download_service_->CheckClientDownload(

@@ -2348,17 +2348,18 @@
             ]
         }
     ],
-    "ClientSideDetectionDocumentScanning": [
+    "ClankStartupOptimizations": [
         {
             "platforms": [
-                "linux",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "None",
                     "enable_features": [
-                        "ClientSideDetectionDocumentScanning"
+                        "ElidePrioritizationOfPreNativeBootstrapTasks",
+                        "ElideTabPreloadAtStartup",
+                        "TreatBootstrapAsDefault"
                     ]
                 }
             ]
