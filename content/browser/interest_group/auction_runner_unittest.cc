@@ -2256,16 +2256,16 @@ TEST_F(AuctionRunnerTest, ProcessManagerDelaysAuction) {
   AuctionProcessManager* auction_process_manager =
       auction_process_manager_.get();
 
-  // Make kMaxActiveSellerWorklets seller worklet requests for kSellerUrl's
-  // origin.
+  // Make kMaxSellerProcesses seller worklet requests for other origins.
   std::list<std::unique_ptr<AuctionProcessManager::ProcessHandle>> sellers;
-  for (size_t i = 0; i < AuctionProcessManager::kMaxActiveSellerWorklets; ++i) {
+  for (size_t i = 0; i < AuctionProcessManager::kMaxSellerProcesses; ++i) {
     sellers.push_back(std::make_unique<AuctionProcessManager::ProcessHandle>());
+    url::Origin origin =
+        url::Origin::Create(GURL(base::StringPrintf("https://%zu.test", i)));
     EXPECT_TRUE(auction_process_manager->RequestWorkletService(
-        AuctionProcessManager::WorkletType::kSeller,
-        url::Origin::Create(kSellerUrl), &*sellers.back(), base::BindOnce([]() {
-          ADD_FAILURE() << "This should not be called";
-        })));
+        AuctionProcessManager::WorkletType::kSeller, origin, &*sellers.back(),
+        base::BindOnce(
+            []() { ADD_FAILURE() << "This should not be called"; })));
   }
 
   StartStandardAuction();
