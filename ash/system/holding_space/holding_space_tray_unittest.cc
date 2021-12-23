@@ -25,6 +25,7 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
+#include "ash/system/holding_space/holding_space_progress_indicator.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
@@ -63,6 +64,45 @@ constexpr char kTestUser[] = "user@test";
 // A wrapper around `views::View::GetVisible()` with a null check for `view`.
 bool IsViewVisible(const views::View* view) {
   return view && view->GetVisible();
+}
+
+// Returns a pointer to the `ui::Layer` in the layer tree associated with the
+// specified `layer` which has the specified `name`. In the event that no such
+// layer is found, `nullptr` is returned.
+ui::Layer* FindLayerWithName(ui::Layer* layer, const char* name) {
+  if (!layer)
+    return nullptr;
+
+  if (strcmp(layer->name().c_str(), name) == 0)
+    return layer;
+
+  for (ui::Layer* child : layer->children()) {
+    layer = FindLayerWithName(child, name);
+    if (layer)
+      return layer;
+  }
+
+  return nullptr;
+}
+
+// Returns a pointer to the `ui::Layer` in the layer tree associated with the
+// specified `view` which has the specified `name`. In the event that no such
+// layer is found, `nullptr` is returned.
+ui::Layer* FindLayerWithName(views::View* view, const char* name) {
+  if (!view)
+    return nullptr;
+
+  ui::Layer* layer = FindLayerWithName(view->layer(), name);
+  if (layer)
+    return layer;
+
+  for (views::View* child : view->children()) {
+    layer = FindLayerWithName(child, name);
+    if (layer)
+      return layer;
+  }
+
+  return nullptr;
 }
 
 void Click(const views::View* view, int flags = ui::EF_NONE) {
@@ -2749,17 +2789,46 @@ TEST_F(HoldingSpaceTrayTest, DISABLED_EnterAndExitAnimations) {
 
 // Base class for holding space tray tests which make assertions about primary
 // and secondary actions on holding space item views. Tests are parameterized by
-// holding space item type.
+// holding space item type and whether in-progress animation v2 is enabled.
 class HoldingSpaceTrayPrimaryAndSecondaryActionsTest
     : public HoldingSpaceTrayTest,
-      public testing::WithParamInterface<HoldingSpaceItem::Type> {
+      public testing::WithParamInterface<
+          std::tuple<HoldingSpaceItem::Type,
+                     /*is_in_progress_animation_v2_enabled=*/bool>> {
  public:
+  HoldingSpaceTrayPrimaryAndSecondaryActionsTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kHoldingSpaceInProgressAnimationV2,
+        IsInProgressAnimationV2Enabled());
+  }
+
   // Returns the parameterized holding space item type.
-  HoldingSpaceItem::Type GetType() const { return GetParam(); }
+  HoldingSpaceItem::Type GetType() const { return std::get<0>(GetParam()); }
+
+  // Returns whether in-progress animation v2 is enabled given test
+  // parameterization.
+  bool IsInProgressAnimationV2Enabled() const {
+    return std::get<1>(GetParam());
+  }
+
+  // Returns whether the progress indicator inner icon is visible.
+  bool IsProgressIndicatorInnerIconVisible(views::View* view) const {
+    ui::Layer* progress_indicator_layer =
+        FindLayerWithName(view, HoldingSpaceProgressIndicator::kClassName);
+    auto* progress_indicator = static_cast<HoldingSpaceProgressIndicator*>(
+        progress_indicator_layer->owner());
+    return progress_indicator->inner_icon_visible();
+  }
 
   // Returns whether a context menu is currently showing.
   bool IsShowingContextMenu() const {
     return views::MenuController::GetActiveInstance();
+  }
+
+  // Returns whether the holding space image is currently showing.
+  bool IsShowingImage(views::View* view) const {
+    auto* v = view->GetViewByID(kHoldingSpaceItemImageId);
+    return v && v->GetVisible();
   }
 
   // Returns whether a primary action is currently showing.
@@ -2782,11 +2851,16 @@ class HoldingSpaceTrayPrimaryAndSecondaryActionsTest
     auto* menu_item = menu_controller->GetSelectedMenuItem();
     return menu_item && menu_item->GetMenuItemByID(static_cast<int>(id));
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceTrayPrimaryAndSecondaryActionsTest,
-                         testing::ValuesIn(GetHoldingSpaceItemTypes()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HoldingSpaceTrayPrimaryAndSecondaryActionsTest,
+    testing::Combine(testing::ValuesIn(GetHoldingSpaceItemTypes()),
+                     /*is_in_progress_animation_v2_enabled=*/testing::Bool()));
 
 // Verifies that holding space item views have the expected primary and
 // secondary actions for their state of progress, both inline and in their
@@ -2806,6 +2880,24 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
   std::vector<views::View*> item_views = test_api()->GetHoldingSpaceItemViews();
   ASSERT_EQ(item_views.size(), 1u);
 
+  // Initially a primary and secondary action should not be shown as the holding
+  // space item is not being hovered over.
+  EXPECT_FALSE(IsShowingPrimaryAction(item_views.front()));
+  EXPECT_FALSE(IsShowingSecondaryAction(item_views.front()));
+
+  if (!item->IsScreenCapture()) {
+    // For non-screen capture items, the inner icon of the progress indicator
+    // should be shown when the secondary action container is hidden.
+    EXPECT_TRUE(IsProgressIndicatorInnerIconVisible(item_views.front()));
+    // The holding space image should only be shown if the secondary action
+    // container is hidden and if in-progress animation v2 is disabled.
+    EXPECT_NE(IsShowingImage(item_views.front()),
+              IsInProgressAnimationV2Enabled());
+  } else {
+    // For screen capture items, the holding space image should always be shown.
+    EXPECT_TRUE(IsShowingImage(item_views.front()));
+  }
+
   // Hover over the item view.
   MoveMouseTo(item_views.front());
 
@@ -2816,6 +2908,21 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
             HoldingSpaceItem::IsDownload(item->type()));
   EXPECT_EQ(IsShowingSecondaryAction(item_views.front()),
             HoldingSpaceItem::IsDownload(item->type()));
+
+  if (!item->IsScreenCapture()) {
+    // For non-screen capture items, the inner icon of the progress indicator
+    // should only be shown if the secondary action container is hidden.
+    EXPECT_NE(IsProgressIndicatorInnerIconVisible(item_views.front()),
+              IsShowingSecondaryAction(item_views.front()));
+    // The holding space image should only be shown if the secondary action
+    // container is hidden or if in-progress animation v2 is disabled.
+    EXPECT_NE(IsShowingImage(item_views.front()),
+              IsShowingSecondaryAction(item_views.front()) ||
+                  IsInProgressAnimationV2Enabled());
+  } else {
+    // For screen capture items, the holding space image should always be shown.
+    EXPECT_TRUE(IsShowingImage(item_views.front()));
+  };
 
   // Right click the item view to show the context menu.
   RightClick(item_views.front());
@@ -2853,6 +2960,9 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
   // Expect only a primary action to be shown for completed items.
   EXPECT_TRUE(IsShowingPrimaryAction(item_views.front()));
   EXPECT_FALSE(IsShowingSecondaryAction(item_views.front()));
+
+  // Holding space images should always be shown for completed items.
+  EXPECT_TRUE(IsShowingImage(item_views.front()));
 
   // Right click the item view to show the context menu.
   RightClick(item_views.front());

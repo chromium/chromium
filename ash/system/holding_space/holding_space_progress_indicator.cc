@@ -292,9 +292,9 @@ class HoldingSpaceItemProgressIndicator : public HoldingSpaceProgressIndicator,
 
 }  // namespace
 
-// HoldingSpaceProgressIndicator
-// ----------------------------------------------------
+// HoldingSpaceProgressIndicator -----------------------------------------------
 
+constexpr char HoldingSpaceProgressIndicator::kClassName[];
 constexpr float HoldingSpaceProgressIndicator::kProgressComplete;
 
 HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
@@ -303,6 +303,7 @@ HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
       animation_key_(animation_key) {
   layer()->set_delegate(this);
   layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetName(kClassName);
 
   HoldingSpaceAnimationRegistry* animation_registry =
       HoldingSpaceAnimationRegistry::GetInstance();
@@ -341,6 +342,18 @@ HoldingSpaceProgressIndicator::CreateForItem(const HoldingSpaceItem* item) {
 
 void HoldingSpaceProgressIndicator::InvalidateLayer() {
   layer()->SchedulePaint(gfx::Rect(layer()->size()));
+}
+
+void HoldingSpaceProgressIndicator::SetInnerIconVisible(bool visible) {
+  if (inner_icon_visible_ == visible)
+    return;
+
+  inner_icon_visible_ = visible;
+
+  // It's not necessary to invalidate the `layer()` if progress is complete
+  // since the inner icon is only painted while progress is incomplete.
+  if (progress_ != kProgressComplete)
+    InvalidateLayer();
 }
 
 void HoldingSpaceProgressIndicator::OnDeviceScaleFactorChanged(
@@ -441,16 +454,18 @@ void HoldingSpaceProgressIndicator::OnPaintLayer(
   flags.setStrokeWidth(inner_ring_stroke_width);
   canvas->DrawPath(path, flags);
 
-  float inner_icon_size = GetInnerIconSize(layer());
-  gfx::Rect inner_icon_bounds(layer()->size());
-  inner_icon_bounds.ClampToCenteredSize(
-      gfx::Size(inner_icon_size, inner_icon_size));
+  if (inner_icon_visible_) {
+    float inner_icon_size = GetInnerIconSize(layer());
+    gfx::Rect inner_icon_bounds(layer()->size());
+    inner_icon_bounds.ClampToCenteredSize(
+        gfx::Size(inner_icon_size, inner_icon_size));
 
-  // Inner icon.
-  canvas->Translate(
-      gfx::Vector2d(inner_icon_bounds.x(), inner_icon_bounds.y()));
-  gfx::PaintVectorIcon(canvas, kHoldingSpaceDownloadIcon, inner_icon_size,
-                       color);
+    // Inner icon.
+    canvas->Translate(
+        gfx::Vector2d(inner_icon_bounds.x(), inner_icon_bounds.y()));
+    gfx::PaintVectorIcon(canvas, kHoldingSpaceDownloadIcon, inner_icon_size,
+                         color);
+  }
 }
 
 void HoldingSpaceProgressIndicator::UpdateVisualState() {

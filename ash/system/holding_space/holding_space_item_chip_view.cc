@@ -152,6 +152,13 @@ class ProgressIndicatorView : public views::View {
   ProgressIndicatorView& operator=(const ProgressIndicatorView&) = delete;
   ~ProgressIndicatorView() override = default;
 
+  // Copies the address of `progress_indicator_` to the specified `ptr`.
+  // NOTE: This method should only be invoked after `SetHoldingSpaceItem()`.
+  void CopyProgressIndicatorAddressTo(HoldingSpaceProgressIndicator** ptr) {
+    DCHECK(progress_indicator_);
+    *ptr = progress_indicator_.get();
+  }
+
   // Sets the underlying `item` for which to indicate progress.
   // NOTE: This method should be invoked only once.
   void SetHoldingSpaceItem(const HoldingSpaceItem* item) {
@@ -180,6 +187,8 @@ class ProgressIndicatorView : public views::View {
 };
 
 BEGIN_VIEW_BUILDER(/*no export*/, ProgressIndicatorView, views::View)
+VIEW_BUILDER_METHOD(CopyProgressIndicatorAddressTo,
+                    HoldingSpaceProgressIndicator**)
 VIEW_BUILDER_PROPERTY(const HoldingSpaceItem*, HoldingSpaceItem)
 END_VIEW_BUILDER
 
@@ -256,6 +265,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
       .AddChild(
           views::Builder<ProgressIndicatorView>()
               .SetHoldingSpaceItem(item)
+              .CopyProgressIndicatorAddressTo(&progress_indicator_)
               .SetUseDefaultFillLayout(true)
               .AddChild(views::Builder<ObservableRoundedImageView>()
                             .SetCornerRadius(kHoldingSpaceChipIconSize / 2)
@@ -332,6 +342,7 @@ HoldingSpaceItemChipView::HoldingSpaceItemChipView(
                             base::Unretained(this))));
 
   UpdateImage();
+  UpdateImageAndProgressIndicatorVisibility();
   UpdateLabels();
 }
 
@@ -494,6 +505,32 @@ void HoldingSpaceItemChipView::UpdateImage() {
   UpdateImageTransform();
 }
 
+void HoldingSpaceItemChipView::UpdateImageAndProgressIndicatorVisibility() {
+  // If the associated `item()` has been deleted then `this` is in the process
+  // of being destroyed and no action needs to be taken.
+  if (!item())
+    return;
+
+  const bool is_secondary_action_visible =
+      secondary_action_container_->GetVisible();
+
+  // The inner icon of the `progress_indicator_` may be visible iff there is
+  // no visible secondary action or multiselect UI.
+  const bool is_progress_indicator_inner_icon_visible =
+      !is_secondary_action_visible && !checkmark()->GetVisible();
+
+  // Similarly, the `image_` may be visible iff there is no visible secondary
+  // action or multiselect UI but additionally, when v2 animations are enabled,
+  // the `image_` may only be visible upon progress completion.
+  bool is_image_visible = is_progress_indicator_inner_icon_visible;
+  if (features::IsHoldingSpaceInProgressAnimationV2Enabled())
+    is_image_visible &= item()->progress().IsComplete();
+
+  image_->SetVisible(is_image_visible);
+  progress_indicator_->SetInnerIconVisible(
+      is_progress_indicator_inner_icon_visible);
+}
+
 void HoldingSpaceItemChipView::UpdateImageTransform() {
   // If the associated `item()` has been deleted then `this` is in the process
   // of being destroyed and no action needs to be taken.
@@ -596,8 +633,8 @@ void HoldingSpaceItemChipView::UpdateSecondaryAction() {
       HoldingSpaceItem::IsDownload(item()->type()) && IsMouseHovered();
 
   if (!has_secondary_action) {
-    image_->SetVisible(!checkmark()->GetVisible());
     secondary_action_container_->SetVisible(false);
+    UpdateImageAndProgressIndicatorVisibility();
     return;
   }
 
@@ -606,8 +643,8 @@ void HoldingSpaceItemChipView::UpdateSecondaryAction() {
   secondary_action_pause_->SetVisible(!is_item_paused);
   secondary_action_resume_->SetVisible(is_item_paused);
 
-  image_->SetVisible(false);
   secondary_action_container_->SetVisible(true);
+  UpdateImageAndProgressIndicatorVisibility();
 }
 
 BEGIN_METADATA(HoldingSpaceItemChipView, HoldingSpaceItemView)

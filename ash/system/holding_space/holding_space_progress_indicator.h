@@ -25,6 +25,7 @@ class HoldingSpaceProgressRingAnimation;
 class HoldingSpaceProgressIndicator : public ui::LayerOwner,
                                       public ui::LayerDelegate {
  public:
+  static constexpr char kClassName[] = "HoldingSpaceProgressIndicator";
   static constexpr float kProgressComplete = 1.f;
 
   HoldingSpaceProgressIndicator(const HoldingSpaceProgressIndicator&) = delete;
@@ -44,6 +45,12 @@ class HoldingSpaceProgressIndicator : public ui::LayerOwner,
 
   // Invoke to schedule repaint of the entire `layer()`.
   void InvalidateLayer();
+
+  // Sets the visibility for this progress indicator's inner icon. Note that
+  // the inner icon will only be painted while `progress_` is incomplete,
+  // regardless of the value of `visible` provided.
+  void SetInnerIconVisible(bool visible);
+  bool inner_icon_visible() const { return inner_icon_visible_; }
 
  protected:
   // Each progress indicator is associated with an `animation_key_` which is
@@ -94,6 +101,11 @@ class HoldingSpaceProgressIndicator : public ui::LayerOwner,
   // NOTE: If absent, progress is indeterminate.
   // NOTE: If present, progress must be >= `0.f` and <= `1.f`.
   absl::optional<float> progress_;
+
+  // Whether this progress indicator's inner icon is visible. Note that the
+  // inner icon will only be painted while `progress_` is incomplete, regardless
+  // of this value.
+  bool inner_icon_visible_ = true;
 };
 
 }  // namespace ash

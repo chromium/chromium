@@ -20,6 +20,7 @@ class Label;
 namespace ash {
 
 class HoldingSpaceItem;
+class HoldingSpaceProgressIndicator;
 class HoldingSpaceViewDelegate;
 class RoundedImageView;
 
@@ -56,6 +57,7 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   void OnSecondaryActionPressed();
 
   void UpdateImage();
+  void UpdateImageAndProgressIndicatorVisibility();
   void UpdateImageTransform();
   void UpdateLabels();
   void UpdateSecondaryAction();
@@ -67,6 +69,7 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   views::View* secondary_action_container_ = nullptr;
   views::ImageButton* secondary_action_pause_ = nullptr;
   views::ImageButton* secondary_action_resume_ = nullptr;
+  HoldingSpaceProgressIndicator* progress_indicator_ = nullptr;
 
   base::CallbackListSubscription image_skia_changed_subscription_;
   HoldingSpaceAnimationRegistry::ProgressRingAnimationChangedCallbackList::
