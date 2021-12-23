@@ -32,7 +32,7 @@ compile_js_files = [
   "main.js",
   "metrics.ts",
   "models/async_interval.ts",
-  "models/async_writer.js",
+  "models/async_writer.ts",
   "models/barcode.js",
   "models/barcode_worker_interface.js",
   "models/barcode_worker.js",
