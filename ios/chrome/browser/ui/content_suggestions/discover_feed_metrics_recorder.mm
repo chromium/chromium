@@ -123,6 +123,14 @@ const char kDiscoverFeedUserActionInfiniteFeedTriggered[] =
 // User action name for engaging with feed.
 const char kDiscoverFeedUserActionEngaged[] = "ContentSuggestions.Feed.Engaged";
 
+// User action indicating that the feed will refresh.
+const char kFeedWillRefresh[] = "ContentSuggestions.Feed.WillRefresh";
+
+// User action triggered when the NTP view hierarchy was fixed after being
+// detected as broken.
+// TODO(crbug.com/1262536): Remove this when issue is fixed.
+const char kNTPViewHierarchyFixed[] = "NewTabPage.ViewHierarchyFixed";
+
 // Histogram name for the feed engagement types.
 const char kDiscoverFeedEngagementTypeHistogram[] =
     "ContentSuggestions.Feed.EngagementType";
@@ -453,6 +461,11 @@ const int kMinutesBetweenSessions = 5;
 
 - (void)recordBrokenNTPHierarchy:(BrokenNTPHierarchyRelationship)relationship {
   base::UmaHistogramEnumeration(kDiscoverFeedBrokenNTPHierarchy, relationship);
+  base::RecordAction(base::UserMetricsAction(kNTPViewHierarchyFixed));
+}
+
+- (void)recordFeedWillRefresh {
+  base::RecordAction(base::UserMetricsAction(kFeedWillRefresh));
 }
 
 #pragma mark - Private
