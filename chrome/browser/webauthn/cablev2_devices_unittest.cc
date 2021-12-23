@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/webauthn/cablev2_devices.h"
@@ -191,7 +192,7 @@ std::unique_ptr<Pairing> PairingWithAllFields() {
 
 TEST_F(CableV2DevicesProfileTest, StoreAndFetch) {
   TestingProfile profile;
-  cablev2::AddPairing(profile.GetPrefs(), PairingWithAllFields());
+  cablev2::AddPairing(profile.GetPrefs(), PairingWithAllFields(), {});
 
   std::unique_ptr<KnownDevices> known_devices =
       KnownDevices::FromProfile(&profile);
@@ -211,7 +212,7 @@ TEST_F(CableV2DevicesProfileTest, StoreAndFetch) {
 
 TEST_F(CableV2DevicesProfileTest, Delete) {
   TestingProfile profile;
-  cablev2::AddPairing(profile.GetPrefs(), PairingWithAllFields());
+  cablev2::AddPairing(profile.GetPrefs(), PairingWithAllFields(), {});
   cablev2::DeletePairingByPublicKey(
       profile.GetPrefs(), PairingWithAllFields()->peer_public_key_x962);
 
@@ -227,7 +228,7 @@ TEST_F(CableV2DevicesProfileTest, NameFiltering) {
   // removed when reading so that they don't mess up the UI.
   TestingProfile profile;
   cablev2::AddPairing(profile.GetPrefs(),
-                      LinkedDevice("w\nx\x0by\xe2\x80\xa8z", kPubKey1));
+                      LinkedDevice("w\nx\x0by\xe2\x80\xa8z", kPubKey1), {});
 
   std::unique_ptr<KnownDevices> known_devices =
       KnownDevices::FromProfile(&profile);
@@ -235,6 +236,23 @@ TEST_F(CableV2DevicesProfileTest, NameFiltering) {
   EXPECT_EQ(known_devices->synced_devices.size(), 0u);
   ASSERT_EQ(known_devices->linked_devices.size(), 1u);
   EXPECT_EQ(known_devices->linked_devices[0]->name, "wxyz");
+}
+
+TEST_F(CableV2DevicesProfileTest, NameCollision) {
+  // Adding a device that has a name equal to one of the existing names should
+  // cause the name to be changed to something that doesn't collide.
+  TestingProfile profile;
+  const base::StringPiece kExistingNames[] = {"collision", "collision (1)",
+                                              "collision (2)\n"};
+  cablev2::AddPairing(profile.GetPrefs(), LinkedDevice("collision", kPubKey1),
+                      kExistingNames);
+
+  std::unique_ptr<KnownDevices> known_devices =
+      KnownDevices::FromProfile(&profile);
+
+  EXPECT_EQ(known_devices->synced_devices.size(), 0u);
+  ASSERT_EQ(known_devices->linked_devices.size(), 1u);
+  EXPECT_EQ(known_devices->linked_devices[0]->name, "collision (3)");
 }
 
 }  // namespace

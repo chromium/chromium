@@ -4,8 +4,14 @@
 
 #include "chrome/browser/webauthn/cablev2_devices.h"
 
+#include <algorithm>
+#include <array>
+#include <string>
+#include <vector>
+
 #include "base/base64.h"
 #include "base/feature_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -238,6 +244,33 @@ std::vector<std::unique_ptr<Pairing>> GetLinkedDevices(Profile* const profile) {
   return ret;
 }
 
+// FindUniqueName checks whether |name| is already contained in |existing_names|
+// (after projecting with |NameForDisplay|). If so it appends a counter so that
+// it isn't.
+std::string FindUniqueName(const std::string& orig_name,
+                           base::span<const base::StringPiece> existing_names) {
+  std::string name = orig_name;
+  std::string name_for_display = NameForDisplay(name);
+  for (int i = 1;; i++) {
+    if (std::none_of(existing_names.begin(), existing_names.end(),
+                     [&name_for_display](base::StringPiece s) -> bool {
+                       return NameForDisplay(s) == name_for_display;
+                     })) {
+      // The new name is unique.
+      break;
+    }
+
+    // The new name collides with an existing one. Append a counter to the
+    // original and try again. (If the original string is right-to-left then
+    // the counter will appear on the left, not the right, of the string even
+    // though the codepoints are appended here.)
+    name = orig_name + " (" + base::NumberToString(i) + ")";
+    name_for_display = NameForDisplay(name);
+  }
+
+  return name;
+}
+
 }  // namespace
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -301,7 +334,23 @@ std::vector<std::unique_ptr<Pairing>> MergeDevices(
   return ret;
 }
 
-void AddPairing(PrefService* pref_service, std::unique_ptr<Pairing> pairing) {
+std::vector<base::StringPiece> KnownDevices::Names() const {
+  std::vector<base::StringPiece> names;
+  names.reserve(this->synced_devices.size() + this->linked_devices.size());
+  for (const std::unique_ptr<device::cablev2::Pairing>& device :
+       this->synced_devices) {
+    names.push_back(device->name);
+  }
+  for (const std::unique_ptr<device::cablev2::Pairing>& device :
+       this->linked_devices) {
+    names.push_back(device->name);
+  }
+  return names;
+}
+
+void AddPairing(PrefService* pref_service,
+                std::unique_ptr<Pairing> pairing,
+                base::span<const base::StringPiece> existing_names) {
   // This is called when doing a QR-code pairing with a phone and the phone
   // sends long-term pairing information during the handshake. The pairing
   // information is saved in preferences for future operations.
@@ -309,6 +358,8 @@ void AddPairing(PrefService* pref_service, std::unique_ptr<Pairing> pairing) {
     NOTREACHED();
     return;
   }
+
+  const std::string name = FindUniqueName(pairing->name, existing_names);
 
   // For Incognito/Guest profiles, pairings will only last for the duration of
   // that session. While an argument could be made that it's safe to persist
@@ -327,7 +378,7 @@ void AddPairing(PrefService* pref_service, std::unique_ptr<Pairing> pairing) {
                base::Value(std::move(public_key_base64)));
   dict->SetKey(kPairingPrefTunnelServer,
                base::Value(pairing->tunnel_server_domain));
-  dict->SetKey(kPairingPrefName, base::Value(std::move(pairing->name)));
+  dict->SetKey(kPairingPrefName, base::Value(std::move(name)));
   dict->SetKey(kPairingPrefContactId,
                base::Value(base::Base64Encode(pairing->contact_id)));
   dict->SetKey(kPairingPrefId, base::Value(base::Base64Encode(pairing->id)));

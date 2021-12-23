@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -719,7 +720,14 @@ void ChromeAuthenticatorRequestDelegate::HandleCablePairingEvent(
     return;
   }
 
+  // `existing_names` is built without calling `cablev2::MergeDevices` because
+  // that function will discard linked entries with duplicate public keys, which
+  // can hide some names that we would still like to avoid colliding with.
+  std::unique_ptr<cablev2::KnownDevices> known_devices =
+      cablev2::KnownDevices::FromProfile(
+          Profile::FromBrowserContext(GetBrowserContext()));
+
   auto& pairing =
       *absl::get_if<std::unique_ptr<device::cablev2::Pairing>>(&event);
-  cablev2::AddPairing(prefs, std::move(pairing));
+  cablev2::AddPairing(prefs, std::move(pairing), known_devices->Names());
 }
