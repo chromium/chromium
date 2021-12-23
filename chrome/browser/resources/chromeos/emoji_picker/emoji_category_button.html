@@ -13,11 +13,18 @@
     margin: 0;
     width: 100%;
   }
+
+  #category-button.category-button-active {
+    --cr-icon-button-fill-color: var(--cros-icon-color-prominent);
+    background-color: var(--cros-highlight-color);
+  }
 </style>
 
 
 <cr-icon-button
   id="category-button"
+  class$="[[_className(active)]]"
   iron-icon="[[icon]]"
+  on-click="handleClick"
 >
 </cr-icon-button>

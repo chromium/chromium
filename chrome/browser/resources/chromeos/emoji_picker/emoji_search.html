@@ -94,7 +94,7 @@
     width: calc(var(--emoji-picker-width) - 2*var(--emoji-picker-side-padding));
   }
 
-  [extension-v2]#search-shadow {
+  :host([v2-enabled]) #search-shadow {
     display: flex;
   }
 
@@ -116,22 +116,23 @@
     margin-inline-start: 20px;
   }
 
-  [extension-v2] #search {
+  :host([v2-enabled]) #search {
     width: 240px;
   }
 </style>
 
-<div id="search-shadow" extension-v2$="[[v2Enabled]]">
+<div id="search-shadow">
   <cr-search-field id="search" label="Search" autofocus="true">
   </cr-search-field>
   <template is="dom-if" if="[[v2Enabled]]">
     <div id="category-button-group">
-      <emoji-category-button icon="emoji_picker:insert_emoticon">
-      </emoji-category-button>
-      <emoji-category-button icon="emoji_picker_v2:symbol_omega">
-      </emoji-category-button>
-      <emoji-category-button icon="emoji_picker_v2:emoticon_gssmiley">
-      </emoji-category-button>
+      <template is="dom-repeat" items="[[categoryData]]">
+          <emoji-category-button 
+            active="[[item.active]]"
+            name="[[item.name]]"
+            icon="[[item.icon]]">
+          </emoji-category-button>
+      </template>
     </div>
   </template>
 </div>

@@ -8,8 +8,10 @@ import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/
 
 import {EmojiButton} from './emoji_button.js';
 import {EmojiCategoryButton} from './emoji_category_button.js';
+import {CATEGORY_BUTTON_CLICK} from './events.js';
 import Fuse from './fuse.js';
-import {EmojiGroupData, EmojiVariants} from './types.js';
+import {CATEGORY_DATA} from './metadata_extension.js';
+import {CategoryData, EmojiGroupData, EmojiVariants} from './types.js';
 
 /**
  * @typedef {!Array<{item: !EmojiVariants}>} FuseResults
@@ -27,6 +29,8 @@ export class EmojiSearch extends PolymerElement {
 
   static get properties() {
     return {
+      /** @type {!Array<!CategoryData>} */
+      categoryData: {type: Array, value: CATEGORY_DATA, notify: true},
       /** @type {EmojiGroupData} */
       emojiData: {type: Array, readonly: true},
       /** @type {!string} */
@@ -40,6 +44,13 @@ export class EmojiSearch extends PolymerElement {
       /** @private {!FuseResults} */
       results:
           {type: Array, computed: 'computeSearchResults(search, emojiList)'},
+      /** @private {!boolean} */
+      v2Enabled: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+        readonly: true
+      }
     };
   }
 
@@ -67,6 +78,15 @@ export class EmojiSearch extends PolymerElement {
         (ev) => this.onSearchKeyDown(/** @type {KeyboardEvent} */ (ev)));
     this.addEventListener(
         'keydown', ev => this.onKeyDown(/** @type {KeyboardEvent} */ (ev)));
+
+    // only after the next render is this.v2Enabled updated.
+    afterNextRender(this, () => {
+      if (this.v2Enabled) {
+        this.addEventListener(
+            CATEGORY_BUTTON_CLICK,
+            ev => this.onSelectCategory(ev.detail.categoryName));
+      }
+    });
   }
 
   onSearch(newSearch) {
@@ -198,6 +218,16 @@ export class EmojiSearch extends PolymerElement {
     ev.currentTarget.querySelector('emoji-button')
         .shadowRoot.querySelector('button')
         .click();
+  }
+
+  /**
+   * @param {string} categoryName
+   */
+  onSelectCategory(categoryName) {
+    this.categoryData.forEach((category, idx) => {
+      const isActive = (categoryName === category.name);
+      this.set(['categoryData', idx, 'active'], isActive);
+    });
   }
 }
 

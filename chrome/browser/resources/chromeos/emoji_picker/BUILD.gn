@@ -35,6 +35,7 @@ generate_grd("build_grd") {
     "constants.js",
     "events.js",
     "index.html",
+    "metadata_extension.js",
     "store.js",
     "types.js",
     "emoji_picker_api_proxy.js",

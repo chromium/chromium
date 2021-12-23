@@ -3,6 +3,13 @@
 // found in the LICENSE file.
 
 /**
+ * @typedef {!CustomEvent<{categoryName: string}>}
+ */
+export let CategoryButtonClickEvent;
+
+export const CATEGORY_BUTTON_CLICK = 'category-button-click';
+
+/**
  * @typedef {!CustomEvent<{group: string}>}
  */
 export let GroupButtonClickEvent;
