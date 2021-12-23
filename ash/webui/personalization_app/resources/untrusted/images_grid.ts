@@ -151,7 +151,7 @@ class ImagesGrid extends PolymerElement {
   }
 
   private getAriaLabel_(tile: ImageTile): string {
-    return tile.attribution.join(' ');
+    return tile.attribution!.join(' ');
   }
 
   private getAriaIndex_(i: number): number {

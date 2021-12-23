@@ -76,10 +76,9 @@ export type SendImageCountsEvent = {
  * single unit. e.g. Dark/Light wallpaper images.
  */
 export type ImageTile = {
-  assetId: bigint,
-  attribution: string[],
-  unitId: bigint,
-  preview: Url[],
+  assetId?: bigint,
+  attribution?: string[],
+  unitId?: bigint, preview: Url[],
 };
 
 export type SendImageTilesEvent = {

@@ -13,11 +13,11 @@ import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '/common/icons.js';
 import './styles.js';
 
-import {isNonEmptyArray} from '/common/utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {WallpaperLayout, WallpaperObserverReceiver, WallpaperType} from '../personalization_app.mojom-webui.js';
+import {isNonEmptyArray} from '../../common/utils.js';
+import {CurrentWallpaper, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverReceiver, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getWallpaperLayoutEnum} from '../utils.js';
@@ -29,20 +29,20 @@ import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 let setTimeout = window.setTimeout;
 let clearTimeout = window.clearTimeout;
 
-/** @param {{setTimeout: Function, clearTimeout: Function}} mock */
-export function mockTimeoutForTesting(mock) {
+export function mockTimeoutForTesting(mock: {
+  setTimeout: typeof window.setTimeout,
+  clearTimeout: typeof window.clearTimeout,
+}) {
   setTimeout = mock.setTimeout;
   clearTimeout = mock.clearTimeout;
 }
 
 /**
  * Set up the observer to listen for wallpaper changes.
- * @param {!WallpaperProviderInterface}
- *     wallpaperProvider
- * @param {!WallpaperObserverInterface} target
- * @return {!WallpaperObserverReceiver}
  */
-function initWallpaperObserver(wallpaperProvider, target) {
+function initWallpaperObserver(
+    wallpaperProvider: WallpaperProviderInterface,
+    target: WallpaperObserverInterface): WallpaperObserverReceiver {
   const receiver = new WallpaperObserverReceiver(target);
   wallpaperProvider.setWallpaperObserver(receiver.$.bindNewPipeAndPassRemote());
   return receiver;
@@ -54,25 +54,18 @@ function initWallpaperObserver(wallpaperProvider, target) {
  * user's wallpaper. We do not want the full resolution here, so remove the
  * suffix to get a 512x512 preview.
  * TODO(b/186807814) support different resolution parameters here.
- * @param {string} url
- * @return {string}
  */
-function removeHighResolutionSuffix(url) {
+function removeHighResolutionSuffix(url: string): string {
   return url.replace(/=w\d+$/, '');
 }
 
 /**
  * Returns whether the given URL starts with http:// or https://.
- * @param {string} url URL to check.
  */
-function hasHttpScheme(url) {
+function hasHttpScheme(url: string): boolean {
   return url.startsWith('http://') || url.startsWith('https://');
 }
 
-/**
- * @polymer
- * @implements {WallpaperObserverInterface}
- */
 export class WallpaperSelected extends WithPersonalizationStore {
   static get is() {
     return 'wallpaper-selected';
@@ -87,116 +80,79 @@ export class WallpaperSelected extends WithPersonalizationStore {
       /**
        * The current collection id to display.
        */
-      collectionId: {
-        type: String,
-      },
+      collectionId: String,
 
       /**
        * The current path of the page.
        */
-      path: {
-        type: String,
-      },
+      path: String,
 
-      /**
-       * @type {?CurrentWallpaper}
-       * @private
-       */
       image_: {
         type: Object,
         observer: 'onImageChanged_',
       },
 
-      /**
-       * @type {!string}
-       * @private
-       */
       imageTitle_: {
         type: String,
         computed: 'computeImageTitle_(image_, dailyRefreshCollectionId_)',
       },
 
-      /**
-       * @type {Array<!string>}
-       * @private
-       */
       imageOtherAttribution_: {
         type: Array,
         computed: 'computeImageOtherAttribution_(image_)',
       },
 
-      /**
-       * @type {?string}
-       * @private
-       */
-      dailyRefreshCollectionId_: {
-        type: String,
-      },
+      dailyRefreshCollectionId_: String,
 
-      /** @private */
-      isLoading_: {
-        type: Boolean,
-      },
+      isLoading_: Boolean,
 
-      /** @private */
       hasError_: {
         type: Boolean,
         computed: 'computeHasError_(image_, isLoading_, error_)',
       },
 
-      /** @private */
       showImage_: {
         type: Boolean,
         computed: 'computeShowImage_(image_, isLoading_)',
       },
 
-      /** @private */
       showWallpaperOptions_: {
         type: Boolean,
         computed: 'computeShowWallpaperOptions_(image_, path)',
       },
 
-      /** @private */
       showCollectionOptions_: {
         type: Boolean,
         computed: 'computeShowCollectionOptions_(path)',
       },
 
-      /** @private */
       showRefreshButton_: {
         type: Boolean,
         computed:
             'isDailyRefreshCollectionId_(collectionId,dailyRefreshCollectionId_)',
       },
 
-      /** @private */
       dailyRefreshIcon_: {
         type: String,
         computed:
             'computeDailyRefreshIcon_(collectionId,dailyRefreshCollectionId_)',
       },
 
-      /** @private */
       ariaPressed_: {
         type: String,
         computed: 'computeAriaPressed_(collectionId,dailyRefreshCollectionId_)',
       },
 
-      /** @private */
       fillIcon_: {
         type: String,
         computed: 'computeFillIcon_(image_)',
       },
 
-      /** @private */
       centerIcon_: {
         type: String,
         computed: 'computeCenterIcon_(image_)',
       },
 
-      /**
-       * @private
-       */
       error_: {
         type: String,
         value: null,
@@ -211,15 +167,35 @@ export class WallpaperSelected extends WithPersonalizationStore {
     };
   }
 
+  collectionId: string;
+  path: string;
+  private image_: CurrentWallpaper|null;
+  private imageTitle_: string;
+  private imageOtherAttribution_: string[];
+  private dailyRefreshCollectionId_: string|null;
+  private isLoading_: boolean;
+  private hasError_: boolean;
+  private showImage_: boolean;
+  private showWallpaperOptions_: boolean;
+  private showCollectionOptions_: boolean;
+  private showRefreshButton_: boolean;
+  private dailyRefreshIcon_: string;
+  private ariaPressed_: string;
+  private fillIcon_: string;
+  private centerIcon_: string;
+  private error_: string;
+  private showPreviewButton_: boolean;
+
+  private wallpaperProvider_: WallpaperProviderInterface;
+  private wallpaperObserver_: WallpaperObserverReceiver|null;
+  private initialLoadTimeout_: number|null;
+
   constructor() {
     super();
-    /** @private */
     this.wallpaperProvider_ = getWallpaperProvider();
-    /** @private */
     this.wallpaperObserver_ = null;
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.dispatch(beginLoadSelectedImageAction());
@@ -250,17 +226,16 @@ export class WallpaperSelected extends WithPersonalizationStore {
     }, 120 * 1000);
   }
 
-  /** @override */
   disconnectedCallback() {
-    this.wallpaperObserver_.$.close();
+    if (this.wallpaperObserver_) {
+      this.wallpaperObserver_.$.close();
+    }
   }
 
   /**
    * Called when the wallpaper changes.
-   * @param {?CurrentWallpaper}
-   *     currentWallpaper
    */
-  onWallpaperChanged(currentWallpaper) {
+  onWallpaperChanged(currentWallpaper: CurrentWallpaper|null) {
     // Ignore updates while in fullscreen preview mode. The attribution
     // information is for the old (non-preview) wallpaper. This is because
     // setting an image in preview mode updates the image but not the stored
@@ -285,11 +260,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
   /**
    * Return a chrome://image or data:// url to load the image safely. Returns
    * empty string in case |image| is null or invalid.
-   * @param {?CurrentWallpaper} image
-   * @return {string}
-   * @private
    */
-  getImageSrc_(image) {
+  private getImageSrc_(image: CurrentWallpaper|null): string {
     if (image && image.url) {
       if (hasHttpScheme(image.url.url)) {
         return `chrome://image?${removeHighResolutionSuffix(image.url.url)}`;
@@ -299,25 +271,15 @@ export class WallpaperSelected extends WithPersonalizationStore {
     return '';
   }
 
-  /**
-   * @param {?CurrentWallpaper} image
-   * @param {boolean} loading
-   * @return {boolean}
-   * @private
-   */
-  computeShowImage_(image, loading) {
+  private computeShowImage_(image: CurrentWallpaper|null, loading: boolean):
+      boolean {
     // Specifically check === false to avoid undefined case while component is
     // initializing.
     return loading === false && !!image;
   }
 
-  /**
-   * @param {?CurrentWallpaper} image
-   * @param {!string} dailyRefreshCollectionId
-   * @return {string}
-   * @private
-   */
-  computeImageTitle_(image, dailyRefreshCollectionId) {
+  private computeImageTitle_(
+      image: CurrentWallpaper|null, dailyRefreshCollectionId: string): string {
     if (!image) {
       return this.i18n('unknownImageAttribution');
     }
@@ -339,12 +301,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
     return this.i18n('unknownImageAttribution');
   }
 
-  /**
-   * @param {?CurrentWallpaper} image
-   * @return {Array<!string>}
-   * @private
-   */
-  computeImageOtherAttribution_(image) {
+  private computeImageOtherAttribution_(image: CurrentWallpaper|
+                                        null): string[] {
     if (!image) {
       return [];
     }
@@ -359,85 +317,47 @@ export class WallpaperSelected extends WithPersonalizationStore {
     return [];
   }
 
-  /**
-   * @param {?CurrentWallpaper} image
-   * @param {string} path
-   * @return {boolean}
-   * @private
-   */
-  computeShowWallpaperOptions_(image, path) {
+  private computeShowWallpaperOptions_(
+      image: CurrentWallpaper|null, path: string): boolean {
     return !!image && image.type === WallpaperType.kCustomized &&
         path === Paths.LocalCollection;
   }
 
-  /**
-   * @param {string} path
-   * @return {boolean}
-   * @private
-   */
-  computeShowCollectionOptions_(path) {
+  private computeShowCollectionOptions_(path: string): boolean {
     return path === Paths.CollectionImages;
   }
 
-  /**
-   * @param {!CurrentWallpaper} image
-   * @return {string}
-   * @private
-   */
-  getCenterAriaPressed_(image) {
+  private getCenterAriaPressed_(image: CurrentWallpaper): string {
     return (!!image && image.layout === WallpaperLayout.kCenter).toString();
   }
 
-  /**
-   * @param {!CurrentWallpaper} image
-   * @return {string}
-   * @private
-   */
-  getFillAriaPressed_(image) {
+  private getFillAriaPressed_(image: CurrentWallpaper): string {
     return (!!image && image.layout === WallpaperLayout.kCenterCropped)
         .toString();
   }
 
-  /**
-   * @param {!CurrentWallpaper} image
-   * @return {string}
-   * @private
-   */
-  computeFillIcon_(image) {
+  private computeFillIcon_(image: CurrentWallpaper): string {
     if (!!image && image.layout === WallpaperLayout.kCenterCropped) {
       return 'personalization:checkmark';
     }
     return 'personalization:layout_fill';
   }
 
-  /**
-   * @param {!CurrentWallpaper} image
-   * @return {string}
-   * @private
-   */
-  computeCenterIcon_(image) {
+  private computeCenterIcon_(image: CurrentWallpaper): string {
     if (!!image && image.layout === WallpaperLayout.kCenter) {
       return 'personalization:checkmark';
     }
     return 'personalization:layout_center';
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onClickLayoutIcon_(event) {
-    const layout = getWallpaperLayoutEnum(event.currentTarget.dataset.layout);
+  private onClickLayoutIcon_(event: Event) {
+    const eventTarget = event.currentTarget as HTMLElement;
+    const layout = getWallpaperLayoutEnum(eventTarget.dataset['layout']!);
     setCustomWallpaperLayout(layout, this.wallpaperProvider_, this.getStore());
   }
 
-  /**
-   * @param {!string} collectionId
-   * @param {!string} dailyRefreshCollectionId
-   * @return {string}
-   * @private
-   */
-  computeDailyRefreshIcon_(collectionId, dailyRefreshCollectionId) {
+  private computeDailyRefreshIcon_(
+      collectionId: string, dailyRefreshCollectionId: string): string {
     if (this.isDailyRefreshCollectionId_(
             collectionId, dailyRefreshCollectionId)) {
       return 'personalization:checkmark';
@@ -445,13 +365,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
     return 'personalization:change-daily';
   }
 
-  /**
-   * @param {!string} collectionId
-   * @param {!string} dailyRefreshCollectionId
-   * @return {string}
-   * @private
-   */
-  computeAriaPressed_(collectionId, dailyRefreshCollectionId) {
+  private computeAriaPressed_(
+      collectionId: string, dailyRefreshCollectionId: string): string {
     if (this.isDailyRefreshCollectionId_(
             collectionId, dailyRefreshCollectionId)) {
       return 'true';
@@ -459,19 +374,16 @@ export class WallpaperSelected extends WithPersonalizationStore {
     return 'false';
   }
 
-  /**
-   * @private
-   * @param {!Event} event
-   */
-  onClickDailyRefreshToggle_(event) {
-    const collectionId = event.currentTarget.dataset['collectionId'];
+  private onClickDailyRefreshToggle_(event: Event) {
+    const eventTarget = event.currentTarget as HTMLElement;
+    const collectionId = eventTarget.dataset['collectionId'];
     const dailyRefreshCollectionId =
-        event.currentTarget.dataset['dailyRefreshCollectionId'];
+        eventTarget.dataset['dailyRefreshCollectionId'];
     const isDailyRefreshCollectionId = this.isDailyRefreshCollectionId_(
-        collectionId, dailyRefreshCollectionId);
+        collectionId!, dailyRefreshCollectionId!);
     setDailyRefreshCollectionId(
-        isDailyRefreshCollectionId ? '' : collectionId, this.wallpaperProvider_,
-        this.getStore());
+        isDailyRefreshCollectionId ? '' : collectionId!,
+        this.wallpaperProvider_, this.getStore());
     // Only refresh the wallpaper if daily refresh is toggled on.
     if (!isDailyRefreshCollectionId) {
       updateDailyRefreshWallpaper(this.wallpaperProvider_, this.getStore());
@@ -482,19 +394,13 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * Determine the current collection view belongs to the collection that is
    * enabled with daily refresh. If true, highlight the toggle and display the
    * refresh button
-   * @param {!string} collectionId
-   * @param {!string} dailyRefreshCollectionId
-   * @return {boolean}
-   * @private
    */
-  isDailyRefreshCollectionId_(collectionId, dailyRefreshCollectionId) {
+  private isDailyRefreshCollectionId_(
+      collectionId: string, dailyRefreshCollectionId: string): boolean {
     return collectionId === dailyRefreshCollectionId;
   }
 
-  /**
-   * @private
-   */
-  onClickUpdateDailyRefreshWallpaper_() {
+  private onClickUpdateDailyRefreshWallpaper_() {
     updateDailyRefreshWallpaper(this.wallpaperProvider_, this.getStore());
   }
 
@@ -502,22 +408,14 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * Determine whether there is an error in showing selected image. An error
    * happens when there is no previously loaded image and either no new image
    * is being loaded or there is an error from upstream.
-   * @param {?CurrentWallpaper} image
-   * @param {boolean} loading
-   * @param {?string} error
-   * @return {boolean}
-   * @private
    */
-  computeHasError_(image, loading, error) {
+  private computeHasError_(
+      image: CurrentWallpaper|null, loading: boolean,
+      error: string|null): boolean {
     return (!loading || !!error) && !image;
   }
 
-  /**
-   * @param {?CurrentWallpaper} image
-   * @return {string}
-   * @private
-   */
-  getAriaLabel_(image) {
+  private getAriaLabel_(image: CurrentWallpaper|null): string {
     if (!image) {
       return this.i18n('currentlySet') + ' ' +
           this.i18n('unknownImageAttribution');
@@ -526,8 +424,7 @@ export class WallpaperSelected extends WithPersonalizationStore {
       return [this.i18n('currentlySet'), ...image.attribution].join(' ');
     }
     // Fallback to cached attribution.
-    const attribution =
-        /** @type {!Iterable} */ (this.getLocalStorageAttribution(image.key));
+    const attribution = this.getLocalStorageAttribution(image.key);
     if (isNonEmptyArray(attribution)) {
       return [this.i18n('currentlySet'), ...attribution].join(' ');
     }
@@ -537,40 +434,34 @@ export class WallpaperSelected extends WithPersonalizationStore {
 
   /**
    * Returns hidden state of loading placeholder.
-   * @param {boolean} loading
-   * @param {boolean} showImage
-   * @return {boolean}
-   * @private
    */
-  showPlaceholders_(loading, showImage) {
+  private showPlaceholders_(loading: boolean, showImage: boolean): boolean {
     return loading || !showImage;
   }
 
   /**
    * Cache the attribution in local storage when image is updated
    * Populate the attribution map in local storage when image is updated
-   * @param {?CurrentWallpaper} newImage
-   * @param {?CurrentWallpaper} oldImage
-   * @private
    */
-  async onImageChanged_(newImage, oldImage) {
-    const attributionMap = /** @type {Object<string, Array<string>>} */ (
-        JSON.parse((window.localStorage['attribution'] || '{}')));
+  private async onImageChanged_(
+      newImage: CurrentWallpaper|null, oldImage: CurrentWallpaper|null) {
+    const attributionMap =
+        JSON.parse((window.localStorage['attribution'] || '{}'));
     if (attributionMap.size == 0 ||
         !!newImage && !!oldImage && newImage.key !== oldImage.key) {
-      attributionMap[newImage.key] = newImage.attribution;
-      delete attributionMap[oldImage.key];
+      if (newImage) {
+        attributionMap[newImage.key] = newImage.attribution;
+      }
+      if (oldImage) {
+        delete attributionMap[oldImage.key];
+      }
       window.localStorage['attribution'] = JSON.stringify(attributionMap);
     }
   }
 
-  /**
-   * @param {string} key
-   * @return {Array<!string>}
-   */
-  getLocalStorageAttribution(key) {
-    const attributionMap = /** @type {Object<string, Array<string>>} */ (
-        JSON.parse((window.localStorage['attribution'] || '{}')));
+  getLocalStorageAttribution(key: string): string[] {
+    const attributionMap =
+        JSON.parse((window.localStorage['attribution'] || '{}'));
     const attribution = attributionMap[key];
     if (!attribution) {
       console.warn('Unable to get attribution from local storage.', key);
@@ -580,12 +471,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
 
   /**
    * Return a container class depending on loading state.
-   * @param {boolean} isLoading
-   * @param {boolean} showImage
-   * @return {string}
-   * @private
    */
-  getContainerClass_(isLoading, showImage) {
+  private getContainerClass_(isLoading: boolean, showImage: boolean): string {
     return this.showPlaceholders_(isLoading, showImage) ? 'loading' : '';
   }
 }

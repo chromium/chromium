@@ -94,7 +94,7 @@ export function WallpaperImagesTest() {
     // Wait for iframe to receive data.
     [targetWindow, data] = await sendCurrentWallpaperAssetIdPromise;
     assertEquals(iframe.contentWindow, targetWindow);
-    assertEquals(null, data);
+    assertEquals(undefined, data);
   });
 
   test('displays images for current collection id', async () => {
