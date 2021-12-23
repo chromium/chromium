@@ -123,9 +123,7 @@ SelectionBoundsRecorder::SelectionBoundsRecorder(
       paint_controller_(paint_controller),
       text_direction_(text_direction),
       writing_mode_(writing_mode),
-      selection_layout_object_(layout_object) {
-  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-}
+      selection_layout_object_(layout_object) {}
 
 SelectionBoundsRecorder::~SelectionBoundsRecorder() {
   absl::optional<PaintedSelectionBound> start;
@@ -161,9 +159,6 @@ SelectionBoundsRecorder::~SelectionBoundsRecorder() {
 bool SelectionBoundsRecorder::ShouldRecordSelection(
     const FrameSelection& frame_selection,
     SelectionState state) {
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return false;
-
   if (!frame_selection.IsHandleVisible() || frame_selection.IsHidden())
     return false;
 

@@ -609,8 +609,7 @@ TEST_P(PaintPropertyTreeUpdateTest,
   Element* target = GetDocument().getElementById("target");
   const ObjectPaintProperties* properties =
       target->GetLayoutObject()->FirstFragment().PaintProperties();
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_TRUE(properties->Transform()->HasDirectCompositingReasons());
+  EXPECT_TRUE(properties->Transform()->HasDirectCompositingReasons());
 
   // Removing the animation should remove the transform node.
   target->removeAttribute(html_names::kClassAttr);
@@ -626,8 +625,7 @@ TEST_P(PaintPropertyTreeUpdateTest,
   Element* target = GetDocument().getElementById("target");
   const ObjectPaintProperties* properties =
       target->GetLayoutObject()->FirstFragment().PaintProperties();
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    EXPECT_TRUE(properties->Effect()->HasDirectCompositingReasons());
+  EXPECT_TRUE(properties->Effect()->HasDirectCompositingReasons());
 
   // Removing the animation should remove the effect node.
   target->removeAttribute(html_names::kClassAttr);
@@ -638,9 +636,6 @@ TEST_P(PaintPropertyTreeUpdateTest,
 
 TEST_P(PaintPropertyTreeUpdateTest,
        TransformNodeDoesNotLoseCompositorElementIdWhenAnimationRemoved) {
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   LoadTestData("transform-animation.html");
 
   Element* target = GetDocument().getElementById("target");
@@ -661,9 +656,6 @@ TEST_P(PaintPropertyTreeUpdateTest,
 
 TEST_P(PaintPropertyTreeUpdateTest,
        EffectNodeDoesNotLoseCompositorElementIdWhenAnimationRemoved) {
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   LoadTestData("opacity-animation.html");
 
   Element* target = GetDocument().getElementById("target");
@@ -1123,9 +1115,6 @@ TEST_P(PaintPropertyTreeUpdateTest, WillTransformChangeAboveFixed) {
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, CompositingReasonForAnimation) {
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <style>
       #target {
@@ -1151,10 +1140,9 @@ TEST_P(PaintPropertyTreeUpdateTest, CompositingReasonForAnimation) {
 
   target->setAttribute(html_names::kStyleAttr, "transform: translateX(11px)");
   UpdateAllLifecyclePhasesForTest();
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_TRUE(transform->HasDirectCompositingReasons());
-    EXPECT_TRUE(transform->HasActiveTransformAnimation());
-  }
+  EXPECT_TRUE(transform->HasDirectCompositingReasons());
+  EXPECT_TRUE(transform->HasActiveTransformAnimation());
+
   // TODO(flackr): After https://crbug.com/900241 is fixed the filter effect
   // should no longer have direct compositing reasons due to the animation.
   EXPECT_TRUE(filter->HasDirectCompositingReasons());
@@ -1163,14 +1151,12 @@ TEST_P(PaintPropertyTreeUpdateTest, CompositingReasonForAnimation) {
                        "transform: translateX(11px); filter: opacity(40%)");
   UpdateAllLifecyclePhasesForTest();
   // The transform animation still continues.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_TRUE(transform->HasDirectCompositingReasons());
-    EXPECT_TRUE(transform->HasActiveTransformAnimation());
-    // The filter node should have correct direct compositing reasons, not
-    // shadowed by the transform animation.
-    EXPECT_TRUE(filter->HasDirectCompositingReasons());
-    EXPECT_TRUE(transform->HasActiveTransformAnimation());
-  }
+  EXPECT_TRUE(transform->HasDirectCompositingReasons());
+  EXPECT_TRUE(transform->HasActiveTransformAnimation());
+  // The filter node should have correct direct compositing reasons, not
+  // shadowed by the transform animation.
+  EXPECT_TRUE(filter->HasDirectCompositingReasons());
+  EXPECT_TRUE(transform->HasActiveTransformAnimation());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, SVGViewportContainerOverflowChange) {
@@ -1586,12 +1572,7 @@ TEST_P(PaintPropertyTreeUpdateTest, SubpixelAccumulationAcrossIsolation) {
             parent->FirstFragment().PaintOffset());
   EXPECT_EQ(gfx::Vector2dF(10, 0),
             isolation_properties->PaintOffsetTranslation()->Translation2D());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(PhysicalOffset(), child->FirstFragment().PaintOffset());
-  } else {
-    EXPECT_EQ(PhysicalOffset(LayoutUnit(0.25), LayoutUnit()),
-              child->FirstFragment().PaintOffset());
-  }
+  EXPECT_EQ(PhysicalOffset(), child->FirstFragment().PaintOffset());
 
   parent_element->setAttribute(html_names::kStyleAttr, "margin-left: 12.75px");
   UpdateAllLifecyclePhasesForTest();
@@ -1600,12 +1581,7 @@ TEST_P(PaintPropertyTreeUpdateTest, SubpixelAccumulationAcrossIsolation) {
             parent->FirstFragment().PaintOffset());
   EXPECT_EQ(gfx::Vector2dF(13, 0),
             isolation_properties->PaintOffsetTranslation()->Translation2D());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(PhysicalOffset(), child->FirstFragment().PaintOffset());
-  } else {
-    EXPECT_EQ(PhysicalOffset(LayoutUnit(-0.25), LayoutUnit()),
-              child->FirstFragment().PaintOffset());
-  }
+  EXPECT_EQ(PhysicalOffset(), child->FirstFragment().PaintOffset());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
@@ -1779,9 +1755,6 @@ TEST_P(PaintPropertyTreeUpdateTest, StartSVGAnimation) {
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, ScrollNonStackingContextContainingStacked) {
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <style>
       #scroller { width: 200px; height: 200px; overflow: scroll;

@@ -271,9 +271,6 @@ void PrePaintTreeWalk::InvalidatePaintForHitTesting(
 void PrePaintTreeWalk::UpdateAuxiliaryObjectProperties(
     const LayoutObject& object,
     PrePaintTreeWalk::PrePaintTreeWalkContext& context) {
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   if (!object.HasLayer())
     return;
 
@@ -533,14 +530,7 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   }
 
   if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-    if (property_changed != PaintPropertyChangeType::kUnchanged ||
-        // CullRectUpdater proactively update cull rect if the layer or
-        // descendant will repaint, but in pre-CAP the repaint flag stops
-        // propagation at compositing boundaries, while cull rect update
-        // ancestor flag should not stop at compositing boundaries.
-        (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-         context.paint_invalidator_context.painting_layer
-             ->SelfOrDescendantNeedsRepaint())) {
+    if (property_changed != PaintPropertyChangeType::kUnchanged) {
       CullRectUpdater::PaintPropertiesChanged(
           object, *context.paint_invalidator_context.painting_layer);
     }

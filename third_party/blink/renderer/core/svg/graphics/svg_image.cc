@@ -559,18 +559,8 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
 
   page_->GetSettings().SetForceDarkModeEnabled(draw_info.IsDarkModeEnabled());
 
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    view->UpdateAllLifecyclePhases(DocumentUpdateReason::kSVGImage);
-    return view->GetPaintRecord();
-  }
-
-  view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kSVGImage);
-  PaintController::CycleScope cycle_scope(*paint_controller_,
-                                          view->PaintDebugInfoEnabled());
-
-  auto* builder = MakeGarbageCollected<PaintRecordBuilder>(*paint_controller_);
-  view->PaintOutsideOfLifecycle(builder->Context(), kGlobalPaintNormalPhase);
-  return builder->EndRecording();
+  view->UpdateAllLifecyclePhases(DocumentUpdateReason::kSVGImage);
+  return view->GetPaintRecord();
 }
 
 static bool DrawNeedsLayer(const PaintFlags& flags) {

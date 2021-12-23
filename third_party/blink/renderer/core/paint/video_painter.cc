@@ -74,10 +74,9 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
       paint_info.GetGlobalPaintFlags() & kGlobalPaintFlattenCompositingLayers &&
       !force_video_poster;
 
-  bool paint_with_foreign_layer =
-      RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      paint_info.phase == PaintPhase::kForeground && !should_display_poster &&
-      !force_software_video_paint;
+  bool paint_with_foreign_layer = paint_info.phase == PaintPhase::kForeground &&
+                                  !should_display_poster &&
+                                  !force_software_video_paint;
   if (paint_with_foreign_layer) {
     if (cc::Layer* layer = layout_video_.MediaElement()->CcLayer()) {
       layer->SetBounds(snapped_replaced_rect.size());
