@@ -226,7 +226,6 @@
 <translation id="7339898014177206373">新しいウィンドウ</translation>
 <translation id="734373864078049451">ウェブ、ブックマーク、その他の Chromium データを好みに設定できます。</translation>
 <translation id="7349591376906416160">システム管理者が、<ph name="TARGET_URL_HOSTNAME" /> へのアクセスに <ph name="ALTERNATIVE_BROWSER_NAME" /> を開くよう Chromium を設定しています。</translation>
-<translation id="7366100504948874379">Chromium でもオンにしますか？</translation>
 <translation id="7398989605938454041">Chromium プロフィールを使うと、Chromium のあらゆる項目や設定を個別に管理できます。これにより、仕事と遊びの使い分けが簡単になります。</translation>
 <translation id="7448255348454382571">Chromium OS を再起動してください</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
@@ -237,6 +236,7 @@
 <translation id="7561906087460245826">Chromium のデータ（<ph name="URL" />）も消去する</translation>
 <translation id="7585853947355360626">このページに設定が表示されない場合は、<ph name="LINK_BEGIN" />
       Chromium OS の設定<ph name="LINK_END" />を確認してください</translation>
+<translation id="7597596667193879455">アカウントでセーフ ブラウジング保護強化機能がオンになっています。Chromium にも適用します。</translation>
 <translation id="761356813943268536">Chromium がカメラとマイクを使用しています。</translation>
 <translation id="7617377681829253106">進化する Chromium</translation>
 <translation id="7686590090926151193">Chromium はデフォルトのブラウザとして設定されていません</translation>

@@ -1386,6 +1386,7 @@
 <translation id="5333022057423422993">Chrome ले तपाईंले भर्खरै प्रयोग गर्नुभएको पासवर्ड डेटा चोरीको घटनामा खुलासा गरिएको पत्ता लगायो। हामी तपाईंलाई अहिले नै आफूले सुरक्षित गरेका पासवर्डहरू जाँच गरेर आफ्ना खाता सुरक्षित राख्न सिफारिस गर्छौँ।</translation>
 <translation id="5334013548165032829">प्रणालीका विस्तृत लगहरू</translation>
 <translation id="5334145288572353250">ठेगाना सेभ गर्ने हो?</translation>
+<translation id="5335920952954443287">धड्किरहेको मुटु</translation>
 <translation id="5340250774223869109">एपमाथि रोक लगाइएको छ</translation>
 <translation id="534295439873310000">NFC यन्त्रहरू</translation>
 <translation id="5344579389779391559">यो पृष्ठले तपाईंलाई पैसा तिराउने प्रयास गर्न सक्छ</translation>
@@ -2056,6 +2057,7 @@
 <translation id="7654909834015434372">तपाईंले एनोटेसनहरू सम्पादन गर्दा यो कागजात सुरुमा जतातिर फर्केको थियो त्यतैतिर घुमाइने छ</translation>
 <translation id="765676359832457558">उन्नत सेटिङहरू लुकाउनुहोस्...</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
+<translation id="7659878911471462949">खुसीको आँसु</translation>
 <translation id="7662298039739062396">कुनै विस्तारले नियन्त्रित गरेको सेटिङ</translation>
 <translation id="7663736086183791259">प्रमाणपत्र <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">इन्कोग्निटो मोडमा अनुमति दिइँदैन</translation>
@@ -2288,7 +2290,6 @@
 <translation id="8390725133630534698">एड्मिनले <ph name="ORIGIN_NAME" /> बाट <ph name="VM_NAME" /> मा सेयर गर्न रोक लगाउनुभएको छ</translation>
 <translation id="8398790343843005537">आफ्नो फोन फेला पार्नुहोस्</translation>
 <translation id="8405579342203358118">Chrome का सेटिङमा गई के कस्ता जानकारी सिंक गर्ने भन्ने कुरा व्यवस्थापन गर्नुहोस्</translation>
-<translation id="8405633352367164037">मुटु</translation>
 <translation id="8409413588194360210">भुक्तानी ह्यान्ड्लरहरू</translation>
 <translation id="8412145213513410671">क्रयासहरू (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">तपाइँले एउटै पासफ्रेज दुईटपक प्रविष्ट गर्नुपर्छ।</translation>

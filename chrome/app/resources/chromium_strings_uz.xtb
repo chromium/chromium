@@ -225,7 +225,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7339898014177206373">Yangi oyna</translation>
 <translation id="734373864078049451">Chromium’dagi barcha veb-sahifalar, xatcho‘plar va boshqa ma’lumotlarni bu yerdan topish mumkin.</translation>
 <translation id="7349591376906416160">Tizim administratori tomonidan Chromium brauzeri <ph name="TARGET_URL_HOSTNAME" /> sahifasini <ph name="ALTERNATIVE_BROWSER_NAME" /> orqali ochiladigan qilib sozlangan.</translation>
-<translation id="7366100504948874379">Chromiumda ham yoqilsinmi?</translation>
 <translation id="7398989605938454041">Chromium profillari brauzerdan alohida foydalanish uchun kerak. Bunda ish va hordiqni ajratish osonlashadi.</translation>
 <translation id="7448255348454382571">Chromium OS tizimini ishga tushirish</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
@@ -236,6 +235,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7561906087460245826">Chromium maʼlumotlarini ham tozalash (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Agar sozlama bu sahifada chiqmasa, <ph name="LINK_BEGIN" />
       Chromium brauzeri sozlamalarini<ph name="LINK_END" /> tekshiring.</translation>
+<translation id="7597596667193879455">Hisobingizda Saytlarni kuchaytirilgan rejimda xavfsiz kezish yoqilgan. Endi uni Chromium brauzerida sinab koʻrishingiz mumkin.</translation>
 <translation id="761356813943268536">Chromium kamera va mikrofoningizdan foydalanmoqda.</translation>
 <translation id="7617377681829253106">Chromium ancha yaxshilanmoqda</translation>
 <translation id="7686590090926151193">Chromium standart brauzer sifatida tayinlanmagan</translation>

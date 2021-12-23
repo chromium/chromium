@@ -2704,6 +2704,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3743842571276656710">Sláðu inn PIN-númer til að para við <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Til að fjarlægja forrit skaltu fara í Stillingar &gt; Google Play Store &gt; Hafa umsjón með stillingum Android &gt; Forrit eða Forritastjórnun. Ýttu síðan á forritið sem þú vilt fjarlægja (þú gætir þurft að fletta til hægri eða vinstri til að finna forritið). Ýttu svo á „Fjarlægja“ eða „Gera óvirkt“.</translation>
 <translation id="3747220812138541072">Sýna textatillögur sem birtast um leið og þú skrifar</translation>
+<translation id="3747603683749989726">Kveikja á auknu öryggi?</translation>
 <translation id="3748706263662799310">Tilkynna villu</translation>
 <translation id="3750562496035670393">Chrome vistaði aðgangsorðið þitt í þessu tæki en þú getur vistað það á Google reikningnum þínum í staðinn. Ef þú gerir það verða öll aðgangsorðin á Google reikningum einnig tiltæk þegar þú ert innskráð(ur).</translation>
 <translation id="3752253558646317685">Láttu barnið lyfta upp fingrinum til að vista fingrafarið</translation>
@@ -3151,7 +3152,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4200689466366162458">Sérsniðin orð</translation>
 <translation id="4200983522494130825">Nýr flipi</translation>
 <translation id="4201546031411513170">Þú getur alltaf valið hvað á að samstilla í stillingunum.</translation>
-<translation id="4202417625268941299">Enn öruggari vefskoðun veitir þér mesta öryggi sem Chrome býður upp á.</translation>
 <translation id="420283545744377356">Slökkva á skjávara</translation>
 <translation id="4206144641569145248">Geimvera</translation>
 <translation id="4206323443866416204">Ábendingaskýrsla</translation>
@@ -3219,6 +3219,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4279129444466079448">Þú getur sett upp allt að <ph name="PROFILE_LIMIT" /> eSIM-prófíla í þessu tæki. Þú þarft að fjarlægja fyrirliggjandi prófíl til að geta bætt nýjum við.</translation>
 <translation id="4281844954008187215">Þjónustuskilmálar</translation>
 <translation id="4282196459431406533">Kveikt er á Smart Lock</translation>
+<translation id="4284755288573763878">Slökkva á auknu öryggi?</translation>
 <translation id="4285418559658561636">Uppfæra aðgangsorð</translation>
 <translation id="4285498937028063278">Losa</translation>
 <translation id="428565720843367874">Óvænt villa kom upp í vírusvarnarhugbúnaði við að skanna þessa skrá.</translation>
@@ -6880,6 +6881,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="81020759409809034">Staðsetning staðar</translation>
 <translation id="8102139037507939978">Fjarlægja persónugreinanlegar upplýsingar úr system_logs.txt.</translation>
 <translation id="8104088837833760645">Sækja eSIM-prófíl</translation>
+<translation id="8105368624971345109">Slökkva</translation>
 <translation id="8107015733319732394">Setur Google Play Store upp á <ph name="DEVICE_TYPE" />. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="810728361871746125">Skjáupplausn</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Engin fótspor frá þriðju aðilum}=1{Lokað á eitt fótspor frá þriðja aðila}one{Lokað er á # fótspor frá þriðju aðilum}other{Lokað er á # fótspor frá þriðju aðilum}}</translation>
@@ -6945,7 +6947,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8168071266284693455">Bókamerkin, aðgangsorðin, ferillinn og fleira eru samstillt í öllum tækjunum þínum</translation>
 <translation id="8168435359814927499">Efni</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Bæta flipa við leslista}one{Bæta flipum við leslista}other{Bæta flipum við leslista}}</translation>
-<translation id="8169849063724750395">Kveikja á aftur</translation>
 <translation id="8171334254070436367">Fela öll spjöld</translation>
 <translation id="8174047975335711832">Upplýsingar um tæki</translation>
 <translation id="8174876712881364124">Vistaðu öryggisafrit á Google Drive. Endurheimtu gögnin þín eða skiptu um tæki hvenær sem er. Öryggisafritunin felur í sér forritagögn. Öryggisafritunum þínum er hlaðið inn á Google og þau dulkóðuð með aðgangsorði Google reiknings barnsins þíns. <ph name="BEGIN_LINK1" />Frekari upplýsingar<ph name="END_LINK1" /></translation>
@@ -7261,7 +7262,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8534656636775144800">Úbbs! Eitthvað fór úrskeiðis við að tengjast léninu. Reyndu aftur.</translation>
 <translation id="8535005006684281994">Endurnýjunarvefslóð Netscape-vottorðs</translation>
 <translation id="8536956381488731905">Takkahljóð</translation>
-<translation id="8538718737588735385">Kveikja á aftur</translation>
 <translation id="8539727552378197395">Nei (HttpOnly)</translation>
 <translation id="8539766201049804895">Uppfæra</translation>
 <translation id="8540136935098276800">Sláðu inn vefslóð á réttu sniði</translation>
@@ -7752,6 +7752,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9026731007018893674">niðurhal</translation>
 <translation id="9026852570893462412">Þetta ferli gæti tekið nokkrar mínútur. Sækir sýndarvélina.</translation>
 <translation id="9027459031423301635">Opna &amp;tengil í nýjum flipa</translation>
+<translation id="9029667986262585240">Þú slökktir á enn öruggari vefskoðun á reikningnum þínum.</translation>
 <translation id="9030515284705930323">Fyrirtækið þitt hefur ekki virkjað Google Play Store fyrir reikninginn þinn. Hafðu samband við stjórnanda til að fá frekari upplýsingar.</translation>
 <translation id="9030754204056345429">Hraðar</translation>
 <translation id="9030785788945687215">Gmail</translation>

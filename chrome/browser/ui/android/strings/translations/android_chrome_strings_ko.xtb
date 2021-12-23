@@ -1082,6 +1082,7 @@
 <translation id="7177466738963138057">나중에 설정에서 변경 가능</translation>
 <translation id="7177873915659574692">QR 코드를 만들 수 없습니다. URL이 <ph name="CHARACTER_LIMIT" />자(영문 기준)를 초과합니다.</translation>
 <translation id="7180611975245234373">새로고침</translation>
+<translation id="718226107353899806">최대 <ph name="MAX_NUM_REACTIONS" />개의 반응을 추가할 수 있습니다.</translation>
 <translation id="7187993566681480880">로그인 상태일 때 Chrome에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 강화하는 데 사용될 수 있습니다.</translation>
 <translation id="718926126787620637">북마크 폴더 목록이 전체 높이로 열림</translation>
 <translation id="7191430249889272776">탭이 백그라운드에 열림</translation>

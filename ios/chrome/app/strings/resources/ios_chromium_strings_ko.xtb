@@ -31,7 +31,6 @@
 <translation id="2478931088402984578"><ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" />을 선택합니다.</translation>
 <translation id="2567507405773541360">더욱 심플하고 안전하며 그 어느 때보다도 빠른 Chromium을 더욱 다양하게 활용하세요</translation>
 <translation id="2590893390871230428">Chromium 데이터 동기화</translation>
-<translation id="259094968798709429">비밀번호가 <ph name="BEGIN_LINK" />비밀번호 관리자<ph name="END_LINK" />에 저장되므로 모든 기기에서 비밀번호를 사용할 수 있습니다</translation>
 <translation id="2650312721222849884">Chromium을 사용하는 어느 곳에서나 탭을 확인하려면 동기화를 사용 설정하세요.</translation>
 <translation id="2684230048001240293">Chromium을 모든 기기에서 탭, 비밀번호, 결제 정보를 동기화할 기본값으로 설정합니다.</translation>
 <translation id="2730884209570016437">다른 애플리케이션에서 카메라를 사용하고 있으므로 Chromium에서 카메라를 사용할 수 없습니다.</translation>
@@ -45,7 +44,6 @@
 <translation id="3639997914391704523">Google 계정으로 로그인하면 Chromium에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="3805899903892079518">Chromium에서 사진 또는 동영상에 액세스할 수 없습니다. 'iOS 설정 &gt; 개인정보 보호 &gt; 사진'에서 액세스를 허용하세요.</translation>
 <translation id="3946918322491238254">북마크, 방문 기록, 비밀번호 및 기타 설정은 모두 이 기기에서 계속 확인할 수 있습니다. 변경할 경우 변경사항이 내 계정에 동기화되지는 않습니다.</translation>
-<translation id="4043291146360695975">비밀번호가 이 기기의 비밀번호 관리자에만 저장됩니다</translation>
 <translation id="4099085513035183040">Chromium 베타에서는 지원되지 않습니다.</translation>
 <translation id="4555020257205549924">이 기능을 사용하면 Chromium에서 Google 번역을 사용하여 외국어로 작성된 페이지를 번역합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chromium을 사용할 수 있습니다.</translation>

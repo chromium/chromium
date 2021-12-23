@@ -2704,6 +2704,7 @@
 <translation id="3743842571276656710"><ph name="DEVICE_NAME" /> 기기와 페어링하려면 PIN을 입력하세요.</translation>
 <translation id="3747077776423672805">앱을 삭제하려면 설정 &gt; Google Play 스토어 &gt; Android 환경설정 관리 &gt; 앱 또는 애플리케이션 관리자로 이동합니다. 그런 다음 제거하려는 앱을 탭합니다(앱을 찾으려면 오른쪽이나 왼쪽으로 스와이프해야 할 수 있음). 그런 다음 제거 또는 사용 중지를 탭합니다.</translation>
 <translation id="3747220812138541072">입력할 때 추천 단어를 인라인으로 표시합니다.</translation>
+<translation id="3747603683749989726">강력한 보안 기능을 사용 설정하시겠습니까?</translation>
 <translation id="3748706263662799310">버그 신고</translation>
 <translation id="3750562496035670393">Chrome에서 비밀번호를 이 기기에 저장했으나, 대신 Google 계정에 저장해도 됩니다. 그렇게 하면 로그인한 상태에서 Google 계정에 저장된 모든 비밀번호를 사용할 수도 있습니다.</translation>
 <translation id="3752253558646317685">지문을 저장하려면 자녀가 손가락을 계속 들고 있게 하세요.</translation>
@@ -3149,7 +3150,6 @@
 <translation id="4200689466366162458">맞춤 단어</translation>
 <translation id="4200983522494130825">새 탭(&amp;T)</translation>
 <translation id="4201546031411513170">언제든지 설정에서 동기화할 항목을 선택할 수 있습니다.</translation>
-<translation id="4202417625268941299">향상된 세이프 브라우징을 사용 설정하여 Chrome의 가장 강력한 보안 기능을 누리세요.</translation>
 <translation id="420283545744377356">화면 보호기 사용 중지</translation>
 <translation id="4206144641569145248">외계인</translation>
 <translation id="4206323443866416204">의견 보고서</translation>
@@ -3217,6 +3217,7 @@
 <translation id="4279129444466079448">이 기기에 최대 <ph name="PROFILE_LIMIT" />개의 eSIM 프로필을 설치할 수 있습니다. 다른 프로필을 추가하려면 먼저 기존 프로필을 삭제하세요.</translation>
 <translation id="4281844954008187215">서비스 약관</translation>
 <translation id="4282196459431406533">Smart Lock이 사용 설정됨</translation>
+<translation id="4284755288573763878">강력한 보안 기능을 사용 중지하시겠습니까?</translation>
 <translation id="4285418559658561636">비밀번호 업데이트</translation>
 <translation id="4285498937028063278">고정 해제</translation>
 <translation id="428565720843367874">파일을 검사하는 동안 바이러스 백신 소프트웨어에 예기치 않은 오류가 발생했습니다.</translation>
@@ -6878,6 +6879,7 @@
 <translation id="81020759409809034">현지 위치</translation>
 <translation id="8102139037507939978">system_logs.txt에서 개인 식별 정보를 삭제합니다.</translation>
 <translation id="8104088837833760645">eSIM 프로필 다운로드</translation>
+<translation id="8105368624971345109">사용 중지</translation>
 <translation id="8107015733319732394"><ph name="DEVICE_TYPE" />에 Google Play 스토어를 설치합니다. 설치하는 데 몇 분 정도 걸릴 수 있습니다.</translation>
 <translation id="810728361871746125">화면 해상도</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{타사 쿠키 없음}=1{타사 쿠키 1개가 차단됨}other{타사 쿠키 #개가 차단됨}}</translation>
@@ -6943,7 +6945,6 @@
 <translation id="8168071266284693455">북마크, 비밀번호, 방문 기록 등이 모든 기기에서 동기화됩니다.</translation>
 <translation id="8168435359814927499">콘텐츠</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{읽기 목록에 탭 추가}other{읽기 목록에 탭 추가}}</translation>
-<translation id="8169849063724750395">다시 사용 설정</translation>
 <translation id="8171334254070436367">모든 카드 숨기기</translation>
 <translation id="8174047975335711832">기기 정보</translation>
 <translation id="8174876712881364124">Google Drive에 백업합니다. 언제든지 간편하게 데이터를 복원하거나 다른 기기로 전환하세요. 백업에는 앱 데이터가 포함됩니다. 백업 항목은 Google에 업로드되며 자녀의 Google 계정 비밀번호를 사용하여 암호화됩니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
@@ -7259,7 +7260,6 @@
 <translation id="8534656636775144800">도메인에 가입하는 중에 문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="8535005006684281994">Netscape Certificate Renewal URL</translation>
 <translation id="8536956381488731905">키를 누를 때 소리 발생</translation>
-<translation id="8538718737588735385">다시 사용 설정</translation>
 <translation id="8539727552378197395">허용 안함(Http만)</translation>
 <translation id="8539766201049804895">업그레이드</translation>
 <translation id="8540136935098276800">올바른 형식의 URL을 입력하세요.</translation>
@@ -7749,6 +7749,7 @@
 <translation id="9026731007018893674">다운로드</translation>
 <translation id="9026852570893462412">이 과정은 몇 분 정도 걸릴 수 있습니다. 가상 머신을 다운로드합니다.</translation>
 <translation id="9027459031423301635">새 탭에서 링크 열기(&amp;T)</translation>
+<translation id="9029667986262585240">계정에서 향상된 세이프 브라우징을 사용 중지했습니다.</translation>
 <translation id="9030515284705930323">조직에서 내 계정이 Google Play 스토어를 사용하도록 설정하지 않았습니다. 자세한 정보는 관리자에게 문의하세요.</translation>
 <translation id="9030754204056345429">조금 빠르게</translation>
 <translation id="9030785788945687215">Gmail</translation>

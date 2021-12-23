@@ -226,7 +226,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7339898014177206373">Uus aken</translation>
 <translation id="734373864078049451">Siin asuvad teie veeb, järjehoidjad ja ülejäänud Chromiumi kraam.</translation>
 <translation id="7349591376906416160">Teie süsteemiadministraator on seadistanud Chromiumi avama brauseri <ph name="ALTERNATIVE_BROWSER_NAME" />, et lehele <ph name="TARGET_URL_HOSTNAME" /> juurde pääseda.</translation>
-<translation id="7366100504948874379">Kas lülitada sisse ka Chromiumis?</translation>
 <translation id="7398989605938454041">Chromiumi profiilidega saate eraldada kogu oma Chromiumi sisu. See muudab töö ja lõbu eraldamise lihtsamaks.</translation>
 <translation id="7448255348454382571">Chromium OS-i taaskäivitamine</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
@@ -237,6 +236,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7561906087460245826">Kustuta andmed ka Chromiumist (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Kui seadet sellel lehel ei kuvata, vaadake oma <ph name="LINK_BEGIN" />
       Chromium OS-i seadeid<ph name="LINK_END" /></translation>
+<translation id="7597596667193879455">Lülitasite oma kontol täiustatud ohutu sirvimise sisse. Kasutage seda ka Chromiumis.</translation>
 <translation id="761356813943268536">Chromium kasutab kaamerat ja mikrofoni.</translation>
 <translation id="7617377681829253106">Chromium muutus just paremaks</translation>
 <translation id="7686590090926151193">Chromium ei ole teie vaikebrauser</translation>

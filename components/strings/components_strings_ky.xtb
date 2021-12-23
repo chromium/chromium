@@ -1389,6 +1389,7 @@
 <translation id="5333022057423422993">Chrome жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганын аныктады. Аккаунттарыңызды коопсуздандыруу үчүн сакталган сырсөздөрүңүздү текшерүүнү сунуштайбыз.</translation>
 <translation id="5334013548165032829">Чоо-жайы көрсөтүлгөн тутум таржымалдары</translation>
 <translation id="5334145288572353250">Дарек сакталсынбы?</translation>
+<translation id="5335920952954443287">Соккон жүрөк</translation>
 <translation id="5340250774223869109">Колдонмо бөгөттөлдү</translation>
 <translation id="534295439873310000">NFC түзмөктөрү</translation>
 <translation id="5344579389779391559">Бул баракта акы алынышы мүмкүн</translation>
@@ -2059,6 +2060,7 @@
 <translation id="7654909834015434372">Аннотацияны түзөтүүдө бул документ өзүнүн түпнуска айлануусуна кайтып келет</translation>
 <translation id="765676359832457558">Өркүндөтүлгөн жөндөөлөрдү жашыруу…</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
+<translation id="7659878911471462949">Көздөрүнөн жаш чыккыча күлгөн жүз</translation>
 <translation id="7662298039739062396">Жөндөө кеңейтүү тарабынан көзөмөлдөнөт</translation>
 <translation id="7663736086183791259"><ph name="CERTIFICATE_VALIDITY" /> тастыктамасы</translation>
 <translation id="7666397036351755929">Жашыруун режимде тыюу салынат</translation>
@@ -2291,7 +2293,6 @@
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> сайтынан <ph name="VM_NAME" /> тутуму менен бөлүшүү аракети администратордун саясатына ылайык бөгөттөлгөн</translation>
 <translation id="8398790343843005537">Телефонуңузду табыңыз</translation>
 <translation id="8405579342203358118">Chrome жөндөөлөрүнөн шайкештирилген маалыматты башкаруу</translation>
-<translation id="8405633352367164037">Жүрөк</translation>
 <translation id="8409413588194360210">төлөмдү иштеткичтер</translation>
 <translation id="8412145213513410671">Кыйроолор (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Бир купуя сөз айкашын эки жолу киргизишиңиз керек.</translation>

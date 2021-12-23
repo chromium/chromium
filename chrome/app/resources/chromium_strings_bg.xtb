@@ -221,7 +221,6 @@
 <translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="734373864078049451">Тук ще намерите посещаваните от вас места в мрежата, отметките и другите си неща в Chromium.</translation>
 <translation id="7349591376906416160">Системният ви администратор е конфигурирал Chromium да отваря <ph name="ALTERNATIVE_BROWSER_NAME" /> за достъп до <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7366100504948874379">Искате ли да включите функцията и в Chromium?</translation>
 <translation id="7398989605938454041">С помощта на потребителските профили в Chromium можете да разделите нещата си в браузъра. Това улеснява разграничаването на работата и забавленията.</translation>
 <translation id="7448255348454382571">Рестартиране на Chromium OS</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
@@ -231,6 +230,7 @@
 <translation id="7549178288319965365">Всичко за Chromium OS</translation>
 <translation id="7561906087460245826">Да се изчистят и данните от Chromium (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Ако дадена настройка не се показва на тази страница, потърсете в <ph name="LINK_BEGIN" />настройките на Chromium OS<ph name="LINK_END" /></translation>
+<translation id="7597596667193879455">Включихте подобрената защита от Безопасно сърфиране в профила си. Сега можете да я активирате и за Chromium.</translation>
 <translation id="761356813943268536">Chromium използва камерата и микрофона ви.</translation>
 <translation id="7617377681829253106">Chromium се подобри</translation>
 <translation id="7686590090926151193">Chromium не е браузърът ви по подразбиране</translation>

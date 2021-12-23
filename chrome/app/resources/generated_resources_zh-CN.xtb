@@ -2685,6 +2685,7 @@
 <translation id="3743842571276656710">请输入 PIN 码以与“<ph name="DEVICE_NAME" />”配对</translation>
 <translation id="3747077776423672805">要想卸载应用，请依次转到“设置”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“应用”或“应用管理器”，点按您要卸载的应用（您可能需要左右滑动才能找到相应的应用），然后点按“卸载”或“停用”。</translation>
 <translation id="3747220812138541072">在您输入内容的同时就地显示撰写建议</translation>
+<translation id="3747603683749989726">开启“增强型安全浏览”功能？</translation>
 <translation id="3748706263662799310">报告错误</translation>
 <translation id="3750562496035670393">Chrome 已将您的密码保存到此设备，但您可改为将其保存到自己的 Google 帐号。这样一来，在登录后，您也能获取您 Google 帐号中保存的所有密码。</translation>
 <translation id="3752253558646317685">让您的孩子不时地移开手指，以便保存指纹</translation>
@@ -3131,7 +3132,6 @@
 <translation id="4200689466366162458">自定义字词</translation>
 <translation id="4200983522494130825">打开新的标签页(&amp;T)</translation>
 <translation id="4201546031411513170">您始终可在设置中选择要同步的内容。</translation>
-<translation id="4202417625268941299">启用“增强型安全浏览”功能后，您将获享 Chrome 的最强安全保护</translation>
 <translation id="420283545744377356">关闭屏保功能</translation>
 <translation id="4206144641569145248">外星人</translation>
 <translation id="4206323443866416204">反馈报告</translation>
@@ -3199,6 +3199,7 @@
 <translation id="4279129444466079448">您最多可以在此设备上安装 <ph name="PROFILE_LIMIT" /> 个 SIM 卡配置文件。若要再添加一个配置文件，请先移除一个现有的配置文件。</translation>
 <translation id="4281844954008187215">服务条款</translation>
 <translation id="4282196459431406533">Smart Lock 已开启</translation>
+<translation id="4284755288573763878">关闭“增强型安全浏览”功能？</translation>
 <translation id="4285418559658561636">更新密码</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428565720843367874">防病毒软件在扫描此文件时意外失败。</translation>
@@ -6859,6 +6860,7 @@
 <translation id="81020759409809034">本地位置</translation>
 <translation id="8102139037507939978">从 system_logs.txt 中删除个人身份信息。</translation>
 <translation id="8104088837833760645">下载 eSIM 卡配置文件</translation>
+<translation id="8105368624971345109">关闭</translation>
 <translation id="8107015733319732394">正在在您的 <ph name="DEVICE_TYPE" /> 上安装 Google Play 商店。这可能需要几分钟的时间。</translation>
 <translation id="810728361871746125">显示屏分辨率</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{无第三方 Cookie}=1{已屏蔽 1 个第三方 Cookie}other{已屏蔽 # 个第三方 Cookie}}</translation>
@@ -6924,7 +6926,6 @@
 <translation id="8168071266284693455">您的已存书签、密码、历史记录等信息会同步到您的所有设备上</translation>
 <translation id="8168435359814927499">内容</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{向阅读清单中添加 1 个标签页}other{向阅读清单中添加多个标签页}}</translation>
-<translation id="8169849063724750395">重新开启</translation>
 <translation id="8171334254070436367">隐藏所有卡片</translation>
 <translation id="8174047975335711832">设备信息</translation>
 <translation id="8174876712881364124">备份到 Google 云端硬盘。您随时都能轻松地恢复数据或更换设备。此类备份内容会包含应用数据、会上传到 Google 并会使用您孩子的 Google 帐号密码进行加密。<ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
@@ -7240,7 +7241,6 @@
 <translation id="8534656636775144800">糟糕！尝试加入该网域时出错了。请重试。</translation>
 <translation id="8535005006684281994">Netscape 证书续订网址</translation>
 <translation id="8536956381488731905">按键音效</translation>
-<translation id="8538718737588735385">重新开启</translation>
 <translation id="8539727552378197395">否（仅 Http）</translation>
 <translation id="8539766201049804895">升级</translation>
 <translation id="8540136935098276800">请输入格式正确的网址</translation>
@@ -7730,6 +7730,7 @@
 <translation id="9026731007018893674">下载</translation>
 <translation id="9026852570893462412">此过程可能需要几分钟的时间。正在下载虚拟机。</translation>
 <translation id="9027459031423301635">在新标签页中打开链接(&amp;T)</translation>
+<translation id="9029667986262585240">您已在自己的帐号中关闭了“增强型安全浏览”功能。</translation>
 <translation id="9030515284705930323">贵单位还没有为您的帐号启用 Google Play 商店。如需更多信息，请与管理员联系。</translation>
 <translation id="9030754204056345429">较快</translation>
 <translation id="9030785788945687215">Gmail</translation>

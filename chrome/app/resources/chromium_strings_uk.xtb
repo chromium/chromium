@@ -227,7 +227,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7339898014177206373">Нове вікно</translation>
 <translation id="734373864078049451">Тут містяться ваші веб-сторінки, закладки та інші дані Chromium.</translation>
 <translation id="7349591376906416160">Ваш системний адміністратор налаштував Chromium відкривати сторінку <ph name="TARGET_URL_HOSTNAME" /> в <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
-<translation id="7366100504948874379">Також увімкнути в Chromium?</translation>
 <translation id="7398989605938454041">Створюйте профілі Chromium для різних цілей (наприклад, робочий і особистий), щоб розмежовувати роботу й дозвілля.</translation>
 <translation id="7448255348454382571">Перезапустіть ОС Chromium</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Версія Chromium для розробників</translation>
@@ -238,6 +237,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7561906087460245826">Також очистити дані Chromium (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Якщо налаштування не з'явиться на цій сторінці, пошукайте його в <ph name="LINK_BEGIN" />
       налаштуваннях ОС Chromium<ph name="LINK_END" /></translation>
+<translation id="7597596667193879455">Безпечний перегляд із розширеним захистом увімкнено для вашого облікового запису. Тепер увімкніть його для Chromium.</translation>
 <translation id="761356813943268536">Chromium використовує вашу камеру та мікрофон.</translation>
 <translation id="7617377681829253106">Chromium став ще кращим</translation>
 <translation id="7686590090926151193">Chromium не є вашим веб-переглядачем за умовчанням</translation>

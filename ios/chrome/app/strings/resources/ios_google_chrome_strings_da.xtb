@@ -50,7 +50,6 @@
 <translation id="4214277427269650960">Log ind på dette website og Chrome. Du kan aktivere synkronisering senere.</translation>
 <translation id="424864128008805179">Vil du logge ud af Chrome?</translation>
 <translation id="4249068189593983585">Chrome-tip. Hvis du vil se flere faneindstillinger, skal du trykke på knappen Vis faner på værktøjslinjen og holde fingeren nede. Du finder knappen nederst eller øverst på skærmen.</translation>
-<translation id="4267862249323750454">Adgangskoder gemmes i <ph name="BEGIN_LINK" />Google Adgangskodeadministrator<ph name="END_LINK" />, så du kan bruge dem på alle enheder.</translation>
 <translation id="4523886039239821078">Nogle tilføjelser får Chrome til at gå ned. Prøv at afinstallere:</translation>
 <translation id="4633328489441962921">Chrome kan ikke søge efter opdateringer</translation>
 <translation id="4698415050768537821">Chrome kunne ikke tjekke alle adgangskoder. Prøv igen i morgen, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
@@ -71,7 +70,6 @@
 <translation id="6063091872902370735">Tillad login via Chrome</translation>
 <translation id="6181930887571472871">Skift til Chrome</translation>
 <translation id="6238746320622508509">Lad Chrome låse dine inkognitofaner.</translation>
-<translation id="6387994324662817823">Adgangskoder gemmes kun i Adgangskodeadministrator på denne enhed.</translation>
 <translation id="6427126399757991875">Din organisation konfigurerer Chrome...</translation>
 <translation id="6600954340915313787">Kopieret til Chrome</translation>
 <translation id="6634107063912726160">Når du er logget ud, synkroniserer Chrome ikke nye data med din Google-konto. De data, der tidligere er blevet synkroniseret, forbliver på din konto.</translation>

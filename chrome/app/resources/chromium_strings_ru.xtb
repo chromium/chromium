@@ -222,7 +222,6 @@
 <translation id="7339898014177206373">Новое окно</translation>
 <translation id="734373864078049451">Все веб-страницы, закладки и другие данные Chromium можно найти здесь.</translation>
 <translation id="7349591376906416160">Ваш системный администратор задал настройки, согласно которым Chromium должен запускать <ph name="ALTERNATIVE_BROWSER_NAME" /> для доступа к сайту <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7366100504948874379">Включить в Chromium?</translation>
 <translation id="7398989605938454041">Профили Chromium позволяют хранить личные и рабочие данные в браузере раздельно.</translation>
 <translation id="7448255348454382571">Перезапуск Chromium OS</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium для разработчиков</translation>
@@ -232,6 +231,7 @@
 <translation id="7549178288319965365">О Chromium OS</translation>
 <translation id="7561906087460245826">Также удалить данные из Chromium (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Если нужного параметра нет на этой странице, откройте <ph name="LINK_BEGIN" />настройки Chromium OS<ph name="LINK_END" />.</translation>
+<translation id="7597596667193879455">В вашем аккаунте включен улучшенный Безопасный просмотр. Воспользуйтесь его преимуществами в Chromium.</translation>
 <translation id="761356813943268536">Chromium использует камеру и микрофон.</translation>
 <translation id="7617377681829253106">Chromium становится все лучше</translation>
 <translation id="7686590090926151193">Chromium не является браузером по умолчанию.</translation>

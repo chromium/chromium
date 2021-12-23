@@ -227,7 +227,6 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="734373864078049451">Ovdje se nalaze vaš web, oznake i ostali sadržaji u Chromiumu.</translation>
 <translation id="7349591376906416160">Vaš administrator sustava konfigurirao je Chromium da otvara <ph name="ALTERNATIVE_BROWSER_NAME" /> za pristup URL-u <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7366100504948874379">Želite li uključiti i u Chromiumu?</translation>
 <translation id="7398989605938454041">Pomoću Chromiumovih profila možete razdvojiti sve svoje sadržaje u Chromiumu. To olakšava odvajanje posla i zabave.</translation>
 <translation id="7448255348454382571">Ponovo pokrenite OS Chromium</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
@@ -238,6 +237,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="7561906087460245826">Izbriši i podatke s Chromiuma (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Ako se postavka ne prikazuje na ovoj stranici, pogledajte <ph name="LINK_BEGIN" />
       postavke OS-a Chromium<ph name="LINK_END" /></translation>
+<translation id="7597596667193879455">Uključili ste poboljšano sigurno pregledavanje na svom računu. Sada ga omogućite za Chromium.</translation>
 <translation id="761356813943268536">Chromium upotrebljava vašu kameru i mikrofon.</translation>
 <translation id="7617377681829253106">Chromium je upravo postao bolji</translation>
 <translation id="7686590090926151193">Chromium nije vaš zadani preglednik</translation>

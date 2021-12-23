@@ -223,7 +223,6 @@
 <translation id="7339898014177206373">కొత్త విండో</translation>
 <translation id="734373864078049451">మీ వెబ్, బుక్‌మార్క్‌లు మరియు ఇతర Chromium అంశాలు ఇక్కడ చూపబడతాయి.</translation>
 <translation id="7349591376906416160"><ph name="TARGET_URL_HOSTNAME" />ను యాక్సెస్ చేయడం కోసం <ph name="ALTERNATIVE_BROWSER_NAME" />ను తెరిచే విధంగా Chromiumను మీ సిస్టమ్ నిర్వాహకుడు కాన్ఫిగర్ చేశారు.</translation>
-<translation id="7366100504948874379">Chromiumలో కూడా ఆన్ చేయాలా?</translation>
 <translation id="7398989605938454041">మీ మొత్తం Chromium అంశాలను, మీరు Chromium ప్రొఫైల్‌లతో వేరు చేయండి. ఇలా చేయడం వలన ఆఫీస్, వినోదాన్ని వేర్వేరుగా ఉంచవచ్చు.</translation>
 <translation id="7448255348454382571">Chromium OSని మళ్లీ ప్రారంభించండి</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
@@ -234,6 +233,7 @@
 <translation id="7561906087460245826">అలాగే (<ph name="URL" />)లో ఉన్న Chromiumకి సంబంధించిన డేటాని తీసివేయి</translation>
 <translation id="7585853947355360626">ఏదైనా సెట్టింగ్ ఈ పేజీలో కనపడకపోతే, మీ <ph name="LINK_BEGIN" />
       Chromium OS సెట్టింగ్‌లు<ph name="LINK_END" />లో చూడండి</translation>
+<translation id="7597596667193879455">మీరు మీ ఖాతాలో మెరుగైన సురక్షిత బ్రౌజింగ్‌ను ఆన్ చేశారు. ఇప్పుడు దాన్ని Chromiumలో పొందండి.</translation>
 <translation id="761356813943268536">Chromium మీ కెమెరా మరియు మైక్రోఫోన్‌ని ఉపయోగిస్తోంది.</translation>
 <translation id="7617377681829253106">Chromium ఇప్పుడు మెరుగైంది</translation>
 <translation id="7686590090926151193">Chromium మీ డిఫాల్ట్ బ్రౌజర్ కాదు</translation>

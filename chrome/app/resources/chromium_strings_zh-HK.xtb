@@ -228,7 +228,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7339898014177206373">新視窗</translation>
 <translation id="734373864078049451">您瀏覽的網頁、書籤和其他 Chromium 內容都在這裡。</translation>
 <translation id="7349591376906416160">系統管理員已設定由 Chromium 開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /> 以存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
-<translation id="7366100504948874379">要同時在 Chromium 中開啟此功能嗎？</translation>
 <translation id="7398989605938454041">透過 Chromium 設定檔，您可將所有 Chromium 內容分門別類，從而更輕易劃分工作和娛樂內容。</translation>
 <translation id="7448255348454382571">重新啟動 Chromium 作業系統</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium 開發人員版</translation>
@@ -238,6 +237,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7549178288319965365">關於 Chromium 作業系統</translation>
 <translation id="7561906087460245826">一併清除 Chromium 的資料 (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">如果此頁面沒有顯示設定，請前往 <ph name="LINK_BEGIN" />Chromium 作業系統設定<ph name="LINK_END" /></translation>
+<translation id="7597596667193879455">您已開啟帳戶的「強化安全瀏覽」功能。現在請為 Chromium 開啟此功能。</translation>
 <translation id="761356813943268536">Chromium 正在使用您的相機和麥克風。</translation>
 <translation id="7617377681829253106">Chromium 現在更進一步</translation>
 <translation id="7686590090926151193">Chromium 不是您的預設瀏覽器</translation>

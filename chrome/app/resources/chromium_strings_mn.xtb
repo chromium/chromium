@@ -225,7 +225,6 @@
 <translation id="7339898014177206373">Шинэ цонх</translation>
 <translation id="734373864078049451">Таны веб хуудас, хавчуурга, болон бусад Chromium-ийн зүйлс энд байдаг.</translation>
 <translation id="7349591376906416160">Таны системийн админ Chromium-г<ph name="TARGET_URL_HOSTNAME" />-д хандахын тулд <ph name="ALTERNATIVE_BROWSER_NAME" />-г нээхээр тохируулсан байна.</translation>
-<translation id="7366100504948874379">Мөн Chromium-д асаах уу?</translation>
 <translation id="7398989605938454041">Та Chromium-н профайлуудаар Chromium-н бүх зүйлээ тусгаарлах боломжтой. Энэ нь ажил болон зугаацдаг зүйлсээ тусад нь байлгахад илүү хялбар болгоно.</translation>
 <translation id="7448255348454382571">Chromium OS-г дахин эхлүүлэх</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Дев</translation>
@@ -236,6 +235,7 @@
 <translation id="7561906087460245826">Chromium-н (<ph name="URL" />) өгөгдлийг мөн адил устгах</translation>
 <translation id="7585853947355360626">Хэрэв энэ хуудсан дээр тохиргоог харуулахгүй байгаа бол <ph name="LINK_BEGIN" />
       Chromium үйлдлийн системийнхээ тохиргоо<ph name="LINK_END" /> дотроос хайна уу</translation>
+<translation id="7597596667193879455">Та бүртгэлдээ Сайжруулсан аюулгүй хөтчийг асаасан байна. Одоо үүнийг Chromium-д идэвхжүүлээрэй.</translation>
 <translation id="761356813943268536">Chromium нь таны камер болон микрофоныг ашиглаж байна.</translation>
 <translation id="7617377681829253106">Chromium сайжирлаа</translation>
 <translation id="7686590090926151193">Chromium таны өгөгдмөл хөтөч биш юм</translation>

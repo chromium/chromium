@@ -1389,6 +1389,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5333022057423422993">Chrome atopou o contrasinal que acabas de utilizar entre os datos dunha violación da seguranza dos datos. Para protexer as túas contas, recomendámosche que revises os contrasinais que tes gardados.</translation>
 <translation id="5334013548165032829">Rexistros do sistema detallados</translation>
 <translation id="5334145288572353250">Queres gardar este enderezo?</translation>
+<translation id="5335920952954443287">Corazón que bate</translation>
 <translation id="5340250774223869109">A aplicación está bloqueada</translation>
 <translation id="534295439873310000">Dispositivos con NFC</translation>
 <translation id="5344579389779391559">Esta páxina pode tentar aplicar cargos</translation>
@@ -2059,6 +2060,7 @@ Detalles adicionais:
 <translation id="7654909834015434372">Ao editar as anotacións, este documento volverá á orientación orixinal</translation>
 <translation id="765676359832457558">Ocultar configuración avanzada...</translation>
 <translation id="7658239707568436148">Cancelar</translation>
+<translation id="7659878911471462949">Bágoas de ledicia</translation>
 <translation id="7662298039739062396">Opción de configuración controlada por unha extensión</translation>
 <translation id="7663736086183791259">Certificado <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">Non se permite no modo de incógnito</translation>
@@ -2291,7 +2293,6 @@ Detalles adicionais:
 <translation id="8390725133630534698">A política do administrador bloqueou a función de compartir contido desde <ph name="ORIGIN_NAME" /> a <ph name="VM_NAME" /></translation>
 <translation id="8398790343843005537">Atopa o teu teléfono</translation>
 <translation id="8405579342203358118">Xestiona na configuración de Chrome a información que se sincroniza</translation>
-<translation id="8405633352367164037">Corazón</translation>
 <translation id="8409413588194360210">indicadores de pago</translation>
 <translation id="8412145213513410671">Erros (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Debes introducir a mesma frase de acceso dúas veces.</translation>
