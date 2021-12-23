@@ -17,6 +17,7 @@ source_set("providers") {
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser:font_size_java_script_feature",
     "//ios/public/provider/chrome/browser/discover_feed",
+    "//ios/public/provider/chrome/browser/follow",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/user_feedback",
     "//ui/base",

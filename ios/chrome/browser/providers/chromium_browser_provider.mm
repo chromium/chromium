@@ -8,6 +8,7 @@
 
 #import "ios/chrome/browser/providers/chromium_logo_controller.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
+#import "ios/public/provider/chrome/browser/follow/follow_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
 #include "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 
@@ -17,7 +18,8 @@
 
 ChromiumBrowserProvider::ChromiumBrowserProvider()
     : user_feedback_provider_(std::make_unique<UserFeedbackProvider>()),
-      discover_feed_provider_(std::make_unique<DiscoverFeedProvider>()) {}
+      discover_feed_provider_(std::make_unique<DiscoverFeedProvider>()),
+      follow_provider_(std::make_unique<FollowProvider>()) {}
 
 ChromiumBrowserProvider::~ChromiumBrowserProvider() {}
 
@@ -37,6 +39,10 @@ UserFeedbackProvider* ChromiumBrowserProvider::GetUserFeedbackProvider() const {
 
 DiscoverFeedProvider* ChromiumBrowserProvider::GetDiscoverFeedProvider() const {
   return discover_feed_provider_.get();
+}
+
+FollowProvider* ChromiumBrowserProvider::GetFollowProvider() const {
+  return follow_provider_.get();
 }
 
 std::unique_ptr<ios::ChromeIdentityService>

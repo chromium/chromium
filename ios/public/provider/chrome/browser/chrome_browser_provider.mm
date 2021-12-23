@@ -89,6 +89,10 @@ DiscoverFeedProvider* ChromeBrowserProvider::GetDiscoverFeedProvider() const {
   return nullptr;
 }
 
+FollowProvider* ChromeBrowserProvider::GetFollowProvider() const {
+  return nullptr;
+}
+
 MailtoHandlerProvider* ChromeBrowserProvider::GetMailtoHandlerProvider() const {
   return mailto_handler_provider_.get();
 }

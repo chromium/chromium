@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 
 class DiscoverFeedProvider;
+class FollowProvider;
 class MailtoHandlerProvider;
 class UserFeedbackProvider;
 
@@ -119,6 +120,9 @@ class ChromeBrowserProvider {
 
   // Returns an instance of the DiscoverFeed provider;
   virtual DiscoverFeedProvider* GetDiscoverFeedProvider() const;
+
+  // Returns an instance of the Follow provider;
+  virtual FollowProvider* GetFollowProvider() const;
 
   // Adds and removes observers.
   void AddObserver(Observer* observer);

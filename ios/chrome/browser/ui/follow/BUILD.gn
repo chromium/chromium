@@ -2,6 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("follow") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "follow_site_info.h",
+    "follow_site_info.mm",
+  ]
+  deps = []
+}
+
 source_set("utils") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
