@@ -1310,8 +1310,6 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_error_code.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_storage_bucket_durability.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_storage_bucket_durability.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sub_apps_error.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_sub_apps_error.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_task_priority.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_task_priority.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_track_default_type.cc",
