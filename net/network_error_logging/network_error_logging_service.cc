@@ -807,7 +807,8 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     body->SetInteger(kStatusCodeKey, details.status_code);
     body->SetInteger(kElapsedTimeKey, details.elapsed_time.InMilliseconds());
 
-    auto sxg_body = std::make_unique<base::DictionaryValue>();
+    auto* sxg_body = body->SetKey(kSignedExchangeBodyKey,
+                                  base::Value(base::Value::Type::DICTIONARY));
     sxg_body->SetKey(kOuterUrlKey, base::Value(details.outer_url.spec()));
     if (details.inner_url.is_valid())
       sxg_body->SetKey(kInnerUrlKey, base::Value(details.inner_url.spec()));
@@ -816,7 +817,6 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     if (details.cert_url.is_valid())
       cert_url_list.Append(base::Value(details.cert_url.spec()));
     sxg_body->SetKey(kCertUrlKey, std::move(cert_url_list));
-    body->SetDictionary(kSignedExchangeBodyKey, std::move(sxg_body));
 
     return std::move(body);
   }
