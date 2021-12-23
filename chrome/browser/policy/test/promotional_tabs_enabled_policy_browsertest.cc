@@ -123,7 +123,7 @@ class PromotionalTabsEnabledPolicyWelcomeTest
 IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWelcomeTest, RunTest) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ASSERT_GE(tab_strip->count(), 1);
-  const auto& url = tab_strip->GetWebContentsAt(0)->GetURL();
+  const auto& url = tab_strip->GetWebContentsAt(0)->GetLastCommittedURL();
   switch (GetParam()) {
     case BooleanPolicy::kFalse:
       // Only the NTP should show.
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewTest, RunTest) {
   run_loop.Run();
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ASSERT_GE(tab_strip->count(), 1);
-  const auto& url = tab_strip->GetWebContentsAt(0)->GetURL();
+  const auto& url = tab_strip->GetWebContentsAt(0)->GetLastCommittedURL();
   switch (GetParam()) {
     case BooleanPolicy::kFalse:
       // Only the NTP should show.
@@ -233,7 +233,8 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewTest, RunTest) {
       EXPECT_EQ(url.possibly_invalid_spec(), chrome::kChromeUIWhatsNewURL);
       EXPECT_EQ(0, tab_strip->active_index());
       // The second tab should be the NTP.
-      const auto& url_tab1 = tab_strip->GetWebContentsAt(1)->GetURL();
+      const auto& url_tab1 =
+          tab_strip->GetWebContentsAt(1)->GetLastCommittedURL();
       EXPECT_EQ(url_tab1.possibly_invalid_spec(), chrome::kChromeUINewTabURL);
       break;
   }
@@ -272,7 +273,7 @@ IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewInvalidTest,
   run_loop.Run();
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ASSERT_GE(tab_strip->count(), 1);
-  const auto& url = tab_strip->GetWebContentsAt(0)->GetURL();
+  const auto& url = tab_strip->GetWebContentsAt(0)->GetLastCommittedURL();
   // Only the NTP should show. There are no other relevant tabs since
   // welcome and What's New have both already been shown.
   EXPECT_EQ(tab_strip->count(), 1);

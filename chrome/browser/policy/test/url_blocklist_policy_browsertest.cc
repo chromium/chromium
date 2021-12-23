@@ -48,7 +48,7 @@ void CheckCanOpenURL(Browser* browser, const std::string& spec) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(url, contents->GetURL());
+  EXPECT_EQ(url, contents->GetLastCommittedURL());
 
   std::u16string blocked_page_title;
   if (url.has_host()) {
@@ -65,7 +65,7 @@ void CheckCanOpenViewSourceURL(Browser* browser, const std::string& spec) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, view_source_url));
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(view_source_url, contents->GetURL());
+  EXPECT_EQ(view_source_url, contents->GetLastCommittedURL());
 }
 
 // Handler for embedded http-server, returns a small page with javascript

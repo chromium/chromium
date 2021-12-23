@@ -25,7 +25,7 @@ UrlBlockingPolicyTest::~UrlBlockingPolicyTest() = default;
 void UrlBlockingPolicyTest::CheckURLIsBlockedInWebContents(
     content::WebContents* web_contents,
     const GURL& url) {
-  EXPECT_EQ(url, web_contents->GetURL());
+  EXPECT_EQ(url, web_contents->GetLastCommittedURL());
 
   std::u16string blocked_page_title;
   if (url.has_host()) {

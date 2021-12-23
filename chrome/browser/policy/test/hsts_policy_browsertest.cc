@@ -50,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(HSTSPolicyTest, HSTSPolicyBypassList) {
   // If the policy didn't take effect, the request to http://example would be
   // upgraded to https://example. This checks that the HSTS upgrade to https
   // didn't happen.
-  EXPECT_EQ(url, contents->GetURL());
+  EXPECT_EQ(url, contents->GetLastCommittedURL());
 }
 
 }  // namespace policy

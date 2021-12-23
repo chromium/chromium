@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DefaultSearchProvider) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL expected("http://search.example/search?q=stuff+to+search+for");
-  EXPECT_EQ(expected, web_contents->GetURL());
+  EXPECT_EQ(expected, web_contents->GetVisibleURL());
 
   // Verify that searching from the omnibox can be disabled.
   ASSERT_TRUE(
@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DefaultSearchProvider) {
   ui_test_utils::SendToOmniboxAndSubmit(browser(), "should not work");
   // This means that submitting won't trigger any action.
   EXPECT_FALSE(model->CurrentMatch(nullptr).destination_url.is_valid());
-  EXPECT_EQ(GURL(url::kAboutBlankURL), web_contents->GetURL());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), web_contents->GetLastCommittedURL());
 }
 
 }  // namespace policy

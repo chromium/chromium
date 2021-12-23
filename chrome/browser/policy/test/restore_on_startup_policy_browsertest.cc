@@ -166,9 +166,9 @@ IN_PROC_BROWSER_TEST_P(RestoreOnStartupPolicyTest, RunTest) {
       CheckURLIsBlockedInWebContents(web_contents, expected_urls_[i]);
     } else if (expected_urls_[i] == GURL(chrome::kChromeUINewTabURL)) {
       EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
-                web_contents->GetURL());
+                web_contents->GetLastCommittedURL());
     } else {
-      EXPECT_EQ(expected_urls_[i], web_contents->GetURL());
+      EXPECT_EQ(expected_urls_[i], web_contents->GetLastCommittedURL());
     }
   }
 }

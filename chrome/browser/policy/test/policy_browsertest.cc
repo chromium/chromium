@@ -141,9 +141,9 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_HomepageLocation) {
             browser()->profile()->GetHomePage());
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(GURL(url::kAboutBlankURL), contents->GetURL());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), contents->GetLastCommittedURL());
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_HOME));
-  EXPECT_EQ(GURL(chrome::kChromeUIPolicyURL), contents->GetURL());
+  EXPECT_EQ(GURL(chrome::kChromeUIPolicyURL), contents->GetVisibleURL());
 
   // Now override with policy.
   PolicyMap policies;
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_HomepageLocation) {
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_HOME));
   EXPECT_TRUE(content::WaitForLoadStop(contents));
-  EXPECT_EQ(GURL(chrome::kChromeUICreditsURL), contents->GetURL());
+  EXPECT_EQ(GURL(chrome::kChromeUICreditsURL), contents->GetLastCommittedURL());
 
   policies.Set(key::kHomepageIsNewTabPage, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_HomepageLocation) {
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_HOME));
   EXPECT_TRUE(content::WaitForLoadStop(contents));
   EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(browser()->profile()),
-            contents->GetURL());
+            contents->GetLastCommittedURL());
 }
 
 #if defined(OS_MAC) && defined(ADDRESS_SANITIZER)

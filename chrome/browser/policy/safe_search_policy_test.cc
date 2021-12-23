@@ -56,7 +56,8 @@ void SafeSearchPolicyTest::CheckSafeSearch(Browser* browser,
   OmniboxEditModel* model =
       browser->window()->GetLocationBar()->GetOmniboxView()->model();
   EXPECT_TRUE(model->CurrentMatch(nullptr).destination_url.is_valid());
-  EXPECT_EQ(GetExpectedSearchURL(expect_safe_search), web_contents->GetURL());
+  EXPECT_EQ(GetExpectedSearchURL(expect_safe_search),
+            web_contents->GetLastCommittedURL());
 }
 
 }  // namespace policy
