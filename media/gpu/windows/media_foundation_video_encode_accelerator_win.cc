@@ -817,15 +817,6 @@ bool MediaFoundationVideoEncodeAccelerator::SetEncoderModes() {
   const bool set_svc_layer_count =
       (num_temporal_layers_ > 1) || (vendor_ == DriverVendor::kIntel);
   if (set_svc_layer_count) {
-    // Nvidia drivers return E_NOTIMPL here, but SVC encoding works
-    // anyway.
-    if (vendor_ != DriverVendor::kNvidia &&
-        codec_api_->IsModifiable(&CODECAPI_AVEncVideoTemporalLayerCount) !=
-            S_OK) {
-      DLOG(ERROR) << "Temporal layer count is not modifiable";
-      return false;
-    }
-
     var.ulVal = num_temporal_layers_;
     hr = codec_api_->SetValue(&CODECAPI_AVEncVideoTemporalLayerCount, &var);
     if (!compatible_with_win7_) {
