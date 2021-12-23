@@ -513,10 +513,6 @@ class PredictionManagerModelDownloadingBrowserTest
             /*model_metadata=*/absl::nullopt, model_file_observer_.get());
   }
 
-  base::HistogramTester* test_harness_histogram_tester() {
-    return &histogram_tester_;
-  }
-
  private:
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -540,11 +536,11 @@ class PredictionManagerModelDownloadingBrowserTest
   }
 
   std::unique_ptr<ModelFileObserver> model_file_observer_;
-  base::HistogramTester histogram_tester_;
 };
 
+// Flaky on various bots. See https://crbug.com/1266318
 IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
-                       TestIncognitoUsesModelFromRegularProfile) {
+                       DISABLED_TestIncognitoUsesModelFromRegularProfile) {
   SetResponseType(
       PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile);
 
@@ -603,51 +599,44 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
 
     run_loop->Run();
 
-    // Should have same model loaded as original profile.
-    otr_histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 123,
-        1);
-    // Should not have fetched.
     otr_histogram_tester.ExpectTotalCount(
-        "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status", 0);
+        "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);
+    otr_histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
   }
 }
-
+// Flaky on multiple ASAN bots. See https://crbug.com/1266318
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_TestIncognitoDoesntFetchModels \
+  DISABLED_TestIncognitoDoesntFetchModels
+#else
+#define MAYBE_TestIncognitoDoesntFetchModels TestIncognitoDoesntFetchModels
+#endif
 IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
-                       TestIncognitoDoesntFetchModels) {
+                       MAYBE_TestIncognitoDoesntFetchModels) {
+  base::HistogramTester histogram_tester;
+
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
                       kSuccessfulWithInvalidModelFile);
-  // Wait until regular profile has finished its model initialization routine.
-  {
-    RetryForHistogramUntilCountReached(
-        test_harness_histogram_tester(),
-        "OptimizationGuide.PredictionManager.StoreInitialized", 1);
-    base::RunLoop().RunUntilIdle();
-  }
 
-  {
-    base::HistogramTester otr_histogram_tester;
+  Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
 
-    Browser* otr_browser = CreateIncognitoBrowser(browser()->profile());
+  // Registering should not initiate the fetch and the model updated callback
+  // should not be triggered too.
+  RegisterModelFileObserverWithKeyedService(otr_browser->profile());
 
-    // Registering should not initiate the fetch and the model updated callback
-    // should not be triggered either.
-    RegisterModelFileObserverWithKeyedService(otr_browser->profile());
+  model_file_observer()->set_model_file_received_callback(base::BindOnce(
+      [](proto::OptimizationTarget optimization_target,
+         const ModelInfo& model_info) { FAIL() << "Should not be called"; }));
 
-    model_file_observer()->set_model_file_received_callback(base::BindOnce(
-        [](proto::OptimizationTarget optimization_target,
-           const ModelInfo& model_info) { FAIL() << "Should not be called"; }));
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "OptimizationGuide.PredictionManager.HostModelFeaturesMapSize", 1);
 
-    RetryForHistogramUntilCountReached(
-        &otr_histogram_tester,
-        "OptimizationGuide.PredictionManager.StoreInitialized", 1);
-    // Wait until everything has stabilized before ensuring no fetches went out.
-    base::RunLoop().RunUntilIdle();
-
-    // Should not have fetched.
-    otr_histogram_tester.ExpectTotalCount(
-        "OptimizationGuide.PredictionModelFetcher.GetModelsResponse.Status", 0);
-  }
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
