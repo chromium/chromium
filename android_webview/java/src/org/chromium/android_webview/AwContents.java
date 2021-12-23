@@ -2791,7 +2791,7 @@ public class AwContents implements SmartClipProvider {
      */
     public void addWebMessageListener(@NonNull String jsObjectName,
             @NonNull String[] allowedOriginRules, @NonNull WebMessageListener listener) {
-        if (TRACE) Log.i(TAG, "%s addWebMessageListener", this);
+        if (TRACE) Log.i(TAG, "%s addWebMessageListener=%s", this, jsObjectName);
         if (listener == null) {
             throw new NullPointerException("listener shouldn't be null");
         }
