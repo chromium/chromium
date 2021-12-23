@@ -6,6 +6,7 @@
     width: 100%;
     --discount-chip-background: rgb(230, 244, 234);
     --discount-chip-text-color: var(--google-green-700);
+    --row-height: 63px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -58,7 +59,7 @@
     cursor: pointer;
     display: flex;
     flex-direction: row;
-    height: 63px;
+    height: var(--row-height);
     padding-inline: 15px 15px;
     position: relative;
     text-decoration: none;
@@ -153,7 +154,7 @@
   .thumbnail-container {
     align-items: center;
     display: flex;
-    height: 63px;
+    height: var(--row-height);
     margin-inline-start: 16px;
     overflow-x: hidden;
     text-align: center;
@@ -161,7 +162,7 @@
 
   .thumbnail-container ul {
     display: flex;
-    height: 63px;
+    height: var(--row-height);
     list-style-type: none;
     margin-block-end: 0;
     margin-block-start: 0;
@@ -178,8 +179,8 @@
     /* Mixes to Google Grey 100 underneath .image-container. */
     background-color: rgb(115, 135, 145);
     border-radius: 50%;
-    height: 63px;
-    width: 63px;
+    height: var(--row-height);
+    width: var(--row-height);
   }
 
   .image-container {
@@ -192,9 +193,9 @@
 
   .thumbnail-img {
     border-radius: 50%;
-    height: 63px;
+    height: var(--row-height);
     object-fit: cover;
-    width: 63px;
+    width: var(--row-height);
   }
 
   .fallback-background {
@@ -202,11 +203,11 @@
     background-color: var(--google-grey-refresh-100);
     border-radius: 50%;
     display: flex;
-    height: 63px;
+    height: var(--row-height);
     justify-content: center;
     margin-inline-start: 8px;
     position: relative;
-    width: 63px;
+    width: var(--row-height);
   }
 
   .thumbnail-fallback {
