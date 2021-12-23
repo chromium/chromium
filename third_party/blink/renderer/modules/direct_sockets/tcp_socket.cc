@@ -51,7 +51,7 @@ void TCPSocket::Init(int32_t result,
   DCHECK(resolver_);
   DCHECK(!tcp_readable_stream_wrapper_);
   DCHECK(!tcp_writable_stream_wrapper_);
-  if (result == net::Error::OK) {
+  if (result == net::Error::OK && peer_addr.has_value()) {
     local_addr_ = local_addr;
     peer_addr_ = peer_addr;
     tcp_readable_stream_wrapper_ =

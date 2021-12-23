@@ -550,6 +550,18 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
+                       OpenTcp_RemotePortCurrentlyRequired) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  const std::string script = "openTcp({})";
+
+  EXPECT_EQ(
+      "openTcp failed: TypeError: Failed to execute 'openTCPSocket' on "
+      "'Navigator': remotePort was not specified.",
+      EvalJs(shell(), script));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
                        OpenTcp_RestrictedByEnterprisePolicies) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
@@ -659,20 +671,25 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsTwo) {
   EXPECT_EQ(true, call.no_delay);
 }
 
-IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_Success) {
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_Success_Hostname) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
 
-  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
-      base::BindRepeating(&UnconditionallyPermitConnection));
+  const char kExampleHostname[] = "mail.example.com";
+  const char kExampleAddress[] = "98.76.54.32";
+  const std::string mapping_rules =
+      base::StringPrintf("MAP %s %s", kExampleHostname, kExampleAddress);
 
   MockNetworkContext mock_network_context(net::OK);
+  mock_network_context.set_host_mapping_rules(mapping_rules);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+  const std::string expected_result = base::StringPrintf(
+      "openUdp succeeded: {remoteAddress: \"%s\", remotePort: 993}",
+      kExampleAddress);
 
-  uint16_t remotePort = 513;
   const std::string script = base::StringPrintf(
-      "openUdp({remoteAddress: '127.0.0.1', remotePort: %d})", remotePort);
+      "openUdp({remoteAddress: '%s', remotePort: 993})", kExampleHostname);
 
-  EXPECT_EQ("openUdp succeeded", EvalJs(shell(), script));
+  EXPECT_EQ(expected_result, EvalJs(shell(), script));
 }
 
 // TODO(https://crbug.com/1282060): This test is flaky.
@@ -758,6 +775,18 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
 
   EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
             EvalJs(shell(), script));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,
+                       OpenUdp_RemotePortCurrentlyRequired) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  const std::string script = "openUdp({remoteAddress: '127.0.0.1'})";
+
+  EXPECT_EQ(
+      "openUdp failed: TypeError: Failed to execute 'openUDPSocket' on "
+      "'Navigator': remotePort was not specified.",
+      EvalJs(shell(), script));
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest,

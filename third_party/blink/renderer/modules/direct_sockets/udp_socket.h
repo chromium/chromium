@@ -12,7 +12,9 @@
 #include "services/network/public/mojom/udp_socket.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -25,13 +27,18 @@ class IPEndPoint;
 
 namespace blink {
 
+class ExecutionContext;
+
 class MODULES_EXPORT UDPSocket final
     : public ScriptWrappable,
+      public ActiveScriptWrappable<UDPSocket>,
+      public ExecutionContextClient,
       public network::mojom::blink::UDPSocketListener {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit UDPSocket(ScriptPromiseResolver&);
+  explicit UDPSocket(ExecutionContext* execution_context,
+                     ScriptPromiseResolver&);
   ~UDPSocket() override;
 
   UDPSocket(const UDPSocket&) = delete;
@@ -46,8 +53,11 @@ class MODULES_EXPORT UDPSocket final
             const absl::optional<net::IPEndPoint>& local_addr,
             const absl::optional<net::IPEndPoint>& peer_addr);
 
-  // Web-exposed function
+  // Web-exposed functions
   ScriptPromise close(ScriptState*, ExceptionState&);
+
+  String remoteAddress() const;
+  uint16_t remotePort() const;
 
   // network::mojom::blink::UDPSocketListener:
   void OnReceived(int32_t result,
@@ -55,18 +65,24 @@ class MODULES_EXPORT UDPSocket final
                   absl::optional<::base::span<const ::uint8_t>> data) override;
 
   // ScriptWrappable:
+  bool HasPendingActivity() const override;
   void Trace(Visitor* visitor) const override;
 
  private:
   void OnSocketListenerConnectionError();
+  void DoClose(bool is_local_close);
 
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolver> init_resolver_;
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
 
   mojo::Remote<blink::mojom::blink::DirectUDPSocket> udp_socket_;
   mojo::Receiver<network::mojom::blink::UDPSocketListener>
       socket_listener_receiver_{this};
+
+  Member<ScriptPromiseResolver> send_resolver_;
+  absl::optional<net::IPEndPoint> local_addr_;
+  absl::optional<net::IPEndPoint> peer_addr_;
 };
 
 }  // namespace blink

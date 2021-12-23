@@ -6,6 +6,7 @@
 
 [
     Exposed=Window,
+    ActiveScriptWrappable,
     RuntimeEnabled=DirectSockets,
     DirectSocketEnabled
 ] interface UDPSocket {
@@ -14,4 +15,7 @@
 
   [RaisesException, CallWith=ScriptState]
   Promise<void> close();
+
+  readonly attribute DOMString remoteAddress;
+  readonly attribute unsigned short remotePort;
 };

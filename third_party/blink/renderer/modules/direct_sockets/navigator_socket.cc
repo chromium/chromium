@@ -153,7 +153,8 @@ ScriptPromise NavigatorSocket::openUDPSocket(ScriptState* script_state,
     return ScriptPromise();
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  UDPSocket* pending = MakeGarbageCollected<UDPSocket>(*resolver);
+  UDPSocket* pending = MakeGarbageCollected<UDPSocket>(
+      ExecutionContext::From(script_state), *resolver);
   pending_udp_.insert(pending);
   ScriptPromise promise = resolver->Promise();
 

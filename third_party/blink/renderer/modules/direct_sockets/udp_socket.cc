@@ -5,36 +5,39 @@
 #include "third_party/blink/renderer/modules/direct_sockets/udp_socket.h"
 
 #include "net/base/net_errors.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fileapi/blob.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
-UDPSocket::UDPSocket(ScriptPromiseResolver& resolver)
-    : resolver_(&resolver),
+UDPSocket::UDPSocket(ExecutionContext* execution_context,
+                     ScriptPromiseResolver& resolver)
+    : ExecutionContextClient(execution_context),
+      init_resolver_(&resolver),
       feature_handle_for_scheduler_(
-          ExecutionContext::From(resolver_->GetScriptState())
-              ->GetScheduler()
-              ->RegisterFeature(
-                  SchedulingPolicy::Feature::
-                      kOutstandingNetworkRequestDirectSocket,
-                  {SchedulingPolicy::DisableBackForwardCache()})) {
-  DCHECK(resolver_);
+          execution_context->GetScheduler()->RegisterFeature(
+              SchedulingPolicy::Feature::kOutstandingNetworkRequestDirectSocket,
+              {SchedulingPolicy::DisableBackForwardCache()})) {
+  DCHECK(init_resolver_);
 }
 
 UDPSocket::~UDPSocket() = default;
 
 mojo::PendingReceiver<blink::mojom::blink::DirectUDPSocket>
 UDPSocket::GetUDPSocketReceiver() {
-  DCHECK(resolver_);
+  DCHECK(init_resolver_);
   return udp_socket_.BindNewPipeAndPassReceiver();
 }
 
 mojo::PendingRemote<network::mojom::blink::UDPSocketListener>
 UDPSocket::GetUDPSocketListener() {
-  DCHECK(resolver_);
+  DCHECK(init_resolver_);
   auto result = socket_listener_receiver_.BindNewPipeAndPassRemote();
 
   socket_listener_receiver_.set_disconnect_handler(WTF::Bind(
@@ -46,22 +49,30 @@ UDPSocket::GetUDPSocketListener() {
 void UDPSocket::Init(int32_t result,
                      const absl::optional<net::IPEndPoint>& local_addr,
                      const absl::optional<net::IPEndPoint>& peer_addr) {
-  DCHECK(resolver_);
-  if (result == net::Error::OK) {
-    // TODO(crbug.com/1119620): Finish initialization.
-    NOTIMPLEMENTED();
-    resolver_->Resolve(this);
+  DCHECK(init_resolver_);
+  if (result == net::Error::OK && peer_addr.has_value()) {
+    peer_addr_ = peer_addr;
+    init_resolver_->Resolve(this);
   } else {
-    resolver_->Reject(MakeGarbageCollected<DOMException>(
+    // TODO(crbug/1282199): Create specific exception based on error code.
+    init_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError, "Permission denied"));
   }
-  resolver_ = nullptr;
+  init_resolver_ = nullptr;
 }
 
-ScriptPromise UDPSocket::close(ScriptState*, ExceptionState&) {
-  // TODO(crbug.com/905818): Implement close.
-  NOTIMPLEMENTED();
-  return ScriptPromise();
+ScriptPromise UDPSocket::close(ScriptState* script_state, ExceptionState&) {
+  DoClose(/*is_local_close=*/true);
+
+  return ScriptPromise::CastUndefined(script_state);
+}
+
+String UDPSocket::remoteAddress() const {
+  return String::FromUTF8(peer_addr_->ToStringWithoutPort());
+}
+
+uint16_t UDPSocket::remotePort() const {
+  return peer_addr_->port();
 }
 
 void UDPSocket::OnReceived(int32_t result,
@@ -71,14 +82,29 @@ void UDPSocket::OnReceived(int32_t result,
   NOTIMPLEMENTED();
 }
 
+bool UDPSocket::HasPendingActivity() const {
+  return !!send_resolver_;
+}
+
 void UDPSocket::Trace(Visitor* visitor) const {
-  visitor->Trace(resolver_);
+  visitor->Trace(init_resolver_);
+  visitor->Trace(send_resolver_);
   ScriptWrappable::Trace(visitor);
+  ActiveScriptWrappable::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
 }
 
 void UDPSocket::OnSocketListenerConnectionError() {
-  // TODO(crbug.com/1119620): Implement UDP error handling.
-  NOTIMPLEMENTED();
+  DoClose(/*is_local_close=*/false);
+}
+
+void UDPSocket::DoClose(bool is_local_close) {
+  init_resolver_ = nullptr;
+  socket_listener_receiver_.reset();
+  if (is_local_close && udp_socket_.is_bound())
+    udp_socket_->Close();
+  udp_socket_.reset();
+  feature_handle_for_scheduler_.reset();
 }
 
 }  // namespace blink

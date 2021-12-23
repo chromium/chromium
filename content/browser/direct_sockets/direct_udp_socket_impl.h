@@ -37,6 +37,8 @@ class DirectUDPSocketImpl : public blink::mojom::DirectUDPSocket {
   void Send(base::span<const uint8_t> data, SendCallback callback) override;
   void Close() override;
 
+  void OnDisconnect();
+
  private:
   mojo::Remote<network::mojom::UDPSocket> remote_;
 };

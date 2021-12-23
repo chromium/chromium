@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Direct Sockets UDP Test</title>
+  <script>
+    'use strict';
+
+    async function closeUdp(options) {
+      try {
+        let udpSocket = await navigator.openUDPSocket(options);
+        await udpSocket.close();
+        return 'closeUdp succeeded';
+      } catch(error) {
+        return ('closeUdp failed: ' + error);
+      }
+    }
+
+  </script>
+</head>
+<body>
+  <h1>Direct Sockets UDP Test</h1>
+</body>
+</html>
