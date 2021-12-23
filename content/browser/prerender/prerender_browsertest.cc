@@ -5139,7 +5139,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DoNotUpdateUserActivationState) {
 
 // Tests that prerendering is cancelled when a mixed content subframe is
 // detected.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MixedContent) {
+// TODO(crbug.com/1282218): Flaky on Linux and Windows
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_MixedContent DISABLED_MixedContent
+#else
+#define MAYBE_MixedContent MixedContent
+#endif
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MAYBE_MixedContent) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/empty.html?prerendering");
