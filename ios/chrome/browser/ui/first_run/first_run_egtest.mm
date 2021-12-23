@@ -597,7 +597,7 @@ GREYLayoutConstraint* BelowConstraint() {
 }
 
 // Checks that the default browser screen is displayed correctly.
-// TODO(crbug.com/1266372): Re-enable this test.
+// TODO(crbug.com/1282248): Re-enable this test.
 - (void)DISABLED_testDefaultBrowserScreenUI {
   if ([self isDefaultBrowserTestDisabled]) {
     return;
@@ -777,8 +777,7 @@ GREYLayoutConstraint* BelowConstraint() {
 // Checks that it is possible to add an account even if there is already account
 // and that it is possible to switch accounts when multiple accounts are
 // present.
-// TODO(crbug.com/1266372): Fix issue finding needed element.
-- (void)DISABLED_testSignInSelectAccount {
+- (void)testSignInSelectAccount {
   FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
   FakeChromeIdentity* fakeIdentity2 = [SigninEarlGrey fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
@@ -788,19 +787,18 @@ GREYLayoutConstraint* BelowConstraint() {
   [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kIdentityButtonControlIdentifier)]
-      performAction:grey_tap()];
+  id<GREYMatcher> identityButton =
+      grey_accessibilityID(kIdentityButtonControlIdentifier);
+  [self scrollToElementAndAssertVisibility:identityButton];
+  [[EarlGrey selectElementWithMatcher:identityButton] performAction:grey_tap()];
 
   // Check that |fakeIdentity2| is displayed.
-  [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
-                                          fakeIdentity2.userEmail)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [self scrollToElementAndAssertVisibility:IdentityCellMatcherForEmail(
+                                               fakeIdentity2.userEmail)];
   // Check that 'Add Account' is displayed.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_ACCOUNT_IDENTITY_CHOOSER_ADD_ACCOUNT))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [self scrollToElementAndAssertVisibility:
+            grey_accessibilityLabel(l10n_util::GetNSString(
+                IDS_IOS_ACCOUNT_IDENTITY_CHOOSER_ADD_ACCOUNT))];
 
   // Select |fakeIdentity2|.
   [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
@@ -808,8 +806,7 @@ GREYLayoutConstraint* BelowConstraint() {
       performAction:grey_tap()];
 
   // Check that the title of the primary button updates for |fakeIdentity2|.
-  [[EarlGrey selectElementWithMatcher:GetYesImInButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [self scrollToElementAndAssertVisibility:GetYesImInButton()];
 }
 
 // Checks that the user is signed in and that sync is turned on after the user
@@ -904,8 +901,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that sync is turned on after the user chose to turn on
 // sync in the advanced sync settings screen.
-// TODO(crbug.com/1266372): Fix issue finding needed element.
-- (void)DISABLED_testCustomSyncOn {
+- (void)testCustomSyncOn {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -915,6 +911,7 @@ GREYLayoutConstraint* BelowConstraint() {
       performAction:grey_tap()];
 
   [self verifySignInSyncScreenIsDisplayed];
+  [self scrollToElementAndAssertVisibility:GetSyncSettings()];
   [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
       performAction:grey_tap()];
 
@@ -923,6 +920,8 @@ GREYLayoutConstraint* BelowConstraint() {
   GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
                   @"Sync shouldn't have finished its original setup yet");
 
+  [self scrollToElementAndAssertVisibility:
+            AdvancedSyncSettingsDoneButtonMatcher()];
   [[EarlGrey selectElementWithMatcher:AdvancedSyncSettingsDoneButtonMatcher()]
       performAction:grey_tap()];
 
@@ -930,6 +929,7 @@ GREYLayoutConstraint* BelowConstraint() {
   GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
                   @"Sync shouldn't start when discarding advanced settings.");
 
+  [self scrollToElementAndAssertVisibility:GetYesImInButton()];
   [[EarlGrey selectElementWithMatcher:GetYesImInButton()]
       performAction:grey_tap()];
 
