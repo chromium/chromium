@@ -180,10 +180,11 @@ void SecureChannel::OnMessageReceived(const Connection& connection,
     return;
   }
 
-  secure_context_->Decode(
+  secure_context_->DecodeAndDequeue(
       wire_message.payload(),
-      base::BindOnce(&SecureChannel::OnMessageDecoded,
-                     weak_ptr_factory_.GetWeakPtr(), wire_message.feature()));
+      base::BindRepeating(&SecureChannel::OnMessageDecoded,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          wire_message.feature()));
 }
 
 void SecureChannel::OnSendCompleted(const Connection& connection,

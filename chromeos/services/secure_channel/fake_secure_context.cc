@@ -34,12 +34,12 @@ SecureContext::ProtocolVersion FakeSecureContext::GetProtocolVersion() const {
 }
 
 void FakeSecureContext::Encode(const std::string& message,
-                               MessageCallback callback) {
+                               EncodeMessageCallback callback) {
   std::move(callback).Run(message + kFakeEncodingSuffix);
 }
 
-void FakeSecureContext::Decode(const std::string& encoded_message,
-                               MessageCallback callback) {
+void FakeSecureContext::DecodeAndDequeue(const std::string& encoded_message,
+                                         DecodeMessageCallback callback) {
   if (!EndsWith(encoded_message, kFakeEncodingSuffix,
                 base::CompareCase::SENSITIVE)) {
     std::move(callback).Run(std::string());

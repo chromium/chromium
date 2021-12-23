@@ -12,7 +12,6 @@
 #include "chromeos/components/multidevice/secure_message_delegate.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
-#include "third_party/ukey2/proto/device_to_device_messages.pb.h"
 
 namespace chromeos {
 
@@ -48,8 +47,9 @@ DeviceToDeviceSecureContext::DeviceToDeviceSecureContext(
 
 DeviceToDeviceSecureContext::~DeviceToDeviceSecureContext() {}
 
-void DeviceToDeviceSecureContext::Decode(const std::string& encoded_message,
-                                         MessageCallback callback) {
+void DeviceToDeviceSecureContext::DecodeAndDequeue(
+    const std::string& encoded_message,
+    DecodeMessageCallback callback) {
   multidevice::SecureMessageDelegate::UnwrapOptions unwrap_options;
   unwrap_options.encryption_scheme = securemessage::AES_256_CBC;
   unwrap_options.signature_scheme = securemessage::HMAC_SHA256;
@@ -61,7 +61,7 @@ void DeviceToDeviceSecureContext::Decode(const std::string& encoded_message,
 }
 
 void DeviceToDeviceSecureContext::Encode(const std::string& message,
-                                         MessageCallback callback) {
+                                         EncodeMessageCallback callback) {
   // Create a cryptauth::GcmMetadata field to put in the header.
   cryptauth::GcmMetadata gcm_metadata;
   gcm_metadata.set_type(cryptauth::DEVICE_TO_DEVICE_MESSAGE);
@@ -91,8 +91,22 @@ SecureContext::ProtocolVersion DeviceToDeviceSecureContext::GetProtocolVersion()
   return protocol_version_;
 }
 
+void DeviceToDeviceSecureContext::ProcessIncomingMessageQueue(
+    DeviceToDeviceSecureContext::DecodeMessageCallback callback) {
+  while (!incoming_message_queue_.empty() &&
+         incoming_message_queue_.top().sequence_number() ==
+             last_decode_sequence_number_ + 1) {
+    callback.Run(incoming_message_queue_.top().message());
+    PA_LOG(INFO) << "Queued incomming message sequence_number="
+                 << incoming_message_queue_.top().sequence_number()
+                 << " is processed.";
+    last_decode_sequence_number_++;
+    incoming_message_queue_.pop();
+  }
+}
+
 void DeviceToDeviceSecureContext::HandleUnwrapResult(
-    DeviceToDeviceSecureContext::MessageCallback callback,
+    DeviceToDeviceSecureContext::DecodeMessageCallback callback,
     bool verified,
     const std::string& payload,
     const securemessage::Header& header) {
@@ -107,10 +121,18 @@ void DeviceToDeviceSecureContext::HandleUnwrapResult(
   // Check that the sequence number matches the expected sequence number.
   if (device_to_device_message.sequence_number() !=
       last_decode_sequence_number_ + 1) {
-    PA_LOG(ERROR) << "Expected sequence_number="
-                  << last_decode_sequence_number_ + 1 << ", but got "
-                  << device_to_device_message.sequence_number();
-    std::move(callback).Run(std::string());
+    PA_LOG(WARNING) << "Expected sequence_number="
+                    << last_decode_sequence_number_ + 1 << ", but got "
+                    << device_to_device_message.sequence_number();
+    if (device_to_device_message.sequence_number() >
+        last_decode_sequence_number_ + 1) {
+      PA_LOG(INFO) << "Queue incoming message sequence_number="
+                   << device_to_device_message.sequence_number();
+      incoming_message_queue_.push(device_to_device_message);
+    } else {
+      PA_LOG(ERROR)
+          << "Drop incoming message due to incorrect sequence number.";
+    }
     return;
   }
 
@@ -125,7 +147,8 @@ void DeviceToDeviceSecureContext::HandleUnwrapResult(
   }
 
   last_decode_sequence_number_++;
-  std::move(callback).Run(device_to_device_message.message());
+  callback.Run(device_to_device_message.message());
+  ProcessIncomingMessageQueue(callback);
 }
 
 }  // namespace secure_channel

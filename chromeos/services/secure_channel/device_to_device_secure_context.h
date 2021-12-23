@@ -6,10 +6,13 @@
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_DEVICE_TO_DEVICE_SECURE_CONTEXT_H_
 
 #include <memory>
+#include <queue>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "chromeos/services/secure_channel/secure_context.h"
 #include "chromeos/services/secure_channel/session_keys.h"
+#include "third_party/ukey2/proto/device_to_device_messages.pb.h"
 
 namespace securemessage {
 class Header;
@@ -22,6 +25,14 @@ class SecureMessageDelegate;
 }  // namespace multidevice
 
 namespace secure_channel {
+
+struct MessageComparator {
+  // Prioritize messages with the lowest sequence number
+  bool operator()(securegcm::DeviceToDeviceMessage a,
+                  securegcm::DeviceToDeviceMessage b) {
+    return a.sequence_number() > b.sequence_number();
+  }
+};
 
 // SecureContext implementation for the DeviceToDevice protocol.
 class DeviceToDeviceSecureContext : public SecureContext {
@@ -40,9 +51,10 @@ class DeviceToDeviceSecureContext : public SecureContext {
   ~DeviceToDeviceSecureContext() override;
 
   // SecureContext:
-  void Decode(const std::string& encoded_message,
-              MessageCallback callback) override;
-  void Encode(const std::string& message, MessageCallback callback) override;
+  void DecodeAndDequeue(const std::string& encoded_message,
+                        DecodeMessageCallback callback) override;
+  void Encode(const std::string& message,
+              EncodeMessageCallback callback) override;
   ProtocolVersion GetProtocolVersion() const override;
   std::string GetChannelBindingData() const override;
 
@@ -50,10 +62,15 @@ class DeviceToDeviceSecureContext : public SecureContext {
   // Callback for unwrapping a secure message. |callback| will be invoked with
   // the decrypted payload if the message is unwrapped successfully; otherwise
   // it will be invoked with an empty string.
-  void HandleUnwrapResult(DeviceToDeviceSecureContext::MessageCallback callback,
-                          bool verified,
-                          const std::string& payload,
-                          const securemessage::Header& header);
+  void HandleUnwrapResult(
+      DeviceToDeviceSecureContext::DecodeMessageCallback callback,
+      bool verified,
+      const std::string& payload,
+      const securemessage::Header& header);
+
+  // Process the queued SecureMessages.
+  void ProcessIncomingMessageQueue(
+      DeviceToDeviceSecureContext::DecodeMessageCallback callback);
 
   // Delegate for handling the creation and unwrapping of SecureMessages.
   std::unique_ptr<multidevice::SecureMessageDelegate> secure_message_delegate_;
@@ -76,6 +93,12 @@ class DeviceToDeviceSecureContext : public SecureContext {
 
   // The last sequence number of the message received.
   int last_decode_sequence_number_;
+
+  // The priority queue for caching out of order DeviceToDeviceMessage
+  std::priority_queue<securegcm::DeviceToDeviceMessage,
+                      std::vector<securegcm::DeviceToDeviceMessage>,
+                      MessageComparator>
+      incoming_message_queue_;
 
   base::WeakPtrFactory<DeviceToDeviceSecureContext> weak_ptr_factory_{this};
 };

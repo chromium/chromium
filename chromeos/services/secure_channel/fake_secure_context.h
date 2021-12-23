@@ -28,9 +28,10 @@ class FakeSecureContext : public SecureContext {
   // SecureContext:
   ProtocolVersion GetProtocolVersion() const override;
   std::string GetChannelBindingData() const override;
-  void Encode(const std::string& message, MessageCallback callback) override;
-  void Decode(const std::string& encoded_message,
-              MessageCallback callback) override;
+  void Encode(const std::string& message,
+              EncodeMessageCallback callback) override;
+  void DecodeAndDequeue(const std::string& encoded_message,
+                        DecodeMessageCallback callback) override;
 
   void set_protocol_version(ProtocolVersion protocol_version) {
     protocol_version_ = protocol_version;

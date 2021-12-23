@@ -4,16 +4,17 @@
 
 #include "chromeos/services/secure_channel/device_to_device_secure_context.h"
 
+#include <list>
 #include <memory>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"
+#include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/services/secure_channel/session_keys.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
-
 namespace chromeos {
 
 namespace secure_channel {
@@ -26,8 +27,14 @@ const SecureContext::ProtocolVersion kProtocolVersion =
     SecureContext::PROTOCOL_VERSION_THREE_ONE;
 
 // Callback saving |result| to |result_out|.
-void SaveResult(std::string* result_out, const std::string& result) {
+void SaveResultEncode(std::string* result_out, const std::string& result) {
   *result_out = result;
+}
+
+// Callback saving |result| to |result_out|.
+void SaveResultDecode(std::list<std::string>* result_out_list,
+                      const std::string& result) {
+  result_out_list->push_back(std::move(result));
 }
 
 // The responder's secure context will have the encoding / decoding keys
@@ -72,7 +79,7 @@ TEST_F(SecureChannelDeviceToDeviceSecureContextTest, CheckEncodedHeader) {
   std::string message = "encrypt this message";
   std::string encoded_message;
   secure_context_.Encode(message,
-                         base::BindOnce(&SaveResult, &encoded_message));
+                         base::BindOnce(&SaveResultEncode, &encoded_message));
 
   securemessage::SecureMessage secure_message;
   ASSERT_TRUE(secure_message.ParseFromString(encoded_message));
@@ -89,10 +96,11 @@ TEST_F(SecureChannelDeviceToDeviceSecureContextTest, CheckEncodedHeader) {
 
 TEST_F(SecureChannelDeviceToDeviceSecureContextTest, DecodeInvalidMessage) {
   std::string encoded_message = "invalidly encoded message";
-  std::string decoded_message = "not empty";
-  secure_context_.Decode(encoded_message,
-                         base::BindOnce(&SaveResult, &decoded_message));
-  EXPECT_TRUE(decoded_message.empty());
+  std::list<std::string> decoded_messages;
+  secure_context_.DecodeAndDequeue(
+      encoded_message,
+      base::BindRepeating(&SaveResultDecode, &decoded_messages));
+  EXPECT_TRUE(decoded_messages.front().empty());
 }
 
 TEST_F(SecureChannelDeviceToDeviceSecureContextTest, EncodeAndDecode) {
@@ -113,13 +121,14 @@ TEST_F(SecureChannelDeviceToDeviceSecureContextTest, EncodeAndDecode) {
   for (int i = 0; i < 3; ++i) {
     std::string encoded_message;
     secure_context_.Encode(message,
-                           base::BindOnce(&SaveResult, &encoded_message));
+                           base::BindOnce(&SaveResultEncode, &encoded_message));
     EXPECT_NE(message, encoded_message);
 
-    std::string decoded_message;
-    secure_context2.Decode(encoded_message,
-                           base::BindOnce(&SaveResult, &decoded_message));
-    EXPECT_EQ(message, decoded_message);
+    std::list<std::string> decoded_messages;
+    secure_context2.DecodeAndDequeue(
+        encoded_message,
+        base::BindRepeating(&SaveResultDecode, &decoded_messages));
+    EXPECT_EQ(message, decoded_messages.front());
   }
 }
 
@@ -135,15 +144,139 @@ TEST_F(SecureChannelDeviceToDeviceSecureContextTest,
   std::string message = "encrypt this message";
   std::string encoded1;
   for (int i = 0; i < 3; ++i) {
-    secure_context_.Encode(message, base::BindOnce(&SaveResult, &encoded1));
+    secure_context_.Encode(message,
+                           base::BindOnce(&SaveResultEncode, &encoded1));
   }
 
   // Second secure channel should not decode the message with an invalid
   // sequence number.
-  std::string decoded_message = "not empty";
-  secure_context_.Decode(encoded1,
-                         base::BindOnce(&SaveResult, &decoded_message));
-  EXPECT_TRUE(decoded_message.empty());
+  std::list<std::string> decoded_messages;
+  secure_context2.DecodeAndDequeue(
+      encoded1, base::BindRepeating(&SaveResultDecode, &decoded_messages));
+  EXPECT_TRUE(decoded_messages.empty());
+}
+
+TEST_F(SecureChannelDeviceToDeviceSecureContextTest, DecodeOutOfOrderMessages) {
+  // Initialize second secure channel with the same parameters as the first.
+  DeviceToDeviceSecureContext secure_context2(
+      std::make_unique<multidevice::FakeSecureMessageDelegate>(),
+      InvertedSessionKeys(kSymmetricKey), kResponderAuthMessage,
+      kProtocolVersion);
+
+  // Send a few messages over the first secure context.
+  std::string message1 = "encrypt this message 1";
+  std::string encoded1;
+  std::string message2 = "encrypt this message 2";
+  std::string encoded2;
+  secure_context_.Encode(message1,
+                         base::BindOnce(&SaveResultEncode, &encoded1));
+  secure_context_.Encode(message2,
+                         base::BindOnce(&SaveResultEncode, &encoded2));
+
+  // Second secure channel should queue out of order message and trigger when
+  // old message is received.
+  std::list<std::string> decoded_messages;
+  secure_context2.DecodeAndDequeue(
+      encoded2, base::BindRepeating(&SaveResultDecode, &decoded_messages));
+  secure_context2.DecodeAndDequeue(
+      encoded1, base::BindRepeating(&SaveResultDecode, &decoded_messages));
+  EXPECT_EQ(message1, decoded_messages.front());
+  decoded_messages.pop_front();
+  EXPECT_EQ(message2, decoded_messages.front());
+}
+
+TEST_F(SecureChannelDeviceToDeviceSecureContextTest,
+       DecodeWithoutFirstMissingMessage) {
+  // Initialize second secure channel with the same parameters as the first.
+  DeviceToDeviceSecureContext secure_context2(
+      std::make_unique<multidevice::FakeSecureMessageDelegate>(),
+      InvertedSessionKeys(kSymmetricKey), kResponderAuthMessage,
+      kProtocolVersion);
+
+  // Send a few messages over the first secure context.
+  std::string message1 = "encrypt this message 1";
+  std::string encoded1;
+  std::string message2 = "encrypt this message 2";
+  std::string encoded2;
+  std::string message3 = "encrypt this message 3";
+  std::string encoded3;
+  secure_context_.Encode(message1,
+                         base::BindOnce(&SaveResultEncode, &encoded1));
+  secure_context_.Encode(message2,
+                         base::BindOnce(&SaveResultEncode, &encoded2));
+  secure_context_.Encode(message3,
+                         base::BindOnce(&SaveResultEncode, &encoded3));
+
+  // Second secure channel should not decode the message without first missing
+  // message is received
+  std::list<std::string> decoded_messages;
+  secure_context2.DecodeAndDequeue(
+      encoded2, base::BindRepeating(&SaveResultDecode, &decoded_messages));
+  secure_context2.DecodeAndDequeue(
+      encoded3, base::BindRepeating(&SaveResultDecode, &decoded_messages));
+  EXPECT_TRUE(decoded_messages.empty());
+  // Second secure channel should decode once first missing message is received
+  secure_context2.DecodeAndDequeue(
+      encoded1, base::BindRepeating(&SaveResultDecode, &decoded_messages));
+  EXPECT_EQ(message1, decoded_messages.front());
+  decoded_messages.pop_front();
+  EXPECT_EQ(message2, decoded_messages.front());
+  decoded_messages.pop_front();
+  EXPECT_EQ(message3, decoded_messages.front());
+}
+
+TEST_F(SecureChannelDeviceToDeviceSecureContextTest,
+       DecodeMultipleOutOfOrderMessages) {
+  // Initialize second secure channel with the same parameters as the first.
+  DeviceToDeviceSecureContext secure_context2(
+      std::make_unique<multidevice::FakeSecureMessageDelegate>(),
+      InvertedSessionKeys(kSymmetricKey), kResponderAuthMessage,
+      kProtocolVersion);
+
+  // Send a few messages over the first secure context.
+  std::string message1 = "encrypt this message 1";
+  std::string encoded1;
+  std::string message2 = "encrypt this message 2";
+  std::string encoded2;
+  std::string message3 = "encrypt this message 3";
+  std::string encoded3;
+  std::string message4 = "encrypt this message 4";
+  std::string encoded4;
+
+  secure_context_.Encode(message1,
+                         base::BindOnce(&SaveResultEncode, &encoded1));
+  secure_context_.Encode(message2,
+                         base::BindOnce(&SaveResultEncode, &encoded2));
+  secure_context_.Encode(message3,
+                         base::BindOnce(&SaveResultEncode, &encoded3));
+  secure_context_.Encode(message4,
+                         base::BindOnce(&SaveResultEncode, &encoded4));
+
+  // Second secure channel should not decode the messages with multiple out of
+  // order messages
+  std::list<std::string> decoded_messages;
+  secure_context2.DecodeAndDequeue(
+      encoded2, base::BindRepeating(&SaveResultDecode, &decoded_messages));
+  secure_context2.DecodeAndDequeue(
+      encoded4, base::BindRepeating(&SaveResultDecode, &decoded_messages));
+  EXPECT_TRUE(decoded_messages.empty());
+  // Second secure channel should decode the messages in order, the others
+  // should remain in queue.
+  secure_context2.DecodeAndDequeue(
+      encoded1, base::BindRepeating(&SaveResultDecode, &decoded_messages));
+  EXPECT_TRUE(decoded_messages.size() == 2);
+  EXPECT_EQ(message1, decoded_messages.front());
+  decoded_messages.pop_front();
+  EXPECT_EQ(message2, decoded_messages.front());
+  // Second secure channel should decode the rest of message when the remained
+  // messages are in order.
+  decoded_messages.clear();
+  secure_context2.DecodeAndDequeue(
+      encoded3, base::BindRepeating(&SaveResultDecode, &decoded_messages));
+  EXPECT_TRUE(decoded_messages.size() == 2);
+  EXPECT_EQ(message3, decoded_messages.front());
+  decoded_messages.pop_front();
+  EXPECT_EQ(message4, decoded_messages.front());
 }
 
 }  // namespace secure_channel
