@@ -295,32 +295,26 @@ bool CommandService::SetScope(const std::string& extension_id,
 
 Command CommandService::FindCommandByName(const std::string& extension_id,
                                           const std::string& command) const {
-  const base::DictionaryValue* bindings = &base::Value::AsDictionaryValue(
-      *profile_->GetPrefs()->GetDictionary(prefs::kExtensionCommands));
-  for (base::DictionaryValue::Iterator it(*bindings); !it.IsAtEnd();
-       it.Advance()) {
-    const base::DictionaryValue* item = NULL;
-    it.value().GetAsDictionary(&item);
-
-    std::string extension;
-    item->GetString(kExtension, &extension);
-    if (extension != extension_id)
+  const base::Value* bindings =
+      profile_->GetPrefs()->GetDictionary(prefs::kExtensionCommands);
+  for (const auto it : bindings->DictItems()) {
+    const std::string* extension = it.second.FindStringKey(kExtension);
+    if (!extension || *extension != extension_id)
       continue;
-    std::string command_name;
-    item->GetString(kCommandName, &command_name);
-    if (command != command_name)
+    const std::string* command_name = it.second.FindStringKey(kCommandName);
+    if (!command_name || *command_name != command)
       continue;
     // Format stored in Preferences is: "Platform:Shortcut[:ExtensionId]".
-    std::string shortcut = it.key();
+    std::string shortcut = it.first;
     if (!IsForCurrentPlatform(shortcut))
       continue;
-    absl::optional<bool> global = item->FindBoolKey(kGlobal);
+    absl::optional<bool> global = it.second.FindBoolKey(kGlobal);
 
     std::vector<base::StringPiece> tokens = base::SplitStringPiece(
         shortcut, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     CHECK(tokens.size() >= 2);
 
-    return Command(command_name, std::u16string(), std::string(tokens[1]),
+    return Command(*command_name, std::u16string(), std::string(tokens[1]),
                    global.value_or(false));
   }
 
