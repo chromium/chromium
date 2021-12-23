@@ -133,6 +133,8 @@ Status ExecuteAddVirtualAuthenticator(WebView* web_view,
         mapped_params.SetPath("options.hasLargeBlob", base::Value(true));
       } else if (extension_string == "credBlob") {
         mapped_params.SetPath("options.hasCredBlob", base::Value(true));
+      } else if (extension_string == "minPinLength") {
+        mapped_params.SetPath("options.minPinLength", base::Value(true));
       } else {
         return Status(kUnsupportedOperation,
                       extension_string + kUnrecognizedExtension);

@@ -359,6 +359,7 @@
     mojoOptions.hasUserVerification = options.hasUserVerification;
     mojoOptions.hasLargeBlob = options.extensions.indexOf("largeBlob") !== -1;
     mojoOptions.hasCredBlob = options.extensions.indexOf("credBlob") !== -1;
+    mojoOptions.hasMinPinLength = options.extensions.indexOf("minPinLength") !== -1;
     mojoOptions.isUserPresent = options.isUserConsenting;
 
     let authenticator = (await manager.createAuthenticator(mojoOptions)).authenticator;

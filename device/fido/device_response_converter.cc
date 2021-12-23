@@ -281,6 +281,8 @@ absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
         options.supports_cred_protect = true;
       } else if (extension_str == kExtensionCredBlob) {
         cred_blob_extension_seen = true;
+      } else if (extension_str == kExtensionMinPINLength) {
+        options.supports_min_pin_length_extension = true;
       }
       extensions.push_back(extension_str);
     }

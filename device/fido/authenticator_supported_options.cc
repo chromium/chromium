@@ -108,6 +108,10 @@ cbor::Value AsCBOR(const AuthenticatorSupportedOptions& options) {
     option_map.emplace(kMakeCredUvNotRqdKey, true);
   }
 
+  if (options.supports_min_pin_length_extension) {
+    option_map.emplace(kExtensionMinPINLength, true);
+  }
+
   return cbor::Value(std::move(option_map));
 }
 

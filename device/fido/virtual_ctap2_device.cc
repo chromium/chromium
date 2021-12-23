@@ -602,6 +602,10 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
     extensions.emplace_back(device::kExtensionLargeBlobKey);
   }
 
+  if (config.min_pin_length_extension_support) {
+    extensions.emplace_back(device::kExtensionMinPINLength);
+  }
+
   if (!extensions.empty()) {
     device_info_->extensions.emplace(std::move(extensions));
   }
@@ -1178,6 +1182,11 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   }
 
   if (request.min_pin_length_requested) {
+    if (!config_.min_pin_length_extension_support) {
+      DLOG(ERROR) << "Rejecting makeCredential due to unexpected minPinLength "
+                     "extension";
+      return CtapDeviceResponseCode::kCtap2ErrUnsupportedExtension;
+    }
     extensions_map.emplace(kExtensionMinPINLength,
                            static_cast<int>(mutable_state()->min_pin_length));
   }

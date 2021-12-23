@@ -4267,27 +4267,31 @@ TEST_F(AuthenticatorImplTest, CredBlob) {
 TEST_F(AuthenticatorImplTest, MinPINLength) {
   NavigateAndCommit(GURL(kTestOrigin1));
 
-  device::VirtualCtap2Device::Config config;
-  virtual_device_factory_->SetCtap2Config(config);
+  for (const bool min_pin_length_supported : {false, true}) {
+    device::VirtualCtap2Device::Config config;
+    config.min_pin_length_extension_support = min_pin_length_supported;
+    virtual_device_factory_->SetCtap2Config(config);
 
-  for (const bool min_pin_length_requested : {false, true}) {
-    PublicKeyCredentialCreationOptionsPtr options =
-        GetTestPublicKeyCredentialCreationOptions();
-    options->min_pin_length_requested = min_pin_length_requested;
-    auto result = AuthenticatorMakeCredential(std::move(options));
-    ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+    for (const bool min_pin_length_requested : {false, true}) {
+      PublicKeyCredentialCreationOptionsPtr options =
+          GetTestPublicKeyCredentialCreationOptions();
+      options->min_pin_length_requested = min_pin_length_requested;
+      auto result = AuthenticatorMakeCredential(std::move(options));
+      ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
 
-    const device::AuthenticatorData auth_data =
-        AuthDataFromMakeCredentialResponse(result.response);
-    bool has_min_pin_length = false;
-    if (auth_data.extensions().has_value()) {
-      const cbor::Value::MapValue& extensions =
-          auth_data.extensions()->GetMap();
-      const auto it =
-          extensions.find(cbor::Value(device::kExtensionMinPINLength));
-      has_min_pin_length = it != extensions.end() && it->second.is_unsigned();
+      const device::AuthenticatorData auth_data =
+          AuthDataFromMakeCredentialResponse(result.response);
+      bool has_min_pin_length = false;
+      if (auth_data.extensions().has_value()) {
+        const cbor::Value::MapValue& extensions =
+            auth_data.extensions()->GetMap();
+        const auto it =
+            extensions.find(cbor::Value(device::kExtensionMinPINLength));
+        has_min_pin_length = it != extensions.end() && it->second.is_unsigned();
+      }
+      ASSERT_EQ(has_min_pin_length,
+                min_pin_length_supported && min_pin_length_requested);
     }
-    ASSERT_EQ(has_min_pin_length, min_pin_length_requested);
   }
 }
 

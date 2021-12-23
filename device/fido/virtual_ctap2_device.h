@@ -73,6 +73,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     bool large_blob_support = false;
     // Support for setting a min PIN length and forcing pin change.
     bool min_pin_length_support = false;
+    // min_pin_length_extension_support, if true, enables support for the
+    // minPinLength extension. See
+    // https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension
+    bool min_pin_length_extension_support = false;
     bool always_uv = false;
     // The space available to store a large blob. In real authenticators this
     // may change depending on the number of resident credentials. We treat this

@@ -1013,6 +1013,11 @@ void MakeCredentialRequestHandler::SpecializeRequestForAuthenticator(
     request->large_blob_key = false;
   }
 
+  if (request->min_pin_length_requested &&
+      !auth_options->supports_min_pin_length_extension) {
+    request->min_pin_length_requested = false;
+  }
+
   if (!authenticator->SupportsEnterpriseAttestation()) {
     switch (request->attestation_preference) {
       case AttestationConveyancePreference::kEnterpriseApprovedByBrowser:

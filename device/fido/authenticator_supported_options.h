@@ -103,6 +103,9 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSupportedOptions {
   // If true, indicates that the authenticator permits creation of non-resident
   // credentials without UV.
   bool make_cred_uv_not_required = false;
+  // If true, indicates that the authenticator supports the minPinLength
+  // extension.
+  bool supports_min_pin_length_extension = false;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)
