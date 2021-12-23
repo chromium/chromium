@@ -30,7 +30,7 @@ class Profile;
 
 namespace base {
 class CommandLine;
-class DictionaryValue;
+class Value;
 }  // namespace base
 
 namespace content {
@@ -183,9 +183,8 @@ class BackgroundContentsService
 
   // Load a BackgroundContent; the settings are read from the provided
   // dictionary.
-  void LoadBackgroundContentsFromDictionary(
-      const std::string& extension_id,
-      const base::DictionaryValue* contents);
+  void LoadBackgroundContentsFromDictionary(const std::string& extension_id,
+                                            const base::Value* contents);
 
   // Load the manifest-specified BackgroundContents for all apps for the
   // profile.
