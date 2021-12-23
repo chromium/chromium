@@ -31,6 +31,16 @@
 
 namespace policy {
 
+namespace {
+
+std::string GetString(const base::Value& dict, base::StringPiece key) {
+  DCHECK(dict.is_dict());
+  const std::string* value = dict.FindStringKey(key);
+  return value ? *value : std::string();
+}
+
+}  // namespace
+
 DeviceCloudPolicyInitializer::DeviceCloudPolicyInitializer(
     PrefService* local_state,
     DeviceManagementService* enterprise_service,
@@ -137,20 +147,20 @@ EnrollmentConfig DeviceCloudPolicyInitializer::GetPrescribedEnrollmentConfig()
   // signal present that indicates the device should enroll.
 
   // Gather enrollment signals from various sources.
-  const base::DictionaryValue* device_state = &base::Value::AsDictionaryValue(
-      *local_state_->GetDictionary(prefs::kServerBackedDeviceState));
+  const base::Value* device_state =
+      local_state_->GetDictionary(prefs::kServerBackedDeviceState);
   std::string device_state_mode;
   std::string device_state_management_domain;
   absl::optional<bool> is_license_packaged_with_device;
   std::string license_type;
 
   if (device_state) {
-    device_state->GetString(kDeviceStateMode, &device_state_mode);
-    device_state->GetString(kDeviceStateManagementDomain,
-                            &device_state_management_domain);
+    device_state_mode = GetString(*device_state, kDeviceStateMode);
+    device_state_management_domain =
+        GetString(*device_state, kDeviceStateManagementDomain);
     is_license_packaged_with_device =
         device_state->FindBoolPath(kDeviceStatePackagedLicense);
-    device_state->GetString(kDeviceStateLicenseType, &license_type);
+    license_type = GetString(*device_state, kDeviceStateLicenseType);
   }
 
   if (is_license_packaged_with_device) {
