@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
 #include "content/public/common/page_visibility_state.h"
@@ -86,6 +87,11 @@ class CONTENT_EXPORT PageLifecycleStateManager {
 
   void SetDelegateForTesting(TestDelegate* test_delegate_);
 
+  // TODO(https://crbug.com/1234634): Remove this.
+  absl::optional<base::Time> persisted_pageshow_timestamp_bug_1234634() {
+    return persisted_pageshow_timestamp_bug_1234634_;
+  }
+
  private:
   // Send mojo message to renderer if the effective (page) lifecycle state has
   // changed.
@@ -135,6 +141,12 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   base::OneShotTimer back_forward_cache_timeout_monitor_;
 
   raw_ptr<TestDelegate> test_delegate_{nullptr};
+
+  // TODO(https://crbug.com/1234634): Remove this.
+  // We set this when we send an updated state that should result in a pageshow
+  // with persisted=true. It may be set multiple times.
+  absl::optional<base::Time> persisted_pageshow_timestamp_bug_1234634_;
+
   // NOTE: This must be the last member.
   base::WeakPtrFactory<PageLifecycleStateManager> weak_ptr_factory_{this};
 };
