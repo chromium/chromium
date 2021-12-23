@@ -216,14 +216,8 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
         // Reference these strings to avoid an error about them being unused.
         // They're checked in for translation ahead of the code that uses them.
         // TODO(agl): remove this.
-        getResources().getString(R.string.cablev2_linked_devices);
-        getResources().getString(R.string.cablev2_linked_devices_body);
         getResources().getString(R.string.cablev2_paask_body);
         getResources().getString(R.string.cablev2_paask_title);
-        getResources().getString(R.string.cablev2_unlink_button);
-        getResources().getString(R.string.cablev2_unlink_confirmation);
-        getResources().getString(R.string.cablev2_your_devices);
-        getResources().getString(R.string.cablev2_your_devices_body);
     }
 
     // This class should not be reachable on Android versions < N (API level 24).

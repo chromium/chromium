@@ -5,7 +5,10 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/webauthn/CableAuthenticatorModuleProvider.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/webauthn/CableAuthenticatorModuleProvider.java",
+    "java/src/org/chromium/chrome/browser/webauthn/PrivacySettingsFragment.java",
+  ]
   deps = [
     ":java_resources",
     ":jni_headers",
@@ -16,13 +19,17 @@ android_library("java") {
     "//components/browser_ui/notifications/android:java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.webauthn"
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/webauthn/CableAuthenticatorModuleProvider.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/webauthn/CableAuthenticatorModuleProvider.java",
+    "java/src/org/chromium/chrome/browser/webauthn/PrivacySettingsFragment.java",
+  ]
 }
 
 android_resources("java_resources") {
@@ -52,6 +59,7 @@ android_resources("java_resources") {
     "java/res/layout-sw600dp/cablev2_error.xml",
     "java/res/layout-sw600dp/cablev2_spinner.xml",
     "java/res/layout/cablev2_error.xml",
+    "java/res/layout/cablev2_settings.xml",
     "java/res/layout/cablev2_spinner.xml",
   ]
   deps = [ "//chrome/android:chrome_app_java_resources" ]
