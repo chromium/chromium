@@ -270,14 +270,7 @@ int HostResolver::SquashErrorCode(int error) {
 std::vector<HostResolverEndpointResult>
 HostResolver::AddressListToEndpointResults(const AddressList& address_list) {
   HostResolverEndpointResult connection_endpoint;
-
   connection_endpoint.ip_endpoints = address_list.endpoints();
-
-  // AddressList always assumes a single alias name. Not completely accurate to
-  // assume it is valid for both address families, but only as inaccurate as
-  // AddressList has always been.
-  connection_endpoint.ipv4_alias_name = address_list.GetCanonicalName();
-  connection_endpoint.ipv6_alias_name = address_list.GetCanonicalName();
 
   std::vector<HostResolverEndpointResult> list;
   list.push_back(std::move(connection_endpoint));

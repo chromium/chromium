@@ -5,7 +5,6 @@
 #include "net/dns/host_resolver_results_test_util.h"
 
 #include <ostream>
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -24,12 +23,8 @@ class EndpointResultMatcher
  public:
   EndpointResultMatcher(
       testing::Matcher<std::vector<IPEndPoint>> ip_endpoints_matcher,
-      testing::Matcher<std::string> ipv4_alias_name_matcher,
-      testing::Matcher<std::string> ipv6_alias_name_matcher,
       testing::Matcher<const ConnectionEndpointMetadata&> metadata_matcher)
       : ip_endpoints_matcher_(std::move(ip_endpoints_matcher)),
-        ipv4_alias_name_matcher_(std::move(ipv4_alias_name_matcher)),
-        ipv6_alias_name_matcher_(std::move(ipv6_alias_name_matcher)),
         metadata_matcher_(std::move(metadata_matcher)) {}
 
   ~EndpointResultMatcher() override = default;
@@ -46,16 +41,6 @@ class EndpointResultMatcher
                testing::Field("ip_endpoints",
                               &HostResolverEndpointResult::ip_endpoints,
                               ip_endpoints_matcher_),
-               endpoint, result_listener) &&
-           ExplainMatchResult(
-               testing::Field("ipv4_alias_name",
-                              &HostResolverEndpointResult::ipv4_alias_name,
-                              ipv4_alias_name_matcher_),
-               endpoint, result_listener) &&
-           ExplainMatchResult(
-               testing::Field("ipv6_alias_name",
-                              &HostResolverEndpointResult::ipv6_alias_name,
-                              ipv6_alias_name_matcher_),
                endpoint, result_listener) &&
            ExplainMatchResult(
                testing::Field("metadata", &HostResolverEndpointResult::metadata,
@@ -76,16 +61,11 @@ class EndpointResultMatcher
  private:
   void Describe(std::ostream& os) const {
     os << "HostResolverEndpointResult {\nip_endpoints: "
-       << testing::PrintToString(ip_endpoints_matcher_) << "\nipv4_alias_name: "
-       << testing::PrintToString(ipv4_alias_name_matcher_)
-       << "\nipv6_alias_name: "
-       << testing::PrintToString(ipv6_alias_name_matcher_)
+       << testing::PrintToString(ip_endpoints_matcher_)
        << "\nmetadata: " << testing::PrintToString(metadata_matcher_) << "\n}";
   }
 
   testing::Matcher<std::vector<IPEndPoint>> ip_endpoints_matcher_;
-  testing::Matcher<std::string> ipv4_alias_name_matcher_;
-  testing::Matcher<std::string> ipv6_alias_name_matcher_;
   testing::Matcher<const ConnectionEndpointMetadata&> metadata_matcher_;
 };
 
@@ -93,20 +73,15 @@ class EndpointResultMatcher
 
 testing::Matcher<const HostResolverEndpointResult&> ExpectEndpointResult(
     testing::Matcher<std::vector<IPEndPoint>> ip_endpoints_matcher,
-    testing::Matcher<std::string> ipv4_alias_name_matcher,
-    testing::Matcher<std::string> ipv6_alias_name_matcher,
     testing::Matcher<const ConnectionEndpointMetadata&> metadata_matcher) {
   return testing::MakeMatcher(new EndpointResultMatcher(
-      std::move(ip_endpoints_matcher), std::move(ipv4_alias_name_matcher),
-      std::move(ipv6_alias_name_matcher), std::move(metadata_matcher)));
+      std::move(ip_endpoints_matcher), std::move(metadata_matcher)));
 }
 
 std::ostream& operator<<(std::ostream& os,
                          const HostResolverEndpointResult& endpoint_result) {
   return os << "HostResolverEndpointResult {\nip_endpoints: "
             << testing::PrintToString(endpoint_result.ip_endpoints)
-            << "\nipv4_alias_name: " << endpoint_result.ipv4_alias_name
-            << "\nipv6_alias_name: " << endpoint_result.ipv6_alias_name
             << "\nmetadata: "
             << testing::PrintToString(endpoint_result.metadata) << "\n}";
 }

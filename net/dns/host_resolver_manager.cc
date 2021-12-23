@@ -761,7 +761,24 @@ class HostResolverManager::RequestImpl
   const absl::optional<std::vector<std::string>>& GetDnsAliasResults()
       const override {
     DCHECK(complete_);
-    return sanitized_dns_alias_results_;
+
+    // If `include_canonical_name` param was true, should only ever have at most
+    // a single alias, representing the expected "canonical name".
+#if DCHECK_IS_ON()
+    if (parameters().include_canonical_name && fixed_up_dns_alias_results_) {
+      DCHECK_LE(fixed_up_dns_alias_results_->size(), 1u);
+      if (GetAddressResults()) {
+        DCHECK(GetAddressResults()->dns_aliases() ==
+               fixed_up_dns_alias_results_.value());
+        DCHECK_EQ(GetAddressResults()->GetCanonicalName(),
+                  fixed_up_dns_alias_results_->empty()
+                      ? ""
+                      : fixed_up_dns_alias_results_->front());
+      }
+    }
+#endif  // DCHECK_IS_ON()
+
+    return fixed_up_dns_alias_results_;
   }
 
   const absl::optional<std::vector<bool>>& GetExperimentalResultsForTesting()
@@ -874,16 +891,24 @@ class HostResolverManager::RequestImpl
 
   bool complete() const { return complete_; }
 
-  void SanitizeDnsAliasResults() {
+  void FixupDnsAliasResults() {
     // If there are no address results, if there are no aliases, or if there
-    // are already sanitized alias results, there is nothing to do.
+    // are already fixed up alias results, there is nothing to do.
     if (!results_ || !results_.value().addresses() ||
         results_.value().addresses()->dns_aliases().empty() ||
-        sanitized_dns_alias_results_) {
+        fixed_up_dns_alias_results_) {
       return;
     }
 
-    sanitized_dns_alias_results_ = dns_alias_utility::SanitizeDnsAliases(
+    // Skip fixups for `include_canonical_name` requests. Just use the
+    // canonical name exactly as it was received from the system resolver.
+    if (parameters().include_canonical_name) {
+      DCHECK_LE(results_.value().addresses()->dns_aliases().size(), 1u);
+      fixed_up_dns_alias_results_ = results_.value().addresses()->dns_aliases();
+      return;
+    }
+
+    fixed_up_dns_alias_results_ = dns_alias_utility::SanitizeDnsAliases(
         results_.value().addresses()->dns_aliases());
   }
 
@@ -954,7 +979,7 @@ class HostResolverManager::RequestImpl
   bool complete_;
   absl::optional<HostCache::Entry> results_;
   absl::optional<HostCache::EntryStaleness> stale_info_;
-  absl::optional<std::vector<std::string>> sanitized_dns_alias_results_;
+  absl::optional<std::vector<std::string>> fixed_up_dns_alias_results_;
   ResolveErrorInfo error_info_;
 
   const raw_ptr<const base::TickClock> tick_clock_;
@@ -2791,9 +2816,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
             results.CopyWithDefaultPort(GetPort(req->request_host())));
 
         // TODO(cammie): Move the sanitization deeper, possibly in
-        // HttpCache::Entry::SetResult(AddressList addresses), so that it
+        // HostCache::Entry::SetResult(AddressList addresses), so that it
         // doesn't happen on a per-request basis.
-        req->SanitizeDnsAliasResults();
+        req->FixupDnsAliasResults();
       }
       req->OnJobCompleted(
           this, results.error(),
@@ -3223,7 +3248,7 @@ int HostResolverManager::Resolve(RequestImpl* request) {
           results.CopyWithDefaultPort(GetPort(request->request_host())));
 
       // TODO(cammie): Sanitize before adding to the cache instead.
-      request->SanitizeDnsAliasResults();
+      request->FixupDnsAliasResults();
     }
     if (stale_info && !request->parameters().is_speculative)
       request->set_stale_info(std::move(stale_info).value());
@@ -3767,6 +3792,12 @@ void HostResolverManager::CreateTaskSequence(
     case HostResolverSource::LOCAL_ONLY:
       // If no external source allowed, a job should not be created or started
       break;
+  }
+
+  // `HOST_RESOLVER_CANONNAME` is only supported through system resolution.
+  if (job_key.flags & HOST_RESOLVER_CANONNAME) {
+    DCHECK(base::ranges::find(*out_tasks, TaskType::DNS) == out_tasks->end());
+    DCHECK(base::ranges::find(*out_tasks, TaskType::MDNS) == out_tasks->end());
   }
 }
 

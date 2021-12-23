@@ -6,7 +6,6 @@
 #define NET_DNS_HOST_RESOLVER_RESULTS_TEST_UTIL_H_
 
 #include <ostream>
-#include <string>
 #include <vector>
 
 #include "net/base/connection_endpoint_metadata_test_util.h"
@@ -22,8 +21,6 @@ struct HostResolverEndpointResult;
 testing::Matcher<const HostResolverEndpointResult&> ExpectEndpointResult(
     testing::Matcher<std::vector<IPEndPoint>> ip_endpoints_matcher =
         testing::IsEmpty(),
-    testing::Matcher<std::string> ipv4_alias_name_matcher = testing::_,
-    testing::Matcher<std::string> ipv6_alias_name_matcher = testing::_,
     testing::Matcher<const ConnectionEndpointMetadata&> metadata_matcher =
         ExpectConnectionEndpointMetadata());
 

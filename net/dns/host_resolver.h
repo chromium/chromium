@@ -116,9 +116,15 @@ class NET_EXPORT HostResolver {
     // canonical name (i.e. address record name) through to query name. Should
     // only be called after Start() signals completion, either by invoking the
     // callback or by returning a result other than `ERR_IO_PENDING`. Returns a
-    // list of aliases that has been sanitized and canonicalized (as URL
+    // list of aliases that has been fixed up and canonicalized (as URL
     // hostnames), and thus may differ from the results stored directly in the
     // AddressList.
+    //
+    // If `ResolveHostParameters::include_canonical_name` was true, alias
+    // results will always be the single "canonical name" received from the
+    // system resolver without URL hostname canonicalization (or an empty vector
+    // or `nullopt` in the unusual case that the system resolver did not give a
+    // canonical name).
     virtual const absl::optional<std::vector<std::string>>& GetDnsAliasResults()
         const = 0;
 
@@ -257,10 +263,18 @@ class NET_EXPORT HostResolver {
     };
     CacheUsage cache_usage = CacheUsage::ALLOWED;
 
-    // If |true|, requests that the resolver include AddressList::canonical_name
-    // in the results. If the resolver can do so without significant
-    // performance impact, canonical_name may still be included even if
-    // parameter is set to |false|.
+    // If |true|, requests special behavior that the "canonical name" be
+    // requested from the system and be returned as the only entry in
+    // `ResolveHostRequest::GetDnsAliasResults()` results. Setting this
+    // parameter is disallowed for any requests that cannot be resolved using
+    // the system resolver, e.g. non-address requests or requests specifying a
+    // non-`SYSTEM` `source`.
+    //
+    // TODO(crbug.com/1282281): Consider allowing the built-in resolver to still
+    // be used with this parameter. Would then function as a request to just
+    // keep the single final name from the alias chain instead of all aliases,
+    // and also skip the canonicalization unless that canonicalization is found
+    // to be fine for usage.
     bool include_canonical_name = false;
 
     // Hint to the resolver that resolution is only being requested for loopback
