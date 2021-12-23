@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.password_manager;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import com.google.android.gms.common.api.ApiException;
@@ -76,9 +75,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         // Ensure the backend is called with a valid success callback.
         mBackendBridge.getAllLogins(kTestTaskId, PasswordStoreOperationTarget.DEFAULT);
         ArgumentCaptor<Callback<byte[]>> successCallback = ArgumentCaptor.forClass(Callback.class);
-        verify(mBackendMock)
-                .getAllLogins(
-                        eq(PasswordStoreOperationTarget.DEFAULT), successCallback.capture(), any());
+        verify(mBackendMock).getAllLogins(successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
         byte[] kExpectedList = sTestLogins.build().toByteArray();
@@ -95,9 +92,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         mBackendBridge.getAllLogins(kTestTaskId, PasswordStoreOperationTarget.DEFAULT);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
-        verify(mBackendMock)
-                .getAllLogins(
-                        eq(PasswordStoreOperationTarget.DEFAULT), any(), failureCallback.capture());
+        verify(mBackendMock).getAllLogins(any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
         Exception kExpectedException = new Exception("Sample failure");
@@ -112,12 +107,10 @@ public class PasswordStoreAndroidBackendBridgeTest {
         final int kTestTaskId = 42069;
 
         // Ensure the backend is called with a valid failure callback.
-        mBackendBridge.getAllLogins(kTestTaskId, PasswordStoreOperationTarget.LOCAL_STORAGE);
+        mBackendBridge.getAllLogins(kTestTaskId, PasswordStoreOperationTarget.DEFAULT);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
-        verify(mBackendMock)
-                .getAllLogins(eq(PasswordStoreOperationTarget.LOCAL_STORAGE), any(),
-                        failureCallback.capture());
+        verify(mBackendMock).getAllLogins(any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
         Exception kExpectedException = new PasswordStoreAndroidBackend.BackendException(
@@ -135,9 +128,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         mBackendBridge.getAllLogins(kTestTaskId, PasswordStoreOperationTarget.DEFAULT);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
-        verify(mBackendMock)
-                .getAllLogins(
-                        eq(PasswordStoreOperationTarget.DEFAULT), any(), failureCallback.capture());
+        verify(mBackendMock).getAllLogins(any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
         Exception kExpectedException =
@@ -291,11 +282,9 @@ public class PasswordStoreAndroidBackendBridgeTest {
         // Ensure the backend is called with a valid success callback.
         byte[] pwdSpecificsData = sTestProfile.build().toByteArray();
         mBackendBridge.removeLogin(
-                kTestTaskId, pwdSpecificsData, PasswordStoreOperationTarget.SYNCING_STORAGE);
+                kTestTaskId, pwdSpecificsData, PasswordStoreOperationTarget.DEFAULT);
         ArgumentCaptor<Runnable> successCallback = ArgumentCaptor.forClass(Runnable.class);
-        verify(mBackendMock)
-                .removeLogin(any(), eq(PasswordStoreOperationTarget.SYNCING_STORAGE),
-                        successCallback.capture(), any());
+        verify(mBackendMock).removeLogin(any(), successCallback.capture(), any());
         assertNotNull(successCallback.getValue());
 
         successCallback.getValue().run();
@@ -312,9 +301,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
                 kTestTaskId, pwdSpecificsData, PasswordStoreOperationTarget.DEFAULT);
         ArgumentCaptor<Callback<Exception>> failureCallback =
                 ArgumentCaptor.forClass(Callback.class);
-        verify(mBackendMock)
-                .removeLogin(any(), eq(PasswordStoreOperationTarget.DEFAULT), any(),
-                        failureCallback.capture());
+        verify(mBackendMock).removeLogin(any(), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
         Exception kExpectedException = new Exception("Sample failure");
