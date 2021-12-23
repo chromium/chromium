@@ -24,35 +24,34 @@ namespace {
 
 // LogAllConnectionResult() Cellular histograms.
 const char kCellularConnectResultAllHistogram[] =
-    "Network.Ash.Cellular.ConnectionResult.All";
+    "Network.Cellular.ConnectionResult.All";
 const char kCellularESimConnectResultAllHistogram[] =
-    "Network.Ash.Cellular.ESim.ConnectionResult.All";
+    "Network.Cellular.ESim.ConnectionResult.All";
 const char kCellularPSimConnectResultAllHistogram[] =
-    "Network.Ash.Cellular.PSim.ConnectionResult.All";
+    "Network.Cellular.PSim.ConnectionResult.All";
 
 // LogAllConnectionResult() VPN histograms.
-const char kVpnConnectResultAllHistogram[] =
-    "Network.Ash.VPN.ConnectionResult.All";
+const char kVpnConnectResultAllHistogram[] = "Network.VPN.ConnectionResult.All";
 const char kVpnBuiltInConnectResultAllHistogram[] =
-    "Network.Ash.VPN.TypeBuiltIn.ConnectionResult.All";
+    "Network.VPN.TypeBuiltIn.ConnectionResult.All";
 const char kVpnThirdPartyConnectResultAllHistogram[] =
-    "Network.Ash.VPN.TypeThirdParty.ConnectionResult.All";
+    "Network.VPN.TypeThirdParty.ConnectionResult.All";
 
 // LogAllConnectionResult() WiFi histograms.
 const char kWifiConnectResultAllHistogram[] =
-    "Network.Ash.WiFi.ConnectionResult.All";
+    "Network.WiFi.ConnectionResult.All";
 const char kWifiOpenConnectResultAllHistogram[] =
-    "Network.Ash.WiFi.SecurityOpen.ConnectionResult.All";
+    "Network.WiFi.SecurityOpen.ConnectionResult.All";
 const char kWifiPasswordProtectedConnectResultAllHistogram[] =
-    "Network.Ash.WiFi.SecurityPasswordProtected.ConnectionResult.All";
+    "Network.WiFi.SecurityPasswordProtected.ConnectionResult.All";
 
 // LogAllConnectionResult() Ethernet histograms.
 const char kEthernetConnectResultAllHistogram[] =
-    "Network.Ash.Ethernet.ConnectionResult.All";
+    "Network.Ethernet.ConnectionResult.All";
 const char kEthernetEapConnectResultAllHistogram[] =
-    "Network.Ash.Ethernet.Eap.ConnectionResult.All";
+    "Network.Ethernet.Eap.ConnectionResult.All";
 const char kEthernetNoEapConnectResultAllHistogram[] =
-    "Network.Ash.Ethernet.NoEap.ConnectionResult.All";
+    "Network.Ethernet.NoEap.ConnectionResult.All";
 
 const char kTestGuid[] = "test_guid";
 const char kTestServicePath[] = "/service/network";
@@ -251,16 +250,8 @@ TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultEthernetEap) {
 
   device_test->SetDeviceProperty(kTestDevicePath,
                                  shill::kEapAuthenticationCompletedProperty,
-                                 base::Value(true), /*notify_changed=*/false);
+                                 base::Value(true), /*notify_changed=*/true);
   base::RunLoop().RunUntilIdle();
-
-  // Setting up the Ethernet Eap connection in tests may cause metrics to be
-  // logged automatically by ConnectionInfoMetricsLogger.
-  histogram_tester_.reset(new base::HistogramTester());
-  histogram_tester_->ExpectTotalCount(kEthernetConnectResultAllHistogram, 0);
-  histogram_tester_->ExpectTotalCount(kEthernetEapConnectResultAllHistogram, 0);
-  histogram_tester_->ExpectTotalCount(kEthernetNoEapConnectResultAllHistogram,
-                                      0);
 
   NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
                                                shill::kErrorNotRegistered);

@@ -16,14 +16,12 @@ namespace chromeos {
 
 namespace {
 
-const char kNetworkMetricsPrefix[] = "Network.Ash.";
+const char kNetworkMetricsPrefix[] = "Network.";
 const char kAllConnectionResultSuffix[] = ".ConnectionResult.All";
 
 const char kWifi[] = "WiFi";
 const char kWifiOpen[] = "WiFi.SecurityOpen";
 const char kWifiPasswordProtected[] = "WiFi.SecurityPasswordProtected";
-
-const char kTether[] = "Tether";
 
 chromeos::NetworkStateHandler* GetNetworkStateHandler() {
   return NetworkHandler::Get()->network_state_handler();
@@ -77,7 +75,8 @@ const std::vector<std::string> GetWifiNetworkTypeHistograms(
 
 const std::vector<std::string> GetTetherNetworkTypeHistograms(
     const NetworkState* network_state) {
-  return {kTether};
+  // TODO(b/207589664): Determine histogram variant names for Tether.
+  return {};
 }
 
 const std::vector<std::string> GetVpnNetworkTypeHistograms(

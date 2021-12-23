@@ -24,7 +24,6 @@ class CellularInhibitor;
 class CellularMetricsLogger;
 class CellularPolicyHandler;
 class ClientCertResolver;
-class ConnectionInfoMetricsLogger;
 class ESimPolicyLoginMetricsLogger;
 class GeolocationHandler;
 class ManagedNetworkConfigurationHandler;
@@ -112,8 +111,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   ProhibitedTechnologiesHandler* prohibited_technologies_handler();
 
  private:
-  friend class ConnectionInfoMetricsLoggerTest;
-
   NetworkHandler();
   virtual ~NetworkHandler();
 
@@ -138,7 +135,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
       cellular_esim_uninstall_handler_;
   std::unique_ptr<CellularPolicyHandler> cellular_policy_handler_;
   std::unique_ptr<CellularMetricsLogger> cellular_metrics_logger_;
-  std::unique_ptr<ConnectionInfoMetricsLogger> connection_info_metrics_logger_;
   std::unique_ptr<ESimPolicyLoginMetricsLogger>
       esim_policy_login_metrics_logger_;
   std::unique_ptr<VpnNetworkMetricsHelper> vpn_network_metrics_helper_;
