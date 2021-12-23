@@ -253,12 +253,12 @@ int CreateFirstRunSecondTrial(
     case version_info::Channel::CANARY:
     case version_info::Channel::DEV:
     case version_info::Channel::BETA:
-      new_fre_with_top_position_old_strings_set_percent = 0;
-      new_fre_with_top_position_new_strings_set_percent = 0;
-      new_fre_with_bottom_position_old_strings_set_percent = 0;
-      new_fre_with_bottom_position_new_strings_set_percent = 0;
-      new_fre_disabled_percent = 0;
-      new_fre_default_percent = 100;
+      new_fre_with_top_position_old_strings_set_percent = 20;
+      new_fre_with_top_position_new_strings_set_percent = 20;
+      new_fre_with_bottom_position_old_strings_set_percent = 20;
+      new_fre_with_bottom_position_new_strings_set_percent = 20;
+      new_fre_disabled_percent = 20;
+      new_fre_default_percent = 0;
       break;
     case version_info::Channel::STABLE:
       new_fre_with_top_position_old_strings_set_percent = 0;
@@ -342,9 +342,16 @@ void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
     // Experience yet.
     return;
   }
-  // Create trial and group user for the first time, or tag users again to
-  // ensure the experiment can be used to filter UMA metrics.
-  if (!base::FieldTrialList::TrialExists(kFRESecondUITrialName)) {
+  // Don't create the trial if it was already created for testing. This is only
+  // expected when the browser is used for development purpose. The trial
+  // created when the about flag is set will have the same name as the feature.
+  // This condition is to avoid having multiple trials overriding the same
+  // feature. A trial might have also been created with the commandline
+  // arugments.
+  if (!base::FieldTrialList::TrialExists(kFRESecondUITrialName) &&
+      !base::FieldTrialList::TrialExists(kEnableFREUIModuleIOS.name)) {
+    // Create trial and group user for the first time, or tag users again to
+    // ensure the experiment can be used to filter UMA metrics.
     trial_group = CreateFirstRunSecondTrial(low_entropy_provider, feature_list);
   }
   // Persist the assigned group for subsequent runs.
