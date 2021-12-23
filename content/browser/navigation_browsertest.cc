@@ -5645,8 +5645,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(final_url, web_contents->GetLastCommittedURL());
 }
 
+// TODO(crbug.com/1233836): Test is flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_BeginNewNavigationAfterCommitNavigationInSubFrame \
+  DISABLED_BeginNewNavigationAfterCommitNavigationInSubFrame
+#else
+#define MAYBE_BeginNewNavigationAfterCommitNavigationInSubFrame \
+  BeginNewNavigationAfterCommitNavigationInSubFrame
+#endif
+
 IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
-                       BeginNewNavigationAfterCommitNavigationInSubFrame) {
+                       MAYBE_BeginNewNavigationAfterCommitNavigationInSubFrame) {
   if (!AreAllSitesIsolatedForTesting())
     return;
 
