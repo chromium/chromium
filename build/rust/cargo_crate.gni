@@ -212,6 +212,10 @@ template("cargo_crate") {
           outputs += [ "$target_out_dir/$generated_file" ]
         }
       }
+      if (defined(invoker.rustenv)) {
+        args += [ "--env" ]
+        args += invoker.rustenv
+      }
       if (defined(invoker.build_script_inputs)) {
         inputs += invoker.build_script_inputs
       }

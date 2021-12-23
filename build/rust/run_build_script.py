@@ -75,6 +75,7 @@ def main():
                       help='where to write output rustc flags')
   parser.add_argument('--target', help='rust target triple')
   parser.add_argument('--features', help='features', nargs='+')
+  parser.add_argument('--env', help='environment variable', nargs='+')
   parser.add_argument('--rust-prefix', required=True, help='rust path prefix')
   parser.add_argument('--generated-files', nargs='+', help='any generated file')
   parser.add_argument('--out-dir', required=True, help='target out dir')
@@ -108,6 +109,15 @@ def main():
       for f in args.features:
         feature_name = f.upper().replace("-", "_")
         env["CARGO_FEATURE_%s" % feature_name] = "1"
+    if args.env:
+      for e in args.env:
+        (k, v) = e.split("=")
+        env[k] = v
+    # Pass through a couple which are useful for diagnostics
+    if os.environ.get("RUST_BACKTRACE"):
+      env["RUST_BACKTRACE"] = os.environ.get("RUST_BACKTRACE")
+    if os.environ.get("RUST_LOG"):
+      env["RUST_LOG"] = os.environ.get("RUST_LOG")
 
     # In the future we should, set all the variables listed here:
     # https://doc.rust-lang.org/cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-build-scripts

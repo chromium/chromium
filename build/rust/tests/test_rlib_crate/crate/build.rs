@@ -50,8 +50,10 @@ fn main() {
 fn generate_some_code() -> std::io::Result<()> {
     let output_dir = Path::new(&env::var_os("OUT_DIR").unwrap()).join("generated");
     let _ = std::fs::create_dir_all(&output_dir);
+    // Test that environment variables from .gn files are passed to build scripts
+    let preferred_number = env::var("ENV_VAR_FOR_BUILD_SCRIPT").unwrap();
     let mut file = std::fs::File::create(output_dir.join("generated.rs"))?;
-    file.write_all(b"fn run_some_generated_code() -> u32 { 42 }")?;
+    write!(file, "fn run_some_generated_code() -> u32 {{ {} }}", preferred_number)?;
     Ok(())
 }
 

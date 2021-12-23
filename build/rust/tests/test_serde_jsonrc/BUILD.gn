@@ -10,7 +10,6 @@ rust_source_set("test_serde_jsonrc_rs") {
   sources = [ "lib.rs" ]
   cxx_bindings = [ "lib.rs" ]
   deps = [ "//third_party/rust/serde_jsonrc/v0_1:lib" ]
-  edition = "2018"
 }
 
 # TODO(https://crbug.com/1278030) - convert to a pure-
