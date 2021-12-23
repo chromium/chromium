@@ -21,12 +21,11 @@ Blink code in `third_party/blink` uses [Blink style](blink-c++.md).
 
 ## Modern C++ features
 
-Google style
+Google and Chromium style
 [targets C++17](https://google.github.io/styleguide/cppguide.html#C++_Version).
-Chromium targets C++14; C++17 support is not expected before 2022. (See the
-[tracking bug](https://crbug.com/752720) for more details.) Additionally, some
-features of supported C++ versions remain forbidden. The status of Chromium's
-C++ support is covered in more detail in [Modern C++ use in Chromium](c++11.md).
+Additionally, some features of supported C++ versions remain forbidden. The
+status of Chromium's C++ support is covered in more detail in
+[Modern C++ use in Chromium](c++11.md).
 
 ## Naming
 
