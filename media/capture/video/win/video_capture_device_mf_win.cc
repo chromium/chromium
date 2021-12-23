@@ -1756,7 +1756,7 @@ void VideoCaptureDeviceMFWin::OnEvent(IMFMediaEvent* media_event) {
   // OnEvent().
   base::AutoLock lock(lock_);
 
-  if (hr == DXGI_ERROR_DEVICE_REMOVED) {
+  if (hr == DXGI_ERROR_DEVICE_REMOVED && dxgi_device_manager_ != nullptr) {
     // Removed device can happen for external reasons.
     // We should restart capture.
     Microsoft::WRL::ComPtr<ID3D11Device> recreated_d3d_device;
