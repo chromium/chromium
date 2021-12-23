@@ -817,18 +817,18 @@ void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable() {
   if (!g_browser_process->local_state())
     return;
 
-  const base::DictionaryValue* dictionary = &base::Value::AsDictionaryValue(
-      *g_browser_process->local_state()->GetDictionary(
-          prefs::kTaskManagerColumnVisibility));
+  const base::Value* dictionary =
+      g_browser_process->local_state()->GetDictionary(
+          prefs::kTaskManagerColumnVisibility);
   if (!dictionary)
     return;
 
   // Do a best effort of retrieving the correct settings from the local state.
   // Use the default settings of the value if it fails to be retrieved.
-  std::string sorted_col_id;
-  dictionary->GetString(kSortColumnIdKey, &sorted_col_id);
+  const std::string* sorted_col_id =
+      dictionary->FindStringKey(kSortColumnIdKey);
   bool sort_is_ascending =
-      dictionary->FindBoolPath(kSortIsAscendingKey).value_or(true);
+      dictionary->FindBoolKey(kSortIsAscendingKey).value_or(true);
 
   int current_visible_column_index = 0;
   for (size_t i = 0; i < kColumnsSize; ++i) {
@@ -848,7 +848,7 @@ void TaskManagerTableModel::RetrieveSavedColumnsSettingsAndUpdateTable() {
     UpdateRefreshTypes(col_id, col_visibility);
 
     if (col_visibility) {
-      if (sorted_col_id == col_id_key) {
+      if (sorted_col_id && *sorted_col_id == col_id_key) {
         table_view_delegate_->SetSortDescriptor(
             TableSortDescriptor(col_id, sort_is_ascending));
       }
