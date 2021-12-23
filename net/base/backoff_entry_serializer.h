@@ -31,7 +31,7 @@ class NET_EXPORT BackoffEntrySerializer {
   BackoffEntrySerializer(const BackoffEntrySerializer&) = delete;
   BackoffEntrySerializer& operator=(const BackoffEntrySerializer&) = delete;
 
-  // Serializes the release time and failure count into a ListValue that can
+  // Serializes the release time and failure count into a Value that can
   // later be passed to Deserialize to re-create the given BackoffEntry. It
   // always serializes using the latest format version. The Policy is not
   // serialized, instead callers must pass an identical Policy* when
@@ -43,7 +43,7 @@ class NET_EXPORT BackoffEntrySerializer {
   static base::Value SerializeToValue(const BackoffEntry& entry,
                                       base::Time time_now);
 
-  // Deserializes a ListValue back to a BackoffEntry. It supports all
+  // Deserializes a Value back to a BackoffEntry. It supports all
   // serialization format versions. |policy| MUST be the same Policy as the
   // serialized entry had. |clock| may be NULL. Both |policy| and |clock| (if
   // not NULL) must enclose lifetime of the returned BackoffEntry. |time_now|
