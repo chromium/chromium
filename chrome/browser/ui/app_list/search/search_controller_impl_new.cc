@@ -145,8 +145,6 @@ void SearchControllerImplNew::AddProvider(
 void SearchControllerImplNew::SetResults(
     const ash::AppListSearchResultType provider_type,
     Results results) {
-  DCHECK(ranker_);
-
   // Re-post onto the UI sequence if not called from there.
   auto ui_thread = content::GetUIThreadTaskRunner({});
   if (!ui_thread->RunsTasksInCurrentSequence()) {
@@ -158,6 +156,12 @@ void SearchControllerImplNew::SetResults(
   }
 
   results_[provider_type] = std::move(results);
+  RankAndPublish(provider_type);
+}
+
+void SearchControllerImplNew::RankAndPublish(
+    const ash::AppListSearchResultType provider_type) {
+  DCHECK(ranker_);
 
   // Update ranking of all results and categories. This ordering is important,
   // as result scores may affect category scores.

@@ -88,6 +88,8 @@ class SearchControllerImplNew : public SearchController {
   }
 
  private:
+  void RankAndPublish(const ash::AppListSearchResultType provider_type);
+
   Profile* profile_;
 
   // The query associated with the most recent search.
