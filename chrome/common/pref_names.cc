@@ -780,6 +780,14 @@ const char kHatsSurveyCycleEndTimestamp[] = "hats_survey_cycle_end_timestamp";
 // survey cycle (general survey).
 const char kHatsDeviceIsSelected[] = "hats_device_is_selected";
 
+// An int64 pref. This is the timestamp that indicates the end of the ENT
+// survey
+const char kHatsEntSurveyCycleEndTs[] = "hats_ent_cycle_end_timestamp";
+
+// A boolean pref. Indicates if the device is selected for the HaTS ENT
+// survey
+const char kHatsEntDeviceIsSelected[] = "hats_ent_device_is_selected";
+
 // An int64 pref. This is the timestamp that indicates the end of the Stability
 // survey
 const char kHatsStabilitySurveyCycleEndTs[] =

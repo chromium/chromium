@@ -281,6 +281,8 @@ extern const char kUnifiedDesktopEnabledByDefault[];
 extern const char kHatsLastInteractionTimestamp[];
 extern const char kHatsSurveyCycleEndTimestamp[];
 extern const char kHatsDeviceIsSelected[];
+extern const char kHatsEntSurveyCycleEndTs[];
+extern const char kHatsEntDeviceIsSelected[];
 extern const char kHatsStabilitySurveyCycleEndTs[];
 extern const char kHatsStabilityDeviceIsSelected[];
 extern const char kHatsPerformanceSurveyCycleEndTs[];

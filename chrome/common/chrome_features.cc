@@ -567,6 +567,9 @@ const base::FeatureParam<base::TimeDelta>
 // Enables or disables the Happiness Tracking System for the General survey.
 const base::Feature kHappinessTrackingSystem{"HappinessTrackingSystem",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables or disables the Happiness Tracking System for the Ent survey.
+const base::Feature kHappinessTrackingSystemEnt{
+    "HappinessTrackingSystemEnt", base::FEATURE_DISABLED_BY_DEFAULT};
 // Enables or disables the Happiness Tracking System for the Stability survey.
 const base::Feature kHappinessTrackingSystemStability{
     "HappinessTrackingSystemStability", base::FEATURE_DISABLED_BY_DEFAULT};
