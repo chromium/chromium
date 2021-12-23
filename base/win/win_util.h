@@ -119,7 +119,9 @@ BASE_EXPORT void SetAbortBehaviorForCrashReporting();
 
 // Checks whether the supplied |hwnd| is in Windows 10 tablet mode. Will return
 // false on versions below 10.
-BASE_EXPORT bool IsWindows10TabletMode(HWND hwnd);
+// While tablet mode isn't officially supported in Windows 11, the function will
+// make an attempt to inspect other signals for tablet mode.
+BASE_EXPORT bool IsWindows10OrGreaterTabletMode(HWND hwnd);
 
 // A tablet is a device that is touch enabled and also is being used
 // "like a tablet". This is used by the following:

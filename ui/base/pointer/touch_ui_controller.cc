@@ -29,7 +29,7 @@ namespace {
 #if defined(OS_WIN)
 
 bool IsTabletMode() {
-  return base::win::IsWindows10TabletMode(
+  return base::win::IsWindows10OrGreaterTabletMode(
       gfx::SingletonHwnd::GetInstance()->hwnd());
 }
 
@@ -79,7 +79,7 @@ TouchUiController::TouchUiController(TouchUiState touch_ui_state)
     : touch_ui_state_(touch_ui_state) {
 #if defined(OS_WIN)
   if (base::CurrentUIThread::IsSet() &&
-      (base::win::GetVersion() >= base::win::Version::WIN10)) {
+      base::win::GetVersion() >= base::win::Version::WIN10) {
     singleton_hwnd_observer_ =
         std::make_unique<gfx::SingletonHwndObserver>(base::BindRepeating(
             [](HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {

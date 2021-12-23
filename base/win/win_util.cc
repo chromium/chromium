@@ -31,6 +31,7 @@
 #include <wrl/client.h>
 #include <wrl/wrappers/corewrappers.h>
 
+#include <limits>
 #include <memory>
 
 #include "base/base_switches.h"
@@ -200,9 +201,22 @@ NativeLibrary PinUser32Internal(NativeLibraryLoadError* error) {
 // It looks like the API implementation is buggy at least on Surface 4 causing
 // it to always return UserInteractionMode_Touch which as per documentation
 // indicates tablet mode.
-bool IsWindows10TabletMode(HWND hwnd) {
-  if (GetVersion() < Version::WIN10)
-    return false;
+bool IsWindows10OrGreaterTabletMode(HWND hwnd) {
+  if (GetVersion() >= Version::WIN11) {
+    // Only Win10 supports explicit tablet mode. On Win11,
+    // get_UserInteractionMode always returns UserInteractionMode_Mouse, so
+    // instead we check if we're in slate mode or not - 0 value means slate
+    // mode. See
+    // https://docs.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/microsoft-windows-gpiobuttons-convertibleslatemode
+    base::win::RegKey registry_key(
+        HKEY_LOCAL_MACHINE,
+        L"System\\CurrentControlSet\\Control\\PriorityControl", KEY_READ);
+    DWORD slate_mode = 0;
+    bool value_exists = registry_key.ReadValueDW(L"ConvertibleSlateMode",
+                                                 &slate_mode) == ERROR_SUCCESS;
+    DCHECK(value_exists) << "ConvertibleSlateMode value not in registry";
+    return value_exists && slate_mode == 0;
+  }
 
   if (!ResolveCoreWinRTDelayload() ||
       !ScopedHString::ResolveCoreWinRTStringDelayload()) {
@@ -493,7 +507,7 @@ bool IsTabletDevice(std::string* reason, HWND hwnd) {
     return false;
   }
 
-  if (IsWindows10TabletMode(hwnd))
+  if (IsWindows10OrGreaterTabletMode(hwnd))
     return true;
 
   return IsDeviceUsedAsATablet(reason);
