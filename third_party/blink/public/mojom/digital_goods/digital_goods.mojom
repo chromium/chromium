@@ -15,7 +15,7 @@ module payments.mojom;
 import "components/payments/mojom/payment_request_data.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
-// https://github.com/WICG/digital-goods/blob/master/explainer.md
+// https://github.com/WICG/digital-goods/blob/main/explainer.md
 
 // Allow the renderer to talk to an associated digital goods backend.
 interface DigitalGoods {
