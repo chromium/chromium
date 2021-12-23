@@ -741,12 +741,6 @@ mojom("mojo_bindings") {
     ]
   }
 
-  if (enable_offline_pages) {
-    sources += [ "mhtml_page_notifier.mojom" ]
-    deps += [ "//third_party/blink/public/mojom:mojom_mhtml_load_result" ]
-    enabled_features = [ "enable_offline_pages" ]
-  }
-
   public_deps = [
     "//components/content_settings/common:mojom",
     "//components/content_settings/core/common:mojo_bindings",
@@ -774,6 +768,18 @@ mojom("mojo_bindings") {
   ]
 
   component_deps = [ "//content/public/common" ]
+
+  enabled_features = []
+
+  if (enable_offline_pages) {
+    sources += [ "mhtml_page_notifier.mojom" ]
+    deps += [ "//third_party/blink/public/mojom:mojom_mhtml_load_result" ]
+    enabled_features += [ "enable_offline_pages" ]
+  }
+
+  if (enable_plugins) {
+    enabled_features += [ "enable_plugins" ]
+  }
 }
 
 if (enable_print_preview && !is_chromeos_ash) {

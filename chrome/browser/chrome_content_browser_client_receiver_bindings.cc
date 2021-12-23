@@ -56,6 +56,7 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/download/android/available_offline_content_provider.h"
+#include "chrome/browser/plugins/plugin_observer_android.h"
 #elif defined(OS_WIN)
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/module_event_sink_impl.h"
@@ -464,14 +465,21 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
         render_frame_host);
     return true;
   }
+#endif
+#if BUILDFLAG(ENABLE_PLUGINS) || defined(OS_ANDROID)
   if (interface_name == chrome::mojom::PluginHost::Name_) {
-    PluginObserver::BindPluginHost(
+#if defined(OS_ANDROID)
+    using PluginObserverImpl = PluginObserverAndroid;
+#else
+    using PluginObserverImpl = PluginObserver;
+#endif
+    PluginObserverImpl::BindPluginHost(
         mojo::PendingAssociatedReceiver<chrome::mojom::PluginHost>(
             std::move(*handle)),
         render_frame_host);
     return true;
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_PLUGINS) || defined(OS_ANDROID)
 #if !defined(OS_ANDROID)
   if (interface_name == chrome::mojom::SyncEncryptionKeysExtension::Name_) {
     SyncEncryptionKeysTabHelper::BindSyncEncryptionKeysExtension(

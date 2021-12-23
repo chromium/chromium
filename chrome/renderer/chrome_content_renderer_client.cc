@@ -856,6 +856,7 @@ bool ChromeContentRendererClient::OverrideCreatePlugin(
   return true;
 }
 
+#if BUILDFLAG(ENABLE_PLUGINS)
 WebPlugin* ChromeContentRendererClient::CreatePluginReplacement(
     content::RenderFrame* render_frame,
     const base::FilePath& plugin_path) {
@@ -863,6 +864,7 @@ WebPlugin* ChromeContentRendererClient::CreatePluginReplacement(
       render_frame, plugin_path);
   return placeholder->plugin();
 }
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 bool ChromeContentRendererClient::DeferMediaLoad(
     content::RenderFrame* render_frame,

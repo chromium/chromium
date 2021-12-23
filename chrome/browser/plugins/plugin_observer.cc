@@ -6,32 +6,25 @@
 
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/bind.h"
-#include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/plugins/plugin_finder.h"
 #include "chrome/browser/plugins/plugin_infobar_delegates.h"
 #include "chrome/browser/plugins/plugin_installer.h"
 #include "chrome/browser/plugins/plugin_installer_observer.h"
+#include "chrome/browser/plugins/plugin_observer_common.h"
 #include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tab_modal_confirm_dialog.h"
-#include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -44,7 +37,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if defined(OS_WIN)
@@ -205,16 +197,12 @@ void PluginObserver::OpenPDF(const GURL& url) {
   content::RenderFrameHost* render_frame_host =
       plugin_host_receivers_.GetCurrentTargetFrame();
 
-  if (!content::ChildProcessSecurityPolicy::GetInstance()->CanRequestURL(
-          render_frame_host->GetRoutingID(), url)) {
+  content::Referrer referrer;
+  if (!CanOpenPdfUrl(render_frame_host, url,
+                     web_contents()->GetLastCommittedURL(), &referrer)) {
     return;
   }
 
-  content::Referrer referrer = content::Referrer::SanitizeForRequest(
-      url, content::Referrer(web_contents()->GetLastCommittedURL(),
-                             network::mojom::ReferrerPolicy::kDefault));
-
-#if BUILDFLAG(ENABLE_PLUGINS)
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("pdf_plugin_placeholder", R"(
         semantics {
@@ -250,15 +238,6 @@ void PluginObserver::OpenPDF(const GURL& url) {
 
   web_contents()->GetBrowserContext()->GetDownloadManager()->DownloadUrl(
       std::move(params));
-
-#else   // !BUILDFLAG(ENABLE_PLUGINS)
-  content::OpenURLParams open_url_params(
-      url, referrer, WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-  // On Android, PDFs downloaded with a user gesture are auto-opened.
-  open_url_params.user_gesture = true;
-  web_contents()->OpenURL(open_url_params);
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PluginObserver);

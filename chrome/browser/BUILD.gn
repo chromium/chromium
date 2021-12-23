@@ -3278,6 +3278,8 @@ static_library("browser") {
       "permissions/permission_update_requester_android.cc",
       "permissions/permission_update_requester_android.h",
       "platform_util_android.cc",
+      "plugins/plugin_observer_android.cc",
+      "plugins/plugin_observer_android.h",
       "policy/android/cloud_management_shared_preferences.cc",
       "policy/android/cloud_management_shared_preferences.h",
       "policy/browser_dm_token_storage_android.cc",
@@ -6911,6 +6913,13 @@ static_library("browser") {
     if (is_chromeos_ash) {
       deps += [ "//chromeos/cryptohome" ]
     }
+  }
+
+  if (enable_plugins || is_android) {
+    sources += [
+      "plugins/plugin_observer_common.cc",
+      "plugins/plugin_observer_common.h",
+    ]
   }
 
   if (enable_rlz) {
