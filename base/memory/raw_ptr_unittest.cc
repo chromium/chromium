@@ -68,6 +68,7 @@ static int g_get_for_dereference_cnt = INT_MIN;
 static int g_get_for_extraction_cnt = INT_MIN;
 static int g_get_for_comparison_cnt = INT_MIN;
 static int g_wrapped_ptr_swap_cnt = INT_MIN;
+static int g_pointer_to_member_operator_cnt = INT_MIN;
 
 static void ClearCounters() {
   g_wrap_raw_ptr_cnt = 0;
@@ -76,6 +77,7 @@ static void ClearCounters() {
   g_get_for_extraction_cnt = 0;
   g_get_for_comparison_cnt = 0;
   g_wrapped_ptr_swap_cnt = 0;
+  g_pointer_to_member_operator_cnt = 0;
 }
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -118,6 +120,10 @@ struct RawPtrCountingImpl : public CountingSuperClass {
 
   static ALWAYS_INLINE void IncrementSwapCountForTest() {
     ++g_wrapped_ptr_swap_cnt;
+  }
+
+  static ALWAYS_INLINE void IncrementPointerToMemberOperatorCountForTest() {
+    ++g_pointer_to_member_operator_cnt;
   }
 };
 
@@ -873,6 +879,101 @@ TEST_F(RawPtrTest, DerivedStructsComparison) {
             static_cast<BaseStruct*>(checked_derived2_ptr.get()));
   EXPECT_NE(static_cast<BaseStruct*>(checked_derived1_ptr.get()),
             checked_derived2_ptr);
+}
+
+class PmfTestBase {
+ public:
+  int MemFunc(char, double) const { return 11; }
+};
+
+class PmfTestDerived : public PmfTestBase {
+ public:
+  using PmfTestBase::MemFunc;
+  int MemFunc(float, double) { return 22; }
+};
+
+TEST_F(RawPtrTest, PointerToMemberFunction) {
+  PmfTestDerived object;
+  int (PmfTestBase::*pmf_base_base)(char, double) const = &PmfTestBase::MemFunc;
+  int (PmfTestDerived::*pmf_derived_base)(char, double) const =
+      &PmfTestDerived::MemFunc;
+  int (PmfTestDerived::*pmf_derived_derived)(float, double) =
+      &PmfTestDerived::MemFunc;
+  int base_count = g_pointer_to_member_operator_cnt;
+  EXPECT_EQ(base_count, 0);
+
+  // Test for `derived_ptr`
+  CountingRawPtr<PmfTestDerived> derived_ptr = &object;
+
+  static_assert(
+      std::is_same<decltype(derived_ptr->*pmf_base_base),
+                   const decltype(derived_ptr)::PendingMemberFunctionCall<
+                       decltype(pmf_base_base), int, char, double>>::value);
+  static_assert(
+      std::is_same<decltype(derived_ptr->*pmf_derived_base),
+                   const decltype(derived_ptr)::PendingMemberFunctionCall<
+                       decltype(pmf_derived_base), int, char, double>>::value);
+  static_assert(std::is_same<
+                decltype(derived_ptr->*pmf_derived_derived),
+                const decltype(derived_ptr)::PendingMemberFunctionCall<
+                    decltype(pmf_derived_derived), int, float, double>>::value);
+
+  base_count = g_pointer_to_member_operator_cnt;
+  EXPECT_EQ((derived_ptr->*pmf_base_base)(0, 0), 11);
+  EXPECT_EQ(g_pointer_to_member_operator_cnt, base_count + 1);
+  EXPECT_EQ((derived_ptr->*pmf_derived_base)(0, 0), 11);
+  EXPECT_EQ(g_pointer_to_member_operator_cnt, base_count + 2);
+  EXPECT_EQ((derived_ptr->*pmf_derived_derived)(0, 0), 22);
+  EXPECT_EQ(g_pointer_to_member_operator_cnt, base_count + 3);
+
+  // Test for `derived_ptr_const`
+  const CountingRawPtr<PmfTestDerived> derived_ptr_const = &object;
+
+  static_assert(
+      std::is_same<decltype(derived_ptr_const->*pmf_base_base),
+                   const decltype(derived_ptr_const)::PendingMemberFunctionCall<
+                       decltype(pmf_base_base), int, char, double>>::value);
+  static_assert(
+      std::is_same<decltype(derived_ptr_const->*pmf_derived_base),
+                   const decltype(derived_ptr_const)::PendingMemberFunctionCall<
+                       decltype(pmf_derived_base), int, char, double>>::value);
+  static_assert(std::is_same<
+                decltype(derived_ptr_const->*pmf_derived_derived),
+                const decltype(derived_ptr_const)::PendingMemberFunctionCall<
+                    decltype(pmf_derived_derived), int, float, double>>::value);
+
+  base_count = g_pointer_to_member_operator_cnt;
+  EXPECT_EQ((derived_ptr_const->*pmf_base_base)(0, 0), 11);
+  EXPECT_EQ(g_pointer_to_member_operator_cnt, base_count + 1);
+  EXPECT_EQ((derived_ptr_const->*pmf_derived_base)(0, 0), 11);
+  EXPECT_EQ(g_pointer_to_member_operator_cnt, base_count + 2);
+  EXPECT_EQ((derived_ptr_const->*pmf_derived_derived)(0, 0), 22);
+  EXPECT_EQ(g_pointer_to_member_operator_cnt, base_count + 3);
+
+  // Test for `const_derived_ptr`
+  CountingRawPtr<const PmfTestDerived> const_derived_ptr = &object;
+
+  static_assert(
+      std::is_same<decltype(const_derived_ptr->*pmf_base_base),
+                   const decltype(const_derived_ptr)::PendingMemberFunctionCall<
+                       decltype(pmf_base_base), int, char, double>>::value);
+  static_assert(
+      std::is_same<decltype(const_derived_ptr->*pmf_derived_base),
+                   const decltype(const_derived_ptr)::PendingMemberFunctionCall<
+                       decltype(pmf_derived_base), int, char, double>>::value);
+  static_assert(std::is_same<
+                decltype(const_derived_ptr->*pmf_derived_derived),
+                const decltype(const_derived_ptr)::PendingMemberFunctionCall<
+                    decltype(pmf_derived_derived), int, float, double>>::value);
+
+  base_count = g_pointer_to_member_operator_cnt;
+  EXPECT_EQ((const_derived_ptr->*pmf_base_base)(0, 0), 11);
+  EXPECT_EQ(g_pointer_to_member_operator_cnt, base_count + 1);
+  EXPECT_EQ((const_derived_ptr->*pmf_derived_base)(0, 0), 11);
+  EXPECT_EQ(g_pointer_to_member_operator_cnt, base_count + 2);
+  // Despite that it's possible to make a temporary PendingMemberFunctionCall
+  // object for the case of `const_derived_ptr->*pmf_derived_derived`, it's not
+  // possible to invoke the member function due to constness.
 }
 
 }  // namespace

@@ -108,6 +108,8 @@ struct RawPtrNoOpImpl {
 
   // This is for accounting only, used by unit tests.
   static RAW_PTR_FUNC_ATTRIBUTES void IncrementSwapCountForTest() {}
+  static RAW_PTR_FUNC_ATTRIBUTES void
+  IncrementPointerToMemberOperatorCountForTest() {}
 };
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
@@ -274,6 +276,8 @@ struct BackupRefPtrImpl {
 
   // This is for accounting only, used by unit tests.
   static RAW_PTR_FUNC_ATTRIBUTES void IncrementSwapCountForTest() {}
+  static RAW_PTR_FUNC_ATTRIBUTES void
+  IncrementPointerToMemberOperatorCountForTest() {}
 
  private:
   // We've evaluated several strategies (inline nothing, various parts, or
@@ -542,11 +546,10 @@ class TRIVIAL_ABI raw_ptr {
   // PendingMemberFunctionCall implements a temporary object returned by
   // operator->*.  PendingMemberFunctionCall::operator() runs the member
   // function taking arguments.
-  template <typename ReturnType, typename... ArgTypes>
+  template <typename PMF,  // PMF = pointer to member function
+            typename ReturnType,
+            typename... ArgTypes>
   class PendingMemberFunctionCall {
-    // PMF = pointer to member function
-    using PMF = ReturnType (T::*)(ArgTypes...);
-
    public:
     explicit PendingMemberFunctionCall(T* receiver, PMF pmf)
         : receiver_(receiver), pmf_(pmf) {}
@@ -567,14 +570,23 @@ class TRIVIAL_ABI raw_ptr {
 
   // Implements `(my_raw_ptr->*pmf)(arg1, arg2, ...)` as a workaround for
   // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=103455
-  template <typename PMF,  // PMF = pointer to member function
-            typename... ArgTypes>
-  RAW_PTR_FUNC_ATTRIBUTES const
-      PendingMemberFunctionCall<std::invoke_result_t<PMF, ArgTypes...>,
-                                ArgTypes...>
-      operator->*(PMF&& pmf) const {
-    return {GetForDereference(), std::forward<PMF>(pmf)};
+  template <typename ReceiverType, typename ReturnType, typename... ArgTypes>
+  RAW_PTR_FUNC_ATTRIBUTES auto operator->*(
+      ReturnType (ReceiverType::*pmf)(ArgTypes...) const) const -> const
+      PendingMemberFunctionCall<decltype(pmf), ReturnType, ArgTypes...> {
+    Impl::IncrementPointerToMemberOperatorCountForTest();
+    return PendingMemberFunctionCall<decltype(pmf), ReturnType, ArgTypes...>(
+        GetForDereference(), pmf);
   }
+  template <typename ReceiverType, typename ReturnType, typename... ArgTypes>
+  RAW_PTR_FUNC_ATTRIBUTES auto operator->*(
+      ReturnType (ReceiverType::*pmf)(ArgTypes...)) const -> const
+      PendingMemberFunctionCall<decltype(pmf), ReturnType, ArgTypes...> {
+    Impl::IncrementPointerToMemberOperatorCountForTest();
+    return PendingMemberFunctionCall<decltype(pmf), ReturnType, ArgTypes...>(
+        GetForDereference(), pmf);
+  }
+  // Ref-qualified variants should be added on demand.
 
   // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
   // NOLINTNEXTLINE(runtime/explicit)
