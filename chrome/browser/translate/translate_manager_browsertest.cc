@@ -1374,9 +1374,8 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 
   histograms.ExpectTotalCount("Translate.TranslateFrameCount", 0);
   histograms.ExpectTotalCount("Translate.LanguageDetection.ContentLength", 1);
-  // Only 54 characters of main frame used for language detection.
-  histograms.ExpectBucketCount("Translate.LanguageDetection.ContentLength", 54,
-                               1);
+  EXPECT_TRUE(
+      histograms.GetTotalSum("Translate.LanguageDetection.ContentLength") > 0);
 }
 
 class TranslateManagerWithSubFrameSupportBrowserTest
