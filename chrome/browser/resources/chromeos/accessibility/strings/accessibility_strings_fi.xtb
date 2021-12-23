@@ -728,7 +728,7 @@
 <translation id="5937336320314038555">{COUNT,plural, =1{yhtäläisyys}other{# yhtäläisyysmerkkiä}}</translation>
 <translation id="5948123859135882163">Vaihda matemaattisten lausekkeiden tulkintatapaa rakenteellisen ja semanttisen välillä</translation>
 <translation id="5955304353782037793">sov.</translation>
-<translation id="5956928062748260866">Dialogi</translation>
+<translation id="5956928062748260866">Valintaikkuna</translation>
 <translation id="5963413905009737549">Osio</translation>
 <translation id="5968607524793740041">Näytä kontekstivalikko</translation>
 <translation id="597121107011153418">{COUNT,plural, =1{jossa # kohde}other{jossa # kohdetta}}</translation>

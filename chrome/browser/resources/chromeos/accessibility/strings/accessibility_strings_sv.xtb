@@ -53,7 +53,7 @@
 <translation id="1273314450961659276">Inställningar för text till tal</translation>
 <translation id="1275718070701477396">Markerad</translation>
 <translation id="1284576163386164372">Du kan när som helst återvända till självstudierna genom att trycka med fyra fingrar och öppna menyerna. Aktivera sedan självstudierna under ChromeVox.</translation>
-<translation id="1291286136605998134">På/av-knapp</translation>
+<translation id="1291286136605998134">Växlingsknapp</translation>
 <translation id="1299774449519412690">Ljust himmelsblå</translation>
 <translation id="1303806948938513162">Öppna ChromeVox-menyerna genom att trycka med fyra fingrar.</translation>
 <translation id="1313373992684326101">Navigera till föregående avsnitt, till exempel statusfältet eller översikten.</translation>
@@ -1146,7 +1146,7 @@
 <translation id="9099429023611373837">klipp ut</translation>
 <translation id="9108370397979208512">matte</translation>
 <translation id="9108589040018540527">rullningslist</translation>
-<translation id="911476240645808512">{COUNT,plural, =1{procenttecken}other{# procenttecken}}</translation>
+<translation id="911476240645808512">{COUNT,plural, =1{procent}other{# procenttecken}}</translation>
 <translation id="9128414153595658330">dialogruta</translation>
 <translation id="9133928141873682933">Khaki</translation>
 <translation id="9149560530563164529">avsnitt</translation>
