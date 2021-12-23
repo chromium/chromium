@@ -108,9 +108,6 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // AccessibilitySelectMenuOpen.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kEnableBlinkFeatures, "HTMLSelectMenuElement");
-  // LayoutNGTable table trees have an additional row GenericContainer.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      switches::kEnableBlinkFeatures, "LayoutNGTable");
   // kDisableAXMenuList is true on Chrome OS by default. Make it consistent
   // for these cross-platform tests.
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
