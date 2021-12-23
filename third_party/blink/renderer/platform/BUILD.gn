@@ -1050,7 +1050,6 @@ component("platform") {
     "graphics/paint/paint_chunk.cc",
     "graphics/paint/paint_chunk.h",
     "graphics/paint/paint_chunk_subset.h",
-    "graphics/paint/paint_chunk_subset_recorder.h",
     "graphics/paint/paint_chunker.cc",
     "graphics/paint/paint_chunker.h",
     "graphics/paint/paint_controller.cc",

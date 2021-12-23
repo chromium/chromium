@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_under_invalidation_checker.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -75,15 +76,6 @@ void PaintController::RecordHitTestData(const DisplayItemClient& client,
                                         bool blocking_wheel) {
   if (rect.IsEmpty())
     return;
-  // In CompositeAfterPaint, we ensure a paint chunk for correct composited
-  // hit testing. In pre-CompositeAfterPaint, this is unnecessary, except that
-  // there is special touch action, and that we have a non-root effect so that
-  // PaintChunksToCcLayer will emit paint operations for filters.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      touch_action == TouchAction::kAuto && !blocking_wheel &&
-      CurrentPaintChunkProperties().Effect().IsRoot())
-    return;
-
   PaintChunk::Id id(client.Id(), DisplayItem::kHitTest, current_fragment_);
   CheckNewChunkId(id);
   ValidateNewChunkClient(client);
@@ -124,7 +116,6 @@ void PaintController::RecordScrollHitTestData(
 void PaintController::RecordSelection(
     absl::optional<PaintedSelectionBound> start,
     absl::optional<PaintedSelectionBound> end) {
-  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   DCHECK(start.has_value() || end.has_value());
   paint_chunker_.AddSelectionToCurrentChunk(start, end);
 }

@@ -82,8 +82,7 @@ std::unique_ptr<JSONArray> PaintArtifactCompositor::GetPendingLayersAsJSON()
 // Get a JSON representation of what layers exist for this PAC.
 std::unique_ptr<JSONObject> PaintArtifactCompositor::GetLayersAsJSON(
     LayerTreeFlags flags) const {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      !tracks_raster_invalidations_) {
+  if (!tracks_raster_invalidations_) {
     flags &= ~(kLayerTreeIncludesInvalidations |
                kLayerTreeIncludesDetailedInvalidations);
   }
@@ -1063,12 +1062,9 @@ bool PaintArtifactCompositor::DirectlyUpdateCompositedOpacityValue(
 
 bool PaintArtifactCompositor::DirectlyUpdateScrollOffsetTransform(
     const TransformPaintPropertyNode& transform) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // We can only directly-update compositor values if all content associated
-    // with the node is known to be composited. We cannot DCHECK this pre-
-    // CompositeAfterPaint because we cannot query CompositedLayerMapping here.
-    DCHECK(transform.HasDirectCompositingReasons());
-  }
+  // We can only directly-update compositor values if all content associated
+  // with the node is known to be composited.
+  DCHECK(transform.HasDirectCompositingReasons());
   if (CanDirectlyUpdateProperties()) {
     return PropertyTreeManager::DirectlyUpdateScrollOffsetTransform(
         *root_layer_->layer_tree_host(), transform);
@@ -1224,12 +1220,6 @@ static void UpdateLayerDebugInfo(
   cc::LayerDebugInfo& debug_info = layer.EnsureDebugInfo();
 
   debug_info.name = name.Utf8();
-  if (id.type == DisplayItem::kForeignLayerContentsWrapper) {
-    // This is for backward compatibility in pre-CompositeAfterPaint mode.
-    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    debug_info.name = std::string("ContentsLayer for ") + debug_info.name;
-  }
-
   debug_info.compositing_reasons =
       CompositingReason::Descriptions(compositing_reasons);
   debug_info.compositing_reason_ids =
@@ -1365,21 +1355,18 @@ Vector<cc::Layer*> PaintArtifactCompositor::SynthesizedClipLayersForTesting()
 
 void PaintArtifactCompositor::ClearPropertyTreeChangedState() {
   for (auto& layer : pending_layers_) {
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      // The chunks ref-counted property tree state keeps the |layer|'s non-ref
-      // property tree pointers alive and all chunk property tree states should
-      // be descendants of the |layer|'s. Therefore, we can just CHECK that the
-      // first chunk's references are keeping the |layer|'s property tree state
-      // alive.
-      CHECK(!layer.Chunks().IsEmpty());
-      const auto& layer_state = layer.GetPropertyTreeState();
-      const auto& first_chunk_state =
-          layer.Chunks().begin()->properties.GetPropertyTreeState();
-      CHECK(
-          layer_state.Transform().IsAncestorOf(first_chunk_state.Transform()));
-      CHECK(layer_state.Clip().IsAncestorOf(first_chunk_state.Clip()));
-      CHECK(layer_state.Effect().IsAncestorOf(first_chunk_state.Effect()));
-    }
+    // The chunks ref-counted property tree state keeps the |layer|'s non-ref
+    // property tree pointers alive and all chunk property tree states should
+    // be descendants of the |layer|'s. Therefore, we can just CHECK that the
+    // first chunk's references are keeping the |layer|'s property tree state
+    // alive.
+    CHECK(!layer.Chunks().IsEmpty());
+    const auto& layer_state = layer.GetPropertyTreeState();
+    const auto& first_chunk_state =
+        layer.Chunks().begin()->properties.GetPropertyTreeState();
+    CHECK(layer_state.Transform().IsAncestorOf(first_chunk_state.Transform()));
+    CHECK(layer_state.Clip().IsAncestorOf(first_chunk_state.Clip()));
+    CHECK(layer_state.Effect().IsAncestorOf(first_chunk_state.Effect()));
 
     layer.GetPropertyTreeState().ClearChangedTo(PropertyTreeState::Root());
     for (auto& chunk : layer.Chunks()) {

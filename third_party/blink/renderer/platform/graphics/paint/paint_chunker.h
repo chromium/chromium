@@ -63,10 +63,6 @@ class PLATFORM_EXPORT PaintChunker final {
   }
   bool WillForceNewChunk() const { return will_force_new_chunk_; }
 
-  void SetShouldComputeContentsOpaque(bool should_compute_) {
-    should_compute_contents_opaque_ = should_compute_;
-  }
-
   void AppendByMoving(PaintChunk&&);
 
   // Returns true if a new chunk is created.
@@ -141,7 +137,6 @@ class PLATFORM_EXPORT PaintChunker final {
   bool will_force_new_chunk_ = true;
 
   bool current_effectively_invisible_ = false;
-  bool should_compute_contents_opaque_ = true;
 
   Color candidate_background_color_ = Color::kTransparent;
   float candidate_background_area_ = 0;

@@ -165,8 +165,7 @@ class PaintArtifactCompositorTest : public testing::Test,
                        &scroll_translation);
   }
 
-  // Returns the |num|th scrollable layer. In CompositeAfterPaint, this will be
-  // a scroll hit test layer, whereas currently this will be a content layer.
+  // Returns the |num|th scroll hit test layer.
   cc::Layer* ScrollableLayerAt(size_t num) {
     const cc::ScrollTree& scroll_tree = GetPropertyTrees().scroll_tree;
     for (auto& layer : RootLayer()->children()) {
@@ -179,10 +178,7 @@ class PaintArtifactCompositorTest : public testing::Test,
     return nullptr;
   }
 
-  // Returns the |num|th non-scrollable layer. In CompositeAfterPaint, content
-  // layers are not scrollable so this is the |num|th content layer. Currently,
-  // content layers are scrollable and non-scrollable, so this will return the
-  // |num|th content layer that is not scrollable.
+  // Returns the |num|th non-scrollable content layer.
   cc::Layer* NonScrollableLayerAt(size_t num) {
     const cc::ScrollTree& scroll_tree = GetPropertyTrees().scroll_tree;
     for (auto& layer : RootLayer()->children()) {

@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/platform/graphics/paint/region_capture_data.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -143,11 +142,6 @@ class PLATFORM_EXPORT PaintController {
     return paint_chunker_.CurrentEffectivelyInvisible();
   }
   void EnsureChunk();
-
-  void SetShouldComputeContentsOpaque(bool should_compute) {
-    DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    paint_chunker_.SetShouldComputeContentsOpaque(should_compute);
-  }
 
   void RecordHitTestData(const DisplayItemClient&,
                          const gfx::Rect&,

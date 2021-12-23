@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -1066,19 +1067,14 @@ void PropertyTreeManager::BuildEffectNodesRecursively(
 
   bool has_multiple_groups = false;
   if (GetEffectTree().Node(next_effect.CcNodeId(new_sequence_number_))) {
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      // TODO(crbug.com/1064341): We have to allow one blink effect node to
-      // apply to multiple groups in block fragments (multicol, etc.) due to
-      // the current FragmentClip implementation. This can only be fixed by
-      // LayoutNG block fragments. For now we'll create multiple cc effect
-      // nodes in the case.
-      // TODO(crbug.com/1253797): Actually this still happens with LayoutNG
-      // block fragments due to paint order issue.
-      has_multiple_groups = true;
-    } else {
-      NOTREACHED() << "Malformed paint artifact. Paint chunks under the same"
-                      " effect should be contiguous.";
-    }
+    // TODO(crbug.com/1064341): We have to allow one blink effect node to apply
+    // to multiple groups in block fragments (multicol, etc.) due to the
+    // current FragmentClip implementation. This can only be fixed by LayoutNG
+    // block fragments. For now we'll create multiple cc effect nodes in the
+    // case.
+    // TODO(crbug.com/1253797): Actually this still happens with LayoutNG block
+    // fragments due to paint order issue.
+    has_multiple_groups = true;
   }
 
   int real_effect_node_id = cc::EffectTree::kInvalidNodeId;

@@ -105,7 +105,6 @@ class PLATFORM_EXPORT DisplayItem {
     kForeignLayerPlugin,
     kForeignLayerVideo,
     kForeignLayerRemoteFrame,
-    kForeignLayerContentsWrapper,
     kForeignLayerLinkHighlight,
     kForeignLayerViewportScroll,
     kForeignLayerViewportScrollbar,

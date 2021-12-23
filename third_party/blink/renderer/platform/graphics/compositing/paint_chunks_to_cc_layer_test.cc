@@ -1213,34 +1213,6 @@ TEST_P(PaintChunksToCcLayerTest, NoopEffectDoesNotEmitItems) {
               }));
 }
 
-TEST_P(PaintChunksToCcLayerTest, AllowChunkEscapeLayerNoopEffects) {
-  // This test doesn't apply to CAP.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
-  auto e1 = CreateOpacityEffect(e0(), 0.5f);
-  auto noop_e2 = CreateOpacityEffect(*e1, 1.0f);
-  auto noop_e3 = CreateOpacityEffect(*noop_e2, 1.0f);
-  auto e4 = CreateOpacityEffect(*e1, 0.5f);
-
-  PropertyTreeState layer_state(t0(), c0(), *noop_e3);
-  TestChunks chunks;
-  chunks.AddChunk(t0(), c0(), *noop_e3);
-  chunks.AddChunk(t0(), c0(), *e4);
-
-  auto output = PaintChunksToCcLayer::Convert(
-                    chunks.Build(), layer_state, gfx::Vector2dF(),
-                    cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer)
-                    ->ReleaseAsRecord();
-
-  EXPECT_THAT(*output, PaintRecordMatcher::Make({
-                           cc::PaintOpType::DrawRecord,
-                           cc::PaintOpType::SaveLayerAlpha,  // e4
-                           cc::PaintOpType::DrawRecord,
-                           cc::PaintOpType::Restore,  // end e4
-                       }));
-}
-
 TEST_P(PaintChunksToCcLayerTest, EmptyChunkRect) {
   CompositorFilterOperations filter;
   filter.AppendBlurFilter(5);

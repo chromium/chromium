@@ -643,26 +643,13 @@ TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunk) {
   HitTestData hit_test_data;
   hit_test_data.touch_action_rects = {
       {gfx::Rect(20, 30, 40, 50), TouchAction::kPan}};
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_THAT(
-        chunks,
-        ElementsAre(IsPaintChunk(0, 1, id1, DefaultPaintChunkProperties(),
-                                 nullptr, gfx::Rect(0, 0, 10, 10)),
-                    IsPaintChunk(1, 1, id2, properties, &hit_test_data,
-                                 gfx::Rect(10, 20, 50, 60)),
-                    IsPaintChunk(1, 2, id3, properties, nullptr,
-                                 gfx::Rect(0, 0, 100, 120))));
-  } else {
-    EXPECT_THAT(
-        chunks,
-        ElementsAre(IsPaintChunk(0, 1, id1, DefaultPaintChunkProperties(),
-                                 nullptr, gfx::Rect(0, 0, 10, 10)),
-                    IsPaintChunk(1, 1, id2, properties, &hit_test_data,
-                                 gfx::Rect(20, 30, 40, 50)),
-                    IsPaintChunk(
-                        1, 2, PaintChunk::Id(client_->Id(), DisplayItemType(5)),
-                        properties, nullptr, gfx::Rect(0, 0, 10, 10))));
-  }
+  EXPECT_THAT(chunks,
+              ElementsAre(IsPaintChunk(0, 1, id1, DefaultPaintChunkProperties(),
+                                       nullptr, gfx::Rect(0, 0, 10, 10)),
+                          IsPaintChunk(1, 1, id2, properties, &hit_test_data,
+                                       gfx::Rect(10, 20, 50, 60)),
+                          IsPaintChunk(1, 2, id3, properties, nullptr,
+                                       gfx::Rect(0, 0, 100, 120))));
 }
 
 TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunkWheelRegionsEnabled) {
@@ -706,26 +693,13 @@ TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunkWheelRegionsEnabled) {
   hit_test_data.touch_action_rects = {
       {gfx::Rect(20, 30, 40, 50), TouchAction::kPan}};
   hit_test_data.wheel_event_rects = {gfx::Rect(25, 35, 5, 10)};
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_THAT(
-        chunks,
-        ElementsAre(IsPaintChunk(0, 1, id1, DefaultPaintChunkProperties(),
-                                 nullptr, gfx::Rect(0, 0, 10, 10)),
-                    IsPaintChunk(1, 1, id2, properties, &hit_test_data,
-                                 gfx::Rect(10, 20, 50, 60)),
-                    IsPaintChunk(1, 2, id3, properties, nullptr,
-                                 gfx::Rect(0, 0, 100, 120))));
-  } else {
-    EXPECT_THAT(
-        chunks,
-        ElementsAre(IsPaintChunk(0, 1, id1, DefaultPaintChunkProperties(),
-                                 nullptr, gfx::Rect(0, 0, 10, 10)),
-                    IsPaintChunk(1, 1, id2, properties, &hit_test_data,
-                                 gfx::Rect(20, 30, 40, 50)),
-                    IsPaintChunk(
-                        1, 2, PaintChunk::Id(client_->Id(), DisplayItemType(5)),
-                        properties, nullptr, gfx::Rect(0, 0, 10, 10))));
-  }
+  EXPECT_THAT(chunks,
+              ElementsAre(IsPaintChunk(0, 1, id1, DefaultPaintChunkProperties(),
+                                       nullptr, gfx::Rect(0, 0, 10, 10)),
+                          IsPaintChunk(1, 1, id2, properties, &hit_test_data,
+                                       gfx::Rect(10, 20, 50, 60)),
+                          IsPaintChunk(1, 2, id3, properties, nullptr,
+                                       gfx::Rect(0, 0, 100, 120))));
 }
 
 TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueAllOpaqueItems) {

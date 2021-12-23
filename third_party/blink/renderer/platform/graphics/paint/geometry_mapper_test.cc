@@ -929,27 +929,6 @@ TEST_P(GeometryMapperTest, Reflection) {
   CheckMappings();
 }
 
-TEST_P(GeometryMapperTest, InvertedClip) {
-  // This test is invalid for CAP.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
-  auto clip = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 50, 50));
-  PropertyTreeState dest(t0(), *clip, e0());
-
-  FloatClipRect visual_rect(gfx::RectF(0, 0, 10, 200));
-  EXPECT_TRUE(visual_rect.IsTight());
-
-  GeometryMapper::LocalToAncestorVisualRect(PropertyTreeState::Root(), dest,
-                                            visual_rect);
-
-  // The "ancestor" clip is below the source clip in this case, so
-  // LocalToAncestorVisualRect must fall back to the original rect, mapped
-  // into the root space.
-  EXPECT_EQ(gfx::RectF(0, 0, 10, 200), visual_rect.Rect());
-  EXPECT_TRUE(visual_rect.IsTight());
-}
-
 TEST_P(GeometryMapperTest, Precision) {
   auto t1 = CreateTransform(t0(), TransformationMatrix().Scale(32767));
   auto t2 = CreateTransform(*t1, TransformationMatrix().Rotate(1));

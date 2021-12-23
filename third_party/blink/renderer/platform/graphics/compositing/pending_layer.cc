@@ -423,8 +423,7 @@ void PendingLayer::DecompositeTransforms(Vector<PendingLayer>& pending_layers) {
       mark_not_decompositable(node->LocalTransformSpace().Unalias());
     }
 
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-        pending_layer.GetCompositingType() == kScrollHitTestLayer) {
+    if (pending_layer.GetCompositingType() == kScrollHitTestLayer) {
       // The scroll translation node of a scroll hit test layer may not be
       // referenced by any pending layer's property tree state. Disallow
       // decomposition of it (and its ancestors).
