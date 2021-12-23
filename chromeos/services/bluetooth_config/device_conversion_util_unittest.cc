@@ -75,6 +75,18 @@ TEST_F(DeviceConversionUtilTest, TestConversion) {
   EXPECT_TRUE(properties->is_blocked_by_policy);
 }
 
+TEST_F(DeviceConversionUtilTest, TestConversion_EmptyName) {
+  device::BluetoothDevice* device = InitDevice(
+      /*bluetooth_class=*/0u, /*name=*/nullptr, /*address=*/"address",
+      /*paired=*/true, /*connected=*/true, /*is_blocked_by_policy=*/true);
+  mojom::BluetoothDevicePropertiesPtr properties =
+      GenerateBluetoothDeviceMojoProperties(device);
+  ASSERT_TRUE(properties);
+
+  // A device with no name should have its name set as its address.
+  EXPECT_EQ(u"address", properties->public_name);
+}
+
 TEST_F(DeviceConversionUtilTest, TestConversion_DefaultBattery) {
   device::BluetoothDevice* device = InitDevice(
       /*bluetooth_class=*/0u, /*name=*/"name", /*address=*/"address",
