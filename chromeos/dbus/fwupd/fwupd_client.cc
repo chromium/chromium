@@ -54,6 +54,7 @@ class FwupdClientImpl : public FwupdClient {
 
   void RequestUpdates(const std::string& device_id) override {
     CHECK(features::IsFirmwareUpdaterAppEnabled());
+    VLOG(1) << "fwupd: RequestUpdates called for: " << device_id;
     dbus::MethodCall method_call(kFwupdServiceInterface,
                                  kFwupdGetUpgradesMethodName);
     dbus::MessageWriter writer(&method_call);
@@ -68,6 +69,7 @@ class FwupdClientImpl : public FwupdClient {
 
   void RequestDevices() override {
     CHECK(features::IsFirmwareUpdaterAppEnabled());
+    VLOG(1) << "fwupd: RequestDevices called";
     dbus::MethodCall method_call(kFwupdServiceInterface,
                                  kFwupdGetDevicesMethodName);
     proxy_->CallMethodWithErrorResponse(
@@ -79,6 +81,7 @@ class FwupdClientImpl : public FwupdClient {
   void InstallUpdate(const std::string& device_id,
                      base::ScopedFD file_descriptor,
                      FirmwareInstallOptions options) override {
+    VLOG(1) << "fwupd: InstallUpdate called for id: " << device_id;
     dbus::MethodCall method_call(kFwupdServiceInterface,
                                  kFwupdInstallMethodName);
     dbus::MessageWriter writer(&method_call);
@@ -183,6 +186,8 @@ class FwupdClientImpl : public FwupdClient {
       const bool success = version && description && priority;
       // TODO(michaelcheco): Confirm that this is the expected behavior.
       if (success) {
+        VLOG(1) << "fwupd: Found update version for device: " << device_id
+                << " with version: " << version->GetString();
         updates.emplace_back(version->GetString(), description->GetString(),
                              priority->GetInt());
       } else {
@@ -230,6 +235,8 @@ class FwupdClientImpl : public FwupdClient {
         return;
       }
 
+      VLOG(1) << "fwupd: Device found: " << id->GetString() << " "
+              << name->GetString();
       devices.emplace_back(id->GetString(), name->GetString());
     }
 
@@ -246,6 +253,7 @@ class FwupdClientImpl : public FwupdClient {
       success = false;
     }
 
+    VLOG(1) << "fwupd: InstallUpdate returned with: " << success;
     for (auto& observer : observers_)
       observer.OnInstallResponse(success);
   }
