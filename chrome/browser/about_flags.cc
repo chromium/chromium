@@ -5955,10 +5955,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
 
-    {"safety-tips", flag_descriptions::kSafetyTipName,
-     flag_descriptions::kSafetyTipDescription, kOsAll,
-     FEATURE_VALUE_TYPE(security_state::features::kSafetyTipUI)},
-
     {"turn-off-streaming-media-caching-on-battery",
      flag_descriptions::kTurnOffStreamingMediaCachingOnBatteryName,
      flag_descriptions::kTurnOffStreamingMediaCachingOnBatteryDescription,

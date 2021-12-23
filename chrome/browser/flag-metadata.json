@@ -4869,11 +4869,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "safety-tips",
-    "owners": [ "jdeblasio", "estark", "meacer" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "sameparty-cookies-considered-first-party",
     "owners": ["cfredric", "chrome-first-party-sets@chromium.org"],
     "expiry_milestone": 98

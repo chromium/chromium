@@ -1231,9 +1231,6 @@ extern const char kMBIModeDescription[];
 extern const char kIntensiveWakeUpThrottlingName[];
 extern const char kIntensiveWakeUpThrottlingDescription[];
 
-extern const char kSafetyTipName[];
-extern const char kSafetyTipDescription[];
-
 extern const char kSamePartyCookiesConsideredFirstPartyName[];
 extern const char kSamePartyCookiesConsideredFirstPartyDescription[];
 

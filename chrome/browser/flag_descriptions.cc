@@ -2141,12 +2141,6 @@ const char kIntensiveWakeUpThrottlingDescription[] =
     "page that has been hidden for 5 minutes. For additional details, see "
     "https://www.chromestatus.com/feature/4718288976216064.";
 
-const char kSafetyTipName[] =
-    "Show Safety Tip UI when visiting low-reputation websites";
-const char kSafetyTipDescription[] =
-    "If enabled, a Safety Tip UI may be displayed when visiting or interacting "
-    "with a site Chrome believes may be suspicious.";
-
 const char kSamePartyCookiesConsideredFirstPartyName[] =
     "Consider SameParty cookies to be first-party.";
 const char kSamePartyCookiesConsideredFirstPartyDescription[] =
