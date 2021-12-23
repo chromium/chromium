@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_LACROS_DATA_MIGRATION_SCREEN_H_
 
 #include "base/callback_forward.h"
+#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
@@ -18,17 +19,6 @@ namespace ash {
 // directory. The screen is shown during login.
 class LacrosDataMigrationScreen : public BaseScreen {
  public:
-  // MigratorDelegate initiates the migration. A fake migrator delegate can be
-  // set for testing.
-  class MigratorDelegate {
-   public:
-    // Calls the actual migrator method `ash::BrowserDataMigrator::Migrate()`.
-    virtual base::OnceClosure Migrate(
-        const std::string& user_id_hash,
-        const base::RepeatingCallback<void(int)>& progress_callback) = 0;
-    virtual ~MigratorDelegate() = default;
-  };
-
   explicit LacrosDataMigrationScreen(LacrosDataMigrationScreenView* view);
   ~LacrosDataMigrationScreen() override;
   LacrosDataMigrationScreen(const LacrosDataMigrationScreen&) = delete;
@@ -51,16 +41,12 @@ class LacrosDataMigrationScreen : public BaseScreen {
   // name on `LacrosDataMigrationScreenView`.
   void ShowSkipButton();
 
+  // Set `migrator_` for testing.
+  void SetMigratorForTesting(std::unique_ptr<BrowserDataMigrator> migrator);
+
   // Sets `skip_post_show_button_for_testing_` for testing. Setting this to true
   // prevents `ShowSkipButton()` from being posted.
   void SetSkipPostShowButtonForTesting(bool value);
-
-  // Set `migrator_delegate_` for testing.
-  void SetMigratorDelegateForTesting(
-      std::unique_ptr<MigratorDelegate> migrator_delegate);
-
-  // Set `user_id_hash_` for testing.
-  void SetUserIdHashForTesting(const std::string& user_id_hash);
 
  private:
   // BaseScreen:
@@ -73,11 +59,10 @@ class LacrosDataMigrationScreen : public BaseScreen {
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
 
   LacrosDataMigrationScreenView* view_;
+  std::unique_ptr<BrowserDataMigrator> migrator_;
   // Callback to cancel migration. Stores the return value from
   // `migrator_delegate->Migrate()`.
   base::OnceClosure cancel_callback_;
-  std::unique_ptr<MigratorDelegate> migrator_delegate_;
-  std::string user_id_hash_;
   bool skip_post_show_button_for_testing_ = false;
   base::WeakPtrFactory<LacrosDataMigrationScreen> weak_factory_{this};
 };

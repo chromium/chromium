@@ -1016,7 +1016,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::ChromeUserManagerImpl::RegisterPrefs(registry);
   crosapi::browser_util::RegisterLocalStatePrefs(registry);
   chromeos::CupsPrintersManager::RegisterLocalStatePrefs(registry);
-  ash::BrowserDataMigrator::RegisterLocalStatePrefs(registry);
+  ash::BrowserDataMigratorImpl::RegisterLocalStatePrefs(registry);
   chromeos::bluetooth_config::BluetoothPowerControllerImpl::
       RegisterLocalStatePrefs(registry);
   chromeos::bluetooth_config::DeviceNameManagerImpl::RegisterLocalStatePrefs(

@@ -2205,7 +2205,7 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
 
   // Call this before `RestartToApplyPerSessionFlagsIfNeed()` in the login
   // process.
-  ash::BrowserDataMigrator::ClearMigrationStep(
+  ash::BrowserDataMigratorImpl::ClearMigrationStep(
       g_browser_process->local_state());
 
   if (RestartToApplyPerSessionFlagsIfNeed(profile, false))
@@ -2213,8 +2213,8 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
 
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
-  if (ash::BrowserDataMigrator::MaybeRestartToMigrate(user->GetAccountId(),
-                                                      user->username_hash())) {
+  if (ash::BrowserDataMigratorImpl::MaybeRestartToMigrate(
+          user->GetAccountId(), user->username_hash())) {
     LOG(WARNING) << "Restarting chrome to run profile migration.";
     return;
   }

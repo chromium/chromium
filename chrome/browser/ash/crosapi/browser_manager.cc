@@ -530,7 +530,7 @@ void BrowserManager::InitializeAndStart() {
   // inside the profile data directory.
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&ash::BrowserDataMigrator::DryRunToCollectUMA,
+      base::BindOnce(&ash::BrowserDataMigratorImpl::DryRunToCollectUMA,
                      ProfileManager::GetPrimaryUserProfile()->GetPath()));
 }
 

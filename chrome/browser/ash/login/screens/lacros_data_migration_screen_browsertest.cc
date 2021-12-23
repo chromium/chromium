@@ -27,16 +27,12 @@ namespace {
 constexpr char kLacrosDataMigrationId[] = "lacros-data-migration";
 const test::UIPath kSkipButton = {kLacrosDataMigrationId, "cancelButton"};
 
-class FakeMigrator : public LacrosDataMigrationScreen::MigratorDelegate {
+class FakeMigrator : public BrowserDataMigrator {
  public:
-  base::OnceClosure Migrate(
-      const std::string& user_id_hash,
-      const base::RepeatingCallback<void(int)>& progress_callback) override {
-    return base::BindOnce([](bool* cancel_called) { *cancel_called = true; },
-                          &cancel_called_);
-  }
+  // BrowserDataMigrator overrides.
+  void Migrate() override {}
+  void Cancel() override { cancel_called_ = true; }
 
-  // Checks if the returned function from `Migrate()` is called.
   bool IsCancelCalled() { return cancel_called_; }
 
  private:
@@ -69,9 +65,8 @@ class LacrosDataMigrationScreenTest : public OobeBaseTest {
             WizardController::default_controller()->GetScreen(
                 LacrosDataMigrationScreenView::kScreenId));
     fake_migrator_ = new FakeMigrator();
-    lacros_data_migration_screen->SetMigratorDelegateForTesting(
+    lacros_data_migration_screen->SetMigratorForTesting(
         base::WrapUnique(fake_migrator_));
-    lacros_data_migration_screen->SetUserIdHashForTesting("user");
     lacros_data_migration_screen->SetSkipPostShowButtonForTesting(true);
     OobeBaseTest::SetUpOnMainThread();
   }

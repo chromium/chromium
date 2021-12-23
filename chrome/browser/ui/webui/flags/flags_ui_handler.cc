@@ -190,7 +190,7 @@ void FlagsUIHandler::HandleRestartBrowser(const base::ListValue* args) {
   // 2. User logs in and migration is completed.
   // 3. User disabled lacros in session.
   // 4. User re-enables lacros in session.
-  ash::BrowserDataMigrator::ClearMigrationStep(
+  ash::BrowserDataMigratorImpl::ClearMigrationStep(
       g_browser_process->local_state());
 #endif
   chrome::AttemptRestart();

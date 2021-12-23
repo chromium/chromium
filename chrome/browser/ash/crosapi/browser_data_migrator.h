@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/timer/elapsed_timer.h"
@@ -51,7 +52,7 @@ constexpr char kCreateDirectoryFail[] =
     "Ash.BrowserDataMigrator.CreateDirectoryFailure";
 
 // The following UMAs are recorded from
-// `BrowserDataMigrator::DryRunToCollectUMA()`.
+// `BrowserDataMigratorImpl::DryRunToCollectUMA()`.
 constexpr char kDryRunNoCopyDataSize[] =
     "Ash.BrowserDataMigrator.DryRunNoCopyDataSizeMB";
 constexpr char kDryRunAshDataSize[] =
@@ -105,9 +106,19 @@ class CancelFlag : public base::RefCountedThreadSafe<CancelFlag> {
   std::atomic_bool cancelled_;
 };
 
-// BrowserDataMigrator is responsible for one time browser data migration from
-// ash-chrome to lacros-chrome.
+// The interface is exposed to be inherited by fakes in tests.
 class BrowserDataMigrator {
+ public:
+  virtual ~BrowserDataMigrator() = default;
+  // Carries out the migration. It needs to be called on UI thread.
+  virtual void Migrate() = 0;
+  // Cancels the migration.
+  virtual void Cancel() = 0;
+};
+
+// BrowserDataMigratorImpl is responsible for one time browser data migration
+// from ash-chrome to lacros-chrome.
+class BrowserDataMigratorImpl : public BrowserDataMigrator {
  public:
   // Used to describe a file/dir that has to be migrated.
   struct TargetItem {
@@ -204,6 +215,20 @@ class BrowserDataMigrator {
                          // TargetInfo::no_copy_items to make extra space.
   };
 
+  // `BrowserDataMigratorImpl` migrates browser data from `original_profile_dir`
+  // to a new profile location for lacros chrome. `progress_callback` is called
+  // to update the progress bar on the screen. `completion_callback` passed as
+  // an argument will be called on the UI thread where `Migrate()` is called
+  // once migration has completed or failed.
+  BrowserDataMigratorImpl(const base::FilePath& original_profile_dir,
+                          const std::string& user_id_hash,
+                          const ProgressCallback& progress_callback,
+                          base::OnceClosure completion_callback,
+                          PrefService* local_state);
+  BrowserDataMigratorImpl(const BrowserDataMigratorImpl&) = delete;
+  BrowserDataMigratorImpl& operator=(const BrowserDataMigratorImpl&) = delete;
+  ~BrowserDataMigratorImpl() override;
+
   // Checks if migration is required for the user identified by `user_id_hash`
   // and if it is required, calls a D-Bus method to session_manager and
   // terminates ash-chrome. It returns true if the D-Bus call to the
@@ -212,22 +237,17 @@ class BrowserDataMigrator {
   static bool MaybeRestartToMigrate(const AccountId& account_id,
                                     const std::string& user_id_hash);
 
-  // The method needs to be called on UI thread. It posts `MigrateInternal()` on
-  // a worker thread and returns a callback which can be used to cancel
-  // migration mid way. `progress_callback` is called to update the progress bar
-  // on the screen.
-  // `completion_callbackchrome/browser/ash/crosapi/browser_data_migrator.cc`
-  // passed as an argument will be called on the original thread once migration
-  // has completed or failed.
-  static base::OnceClosure Migrate(const std::string& user_id_hash,
-                                   const ProgressCallback& progress_callback,
-                                   base::OnceClosure completion_callback);
+  // `BrowserDataMigrator` methods.
+  void Migrate() override;
+  void Cancel() override;
 
   // Registers boolean pref `kCheckForMigrationOnRestart` with default as false.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Clears the value of `kMigrationStep` in Local State.
   static void ClearMigrationStep(PrefService* local_state);
+
+  ResultValue GetFinalStatus();
 
   // Collects migration specific UMAs without actually running the migration. It
   // does not check if lacros is enabled.
@@ -241,13 +261,15 @@ class BrowserDataMigrator {
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, SetupTmpDir);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, CancelSetupTmpDir);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, RecordStatus);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, MigrateInternal);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, Migrate);
-
-  // Gets the value of `kMigrationStep` in Local State.
-  static MigrationStep GetMigrationStep(PrefService* local_state);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, MigrateCancelled);
 
   // Sets the value of `kMigrationStep` in Local State.
   static void SetMigrationStep(PrefService* local_state, MigrationStep step);
+
+  // Gets the value of `kMigrationStep` in Local State.
+  static MigrationStep GetMigrationStep(PrefService* local_state);
 
   // Increments the migration attempt count stored in
   // `kMigrationAttemptCountPref` by 1 for the user identified by
@@ -281,9 +303,7 @@ class BrowserDataMigrator {
                                const std::string& user_id_hash);
 
   // Called on UI thread once migration is finished.
-  static void MigrateInternalFinishedUIThread(base::OnceClosure callback,
-                                              const std::string& user_id_hash,
-                                              MigrationResult result);
+  void MigrateInternalFinishedUIThread(MigrationResult result);
 
   // Records to UMA histograms. Note that if `target_info` is nullptr, timer
   // will be ignored.
@@ -319,7 +339,7 @@ class BrowserDataMigrator {
 
   // Copies `item` to location pointed by `dest`. Returns true on success and
   // false on failure.
-  static bool CopyTargetItem(const BrowserDataMigrator::TargetItem& item,
+  static bool CopyTargetItem(const BrowserDataMigratorImpl::TargetItem& item,
                              const base::FilePath& dest,
                              CancelFlag* cancel_flag,
                              MigrationProgressTracker* progress_tracker);
@@ -333,6 +353,28 @@ class BrowserDataMigrator {
 
   // Records the sizes of `TargetItem`s.
   static void RecordTargetItemSizes(const std::vector<TargetItem>& items);
+
+  // Path to the original profile data directory, which is directly under the
+  // user data directory.
+  const base::FilePath original_profile_dir_;
+  // A hash string of the profile user ID.
+  const std::string user_id_hash_;
+  // `progress_tracker_` is used to report progress status to the screen.
+  std::unique_ptr<MigrationProgressTracker> progress_tracker_;
+  // Callback to be called once migration is done. It is called regardless of
+  // whether migration succeeded or not.
+  base::OnceClosure completion_callback_;
+  // `cancel_flag_` gets set by `Cancel()` and tasks posted to worker threads
+  // can check if migration is cancelled or not.
+  scoped_refptr<CancelFlag> cancel_flag_;
+  // Local state prefs, not owned.
+  PrefService* local_state_ = nullptr;
+  // Final status of the migration.
+  ResultValue final_status_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<BrowserDataMigratorImpl> weak_factory_{this};
 };
 
 }  // namespace ash
