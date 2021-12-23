@@ -31,7 +31,7 @@ compile_js_files = [
   "lib/ffmpeg.js",
   "main.js",
   "metrics.ts",
-  "models/async_interval.js",
+  "models/async_interval.ts",
   "models/async_writer.js",
   "models/barcode.js",
   "models/barcode_worker_interface.js",
