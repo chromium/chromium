@@ -6533,6 +6533,44 @@
                         "ReadLater"
                     ],
                     "disable_features": [
+                        "BookmarkBottomSheet",
+                        "BookmarksImprovedSaveFlow",
+                        "BookmarksRefresh"
+                    ]
+                },
+                {
+                    "name": "EnabledDedicatedSaveFlow",
+                    "params": {
+                        "autodismiss_enabled": "true",
+                        "bookmark_in_app_menu": "true",
+                        "bookmark_visuals_enabled": "true",
+                        "reading_list_in_app_menu": "true",
+                        "use_root_bookmark_as_default": "true"
+                    },
+                    "enable_features": [
+                        "BookmarksImprovedSaveFlow",
+                        "BookmarksRefresh",
+                        "ReadLater"
+                    ],
+                    "disable_features": [
+                        "BookmarkBottomSheet"
+                    ]
+                },
+                {
+                    "name": "EnabledSemiIntegrated",
+                    "params": {
+                        "allow_bookmark_type_swapping": "true",
+                        "autodismiss_enabled": "true",
+                        "bookmark_in_app_menu": "false",
+                        "bookmark_visuals_enabled": "true",
+                        "use_root_bookmark_as_default": "true"
+                    },
+                    "enable_features": [
+                        "BookmarksImprovedSaveFlow",
+                        "BookmarksRefresh",
+                        "ReadLater"
+                    ],
+                    "disable_features": [
                         "BookmarkBottomSheet"
                     ]
                 }
