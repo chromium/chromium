@@ -379,6 +379,10 @@ void FederatedAuthRequestImpl::OnClientIdMetadataResponseReceived(
       client_id_metadata_ = data;
       network_manager_->SendAccountsRequest(
           endpoints_.accounts,
+          request_dialog_controller_->GetBrandIconIdealSize(),
+          request_dialog_controller_->GetBrandIconMinimumSize(),
+          base::BindOnce(&FederatedAuthRequestImpl::DownloadBitmap,
+                         weak_ptr_factory_.GetWeakPtr()),
           base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
                          weak_ptr_factory_.GetWeakPtr()));
     }
@@ -521,10 +525,21 @@ void FederatedAuthRequestImpl::OnTokenProvisionApproved(
   CompleteRequest(RequestIdTokenStatus::kSuccess, id_token_);
 }
 
+void FederatedAuthRequestImpl::DownloadBitmap(
+    const GURL& icon_url,
+    int ideal_icon_size,
+    WebContents::ImageDownloadCallback callback) {
+  WebContents::FromRenderFrameHost(render_frame_host_)
+      ->DownloadImage(icon_url, /*is_favicon*/ false,
+                      gfx::Size(ideal_icon_size, ideal_icon_size),
+                      0 /* max_bitmap_size */, false /* bypass_cache */,
+                      std::move(callback));
+}
+
 void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::AccountList accounts,
-    content::IdentityProviderMetadata idp_metadata) {
+    IdentityProviderMetadata idp_metadata) {
   switch (status) {
     case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
       CompleteRequest(RequestIdTokenStatus::kErrorFetchingAccountsHttpNotFound,

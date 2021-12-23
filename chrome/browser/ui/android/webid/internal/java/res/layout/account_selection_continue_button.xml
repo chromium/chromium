@@ -11,7 +11,9 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/account_selection_sheet_button_margin"
     android:layout_marginBottom="@dimen/account_selection_sheet_button_margin"
-    android:text="@string/account_selection_continue"
+    android:drawablePadding="5dp"
+    android:paddingStart="10dp"
+    android:paddingEnd="@dimen/account_selection_continue_padding_end"
     android:ellipsize="end"
     android:singleLine="true"
     style="@style/FilledButton.Flat"/>

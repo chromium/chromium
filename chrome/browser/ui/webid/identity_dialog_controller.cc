@@ -19,6 +19,14 @@ IdentityDialogController::IdentityDialogController() = default;
 
 IdentityDialogController::~IdentityDialogController() = default;
 
+int IdentityDialogController::GetBrandIconMinimumSize() {
+  return AccountSelectionView::GetBrandIconMinimumSize();
+}
+
+int IdentityDialogController::GetBrandIconIdealSize() {
+  return AccountSelectionView::GetBrandIconIdealSize();
+}
+
 void IdentityDialogController::ShowInitialPermissionDialog(
     content::WebContents* rp_web_contents,
     const GURL& idp_url,

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ui.android.webid;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
@@ -14,6 +16,10 @@ import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 
 import static java.util.Arrays.asList;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.view.View;
@@ -42,6 +48,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.D
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
+import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -175,7 +182,7 @@ public class AccountSelectionViewTest {
                                     .with(AccountProperties.ON_CLICK_LISTENER, null)
                                     .build());
 
-            mSheetItems.addAll(asList(account_without_callback, buildContinueButton(ANA)));
+            mSheetItems.addAll(asList(account_without_callback, buildContinueButton(ANA, null)));
         });
         pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
 
@@ -252,6 +259,46 @@ public class AccountSelectionViewTest {
         assertEquals("Expected two clickable links", 2, spans.length);
     }
 
+    /**
+     * Tests that the brand foreground and the brand icon are used in the "Continue" button.
+     */
+    @Test
+    @MediumTest
+    public void testContinueButtonBranding() {
+        final int expectedTextColor = Color.BLUE;
+        final int expectedIconColor = Color.RED;
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Bitmap brandIcon = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+            brandIcon.eraseColor(expectedIconColor);
+            IdentityProviderMetadata idpMetadata = new IdentityProviderMetadata(
+                    expectedTextColor, /*brandBackgroundColor*/ Color.GREEN, brandIcon);
+
+            mSheetItems.addAll(Collections.singletonList(buildContinueButton(ANA, idpMetadata)));
+        });
+
+        pollUiThread(() -> mContentView.getVisibility() == View.VISIBLE);
+
+        assertNotNull(getAccounts().getChildAt(0));
+        TextView continueButton = mContentView.findViewById(R.id.account_selection_continue_btn);
+
+        assertEquals(expectedTextColor, continueButton.getTextColors().getDefaultColor());
+
+        Drawable[] compoundDrawables = continueButton.getCompoundDrawables();
+        assertEquals(4, compoundDrawables.length);
+
+        assertTrue(compoundDrawables[0] instanceof BitmapDrawable);
+        Bitmap actualBrandIconBitmap = ((BitmapDrawable) compoundDrawables[0]).getBitmap();
+        // AccountSelectionViewBinder crops the brand icon in a circle. Test a pixel in the middle
+        // of the icon which is unaffected by the cropping.
+        int centerX = actualBrandIconBitmap.getWidth() / 2;
+        int centerY = actualBrandIconBitmap.getHeight() / 2;
+        assertEquals(expectedIconColor, actualBrandIconBitmap.getPixel(centerX, centerY));
+
+        assertNull(compoundDrawables[1]);
+        assertNull(compoundDrawables[2]);
+        assertNull(compoundDrawables[3]);
+    }
+
     private RecyclerView getAccounts() {
         return mContentView.findViewById(R.id.sheet_item_list);
     }
@@ -277,12 +324,18 @@ public class AccountSelectionViewTest {
                         .build());
     }
 
-    private MVCListAdapter.ListItem buildContinueButton(Account account) {
-        return new MVCListAdapter.ListItem(AccountSelectionProperties.ItemType.CONTINUE_BUTTON,
+    private MVCListAdapter.ListItem buildContinueButton(
+            Account account, IdentityProviderMetadata idpMetadata) {
+        PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(ContinueButtonProperties.ALL_KEYS)
                         .with(ContinueButtonProperties.ACCOUNT, account)
-                        .with(ContinueButtonProperties.ON_CLICK_LISTENER, mAccountCallback)
-                        .build());
+                        .with(ContinueButtonProperties.ON_CLICK_LISTENER, mAccountCallback);
+        if (idpMetadata != null) {
+            modelBuilder.with(ContinueButtonProperties.IDP_METADATA, idpMetadata);
+        }
+
+        return new MVCListAdapter.ListItem(
+                AccountSelectionProperties.ItemType.CONTINUE_BUTTON, modelBuilder.build());
     }
 
     private MVCListAdapter.ListItem buildCancelButton() {

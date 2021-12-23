@@ -98,7 +98,7 @@ public class AccountSelectionControllerTest {
             "Sam E. Goto", "Sam", TEST_PROFILE_PIC, /*isSignIn=*/false);
 
     private static final IdentityProviderMetadata IDP_METADATA =
-            new IdentityProviderMetadata(Color.BLACK, Color.BLACK);
+            new IdentityProviderMetadata(Color.BLACK, Color.BLACK, null);
     private static final ClientIdMetadata CLIENT_ID_METADATA =
             new ClientIdMetadata(TEST_URL_TERMS_OF_SERVICE, TEST_URL_PRIVACY_POLICY);
 

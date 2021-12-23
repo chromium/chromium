@@ -19,6 +19,7 @@
 #include "ui/android/color_utils_android.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+#include "ui/gfx/android/java_bitmap.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -45,9 +46,13 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(JNIEnv* env,
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(
     JNIEnv* env,
     const content::IdentityProviderMetadata& metadata) {
+  base::android::ScopedJavaLocalRef<jobject> java_brand_icon;
+  if (!metadata.brand_icon.isNull())
+    java_brand_icon = gfx::ConvertToJavaBitmap(metadata.brand_icon);
   return Java_IdentityProviderMetadata_Constructor(
       env, ui::OptionalSkColorToJavaColor(metadata.brand_text_color),
-      ui::OptionalSkColorToJavaColor(metadata.brand_background_color));
+      ui::OptionalSkColorToJavaColor(metadata.brand_background_color),
+      java_brand_icon);
 }
 
 ScopedJavaLocalRef<jobject> ConvertToJavaClientIdMetadata(
@@ -176,4 +181,16 @@ bool AccountSelectionViewAndroid::RecreateJavaObject() {
 std::unique_ptr<AccountSelectionView> AccountSelectionView::Create(
     AccountSelectionView::Delegate* delegate) {
   return std::make_unique<AccountSelectionViewAndroid>(delegate);
+}
+
+// static
+int AccountSelectionView::GetBrandIconMinimumSize() {
+  return Java_AccountSelectionBridge_getBrandIconMinimumSize(
+      base::android::AttachCurrentThread());
+}
+
+// static
+int AccountSelectionView::GetBrandIconIdealSize() {
+  return Java_AccountSelectionBridge_getBrandIconIdealSize(
+      base::android::AttachCurrentThread());
 }

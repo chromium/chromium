@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
@@ -80,6 +81,7 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
 
   absl::optional<SkColor> brand_text_color;
   absl::optional<SkColor> brand_background_color;
+  SkBitmap brand_icon;
 };
 
 // IdentityRequestDialogController is in interface for control of the UI
@@ -109,6 +111,14 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       const IdentityRequestDialogController&) = delete;
 
   virtual ~IdentityRequestDialogController() = default;
+
+  // Returns the ideal size for the identity provider brand icon. The brand icon
+  // is displayed in the accounts dialog.
+  virtual int GetBrandIconIdealSize();
+
+  // Returns the minimum size for the identity provider brand icon. The brand
+  // icon is displayed in the accounts dialog.
+  virtual int GetBrandIconMinimumSize();
 
   // Permission-oriented flow methods.
 

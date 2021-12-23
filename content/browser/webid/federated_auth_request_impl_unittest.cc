@@ -572,9 +572,10 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
                                    std::string token,
                                    bool prefer_auto_sign_in) {
     if (conf.accounts_response) {
-      EXPECT_CALL(*mock_request_manager_, SendAccountsRequest(_, _))
+      EXPECT_CALL(*mock_request_manager_, SendAccountsRequest(_, _, _, _, _))
           .WillOnce(Invoke(
-              [&](const GURL&,
+              [&](const GURL&, int, int,
+                  IdpNetworkRequestManager::BrandIconDownloader,
                   IdpNetworkRequestManager::AccountsRequestCallback callback) {
                 std::move(callback).Run(*conf.accounts_response, conf.accounts,
                                         IdentityProviderMetadata());

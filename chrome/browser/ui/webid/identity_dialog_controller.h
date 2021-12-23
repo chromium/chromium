@@ -43,6 +43,9 @@ class IdentityDialogController
   ~IdentityDialogController() override;
 
   // content::IdentityRequestDelegate
+  int GetBrandIconMinimumSize() override;
+  int GetBrandIconIdealSize() override;
+
   void ShowInitialPermissionDialog(
       content::WebContents* rp_web_contents,
       const GURL& idp_url,

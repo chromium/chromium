@@ -31,6 +31,8 @@ class AccountSelectionView {
   };
 
   static std::unique_ptr<AccountSelectionView> Create(Delegate* delegate);
+  static int GetBrandIconMinimumSize();
+  static int GetBrandIconIdealSize();
 
   explicit AccountSelectionView(Delegate* delegate) : delegate_(delegate) {}
   AccountSelectionView(const AccountSelectionView&) = delete;
