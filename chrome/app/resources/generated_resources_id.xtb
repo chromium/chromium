@@ -1235,7 +1235,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2251218783371366160">Buka menggunakan penampil sistem</translation>
 <translation id="225163402930830576">Segarkan Jaringan</translation>
 <translation id="2251809247798634662">Jendela Samaran baru</translation>
-<translation id="225240747099314620">Izinkan pengenal untuk konten yang dilindungi (mungkin harus memulai ulang komputer)</translation>
+<translation id="225240747099314620">Izinkan ID untuk konten yang dilindungi (mungkin harus memulai ulang komputer)</translation>
 <translation id="2255077166240162850">Perangkat ini terkunci ke domain atau mode lain.</translation>
 <translation id="2255317897038918278">Microsoft Time Stamping</translation>
 <translation id="2256115617011615191">Mulai ulang sekarang</translation>
@@ -2214,7 +2214,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{File}other{# file}}</translation>
 <translation id="326999365752735949">Mendownload diff</translation>
 <translation id="3270965368676314374">Membaca, mengubah, dan menghapus foto, musik, serta media lain dari komputer Anda</translation>
-<translation id="327147043223061465">Lihat semua data situs dan cookie</translation>
+<translation id="327147043223061465">Lihat semua cookie dan data situs</translation>
 <translation id="3274763671541996799">Anda telah memasuki mode layar penuh.</translation>
 <translation id="3275778809241512831">Kunci keamanan internal Anda saat ini tidak aman. Harap hapus dari layanan apa pun tempat Anda menggunakannya. Harap reset kunci keamanan untuk memecahkan masalahnya.</translation>
 <translation id="3275778913554317645">Buka sebagai jendela</translation>
@@ -2274,7 +2274,7 @@ dan Ctrl+Alt+Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="3333190335304955291">Anda dapat menonaktifkan layanan ini di Setelan.</translation>
 <translation id="3333961966071413176">Semua kontak</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> - Video diputar dalam mode picture-in-picture</translation>
-<translation id="3335947283844343239">Buka Kembali Tab yang Tertutup</translation>
+<translation id="3335947283844343239">Buka Kembali Tab yang Ditutup</translation>
 <translation id="3336855445806447827">Tidak yakin</translation>
 <translation id="3337568642696914359">Jangan izinkan situs menangani protokol</translation>
 <translation id="3340251637492627067">Organisasi Anda mengharuskan download yang valid untuk disimpan ke <ph name="WEB_DRIVE" />. Saat login, token autentikasi unik akan disimpan dan digunakan untuk semua download valid berikutnya.</translation>

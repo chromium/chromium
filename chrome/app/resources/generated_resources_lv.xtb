@@ -2497,7 +2497,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3576324189521867626">Veiksmīgi instalēta</translation>
 <translation id="3578594933904494462">Šīs cilnes saturs tiek kopīgots.</translation>
 <translation id="3581605050355435601">IP adreses automātiska konfigurēšana</translation>
-<translation id="3582057310199111521">Ievadīta maldinošā vietnē, atklāta datu pārkāpuma dēļ</translation>
+<translation id="3582057310199111521">Ievadīta maldinošā vietnē, atklāta datu aizsardzības pārkāpuma dēļ</translation>
 <translation id="3584169441612580296">Lasīt fotoattēus, mūziku un citu datorā esošu multivides saturu un mainīt to</translation>
 <translation id="3586806079541226322">Failu nevar atvērt</translation>
 <translation id="3586931643579894722">Slēpt detaļas</translation>
@@ -2599,7 +2599,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3688526734140524629">Mainīt kanālu</translation>
 <translation id="3688578402379768763">Atjaunināts</translation>
 <translation id="3688794912214798596">Mainīt valodas…</translation>
-<translation id="3690369331356918524">Tiek parādīts brīdinājums, ja paroles ir atklātas datu noplūdes dēļ.</translation>
+<translation id="3690369331356918524">Tiek parādīts brīdinājums, ja paroles ir atklātas datu aizsardzības pārkāpuma dēļ.</translation>
 <translation id="3691231116639905343">Tastatūras lietotnes</translation>
 <translation id="3691267899302886494">Vietnē <ph name="HOST" /> tiek pieprasīta atļauja kopīgot jūsu ekrānu.</translation>
 <translation id="369135240373237088">Atkārtota pierakstīšanās, izmantojot mācību iestādes kontu</translation>
@@ -5648,7 +5648,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6993000214273684335">Cilne tika noņemta no grupas bez nosaukuma — <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6993050154661569036">Notiek pārlūkprogrammas Chrome atjaunināšana</translation>
 <translation id="6994069045767983299">Invertētas krāsas</translation>
-<translation id="6995899638241819463">Brīdināt, ja paroles tiek atklātas datu noplūdes dēļ</translation>
+<translation id="6995899638241819463">Brīdināt, ja paroles tiek atklātas datu aizsardzības pārkāpums dēļ</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" />— darbību žurnāls</translation>
 <translation id="6997707937646349884">Jūsu ierīcēs:</translation>
 <translation id="6998793565256476099">Reģistrēt ierīci videokonferencēm</translation>
@@ -6365,7 +6365,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7742879569460013116">Kopīgot saiti uz:</translation>
 <translation id="774377079771918250">Izvēlieties saglabāšanas vietu</translation>
 <translation id="7744047395460924128">Skatiet savu drukāšanas vēsturi</translation>
-<translation id="7744192722284567281">Atklāta datu pārkāpuma dēļ</translation>
+<translation id="7744192722284567281">Atklāta datu aizsardzības pārkāpuma dēļ</translation>
 <translation id="7744649840067671761">Lai piešķirtu, nospiediet jaunu slēdzi vai taustiņu.
 Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</translation>
 <translation id="7750228210027921155">Attēls attēlā</translation>

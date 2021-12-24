@@ -1005,7 +1005,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6981982820502123353">Pieejamība</translation>
 <translation id="6987047470128880212">Inkognito režīms šajā ierīcē nav pieejams.</translation>
 <translation id="6989267951144302301">Nevarēja lejupielādēt</translation>
-<translation id="6995899638241819463">Brīdināt, ja paroles tiek atklātas datu noplūdes dēļ</translation>
+<translation id="6995899638241819463">Brīdināt, ja paroles tiek atklātas datu aizsardzības pārkāpums dēļ</translation>
 <translation id="7001056293070445572">Šis fails ir liels (<ph name="FILE_SIZE" />).</translation>
 <translation id="7020741890149022655">Iekļaut lasīš. sarakstā <ph name="BEGIN_NEW" />Jauns<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">Atvērt pārlūkā</translation>
@@ -1165,7 +1165,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7925590027513907933">{FILE_COUNT,plural, =1{Notiek faila lejupielāde.}zero{Notiek # failu lejupielāde.}one{Notiek # faila lejupielāde.}other{Notiek # failu lejupielāde.}}</translation>
 <translation id="7926975587469166629">Kredītkartes apzīmējums</translation>
 <translation id="7929962904089429003">Atvērt izvēlni</translation>
-<translation id="7930998711684428189">Jūs saņemat brīdinājumu, ja paroles tiek atklātas datu pārkāpuma dēļ.</translation>
+<translation id="7930998711684428189">Jūs saņemat brīdinājumu, ja paroles tiek atklātas datu aizsardzības pārkāpuma dēļ.</translation>
 <translation id="7939485076072265087">Izveidot stilizētu kartīti ar izcēlumu</translation>
 <translation id="7942131818088350342">Spraudnis <ph name="PRODUCT_NAME" /> ir novecojis.</translation>
 <translation id="7944772052836377867">Sinhronizēšanai nepieciešams apstiprināt jūsu identitāti</translation>

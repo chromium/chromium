@@ -7,7 +7,7 @@
 <translation id="1044891598689252897">Vietnes darbosies normāli</translation>
 <translation id="1047726139967079566">Saglabāt šo lapu kā grāmatzīmi...</translation>
 <translation id="1049743911850919806">Inkognito</translation>
-<translation id="105093091697134113">Tālāk norādītajos kontos tiek izmantotas paroles, kas tika atklātas trešās puses datu pārkāpumā vai ievadītas maldinošā vietnē. Nekavējoties nomainiet šīs paroles, lai aizsargātu savus kontus.</translation>
+<translation id="105093091697134113">Tālāk norādītajos kontos tiek izmantotas paroles, kas tika atklātas trešās puses datu aizsardzības pārkāpumā vai ievadītas maldinošā vietnē. Nekavējoties nomainiet šīs paroles, lai aizsargātu savus kontus.</translation>
 <translation id="105214722824962652">Jūs netiksiet izrakstīts no sava Google konta. Kad esat pierakstījies, jūsu Google kontā var saglabāt <ph name="BEGIN_LINK" />arī cita veida darbības<ph name="END_LINK" />. Jebkurā laikā varat tās izdzēst.
 
         
@@ -639,7 +639,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="6979158407327259162">Google disks</translation>
 <translation id="6988572888918530647">Google konta pārvaldība</translation>
 <translation id="6989674195860388998">Mainīt iestatījumos…</translation>
-<translation id="6995899638241819463">Brīdināt, ja paroles tiek atklātas datu noplūdes dēļ</translation>
+<translation id="6995899638241819463">Brīdināt, ja paroles tiek atklātas datu aizsardzības pārkāpums dēļ</translation>
 <translation id="6998989275928107238">Kam</translation>
 <translation id="7004032350256606903">Saskaņā ar jūsu organizācijas politiku tīmeklis ir jāpārlūko privāti.
 <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
