@@ -862,6 +862,12 @@ void ChromeShelfController::DoShowAppInfoFlow(Profile* profile,
 void ChromeShelfController::OnAppInstalled(
     content::BrowserContext* browser_context,
     const std::string& app_id) {
+  if (IsAppPinned(app_id) &&
+      ShelfControllerHelper::IsAppHiddenFromShelf(profile(), app_id)) {
+    ScopedPinSyncDisabler scoped_pin_sync_disabler = GetScopedPinSyncDisabler();
+    UnpinShelfItemInternal(ash::ShelfID(app_id));
+  }
+
   // When the app is pinned to the shelf, or added to the shelf, the app
   // probably isn't ready in AppService, so set the title, and load the icon
   // again on callback when the app is ready in AppService.
@@ -934,6 +940,64 @@ void ChromeShelfController::OnAppUpdated(
         model_->Set(index, item);
     }
   }
+}
+
+void ChromeShelfController::OnAppShowInShelfChanged(
+    content::BrowserContext* browser_context,
+    const std::string& app_id,
+    bool show_in_shelf) {
+  if (browser_context != profile())
+    return;
+
+  ScopedPinSyncDisabler scoped_pin_sync_disabler = GetScopedPinSyncDisabler();
+
+  // If the app should be hidden from shelf, make sure it gets unpinned.
+  if (!show_in_shelf) {
+    if (IsAppPinned(app_id))
+      UnpinShelfItemInternal(ash::ShelfID(app_id));
+    return;
+  }
+
+  // If the app status changed to "shown in shelf", pin the app if user prefs
+  // (or policy) indicate that the app should be pinned.
+  const std::vector<ash::ShelfID> pinned_apps =
+      shelf_prefs_->GetPinnedAppsFromSync(shelf_controller_helper_.get());
+
+  // Find the app index within pinned apps.
+  int index = -1;
+  for (size_t i = 0; i < pinned_apps.size(); ++i) {
+    if (pinned_apps[i].app_id == app_id) {
+      index = i;
+      break;
+    }
+  }
+
+  // The app should not be pinned - nothing left to do.
+  if (index == -1)
+    return;
+
+  // Update apps icon if applicable.
+  OnAppUpdated(profile(), app_id, /*reload_icon=*/true);
+
+  // Calculate the target app index within the model - find the last app in
+  // `pinned_apps` that precedes `app_id`, and is in shelf model.
+  int target_index_in_model = 0;
+  for (int i = index - 1; i >= 0; --i) {
+    int index_in_model = model_->ItemIndexByID(pinned_apps[i]);
+    if (index_in_model >= 0 &&
+        ItemTypeIsPinned(model_->items()[index_in_model])) {
+      target_index_in_model = index_in_model + 1;
+      break;
+    }
+  }
+
+  EnsureAppPinnedInModelAtIndex(app_id, model_->ItemIndexByAppID(app_id),
+                                target_index_in_model);
+
+  // Set the pinned by policy flag.
+  const int final_index = model_->ItemIndexByAppID(app_id);
+  if (final_index >= 0)
+    UpdatePinnedByPolicyForItemAtIndex(final_index);
 }
 
 void ChromeShelfController::OnAppUninstalledPrepared(
@@ -1160,9 +1224,6 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
   // cyclically trigger sync changes (eg. ShelfItemAdded calls SyncPinPosition).
   ScopedPinSyncDisabler scoped_pin_sync_disabler = GetScopedPinSyncDisabler();
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile());
-
   const std::vector<ash::ShelfID> pinned_apps =
       shelf_prefs_->GetPinnedAppsFromSync(shelf_controller_helper_.get());
 
@@ -1172,17 +1233,13 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
   // pin, move existing pin to current position specified by |index| or create
   // the new pin at that position.
   for (const auto& pref_shelf_id : pinned_apps) {
+    const std::string app_id = pref_shelf_id.app_id;
     // Do not show apps in the shelf if they are explicitly forbidden.
-    bool hide = false;
-    proxy->AppRegistryCache().ForOneApp(
-        pref_shelf_id.app_id, [&hide](const apps::AppUpdate& update) {
-          hide = update.ShowInShelf() == apps::mojom::OptionalBool::kFalse;
-        });
-    if (hide)
+    if (ShelfControllerHelper::IsAppHiddenFromShelf(profile(), app_id))
       continue;
 
     // Update apps icon if applicable.
-    OnAppUpdated(profile(), pref_shelf_id.app_id, /*reload_icon=*/true);
+    OnAppUpdated(profile(), app_id, /*reload_icon=*/true);
 
     // Find existing pin or app from the right of current |index|.
     int app_index = index;
@@ -1191,37 +1248,14 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
       if (item.id == pref_shelf_id)
         break;
     }
-    if (app_index < model_->item_count()) {
-      DCHECK_EQ(model_->ItemIndexByID(pref_shelf_id), app_index);
 
-      // Found existing pin or running app.
-      const ash::ShelfItem item = model_->items()[app_index];
-      if (ItemTypeIsPinned(item)) {
-        // Just move to required position or keep it inplace.
-        model_->Move(app_index, index);
-      } else {
-        PinRunningAppInternal(index, item.id);
-      }
-      DCHECK_EQ(model_->ItemIndexByID(item.id), index);
+    const bool item_pinned = EnsureAppPinnedInModelAtIndex(
+        app_id,
+        /*current_index=*/app_index < model_->item_count() ? app_index : -1,
+        /*target_index=*/index);
+
+    if (item_pinned)
       ++index;
-    } else {
-      DCHECK_EQ(model_->ItemIndexByID(pref_shelf_id), -1);
-      // app_id may be kChromeAppId. This happens when sync happens,
-      // but Lacros becomes the primary browser so that the browser
-      // shortcut is unpinned. Do nothing then.
-      if (pref_shelf_id.app_id != kChromeAppId) {
-        // We need to create a new pin for a synced app.
-        ash::ShelfItem item;
-        std::unique_ptr<ash::ShelfItemDelegate> item_delegate;
-        bool success = shelf_item_factory()->CreateShelfItemForAppId(
-            pref_shelf_id.app_id, &item, &item_delegate);
-        if (success) {
-          InsertAppItem(std::move(item_delegate), ash::STATUS_CLOSED, index,
-                        ash::TYPE_PINNED_APP, /*title=*/std::u16string());
-          ++index;
-        }
-      }
-    }
   }
 
   // At second step remove any pin to the right from the current index.
@@ -1236,16 +1270,60 @@ void ChromeShelfController::UpdatePinnedAppsFromSync() {
   UpdatePolicyPinnedAppsFromPrefs();
 }
 
-void ChromeShelfController::UpdatePolicyPinnedAppsFromPrefs() {
-  for (int index = 0; index < model_->item_count(); index++) {
-    ash::ShelfItem item = model_->items()[index];
-    const bool pinned_by_policy =
-        GetPinnableForAppID(item.id.app_id, profile()) ==
-        AppListControllerDelegate::PIN_FIXED;
-    if (item.pinned_by_policy != pinned_by_policy) {
-      item.pinned_by_policy = pinned_by_policy;
-      model_->Set(index, item);
+bool ChromeShelfController::EnsureAppPinnedInModelAtIndex(
+    const std::string& app_id,
+    int current_index,
+    int target_index) {
+  // Passing current app index in model as an argument is an optimization in
+  // case this method is used while looping over items that avoids extra pass
+  // over items in the model to find the app index.
+  DCHECK_EQ(current_index, model_->ItemIndexByAppID(app_id));
+
+  if (current_index >= 0) {
+    const ash::ShelfItem item = model_->items()[current_index];
+    if (ItemTypeIsPinned(item)) {
+      model_->Move(current_index, target_index);
+    } else {
+      PinRunningAppInternal(target_index, item.id);
     }
+    DCHECK_EQ(model_->ItemIndexByID(item.id), target_index);
+    return true;
+  }
+
+  // app_id may be kChromeAppId. This happens when sync happens,
+  // but Lacros becomes the primary browser so that the browser
+  // shortcut is unpinned. Do nothing then.
+  if (app_id == kChromeAppId)
+    return false;
+
+  // We need to create a new pin for a synced app.
+  ash::ShelfItem item;
+  std::unique_ptr<ash::ShelfItemDelegate> item_delegate;
+  if (!shelf_item_factory()->CreateShelfItemForAppId(app_id, &item,
+                                                     &item_delegate)) {
+    return false;
+  }
+
+  InsertAppItem(std::move(item_delegate), ash::STATUS_CLOSED, target_index,
+                ash::TYPE_PINNED_APP,
+                /*title=*/std::u16string());
+  return true;
+}
+
+void ChromeShelfController::UpdatePolicyPinnedAppsFromPrefs() {
+  for (int index = 0; index < model_->item_count(); index++)
+    UpdatePinnedByPolicyForItemAtIndex(index);
+}
+
+void ChromeShelfController::UpdatePinnedByPolicyForItemAtIndex(
+    int model_index) {
+  ash::ShelfItem item = model_->items()[model_index];
+  const bool pinned_by_policy =
+      GetPinnableForAppID(item.id.app_id, profile()) ==
+      AppListControllerDelegate::PIN_FIXED;
+  if (item.pinned_by_policy != pinned_by_policy) {
+    item.pinned_by_policy = pinned_by_policy;
+    model_->Set(model_index, item);
   }
 }
 

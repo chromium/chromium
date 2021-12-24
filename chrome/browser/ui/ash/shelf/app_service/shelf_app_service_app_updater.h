@@ -34,7 +34,8 @@ class ShelfAppServiceAppUpdater : public ShelfAppUpdater,
       apps::AppRegistryCache* cache) override;
 
  private:
-  void OnShowInShelfChanged(const std::string& app_id, bool show_in_shelf);
+  void OnShowInShelfChangedForAppDisabledByPolicy(const std::string& app_id,
+                                                  bool show_in_shelf);
   std::set<std::string> installed_apps_;
 };
 

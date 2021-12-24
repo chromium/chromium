@@ -5384,6 +5384,161 @@ TEST_P(ChromeShelfControllerTest, VerifyAppStatusForBlockedApp) {
   EXPECT_EQ(ash::AppStatus::kReady, model_->items()[1].app_status);
 }
 
+TEST_P(ChromeShelfControllerTest, PinnedAppsRespectShownInShelfState) {
+  InitShelfController();
+  // Pin a test app.
+  AddExtension(extension1_.get());
+
+  PinAppWithIDToShelf(extension1_->id());
+  EXPECT_EQ(2, model_->item_count());
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(extension1_->id()));
+  EXPECT_EQ(1, model_->ItemIndexByAppID(extension1_->id()));
+
+  // Update the app so it's considered not shown in shelf, and verify it's no
+  // longer pinned.
+  UpdateAppRegistryCache(profile(), extension1_->id(), /*block=*/false,
+                         /*pause=*/false,
+                         /*show_in_shelf=*/apps::mojom::OptionalBool::kFalse);
+  EXPECT_FALSE(shelf_controller_->IsAppPinned(extension1_->id()));
+
+  // Update the app so it's allowed in shelf again, verify it gets pinned.
+  UpdateAppRegistryCache(profile(), extension1_->id(), /*block=*/false,
+                         /*pause=*/false,
+                         /*show_in_shelf=*/apps::mojom::OptionalBool::kTrue);
+  EXPECT_TRUE(model_->IsAppPinned(extension1_->id()));
+  EXPECT_TRUE(model_->AllowedToSetAppPinState(extension1_->id(), false));
+  EXPECT_EQ(1, model_->ItemIndexByAppID(extension1_->id()));
+}
+
+TEST_P(ChromeShelfControllerTest, AppIndexAfterUnhidingFirstPinnedApp) {
+  InitShelfController();
+  // Pin a test app.
+  AddExtension(extension1_.get());
+
+  PinAppWithIDToShelf(extension1_->id());
+  EXPECT_EQ(2, model_->item_count());
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(extension1_->id()));
+  EXPECT_EQ(1, model_->ItemIndexByAppID(extension1_->id()));
+  model_->Move(1, 0);
+  EXPECT_EQ(0, model_->ItemIndexByAppID(extension1_->id()));
+
+  // Update the app so it's considered not shown in shelf, and verify it's no
+  // longer pinned.
+  UpdateAppRegistryCache(profile(), extension1_->id(), /*block=*/false,
+                         /*pause=*/false,
+                         /*show_in_shelf=*/apps::mojom::OptionalBool::kFalse);
+  EXPECT_FALSE(shelf_controller_->IsAppPinned(extension1_->id()));
+
+  // Update the app so it's allowed in shelf again, verify it gets pinned.
+  UpdateAppRegistryCache(profile(), extension1_->id(), /*block=*/false,
+                         /*pause=*/false,
+                         /*show_in_shelf=*/apps::mojom::OptionalBool::kTrue);
+  EXPECT_TRUE(model_->IsAppPinned(extension1_->id()));
+  EXPECT_TRUE(model_->AllowedToSetAppPinState(extension1_->id(), false));
+  EXPECT_EQ(0, model_->ItemIndexByAppID(extension1_->id()));
+}
+
+TEST_P(ChromeShelfControllerTest,
+       AppIndexAfterUnhidingtPinnedAppWithOtherHiddenApps) {
+  InitShelfController();
+  // Pin test apps.
+  AddExtension(extension1_.get());
+  AddExtension(extension2_.get());
+  AddExtension(extension5_.get());
+  AddExtension(extension6_.get());
+
+  PinAppWithIDToShelf(extension1_->id());
+  PinAppWithIDToShelf(extension2_->id());
+  PinAppWithIDToShelf(extension5_->id());
+  PinAppWithIDToShelf(extension6_->id());
+  EXPECT_EQ(5, model_->item_count());
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(extension2_->id()));
+  EXPECT_EQ(2, model_->ItemIndexByAppID(extension2_->id()));
+
+  // Update all test apps so they're considered not shown in shelf, and verify
+  // it's no longer pinned.
+  UpdateAppRegistryCache(profile(), extension1_->id(), /*block=*/false,
+                         /*pause=*/false,
+                         /*show_in_shelf=*/apps::mojom::OptionalBool::kFalse);
+  UpdateAppRegistryCache(profile(), extension2_->id(), /*block=*/false,
+                         /*pause=*/false,
+                         /*show_in_shelf=*/apps::mojom::OptionalBool::kFalse);
+  UpdateAppRegistryCache(profile(), extension5_->id(), /*block=*/false,
+                         /*pause=*/false,
+                         /*show_in_shelf=*/apps::mojom::OptionalBool::kFalse);
+  EXPECT_FALSE(shelf_controller_->IsAppPinned(extension2_->id()));
+
+  // Update app 2 so it's allowed in shelf again, verify it gets pinned.
+  UpdateAppRegistryCache(profile(), extension2_->id(), /*block=*/false,
+                         /*pause=*/false,
+                         /*show_in_shelf=*/apps::mojom::OptionalBool::kTrue);
+  EXPECT_TRUE(model_->IsAppPinned(extension2_->id()));
+  EXPECT_TRUE(model_->AllowedToSetAppPinState(extension2_->id(), false));
+  EXPECT_EQ(1, model_->ItemIndexByAppID(extension2_->id()));
+  EXPECT_EQ(2, model_->ItemIndexByAppID(extension6_->id()));
+}
+
+TEST_P(ChromeShelfControllerTest, AppsHiddenFromShelfDontGetPinnedByPolicy) {
+  AddExtension(extension1_.get());
+
+  // Pin a test app by policy.
+  base::ListValue policy_value;
+  AppendPrefValue(&policy_value, extension1_->id());
+  profile()->GetTestingPrefService()->SetManagedPref(
+      prefs::kPolicyPinnedLauncherApps,
+      base::Value::ToUniquePtrValue(policy_value.Clone()));
+
+  InitShelfController();
+  EXPECT_EQ(2, model_->item_count());
+  EXPECT_TRUE(model_->IsAppPinned(extension1_->id()));
+  EXPECT_EQ(1, model_->ItemIndexByAppID(extension1_->id()));
+
+  // Update the app so it's considered not shown in shelf, and verify it's no
+  // longer pinned.
+  UpdateAppRegistryCache(profile(), extension1_->id(), /*block=*/false,
+                         /*pause=*/false,
+                         /*show_in_shelf=*/apps::mojom::OptionalBool::kFalse);
+  EXPECT_FALSE(model_->IsAppPinned(extension1_->id()));
+
+  // Update the app so it's allowed in shelf again, verify it gets pinned.
+  UpdateAppRegistryCache(profile(), extension1_->id(), /*block=*/false,
+                         /*pause=*/false,
+                         /*show_in_shelf=*/apps::mojom::OptionalBool::kTrue);
+  EXPECT_TRUE(model_->IsAppPinned(extension1_->id()));
+  EXPECT_FALSE(model_->AllowedToSetAppPinState(extension1_->id(), false));
+  EXPECT_EQ(1, model_->ItemIndexByAppID(extension1_->id()));
+}
+
+TEST_P(ChromeShelfControllerTest, AppHiddenFromShelfNotPinnedOnInstall) {
+  AddExtension(extension1_.get());
+  InitShelfController();
+  PinAppWithIDToShelf(extension1_->id());
+  EXPECT_EQ(2, model_->item_count());
+  EXPECT_TRUE(model_->IsAppPinned(extension1_->id()));
+  EXPECT_EQ(1, model_->ItemIndexByAppID(extension1_->id()));
+
+  // Block the extension so it gets removed from shelf.
+  UpdateAppRegistryCache(profile(), extension1_->id(), /*block=*/true,
+                         /*pause=*/false,
+                         /*show_in_shelf=*/apps::mojom::OptionalBool::kFalse);
+  EXPECT_FALSE(model_->IsAppPinned(extension1_->id()));
+
+  // Unblock the extension, but mark it as not shown in shelf - verify it
+  // doesn't get pinned/added to shelf.
+  UpdateAppRegistryCache(profile(), extension1_->id(), /*block=*/false,
+                         /*pause=*/false,
+                         /*show_in_shelf=*/apps::mojom::OptionalBool::kFalse);
+  EXPECT_FALSE(model_->IsAppPinned(extension1_->id()));
+
+  // Allow the app to be shown in shelf, and verify it gets pinned again.
+  UpdateAppRegistryCache(profile(), extension1_->id(), /*block=*/false,
+                         /*pause=*/false,
+                         /*show_in_shelf=*/apps::mojom::OptionalBool::kTrue);
+  EXPECT_TRUE(model_->IsAppPinned(extension1_->id()));
+  EXPECT_TRUE(model_->AllowedToSetAppPinState(extension1_->id(), false));
+  EXPECT_EQ(1, model_->ItemIndexByAppID(extension1_->id()));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* no label */,
     ChromeShelfControllerTest,

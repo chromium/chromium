@@ -119,6 +119,22 @@ ash::AppStatus ShelfControllerHelper::GetAppStatus(Profile* profile,
   return status;
 }
 
+// static
+bool ShelfControllerHelper::IsAppHiddenFromShelf(Profile* profile,
+                                                 const std::string& app_id) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
+    return false;
+
+  bool hidden = false;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&hidden](const apps::AppUpdate& update) {
+        hidden = update.ShowInShelf() == apps::mojom::OptionalBool::kFalse;
+      });
+
+  return hidden;
+}
+
 std::string ShelfControllerHelper::GetAppID(content::WebContents* tab) {
   DCHECK(tab);
   return apps::GetInstanceAppIdForWebContents(tab).value_or(std::string());
