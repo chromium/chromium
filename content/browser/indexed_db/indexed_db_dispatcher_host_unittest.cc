@@ -358,7 +358,14 @@ TEST_F(IndexedDBDispatcherHostTest, CloseAfterUpgrade) {
   loop3.Run();
 }
 
-TEST_F(IndexedDBDispatcherHostTest, OpenNewConnectionWhileUpgrading) {
+// TODO(crbug.com/1282613): Test is flaky on Mac in debug.
+#if defined(OS_MAC) && !defined(NDEBUG)
+#define MAYBE_OpenNewConnectionWhileUpgrading \
+  DISABLED_OpenNewConnectionWhileUpgrading
+#else
+#define MAYBE_OpenNewConnectionWhileUpgrading OpenNewConnectionWhileUpgrading
+#endif
+TEST_F(IndexedDBDispatcherHostTest, MAYBE_OpenNewConnectionWhileUpgrading) {
   const int64_t kDBVersion = 1;
   const int64_t kTransactionId = 1;
   const int64_t kObjectStoreId = 10;
