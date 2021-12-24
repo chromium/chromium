@@ -12,10 +12,10 @@
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/status_codes.h"
-#include "media/base/win/hresult_status_helper.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/windows/av1_guids.h"
 #include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
+#include "media/gpu/windows/d3d11_status.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/direct_composition_surface_win.h"
 
@@ -129,13 +129,13 @@ D3D11DecoderConfigurator::CreateOutputTexture(ComD3D11Device device,
   HRESULT hr =
       device->CreateTexture2D(&output_texture_desc_, nullptr, &texture);
   if (FAILED(hr)) {
-    return D3D11Status(D3D11Status::Codes::kCreateDecoderOutputTextureFailed)
-        .AddCause(HresultToStatus(hr));
+    return HresultToStatus(
+        hr, D3D11Status::Codes::kCreateDecoderOutputTextureFailed);
   }
   hr = SetDebugName(texture.Get(), "D3D11Decoder_ConfiguratorOutput");
   if (FAILED(hr)) {
-    return D3D11Status(D3D11Status::Codes::kCreateDecoderOutputTextureFailed)
-        .AddCause(HresultToStatus(hr));
+    return HresultToStatus(
+        hr, D3D11Status::Codes::kCreateDecoderOutputTextureFailed);
   }
   return texture;
 }

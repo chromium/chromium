@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/base/win/hresult_status_helper.h"
+#include "media/gpu/windows/d3d11_status.h"
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"

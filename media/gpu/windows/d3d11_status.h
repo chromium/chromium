@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D11_STATUS_H_
 #define MEDIA_GPU_WINDOWS_D3D11_STATUS_H_
 
+#include <wrl/client.h>
+
 #include "media/base/status.h"
 
 namespace media {
@@ -79,6 +81,12 @@ struct D3D11StatusTraits {
 };
 
 using D3D11Status = TypedStatus<D3D11StatusTraits>;
+
+D3D11Status HresultToStatus(
+    HRESULT hresult,
+    D3D11Status::Codes code,
+    const char* message = nullptr,
+    const base::Location& location = base::Location::Current());
 
 }  // namespace media
 

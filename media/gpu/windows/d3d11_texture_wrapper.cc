@@ -16,7 +16,6 @@
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_image_backing_d3d.h"
 #include "media/base/bind_to_current_loop.h"
-#include "media/base/win/hresult_status_helper.h"
 #include "media/base/win/mf_helpers.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/gl/gl_image.h"
@@ -85,8 +84,7 @@ D3D11Status DefaultTexture2DWrapper::AcquireKeyedMutexIfNeeded() {
   if (FAILED(hr)) {
     keyed_mutex_acquired_ = false;
     DPLOG(ERROR) << "Unable to acquire the key mutex, error: " << hr;
-    return D3D11Status(D3D11Status::Codes::kAcquireKeyedMutexFailed)
-        .AddCause(HresultToStatus(hr));
+    return HresultToStatus(hr, D3D11Status::Codes::kAcquireKeyedMutexFailed);
   }
 
   // Key mutex has been acquired for shared resource.
@@ -105,8 +103,7 @@ D3D11Status DefaultTexture2DWrapper::ProcessTexture(
     HRESULT hr = keyed_mutex_->ReleaseSync(gpu::kDXGIKeyedMutexAcquireKey);
     if (FAILED(hr)) {
       DPLOG(ERROR) << "Unable to release the keyed mutex, error: " << hr;
-      return D3D11Status(D3D11Status::Codes::kReleaseKeyedMutexFailed)
-          .AddCause(HresultToStatus(hr));
+      return HresultToStatus(hr, D3D11Status::Codes::kReleaseKeyedMutexFailed);
     }
 
     keyed_mutex_acquired_ = false;
@@ -148,8 +145,7 @@ D3D11Status DefaultTexture2DWrapper::Init(
       if (FAILED(hr)) {
         DPLOG(ERROR) << "Failed to get key_mutex from output resource, error "
                      << std::hex << hr;
-        return D3D11Status(D3D11Status::Codes::kGetKeyedMutexFailed)
-            .AddCause(HresultToStatus(hr));
+        return HresultToStatus(hr, D3D11Status::Codes::kGetKeyedMutexFailed);
       }
     }
   }

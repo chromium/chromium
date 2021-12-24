@@ -53,11 +53,6 @@ enum class StatusCode : StatusCodeType {
   // DecodeStatus => Status conversion.
   kDecodeErrorDoNotUse = 0x010F,
 
-  // Windows Errors: 0x02
-  kWindowsWrappedHresult = 0x0201,
-  kWindowsApiNotAvailible = 0x0202,
-  kWindowsD3D11Error = 0x0203,
-
   // MojoDecoder Errors: 0x04
   kMojoDecoderNoWrappedDecoder = 0x0401,
   kMojoDecoderStoppedBeforeInitDone = 0x0402,

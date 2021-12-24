@@ -41,14 +41,6 @@ component("media_foundation_util") {
   all_dependent_configs = [ ":delay_load_mf" ]
 }
 
-source_set("hresult_status_helper") {
-  sources = [
-    "hresult_status_helper.cc",
-    "hresult_status_helper.h",
-  ]
-  deps = [ "//media" ]
-}
-
 source_set("mf_cdm_proxy") {
   sources = [ "media_foundation_cdm_proxy.h" ]
   deps = [ "//base" ]

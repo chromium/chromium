@@ -28,9 +28,9 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
-#include "media/base/win/hresult_status_helper.h"
 #include "media/gpu/windows/d3d11_av1_accelerator.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
+#include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_context_wrapper.h"
 #include "media/gpu/windows/d3d11_video_decoder_impl.h"
 #include "media/gpu/windows/d3d11_video_device_format_support.h"
@@ -247,8 +247,8 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
   auto hr = video_device_->GetVideoDecoderConfigCount(
       decoder_configurator_->DecoderDescriptor(), &config_count);
   if (FAILED(hr)) {
-    return D3D11Status(D3D11Status::Codes::kGetDecoderConfigCountFailed)
-        .AddCause(HresultToStatus(hr));
+    return HresultToStatus(hr,
+                           D3D11Status::Codes::kGetDecoderConfigCountFailed);
   }
 
   if (config_count == 0)
@@ -261,8 +261,7 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
     hr = video_device_->GetVideoDecoderConfig(
         decoder_configurator_->DecoderDescriptor(), i, &dec_config);
     if (FAILED(hr)) {
-      return D3D11Status(D3D11Status::Codes::kGetDecoderConfigFailed)
-          .AddCause(HresultToStatus(hr));
+      return HresultToStatus(hr, D3D11Status::Codes::kGetDecoderConfigFailed);
     }
 
     if ((config_.codec() == VideoCodec::kVP9 ||
@@ -317,8 +316,7 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
     return D3D11Status(D3D11Status::Codes::kDecoderCreationFailed);
 
   if (FAILED(hr)) {
-    return D3D11Status(D3D11Status::Codes::kDecoderCreationFailed)
-        .AddCause(HresultToStatus(hr));
+    return HresultToStatus(hr, D3D11Status::Codes::kDecoderCreationFailed);
   }
 
   return {std::move(video_decoder)};
@@ -407,8 +405,7 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   hr = device_->QueryInterface(IID_PPV_ARGS(&multi_threaded));
   if (FAILED(hr)) {
     return NotifyError(
-        D3D11Status(D3D11Status::Codes::kQueryID3D11MultithreadFailed)
-            .AddCause(HresultToStatus(hr)));
+        HresultToStatus(hr, D3D11Status::Codes::kQueryID3D11MultithreadFailed));
   }
 
   multi_threaded->SetMultithreadProtected(TRUE);

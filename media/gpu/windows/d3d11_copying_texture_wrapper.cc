@@ -8,7 +8,6 @@
 
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "media/base/status_codes.h"
-#include "media/base/win/hresult_status_helper.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
 #include "ui/gl/hdr_metadata_helper_win.h"
 
@@ -52,9 +51,8 @@ D3D11Status CopyingTexture2DWrapper::ProcessTexture(
   HRESULT hr = video_processor_->CreateVideoProcessorOutputView(
       output_texture_.Get(), &output_view_desc, &output_view);
   if (!SUCCEEDED(hr)) {
-    return D3D11Status(
-               D3D11Status::Codes::kCreateVideoProcessorOutputViewFailed)
-        .AddCause(HresultToStatus(hr));
+    return HresultToStatus(
+        hr, D3D11Status::Codes::kCreateVideoProcessorOutputViewFailed);
   }
 
   D3D11_VIDEO_PROCESSOR_INPUT_VIEW_DESC input_view_desc = {0};
@@ -65,8 +63,8 @@ D3D11Status CopyingTexture2DWrapper::ProcessTexture(
   hr = video_processor_->CreateVideoProcessorInputView(
       texture_.Get(), &input_view_desc, &input_view);
   if (!SUCCEEDED(hr)) {
-    return D3D11Status(D3D11Status::Codes::kCreateVideoProcessorInputViewFailed)
-        .AddCause(HresultToStatus(hr));
+    return HresultToStatus(
+        hr, D3D11Status::Codes::kCreateVideoProcessorInputViewFailed);
   }
 
   D3D11_VIDEO_PROCESSOR_STREAM streams = {0};
@@ -106,8 +104,7 @@ D3D11Status CopyingTexture2DWrapper::ProcessTexture(
                                            1,  // stream_count
                                            &streams);
   if (!SUCCEEDED(hr)) {
-    return D3D11Status(D3D11Status::Codes::kVideoProcessorBltFailed)
-        .AddCause(HresultToStatus(hr));
+    return HresultToStatus(hr, D3D11Status::Codes::kVideoProcessorBltFailed);
   }
 
   return output_texture_wrapper_->ProcessTexture(copy_color_space, mailbox_dest,
