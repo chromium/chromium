@@ -27,10 +27,10 @@ Are you a Google employee? See
     [official builds](https://source.chromium.org/search?q=MAC_BINARIES_LABEL&ss=chromium),
     so that version is guaranteed to work. Building with a newer SDK usually
     works too (please fix or file a bug if it doesn't).
-    
+
     Building with an older SDK might also work, but if it doesn't then we won't
     accept changes for making it work.
-    
+
     The easiest way to get the newest SDK is to use the newest version of Xcode,
     which often requires using the newest version of macOS. We don't use Xcode
     itself much, so if you're know what you're doing, you can likely get the
@@ -196,9 +196,15 @@ network connections?" - to avoid this, run with this command-line flag:
 
 --disable-features="DialMediaRouteProvider"
 
-## Running test targets
+## Build and run test targets
 
-You can run the tests in the same way. You can also limit which tests are
+You can build a test in the same way, e.g.:
+
+```shell
+$ autoninja -C out/Default unit_tests
+```
+
+and can run the tests in the same way. You can also limit which tests are
 run using the `--gtest_filter` arg, e.g.:
 
 ```
