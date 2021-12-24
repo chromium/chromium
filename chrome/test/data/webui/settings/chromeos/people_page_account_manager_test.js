@@ -40,6 +40,7 @@ cr.define('settings_people_page_account_manager', function() {
           fullName: 'Device Account',
           email: 'admin@domain.com',
           pic: 'data:image/png;base64,abc123',
+          isAvailableInArc: true,
           organization: 'Family Link',
         },
         {
@@ -51,6 +52,7 @@ cr.define('settings_people_page_account_manager', function() {
           fullName: 'Secondary Account 1',
           email: 'user1@example.com',
           pic: '',
+          isAvailableInArc: true,
         },
         {
           id: '789',
@@ -61,6 +63,7 @@ cr.define('settings_people_page_account_manager', function() {
           fullName: 'Secondary Account 2',
           email: 'user2@example.com',
           pic: '',
+          isAvailableInArc: true,
         },
         {
           id: '1010',
@@ -71,6 +74,7 @@ cr.define('settings_people_page_account_manager', function() {
           fullName: 'Secondary Account 3',
           email: 'user3@example.com',
           pic: '',
+          isAvailableInArc: false,
         }
       ]);
     }
@@ -231,6 +235,13 @@ cr.define('settings_people_page_account_manager', function() {
       // Click on 'Remove account'
       accountManager.$$('cr-action-menu').querySelector('button').click();
 
+      if (loadTimeData.getBoolean('lacrosEnabled')) {
+        const confirmationDialog =
+            accountManager.$$('#removeConfirmationDialog');
+        assertTrue(!!confirmationDialog);
+        confirmationDialog.querySelector('#removeConfirmationButton').click();
+      }
+
       const account = await browserProxy.whenCalled('removeAccount');
       assertEquals('456', account.id);
       // Add account button should be in focus now.
@@ -277,6 +288,21 @@ cr.define('settings_people_page_account_manager', function() {
             '.device-account-icon .managed-badge');
         // Managed badge should be shown for managed accounts.
         assertFalse(managedBadge.hidden);
+    });
+
+    test('ArcAvailabilityIsShownForSecondaryAccounts', async function() {
+      if (!loadTimeData.getBoolean('arcAccountRestrictionsEnabled')) {
+        return;
+      }
+
+      await browserProxy.whenCalled('getAccounts');
+      Polymer.dom.flush();
+
+      accountList.items.forEach((item, i) => {
+        const notAvailableInArc =
+            accountManager.root.querySelectorAll('.arc-availability')[i];
+        assertEquals(item.isAvailableInArc, notAvailableInArc.hidden);
+      });
     });
   });
 

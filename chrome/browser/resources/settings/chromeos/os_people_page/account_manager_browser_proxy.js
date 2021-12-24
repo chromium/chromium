@@ -18,6 +18,7 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
  *   email: string,
  *   pic: string,
  *   organization: (string|undefined),
+ *   isAvailableInArc: boolean,
  * }}
  */
 export let Account;

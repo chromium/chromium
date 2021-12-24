@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
@@ -24,7 +25,8 @@ namespace settings {
 class AccountManagerUIHandler
     : public ::settings::SettingsPageUIHandler,
       public account_manager::AccountManagerFacade::Observer,
-      public signin::IdentityManager::Observer {
+      public signin::IdentityManager::Observer,
+      public ash::AccountAppsAvailability::Observer {
  public:
   // Accepts non-owning pointers to |account_manager::AccountManager|,
   // |AccountManagerFacade| and |IdentityManager|. Both of these must outlive
@@ -32,7 +34,8 @@ class AccountManagerUIHandler
   AccountManagerUIHandler(
       account_manager::AccountManager* account_manager,
       account_manager::AccountManagerFacade* account_manager_facade,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      ash::AccountAppsAvailability* account_apps_availability);
 
   AccountManagerUIHandler(const AccountManagerUIHandler&) = delete;
   AccountManagerUIHandler& operator=(const AccountManagerUIHandler&) = delete;
@@ -57,8 +60,15 @@ class AccountManagerUIHandler
       const CoreAccountInfo& account_info,
       const GoogleServiceAuthError& error) override;
 
+  // |ash::AccountAppsAvailability::Observer| overrides.
+  void OnAccountAvailableInArc(
+      const ::account_manager::Account& account) override;
+  void OnAccountUnavailableInArc(
+      const ::account_manager::Account& account) override;
+
  private:
   friend class AccountManagerUIHandlerTest;
+  friend class AccountManagerUIHandlerTestWithArcAccountRestrictions;
 
   void SetProfileForTesting(Profile* profile);
 
@@ -87,6 +97,12 @@ class AccountManagerUIHandler
       const std::vector<std::pair<::account_manager::Account, bool>>&
           account_dummy_token_list);
 
+  void FinishHandleGetAccounts(
+      base::Value callback_id,
+      const std::vector<std::pair<::account_manager::Account, bool>>&
+          account_dummy_token_list,
+      const base::flat_set<account_manager::Account>& arc_accounts);
+
   // Returns secondary Gaia accounts from |stored_accounts| list. If the Device
   // Account is a Gaia account, populates |device_account| with information
   // about that account, otherwise does not modify |device_account|.
@@ -96,6 +112,7 @@ class AccountManagerUIHandler
   base::ListValue GetSecondaryGaiaAccounts(
       const std::vector<std::pair<::account_manager::Account, bool>>&
           account_dummy_token_list,
+      const base::flat_set<account_manager::Account>& arc_accounts,
       const AccountId device_account_id,
       const bool is_child_user,
       base::DictionaryValue* device_account);
@@ -114,6 +131,10 @@ class AccountManagerUIHandler
   // A non-owning pointer to |IdentityManager|.
   signin::IdentityManager* const identity_manager_;
 
+  // A non-owning pointer to |AccountAppsAvailability| which is a KeyedService
+  // and should outlive this class.
+  ash::AccountAppsAvailability* account_apps_availability_ = nullptr;
+
   // An observer for |AccountManagerFacade|. Automatically deregisters when
   // |this| is destructed.
   base::ScopedObservation<account_manager::AccountManagerFacade,
@@ -125,6 +146,12 @@ class AccountManagerUIHandler
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+
+  // An observer for |ash::AccountAppsAvailability|. Registered on
+  // |OnJavascriptAllowed| and deregistered on |OnJavascriptDisallowed|.
+  base::ScopedObservation<ash::AccountAppsAvailability,
+                          ash::AccountAppsAvailability::Observer>
+      account_apps_availability_observation_{this};
 
   base::WeakPtrFactory<AccountManagerUIHandler> weak_factory_{this};
 };

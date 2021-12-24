@@ -193,21 +193,6 @@
     margin-inline-start: 12px;
   }
 
-  .tooltip-primary-account {
-    margin-inline-end: 12px;
-    margin-inline-start: 12px;
-  }
-
-  .no-accounts-message {
-    color: var(--cr-secondary-text-color);
-    padding: 20px 50px;
-    text-align: center;
-  }
-
-  .settings-box.border-bottom {
-    border-bottom: var(--cr-separator-line);
-  }
-
   #removeConfirmationButton {
     --active-shadow-action-rgb: var(--google-red-refresh-500-rgb);
     --bg-action: var(--google-red-600);
@@ -324,6 +309,14 @@
               aria-hidden="true">[[item.email]]</div>
         </div>
       </div>
+      <!-- Display ARC status -->
+      <template is="dom-if" if="[[isArcAccountRestrictionsEnabled_]]">
+        <span class="arc-availability secondary"
+            hidden$="[[item.isAvailableInArc]]">
+          <!-- TODO(crbug.com/1260909): Use real strings -->
+          Not shared with Android apps
+        </span>
+      </template>
       <template is="dom-if"
           if="[[shouldShowReauthenticationButton_(item)]]">
         <cr-button title="[[getAccountManagerSignedOutTitle_(item)]]"

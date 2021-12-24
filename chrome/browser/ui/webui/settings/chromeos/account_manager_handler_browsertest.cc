@@ -8,7 +8,10 @@
 #include <ostream>
 
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -112,10 +115,12 @@ class TestingAccountManagerUIHandler : public AccountManagerUIHandler {
       AccountManager* account_manager,
       account_manager::AccountManagerFacade* account_manager_facade,
       signin::IdentityManager* identity_manager,
+      ash::AccountAppsAvailability* apps_availability,
       content::WebUI* web_ui)
       : AccountManagerUIHandler(account_manager,
                                 account_manager_facade,
-                                identity_manager) {
+                                identity_manager,
+                                apps_availability) {
     set_web_ui(web_ui);
   }
 
@@ -135,6 +140,31 @@ class AccountManagerUIHandlerTest
       delete;
 
   void SetUpOnMainThread() override {
+    // Split the setup so it can be called from the inherited classes.
+    SetUpEnvironment();
+
+    auto* account_manager_facade =
+        ::GetAccountManagerFacade(profile_->GetPath().value());
+
+    handler_ = std::make_unique<TestingAccountManagerUIHandler>(
+        account_manager_, account_manager_facade, identity_manager_, nullptr,
+        &web_ui_);
+    handler_->SetProfileForTesting(profile_.get());
+    handler_->RegisterMessages();
+    handler_->AllowJavascriptForTesting();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void TearDownOnMainThread() override {
+    handler_.reset();
+    ProfileHelper::Get()->RemoveUserFromListForTesting(primary_account_id_);
+    profile_.reset();
+    base::RunLoop().RunUntilIdle();
+    user_manager_enabler_.reset();
+  }
+
+  // Sets up profile and user manager. Should be called only once on test setup.
+  void SetUpEnvironment() {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingProfile::Builder profile_builder;
     profile_builder.SetPath(temp_dir_.GetPath().AppendASCII("TestProfile"));
@@ -149,17 +179,17 @@ class AccountManagerUIHandlerTest
     const user_manager::User* user;
     if (GetDeviceAccountInfo().user_type ==
         user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY) {
-      user = GetFakeUserManager()->AddUserWithAffiliationAndTypeAndProfile(
+      user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
           AccountId::AdFromUserEmailObjGuid(GetDeviceAccountInfo().email,
                                             GetDeviceAccountInfo().id),
           true, user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY,
           profile_.get());
     } else if (GetDeviceAccountInfo().user_type ==
                user_manager::UserType::USER_TYPE_CHILD) {
-      user = GetFakeUserManager()->AddChildUser(AccountId::FromUserEmailGaiaId(
+      user = user_manager->AddChildUser(AccountId::FromUserEmailGaiaId(
           GetDeviceAccountInfo().email, GetDeviceAccountInfo().id));
     } else {
-      user = GetFakeUserManager()->AddUserWithAffiliationAndTypeAndProfile(
+      user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
           AccountId::FromUserEmailGaiaId(GetDeviceAccountInfo().email,
                                          GetDeviceAccountInfo().id),
           true, GetDeviceAccountInfo().user_type, profile_.get());
@@ -181,24 +211,6 @@ class AccountManagerUIHandlerTest
         ::account_manager::AccountKey{GetDeviceAccountInfo().id,
                                       GetDeviceAccountInfo().account_type},
         GetDeviceAccountInfo().email, GetDeviceAccountInfo().token);
-
-    auto* account_manager_facade =
-        ::GetAccountManagerFacade(profile_->GetPath().value());
-
-    handler_ = std::make_unique<TestingAccountManagerUIHandler>(
-        account_manager_, account_manager_facade, identity_manager_, &web_ui_);
-    handler_->SetProfileForTesting(profile_.get());
-    handler_->RegisterMessages();
-    handler_->AllowJavascriptForTesting();
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void TearDownOnMainThread() override {
-    handler_.reset();
-    ProfileHelper::Get()->RemoveUserFromListForTesting(primary_account_id_);
-    profile_.reset();
-    base::RunLoop().RunUntilIdle();
-    user_manager_enabler_.reset();
   }
 
   void UpsertAccount(std::string email) {
@@ -242,16 +254,12 @@ class AccountManagerUIHandlerTest
 
   DeviceAccountInfo GetDeviceAccountInfo() const { return GetParam(); }
 
+  TestingProfile* profile() { return profile_.get(); }
   content::TestWebUI* web_ui() { return &web_ui_; }
   signin::IdentityManager* identity_manager() { return identity_manager_; }
   AccountManager* account_manager() { return account_manager_; }
 
  private:
-  FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingProfile> profile_;
@@ -394,6 +402,113 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
 INSTANTIATE_TEST_SUITE_P(
     AccountManagerUIHandlerTestSuite,
     AccountManagerUIHandlerTest,
+    ::testing::Values(GetActiveDirectoryDeviceAccountInfo(),
+                      GetGaiaDeviceAccountInfo(),
+                      GetChildDeviceAccountInfo()));
+
+class AccountManagerUIHandlerTestWithArcAccountRestrictions
+    : public AccountManagerUIHandlerTest {
+ public:
+  AccountManagerUIHandlerTestWithArcAccountRestrictions() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kArcAccountRestrictions,
+                              chromeos::features::kLacrosSupport},
+        /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    SetUpEnvironment();
+
+    auto* account_manager_facade =
+        ::GetAccountManagerFacade(profile()->GetPath().value());
+
+    account_apps_availability_ =
+        ash::AccountAppsAvailabilityFactory::GetForProfile(profile());
+
+    handler_ = std::make_unique<TestingAccountManagerUIHandler>(
+        account_manager(), account_manager_facade, identity_manager(),
+        account_apps_availability_, web_ui());
+    handler_->SetProfileForTesting(profile());
+    handler_->RegisterMessages();
+    handler_->AllowJavascriptForTesting();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void TearDownOnMainThread() override {
+    handler_.reset();
+    AccountManagerUIHandlerTest::TearDownOnMainThread();
+  }
+
+  ash::AccountAppsAvailability* account_apps_availability() {
+    return account_apps_availability_;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  ash::AccountAppsAvailability* account_apps_availability_;
+  std::unique_ptr<TestingAccountManagerUIHandler> handler_;
+};
+
+IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
+                       CheckIsAvailableInArcValue) {
+  const std::string secondary_email_1 = "secondary1@example.com";
+  const std::string secondary_email_2 = "secondary2@example.com";
+  UpsertAccount(secondary_email_1);
+  UpsertAccount(secondary_email_2);
+  const std::vector<::account_manager::Account> account_manager_accounts =
+      GetAccountsFromAccountManager();
+  ASSERT_EQ(3UL, account_manager_accounts.size());
+
+  // Wait for accounts to propagate to IdentityManager.
+  base::RunLoop().RunUntilIdle();
+
+  for (const auto& account : account_manager_accounts) {
+    if (account.raw_email == secondary_email_1) {
+      account_apps_availability()->SetIsAccountAvailableInArc(account, true);
+    } else if (account.raw_email == secondary_email_2) {
+      account_apps_availability()->SetIsAccountAvailableInArc(account, false);
+    }
+  }
+
+  // Call "getAccounts".
+  base::Value args(base::Value::Type::LIST);
+  args.Append(kHandleFunctionName);
+  web_ui()->HandleReceivedMessage(kGetAccountsMessage,
+                                  &base::Value::AsListValue(args));
+
+  // Wait for the async calls to finish.
+  base::RunLoop().RunUntilIdle();
+
+  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", call_data.function_name());
+  EXPECT_EQ(kHandleFunctionName, call_data.arg1()->GetString());
+  ASSERT_TRUE(call_data.arg2()->GetBool());
+
+  // Get results from JS callback.
+  const base::span<const base::Value> result = call_data.arg3()->GetList();
+  ASSERT_EQ(account_manager_accounts.size(), result.size());
+
+  // The value for the device account should be always `true`.
+  const base::Value& device_account = result[0];
+  EXPECT_TRUE(device_account.FindBoolKey("isAvailableInArc").value());
+
+  // Check secondary accounts.
+  for (const base::Value& account : result) {
+    if (ValueOrEmpty(account.FindStringKey("id")) == GetDeviceAccountInfo().id)
+      continue;
+
+    std::string email = ValueOrEmpty(account.FindStringKey("email"));
+    if (email == secondary_email_1) {
+      EXPECT_TRUE(account.FindBoolKey("isAvailableInArc").value());
+    } else if (email == secondary_email_2) {
+      EXPECT_FALSE(account.FindBoolKey("isAvailableInArc").value());
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AccountManagerUIHandlerTestWithArcAccountRestrictionsSuite,
+    AccountManagerUIHandlerTestWithArcAccountRestrictions,
     ::testing::Values(GetActiveDirectoryDeviceAccountInfo(),
                       GetGaiaDeviceAccountInfo(),
                       GetChildDeviceAccountInfo()));

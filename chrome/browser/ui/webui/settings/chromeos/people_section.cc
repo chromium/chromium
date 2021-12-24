@@ -14,6 +14,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
@@ -270,6 +272,9 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
                                  ui::GetChromeOSDeviceName()));
   html_source->AddBoolean("lacrosEnabled",
                           crosapi::browser_util::IsLacrosEnabled());
+  html_source->AddBoolean(
+      "arcAccountRestrictionsEnabled",
+      ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
 }
 
 void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
@@ -584,6 +589,8 @@ PeopleSection::PeopleSection(
         ::GetAccountManagerFacade(profile->GetPath().value());
     DCHECK(account_manager_facade_);
     account_manager_facade_observation_.Observe(account_manager_facade_);
+    account_apps_availability_ =
+        ash::AccountAppsAvailabilityFactory::GetForProfile(profile);
     FetchAccounts();
   }
 
@@ -704,7 +711,8 @@ void PeopleSection::AddHandlers(content::WebUI* web_ui) {
   if (account_manager_facade_) {
     web_ui->AddMessageHandler(
         std::make_unique<chromeos::settings::AccountManagerUIHandler>(
-            account_manager_, account_manager_facade_, identity_manager_));
+            account_manager_, account_manager_facade_, identity_manager_,
+            account_apps_availability_));
   }
 
   if (chromeos::features::IsSyncSettingsCategorizationEnabled())

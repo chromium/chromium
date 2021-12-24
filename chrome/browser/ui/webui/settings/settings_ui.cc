@@ -107,6 +107,8 @@
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/android_sms/android_sms_app_manager.h"
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
@@ -390,7 +392,8 @@ void SettingsUI::InitBrowserSettingsWebUIHandlers() {
     web_ui()->AddMessageHandler(
         std::make_unique<chromeos::settings::AccountManagerUIHandler>(
             account_manager, account_manager_facade,
-            IdentityManagerFactory::GetForProfile(profile)));
+            IdentityManagerFactory::GetForProfile(profile),
+            ash::AccountAppsAvailabilityFactory::GetForProfile(profile)));
   }
 
   // MultideviceHandler is required in browser settings to show a special note

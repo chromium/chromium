@@ -31,6 +31,10 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
+namespace ash {
+class AccountAppsAvailability;
+}
+
 namespace chromeos {
 
 namespace settings {
@@ -80,6 +84,7 @@ class PeopleSection : public OsSettingsSection,
 
   account_manager::AccountManager* account_manager_ = nullptr;
   account_manager::AccountManagerFacade* account_manager_facade_ = nullptr;
+  ash::AccountAppsAvailability* account_apps_availability_ = nullptr;
   syncer::SyncService* sync_service_;
   SupervisedUserService* supervised_user_service_;
   signin::IdentityManager* identity_manager_;

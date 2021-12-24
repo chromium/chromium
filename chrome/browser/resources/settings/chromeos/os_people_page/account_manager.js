@@ -100,6 +100,18 @@ Polymer({
     },
 
     /**
+     * @return {boolean} True if `kArcAccountRestrictionsEnabled` feature is
+     *     enabled, false otherwise.
+     * @private
+     */
+    isArcAccountRestrictionsEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('arcAccountRestrictionsEnabled');
+      },
+    },
+
+    /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
      */
