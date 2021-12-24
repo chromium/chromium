@@ -65,7 +65,7 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
     }
 
     @Override
-    default AssistantTabUtil getTabUtil() {
+    public AssistantTabUtil getTabUtil() {
         return new AssistantTabUtilChrome();
     }
 
