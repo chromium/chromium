@@ -321,7 +321,7 @@ void PerFrameContentTranslateDriver::DOMContentLoaded(
   // Start language detection now if not waiting for sub frames
   // to load to use for detection.
   if (!translate::IsSubFrameLanguageDetectionEnabled() &&
-      translate::IsTranslatableURL(web_contents()->GetURL())) {
+      translate::IsTranslatableURL(web_contents()->GetLastCommittedURL())) {
     StartLanguageDetection();
   }
 }
@@ -329,7 +329,7 @@ void PerFrameContentTranslateDriver::DOMContentLoaded(
 void PerFrameContentTranslateDriver::DocumentOnLoadCompletedInMainFrame(
     content::RenderFrameHost* render_frame_host) {
   if (translate::IsSubFrameLanguageDetectionEnabled() &&
-      translate::IsTranslatableURL(web_contents()->GetURL())) {
+      translate::IsTranslatableURL(web_contents()->GetLastCommittedURL())) {
     StartLanguageDetection();
   }
 }
