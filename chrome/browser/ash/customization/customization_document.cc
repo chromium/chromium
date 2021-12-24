@@ -271,7 +271,8 @@ bool CustomizationDocument::LoadManifestFromString(
     const std::string& manifest) {
   base::JSONReader::ValueWithError parsed_json =
       base::JSONReader::ReadAndReturnValueWithError(
-          manifest, base::JSON_ALLOW_TRAILING_COMMAS);
+          manifest,
+          base::JSON_ALLOW_TRAILING_COMMAS | base::JSON_ALLOW_COMMENTS);
   if (!parsed_json.value) {
     LOG(ERROR) << parsed_json.error_message;
     NOTREACHED();
