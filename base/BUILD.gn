@@ -33,6 +33,7 @@ import("//build/config/rust.gni")
 import("//build/config/sysroot.gni")
 import("//build/config/ui.gni")
 import("//build/nocompile.gni")
+import("//build/rust/mixed_component.gni")
 import("//build/timestamp.gni")
 import("//build_overrides/build.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -169,7 +170,10 @@ config("perfetto_config") {
 # base compilation units to be linked in where they wouldn't have otherwise.
 # This does not include test code (test support and anything in the test
 # directory) which should use source_set as is recommended for GN targets).
-component("base") {
+#
+# mixed_component is a regular C++ "component", but may have some Rust files
+# if Rust is enabled.
+mixed_component("base") {
   sources = [
     "allocator/allocator_check.cc",
     "allocator/allocator_check.h",
@@ -1395,6 +1399,21 @@ component("base") {
   # native_unwinder_android is intended for use solely via a dynamic feature
   # module, to avoid increasing Chrome's executable size.
   assert_no_deps = [ ":native_unwinder_android" ]
+
+# TODO(crbug.com/1280708): Switch to enable_rust after we have NaCl support.
+  if (toolchain_has_rust) {
+    rs_crate_root = "lib.rs"
+    rs_sources = [
+      "lib.rs",
+      "rs_glue/mod.rs",
+      "values.rs",
+    ]
+    rs_cxx_bindings = [ "rs_glue/mod.rs" ]
+    sources += [
+      "rs_glue/values_glue.cc",
+      "rs_glue/values_glue.h",
+    ]
+  }
 
   public_deps = [
     ":anchor_functions_buildflags",
