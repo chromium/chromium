@@ -25,6 +25,7 @@
 <translation id="1145536944570833626">നിലവിലുള്ള വിവരങ്ങൾ ഇല്ലാതാക്കുക.</translation>
 <translation id="1147031633655575115"><ph name="USER" /> ആയി സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="1154984953698510061">മറ്റ് ടാബുകൾ കാണുക</translation>
+<translation id="1164064664035028907">ശക്തമായ ഈ പാസ്‌വേഡ് ഉപയോഗിക്കുക:</translation>
 <translation id="1165039591588034296">പിശക്</translation>
 <translation id="1172898394251786223">അടുത്ത ഫീൽഡ്</translation>
 <translation id="1176932207622159128">ചിത്രം സംരക്ഷിക്കാൻ കഴിയില്ല.</translation>
@@ -235,6 +236,7 @@
 <translation id="3157387275655328056">വായന ലിസ്റ്റിൽ ചേർക്കുക</translation>
 <translation id="3157684681743766797">എല്ലാം അടയാളപ്പെടുത്തുക…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">സംരക്ഷിച്ച പാസ്‌വേഡുകൾ നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിലും ഉപയോഗിക്കാനാകും.</translation>
 <translation id="3175081911749765310">വെബ് സേവനങ്ങൾ</translation>
 <translation id="3178650076442119961">ഇന്ന് സജീവമായിരുന്നു</translation>
 <translation id="3181825792072797598">സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
@@ -543,6 +545,7 @@
 <translation id="6127379762771434464">ഇനം നീക്കംചെയ്‌തു</translation>
 <translation id="6136914049981179737">സെക്കൻഡ് മുമ്പ്</translation>
 <translation id="6144589619057374135">${url} അദൃശ്യ മോഡിൽ തുറക്കുക</translation>
+<translation id="6149061208933997199">പാസ്‌വേഡ് ഉപയോഗിക്കുക</translation>
 <translation id="6159839020698489198">ഓപ്‌ഷണൽ</translation>
 <translation id="6177442314419606057">Chrome-ൽ തിരയുക</translation>
 <translation id="6184086493125982861">ടാബുകൾ കാണിക്കുക</translation>
@@ -635,6 +638,7 @@
 <translation id="6807889908376551050">എല്ലാം കാണിക്കുക...</translation>
 <translation id="681368974849482173">ഇനം സൃഷ്‌ടിച്ചു</translation>
 <translation id="681450999322335505">നിങ്ങളുടെ സ്ഥാപനം സമന്വയം ഓഫാക്കി.</translation>
+<translation id="683022620450280906">സംരക്ഷിച്ച പാസ്‌വേഡുകൾ നിങ്ങൾക്ക് ഏത് ഉപകരണത്തിൽ വേണമെങ്കിലും ഉപയോഗിക്കാം. <ph name="EMAIL" /> എന്നതിനുള്ള Google പാസ്‌വേഡ് മാനേജറിൽ അവ സംരക്ഷിക്കുന്നു</translation>
 <translation id="6830804042318138535">കൂടുതൽ വായിക്കുക</translation>
 <translation id="6831043979455480757">വിവർത്തനം ചെയ്യുക</translation>
 <translation id="6842136130964845393">സംരക്ഷിച്ച നിങ്ങളുടെ പാസ്‌വേഡുകൾ എപ്പോഴും ആക്‌സസ് ചെയ്യാനാകുമെന്ന് ഉറപ്പാക്കാൻ ഇത് നിങ്ങളാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>

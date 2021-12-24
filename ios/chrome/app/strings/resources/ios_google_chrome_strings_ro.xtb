@@ -70,6 +70,7 @@
 <translation id="6063091872902370735">Permite conectarea la Chrome</translation>
 <translation id="6181930887571472871">Treci la Chrome</translation>
 <translation id="6238746320622508509">Permite ca Chrome să blocheze filele incognito.</translation>
+<translation id="6387994324662817823">Parolele sunt salvate în Managerul de parole Google numai pe acest dispozitiv.</translation>
 <translation id="6427126399757991875">Organizația ta configurează Chrome...</translation>
 <translation id="6600954340915313787">Copiat în Chrome</translation>
 <translation id="6634107063912726160">Când te deconectezi, Chrome nu va sincroniza datele noi cu Contul tău Google. Datele sincronizate anterior rămân în cont.</translation>
@@ -111,5 +112,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Protejează-te cu Google Chrome</translation>
 <translation id="8772179140489533211">Afișează solicitări pentru conectarea la Chrome.</translation>
+<translation id="8788269841521769222">Nu va trebui să reții această parolă. Ea se va salva în Managerul de parole Google pentru <ph name="EMAIL" /></translation>
 <translation id="9112744793181547300">Setezi Chrome ca browser prestabilit?</translation>
 </translationbundle>

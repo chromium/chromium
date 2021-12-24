@@ -70,6 +70,7 @@
 <translation id="6063091872902370735">Chrome உள்நுழைவை அனுமதி</translation>
 <translation id="6181930887571472871">Chromeமிற்கு மாறுங்கள்</translation>
 <translation id="6238746320622508509">மறைநிலைத் தாவல்களைப் பூட்ட Chromeமை அனுமதிக்கவும்.</translation>
+<translation id="6387994324662817823">இந்தச் சாதனத்தில் மட்டுமே உள்ள Google கடவுச்சொல் நிர்வாகியில் கடவுச்சொற்கள் சேமிக்கப்படுகின்றன.</translation>
 <translation id="6427126399757991875">Chromeமை உங்கள் நிறுவனம் அமைக்கிறது...</translation>
 <translation id="6600954340915313787">Chromeக்கு நகலெடுக்கப்பட்டது</translation>
 <translation id="6634107063912726160">வெளியேறிவிட்டால் எந்தவொரு புதிய தரவையும் உங்கள் Google கணக்குடன் Chrome ஒத்திசைக்காது. ஏற்கெனவே ஒத்திசைக்கப்பட்ட தரவு கணக்கிலேயே இருக்கும்.</translation>
@@ -111,5 +112,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chromeமைப் பயன்படுத்தி பாதுகாப்பாக உலாவுங்கள்</translation>
 <translation id="8772179140489533211">Chromeமில் உள்நுழைவதற்கான அறிவிப்புகளைக் காட்டும்.</translation>
+<translation id="8788269841521769222">இந்தக் கடவுச்சொல்லை நீங்கள் நினைவில் வைத்திருக்க வேண்டிய அவசியமில்லை. <ph name="EMAIL" /> கணக்கின் Google கடவுச்சொல் நிர்வாகியில் இது சேமிக்கப்படும்</translation>
 <translation id="9112744793181547300">Chromeமை இயல்பு உலாவியாக அமைக்கவா?</translation>
 </translationbundle>

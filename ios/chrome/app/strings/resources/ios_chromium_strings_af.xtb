@@ -44,6 +44,7 @@
 <translation id="3639997914391704523">Chromium kan jou wagwoorde nagaan as jy met jou Google-rekening aanmeld.</translation>
 <translation id="3805899903892079518">Chromium het nie toegang tot jou foto's of video's nie. Aktiveer toegang in iOS-instellings &gt; Privacy &gt; Photos.</translation>
 <translation id="3946918322491238254">Jy kan steeds al jou boekmerke, geskiedenis, wagwoorde en ander instellings op hierdie toestel sien. As jy veranderinge aanbring, sal hulle nie na jou rekening sinkroniseer nie.</translation>
+<translation id="4043291146360695975">Wagwoorde word slegs op hierdie toestel in Wagwoordbestuurder gestoor.</translation>
 <translation id="4099085513035183040">Nie op Chromium Beta gesteun nie</translation>
 <translation id="4555020257205549924">Wanneer hierdie kenmerk aangeskakel is, sal Chromium aanbied om bladsye wat in ander tale geskryf is, te vertaal deur Google Vertaal te gebruik. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Jy kan Chromium nou enige tyd gebruik wanneer jy op skakels in boodskappe, dokumente en ander programme tik.</translation>
@@ -76,6 +77,7 @@
 <translation id="6424492062988593837">Chromium het pas beter geword! 'n Nuwe weergawe is beskikbaar.</translation>
 <translation id="6752854822223394465">Jou organisasie stel tans Chromium op …</translation>
 <translation id="6820823224820483452">Chromium kon nie alle wagwoorde nagaan nie. Probeer môre weer.</translation>
+<translation id="7006920032187763988">Jy kan die wagwoorde wat jy in Wagwoordbestuurder gestoor het in ander programme op jou iPad gebruik.</translation>
 <translation id="7018284295775193585">Chromium kan nie opdateer nie</translation>
 <translation id="7045244423563602563">Maak Chromium jou eie</translation>
 <translation id="7099326575020694068">Chromium kan nie jou kamera in deelaansigmodus gebruik nie</translation>
@@ -102,11 +104,13 @@
 <translation id="8073677936375100957">Vee jou Chromium-data op hierdie toestel uit?</translation>
 <translation id="8175055321229419309">Wenk: <ph name="BEGIN_LINK" />Skuif Chromium na jou dok<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium kon nie vir opdaterings kyk nie. Probeer later weer.</translation>
+<translation id="858114650497379505">Jy kan die wagwoorde wat jy in Wagwoordbestuurder gestoor het in ander programme op jou iPhone gebruik.</translation>
 <translation id="8586442755830160949">Kopiereg <ph name="YEAR" /> Die Chromium-outeurs. Alle regte voorbehou.</translation>
 <translation id="8663480472502753423">Hou Chromium op datum</translation>
 <translation id="8776843108004031667">Hierdie rekening en enige ongstoorde data sal uit Chromium verwyder word.</translation>
 <translation id="894437814105052438">Chromium sal nie enige nuwe data na jou Google-rekening sinkroniseer nadat jy afgemeld het nie. Data wat voorheen gesinkroniseer is, bly in hierdie rekening.</translation>
 <translation id="9022552996538154597">Meld by Chromium aan</translation>
+<translation id="9059693977935746710">Jy hoef nie hierdie wagwoord te onthou nie. Dit sal vir <ph name="EMAIL" /> in Wagwoordbestuurder gestoor word</translation>
 <translation id="9089354809943900324">Chromium is verouderd</translation>
 <translation id="9110075932708282655">Gebruik Chromium by verstek</translation>
 <translation id="921174536258924340">Chromium kon nie alle wagwoorde nagaan nie. Probeer môre weer of <ph name="BEGIN_LINK" />gaan wagwoorde in jou Google-rekening na<ph name="END_LINK" />.</translation>

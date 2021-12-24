@@ -25,6 +25,7 @@
 <translation id="1145536944570833626">Избришете ги постоечките податоци.</translation>
 <translation id="1147031633655575115">Најавени сте како <ph name="USER" /></translation>
 <translation id="1154984953698510061">Видете ги „Другите картички“</translation>
+<translation id="1164064664035028907">Користете силна лозинка:</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1172898394251786223">Следно поле</translation>
 <translation id="1176932207622159128">Не може да се зачува сликата</translation>
@@ -235,6 +236,7 @@
 <translation id="3157387275655328056">Додај во „Списокот за читање“</translation>
 <translation id="3157684681743766797">Означи ги сите…</translation>
 <translation id="3169472444629675720">Откриј</translation>
+<translation id="3174662312949010067">Зачуваните лозинки може да ги користите и на другите ваши уреди.</translation>
 <translation id="3175081911749765310">Веб-услуги</translation>
 <translation id="3178650076442119961">Активен денес</translation>
 <translation id="3181825792072797598">Вклучи синхронизација</translation>
@@ -543,6 +545,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6127379762771434464">Ставката е отстранета</translation>
 <translation id="6136914049981179737">Пред секунди</translation>
 <translation id="6144589619057374135">Отвори ${url} во „Инкогнито“</translation>
+<translation id="6149061208933997199">Користи лозинка</translation>
 <translation id="6159839020698489198">изборно</translation>
 <translation id="6177442314419606057">Пребарувајте во Chrome</translation>
 <translation id="6184086493125982861">Прикажи картички</translation>
@@ -635,6 +638,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6807889908376551050">Прикажи ги сите...</translation>
 <translation id="681368974849482173">Ставката е создадена</translation>
 <translation id="681450999322335505">Вашата организација го исклучи синхронизирањето.</translation>
+<translation id="683022620450280906">Зачуваните лозинки може да ги користите на кој било уред. Зачувани се во „Управникот со лозинки на Google“ за <ph name="EMAIL" /></translation>
 <translation id="6830804042318138535">Прочитајте повеќе</translation>
 <translation id="6831043979455480757">Преведи</translation>
 <translation id="6842136130964845393">За да можете секогаш да пристапувате до зачуваните лозинки, потврдете дека сте вие</translation>

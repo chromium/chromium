@@ -235,6 +235,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3157387275655328056">Afegeix a la llista de lectura</translation>
 <translation id="3157684681743766797">Marca-ho tot com a…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">També pots utilitzar les contrasenyes desades en els teus altres dispositius.</translation>
 <translation id="3175081911749765310">Serveis web</translation>
 <translation id="3178650076442119961">Actiu avui</translation>
 <translation id="3181825792072797598">Activa l'opció Sincronització</translation>
@@ -543,6 +544,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6127379762771434464">S'ha suprimit l'element</translation>
 <translation id="6136914049981179737">Fa segons</translation>
 <translation id="6144589619057374135">Obre ${url} en mode d'incògnit</translation>
+<translation id="6149061208933997199">Fes servir la contrasenya</translation>
 <translation id="6159839020698489198">opcional</translation>
 <translation id="6177442314419606057">Fes cerques a Chrome</translation>
 <translation id="6184086493125982861">Mostra les pestanyes</translation>

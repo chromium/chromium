@@ -25,6 +25,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1145536944570833626">Borra los datos existentes.</translation>
 <translation id="1147031633655575115">Accediste como <ph name="USER" /></translation>
 <translation id="1154984953698510061">Ver otras pestañas</translation>
+<translation id="1164064664035028907">Utiliza una contraseña segura:</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Campo siguiente</translation>
 <translation id="1176932207622159128">Error al guardar imagen</translation>
@@ -235,6 +236,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3157387275655328056">Agregar a la lista de lectura</translation>
 <translation id="3157684681743766797">Marcar todas…</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3174662312949010067">También puedes usar las contraseñas guardadas en tus otros dispositivos.</translation>
 <translation id="3175081911749765310">Servicios web</translation>
 <translation id="3178650076442119961">Activo hoy</translation>
 <translation id="3181825792072797598">Activar la sincronización</translation>
@@ -543,6 +545,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6127379762771434464">Se eliminó el elemento</translation>
 <translation id="6136914049981179737">Hace seg.</translation>
 <translation id="6144589619057374135">Abrir ${url} en modo Incógnito</translation>
+<translation id="6149061208933997199">Usar contraseña</translation>
 <translation id="6159839020698489198">opcional</translation>
 <translation id="6177442314419606057">Buscar en Chrome</translation>
 <translation id="6184086493125982861">Mostrar las pestañas</translation>
@@ -635,6 +638,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6807889908376551050">Mostrar todos...</translation>
 <translation id="681368974849482173">Elemento creado</translation>
 <translation id="681450999322335505">Tu organización desactivó la sincronización.</translation>
+<translation id="683022620450280906">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en el Administrador de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="6830804042318138535">Más información</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6842136130964845393">Para asegurarte de que siempre puedas acceder a tus contraseñas guardadas, verifica tu identidad.</translation>
