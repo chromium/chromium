@@ -1869,8 +1869,11 @@ int HTMLInputElement::scrollWidth() {
   // Adjust scrollWidth to include input element horizontal paddings and
   // decoration width.
   LayoutUnit adjustment = box->ClientWidth() - editor_box->ClientWidth();
+  int snapped_scroll_width =
+      SnapSizeToPixel(editor_box->ScrollWidth() + adjustment,
+                      box->Location().X() + box->ClientLeft());
   return AdjustForAbsoluteZoom::AdjustLayoutUnit(
-             editor_box->ScrollWidth() + adjustment, box->StyleRef())
+             LayoutUnit(snapped_scroll_width), box->StyleRef())
       .Round();
 }
 
