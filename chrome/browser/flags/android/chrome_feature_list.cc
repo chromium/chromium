@@ -102,7 +102,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &download::features::kSmartSuggestionForLargeDownloads,
     &download::features::kUseDownloadOfflineContentProvider,
     &embedder_support::kShowTrustedPublisherURL,
-    &features::kAnonymousUpdateChecks,
     &features::kContinuousSearch,
     &features::kEarlyLibraryLoad,
     &features::kGenericSensorExtraClasses,

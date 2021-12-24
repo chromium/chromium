@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 import org.xmlpull.v1.XmlSerializer;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.uid.SettingsSecureBasedIdentificationGenerator;
 import org.chromium.chrome.browser.uid.UniqueIdentificationGeneratorFactory;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -81,12 +80,8 @@ public abstract class RequestGenerator {
             serializer.attribute(null, "requestid", "{" + data.getRequestID() + "}");
             serializer.attribute(null, "sessionid", "{" + sessionID + "}");
             serializer.attribute(null, "installsource", data.getInstallSource());
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANONYMOUS_UPDATE_CHECKS)) {
-                serializer.attribute(null, "dedup", "cr");
-            } else {
-                serializer.attribute(null, "userid", "{" + getDeviceID() + "}");
-                serializer.attribute(null, "dedup", "uid");
-            }
+            serializer.attribute(null, "userid", "{" + getDeviceID() + "}");
+            serializer.attribute(null, "dedup", "uid");
 
             // Set up <os platform="android"... />
             serializer.startTag(null, "os");
