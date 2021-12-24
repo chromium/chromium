@@ -546,6 +546,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     enum="ChromeOSProfileCollectionStatus" expires_after="2022-05-01">
   <owner>aalexand@google.com</owner>
   <owner>gmx@chromium.org</owner>
+  <owner>cwp-team@google.com</owner>
   <summary>
     A count of successes and various failure modes related to collecting and
     processing profile data obtained via &quot;perf events&quot; on Chrome OS.
@@ -586,7 +587,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.CWP.ParsePSICPU" enum="ChromeOSParsePSICPUStatus"
     expires_after="2022-05-01">
-  <owner>dubin@google.com</owner>
+  <owner>shantuo@google.com</owner>
   <owner>cwp-team@google.com</owner>
   <summary>
     A count of successes and various failure modes related to the parsing of PSI
@@ -628,8 +629,8 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.CWP.RecordPerf" enum="ChromeOSProfileRecordStatus"
-    expires_after="2022-01-30">
-  <owner>dubin@google.com</owner>
+    expires_after="2022-12-20">
+  <owner>shantuo@google.com</owner>
   <owner>cwp-team@google.com</owner>
   <summary>
     A count of the various outcomes related to recording the profile data
@@ -643,6 +644,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2022-03-27">
   <owner>aalexand@google.com</owner>
   <owner>gmx@chromium.org</owner>
+  <owner>cwp-team@google.com</owner>
   <summary>
     Records the number of &quot;perf events&quot; reports included in an UMA
     upload on Chrome OS.
