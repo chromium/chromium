@@ -129,8 +129,7 @@ export class Modes {
       photoPreferrer: PhotoConstraintsPreferrer,
       videoPreferrer: VideoConstraintsPreferrer,
       private readonly doSwitchMode: DoSwitchMode,
-      private readonly handler: PhotoHandler&PortraitHandler&ScanHandler&
-      VideoHandler,
+      handler: PhotoHandler&PortraitHandler&ScanHandler&VideoHandler,
   ) {
     /**
      * Returns a set of general constraints for fake cameras.
