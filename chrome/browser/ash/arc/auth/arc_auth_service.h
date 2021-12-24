@@ -40,6 +40,11 @@ class ArcBackgroundAuthCodeFetcher;
 class ArcBridgeService;
 class ArcFetcherBase;
 
+constexpr char kArcAuthRequestAccountInfoResultPrimaryHistogramName[] =
+    "Arc.Auth.RequestAccountInfoResult.Primary";
+constexpr char kArcAuthRequestAccountInfoResultSecondaryHistogramName[] =
+    "Arc.Auth.RequestAccountInfoResult.Secondary";
+
 // Implementation of ARC authorization.
 class ArcAuthService : public KeyedService,
                        public mojom::AuthHost,

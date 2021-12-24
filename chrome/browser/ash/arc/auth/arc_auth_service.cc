@@ -18,6 +18,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
@@ -179,6 +180,26 @@ void OnFetchPrimaryAccountInfoCompleted(
     bool persistent_error,
     mojom::ArcAuthCodeStatus status,
     mojom::AccountInfoPtr account_info) {
+  std::move(callback).Run(std::move(status), std::move(account_info),
+                          persistent_error);
+}
+
+void CompleteFetchPrimaryAccountInfoWithMetrics(
+    ArcAuthService::RequestPrimaryAccountInfoCallback callback,
+    mojom::ArcAuthCodeStatus status,
+    mojom::AccountInfoPtr account_info) {
+  base::UmaHistogramEnumeration(
+      kArcAuthRequestAccountInfoResultPrimaryHistogramName, status);
+  std::move(callback).Run(std::move(status), std::move(account_info));
+}
+
+void CompleteFetchSecondaryAccountInfoWithMetrics(
+    ArcAuthService::RequestAccountInfoCallback callback,
+    mojom::ArcAuthCodeStatus status,
+    mojom::AccountInfoPtr account_info,
+    bool persistent_error) {
+  base::UmaHistogramEnumeration(
+      kArcAuthRequestAccountInfoResultSecondaryHistogramName, status);
   std::move(callback).Run(std::move(status), std::move(account_info),
                           persistent_error);
 }
@@ -369,7 +390,10 @@ void ArcAuthService::ReportManagementChangeStatus(
 void ArcAuthService::RequestPrimaryAccountInfo(
     RequestPrimaryAccountInfoCallback callback) {
   // This is the provisioning flow.
-  FetchPrimaryAccountInfo(true /* initial_signin */, std::move(callback));
+  FetchPrimaryAccountInfo(
+      true /* initial_signin */,
+      base::BindOnce(&CompleteFetchPrimaryAccountInfoWithMetrics,
+                     std::move(callback)));
 }
 
 void ArcAuthService::RequestAccountInfo(const std::string& account_name,
@@ -380,7 +404,10 @@ void ArcAuthService::RequestAccountInfo(const std::string& account_name,
 
   // Check if |account_name| points to a Secondary Account.
   if (!IsPrimaryOrDeviceLocalAccount(identity_manager_, account_name)) {
-    FetchSecondaryAccountInfo(account_name, std::move(callback));
+    FetchSecondaryAccountInfo(
+        account_name,
+        base::BindOnce(&CompleteFetchSecondaryAccountInfoWithMetrics,
+                       std::move(callback)));
     return;
   }
 
@@ -389,8 +416,10 @@ void ArcAuthService::RequestAccountInfo(const std::string& account_name,
   // has persistent error.
   FetchPrimaryAccountInfo(
       false /* initial_signin */,
-      base::BindOnce(&OnFetchPrimaryAccountInfoCompleted, std::move(callback),
-                     false /* persistent_error */));
+      base::BindOnce(
+          &CompleteFetchPrimaryAccountInfoWithMetrics,
+          base::BindOnce(&OnFetchPrimaryAccountInfoCompleted,
+                         std::move(callback), false /* persistent_error */)));
 }
 
 void ArcAuthService::FetchPrimaryAccountInfo(

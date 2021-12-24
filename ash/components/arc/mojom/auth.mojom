@@ -24,6 +24,10 @@ enum ArcAuthCodeStatus {
 
   // Account is not present in Chrome OS Account Manager.
   [MinVersion=21] CHROME_ACCOUNT_NOT_FOUND = 21,
+
+  // NOTE: If you add any entries to this enum, you must also update the
+  // corresponding UMA ArcAuthMainAccountResolutionStatus at
+  // tools/metrics/histograms/enums.xml.
 };
 
 [Extensible]

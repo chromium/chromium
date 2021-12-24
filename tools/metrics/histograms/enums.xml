@@ -3775,6 +3775,14 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="GmsProxy api"/>
 </enum>
 
+<enum name="ArcAuthCodeStatus">
+  <summary>Defines the status of auth code retrieval.</summary>
+  <int value="16" label="Server does not return authorization"/>
+  <int value="17" label="ARC was disabled for Active Directory user"/>
+  <int value="18" label="Success"/>
+  <int value="21" label="Account is not present in Chrome OS Account Manager"/>
+</enum>
+
 <enum name="ArcAuthMainAccountResolutionStatus">
   <int value="0" label="No hash code no account"/>
   <int value="1" label="No hash code for single account"/>

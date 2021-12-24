@@ -587,6 +587,7 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, SuccessfulBackgroundProxyBypass) {
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
                        ReAuthenticatePrimaryAccountSucceeds) {
+  base::HistogramTester tester;
   SetAccountAndProfile(user_manager::USER_TYPE_REGULAR);
   test_url_loader_factory()->AddResponse(arc::kAuthTokenExchangeEndPoint,
                                          GetFakeAuthTokenResponse());
@@ -604,10 +605,14 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
   EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_FALSE(auth_instance().account_info()->is_managed);
   EXPECT_FALSE(auth_instance().sign_in_persistent_error());
+  tester.ExpectUniqueSample(
+      kArcAuthRequestAccountInfoResultPrimaryHistogramName,
+      mojom::ArcAuthCodeStatus::SUCCESS, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
                        RetryAuthTokenExchangeRequestOnUnauthorizedError) {
+  base::HistogramTester tester;
   SetAccountAndProfile(user_manager::USER_TYPE_REGULAR);
 
   base::RunLoop run_loop;
@@ -626,10 +631,14 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
   run_loop.Run();
 
   ASSERT_TRUE(auth_instance().account_info());
+  tester.ExpectUniqueSample(
+      kArcAuthRequestAccountInfoResultPrimaryHistogramName,
+      mojom::ArcAuthCodeStatus::SUCCESS, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
                        ReAuthenticatePrimaryAccountFailsForInvalidAccount) {
+  base::HistogramTester tester;
   SetAccountAndProfile(user_manager::USER_TYPE_REGULAR);
   test_url_loader_factory()->AddResponse(arc::kAuthTokenExchangeEndPoint,
                                          std::string() /* response */,
@@ -642,9 +651,13 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
   EXPECT_FALSE(auth_instance().account_info());
   EXPECT_EQ(mojom::ArcAuthCodeStatus::CHROME_SERVER_COMMUNICATION_ERROR,
             auth_instance().auth_code_status());
+  tester.ExpectUniqueSample(
+      kArcAuthRequestAccountInfoResultPrimaryHistogramName,
+      mojom::ArcAuthCodeStatus::CHROME_SERVER_COMMUNICATION_ERROR, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, FetchSecondaryAccountInfoSucceeds) {
+  base::HistogramTester tester;
   // Add a Secondary Account.
   SetAccountAndProfile(user_manager::USER_TYPE_REGULAR);
   SeedAccountInfo(kSecondaryAccountEmail);
@@ -665,10 +678,14 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, FetchSecondaryAccountInfoSucceeds) {
   EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_FALSE(auth_instance().account_info()->is_managed);
   EXPECT_FALSE(auth_instance().sign_in_persistent_error());
+  tester.ExpectUniqueSample(
+      kArcAuthRequestAccountInfoResultSecondaryHistogramName,
+      mojom::ArcAuthCodeStatus::SUCCESS, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
                        FetchSecondaryAccountInfoFailsForInvalidAccounts) {
+  base::HistogramTester tester;
   // Add a Secondary Account.
   SetAccountAndProfile(user_manager::USER_TYPE_REGULAR);
   SeedAccountInfo(kSecondaryAccountEmail);
@@ -684,10 +701,14 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
   EXPECT_FALSE(auth_instance().account_info());
   EXPECT_EQ(mojom::ArcAuthCodeStatus::CHROME_SERVER_COMMUNICATION_ERROR,
             auth_instance().auth_code_status());
+  tester.ExpectUniqueSample(
+      kArcAuthRequestAccountInfoResultSecondaryHistogramName,
+      mojom::ArcAuthCodeStatus::CHROME_SERVER_COMMUNICATION_ERROR, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
                        FetchSecondaryAccountInfoInvalidRefreshToken) {
+  base::HistogramTester tester;
   const AccountInfo account_info = SetupGaiaAccount(kSecondaryAccountEmail);
   SetInvalidRefreshTokenForAccount(account_info.account_id);
   test_url_loader_factory()->AddResponse(arc::kAuthTokenExchangeEndPoint,
@@ -703,10 +724,14 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
   EXPECT_EQ(mojom::ArcAuthCodeStatus::CHROME_SERVER_COMMUNICATION_ERROR,
             auth_instance().auth_code_status());
   EXPECT_TRUE(auth_instance().sign_in_persistent_error());
+  tester.ExpectUniqueSample(
+      kArcAuthRequestAccountInfoResultSecondaryHistogramName,
+      mojom::ArcAuthCodeStatus::CHROME_SERVER_COMMUNICATION_ERROR, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
                        FetchSecondaryAccountRefreshTokenHasPersistentError) {
+  base::HistogramTester tester;
   const AccountInfo account_info = SetupGaiaAccount(kSecondaryAccountEmail);
   UpdatePersistentErrorOfRefreshTokenForAccount(
       account_info.account_id,
@@ -723,11 +748,15 @@ IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest,
   EXPECT_EQ(mojom::ArcAuthCodeStatus::CHROME_SERVER_COMMUNICATION_ERROR,
             auth_instance().auth_code_status());
   EXPECT_TRUE(auth_instance().sign_in_persistent_error());
+  tester.ExpectUniqueSample(
+      kArcAuthRequestAccountInfoResultSecondaryHistogramName,
+      mojom::ArcAuthCodeStatus::CHROME_SERVER_COMMUNICATION_ERROR, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ArcAuthServiceTest,
     FetchSecondaryAccountInfoReturnsErrorForNotFoundAccounts) {
+  base::HistogramTester tester;
   SetAccountAndProfile(user_manager::USER_TYPE_REGULAR);
   // Don't add account with kSecondaryAccountEmail.
 
@@ -740,6 +769,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(mojom::ArcAuthCodeStatus::CHROME_ACCOUNT_NOT_FOUND,
             auth_instance().auth_code_status());
   EXPECT_TRUE(auth_instance().sign_in_persistent_error());
+  tester.ExpectUniqueSample(
+      kArcAuthRequestAccountInfoResultSecondaryHistogramName,
+      mojom::ArcAuthCodeStatus::CHROME_ACCOUNT_NOT_FOUND, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ArcAuthServiceTest, FetchGoogleAccountsFromArc) {
