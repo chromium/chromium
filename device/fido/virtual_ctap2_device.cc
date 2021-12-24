@@ -448,6 +448,20 @@ std::vector<uint8_t> GenerateAndEncryptToken(
   return pin::ProtocolVersion(pin_protocol).Encrypt(shared_key, pin_token);
 }
 
+bool CheckCredentialListForExtraKeys(
+    base::span<const PublicKeyCredentialDescriptor> creds) {
+  if (std::any_of(creds.begin(), creds.end(), [](const auto& cred) -> bool {
+        return cred.had_other_keys;
+      })) {
+    LOG(ERROR) << "A PublicKeyCredentialDescriptor contained unexpected CBOR "
+                  "keys. This is believed to trigger bugs in some security "
+                  "keys. See crbug.com/1270757.";
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 VirtualCtap2Device::Config::Config() = default;
@@ -1039,6 +1053,10 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
     return CtapDeviceResponseCode::kCtap2ErrLimitExceeded;
   }
 
+  if (!CheckCredentialListForExtraKeys(request.exclude_list)) {
+    return CtapDeviceResponseCode::kCtap2ErrInvalidCBOR;
+  }
+
   for (const auto& excluded_credential : request.exclude_list) {
     if (0 < config_.max_credential_id_length &&
         config_.max_credential_id_length < excluded_credential.id.size()) {
@@ -1350,6 +1368,10 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
       (config_.max_credential_count_in_list &&
        request.allow_list.size() > config_.max_credential_count_in_list)) {
     return CtapDeviceResponseCode::kCtap2ErrLimitExceeded;
+  }
+
+  if (!CheckCredentialListForExtraKeys(request.allow_list)) {
+    return CtapDeviceResponseCode::kCtap2ErrInvalidCBOR;
   }
 
   for (const auto& allowed_credential : request.allow_list) {

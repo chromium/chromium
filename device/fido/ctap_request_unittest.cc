@@ -85,4 +85,24 @@ TEST(CTAPRequestTest, PublicKeyCredentialDescriptorAsCBOR_1270757) {
   EXPECT_FALSE(base::Contains(map, cbor::Value("transports")));
 }
 
+// Also for https://crbug.com/1270757: check that
+// |PublicKeyCredentialDescriptor| notices when extra keys are present. The
+// |VirtualCtap2Device| will reject such requests.
+TEST(CTAPRequestTest, PublicKeyCredentialDescriptorNoticesExtraKeys) {
+  for (const bool extra_key : {false, true}) {
+    SCOPED_TRACE(extra_key);
+    cbor::Value::MapValue map;
+    map.emplace("type", "public-key");
+    map.emplace("id", std::vector<uint8_t>({1, 2, 3, 4}));
+    if (extra_key) {
+      map.emplace("unexpected", "value");
+    }
+    const absl::optional<PublicKeyCredentialDescriptor> descriptor(
+        PublicKeyCredentialDescriptor::CreateFromCBORValue(
+            cbor::Value(std::move(map))));
+    ASSERT_TRUE(descriptor);
+    EXPECT_EQ(extra_key, descriptor->had_other_keys);
+  }
+}
+
 }  // namespace device

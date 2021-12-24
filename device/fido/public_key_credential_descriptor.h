@@ -46,6 +46,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) PublicKeyCredentialDescriptor {
   CredentialType credential_type;
   std::vector<uint8_t> id;
   base::flat_set<FidoTransportProtocol> transports;
+
+  // had_other_keys is true if, when parsed from CBOR, this descriptor
+  // contained keys other than 'id' and 'type'. This is only used for testing
+  // that we don't repeat crbug.com/1270757.
+  bool had_other_keys = false;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)

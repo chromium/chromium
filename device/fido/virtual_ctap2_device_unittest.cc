@@ -12,6 +12,8 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/cbor/reader.h"
+#include "components/cbor/values.h"
+#include "components/cbor/writer.h"
 #include "device/fido/attestation_statement.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/device_response_converter.h"
@@ -197,6 +199,53 @@ TEST_F(VirtualCtap2DeviceTest, AttestationCertificateIsValid) {
   EXPECT_TRUE(present);
   EXPECT_TRUE(critical);
   EXPECT_EQ(base::StringPiece("\x30\x00", 2), contents);
+}
+
+TEST_F(VirtualCtap2DeviceTest, RejectsCredentialsWithExtraKeys) {
+  // The VirtualCtap2Device should reject assertion requests where a credential
+  // contains extra keys. This is to ensure that we catch if we trigger
+  // crbug.com/1270757 again.
+  for (const bool include_extra_keys : {false, true}) {
+    SCOPED_TRACE(include_extra_keys);
+
+    cbor::Value::MapValue map;
+    map.emplace(1, "example.com");
+
+    const uint8_t k32Bytes[32] = {1, 2, 3};
+    map.emplace(2, base::span<const uint8_t>(k32Bytes));
+
+    cbor::Value::MapValue cred;
+    cred.emplace("type", "public-key");
+    cred.emplace("id", base::span<const uint8_t>(k32Bytes));
+    if (include_extra_keys) {
+      cred.emplace("extra", true);
+    }
+    cbor::Value::ArrayValue allow_list;
+    allow_list.emplace_back(std::move(cred));
+    map.emplace(3, std::move(allow_list));
+
+    absl::optional<std::vector<uint8_t>> bytes =
+        cbor::Writer::Write(cbor::Value(std::move(map)));
+    ASSERT_TRUE(bytes.has_value());
+
+    bytes->insert(
+        bytes->begin(),
+        static_cast<uint8_t>(CtapRequestCommand::kAuthenticatorGetAssertion));
+
+    MakeDevice();
+    TestCallbackReceiver callback_receiver;
+    SendCommand(device_.get(), *bytes, callback_receiver.callback());
+    callback_receiver.WaitForCallback();
+
+    ASSERT_TRUE(callback_receiver.value().has_value());
+    base::span<const uint8_t> result = *callback_receiver.value();
+    ASSERT_EQ(result.size(), 1u);
+    EXPECT_EQ(result[0],
+              static_cast<uint8_t>(
+                  include_extra_keys
+                      ? CtapDeviceResponseCode::kCtap2ErrInvalidCBOR
+                      : CtapDeviceResponseCode::kCtap2ErrNoCredentials));
+  }
 }
 
 }  // namespace device
