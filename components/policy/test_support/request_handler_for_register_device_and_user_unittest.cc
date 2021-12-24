@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/strcat.h"
 #include "components/policy/test_support/request_handler_for_register_browser.h"
 
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/test_support/client_storage.h"
 #include "components/policy/test_support/embedded_policy_test_server_test_base.h"
 #include "components/policy/test_support/policy_storage.h"
+#include "device_management_backend.pb.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,6 +25,8 @@ constexpr char kDisallowedUserEmail[] = "invalid-user@example.com";
 constexpr char kAllowedUserOAuthToken[] = "oauth-token-for-user";
 constexpr char kDisallowedUserOAuthToken[] = "oauth-token-for-invalid-user";
 constexpr char kMachineModel[] = "iPhone 10";
+constexpr char kBrandCode[] = "iPhone";
+constexpr char kMachineId[] = "11123";
 
 }  // namespace
 
@@ -79,12 +83,23 @@ TEST_F(RequestHandlerForRegisterDeviceAndUserTest, HandleRequest_Success) {
   policy_storage()->add_managed_user(kAllowedUserEmail);
   SetGoogleLoginTokenHeader(kAllowedUserOAuthToken);
   policy_storage()->set_policy_user(kAllowedUserEmail);
+  policy_storage()->SetPsmEntry(
+      base::StrCat({kBrandCode, "_", kMachineId}),
+      PolicyStorage::PsmEntry{
+          .psm_execution_result =
+              em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE,
+          .psm_determination_timestamp = 42});
 
   em::DeviceManagementRequest device_management_request;
   em::DeviceRegisterRequest* register_request =
       device_management_request.mutable_register_request();
   register_request->set_machine_model(kMachineModel);
   register_request->set_type(em::DeviceRegisterRequest::USER);
+  register_request->set_brand_code(kBrandCode);
+  register_request->set_machine_id(kMachineId);
+  register_request->set_psm_execution_result(
+      em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE);
+  register_request->set_psm_determination_timestamp_ms(42);
   SetPayload(device_management_request);
 
   StartRequestAndWait();
@@ -111,6 +126,119 @@ TEST_F(RequestHandlerForRegisterDeviceAndUserTest, HandleRequest_Success) {
   EXPECT_EQ(client_info->machine_name, register_response.machine_name());
   EXPECT_EQ(client_info->username, kAllowedUserEmail);
   EXPECT_FALSE(client_info->allowed_policy_types.empty());
+}
+
+TEST_F(RequestHandlerForRegisterDeviceAndUserTest,
+       HandleRequest_NoPsmExecutionResult) {
+  policy_storage()->add_managed_user(kAllowedUserEmail);
+  SetGoogleLoginTokenHeader(kAllowedUserOAuthToken);
+  policy_storage()->set_policy_user(kAllowedUserEmail);
+  policy_storage()->SetPsmEntry(
+      base::StrCat({kBrandCode, "_", kMachineId}),
+      PolicyStorage::PsmEntry{
+          .psm_execution_result =
+              em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE,
+          .psm_determination_timestamp = 42});
+
+  em::DeviceManagementRequest device_management_request;
+  em::DeviceRegisterRequest* register_request =
+      device_management_request.mutable_register_request();
+  register_request->set_machine_model(kMachineModel);
+  register_request->set_type(em::DeviceRegisterRequest::USER);
+  register_request->set_brand_code(kBrandCode);
+  register_request->set_machine_id(kMachineId);
+  register_request->set_psm_determination_timestamp_ms(42);
+  SetPayload(device_management_request);
+
+  StartRequestAndWait();
+
+  EXPECT_EQ(GetResponseCode(), net::HTTP_BAD_REQUEST);
+}
+
+TEST_F(RequestHandlerForRegisterDeviceAndUserTest,
+       HandleRequest_NoPsmDeterminationTimestamp) {
+  policy_storage()->add_managed_user(kAllowedUserEmail);
+  SetGoogleLoginTokenHeader(kAllowedUserOAuthToken);
+  policy_storage()->set_policy_user(kAllowedUserEmail);
+  policy_storage()->SetPsmEntry(
+      base::StrCat({kBrandCode, "_", kMachineId}),
+      PolicyStorage::PsmEntry{
+          .psm_execution_result =
+              em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE,
+          .psm_determination_timestamp = 42});
+
+  em::DeviceManagementRequest device_management_request;
+  em::DeviceRegisterRequest* register_request =
+      device_management_request.mutable_register_request();
+  register_request->set_machine_model(kMachineModel);
+  register_request->set_type(em::DeviceRegisterRequest::USER);
+  register_request->set_brand_code(kBrandCode);
+  register_request->set_machine_id(kMachineId);
+  register_request->set_psm_execution_result(
+      em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE);
+  SetPayload(device_management_request);
+
+  StartRequestAndWait();
+
+  EXPECT_EQ(GetResponseCode(), net::HTTP_BAD_REQUEST);
+}
+
+TEST_F(RequestHandlerForRegisterDeviceAndUserTest,
+       HandleRequest_MismatchingPsmExecutionResult) {
+  policy_storage()->add_managed_user(kAllowedUserEmail);
+  SetGoogleLoginTokenHeader(kAllowedUserOAuthToken);
+  policy_storage()->set_policy_user(kAllowedUserEmail);
+  policy_storage()->SetPsmEntry(
+      base::StrCat({kBrandCode, "_", kMachineId}),
+      PolicyStorage::PsmEntry{
+          .psm_execution_result =
+              em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE,
+          .psm_determination_timestamp = 42});
+
+  em::DeviceManagementRequest device_management_request;
+  em::DeviceRegisterRequest* register_request =
+      device_management_request.mutable_register_request();
+  register_request->set_machine_model(kMachineModel);
+  register_request->set_type(em::DeviceRegisterRequest::USER);
+  register_request->set_brand_code(kBrandCode);
+  register_request->set_machine_id(kMachineId);
+  register_request->set_psm_execution_result(
+      em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
+  register_request->set_psm_determination_timestamp_ms(42);
+  SetPayload(device_management_request);
+
+  StartRequestAndWait();
+
+  EXPECT_EQ(GetResponseCode(), net::HTTP_BAD_REQUEST);
+}
+
+TEST_F(RequestHandlerForRegisterDeviceAndUserTest,
+       HandleRequest_MismatchingPsmDeterminationTimestamp) {
+  policy_storage()->add_managed_user(kAllowedUserEmail);
+  SetGoogleLoginTokenHeader(kAllowedUserOAuthToken);
+  policy_storage()->set_policy_user(kAllowedUserEmail);
+  policy_storage()->SetPsmEntry(
+      base::StrCat({kBrandCode, "_", kMachineId}),
+      PolicyStorage::PsmEntry{
+          .psm_execution_result =
+              em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE,
+          .psm_determination_timestamp = 42});
+
+  em::DeviceManagementRequest device_management_request;
+  em::DeviceRegisterRequest* register_request =
+      device_management_request.mutable_register_request();
+  register_request->set_machine_model(kMachineModel);
+  register_request->set_type(em::DeviceRegisterRequest::USER);
+  register_request->set_brand_code(kBrandCode);
+  register_request->set_machine_id(kMachineId);
+  register_request->set_psm_execution_result(
+      em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
+  register_request->set_psm_determination_timestamp_ms(24);
+  SetPayload(device_management_request);
+
+  StartRequestAndWait();
+
+  EXPECT_EQ(GetResponseCode(), net::HTTP_BAD_REQUEST);
 }
 
 }  // namespace policy

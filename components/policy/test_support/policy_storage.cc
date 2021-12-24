@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/policy/test_support/policy_storage.h"
+#include "crypto/sha2.h"
 
 namespace policy {
 
@@ -25,6 +26,53 @@ std::string PolicyStorage::GetPolicyPayload(
 void PolicyStorage::SetPolicyPayload(const std::string& policy_type,
                                      const std::string& policy_payload) {
   policy_payloads_[policy_type] = policy_payload;
+}
+
+void PolicyStorage::SetPsmEntry(const std::string& brand_serial_id,
+                                const PolicyStorage::PsmEntry& psm_entry) {
+  psm_entries_[brand_serial_id] = psm_entry;
+}
+
+const PolicyStorage::PsmEntry* PolicyStorage::GetPsmEntry(
+    const std::string& brand_serial_id) const {
+  auto it = psm_entries_.find(brand_serial_id);
+  if (it == psm_entries_.end())
+    return nullptr;
+  return &it->second;
+}
+
+void PolicyStorage::SetInitialEnrollmentState(
+    const std::string& brand_serial_id,
+    const PolicyStorage::InitialEnrollmentState& initial_enrollment_state) {
+  initial_enrollment_states_[brand_serial_id] = initial_enrollment_state;
+}
+
+const PolicyStorage::InitialEnrollmentState*
+PolicyStorage::GetInitialEnrollmentState(
+    const std::string& brand_serial_id) const {
+  auto it = initial_enrollment_states_.find(brand_serial_id);
+  if (it == initial_enrollment_states_.end())
+    return nullptr;
+  return &it->second;
+}
+
+std::vector<std::string> PolicyStorage::GetMatchingSerialHashes(
+    uint64_t modulus,
+    uint64_t remainder) const {
+  std::vector<std::string> hashes;
+  for (const auto& [serial, enrollment_state] : initial_enrollment_states_) {
+    uint64_t hash = 0;
+    char hstr[sizeof(hash)];
+    crypto::SHA256HashString(serial, &hstr, sizeof(hash));
+    // Convert hash string to uint64_t using big-endian byte-order.
+    for (size_t i = 0; i < sizeof(hash); i++) {
+      uint64_t byte = static_cast<unsigned char>(hstr[i]);
+      hash += byte << (sizeof(hash) - i - 1) * CHAR_BIT;
+    }
+    if (hash % modulus == remainder)
+      hashes.emplace_back(hstr, sizeof(uint64_t));
+  }
+  return hashes;
 }
 
 }  // namespace policy

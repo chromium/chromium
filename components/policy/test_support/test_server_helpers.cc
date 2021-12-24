@@ -5,8 +5,10 @@
 #include "components/policy/test_support/test_server_helpers.h"
 
 #include <utility>
+#include "base/ranges/algorithm.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "net/base/url_util.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -16,6 +18,28 @@ namespace policy {
 using ::net::test_server::BasicHttpResponse;
 using ::net::test_server::HttpRequest;
 using ::net::test_server::HttpResponse;
+
+namespace {
+
+// C++ does not offer a mechanism to check if a given status code is present in
+// net::HttpStatusCode enum. To allow distinguishing standard HTTP status code
+// from custom ones, we define this array that will contain all standard codes.
+constexpr net::HttpStatusCode kStandardHttpStatusCodes[] = {
+#define HTTP_STATUS(label, code, reason) net::HttpStatusCode(code),
+#include "net/http/http_status_code_list.h"
+#undef HTTP_STATUS
+};
+
+}  // namespace
+
+void CustomHttpResponse::SendResponse(
+    base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) {
+  std::string reason = "Custom";
+  if (base::ranges::lower_bound(kStandardHttpStatusCodes, code()))
+    reason = BasicHttpResponse::reason();
+  delegate->SendHeadersContentAndFinish(code(), reason, BuildHeaders(),
+                                        content());
+}
 
 std::string KeyValueFromUrl(GURL url, const std::string& key) {
   std::string value;
@@ -60,7 +84,7 @@ bool GetGoogleLoginFromRequest(const net::test_server::HttpRequest& request,
 
 std::unique_ptr<HttpResponse> CreateHttpResponse(net::HttpStatusCode code,
                                                  const std::string& content) {
-  auto response = std::make_unique<BasicHttpResponse>();
+  auto response = std::make_unique<CustomHttpResponse>();
   response->set_content_type("text/plain");
   response->set_code(code);
   response->set_content(content);

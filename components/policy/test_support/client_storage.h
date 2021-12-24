@@ -54,8 +54,17 @@ class ClientStorage {
   // no such a client.
   const ClientInfo* GetClientOrNull(const std::string& device_id) const;
 
+  // Returns the client info associated with |state_key| or nullptr if there is
+  // no such a client.
+  const ClientInfo* LookupByStateKey(const std::string& state_key) const;
+
   // Returns the number of clients registered.
   size_t GetNumberOfRegisteredClients() const;
+
+  // Returns hashes for all state keys registered with the server, which, when
+  // divied by |modulus|, result in the specified |remainder|.
+  std::vector<std::string> GetMatchingStateKeyHashes(uint64_t modulus,
+                                                     uint64_t remainder) const;
 
  private:
   // Key: device ids.

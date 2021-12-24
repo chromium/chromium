@@ -54,6 +54,33 @@ void AddAllowedPolicyTypes(em::DeviceRegisterRequest::Type type,
   }
 }
 
+std::unique_ptr<HttpResponse> ValidatePsmFields(
+    const em::DeviceRegisterRequest& register_request,
+    const PolicyStorage* policy_storage) {
+  const PolicyStorage::PsmEntry* psm_entry = policy_storage->GetPsmEntry(
+      register_request.brand_code() + "_" + register_request.machine_id());
+  if (!psm_entry)
+    return nullptr;
+
+  if (!register_request.has_psm_execution_result() ||
+      !register_request.has_psm_determination_timestamp_ms()) {
+    return CreateHttpResponse(net::HTTP_BAD_REQUEST,
+                              "DeviceRegisterRequest must have all required "
+                              "PSM execution fields.");
+  }
+
+  if (register_request.psm_execution_result() !=
+          psm_entry->psm_execution_result ||
+      psm_entry->psm_determination_timestamp !=
+          register_request.psm_determination_timestamp_ms()) {
+    return CreateHttpResponse(
+        net::HTTP_BAD_REQUEST,
+        "DeviceRegisterRequest must have all correct PSM execution values");
+  }
+
+  return nullptr;
+}
+
 }  // namespace
 
 RequestHandlerForRegisterDeviceAndUser::RequestHandlerForRegisterDeviceAndUser(
@@ -79,7 +106,7 @@ RequestHandlerForRegisterDeviceAndUser::HandleRequest(
   if (!GetGoogleLoginFromRequest(request, &google_login))
     return CreateHttpResponse(net::HTTP_UNAUTHORIZED, "User not authorized.");
 
-  const std::set<std::string>& managed_users =
+  const base::flat_set<std::string>& managed_users =
       policy_storage()->managed_users();
   if (managed_users.empty()) {
     return CreateHttpResponse(net::HTTP_INTERNAL_SERVER_ERROR,
@@ -97,6 +124,19 @@ RequestHandlerForRegisterDeviceAndUser::HandleRequest(
   const em::DeviceRegisterRequest& register_request =
       device_management_request.register_request();
 
+  std::unique_ptr<HttpResponse> error_response =
+      ValidatePsmFields(register_request, policy_storage());
+  if (error_response)
+    return error_response;
+
+  return RegisterDeviceAndSendResponse(request, register_request, policy_user);
+}
+
+std::unique_ptr<HttpResponse>
+RequestHandlerForRegisterDeviceAndUser::RegisterDeviceAndSendResponse(
+    const HttpRequest& request,
+    const em::DeviceRegisterRequest& register_request,
+    const std::string& policy_user) {
   std::string device_id =
       KeyValueFromUrl(request.GetURL(), dm_protocol::kParamDeviceID);
   std::string device_token = base::GUID::GenerateRandomV4().AsLowercaseString();

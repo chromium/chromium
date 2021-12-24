@@ -5,6 +5,8 @@
 #include "components/policy/test_support/client_storage.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
+#include "crypto/sha2.h"
 
 namespace policy {
 
@@ -57,8 +59,32 @@ const ClientStorage::ClientInfo* ClientStorage::GetClientOrNull(
   return it == clients_.end() ? nullptr : &it->second;
 }
 
+const ClientStorage::ClientInfo* ClientStorage::LookupByStateKey(
+    const std::string& state_key) const {
+  for (auto const& [device_id, client_info] : clients_) {
+    if (base::Contains(client_info.state_keys, state_key))
+      return &client_info;
+  }
+  return nullptr;
+}
+
 size_t ClientStorage::GetNumberOfRegisteredClients() const {
   return clients_.size();
+}
+
+std::vector<std::string> ClientStorage::GetMatchingStateKeyHashes(
+    uint64_t modulus,
+    uint64_t remainder) const {
+  std::vector<std::string> hashes;
+  for (const auto& [device_id, client_info] : clients_) {
+    // This does not actually divide hashes by |modulus| and verifies that
+    // |remainder| is correct as current tests do not rely on this behavior.
+    // This is difficult to implement since 32-byte hashes do not fit into
+    // regular integer types and thus long-arithmetic approach is needed.
+    for (const std::string& key : client_info.state_keys)
+      hashes.push_back(crypto::SHA256HashString(key));
+  }
+  return hashes;
 }
 
 }  // namespace policy

@@ -44,9 +44,9 @@ TEST_F(RequestHandlerForApiAuthorizationTest, HandleRequest) {
 
   EXPECT_EQ(GetResponseCode(), net::HTTP_OK);
   ASSERT_TRUE(HasResponseBody());
-  EXPECT_EQ(
-      GetDeviceManagementResponse().service_api_access_response().auth_code(),
-      kRobotApiAuthCode);
+  auto response = GetDeviceManagementResponse();
+  EXPECT_EQ(response.service_api_access_response().auth_code(),
+            kRobotApiAuthCode);
 }
 
 }  // namespace policy

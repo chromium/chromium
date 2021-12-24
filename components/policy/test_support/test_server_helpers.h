@@ -9,6 +9,7 @@
 #include <string>
 
 #include "net/http/http_status_code.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -19,6 +20,13 @@ struct HttpRequest;
 }  // namespace net
 
 namespace policy {
+
+// HTTP Response that supports custom HTTP status codes.
+class CustomHttpResponse : public net::test_server::BasicHttpResponse {
+ public:
+  void SendResponse(
+      base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override;
+};
 
 // Returns the value associated with `key` in `url`'s query or empty string if
 // `key` is not present.
