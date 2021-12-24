@@ -10,15 +10,15 @@ import android.widget.TextView;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
-import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 
 /**
  * Coordinator responsible for enabling or disabling the soft keyboard.
  */
 class AssistantKeyboardCoordinator {
     private final Activity mActivity;
-    private final ActivityKeyboardVisibilityDelegate mKeyboardDelegate;
+    private final KeyboardVisibilityDelegate mKeyboardDelegate;
     private final View mRootView;
     private final KeyboardVisibilityListener mKeyboardVisibilityListener =
             this::onKeyboardVisibilityChanged;
@@ -32,7 +32,7 @@ class AssistantKeyboardCoordinator {
 
     // TODO(b/173103628): refactor and inject the keyboard delegate directly.
     AssistantKeyboardCoordinator(Activity activity,
-            ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate, View rootView,
+            KeyboardVisibilityDelegate keyboardVisibilityDelegate, View rootView,
             AssistantModel model, Delegate delegate, BottomSheetController controller) {
         mActivity = activity;
         mKeyboardDelegate = keyboardVisibilityDelegate;

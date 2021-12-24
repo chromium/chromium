@@ -274,18 +274,17 @@ std::unique_ptr<UiControllerAndroid> UiControllerAndroid::CreateFromWebContents(
     const base::android::JavaRef<jobject>& jdependencies,
     const base::android::JavaRef<jobject>& joverlay_coordinator) {
   JNIEnv* env = AttachCurrentThread();
-  auto jactivity = Java_AutofillAssistantUiController_findAppropriateActivity(
-      env, web_contents->GetJavaWebContents());
-  if (!jactivity) {
+  if (!Java_AutofillAssistantUiController_shouldCreateNewInstance(
+          env, web_contents->GetJavaWebContents(), jdependencies)) {
     return nullptr;
   }
-  return std::make_unique<UiControllerAndroid>(env, jactivity, jdependencies,
+
+  return std::make_unique<UiControllerAndroid>(env, jdependencies,
                                                joverlay_coordinator);
 }
 
 UiControllerAndroid::UiControllerAndroid(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& jactivity,
     const base::android::JavaRef<jobject>& jdependencies,
     const base::android::JavaRef<jobject>& joverlay_coordinator)
     : overlay_delegate_(this),
@@ -297,11 +296,11 @@ UiControllerAndroid::UiControllerAndroid(
       jstatic_dependencies_(
           Java_AssistantDependencies_getStaticDependencies(env,
                                                            jdependencies)) {
-  java_object_ = Java_AutofillAssistantUiController_create(
-      env, jactivity,
+  java_object_ = Java_AutofillAssistantUiController_Constructor(
+      env, reinterpret_cast<intptr_t>(this), jdependencies,
       /* allowTabSwitching= */
       base::FeatureList::IsEnabled(features::kAutofillAssistantChromeEntry),
-      reinterpret_cast<intptr_t>(this), jdependencies, joverlay_coordinator);
+      joverlay_coordinator);
   header_model_ = std::make_unique<AssistantHeaderModel>(
       Java_AssistantModel_getHeaderModel(env, GetModel()));
 

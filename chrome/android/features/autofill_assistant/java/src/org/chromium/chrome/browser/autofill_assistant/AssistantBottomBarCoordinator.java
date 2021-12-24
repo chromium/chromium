@@ -249,7 +249,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
                 }
             }
         };
-        controller.addObserver(mBottomSheetObserver);
+        mBottomSheetController.addObserver(mBottomSheetObserver);
 
         // Show or hide the bottom sheet content when the Autofill Assistant visibility is changed.
         model.addObserver((source, propertyKey) -> {

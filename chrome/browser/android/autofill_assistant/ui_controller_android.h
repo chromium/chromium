@@ -56,7 +56,6 @@ class UiControllerAndroid : public ControllerObserver {
   // instance or until WillShutdown is called.
   UiControllerAndroid(
       JNIEnv* env,
-      const base::android::JavaRef<jobject>& jactivity,
       const base::android::JavaRef<jobject>& jdependencies,
       const base::android::JavaRef<jobject>& joverlay_coordinator);
 

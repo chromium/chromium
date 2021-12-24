@@ -36,6 +36,8 @@ public interface AssistantStaticDependencies {
 
     AssistantFeedbackUtil getFeedbackUtil();
 
+    AssistantTabUtil getTabUtil();
+
     @Nullable
     String getSignedInAccountEmailOrNull();
 

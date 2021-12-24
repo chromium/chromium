@@ -65,6 +65,11 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
     }
 
     @Override
+    default AssistantTabUtil getTabUtil() {
+        return new AssistantTabUtilChrome();
+    }
+
+    @Override
     @Nullable
     public String getSignedInAccountEmailOrNull() {
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
