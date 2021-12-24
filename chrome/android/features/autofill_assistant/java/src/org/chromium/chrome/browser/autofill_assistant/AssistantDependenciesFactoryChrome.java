@@ -17,6 +17,6 @@ public class AssistantDependenciesFactoryChrome implements AssistantDependencies
 
     @Override
     public AssistantStaticDependencies createStaticDependencies() {
-        return new AssistantStaticDependenciesChrome() {};
+        return new AssistantStaticDependenciesChrome();
     }
 }

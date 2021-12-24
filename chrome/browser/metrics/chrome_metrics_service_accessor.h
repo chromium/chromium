@@ -34,7 +34,7 @@ class ChromeCameraAppUIDelegate;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace autofill_assistant {
-class ClientAndroid;
+class AssistantFieldTrialUtilChrome;
 }  // namespace autofill_assistant
 
 namespace domain_reliability {
@@ -113,7 +113,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   static void SetMetricsAndCrashReportingForTesting(const bool* value);
 
  private:
-  friend class autofill_assistant::ClientAndroid;
+  friend class autofill_assistant::AssistantFieldTrialUtilChrome;
   friend class ::CrashesDOMHandler;
   friend class ::FlashDOMHandler;
   friend class BreadcrumbsStatus;

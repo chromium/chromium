@@ -8,6 +8,8 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
@@ -22,15 +24,26 @@ import org.chromium.ui.util.AccessibilityUtil;
 /**
  * Provides default implementations of {@link AssistantStaticDependencies} for Chrome.
  */
-public interface AssistantStaticDependenciesChrome extends AssistantStaticDependencies {
+@JNINamespace("autofill_assistant")
+public class AssistantStaticDependenciesChrome implements AssistantStaticDependencies {
+    private long mNativePointer;
+
     @Override
-    default AccessibilityUtil getAccessibilityUtil() {
+    public long getNativePointer() {
+        if (mNativePointer == 0) {
+            mNativePointer = AssistantStaticDependenciesChromeJni.get().init(this);
+        }
+        return mNativePointer;
+    }
+
+    @Override
+    public AccessibilityUtil getAccessibilityUtil() {
         return ChromeAccessibilityUtil.get();
     }
 
     @Override
     @Nullable
-    default AssistantTabObscuringUtil getTabObscuringUtilOrNull(WindowAndroid windowAndroid) {
+    public AssistantTabObscuringUtil getTabObscuringUtilOrNull(WindowAndroid windowAndroid) {
         TabObscuringHandler tabObscuringHandler =
                 TabObscuringHandlerSupplier.getValueOrNullFrom(windowAndroid);
         assert tabObscuringHandler != null;
@@ -42,18 +55,18 @@ public interface AssistantStaticDependenciesChrome extends AssistantStaticDepend
     }
 
     @Override
-    default AssistantInfoPageUtil getInfoPageUtil() {
+    public AssistantInfoPageUtil getInfoPageUtil() {
         return new AssistantInfoPageUtilChrome();
     }
 
     @Override
-    default AssistantFeedbackUtil getFeedbackUtil() {
+    public AssistantFeedbackUtil getFeedbackUtil() {
         return new AssistantFeedbackUtilChrome();
     }
 
     @Override
     @Nullable
-    default String getSignedInAccountEmailOrNull() {
+    public String getSignedInAccountEmailOrNull() {
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
         return CoreAccountInfo.getEmailFrom(
@@ -62,10 +75,15 @@ public interface AssistantStaticDependenciesChrome extends AssistantStaticDepend
 
     @Override
     @Nullable
-    default AssistantProfileImageUtil getProfileImageUtilOrNull(Context context) {
+    public AssistantProfileImageUtil getProfileImageUtilOrNull(Context context) {
         String signedInAccountEmail = getSignedInAccountEmailOrNull();
         if (signedInAccountEmail == null) return null;
 
         return new AssistantProfileImageUtilChrome(context, signedInAccountEmail);
+    }
+
+    @NativeMethods
+    interface Natives {
+        long init(AssistantStaticDependencies staticDependencies);
     }
 }

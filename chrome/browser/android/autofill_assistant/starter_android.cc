@@ -23,8 +23,11 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
 
-using base::android::JavaParamRef;
-using base::android::ScopedJavaLocalRef;
+using ::base::android::AttachCurrentThread;
+using ::base::android::JavaObjectArrayReader;
+using ::base::android::JavaParamRef;
+using ::base::android::ScopedJavaGlobalRef;
+using ::base::android::ScopedJavaLocalRef;
 
 namespace autofill_assistant {
 
@@ -58,7 +61,7 @@ void StarterAndroid::Attach(JNIEnv* env, const JavaParamRef<jobject>& jcaller) {
 
 void StarterAndroid::Detach(JNIEnv* env, const JavaParamRef<jobject>& jcaller) {
   java_object_ = nullptr;
-  java_dependencies_ = nullptr;
+  dependencies_ = nullptr;
   starter_.reset();
 }
 
@@ -67,7 +70,7 @@ StarterAndroid::CreateTriggerScriptUiDelegate() {
   CreateJavaDependenciesIfNecessary();
   return std::make_unique<TriggerScriptBridgeAndroid>(
       base::android::AttachCurrentThread(),
-      GetWebContents().GetJavaWebContents(), java_dependencies_);
+      GetWebContents().GetJavaWebContents(), dependencies_->GetJavaObject());
 }
 
 std::unique_ptr<ServiceRequestSender>
@@ -123,7 +126,7 @@ void StarterAndroid::OnInteractabilityChanged(
 void StarterAndroid::OnActivityAttachmentChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  java_dependencies_ = nullptr;
+  dependencies_ = nullptr;
   if (!starter_) {
     return;
   }
@@ -180,7 +183,7 @@ void StarterAndroid::ShowOnboarding(
 }
 
 void StarterAndroid::HideOnboarding() {
-  if (!java_dependencies_) {
+  if (!dependencies_) {
     return;
   }
   Java_Starter_hideOnboarding(base::android::AttachCurrentThread(),
@@ -240,20 +243,25 @@ bool StarterAndroid::GetIsTabCreatedByGSA() const {
 }
 
 void StarterAndroid::CreateJavaDependenciesIfNecessary() {
-  if (java_dependencies_) {
+  if (dependencies_) {
     return;
   }
 
-  base::android::JavaObjectArrayReader<jobject> array(
+  JavaObjectArrayReader<jobject> array(
       Java_Starter_getOrCreateDependenciesAndOnboardingHelper(
-          base::android::AttachCurrentThread(), java_object_));
+          AttachCurrentThread(), java_object_));
 
   DCHECK_EQ(array.size(), 2);
   if (array.size() != 2) {
     return;
   }
 
-  java_dependencies_ = *array.begin();
+  ScopedJavaGlobalRef<jobject> java_dependencies =
+      ScopedJavaGlobalRef<jobject>(*array.begin());
+  if (!java_dependencies.is_null()) {
+    dependencies_ = Dependencies::CreateFromJavaObject(java_dependencies);
+  }
+
   java_onboarding_helper_ = *(++array.begin());
 }
 
@@ -282,7 +290,8 @@ void StarterAndroid::StartRegularScript(
     std::unique_ptr<TriggerContext> trigger_context,
     const absl::optional<TriggerScriptProto>& trigger_script) {
   CreateJavaDependenciesIfNecessary();
-  ClientAndroid::CreateForWebContents(&GetWebContents(), java_dependencies_);
+  ClientAndroid::CreateForWebContents(&GetWebContents(),
+                                      std::move(dependencies_));
   auto* client_android = ClientAndroid::FromWebContents(&GetWebContents());
   DCHECK(client_android);
 

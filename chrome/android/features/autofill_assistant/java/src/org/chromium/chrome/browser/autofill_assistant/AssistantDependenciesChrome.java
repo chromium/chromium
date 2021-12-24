@@ -20,7 +20,7 @@ import org.chromium.ui.base.ApplicationViewportInsetSupplier;
  * Implementation of {@link AssistantDependencies} for Chrome.
  */
 public class AssistantDependenciesChrome
-        implements AssistantDependencies, AssistantStaticDependenciesChrome {
+        extends AssistantStaticDependenciesChrome implements AssistantDependencies {
     private Activity mActivity;
     private BottomSheetController mBottomSheetController;
     private BrowserControlsStateProvider mBrowserControls;

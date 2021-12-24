@@ -29,8 +29,8 @@
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantPlaceholdersConfiguration_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AutofillAssistantUiController_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers_public/AssistantDependencies_jni.h"
-#include "chrome/android/features/autofill_assistant/jni_headers_public/AssistantStaticDependencies_jni.h"
 #include "chrome/browser/android/autofill_assistant/client_android.h"
+#include "chrome/browser/android/autofill_assistant/dependencies.h"
 #include "chrome/browser/android/autofill_assistant/generic_ui_root_controller_android.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
@@ -62,6 +62,7 @@ using ::base::android::AttachCurrentThread;
 using ::base::android::ConvertUTF8ToJavaString;
 using ::base::android::JavaParamRef;
 using ::base::android::JavaRef;
+using ::base::android::ScopedJavaGlobalRef;
 using ::base::android::ScopedJavaLocalRef;
 using ::base::android::ToJavaArrayOfStrings;
 
@@ -1208,11 +1209,8 @@ void UiControllerAndroid::HideKeyboardIfFocusNotOnText() {
       AttachCurrentThread(), java_object_);
 }
 
-base::android::ScopedJavaGlobalRef<jobject>
-UiControllerAndroid::GetInfoPageUtil() const {
-  return base::android::ScopedJavaGlobalRef<jobject>(
-      Java_AssistantStaticDependencies_getInfoPageUtil(AttachCurrentThread(),
-                                                       jstatic_dependencies_));
+ScopedJavaGlobalRef<jobject> UiControllerAndroid::GetInfoPageUtil() const {
+  return Dependencies::GetInfoPageUtil(jstatic_dependencies_);
 }
 
 void UiControllerAndroid::OnCollectUserDataOptionsChanged(

@@ -24,7 +24,6 @@
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -53,6 +52,8 @@
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
+using base::android::ScopedJavaGlobalRef;
+using base::android::ScopedJavaLocalRef;
 
 namespace autofill_assistant {
 namespace {
@@ -64,13 +65,16 @@ const char kDisabledGroupName[] = "Disabled";
 
 }  // namespace
 
-static base::android::ScopedJavaLocalRef<jobject>
+static ScopedJavaLocalRef<jobject>
 JNI_AutofillAssistantClient_CreateForWebContents(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents,
-    const base::android::JavaParamRef<jobject>& jdependencies) {
+    const JavaParamRef<jobject>& jweb_contents,
+    const JavaParamRef<jobject>& jdependencies) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
-  ClientAndroid::CreateForWebContents(web_contents, jdependencies);
+  std::unique_ptr<Dependencies> dependencies =
+      Dependencies::CreateFromJavaObject(
+          ScopedJavaGlobalRef<jobject>(jdependencies));
+  ClientAndroid::CreateForWebContents(web_contents, std::move(dependencies));
   return ClientAndroid::FromWebContents(web_contents)->GetJavaObject();
 }
 
@@ -89,7 +93,7 @@ JNI_AutofillAssistantClient_FromWebContents(
 
 static void JNI_AutofillAssistantClient_OnOnboardingUiChange(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents,
+    const JavaParamRef<jobject>& jweb_contents,
     jboolean shown) {
   RuntimeManager* runtime_manager = RuntimeManager::GetForWebContents(
       content::WebContents::FromJavaWebContents(jweb_contents));
@@ -97,14 +101,13 @@ static void JNI_AutofillAssistantClient_OnOnboardingUiChange(
     runtime_manager->SetUIState(shown ? UIState::kShown : UIState::kNotShown);
 }
 
-ClientAndroid::ClientAndroid(
-    content::WebContents* web_contents,
-    const base::android::JavaRef<jobject>& jdependencies)
+ClientAndroid::ClientAndroid(content::WebContents* web_contents,
+                             std::unique_ptr<Dependencies> dependencies)
     : content::WebContentsUserData<ClientAndroid>(*web_contents),
-      jdependencies_(jdependencies),
       java_object_(Java_AutofillAssistantClient_Constructor(
           AttachCurrentThread(),
-          reinterpret_cast<intptr_t>(this))) {}
+          reinterpret_cast<intptr_t>(this))),
+      dependencies_(std::move(dependencies)) {}
 
 ClientAndroid::~ClientAndroid() {
   if (controller_ != nullptr && started_) {
@@ -163,11 +166,11 @@ bool ClientAndroid::Start(
   }
 
   // Register TTS Synthetic Field Trial.
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+  const bool enable_tts =
+      trigger_context->GetScriptParameters().GetEnableTts().value_or(false);
+  dependencies_->CreateFieldTrialUtil()->RegisterSyntheticFieldTrial(
       kAutofillAssistantTtsTrialName,
-      trigger_context->GetScriptParameters().GetEnableTts().value_or(false)
-          ? kEnabledGroupName
-          : kDisabledGroupName);
+      enable_tts ? kEnabledGroupName : kDisabledGroupName);
 
   DCHECK(!trigger_context->GetDirectAction());
   if (VLOG_IS_ON(2)) {
@@ -405,7 +408,7 @@ void ClientAndroid::OnSpokenFeedbackAccessibilityServiceChanged(
 base::android::ScopedJavaGlobalRef<jobject> ClientAndroid::GetDependencies(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {
-  return jdependencies_;
+  return dependencies_->GetJavaObject();
 }
 
 int ClientAndroid::FindDirectAction(const std::string& action_name) {
@@ -434,7 +437,7 @@ void ClientAndroid::AttachUI(
     const base::android::JavaRef<jobject>& joverlay_coordinator) {
   if (!ui_controller_android_) {
     ui_controller_android_ = UiControllerAndroid::CreateFromWebContents(
-        GetWebContents(), jdependencies_, joverlay_coordinator);
+        GetWebContents(), dependencies_->GetJavaObject(), joverlay_coordinator);
     if (!ui_controller_android_) {
       // The activity is not or not yet in a mode where attaching the UI is
       // possible.
@@ -560,7 +563,7 @@ DeviceContext ClientAndroid::GetDeviceContext() const {
 
 bool ClientAndroid::IsAccessibilityEnabled() const {
   return Java_AutofillAssistantClient_isAccessibilityEnabled(
-      AttachCurrentThread(), jdependencies_);
+      AttachCurrentThread(), dependencies_->GetJavaObject());
 }
 
 bool ClientAndroid::IsSpokenFeedbackAccessibilityServiceEnabled() const {
