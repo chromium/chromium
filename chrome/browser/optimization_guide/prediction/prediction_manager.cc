@@ -682,6 +682,8 @@ void PredictionManager::OnHostModelFeaturesStored() {
 void PredictionManager::OnStoreInitialized() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   store_is_ready_ = true;
+  LOCAL_HISTOGRAM_BOOLEAN(
+      "OptimizationGuide.PredictionManager.StoreInitialized", true);
 
   // Create the download manager here if we are allowed to.
   if (features::IsModelDownloadingEnabled() && !profile_->IsOffTheRecord() &&

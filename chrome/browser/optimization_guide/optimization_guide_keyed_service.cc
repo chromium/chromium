@@ -20,6 +20,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
@@ -67,6 +68,28 @@ void DeleteOldStorePaths(const base::FilePath& profile_path) {
           profile_path.AddExtension(
               optimization_guide::
                   kOptimizationGuidePredictionModelAndFeaturesStore)));
+}
+
+// Returns the profile to use for when setting up the keyed service when the
+// profile is Off-The-Record. For guest profiles, returns a loaded profile if
+// one exists, otherwise just the original profile of the OTR profile. Note:
+// guest profiles are off-the-record and "original" profiles.
+Profile* GetProfileForOTROptimizationGuide(Profile* profile) {
+  DCHECK(profile);
+  DCHECK(profile->IsOffTheRecord());
+
+  if (profile->IsGuestSession()) {
+    // Guest sessions need to rely on the stores from real profiles
+    // as guest profiles cannot fetch or store new models. Note: only
+    // loaded profiles should be used as we do not want to force load
+    // another profile as that can lead to start up regressions.
+    std::vector<Profile*> profiles =
+        g_browser_process->profile_manager()->GetLoadedProfiles();
+    if (!profiles.empty()) {
+      return profiles[0];
+    }
+  }
+  return profile->GetOriginalProfile();
 }
 
 }  // namespace
@@ -122,7 +145,7 @@ void OptimizationGuideKeyedService::Initialize() {
   if (profile->IsOffTheRecord()) {
     OptimizationGuideKeyedService* original_ogks =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            profile->GetOriginalProfile());
+            GetProfileForOTROptimizationGuide(profile));
     DCHECK(original_ogks);
     hint_store = original_ogks->GetHintsManager()->hint_store();
     prediction_model_and_features_store =
