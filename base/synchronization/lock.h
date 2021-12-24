@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 
 #if DCHECK_IS_ON()
-#include "base/threading/platform_thread.h"
+#include "base/threading/platform_thread_ref.h"
 #endif
 
 namespace base {

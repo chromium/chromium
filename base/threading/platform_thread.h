@@ -14,6 +14,7 @@
 #include <iosfwd>
 
 #include "base/base_export.h"
+#include "base/threading/platform_thread_ref.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -41,45 +42,6 @@ typedef mach_port_t PlatformThreadId;
 #elif defined(OS_POSIX)
 typedef pid_t PlatformThreadId;
 #endif
-
-// Used for thread checking and debugging.
-// Meant to be as fast as possible.
-// These are produced by PlatformThread::CurrentRef(), and used to later
-// check if we are on the same thread or not by using ==. These are safe
-// to copy between threads, but can't be copied to another process as they
-// have no meaning there. Also, the internal identifier can be re-used
-// after a thread dies, so a PlatformThreadRef cannot be reliably used
-// to distinguish a new thread from an old, dead thread.
-class PlatformThreadRef {
- public:
-#if defined(OS_WIN)
-  typedef DWORD RefType;
-#else  //  OS_POSIX
-  typedef pthread_t RefType;
-#endif
-  constexpr PlatformThreadRef() = default;
-
-  explicit constexpr PlatformThreadRef(RefType id) : id_(id) {}
-
-  bool operator==(PlatformThreadRef other) const {
-    return id_ == other.id_;
-  }
-
-  bool operator!=(PlatformThreadRef other) const { return id_ != other.id_; }
-
-  bool is_null() const {
-    return id_ == 0;
-  }
-
- private:
-  friend BASE_EXPORT std::ostream& operator<<(std::ostream& os,
-                                              const PlatformThreadRef& ref);
-
-  RefType id_ = 0;
-};
-
-BASE_EXPORT std::ostream& operator<<(std::ostream& os,
-                                     const PlatformThreadRef& ref);
 
 // Used to operate on threads.
 class PlatformThreadHandle {

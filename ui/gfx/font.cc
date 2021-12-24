@@ -10,6 +10,10 @@
 #include "build/build_config.h"
 #include "ui/gfx/platform_font.h"
 
+#ifndef NDEBUG
+#include <ostream>
+#endif
+
 namespace gfx {
 
 ////////////////////////////////////////////////////////////////////////////////

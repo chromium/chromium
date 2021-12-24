@@ -4,6 +4,8 @@
 
 #include "components/keyed_service/core/dependency_manager.h"
 
+#include <ostream>
+
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"

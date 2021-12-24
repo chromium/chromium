@@ -820,6 +820,8 @@ mixed_component("base") {
     "threading/hang_watcher.h",
     "threading/platform_thread.cc",
     "threading/platform_thread.h",
+    "threading/platform_thread_ref.cc",
+    "threading/platform_thread_ref.h",
     "threading/post_task_and_reply_impl.cc",
     "threading/post_task_and_reply_impl.h",
     "threading/scoped_blocking_call.cc",

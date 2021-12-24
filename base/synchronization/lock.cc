@@ -9,6 +9,10 @@
 #include "base/synchronization/lock.h"
 
 #if DCHECK_IS_ON()
+#include "base/threading/platform_thread.h"
+#endif
+
+#if DCHECK_IS_ON()
 
 namespace base {
 

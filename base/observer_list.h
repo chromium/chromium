@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <iterator>
 #include <limits>
+#include <ostream>
 #include <string>
 #include <utility>
 #include <vector>
