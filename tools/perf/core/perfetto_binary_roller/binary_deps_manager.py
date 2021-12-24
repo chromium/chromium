@@ -37,7 +37,7 @@ def _GetHostArch():
   return uname_arch
 
 
-def _GetBinaryArch(binary_name):
+def _GetLinuxBinaryArch(binary_name):
   file_output = subprocess.check_output(['file', binary_name])
   # TODO(b/206008069): Remove the check when fixed.
   if hasattr(six, 'ensure_str'):
@@ -52,6 +52,15 @@ def _GetBinaryArch(binary_name):
   return file_arch
 
 
+def _GetMacBinaryArch(binary_name):
+  file_output = subprocess.check_output(['file', binary_name])
+  # TODO(b/206008069): Remove the check when fixed.
+  if hasattr(six, 'ensure_str'):
+    file_output = six.ensure_str(file_output)
+  file_arch = file_output.split()[-1].strip()
+  return file_arch
+
+
 def _GetHostPlatform():
   os_name = py_utils.GetHostOsName()
   # If we're running directly on a Chrome OS device, fetch the binaries for
@@ -61,19 +70,31 @@ def _GetHostPlatform():
     if arch == 'x86_64':
       return 'linux'
     return 'linux_' + arch
+  if os_name == 'mac':
+    return 'mac_arm64' if _GetHostArch() == 'arm64' else 'mac'
   return os_name
 
 
 def _GetBinaryPlatform(binary_name):
   host_platform = _GetHostPlatform()
-  # Binaries built on mac/windows are for mac/windows respectively. Binaries
-  # built on linux may be for linux or chromeos on different architectures.
-  if not host_platform.startswith('linux'):
-    return host_platform
-  arch = _GetBinaryArch(binary_name)
-  if arch == 'x86_64':
-    return 'linux'
-  return 'linux' + '_' + arch
+
+  # Binaries built on linux may be for linux or chromeos on different
+  # architectures.
+  if host_platform.startswith('linux'):
+    arch = _GetLinuxBinaryArch(binary_name)
+    if arch == 'x86_64':
+      return 'linux'
+    return 'linux' + '_' + arch
+
+  # Binaries built on mac may be either for arm64 or intel.
+  if host_platform.startswith('mac'):
+    arch = _GetMacBinaryArch(binary_name)
+    if arch == 'x86_64':
+      return 'mac'
+    return 'mac' + '_' + arch
+
+  # Binaries built on windows are for windows intel always.
+  return host_platform
 
 
 def _CalculateHash(remote_path):
