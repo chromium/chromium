@@ -3752,10 +3752,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 1) Navigate to a page and start using SpeechSynthesis.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver rhf_a_deleted(rfh_a);
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  RenderFrameDeletedObserver rfh_a_deleted(rfh_a.get());
 
-  EXPECT_TRUE(ExecJs(rfh_a, R"(
+  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
     new Promise(async resolve => {
     var u = new SpeechSynthesisUtterance(" ");
     speechSynthesis.speak(u);
@@ -3767,7 +3767,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
 
   // The page uses SpeechSynthesis so it should be deleted.
-  rhf_a_deleted.WaitUntilDeleted();
+  rfh_a_deleted.WaitUntilDeleted();
 
   // 3) Go back to the page with SpeechSynthesis.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -3775,6 +3775,50 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
       {blink::scheduler::WebSchedulerTrackedFeature::kSpeechSynthesis}, {}, {},
       {}, FROM_HERE);
+}
+
+// This test is not important for Chrome OS if TTS is called in content. For
+// more details refer (content/browser/speech/tts_platform_impl.cc).
+#if defined(OS_CHROMEOS)
+#define MAYBE_CacheIfSpeechSynthesisCancelled \
+  DISABLED_CacheIfSpeechSynthesisCancelled
+#else
+#define MAYBE_CacheIfSpeechSynthesisCancelled CacheIfSpeechSynthesisCancelled
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       MAYBE_CacheIfSpeechSynthesisCancelled) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to a page and start using SpeechSynthesis.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
+    new Promise(async resolve => {
+    var u = new SpeechSynthesisUtterance(" ");
+    speechSynthesis.speak(u);
+    resolve();
+    });
+    )"));
+  // Register a pagehide handler to cancel SpeechSynthesis. It will no longer
+  // block bfcache.
+  EXPECT_TRUE(ExecJs(rfh_a.get(), R"(
+    window.onpagehide = function(e) {
+      new Promise(resolve => {
+      speechSynthesis.cancel();
+      resolve();
+      });
+    };
+  )"));
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Go back to the page with SpeechSynthesis.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,

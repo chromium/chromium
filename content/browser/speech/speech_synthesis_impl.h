@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SPEECH_SPEECH_SYNTHESIS_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/tts_controller.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -48,6 +49,11 @@ class SpeechSynthesisImpl : public blink::mojom::SpeechSynthesis,
  private:
   raw_ptr<BrowserContext> browser_context_;
   raw_ptr<WebContents> web_contents_;
+
+  // When the handle is set, the page is not eligible for back/forward cache.
+  // When the handle is reset, the page is no longer blocked for back/forward
+  // cache because of speech synthesis.
+  RenderFrameHostImpl::BackForwardCacheDisablingFeatureHandle feature_handle_;
 
   mojo::ReceiverSet<blink::mojom::SpeechSynthesis> receiver_set_;
   mojo::RemoteSet<blink::mojom::SpeechSynthesisVoiceListObserver> observer_set_;
