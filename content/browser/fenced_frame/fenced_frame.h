@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_controller_delegate.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom.h"
@@ -32,7 +32,6 @@ class WebContentsImpl;
 // on `RenderFrameHostImpl`.
 class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
                                    public FrameTree::Delegate,
-                                   public FrameTreeNode::Observer,
                                    public NavigationControllerDelegate {
  public:
   explicit FencedFrame(
@@ -56,18 +55,6 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   void NotifyPageChanged(PageImpl& page) override {}
   int GetOuterDelegateFrameTreeNodeId() override;
   bool IsPortal() override;
-
-  // FrameTreeNode::Observer.
-  // We are monitoring the destruction of the outer delegate dummy
-  // FrameTreeNode. That node is a direct child of `owner_render_frame_host_`,
-  // so in order to make the lifetime of `this` fenced frame perfectly match
-  // that of a traditional child node, we tie ourselves directly to its
-  // destruction.
-  void OnFrameTreeNodeDestroyed(FrameTreeNode*) override;
-
-  // TODO(crbug.com/1123606): Make FencedFrame a NavigationControllerDelegate
-  // to suppress certain events about the fenced frame from being exposed to the
-  // outer WebContents.
 
   RenderFrameProxyHost* GetProxyToInnerMainFrame();
 

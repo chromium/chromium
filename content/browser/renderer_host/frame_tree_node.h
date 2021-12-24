@@ -529,6 +529,10 @@ class CONTENT_EXPORT FrameTreeNode {
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessPermissionsPolicyBrowserTest,
                            ContainerPolicySandboxDynamic);
 
+  // Called by the destructor. When `this` is an outer dummy FrameTreeNode
+  // representing an inner FrameTree, this method destroys said inner FrameTree.
+  void DestroyInnerFrameTreeIfExists();
+
   class OpenerDestroyedObserver;
 
   // The |notification_type| parameter is used for histograms only.

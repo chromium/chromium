@@ -111,13 +111,6 @@ RenderFrameProxyHost* FencedFrame::GetProxyToInnerMainFrame() {
   return proxy_to_inner_main_frame_;
 }
 
-void FencedFrame::OnFrameTreeNodeDestroyed(
-    FrameTreeNode* outer_delegate_frame_tree_node) {
-  DCHECK_EQ(outer_delegate_frame_tree_node_, outer_delegate_frame_tree_node);
-  owner_render_frame_host_->DestroyFencedFrame(*this);
-  // Don't use `this` after this point, as it is destroyed.
-}
-
 void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
   // The fenced frame should not already be attached.
   DCHECK(!outer_delegate_frame_tree_node_);
@@ -142,11 +135,6 @@ void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
   outer_delegate_frame_tree_node_->current_frame_host()
       ->set_inner_tree_main_frame_tree_node_id(
           frame_tree_->root()->frame_tree_node_id());
-
-  // We observe the outer node because when it is destroyed by its parent
-  // RenderFrameHostImpl, we respond to its destruction by destroying ourself
-  // and the inner fenced frame FrameTree.
-  outer_delegate_frame_tree_node_->AddObserver(this);
 
   FrameTreeNode* inner_root = frame_tree_->root();
   proxy_to_inner_main_frame_ =

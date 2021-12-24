@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
@@ -138,6 +139,44 @@ FrameTreeNode::FrameTreeNode(
   blame_context_.Initialize();
 }
 
+void FrameTreeNode::DestroyInnerFrameTreeIfExists() {
+  // If `this` is an dummy outer delegate node, then we really are representing
+  // an inner FrameTree for one of the following consumers:
+  //   - `Portal`
+  //   - `FencedFrame`
+  //   - `GuestView`
+  // If we are representing a `FencedFrame` object, we need to destroy it
+  // alongside ourself. `Portals` and `GuestView` however, *currently* have a
+  // more complex lifetime and are dealt with separately.
+  bool is_outer_dummy_node = false;
+  if (current_frame_host() &&
+      current_frame_host()->inner_tree_main_frame_tree_node_id() !=
+          FrameTreeNode::kFrameTreeNodeInvalidId) {
+    is_outer_dummy_node = true;
+  }
+
+  if (is_outer_dummy_node) {
+    DCHECK(parent());
+    // Try and find the `FencedFrame` that `this` represents.
+    std::vector<FencedFrame*> fenced_frames = parent()->GetFencedFrames();
+    FencedFrame* doomed_fenced_frame = nullptr;
+    for (FencedFrame* fenced_frame : fenced_frames) {
+      if (frame_tree_node_id() ==
+          fenced_frame->GetOuterDelegateFrameTreeNodeId()) {
+        doomed_fenced_frame = fenced_frame;
+        break;
+      }
+    }
+
+    // `doomed_fenced_frame` might not actually exist, because some outer dummy
+    // `FrameTreeNode`s might correspond to `Portal`s, which do not have their
+    // lifetime managed in the same way as `FencedFrames`.
+    if (doomed_fenced_frame) {
+      parent()->DestroyFencedFrame(*doomed_fenced_frame);
+    }
+  }
+}
+
 FrameTreeNode::~FrameTreeNode() {
   // There should always be a current RenderFrameHost except during prerender
   // activation. Prerender activation moves the current RenderFrameHost from
@@ -175,6 +214,8 @@ FrameTreeNode::~FrameTreeNode() {
   }
 
   frame_tree_->FrameRemoved(this);
+
+  DestroyInnerFrameTreeIfExists();
 
   // Do not dispatch notification for the root frame as ~WebContentsImpl already
   // dispatches it for now.
