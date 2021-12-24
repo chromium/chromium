@@ -34,7 +34,7 @@ class IsolationInfo;
 //
 // Each Reporting "endpoint" represents a report collector at some specified
 // URL. Endpoints are organized into named "endpoint groups", each of which
-// additionally specifes some properties such as expiration time.
+// additionally specifies some properties such as expiration time.
 // A "client" represents the entire endpoint configuration set by an origin via
 // a Report-To header, which consists of multiple endpoint groups, each of which
 // consists of multiple endpoints. An endpoint group is keyed by its name.  An
@@ -47,7 +47,7 @@ class IsolationInfo;
 //
 // The cache implementation has the notion of "pending" reports. These are
 // reports that are part of an active delivery attempt, so they won't be
-// actually deallocated. Any attempt to remove a pending report wil mark it
+// actually deallocated. Any attempt to remove a pending report will mark it
 // "doomed", which will cause it to be deallocated once it is no longer pending.
 class NET_EXPORT ReportingCache {
  public:

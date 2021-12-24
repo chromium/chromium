@@ -80,8 +80,9 @@ void ReportingCacheImpl::GetReports(
   reports_out->clear();
   for (const auto& report : reports_) {
     if (report->status != ReportingReport::Status::DOOMED &&
-        report->status != ReportingReport::Status::SUCCESS)
+        report->status != ReportingReport::Status::SUCCESS) {
       reports_out->push_back(report.get());
+    }
   }
 }
 
@@ -164,8 +165,6 @@ ReportingCacheImpl::GetReportsToDeliverForSource(
 
 void ReportingCacheImpl::ClearReportsPending(
     const std::vector<const ReportingReport*>& reports) {
-  std::vector<const ReportingReport*> reports_to_remove;
-
   for (const ReportingReport* report : reports) {
     auto it = reports_.find(report);
     DCHECK(it != reports_.end());
@@ -624,7 +623,7 @@ void ReportingCacheImpl::AddClientsLoadedFromStore(
       continue;
     }
 
-    DCHECK(group_key == endpoints_it->group_key);
+    DCHECK_EQ(group_key, endpoints_it->group_key);
 
     size_t cur_group_endpoints_count = 0;
 
@@ -738,8 +737,9 @@ ReportingCacheImpl::GetCandidateEndpointsForDelivery(
       // Client for a superdomain of |origin|
       const Client& client = client_it->second;
       if (client.network_isolation_key !=
-          v0_lookup_group_key.network_isolation_key)
+          v0_lookup_group_key.network_isolation_key) {
         continue;
+      }
       ReportingEndpointGroupKey superdomain_lookup_group_key(
           v0_lookup_group_key.network_isolation_key, client.origin,
           v0_lookup_group_key.group_name);
@@ -1012,12 +1012,10 @@ void ReportingCacheImpl::ConsistencyCheckClients() const {
     total_endpoint_count += client.endpoint_count;
     total_endpoint_group_count += ConsistencyCheckClient(domain, client);
 
-    // We have not seen a duplicate client with the same NIK and origin.
-    DCHECK(!base::Contains(
-        nik_origin_pairs_in_cache,
-        std::make_pair(client.network_isolation_key, client.origin)));
-    nik_origin_pairs_in_cache.insert(
+    auto inserted = nik_origin_pairs_in_cache.insert(
         std::make_pair(client.network_isolation_key, client.origin));
+    // We have not seen a duplicate client with the same NIK and origin.
+    DCHECK(inserted.second);
   }
 
   // Global endpoint cap is respected.
@@ -1098,10 +1096,10 @@ size_t ReportingCacheImpl::ConsistencyCheckEndpointGroup(
 
     ConsistencyCheckEndpoint(key, endpoint, it);
 
+    auto inserted = endpoint_urls_in_group.insert(endpoint.info.url);
     // We have not seen a duplicate endpoint with the same URL in this
     // group.
-    DCHECK(!base::Contains(endpoint_urls_in_group, endpoint.info.url));
-    endpoint_urls_in_group.insert(endpoint.info.url);
+    DCHECK(inserted.second);
 
     ++endpoint_count_in_group;
   }
@@ -1396,14 +1394,13 @@ ReportingCacheImpl::RemoveEndpointGroupInternal(
   if (context_->IsClientDataPersisted())
     store()->DeleteReportingEndpointGroup(group_it->second);
 
-  absl::optional<EndpointGroupMap::iterator> rv =
-      endpoint_groups_.erase(group_it);
+  EndpointGroupMap::iterator rv = endpoint_groups_.erase(group_it);
 
   // Delete client if empty.
   if (client.endpoint_count == 0) {
     DCHECK(client.endpoint_group_names.empty());
     clients_.erase(client_it);
-    rv = absl::nullopt;
+    return absl::nullopt;
   }
   return rv;
 }

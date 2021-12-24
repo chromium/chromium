@@ -76,8 +76,6 @@ class ReportingCacheTest : public ReportingTestBase,
 
     if (GetParam())
       store_ = std::make_unique<MockPersistentReportingStore>();
-    else
-      store_ = nullptr;
 
     UseStore(store_.get());
 
