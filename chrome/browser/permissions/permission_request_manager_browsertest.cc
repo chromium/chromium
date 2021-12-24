@@ -1225,6 +1225,12 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerWithFencedFrameTest,
   const char kExpectedConsolePattern[] =
       "*blocked because it was requested inside a fenced frame*";
   content::WebContentsConsoleObserver console_observer(web_contents);
+  console_observer.SetFilter(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         const content::WebContentsConsoleObserver::Message& message) {
+        return message.source_frame == render_frame_host;
+      },
+      fenced_frame_host->GetOutermostMainFrame()));
   console_observer.SetPattern(kExpectedConsolePattern);
 
   base::MockOnceCallback<void(blink::mojom::PermissionStatus)> callback;
