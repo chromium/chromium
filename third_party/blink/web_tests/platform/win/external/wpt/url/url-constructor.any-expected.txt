@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 667 tests; 468 PASS, 199 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 671 tests; 468 PASS, 203 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -287,6 +287,18 @@ FAIL Parsing: <http://a.b.c.xn--pokxncvks> against <about:blank> assert_throws_j
           bURL(expected.input, expected.base)
         }" did not throw
 FAIL Parsing: <http://10.0.0.xn--pokxncvks> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://a.b.c.XN--pokxncvks> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://a.b.c.Xn--pokxncvks> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://10.0.0.XN--pokxncvks> against <about:blank> assert_throws_js: function "function() {
+          bURL(expected.input, expected.base)
+        }" did not throw
+FAIL Parsing: <http://10.0.0.xN--pokxncvks> against <about:blank> assert_throws_js: function "function() {
           bURL(expected.input, expected.base)
         }" did not throw
 PASS Parsing: <http://Ｇｏ.com> against <http://other.com/>

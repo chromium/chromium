@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 665 tests; 370 PASS, 295 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 669 tests; 370 PASS, 299 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -277,6 +277,10 @@ FAIL Parsing: <https://%EF%BF%BD> against <about:blank> assert_equals: failure s
 PASS Parsing: <https://x/�?�#�> against <about:blank>
 FAIL Parsing: <http://a.b.c.xn--pokxncvks> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 FAIL Parsing: <http://10.0.0.xn--pokxncvks> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <http://a.b.c.XN--pokxncvks> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <http://a.b.c.Xn--pokxncvks> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <http://10.0.0.XN--pokxncvks> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <http://10.0.0.xN--pokxncvks> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 PASS Parsing: <http://Ｇｏ.com> against <http://other.com/>
 FAIL Parsing: <http://％４１.com> against <http://other.com/> assert_unreached: Expected URL to fail parsing Reached unreachable code
 FAIL Parsing: <http://%ef%bc%85%ef%bc%94%ef%bc%91.com> against <http://other.com/> assert_unreached: Expected URL to fail parsing Reached unreachable code
