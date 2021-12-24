@@ -832,8 +832,8 @@ IN_PROC_BROWSER_TEST_F(
   helper_.CheckAppInListNotLocallyInstalled("SiteA");
 }
 
-// TODO(crbug.com/1273666): Test failed on Mac ASAN.
-#if defined(OS_MAC) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/1273666): Test failing frequently on Mac.
+#if defined(OS_MAC)
 #define MAYBE_WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_TurnSyncOff_UninstallFromMenuSiteA_TurnSyncOn_InListNotLclyInstSiteA \
   DISABLED_WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_TurnSyncOff_UninstallFromMenuSiteA_TurnSyncOn_InListNotLclyInstSiteA
 #else
