@@ -32,7 +32,7 @@ import {
   PhotoFactory,
   PhotoHandler,
 } from './photo.js';
-import {PortraitFactory} from './portrait.js';
+import {PortraitFactory, PortraitHandler} from './portrait.js';
 import {
   ScanFactory,
   ScanHandler,
@@ -129,9 +129,8 @@ export class Modes {
       photoPreferrer: PhotoConstraintsPreferrer,
       videoPreferrer: VideoConstraintsPreferrer,
       private readonly doSwitchMode: DoSwitchMode,
-      photoHandler: PhotoHandler,
-      videoHandler: VideoHandler,
-      scanHandler: ScanHandler,
+      private readonly handler: PhotoHandler&PortraitHandler&ScanHandler&
+      VideoHandler,
   ) {
     /**
      * Returns a set of general constraints for fake cameras.
@@ -191,7 +190,7 @@ export class Modes {
           const params = this.getCaptureParams();
           return new VideoFactory(
               params.constraints, params.captureResolution,
-              params.videoSnapshotResolution, videoHandler);
+              params.videoSnapshotResolution, handler);
         },
         isSupported: async () => true,
         isSupportPTZ: () => true,
@@ -238,7 +237,7 @@ export class Modes {
         getCaptureFactory: () => {
           const params = this.getCaptureParams();
           return new PhotoFactory(
-              params.constraints, params.captureResolution, photoHandler);
+              params.constraints, params.captureResolution, handler);
         },
         isSupported: async () => true,
         isSupportPTZ: checkSupportPTZForPhotoMode,
@@ -253,7 +252,7 @@ export class Modes {
         getCaptureFactory: () => {
           const params = this.getCaptureParams();
           return new SquareFactory(
-              params.constraints, params.captureResolution, photoHandler);
+              params.constraints, params.captureResolution, handler);
         },
         isSupported: async () => true,
         isSupportPTZ: checkSupportPTZForPhotoMode,
@@ -268,7 +267,7 @@ export class Modes {
         getCaptureFactory: () => {
           const params = this.getCaptureParams();
           return new PortraitFactory(
-              params.constraints, params.captureResolution, photoHandler);
+              params.constraints, params.captureResolution, handler);
         },
         isSupported: async (deviceId) => {
           if (deviceId === null) {
@@ -292,7 +291,7 @@ export class Modes {
         getCaptureFactory: () => {
           const params = this.getCaptureParams();
           return new ScanFactory(
-              params.constraints, params.captureResolution, scanHandler);
+              params.constraints, params.captureResolution, handler);
         },
         isSupported: async () => state.get(state.State.SHOW_SCAN_MODE),
         isSupportPTZ: checkSupportPTZForPhotoMode,

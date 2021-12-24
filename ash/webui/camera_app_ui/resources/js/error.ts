@@ -43,7 +43,7 @@ function toStackFrame(callsite: CallSite): StackFrame {
  * Gets stack frames from error.
  * @return return null if failed to get frames from error.
  */
-export function getStackFrames(error: Error): StackFrame[]|null {
+function getStackFrames(error: Error): StackFrame[]|null {
   const prevPrepareStackTrace = Error.prepareStackTrace;
   Error.prepareStackTrace = (error, stack) => {
     try {

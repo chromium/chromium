@@ -40,7 +40,7 @@ export class ModeBase {
 
     /**
      * Promise for ongoing capture operation.
-     * @type {?Promise}
+     * @type {?Promise<function(): Promise<void>>}
      * @private
      */
     this.capture_ = null;
@@ -48,11 +48,19 @@ export class ModeBase {
 
   /**
    * Initiates video/photo capture operation.
-   * @return {!Promise} Promise for ongoing capture operation.
+   * @return {!Promise<function(): Promise<void>>} Promise for ongoing capture
+   *     operation and resolved to handler function which should be run after
+   *     capture finished.
    */
   startCapture() {
     if (this.capture_ === null) {
-      this.capture_ = this.start_().finally(() => this.capture_ = null);
+      this.capture_ = (async () => {
+        try {
+          return await this.start_();
+        } finally {
+          this.capture_ = null;
+        }
+      })();
     }
     return this.capture_;
   }
@@ -104,7 +112,9 @@ export class ModeBase {
 
   /**
    * Initiates video/photo capture operation under this mode.
-   * @return {!Promise}
+   * @return {!Promise<function(): !Promise<void>>} Promise for ongoing capture
+   *     operation and resolved to handler function which should be run after
+   *     capture finished.
    * @protected
    * @abstract
    */

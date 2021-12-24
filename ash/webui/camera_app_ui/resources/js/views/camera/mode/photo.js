@@ -5,9 +5,6 @@
 import {assertNotReached} from '../../../assert.js';
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
-import {I18nString} from '../../../i18n_string.js';
-import {Filenamer} from '../../../models/file_namer.js';
-import * as filesystem from '../../../models/file_system.js';
 import {DeviceOperator, parseMetadata} from '../../../mojo/device_operator.js';
 import {CrosImageCapture} from '../../../mojo/image_capture.js';
 import {
@@ -19,14 +16,14 @@ import {
   MojoEndpoint,  // eslint-disable-line no-unused-vars
 } from '../../../mojo/util.js';
 import * as state from '../../../state.js';
-import * as toast from '../../../toast.js';
 import {
-  CanceledError,
-  Facing,  // eslint-disable-line no-unused-vars
+  Facing,    // eslint-disable-line no-unused-vars
+  Metadata,  // eslint-disable-line no-unused-vars
   PerfEvent,
   Resolution,
 } from '../../../type.js';
 import * as util from '../../../util.js';
+import {WaitableEvent} from '../../../waitable_event.js';
 
 import {ModeBase, ModeFactory} from './mode_base.js';
 
@@ -35,7 +32,8 @@ import {ModeBase, ModeFactory} from './mode_base.js';
  * @typedef {{
  *     resolution: !Resolution,
  *     blob: !Blob,
- *     isVideoSnapshot?: boolean,
+ *     timestamp: number,
+ *     metadata: ?Metadata,
  * }}
  */
 export let PhotoResult;
@@ -47,17 +45,6 @@ export let PhotoResult;
  */
 export class PhotoHandler {
   /**
-   * Handles the result photo.
-   * @param {!PhotoResult} photo Captured photo result.
-   * @param {string} name Name of the photo result to be saved as.
-   * @return {!Promise}
-   * @abstract
-   */
-  handleResultPhoto(photo, name) {
-    assertNotReached();
-  }
-
-  /**
    * Plays UI effect when taking photo.
    */
   playShutterEffect() {}
@@ -67,6 +54,23 @@ export class PhotoHandler {
    * @abstract
    */
   waitPreviewReady() {
+    assertNotReached();
+  }
+
+  /**
+   * Called when error happen in the capture process.
+   * @abstract
+   */
+  onPhotoError() {
+    assertNotReached();
+  }
+
+  /**
+   * @param {!Promise<!PhotoResult>} pendingPhotoResult
+   * @return {!Promise<void>}
+   * @abstract
+   */
+  onPhotoCaptureDone(pendingPhotoResult) {
     assertNotReached();
   }
 }
@@ -114,11 +118,12 @@ export class Photo extends ModeBase {
     this.metadataObserver_ = null;
 
     /**
-     * Metadata names ready to be saved.
-     * @type {!Array<string>}
+     * Pending |PhotoResult| waiting for arrival of their corresponding
+     * metadata..
+     * @type {!Array<!WaitableEvent<!Metadata>>}
      * @protected
      */
-    this.metadataNames_ = [];
+    this.pendingResultForMetadata_ = [];
   }
 
   /**
@@ -134,42 +139,44 @@ export class Photo extends ModeBase {
    * @override
    */
   async start_() {
-    const imageName = (new Filenamer()).newImageName();
-    if (this.metadataObserver_ !== null) {
-      this.metadataNames_.push(Filenamer.getMetadataName(imageName));
-    }
-
+    const timestamp = Date.now();
     state.set(PerfEvent.PHOTO_CAPTURE_SHUTTER, true);
-    try {
-      const blob = await this.takePhoto_();
-      state.set(PerfEvent.PHOTO_CAPTURE_SHUTTER, false, {facing: this.facing_});
-      state.set(PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, true);
+    const {blob, pendingMetadata} = await (async () => {
+      let hasError = false;
+      try {
+        return await this.takePhoto_();
+      } catch (e) {
+        hasError = true;
+        this.handler_.onPhotoError();
+        throw e;
+      } finally {
+        state.set(
+            PerfEvent.PHOTO_CAPTURE_SHUTTER, false,
+            hasError ? {hasError} : {facing: this.facing_});
+      }
+    })();
+
+    const pendingPhotoResult = (async () => {
       const image = await util.blobToImage(blob);
       const resolution = new Resolution(image.width, image.height);
-      await this.handler_.handleResultPhoto({resolution, blob}, imageName);
-      state.set(
-          PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, false,
-          {resolution, facing: this.facing_});
-    } catch (e) {
-      state.set(PerfEvent.PHOTO_CAPTURE_SHUTTER, false, {hasError: true});
-      state.set(
-          PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, false, {hasError: true});
-      if (!(e instanceof CanceledError)) {
-        toast.show(I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);
-      }
-      throw e;
-    }
+      return {resolution, blob, timestamp, metadata: await pendingMetadata};
+    })();
+
+    return async () => this.handler_.onPhotoCaptureDone(pendingPhotoResult);
   }
 
   /**
    * @private
-   * @return {!Promise<!Blob>}
+   * @return {!Promise<{blob: !Blob, pendingMetadata: ?Promise<!Metadata>}>}
    */
   async takePhoto_() {
     if (state.get(state.State.ENABLE_PTZ)) {
       // Workaround for b/184089334 on PTZ camera to use preview frame as
       // photo result.
-      return this.crosImageCapture_.grabJpegFrame();
+      return {
+        blob: await this.crosImageCapture_.grabJpegFrame(),
+        pendingMetadata: null,
+      };
     }
     let photoSettings;
     if (this.captureResolution_) {
@@ -184,10 +191,20 @@ export class Photo extends ModeBase {
         imageHeight: caps.imageHeight.max,
       });
     }
+
+    let /** ?WaitableEvent<!Metadata> */ waitForMetadata = null;
+    if (this.metadataObserver_ !== null) {
+      waitForMetadata =
+          /** @type{!WaitableEvent<!Metadata>} */ (new WaitableEvent());
+      this.pendingResultForMetadata_.push(waitForMetadata);
+    }
     await this.handler_.waitPreviewReady();
     const results = await this.crosImageCapture_.takePhoto(photoSettings);
     this.handler_.playShutterEffect();
-    return results[0];
+    return {
+      blob: await results[0],
+      pendingMetadata: waitForMetadata?.wait() ?? null,
+    };
   }
 
   /**
@@ -213,7 +230,7 @@ export class Photo extends ModeBase {
     });
 
     const callback = (metadata) => {
-      const parsedMetadata = {};
+      const parsedMetadata = /** @type {!Record<string, unknown>} */ ({});
       for (const entry of metadata.entries) {
         const key = cameraMetadataTagInverseLookup[entry.tag];
         if (key === undefined) {
@@ -225,11 +242,7 @@ export class Photo extends ModeBase {
         parsedMetadata[key] = val;
       }
 
-      filesystem.saveBlob(
-          new Blob(
-              [JSON.stringify(parsedMetadata, null, 2)],
-              {type: 'application/json'}),
-          this.metadataNames_.shift());
+      this.pendingResultForMetadata_.shift()?.signal(parsedMetadata);
     };
 
     const deviceId = this.stream_.getVideoTracks()[0].getSettings().deviceId;

@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from '../../../assert.js';
 // eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../../../device/stream_constraints.js';
 import {Point} from '../../../geometry.js';
-import {Filenamer} from '../../../models/file_namer.js';
-import {ChromeHelper} from '../../../mojo/chrome_helper.js';
 import {
-  CanceledError,
-  Facing,     // eslint-disable-line no-unused-vars
-  ImageBlob,  // eslint-disable-line no-unused-vars
-  MimeType,
+  Facing,      // eslint-disable-line no-unused-vars
+  ImageBlob,   // eslint-disable-line no-unused-vars
   Resolution,  // eslint-disable-line no-unused-vars
 } from '../../../type.js';
 
@@ -20,17 +15,8 @@ import {ModeFactory} from './mode_base.js';
 import {
   Photo,
   PhotoHandler,  // eslint-disable-line no-unused-vars
+  PhotoResult,   // eslint-disable-line no-unused-vars
 } from './photo.js';
-
-/**
- * Contains photo taking result.
- * @typedef {{
- *     resolution: !Resolution,
- *     blob: !Blob,
- *     mimeType: !MimeType,
- * }}
- */
-export let DocumentResult;
 
 /**
  * @param {!Resolution} size Size of image to be cropped document from.
@@ -58,47 +44,13 @@ export function getDefaultScanCorners(size) {
  * captured result photo.
  * @interface
  */
-export class ScanHandler {
+export class ScanHandler extends PhotoHandler {
   /**
-   * Plays UI effect when taking photo.
-   * @abstract
-   */
-  playShutterEffect() {
-    assertNotReached();
-  }
-
-  /**
-   * @param {!ImageBlob} originImage Original photo to be cropped document from.
-   * @param {?Array<!Point>} refCorners Initial reference document corner
-   *     positions detected by scan API. Sets to null if scan API cannot find
-   *     any reference corner from |rawBlob|.
-   * @return {!Promise<?{docBlob: !Blob, mimeType: !MimeType}>} Returns the
-   *     processed document blob and which mime type user choose to save. Null
-   *     for cancel document.
-   * @abstract
-   */
-  async reviewDocument(originImage, refCorners) {
-    assertNotReached();
-  }
-
-  /**
-   * Handles the result document.
-   * @param {!DocumentResult} result
-   * @param {string} name Name of the document result to be saved as.
+   * @param {!Promise<!PhotoResult>} pendingPhotoResult
    * @return {!Promise}
    * @abstract
    */
-  handleResultDocument(result, name) {
-    assertNotReached();
-  }
-
-  /**
-   * @return {!Promise}
-   * @abstract
-   */
-  waitPreviewReady() {
-    assertNotReached();
-  }
+  async onDocumentCaptureDone(pendingPhotoResult) {}
 }
 
 /**
@@ -111,30 +63,9 @@ class DocumentPhotoHandler {
   constructor(handler) {
     /**
      * @const {!ScanHandler}
+     * @private
      */
     this.handler_ = handler;
-  }
-
-  /**
-   * @override
-   */
-  async handleResultPhoto({blob: rawBlob, resolution}) {
-    const namer = new Filenamer();
-    const helper = await ChromeHelper.getInstance();
-    const corners = await helper.scanDocumentCorners(rawBlob);
-    const reviewResult = await this.handler_.reviewDocument(
-        {blob: rawBlob, resolution}, corners);
-    if (reviewResult === null) {
-      throw new CanceledError('Cancelled after review document');
-    }
-    const {docBlob, mimeType} = reviewResult;
-    const name = namer.newDocumentName(mimeType);
-    let blob = docBlob;
-    if (mimeType === MimeType.PDF) {
-      blob = await helper.convertToPdf(blob);
-    }
-    await this.handler_.handleResultDocument(
-        {blob, resolution, mimeType}, name);
   }
 
   /**
@@ -150,6 +81,20 @@ class DocumentPhotoHandler {
   waitPreviewReady() {
     return this.handler_.waitPreviewReady();
   }
+
+  /**
+   * @override
+   */
+  onPhotoError() {
+    this.handler_.onPhotoError();
+  }
+
+  /**
+   * @override
+   */
+  onPhotoCaptureDone(pendingPhotoResult) {
+    return this.handler_.onDocumentCaptureDone(pendingPhotoResult);
+  }
 }
 
 /**
@@ -164,12 +109,6 @@ export class Scan extends Photo {
    */
   constructor(stream, facing, captureResolution, handler) {
     super(stream, facing, captureResolution, new DocumentPhotoHandler(handler));
-
-    /**
-     * @const {!ScanHandler}
-     * @protected
-     */
-    this.scanHandler_ = handler;
   }
 }
 

@@ -18,6 +18,7 @@ import {StreamConstraints} from '../device/stream_constraints.js';
 import * as dom from '../dom.js';
 import * as error from '../error.js';
 import {Flag} from '../flag.js';
+import {Point} from '../geometry.js';  // eslint-disable-line no-unused-vars
 import {I18nString} from '../i18n_string.js';
 import * as metrics from '../metrics.js';
 import {Filenamer} from '../models/file_namer.js';
@@ -40,8 +41,10 @@ import {
   ErrorLevel,
   ErrorType,
   Facing,
+  ImageBlob,  // eslint-disable-line no-unused-vars
   MimeType,
   Mode,
+  PerfEvent,
   Resolution,
   Rotation,
   ViewName,
@@ -229,7 +232,7 @@ export class Camera extends View {
      */
     this.modes_ = new Modes(
         this.defaultMode_, photoPreferrer, videoPreferrer, () => this.start(),
-        this, this, this);
+        this);
 
     /**
      * @type {!Facing}
@@ -653,7 +656,8 @@ export class Camera extends View {
         // what we need to rotate the captured video with.
         this.outputVideoRotation_ = (360 - cameraFrameRotation) % 360;
         await timertick.start();
-        await this.modes_.current.startCapture();
+        const captureDone = await this.modes_.current.startCapture();
+        await captureDone();
       } catch (e) {
         hasError = true;
         if (e instanceof CanceledError) {
@@ -692,17 +696,33 @@ export class Camera extends View {
   }
 
   /**
+   * @template T
+   * @param {!Promise<T>} pendingPhotoResult
+   * @return {!Promise<T>}
+   * @private
+   */
+  async checkPhotoResult_(pendingPhotoResult) {
+    try {
+      return /** !Promise<!T> */ (await pendingPhotoResult);
+    } catch (e) {
+      this.onPhotoError();
+      throw e;
+    }
+  }
+
+  /**
    * @override
    */
-  async handleResultPhoto({resolution, blob, isVideoSnapshot}, name) {
+  async handleVideoSnapshot({resolution, blob, timestamp}) {
     metrics.sendCaptureEvent({
       facing: this.facingMode_,
       resolution,
       shutterType: this.shutterType_,
-      isVideoSnapshot,
+      isVideoSnapshot: true,
     });
     try {
-      await this.resultSaver_.savePhoto(blob, name);
+      const name = (new Filenamer(timestamp)).newImageName();
+      await this.resultSaver_.savePhoto(blob, name, /* metadata */ null);
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
       throw e;
@@ -712,9 +732,118 @@ export class Camera extends View {
   /**
    * @override
    */
-  async handleResultDocument({blob, resolution, mimeType}, name) {
+  async onPhotoError() {
+    toast.show(I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);
+  }
+
+  /**
+   * @override
+   */
+  async onNoPortrait() {
+    toast.show(I18nString.ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED);
+  }
+
+  /**
+   * @override
+   */
+  async onPhotoCaptureDone(pendingPhotoResult) {
+    state.set(PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, true);
     try {
-      await this.resultSaver_.savePhoto(blob, name);
+      const {resolution, blob, timestamp, metadata} =
+          await this.checkPhotoResult_(pendingPhotoResult);
+
+      metrics.sendCaptureEvent({
+        facing: this.facingMode_,
+        resolution,
+        shutterType: this.shutterType_,
+        isVideoSnapshot: false,
+      });
+
+      try {
+        const name = (new Filenamer(timestamp)).newImageName();
+        await this.resultSaver_.savePhoto(blob, name, metadata);
+      } catch (e) {
+        toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
+        throw e;
+      }
+      state.set(
+          PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, false,
+          {resolution, facing: this.facingMode_});
+    } catch (e) {
+      state.set(
+          PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, false, {hasError: true});
+      throw e;
+    }
+  }
+
+  /**
+   * @override
+   */
+  async onPortraitCaptureDone(pendingPortraitResult) {
+    state.set(PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, true);
+    let hasError = false;
+    try {
+      const {timestamp, resolution, blob, metadata, pendingPortrait} =
+          await this.checkPhotoResult_(pendingPortraitResult);
+      const portraitBlobAndMetadata =
+          await this.checkPhotoResult_(pendingPortrait);
+
+      metrics.sendCaptureEvent({
+        facing: this.facingMode_,
+        resolution,
+        shutterType: this.shutterType_,
+        isVideoSnapshot: false,
+      });
+
+      try {
+        // Save reference.
+        const filenamer = new Filenamer(timestamp);
+        const name = filenamer.newBurstName(false);
+        await this.resultSaver_.savePhoto(blob, name, metadata);
+
+        // Save portrait.
+        if (portraitBlobAndMetadata !== null) {
+          const {blob, metadata} = portraitBlobAndMetadata;
+          const name = filenamer.newBurstName(true);
+          await this.resultSaver_.savePhoto(blob, name, metadata);
+        } else {
+          toast.show(I18nString.ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED);
+        }
+      } catch (e) {
+        toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
+        throw e;
+      }
+    } catch (e) {
+      hasError = true;
+      throw e;
+    } finally {
+      state.set(
+          PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, false,
+          {hasError, facing: this.facingMode_});
+    }
+  }
+
+  /**
+   * @override
+   */
+  async onDocumentCaptureDone(pendingPhotoResult) {
+    const {blob: rawBlob, resolution, timestamp, metadata} =
+        await this.checkPhotoResult_(pendingPhotoResult);
+    const helper = await ChromeHelper.getInstance();
+    const corners = await helper.scanDocumentCorners(rawBlob);
+    const reviewResult =
+        await this.reviewDocument_({blob: rawBlob, resolution}, corners);
+    if (reviewResult === null) {
+      throw new CanceledError('Cancelled after review document');
+    }
+    const {docBlob, mimeType} = reviewResult;
+    let blob = docBlob;
+    if (mimeType === MimeType.PDF) {
+      blob = await helper.convertToPdf(blob);
+    }
+    try {
+      const name = (new Filenamer(timestamp)).newDocumentName(mimeType);
+      await this.resultSaver_.savePhoto(blob, name, metadata);
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
       throw e;
@@ -745,9 +874,16 @@ export class Camera extends View {
   }
 
   /**
-   * @override
+   * @param {!ImageBlob} originImage Original photo to be cropped document from.
+   * @param {?Array<!Point>} refCorners Initial reference document corner
+   *     positions detected by scan API. Sets to null if scan API cannot find
+   *     any reference corner from |rawBlob|.
+   * @return {!Promise<?{docBlob: !Blob, mimeType: !MimeType}>} Returns the
+   *     processed document blob and which mime type user choose to save. Null
+   *     for cancel document.
+   * @private
    */
-  async reviewDocument(originImage, refCorners) {
+  async reviewDocument_(originImage, refCorners) {
     const needFirstRecrop = refCorners === null;
     const allowRecrop = loadTimeData.getChromeFlag(Flag.DOCUMENT_MANUAL_CROP);
     if (needFirstRecrop && !allowRecrop) {
@@ -908,29 +1044,15 @@ export class Camera extends View {
   /**
    * @override
    */
-  async handleResultVideo({resolution, duration, videoSaver, everPaused}) {
-    metrics.sendCaptureEvent({
-      recordType: metrics.RecordType.NORMAL_VIDEO,
-      facing: this.facingMode_,
-      duration,
-      resolution,
-      shutterType: this.shutterType_,
-      everPaused,
-    });
-    try {
-      await this.resultSaver_.finishSaveVideo(videoSaver);
-    } catch (e) {
-      toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
-      throw e;
-    }
-  }
-
-  /**
-   * @override
-   */
-  async handleResultGif({name, getBlob, resolution, duration}) {
+  async onGifCaptureDone({name, gifSaver, resolution, duration}) {
     nav.open(ViewName.FLASH);
-    const blob = await getBlob();
+
+    // Measure the latency of gif encoder finishing rest of the encoding
+    // works.
+    state.set(PerfEvent.GIF_CAPTURE_POST_PROCESSING, true);
+    const blob = await gifSaver.endWrite();
+    state.set(PerfEvent.GIF_CAPTURE_POST_PROCESSING, false);
+
     const sendEvent = (gifResult) => {
       metrics.sendCaptureEvent({
         recordType: metrics.RecordType.GIF,
@@ -964,6 +1086,31 @@ export class Camera extends View {
       await this.resultSaver_.saveGif(blob, name);
     } else {
       sendEvent(metrics.GifResultType.RETAKE);
+    }
+  }
+
+  /**
+   * @override
+   */
+  async onVideoCaptureDone({resolution, videoSaver, duration, everPaused}) {
+    state.set(PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, true);
+    try {
+      metrics.sendCaptureEvent({
+        recordType: metrics.RecordType.NORMAL_VIDEO,
+        facing: this.facingMode_,
+        duration,
+        resolution,
+        shutterType: this.shutterType_,
+        everPaused,
+      });
+      await this.resultSaver_.finishSaveVideo(videoSaver);
+      state.set(
+          PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false,
+          {resolution, facing: this.facingMode_});
+    } catch (e) {
+      state.set(
+          PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false, {hasError: true});
+      throw e;
     }
   }
 

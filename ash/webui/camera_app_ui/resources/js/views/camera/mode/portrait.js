@@ -2,24 +2,54 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReached} from '../../../assert.js';
+// eslint-disable-next-line no-unused-vars
+import {StreamConstraints} from '../../../device/stream_constraints.js';
 import {I18nString} from '../../../i18n_string.js';
-import {Filenamer} from '../../../models/file_namer.js';
 import {CrosImageCapture} from '../../../mojo/image_capture.js';
 import {Effect} from '../../../mojo/type.js';
-import * as state from '../../../state.js';
 import * as toast from '../../../toast.js';
 import {
-  Facing,  // eslint-disable-line no-unused-vars
-  PerfEvent,
+  Facing,      // eslint-disable-line no-unused-vars
+  Metadata,    // eslint-disable-line no-unused-vars
   Resolution,  // eslint-disable-line no-unused-vars
 } from '../../../type.js';
 import * as util from '../../../util.js';
+import {WaitableEvent} from '../../../waitable_event.js';
 
 import {
   Photo,
   PhotoFactory,
   PhotoHandler,  // eslint-disable-line no-unused-vars
 } from './photo.js';
+
+/**
+ * Contains photo taking result.
+ * @typedef {{
+ *     timestamp: number,
+ *     resolution: !Resolution,
+ *     blob: !Blob,
+ *     metadata: ?Metadata,
+ *     pendingPortrait: !Promise<?{blob: !Blob, metadata: ?Metadata}>,
+ * }}
+ */
+export let PortraitResult;
+
+/**
+ * Provides external dependency functions used by portrait mode and handles the
+ * captured result photo.
+ * @interface
+ */
+export class PortraitHandler extends PhotoHandler {
+  /**
+   * @param {!Promise<!PortraitResult>} pendingPortraitResult
+   * @return {!Promise<void>}
+   * @abstract
+   */
+  onPortraitCaptureDone(pendingPortraitResult) {
+    assertNotReached();
+  }
+}
 
 /**
  * Portrait mode capture controller.
@@ -29,16 +59,23 @@ export class Portrait extends Photo {
    * @param {!MediaStream} stream
    * @param {!Facing} facing
    * @param {!Resolution} captureResolution
-   * @param {!PhotoHandler} handler
+   * @param {!PortraitHandler} handler
    */
   constructor(stream, facing, captureResolution, handler) {
     super(stream, facing, captureResolution, handler);
+
+    /**
+     * @const {!PortraitHandler}
+     * @private
+     */
+    this.portraitHandler_ = handler;
   }
 
   /**
    * @override
    */
   async start_() {
+    const timestamp = Date.now();
     if (this.crosImageCapture_ === null) {
       this.crosImageCapture_ =
           new CrosImageCapture(this.stream_.getVideoTracks()[0]);
@@ -58,66 +95,50 @@ export class Portrait extends Photo {
       });
     }
 
-    const filenamer = new Filenamer();
-    const refImageName = filenamer.newBurstName(false);
-    const portraitImageName = filenamer.newBurstName(true);
-
+    let /** !Promise<!Blob> */ reference;
+    let /** !Promise<!Blob> */ portrait;
+    let /** ?WaitableEvent<!Metadata> */ waitForMetadata = null;
+    let /** ?WaitableEvent<!Metadata> */ waitForPortraitMetadata = null;
     if (this.metadataObserver_ !== null) {
-      [refImageName, portraitImageName].forEach((/** string */ imageName) => {
-        this.metadataNames_.push(Filenamer.getMetadataName(imageName));
-      });
+      waitForMetadata =
+          /** @type{!WaitableEvent<!Metadata>} */ (new WaitableEvent());
+      waitForPortraitMetadata =
+          /** @type{!WaitableEvent<!Metadata>} */ (new WaitableEvent());
+      this.pendingResultForMetadata_.push(
+          waitForMetadata, waitForPortraitMetadata);
     }
-
-    let /** ?Promise<!Blob> */ reference;
-    let /** ?Promise<!Blob> */ portrait;
-
     try {
       [reference, portrait] = await this.crosImageCapture_.takePhoto(
           photoSettings, [Effect.PORTRAIT_MODE]);
-      this.handler_.playShutterEffect();
+      this.portraitHandler_.playShutterEffect();
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);
       throw e;
     }
 
-    state.set(PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, true);
-    let hasError = false;
+    const pendingPortraitResult = (async () => {
+      const blob = await reference;
+      const image = await util.blobToImage(blob);
+      const resolution = new Resolution(image.width, image.height);
+      const metadata = await (waitForMetadata?.wait() ?? null);
+      const pendingPortrait = (async () => {
+        let /** !Blob */ portraitBlob;
+        try {
+          portraitBlob = await portrait;
+        } catch (e) {
+          // Portrait image may failed due to absence of human faces.
+          // TODO(inker): Log non-intended error.
+          return null;
+        }
+        const metadata = await (waitForPortraitMetadata?.wait() ?? null);
+        return {blob: portraitBlob, metadata};
+      })();
 
-    /**
-     * @param {!Promise<!Blob>} p
-     * @param {string} imageName
-     * @return {!Promise}
-     */
-    const saveResult = async (p, imageName) => {
-      const isPortrait = Object.is(p, portrait);
-      let /** ?Blob */ blob = null;
-      try {
-        blob = await p;
-      } catch (e) {
-        hasError = true;
-        toast.show(
-            isPortrait ? I18nString.ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED :
-                         I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);
-        throw e;
-      }
-      const {width, height} = await util.blobToImage(blob);
-      await this.handler_.handleResultPhoto(
-          {resolution: new Resolution(width, height), blob}, imageName);
-    };
+      return {timestamp, resolution, blob, metadata, pendingPortrait};
+    })();
 
-    const refSave = saveResult(reference, refImageName);
-    const portraitSave = saveResult(portrait, portraitImageName);
-    try {
-      await portraitSave;
-    } catch (e) {
-      hasError = true;
-      // Portrait image may failed due to absence of human faces.
-      // TODO(inker): Log non-intended error.
-    }
-    await refSave;
-    state.set(
-        PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, false,
-        {hasError, facing: this.facing_});
+    return () => this.portraitHandler_.onPortraitCaptureDone(
+               pendingPortraitResult);
   }
 }
 
@@ -126,11 +147,27 @@ export class Portrait extends Photo {
  */
 export class PortraitFactory extends PhotoFactory {
   /**
+   * @param {!StreamConstraints} constraints Constraints for preview
+   *     stream.
+   * @param {!Resolution} captureResolution
+   * @param {!PortraitHandler} handler
+   */
+  constructor(constraints, captureResolution, handler) {
+    super(constraints, captureResolution, handler);
+
+    /**
+     * @const {!PhotoHandler}
+     * @protected
+     */
+    this.portraitHandler_ = handler;
+  }
+
+  /**
    * @override
    */
   produce() {
     return new Portrait(
         this.previewStream_, this.facing_, this.captureResolution_,
-        this.handler_);
+        this.portraitHandler_);
   }
 }

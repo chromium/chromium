@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Metadata} from '../type.js';
+
 import {VideoSaver} from './video_saver.js';
 
 /**
@@ -13,8 +15,9 @@ export interface ResultSaver {
    * Saves photo capture result.
    * @param blob Data of the photo to be added.
    * @param name Name of the photo to be saved.
+   * @param metadata Data of the photo to be added.
    */
-  savePhoto(blob: Blob, name: string): Promise<void>;
+  savePhoto(blob: Blob, name: string, metadata: Metadata|null): Promise<void>;
 
   /**
    * Saves gif capture result.

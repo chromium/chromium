@@ -34,7 +34,6 @@ import {
   ErrorType,
   Facing,  // eslint-disable-line no-unused-vars
   NoChunkError,
-  PerfEvent,
   Resolution,
   VideoType,
 } from '../../../type.js';
@@ -114,48 +113,28 @@ function beforeUnloadListener(event) {
 }
 
 /**
- * Contains video recording result.
+ * @typedef {{
+ *   blob: !Blob,
+ *   resolution: !Resolution,
+ *   timestamp: number,
+ * }}
  */
-export class VideoResult {
-  /**
-   * @param {{
-   *     resolution: !Resolution,
-   *     duration: number,
-   *     videoSaver: !VideoSaver,
-   *     everPaused: boolean,
-   * }} params
-   */
-  constructor({resolution, duration, videoSaver, everPaused}) {
-    /**
-     * @const {!Resolution}
-     * @public
-     */
-    this.resolution = resolution;
+export let VideoSnapshotResult;
 
-    /**
-     * @const {number}
-     * @public
-     */
-    this.duration = duration;
-
-    /**
-     * @const {!VideoSaver}
-     * @public
-     */
-    this.videoSaver = videoSaver;
-
-    /**
-     * @const {boolean}
-     * @public
-     */
-    this.everPaused = everPaused;
-  }
-}
+/**
+ * @typedef {{
+ *   resolution: !Resolution,
+ *   duration: number,
+ *   videoSaver: !VideoSaver,
+ *   everPaused: boolean,
+ * }}
+ */
+export let VideoResult;
 
 /**
  * @typedef {{
  *   name: string,
- *   getBlob: function(): !Promise<!Blob>,
+ *   gifSaver: !GifSaver,
  *   resolution: !Resolution,
  *   duration: number,
  * }}
@@ -178,33 +157,12 @@ export class VideoHandler {
   }
 
   /**
-   * Handles the result video.
-   * @param {!VideoResult} video Captured video result.
-   * @return {!Promise}
-   * @abstract
-   */
-  handleResultVideo(video) {
-    assertNotReached();
-  }
-
-  /**
-   * Handles the result gif video.
-   * @param {!GifResult} result
-   * @return {!Promise}
-   * @abstract
-   */
-  handleResultGif(result) {
-    assertNotReached();
-  }
-
-  /**
    * Handles the result video snapshot.
-   * @param {!PhotoResult} photo photo Captured video snapshot photo.
-   * @param {string} name Name of the video snapshot result to be saved as.
+   * @param {!VideoSnapshotResult} videoSnapshotResult
    * @return {!Promise}
    * @abstract
    */
-  handleResultPhoto(photo, name) {
+  handleVideoSnapshot(videoSnapshotResult) {
     assertNotReached();
   }
 
@@ -221,6 +179,24 @@ export class VideoHandler {
    * @abstract
    */
   getPreviewVideo() {
+    assertNotReached();
+  }
+
+  /**
+   * @param {!GifResult} gifResult
+   * @return {!Promise<void>}
+   * @abstract
+   */
+  async onGifCaptureDone(gifResult) {
+    assertNotReached();
+  }
+
+  /**
+   * @param {!VideoResult} videoResult
+   * @return {!Promise<void>}
+   * @abstract
+   */
+  async onVideoCaptureDone(videoResult) {
     assertNotReached();
   }
 }
@@ -398,6 +374,7 @@ export class Video extends ModeBase {
     state.set(state.State.SNAPSHOTTING, true);
     this.snapshotting_ = (async () => {
       try {
+        const timestamp = Date.now();
         let blob;
         if (await this.isBlobVideoSnapshotEnabled()) {
           const photoSettings = /** @type {!PhotoSettings} */ ({
@@ -411,14 +388,11 @@ export class Video extends ModeBase {
         }
 
         this.handler_.playShutterEffect();
-        const imageName = (new Filenamer()).newImageName();
-        await this.handler_.handleResultPhoto(
-            {
-              resolution: this.captureResolution_,
-              blob,
-              isVideoSnapshot: true,
-            },
-            imageName);
+        await this.handler_.handleVideoSnapshot({
+          blob,
+          resolution: this.captureResolution_,
+          timestamp,
+        });
       } finally {
         state.set(state.State.SNAPSHOTTING, false);
         this.snapshotting_ = null;
@@ -581,18 +555,11 @@ export class Video extends ModeBase {
       state.set(state.State.RECORDING, false);
       this.gifRecordTime_.stop({pause: false});
 
-      // TODO(b:191950622): Close capture stream before handleResultGif()
+      // TODO(b:191950622): Close capture stream before onGifCaptureDone()
       // opening preview page when multi-stream recording enabled.
-      await this.handler_.handleResultGif({
+      return () => this.handler_.onGifCaptureDone({
         name: gifName,
-        getBlob: async () => {
-          // Measure the latency of gif encoder finishing rest of the encoding
-          // works.
-          state.set(PerfEvent.GIF_CAPTURE_POST_PROCESSING, true);
-          const blob = await gifSaver.endWrite();
-          state.set(PerfEvent.GIF_CAPTURE_POST_PROCESSING, false);
-          return blob;
-        },
+        gifSaver,
         resolution: this.captureResolution_,
         duration: this.gifRecordTime_.inMilliseconds(),
       });
@@ -622,29 +589,19 @@ export class Video extends ModeBase {
 
       if (isVideoTooShort()) {
         toast.show(I18nString.ERROR_MSG_VIDEO_TOO_SHORT);
-        if (videoSaver !== null) {
-          await videoSaver.cancel();
-        }
-        return;
+        await videoSaver.cancel();
+        return () => this.snapshotting_;
       }
 
-      state.set(PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, true);
-
-      try {
-        await this.handler_.handleResultVideo(new VideoResult({
+      return async () => {
+        await this.handler_.onVideoCaptureDone({
           resolution: this.captureResolution_,
           duration: this.recordTime_.inMilliseconds(),
           videoSaver,
           everPaused: this.everPaused_,
-        }));
-        state.set(
-            PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false,
-            {resolution: this.captureResolution_, facing: this.facing_});
-      } catch (e) {
-        state.set(
-            PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false, {hasError: true});
-        throw e;
-      }
+        });
+        await this.snapshotting_;
+      };
     }
   }
 

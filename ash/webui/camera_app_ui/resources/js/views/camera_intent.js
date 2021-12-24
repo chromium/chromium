@@ -116,10 +116,10 @@ export class CameraIntent extends Camera {
   /**
    * @override
    */
-  async handleResultPhoto(result, name) {
+  async handlePhotoResult(result, name) {
     this.photoResult_ = result;
     try {
-      await this.resultSaver_.savePhoto(result.blob, name);
+      await this.resultSaver_.savePhoto(result.blob, name, /* metadata */ null);
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
       throw e;
@@ -129,7 +129,7 @@ export class CameraIntent extends Camera {
   /**
    * @override
    */
-  async handleResultVideo(result) {
+  async handleVideoResult(result) {
     this.videoResult_ = result;
     try {
       await this.resultSaver_.finishSaveVideo(result.videoSaver);

@@ -61,6 +61,7 @@ export class Resolution {
 export enum MimeType {
   GIF = 'image/gif',
   JPEG = 'image/jpeg',
+  JSON = 'application/json',
   MP4 = 'video/mp4',
   PDF = 'application/pdf',
 }
@@ -172,6 +173,10 @@ export interface ImageBlob {
   blob: Blob;
   resolution: Resolution;
 }
+
+// The key-value pair of the entries in metadata are stored as key-value of an
+// |Object| type
+export type Metadata = Record<string, unknown>;
 
 export interface PerfInformation {
   hasError?: boolean;

@@ -5,6 +5,7 @@
 import {assert, assertInstanceof} from './assert.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
+import {Filenamer} from './models/file_namer.js';
 import * as filesystem from './models/file_system.js';
 import {
   DirectoryAccessEntry,  // eslint-disable-line no-unused-vars
@@ -214,8 +215,13 @@ export class GalleryButton {
   /**
    * @override
    */
-  async savePhoto(blob, name) {
+  async savePhoto(blob, name, metadata) {
     const file = await filesystem.saveBlob(blob, name);
+    if (metadata !== null) {
+      const metadataBlob =
+          new Blob([JSON.stringify(metadata, null, 2)], {type: MimeType.JSON});
+      await filesystem.saveBlob(metadataBlob, Filenamer.getMetadataName(name));
+    }
 
     ChromeHelper.getInstance().sendNewCaptureBroadcast(
         {isVideo: false, name: file.name});

@@ -56,14 +56,6 @@ class SquarePhotoHandler {
   /**
    * @override
    */
-  async handleResultPhoto(result, name) {
-    result.blob = await cropSquare(result.blob);
-    await this.handler_.handleResultPhoto(result, name);
-  }
-
-  /**
-   * @override
-   */
   playShutterEffect() {
     this.handler_.playShutterEffect();
   }
@@ -73,6 +65,28 @@ class SquarePhotoHandler {
    */
   waitPreviewReady() {
     return this.handler_.waitPreviewReady();
+  }
+
+  /**
+   * @override
+   */
+  onPhotoError() {
+    this.handler_.onPhotoError();
+  }
+
+  /**
+   * @override
+   */
+  async onPhotoCaptureDone(pendingPhotoResult) {
+    const pendingSquarePhotoResult = (async () => {
+      const photoResult = await pendingPhotoResult;
+      const croppedBlob = await cropSquare(photoResult.blob);
+      return {
+        ...photoResult,
+        blob: croppedBlob,
+      };
+    })();
+    await this.handler_.onPhotoCaptureDone(pendingSquarePhotoResult);
   }
 }
 
