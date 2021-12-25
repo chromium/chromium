@@ -108,6 +108,7 @@
 <translation id="8776843108004031667">Aquest compte i totes les dades que no s'hagin desat se suprimiran de Chromium.</translation>
 <translation id="894437814105052438">Quan tanquis la sessió, Chromium no sincronitzarà cap dada nova amb el teu Compte de Google. Les dades sincronitzades prèviament romandran al compte.</translation>
 <translation id="9022552996538154597">Inicia la sessió a Chromium</translation>
+<translation id="9059693977935746710">No caldrà que recordis aquesta contrasenya. Es desarà al gestor de contrasenyes per a <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium no està actualitzat</translation>
 <translation id="9110075932708282655">Utilitza Chromium de manera predeterminada</translation>
 <translation id="921174536258924340">Chromium no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>

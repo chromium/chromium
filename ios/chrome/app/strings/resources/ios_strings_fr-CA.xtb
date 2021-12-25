@@ -25,6 +25,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="1145536944570833626">Supprimer toutes les données existantes.</translation>
 <translation id="1147031633655575115">Connecté en tant que <ph name="USER" /></translation>
 <translation id="1154984953698510061">Voir les autres onglets</translation>
+<translation id="1164064664035028907">Utiliser un mot de passe fort :</translation>
 <translation id="1165039591588034296">Erreur</translation>
 <translation id="1172898394251786223">Champ suivant</translation>
 <translation id="1176932207622159128">Enreg. image imposs.</translation>
@@ -637,6 +638,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6807889908376551050">Tout afficher…</translation>
 <translation id="681368974849482173">Élément créé</translation>
 <translation id="681450999322335505">Votre organisation a désactivé la synchronisation.</translation>
+<translation id="683022620450280906">Vous pouvez utiliser des mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le gestionnaire de mots de passe Google de ce compte : <ph name="EMAIL" /></translation>
 <translation id="6830804042318138535">Lire la suite</translation>
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="6842136130964845393">Pour vous assurer de toujours pouvoir accéder à vos mots de passe enregistrés, vérifiez qu'il s'agit bien de vous</translation>

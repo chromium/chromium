@@ -25,6 +25,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="1145536944570833626">Fshi të dhënat ekzistuese.</translation>
 <translation id="1147031633655575115">Identifikuar si <ph name="USER" /></translation>
 <translation id="1154984953698510061">Shiko skedat e tjera</translation>
+<translation id="1164064664035028907">Përdor fjalëkalimin e fortë:</translation>
 <translation id="1165039591588034296">Gabim</translation>
 <translation id="1172898394251786223">Fusha tjetër</translation>
 <translation id="1176932207622159128">Imazhi nuk mund të ruhet</translation>
@@ -637,6 +638,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6807889908376551050">Shfaqi të gjitha...</translation>
 <translation id="681368974849482173">Elementi u krijua</translation>
 <translation id="681450999322335505">Organizata jote e ka çaktivizuar sinkronizimin.</translation>
+<translation id="683022620450280906">Fjalëkalimet e ruajtura mund t'i përdorësh në çdo pajisje. Ato janë të ruajtura në "Menaxherin e fjalëkalimeve" të Google për <ph name="EMAIL" /></translation>
 <translation id="6830804042318138535">Lexo më shumë</translation>
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="6842136130964845393">Për t'u siguruar që mund të qasesh gjithmonë në fjalëkalimet e tua të ruajtura, verifiko që je ti</translation>
