@@ -122,7 +122,8 @@ PersonalizationAppUI::PersonalizationAppUI(
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
+      "script-src chrome://resources chrome://test chrome://webui-test "
+      "'self';");
 
   // Allow requesting a chrome-untrusted://personalization/ iframe.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);

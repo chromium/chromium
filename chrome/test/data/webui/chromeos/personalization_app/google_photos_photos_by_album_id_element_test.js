@@ -4,8 +4,8 @@
 
 import {GooglePhotosPhotosByAlbumId, promisifyWallpaperControllerFunctionsForTesting} from 'chrome://personalization/trusted/wallpaper/google_photos_photos_by_album_id_element.js';
 
-import {assertEquals} from '../../chai_assert.js';
-import {waitAfterNextRender} from '../../test_util.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';

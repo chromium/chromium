@@ -9,8 +9,8 @@ import {emptyState} from 'chrome://personalization/trusted/personalization_state
 import {WallpaperActionName} from 'chrome://personalization/trusted/wallpaper/wallpaper_actions.js';
 import {mockTimeoutForTesting, WallpaperSelected} from 'chrome://personalization/trusted/wallpaper/wallpaper_selected_element.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from '../../chai_assert.js';
-import {flushTasks, waitAfterNextRender} from '../../test_util.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';

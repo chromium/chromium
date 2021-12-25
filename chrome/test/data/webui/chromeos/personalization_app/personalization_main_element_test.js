@@ -4,7 +4,7 @@
 
 import {PersonalizationMain} from 'chrome://personalization/trusted/personalization_main_element.js';
 
-import {assertEquals} from '../../chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';

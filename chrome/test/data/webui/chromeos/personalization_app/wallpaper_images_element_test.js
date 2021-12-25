@@ -6,8 +6,8 @@ import {WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/p
 import {PersonalizationRouter} from 'chrome://personalization/trusted/personalization_router_element.js';
 import {getDarkLightImageTiles, getRegularImageTiles, promisifyImagesIframeFunctionsForTesting, WallpaperImages} from 'chrome://personalization/trusted/wallpaper/wallpaper_images_element.js';
 
-import {assertDeepEquals, assertEquals, assertFalse} from '../../chai_assert.js';
-import {flushTasks, waitAfterNextRender} from '../../test_util.js';
+import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {assertWindowObjectsEqual, baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';

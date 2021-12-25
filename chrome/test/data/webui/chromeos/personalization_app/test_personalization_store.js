@@ -14,7 +14,7 @@
 import {reduce} from 'chrome://personalization/trusted/personalization_reducers.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
 import {PersonalizationStore} from 'chrome://personalization/trusted/personalization_store.js';
-import {TestStore} from '../../test_store.js';
+import {TestStore} from 'chrome://webui-test/test_store.js';
 
 export class TestPersonalizationStore extends TestStore {
   constructor(data) {

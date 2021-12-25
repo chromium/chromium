@@ -662,6 +662,12 @@ generate_grd("build_grd") {
       "$target_gen_dir/signin/resources.grdp",
     ]
   }
+
+  if (is_chromeos_ash) {
+    deps += [ "chromeos/personalization_app:build_grdp" ]
+    grdp_files +=
+        [ "$target_gen_dir/chromeos/personalization_app/resources.grdp" ]
+  }
 }
 
 # TypeScript related targets

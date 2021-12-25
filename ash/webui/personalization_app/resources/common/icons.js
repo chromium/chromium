@@ -18,6 +18,9 @@
  * @see https://github.com/PolymerElements/iron-iconset-svg/blob/v3.0.1/demo/svg-sample-icons.js
  */
 
+// Force tsc to consider this file a module.
+export {};
+
 const template = document.createElement('template');
 template.innerHTML = `{__html_template__}`;
 document.head.appendChild(template.content);

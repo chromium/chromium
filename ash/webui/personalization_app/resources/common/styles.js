@@ -12,6 +12,9 @@
  * above.
  */
 
+// Force tsc to consider this file a module.
+export {};
+
 const template = document.createElement('dom-module');
 template.innerHTML = `{__html_template__}`;
 template.register('common-style');

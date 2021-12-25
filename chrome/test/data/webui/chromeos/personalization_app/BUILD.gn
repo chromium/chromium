@@ -1,0 +1,53 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_chromeos_personalization_app"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "chromeos/personalization_app"
+}
+
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://personalization/*|" +
+        rebase_path(
+            "$root_gen_dir/ash/webui/personalization_app/resources/tsc/*",
+            target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+  in_files = [
+    "google_photos_collection_element_test.js",
+    "google_photos_photos_by_album_id_element_test.js",
+    "local_images_element_test.js",
+    "personalization_app_component_browsertest.js",
+    "personalization_app_component_test.js",
+    "personalization_app_controller_browsertest.js",
+    "personalization_app_controller_test.js",
+    "personalization_app_test_utils.js",
+    "personalization_breadcrumb_element_test.js",
+    "personalization_main_element_test.js",
+    "personalization_router_element_test.js",
+    "personalization_toast_element_test.js",
+    "test_personalization_store.js",
+    "test_wallpaper_interface_provider.js",
+    "wallpaper_collections_element_test.js",
+    "wallpaper_fullscreen_element_test.js",
+    "wallpaper_images_element_test.js",
+    "wallpaper_selected_element_test.js",
+  ]
+  deps = [ "//ash/webui/personalization_app/resources:build_ts" ]
+  extra_deps = [ "../..:generate_definitions" ]
+}
