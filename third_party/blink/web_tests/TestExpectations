@@ -543,9 +543,12 @@ crbug.com/1123189 virtual/threaded-composited-iframes/external/wpt/is-input-pend
 crbug.com/1266900 [ Mac ] fast/events/touch/gesture/right-click-gestures-set-cursor-at-correct-position.html [ Crash Pass ]
 crbug.com/1267924 [ Mac ] external/wpt/css/css-contain/contain-layout-baseline-005.html [ Failure ]
 crbug.com/1267924 [ Mac ] external/wpt/css/css-contain/contain-layout-suppress-baseline-001.html [ Failure ]
+
 # Needs rebaseline on Fuchsia.
 crbug.com/1267498 [ Fuchsia ] paint/invalidation/svg/animated-svg-as-image-transformed-offscreen.html [ Failure ]
 crbug.com/1267498 [ Fuchsia ] compositing/layer-creation/fixed-position-out-of-view.html [ Failure ]
+crbug.com/1267498 [ Fuchsia ] fast/inline/inline-focus-ring.html [ Failure ]
+crbug.com/1267498 [ Fuchsia ] transforms/transformed-caret.html [ Failure ]
 
 # WebGPU tests are only run on GPU bots, so they are skipped by default and run
 # separately from other Web Tests.

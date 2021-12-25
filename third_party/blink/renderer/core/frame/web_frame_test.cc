@@ -6424,7 +6424,7 @@ class CompositedSelectionBoundsTest
     ASSERT_EQ(selection.end, cc::LayerSelectionBound());
   }
 
-  void RunTest(const char* test_file) {
+  void RunTest(const char* test_file, bool selection_is_caret = false) {
     RegisterMockedHttpURLLoad(test_file);
     web_view_helper_.GetWebView()->MainFrameWidget()->SetFocus(true);
     frame_test_helpers::LoadFrame(
@@ -6446,39 +6446,39 @@ class CompositedSelectionBoundsTest
     v8::Local<v8::Context> context =
         v8::Isolate::GetCurrent()->GetCurrentContext();
 
-    const int start_edge_start_in_layer_x = expected_result.Get(context, 1)
-                                                .ToLocalChecked()
-                                                .As<v8::Int32>()
-                                                ->Value();
-    const int start_edge_start_in_layer_y = expected_result.Get(context, 2)
-                                                .ToLocalChecked()
-                                                .As<v8::Int32>()
-                                                ->Value();
-    const int start_edge_end_in_layer_x = expected_result.Get(context, 3)
-                                              .ToLocalChecked()
-                                              .As<v8::Int32>()
-                                              ->Value();
-    const int start_edge_end_in_layer_y = expected_result.Get(context, 4)
-                                              .ToLocalChecked()
-                                              .As<v8::Int32>()
-                                              ->Value();
+    int start_edge_start_in_layer_x = expected_result.Get(context, 1)
+                                          .ToLocalChecked()
+                                          .As<v8::Int32>()
+                                          ->Value();
+    int start_edge_start_in_layer_y = expected_result.Get(context, 2)
+                                          .ToLocalChecked()
+                                          .As<v8::Int32>()
+                                          ->Value();
+    int start_edge_end_in_layer_x = expected_result.Get(context, 3)
+                                        .ToLocalChecked()
+                                        .As<v8::Int32>()
+                                        ->Value();
+    int start_edge_end_in_layer_y = expected_result.Get(context, 4)
+                                        .ToLocalChecked()
+                                        .As<v8::Int32>()
+                                        ->Value();
 
-    const int end_edge_start_in_layer_x = expected_result.Get(context, 6)
-                                              .ToLocalChecked()
-                                              .As<v8::Int32>()
-                                              ->Value();
-    const int end_edge_start_in_layer_y = expected_result.Get(context, 7)
-                                              .ToLocalChecked()
-                                              .As<v8::Int32>()
-                                              ->Value();
-    const int end_edge_end_in_layer_x = expected_result.Get(context, 8)
-                                            .ToLocalChecked()
-                                            .As<v8::Int32>()
-                                            ->Value();
-    const int end_edge_end_in_layer_y = expected_result.Get(context, 9)
-                                            .ToLocalChecked()
-                                            .As<v8::Int32>()
-                                            ->Value();
+    int end_edge_start_in_layer_x = expected_result.Get(context, 6)
+                                        .ToLocalChecked()
+                                        .As<v8::Int32>()
+                                        ->Value();
+    int end_edge_start_in_layer_y = expected_result.Get(context, 7)
+                                        .ToLocalChecked()
+                                        .As<v8::Int32>()
+                                        ->Value();
+    int end_edge_end_in_layer_x = expected_result.Get(context, 8)
+                                      .ToLocalChecked()
+                                      .As<v8::Int32>()
+                                      ->Value();
+    int end_edge_end_in_layer_y = expected_result.Get(context, 9)
+                                      .ToLocalChecked()
+                                      .As<v8::Int32>()
+                                      ->Value();
 
     gfx::PointF hit_point;
 
@@ -6529,9 +6529,21 @@ class CompositedSelectionBoundsTest
         v8::Isolate::GetCurrent(),
         expected_result.Get(context, 0).ToLocalChecked());
     ASSERT_TRUE(layer_owner_node_for_start);
-    int id = LayerIdFromNode(layer_tree_host->root_layer(),
-                             layer_owner_node_for_start);
-    EXPECT_EQ(selection.start.layer_id, id);
+    int start_layer_id = LayerIdFromNode(layer_tree_host->root_layer(),
+                                         layer_owner_node_for_start);
+    if (selection_is_caret) {
+      // The selection data are recorded on the caret layer which is the next
+      // layer for the current test cases.
+      start_layer_id++;
+      EXPECT_EQ("Caret",
+                layer_tree_host->LayerById(start_layer_id)->DebugName());
+      // The locations are relative to the caret layer.
+      start_edge_end_in_layer_x -= start_edge_start_in_layer_x;
+      start_edge_end_in_layer_y -= start_edge_start_in_layer_y;
+      start_edge_start_in_layer_x = 0;
+      start_edge_start_in_layer_y = 0;
+    }
+    EXPECT_EQ(start_layer_id, selection.start.layer_id);
 
     EXPECT_NEAR(start_edge_start_in_layer_x, selection.start.edge_start.x(), 1);
     EXPECT_NEAR(start_edge_start_in_layer_y, selection.start.edge_start.y(), 1);
@@ -6541,9 +6553,21 @@ class CompositedSelectionBoundsTest
         v8::Isolate::GetCurrent(),
         expected_result.Get(context, 5).ToLocalChecked());
     ASSERT_TRUE(layer_owner_node_for_end);
-    id = LayerIdFromNode(layer_tree_host->root_layer(),
-                         layer_owner_node_for_end);
-    EXPECT_EQ(selection.end.layer_id, id);
+    int end_layer_id = LayerIdFromNode(layer_tree_host->root_layer(),
+                                       layer_owner_node_for_end);
+    if (selection_is_caret) {
+      // The selection data are recorded on the caret layer which is the next
+      // layer for the current test cases.
+      end_layer_id++;
+      EXPECT_EQ(start_layer_id, end_layer_id);
+      // The locations are relative to the caret layer.
+      end_edge_end_in_layer_x -= end_edge_start_in_layer_x;
+      end_edge_end_in_layer_y -= end_edge_start_in_layer_y;
+      end_edge_start_in_layer_x = 0;
+      end_edge_start_in_layer_y = 0;
+    }
+    EXPECT_EQ(end_layer_id, selection.end.layer_id);
+
     EXPECT_NEAR(end_edge_start_in_layer_x, selection.end.edge_start.x(), 1);
     EXPECT_NEAR(end_edge_start_in_layer_y, selection.end.edge_start.y(), 1);
     EXPECT_NEAR(end_edge_end_in_layer_x, selection.end.edge_end.x(), 1);
@@ -6589,6 +6613,10 @@ class CompositedSelectionBoundsTest
     }
 
     RunTest(test_file);
+  }
+
+  void RunTestWithCaret(const char* test_file) {
+    RunTest(test_file, /*selection_is_caret*/ true);
   }
 
   static int LayerIdFromNode(const cc::Layer* root_layer, blink::Node* node) {
@@ -6650,10 +6678,10 @@ TEST_F(CompositedSelectionBoundsTest, Iframe) {
 }
 TEST_F(CompositedSelectionBoundsTest, Editable) {
   web_view_helper_.GetWebView()->GetSettings()->SetDefaultFontSize(16);
-  RunTest("composited_selection_bounds_editable.html");
+  RunTestWithCaret("composited_selection_bounds_editable.html");
 }
 TEST_F(CompositedSelectionBoundsTest, EditableDiv) {
-  RunTest("composited_selection_bounds_editable_div.html");
+  RunTestWithCaret("composited_selection_bounds_editable_div.html");
 }
 TEST_F(CompositedSelectionBoundsTest, SVGBasic) {
   RunTest("composited_selection_bounds_svg_basic.html");

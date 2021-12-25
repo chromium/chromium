@@ -188,6 +188,7 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
   }
 
   auto new_local_rect = rect_and_block.caret_rect;
+  // TODO(crbug.com/1123630): Avoid paint invalidation on caret movement.
   if (new_local_rect != local_rect_) {
     needs_paint_invalidation_ = true;
     local_rect_ = new_local_rect;
@@ -197,10 +198,10 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
     new_layout_block->SetShouldCheckForPaintInvalidation();
 }
 
-void CaretDisplayItemClient::SetVisibleIfActive(bool visible) {
-  if (visible == is_visible_if_active_)
+void CaretDisplayItemClient::SetActive(bool active) {
+  if (active == is_active_)
     return;
-  is_visible_if_active_ = visible;
+  is_active_ = active;
   needs_paint_invalidation_ = true;
 }
 
@@ -267,7 +268,7 @@ void CaretDisplayItemClient::PaintCaret(
   }
 
   gfx::Rect paint_rect = ToPixelSnappedRect(drawing_rect);
-  context.FillRect(paint_rect, is_visible_if_active_ ? color_ : Color(),
+  context.FillRect(paint_rect, color_,
                    PaintAutoDarkMode(layout_block_->StyleRef(),
                                      DarkModeFilter::ElementRole::kForeground));
 }

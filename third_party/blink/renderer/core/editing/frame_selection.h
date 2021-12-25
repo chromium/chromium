@@ -41,7 +41,7 @@
 
 namespace blink {
 
-class CaretDisplayItemClient;
+class EffectPaintPropertyNode;
 class Element;
 class InlineTextBox;
 class LayoutBlock;
@@ -291,6 +291,8 @@ class CORE_EXPORT FrameSelection final
   // |VisibleSelection| and selection bounds.
   void MarkCacheDirty();
 
+  const EffectPaintPropertyNode& CaretEffectNode() const;
+
   FrameCaret& FrameCaretForTesting() const { return *frame_caret_; }
 
   LayoutTextSelectionStatus ComputeLayoutSelectionStatus(
@@ -309,8 +311,6 @@ class CORE_EXPORT FrameSelection final
   friend class FrameSelectionTest;
   friend class PaintControllerPaintTestBase;
   friend class SelectionControllerTest;
-
-  const CaretDisplayItemClient& CaretDisplayItemClientForTesting() const;
 
   void NotifyAccessibilityForSelectionChange();
   void NotifyCompositorForSelectionChange();

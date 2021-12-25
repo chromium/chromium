@@ -1596,3 +1596,8 @@ crbug.com/1266821 virtual/gpu-rasterization/images/2-dht.html [ Failure ]
 crbug.com/1266821 virtual/gpu-rasterization/images/23-55.html [ Failure ]
 crbug.com/1266821 virtual/gpu-rasterization/images/55.html [ Failure ]
 crbug.com/1266821 virtual/gpu-rasterization/images/imagemap-focus-ring-zoom.html [ Failure ]
+
+# Invisible antialiased pixel differences. Can't rebaseline ref tests.
+crbug.com/1123630 editing/caret/in-multicol-child.html [ Failure ]
+crbug.com/1123630 paint/caret/multicol_block_children.html [ Failure ]
+crbug.com/1123630 paint/caret/multicol_inline_children.html [ Failure ]

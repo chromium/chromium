@@ -48,6 +48,7 @@ class FrameViewPropertyTreePrinter
       if (LocalFrameView* child_view = child_local_frame->View())
         CollectNodes(*child_view);
     }
+    Traits::AddOtherProperties(frame_view, *this);
   }
 
   void CollectNodes(const LayoutObject& object) {
@@ -85,6 +86,9 @@ class PropertyTreePrinterTraits<TransformPaintPropertyNodeOrAlias> {
     printer.AddNode(properties.ScrollTranslation());
     printer.AddNode(properties.TransformIsolationNode());
   }
+  static void AddOtherProperties(
+      const FrameView& frame_view,
+      PropertyTreePrinter<TransformPaintPropertyNodeOrAlias>& printer) {}
 };
 
 template <>
@@ -106,6 +110,9 @@ class PropertyTreePrinterTraits<ClipPaintPropertyNodeOrAlias> {
     printer.AddNode(properties.OverflowClip());
     printer.AddNode(properties.ClipIsolationNode());
   }
+  static void AddOtherProperties(
+      const LocalFrameView& frame_view,
+      PropertyTreePrinter<ClipPaintPropertyNodeOrAlias>& printer) {}
 };
 
 template <>
@@ -128,6 +135,12 @@ class PropertyTreePrinterTraits<EffectPaintPropertyNodeOrAlias> {
     printer.AddNode(properties.ClipPathMask());
     printer.AddNode(properties.EffectIsolationNode());
   }
+
+  static void AddOtherProperties(
+      const LocalFrameView& frame_view,
+      PropertyTreePrinter<EffectPaintPropertyNodeOrAlias>& printer) {
+    printer.AddNode(&frame_view.GetFrame().Selection().CaretEffectNode());
+  }
 };
 
 template <>
@@ -144,6 +157,10 @@ class PropertyTreePrinterTraits<ScrollPaintPropertyNode> {
       PropertyTreePrinter<ScrollPaintPropertyNode>& printer) {
     printer.AddNode(properties.Scroll());
   }
+
+  static void AddOtherProperties(
+      const LocalFrameView& frame_view,
+      PropertyTreePrinter<ScrollPaintPropertyNode>& printer) {}
 };
 
 template <typename PropertyTreeNode>

@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -39,6 +40,7 @@
 namespace blink {
 
 class CaretDisplayItemClient;
+class EffectPaintPropertyNode;
 class FrameCaret;
 class GraphicsContext;
 class LayoutBlock;
@@ -78,11 +80,9 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   bool ShouldPaintCaret(const NGPhysicalBoxFragment&) const;
   void PaintCaret(GraphicsContext&, const PhysicalOffset&) const;
 
+  const EffectPaintPropertyNode& CaretEffectNode() const { return *effect_; }
+
   // For unit tests.
-  const CaretDisplayItemClient& CaretDisplayItemClientForTesting() const {
-    return *display_item_client_;
-  }
-  bool IsVisibleIfActiveForTesting() const;
   void RecreateCaretBlinkTimerForTesting(
       scoped_refptr<base::SingleThreadTaskRunner>);
 
@@ -91,18 +91,24 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
  private:
   friend class FrameCaretTest;
   friend class FrameSelectionTest;
+  friend class CaretDisplayItemClientTest;
 
   const PositionWithAffinity CaretPosition() const;
 
   bool ShouldShowCaret() const;
   void CaretBlinkTimerFired(TimerBase*);
   void UpdateAppearance();
+  void SetVisibleIfActive(bool visible);
+  bool IsVisibleIfActive() const { return effect_->Opacity() != 0; }
 
   const Member<const SelectionEditor> selection_editor_;
   const Member<LocalFrame> frame_;
   const Member<CaretDisplayItemClient> display_item_client_;
-  // TODO(https://crbug.com/668758): Consider using BeginFrame update for this.
+  // TODO(https://crbug.com/1123630): Consider moving the timer into the
+  // compositor thread.
   HeapTaskRunnerTimer<FrameCaret> caret_blink_timer_;
+  // Controls visibility of caret with opacity when the caret is blinking.
+  scoped_refptr<EffectPaintPropertyNode> effect_;
   bool is_caret_enabled_ = false;
   bool should_show_caret_ = false;
   bool is_caret_blinking_suspended_ = false;

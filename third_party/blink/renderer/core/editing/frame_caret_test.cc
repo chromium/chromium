@@ -25,6 +25,10 @@ class FrameCaretTest : public EditingTestBase {
     return caret.ShouldShowCaret();
   }
 
+  static bool IsVisibleIfActive(const FrameCaret& caret) {
+    return caret.IsVisibleIfActive();
+  }
+
  private:
   // The caret blink timer doesn't work if IsRunningWebTest() because
   // LayoutTheme::CaretBlinkInterval() returns 0.
@@ -53,26 +57,25 @@ TEST_F(FrameCaretTest, MAYBE_BlinkAfterTyping) {
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_TRUE(caret.IsActive());
-  EXPECT_TRUE(caret.IsVisibleIfActiveForTesting())
+  EXPECT_TRUE(IsVisibleIfActive(caret))
       << "Initially a caret should be in visible cycle.";
 
   task_runner->AdvanceTimeAndRun(kInterval);
-  EXPECT_FALSE(caret.IsVisibleIfActiveForTesting())
-      << "The caret blinks normally.";
+  EXPECT_FALSE(IsVisibleIfActive(caret)) << "The caret blinks normally.";
 
   TypingCommand::InsertLineBreak(GetDocument());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(caret.IsVisibleIfActiveForTesting())
+  EXPECT_TRUE(IsVisibleIfActive(caret))
       << "The caret should be in visible cycle just after a typing command.";
 
   task_runner->AdvanceTimeAndRun(kInterval - 1);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(caret.IsVisibleIfActiveForTesting())
+  EXPECT_TRUE(IsVisibleIfActive(caret))
       << "The typing command reset the timer. The caret is still visible.";
 
   task_runner->AdvanceTimeAndRun(1);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(caret.IsVisibleIfActiveForTesting())
+  EXPECT_FALSE(IsVisibleIfActive(caret))
       << "The caret should blink after the typing command.";
 }
 

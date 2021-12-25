@@ -112,9 +112,8 @@ FrameSelection::FrameSelection(LocalFrame& frame)
 
 FrameSelection::~FrameSelection() = default;
 
-const CaretDisplayItemClient& FrameSelection::CaretDisplayItemClientForTesting()
-    const {
-  return frame_caret_->CaretDisplayItemClientForTesting();
+const EffectPaintPropertyNode& FrameSelection::CaretEffectNode() const {
+  return frame_caret_->CaretEffectNode();
 }
 
 bool FrameSelection::IsAvailable() const {
