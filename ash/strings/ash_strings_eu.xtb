@@ -593,7 +593,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5071064518267176975">Aplikazio batek mikrofonoa erabili nahi du</translation>
 <translation id="5075554201838155866">Abiarazi azpitituluak</translation>
 <translation id="5078796286268621944">Okerra da PINa</translation>
-<translation id="5083553833479578423">Lortu Laguntzailea eginbidearen aukera gehiago.</translation>
+<translation id="5083553833479578423">Lortu Laguntzailea zerbitzuaren aukera gehiago.</translation>
 <translation id="5117590920725113268">Erakutsi hurrengo hilabetea</translation>
 <translation id="5136175204352732067">Beste teklatu bat konektatu duzu</translation>
 <translation id="5147567197700016471">Desblokeatuta</translation>
@@ -625,7 +625,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5319712128756744240">Parekatu beste gailu batekin</translation>
 <translation id="5322611492012084517">Ezin da aurkitu telefonoa</translation>
 <translation id="5329548388331921293">Konektatzen…</translation>
-<translation id="5330201449517439522">Sartzeko, sakatu hau edo egin klik hemen</translation>
+<translation id="5330201449517439522">Sartzeko, sakatu hau</translation>
 <translation id="5331975486040154427">USB-C gailua (ezkerraldeko atzeko ataka)</translation>
 <translation id="5352250171825660495">Aktibatuta dago gai iluna.</translation>
 <translation id="5379115545237091094">Saiakera gehiegi egin dira</translation>
@@ -1098,7 +1098,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="8909138438987180327">Bateriaren % <ph name="PERCENTAGE" /> geratzen zaizu.</translation>
 <translation id="8913384980486163186">Gaikakoa (lehenetsia)</translation>
 <translation id="8921554779039049422">H+</translation>
-<translation id="8921624153894383499">Google-ren Laguntzailea eginbideak ezin du erabili hizkuntza hori.</translation>
+<translation id="8921624153894383499">Google-ren Laguntzailea zerbitzuak ezin du erabili hizkuntza hori.</translation>
 <translation id="8936501819958976551">desaktibatuta</translation>
 <translation id="8938800817013097409">USB-C gailua (eskuinaldeko atzeko ataka)</translation>
 <translation id="8940956008527784070">Bateria gutxi (% <ph name="PERCENTAGE" />)</translation>
@@ -1114,7 +1114,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="9059834730836941392">Tolestu jakinarazpena</translation>
 <translation id="9063800855227801443">Ezin da kapturatu isilpeko edukia</translation>
 <translation id="9065203028668620118">Editatu</translation>
-<translation id="9070640332319875144">Laguntzailea eginbidearen ezarpenak</translation>
+<translation id="9070640332319875144">Laguntzailea zerbitzuaren ezarpenak</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> agortu arte.</translation>
 <translation id="9074739597929991885">Bluetooth-a</translation>
 <translation id="9077404278023321866">Txantiloiak</translation>
