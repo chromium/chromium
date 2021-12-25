@@ -1015,6 +1015,7 @@ New install</translation>
 <translation id="7860671499921112077">Swipe up with three fingers to enter Overview</translation>
 <translation id="7866482334467279021">on</translation>
 <translation id="7868900307798234037">Unlocking with fingerprint</translation>
+<translation id="7872195908557044066">Your administrator is resetting your eSIM. Wait a few minutes.</translation>
 <translation id="7872786842639831132">Off</translation>
 <translation id="7875575368831396199">Looks like Bluetooth is turned off on your <ph name="DEVICE_TYPE" />. Please turn on Bluetooth to use Phone Hub.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Change device to previous version now}=1{Change device to previous version within 1 second}other{Change device to previous version within # seconds}}</translation>

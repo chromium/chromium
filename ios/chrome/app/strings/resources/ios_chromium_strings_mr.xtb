@@ -77,6 +77,7 @@
 <translation id="6424492062988593837">Chrome आता सर्वोत्तम झाले आहे! नवीन आवृत्ती उपलब्ध आहे.</translation>
 <translation id="6752854822223394465">तुमची संस्था Chromium सेट करत आहे...</translation>
 <translation id="6820823224820483452">Chromium ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा.</translation>
+<translation id="7006920032187763988">तुम्ही पासवर्ड व्यवस्थापक यामध्ये सेव्ह केलेले पासवर्ड तुमच्या iPad वरील इतर अ‍ॅप्समध्ये वापरू शकता.</translation>
 <translation id="7018284295775193585">Chromium अपडेट करू शकत नाही</translation>
 <translation id="7045244423563602563">Chromium ला तुमचे हक्काचे ठिकाण बनवा</translation>
 <translation id="7099326575020694068">Chromium विभाजित दृश्य मोड मध्ये तुमचा कॅमेरा वापरू शकत नाही</translation>
@@ -103,11 +104,13 @@
 <translation id="8073677936375100957">या डिव्हाइसवरून तुमचा Chromium डेटा साफ करायचा?</translation>
 <translation id="8175055321229419309">टीप: <ph name="BEGIN_LINK" />Chromium तुमच्या डॉकमध्ये हलवा<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ला अपडेट तपासता आली नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
+<translation id="858114650497379505">तुम्ही पासवर्ड व्यवस्थापक यामध्ये सेव्ह केलेले पासवर्ड तुमच्या iPhone वरील इतर अ‍ॅप्समध्ये वापरू शकता.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium लेखक. सर्व हक्क राखीव.</translation>
 <translation id="8663480472502753423">Chromium अप टू डेट ठेवा</translation>
 <translation id="8776843108004031667">हे खाते आणि कोणताही सेव्ह न केलेला डेटा Chromium मधून काढून टाकला जाईल.</translation>
 <translation id="894437814105052438">तुम्ही साइन आउट करता तेव्हा, Chromium तुमच्या Google खाते मध्ये कोणताही नवीन डेटा सिंक करणार नाही. याआधी सिंक केलेला डेटा खात्यामध्ये राहील.</translation>
 <translation id="9022552996538154597">Chromium वर साइन इन करा</translation>
+<translation id="9059693977935746710">तुम्ही हा पासवर्ड लक्षात ठेवण्याची आवश्यकता नाही. तो <ph name="EMAIL" /> साठी पासवर्ड व्यवस्थापक यामध्ये सेव्ह केला जाईल</translation>
 <translation id="9089354809943900324">Chromium कालबाह्य आहे</translation>
 <translation id="9110075932708282655">बाय डीफॉल्ट Chromium वापरा</translation>
 <translation id="921174536258924340">Chromium ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा किंवा <ph name="BEGIN_LINK" />तुमच्या Google खाते मध्ये पासवर्ड तपासा.<ph name="END_LINK" /></translation>

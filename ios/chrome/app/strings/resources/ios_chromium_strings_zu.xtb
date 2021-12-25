@@ -59,7 +59,7 @@
 <translation id="5308226104666789935">I-Chromium ayikwazi ukuhlola izibuyekezo</translation>
 <translation id="5396916991083608703">Setha i-Chromium Njengokuzenzakalelayo?</translation>
 <translation id="5521125884468363740">Ukuze ubone amathebhu wakho noma kuphi lapho usebenzisa i-Chromium, ngena ngemvume bese uvula ukuvumelanisa</translation>
-<translation id="5573014823074921752">Ithiphu le-Chromium. Ukuze uthole izinketho eziningi zethebhu, thinta uphinde ubambe inkinobho yokuthi Bonisa Amathebhu kubha yamathuluzi, engaphansi noma ngaphezulu kwesikrini sakho.</translation>
+<translation id="5573014823074921752">Ithiphu le-Chromium. Ukuze uthole okunye okungakhethwa zethebhu, thinta uphinde ubambe inkinobho yokuthi Bonisa Amathebhu kubha yamathuluzi, engaphansi noma ngaphezulu kwesikrini sakho.</translation>
 <translation id="5700709190537129682">I-Chromium ayikwazi ukuhlola iphasiwedi yakho</translation>
 <translation id="5777187867430702742">Ikhasi le-Chromium</translation>
 <translation id="5862307444128926510">Siyakwamukela ku-Chromium</translation>
@@ -77,6 +77,7 @@
 <translation id="6424492062988593837">I-Chromium ingocono nakakhulu! Inguqulo entsha iyatholakala.</translation>
 <translation id="6752854822223394465">Inhlangano yakho isetha i-Chromium...</translation>
 <translation id="6820823224820483452">I-Chromium ayikwazanga ukuhlola wonke amaphasiwedi. Zama futhi kusasa.</translation>
+<translation id="7006920032187763988">Ungasebenzisa amaphasiwedi owalondolozile ku-Password Manager kwamanye ama-app ku-iPad yakho.</translation>
 <translation id="7018284295775193585">I-Chromium ayikwazi ukubuyekeza</translation>
 <translation id="7045244423563602563">Yenza i-Chromium Ibe Ngeyakho</translation>
 <translation id="7099326575020694068">I-Chromium ayikwazi ukusebenzisa ikhamera yakho kumodi yokubuka okuhlukanisiwe</translation>
@@ -103,11 +104,13 @@
 <translation id="8073677936375100957">Sula idatha yakho ye-Chromium kusuka kule divayisi?</translation>
 <translation id="8175055321229419309">Ithiphu: <ph name="BEGIN_LINK" />Hambisa i-Chromium kudokhu yakho<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">I-Chromium ayikwazanga ukuhlola izibuyekezo. Zama futhi emuva kwesikhathi.</translation>
+<translation id="858114650497379505">Ungasebenzisa amaphasiwedi owalondolozile ku-Password Manager kwamanye ama-app ku-iPhone yakho.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ababhali be-Chromium. Wonke amalungelo agciniwe.</translation>
 <translation id="8663480472502753423">Gcina i-Chromium isesikhathini</translation>
 <translation id="8776843108004031667">Le akhawunti kanye nanoma iyiphi idatha engalondolozwanga izosuswa ku-Chromium.</translation>
 <translation id="894437814105052438">Lapho uphuma ngemvume, i-Chromium ngeke ivumelanise noma iyiphi idatha entsha ku-akhawunti yakho ye-Google. Idatha evumelaniswe ngaphambilini ihlala kwi-akhawunti.</translation>
 <translation id="9022552996538154597">Ngena ngemvume ku-Chromium</translation>
+<translation id="9059693977935746710">Ngeke kudingeke ukuthi ukhumbule le phasiwedi. Izolondolozwa Kusiphathi Sephasiwedi se-<ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">I-Chromium ayikho kudethi</translation>
 <translation id="9110075932708282655">Sebenzisa i-Chromium ngokuzenzakalelayo</translation>
 <translation id="921174536258924340">I-Chromium ayikwazanga ukuhlola wonke amaphasiwedi. Zama futhi kusasa noma <ph name="BEGIN_LINK" />hlola amaphasiwedi ku-Akhawunti yakho ye-Google<ph name="END_LINK" /></translation>

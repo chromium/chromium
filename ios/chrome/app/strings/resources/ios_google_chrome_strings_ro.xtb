@@ -25,6 +25,7 @@
 <translation id="2574249610672786438">Conectează-te pe toate dispozitivele ca să vezi toate filele tale deschise în Chrome</translation>
 <translation id="2576431527583832481">Chrome a devenit și mai bun! Este disponibilă o nouă versiune.</translation>
 <translation id="257708665678654955">Dorești ca data viitoare Google Chrome să propună traducerea paginilor în limba <ph name="LANGUAGE_NAME" /> de pe acest site?</translation>
+<translation id="2671426118752779020">Poți folosi parolele salvate în Managerul de parole Google în alte aplicații de pe iPhone.</translation>
 <translation id="2695886661449553974">Chrome nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>
 <translation id="2732745070297234559">Chrome nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>
 <translation id="2869959624320573933">Conectează-te la Chrome</translation>
@@ -85,6 +86,7 @@
 <translation id="7165736900384873061">Începe să folosești scanerul QR din Google Chrome</translation>
 <translation id="7172660552945675509">Sfat: <ph name="BEGIN_LINK" />mută Chrome în bara de andocare<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome folosește Face ID pentru a asigura accesul autorizat la parolele tale.</translation>
+<translation id="72119412072970160">Poți folosi parolele salvate în Managerul de parole Google în alte aplicații de pe iPad.</translation>
 <translation id="7261678641327190792">Chrome nu îți poate verifica parolele</translation>
 <translation id="7272930098487145294">Pentru a salva imaginile, atinge Setări ca să permiți browserului Chrome să adauge fotografiile</translation>
 <translation id="7275945473750112644">Contul tău este gestionat de <ph name="HOSTED_DOMAIN" />, așa că datele Chrome vor fi șterse de pe acest dispozitiv</translation>
@@ -112,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Protejează-te cu Google Chrome</translation>
 <translation id="8772179140489533211">Afișează solicitări pentru conectarea la Chrome.</translation>
+<translation id="8788269841521769222">Nu va trebui să reții această parolă. Ea se va salva în Managerul de parole Google pentru <ph name="EMAIL" /></translation>
 <translation id="9112744793181547300">Setezi Chrome ca browser prestabilit?</translation>
 </translationbundle>

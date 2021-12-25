@@ -66,6 +66,7 @@
 <translation id="2467438592969358367">Google Chrome сака да ги извезе вашите лозинки. Внесете ја лозинката за Windows за да го дозволите ова.</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
 <translation id="2534507159460261402">Google Pay (копирана во Chrome)</translation>
+<translation id="2563121210305478421">Да се рестартира Chrome?</translation>
 <translation id="2574930892358684005">Корисникот <ph name="EXISTING_USER" /> веќе е најавен на овој профил на Chrome. За да прелистувате одделно, Chrome може да создаде одделен профил за вас.</translation>
 <translation id="2580411288591421699">Не може да се инсталира истата верзија на Google Chrome што работи во моментов. Затворете го Google Chrome и обидете се повторно.</translation>
 <translation id="2586406160782125153">Ова ќе ги избрише податоците од прелистувањето од уредов. За да ги вратите вашите податоци подоцна, најавете се на Chrome како <ph name="USER_EMAIL" />.</translation>
@@ -301,6 +302,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Контролира и која страница се прикажува кога ќе стартувате Chrome.</translation>
 <translation id="8686817260976772516">Со профилите на Chrome може да ги одделите сите ваши работи на Chrome. Создајте профили за пријателите и семејството или поделете ги помеѓу работа и забава.</translation>
+<translation id="8712767363896337380">Речиси сте готови! Рестартирајте го Chrome за да заврши ажурирањето.</translation>
 <translation id="873133009373065397">Google Chrome не може да го одреди или постави стандардниот прелистувач</translation>
 <translation id="8823341990149967727">Chrome е застарен</translation>
 <translation id="8834965163890861871">Google Chrome се обидува да измени лозинки. Внесете ја својата лозинка за Windows за да го дозволите ова.</translation>

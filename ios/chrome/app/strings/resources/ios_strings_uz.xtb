@@ -140,6 +140,7 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="2268044343513325586">Aniqlashtirish</translation>
 <translation id="2271351792809375263">Chromeda saqlangan parollarni qurilmadagi boshqa ilovalarda ishlating</translation>
 <translation id="2273327106802955778">Batafsil menyusi</translation>
+<translation id="2286505070150039482">Belgilangan matn</translation>
 <translation id="2302742851632557585">Saytdagi parolni yangilash</translation>
 <translation id="2316709634732130529">Taklif qilingan parolni ishlatish</translation>
 <translation id="2320166752086256636">Klaviaturani berkitish</translation>
@@ -310,6 +311,7 @@ Quyidagi amallarni bajaring:</translation>
 <translation id="3803696231112616155">Bu saytda tarjima taklif qilinsin</translation>
 <translation id="385051799172605136">Orqaga</translation>
 <translation id="3858860766373142691">Ism</translation>
+<translation id="3861486700625780712">Kuzatuvni bekor qilish</translation>
 <translation id="3892144330757387737">Brauzer tarixi shu yerda chiqadi</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3913386780052199712">Chrome hisobiga kirildi</translation>
@@ -407,6 +409,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="481968316161811770">Cookie, sayt ma’lumotlari</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} va yana 1 ta varaq}other{{domain} va yana {count} ta varaq}}</translation>
 <translation id="4826218269716039351">Tashqi cookie fayllarni bloklash</translation>
+<translation id="4826726074642088322">Belgilovni ulashish</translation>
 <translation id="48274138579728272">Oʻqilgan deb belgilash</translation>
 <translation id="4833686396768033263">Oxirgi varaqlar chiqmaydi</translation>
 <translation id="4833786495304741580">Foydalanish statistikasi va ishdan chiqish hisobotlari avtomatik tarzda Google serverlariga yuborilsin.</translation>
@@ -602,6 +605,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="6497772452874122664"><ph name="TIME" /> saytiga ishonsangiz, saqlangan parolingizni boshqa saytda ishlatishingiz mumkin.
 
 Har bir sayt uchun alohida parol ishlating.</translation>
+<translation id="650279896687777322">Batafsil...</translation>
 <translation id="651505212789431520">Sinxronizatsiya bekor qilinsinmi? Sinxronizatsiyani istalgan vaqtda Sozlamalardan yoqish mumkin.</translation>
 <translation id="6524918542306337007">Inkognito rejimi ishlamayapti</translation>
 <translation id="6537746030088321027">example.com</translation>

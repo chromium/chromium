@@ -234,6 +234,7 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="7448255348454382571">Рестартирајте го Chromium OS</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">На Chromium му треба дозвола за да пристапи до камерата за сајтов</translation>
+<translation id="7467949745582939695">Да се рестартира Chromium?</translation>
 <translation id="7483335560992089831">Не може да се инсталира истата верзија на Chromium што работи во моментов. Затворете го Chromium и обидете се повторно.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium ќе се рестартира по 1 минута}one{Chromium ќе се рестартира по # минута}other{Chromium ќе се рестартира по # минути}}</translation>
 <translation id="7549178288319965365">За Chromium OS</translation>

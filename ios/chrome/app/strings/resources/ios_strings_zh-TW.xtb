@@ -25,6 +25,7 @@
 <translation id="1145536944570833626">刪除現有資料。</translation>
 <translation id="1147031633655575115">已使用「<ph name="USER" />」的身分登入</translation>
 <translation id="1154984953698510061">查看其他分頁</translation>
+<translation id="1164064664035028907">使用高強度密碼：</translation>
 <translation id="1165039591588034296">錯誤</translation>
 <translation id="1172898394251786223">下一個欄位</translation>
 <translation id="1176932207622159128">無法儲存圖片</translation>
@@ -139,6 +140,7 @@
 <translation id="2268044343513325586">修正搜尋</translation>
 <translation id="2271351792809375263">在裝置上的其他應用程式使用儲存在 Chrome 中的密碼</translation>
 <translation id="2273327106802955778">[更多] 選單</translation>
+<translation id="2286505070150039482">醒目顯示的文字</translation>
 <translation id="2302742851632557585">變更網站上的密碼</translation>
 <translation id="2316709634732130529">使用建議的密碼</translation>
 <translation id="2320166752086256636">隱藏鍵盤</translation>
@@ -309,6 +311,7 @@
 <translation id="3803696231112616155">針對這個網站提供翻譯選項</translation>
 <translation id="385051799172605136">返回</translation>
 <translation id="3858860766373142691">名稱</translation>
+<translation id="3861486700625780712">取消追蹤</translation>
 <translation id="3892144330757387737">這裡會顯示你的歷史記錄</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3913386780052199712">已登入 Chrome</translation>
@@ -406,6 +409,7 @@
 <translation id="481968316161811770">Cookie、網站資料</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 和另外 1 個分頁}other{{domain} 和另外 {count} 個分頁}}</translation>
 <translation id="4826218269716039351">封鎖第三方 Cookie</translation>
+<translation id="4826726074642088322">分享醒目顯示內容</translation>
 <translation id="48274138579728272">標示為已讀取</translation>
 <translation id="4833686396768033263">無法使用最近開啟的分頁</translation>
 <translation id="4833786495304741580">自動將使用統計資料和當機報告傳送給 Google。</translation>
@@ -601,6 +605,7 @@
 <translation id="6497772452874122664">如果你信任 <ph name="TIME" />，可以使用已在其他網站儲存的密碼。
 
 建議你為每個網站設定專屬的密碼。</translation>
+<translation id="650279896687777322">瞭解詳情...</translation>
 <translation id="651505212789431520">確定要取消同步處理嗎？你隨時可以在「設定」中開啟同步功能。</translation>
 <translation id="6524918542306337007">無法使用無痕模式</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -639,6 +644,7 @@
 <translation id="6807889908376551050">全部顯示...</translation>
 <translation id="681368974849482173">項目已建立</translation>
 <translation id="681450999322335505">貴機構已關閉同步功能。</translation>
+<translation id="683022620450280906">你可以在任何裝置上使用儲存的密碼。系統會將密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理員中</translation>
 <translation id="6830804042318138535">瞭解詳情</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6842136130964845393">為確保你可以隨時存取已儲存的密碼，請驗證你的身分</translation>

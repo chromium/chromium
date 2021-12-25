@@ -25,6 +25,7 @@
 <translation id="1145536944570833626">Առկա տվյալների ջնջում։</translation>
 <translation id="1147031633655575115">Դուք մուտք եք գործել որպես <ph name="USER" /></translation>
 <translation id="1154984953698510061">Տեսնել մյուս ներդիրները</translation>
+<translation id="1164064664035028907">Օգտագործեք հուսալի գաղտնաբառ՝</translation>
 <translation id="1165039591588034296">Սխալ</translation>
 <translation id="1172898394251786223">Հաջորդ դաշտը</translation>
 <translation id="1176932207622159128">Չհաջողվեց պահել պատկերը</translation>
@@ -639,6 +640,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6807889908376551050">Ցույց տալ բոլորը…</translation>
 <translation id="681368974849482173">Տարրը ստեղծվեց</translation>
 <translation id="681450999322335505">Ձեր կազմակերպությունն անջատել է համաժամացումը։</translation>
+<translation id="683022620450280906">Պահված գաղտնաբառերը կարող եք օգտագործել ցանկացած սարքում։ Դրանք պահված են <ph name="EMAIL" /> հաշվի Google Գաղտնաբառերի կառավարիչում։</translation>
 <translation id="6830804042318138535">Կարդալ ավելին</translation>
 <translation id="6831043979455480757">Թարգմանել</translation>
 <translation id="6842136130964845393">Հաստատեք ձեր ինքնությունը, որպեսզի պահված գաղտնաբառերը միշտ հասանելի լինեն ձեզ</translation>

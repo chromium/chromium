@@ -140,6 +140,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="2268044343513325586">Pontosítás</translation>
 <translation id="2271351792809375263">Használja a Chrome-ba mentett jelszavait az eszközén lévő többi alkalmazásban.</translation>
 <translation id="2273327106802955778">Továbbiak menü</translation>
+<translation id="2286505070150039482">Kiemelt szöveg</translation>
 <translation id="2302742851632557585">Jelszómódosítás a webhelyen</translation>
 <translation id="2316709634732130529">Javasolt jelszó használata</translation>
 <translation id="2320166752086256636">Billentyűzet elrejtése</translation>
@@ -310,6 +311,7 @@ Hajtsa végre az alábbi lépéseket:</translation>
 <translation id="3803696231112616155">A webhely lefordításának felajánlása</translation>
 <translation id="385051799172605136">Vissza</translation>
 <translation id="3858860766373142691">Név</translation>
+<translation id="3861486700625780712">Követés megszüntetése</translation>
 <translation id="3892144330757387737">Itt láthatja majd az előzményeit</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3913386780052199712">Bejelentkezve: Chrome</translation>
@@ -407,6 +409,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="481968316161811770">Cookie-k, webhelyadatok</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} és további 1}other{{domain} és további {count}}}</translation>
 <translation id="4826218269716039351">Harmadik féltől származó cookie-k letiltása</translation>
+<translation id="4826726074642088322">Kiemelés megosztása</translation>
 <translation id="48274138579728272">Megjelölés olvasottként</translation>
 <translation id="4833686396768033263">A nemrég megnyitott lapok nem állnak rendelkezésre</translation>
 <translation id="4833786495304741580">Automatikusan elküldi a használati statisztikákat és a hibajelentéseket a Google-nak.</translation>
@@ -602,6 +605,7 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="6497772452874122664">Ha megbízik a(z) <ph name="TIME" /> webhelyben, használhatja másik webhelyhez mentett jelszavát.
 
 Próbáljon minden webhelyen egyedi jelszót használni.</translation>
+<translation id="650279896687777322">További információ…</translation>
 <translation id="651505212789431520">Megszakítja a szinkronizálást? A szinkronizálás bármikor bekapcsolható a Beállításokban.</translation>
 <translation id="6524918542306337007">Az inkognitó mód nem áll rendelkezésre</translation>
 <translation id="6537746030088321027">example.com</translation>

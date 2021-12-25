@@ -1167,6 +1167,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4708268264240856090">Se interrumpió la conexión</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Ejecución del Diagnóstico de red de Windows<ph name="END_LINK" /></translation>
+<translation id="4722735765955348426">Contraseña de <ph name="USERNAME" /></translation>
 <translation id="4724144314178270921">Puede solicitar permiso para ver imágenes y texto del portapapeles</translation>
 <translation id="4726672564094551039">Volver a cargar políticas</translation>
 <translation id="4728558894243024398">Plataforma</translation>

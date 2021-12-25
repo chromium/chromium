@@ -90,6 +90,7 @@
 <translation id="147113415845704694">Try 'What’s the weather today?'</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> download failed due to server issues.</translation>
 <translation id="148482509007564431">Bookmark save flow</translation>
+<translation id="1488775391433859242">You can use this phone to sign in on the computer that’s displaying this QR code.</translation>
 <translation id="1492417797159476138">You already saved this username for this site</translation>
 <translation id="1493287004536771723">You’re following <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">Search engine</translation>
@@ -189,6 +190,7 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2122601567107267586">Could not open app</translation>
 <translation id="2126426811489709554">Powered by Chrome</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> saved</translation>
+<translation id="2132122640199389833">Remove all linked devices</translation>
 <translation id="213279576345780926">Closed <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Add to Home screen</translation>
 <translation id="2141396931810938595">Based on your usage</translation>
@@ -265,6 +267,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2534582914273493287">URLs that you visit are sent to Google</translation>
 <translation id="2536728043171574184">Viewing an offline copy of this page</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
+<translation id="2549516196460093976">You can use this tablet to sign in on the computer that’s displaying this QR code.</translation>
 <translation id="2558692642259318568">To browse without saving activity to your device, try out Incognito</translation>
 <translation id="2561519700418191927">Video previews</translation>
 <translation id="2567385386134582609">IMAGE</translation>
@@ -451,6 +454,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3563767357928833671">Clipboard contents shown</translation>
 <translation id="3566923219790363270">Chrome is still preparing for VR. Restart Chrome later.</translation>
 <translation id="3568688522516854065">To get your tabs from your other devices, sign in and turn on sync</translation>
+<translation id="357465026686164600">Phone as a security key</translation>
 <translation id="3577473026931028326">Something went wrong. Try again.</translation>
 <translation id="3587482841069643663">All</translation>
 <translation id="3587596251841506391">Help improve security on the web</translation>
@@ -520,6 +524,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4000212216660919741">Offline Home</translation>
 <translation id="4016425174436051808">Can’t follow. Something went wrong.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# hr}other{# hrs}}</translation>
+<translation id="4035877632587724847">Don't allow</translation>
 <translation id="4045764304651014138">Usage data</translation>
 <translation id="405399507749852140">Get alerts if the price drops on any site</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -579,6 +584,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4450672886426705087">Search results from Google.</translation>
 <translation id="4452411734226507615">Close <ph name="TAB_TITLE" /> tab</translation>
 <translation id="4452548195519783679">Bookmarked to <ph name="FOLDER_NAME" /></translation>
+<translation id="4461614516424362539">When you link another device with a QR code, it can use this phone as a security key. If you remove it, you’ll have to scan a QR code to link it again.</translation>
 <translation id="4472118726404937099">To sync and personalise across devices, sign in and turn on sync</translation>
 <translation id="4479839115899251637">Delete from reading list</translation>
 <translation id="4479972344484327217">Installing <ph name="MODULE" /> for Chrome…</translation>
@@ -649,6 +655,7 @@ Your Google Account may have other forms of browsing history such as searches an
 
 To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Name on card</translation>
+<translation id="481574578487123132">Linked devices</translation>
 <translation id="4818017973810341238">Digital Asset Links verification failed on <ph name="VIOLATED_URL" /></translation>
 <translation id="4831037795716408498">Download content</translation>
 <translation id="4834007576107377210">See your search engine’s instructions for deleting your search history, if applicable</translation>
@@ -681,6 +688,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4941179133499732445">Tap the mic to search with your voice</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">No results</translation>
+<translation id="4950924971025849764">When you’re signed into the same Google Account, other devices can use this phone as a security key.</translation>
 <translation id="4957722034734105353">Learn more...</translation>
 <translation id="4961107849584082341">Translate this page to any language</translation>
 <translation id="4971735654804503942">Faster, proactive protection against dangerous websites, downloads and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.</translation>
@@ -781,6 +789,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="55737423895878184">Location and notifications are allowed</translation>
 <translation id="5578795271662203820">Search <ph name="SEARCH_ENGINE" /> for this image</translation>
 <translation id="5581519193887989363">You can always choose what to sync in <ph name="BEGIN_LINK1" />settings<ph name="END_LINK1" />.</translation>
+<translation id="5590372121997663538">Remember this computer</translation>
 <translation id="5599455543593328020">Incognito mode</translation>
 <translation id="5599941490345670218">Google Assistant can complete actions across websites for you</translation>
 <translation id="5620163320393916465">No saved passwords</translation>
@@ -862,6 +871,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5995726099713306770">Download page again?</translation>
 <translation id="6000066717592683814">Keep Google</translation>
 <translation id="6000203700195075278">Refollow</translation>
+<translation id="6002122790816966947">Your devices</translation>
 <translation id="6005538289190791541">Suggested password</translation>
 <translation id="6032091552407840792">This trial is active only in <ph name="BEGIN_LINK" />some regions<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">With <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome is developing new technologies to safeguard you from cross-site tracking while preserving the open web.
@@ -991,6 +1001,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6640207029842583248">Block all the time</translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6643649862576733715">Sort by amount of data saved</translation>
+<translation id="6645629752388991326">Control which devices can sign in by using this device as a security key.</translation>
 <translation id="6648459603387803038">Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}}</translation>
 <translation id="6649642165559792194">Preview image <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6710213216561001401">Previous</translation>
 <translation id="671481426037969117">Your <ph name="FQDN" /> timer ran out. It will start again tomorrow.</translation>
 <translation id="6715020873764921614">Do you want to download <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) anyway?</translation>
+<translation id="6719634564325948108">Connect with QR code?</translation>
 <translation id="6738516213925468394">Your data was encrypted with your <ph name="BEGIN_LINK" />sync passphrase<ph name="END_LINK" /> on <ph name="TIME" />. Enter it to start sync.</translation>
 <translation id="6738867403308150051">Downloading…</translation>
 <translation id="6751521182688001123">Quickly open a new tab. To edit this shortcut, touch and hold.</translation>

@@ -77,6 +77,7 @@
 <translation id="6424492062988593837">Chromium a devenit și mai bun! Este disponibilă o nouă versiune.</translation>
 <translation id="6752854822223394465">Organizația ta configurează Chromium...</translation>
 <translation id="6820823224820483452">Chromium nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>
+<translation id="7006920032187763988">Poți folosi parolele salvate în Managerul de parole în alte aplicații de pe iPad.</translation>
 <translation id="7018284295775193585">Chromium nu se poate actualiza</translation>
 <translation id="7045244423563602563">Personalizează Chromium</translation>
 <translation id="7099326575020694068">Chromium nu poate folosi camera foto în modul Vizualizare împărțită</translation>
@@ -103,11 +104,13 @@
 <translation id="8073677936375100957">Ștergi datele tale Chromium de pe dispozitiv?</translation>
 <translation id="8175055321229419309">Sfat: <ph name="BEGIN_LINK" />mută Chromium în bara de andocare<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>
+<translation id="858114650497379505">Poți folosi parolele salvate în Managerul de parole în alte aplicații de pe iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="8663480472502753423">Menține browserul Chromium actualizat</translation>
 <translation id="8776843108004031667">Acest cont și toate datele nesalvate vor fi eliminate din Chromium.</translation>
 <translation id="894437814105052438">Când te deconectezi, Chromium nu va sincroniza datele noi cu Contul tău Google. Datele sincronizate anterior rămân în cont.</translation>
 <translation id="9022552996538154597">Conectați-vă la Chromium</translation>
+<translation id="9059693977935746710">Nu va trebui să reții această parolă. Ea se va salva în Managerul de parole pentru <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium nu este actualizat</translation>
 <translation id="9110075932708282655">Folosește Chromium în mod prestabilit</translation>
 <translation id="921174536258924340">Chromium nu a putut verifica toate parolele. Încearcă din nou mâine sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>

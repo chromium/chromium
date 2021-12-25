@@ -25,6 +25,7 @@
 <translation id="2574249610672786438">Ukuze ubone amathebhu wakho noma kuphi lapho usebenzisa i-Chrome, ngena ngemvume kuwo wonke amadivayisi wakho</translation>
 <translation id="2576431527583832481">I-Chrome isanda kuba ngcono! Inguqulo entsha iyatholakala.</translation>
 <translation id="257708665678654955">Ungathanda i-Google Chromium ukuthi ikunikeze ukuhumusha kwesi-<ph name="LANGUAGE_NAME" /> okuvela kuleli sayithi ngesikhathi esilandelayo?</translation>
+<translation id="2671426118752779020">Ungasebenzisa amaphasiwedi owalondolozile ku-Google Password Manager kwamanye ama-app ku-iPhone yakho.</translation>
 <translation id="2695886661449553974">I-Chrome ayikwazanga ukuhlola izibuyekezo. Zama futhi emuva kwesikhathi.</translation>
 <translation id="2732745070297234559">I-Chrome ayikwazanga ukuhlola wonke amaphasiwedi. Zama futhi kusasa.</translation>
 <translation id="2869959624320573933">Ngena ngemvume ku-Chrome</translation>
@@ -49,7 +50,7 @@
 <translation id="417201473131094001">Ayisekelwe ku-Chrome Canary</translation>
 <translation id="4214277427269650960">Ngena ngemvume kuleli sayithi naku-Chrome. Ungavula ukuvumelanisa kamuva.</translation>
 <translation id="424864128008805179">Phuma ngemvume ku-Chrome?</translation>
-<translation id="4249068189593983585">Ithiphu le-Chrome. Ukuze uthole izinketho eziningi zethebhu, thinta uphinde ubambe inkinobho yokuthi Bonisa Ithebhu kubha yamathuluzi, engaphansi noma engaphezulu kwesikrini sakho.</translation>
+<translation id="4249068189593983585">Ithiphu le-Chrome. Ukuze uthole okunye okungakhethwa zethebhu, thinta uphinde ubambe inkinobho yokuthi Bonisa Ithebhu kubha yamathuluzi, engaphansi noma engaphezulu kwesikrini sakho.</translation>
 <translation id="4523886039239821078">Ezinye izengezo zidale ukuthi i-Chrome isaphazeke. Sicela ukhiphe:</translation>
 <translation id="4633328489441962921">I-Chrome ayikwazi ukuhlola izibuyekezo</translation>
 <translation id="4698415050768537821">I-Chrome ayikwazanga ukuhlola wonke amaphasiwedi. Zama futhi kusasa noma <ph name="BEGIN_LINK" />hlola amaphasiwedi ku-Akhawunti yakho ye-Google<ph name="END_LINK" /></translation>
@@ -85,6 +86,7 @@
 <translation id="7165736900384873061">Qala ukusebenzisa iskena se-Google Chrome QR</translation>
 <translation id="7172660552945675509">Ithiphu: <ph name="BEGIN_LINK" />Hambisa i-Chrome kudokhu yakho<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">I-Chrome isebenzisa i-ID yobuso ukuze iqinisekise ukugunyazwa kokufinyeleleka kumaphasiwedi akho.</translation>
+<translation id="72119412072970160">Ungasebenzisa amaphasiwedi owalondolozile ku-Google Password Manager kwamanye ama-app ku-iPad yakho.</translation>
 <translation id="7261678641327190792">I-Chrome ayikwazi ukuhlola amaphasiwedi akho</translation>
 <translation id="7272930098487145294">Ukuze ulondoloze izithombe, thepha Amasethingi ukuze uvumele i-Chrome ingeze ezithombeni zakho</translation>
 <translation id="7275945473750112644">I-akhawunti yakho iphethwe yi-<ph name="HOSTED_DOMAIN" />, ngakho idatha yakho ye-Chrome izosulwa kule divayisi</translation>
@@ -112,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Hlala Uphephile nge-Google Chrome</translation>
 <translation id="8772179140489533211">Ibonisa isiqondiso sokungena ngemvume ku-Chrome.</translation>
+<translation id="8788269841521769222">Ngeke kudingeke ukuthi ukhumbule le phasiwedi. Izolondolozwa Kusiphathi Sephasiwedi se-Google se-<ph name="EMAIL" /></translation>
 <translation id="9112744793181547300">Setha i-Chrome Njengokuzenzakalelayo?</translation>
 </translationbundle>

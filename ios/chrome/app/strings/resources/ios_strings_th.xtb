@@ -25,6 +25,7 @@
 <translation id="1145536944570833626">ลบข้อมูลที่มีอยู่</translation>
 <translation id="1147031633655575115">ลงชื่อเข้าใช้ด้วย <ph name="USER" /></translation>
 <translation id="1154984953698510061">ดูแท็บอื่นๆ</translation>
+<translation id="1164064664035028907">ใช้รหัสผ่านที่รัดกุม:</translation>
 <translation id="1165039591588034296">ข้อผิดพลาด</translation>
 <translation id="1172898394251786223">ช่องถัดไป</translation>
 <translation id="1176932207622159128">ไม่สามารถบันทึกภาพ</translation>
@@ -139,6 +140,7 @@
 <translation id="2268044343513325586">ปรับแต่ง</translation>
 <translation id="2271351792809375263">ใช้รหัสผ่านที่คุณบันทึกไว้ใน Chrome กับแอปอื่นๆ ในอุปกรณ์</translation>
 <translation id="2273327106802955778">เมนูเพิ่มเติม</translation>
+<translation id="2286505070150039482">ข้อความที่ไฮไลต์</translation>
 <translation id="2302742851632557585">เปลี่ยนรหัสผ่านในเว็บไซต์</translation>
 <translation id="2316709634732130529">ใช้รหัสผ่านที่แนะนำ</translation>
 <translation id="2320166752086256636">ซ่อนแป้นพิมพ์</translation>
@@ -309,6 +311,7 @@
 <translation id="3803696231112616155">เสนอให้แปลเว็บไซต์นี้</translation>
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3858860766373142691">ชื่อ</translation>
+<translation id="3861486700625780712">เลิกติดตาม</translation>
 <translation id="3892144330757387737">คุณจะเห็นประวัติการเข้าชมที่นี่</translation>
 <translation id="3897092660631435901">เมนู</translation>
 <translation id="3913386780052199712">ลงชื่อเข้าใช้ Chrome แล้ว</translation>
@@ -406,6 +409,7 @@
 <translation id="481968316161811770">คุกกี้ ข้อมูลเว็บไซต์</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} และอีก 1 แท็บ}other{{domain} และอีก {count} แท็บ}}</translation>
 <translation id="4826218269716039351">บล็อกของบุคคลที่สาม</translation>
+<translation id="4826726074642088322">แชร์ไฮไลต์</translation>
 <translation id="48274138579728272">ทำเครื่องหมายว่าอ่านแล้ว</translation>
 <translation id="4833686396768033263">แท็บล่าสุดไม่พร้อมใช้งาน</translation>
 <translation id="4833786495304741580">ส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google โดยอัตโนมัติ</translation>
@@ -601,6 +605,7 @@
 <translation id="6497772452874122664">หากคุณเชื่อถือ <ph name="TIME" /> ก็ใช้รหัสผ่านที่บันทึกไว้จากเว็บไซต์อื่นได้
 
 ขอแนะนำให้ใช้รหัสผ่านที่ไม่ซ้ำกันสำหรับทุกเว็บไซต์</translation>
+<translation id="650279896687777322">ดูข้อมูลเพิ่มเติม...</translation>
 <translation id="651505212789431520">ยกเลิกการซิงค์ไหม คุณเปิดการซิงค์ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="6524918542306337007">โหมดไม่ระบุตัวตนไม่พร้อมใช้งาน</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -639,6 +644,7 @@
 <translation id="6807889908376551050">แสดงทั้งหมด...</translation>
 <translation id="681368974849482173">สร้างรายการแล้ว</translation>
 <translation id="681450999322335505">องค์กรของคุณปิดการซิงค์</translation>
+<translation id="683022620450280906">คุณใช้รหัสผ่านที่บันทึกไว้ในอุปกรณ์ใดก็ได้ โดยจะบันทึกอยู่ในเครื่องมือจัดการรหัสผ่านของ Google สำหรับ <ph name="EMAIL" /></translation>
 <translation id="6830804042318138535">อ่านเพิ่มเติม</translation>
 <translation id="6831043979455480757">แปลภาษา</translation>
 <translation id="6842136130964845393">โปรดยืนยันว่าเป็นคุณเพื่อให้เข้าถึงรหัสผ่านที่บันทึกไว้ได้ทุกเมื่อ</translation>

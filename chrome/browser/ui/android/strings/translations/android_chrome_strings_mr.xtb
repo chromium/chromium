@@ -90,6 +90,7 @@
 <translation id="147113415845704694">“आजचे हवामान कसे आहे?” असे म्हणून पहा</translation>
 <translation id="1477626028522505441">सर्व्हर समस्यांमुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
 <translation id="148482509007564431">बुकमार्क सेव्ह करा फ्लो</translation>
+<translation id="1488775391433859242">तुम्ही हा QR कोड प्रदर्शित करणाऱ्या कॉंप्युटरवर साइन इन करण्यासाठी हा फोन वापरू शकता.</translation>
 <translation id="1492417797159476138">तुम्ही या साइटसाठी आधीच वापरकर्ता नाव सेव्ह केले आहे</translation>
 <translation id="1493287004536771723">तुम्ही <ph name="SITE_NAME" /> ला फॉलो करत आहात</translation>
 <translation id="1506061864768559482">शोध इंजीन</translation>
@@ -189,6 +190,7 @@
 <translation id="2122601567107267586">ॲप उघडता आले नाही</translation>
 <translation id="2126426811489709554">Chrome द्वारे समर्थित</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> बचत केली</translation>
+<translation id="2132122640199389833">सर्व लिंक केलेली डिव्हाइस काढून टाका</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> बंद केले</translation>
 <translation id="2139186145475833000">होम स्क्रीनवर जोडा</translation>
 <translation id="2141396931810938595">तुमच्या वापरावर आधारित</translation>
@@ -265,6 +267,7 @@
 <translation id="2534582914273493287">Google ला तुम्ही भेट दिलेल्या URLs पाठवल्या जातात</translation>
 <translation id="2536728043171574184">या पेजची ऑफलाइन प्रत पाहत आहे</translation>
 <translation id="2546283357679194313">कुकीज आणि साइट डेटा</translation>
+<translation id="2549516196460093976">तुम्ही हा QR कोड प्रदर्शित करणाऱ्या कॉंप्युटरवर साइन इन करण्यासाठी हा टॅबलेट वापरू शकता.</translation>
 <translation id="2558692642259318568">तुमच्या डिव्हाइसवर अ‍ॅक्टिव्हिटी सेव्ह न करता ब्राउझ करण्यासाठी, गुप्त मोड वापरून पहा</translation>
 <translation id="2561519700418191927">व्हिडिओची पूर्वावलोकने</translation>
 <translation id="2567385386134582609">इमेज</translation>
@@ -451,6 +454,7 @@
 <translation id="3563767357928833671">क्लिपबोर्डचा आशय दाखवला</translation>
 <translation id="3566923219790363270">Chrome अजूनही VR ची तयारी करत आहे. Chrome नंतर रीस्टार्ट करा.</translation>
 <translation id="3568688522516854065">तुमच्या इतर डिव्हाइसवरून तुमचे टॅब मिळविण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
+<translation id="357465026686164600">सिक्युरिटी की म्हणून फोन</translation>
 <translation id="3577473026931028326">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="3587482841069643663">सर्व</translation>
 <translation id="3587596251841506391">वेबवरील सुरक्षेमध्ये सुधारणा करण्यात मदत करा</translation>
@@ -520,6 +524,7 @@
 <translation id="4000212216660919741">ऑफलाइन होम</translation>
 <translation id="4016425174436051808">फॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# तास}other{# तास}}</translation>
+<translation id="4035877632587724847">अनुमती देऊ नका</translation>
 <translation id="4045764304651014138">वापर डेटा</translation>
 <translation id="405399507749852140">कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा</translation>
 <translation id="4056223980640387499">सेपिया</translation>
@@ -579,6 +584,7 @@
 <translation id="4450672886426705087">Google वरील शोध परिणाम.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> टॅब बंद करा</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> ला बुकमार्क केले</translation>
+<translation id="4461614516424362539">तुम्ही दुसरे डिव्हाइस QR कोडसह लिंक केल्यास, ते हा फोन सिक्युरिटी की म्हणून वापरू शकते. तुम्ही ते काढून टाकल्यास, तुम्हाला ते पुन्हा लिंक करण्यासाठी QR कोड स्कॅन करावा लागेल.</translation>
 <translation id="4472118726404937099">सर्व डिव्हाइसवर सिंक आणि पर्सनलाइझ करण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
 <translation id="4479839115899251637">वाचन सूचीमधून हटवा</translation>
 <translation id="4479972344484327217">Chrome साठी <ph name="MODULE" /> इंस्टॉल करत आहे…</translation>
@@ -649,6 +655,7 @@
 
 हे सेटिंग बदलण्यासाठी, <ph name="BEGIN_LINK" />सिंक रीसेट करा<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">कार्डवरील नाव</translation>
+<translation id="481574578487123132">लिंक केलेली डिव्हाइस</translation>
 <translation id="4818017973810341238"><ph name="VIOLATED_URL" /> वर डिजिटल मालमत्तेची पडताळणी करता आली नाही</translation>
 <translation id="4831037795716408498">आशय डाउनलोड करा</translation>
 <translation id="4834007576107377210">लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, तुमच्या शोध इंजीनच्या सूचना पहा</translation>
@@ -681,6 +688,7 @@
 <translation id="4941179133499732445">तुमचा आवाज वापरून शोधण्यासाठी माइकवर टॅप करा</translation>
 <translation id="4943703118917034429">आभासी वास्तविकता</translation>
 <translation id="4943872375798546930">परिणाम नाहीत</translation>
+<translation id="4950924971025849764">तुम्ही त्याच Google खाते मध्ये साइन इन केलेले असल्यास, इतर डिव्हाइस हा फोन सिक्युरिटी की म्हणून वापरू शकतात.</translation>
 <translation id="4957722034734105353">अधिक जाणून घ्या...</translation>
 <translation id="4961107849584082341">या पेजचे कोणत्याही भाषेत भाषांतर करा</translation>
 <translation id="4971735654804503942">धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून अधिक जलद, प्रोअ‍ॅक्टिव्ह संरक्षण. पासवर्ड भंगांबद्दल तुम्हाला चेतावणी देतो. Google ला पाठवला जाण्यासाठी ब्राउझिंग डेटा आवश्यक आहे.</translation>
@@ -781,6 +789,7 @@
 <translation id="55737423895878184">स्‍थान आणि सूचनांना अनुमती आहे</translation>
 <translation id="5578795271662203820">या इमेजसाठी <ph name="SEARCH_ENGINE" /> शोधा</translation>
 <translation id="5581519193887989363">तुम्ही काय सिंक करायचे हे <ph name="BEGIN_LINK1" />सेटिंग्ज<ph name="END_LINK1" /> मध्ये कधीही निवडू शकता.</translation>
+<translation id="5590372121997663538">हा कॉंप्युटर लक्षात ठेवा</translation>
 <translation id="5599455543593328020">गुप्त मोड</translation>
 <translation id="5599941490345670218">तुमच्यासाठी Google Assistant सर्व वेबसाइटवर कृती पूर्ण करू शकतो</translation>
 <translation id="5620163320393916465">सेव्ह केलेले पासवर्ड नाहीत</translation>
@@ -862,6 +871,7 @@
 <translation id="5995726099713306770">पेज पुन्हा डाउनलोड करायचे आहे का?</translation>
 <translation id="6000066717592683814">Google ठेवा</translation>
 <translation id="6000203700195075278">पुन्हा फॉलो करा</translation>
+<translation id="6002122790816966947">तुमची डिव्हाइस</translation>
 <translation id="6005538289190791541">सुचवलेला पासवर्ड</translation>
 <translation id="6032091552407840792">ही चाचणी फक्त <ph name="BEGIN_LINK" />काही प्रदेश<ph name="END_LINK" /> यांमध्ये ॲक्टिव्ह आहे.</translation>
 <translation id="6033245666633565791">खुल्या वेबचे संरक्षण करत असताना, क्रॉस-साइट ट्रॅकिंगपासून तुमचे रक्षण करण्यासाठी, <ph name="BEGIN_LINK" />प्रायव्हसी सॅंडबाॅक्स<ph name="END_LINK" /> च्या आधारे Chrome नवीन तंत्रज्ञाने विकसित करत आहे.
@@ -991,6 +1001,7 @@
 <translation id="6640207029842583248">कायम ब्लॉक करणे</translation>
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6643649862576733715">वाचवलेल्या डेटानुसार क्रमाने लावा</translation>
+<translation id="6645629752388991326">सिक्युरिटी की म्हणून हे डिव्हाइस वापरून कोणती डिव्हाइस साइन इन करू शकतात ते नियंत्रित करा.</translation>
 <translation id="6648459603387803038">तुमचा अ‍ॅडमिनिस्ट्रेटर तुमच्या ब्राउझरचा सेटअप रिमोट पद्धतीने बदलू शकतो. या डिव्हाइसवरील अ‍ॅक्टिव्हिटी कदाचित Chrome च्या बाहेर व्यवस्थापित केलेली असू शकते.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अधिक}other{<ph name="CONTACT_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अधिक}}</translation>
 <translation id="6649642165559792194">इमेज <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /> चे पूर्वावलोकन करा</translation>
@@ -1007,6 +1018,7 @@
 <translation id="6710213216561001401">मागील</translation>
 <translation id="671481426037969117">तुमचा <ph name="FQDN" /> टायमर झाला आहे. तो उद्या पुन्हा सुरू होईल.</translation>
 <translation id="6715020873764921614">तुम्हाला तरीही <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) डाउनलोड करायची आहे का?</translation>
+<translation id="6719634564325948108">QR कोड सह कनेक्ट करायचे का?</translation>
 <translation id="6738516213925468394">तुमचा डेटा तुमच्या <ph name="BEGIN_LINK" />सिंक पासफ्रेज<ph name="END_LINK" /> ने <ph name="TIME" /> वाजता एंक्रिप्ट केला गेला होता. सिंक सुरू करण्यासाठी तो एंटर करा.</translation>
 <translation id="6738867403308150051">डाउनलोड करीत आहे…</translation>
 <translation id="6751521182688001123">झटपट नवीन टॅब उघडा. हा शॉर्टकट संपादित करण्यासाठी, स्‍पर्श करा आणि धरून ठेवा.</translation>

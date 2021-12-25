@@ -140,6 +140,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2268044343513325586">Refine</translation>
 <translation id="2271351792809375263">Use the passwords that you saved to Chrome in other apps on your device</translation>
 <translation id="2273327106802955778">More menu</translation>
+<translation id="2286505070150039482">Highlighted text</translation>
 <translation id="2302742851632557585">Change password on website</translation>
 <translation id="2316709634732130529">Use suggested password</translation>
 <translation id="2320166752086256636">Hide keyboard</translation>
@@ -310,6 +311,7 @@ Follow the steps below:</translation>
 <translation id="3803696231112616155">Offer to translate this site</translation>
 <translation id="385051799172605136">Back</translation>
 <translation id="3858860766373142691">Name</translation>
+<translation id="3861486700625780712">Unfollow</translation>
 <translation id="3892144330757387737">You'll find your history here</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3913386780052199712">Signed in to Chrome</translation>
@@ -407,6 +409,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="481968316161811770">Cookies, Site Data</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} and 1 other}other{{domain} and {count} others}}</translation>
 <translation id="4826218269716039351">Block third party</translation>
+<translation id="4826726074642088322">Share highlight</translation>
 <translation id="48274138579728272">Mark as read</translation>
 <translation id="4833686396768033263">Recent tabs are unavailable</translation>
 <translation id="4833786495304741580">Automatically sends usage statistics and crash reports to Google.</translation>
@@ -602,6 +605,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="6497772452874122664">If you trust <ph name="TIME" />, you can use a saved password from another site.
 
 Try to use a unique password for every site.</translation>
+<translation id="650279896687777322">Learn more…</translation>
 <translation id="651505212789431520">Cancel sync? You can turn on sync at any time in Settings.</translation>
 <translation id="6524918542306337007">Incognito mode is unavailable</translation>
 <translation id="6537746030088321027">sample.co.uk</translation>

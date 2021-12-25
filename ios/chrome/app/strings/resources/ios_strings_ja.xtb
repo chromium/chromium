@@ -140,6 +140,7 @@
 <translation id="2268044343513325586">絞り込み</translation>
 <translation id="2271351792809375263">Chrome に保存したパスワードをデバイスの他のアプリで使用する</translation>
 <translation id="2273327106802955778">その他のメニュー</translation>
+<translation id="2286505070150039482">選択したテキスト</translation>
 <translation id="2302742851632557585">ウェブサイトでパスワードを変更</translation>
 <translation id="2316709634732130529">推奨されたパスワードを使用</translation>
 <translation id="2320166752086256636">キーボードを非表示</translation>
@@ -310,6 +311,7 @@
 <translation id="3803696231112616155">このサイトを翻訳するか尋ねる</translation>
 <translation id="385051799172605136">戻る</translation>
 <translation id="3858860766373142691">名前</translation>
+<translation id="3861486700625780712">フォローを解除</translation>
 <translation id="3892144330757387737">履歴はここに表示されます</translation>
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3913386780052199712">Chrome にログイン</translation>
@@ -407,6 +409,7 @@
 <translation id="481968316161811770">Cookie、サイトデータ</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} とその他 1 タブ}other{{domain} とその他 {count} タブ}}</translation>
 <translation id="4826218269716039351">サードパーティの Cookie をブロック</translation>
+<translation id="4826726074642088322">選択箇所を共有</translation>
 <translation id="48274138579728272">既読にする</translation>
 <translation id="4833686396768033263">最近使ったタブは使用できません</translation>
 <translation id="4833786495304741580">使用統計情報や障害レポートを Google に自動送信します。</translation>
@@ -602,6 +605,7 @@
 <translation id="6497772452874122664"><ph name="TIME" /> を信用できる場合は、他のサイトで保存したパスワードを使用できます。
 
 各サイトで個別のパスワードを使用することをご検討ください。</translation>
+<translation id="650279896687777322">詳細を表示...</translation>
 <translation id="651505212789431520">同期をキャンセルしますか？同期は設定でいつでもオンにできます。</translation>
 <translation id="6524918542306337007">シークレット モードは使用できません</translation>
 <translation id="6537746030088321027">example.com</translation>

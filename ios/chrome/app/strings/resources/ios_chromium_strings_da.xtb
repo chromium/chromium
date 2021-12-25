@@ -108,6 +108,7 @@
 <translation id="8776843108004031667">Denne konto og data, som ikke er gemt, fjernes fra Chromium.</translation>
 <translation id="894437814105052438">Når du er logget ud, synkroniserer Chromium ikke nye data med din Google-konto. De data, der tidligere er blevet synkroniseret, forbliver på din konto.</translation>
 <translation id="9022552996538154597">Log ind på Chromium</translation>
+<translation id="9059693977935746710">Du behøver ikke at huske denne adgangskode. Den gemmes i Adgangskodeadministrator for <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium er forældet</translation>
 <translation id="9110075932708282655">Brug Chromium som standard</translation>
 <translation id="921174536258924340">Chromium kunne ikke tjekke alle adgangskoder. Prøv igen i morgen, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>

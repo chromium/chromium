@@ -586,6 +586,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4831034276697007977">Voulez-vous vraiment désactiver les clics automatiques?</translation>
 <translation id="4849058404725798627">Mettre l'élément sélectionné par le clavier en surbrillance</translation>
 <translation id="485592688953820832">Aucune action (pause)</translation>
+<translation id="485634149294284819">Entrez le clavier du menu</translation>
 <translation id="4860284199500934869">Vérifiez votre connexion réseau pour télécharger <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Une tentative de téléchargement aura lieu ultérieurement. Le fichier vocal sera envoyé à Google aux fins de traitement jusqu'à la fin du téléchargement.</translation>
 <translation id="4868492592575313542">activée</translation>
@@ -1015,6 +1016,7 @@ Nouvelle installation</translation>
 <translation id="7860671499921112077">Balayez l'écran vers le haut avec trois doigts pour activer le mode Aperçu</translation>
 <translation id="7866482334467279021">activé</translation>
 <translation id="7868900307798234037">Déverrouillage avec empreinte digitale</translation>
+<translation id="7872195908557044066">Votre administrateur est en train de réinitialiser votre carte eSIM. Patientez quelques minutes.</translation>
 <translation id="7872786842639831132">Désactivé</translation>
 <translation id="7875575368831396199">Il semble que le Bluetooth est désactivé sur votre <ph name="DEVICE_TYPE" />. Veuillez activer le Bluetooth pour utiliser Phone Hub.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Restaurez la version antérieure de l'appareil maintenant}=1{Restaurez la version antérieure de l'appareil dans un délai de 1 seconde}one{Restaurez la version antérieure de l'appareil dans un délai de # seconde}other{Restaurez la version antérieure de l'appareil dans un délai de # secondes}}</translation>
@@ -1097,6 +1099,7 @@ Nouvelle installation</translation>
 <translation id="8380784334203145311">Bonne nuit,</translation>
 <translation id="8388750414311082622">Impossible de supprimer le dernier bureau.</translation>
 <translation id="8394567579869570560">Ton parent a verrouillé cet appareil</translation>
+<translation id="8401850874595457088">Entrez la langue du menu</translation>
 <translation id="8412677897383510995">Afficher les paramètres d'affichage</translation>
 <translation id="8413272770729657668">L'enregistrement va commencer dans 3 secondes, 2 secondes, 1 seconde</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (étui)</translation>

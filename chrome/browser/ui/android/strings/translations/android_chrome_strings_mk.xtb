@@ -90,6 +90,7 @@
 <translation id="147113415845704694">Пробајте со „What’s the weather today?“ (Какво е времето денес?)</translation>
 <translation id="1477626028522505441">Преземањето на <ph name="FILE_NAME" /> не успеа поради проблеми со серверот.</translation>
 <translation id="148482509007564431">Тек за зачувување обележувач</translation>
+<translation id="1488775391433859242">Може да го користите телефонов за да се најавите на компјутерот што го прикажува QR-кодов.</translation>
 <translation id="1492417797159476138">Веќе го зачувавте ова корисничко име за сајтов</translation>
 <translation id="1493287004536771723">Го следите <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">Пребарувач</translation>
@@ -189,6 +190,7 @@
 <translation id="2122601567107267586">Не може да се отвори апликацијата</translation>
 <translation id="2126426811489709554">Овозможено од Chrome</translation>
 <translation id="2131665479022868825">Зачувани: <ph name="DATA" /></translation>
+<translation id="2132122640199389833">Отстрани ги сите поврзани уреди</translation>
 <translation id="213279576345780926">Се затвори <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Додај на почетниот екран</translation>
 <translation id="2141396931810938595">Според користењето</translation>
@@ -265,6 +267,7 @@
 <translation id="2534582914273493287">URL-адресите што ги посетувате се испраќаат во Google</translation>
 <translation id="2536728043171574184">Се прикажува офлајн копија на страницата</translation>
 <translation id="2546283357679194313">Колачиња и податоци од сајтот</translation>
+<translation id="2549516196460093976">Може да го користите таблетов за да се најавите на компјутерот што го прикажува QR-кодов.</translation>
 <translation id="2558692642259318568">За да прелистувате без зачувување активност на вашиот уред, обидете се со „Инкогнито“</translation>
 <translation id="2561519700418191927">Прегледи на видео</translation>
 <translation id="2567385386134582609">СЛИКА</translation>
@@ -451,6 +454,7 @@
 <translation id="3563767357928833671">Прикажани се содржини од привремената меморија</translation>
 <translation id="3566923219790363270">Chrome сѐ уште се подготвува за VR. Рестартирајте го Chrome подоцна.</translation>
 <translation id="3568688522516854065">За да ги добиете вашите картички од другите уреди, најавете се и вклучете ја синхронизацијата</translation>
+<translation id="357465026686164600">Телефон како безбедносен клуч</translation>
 <translation id="3577473026931028326">Нешто тргна наопаку. Обидете се повторно.</translation>
 <translation id="3587482841069643663">Сите</translation>
 <translation id="3587596251841506391">Подобра безбедноста на интернет</translation>
@@ -520,6 +524,7 @@
 <translation id="4000212216660919741">Офлајн</translation>
 <translation id="4016425174436051808">Не може да се следи. Нешто тргна наопаку.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ч.}one{# ч.}other{# ч.}}</translation>
+<translation id="4035877632587724847">Не дозволувај</translation>
 <translation id="4045764304651014138">Податоци за користењето</translation>
 <translation id="405399507749852140">Добивајте предупредувања ако цената се намали на кој било сајт</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -579,6 +584,7 @@
 <translation id="4450672886426705087">Резултати од пребарувањето од Google.</translation>
 <translation id="4452411734226507615">Затвори ја картичката <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Додаден е обележувач во <ph name="FOLDER_NAME" /></translation>
+<translation id="4461614516424362539">Кога ќе поврзете друг уред со QR-код, тој ќе може да го користи телефонов како безбедносен клуч. Ако го отстраните, ќе треба да скенирате QR-код за да го поврзете повторно.</translation>
 <translation id="4472118726404937099">За да ги синхронизирате и персонализирате уредите, најавете се и вклучете ја синхронизацијата</translation>
 <translation id="4479839115899251637">Избриши од список за читање</translation>
 <translation id="4479972344484327217">Се инсталира <ph name="MODULE" /> за Chrome…</translation>
@@ -649,6 +655,7 @@
 
 За да ја промените поставкава, <ph name="BEGIN_LINK" />ресетирајте ја синхронизацијата<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Име на картичка</translation>
+<translation id="481574578487123132">Поврзани уреди</translation>
 <translation id="4818017973810341238">Потврдувањето на Digital Asset Links не успеа на <ph name="VIOLATED_URL" /></translation>
 <translation id="4831037795716408498">Преземање содржини</translation>
 <translation id="4834007576107377210">Погледнете го упатството на пребарувачот за бришење на историјата на пребарување доколку е применливо</translation>
@@ -681,6 +688,7 @@
 <translation id="4941179133499732445">Допрете го микрофонот за да пребарувате со гласот</translation>
 <translation id="4943703118917034429">Виртуелна реалност</translation>
 <translation id="4943872375798546930">Нема резултати</translation>
+<translation id="4950924971025849764">Кога сте најавени на истата сметка на Google, другите уреди можат да го користат телефонов како безбедносен клуч.</translation>
 <translation id="4957722034734105353">Дознај повеќе...</translation>
 <translation id="4961107849584082341">Преведете ја страницава на кој било јазик</translation>
 <translation id="4971735654804503942">Побрза и проактивна заштита од опасни веб-сајтови, преземања и екстензии. Ве предупредува за упади во лозинките. Бара да се испраќаат податоци од прелистувањето до Google.</translation>
@@ -781,6 +789,7 @@
 <translation id="55737423895878184">Локацијата и известувањата се дозволени</translation>
 <translation id="5578795271662203820">Пребарај во <ph name="SEARCH_ENGINE" /> за сликава</translation>
 <translation id="5581519193887989363">Секогаш може да изберете што да синхронизирате во <ph name="BEGIN_LINK1" />Поставки<ph name="END_LINK1" />.</translation>
+<translation id="5590372121997663538">Запомни го компјутеров</translation>
 <translation id="5599455543593328020">Режим инкогнито</translation>
 <translation id="5599941490345670218">„Помошникот на Google“ може да извршува дејства за вас на веб-сајтовите</translation>
 <translation id="5620163320393916465">Нема зачувани лозинки</translation>
@@ -862,6 +871,7 @@
 <translation id="5995726099713306770">Да се преземе страницата повторно?</translation>
 <translation id="6000066717592683814">Задржи го Google</translation>
 <translation id="6000203700195075278">Следете пак</translation>
+<translation id="6002122790816966947">Ваши уреди</translation>
 <translation id="6005538289190791541">Предложена лозинка</translation>
 <translation id="6032091552407840792">Оваа пробна верзија е активна само во <ph name="BEGIN_LINK" />некои региони<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Со <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome развива нови технологии за заштита од следење на повеќе сајтови, додека истовремено го зачувува отворениот интернет.
@@ -991,6 +1001,7 @@
 <translation id="6640207029842583248">Блокирај цело време</translation>
 <translation id="6643016212128521049">Исчисти</translation>
 <translation id="6643649862576733715">Подреди по количина на заштеден сообраќај</translation>
+<translation id="6645629752388991326">Контролирајте кои уреди можат да се најават користејќи го уредов како безбедносен клуч.</translation>
 <translation id="6648459603387803038">Администраторот може далечински да го менува поставувањето на прелистувачот. Со активноста на уредов може да се управува и надвор од Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Прегледајте ја сликата <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@
 <translation id="6710213216561001401">Претходно</translation>
 <translation id="671481426037969117">Тајмерот за <ph name="FQDN" /> истече. Ќе започне одново утре.</translation>
 <translation id="6715020873764921614">Дали сепак сакате да ја преземете датотеката <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
+<translation id="6719634564325948108">Да се поврзе со QR-код?</translation>
 <translation id="6738516213925468394">Податоците се шифрирани со вашата <ph name="BEGIN_LINK" />лозинка за синхронизација<ph name="END_LINK" /> на <ph name="TIME" />. Внесете ја за да започне синхронизацијата.</translation>
 <translation id="6738867403308150051">Се презема…</translation>
 <translation id="6751521182688001123">Брзо отворете нова картичка. За да ја измените сликава од екранот, допрете и задржете.</translation>

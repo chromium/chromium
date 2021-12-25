@@ -586,6 +586,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4831034276697007977">Jeste li sigurni da želite isključiti automatske klikove?</translation>
 <translation id="4849058404725798627">Istakni objekat fokusom tastature</translation>
 <translation id="485592688953820832">Nema radnje (pauza)</translation>
+<translation id="485634149294284819">Otvorite izbornik tipkovnice</translation>
 <translation id="4860284199500934869">Provjerite mrežnu vezu da preuzmete fajl <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Pokušaj preuzimanja će se izvršiti kasnije. Govor će se poslati Googleu na obradu kada se završi preuzimanje.</translation>
 <translation id="4868492592575313542">aktivirano</translation>
@@ -1015,6 +1016,7 @@ Nova instalacija</translation>
 <translation id="7860671499921112077">Prevucite nagore s tri prsta da pristupite Pregledu</translation>
 <translation id="7866482334467279021">uključeno</translation>
 <translation id="7868900307798234037">Otključavanje otiskom prsta</translation>
+<translation id="7872195908557044066">Vaš administrator vraća vaš eSIM na zadano. Pričekajte nekoliko minuta.</translation>
 <translation id="7872786842639831132">Isključeno</translation>
 <translation id="7875575368831396199">Izgleda da je Bluetooth isključen na vašem uređaju <ph name="DEVICE_TYPE" />. Uključite Bluetooth da koristite Phone Hub.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Vratite uređaj na prethodnu verziju odmah}=1{Vratite uređaj na prethodnu verziju u roku od 1 sekunde}one{Vratite uređaj na prethodnu verziju u roku od # sekunde}few{Vratite uređaj na prethodnu verziju u roku od # sekunde}other{Vratite uređaj na prethodnu verziju u roku od # sekundi}}</translation>
@@ -1097,6 +1099,7 @@ Nova instalacija</translation>
 <translation id="8380784334203145311">Laku noć,</translation>
 <translation id="8388750414311082622">Nije moguće ukloniti posljednju radnu površinu.</translation>
 <translation id="8394567579869570560">Roditelj je zaključao uređaj</translation>
+<translation id="8401850874595457088">Otvorite izbornik jezika</translation>
 <translation id="8412677897383510995">Prikaz postavki ekrana</translation>
 <translation id="8413272770729657668">Snimanje počinje za 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (kućište)</translation>

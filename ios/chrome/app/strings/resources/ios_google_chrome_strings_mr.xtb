@@ -25,6 +25,7 @@
 <translation id="2574249610672786438">तुम्ही जेथून Chrome वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, तुमच्या सर्व डिव्हाइसवर साइन इन करा</translation>
 <translation id="2576431527583832481">Chrome आता आणखी सर्वोत्तम झाले आहे! नवीन आवृत्ती उपलब्ध आहे.</translation>
 <translation id="257708665678654955">पुढील वेळी Google Chrome ने या साइटवरील <ph name="LANGUAGE_NAME" /> पेजचे भाषांतर करण्याची ऑफर द्यावी असे तुम्हाला वाटते?</translation>
+<translation id="2671426118752779020">तुम्ही Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केलेले पासवर्ड तुमच्या iPhone वरील इतर अ‍ॅप्समध्ये वापरू शकता.</translation>
 <translation id="2695886661449553974">Chrome ला अपडेट तपासता आली नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="2732745070297234559">Chrome ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा.</translation>
 <translation id="2869959624320573933">Chrome वर साइन इन करा</translation>
@@ -85,6 +86,7 @@
 <translation id="7165736900384873061">Google Chrome QR स्कॅनर वापरणे आरंभ करा</translation>
 <translation id="7172660552945675509">टीप: <ph name="BEGIN_LINK" />Chrome तुमच्या डॉकमध्ये हलवा<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">तुमच्या पासवर्डच्या परवानगी दिलेल्या ॲक्सेसची खात्री करण्यासाठी Chrome फेस आयडी वापरते.</translation>
+<translation id="72119412072970160">तुम्ही Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केलेले पासवर्ड तुमच्या iPad वरील इतर अ‍ॅप्समध्ये वापरू शकता.</translation>
 <translation id="7261678641327190792">Chrome तुमचे पासवर्ड तपासू शकत नाही</translation>
 <translation id="7272930098487145294">इमेज सेव्ह करण्यासाठी, तुमच्या फोटोंमध्ये Chrome ला जोडण्यासाठी सेटिंग्ज वर टॅप करा</translation>
 <translation id="7275945473750112644">तुमचे खाते <ph name="HOSTED_DOMAIN" /> द्वारे व्यवस्थापित केले जात असल्याने, या डिव्हाइसवरून तुमचा Chrome डेटा साफ केला जाईल</translation>
@@ -112,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chrome सह सुरक्षित राहा</translation>
 <translation id="8772179140489533211">Chrome मध्ये साइन इन करण्यासाठी सूचना दाखवते.</translation>
+<translation id="8788269841521769222">तुम्ही हा पासवर्ड लक्षात ठेवण्याची आवश्यकता नाही. तो <ph name="EMAIL" /> साठी Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केला जाईल</translation>
 <translation id="9112744793181547300">Chrome ला डीफॉल्ट म्हणून सेट करायचे आहे का?</translation>
 </translationbundle>

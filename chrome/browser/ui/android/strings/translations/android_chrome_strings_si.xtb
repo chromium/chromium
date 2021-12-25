@@ -90,6 +90,7 @@
 <translation id="147113415845704694">“What’s the weather today?” උත්සාහ කරන්න</translation>
 <translation id="1477626028522505441">සේවාදායකයේ දෝෂ නිසා <ph name="FILE_NAME" /> බාගැනීම අසාර්ථක විය.</translation>
 <translation id="148482509007564431">පිටුසන් සුරැකීම් ප්‍රවාහය</translation>
+<translation id="1488775391433859242">මෙම QR කේතය සංදර්ශනය කරන පරිගණකයට පිරීමට ඔබට මෙම දුරකථනය භාවිත කළ හැකිය.</translation>
 <translation id="1492417797159476138">ඔබ දැනටමත් මෙම පරිශීලක නම මෙම වෙබ් අඩවිය සඳහා සුරැක ඇත</translation>
 <translation id="1493287004536771723">ඔබ <ph name="SITE_NAME" /> අනුගමනය කරයි</translation>
 <translation id="1506061864768559482">සෙවුම් යන්ත්‍රය</translation>
@@ -189,6 +190,7 @@
 <translation id="2122601567107267586">යෙදුම විවෘත කළ නොහැකි විය</translation>
 <translation id="2126426811489709554">Chrome විසින් බලගන්වන ලද</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> සුරැකිණි</translation>
+<translation id="2132122640199389833">සියලුම සබැඳි කළ උපාංග ඉවත් කරන්න</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> වසන ලදී</translation>
 <translation id="2139186145475833000">මුල් පිටු තිරයට එක් කරන්න</translation>
 <translation id="2141396931810938595">ඔබගේ භාවිතය මත පදනම්ව</translation>
@@ -265,6 +267,7 @@
 <translation id="2534582914273493287">ඔබ පිවිසෙන URL Google වෙත යවනු ලැබේ</translation>
 <translation id="2536728043171574184">මෙම පිටුවෙහි නොබැඳි පිටපතක් බලමින්</translation>
 <translation id="2546283357679194313">කුකීස් සහ අඩවි දත්ත</translation>
+<translation id="2549516196460093976">මෙම QR කේතය සංදර්ශනය කරන පරිගණකයට පිරීමට ඔබට මෙම ටැබ්ලටය භාවිත කළ හැකිය.</translation>
 <translation id="2558692642259318568">ඔබගේ උපාංගයට ක්‍රියාකාරකම් සුරැකීමෙන් තොරව බ්‍රවුස් කිරීමට, අප්‍රසිද්ධ ටැබය උත්සාහ කරන්න</translation>
 <translation id="2561519700418191927">වීඩියෝ පෙරදසුන්</translation>
 <translation id="2567385386134582609">රූපය</translation>
@@ -451,6 +454,7 @@
 <translation id="3563767357928833671">පසුරු පුවරු අන්තර්ගතය පෙන්වා ඇත</translation>
 <translation id="3566923219790363270">Chrome තවමත් VR සඳහා සූදානම් වෙයි. පසුව Chrome යළි අරඹන්න.</translation>
 <translation id="3568688522516854065">ඔබගේ වෙනත් උපාංගවලින් ඔබගේ පටිති ලබා ගැනීමට, පුරනය වී සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
+<translation id="357465026686164600">ආරක්ෂක යතුරක් ලෙස දුරකථනය</translation>
 <translation id="3577473026931028326">යම් දෙයක් වැරදිණි. නැවත උත්සාහ කරන්න.</translation>
 <translation id="3587482841069643663">සියළු</translation>
 <translation id="3587596251841506391">වෙබයෙහි ආරක්ෂාව දියුණුවට උදව් ව.</translation>
@@ -520,6 +524,7 @@
 <translation id="4000212216660919741">නොබැඳි මුල්පිටුව</translation>
 <translation id="4016425174436051808">අනුගමනය කළ නොහැකිය. යම් දෙයක් වැරදිණි.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{පැය #}one{පැය #}other{පැය #}}</translation>
+<translation id="4035877632587724847">ඉඩ නොදෙන්න</translation>
 <translation id="4045764304651014138">භාවිත දත්ත</translation>
 <translation id="405399507749852140">කිනම් හෝ අඩවියක මිල අඩු වුවහොත් ඇඟවීම් ලබා ගන්න</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -579,6 +584,7 @@
 <translation id="4450672886426705087">Google වෙතින් සෙවීම් ප්‍රතිඵල.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> පටිත්ත වසන්න</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> වෙත පිටුසන් යොදන ලදී</translation>
+<translation id="4461614516424362539">ඔබ QR කේතයක් සමඟ වෙනත් උපාංගයක් සබැඳි කරන විට, එයට මෙම දුරකථනය ආරක්ෂක යතුරක් ලෙස භාවිත කළ හැකිය. ඔබ එය ඉවත් කළහොත්, එය නැවත සබැඳි කිරීමට ඔබට QR කේතයක් ස්කෑන් කිරීමට සිදු වනු ඇත.</translation>
 <translation id="4472118726404937099">උපාංග හරහා සමමුහුර්ත කිරීමට සහ පෞද්ගලීකරණය කිරීමට, පුරනය වී සමමුහුර්තය ක්‍රියාත්මක කරන්න</translation>
 <translation id="4479839115899251637">කියවීම් ලැයිස්තුවෙන් මකන්න</translation>
 <translation id="4479972344484327217">Chrome සඳහා <ph name="MODULE" /> ස්ථාපන කිරීම…</translation>
@@ -649,6 +655,7 @@
 
 මෙම සැකසීම වෙනස් කිරීමට, <ph name="BEGIN_LINK" />සමමුහූර්තය යළි සකසන්න<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">කාඩ්පතෙහි නම</translation>
+<translation id="481574578487123132">සබැඳි කළ උපාංග</translation>
 <translation id="4818017973810341238"><ph name="VIOLATED_URL" /> හි ඩිජිටල් වත්කම් සත්‍යාපනය අසාර්ථක විය</translation>
 <translation id="4831037795716408498">අන්තර්ගතය බාගන්න</translation>
 <translation id="4834007576107377210">අදාළ වන්නේ නම්, ඔබගේ සෙවීම් ඉතිහාසය මැකීම සඳහා ඔබගේ සෙවීම් යන්ත්‍රයේ උපදෙස් බලන්න</translation>
@@ -681,6 +688,7 @@
 <translation id="4941179133499732445">ඔබගේ කටහඬ සමඟ සෙවීමට මයික් එක තට්ටු කරන්න</translation>
 <translation id="4943703118917034429">අතථ්‍ය යථාර්ථය</translation>
 <translation id="4943872375798546930">ප්‍රතිඵල නැත</translation>
+<translation id="4950924971025849764">ඔබ එකම Google ගිණුමට පුරනය වී ඇති විට, වෙනත් උපාංගවලට මෙම දුරකථනය ආරක්ෂක යතුරක් ලෙස භාවිත කළ හැකිය.</translation>
 <translation id="4957722034734105353">තව දැන ගන්න..</translation>
 <translation id="4961107849584082341">මෙම පිටුව ඕනෑම භාෂාවකට පරිවර්තන කරන්න</translation>
 <translation id="4971735654804503942">අනතුරුදායක වෙබ් අඩවිවලට, බාගැනීම්වලට, සහ දිගුවලට එරෙහි වඩා වේගවත්, පූර්වාරක්‍ෂාකාරී ආරක්‍ෂාව. මුරපද කඩ කිරීම් ගැන ඔබට අවවාද කරයි. බ්‍රවුස් කිරීමේ දත්ත Google වෙත යැවීම අවශ්‍ය කරයි.</translation>
@@ -781,6 +789,7 @@
 <translation id="55737423895878184">ස්ථානය සහ දැනුම්දීම්වලට ඉඩ දේ</translation>
 <translation id="5578795271662203820">මෙම රූපය සඳහා <ph name="SEARCH_ENGINE" /> සොයන්න</translation>
 <translation id="5581519193887989363">ඔබට සැමවිට <ph name="BEGIN_LINK1" />සැකසීම්<ph name="END_LINK1" /> තුළ සමමුහු කළ යුතු දෙය තෝරා ගත හැක.</translation>
+<translation id="5590372121997663538">මෙම පරිගණකය මතක තබා ගන්න</translation>
 <translation id="5599455543593328020">අප්‍රසිද්ධ ප්‍රකාරය</translation>
 <translation id="5599941490345670218">Google සහායකට ඔබ සඳහා වෙබ් අඩවි හරහා කාර්ය ඉටු කළ හැකිය</translation>
 <translation id="5620163320393916465">සුරැකි මුරපද නැත</translation>
@@ -862,6 +871,7 @@
 <translation id="5995726099713306770">නැවත පිටුව බාගන්නද?</translation>
 <translation id="6000066717592683814">Keep Google</translation>
 <translation id="6000203700195075278">නැවත අනුගමනය කරන්න</translation>
+<translation id="6002122790816966947">ඔබගේ උපාංග</translation>
 <translation id="6005538289190791541">යෝජිත මුරපදය</translation>
 <translation id="6032091552407840792">මෙම අත්හදා බැලීම <ph name="BEGIN_LINK" />සමහර කලාප<ph name="END_LINK" /> තුළ පමණක් සක්‍රියයි.</translation>
 <translation id="6033245666633565791"><ph name="BEGIN_LINK" />පෞද්ගලිකත්ව සෑන්ඩ්බොක්ස්<ph name="END_LINK" /> සමග, Chrome විවෘත වෙබය ආරක්ෂා කරන අතරම හරස් අඩවි හඹා යාමෙන් ඔබව ආරක්ෂා කිරීම සඳහා නව තාක්ෂණ සංවර්ධනය කරයි.
@@ -991,6 +1001,7 @@
 <translation id="6640207029842583248">සෑම විට අවහිර කරන්න</translation>
 <translation id="6643016212128521049">මකන්න</translation>
 <translation id="6643649862576733715">සුරැකි දත්ත ප්‍රමාණයේ එකතුව අනුව අනුපිළිවෙලට සකසන්න</translation>
+<translation id="6645629752388991326">මෙම උපාංගය ආරක්ෂක යතුරක් ලෙස භාවිත කිරීමෙන් පිරිය හැකි උපාංග පාලනය කරන්න.</translation>
 <translation id="6648459603387803038">ඔබේ පරිපාලකට දුරස්ථව ඔබේ බ්‍රවුසර සැකසීම වෙනස් කළ හැකිය. මෙම උපාංගය මත ක්‍රියාකාරකම Chrome හට පිටතින් ද කළමනා කරනු ලැබිය හැක.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">රූපය පෙරදකින්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@
 <translation id="6710213216561001401">පෙර</translation>
 <translation id="671481426037969117">ඔබේ <ph name="FQDN" /> මුහූර්තකය ඉවර විය. එය හෙට නැවත ඇරඹෙයි.</translation>
 <translation id="6715020873764921614">ඔබට කෙසේ වෙතත් <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) බාගැනීමට අවශ්‍යද?</translation>
+<translation id="6719634564325948108">QR කේතය සමඟ සම්බන්ධ කරන්නද?</translation>
 <translation id="6738516213925468394">ඔබේ දත්ත <ph name="TIME" /> වූ විට ඔබේ <ph name="BEGIN_LINK" />මුර වැකිකඩ<ph name="END_LINK" /> සංකේතන කරනු ලැබුවේය. සමමුහූර්තය ආරම්භ කිරීමට එය ඇතුළත් කරන්න.</translation>
 <translation id="6738867403308150051">බාගනිමින්...</translation>
 <translation id="6751521182688001123">ඉක්මනින් නව ටැබයක් විවෘත කරන්න. මෙම කෙටිමඟ සංස්කරණය කිරීමට, ස්පර්ශ කර අල්ලාගෙන සිටින්න.</translation>

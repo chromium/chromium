@@ -1174,6 +1174,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4708268264240856090">Your connection was interrupted</translation>
 <translation id="4712404868219726379">Windows Hello</translation>
 <translation id="4722547256916164131"><ph name="BEGIN_LINK" />Running Windows Network Diagnostics<ph name="END_LINK" /></translation>
+<translation id="4722735765955348426">Password for <ph name="USERNAME" /></translation>
 <translation id="4724144314178270921">Can ask to see text and images on your clipboard</translation>
 <translation id="4726672564094551039">Reload policies</translation>
 <translation id="4728558894243024398">Platform</translation>

@@ -25,6 +25,7 @@
 <translation id="2574249610672786438">如要在任何使用 Chrome 的裝置上查看分頁，請在所有裝置上登入</translation>
 <translation id="2576431527583832481">Chrome 現在更進一步！歡迎您升級使用新版本。</translation>
 <translation id="257708665678654955">您希望 Google Chrome 將來翻譯此網站的<ph name="LANGUAGE_NAME" />頁面嗎？</translation>
+<translation id="2671426118752779020">您可在 iPhone 上的其他應用程式使用您儲存到「Google 密碼管理工具」的密碼。</translation>
 <translation id="2695886661449553974">Chrome 無法檢查更新，請稍後再試。</translation>
 <translation id="2732745070297234559">Chrome 無法檢查所有密碼。請明天再試。</translation>
 <translation id="2869959624320573933">登入 Chrome</translation>
@@ -85,6 +86,7 @@
 <translation id="7165736900384873061">開始使用 Google Chrome 二維條碼掃描器</translation>
 <translation id="7172660552945675509">提示：<ph name="BEGIN_LINK" />將 Chrome 移至工具列<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome 透過 Face ID 確保只有獲授權人士才可存取您的密碼。</translation>
+<translation id="72119412072970160">您可在 iPad 上的其他應用程式使用您儲存到「Google 密碼管理工具」的密碼。</translation>
 <translation id="7261678641327190792">Chrome 無法檢查密碼</translation>
 <translation id="7272930098487145294">如要儲存圖片，請輕按 [設定] 並允許 Chrome 新增您的相片</translation>
 <translation id="7275945473750112644">由於您的帳戶由 <ph name="HOSTED_DOMAIN" /> 管理，因此您的 Chrome 資料將會從此裝置上清除</translation>
@@ -112,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">讓 Google Chrome 確保您的安全</translation>
 <translation id="8772179140489533211">顯示登入 Chrome 的指示。</translation>
+<translation id="8788269841521769222">您不需記住此密碼。密碼將會儲存至 <ph name="EMAIL" /> 的「Google 密碼管理工具」</translation>
 <translation id="9112744793181547300">要將 Chrome 設定為預設瀏覽器嗎？</translation>
 </translationbundle>

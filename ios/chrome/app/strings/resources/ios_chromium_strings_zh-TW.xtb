@@ -77,6 +77,7 @@
 <translation id="6424492062988593837">Chromium 現在變得更進步了！歡迎你升級使用新版本。</translation>
 <translation id="6752854822223394465">貴機構正在設定 Chromium...</translation>
 <translation id="6820823224820483452">Chromium 無法檢查所有密碼，請明天再試。</translation>
+<translation id="7006920032187763988">你可以在 iPad 上的其他應用程式，使用儲存至密碼管理員的密碼。</translation>
 <translation id="7018284295775193585">Chromium 無法更新</translation>
 <translation id="7045244423563602563">使用你專屬的 Chromium</translation>
 <translation id="7099326575020694068">Chromium 無法在分割模式中使用你的相機</translation>
@@ -103,11 +104,13 @@
 <translation id="8073677936375100957">要清除這個裝置上的 Chromium 資料嗎？</translation>
 <translation id="8175055321229419309">提示：<ph name="BEGIN_LINK" />將 Chromium 移至 Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium 無法檢查更新，請稍後再試。</translation>
+<translation id="858114650497379505">你可以在 iPhone 上的其他應用程式，使用儲存至密碼管理員的密碼。</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
 <translation id="8663480472502753423">取得 Chromium 最新版本</translation>
 <translation id="8776843108004031667">系統會將這個帳戶和所有未儲存的資料從 Chromium 中移除。</translation>
 <translation id="894437814105052438">登出帳戶後，Chromium 就不會將任何新資料同步到你的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>
+<translation id="9059693977935746710">你不需要記住這組密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的密碼管理員中</translation>
 <translation id="9089354809943900324">Chromium 版本過舊</translation>
 <translation id="9110075932708282655">預設為使用 Chromium</translation>
 <translation id="921174536258924340">Chromium 無法檢查所有密碼，請明天再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼。<ph name="END_LINK" /></translation>

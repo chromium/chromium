@@ -232,6 +232,7 @@
 <translation id="7448255348454382571">Επανεκκίνηση Chromium OS</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Το Chromium χρειάζεται άδεια, για να αποκτήσει πρόσβαση στην κάμερα για αυτόν τον ιστότοπο</translation>
+<translation id="7467949745582939695">Επανεκκίνηση του Chromium;</translation>
 <translation id="7483335560992089831">Δεν είναι δυνατή η εγκατάσταση της ίδια έκδοσης του Chromium που εκτελείται αυτήν τη στιγμή. Κλείστε το Chromium και δοκιμάστε ξανά.</translation>
 <translation id="753534427205733210">{0,plural, =1{Η επανεκκίνηση του Chromium θα γίνει σε 1 λεπτό}other{Η επανεκκίνηση του Chromium θα γίνει σε # λεπτά}}</translation>
 <translation id="7549178288319965365">Σχετικά με το Chromium OS</translation>

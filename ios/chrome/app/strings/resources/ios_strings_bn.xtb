@@ -25,6 +25,7 @@
 <translation id="1145536944570833626">বিদ্যমান ডেটা মুছুন।</translation>
 <translation id="1147031633655575115"><ph name="USER" /> হিসেবে সাইন-ইন করেছেন</translation>
 <translation id="1154984953698510061">অন্যান্য ট্যাব দেখুন</translation>
+<translation id="1164064664035028907">স্ট্রং পাসওয়ার্ড ব্যবহার করুন:</translation>
 <translation id="1165039591588034296">ত্রুটি</translation>
 <translation id="1172898394251786223">পরবর্তী ফিল্ড</translation>
 <translation id="1176932207622159128">ছবি সেভ করা যায়নি</translation>
@@ -139,6 +140,7 @@
 <translation id="2268044343513325586">রিফাইন করুন</translation>
 <translation id="2271351792809375263">Chrome-এ সেভ করা পাসওয়ার্ড আপনার ডিভাইসের অন্যান্য অ্যাপে ব্যবহার করুন</translation>
 <translation id="2273327106802955778">‘আরও’ মেনু</translation>
+<translation id="2286505070150039482">হাইলাইট করা টেক্সট</translation>
 <translation id="2302742851632557585">ওয়েবসাইটে গিয়ে পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="2316709634732130529">সাজেস্ট করা পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="2320166752086256636">কীবোর্ড লুকান</translation>
@@ -309,6 +311,7 @@
 <translation id="3803696231112616155">এই সাইট অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="3858860766373142691">নাম</translation>
+<translation id="3861486700625780712">ফলো করা বন্ধ করুন</translation>
 <translation id="3892144330757387737">আপনি এখানে আপনার ইতিহাস দেখতে পাবেন</translation>
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3913386780052199712">Chrome-এ সাইন-ইন করা হয়েছে</translation>
@@ -406,6 +409,7 @@
 <translation id="481968316161811770">কুকিজ, সাইট ডেটা</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} এবং আরও ১টি}one{{domain} এবং আরও {count}টি}other{{domain} এবং আরও {count}টি}}</translation>
 <translation id="4826218269716039351">থার্ড-পার্টি ব্লক করুন</translation>
+<translation id="4826726074642088322">হাইলাইট শেয়ার করুন</translation>
 <translation id="48274138579728272">'পড়া হয়েছে' হিসেবে চিহ্নিত করুন</translation>
 <translation id="4833686396768033263">'সাম্প্রতিক ট্যাব' উপলভ্য নেই</translation>
 <translation id="4833786495304741580">Google-কে অটোমেটিক ব্যবহারের পরিসংখ্যান ও ক্র্যাশ রিপোর্ট পাঠায়।</translation>
@@ -602,6 +606,7 @@
 <translation id="6497772452874122664"><ph name="TIME" />-এর উপর ভরসা থাকলে, আপনি অন্য কোনও সাইটে সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন।
 
 প্রতিটি সাইটের জন্য অনন্য পাসওয়ার্ড ব্যবহার করার চেষ্টা করুন।</translation>
+<translation id="650279896687777322">আরও জানুন...</translation>
 <translation id="651505212789431520">সিঙ্ক বাতিল করতে চান? যেকোনও সময় সেটিংস থেকে আপনি সিঙ্ক চালু করতে পারবেন।</translation>
 <translation id="6524918542306337007">'ছদ্মবেশী মোড' উপলভ্য নেই</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -640,6 +645,7 @@
 <translation id="6807889908376551050">সমস্ত দেখান...</translation>
 <translation id="681368974849482173">আইটেম তৈরি করা হয়েছে</translation>
 <translation id="681450999322335505">আপনার সংস্থা সিঙ্ক করার সুবিধা বন্ধ করে দিয়েছে।</translation>
+<translation id="683022620450280906">যেকোনও ডিভাইসে আপনি সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন। এটি <ph name="EMAIL" />-এর Google পাসওয়ার্ড ম্যানেজার বিকল্পে সেভ করা আছে</translation>
 <translation id="6830804042318138535">আরও পড়ুন</translation>
 <translation id="6831043979455480757">অনুবাদ</translation>
 <translation id="6842136130964845393">আপনার সেভ করা পাসওয়ার্ড সবসময় যাতে অ্যাক্সেস করতে পারেন তা নিশ্চিত করতে, নিজের পরিচয় যাচাই করুন</translation>

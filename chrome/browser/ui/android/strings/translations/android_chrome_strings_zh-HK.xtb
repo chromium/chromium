@@ -90,6 +90,7 @@
 <translation id="147113415845704694">嘗試說「今日天氣點呀？」</translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="148482509007564431">書籤儲存流程</translation>
+<translation id="1488775391433859242">您可在正在顯示此 QR 碼的電腦上使用此手機來登入。</translation>
 <translation id="1492417797159476138">您已為此網站儲存此使用者名稱</translation>
 <translation id="1493287004536771723">您正在追蹤「<ph name="SITE_NAME" />」</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
@@ -189,6 +190,7 @@
 <translation id="2122601567107267586">無法開啟應用程式</translation>
 <translation id="2126426811489709554">Chrome 技術提供</translation>
 <translation id="2131665479022868825">已節省 <ph name="DATA" /></translation>
+<translation id="2132122640199389833">移除所有已連結的裝置</translation>
 <translation id="213279576345780926">已關閉「<ph name="TAB_TITLE" />」</translation>
 <translation id="2139186145475833000">新增至主螢幕</translation>
 <translation id="2141396931810938595">根據使用情況</translation>
@@ -265,6 +267,7 @@
 <translation id="2534582914273493287">系統會將您瀏覽的網址傳送至 Google</translation>
 <translation id="2536728043171574184">正在瀏覽此網頁的離線版本</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
+<translation id="2549516196460093976">您可在正在顯示此 QR 碼的電腦上使用此平板電腦來登入。</translation>
 <translation id="2558692642259318568">如果不要將瀏覽活動儲存至裝置上，請使用無痕模式</translation>
 <translation id="2561519700418191927">影片預覽</translation>
 <translation id="2567385386134582609">圖片</translation>
@@ -451,6 +454,7 @@
 <translation id="3563767357928833671">顯示咗剪貼簿嘅內容</translation>
 <translation id="3566923219790363270">Chrome 仍在準備 VR。請稍後再重新啟動 Chrome。</translation>
 <translation id="3568688522516854065">如要取得其他裝置上的分頁，請登入並開啟同步處理功能</translation>
+<translation id="357465026686164600">使用手機作為安全密鑰</translation>
 <translation id="3577473026931028326">發生錯誤，請再試一次。</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587596251841506391">協助改善網絡安全</translation>
@@ -520,6 +524,7 @@
 <translation id="4000212216660919741">離線首頁</translation>
 <translation id="4016425174436051808">無法追蹤，發生錯誤。</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 小時}other{# 小時}}</translation>
+<translation id="4035877632587724847">不允許</translation>
 <translation id="4045764304651014138">使用情況資料</translation>
 <translation id="405399507749852140">如果產品在任何網站上降價，系統將通知您</translation>
 <translation id="4056223980640387499">棕褐色</translation>
@@ -579,6 +584,7 @@
 <translation id="4450672886426705087">Google 的搜尋結果。</translation>
 <translation id="4452411734226507615">關閉 <ph name="TAB_TITLE" /> 分頁</translation>
 <translation id="4452548195519783679">已將書籤加入到「<ph name="FOLDER_NAME" />」</translation>
+<translation id="4461614516424362539">將另一部裝置連結 QR 碼後，該裝置就能將手機作為安全密鑰。如果移除裝置，您便需掃瞄 QR 碼才能再次連結裝置。</translation>
 <translation id="4472118726404937099">如要在不同裝置上同步和個人化內容，請登入並開啟同步處理功能</translation>
 <translation id="4479839115899251637">從閱讀清單中刪除</translation>
 <translation id="4479972344484327217">正在為 Chrome 安裝 <ph name="MODULE" />…</translation>
@@ -649,6 +655,7 @@
 
 如要變更此設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">信用卡持有人姓名</translation>
+<translation id="481574578487123132">連結的裝置</translation>
 <translation id="4818017973810341238"><ph name="VIOLATED_URL" /> 上的 Digital Asset Links 驗證失敗</translation>
 <translation id="4831037795716408498">下載內容</translation>
 <translation id="4834007576107377210">同時建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)</translation>
@@ -681,6 +688,7 @@
 <translation id="4941179133499732445">輕按麥克風圖示即可透過語音進行搜尋</translation>
 <translation id="4943703118917034429">虛擬實境</translation>
 <translation id="4943872375798546930">沒有結果</translation>
+<translation id="4950924971025849764">登入同一個 Google 帳戶後，其他裝置便可使用此手機作為安全密鑰。</translation>
 <translation id="4957722034734105353">瞭解詳情…</translation>
 <translation id="4961107849584082341">將此網頁翻譯成任何語言</translation>
 <translation id="4971735654804503942">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能。密碼外洩時系統會發出警告。需要將瀏覽資料傳送給 Google。</translation>
@@ -781,6 +789,7 @@
 <translation id="55737423895878184">允許分享位置資訊和顯示通知</translation>
 <translation id="5578795271662203820">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
 <translation id="5581519193887989363">您隨時可在<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />中選擇要同步的資料。</translation>
+<translation id="5590372121997663538">記住此電腦</translation>
 <translation id="5599455543593328020">無痕模式</translation>
 <translation id="5599941490345670218">「Google 助理」可助您完成各網站的操作</translation>
 <translation id="5620163320393916465">沒有已儲存的密碼</translation>
@@ -862,6 +871,7 @@
 <translation id="5995726099713306770">要再次下載頁面嗎？</translation>
 <translation id="6000066717592683814">繼續使用 Google</translation>
 <translation id="6000203700195075278">重新追蹤</translation>
+<translation id="6002122790816966947">您的裝置</translation>
 <translation id="6005538289190791541">建議的密碼</translation>
 <translation id="6032091552407840792">此試用功能只會在<ph name="BEGIN_LINK" />部分地區<ph name="END_LINK" />啟用。</translation>
 <translation id="6033245666633565791">Chrome 透過「<ph name="BEGIN_LINK" />私隱沙箱<ph name="END_LINK" />」開發新的技術，防止有心人士透過跨網站追蹤機制取得您的資料，同時保護開放網絡。
@@ -991,6 +1001,7 @@
 <translation id="6640207029842583248">一律封鎖</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6643649862576733715">依節省數據量排序</translation>
+<translation id="6645629752388991326">透過使用此裝置作為安全密鑰，控制可以登入的裝置。</translation>
 <translation id="6648459603387803038">您的管理員可遠端變更瀏覽器設定。此裝置上的活動也可透過 Chrome 以外的服務管理。</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}other{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}}</translation>
 <translation id="6649642165559792194">預覽圖片<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@
 <translation id="6710213216561001401">上一個</translation>
 <translation id="671481426037969117">「<ph name="FQDN" />」計時器已結束計時，將於明天重新開始。</translation>
 <translation id="6715020873764921614">仍要下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
+<translation id="6719634564325948108">要使用 QR 碼連線嗎？</translation>
 <translation id="6738516213925468394">您已於 <ph name="TIME" />使用<ph name="BEGIN_LINK" />同步密碼短語<ph name="END_LINK" />加密資料，請輸入密碼短語開始同步資料。</translation>
 <translation id="6738867403308150051">下載中…</translation>
 <translation id="6751521182688001123">快速開啟新分頁。如要編輯此捷徑，請按住捷徑按鈕。</translation>

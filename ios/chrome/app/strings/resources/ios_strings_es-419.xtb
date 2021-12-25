@@ -25,6 +25,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1145536944570833626">Borra los datos existentes.</translation>
 <translation id="1147031633655575115">Accediste como <ph name="USER" /></translation>
 <translation id="1154984953698510061">Ver otras pestañas</translation>
+<translation id="1164064664035028907">Utiliza una contraseña segura:</translation>
 <translation id="1165039591588034296">Error</translation>
 <translation id="1172898394251786223">Campo siguiente</translation>
 <translation id="1176932207622159128">Error al guardar imagen</translation>
@@ -639,6 +640,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6807889908376551050">Mostrar todos...</translation>
 <translation id="681368974849482173">Elemento creado</translation>
 <translation id="681450999322335505">Tu organización desactivó la sincronización.</translation>
+<translation id="683022620450280906">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en el Administrador de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="6830804042318138535">Más información</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6842136130964845393">Para asegurarte de que siempre puedas acceder a tus contraseñas guardadas, verifica tu identidad.</translation>
