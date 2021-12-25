@@ -6,8 +6,11 @@
 
 #include <algorithm>
 #include <memory>
+#include <ostream>
 
 #include "base/callback_helpers.h"
+#include "base/check.h"
+#include "base/debug/stack_trace.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -32,6 +35,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequence_local_storage_map.h"
+#include "base/threading/thread_checker_impl.h"
 #include "base/threading/thread_local.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -60,6 +64,10 @@ ObserverList<TaskEnvironment::DestructionObserver>& GetDestructionObservers() {
       instance;
   return *instance;
 }
+
+// A pointer to the current TestTaskTracker, if any, constant throughout the
+// lifetime of a ThreadPoolInstance managed by a TaskEnvironment.
+TaskEnvironment::TestTaskTracker* g_task_tracker = nullptr;
 
 base::MessagePumpType GetMessagePumpTypeForMainThreadType(
     TaskEnvironment::MainThreadType main_thread_type) {
@@ -120,11 +128,11 @@ class TaskEnvironment::TestTaskTracker
   // be no tasks currently running. Returns false if >0 tasks are currently
   // running. Prior to returning false, it will attempt to block until at least
   // one task has completed (in an attempt to avoid callers busy-looping
-  // DisallowRunTasks() calls with the same set of slowly ongoing tasks). This
-  // block attempt will also have a short timeout (in an attempt to prevent the
-  // fallout of blocking: if the only task remaining is blocked on the main
-  // thread, waiting for it to complete results in a deadlock...).
-  bool DisallowRunTasks();
+  // DisallowRunTasks() calls with the same set of slowly ongoing tasks).
+  // Returns false if none of the ongoing tasks complete within |timeout| in an
+  // attempt to prevent a deadlock in the event that the only task remaining is
+  // blocked on the main thread.
+  bool DisallowRunTasks(TimeDelta timeout = Milliseconds(1));
 
   // Returns true if tasks are currently allowed to run.
   bool TasksAllowedToRun() const;
@@ -132,6 +140,12 @@ class TaskEnvironment::TestTaskTracker
   // For debugging purposes. Returns a string with information about all the
   // currently running tasks on the thread pool.
   std::string DescribeRunningTasks() const;
+
+  // Returns true if this is invoked on this TaskTracker's owning thread
+  // (i.e. test main thread).
+  bool OnControllerThread() const {
+    return controller_thread_checker_.CalledOnValidThread();
+  }
 
  private:
   friend class TaskEnvironment;
@@ -159,6 +173,9 @@ class TaskEnvironment::TestTaskTracker
   // The set of tasks currently running, keyed by the id from
   // |next_task_number_|.
   base::flat_map<int64_t, Location> running_tasks_ GUARDED_BY(lock_);
+
+  // Used to implement OnControllerThread().
+  ThreadCheckerImpl controller_thread_checker_;
 };
 
 class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
@@ -443,6 +460,8 @@ TaskEnvironment::TestTaskTracker* TaskEnvironment::CreateThreadPool() {
   auto thread_pool = std::make_unique<internal::ThreadPoolImpl>(
       std::string(), std::move(task_tracker));
   ThreadPoolInstance::Set(std::move(thread_pool));
+  DCHECK(!g_task_tracker);
+  g_task_tracker = raw_task_tracker;
   return raw_task_tracker;
 }
 
@@ -527,6 +546,8 @@ void TaskEnvironment::DestroyThreadPool() {
   ThreadPoolInstance::Get()->FlushForTesting();
   ThreadPoolInstance::Get()->Shutdown();
   ThreadPoolInstance::Get()->JoinForTesting();
+  DCHECK_EQ(g_task_tracker, task_tracker_);
+  g_task_tracker = nullptr;
   // Destroying ThreadPoolInstance state can result in waiting on worker
   // threads. Make sure this is allowed to avoid flaking tests that have
   // disallowed waits on their main thread.
@@ -744,6 +765,12 @@ void TaskEnvironment::DescribeCurrentTasks() const {
   LOG(INFO) << sequence_manager_->DescribeAllPendingTasks();
 }
 
+void TaskEnvironment::DetachFromThread() {
+  DETACH_FROM_THREAD(main_thread_checker_);
+  if (task_tracker_)
+    task_tracker_->controller_thread_checker_.DetachFromThread();
+}
+
 // static
 void TaskEnvironment::AddDestructionObserver(DestructionObserver* observer) {
   GetDestructionObservers().AddObserver(observer);
@@ -752,6 +779,36 @@ void TaskEnvironment::AddDestructionObserver(DestructionObserver* observer) {
 // static
 void TaskEnvironment::RemoveDestructionObserver(DestructionObserver* observer) {
   GetDestructionObservers().RemoveObserver(observer);
+}
+
+TaskEnvironment::ParallelExecutionFence::ParallelExecutionFence(
+    const char* error_message) {
+  CHECK(!g_task_tracker || g_task_tracker->OnControllerThread())
+      << error_message;
+  if (g_task_tracker) {
+    previously_allowed_to_run_ = g_task_tracker->TasksAllowedToRun();
+    // DisallowRunTasks typically yields back if it fails to reach quiescence
+    // within 1ms. This is typically done to let the main thread run tasks that
+    // could potentially be blocking main thread tasks. In this case however,
+    // main thread making progress while installing the fence would be more
+    // surprising. So allow more time but report errors after a while.
+    while (previously_allowed_to_run_ &&
+           !g_task_tracker->DisallowRunTasks(Seconds(5))) {
+      LOG(WARNING) << "Installing ParallelExecutionFence is slow because of "
+                      "these running tasks:\n"
+                   << g_task_tracker->DescribeRunningTasks()
+                   << "\nParallelExecutionFence requested by:\n"
+                   << debug::StackTrace();
+    }
+  } else if (ThreadPoolInstance::Get()) {
+    LOG(WARNING) << "ParallelExecutionFence is ineffective when "
+                    "ThreadPoolInstance is not managed by a TaskEnvironment.";
+  }
+}
+
+TaskEnvironment::ParallelExecutionFence::~ParallelExecutionFence() {
+  if (previously_allowed_to_run_)
+    g_task_tracker->AllowRunTasks();
 }
 
 TaskEnvironment::TestTaskTracker::TestTaskTracker()
@@ -775,15 +832,12 @@ bool TaskEnvironment::TestTaskTracker::TasksAllowedToRun() const {
   return can_run_tasks_;
 }
 
-bool TaskEnvironment::TestTaskTracker::DisallowRunTasks() {
+bool TaskEnvironment::TestTaskTracker::DisallowRunTasks(TimeDelta timeout) {
   AutoLock auto_lock(lock_);
 
   // Can't disallow run task if there are tasks running.
   if (!running_tasks_.empty()) {
-    // Attempt to wait a bit so that the caller doesn't busy-loop with the same
-    // set of pending work. A short wait is required to avoid deadlock
-    // scenarios. See DisallowRunTasks()'s declaration for more details.
-    task_completed_cv_.TimedWait(Milliseconds(1));
+    task_completed_cv_.TimedWait(timeout);
     return false;
   }
 

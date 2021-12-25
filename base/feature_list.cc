@@ -359,13 +359,13 @@ void FeatureList::AddFeaturesToAllocator(PersistentMemoryAllocator* allocator) {
 }
 
 void FeatureList::GetFeatureOverrides(std::string* enable_overrides,
-                                      std::string* disable_overrides) {
+                                      std::string* disable_overrides) const {
   GetFeatureOverridesImpl(enable_overrides, disable_overrides, false);
 }
 
 void FeatureList::GetCommandLineFeatureOverrides(
     std::string* enable_overrides,
-    std::string* disable_overrides) {
+    std::string* disable_overrides) const {
   GetFeatureOverridesImpl(enable_overrides, disable_overrides, true);
 }
 
@@ -520,7 +520,7 @@ void FeatureList::FinalizeInitialization() {
   initialized_ = true;
 }
 
-bool FeatureList::IsFeatureEnabled(const Feature& feature) {
+bool FeatureList::IsFeatureEnabled(const Feature& feature) const {
   OverrideState overridden_state = GetOverrideState(feature);
 
   // If marked as OVERRIDE_USE_DEFAULT, simply return the default state below.
@@ -531,7 +531,7 @@ bool FeatureList::IsFeatureEnabled(const Feature& feature) {
 }
 
 absl::optional<bool> FeatureList::IsFeatureEnabledIfOverridden(
-    const Feature& feature) {
+    const Feature& feature) const {
   OverrideState overridden_state = GetOverrideState(feature);
 
   // If marked as OVERRIDE_USE_DEFAULT, fall through to returning empty.
@@ -542,7 +542,7 @@ absl::optional<bool> FeatureList::IsFeatureEnabledIfOverridden(
 }
 
 FeatureList::OverrideState FeatureList::GetOverrideState(
-    const Feature& feature) {
+    const Feature& feature) const {
   DCHECK(initialized_);
   DCHECK(IsValidFeatureOrFieldTrialName(feature.name)) << feature.name;
   DCHECK(CheckFeatureIdentity(feature)) << feature.name;
@@ -551,7 +551,7 @@ FeatureList::OverrideState FeatureList::GetOverrideState(
 }
 
 FeatureList::OverrideState FeatureList::GetOverrideStateByFeatureName(
-    StringPiece feature_name) {
+    StringPiece feature_name) const {
   DCHECK(initialized_);
   DCHECK(IsValidFeatureOrFieldTrialName(feature_name)) << feature_name;
 
@@ -571,7 +571,7 @@ FeatureList::OverrideState FeatureList::GetOverrideStateByFeatureName(
   return OVERRIDE_USE_DEFAULT;
 }
 
-FieldTrial* FeatureList::GetAssociatedFieldTrial(const Feature& feature) {
+FieldTrial* FeatureList::GetAssociatedFieldTrial(const Feature& feature) const {
   DCHECK(initialized_);
   DCHECK(CheckFeatureIdentity(feature)) << feature.name;
 
@@ -579,7 +579,7 @@ FieldTrial* FeatureList::GetAssociatedFieldTrial(const Feature& feature) {
 }
 
 const base::FeatureList::OverrideEntry*
-FeatureList::GetOverrideEntryByFeatureName(StringPiece name) {
+FeatureList::GetOverrideEntryByFeatureName(StringPiece name) const {
   DCHECK(initialized_);
   DCHECK(IsValidFeatureOrFieldTrialName(name)) << name;
 
@@ -592,7 +592,7 @@ FeatureList::GetOverrideEntryByFeatureName(StringPiece name) {
 }
 
 FieldTrial* FeatureList::GetAssociatedFieldTrialByFeatureName(
-    StringPiece name) {
+    StringPiece name) const {
   DCHECK(initialized_);
 
   const base::FeatureList::OverrideEntry* entry =
@@ -603,7 +603,8 @@ FieldTrial* FeatureList::GetAssociatedFieldTrialByFeatureName(
   return nullptr;
 }
 
-FieldTrial* FeatureList::GetEnabledFieldTrialByFeatureName(StringPiece name) {
+FieldTrial* FeatureList::GetEnabledFieldTrialByFeatureName(
+    StringPiece name) const {
   DCHECK(initialized_);
 
   const base::FeatureList::OverrideEntry* entry =
@@ -673,7 +674,7 @@ void FeatureList::RegisterOverride(StringPiece feature_name,
 
 void FeatureList::GetFeatureOverridesImpl(std::string* enable_overrides,
                                           std::string* disable_overrides,
-                                          bool command_line_only) {
+                                          bool command_line_only) const {
   DCHECK(initialized_);
 
   // Check that the FieldTrialList this is associated with, if any, is the
@@ -719,7 +720,7 @@ void FeatureList::GetFeatureOverridesImpl(std::string* enable_overrides,
   }
 }
 
-bool FeatureList::CheckFeatureIdentity(const Feature& feature) {
+bool FeatureList::CheckFeatureIdentity(const Feature& feature) const {
   AutoLock auto_lock(feature_identity_tracker_lock_);
 
   auto it = feature_identity_tracker_.find(feature.name);

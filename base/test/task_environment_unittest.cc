@@ -1372,7 +1372,97 @@ TEST_F(TaskEnvironmentTest, NoCOMEnvironment) {
   InitializeCOMOnWorker(TaskEnvironment::ThreadPoolCOMEnvironment::NONE,
                         ApartmentType::kSTA);
 }
-#endif
+#endif  // defined(OS_WIN)
+
+TEST_F(TaskEnvironmentTest, ParallelExecutionFence) {
+  TaskEnvironment task_environment;
+
+  constexpr int kNumParallelTasks =
+      TaskEnvironment::kNumForegroundThreadPoolThreads;
+
+  TestWaitableEvent resume_main_thread;
+  TestWaitableEvent all_runs_done;
+  // Counters, all accessed/modified with memory_order_relaxed as no memory
+  // ordering is necessary between operations.
+  std::atomic_int completed_runs{0};
+  std::atomic_int next_run{1};
+
+  // Each task will repost itself until run 500. Run #50 will signal
+  // |resume_main_thread|.
+  RepeatingClosure task = BindLambdaForTesting([&]() {
+    int this_run = next_run.fetch_add(1, std::memory_order_relaxed);
+
+    if (this_run == 50)
+      resume_main_thread.Signal();
+
+    // Sleep after signaling to increase the likelihood the main thread installs
+    // the fence during this run and must wait on this task.
+    if (this_run >= 50 && this_run < 50 + kNumParallelTasks)
+      PlatformThread::Sleep(Milliseconds(5));
+
+    // Repost self until the last kNumParallelTasks.
+    if (this_run <= 500 - kNumParallelTasks)
+      ThreadPool::PostTask(task);
+
+    completed_runs.fetch_add(1, std::memory_order_relaxed);
+
+    if (this_run == 500)
+      all_runs_done.Signal();
+  });
+  for (int i = 0; i < kNumParallelTasks; ++i)
+    ThreadPool::PostTask(task);
+
+  resume_main_thread.Wait();
+  ASSERT_GE(next_run.load(std::memory_order_relaxed), 50);
+
+  {
+    // Confirm that no run happens while the fence is up.
+    TaskEnvironment::ParallelExecutionFence fence;
+
+    // All runs are complete.
+    const int completed_runs1 = completed_runs.load(std::memory_order_relaxed);
+    const int next_run1 = next_run.load(std::memory_order_relaxed);
+    EXPECT_EQ(completed_runs1, next_run1 - 1);
+
+    // Given a bit more time, no additional run starts nor completes.
+    PlatformThread::Sleep(Milliseconds(30));
+    const int completed_runs2 = completed_runs.load(std::memory_order_relaxed);
+    const int next_run2 = next_run.load(std::memory_order_relaxed);
+    EXPECT_EQ(completed_runs1, completed_runs2);
+    EXPECT_EQ(next_run1, next_run2);
+  }
+
+  // Runs resume automatically after taking down the fence (without needing to
+  // call RunUntilIdle()).
+  all_runs_done.Wait();
+  ASSERT_EQ(completed_runs.load(std::memory_order_relaxed), 500);
+  ASSERT_EQ(next_run.load(std::memory_order_relaxed), 501);
+}
+
+TEST_F(TaskEnvironmentTest, ParallelExecutionFenceWithoutTaskEnvironment) {
+  // Noops (doesn't crash) without a TaskEnvironment.
+  TaskEnvironment::ParallelExecutionFence fence;
+}
+
+TEST_F(TaskEnvironmentTest,
+       ParallelExecutionFenceWithSingleThreadTaskEnvironment) {
+  SingleThreadTaskEnvironment task_environment;
+  // Noops (doesn't crash), with a SingleThreadTaskEnvironment/
+  TaskEnvironment::ParallelExecutionFence fence;
+}
+
+TEST_F(TaskEnvironmentTest, ParallelExecutionFenceNonMainThreadDeath) {
+  TaskEnvironment task_environment;
+
+  ThreadPool::PostTask(BindOnce([]() {
+    const char kFailureLog[] = "ParallelExecutionFence invoked from worker";
+    EXPECT_DEATH_IF_SUPPORTED(
+        { TaskEnvironment::ParallelExecutionFence fence(kFailureLog); },
+        kFailureLog);
+  }));
+
+  task_environment.RunUntilIdle();
+}
 
 }  // namespace test
 }  // namespace base
