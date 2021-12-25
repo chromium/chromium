@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ImageTile} from 'chrome://personalization/common/constants.js';
 import {WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from 'chrome://personalization/trusted/personalization_router_element.js';
 import {getDarkLightImageTiles, getRegularImageTiles, promisifyImagesIframeFunctionsForTesting, WallpaperImages} from 'chrome://personalization/trusted/wallpaper/wallpaper_images_element.js';
-
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -14,14 +15,9 @@ import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 export function WallpaperImagesTest() {
-  /** @type {?HTMLElement} */
-  let wallpaperImagesElement = null;
-
-  /** @type {?TestWallpaperProvider} */
-  let wallpaperProvider = null;
-
-  /** @type {?TestPersonalizationStore} */
-  let personalizationStore = null;
+  let wallpaperImagesElement: WallpaperImages|null = null;
+  let wallpaperProvider: TestWallpaperProvider;
+  let personalizationStore: TestPersonalizationStore;
 
   setup(() => {
     const mocks = baseSetup();
@@ -45,13 +41,14 @@ export function WallpaperImagesTest() {
         wallpaperProvider.currentWallpaper;
 
     wallpaperImagesElement =
-        initElement(WallpaperImages.is, {collectionId: 'id_0'});
+        initElement(WallpaperImages, {collectionId: 'id_0'});
 
-    const iframe =
-        wallpaperImagesElement.shadowRoot.getElementById('images-iframe');
+    const iframe = wallpaperImagesElement.shadowRoot!.getElementById(
+                       'images-iframe') as HTMLIFrameElement;
 
     // Wait for iframe to receive data.
-    let [targetWindow, data] = await sendCurrentWallpaperAssetIdPromise;
+    let [targetWindow, data] =
+        await sendCurrentWallpaperAssetIdPromise as [Window, bigint | null];
 
     assertEquals(iframe.contentWindow, targetWindow);
     assertDeepEquals(
@@ -72,7 +69,8 @@ export function WallpaperImagesTest() {
     personalizationStore.notifyObservers();
 
     // Wait for iframe to receive data.
-    [targetWindow, data] = await sendCurrentWallpaperAssetIdPromise;
+    [targetWindow, data] =
+        await sendCurrentWallpaperAssetIdPromise as [Window, bigint | null];
     assertEquals(iframe.contentWindow, targetWindow);
     assertDeepEquals(
         BigInt(personalizationStore.data.wallpaper.currentSelected.key), data);
@@ -92,7 +90,8 @@ export function WallpaperImagesTest() {
     personalizationStore.notifyObservers();
 
     // Wait for iframe to receive data.
-    [targetWindow, data] = await sendCurrentWallpaperAssetIdPromise;
+    [targetWindow, data] =
+        await sendCurrentWallpaperAssetIdPromise as [Window, bigint | null];
     assertEquals(iframe.contentWindow, targetWindow);
     assertEquals(undefined, data);
   });
@@ -116,13 +115,14 @@ export function WallpaperImagesTest() {
     let {sendImageTiles: sendImageTilesPromise} =
         promisifyImagesIframeFunctionsForTesting();
     wallpaperImagesElement =
-        initElement(WallpaperImages.is, {collectionId: 'id_0'});
+        initElement(WallpaperImages, {collectionId: 'id_0'});
 
-    const iframe =
-        wallpaperImagesElement.shadowRoot.getElementById('images-iframe');
+    const iframe = wallpaperImagesElement.shadowRoot!.getElementById(
+                       'images-iframe') as HTMLIFrameElement;
 
     // Wait for iframe to receive data.
-    let [targetWindow, data] = await sendImageTilesPromise;
+    let [targetWindow, data] =
+        await sendImageTilesPromise as [Window, ImageTile[]];
     assertEquals(iframe.contentWindow, targetWindow);
     assertDeepEquals(
         getRegularImageTiles(
@@ -137,7 +137,7 @@ export function WallpaperImagesTest() {
     wallpaperImagesElement.collectionId = 'id_1';
 
     // Wait for iframe to receive new data.
-    [targetWindow, data] = await sendImageTilesPromise;
+    [targetWindow, data] = await sendImageTilesPromise as [Window, ImageTile[]];
 
     await waitAfterNextRender(wallpaperImagesElement);
 
@@ -170,23 +170,24 @@ export function WallpaperImagesTest() {
     let {sendImageTiles: sendImageTilesPromise} =
         promisifyImagesIframeFunctionsForTesting();
     wallpaperImagesElement =
-        initElement(WallpaperImages.is, {collectionId: 'id_0'});
+        initElement(WallpaperImages, {collectionId: 'id_0'});
 
-    const iframe =
-        wallpaperImagesElement.shadowRoot.getElementById('images-iframe');
+    const iframe = wallpaperImagesElement.shadowRoot!.getElementById(
+                       'images-iframe') as HTMLIFrameElement;
 
     // Wait for iframe to receive data.
-    let [targetWindow, data] = await sendImageTilesPromise;
+    let [targetWindow, data] =
+        await sendImageTilesPromise as [Window, ImageTile[]];
     assertEquals(iframe.contentWindow, targetWindow);
     const tiles = getDarkLightImageTiles(
         false, personalizationStore.data.wallpaper.backdrop.images['id_0']);
     assertDeepEquals(tiles, data);
-    assertEquals(data[0].preview.length, 2);
+    assertEquals(data[0]!.preview.length, 2);
     // Check that light variant comes before dark variant.
     assertEquals(
-        data[0].preview[0].url, 'https://images.googleusercontent.com/1');
+        data[0]!.preview[0]!.url, 'https://images.googleusercontent.com/1');
     assertEquals(
-        data[0].preview[1].url, 'https://images.googleusercontent.com/0');
+        data[0]!.preview[1]!.url, 'https://images.googleusercontent.com/0');
     // Wait for a render to happen.
     await waitAfterNextRender(wallpaperImagesElement);
     assertFalse(iframe.hidden);
@@ -196,7 +197,7 @@ export function WallpaperImagesTest() {
     wallpaperImagesElement.collectionId = 'id_1';
 
     // Wait for iframe to receive new data.
-    [targetWindow, data] = await sendImageTilesPromise;
+    [targetWindow, data] = await sendImageTilesPromise as [Window, ImageTile[]];
 
     await waitAfterNextRender(wallpaperImagesElement);
 
@@ -210,7 +211,7 @@ export function WallpaperImagesTest() {
   });
 
   test('navigates back to main page on loading failure', async () => {
-    const reloadPromise = new Promise((resolve) => {
+    const reloadPromise = new Promise<void>((resolve) => {
       PersonalizationRouter.reloadAtWallpaper = resolve;
     });
 
@@ -223,7 +224,7 @@ export function WallpaperImagesTest() {
     };
 
     wallpaperImagesElement =
-        initElement(WallpaperImages.is, {collectionId: 'id_0'});
+        initElement(WallpaperImages, {collectionId: 'id_0'});
 
     // Simulate finish loading. Images still null. Should bail and reload
     // application.
@@ -234,7 +235,7 @@ export function WallpaperImagesTest() {
   });
 
   test('navigates back to main page on unknown collection id', async () => {
-    const reloadPromise = new Promise((resolve) => {
+    const reloadPromise = new Promise<void>((resolve) => {
       PersonalizationRouter.reloadAtWallpaper = resolve;
     });
 
@@ -249,7 +250,7 @@ export function WallpaperImagesTest() {
     };
 
     wallpaperImagesElement =
-        initElement(WallpaperImages.is, {collectionId: 'unknown_id'});
+        initElement(WallpaperImages, {collectionId: 'unknown_id'});
 
     await reloadPromise;
   });

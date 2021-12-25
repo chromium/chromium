@@ -37,7 +37,7 @@ export function WallpaperCollectionsTest() {
   test('sends wallpaper collections when loaded', async () => {
     const {sendCollections: sendCollectionsPromise} =
         promisifyIframeFunctionsForTesting();
-    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
 
     personalizationStore.data.wallpaper.loading = {
       ...personalizationStore.data.wallpaper.loading,
@@ -63,7 +63,7 @@ export function WallpaperCollectionsTest() {
     const {sendGooglePhotosCount: sendGooglePhotosCountPromise} =
         promisifyIframeFunctionsForTesting();
 
-    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
 
     personalizationStore.data.wallpaper.googlePhotos.count = 1234;
     personalizationStore.data.wallpaper.loading.googlePhotos.count = false;
@@ -86,7 +86,7 @@ export function WallpaperCollectionsTest() {
     const {sendGooglePhotosPhotos: sendGooglePhotosPhotosPromise} =
         promisifyIframeFunctionsForTesting();
 
-    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
 
     personalizationStore.data.wallpaper.googlePhotos.photos =
         Array.from({length: kMaximumGooglePhotosPreviews + 1})
@@ -120,7 +120,7 @@ export function WallpaperCollectionsTest() {
       images: {},
     };
 
-    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
     // Wait for initial load to complete.
     await promisifyIframeFunctionsForTesting().sendImageCounts;
 
@@ -164,7 +164,7 @@ export function WallpaperCollectionsTest() {
     const {sendLocalImages: sendLocalImagesPromise} =
         promisifyIframeFunctionsForTesting();
 
-    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
 
     personalizationStore.data.wallpaper.loading = {
       ...personalizationStore.data.wallpaper.loading,
@@ -195,7 +195,7 @@ export function WallpaperCollectionsTest() {
       sendLocalImages: sendLocalImagesPromise
     } = promisifyIframeFunctionsForTesting();
 
-    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
 
     personalizationStore.data.wallpaper.loading = {
       ...personalizationStore.data.wallpaper.loading,
@@ -230,7 +230,7 @@ export function WallpaperCollectionsTest() {
   });
 
   test('shows error when fails to load', async () => {
-    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
 
     // No error displayed while loading.
     let error =
@@ -265,7 +265,7 @@ export function WallpaperCollectionsTest() {
     const {sendCollections: sendCollectionsPromise} =
         promisifyIframeFunctionsForTesting();
 
-    wallpaperCollectionsElement = initElement(WallpaperCollections.is);
+    wallpaperCollectionsElement = initElement(WallpaperCollections);
 
     const [_, collections] = await sendCollectionsPromise;
     assertDeepEquals(wallpaperProvider.collections, collections);
@@ -313,7 +313,7 @@ export function WallpaperCollectionsTest() {
         const {sendLocalImages, sendLocalImageData} =
             promisifyIframeFunctionsForTesting();
 
-        wallpaperCollectionsElement = initElement(WallpaperCollections.is);
+        wallpaperCollectionsElement = initElement(WallpaperCollections);
 
         await sendLocalImages;
 

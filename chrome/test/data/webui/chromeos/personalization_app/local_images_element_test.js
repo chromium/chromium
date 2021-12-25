@@ -59,7 +59,7 @@ export function LocalImagesTest() {
       data: {}
     };
 
-    localImagesElement = initElement(LocalImages.is, {hidden: false});
+    localImagesElement = initElement(LocalImages, {hidden: false});
     await waitAfterNextRender(localImagesElement);
 
     // Iron-list creates some extra dom elements as a scroll buffer and
@@ -104,7 +104,7 @@ export function LocalImagesTest() {
           data: {}
         };
 
-        localImagesElement = initElement(LocalImages.is, {hidden: false});
+        localImagesElement = initElement(LocalImages, {hidden: false});
 
         const ironList =
             localImagesElement.shadowRoot.querySelector('iron-list');
@@ -156,7 +156,7 @@ export function LocalImagesTest() {
           data: {'LocalImage0.png': false, 'LocalImage1.png': false},
         };
 
-        localImagesElement = initElement(LocalImages.is, {hidden: false});
+        localImagesElement = initElement(LocalImages, {hidden: false});
         await waitAfterNextRender(localImagesElement);
 
         // iron-list pre-creates some extra DOM elements but marks them as
@@ -190,7 +190,7 @@ export function LocalImagesTest() {
       data: {'LocalImage0.png': false, 'LocalImage1.png': false},
     };
 
-    localImagesElement = initElement(LocalImages.is, {hidden: false});
+    localImagesElement = initElement(LocalImages, {hidden: false});
     await waitAfterNextRender(localImagesElement);
 
     // iron-list pre-creates some extra DOM elements but marks them as

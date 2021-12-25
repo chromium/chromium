@@ -70,7 +70,7 @@ export function PersonalizationBreadcrumbTest() {
   });
 
   test('shows wallpaper label by default', async () => {
-    breadcrumbElement = initElement(PersonalizationBreadcrumb.is);
+    breadcrumbElement = initElement(PersonalizationBreadcrumb);
 
     const breadcrumbContainer =
         breadcrumbElement.shadowRoot.getElementById('breadcrumbContainer');
@@ -81,7 +81,7 @@ export function PersonalizationBreadcrumbTest() {
   test('shows collection name when collection is selected', async () => {
     const collection = wallpaperProvider.collections[0];
     breadcrumbElement = initElement(
-        PersonalizationBreadcrumb.is,
+        PersonalizationBreadcrumb,
         {'path': Paths.CollectionImages, 'collectionId': collection.id});
 
     personalizationStore.data.wallpaper.backdrop.collections =
@@ -111,7 +111,7 @@ export function PersonalizationBreadcrumbTest() {
         [googlePhotosAlbum];
     personalizationStore.notifyObservers();
 
-    breadcrumbElement = initElement(PersonalizationBreadcrumb.is, {
+    breadcrumbElement = initElement(PersonalizationBreadcrumb, {
       'path': Paths.GooglePhotosCollection,
       'googlePhotosAlbumId': googlePhotosAlbum.id
     });
@@ -131,7 +131,7 @@ export function PersonalizationBreadcrumbTest() {
     loadTimeData.overrideValues({'googlePhotosLabel': 'Google Photos'});
 
     breadcrumbElement = initElement(
-        PersonalizationBreadcrumb.is, {'path': Paths.GooglePhotosCollection});
+        PersonalizationBreadcrumb, {'path': Paths.GooglePhotosCollection});
 
     const breadcrumbContainer =
         breadcrumbElement.shadowRoot.getElementById('breadcrumbContainer');
@@ -143,8 +143,8 @@ export function PersonalizationBreadcrumbTest() {
   });
 
   test('show label when local images subpage is loaded', async () => {
-    breadcrumbElement = initElement(
-        PersonalizationBreadcrumb.is, {'path': Paths.LocalCollection});
+    breadcrumbElement =
+        initElement(PersonalizationBreadcrumb, {'path': Paths.LocalCollection});
 
     personalizationStore.data.wallpaper.local.images =
         wallpaperProvider.localImages;

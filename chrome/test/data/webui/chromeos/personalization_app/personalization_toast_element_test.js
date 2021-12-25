@@ -21,7 +21,7 @@ export function PersonalizationToastTest() {
   setup(() => {
     const mocks = baseSetup();
     personalizationStore = mocks.personalizationStore;
-    personalizationToastElement = initElement(PersonalizationToastElement.is);
+    personalizationToastElement = initElement(PersonalizationToastElement);
   });
 
   teardown(async () => {

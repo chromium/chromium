@@ -17,14 +17,9 @@ import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 export function WallpaperSelectedTest() {
-  /** @type {?HTMLElement} */
-  let wallpaperSelectedElement = null;
-
-  /** @type {?TestWallpaperProvider} */
-  let wallpaperProvider = null;
-
-  /** @type {?TestPersonalizationStore} */
-  let personalizationStore = null;
+  let wallpaperSelectedElement: WallpaperSelected|null;
+  let wallpaperProvider: TestWallpaperProvider;
+  let personalizationStore: TestPersonalizationStore;
 
   setup(() => {
     const mocks = baseSetup();
@@ -48,17 +43,17 @@ export function WallpaperSelectedTest() {
           selected: 1,
           setImage: 0,
         };
-        wallpaperSelectedElement = initElement(WallpaperSelected.is);
+        wallpaperSelectedElement = initElement(WallpaperSelected);
 
         assertEquals(
-            null, wallpaperSelectedElement.shadowRoot.querySelector('img'));
+            null, wallpaperSelectedElement.shadowRoot!.querySelector('img'));
 
         assertEquals(
             null,
-            wallpaperSelectedElement.shadowRoot.getElementById(
+            wallpaperSelectedElement.shadowRoot!.getElementById(
                 'textContainer'));
 
-        const placeholder = wallpaperSelectedElement.shadowRoot.getElementById(
+        const placeholder = wallpaperSelectedElement.shadowRoot!.getElementById(
             'imagePlaceholder');
 
         assertTrue(!!placeholder);
@@ -74,7 +69,7 @@ export function WallpaperSelectedTest() {
         personalizationStore.notifyObservers();
         await waitAfterNextRender(wallpaperSelectedElement);
 
-        assertEquals('none', placeholder.style.display);
+        assertEquals('none', placeholder!.style.display);
 
         // Sent a request to update user wallpaper. Loading placeholder should
         // come back.
@@ -86,12 +81,12 @@ export function WallpaperSelectedTest() {
         personalizationStore.notifyObservers();
         await waitAfterNextRender(wallpaperSelectedElement);
 
-        assertEquals('', placeholder.style.display);
+        assertEquals('', placeholder!.style.display);
       });
 
   test('sets wallpaper image in store on first load', async () => {
     personalizationStore.expectAction(WallpaperActionName.SET_SELECTED_IMAGE);
-    wallpaperSelectedElement = initElement(WallpaperSelected.is);
+    wallpaperSelectedElement = initElement(WallpaperSelected);
     const action = await personalizationStore.waitForAction(
         WallpaperActionName.SET_SELECTED_IMAGE);
     assertDeepEquals(wallpaperProvider.currentWallpaper, action.image);
@@ -101,32 +96,33 @@ export function WallpaperSelectedTest() {
     personalizationStore.data.wallpaper.currentSelected =
         wallpaperProvider.currentWallpaper;
 
-    wallpaperSelectedElement = initElement(WallpaperSelected.is);
+    wallpaperSelectedElement = initElement(WallpaperSelected);
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    const img = wallpaperSelectedElement.shadowRoot.querySelector('img');
+    const img = wallpaperSelectedElement.shadowRoot!.querySelector('img');
     assertEquals(
         `chrome://image/?${wallpaperProvider.currentWallpaper.url.url}`,
-        img.src);
+        img!.src);
 
     const textContainerElements =
-        wallpaperSelectedElement.shadowRoot.querySelectorAll(
+        wallpaperSelectedElement.shadowRoot!.querySelectorAll(
             '#textContainer span');
 
     // First span tag is 'Currently Set' text.
-    assertEquals('currentlySet', textContainerElements[0].id);
+    assertEquals('currentlySet', textContainerElements[0]!.id);
     assertEquals(
         wallpaperSelectedElement.i18n('currentlySet'),
-        textContainerElements[0].textContent);
+        textContainerElements[0]!.textContent);
 
     // Following text elements are for the photo attribution text.
-    const attributionLines = Array.from(textContainerElements).slice(1);
+    const attributionLines =
+        Array.from(textContainerElements).slice(1) as HTMLElement[];
 
     assertEquals(
         wallpaperProvider.currentWallpaper.attribution.length,
         attributionLines.length);
     wallpaperProvider.currentWallpaper.attribution.forEach((line, i) => {
-      assertEquals(line, attributionLines[i].innerText);
+      assertEquals(line, attributionLines[i]!.innerText);
     });
   });
 
@@ -137,14 +133,14 @@ export function WallpaperSelectedTest() {
       assetId: BigInt(100),
     };
     personalizationStore.data.wallpaper.loading.selected = false;
-    wallpaperSelectedElement = initElement(WallpaperSelected.is);
+    wallpaperSelectedElement = initElement(WallpaperSelected);
     await waitAfterNextRender(wallpaperSelectedElement);
 
     const title =
-        wallpaperSelectedElement.shadowRoot.getElementById('imageTitle');
+        wallpaperSelectedElement.shadowRoot!.getElementById('imageTitle');
     assertEquals(
         wallpaperSelectedElement.i18n('unknownImageAttribution'),
-        title.textContent.trim());
+        title!.textContent!.trim());
   });
 
   test('removes high resolution suffix from image url', async () => {
@@ -154,12 +150,12 @@ export function WallpaperSelectedTest() {
       assetId: BigInt(100),
     };
     personalizationStore.data.wallpaper.loading.selected = false;
-    wallpaperSelectedElement = initElement(WallpaperSelected.is);
+    wallpaperSelectedElement = initElement(WallpaperSelected);
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    const img = wallpaperSelectedElement.shadowRoot.querySelector('img');
+    const img = wallpaperSelectedElement.shadowRoot!.querySelector('img');
     assertEquals(
-        'chrome://image/?https://images.googleusercontent.com/abc12', img.src);
+        'chrome://image/?https://images.googleusercontent.com/abc12', img!.src);
   });
 
   test('updates image when store is updated', async () => {
@@ -167,10 +163,11 @@ export function WallpaperSelectedTest() {
         wallpaperProvider.currentWallpaper;
     personalizationStore.data.wallpaper.loading.selected = false;
 
-    wallpaperSelectedElement = initElement(WallpaperSelected.is);
+    wallpaperSelectedElement = initElement(WallpaperSelected);
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    const img = wallpaperSelectedElement.shadowRoot.querySelector('img');
+    const img = wallpaperSelectedElement.shadowRoot!.querySelector('img') as
+        HTMLImageElement;
     assertEquals(
         `chrome://image/?${wallpaperProvider.currentWallpaper.url.url}`,
         img.src);
@@ -187,7 +184,7 @@ export function WallpaperSelectedTest() {
   });
 
   test('shows placeholders when image fails to load', async () => {
-    wallpaperSelectedElement = initElement(WallpaperSelected.is);
+    wallpaperSelectedElement = initElement(WallpaperSelected);
     await waitAfterNextRender(wallpaperSelectedElement);
 
     // Still loading.
@@ -197,7 +194,7 @@ export function WallpaperSelectedTest() {
     await waitAfterNextRender(wallpaperSelectedElement);
 
     const placeholder =
-        wallpaperSelectedElement.shadowRoot.getElementById('imagePlaceholder');
+        wallpaperSelectedElement.shadowRoot!.getElementById('imagePlaceholder');
     assertTrue(!!placeholder);
 
     // Loading finished and still no current wallpaper.
@@ -207,21 +204,21 @@ export function WallpaperSelectedTest() {
 
     // Dom-if will set display: none if the element is hidden. Make sure it is
     // not hidden.
-    assertNotEquals('none', placeholder.style.display);
+    assertNotEquals('none', placeholder!.style.display);
     assertEquals(
-        null, wallpaperSelectedElement.shadowRoot.querySelector('img'));
+        null, wallpaperSelectedElement.shadowRoot!.querySelector('img'));
   });
 
   test('sets selected wallpaper data in store on changed', async () => {
     // Make sure state starts as expected.
     assertDeepEquals(emptyState(), personalizationStore.data);
 
-    wallpaperSelectedElement = initElement(WallpaperSelected.is);
+    wallpaperSelectedElement = initElement(WallpaperSelected);
 
     await wallpaperProvider.whenCalled('setWallpaperObserver');
 
     personalizationStore.expectAction(WallpaperActionName.SET_SELECTED_IMAGE);
-    wallpaperProvider.wallpaperObserverRemote.onWallpaperChanged(
+    wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged(
         wallpaperProvider.currentWallpaper);
 
     const {image} = await personalizationStore.waitForAction(
@@ -237,11 +234,11 @@ export function WallpaperSelectedTest() {
       assetId: BigInt(100),
     };
     personalizationStore.data.wallpaper.loading.selected = false;
-    wallpaperSelectedElement = initElement(WallpaperSelected.is);
+    wallpaperSelectedElement = initElement(WallpaperSelected);
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    const img = wallpaperSelectedElement.shadowRoot.querySelector('img');
-    assertEquals('data:image/png;base64,abc=', img.src);
+    const img = wallpaperSelectedElement.shadowRoot!.querySelector('img');
+    assertEquals('data:image/png;base64,abc=', img!.src);
   });
 
   test('shows daily refresh option on the collection view', async () => {
@@ -253,16 +250,16 @@ export function WallpaperSelectedTest() {
     personalizationStore.data.wallpaper.loading.selected = false;
 
     wallpaperSelectedElement =
-        initElement(WallpaperSelected.is, {'path': Paths.CollectionImages});
+        initElement(WallpaperSelected, {'path': Paths.CollectionImages});
     await waitAfterNextRender(wallpaperSelectedElement);
 
     const dailyRefresh =
-        wallpaperSelectedElement.shadowRoot.getElementById('dailyRefresh');
+        wallpaperSelectedElement.shadowRoot!.getElementById('dailyRefresh');
     assertTrue(!!dailyRefresh);
 
     const refreshWallpaper =
-        wallpaperSelectedElement.shadowRoot.getElementById('refreshWallpaper');
-    assertTrue(refreshWallpaper.hidden);
+        wallpaperSelectedElement.shadowRoot!.getElementById('refreshWallpaper');
+    assertTrue(refreshWallpaper!.hidden);
   });
 
   test(
@@ -274,33 +271,33 @@ export function WallpaperSelectedTest() {
           assetId: BigInt(100),
         };
         personalizationStore.data.wallpaper.loading.selected = false;
-        const collection_id = wallpaperProvider.collections[0].id;
+        const collection_id = wallpaperProvider.collections![0]!.id;
         personalizationStore.data.wallpaper.dailyRefresh = {
           collectionId: collection_id,
         };
 
         wallpaperSelectedElement = initElement(
-            WallpaperSelected.is,
+            WallpaperSelected,
             {'path': Paths.CollectionImages, 'collectionId': collection_id});
         personalizationStore.notifyObservers();
 
         await waitAfterNextRender(wallpaperSelectedElement);
 
         const newRefreshWallpaper =
-            wallpaperSelectedElement.shadowRoot.getElementById(
+            wallpaperSelectedElement.shadowRoot!.getElementById(
                 'refreshWallpaper');
-        assertFalse(newRefreshWallpaper.hidden);
+        assertFalse(newRefreshWallpaper!.hidden);
       });
 
   test('sets current image to null after timeout', async () => {
-    let timeoutCallback;
+    let timeoutCallback: Function;
     mockTimeoutForTesting({
       setTimeout(callback, delay) {
         assertEquals(120 * 1000, delay);
-        timeoutCallback = callback;
+        timeoutCallback = callback as Function;
         return 1234;
       },
-      clearTimeout(id) {
+      clearTimeout() {
         assertNotReached('Should not clear timeout');
       },
     });
@@ -308,12 +305,12 @@ export function WallpaperSelectedTest() {
     wallpaperProvider.wallpaperObserverUpdateTimeout = 100;
 
     wallpaperSelectedElement =
-        initElement(WallpaperSelected.is, {'path': Paths.CollectionImages});
+        initElement(WallpaperSelected, {'path': Paths.CollectionImages});
     await waitAfterNextRender(wallpaperSelectedElement);
 
     personalizationStore.expectAction(WallpaperActionName.SET_SELECTED_IMAGE);
 
-    timeoutCallback.call(wallpaperSelectedElement);
+    timeoutCallback!.call(wallpaperSelectedElement);
 
     const action = await personalizationStore.waitForAction(
         WallpaperActionName.SET_SELECTED_IMAGE);
@@ -322,9 +319,9 @@ export function WallpaperSelectedTest() {
 
   test('cancels timeout after receiving first image', async () => {
     const timeoutId = 1234;
-    const clearTimeoutPromise = new Promise(resolve => {
+    const clearTimeoutPromise = new Promise<void>(resolve => {
       mockTimeoutForTesting({
-        setTimeout(callback, delay) {
+        setTimeout() {
           return timeoutId;
         },
         clearTimeout(id) {
@@ -335,10 +332,10 @@ export function WallpaperSelectedTest() {
     });
 
     wallpaperSelectedElement =
-        initElement(WallpaperSelected.is, {'path': Paths.CollectionImages});
+        initElement(WallpaperSelected, {'path': Paths.CollectionImages});
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    wallpaperProvider.wallpaperObserverRemote.onWallpaperChanged(
+    wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged(
         wallpaperProvider.currentWallpaper);
 
     await clearTimeoutPromise;
@@ -348,12 +345,12 @@ export function WallpaperSelectedTest() {
     personalizationStore.data.wallpaper.fullscreen = true;
 
     wallpaperSelectedElement =
-        initElement(WallpaperSelected.is, {'path': Paths.CollectionImages});
+        initElement(WallpaperSelected, {'path': Paths.CollectionImages});
     await waitAfterNextRender(wallpaperSelectedElement);
 
     personalizationStore.resetLastAction();
 
-    await wallpaperProvider.wallpaperObserverRemote.onWallpaperChanged(
+    wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged(
         wallpaperProvider.currentWallpaper);
     await waitAfterNextRender(wallpaperSelectedElement);
 
@@ -364,7 +361,7 @@ export function WallpaperSelectedTest() {
 
     personalizationStore.expectAction(WallpaperActionName.SET_SELECTED_IMAGE);
 
-    wallpaperProvider.wallpaperObserverRemote.onWallpaperChanged(
+    wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged(
         wallpaperProvider.currentWallpaper);
 
     const action = await personalizationStore.waitForAction(

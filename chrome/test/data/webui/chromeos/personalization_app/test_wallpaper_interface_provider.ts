@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OnlineImageType, WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {CurrentWallpaper, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverRemote, WallpaperProviderInterface, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-
+import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -12,7 +12,8 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
  * @implements {WallpaperProviderInterface}
  * @extends {TestBrowserProxy}
  */
-export class TestWallpaperProvider extends TestBrowserProxy {
+export class TestWallpaperProvider extends TestBrowserProxy implements
+    WallpaperProviderInterface {
   constructor() {
     super([
       'makeTransparent',
@@ -35,8 +36,6 @@ export class TestWallpaperProvider extends TestBrowserProxy {
 
     /**
      * URLs are not real but must have the correct origin to pass CSP checks.
-     * @private
-     * @type {?Array<!WallpaperCollection>}
      */
     this.collections_ = [
       {
@@ -53,8 +52,6 @@ export class TestWallpaperProvider extends TestBrowserProxy {
 
     /**
      * URLs are not real but must have the correct origin to pass CSP checks.
-     * @private
-     * @type {?Array<!WallpaperImage>}
      */
     this.images_ = [
       {
@@ -80,19 +77,13 @@ export class TestWallpaperProvider extends TestBrowserProxy {
       },
     ];
 
-    /** @type {?Array<!mojoBase.mojom.FilePath>} */
     this.localImages = [{path: 'LocalImage0.png'}, {path: 'LocalImage1.png'}];
 
-    /** @type {!Object<string, string>} */
     this.localImageData = {
       'LocalImage0.png': 'data://localimage0data',
       'LocalImage1.png': 'data://localimage1data',
     };
 
-    /**
-     * @public
-     * @type {?CurrentWallpaper}
-     */
     this.currentWallpaper = {
       attribution: ['Image 0'],
       layout: WallpaperLayout.kCenter,
@@ -100,65 +91,47 @@ export class TestWallpaperProvider extends TestBrowserProxy {
       type: WallpaperType.kOnline,
       url: {url: 'https://images.googleusercontent.com/0'},
     };
-
-    /** @public */
-    this.selectWallpaperResponse = true;
-
-    /** @public */
-    this.selectLocalImageResponse = true;
-
-    /** @public */
-    this.updateDailyRefreshWallpaperResponse = true;
-
-    /** @public */
-    this.isInTabletModeResponse = true;
-
-    /** @public */
-    this.wallpaperObserverUpdateTimeout = 0;
-
-    /**
-     * @public
-     * @type {?WallpaperObserverInterface}
-     */
-    this.wallpaperObserverRemote = null;
   }
 
-  /**
-   * @return {?Array<!WallpaperCollection>}
-   */
-  get collections() {
+  private collections_: WallpaperCollection[]|null;
+  private images_: WallpaperImage[]|null;
+  localImages: FilePath[];
+  localImageData: Record<string, string>;
+  currentWallpaper: CurrentWallpaper;
+  selectWallpaperResponse = true;
+  selectLocalImageResponse = true;
+  updateDailyRefreshWallpaperResponse = true;
+  isInTabletModeResponse = true;
+  wallpaperObserverUpdateTimeout = 0;
+  wallpaperObserverRemote: WallpaperObserverInterface|null = null;
+
+  get collections(): WallpaperCollection[]|null {
     return this.collections_;
   }
 
-  /**
-   * @return {?Array<!WallpaperImage>}
-   */
-  get images() {
+  get images(): WallpaperImage[]|null {
     return this.images_;
   }
 
-  /** @override */
   makeTransparent() {
     this.methodCalled('makeTransparent');
   }
 
-  /** @override */
   fetchCollections() {
     this.methodCalled('fetchCollections');
     return Promise.resolve({collections: this.collections_});
   }
 
-  /** @override */
-  fetchImagesForCollection(collectionId) {
+  fetchImagesForCollection(collectionId: string) {
     this.methodCalled('fetchImagesForCollection', collectionId);
     assertTrue(
-        !!this.collections_.find(({id}) => id === collectionId),
+        !!this.collections_ &&
+            !!this.collections_.find(({id}) => id === collectionId),
         'Must request images for existing wallpaper collection',
     );
     return Promise.resolve({images: this.images_});
   }
 
-  /** @override */
   fetchGooglePhotosCount() {
     this.methodCalled('fetchGooglePhotosCount');
     const count =
@@ -166,56 +139,48 @@ export class TestWallpaperProvider extends TestBrowserProxy {
     return Promise.resolve({count: count});
   }
 
-  /** @override */
   getLocalImages() {
     this.methodCalled('getLocalImages');
     return Promise.resolve({images: this.localImages});
   }
 
-  /** @override */
-  getLocalImageThumbnail(filePath) {
+  getLocalImageThumbnail(filePath: FilePath) {
     this.methodCalled('getLocalImageThumbnail', filePath);
-    return Promise.resolve({data: this.localImageData[filePath.path]});
+    return Promise.resolve({data: this.localImageData[filePath.path]!});
   }
 
-  /** @override */
-  setWallpaperObserver(remote) {
+  setWallpaperObserver(remote: WallpaperObserverRemote) {
     this.methodCalled('setWallpaperObserver');
     this.wallpaperObserverRemote = remote;
     window.setTimeout(() => {
-      this.wallpaperObserverRemote.onWallpaperChanged(this.currentWallpaper);
+      this.wallpaperObserverRemote!.onWallpaperChanged(this.currentWallpaper);
     }, this.wallpaperObserverUpdateTimeout);
   }
 
-  /** @override */
-  selectWallpaper(assetId, previewMode) {
+  selectWallpaper(assetId: bigint, previewMode: boolean) {
     this.methodCalled('selectWallpaper', assetId, previewMode);
     return Promise.resolve({success: this.selectWallpaperResponse});
   }
 
-  /** @override */
-  selectLocalImage(id, layout, previewMode) {
-    this.methodCalled('selectLocalImage', id, layout, previewMode);
+  selectLocalImage(
+      path: FilePath, layout: WallpaperLayout, previewMode: boolean) {
+    this.methodCalled('selectLocalImage', path, layout, previewMode);
     return Promise.resolve({success: this.selectLocalImageResponse});
   }
 
-  /** @override */
-  setCustomWallpaperLayout(layout) {
+  setCustomWallpaperLayout(layout: WallpaperLayout) {
     this.methodCalled('setCustomWallpaperLayout', layout);
   }
 
-  /** @override */
-  setDailyRefreshCollectionId(collectionId) {
+  setDailyRefreshCollectionId(collectionId: string) {
     this.methodCalled('setDailyRefreshCollectionId', collectionId);
   }
 
-  /** @override */
   getDailyRefreshCollectionId() {
     this.methodCalled('getDailyRefreshCollectionId');
-    return Promise.resolve({collectionId: this.collections_[0].id});
+    return Promise.resolve({collectionId: this.collections_![0]!.id});
   }
 
-  /** @override */
   updateDailyRefreshWallpaper() {
     this.methodCalled('updateDailyRefreshWallpaper');
     return Promise.resolve({success: this.updateDailyRefreshWallpaperResponse});
@@ -226,21 +191,15 @@ export class TestWallpaperProvider extends TestBrowserProxy {
     return Promise.resolve({tabletMode: this.isInTabletModeResponse});
   }
 
-  /** @override */
   confirmPreviewWallpaper() {
     this.methodCalled('confirmPreviewWallpaper');
   }
 
-  /** @override */
   cancelPreviewWallpaper() {
     this.methodCalled('cancelPreviewWallpaper');
   }
 
-  /**
-   * @param {!Array<!WallpaperCollection>}
-   *     collections
-   */
-  setCollections(collections) {
+  setCollections(collections: WallpaperCollection[]) {
     this.collections_ = collections;
   }
 
@@ -248,10 +207,7 @@ export class TestWallpaperProvider extends TestBrowserProxy {
     this.collections_ = null;
   }
 
-  /**
-   * @param {Array<!WallpaperImage>} images
-   */
-  setImages(images) {
+  setImages(images: WallpaperImage[]) {
     this.images_ = images;
   }
 

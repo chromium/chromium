@@ -32,7 +32,7 @@ export function PersonalizationMainTest() {
   });
 
   test('displays content', async () => {
-    personalizationMainElement = initElement(PersonalizationMain.is);
+    personalizationMainElement = initElement(PersonalizationMain);
     assertEquals(
         'Personalization',
         personalizationMainElement.shadowRoot.querySelector('h1').innerText);

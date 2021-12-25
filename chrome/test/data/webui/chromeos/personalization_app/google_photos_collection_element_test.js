@@ -56,7 +56,7 @@ export function GooglePhotosCollectionTest() {
     personalizationStore.data.wallpaper.loading.googlePhotos.photos = false;
 
     googlePhotosCollectionElement =
-        initElement(GooglePhotosCollection.is, {hidden: false});
+        initElement(GooglePhotosCollection, {hidden: false});
     await waitAfterNextRender(googlePhotosCollectionElement);
 
     // Zero state should be absent.
@@ -87,7 +87,7 @@ export function GooglePhotosCollectionTest() {
     personalizationStore.data.wallpaper.loading.googlePhotos.photos = false;
 
     googlePhotosCollectionElement =
-        initElement(GooglePhotosCollection.is, {hidden: false});
+        initElement(GooglePhotosCollection, {hidden: false});
     await waitAfterNextRender(googlePhotosCollectionElement);
 
     // Zero state should be absent.
@@ -187,7 +187,7 @@ export function GooglePhotosCollectionTest() {
     personalizationStore.data.wallpaper.loading.googlePhotos.photos = false;
 
     googlePhotosCollectionElement =
-        initElement(GooglePhotosCollection.is, {hidden: false});
+        initElement(GooglePhotosCollection, {hidden: false});
     await waitAfterNextRender(googlePhotosCollectionElement);
 
     // Photos tab should be absent.

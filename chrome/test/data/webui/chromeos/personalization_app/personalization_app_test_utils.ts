@@ -7,9 +7,9 @@
  * SWA.
  */
 
-import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
+import {emptyState, PersonalizationState} from 'chrome://personalization/trusted/personalization_state.js';
 import {setWallpaperProviderForTesting} from 'chrome://personalization/trusted/wallpaper/wallpaper_interface_provider.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
@@ -19,15 +19,12 @@ import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 /**
  * Constructs the given element with properties and appends it to body.
- * TODO(cowmoo) make generic and cast to specific polymer types.
- * @param {!string} tag
- * @param {!Object} properties
- * @returns {!HTMLElement}
  */
-export function initElement(tag, properties = {}) {
-  const element = /** @type {!HTMLElement} **/ (document.createElement(tag));
+export function initElement<T extends PolymerElement>(
+    cls: {new (): T; is: string}, properties = {}): T {
+  const element = document.createElement(cls.is) as T & HTMLElement;
   for (const [key, value] of Object.entries(properties)) {
-    element[key] = value;
+    (element as any)[key] = value;
   }
   document.body.appendChild(element);
   flush();
@@ -38,13 +35,12 @@ export function initElement(tag, properties = {}) {
  * Tear down an element. Make sure the iframe load callback
  * has completed to avoid weird race condition with loading.
  * @see {b/185905694, crbug/466089}
- * @param {*} element
  */
-export async function teardownElement(element) {
+export async function teardownElement(element: HTMLElement|null) {
   if (!element) {
     return;
   }
-  const iframe = await element.iframePromise_;
+  const iframe = await (element as any).iframePromise_;
   if (iframe) {
     iframe.remove();
     await flushTasks();
@@ -56,11 +52,8 @@ export async function teardownElement(element) {
 /**
  * Sets up the test wallpaper provider, test personalization store, and clears
  * the page.
- * @param {!PersonalizationState} initialState
- * @return {{wallpaperProvider: !TestWallpaperProvider, personalizationStore:
- *     !TestPersonalizationStore}}
  */
-export function baseSetup(initialState = emptyState()) {
+export function baseSetup(initialState: PersonalizationState = emptyState()) {
   const wallpaperProvider = new TestWallpaperProvider();
   setWallpaperProviderForTesting(wallpaperProvider);
   const personalizationStore = new TestPersonalizationStore(initialState);
@@ -69,7 +62,7 @@ export function baseSetup(initialState = emptyState()) {
   return {wallpaperProvider, personalizationStore};
 }
 
-function getDebugString(w) {
+function getDebugString(w: any) {
   if (w === window) {
     return w.location.href;
   }
@@ -80,10 +73,8 @@ function getDebugString(w) {
  * Helper function to test if two window objects are the same.
  * Plain |assertEquals| fails when it attempts to get a debug string
  * representation of cross-origin iframe window.
- * @param {!Object} x
- * @param {!Object} y
  */
-export function assertWindowObjectsEqual(x, y) {
+export function assertWindowObjectsEqual(x: object|null, y: object|null) {
   assertTrue(
       x === y,
       `Window objects are not identical: ${getDebugString(x)}, ${

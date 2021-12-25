@@ -55,7 +55,7 @@ export function GooglePhotosPhotosByAlbumIdTest() {
         .photosByAlbumId = {};
 
     googlePhotosPhotosByAlbumIdElement =
-        initElement(GooglePhotosPhotosByAlbumId.is, {hidden: false});
+        initElement(GooglePhotosPhotosByAlbumId, {hidden: false});
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
 
     // Initially no album id selected. Photos should be absent.
