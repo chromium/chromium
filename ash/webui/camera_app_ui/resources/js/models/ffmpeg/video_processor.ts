@@ -7,131 +7,124 @@ import {AsyncJobQueue} from '../../async_job_queue.js';
 import * as Comlink from '../../lib/comlink.js';
 import runFFmpeg from '../../lib/ffmpeg.js';
 import {WaitableEvent} from '../../waitable_event.js';
-// eslint-disable-next-line no-unused-vars
 import {AsyncWriter} from '../async_writer.js';
-// eslint-disable-next-line no-unused-vars
 import {VideoProcessor} from '../video_processor_interface.js';
 
-// eslint-disable-next-line no-unused-vars
 import {VideoProcessorArgs} from './video_processor_args.js';
 
 /**
  * A file stream in Emscripten.
- * @typedef {{position: number}}
  */
-let FileStream;  // eslint-disable-line no-unused-vars
+interface FileStream {
+  position: number;
+}
 
 /**
  * The set of callbacks for an emulated device in Emscripten. ref:
  * https://emscripten.org/docs/api_reference/Filesystem-API.html#FS.registerDevice
- * @typedef {{
- *   open: function(!FileStream): void,
- *   close: function(!FileStream): void,
- *   read: function(!FileStream, !Int8Array, number, number, number): number,
- *   write: function(!FileStream, !Int8Array, number, number, number=): number,
- *   llseek: function(!FileStream, number, number): number,
- * }}
  */
-let FileOps;  // eslint-disable-line no-unused-vars
+interface FileOps {
+  open(stream: FileStream): void;
+  close(stream: FileStream): void;
+  read(
+      stream: FileStream, buffer: Int8Array, offset: number, length: number,
+      position: number): number;
+  write(
+      stream: FileStream, buffer: Int8Array, offset: number, length: number,
+      position?: number): number;
+  llseek(stream: FileStream, offset: number, whence: number): number;
+}
+
+type ReadableCallback = (deviceReadable: number) => void;
 
 /**
  * An emulated input device backed by Int8Array.
  */
 class InputDevice {
   /**
-   * @public
+   * The data to be read from the device.
    */
-  constructor() {
-    /**
-     * The data to be read from the device.
-     * @type {!Array<!Int8Array>}
-     */
-    this.data_ = [];
+  private readonly data: Int8Array[] = [];
 
-    /**
-     * Whether the writing is canceled.
-     * @type {boolean}
-     */
-    this.isCanceled_ = false;
+  /**
+   * Whether the writing is canceled.
+   */
+  private isCanceled = false;
 
-    /**
-     * Whether the writing is ended. If true, no more data would be pushed.
-     * @type {boolean}
-     */
-    this.ended_ = false;
+  /**
+   * Whether the writing is ended. If true, no more data would be pushed.
+   */
+  private ended = false;
 
-    /**
-     * The callback to be triggered when the device is ready to read(). The
-     * callback would be called only once and reset to null afterward. It should
-     * be called with 1 if the device is readable or 0 if it is canceled.
-     * @type {?function(number): void}
-     */
-    this.readableCallback_ = null;
-  }
+  /**
+   * The callback to be triggered when the device is ready to read(). The
+   * callback would be called only once and reset to null afterward. It should
+   * be called with 1 if the device is readable or 0 if it is canceled.
+   */
+  private readableCallback: ReadableCallback|null = null;
 
   /**
    * Returns 1 if the device is readable or 0 if it is canceled.
-   * @return {number}
    */
-  isDeviceReadable_() {
-    return this.isCanceled_ ? 0 : 1;
+  private isDeviceReadable(): number {
+    return this.isCanceled ? 0 : 1;
   }
 
   /**
    * Notifies and resets the readable callback, if any.
    */
-  consumeReadableCallback() {
-    if (this.readableCallback_ === null) {
+  consumeReadableCallback(): void {
+    if (this.readableCallback === null) {
       return;
     }
-    const callback = this.readableCallback_;
-    this.readableCallback_ = null;
-    callback(this.isDeviceReadable_());
+    const callback = this.readableCallback;
+    this.readableCallback = null;
+    callback(this.isDeviceReadable());
   }
 
   /**
    * Pushes a chunk of data into the device.
-   * @param {!Int8Array} data
    */
-  push(data) {
-    assert(!this.ended_);
-    this.data_.push(data);
+  push(data: Int8Array): void {
+    assert(!this.ended);
+    this.data.push(data);
     this.consumeReadableCallback();
   }
 
   /**
    * Closes the writing pipe.
    */
-  endPush() {
-    this.ended_ = true;
+  endPush(): void {
+    this.ended = true;
     this.consumeReadableCallback();
   }
 
   /**
    * Implements the read() operation for the emulated device.
-   * @param {!FileStream} stream
-   * @param {!Int8Array} buffer The destination buffer.
-   * @param {number} offset The destination buffer offset.
-   * @param {number} length The maximum length to read.
-   * @param {number} position The position to read from stream.
-   * @return {number} The numbers of bytes read.
+   * @param buffer The destination buffer.
+   * @param offset The destination buffer offset.
+   * @param length The maximum length to read.
+   * @param position The position to read from stream.
+   * @return The numbers of bytes read.
    */
-  read(stream, buffer, offset, length, position) {
+  read(
+      stream: FileStream, buffer: Int8Array, offset: number, length: number,
+      position: number): number {
     assert(position === stream.position, 'stdin is not seekable');
-    if (this.data_.length === 0) {
-      assert(this.ended_);
+    if (this.data.length === 0) {
+      assert(this.ended);
       return 0;
     }
 
     let bytesRead = 0;
-    while (this.data_.length > 0 && length > 0) {
-      const data = this.data_[0];
+    while (this.data.length > 0 && length > 0) {
+      const data = this.data[0];
       const len = Math.min(data.length, length);
       buffer.set(data.subarray(0, len), offset);
       if (len === data.length) {
-        this.data_.shift();
+        this.data.shift();
       } else {
-        this.data_[0] = data.subarray(len);
+        this.data[0] = data.subarray(len);
       }
 
       offset += len;
@@ -142,13 +135,14 @@ class InputDevice {
     return bytesRead;
   }
 
-  /**
-   * @return {!FileOps}
-   */
-  getFileOps() {
+  getFileOps(): FileOps {
     return {
-      open: () => {},
-      close: () => {},
+      open: () => {
+        // Do nothing.
+      },
+      close: () => {
+        // Do nothing.
+      },
       read: (...args) => this.read(...args),
       write: () => assertNotReached('write should not be called on stdin'),
       llseek: () => assertNotReached('llseek should not be called on stdin'),
@@ -158,22 +152,21 @@ class InputDevice {
   /**
    * Sets the readable callback. The callback would be called immediately if
    * the device is in a readable state.
-   * @param {function(number): void} callback
    */
-  setReadableCallback(callback) {
-    if (this.data_.length > 0 || this.ended_) {
-      callback(this.isDeviceReadable_());
+  setReadableCallback(callback: ReadableCallback) {
+    if (this.data.length > 0 || this.ended) {
+      callback(this.isDeviceReadable());
       return;
     }
-    assert(this.readableCallback_ === null);
-    this.readableCallback_ = callback;
+    assert(this.readableCallback === null);
+    this.readableCallback = callback;
   }
 
   /**
    * Marks the input device as canceled so that ffmpeg can handle it properly.
    */
   cancel() {
-    this.isCanceled_ = true;
+    this.isCanceled = true;
     this.endPush();
   }
 }
@@ -182,39 +175,30 @@ class InputDevice {
  * An emulated output device.
  */
 class OutputDevice {
-  /**
-   * @param {!AsyncWriter} output Where should the device write to.
-   */
-  constructor(output) {
-    /**
-     * @type {!AsyncWriter}
-     * @private
-     */
-    this.output_ = output;
+  private readonly closed = new WaitableEvent();
 
-    /**
-     * @type {!WaitableEvent}
-     * @private
-     */
-    this.closed_ = new WaitableEvent();
-  }
+  /**
+   * @param output Where should the device write to.
+   */
+  constructor(private readonly output: AsyncWriter) {}
 
   /**
    * Implements the write() operation for the emulated device.
-   * @param {!FileStream} stream
-   * @param {!Int8Array} buffer The source buffer.
-   * @param {number} offset The source buffer offset.
-   * @param {number} length The maximum length to be write.
-   * @param {number=} position The position to write in stream.
-   * @return {number} The numbers of bytes written.
+   * @param buffer The source buffer.
+   * @param offset The source buffer offset.
+   * @param length The maximum length to be write.
+   * @param position The position to write in stream.
+   * @return The numbers of bytes written.
    */
-  write(stream, buffer, offset, length, position) {
-    assert(!this.closed_.isSignaled());
+  write(
+      stream: FileStream, buffer: Int8Array, offset: number, length: number,
+      position?: number): number {
+    assert(!this.closed.isSignaled());
     const blob = new Blob([buffer.subarray(offset, offset + length)]);
     assert(
         position === undefined || position === stream.position,
         'combined seek-and-write operation is not supported');
-    this.output_.write(blob);
+    this.output.write(blob);
     return length;
   }
 
@@ -222,16 +206,15 @@ class OutputDevice {
    * Implements the llseek() operation for the emulated device.
    * Only SEEK_SET (0) is supported as |whence|. Reference:
    * https://emscripten.org/docs/api_reference/Filesystem-API.html#FS.llseek
-   * @param {!FileStream} stream
-   * @param {number} offset The offset in bytes relative to |whence|.
-   * @param {number} whence The reference position to be used.
-   * @return {number} The resulting file position.
+   * @param offset The offset in bytes relative to |whence|.
+   * @param whence The reference position to be used.
+   * @return The resulting file position.
    */
-  llseek(stream, offset, whence) {
+  llseek(stream: FileStream, offset: number, whence: number): number {
     assert(whence === 0, 'only SEEK_SET is supported');
-    assert(this.output_.seekable());
+    assert(this.output.seekable());
     if (stream.position !== offset) {
-      this.output_.seek(offset);
+      this.output.seek(offset);
     }
     return offset;
   }
@@ -239,23 +222,22 @@ class OutputDevice {
   /**
    * Implements the close() operation for the emulated device.
    */
-  close() {
-    this.closed_.signal();
+  close(): void {
+    this.closed.signal();
   }
 
   /**
-   * @return {!Promise} Resolved when the device is closed.
+   * @return Resolved when the device is closed.
    */
-  async waitClosed() {
-    await this.closed_.wait();
+  async waitClosed(): Promise<void> {
+    await this.closed.wait();
   }
 
-  /**
-   * @return {!FileOps}
-   */
-  getFileOps() {
+  getFileOps(): FileOps {
     return {
-      open: () => {},
+      open: () => {
+        // Do nothing.
+      },
       close: () => this.close(),
       read: () => assertNotReached('read should not be called on output'),
       write: (...args) => this.write(...args),
@@ -267,18 +249,17 @@ class OutputDevice {
 /**
  * A ffmpeg-based video processor that can process input and output data
  * incrementally.
- * @implements {VideoProcessor}
  */
-class FFMpegVideoProcessor {
+class FFMpegVideoProcessor implements VideoProcessor {
+  private readonly inputDevice = new InputDevice();
+  private readonly outputDevice: OutputDevice;
+  private readonly jobQueue = new AsyncJobQueue();
   /**
-   * @param {!AsyncWriter} output The output writer.
-   * @param {!VideoProcessorArgs} processorArgs
+   * @param output The output writer.
    */
-  constructor(output, processorArgs) {
-    this.output_ = output;
-    this.inputDevice_ = new InputDevice();
-    this.outputDevice_ = new OutputDevice(output);
-    this.jobQueue_ = new AsyncJobQueue();
+  constructor(
+      private readonly output: AsyncWriter, processorArgs: VideoProcessorArgs) {
+    this.outputDevice = new OutputDevice(output);
 
     const outputFile = `/output.${processorArgs.outputExtension}`;
     const args = [
@@ -306,19 +287,18 @@ class FFMpegVideoProcessor {
       },
       noFSInit: true,  // It would be setup in preRun().
       preRun: () => {
-        /** @suppress {missingProperties} */
-        const fs = config.FS;
+        const fs = config['FS'];
         assert(fs !== null);
         // 80 is just a random major number that won't collide with other
         // default devices of the Emscripten runtime environment, which uses
         // major numbers 1, 3, 5, 6, 64, and 65. Ref:
         // https://github.com/emscripten-core/emscripten/blob/1ed6dd5cfb88d927ec03ecac8756f0273810d5c9/src/library_fs.js#L1331
         const input = fs.makedev(80, 0);
-        fs.registerDevice(input, this.inputDevice_.getFileOps());
+        fs.registerDevice(input, this.inputDevice.getFileOps());
         fs.mkdev('/dev/stdin', input);
 
         const output = fs.makedev(80, 1);
-        fs.registerDevice(output, this.outputDevice_.getFileOps());
+        fs.registerDevice(output, this.outputDevice.getFileOps());
         fs.mkdev(outputFile, output);
 
         fs.symlink('/dev/tty1', '/dev/stdout');
@@ -333,7 +313,7 @@ class FFMpegVideoProcessor {
     };
 
     const initFFmpeg = () => {
-      return new Promise((resolve) => {
+      return new Promise<void>((resolve) => {
         // runFFmpeg() is a special function exposed by Emscripten that will
         // return an object with then(). The function passed into then() would
         // be called when the runtime is initialized. Note that because the
@@ -342,64 +322,61 @@ class FFMpegVideoProcessor {
         runFFmpeg(config).then(() => resolve());
       });
     };
-    this.jobQueue_.push(initFFmpeg);
+    this.jobQueue.push(initFFmpeg);
 
     // This is a function to be called by ffmpeg before running read() in C.
     globalThis.waitReadable = (callback) => {
-      this.inputDevice_.setReadableCallback(callback);
+      this.inputDevice.setReadableCallback(callback);
     };
   }
 
   /**
    * Writes a blob with mkv data into the processor.
-   * @param {!Blob} blob
    */
-  async write(blob) {
-    this.jobQueue_.push(async () => {
+  async write(blob: Blob): Promise<void> {
+    this.jobQueue.push(async () => {
       const buf = await blob.arrayBuffer();
-      this.inputDevice_.push(new Int8Array(buf));
+      this.inputDevice.push(new Int8Array(buf));
     });
   }
 
   /**
    * Closes the writer. No more write operations are allowed.
-   * @return {!Promise} Resolved when all write operations are finished.
+   * @return Resolved when all write operations are finished.
    */
-  async close() {
+  async close(): Promise<void> {
     // Flush and close the input device.
-    this.jobQueue_.push(async () => {
-      this.inputDevice_.endPush();
+    this.jobQueue.push(async () => {
+      this.inputDevice.endPush();
     });
-    await this.jobQueue_.flush();
+    await this.jobQueue.flush();
 
     // Wait until the output device is closed.
-    await this.outputDevice_.waitClosed();
+    await this.outputDevice.waitClosed();
 
     // Flush and close the output writer.
-    await this.output_.close();
+    await this.output.close();
   }
 
   /**
    * Cancels all the remaining tasks and notifies ffmpeg that the writing is
    * canceled.
-   * @return {!Promise}
    */
-  async cancel() {
+  async cancel(): Promise<void> {
     // Clear and make sure there is no pending task.
-    this.jobQueue_.clear();
-    await this.jobQueue_.flush();
+    this.jobQueue.clear();
+    await this.jobQueue.flush();
 
-    this.inputDevice_.cancel();
-    this.outputDevice_.close();
-  }
-
-  /**
-   * Expose the VideoProcessor constructor to given end point.
-   * @param {!MessagePort} endPoint
-   */
-  static exposeVideoProcessor(endPoint) {
-    Comlink.expose(FFMpegVideoProcessor, endPoint);
+    this.inputDevice.cancel();
+    this.outputDevice.close();
   }
 }
 
-Comlink.expose(FFMpegVideoProcessor);
+/**
+ * Expose the VideoProcessor constructor to given end point.
+ */
+function exposeVideoProcessor(endPoint: MessagePort) {
+  Comlink.expose(FFMpegVideoProcessor, endPoint);
+}
+
+Comlink.expose({exposeVideoProcessor});

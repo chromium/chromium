@@ -196,7 +196,7 @@ TS_ENTRY_FILES = [
     "js/init.ts",
     "js/main.js",
     "js/models/barcode_worker.ts",
-    "js/models/ffmpeg/video_processor.js",
+    "js/models/ffmpeg/video_processor.ts",
     "js/test_bridge.ts",
     "js/untrusted_ga_helper.js",
     "js/untrusted_script_loader.js",
