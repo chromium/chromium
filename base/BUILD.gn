@@ -1697,17 +1697,14 @@ mixed_component("base") {
   }
 
   # Chromeos.
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "logging_chromeos.cc",
-      "power_monitor/power_monitor_device_source_chromeos.cc",
       "system/sys_info_chromeos.cc",
     ]
-  }
-
-  # Lacros.
-  if (is_chromeos_lacros) {
-    sources += [ "system/sys_info_chromeos.cc" ]
+    if (is_chromeos_ash) {
+      sources += [ "power_monitor/power_monitor_device_source_chromeos.cc" ]
+    }
   }
 
   # Fuchsia.

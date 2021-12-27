@@ -159,7 +159,7 @@ int g_min_log_level = 0;
 // LoggingDestination values joined by bitwise OR.
 uint32_t g_logging_destination = LOG_DEFAULT;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Specifies the format of log header for chrome os.
 LogFormat g_log_format = LogFormat::LOG_FORMAT_SYSLOG;
 #endif
@@ -398,7 +398,7 @@ bool BaseInitLoggingImpl(const LoggingSettings& settings) {
            0u);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   g_log_format = settings.log_format;
 #endif
 
@@ -899,13 +899,13 @@ void LogMessage::Init(const char* file, int line) {
   if (last_slash_pos != base::StringPiece::npos)
     filename.remove_prefix(last_slash_pos + 1);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (g_log_format == LogFormat::LOG_FORMAT_SYSLOG) {
     InitWithSyslogPrefix(
         filename, line, TickCount(), log_severity_name(severity_), g_log_prefix,
         g_log_process_id, g_log_thread_id, g_log_timestamp, g_log_tickcount);
   } else
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   {
     // TODO(darin): It might be nice if the columns were fixed width.
     stream_ << '[';
@@ -1058,7 +1058,7 @@ FILE* DuplicateLogFILE() {
 ScopedLoggingSettings::ScopedLoggingSettings()
     : min_log_level_(g_min_log_level),
       logging_destination_(g_logging_destination),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       log_format_(g_log_format),
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       enable_process_id_(g_log_process_id),
@@ -1084,7 +1084,7 @@ ScopedLoggingSettings::~ScopedLoggingSettings() {
   CHECK(InitLogging({
     .logging_dest = logging_destination_,
     .log_file_path = log_file_name_ ? log_file_name_->data() : nullptr,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     .log_format = log_format_
 #endif
   })) << "~ScopedLoggingSettings() failed to restore settings.";
@@ -1097,7 +1097,7 @@ ScopedLoggingSettings::~ScopedLoggingSettings() {
   SetLogMessageHandler(message_handler_);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ScopedLoggingSettings::SetLogFormat(LogFormat log_format) const {
   g_log_format = log_format;
 }
