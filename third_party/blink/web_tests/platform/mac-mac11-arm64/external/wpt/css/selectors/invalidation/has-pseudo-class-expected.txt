@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS Initial color
-FAIL Set checked on checkbox assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
-PASS Unset checked on checkbox
-FAIL Set selected on option assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
-PASS Unset selected on option
-Harness: the test ran to completion.
-
