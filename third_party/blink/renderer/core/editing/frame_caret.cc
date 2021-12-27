@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/editing/frame_caret.h"
 
 #include "base/location.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/editing/caret_display_item_client.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -50,21 +51,6 @@ namespace blink {
 
 namespace {
 
-EffectPaintPropertyNode::State CaretEffectNodeState(
-    bool visible,
-    const TransformPaintPropertyNodeOrAlias& local_transform_space) {
-  EffectPaintPropertyNode::State state;
-  state.opacity = visible ? 1.f : 0.f;
-  state.local_transform_space = &local_transform_space;
-  DEFINE_STATIC_LOCAL(
-      CompositorElementId, element_id,
-      (CompositorElementIdFromUniqueObjectId(
-          NewUniqueObjectId(), CompositorElementIdNamespace::kPrimaryEffect)));
-  state.compositor_element_id = element_id;
-  state.direct_compositing_reasons = CompositingReason::kWillChangeOpacity;
-  return state;
-}
-
 }  // anonymous namespace
 
 FrameCaret::FrameCaret(LocalFrame& frame,
@@ -75,6 +61,8 @@ FrameCaret::FrameCaret(LocalFrame& frame,
       caret_blink_timer_(frame.GetTaskRunner(TaskType::kInternalDefault),
                          this,
                          &FrameCaret::CaretBlinkTimerFired),
+      is_composited_caret_enabled_(
+          base::FeatureList::IsEnabled(features::kCompositedCaret)),
       effect_(EffectPaintPropertyNode::Create(
           EffectPaintPropertyNode::Root(),
           CaretEffectNodeState(/*visible*/ true,
@@ -91,6 +79,22 @@ void FrameCaret::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(display_item_client_);
   visitor->Trace(caret_blink_timer_);
+}
+
+EffectPaintPropertyNode::State FrameCaret::CaretEffectNodeState(
+    bool visible,
+    const TransformPaintPropertyNodeOrAlias& local_transform_space) const {
+  EffectPaintPropertyNode::State state;
+  state.opacity = visible ? 1.f : 0.f;
+  state.local_transform_space = &local_transform_space;
+  DEFINE_STATIC_LOCAL(
+      CompositorElementId, element_id,
+      (CompositorElementIdFromUniqueObjectId(
+          NewUniqueObjectId(), CompositorElementIdNamespace::kPrimaryEffect)));
+  state.compositor_element_id = element_id;
+  if (is_composited_caret_enabled_)
+    state.direct_compositing_reasons = CompositingReason::kWillChangeOpacity;
+  return state;
 }
 
 const PositionWithAffinity FrameCaret::CaretPosition() const {

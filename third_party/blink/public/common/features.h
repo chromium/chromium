@@ -581,6 +581,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kPrefetchAndroidFonts;
 BLINK_COMMON_EXPORT extern const base::Feature
     kLazyInitializeTimeZoneController;
 
+BLINK_COMMON_EXPORT extern const base::Feature kCompositedCaret;
+
 }  // namespace features
 }  // namespace blink
 

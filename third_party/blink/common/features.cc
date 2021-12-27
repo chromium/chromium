@@ -1180,5 +1180,8 @@ const base::Feature kPrefetchAndroidFonts{"PrefetchAndroidFonts",
 const base::Feature kLazyInitializeTimeZoneController{
     "LazyInitializeTimeZoneController", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCompositedCaret{"CompositedCaret",
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

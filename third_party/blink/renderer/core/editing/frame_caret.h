@@ -93,6 +93,10 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   friend class FrameSelectionTest;
   friend class CaretDisplayItemClientTest;
 
+  EffectPaintPropertyNode::State CaretEffectNodeState(
+      bool visible,
+      const TransformPaintPropertyNodeOrAlias& local_transform_space) const;
+
   const PositionWithAffinity CaretPosition() const;
 
   bool ShouldShowCaret() const;
@@ -107,11 +111,12 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   // TODO(https://crbug.com/1123630): Consider moving the timer into the
   // compositor thread.
   HeapTaskRunnerTimer<FrameCaret> caret_blink_timer_;
-  // Controls visibility of caret with opacity when the caret is blinking.
-  scoped_refptr<EffectPaintPropertyNode> effect_;
   bool is_caret_enabled_ = false;
   bool should_show_caret_ = false;
   bool is_caret_blinking_suspended_ = false;
+  bool is_composited_caret_enabled_ = true;
+  // Controls visibility of caret with opacity when the caret is blinking.
+  scoped_refptr<EffectPaintPropertyNode> effect_;
 };
 
 }  // namespace blink
