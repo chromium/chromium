@@ -4,6 +4,7 @@
 
 #include "content/browser/speech/speech_synthesis_impl.h"
 
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/speech/tts_utterance_impl.h"
 #include "content/public/browser/web_contents.h"
 
@@ -91,9 +92,7 @@ void SendVoiceListToObserver(
 SpeechSynthesisImpl::SpeechSynthesisImpl(BrowserContext* browser_context,
                                          RenderFrameHostImpl* rfh)
     : browser_context_(browser_context),
-      web_contents_(WebContents::FromRenderFrameHost((rfh))),
-      feature_handle_(rfh->RegisterBackForwardCacheDisablingNonStickyFeature(
-          blink::scheduler::WebSchedulerTrackedFeature::kSpeechSynthesis)) {
+      web_contents_(WebContents::FromRenderFrameHost((rfh))) {
   DCHECK(browser_context_);
   DCHECK(web_contents_);
   TtsController::GetInstance()->AddVoicesChangedDelegate(this);
@@ -156,7 +155,6 @@ void SpeechSynthesisImpl::Resume() {
 
 void SpeechSynthesisImpl::Cancel() {
   TtsController::GetInstance()->Stop();
-  feature_handle_.reset();
 }
 
 void SpeechSynthesisImpl::OnVoicesChanged() {
