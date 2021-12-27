@@ -9907,6 +9907,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OccludedWindowMouseEvents" units="events"
     expires_after="2021-12-12">
+  <obsolete>
+    Retired in M99.
+  </obsolete>
   <owner>davidbienvenu@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -17331,6 +17334,9 @@ regressions. -->
 
 <histogram name="WindowOcclusionChanged" enum="WindowOcclusionState"
     expires_after="2021-10-04">
+  <obsolete>
+    Retired in M99.
+  </obsolete>
   <owner>davidbienvenu@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
