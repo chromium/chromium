@@ -85,7 +85,8 @@ async function initCameraDirectory(): Promise<DirectoryAccessEntry|null> {
   // handle if the handle changes in the future.
   const isConsumedHandle = window.sessionStorage.getItem('IsConsumedHandle');
   if (isConsumedHandle !== null) {
-    const storedHandle = await idb.get(idb.KEY_CAMERA_DIRECTORY_HANDLE);
+    const storedHandle = await idb.get<FileSystemDirectoryHandle>(
+        idb.KEY_CAMERA_DIRECTORY_HANDLE);
     handle.signal(storedHandle);
   } else {
     const launchQueue = window.launchQueue;

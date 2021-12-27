@@ -8,8 +8,7 @@ const DB_STORE = 'store';
 // Key of the camera directory handle.
 export const KEY_CAMERA_DIRECTORY_HANDLE = 'CameraDirectoryHandle';
 
-/** @type {!Promise<!IDBDatabase>} */
-const idb = new Promise((resolve, reject) => {
+const idb = new Promise<IDBDatabase>((resolve, reject) => {
   const request = indexedDB.open(DB_NAME);
   request.onerror = () => {
     reject(request.error);
@@ -27,14 +26,14 @@ const idb = new Promise((resolve, reject) => {
 
 /**
  * Retrieves serializable object from idb.
- * @param {string} key The key of the object.
- * @return {!Promise<?Object>} The promise of the retrieved object.
+ * @param key The key of the object.
+ * @return The promise of the retrieved object.
  */
-export async function get(key) {
+export async function get<T>(key: string): Promise<T|null> {
   const transaction = (await idb).transaction(DB_STORE, 'readonly');
   const objStore = transaction.objectStore(DB_STORE);
   const request = objStore.get(key);
-  return new Promise((resolve, reject) => {
+  return new Promise<T>((resolve, reject) => {
     request.onerror = () => reject(request.error);
     request.onsuccess = () => {
       const entry = request.result;
@@ -49,11 +48,10 @@ export async function get(key) {
 
 /**
  * Stores serializable object into idb.
- * @param {string} key The key of the object.
- * @param {!Object} obj The object to store.
- * @return {!Promise}
+ * @param key The key of the object.
+ * @param obj The object to store.
  */
-export async function set(key, obj) {
+export async function set(key: string, obj: unknown): Promise<void> {
   const transaction = (await idb).transaction(DB_STORE, 'readwrite');
   const objStore = transaction.objectStore(DB_STORE);
   const request = objStore.put({id: key, value: obj});

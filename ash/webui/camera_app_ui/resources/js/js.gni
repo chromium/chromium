@@ -40,7 +40,7 @@ compile_js_files = [
   "models/file_namer.ts",
   "models/file_system_access_entry.ts",
   "models/file_system.ts",
-  "models/idb.js",
+  "models/idb.ts",
   "models/lazy_directory_entry.js",
   "models/load_time_data.js",
   "models/local_storage.js",
