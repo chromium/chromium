@@ -12,6 +12,7 @@
 #include "ash/components/login/auth/user_context.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/settings/cros_settings_provider.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
@@ -25,6 +26,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
@@ -39,6 +41,7 @@
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -327,7 +330,11 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
   const LoginManagerMixin::TestUserInfo existing_user_{
       AccountId::FromUserEmailGaiaId(kExistingUser, kExistingGaiaID)};
 
-  LoginManagerMixin login_manager_{&mixin_host_, {existing_user_}};
+  CryptohomeMixin cryptohome_mixin_{&mixin_host_};
+  LoginManagerMixin login_manager_{&mixin_host_,
+                                   {existing_user_},
+                                   nullptr,
+                                   &cryptohome_mixin_};
 };
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerTest, ExistingUserLogin) {
@@ -1143,20 +1150,32 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryUserAllowlistTest,
 }
 
 class ExistingUserControllerSavePasswordHashTest
-    : public ExistingUserControllerTest {
+    : public ExistingUserControllerTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  ExistingUserControllerSavePasswordHashTest() = default;
+  ExistingUserControllerSavePasswordHashTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kUseAuthsessionAuthentication);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kUseAuthsessionAuthentication);
+    }
+  }
   ~ExistingUserControllerSavePasswordHashTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     ExistingUserControllerTest::SetUpInProcessBrowserTestFixture();
     RefreshDevicePolicy();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that successful GAIA online login saves SyncPasswordData to user
 // profile prefs.
-IN_PROC_BROWSER_TEST_F(ExistingUserControllerSavePasswordHashTest,
+IN_PROC_BROWSER_TEST_P(ExistingUserControllerSavePasswordHashTest,
                        GaiaOnlineLoginSavesPasswordHashToPrefs) {
   UserContext user_context(
       LoginManagerMixin::CreateDefaultUserContext(new_user_));
@@ -1173,7 +1192,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerSavePasswordHashTest,
 
 // Tests that successful offline login saves SyncPasswordData to user profile
 // prefs.
-IN_PROC_BROWSER_TEST_F(ExistingUserControllerSavePasswordHashTest,
+IN_PROC_BROWSER_TEST_P(ExistingUserControllerSavePasswordHashTest,
                        OfflineLoginSavesPasswordHashToPrefs) {
   UserContext user_context(
       LoginManagerMixin::CreateDefaultUserContext(existing_user_));
@@ -1429,5 +1448,9 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, NotManagedUserLogin) {
   EXPECT_FALSE(LoginScreenTestApi::IsManagedMessageInDialogShown(
       not_managed_user_.account_id));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExistingUserControllerSavePasswordHashTest,
+                         testing::Bool());
 
 }  // namespace ash
