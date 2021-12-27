@@ -6896,6 +6896,11 @@ crbug.com/1161590 external/wpt/html/semantics/forms/textfieldselection/select-ev
 # Wpt importer sheriff 2021-01-05
 crbug.com/1163175 external/wpt/css/css-pseudo/first-letter-punctuation-and-space.html [ Failure ]
 
+# Temporarily skipped to unblock crrev.com/c/3358196
+crbug.com/128207 http/tests/devtools/console/console-truncate-long-messages.js [ Skip ]
+crbug.com/128207 http/tests/devtools/console/console-format-style.js [ Skip ]
+crbug.com/128207 http/tests/devtools/console/console-format-style-allowed.js [ Skip ]
+
 # Sheriff 2020-12-22
 crbug.com/1161301 [ Mac10.15 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Pass Timeout ]
 crbug.com/1161301 [ Mac10.14 ] external/wpt/webxr/xrSession_requestReferenceSpace_features.https.html [ Failure Pass Timeout ]
