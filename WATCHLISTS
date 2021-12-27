@@ -871,7 +871,15 @@
                   '|printing/',
     },
     'cursor': {
-      'filepath': 'ui/base/cursor/',
+      'filepath': 'ash/display/cursor'\
+                  '|ash/wm/.*cursor'\
+                  '|ui/aura/cursor/'\
+                  '|ui/base/cursor/'\
+                  '|ui/base/x/x11_cursor'\
+                  '|ui/base/win/win_cursor'\
+                  '|ui/ozone/common/bitmap_cursor'\
+                  '|ui/views/widget/desktop_aura/.*cursor'\
+                  '|ui/wm/core/.*cursor',
     },
     'custom_proxy': {
       'filepath': 'services/network/network_service_proxy_delegate.*',
