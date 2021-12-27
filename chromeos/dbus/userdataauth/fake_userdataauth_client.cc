@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/dbus/cryptohome/rpc.pb.h"
 
 namespace chromeos {
 
@@ -72,7 +73,18 @@ void FakeUserDataAuthClient::Mount(
   ::user_data_auth::CryptohomeErrorCode error = cryptohome_error_;
   last_mount_request_ = request;
   ::user_data_auth::MountReply reply;
-  reply.set_sanitized_username(GetStubSanitizedUsername(request.account()));
+
+  cryptohome::AccountIdentifier account;
+  if (request.has_account() || request.guest_mount()) {
+    account = request.account();
+  } else {
+    auto auth_session = auth_sessions_.find(request.auth_session_id());
+    DCHECK(auth_session != std::end(auth_sessions_));
+    account = auth_session->second.account;
+  }
+
+  reply.set_sanitized_username(GetStubSanitizedUsername(account));
+
   if (IsEcryptfsUserHome(request.account()) &&
       !request.to_migrate_from_ecryptfs() &&
       request.force_dircrypto_if_available()) {
@@ -239,6 +251,8 @@ void FakeUserDataAuthClient::StartAuthSession(
   ::user_data_auth::StartAuthSessionReply reply;
   reply.set_auth_session_id(auth_session_id);
 
+  reply.set_user_exists(UserExists(request.account_id()));
+
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 void FakeUserDataAuthClient::AuthenticateAuthSession(
@@ -374,6 +388,16 @@ FakeUserDataAuthClient::FindKey(
 
   // Specific label
   return keys.find(label);
+}
+
+bool FakeUserDataAuthClient::UserExists(
+    const cryptohome::AccountIdentifier& account_id) const {
+  return existing_users_.find(account_id) != std::end(existing_users_);
+}
+
+void FakeUserDataAuthClient::AddExistingUser(
+    const cryptohome::AccountIdentifier& account_id) {
+  existing_users_.insert(account_id);
 }
 
 }  // namespace chromeos

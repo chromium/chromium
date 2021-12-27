@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_DBUS_USERDATAAUTH_FAKE_USERDATAAUTH_CLIENT_H_
 #define CHROMEOS_DBUS_USERDATAAUTH_FAKE_USERDATAAUTH_CLIENT_H_
 
+#include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 
 #include <set>
@@ -189,6 +190,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // Calls LowDiskSpace() on Observer instances.
   void NotifyLowDiskSpace(uint64_t disk_free_bytes);
 
+  void AddExistingUser(const cryptohome::AccountIdentifier& account_id);
+
  private:
   // Helper that returns the protobuf reply.
   template <typename ReplyType>
@@ -206,6 +209,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   std::map<std::string, cryptohome::Key>::const_iterator FindKey(
       const std::map<std::string, cryptohome::Key>& keys,
       const std::string& label);
+
+  // Check whether user with given id exists
+  bool UserExists(const cryptohome::AccountIdentifier& account_id) const;
 
   // Mount() related fields.
   ::user_data_auth::CryptohomeErrorCode cryptohome_error_ =
@@ -272,6 +278,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       pending_wait_for_service_to_be_available_callbacks_;
 
   // Other stuff/miscellaneous:
+
+  // The users that have already logged in at least once
+  std::set<cryptohome::AccountIdentifier> existing_users_;
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;

@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/signin_specifics.h"
 #include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
@@ -43,13 +44,18 @@ constexpr char kManagedDomain[] = "@example.com";
 
 void AppendUsers(LoginManagerMixin::UserList* users,
                  const std::string& domain,
-                 int n) {
+                 int n,
+                 CryptohomeMixin* cryptohome_mixin) {
   int num = users->size();
   for (int i = 0; i < n; ++i, ++num) {
     const std::string email = "test_user_" + base::NumberToString(num) + domain;
     const std::string gaia_id = base::NumberToString(num) + "111111111";
-    users->push_back(LoginManagerMixin::TestUserInfo(
-        AccountId::FromUserEmailGaiaId(email, gaia_id)));
+    const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
+    users->push_back(LoginManagerMixin::TestUserInfo(account_id));
+
+    if (cryptohome_mixin != nullptr) {
+      cryptohome_mixin->MarkUserAsExisting(account_id);
+    }
   }
 }
 
@@ -64,11 +70,11 @@ UserContext LoginManagerMixin::CreateDefaultUserContext(
 }
 
 void LoginManagerMixin::AppendRegularUsers(int n) {
-  AppendUsers(&initial_users_, kGmailDomain, n);
+  AppendUsers(&initial_users_, kGmailDomain, n, cryptohome_mixin_);
 }
 
 void LoginManagerMixin::AppendManagedUsers(int n) {
-  AppendUsers(&initial_users_, kManagedDomain, n);
+  AppendUsers(&initial_users_, kManagedDomain, n, cryptohome_mixin_);
 }
 
 LoginManagerMixin::LoginManagerMixin(InProcessBrowserTestMixinHost* host)
@@ -81,12 +87,25 @@ LoginManagerMixin::LoginManagerMixin(InProcessBrowserTestMixinHost* host,
 LoginManagerMixin::LoginManagerMixin(InProcessBrowserTestMixinHost* host,
                                      const UserList& initial_users,
                                      FakeGaiaMixin* gaia_mixin)
+    : LoginManagerMixin(host, initial_users, gaia_mixin, nullptr) {}
+
+LoginManagerMixin::LoginManagerMixin(InProcessBrowserTestMixinHost* host,
+                                     const UserList& initial_users,
+                                     FakeGaiaMixin* gaia_mixin,
+                                     CryptohomeMixin* cryptohome_mixin)
     : InProcessBrowserTestMixin(host),
       initial_users_(initial_users),
       local_state_mixin_(host, this),
-      fake_gaia_mixin_(gaia_mixin) {
+      fake_gaia_mixin_(gaia_mixin),
+      cryptohome_mixin_(cryptohome_mixin) {
   DCHECK(!g_instance_created);
   g_instance_created = true;
+
+  if (cryptohome_mixin != nullptr) {
+    for (const auto& user : initial_users_) {
+      cryptohome_mixin_->MarkUserAsExisting(user.account_id);
+    }
+  }
 }
 
 LoginManagerMixin::~LoginManagerMixin() {

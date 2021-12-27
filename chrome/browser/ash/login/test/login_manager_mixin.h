@@ -26,6 +26,7 @@ constexpr char kTestGaiaId[] = "111111111";
 
 }  // namespace test
 
+class CryptohomeMixin;
 class StubAuthenticatorBuilder;
 
 // Mixin browser tests can use for setting up test login manager environment.
@@ -76,6 +77,15 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   LoginManagerMixin(InProcessBrowserTestMixinHost* host,
                     const UserList& initial_users,
                     FakeGaiaMixin* gaia_mixin);
+  // When LoginManagerMixin is provided a handle to CryptohomeMixin,
+  // all users added to LoginManagerMixin through
+  // |LoginManagerMixin::AppendRegularUsers| and
+  // |LoginManagerMixin::AppendManagedUsers| will also be forwarded to
+  // CryptohomeMixin.
+  LoginManagerMixin(InProcessBrowserTestMixinHost* host,
+                    const UserList& initial_users,
+                    FakeGaiaMixin* gaia_mixin,
+                    CryptohomeMixin* cryptohome_mixin);
 
   LoginManagerMixin(const LoginManagerMixin&) = delete;
   LoginManagerMixin& operator=(const LoginManagerMixin&) = delete;
@@ -161,6 +171,7 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
 
   LocalStateMixin local_state_mixin_;
   FakeGaiaMixin* fake_gaia_mixin_;
+  CryptohomeMixin* cryptohome_mixin_;
 };
 
 }  // namespace ash
