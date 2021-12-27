@@ -2863,6 +2863,9 @@ crbug.com/626703 [ Mac11 ] external/wpt/css/css-flexbox/abspos/flex-abspos-stati
 crbug.com/626703 [ Mac11 ] external/wpt/html/syntax/speculative-parsing/generated/document-write/svg-script-src.tentative.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] external/wpt/css/css-color/color-resolving-hwb.html [ Failure Skip Timeout ]
+crbug.com/626703 [ Win10.20h2 ] external/wpt/css/css-color/color-resolving-hwb.html [ Failure Skip Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/system-color-compute/external/wpt/css/css-color/color-resolving-hwb.html [ Failure Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-conditional/at-supports-046.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-025.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]

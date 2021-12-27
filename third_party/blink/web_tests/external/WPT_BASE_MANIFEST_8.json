@@ -241788,7 +241788,7 @@
       []
      ],
      "color-resolving-hwb-expected.txt": [
-      "4c702545c17052ddbdda669b4a8191116b9306f8",
+      "a77cec238cdff3f40afc9b326c9788f452a1e6ad",
       []
      ],
      "composited-filters-under-opacity-ref.html": [
@@ -358007,7 +358007,7 @@
       ]
      ],
      "color-resolving-hwb.html": [
-      "bfa0eb022fe621596c65538fae258ec3a53b0709",
+      "a60aecaa4dbe5ad502825f85207fa7410c1698e6",
       [
        null,
        {
