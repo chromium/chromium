@@ -196,8 +196,6 @@ void LayoutSVGInline::StyleDidChange(StyleDifference diff,
 
   if (!Parent())
     return;
-  if (diff.CompositingReasonsChanged())
-    SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
   if (diff.HasDifference())
     LayoutSVGResourceContainer::StyleChanged(*this, diff);
 }
@@ -224,10 +222,6 @@ void LayoutSVGInline::InsertedIntoTree() {
                                                                          false);
   if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
-  if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
-      CompositingReason::kNone) {
-    SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
-  }
 }
 
 void LayoutSVGInline::WillBeRemovedFromTree() {
@@ -237,10 +231,6 @@ void LayoutSVGInline::WillBeRemovedFromTree() {
   if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
   LayoutInline::WillBeRemovedFromTree();
-  if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
-      CompositingReason::kNone) {
-    SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
-  }
 }
 
 }  // namespace blink

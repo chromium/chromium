@@ -59,10 +59,6 @@ void LayoutSVGBlock::InsertedIntoTree() {
                                                                          false);
   if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
-  if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
-      CompositingReason::kNone) {
-    SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
-  }
 }
 
 void LayoutSVGBlock::WillBeRemovedFromTree() {
@@ -72,10 +68,6 @@ void LayoutSVGBlock::WillBeRemovedFromTree() {
   if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
   LayoutBlockFlow::WillBeRemovedFromTree();
-  if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
-      CompositingReason::kNone) {
-    SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
-  }
 }
 
 void LayoutSVGBlock::UpdateFromStyle() {
@@ -144,8 +136,6 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
         StyleRef().HasBlendMode() ? kDescendantIsolationRequired
                                   : kDescendantIsolationNeedsUpdate);
   }
-  if (diff.CompositingReasonsChanged())
-    SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
   if (diff.HasDifference())
     LayoutSVGResourceContainer::StyleChanged(*this, diff);
 }

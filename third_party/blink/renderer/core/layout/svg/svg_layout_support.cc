@@ -507,17 +507,6 @@ LayoutObject* SVGLayoutSupport::FindClosestLayoutSVGText(
       .layout_object;
 }
 
-void SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(
-    const LayoutObject* object) {
-  for (auto* ancestor = object->Parent(); ancestor;
-       ancestor = ancestor->Parent()) {
-    if (ancestor->IsSVGRoot()) {
-      To<LayoutSVGRoot>(ancestor)->NotifyDescendantCompositingReasonsChanged();
-      break;
-    }
-  }
-}
-
 }  // namespace blink
 
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::SearchCandidate)
