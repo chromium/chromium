@@ -2670,18 +2670,39 @@ class BackForwardCacheUnloadStrategyBrowserTest
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 
+  void InstallUnloadHandlerOnMainFrame() {
+    EXPECT_TRUE(ExecJs(current_frame_host(), R"(
+      localStorage["unload_run_count"] = 0;
+      window.onunload = () => {
+        localStorage["unload_run_count"] =
+            1 + parseInt(localStorage["unload_run_count"]);
+      };
+    )"));
+    EXPECT_EQ("0", GetUnloadRunCount());
+  }
+
   void InstallUnloadHandlerOnSubFrame() {
     TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
     EXPECT_TRUE(ExecJs(current_frame_host(), R"(
       const iframeElement = document.createElement("iframe");
       iframeElement.src = "%s";
       document.body.appendChild(iframeElement);
-      )"));
+    )"));
     navigation_observer.Wait();
     RenderFrameHostImpl* subframe_render_frame_host =
         current_frame_host()->child_at(0)->current_frame_host();
-    EXPECT_TRUE(
-        ExecJs(subframe_render_frame_host, "window.onunload = () => 42;"));
+    EXPECT_TRUE(ExecJs(subframe_render_frame_host, R"(
+      localStorage["unload_run_count"] = 0;
+      window.onunload = () => {
+        localStorage["unload_run_count"] =
+            1 + parseInt(localStorage["unload_run_count"]);
+      };
+    )"));
+    EXPECT_EQ("0", GetUnloadRunCount());
+  }
+
+  EvalJsResult GetUnloadRunCount() {
+    return GetLocalStorage(current_frame_host(), "unload_run_count");
   }
 };
 
@@ -2702,7 +2723,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  EXPECT_TRUE(ExecJs(current_frame_host(), "window.onunload = () => 42;"));
+  InstallUnloadHandlerOnMainFrame();
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -2712,10 +2733,13 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
 
   if (GetParam() == "always" || GetParam() == "opt_in_header_required") {
     ExpectRestored(FROM_HERE);
+    EXPECT_EQ("0", GetUnloadRunCount());
   } else {
+    ASSERT_EQ("no", GetParam());
     ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                            kUnloadHandlerExistsInMainFrame},
                       {}, {}, {}, {}, FROM_HERE);
+    EXPECT_EQ("1", GetUnloadRunCount());
   }
 
   // 4) Go forward.
@@ -2728,11 +2752,12 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
                        UnloadHandlerPresentWithoutOptInHeader) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/unload.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  InstallUnloadHandlerOnMainFrame();
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
@@ -2742,14 +2767,18 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
 
   if (GetParam() == "always") {
     ExpectRestored(FROM_HERE);
+    EXPECT_EQ("0", GetUnloadRunCount());
   } else if (GetParam() == "opt_in_header_required") {
     ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                            kOptInUnloadHeaderNotPresent},
                       {}, {}, {}, {}, FROM_HERE);
+    EXPECT_EQ("1", GetUnloadRunCount());
   } else {
+    ASSERT_EQ("no", GetParam());
     ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                            kUnloadHandlerExistsInMainFrame},
                       {}, {}, {}, {}, FROM_HERE);
+    EXPECT_EQ("1", GetUnloadRunCount());
   }
 
   // 4) Go forward.
@@ -2779,11 +2808,13 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
 
   if (GetParam() == "always" || GetParam() == "opt_in_header_required") {
     ExpectRestored(FROM_HERE);
+    EXPECT_EQ("0", GetUnloadRunCount());
   } else {
     ASSERT_EQ("no", GetParam());
     ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                            kUnloadHandlerExistsInSubFrame},
                       {}, {}, {}, {}, FROM_HERE);
+    EXPECT_EQ("1", GetUnloadRunCount());
   }
 
   // 4) Go forward.
@@ -2797,7 +2828,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
@@ -2811,10 +2842,13 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheUnloadStrategyBrowserTest,
 
   if (GetParam() == "always") {
     ExpectRestored(FROM_HERE);
+    EXPECT_EQ("0", GetUnloadRunCount());
   } else {
+    EXPECT_TRUE(GetParam() == "opt_in_header_required" || GetParam() == "no");
     ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::
                            kUnloadHandlerExistsInSubFrame},
                       {}, {}, {}, {}, FROM_HERE);
+    EXPECT_EQ("1", GetUnloadRunCount());
   }
 
   // 4) Go forward.
