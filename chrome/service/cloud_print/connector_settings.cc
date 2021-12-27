@@ -68,7 +68,7 @@ void ConnectorSettings::InitFrom(ServiceProcessPrefs* prefs) {
       prefs::kCloudPrintXmppPingTimeout, kDefaultXmppPingTimeoutSecs);
   SetXmppPingTimeoutSec(timeout);
 
-  const base::ListValue* printers = prefs->GetList(prefs::kCloudPrintPrinters);
+  const base::Value* printers = prefs->GetList(prefs::kCloudPrintPrinters);
   if (printers) {
     for (const auto& printer : printers->GetList()) {
       if (printer.is_dict()) {

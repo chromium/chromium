@@ -12,7 +12,6 @@
 
 namespace base {
 class DictionaryValue;
-class ListValue;
 class SequencedTaskRunner;
 }
 
@@ -58,7 +57,7 @@ class ServiceProcessPrefs {
   const base::DictionaryValue* GetDictionary(const std::string& key) const;
 
   // Returns a list for |key|.
-  const base::ListValue* GetList(const std::string& key) const;
+  const base::Value* GetList(const std::string& key) const;
 
   // Set a |value| for |key|.
   void SetValue(const std::string& key, std::unique_ptr<base::Value> value);
