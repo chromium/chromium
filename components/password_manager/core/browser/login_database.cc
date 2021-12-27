@@ -58,7 +58,7 @@ using autofill::GaiaIdHash;
 namespace password_manager {
 
 // The current version number of the login database schema.
-constexpr int kCurrentVersionNumber = 31;
+constexpr int kCurrentVersionNumber = 32;
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
 constexpr int kCompatibleVersionNumber = 31;
@@ -437,6 +437,10 @@ void InitializeBuilders(SQLTableBuilders builders) {
   builders.logins->DropColumn("date_synced");
   SealVersion(builders, /*expected_version=*/31u);
 
+  // Version 32. Set timestamps of uninitialized timestamps in
+  // 'insecure_credentials' table.
+  SealVersion(builders, /*expected_version=*/32u);
+
   DCHECK_EQ(static_cast<size_t>(COLUMN_NUM), builders.logins->NumberOfColumns())
       << "Adjust LoginDatabaseTableColumns if you change column definitions "
          "here.";
@@ -576,6 +580,18 @@ bool MigrateDatabase(unsigned current_version,
     set_date_password_modified.Assign(db->GetUniqueStatement(
         "UPDATE logins SET date_password_modified = date_created"));
     if (!set_date_password_modified.Run())
+      return false;
+  }
+
+  // Set the create_time value when uninitialized for 'insecure_credentials'.
+  if (current_version >= 29 && current_version < 32) {
+    sql::Statement set_timestamp;
+    set_timestamp.Assign(
+        db->GetUniqueStatement("UPDATE insecure_credentials SET create_time = "
+                               "? WHERE create_time = 0"));
+    set_timestamp.BindInt64(
+        0, base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    if (!set_timestamp.Run())
       return false;
   }
 

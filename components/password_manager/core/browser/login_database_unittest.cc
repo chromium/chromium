@@ -1919,6 +1919,18 @@ void LoginDatabaseMigrationTest::MigrationToVCurrent(
     ASSERT_EQ(1U, result.size());
     EXPECT_EQ(form, *result[0]);
     EXPECT_TRUE(db.RemoveLogin(form, /*changes=*/nullptr));
+
+    if (version() == 31) {
+      // Check that unset values of 'insecure_credentials.create_time' are set
+      // to current time.
+      std::vector<InsecureCredential> insecure_credentials(
+          db.insecure_credentials_table().GetRows(FormPrimaryKey(1)));
+      ASSERT_EQ(2U, insecure_credentials.size());
+      base::Time time_now = base::Time::Now();
+      base::Time time_slightly_before = time_now - base::Seconds(2);
+      EXPECT_LE(insecure_credentials[0].create_time, time_now);
+      EXPECT_GE(insecure_credentials[0].create_time, time_slightly_before);
+    }
   }
   // Added 07/21. Safe to remove in a year.
   if (version() <= 29) {

@@ -1,7 +1,7 @@
 BEGIN TRANSACTION;
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 INSERT INTO "meta" VALUES('last_compatible_version','31');
-INSERT INTO "meta" VALUES('version','31');
+INSERT INTO "meta" VALUES('version','32');
 CREATE TABLE logins (
 origin_url VARCHAR NOT NULL,
 action_url VARCHAR,
@@ -131,7 +131,7 @@ INSERT INTO "insecure_credentials"
   (parent_id,insecurity_type,create_time,is_muted) VALUES(
 1, /* parent_id */
 0, /* compromise_type */
-0, /* create_time */
+13047423600000000, /* create_time */
 0 /* is_muted */
 );
 INSERT INTO "insecure_credentials"
