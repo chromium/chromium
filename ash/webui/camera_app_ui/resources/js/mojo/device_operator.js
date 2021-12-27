@@ -24,6 +24,7 @@ import {
   CameraAppDeviceRemote,          // eslint-disable-line no-unused-vars
   CameraEventObserverCallbackRouter,
   CameraFacing,
+  CameraInfo,           // eslint-disable-line no-unused-vars
   CameraMetadata,       // eslint-disable-line no-unused-vars
   CameraMetadataEntry,  // eslint-disable-line no-unused-vars
   CameraMetadataTag,
@@ -164,6 +165,22 @@ export class DeviceOperator {
      * @private
      */
     this.devices_ = new Map();
+
+    /**
+     * Map for cached camera infos.
+     * @type {!Map<string, !Promise<CameraInfo>>}
+     * @private
+     */
+    this.cameraInfos_ = new Map();
+  }
+
+  /**
+   * Removes a device from the maps.
+   * @param {string} deviceId
+   */
+  removeDevice(deviceId) {
+    this.devices_.delete(deviceId);
+    this.cameraInfos_.delete(deviceId);
   }
 
   /**
@@ -189,16 +206,34 @@ export class DeviceOperator {
           throw new Error('Unknown error');
         }
         device.onConnectionError.addListener(() => {
-          this.devices_.delete(deviceId);
+          this.removeDevice(deviceId);
         });
         return wrapEndpoint(device);
       } catch (e) {
-        this.devices_.delete(deviceId);
+        this.removeDevice(deviceId);
         throw e;
       }
     })();
     this.devices_.set(deviceId, newDevice);
     return newDevice;
+  }
+
+  /**
+   * @param {string} deviceId
+   * @return {!Promise<CameraInfo>}
+   */
+  async getCameraInfo_(deviceId) {
+    const info = this.cameraInfos_.get(deviceId);
+    if (info !== undefined) {
+      return info;
+    }
+    const newInfo = (async () => {
+      const device = await this.getDevice_(deviceId);
+      const {cameraInfo} = await device.getCameraInfo();
+      return cameraInfo;
+    })();
+    this.cameraInfos_.set(deviceId, newInfo);
+    return newInfo;
   }
 
   /**
@@ -216,8 +251,7 @@ export class DeviceOperator {
     if (tag > 0x7FFFFFFF) {
       tag = /** @type {CameraMetadataTag} */ (-(~tag + 1));
     }
-    const device = await this.getDevice_(deviceId);
-    const {cameraInfo} = await device.getCameraInfo();
+    const cameraInfo = await this.getCameraInfo_(deviceId);
     const staticMetadata = cameraInfo.staticCameraCharacteristics;
     return getMetadataData(staticMetadata, tag);
   }
@@ -326,8 +360,7 @@ export class DeviceOperator {
    * @throws {!Error} Thrown when the device operation is not supported.
    */
   async getCameraFacing(deviceId) {
-    const device = await this.getDevice_(deviceId);
-    const {cameraInfo: {facing}} = await device.getCameraInfo();
+    const {facing} = await this.getCameraInfo_(deviceId);
     switch (facing) {
       case CameraFacing.CAMERA_FACING_BACK:
         return Facing.ENVIRONMENT;
@@ -630,7 +663,7 @@ export class DeviceOperator {
     const device = await this.devices_.get(deviceId);
     if (device !== undefined) {
       closeEndpoint(device);
-      this.devices_.delete(deviceId);
+      this.removeDevice(deviceId);
     }
   }
 

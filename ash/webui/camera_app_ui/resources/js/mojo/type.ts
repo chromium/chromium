@@ -45,6 +45,7 @@ export {
     '/mojom-webui/media/capture/video/chromeos/mojom/camera_app.mojom-webui.js';
 export {
   CameraFacing,
+  CameraInfo,
 } from
     '/mojom-webui/media/capture/video/chromeos/mojom/camera_common.mojom-webui.js';
 export {
