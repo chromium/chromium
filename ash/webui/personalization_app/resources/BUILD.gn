@@ -52,7 +52,7 @@ polymer_js_files = [
   "trusted/wallpaper/google_photos_albums_element.ts",
   "trusted/wallpaper/google_photos_collection_element.ts",
   "trusted/wallpaper/google_photos_photos_by_album_id_element.ts",
-  "trusted/wallpaper/google_photos_photos_element.js",
+  "trusted/wallpaper/google_photos_photos_element.ts",
   "trusted/wallpaper/google_photos_zero_state_element.ts",
   "trusted/wallpaper/local_images_element.ts",
   "trusted/wallpaper/styles.ts",
