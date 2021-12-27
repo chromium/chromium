@@ -96183,6 +96183,19 @@
         {}
        ]
       ],
+      "flex-abspos-staticpos-margin-003.html": [
+       "64ef7a7fe5116296d43b0f2060539b48148549c2",
+       [
+        null,
+        [
+         [
+          "/css/css-flexbox/abspos/flex-abspos-staticpos-margin-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "flexbox-abspos-child-001a.html": [
        "fabe204b2796257fd3a74216a87c79960c42a9f9",
        [
@@ -142720,7 +142733,7 @@
       ]
      ],
      "selection-contenteditable-011.html": [
-      "bc01d103ea9bfd41ab40f3ad6a429266cd29bef8",
+      "5203edb4da7e837ae2616cdc6e1517d08b072bb1",
       [
        null,
        [
@@ -142729,11 +142742,27 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            5
+           ],
+           [
+            0,
+            255
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "selection-input-011.html": [
-      "77f7188c71e137a76a75fe410c23f17bbdf33c66",
+      "56ea2a08634f04dafe5cb7b2a4670f43cec580b0",
       [
        null,
        [
@@ -142742,7 +142771,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            5
+           ],
+           [
+            0,
+            255
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "selection-intercharacter-011.html": [
@@ -244624,6 +244669,10 @@
        "38cfdff074c539efa2ba41492e6327b5d775b0ea",
        []
       ],
+      "flex-abspos-staticpos-margin-003-ref.html": [
+       "74e4066570c12fd3498409ad471530fe7970161e",
+       []
+      ],
       "flexbox-abspos-child-001-ref.html": [
        "95c1f3341d048664792cfaad92be4ae2c3971dd7",
        []
@@ -275645,7 +275694,7 @@
        []
       ],
       "has-pseudo-class-expected.txt": [
-       "b4036b367e35dc4e3fa4ff39b1a962b359223341",
+       "7015182248e19d5cdc9f0450edb380e50ce28753",
        []
       ],
       "has-sibling-expected.txt": [
@@ -276487,7 +276536,7 @@
      []
     ],
     "requirements.txt": [
-     "b4a563ae584c5af2f239dd0a7ea49795aae6e37d",
+     "86bfe880960e5259daef53349e9b40ec8c973d63",
      []
     ],
     "reviewing-tests": {
@@ -359797,6 +359846,13 @@
        {}
       ]
      ],
+     "column-reverse-gap.html": [
+      "770ad6dfda70efa43589b76b66c4852f211df968",
+      [
+       null,
+       {}
+      ]
+     ],
      "columns-height-set-via-top-bottom.html": [
       "80cdcc6974df9bb0b79bc91c2d4dc0aad881cf4d",
       [
@@ -384111,7 +384167,7 @@
        ]
       ],
       "has-pseudo-class.html": [
-       "e74c4e6928ada8c46d5bcd846bc1c4099f5672f6",
+       "78ea392fd0469c0e268a05500b1022aa49a81d2e",
        [
         null,
         {}

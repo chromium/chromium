@@ -13,6 +13,7 @@
 # Tests that fail in legacy but pass in NG
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-flexbox/abspos/flex-abspos-staticpos-margin-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-overflow/scrollbar-gutter-vertical-lr-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-writing-modes/inline-box-orthogonal-child-with-margins.html [ Failure ]
 crbug.com/626703 virtual/system-color-compute/external/wpt/css/css-color/oklch-008.html [ Failure ]
