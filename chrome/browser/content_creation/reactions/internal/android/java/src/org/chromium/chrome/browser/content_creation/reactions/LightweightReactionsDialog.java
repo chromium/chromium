@@ -55,8 +55,7 @@ public class LightweightReactionsDialog extends DialogFragment {
 
         mContentView = getActivity().getLayoutInflater().inflate(R.layout.reactions_dialog, null);
         setBackgroundImage();
-        mSceneCoordinator.setSceneBackground(
-                mContentView.findViewById(R.id.lightweight_reactions_scene),
+        mSceneCoordinator.setSceneViews(mContentView.findViewById(R.id.lightweight_reactions_scene),
                 mContentView.findViewById(R.id.lightweight_reactions_background));
         builder.setView(mContentView);
 
@@ -74,6 +73,7 @@ public class LightweightReactionsDialog extends DialogFragment {
         if (mCurrentOrientation != newConfig.orientation) {
             mCurrentOrientation = newConfig.orientation;
             LightweightReactionsMetrics.recordOrientationChange(newConfig.orientation);
+            mSceneCoordinator.handleOrientationChange();
         }
     }
 

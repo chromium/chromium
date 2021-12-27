@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.util.Size;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
@@ -53,7 +55,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
     private final int mMaxReactionCount;
 
     private ReactionLayout mActiveReaction;
-    private RelativeLayout mSceneBackground;
+    private RelativeLayout mSceneView;
     private ImageView mScreenshotView;
     private Toast mToast;
 
@@ -88,16 +90,16 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
                 DEFAULT_MAX_REACTION_COUNT);
     }
 
-    public void setSceneBackground(RelativeLayout sceneBackground, ImageView screenshotView) {
-        mSceneBackground = sceneBackground;
-        mSceneBackground.setOnClickListener((view) -> { clearSelection(); });
+    public void setSceneViews(RelativeLayout sceneView, ImageView screenshotView) {
+        mSceneView = sceneView;
+        mSceneView.setOnClickListener((view) -> { clearSelection(); });
         mScreenshotView = screenshotView;
     }
 
     public void addReactionInDefaultLocation(ReactionMetadata reaction) {
         ++mNbReactionsAdded;
         mMediator.getGifForUrl(reaction.assetUrl, (baseGifImage) -> {
-            if (mSceneBackground == null) {
+            if (mSceneView == null) {
                 return;
             }
 
@@ -185,14 +187,14 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
      * Gets the width of the scene view, in pixels.
      */
     public int getSceneWidth() {
-        return mSceneBackground.getWidth();
+        return mSceneView.getWidth();
     }
 
     /**
      * Gets the height of the scene view, in pixels.
      */
     public int getSceneHeight() {
-        return mSceneBackground.getHeight();
+        return mSceneView.getHeight();
     }
 
     /**
@@ -214,7 +216,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
      * Draws the scene view to the provided canvas.
      */
     public void drawScene(Canvas canvas) {
-        mSceneBackground.draw(canvas);
+        mSceneView.draw(canvas);
     }
 
     /**
@@ -276,6 +278,55 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
         return mReactionLayouts;
     }
 
+    public void handleOrientationChange() {
+        final float previousScreenshotViewX = mScreenshotView.getX();
+        final float previousScreenshotViewWidth = mScreenshotView.getWidth();
+        final float previousScreenshotImageWidth = getScreenshotDisplaySize().getWidth();
+        final float previousScreenshotImageX = previousScreenshotViewX
+                + (previousScreenshotViewWidth - previousScreenshotImageWidth) / 2;
+
+        ViewTreeObserver vto = mSceneView.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mSceneView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+
+                float screenshotViewX = mScreenshotView.getX();
+                float screenshotViewWidth = mScreenshotView.getWidth();
+                float screenshotImageWidth = getScreenshotDisplaySize().getWidth();
+                float screenshotImageX =
+                        screenshotViewX + (screenshotViewWidth - screenshotImageWidth) / 2;
+                float screenshotImageRatio = screenshotImageWidth / previousScreenshotImageWidth;
+
+                for (ReactionLayout rl : mReactionLayouts) {
+                    // Normalize the reaction's X coordinate relative to the screenshot image's
+                    // previous absolute X coordinate, and then multiply the resulting value by the
+                    // screenshot ratio. This gives the new normalized X coordinate relative to the
+                    // image's new X coordinate. Then, convert the normalized X back to its absolute
+                    // value using the image's new absolute X coordinate.
+                    float previousNormalizedX = rl.getX() - previousScreenshotImageX;
+                    float newNormalizedX = previousNormalizedX * screenshotImageRatio;
+                    rl.setX(newNormalizedX + screenshotImageX);
+
+                    // The Y coordinate simply needs to be multiplied by the screenshot ratio,
+                    // because the screenshot view and the actual image always have Y = 0.
+                    rl.setY(rl.getY() * screenshotImageRatio);
+
+                    // Finally, scale the reaction by the screenshot ratio.
+                    RelativeLayout.LayoutParams layoutParams =
+                            (RelativeLayout.LayoutParams) rl.getLayoutParams();
+                    layoutParams.width = (int) (screenshotImageRatio * layoutParams.width);
+                    layoutParams.height = (int) (screenshotImageRatio * layoutParams.height);
+                    rl.setLayoutParams(layoutParams);
+                }
+
+                // Force a redraw of the scene to ensure the new dimensions and positions
+                // are correctly displayed.
+                mSceneView.invalidate();
+            }
+        });
+    }
+
     // SceneEditorDelegate implementation.
     @Override
     public boolean canAddReaction() {
@@ -330,7 +381,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
     public void removeReaction(ReactionLayout reactionLayout) {
         ++mNbDelete;
         markActiveStatus(reactionLayout, false);
-        mSceneBackground.removeView(reactionLayout);
+        mSceneView.removeView(reactionLayout);
         removeReactionLayoutFromInitialPosition(reactionLayout);
         mReactionLayouts.remove(reactionLayout);
     }
@@ -388,7 +439,7 @@ public class SceneCoordinator implements SceneEditorDelegate, ToolbarReactionsDe
 
     private void addReactionLayoutToScene(
             ReactionLayout reactionLayout, RelativeLayout.LayoutParams layoutParams) {
-        mSceneBackground.addView(reactionLayout, layoutParams);
+        mSceneView.addView(reactionLayout, layoutParams);
         mReactionLayouts.add(reactionLayout);
         markActiveStatus(reactionLayout, true);
         resetReactions(reactionLayout);
