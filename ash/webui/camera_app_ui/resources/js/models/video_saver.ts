@@ -71,7 +71,7 @@ export class VideoSaver {
    */
   async cancel(): Promise<void> {
     await this.processor.cancel();
-    return this.file.delete();
+    return this.file.remove();
   }
 
   /**

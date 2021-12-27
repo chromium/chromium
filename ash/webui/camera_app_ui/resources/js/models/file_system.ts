@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from '../assert.js';
-// eslint-disable-next-line no-unused-vars
 import {VideoType} from '../type.js';
 import {WaitableEvent} from '../waitable_event.js';
 
@@ -14,9 +13,9 @@ import {
   VIDEO_PREFIX,
 } from './file_namer.js';
 import {
-  DirectoryAccessEntry,  // eslint-disable-line no-unused-vars
+  DirectoryAccessEntry,
   DirectoryAccessEntryImpl,
-  FileAccessEntry,  // eslint-disable-line no-unused-vars
+  FileAccessEntry,
 } from './file_system_access_entry.js';
 import * as idb from './idb.js';
 import {getMaybeLazyDirectory} from './lazy_directory_entry.js';
@@ -24,66 +23,62 @@ import {getMaybeLazyDirectory} from './lazy_directory_entry.js';
 
 /**
  * Checks if the entry's name has the video prefix.
- * @param {!FileAccessEntry} entry File entry.
- * @return {boolean} Has the video prefix or not.
+ * @param entry File entry.
+ * @return Has the video prefix or not.
  */
-export function hasVideoPrefix(entry) {
+export function hasVideoPrefix(entry: FileAccessEntry): boolean {
   return entry.name.startsWith(VIDEO_PREFIX);
 }
 
 /**
  * Checks if the entry's name has the image prefix.
- * @param {!FileAccessEntry} entry File entry.
- * @return {boolean} Has the image prefix or not.
+ * @param entry File entry.
+ * @return Has the image prefix or not.
  */
-function hasImagePrefix(entry) {
+function hasImagePrefix(entry: FileAccessEntry): boolean {
   return entry.name.startsWith(IMAGE_PREFIX);
 }
 
 /**
  * Checks if the entry's name has the document prefix.
- * @param {!FileAccessEntry} entry File entry.
- * @return {boolean} Has the document prefix or not.
+ * @param entry File entry.
+ * @return Has the document prefix or not.
  */
-function hasDocumentPrefix(entry) {
+function hasDocumentPrefix(entry: FileAccessEntry): boolean {
   return entry.name.startsWith(DOCUMENT_PREFIX);
 }
 
 /**
  * Temporary directory in the internal file system.
- * @type {?DirectoryAccessEntry}
  */
-let internalTempDir = null;
+let internalTempDir: DirectoryAccessEntry|null = null;
 
 /**
  * Camera directory in the external file system.
- * @type {?DirectoryAccessEntry}
  */
-let cameraDir = null;
+let cameraDir: DirectoryAccessEntry|null = null;
 
 /**
  * Gets camera directory used by CCA.
- * @return {?DirectoryAccessEntry}
  */
-export function getCameraDirectory() {
+export function getCameraDirectory(): DirectoryAccessEntry|null {
   return cameraDir;
 }
 
 /**
  * Initializes the temporary directory in the internal file system.
- * @return {!Promise<!DirectoryAccessEntry>} Promise for the directory result.
+ * @return Promise for the directory result.
  */
-async function initInternalTempDir() {
+async function initInternalTempDir(): Promise<DirectoryAccessEntry> {
   return new DirectoryAccessEntryImpl(await navigator.storage.getDirectory());
 }
 
 /**
  * Initializes the camera directory in the external file system.
- * @return {!Promise<?DirectoryAccessEntry>} Promise for the directory result.
+ * @return Promise for the directory result.
  */
-async function initCameraDirectory() {
-  /** @type {WaitableEvent<FileSystemDirectoryHandle>} */
-  const handle = new WaitableEvent();
+async function initCameraDirectory(): Promise<DirectoryAccessEntry|null> {
+  const handle = new WaitableEvent<FileSystemDirectoryHandle>();
 
   // We use the sessionStorage to decide if we should use the handle in the
   // database or the handle from the launch queue so that we can use the new
@@ -97,8 +92,7 @@ async function initCameraDirectory() {
     assert(launchQueue !== undefined);
     launchQueue.setConsumer(async (launchParams) => {
       assert(launchParams.files.length > 0);
-      const dir =
-          /** @type {!FileSystemDirectoryHandle} */ (launchParams.files[0]);
+      const dir: FileSystemHandle = launchParams.files[0];
       assert(dir.kind === 'directory');
 
       await idb.set(idb.KEY_CAMERA_DIRECTORY_HANDLE, dir);
@@ -115,9 +109,8 @@ async function initCameraDirectory() {
 /**
  * Initializes file systems. This function should be called only once in the
  * beginning of the app.
- * @return {!Promise}
  */
-export async function initialize() {
+export async function initialize(): Promise<void> {
   internalTempDir = await initInternalTempDir();
   assert(internalTempDir !== null);
 
@@ -127,11 +120,12 @@ export async function initialize() {
 
 /**
  * Saves photo blob or metadata blob into predefined default location.
- * @param {!Blob} blob Data of the photo to be saved.
- * @param {string} name Filename of the photo to be saved.
- * @return {!Promise<?FileAccessEntry>} Promise for the result.
+ * @param blob Data of the photo to be saved.
+ * @param name Filename of the photo to be saved.
+ * @return Promise for the result.
  */
-export async function saveBlob(blob, name) {
+export async function saveBlob(
+    blob: Blob, name: string): Promise<FileAccessEntry|null> {
   const file = await cameraDir.createFile(name);
   assert(file !== null);
 
@@ -141,11 +135,11 @@ export async function saveBlob(blob, name) {
 
 /**
  * Creates a file for saving video recording result.
- * @param {!VideoType} videoType
- * @return {!Promise<!FileAccessEntry>} Newly created video file.
- * @throws {!Error} If failed to create video file.
+ * @return Newly created video file.
+ * @throws If failed to create video file.
  */
-export async function createVideoFile(videoType) {
+export async function createVideoFile(videoType: VideoType):
+    Promise<FileAccessEntry> {
   const name = new Filenamer().newVideoName(videoType);
   const file = await cameraDir.createFile(name);
   if (file === null) {
@@ -154,16 +148,13 @@ export async function createVideoFile(videoType) {
   return file;
 }
 
-/**
- * @type {string}
- */
 const PRIVATE_TEMPFILE_NAME = 'video-intent.mp4';
 
 /**
- * @return {!Promise<!FileAccessEntry>} Newly created temporary file.
- * @throws {!Error} If failed to create video temp file.
+ * @return Newly created temporary file.
+ * @throws If failed to create video temp file.
  */
-export async function createPrivateTempVideoFile() {
+export async function createPrivateTempVideoFile(): Promise<FileAccessEntry> {
   // TODO(inker): Handles running out of space case.
   const dir = internalTempDir;
   assert(dir !== null);
@@ -176,10 +167,9 @@ export async function createPrivateTempVideoFile() {
 
 /**
  * Gets the picture entries.
- * @return {!Promise<!Array<!FileAccessEntry>>} Promise for the picture
- *     entries.
+ * @return Promise for the picture entries.
  */
-export async function getEntries() {
+export async function getEntries(): Promise<FileAccessEntry[]> {
   const entries = await cameraDir.getFiles();
   return entries.filter((entry) => {
     if (!hasVideoPrefix(entry) && !hasImagePrefix(entry) &&
@@ -192,10 +182,10 @@ export async function getEntries() {
 
 /**
  * Returns an URL for a picture given by the file |entry|.
- * @param {!FileAccessEntry} entry The file entry of the picture.
- * @return {!Promise<string>} Promise for the result.
+ * @param entry The file entry of the picture.
+ * @return Promise for the result.
  */
-export async function pictureURL(entry) {
+export async function pictureURL(entry: FileAccessEntry): Promise<string> {
   const file = await entry.file();
   return URL.createObjectURL(file);
 }
