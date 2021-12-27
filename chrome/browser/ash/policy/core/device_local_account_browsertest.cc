@@ -1481,18 +1481,18 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, UserAvatarImage) {
   EXPECT_FALSE(user->HasDefaultImage());
   EXPECT_EQ(user_manager::User::USER_IMAGE_EXTERNAL, user->image_index());
   EXPECT_TRUE(ash::test::AreImagesEqual(policy_image, user->GetImage()));
-  const base::DictionaryValue* images_pref = &base::Value::AsDictionaryValue(
-      *g_browser_process->local_state()->GetDictionary("user_image_info"));
+  const base::Value* images_pref =
+      g_browser_process->local_state()->GetDictionary("user_image_info");
   ASSERT_TRUE(images_pref);
-  const base::DictionaryValue* image_properties;
-  ASSERT_TRUE(images_pref->GetDictionaryWithoutPathExpansion(
-      account_id_1_.GetUserEmail(), &image_properties));
-  int image_index;
-  std::string image_path;
-  ASSERT_TRUE(image_properties->GetInteger("index", &image_index));
-  ASSERT_TRUE(image_properties->GetString("path", &image_path));
-  EXPECT_EQ(user_manager::User::USER_IMAGE_EXTERNAL, image_index);
-  EXPECT_EQ(saved_image_path.value(), image_path);
+  const base::Value* image_properties =
+      images_pref->FindDictKey(account_id_1_.GetUserEmail());
+  ASSERT_TRUE(image_properties);
+  absl::optional<int> image_index = image_properties->FindIntKey("index");
+  const std::string* image_path = image_properties->FindStringKey("path");
+  ASSERT_TRUE(image_index.has_value());
+  ASSERT_TRUE(image_path);
+  EXPECT_EQ(user_manager::User::USER_IMAGE_EXTERNAL, image_index.value());
+  EXPECT_EQ(saved_image_path.value(), *image_path);
 
   gfx::ImageSkia saved_image = ash::test::ImageLoader(saved_image_path).Load();
   ASSERT_FALSE(saved_image.isNull());
