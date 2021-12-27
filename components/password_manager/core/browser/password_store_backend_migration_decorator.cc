@@ -200,6 +200,9 @@ void PasswordStoreBackendMigrationDecorator::StartMigration() {
 }
 
 void PasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
+  if (!base::FeatureList::IsEnabled(features::kUnifiedPasswordManagerMigration))
+    return;
+
   if (is_syncing_passwords_callback_.Run()) {
     // Sync was enabled. Delete all the passwords from GMS Core local storage.
     android_backend_->ClearAllLocalPasswords();

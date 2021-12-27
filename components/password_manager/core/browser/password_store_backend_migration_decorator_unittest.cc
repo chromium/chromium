@@ -8,9 +8,11 @@
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/mock_password_store_backend.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -31,6 +33,10 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
   PasswordStoreBackendMigrationDecoratorTest() = default;
 
   void Init(base::RepeatingCallback<bool()> is_sync_enabled) {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        /*enabled_feature=*/features::kUnifiedPasswordManagerMigration,
+        {{"migration_version", "1"}});
+
     backend_migration_decorator_ =
         std::make_unique<PasswordStoreBackendMigrationDecorator>(
             CreateBuiltInBackend(), CreateAndroidBackend(), &prefs_,
@@ -65,6 +71,7 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_env_;
+  base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
   raw_ptr<MockPasswordStoreBackend> built_in_backend_;
   raw_ptr<MockPasswordStoreBackend> android_backend_;
