@@ -261,7 +261,7 @@ void VmApplicationsServiceProvider::ParseSelectFileDialogFileTypes(
     std::string extensions = item;
     // Description after ':'.
     std::string desc;
-    int pos = item.find(':');
+    size_t pos = item.find(':');
     if (pos != std::string::npos) {
       extensions = item.substr(0, pos);
       desc = item.substr(pos + 1);
