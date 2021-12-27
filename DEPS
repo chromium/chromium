@@ -1594,7 +1594,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/turbine',
-              'version': 'RGxvdzLaS73gQOXCTgq7CWKsqCgrXDPPL0Pcxz6oGbQC',
+              'version': 'tJ3VP1_iZhYyYREs6I6YHVZeA5CN6drLhywrF_DFVh0C',
           },
       ],
       'condition': 'checkout_android',
