@@ -2,24 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// eslint-disable-next-line no-unused-vars
 import {Resolution} from '../../type.js';
 
-/**
- * @typedef {{
- *   decoderArgs: !Array<string>,
- *   encoderArgs: !Array<string>,
- *   outputExtension: string,
- * }}
- */
-export let VideoProcessorArgs;
+export interface VideoProcessorArgs {
+  decoderArgs: string[];
+  encoderArgs: string[];
+  outputExtension: string;
+}
 
-/**
- * @param {number} videoRotation
- * @param {boolean} outputSeekable
- * @return {!VideoProcessorArgs}
- */
-export function createMp4Args(videoRotation, outputSeekable) {
+export function createMp4Args(
+    videoRotation: number, outputSeekable: boolean): VideoProcessorArgs {
   // input in mkv format
   const decoderArgs = ['-f', 'matroska'];
   const encoderArgs = [
@@ -40,11 +32,7 @@ export function createMp4Args(videoRotation, outputSeekable) {
 }
 
 
-/**
- * @param {!Resolution} resolution
- * @return {!VideoProcessorArgs}
- */
-export function createGifArgs({width, height}) {
+export function createGifArgs({width, height}: Resolution): VideoProcessorArgs {
   // Raw rgba frame input format with fixed resolution.
   const decoderArgs =
       ['-f', 'rawvideo', '-s', `${width}x${height}`, '-pix_fmt', 'rgba'];
