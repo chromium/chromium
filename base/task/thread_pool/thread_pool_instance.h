@@ -244,17 +244,8 @@ class BASE_EXPORT ThreadPoolInstance {
   virtual int GetMaxConcurrentNonBlockedTasksWithTraitsDeprecated(
       const TaskTraits& traits) const = 0;
 
-  // Starts/stops a fence that prevents scheduling of tasks of any / BEST_EFFORT
-  // priority. Ongoing tasks will still be allowed to complete and not be
-  // waited upon. This is useful for use cases where a second component
-  // (e.g. content) needs a "single-threaded" startup phase where tasks it
-  // posts do not run before it "enables the ThreadPool"
-  // (via ThreadPoolInstance::EndFence instead of the typical
-  // ThreadPoolInstance::Start). For example, because a lightweight service
-  // manager was already running prior to launching full chrome. BeginFence
-  // does not wait for ongoing tasks as those pertain to the previous phase and
-  // cannot interfere with the upcoming "single-threaded" initialization
-  // phase.
+  // Starts/stops a fence that prevents execution of tasks of any / BEST_EFFORT
+  // priority.
   virtual void BeginFence() = 0;
   virtual void EndFence() = 0;
   virtual void BeginBestEffortFence() = 0;
