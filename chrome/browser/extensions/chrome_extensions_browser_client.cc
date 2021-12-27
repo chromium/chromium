@@ -19,7 +19,6 @@
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
-#include "chrome/browser/extensions/api/tabs/tabs_util.h"
 #include "chrome/browser/extensions/chrome_component_extension_resource_manager.h"
 #include "chrome/browser/extensions/chrome_extension_host_delegate.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
@@ -73,9 +72,11 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/updater/chromeos_extension_cache_delegate.h"
 #include "chrome/browser/extensions/updater/extension_cache_impl.h"
+#include "chrome/browser/ui/ash/screenshot_area.h"
 #include "components/user_manager/user_manager.h"
 #else
 #include "extensions/browser/updater/null_extension_cache.h"
@@ -565,7 +566,12 @@ bool ChromeExtensionsBrowserClient::HasIsolatedStorage(
 
 bool ChromeExtensionsBrowserClient::IsScreenshotRestricted(
     content::WebContents* web_contents) const {
-  return tabs_util::IsScreenshotRestricted(web_contents);
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  return false;
+#else
+  return policy::DlpContentManagerAsh::Get()->IsScreenshotApiRestricted(
+      ScreenshotArea::CreateForWindow(web_contents->GetNativeView()));
+#endif
 }
 
 bool ChromeExtensionsBrowserClient::IsValidTabId(
