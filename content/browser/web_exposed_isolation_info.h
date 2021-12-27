@@ -114,7 +114,7 @@ class CONTENT_EXPORT WebExposedIsolationInfo {
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,
                                         const WebExposedIsolationInfo& info);
 
-// Disable these operators to avoid confusion with AreCompatible() functions.
+// Disable these operators, AreCompatible() functions should be used instead.
 CONTENT_EXPORT bool operator==(
     const absl::optional<WebExposedIsolationInfo>& a,
     const absl::optional<WebExposedIsolationInfo>& b);
@@ -122,6 +122,14 @@ CONTENT_EXPORT bool operator==(
     const WebExposedIsolationInfo& a,
     const absl::optional<WebExposedIsolationInfo>& b);
 CONTENT_EXPORT bool operator==(const absl::optional<WebExposedIsolationInfo>& a,
+                               const WebExposedIsolationInfo& b);
+CONTENT_EXPORT bool operator!=(
+    const absl::optional<WebExposedIsolationInfo>& a,
+    const absl::optional<WebExposedIsolationInfo>& b);
+CONTENT_EXPORT bool operator!=(
+    const WebExposedIsolationInfo& a,
+    const absl::optional<WebExposedIsolationInfo>& b);
+CONTENT_EXPORT bool operator!=(const absl::optional<WebExposedIsolationInfo>& a,
                                const WebExposedIsolationInfo& b);
 
 }  // namespace content

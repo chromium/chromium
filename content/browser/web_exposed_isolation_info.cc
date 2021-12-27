@@ -147,4 +147,22 @@ bool operator==(const absl::optional<WebExposedIsolationInfo>& a,
   return false;
 }
 
+bool operator!=(const absl::optional<WebExposedIsolationInfo>& a,
+                const absl::optional<WebExposedIsolationInfo>& b) {
+  NOTREACHED() << kComparisonErrorMessage;
+  return false;
+}
+
+bool operator!=(const WebExposedIsolationInfo& a,
+                const absl::optional<WebExposedIsolationInfo>& b) {
+  NOTREACHED() << kComparisonErrorMessage;
+  return false;
+}
+
+bool operator!=(const absl::optional<WebExposedIsolationInfo>& a,
+                const WebExposedIsolationInfo& b) {
+  NOTREACHED() << kComparisonErrorMessage;
+  return false;
+}
+
 }  // namespace content

@@ -99,6 +99,10 @@ TEST_F(WebExposedIsolationInfoTest, ComparisonsWithOptionals) {
   ASSERT_DCHECK_DEATH(operator==(value, optional_value));
   ASSERT_DCHECK_DEATH(operator==(optional_value, value));
   ASSERT_DCHECK_DEATH(operator==(optional_value, optional_value));
+
+  ASSERT_DCHECK_DEATH(operator!=(value, optional_value));
+  ASSERT_DCHECK_DEATH(operator!=(optional_value, value));
+  ASSERT_DCHECK_DEATH(operator!=(optional_value, optional_value));
 }
 
 TEST_F(WebExposedIsolationInfoTest, AreCompatibleFunctions) {

@@ -2490,8 +2490,9 @@ bool RenderFrameHostManager::IsCandidateSameSite(RenderFrameHostImpl* candidate,
                                                  const UrlInfo& dest_url_info) {
   DCHECK_EQ(GetNavigationController().GetBrowserContext(),
             candidate->GetSiteInstance()->GetBrowserContext());
-  if (candidate->GetSiteInstance()->GetWebExposedIsolationInfo() !=
-      dest_url_info.web_exposed_isolation_info) {
+  if (!WebExposedIsolationInfo::AreCompatible(
+          candidate->GetSiteInstance()->GetWebExposedIsolationInfo(),
+          dest_url_info.web_exposed_isolation_info)) {
     return false;
   }
 
