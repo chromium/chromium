@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/cookie_manager_mojom_traits.h"
 
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/same_party_context.h"
 
@@ -426,6 +427,56 @@ EnumTraits<network::mojom::SamePartyCookieContextType,
   return network::mojom::SamePartyCookieContextType::kCrossParty;
 }
 
+bool EnumTraits<network::mojom::FirstPartySetsContextType,
+                net::FirstPartySetsContextType>::
+    FromMojom(network::mojom::FirstPartySetsContextType type,
+              net::FirstPartySetsContextType* out) {
+  switch (type) {
+    case network::mojom::FirstPartySetsContextType::kUnknown:
+      *out = net::FirstPartySetsContextType::kUnknown;
+      return true;
+    case network::mojom::FirstPartySetsContextType::kTopFrameIgnoredMixed:
+      *out = net::FirstPartySetsContextType::kTopFrameIgnoredMixed;
+      return true;
+    case network::mojom::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous:
+      *out = net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous;
+      return true;
+    case network::mojom::FirstPartySetsContextType::kTopResourceMismatch:
+      *out = net::FirstPartySetsContextType::kTopResourceMismatch;
+      return true;
+    case network::mojom::FirstPartySetsContextType::kTopResourceMatchMixed:
+      *out = net::FirstPartySetsContextType::kTopResourceMatchMixed;
+      return true;
+    case network::mojom::FirstPartySetsContextType::kHomogeneous:
+      *out = net::FirstPartySetsContextType::kHomogeneous;
+      return true;
+  }
+  return false;
+}
+
+network::mojom::FirstPartySetsContextType EnumTraits<
+    network::mojom::FirstPartySetsContextType,
+    net::FirstPartySetsContextType>::ToMojom(net::FirstPartySetsContextType
+                                                 type) {
+  switch (type) {
+    case net::FirstPartySetsContextType::kUnknown:
+      return network::mojom::FirstPartySetsContextType::kUnknown;
+    case net::FirstPartySetsContextType::kTopFrameIgnoredMixed:
+      return network::mojom::FirstPartySetsContextType::kTopFrameIgnoredMixed;
+    case net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous:
+      return network::mojom::FirstPartySetsContextType::
+          kTopFrameIgnoredHomogeneous;
+    case net::FirstPartySetsContextType::kTopResourceMismatch:
+      return network::mojom::FirstPartySetsContextType::kTopResourceMismatch;
+    case net::FirstPartySetsContextType::kTopResourceMatchMixed:
+      return network::mojom::FirstPartySetsContextType::kTopResourceMatchMixed;
+    case net::FirstPartySetsContextType::kHomogeneous:
+      return network::mojom::FirstPartySetsContextType::kHomogeneous;
+  }
+  NOTREACHED();
+  return network::mojom::FirstPartySetsContextType::kUnknown;
+}
+
 bool StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions>::
     Read(network::mojom::CookieOptionsDataView mojo_options,
          net::CookieOptions* cookie_options) {
@@ -672,8 +723,13 @@ bool StructTraits<network::mojom::SamePartyContextDataView,
   if (!context.ReadTopResourceForMetricsOnly(&top_resource_for_metrics_only))
     return false;
 
+  net::FirstPartySetsContextType first_party_sets_context_type;
+  if (!context.ReadFirstPartySetsContextType(&first_party_sets_context_type))
+    return false;
+
   *out = net::SamePartyContext(context_type, ancestors_for_metrics_only,
-                               top_resource_for_metrics_only);
+                               top_resource_for_metrics_only,
+                               first_party_sets_context_type);
   return true;
 }
 

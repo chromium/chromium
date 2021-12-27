@@ -779,24 +779,6 @@ CookieSamePartyStatus GetSamePartyStatus(const CanonicalCookie& cookie,
   };
 }
 
-FirstPartySetsContextType ComputeFirstPartySetsContextType(
-    const SchemefulSite& request_site,
-    const IsolationInfo& isolation_info,
-    const CookieAccessDelegate* cookie_access_delegate,
-    bool force_ignore_top_frame_party) {
-  if (!isolation_info.IsEmpty() && isolation_info.party_context().has_value() &&
-      cookie_access_delegate) {
-    return cookie_access_delegate->ComputeFirstPartySetsContextType(
-        request_site,
-        force_ignore_top_frame_party
-            ? absl::nullopt
-            : isolation_info.network_isolation_key().GetTopFrameSite(),
-        isolation_info.party_context().value());
-  }
-
-  return FirstPartySetsContextType::kUnknown;
-}
-
 base::OnceCallback<void(CookieAccessResult)> AdaptCookieAccessResultToBool(
     base::OnceCallback<void(bool)> callback) {
   return base::BindOnce(

@@ -98,6 +98,7 @@
 #include "net/base/io_buffer.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/same_party_context.h"
 #include "net/filter/gzip_header.h"
@@ -2054,7 +2055,8 @@ bool SetCookie(BrowserContext* browser_context,
   net::CookieOptions options;
   options.set_include_httponly();
   options.set_same_site_cookie_context(context);
-  options.set_same_party_context(net::SamePartyContext(party_context));
+  options.set_same_party_context(net::SamePartyContext(
+      party_context, net::FirstPartySetsContextType::kUnknown));
   cookie_manager->SetCanonicalCookie(
       *cc.get(), url, options,
       base::BindOnce(

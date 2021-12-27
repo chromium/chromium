@@ -125,34 +125,47 @@ TEST_F(FirstPartySetsDisabledTest, ComputeContext_InfersSingletons) {
 
   // Works if the site is provided with WSS scheme instead of HTTPS.
   EXPECT_THAT(sets().ComputeContext(wss_member, &member, {member, example}),
-              net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                    Type::kSameParty));
+              net::SamePartyContext(
+                  Type::kCrossParty, Type::kCrossParty, Type::kSameParty,
+                  net::FirstPartySetsContextType::kTopResourceMatchMixed));
 
   EXPECT_THAT(sets().ComputeContext(example, &member, {member}),
-              net::SamePartyContext(Type::kCrossParty));
+              net::SamePartyContext(
+                  Type::kCrossParty,
+                  net::FirstPartySetsContextType::kTopResourceMismatch));
   EXPECT_THAT(sets().ComputeContext(member, &example, {member}),
-              net::SamePartyContext(Type::kCrossParty));
+              net::SamePartyContext(
+                  Type::kCrossParty,
+                  net::FirstPartySetsContextType::kTopResourceMismatch));
 
   // Top&resource differs from Ancestors.
   EXPECT_THAT(sets().ComputeContext(member, &member, {example}),
-              net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                    Type::kSameParty));
+              net::SamePartyContext(
+                  Type::kCrossParty, Type::kCrossParty, Type::kSameParty,
+                  net::FirstPartySetsContextType::kTopResourceMatchMixed));
 
   // Metrics values infer singleton sets when appropriate.
   EXPECT_THAT(sets().ComputeContext(member, &member, {member}),
-              net::SamePartyContext(Type::kCrossParty, Type::kSameParty,
-                                    Type::kSameParty));
+              net::SamePartyContext(
+                  Type::kCrossParty, Type::kSameParty, Type::kSameParty,
+                  net::FirstPartySetsContextType::kHomogeneous));
   EXPECT_THAT(sets().ComputeContext(member, &example, {member}),
-              net::SamePartyContext(Type::kCrossParty));
+              net::SamePartyContext(
+                  Type::kCrossParty,
+                  net::FirstPartySetsContextType::kTopResourceMismatch));
   EXPECT_THAT(sets().ComputeContext(example, &member, {member}),
-              net::SamePartyContext(Type::kCrossParty));
+              net::SamePartyContext(
+                  Type::kCrossParty,
+                  net::FirstPartySetsContextType::kTopResourceMismatch));
   EXPECT_THAT(sets().ComputeContext(member, &member, {example}),
-              net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                    Type::kSameParty));
+              net::SamePartyContext(
+                  Type::kCrossParty, Type::kCrossParty, Type::kSameParty,
+                  net::FirstPartySetsContextType::kTopResourceMatchMixed));
 
   EXPECT_THAT(sets().ComputeContext(member, &member, {member, example}),
-              net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                    Type::kSameParty));
+              net::SamePartyContext(
+                  Type::kCrossParty, Type::kCrossParty, Type::kSameParty,
+                  net::FirstPartySetsContextType::kTopResourceMatchMixed));
 }
 
 TEST_F(FirstPartySetsDisabledTest, FindOwner) {
@@ -1397,52 +1410,79 @@ TEST_F(PopulatedFirstPartySetsTest, ComputeContext) {
   net::SchemefulSite wss_nonmember(GURL("wss://nonmember.test"));
 
   // Works as usual for sites that are in First-Party sets.
-  EXPECT_THAT(sets().ComputeContext(member, &member, {member}),
-              net::SamePartyContext(Type::kSameParty));
-  EXPECT_THAT(sets().ComputeContext(owner, &member, {member}),
-              net::SamePartyContext(Type::kSameParty));
-  EXPECT_THAT(sets().ComputeContext(member, &owner, {member}),
-              net::SamePartyContext(Type::kSameParty));
-  EXPECT_THAT(sets().ComputeContext(member, &member, {owner}),
-              net::SamePartyContext(Type::kSameParty));
-  EXPECT_THAT(sets().ComputeContext(member, &member, {member, owner}),
-              net::SamePartyContext(Type::kSameParty));
+  EXPECT_THAT(
+      sets().ComputeContext(member, &member, {member}),
+      net::SamePartyContext(Type::kSameParty,
+                            net::FirstPartySetsContextType::kHomogeneous));
+  EXPECT_THAT(
+      sets().ComputeContext(owner, &member, {member}),
+      net::SamePartyContext(Type::kSameParty,
+                            net::FirstPartySetsContextType::kHomogeneous));
+  EXPECT_THAT(
+      sets().ComputeContext(member, &owner, {member}),
+      net::SamePartyContext(Type::kSameParty,
+                            net::FirstPartySetsContextType::kHomogeneous));
+  EXPECT_THAT(
+      sets().ComputeContext(member, &member, {owner}),
+      net::SamePartyContext(Type::kSameParty,
+                            net::FirstPartySetsContextType::kHomogeneous));
+  EXPECT_THAT(
+      sets().ComputeContext(member, &member, {member, owner}),
+      net::SamePartyContext(Type::kSameParty,
+                            net::FirstPartySetsContextType::kHomogeneous));
 
   // Works if the site is provided with WSS scheme instead of HTTPS.
-  EXPECT_THAT(sets().ComputeContext(wss_member, &member, {member, owner}),
-              net::SamePartyContext(Type::kSameParty));
+  EXPECT_THAT(
+      sets().ComputeContext(wss_member, &member, {member, owner}),
+      net::SamePartyContext(Type::kSameParty,
+                            net::FirstPartySetsContextType::kHomogeneous));
 
   EXPECT_THAT(sets().ComputeContext(nonmember, &member, {member}),
-              net::SamePartyContext(Type::kCrossParty));
+              net::SamePartyContext(
+                  Type::kCrossParty,
+                  net::FirstPartySetsContextType::kTopResourceMismatch));
   EXPECT_THAT(sets().ComputeContext(member, &nonmember, {member}),
-              net::SamePartyContext(Type::kCrossParty));
+              net::SamePartyContext(
+                  Type::kCrossParty,
+                  net::FirstPartySetsContextType::kTopResourceMismatch));
   EXPECT_THAT(
       sets().ComputeContext(wss_nonmember, &wss_member, {member, owner}),
-      net::SamePartyContext(Type::kCrossParty));
+      net::SamePartyContext(
+          Type::kCrossParty,
+          net::FirstPartySetsContextType::kTopResourceMismatch));
 
   // Top&resource differs from Ancestors.
   EXPECT_THAT(sets().ComputeContext(member, &member, {nonmember}),
-              net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                    Type::kSameParty));
+              net::SamePartyContext(
+                  Type::kCrossParty, Type::kCrossParty, Type::kSameParty,
+                  net::FirstPartySetsContextType::kTopResourceMatchMixed));
 
   // Metrics values infer singleton sets when appropriate.
   EXPECT_THAT(sets().ComputeContext(nonmember, &nonmember, {nonmember}),
-              net::SamePartyContext(Type::kCrossParty, Type::kSameParty,
-                                    Type::kSameParty));
+              net::SamePartyContext(
+                  Type::kCrossParty, Type::kSameParty, Type::kSameParty,
+                  net::FirstPartySetsContextType::kHomogeneous));
   EXPECT_THAT(sets().ComputeContext(nonmember, &nonmember1, {nonmember}),
-              net::SamePartyContext(Type::kCrossParty));
+              net::SamePartyContext(
+                  Type::kCrossParty,
+                  net::FirstPartySetsContextType::kTopResourceMismatch));
   EXPECT_THAT(sets().ComputeContext(nonmember1, &nonmember, {nonmember}),
-              net::SamePartyContext(Type::kCrossParty));
+              net::SamePartyContext(
+                  Type::kCrossParty,
+                  net::FirstPartySetsContextType::kTopResourceMismatch));
   EXPECT_THAT(sets().ComputeContext(nonmember, &nonmember, {nonmember1}),
-              net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                    Type::kSameParty));
+              net::SamePartyContext(
+                  Type::kCrossParty, Type::kCrossParty, Type::kSameParty,
+                  net::FirstPartySetsContextType::kTopResourceMatchMixed));
 
   EXPECT_THAT(sets().ComputeContext(member, &member, {member, nonmember}),
-              net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                    Type::kSameParty));
+              net::SamePartyContext(
+                  Type::kCrossParty, Type::kCrossParty, Type::kSameParty,
+                  net::FirstPartySetsContextType::kTopResourceMatchMixed));
   EXPECT_THAT(sets().ComputeContext(nonmember, &nonmember, {member, nonmember}),
-              net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                    Type::kSameParty));
+              net::SamePartyContext(
+                  Type::kCrossParty, Type::kCrossParty, Type::kSameParty,
+                  net::FirstPartySetsContextType::kTopResourceMatchMixed));
 }
 
 TEST_F(PopulatedFirstPartySetsTest, IsInNontrivialFirstPartySet) {
@@ -1508,76 +1548,52 @@ TEST_F(PopulatedFirstPartySetsTest, Sets_NonEmpty) {
 }
 
 TEST_F(PopulatedFirstPartySetsTest, ComputeContextType) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  net::SchemefulSite foo(GURL("https://foo.test"));
+
   std::set<net::SchemefulSite> homogeneous_context({
-      net::SchemefulSite(GURL("https://example.test")),
-      net::SchemefulSite(GURL("https://member1.test")),
+      example,
+      member1,
   });
   std::set<net::SchemefulSite> mixed_context({
-      net::SchemefulSite(GURL("https://example.test")),
+      example,
       net::SchemefulSite(GURL("https://nonmember.test")),
   });
   net::SchemefulSite singleton(GURL("https://implicit-singleton.test"));
 
-  EXPECT_EQ(
-      net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous,
-      sets().ComputeContextType(
-          net::SchemefulSite(GURL("https://example.test")), absl::nullopt, {}));
   EXPECT_EQ(net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous,
-            sets().ComputeContextType(
-                net::SchemefulSite(GURL("https://example.test")), absl::nullopt,
-                homogeneous_context));
+            sets().ComputeContextType(example, nullptr, {}));
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous,
+            sets().ComputeContextType(example, nullptr, homogeneous_context));
 
   EXPECT_EQ(net::FirstPartySetsContextType::kTopFrameIgnoredMixed,
-            sets().ComputeContextType(
-                net::SchemefulSite(GURL("https://example.test")), absl::nullopt,
-                mixed_context));
+            sets().ComputeContextType(example, nullptr, mixed_context));
 
   EXPECT_EQ(net::FirstPartySetsContextType::kHomogeneous,
-            sets().ComputeContextType(
-                net::SchemefulSite(GURL("https://example.test")),
-                net::SchemefulSite(GURL("https://member1.test")), {}));
+            sets().ComputeContextType(example, &member1, {}));
   EXPECT_EQ(net::FirstPartySetsContextType::kHomogeneous,
-            sets().ComputeContextType(
-                net::SchemefulSite(GURL("https://example.test")),
-                net::SchemefulSite(GURL("https://member1.test")),
-                homogeneous_context));
+            sets().ComputeContextType(example, &member1, homogeneous_context));
   EXPECT_EQ(net::FirstPartySetsContextType::kHomogeneous,
-            sets().ComputeContextType(singleton, singleton, {singleton}));
+            sets().ComputeContextType(singleton, &singleton, {singleton}));
 
   EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
-            sets().ComputeContextType(
-                net::SchemefulSite(GURL("https://example.test")),
-                net::SchemefulSite(GURL("https://member1.test")),
-                {net::SchemefulSite(GURL("https://foo.test"))}));
-  EXPECT_EQ(
-      net::FirstPartySetsContextType::kTopResourceMatchMixed,
-      sets().ComputeContextType(
-          net::SchemefulSite(GURL("https://example.test")),
-          net::SchemefulSite(GURL("https://member1.test")), mixed_context));
+            sets().ComputeContextType(example, &member1, {foo}));
   EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
-            sets().ComputeContextType(
-                net::SchemefulSite(GURL("https://example.test")),
-                net::SchemefulSite(GURL("https://member1.test")), {singleton}));
+            sets().ComputeContextType(example, &member1, mixed_context));
   EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
-            sets().ComputeContextType(singleton, singleton, mixed_context));
+            sets().ComputeContextType(example, &member1, {singleton}));
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
+            sets().ComputeContextType(singleton, &singleton, mixed_context));
 
   EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
-            sets().ComputeContextType(
-                net::SchemefulSite(GURL("https://example.test")),
-                net::SchemefulSite(GURL("https://foo.test")), {}));
-  EXPECT_EQ(
-      net::FirstPartySetsContextType::kTopResourceMismatch,
-      sets().ComputeContextType(
-          net::SchemefulSite(GURL("https://example.test")),
-          net::SchemefulSite(GURL("https://foo.test")), homogeneous_context));
+            sets().ComputeContextType(example, &foo, {}));
   EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
-            sets().ComputeContextType(
-                net::SchemefulSite(GURL("https://example.test")),
-                net::SchemefulSite(GURL("https://foo.test")), mixed_context));
+            sets().ComputeContextType(example, &foo, homogeneous_context));
   EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
-            sets().ComputeContextType(
-                net::SchemefulSite(GURL("https://example.test")), singleton,
-                mixed_context));
+            sets().ComputeContextType(example, &foo, mixed_context));
+  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
+            sets().ComputeContextType(example, &singleton, mixed_context));
 }
 
 }  // namespace network

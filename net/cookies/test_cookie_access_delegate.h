@@ -41,10 +41,6 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context) const override;
-  FirstPartySetsContextType ComputeFirstPartySetsContextType(
-      const net::SchemefulSite& site,
-      const absl::optional<net::SchemefulSite>& top_frame_site,
-      const std::set<net::SchemefulSite>& party_context) const override;
   bool IsInNontrivialFirstPartySet(
       const net::SchemefulSite& site) const override;
   absl::optional<net::SchemefulSite> FindFirstPartySetOwner(

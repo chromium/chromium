@@ -43,14 +43,6 @@ SamePartyContext TestCookieAccessDelegate::ComputeSamePartyContext(
   return SamePartyContext();
 }
 
-FirstPartySetsContextType
-TestCookieAccessDelegate::ComputeFirstPartySetsContextType(
-    const net::SchemefulSite& site,
-    const absl::optional<net::SchemefulSite>& top_frame_site,
-    const std::set<net::SchemefulSite>& party_context) const {
-  return FirstPartySetsContextType::kUnknown;
-}
-
 bool TestCookieAccessDelegate::IsInNontrivialFirstPartySet(
     const net::SchemefulSite& site) const {
   return false;

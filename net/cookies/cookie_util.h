@@ -250,12 +250,6 @@ ComputeSamePartyContext(const SchemefulSite& request_site,
                         const CookieAccessDelegate* cookie_access_delegate,
                         bool force_ignore_top_frame_party);
 
-NET_EXPORT FirstPartySetsContextType ComputeFirstPartySetsContextType(
-    const SchemefulSite& request_site,
-    const IsolationInfo& isolation_info,
-    const CookieAccessDelegate* cookie_access_delegate,
-    bool force_ignore_top_frame_party);
-
 // Get the SameParty inclusion status. If the cookie is not SameParty, returns
 // kNoSamePartyEnforcement; if the cookie is SameParty but does not have a
 // valid context, returns kEnforceSamePartyExclude.

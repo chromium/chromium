@@ -65,20 +65,6 @@ class FirstPartySets {
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context) const;
 
-  // Computes the "type" of the context. I.e., categorizes contexts based on
-  // whether the top frame site and resource URL are same-party; whether the top
-  // frame site was ignored; whether the `party_context` is same-party with
-  // everything else; etc.
-  //
-  // Since this metric may be used to inform decisions based on actual usage
-  // patterns of sites on the web, this infers singleton sets. That is, it
-  // treats sites that do not belong to a First-Party Set as belonging to an
-  // implictly-declared singleton First-Party Set.
-  net::FirstPartySetsContextType ComputeContextType(
-      const net::SchemefulSite& site,
-      const absl::optional<net::SchemefulSite>& top_frame_site,
-      const std::set<net::SchemefulSite>& party_context) const;
-
   // Returns whether the `site` is a member of a non-trivial (i.e.
   // non-singleton) First-Party Set.
   bool IsInNontrivialFirstPartySet(const net::SchemefulSite& site) const;
@@ -121,6 +107,20 @@ class FirstPartySets {
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context,
       bool infer_singleton_sets) const;
+
+  // Computes the "type" of the context. I.e., categorizes contexts based on
+  // whether the top frame site and resource URL are same-party; whether the top
+  // frame site was ignored; whether the `party_context` is same-party with
+  // everything else; etc.
+  //
+  // Since this metric may be used to inform decisions based on actual usage
+  // patterns of sites on the web, this infers singleton sets. That is, it
+  // treats sites that do not belong to a First-Party Set as belonging to an
+  // implictly-declared singleton First-Party Set.
+  net::FirstPartySetsContextType ComputeContextType(
+      const net::SchemefulSite& site,
+      const net::SchemefulSite* top_frame_site,
+      const std::set<net::SchemefulSite>& party_context) const;
 
   // Parses the contents of `raw_sets` as a collection of First-Party Set
   // declarations, and assigns to `sets_`.
@@ -189,6 +189,7 @@ class FirstPartySets {
                            ComputeSetsDiff_OwnerMemberRotate);
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
                            ComputeSetsDiff_EmptySets);
+  FRIEND_TEST_ALL_PREFIXES(PopulatedFirstPartySetsTest, ComputeContextType);
 };
 
 }  // namespace network

@@ -6,6 +6,7 @@
 #define NET_COOKIES_SAME_PARTY_CONTEXT_H_
 
 #include "net/base/net_export.h"
+#include "net/cookies/cookie_constants.h"
 
 namespace net {
 
@@ -15,8 +16,8 @@ namespace net {
 // to explore the impact of different definitions of "same-party".
 class NET_EXPORT SamePartyContext {
  public:
-  // Computed in URLRequestHttpJob for every cookie access attempt but is only
-  // relevant for SameParty cookies.
+  // Computed for every cookie access attempt but is only relevant for SameParty
+  // cookies.
   enum class Type {
     // The opposite to kSameParty. Should be the default value.
     kCrossParty = 0,
@@ -26,10 +27,13 @@ class NET_EXPORT SamePartyContext {
   };
 
   SamePartyContext() = default;
-  explicit SamePartyContext(Type type);
+  explicit SamePartyContext(
+      Type type,
+      FirstPartySetsContextType first_party_sets_context_type);
   SamePartyContext(Type context_type,
                    Type ancestors_for_metrics,
-                   Type top_resource_for_metrics);
+                   Type top_resource_for_metrics,
+                   FirstPartySetsContextType first_party_sets_context_type);
 
   bool operator==(const SamePartyContext& other) const;
 
@@ -49,6 +53,10 @@ class NET_EXPORT SamePartyContext {
     return top_resource_for_metrics_only_;
   }
 
+  FirstPartySetsContextType first_party_sets_context_type() const {
+    return first_party_sets_context_type_;
+  }
+
   // Creates a SamePartyContext that is as permissive as possible.
   static SamePartyContext MakeInclusive();
 
@@ -56,6 +64,8 @@ class NET_EXPORT SamePartyContext {
   Type context_type_ = Type::kCrossParty;
   Type ancestors_for_metrics_only_ = Type::kCrossParty;
   Type top_resource_for_metrics_only_ = Type::kCrossParty;
+  FirstPartySetsContextType first_party_sets_context_type_ =
+      FirstPartySetsContextType::kUnknown;
 };
 
 }  // namespace net

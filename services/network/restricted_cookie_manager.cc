@@ -27,6 +27,7 @@
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/same_party_context.h"
 #include "services/network/cookie_settings.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -67,9 +68,11 @@ net::CookieOptions MakeOptionsForSet(
   // SameParty cookies for requests in same-party contexts embedded in top-level
   // extension frames.
   bool force_ignore_top_frame_party = false;
-  options.set_same_party_context(net::cookie_util::ComputeSamePartyContext(
-      request_site, isolation_info, cookie_access_delegate,
-      force_ignore_top_frame_party));
+  net::SamePartyContext same_party_context =
+      net::cookie_util::ComputeSamePartyContext(request_site, isolation_info,
+                                                cookie_access_delegate,
+                                                force_ignore_top_frame_party);
+  options.set_same_party_context(same_party_context);
   if (isolation_info.party_context().has_value()) {
     // Count the top-frame site since it's not in the party_context.
     options.set_full_party_context_size(isolation_info.party_context()->size() +
@@ -81,11 +84,8 @@ net::CookieOptions MakeOptionsForSet(
   options.set_is_in_nontrivial_first_party_set(
       is_in_nontrivial_first_party_set);
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "Cookie.FirstPartySetsContextType.JS.Write",
-      net::cookie_util::ComputeFirstPartySetsContextType(
-          request_site, isolation_info, cookie_access_delegate,
-          force_ignore_top_frame_party));
+  UMA_HISTOGRAM_ENUMERATION("Cookie.FirstPartySetsContextType.JS.Write",
+                            same_party_context.first_party_sets_context_type());
 
   return options;
 }
@@ -116,9 +116,11 @@ net::CookieOptions MakeOptionsForGet(
   }
   net::SchemefulSite request_site(url);
   bool force_ignore_top_frame_party = false;
-  options.set_same_party_context(net::cookie_util::ComputeSamePartyContext(
-      request_site, isolation_info, cookie_access_delegate,
-      force_ignore_top_frame_party));
+  net::SamePartyContext same_party_context =
+      net::cookie_util::ComputeSamePartyContext(request_site, isolation_info,
+                                                cookie_access_delegate,
+                                                force_ignore_top_frame_party);
+  options.set_same_party_context(same_party_context);
   if (isolation_info.party_context().has_value()) {
     // Count the top-frame site since it's not in the party_context.
     options.set_full_party_context_size(isolation_info.party_context()->size() +
@@ -130,11 +132,8 @@ net::CookieOptions MakeOptionsForGet(
   options.set_is_in_nontrivial_first_party_set(
       is_in_nontrivial_first_party_set);
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "Cookie.FirstPartySetsContextType.JS.Read",
-      net::cookie_util::ComputeFirstPartySetsContextType(
-          request_site, isolation_info, cookie_access_delegate,
-          force_ignore_top_frame_party));
+  UMA_HISTOGRAM_ENUMERATION("Cookie.FirstPartySetsContextType.JS.Read",
+                            same_party_context.first_party_sets_context_type());
 
   return options;
 }

@@ -277,8 +277,8 @@ class RestrictedCookieManagerTest
     net::CookieOptions::SameSiteCookieContext same_site_cookie_context(
         same_site_cookie_context_type, same_site_cookie_context_type);
     options.set_same_site_cookie_context(same_site_cookie_context);
-    options.set_same_party_context(
-        net::SamePartyContext(same_party_context_type));
+    options.set_same_party_context(net::SamePartyContext(
+        same_party_context_type, net::FirstPartySetsContextType::kUnknown));
 
     cookie_monster_.SetCanonicalCookieAsync(
         std::make_unique<net::CanonicalCookie>(cookie),

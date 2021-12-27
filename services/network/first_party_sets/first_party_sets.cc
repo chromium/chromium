@@ -177,12 +177,16 @@ net::SamePartyContext FirstPartySets::ComputeContext(
       "Cookie.FirstPartySets.ComputeContext.Latency", timer.Elapsed(),
       base::Microseconds(1), base::Milliseconds(100), 50);
 
-  return net::SamePartyContext(context_type, ancestors, top_resource);
+  net::FirstPartySetsContextType first_party_sets_context_type =
+      ComputeContextType(site, top_frame_site, party_context);
+
+  return net::SamePartyContext(context_type, ancestors, top_resource,
+                               first_party_sets_context_type);
 }
 
 net::FirstPartySetsContextType FirstPartySets::ComputeContextType(
     const net::SchemefulSite& site,
-    const absl::optional<net::SchemefulSite>& top_frame_site,
+    const net::SchemefulSite* top_frame_site,
     const std::set<net::SchemefulSite>& party_context) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   constexpr bool infer_singleton_sets = true;
@@ -195,7 +199,7 @@ net::FirstPartySetsContextType FirstPartySets::ComputeContextType(
       party_context, [&](const net::SchemefulSite& middle_site) {
         return *FindOwner(middle_site, infer_singleton_sets) == *site_owner;
       });
-  if (!top_frame_site.has_value()) {
+  if (top_frame_site == nullptr) {
     return is_homogeneous
                ? net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous
                : net::FirstPartySetsContextType::kTopFrameIgnoredMixed;
