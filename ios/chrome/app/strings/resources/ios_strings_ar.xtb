@@ -25,6 +25,7 @@
 <translation id="1145536944570833626">يمكنك حذف البيانات الحالية.</translation>
 <translation id="1147031633655575115">تم تسجيل الدخول بحساب <ph name="USER" />.</translation>
 <translation id="1154984953698510061">الانتقال إلى علامات التبويب الأخرى</translation>
+<translation id="1164064664035028907">استخدام كلمة مرور قوية:</translation>
 <translation id="1165039591588034296">خطأ</translation>
 <translation id="1172898394251786223">الحقل التالي</translation>
 <translation id="1176932207622159128">يتعذر حفظ الصورة</translation>
@@ -638,6 +639,7 @@
 <translation id="6807889908376551050">إظهار الكل...</translation>
 <translation id="681368974849482173">تم إنشاء العنصر</translation>
 <translation id="681450999322335505">أوقفت مؤسستك ميزة المزامنة</translation>
+<translation id="683022620450280906">‏يمكنك استخدام كلمات المرور المحفوظة على أي جهاز، حيث تُحفظ كلمات المرور هذه في "مدير كلمات المرور" من Google على عنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="6830804042318138535">قراءة المزيد</translation>
 <translation id="6831043979455480757">ترجمة</translation>
 <translation id="6842136130964845393">لضمان إمكانية الوصول دائمًا إلى كلمات المرور المحفوظة، عليك إثبات هويتك.</translation>

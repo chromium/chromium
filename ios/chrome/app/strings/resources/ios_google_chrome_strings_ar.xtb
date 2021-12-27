@@ -25,6 +25,7 @@
 <translation id="2574249610672786438">‏للاطّلاع على علامات التبويب من أي جهاز تستخدم فيه Chrome، سجِّل الدخول على جميع أجهزتك.</translation>
 <translation id="2576431527583832481">‏لقد أصبح Chrome أفضل من ذي قبل! يتوفر إصدار جديد.</translation>
 <translation id="257708665678654955">‏هل تريد أن يعرض Google Chrome ترجمة صفحات <ph name="LANGUAGE_NAME" /> من الموقع الإلكتروني هذا في المرة القادمة؟</translation>
+<translation id="2671426118752779020">‏يمكنك استخدام كلمات المرور التي حفظتها في "مدير كلمات المرور" من Google في التطبيقات الأخرى على هاتف iPhone.</translation>
 <translation id="2695886661449553974">‏تعذّر على Chrome البحث عن تحديثات. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2732745070297234559">‏تعذّر على متصفِّح Chrome التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا.</translation>
 <translation id="2869959624320573933">‏تسجيل الدخول إلى Chrome</translation>
@@ -85,6 +86,7 @@
 <translation id="7165736900384873061">‏بدء استخدام الماسح الضوئي للاستجابة السريعة في Google Chrome</translation>
 <translation id="7172660552945675509">‏نصيحة: <ph name="BEGIN_LINK" />نقل Chrome إلى شريط الإرساء<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">‏يستخدم Chrome تقنية "التعرُّف على الوجه" لضمان الدخول المصرَّح به إلى كلمات المرور.</translation>
+<translation id="72119412072970160">‏يمكنك استخدام كلمات المرور التي حفظتها في "مدير كلمات المرور" من Google في التطبيقات الأخرى على جهاز iPad.</translation>
 <translation id="7261678641327190792">‏يتعذّر على متصفِّح Chrome التحقُّق من كلمات المرور.</translation>
 <translation id="7272930098487145294">‏لحفظ الصور، يُرجى النقر على "الإعدادات" للسماح لمتصفّح Chrome بأن يضيف إلى صورك.</translation>
 <translation id="7275945473750112644">‏سيتم محو بيانات Chrome المخزَّنة على هذا الجهاز لأنّ حسابك تتم إدارته من خلال <ph name="HOSTED_DOMAIN" /></translation>
@@ -112,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">‏الحفاظ على أمانك باستخدام Google Chrome</translation>
 <translation id="8772179140489533211">‏عرض رسائل مطالبة تسجيل الدخول إلى Chrome</translation>
+<translation id="8788269841521769222">‏لن تضطر إلى تذكُّر كلمة المرور هذه. سيتم حفظ كلمة المرور في "مدير كلمات المرور" من Google على عنوان البريد الإلكتروني <ph name="EMAIL" />.</translation>
 <translation id="9112744793181547300">‏هل تريد ضبط Chrome كمتصفّح تلقائي؟</translation>
 </translationbundle>
