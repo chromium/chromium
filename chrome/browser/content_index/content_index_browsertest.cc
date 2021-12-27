@@ -254,8 +254,10 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, LaunchUrl) {
   base::RunLoop().RunUntilIdle();  // Wait for the provider to get the content.
 
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
-  GURL current_url =
-      browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
+  GURL current_url = browser()
+                         ->tab_strip_model()
+                         ->GetActiveWebContents()
+                         ->GetLastCommittedURL();
   EXPECT_TRUE(base::EndsWith(current_url.spec(),
                              "/content_index/content_index.html",
                              base::CompareCase::SENSITIVE));
@@ -272,7 +274,10 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, LaunchUrl) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
-  current_url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
+  current_url = browser()
+                    ->tab_strip_model()
+                    ->GetActiveWebContents()
+                    ->GetLastCommittedURL();
   EXPECT_TRUE(base::EndsWith(current_url.spec(),
                              "/content_index/content_index.html?launch",
                              base::CompareCase::SENSITIVE));
