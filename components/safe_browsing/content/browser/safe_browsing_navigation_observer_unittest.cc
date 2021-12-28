@@ -190,8 +190,7 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1279844): Fix test on Linux TSan bot.
-TEST_F(SBNavigationObserverTest, DISABLED_TestNavigationEventList) {
+TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
   NavigationEventList events(3);
 
   EXPECT_EQ(-1, static_cast<int>(events.FindNavigationEvent(
