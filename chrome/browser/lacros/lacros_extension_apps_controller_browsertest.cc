@@ -37,8 +37,8 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, OpenNativeSettings) {
 
   // It doesn't matter what the URL is, it shouldn't be related to the
   // extension.
-  ASSERT_FALSE(
-      base::Contains(GetActiveWebContents()->GetURL().spec(), extension->id()));
+  ASSERT_FALSE(base::Contains(GetActiveWebContents()->GetVisibleURL().spec(),
+                              extension->id()));
 
   // Send the message to open native settings.
   std::string muxed_id =
@@ -47,8 +47,8 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, OpenNativeSettings) {
   controller.OpenNativeSettings(muxed_id);
 
   // Now the URL should be on a settings page that has the extension id.
-  ASSERT_TRUE(
-      base::Contains(GetActiveWebContents()->GetURL().spec(), extension->id()));
+  ASSERT_TRUE(base::Contains(GetActiveWebContents()->GetVisibleURL().spec(),
+                             extension->id()));
 }
 
 // Test uninstalling an app.

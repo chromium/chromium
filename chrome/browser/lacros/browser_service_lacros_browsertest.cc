@@ -85,7 +85,7 @@ class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
     // Verify the web content.
     content::WebContents* web_content =
         browser->tab_strip_model()->GetActiveWebContents();
-    EXPECT_EQ(web_content->GetURL(), kNavigationUrl);
+    EXPECT_EQ(web_content->GetVisibleURL(), kNavigationUrl);
   }
 
   BrowserServiceLacros* browser_service() const {
