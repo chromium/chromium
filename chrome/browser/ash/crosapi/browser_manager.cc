@@ -1112,7 +1112,7 @@ void BrowserManager::LaunchForKeepAliveIfNecessary() {
       !keep_alive_features_.empty()) {
     CHECK(browser_util::IsLacrosEnabled());
     CHECK(browser_util::IsLacrosAllowedToLaunch());
-    Start(browser_util::InitialBrowserAction(
+    MaybeStart(browser_util::InitialBrowserAction(
         mojom::InitialBrowserAction::kDoNotOpenWindow));
   }
 }

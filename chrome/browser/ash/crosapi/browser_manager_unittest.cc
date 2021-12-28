@@ -33,6 +33,9 @@ namespace crosapi {
 
 namespace {
 
+constexpr char kSampleLacrosPath[] =
+    "/run/imageloader-lacros-dogfood-dev/97.0.4676/";
+
 class BrowserManagerFake : public BrowserManager {
  public:
   BrowserManagerFake(std::unique_ptr<BrowserLoader> browser_loader,
@@ -75,6 +78,9 @@ class BrowserManagerTest : public testing::Test {
   ~BrowserManagerTest() override = default;
 
   void SetUp() override {
+    // Enable Lacros by setting the appropriate flag.
+    feature_list_.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+
     fake_user_manager_ = new ash::FakeChromeUserManager;
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_));
@@ -112,16 +118,14 @@ class BrowserManagerTest : public testing::Test {
   MockBrowserLoader* browser_loader_;
   std::unique_ptr<MockComponentUpdateService> component_update_service_;
   std::unique_ptr<BrowserManagerFake> fake_browser_manager_;
-
   ScopedTestingLocalState local_state_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(BrowserManagerTest, LacrosKeepAlive) {
-  // Enable Lacros by creating a regular user, and setting the appropriate
-  // flag.
   AddRegularUser("user@test.com");
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
   browser_util::SetProfileMigrationCompletedForUser(
       local_state_.Get(), chromeos::ProfileHelper::Get()
                               ->GetUserByProfile(&testing_profile_)
@@ -130,6 +134,16 @@ TEST_F(BrowserManagerTest, LacrosKeepAlive) {
   EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
 
   using State = BrowserManagerFake::State;
+  EXPECT_EQ(fake_browser_manager_->start_count(), 0);
+
+  // Attempt to mount the Lacros image. Will not start as it does not meet the
+  // automatic start criteria.
+  EXPECT_CALL(*browser_loader_, Load(_))
+      .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
+        std::move(callback).Run(base::FilePath("/run/lacros"),
+                                browser_util::LacrosSelection::kRootfs);
+      });
+  fake_browser_manager_->InitializeAndStart();
   EXPECT_EQ(fake_browser_manager_->start_count(), 0);
 
   fake_browser_manager_->SetStatePublic(State::UNAVAILABLE);
@@ -154,10 +168,53 @@ TEST_F(BrowserManagerTest, LacrosKeepAlive) {
   EXPECT_EQ(fake_browser_manager_->start_count(), 2);
 }
 
+TEST_F(BrowserManagerTest, LacrosKeepAliveReloadsWhenUpdateAvailable) {
+  AddRegularUser("user@test.com");
+  browser_util::SetProfileMigrationCompletedForUser(
+      local_state_.Get(), chromeos::ProfileHelper::Get()
+                              ->GetUserByProfile(&testing_profile_)
+                              ->username_hash());
+  EXPECT_TRUE(browser_util::IsLacrosEnabled());
+  EXPECT_TRUE(browser_util::IsLacrosAllowedToLaunch());
+
+  EXPECT_CALL(*browser_loader_, Load(_))
+      .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
+        std::move(callback).Run(base::FilePath("/run/lacros"),
+                                browser_util::LacrosSelection::kRootfs);
+      });
+  fake_browser_manager_->InitializeAndStart();
+
+  using State = BrowserManagerFake::State;
+  EXPECT_EQ(fake_browser_manager_->start_count(), 0);
+
+  fake_browser_manager_->SetStatePublic(State::UNAVAILABLE);
+  EXPECT_EQ(fake_browser_manager_->start_count(), 0);
+
+  // Simulate an update event by the component update service.
+  const std::string lacros_component_id =
+      browser_util::kLacrosDogfoodDevInfo.crx_id;
+  static_cast<component_updater::ComponentUpdateService::Observer*>(
+      fake_browser_manager_.get())
+      ->OnEvent(UpdateClient::Observer::Events::COMPONENT_UPDATED,
+                lacros_component_id);
+
+  std::unique_ptr<BrowserManager::ScopedKeepAlive> keep_alive =
+      fake_browser_manager_->KeepAlive(BrowserManager::Feature::kTestOnly);
+
+  EXPECT_CALL(*browser_loader_, Load(_))
+      .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
+        std::move(callback).Run(base::FilePath(kSampleLacrosPath),
+                                browser_util::LacrosSelection::kStateful);
+      });
+
+  // Once the state becomes STOPPED, then Lacros should start. Since there is
+  // an update, it should first load the updated image.
+  fake_browser_manager_->SetStatePublic(State::STOPPED);
+  EXPECT_EQ(fake_browser_manager_->start_count(), 1);
+}
+
 TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
   AddRegularUser("user@test.com");
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
   browser_util::SetProfileMigrationCompletedForUser(
       local_state_.Get(), chromeos::ProfileHelper::Get()
                               ->GetUserByProfile(&testing_profile_)
@@ -186,9 +243,8 @@ TEST_F(BrowserManagerTest, NewWindowReloadsWhenUpdateAvailable) {
 
   EXPECT_CALL(*browser_loader_, Load(_))
       .WillOnce([](BrowserLoader::LoadCompletionCallback callback) {
-        std::move(callback).Run(
-            base::FilePath("/run/imageloader-lacros-dogfood-dev/97.0.4676/"),
-            browser_util::LacrosSelection::kStateful);
+        std::move(callback).Run(base::FilePath(kSampleLacrosPath),
+                                browser_util::LacrosSelection::kStateful);
       });
   fake_browser_manager_->NewWindow(false);
 }
