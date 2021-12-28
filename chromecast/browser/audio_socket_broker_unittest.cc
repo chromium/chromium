@@ -18,6 +18,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "chromecast/net/socket_util.h"
 #include "content/public/test/test_content_client_initializer.h"
@@ -63,16 +64,18 @@ class AudioSocketBrokerTest : public content::RenderViewHostTestHarness {
   }
 
   void SetupServerSocket() {
+    base::WaitableEvent server_setup_finished;
     io_thread_ = std::make_unique<base::Thread>("test_io_thread");
     io_thread_->StartWithOptions(
         base::Thread::Options(base::MessagePumpType::IO, 0));
     io_thread_->task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&AudioSocketBrokerTest::SetupServerSocketOnIoThread,
-                       base::Unretained(this)));
+                       base::Unretained(this), &server_setup_finished));
+    server_setup_finished.Wait();
   }
 
-  void SetupServerSocketOnIoThread() {
+  void SetupServerSocketOnIoThread(base::WaitableEvent* server_setup_finished) {
     auto unix_socket = std::make_unique<net::UnixDomainServerSocket>(
         base::BindRepeating(
             [](const net::UnixDomainServerSocket::Credentials&) {
@@ -87,6 +90,7 @@ class AudioSocketBrokerTest : public content::RenderViewHostTestHarness {
         &accepted_descriptor_,
         base::BindRepeating(&AudioSocketBrokerTest::OnAccept,
                             base::Unretained(this)));
+    server_setup_finished->Signal();
   }
 
   void OnAccept(int result) {
