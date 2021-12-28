@@ -22,22 +22,6 @@
 
 namespace chromeos {
 
-namespace {
-
-void OnRemoveStaleShillService(std::string service_path, bool success) {
-  if (success) {
-    NET_LOG(EVENT)
-        << "Successfully removed stale Shill eSIM configuration. service_path="
-        << service_path;
-  } else {
-    NET_LOG(ERROR)
-        << "Error removing stale Shill eSIM configuration. service_path="
-        << service_path;
-  }
-}
-
-}  // namespace
-
 CellularESimUninstallHandler::UninstallRequest::UninstallRequest(
     const std::string& iccid,
     const absl::optional<dbus::ObjectPath>& esim_profile_path,
@@ -50,10 +34,7 @@ CellularESimUninstallHandler::UninstallRequest::UninstallRequest(
 CellularESimUninstallHandler::UninstallRequest::~UninstallRequest() = default;
 
 CellularESimUninstallHandler::CellularESimUninstallHandler() = default;
-CellularESimUninstallHandler::~CellularESimUninstallHandler() {
-  cellular_esim_profile_handler_->RemoveObserver(this);
-  network_state_handler_->RemoveObserver(this, FROM_HERE);
-}
+CellularESimUninstallHandler::~CellularESimUninstallHandler() = default;
 
 void CellularESimUninstallHandler::Init(
     CellularInhibitor* cellular_inhibitor,
@@ -66,9 +47,6 @@ void CellularESimUninstallHandler::Init(
   network_configuration_handler_ = network_configuration_handler;
   network_connection_handler_ = network_connection_handler;
   network_state_handler_ = network_state_handler;
-  network_state_handler_->AddObserver(this, FROM_HERE);
-  cellular_esim_profile_handler_->AddObserver(this);
-  CheckStaleESimServices();
 }
 
 void CellularESimUninstallHandler::UninstallESim(
@@ -79,19 +57,6 @@ void CellularESimUninstallHandler::UninstallESim(
   uninstall_requests_.push_back(std::make_unique<UninstallRequest>(
       iccid, esim_profile_path, euicc_path, std::move(callback)));
   ProcessPendingUninstallRequests();
-}
-
-void CellularESimUninstallHandler::OnESimProfileListUpdated() {
-  CheckStaleESimServices();
-}
-
-void CellularESimUninstallHandler::NetworkListChanged() {
-  CheckStaleESimServices();
-}
-
-void CellularESimUninstallHandler::DevicePropertiesUpdated(
-    const DeviceState* device_state) {
-  CheckStaleESimServices();
 }
 
 void CellularESimUninstallHandler::ProcessPendingUninstallRequests() {
@@ -360,54 +325,6 @@ void CellularESimUninstallHandler::OnRemoveServiceFailure(
   NET_LOG(ERROR) << "Error removing service with ICCID "
                  << GetIccidForCurrentRequest() << ". Error: " << error_name;
   CompleteCurrentRequest(UninstallESimResult::kRemoveServiceFailed);
-}
-
-void CellularESimUninstallHandler::CheckStaleESimServices() {
-  // Find all known eSIM ICCIDs.
-  base::flat_set<std::string> esim_iccids;
-  std::vector<CellularESimProfile> esim_profiles =
-      cellular_esim_profile_handler_->GetESimProfiles();
-  for (const CellularESimProfile& esim_profile : esim_profiles) {
-    // Skip pending and installing profiles since they can never have
-    // a corresponding Shill service.
-    if (esim_profile.state() == CellularESimProfile::State::kPending ||
-        esim_profile.state() == CellularESimProfile::State::kInstalling) {
-      continue;
-    }
-
-    esim_iccids.insert(esim_profile.iccid());
-  }
-
-  for (const NetworkState* network_state : GetESimCellularNetworks()) {
-    if (esim_iccids.contains(network_state->iccid()))
-      continue;
-
-    // If we have not yet refreshed profiles for this EUICC, do not attempt to
-    // remove the service. This ensures that we don't accidentally remove
-    // services for eSIM profile which are in the process of being refreshed.
-    // See b/186753024 for details.
-    if (!cellular_esim_profile_handler_->HasRefreshedProfilesForEuicc(
-            network_state->eid())) {
-      NET_LOG(DEBUG) << "No eSIM profile for Shill service with ICCID "
-                     << network_state->iccid() << ". Not counted as stale "
-                     << "because we have not yet refreshed profiles from the "
-                     << "associated EUICC";
-      continue;
-    }
-
-    // Skip if an uninstall request is already queued for this service.
-    if (HasQueuedRequest(network_state->iccid()))
-      continue;
-
-    NET_LOG(EVENT) << "Queueing removal for stale shill config. iccid="
-                   << network_state->iccid() << ", "
-                   << "network path=" << network_state->path();
-    uninstall_requests_.push_back(std::make_unique<UninstallRequest>(
-        network_state->iccid(), /*esim_profile_path=*/absl::nullopt,
-        /*euicc_path=*/absl::nullopt,
-        base::BindOnce(&OnRemoveStaleShillService, network_state->path())));
-  }
-  ProcessPendingUninstallRequests();
 }
 
 NetworkStateHandler::NetworkStateList

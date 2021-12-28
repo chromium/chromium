@@ -40,20 +40,18 @@ class NetworkConnectionHandler;
 //
 // Uninstallation requests are queued and run in order.
 //
-// This class also checks for stale Shill eSIM services (Shill services that no
-// longer have corresponding eSIM profile in Hermes), and removes their
-// configurations from Shill. This allows handling cases where the configuration
-// was not removed properly during uninstallation or the eSIM profile was
-// removed externally (e.g. Removable EUICC card).
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
-    : public CellularESimProfileHandler::Observer,
-      public NetworkStateHandlerObserver {
+// Note: This class doesn't check and remove stale Shill eSIM services anymore
+// because it might remove usable eSIM services incorrectly. This may cause some
+// issues where some stale networks showing in UI because its Shill
+// configuration doesn't get removed properly during the uninstallation.
+// TODO(b/210726568)
+class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler {
  public:
   CellularESimUninstallHandler();
   CellularESimUninstallHandler(const CellularESimUninstallHandler&) = delete;
   CellularESimUninstallHandler& operator=(const CellularESimUninstallHandler&) =
       delete;
-  ~CellularESimUninstallHandler() override;
+  ~CellularESimUninstallHandler();
 
   void Init(CellularInhibitor* cellular_inhibitor,
             CellularESimProfileHandler* cellular_esim_profile_handler,
@@ -73,13 +71,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
                      const dbus::ObjectPath& euicc_path,
                      UninstallRequestCallback callback);
 
-  // CellularESimProfileHandler::Observer:
-  void OnESimProfileListUpdated() override;
-
-  // NetworkStateHandlerObserver:
-  void NetworkListChanged() override;
-  void DevicePropertiesUpdated(const DeviceState* device_state) override;
-
  private:
   friend class CellularESimUninstallHandlerTest;
   FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest, Success);
@@ -90,8 +81,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest, MultipleRequests);
   FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest,
                            StubCellularNetwork);
-  FRIEND_TEST_ALL_PREFIXES(CellularESimUninstallHandlerTest,
-                           RemovesShillOnlyServices);
 
   enum class UninstallState {
     kIdle,
@@ -170,8 +159,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   void OnRemoveServiceFailure(
       const std::string& error_name,
       std::unique_ptr<base::DictionaryValue> error_data);
-
-  void CheckStaleESimServices();
 
   NetworkStateHandler::NetworkStateList GetESimCellularNetworks() const;
   bool HasQueuedRequest(const std::string& iccid) const;
