@@ -22,6 +22,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -242,22 +243,20 @@ void ProductivityLauncherSearchView::MaybeNotifySelectedResultChanged() {
   if (ignore_result_changes_for_a11y_)
     return;
 
-  // Ignore result selection change if the focus moved away from the search box
-  // textfield, for example to the close button.
-  if (!search_box_view_->search_box()->HasFocus())
+  if (!result_selection_controller_->selected_result()) {
+    search_box_view_->SetA11yActiveDescendant(absl::nullopt);
     return;
-
-  if (!result_selection_controller_->selected_result())
-    return;
+  }
 
   views::View* selected_view =
       result_selection_controller_->selected_result()->GetSelectedView();
-  if (!selected_view)
+  if (!selected_view) {
+    search_box_view_->SetA11yActiveDescendant(absl::nullopt);
     return;
+  }
 
-  selected_view->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
-  NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
-  search_box_view_->set_a11y_selection_on_search_result(true);
+  search_box_view_->SetA11yActiveDescendant(
+      selected_view->GetViewAccessibility().GetUniqueId().Get());
 }
 
 bool ProductivityLauncherSearchView::CanSelectSearchResults() {

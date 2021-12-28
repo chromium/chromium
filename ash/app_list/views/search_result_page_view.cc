@@ -30,6 +30,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -429,26 +430,25 @@ void SearchResultPageView::NotifyA11yResultsChanged() {
 void SearchResultPageView::NotifySelectedResultChanged() {
   // Result selection should be handled by |productivity_launcher_search_page_|.
   DCHECK(!features::IsProductivityLauncherEnabled());
-  if (ignore_result_changes_for_a11y_ ||
-      !result_selection_controller_->selected_location_details() ||
+  if (ignore_result_changes_for_a11y_)
+    return;
+
+  SearchBoxView* search_box = AppListPage::contents_view()->GetSearchBoxView();
+  if (!result_selection_controller_->selected_location_details() ||
       !result_selection_controller_->selected_result()) {
+    search_box->SetA11yActiveDescendant(absl::nullopt);
     return;
   }
 
-  SearchBoxView* search_box = AppListPage::contents_view()->GetSearchBoxView();
-  // Ignore result selection change if the focus moved away from the search boc
-  // textfield, for example to the close button.
-  if (!search_box->search_box()->HasFocus())
-    return;
-
   views::View* selected_view =
       result_selection_controller_->selected_result()->GetSelectedView();
-  if (!selected_view)
+  if (!selected_view) {
+    search_box->SetA11yActiveDescendant(absl::nullopt);
     return;
+  }
 
-  selected_view->NotifyAccessibilityEvent(ax::mojom::Event::kSelection, true);
-  NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
-  search_box->set_a11y_selection_on_search_result(true);
+  search_box->SetA11yActiveDescendant(
+      selected_view->GetViewAccessibility().GetUniqueId().Get());
 }
 
 void SearchResultPageView::OnActiveAppListModelsChanged(

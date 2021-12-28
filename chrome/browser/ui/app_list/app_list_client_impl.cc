@@ -438,6 +438,11 @@ app_list::SearchController* AppListClientImpl::search_controller() {
   return search_controller_.get();
 }
 
+void AppListClientImpl::SetSearchControllerForTest(
+    std::unique_ptr<app_list::SearchController> test_controller) {
+  search_controller_ = std::move(test_controller);
+}
+
 AppListModelUpdater* AppListClientImpl::GetModelUpdaterForTest() {
   return current_model_updater_;
 }

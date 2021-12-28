@@ -257,7 +257,6 @@ void SearchResultTileItemView::GetAccessibleNodeData(
 
   // The tile is a list item in the search result page's result list.
   node_data->role = ax::mojom::Role::kListBoxOption;
-  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected());
   node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
 
   // Specify |ax::mojom::StringAttribute::kDescription| with an empty string, so

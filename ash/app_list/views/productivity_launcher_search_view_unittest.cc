@@ -511,22 +511,22 @@ TEST_P(ProductivityLauncherSearchViewTest, SearchResultA11y) {
   // Pressing down should not generate a selection accessibility event because
   // A11Y announcements are delayed since the results list just changed.
   PressAndReleaseKey(ui::VKEY_DOWN);
-  EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kSelection));
+  EXPECT_EQ(0, ax_counter.GetCount(ax::mojom::Event::kActiveDescendantChanged));
   // Advance time to fire the timer to stop ignoring A11Y announcements.
   task_environment()->FastForwardBy(base::Milliseconds(5000));
 
   // A selection event is generated when the timer fires.
-  EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kSelection));
+  EXPECT_EQ(1, ax_counter.GetCount(ax::mojom::Event::kActiveDescendantChanged));
 
   // Successive up/down key presses should generate additional selection events.
   PressAndReleaseKey(ui::VKEY_DOWN);
-  EXPECT_EQ(2, ax_counter.GetCount(ax::mojom::Event::kSelection));
+  EXPECT_EQ(2, ax_counter.GetCount(ax::mojom::Event::kActiveDescendantChanged));
   PressAndReleaseKey(ui::VKEY_UP);
-  EXPECT_EQ(3, ax_counter.GetCount(ax::mojom::Event::kSelection));
+  EXPECT_EQ(3, ax_counter.GetCount(ax::mojom::Event::kActiveDescendantChanged));
   PressAndReleaseKey(ui::VKEY_DOWN);
-  EXPECT_EQ(4, ax_counter.GetCount(ax::mojom::Event::kSelection));
+  EXPECT_EQ(4, ax_counter.GetCount(ax::mojom::Event::kActiveDescendantChanged));
   PressAndReleaseKey(ui::VKEY_DOWN);
-  EXPECT_EQ(5, ax_counter.GetCount(ax::mojom::Event::kSelection));
+  EXPECT_EQ(5, ax_counter.GetCount(ax::mojom::Event::kActiveDescendantChanged));
 }
 
 TEST_P(ProductivityLauncherSearchViewTest, SearchPageA11y) {
