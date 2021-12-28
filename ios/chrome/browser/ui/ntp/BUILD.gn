@@ -181,6 +181,7 @@ source_set("ntp_internal") {
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
+    "//ios/public/provider/chrome/browser/discover_feed",
     "//ios/third_party/material_components_ios",
     "//ios/web",
     "//net",
