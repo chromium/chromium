@@ -173,15 +173,32 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   virtual void SendLogout(const GURL& logout_url, LogoutCallback);
 
  private:
+  struct AccountRequestInfo {
+    AccountRequestInfo(AccountsRequestCallback callback,
+                       int idp_brand_icon_ideal_size,
+                       int idp_brand_icon_minimum_size,
+                       BrandIconDownloader idp_brand_icon_downloader);
+    ~AccountRequestInfo();
+    AccountRequestInfo(AccountRequestInfo&&);
+
+    AccountsRequestCallback callback;
+    int idp_brand_icon_ideal_size;
+    int idp_brand_icon_minimum_size;
+    BrandIconDownloader idp_brand_icon_downloader;
+  };
+
   void OnWellKnownLoaded(std::unique_ptr<std::string> response_body);
   void OnWellKnownParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnClientIdMetadataLoaded(std::unique_ptr<std::string> response_body);
   void OnClientIdMetadataParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnSigninRequestResponse(std::unique_ptr<std::string> response_body);
   void OnSigninRequestParsed(data_decoder::DataDecoder::ValueOrError result);
-  void OnAccountsRequestResponse(std::unique_ptr<std::string> response_body);
-  void OnAccountsRequestParsed(data_decoder::DataDecoder::ValueOrError result);
-  void OnIdentityProviderBrandIconFetched(AccountList account_list,
+  void OnAccountsRequestResponse(AccountRequestInfo request_info,
+                                 std::unique_ptr<std::string> response_body);
+  void OnAccountsRequestParsed(AccountRequestInfo request_info,
+                               data_decoder::DataDecoder::ValueOrError result);
+  void OnIdentityProviderBrandIconFetched(AccountRequestInfo request_info,
+                                          AccountList account_list,
                                           IdentityProviderMetadata idp_metadata,
                                           int id,
                                           int http_status_code,
@@ -210,16 +227,11 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   FetchWellKnownCallback idp_well_known_callback_;
   FetchClientIdMetadataCallback client_metadata_callback_;
   SigninRequestCallback signin_request_callback_;
-  AccountsRequestCallback accounts_request_callback_;
   TokenRequestCallback token_request_callback_;
   RevokeCallback revoke_callback_;
   LogoutCallback logout_callback_;
 
-  int idp_brand_icon_ideal_size_;
-  int idp_brand_icon_minimum_size_;
-
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  BrandIconDownloader brand_icon_downloader_;
 
   base::WeakPtrFactory<IdpNetworkRequestManager> weak_ptr_factory_{this};
 };

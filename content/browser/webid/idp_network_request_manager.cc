@@ -271,6 +271,19 @@ IdpNetworkRequestManager::Endpoints::~Endpoints() = default;
 IdpNetworkRequestManager::Endpoints::Endpoints(const Endpoints& other) =
     default;
 
+IdpNetworkRequestManager::AccountRequestInfo::AccountRequestInfo(
+    AccountsRequestCallback callback,
+    int idp_brand_icon_ideal_size,
+    int idp_brand_icon_minimum_size,
+    IdpNetworkRequestManager::BrandIconDownloader idp_brand_icon_downloader)
+    : callback(std::move(callback)),
+      idp_brand_icon_ideal_size(idp_brand_icon_ideal_size),
+      idp_brand_icon_minimum_size(idp_brand_icon_minimum_size),
+      idp_brand_icon_downloader(std::move(idp_brand_icon_downloader)) {}
+IdpNetworkRequestManager::AccountRequestInfo::~AccountRequestInfo() = default;
+IdpNetworkRequestManager::AccountRequestInfo::AccountRequestInfo(
+    AccountRequestInfo&&) = default;
+
 // static
 constexpr char IdpNetworkRequestManager::kWellKnownFilePath[];
 
@@ -295,9 +308,7 @@ IdpNetworkRequestManager::IdpNetworkRequestManager(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory)
     : provider_(provider),
       relying_party_origin_(relying_party_origin),
-      loader_factory_(loader_factory),
-      idp_brand_icon_ideal_size_(0),
-      idp_brand_icon_minimum_size_(0) {}
+      loader_factory_(loader_factory) {}
 
 IdpNetworkRequestManager::~IdpNetworkRequestManager() = default;
 
@@ -347,14 +358,9 @@ void IdpNetworkRequestManager::SendAccountsRequest(
     const GURL& accounts_url,
     int idp_brand_icon_ideal_size,
     int idp_brand_icon_minimum_size,
-    BrandIconDownloader brand_icon_downloader,
+    BrandIconDownloader idp_brand_icon_downloader,
     AccountsRequestCallback callback) {
   DCHECK(!url_loader_);
-  DCHECK(!accounts_request_callback_);
-  idp_brand_icon_ideal_size_ = idp_brand_icon_ideal_size;
-  idp_brand_icon_minimum_size_ = idp_brand_icon_minimum_size;
-  accounts_request_callback_ = std::move(callback);
-  brand_icon_downloader_ = std::move(brand_icon_downloader);
 
   // Use ReferrerPolicy::NO_REFERRER for this request so that relying party
   // identity is not exposed to the Identity provider via referrer.
@@ -366,8 +372,12 @@ void IdpNetworkRequestManager::SendAccountsRequest(
 
   url_loader_->DownloadToString(
       loader_factory_.get(),
-      base::BindOnce(&IdpNetworkRequestManager::OnAccountsRequestResponse,
-                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(
+          &IdpNetworkRequestManager::OnAccountsRequestResponse,
+          weak_ptr_factory_.GetWeakPtr(),
+          AccountRequestInfo(std::move(callback), idp_brand_icon_ideal_size,
+                             idp_brand_icon_minimum_size,
+                             std::move(idp_brand_icon_downloader))),
       maxResponseSizeInKiB * 1024);
 }
 
@@ -597,13 +607,14 @@ void IdpNetworkRequestManager::OnSigninRequestParsed(
 }
 
 void IdpNetworkRequestManager::OnAccountsRequestResponse(
+    AccountRequestInfo request_info,
     std::unique_ptr<std::string> response_body) {
   FetchStatus response_error =
       GetResponseError(url_loader_.get(), response_body.get());
   url_loader_.reset();
 
   if (response_error != FetchStatus::kSuccess) {
-    std::move(accounts_request_callback_)
+    std::move(request_info.callback)
         .Run(response_error, AccountList(), IdentityProviderMetadata());
     return;
   }
@@ -611,13 +622,14 @@ void IdpNetworkRequestManager::OnAccountsRequestResponse(
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response_body,
       base::BindOnce(&IdpNetworkRequestManager::OnAccountsRequestParsed,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request_info)));
 }
 
 void IdpNetworkRequestManager::OnAccountsRequestParsed(
+    AccountRequestInfo request_info,
     data_decoder::DataDecoder::ValueOrError result) {
   auto Fail = [&]() {
-    std::move(accounts_request_callback_)
+    std::move(request_info.callback)
         .Run(FetchStatus::kInvalidResponseError, AccountList(),
              IdentityProviderMetadata());
   };
@@ -642,18 +654,19 @@ void IdpNetworkRequestManager::OnAccountsRequestParsed(
   const base::Value* idp_metadata_value = response.FindKey(kIdpBrandingKey);
   if (idp_metadata_value)
     ParseIdentityProviderMetadata(
-        *idp_metadata_value, idp_brand_icon_ideal_size_,
-        idp_brand_icon_minimum_size_, idp_metadata, &idp_icon_url);
+        *idp_metadata_value, request_info.idp_brand_icon_ideal_size,
+        request_info.idp_brand_icon_minimum_size, idp_metadata, &idp_icon_url);
 
+  auto fetch_icon_callback =
+      base::BindOnce(std::move(request_info.idp_brand_icon_downloader),
+                     idp_icon_url, request_info.idp_brand_icon_ideal_size);
   auto on_icon_fetched_callback = base::BindOnce(
       &IdpNetworkRequestManager::OnIdentityProviderBrandIconFetched,
-      weak_ptr_factory_.GetWeakPtr(), std::move(account_list),
-      std::move(idp_metadata));
+      weak_ptr_factory_.GetWeakPtr(), std::move(request_info),
+      std::move(account_list), std::move(idp_metadata));
 
   if (idp_icon_url.is_valid()) {
-    std::move(brand_icon_downloader_)
-        .Run(idp_icon_url, idp_brand_icon_ideal_size_,
-             std::move(on_icon_fetched_callback));
+    std::move(fetch_icon_callback).Run(std::move(on_icon_fetched_callback));
     return;
   }
 
@@ -661,6 +674,7 @@ void IdpNetworkRequestManager::OnAccountsRequestParsed(
 }
 
 void IdpNetworkRequestManager::OnIdentityProviderBrandIconFetched(
+    AccountRequestInfo request_info,
     AccountList account_list,
     IdentityProviderMetadata idp_metadata,
     int id,
@@ -669,11 +683,11 @@ void IdpNetworkRequestManager::OnIdentityProviderBrandIconFetched(
     const std::vector<SkBitmap>& bitmaps,
     const std::vector<gfx::Size>& sizes) {
   if (bitmaps.size() == 1 && bitmaps[0].width() == bitmaps[0].height() &&
-      bitmaps[0].width() >= idp_brand_icon_minimum_size_) {
+      bitmaps[0].width() >= request_info.idp_brand_icon_minimum_size) {
     idp_metadata.brand_icon = bitmaps[0];
   }
 
-  std::move(accounts_request_callback_)
+  std::move(request_info.callback)
       .Run(FetchStatus::kSuccess, std::move(account_list),
            std::move(idp_metadata));
 }
