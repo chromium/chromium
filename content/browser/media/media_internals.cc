@@ -182,14 +182,16 @@ class MediaInternals::AudioLogImpl : public media::mojom::AudioLog,
   void SetWebContentsTitle();
 
   void SendSingleStringUpdate(const std::string& key, const std::string& value);
-  void StoreComponentMetadata(base::DictionaryValue* dict);
+
+  // `dict->is_dict()` must be true.
+  void StoreComponentMetadata(base::Value* dict);
   std::string FormatCacheKey();
 
-  static void SendWebContentsTitleHelper(
-      const std::string& cache_key,
-      std::unique_ptr<base::DictionaryValue> dict,
-      int render_process_id,
-      int render_frame_id);
+  // `dict.is_dict()` must be true.
+  static void SendWebContentsTitleHelper(const std::string& cache_key,
+                                         base::Value dict,
+                                         int render_process_id,
+                                         int render_frame_id);
 
   const int owner_id_;
   const media::AudioLogFactory::AudioComponent component_;
@@ -223,21 +225,21 @@ MediaInternals::AudioLogImpl::~AudioLogImpl() {
 void MediaInternals::AudioLogImpl::OnCreated(
     const media::AudioParameters& params,
     const std::string& device_id) {
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
   StoreComponentMetadata(&dict);
 
-  dict.SetString(kAudioLogStatusKey, "created");
-  dict.SetString("device_id", device_id);
-  dict.SetString("device_type", FormatToString(params.format()));
-  dict.SetInteger("frames_per_buffer", params.frames_per_buffer());
-  dict.SetInteger("sample_rate", params.sample_rate());
-  dict.SetInteger("channels", params.channels());
-  dict.SetString("channel_layout",
-                 ChannelLayoutToString(params.channel_layout()));
-  dict.SetString("effects", EffectsToString(params.effects()));
+  dict.SetStringKey(kAudioLogStatusKey, "created");
+  dict.SetStringKey("device_id", device_id);
+  dict.SetStringKey("device_type", FormatToString(params.format()));
+  dict.SetIntKey("frames_per_buffer", params.frames_per_buffer());
+  dict.SetIntKey("sample_rate", params.sample_rate());
+  dict.SetIntKey("channels", params.channels());
+  dict.SetStringKey("channel_layout",
+                    ChannelLayoutToString(params.channel_layout()));
+  dict.SetStringKey("effects", EffectsToString(params.effects()));
 
   media_internals_->UpdateAudioLog(MediaInternals::CREATE, FormatCacheKey(),
-                                   kAudioLogUpdateFunction, &dict);
+                                   kAudioLogUpdateFunction, dict);
   SetWebContentsTitle();
 }
 
@@ -250,12 +252,12 @@ void MediaInternals::AudioLogImpl::OnStopped() {
 }
 
 void MediaInternals::AudioLogImpl::OnClosed() {
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
   StoreComponentMetadata(&dict);
-  dict.SetString(kAudioLogStatusKey, "closed");
+  dict.SetStringKey(kAudioLogStatusKey, "closed");
   media_internals_->UpdateAudioLog(MediaInternals::UPDATE_AND_DELETE,
                                    FormatCacheKey(), kAudioLogUpdateFunction,
-                                   &dict);
+                                   dict);
 }
 
 void MediaInternals::AudioLogImpl::OnError() {
@@ -263,12 +265,12 @@ void MediaInternals::AudioLogImpl::OnError() {
 }
 
 void MediaInternals::AudioLogImpl::OnSetVolume(double volume) {
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
   StoreComponentMetadata(&dict);
-  dict.SetDouble("volume", volume);
+  dict.SetDoubleKey("volume", volume);
   media_internals_->UpdateAudioLog(MediaInternals::UPDATE_IF_EXISTS,
                                    FormatCacheKey(), kAudioLogUpdateFunction,
-                                   &dict);
+                                   dict);
 }
 
 void MediaInternals::AudioLogImpl::OnProcessingStateChanged(
@@ -283,8 +285,8 @@ void MediaInternals::AudioLogImpl::OnLogMessage(const std::string& message) {
 void MediaInternals::AudioLogImpl::SetWebContentsTitle() {
   if (render_process_id_ < 0 || render_frame_id_ < 0)
     return;
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  StoreComponentMetadata(dict.get());
+  base::Value dict(base::Value::Type::DICTIONARY);
+  StoreComponentMetadata(&dict);
   SendWebContentsTitleHelper(FormatCacheKey(), std::move(dict),
                              render_process_id_, render_frame_id_);
 }
@@ -296,9 +298,10 @@ std::string MediaInternals::AudioLogImpl::FormatCacheKey() {
 // static
 void MediaInternals::AudioLogImpl::SendWebContentsTitleHelper(
     const std::string& cache_key,
-    std::unique_ptr<base::DictionaryValue> dict,
+    base::Value dict,
     int render_process_id,
     int render_frame_id) {
+  DCHECK(dict.is_dict());
   // Page title information can only be retrieved from the UI thread.
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     GetUIThreadTaskRunner({})->PostTask(
@@ -315,29 +318,29 @@ void MediaInternals::AudioLogImpl::SendWebContentsTitleHelper(
 
   // Note: by this point the given audio log entry could have been destroyed, so
   // we use UPDATE_IF_EXISTS to discard such instances.
-  dict->SetInteger("render_process_id", render_process_id);
-  dict->SetString("web_contents_title", web_contents->GetTitle());
+  dict.SetIntKey("render_process_id", render_process_id);
+  dict.SetStringKey("web_contents_title", web_contents->GetTitle());
   MediaInternals::GetInstance()->UpdateAudioLog(
       MediaInternals::UPDATE_IF_EXISTS, cache_key, kAudioLogUpdateFunction,
-      dict.get());
+      dict);
 }
 
 void MediaInternals::AudioLogImpl::SendSingleStringUpdate(
     const std::string& key,
     const std::string& value) {
-  base::DictionaryValue dict;
+  base::Value dict(base::Value::Type::DICTIONARY);
   StoreComponentMetadata(&dict);
-  dict.SetString(key, value);
+  dict.SetStringKey(key, value);
   media_internals_->UpdateAudioLog(MediaInternals::UPDATE_IF_EXISTS,
                                    FormatCacheKey(), kAudioLogUpdateFunction,
-                                   &dict);
+                                   dict);
 }
 
-void MediaInternals::AudioLogImpl::StoreComponentMetadata(
-    base::DictionaryValue* dict) {
-  dict->SetInteger("owner_id", owner_id_);
-  dict->SetInteger("component_id", component_id_);
-  dict->SetInteger("component_type", component_);
+void MediaInternals::AudioLogImpl::StoreComponentMetadata(base::Value* dict) {
+  DCHECK(dict->is_dict());
+  dict->SetIntKey("owner_id", owner_id_);
+  dict->SetIntKey("component_id", component_id_);
+  dict->SetIntKey("component_type", component_);
 }
 
 MediaInternals* MediaInternals::GetInstance() {
@@ -371,33 +374,33 @@ static bool ConvertEventToUpdate(int render_process_id,
                                  std::u16string* update) {
   DCHECK(update);
 
-  base::DictionaryValue dict;
-  dict.SetInteger("renderer", render_process_id);
-  dict.SetInteger("player", event.id);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetIntKey("renderer", render_process_id);
+  dict.SetIntKey("player", event.id);
 
   // TODO(dalecurtis): This is technically not correct.  TimeTicks "can't" be
   // converted to to a human readable time format.  See base/time/time.h.
   const double ticks = event.time.ToInternalValue();
   const double ticks_millis = ticks / base::Time::kMicrosecondsPerMillisecond;
-  dict.SetDouble("ticksMillis", ticks_millis);
+  dict.SetDoubleKey("ticksMillis", ticks_millis);
 
   base::Value cloned_params = event.params.Clone();
   switch (event.type) {
     case media::MediaLogRecord::Type::kMessage:
-      dict.SetString("type", "MEDIA_LOG_ENTRY");
+      dict.SetStringKey("type", "MEDIA_LOG_ENTRY");
       break;
     case media::MediaLogRecord::Type::kMediaPropertyChange:
-      dict.SetString("type", "PROPERTY_CHANGE");
+      dict.SetStringKey("type", "PROPERTY_CHANGE");
       break;
     case media::MediaLogRecord::Type::kMediaEventTriggered: {
       // Delete the "event" param so that it won't spam the log.
-      absl::optional<base::Value> exists = cloned_params.ExtractPath("event");
+      absl::optional<base::Value> exists = cloned_params.ExtractKey("event");
       DCHECK(exists.has_value());
       dict.SetKey("type", std::move(exists.value()));
       break;
     }
     case media::MediaLogRecord::Type::kMediaStatus:
-      dict.SetString("type", "PIPELINE_ERROR");
+      dict.SetStringKey("type", "PIPELINE_ERROR");
       break;
   }
 
@@ -409,8 +412,8 @@ static bool ConvertEventToUpdate(int render_process_id,
       return false;
     }
     media::PipelineStatus error = static_cast<media::PipelineStatus>(*status);
-    dict.SetString("params.pipeline_error",
-                   media::PipelineStatusToString(error));
+    dict.SetStringPath("params.pipeline_error",
+                       media::PipelineStatusToString(error));
   } else {
     dict.SetKey("params", std::move(cloned_params));
   }
@@ -476,7 +479,7 @@ void MediaInternals::SendHistoricalMediaEvents() {
 }
 
 void MediaInternals::SendGeneralAudioInformation() {
-  base::DictionaryValue audio_info_data;
+  base::Value audio_info_data(base::Value::Type::DICTIONARY);
 
   // Audio feature information.
   auto set_feature_data = [&](auto& feature) {
@@ -668,29 +671,29 @@ void MediaInternals::SaveEvent(int process_id,
 void MediaInternals::UpdateAudioLog(AudioLogUpdateType type,
                                     const std::string& cache_key,
                                     const std::string& function,
-                                    const base::DictionaryValue* value) {
+                                    const base::Value& value) {
   {
     base::AutoLock auto_lock(lock_);
-    const bool has_entry = audio_streams_cached_data_.HasKey(cache_key);
+    const bool has_entry = audio_streams_cached_data_.FindKey(cache_key);
     if ((type == UPDATE_IF_EXISTS || type == UPDATE_AND_DELETE) && !has_entry) {
       return;
     } else if (!has_entry) {
       DCHECK_EQ(type, CREATE);
-      audio_streams_cached_data_.SetKey(cache_key, value->Clone());
+      audio_streams_cached_data_.SetKey(cache_key, value.Clone());
     } else if (type == UPDATE_AND_DELETE) {
       absl::optional<base::Value> out_value =
           audio_streams_cached_data_.ExtractKey(cache_key);
       CHECK(out_value.has_value());
     } else {
-      base::DictionaryValue* existing_dict = nullptr;
-      CHECK(
-          audio_streams_cached_data_.GetDictionary(cache_key, &existing_dict));
-      existing_dict->MergeDictionary(value);
+      base::Value* existing_dict =
+          audio_streams_cached_data_.FindDictKey(cache_key);
+      CHECK(existing_dict);
+      existing_dict->MergeDictionary(&value);
     }
   }
 
   if (CanUpdate())
-    SendUpdate(SerializeUpdate(function, value));
+    SendUpdate(SerializeUpdate(function, &value));
 }
 
 }  // namespace content

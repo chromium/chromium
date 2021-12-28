@@ -156,7 +156,7 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   void UpdateAudioLog(AudioLogUpdateType type,
                       const std::string& cache_key,
                       const std::string& function,
-                      const base::DictionaryValue* value);
+                      const base::Value& value);
 
   std::unique_ptr<AudioLogImpl> CreateAudioLogImpl(AudioComponent component,
                                                    int component_id,
