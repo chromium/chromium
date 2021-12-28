@@ -80,7 +80,7 @@ net::CookieOptions MakeOptionsForSet(
   }
   bool is_in_nontrivial_first_party_set =
       cookie_access_delegate &&
-      cookie_access_delegate->IsInNontrivialFirstPartySet(request_site);
+      cookie_access_delegate->FindFirstPartySetOwner(request_site).has_value();
   options.set_is_in_nontrivial_first_party_set(
       is_in_nontrivial_first_party_set);
 
@@ -128,7 +128,7 @@ net::CookieOptions MakeOptionsForGet(
   }
   bool is_in_nontrivial_first_party_set =
       cookie_access_delegate &&
-      cookie_access_delegate->IsInNontrivialFirstPartySet(request_site);
+      cookie_access_delegate->FindFirstPartySetOwner(request_site).has_value();
   options.set_is_in_nontrivial_first_party_set(
       is_in_nontrivial_first_party_set);
 

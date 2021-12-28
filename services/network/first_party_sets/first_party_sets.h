@@ -65,10 +65,6 @@ class FirstPartySets {
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context) const;
 
-  // Returns whether the `site` is a member of a non-trivial (i.e.
-  // non-singleton) First-Party Set.
-  bool IsInNontrivialFirstPartySet(const net::SchemefulSite& site) const;
-
   int64_t size() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return sets_.size();

@@ -43,11 +43,6 @@ SamePartyContext TestCookieAccessDelegate::ComputeSamePartyContext(
   return SamePartyContext();
 }
 
-bool TestCookieAccessDelegate::IsInNontrivialFirstPartySet(
-    const net::SchemefulSite& site) const {
-  return false;
-}
-
 absl::optional<net::SchemefulSite>
 TestCookieAccessDelegate::FindFirstPartySetOwner(
     const net::SchemefulSite& site) const {

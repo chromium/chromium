@@ -64,12 +64,6 @@ net::SamePartyContext CookieAccessDelegateImpl::ComputeSamePartyContext(
                            : net::SamePartyContext();
 }
 
-bool CookieAccessDelegateImpl::IsInNontrivialFirstPartySet(
-    const net::SchemefulSite& site) const {
-  return first_party_sets_ &&
-         first_party_sets_->IsInNontrivialFirstPartySet(site);
-}
-
 absl::optional<net::SchemefulSite>
 CookieAccessDelegateImpl::FindFirstPartySetOwner(
     const net::SchemefulSite& site) const {

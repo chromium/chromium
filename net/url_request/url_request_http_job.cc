@@ -585,7 +585,7 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
         cookie_store->cookie_access_delegate();
 
     bool is_in_nontrivial_first_party_set =
-        delegate && delegate->IsInNontrivialFirstPartySet(request_site);
+        delegate && delegate->FindFirstPartySetOwner(request_site).has_value();
     CookieOptions options = CreateCookieOptions(
         same_site_context, request_->same_party_context(),
         request_->isolation_info(), is_in_nontrivial_first_party_set);
@@ -751,7 +751,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   net::SchemefulSite request_site(request_->url());
 
   bool is_in_nontrivial_first_party_set =
-      delegate && delegate->IsInNontrivialFirstPartySet(request_site);
+      delegate && delegate->FindFirstPartySetOwner(request_site).has_value();
   CookieOptions options = CreateCookieOptions(
       same_site_context, request_->same_party_context(),
       request_->isolation_info(), is_in_nontrivial_first_party_set);

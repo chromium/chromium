@@ -98,26 +98,6 @@ TEST_F(FirstPartySetsDisabledTest, SetsManuallySpecified_IgnoresValid) {
   EXPECT_THAT(sets().Sets(), IsEmpty());
 }
 
-TEST_F(FirstPartySetsDisabledTest, IsInNontrivialFirstPartySet) {
-  const std::string input =
-      R"([{
-        "owner": "https://example.test",
-        "members": ["https://aaaa.test"]
-        }])";
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  SetComponentSetsAndWait(input);
-
-  // IsInNontrivialFirstPartySet queries should return false, regardless of what
-  // data has been passed to the instance.
-  EXPECT_FALSE(sets().IsInNontrivialFirstPartySet(
-      net::SchemefulSite(GURL("https://example.test"))));
-  EXPECT_FALSE(sets().IsInNontrivialFirstPartySet(
-      net::SchemefulSite(GURL("https://aaaa.test"))));
-  EXPECT_FALSE(sets().IsInNontrivialFirstPartySet(
-      net::SchemefulSite(GURL("https://bbbb.test"))));
-}
-
 TEST_F(FirstPartySetsDisabledTest, ComputeContext_InfersSingletons) {
   net::SchemefulSite member(GURL("https://member1.test"));
   net::SchemefulSite example(GURL("https://example.test"));
@@ -1483,26 +1463,6 @@ TEST_F(PopulatedFirstPartySetsTest, ComputeContext) {
               net::SamePartyContext(
                   Type::kCrossParty, Type::kCrossParty, Type::kSameParty,
                   net::FirstPartySetsContextType::kTopResourceMatchMixed));
-}
-
-TEST_F(PopulatedFirstPartySetsTest, IsInNontrivialFirstPartySet) {
-  EXPECT_TRUE(sets().IsInNontrivialFirstPartySet(
-      net::SchemefulSite(GURL("https://example.test"))));
-
-  EXPECT_FALSE(sets().IsInNontrivialFirstPartySet(
-      net::SchemefulSite(GURL("http://example.test"))));
-
-  EXPECT_TRUE(sets().IsInNontrivialFirstPartySet(
-      net::SchemefulSite(GURL("https://member1.test"))));
-
-  EXPECT_TRUE(sets().IsInNontrivialFirstPartySet(
-      net::SchemefulSite(GURL("wss://member1.test"))));
-
-  EXPECT_FALSE(sets().IsInNontrivialFirstPartySet(
-      net::SchemefulSite(GURL("ws://member1.test"))));
-
-  EXPECT_FALSE(sets().IsInNontrivialFirstPartySet(
-      net::SchemefulSite(GURL("https://nonmember.test"))));
 }
 
 TEST_F(PopulatedFirstPartySetsTest, FindOwner) {

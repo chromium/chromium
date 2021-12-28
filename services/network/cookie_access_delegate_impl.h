@@ -53,8 +53,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context) const override;
-  bool IsInNontrivialFirstPartySet(
-      const net::SchemefulSite& site) const override;
   absl::optional<net::SchemefulSite> FindFirstPartySetOwner(
       const net::SchemefulSite& site) const override;
   base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>

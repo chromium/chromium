@@ -240,12 +240,6 @@ const absl::optional<net::SchemefulSite> FirstPartySets::FindOwner(
   return FindOwner(site, /*infer_singleton_sets=*/false);
 }
 
-bool FirstPartySets::IsInNontrivialFirstPartySet(
-    const net::SchemefulSite& site) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return FindOwner(site, /*infer_singleton_sets=*/false).has_value();
-}
-
 base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
 FirstPartySets::Sets() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

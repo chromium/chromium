@@ -55,10 +55,6 @@ class NET_EXPORT CookieAccessDelegate {
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context) const = 0;
 
-  // Returns whether `site` belongs to a non-singleton First-Party Set.
-  virtual bool IsInNontrivialFirstPartySet(
-      const net::SchemefulSite& site) const = 0;
-
   // Returns the owner of a `site`'s First-Party Set if `site` is in a
   // non-trivial set. Returns nullopt otherwise.
   virtual absl::optional<net::SchemefulSite> FindFirstPartySetOwner(
