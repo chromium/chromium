@@ -52,6 +52,25 @@ v8::Local<v8::Value> SendMessageTester::TestSendRequest(
   return output;
 }
 
+v8::Local<v8::Value> SendMessageTester::TestSendNativeMessage(
+    const std::string& args,
+    const std::string& expected_message,
+    const std::string& expected_application_name) {
+  SCOPED_TRACE(
+      base::StringPrintf("Send Native Message Args: `%s`", args.c_str()));
+
+  // Note: we don't close the native message ports immediately, See comment in
+  // OneTimeMessageSender.
+  PortStatus expected_port_status = OPEN;
+  MessageTarget expected_target(
+      MessageTarget::ForNativeApp(expected_application_name));
+
+  v8::Local<v8::Value> output;
+  TestSendMessageOrRequest(args, expected_message, expected_target,
+                           expected_port_status, SEND_NATIVE_MESSAGE, output);
+  return output;
+}
+
 void SendMessageTester::TestConnect(const std::string& args,
                                     const std::string& expected_channel,
                                     const MessageTarget& expected_target) {
@@ -98,6 +117,11 @@ void SendMessageTester::TestSendMessageOrRequest(
     case SEND_REQUEST:
       method_name = "sendRequest";
       expected_channel = messaging_util::kSendRequestChannel;
+      break;
+    case SEND_NATIVE_MESSAGE:
+      method_name = "sendNativeMessage";
+      // sendNativeMessage doesn't have name channels so we don't need to change
+      // expected_channel from an empty string.
       break;
   }
 

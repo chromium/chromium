@@ -289,16 +289,19 @@ RequestResult RuntimeHooksDelegate::HandleSendNativeMessage(
   if (!arguments[2]->IsNull())
     response_callback = arguments[2].As<v8::Function>();
 
-  // TODO(tjudkins): This API requires some more end to end testing before
-  // converting it to support promises, so for now ensure we are not trying to
-  // send promise based requests through here.
-  DCHECK_NE(binding::AsyncResponseType::kPromise, parse_result.async_type);
-
-  messaging_service_->SendOneTimeMessage(
+  v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForNativeApp(application_name),
       std::string(), *message, parse_result.async_type, response_callback);
+  DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
+            !promise.IsEmpty())
+      << "SendOneTimeMessage should only return a Promise for promise based "
+         "API calls, otherwise it should be empty";
 
-  return RequestResult(RequestResult::HANDLED);
+  RequestResult result(RequestResult::HANDLED);
+  if (parse_result.async_type == binding::AsyncResponseType::kPromise) {
+    result.return_value = promise;
+  }
+  return result;
 }
 
 RequestResult RuntimeHooksDelegate::HandleConnect(

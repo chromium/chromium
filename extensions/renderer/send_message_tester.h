@@ -47,7 +47,13 @@ class SendMessageTester {
                                        const MessageTarget& expected_target,
                                        PortStatus expected_port_status);
 
-  // Tests the connect API with the specified expectaions.
+  // Tests the sendNativeMessage API with the specified expectations.
+  v8::Local<v8::Value> TestSendNativeMessage(
+      const std::string& args,
+      const std::string& expected_message,
+      const std::string& expected_application_name);
+
+  // Tests the connect API with the specified expectations.
   void TestConnect(const std::string& args,
                    const std::string& expected_channel,
                    const MessageTarget& expected_target);
@@ -56,6 +62,7 @@ class SendMessageTester {
   enum Method {
     SEND_REQUEST,
     SEND_MESSAGE,
+    SEND_NATIVE_MESSAGE,
   };
 
   // Common handler for testing sendMessage and sendRequest.

@@ -47,6 +47,20 @@ class NativeMessagingApiTestBase : public ExtensionApiTest {
   extensions::ScopedTestNativeMessagingHost test_host_;
 };
 
+// Tests basic functionality of chrome.runtime.sendNativeMessage in an MV3
+// extension.
+IN_PROC_BROWSER_TEST_F(NativeMessagingApiTestBase, SendNativeMessage) {
+  constexpr bool kUserLevel = false;
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(kUserLevel));
+  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message"));
+}
+
+IN_PROC_BROWSER_TEST_F(NativeMessagingApiTestBase, UserLevelSendNativeMessage) {
+  constexpr bool kUserLevel = true;
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(kUserLevel));
+  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message"));
+}
+
 class NativeMessagingApiTest : public NativeMessagingApiTestBase,
                                public testing::WithParamInterface<ContextType> {
  public:
