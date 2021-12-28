@@ -1060,6 +1060,7 @@
 <translation id="204914487372604757">शॉर्टकट बनाएं</translation>
 <translation id="2050339315714019657">पोर्ट्रेट</translation>
 <translation id="2053312383184521053">निष्क्रिय स्थिति डेटा</translation>
+<translation id="2054240652864153171">क्या <ph name="PARTITION_SITE_NAME" /> पर पार्टीशन किए गए <ph name="SITE_NAME" /> का साइट डेटा मिटाना है?</translation>
 <translation id="2055585478631012616">आपको इन साइटों और खुले हुए टैब से साइन आउट कर दिया जाएगा</translation>
 <translation id="205560151218727633">Google Assistant लोगो</translation>
 <translation id="2058456167109518507">डिवाइस की पहचान हुई</translation>
@@ -2404,6 +2405,7 @@
 <translation id="3433621910545056227">ओह!  सिस्टम डिवाइस इंस्टॉलेशन-समय विशेषता लॉक स्थापित नहीं कर पाया.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">अगर आपके बच्चे के लिए 'अन्य वेब और ऐप्लिकेशन गतिविधि' सेटिंग चालू है, तो यह डेटा उसके Google खाते में सेव किया जा सकता है. इन सेटिंग के बारे में ज़्यादा जानें. साथ ही, जानें कि families.google.com पर इन्हें कैसे नियंत्रित करें.</translation>
+<translation id="3434512374684753970">ऑडियो और वीडियो</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" आपके <ph name="CODE_TYPE" /> का अनुरोध कर रहा है</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="343578350365773421">काग़ज़ खत्म हो गया है</translation>
@@ -2850,6 +2852,7 @@
 <translation id="3873423927483480833">पिन दिखाएं</translation>
 <translation id="3873915545594852654">एआरसी++ के साथ कोई समस्या हुई.</translation>
 <translation id="3874164307099183178">Google Assistant चालू करें</translation>
+<translation id="3875783148670536197">मुझे इसका तरीका दिखाएं</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> नए ब्राउज़र टैब में खोले जाने के लिए तैयार है. साथ में काम करने वाले लिंक भी ब्राउज़र में खुलेंगे. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> के डिवाइस के लिए आस-पास शेयर करने की सेटिंग. इसके लिए <ph name="USER_EMAIL" /> खाते का इस्तेमाल किया जा रहा है.</translation>
 <translation id="3879748587602334249">डाउनलोड मैनेजर</translation>
@@ -4485,6 +4488,7 @@
 <translation id="562935524653278697">आपके व्यवस्थापक ने आपके बुकमार्क, इतिहास, पासवर्ड और अन्य सेटिंग को सिंक करना अक्षम कर दिया है.</translation>
 <translation id="5631017369956619646">CPU का उपयोग</translation>
 <translation id="5632059346822207074">अनुमति मांगी गई है, जवाब देने के लिए Ctrl + Forward बटन दबाएं</translation>
+<translation id="5632485077360054581">मुझे इसका तरीका दिखाएं</translation>
 <translation id="5632566673632479864">आपका खाता <ph name="EMAIL" /> अब प्राथमिक खाते के रूप में काम नहीं कर सकता. इस खाते का प्रबंधन <ph name="DOMAIN" /> करता है. इसलिए, आपके बुकमार्क, इतिहास, पासवर्ड, और दूसरी सेटिंग को इस डिवाइस से हटा दिया जाएगा.</translation>
 <translation id="5632592977009207922">डाउनलोड हो रहा है, <ph name="PERCENT_REMAINING" />% बचा है</translation>
 <translation id="563371367637259496">मोबाइल</translation>

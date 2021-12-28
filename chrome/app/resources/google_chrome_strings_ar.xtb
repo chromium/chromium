@@ -64,6 +64,7 @@
 <translation id="2467438592969358367">‏يرغب Google Chrome في تصدير كلمات مرورك، لذا يُرجى كتابة كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="2485422356828889247">إزالة التثبيت</translation>
 <translation id="2534507159460261402">‏Google Pay (تم النسخ إلى Chrome)</translation>
+<translation id="2563121210305478421">‏هل تريد إعادة تشغيل Chrome؟</translation>
 <translation id="2574930892358684005">‏سبَق تسجيل دخول <ph name="EXISTING_USER" /> إلى هذا الملف الشخصي على Chrome. للحصول على تجربة تصفّح منفصلة، يمكن لمتصفِّح Chrome إنشاء ملف شخصي خاص بك.</translation>
 <translation id="2580411288591421699">‏لا يمكن تثبيت نفس الإصدار المثبت من Google Chrome والذي يتم تشغيله حاليًا. يُرجى إغلاق Google Chrome وإعادة المحاولة.</translation>
 <translation id="2586406160782125153">‏سيؤدي هذا إلى حذف بيانات التصفح من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
@@ -297,6 +298,7 @@
 <translation id="8669527147644353129">‏مساعد Google Chrome</translation>
 <translation id="8679801911857917785">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chrome.</translation>
 <translation id="8686817260976772516">‏باستخدام الملفات الشخصية على Chrome، يمكنك الفصل بين جميع بيانات Chrome. ويمكنك إنشاء ملفات شخصية للأصدقاء والعائلة أو تقسيمها للعمل وأغراض الترفيه.</translation>
+<translation id="8712767363896337380">‏أوشك التحديث على الانتهاء. أعِد تشغيل Chrome لإتمام التحديث.</translation>
 <translation id="873133009373065397">‏يتعذَّر على Google Chrome تحديد المتصفح التلقائي أو تعيينه</translation>
 <translation id="8823341990149967727">‏إصدار Chrome قديم</translation>
 <translation id="8834965163890861871">‏يحاول Google Chrome تعديل كلمات المرور. للسماح بذلك، يُرجى كتابة كلمة مرور Windows الخاصة بك.</translation>

@@ -1045,6 +1045,7 @@
 <translation id="204914487372604757">Таңбаша жасау</translation>
 <translation id="2050339315714019657">Портреттік</translation>
 <translation id="2053312383184521053">Әрекетсіз күй деректері</translation>
+<translation id="2054240652864153171"><ph name="SITE_NAME" /> үшін <ph name="PARTITION_SITE_NAME" /> бойынша бөлшектелген сайт деректері өшірілсін бе?</translation>
 <translation id="2055585478631012616">Осы сайттардан, оның ішінде ашық қойындылардан шығып кетесіз.</translation>
 <translation id="205560151218727633">Google Assistant логотипі</translation>
 <translation id="2058456167109518507">Құрылғы анықталды</translation>
@@ -2386,6 +2387,7 @@
 <translation id="3433621910545056227">Жүйенің құрылғы орнату уақытының атрибуттары құлпын орнатуы сәтсіз аяқталды.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Егер "Интернет пен қолданбаларды пайдаланудың қосымша тарихы" параметрі қосулы болса, бұл деректер балаңыздың Google аккаунтына сақталуы мүмкін. Бұл параметрлер және оларды қалай реттеу керектігі туралы ақпаратты families.google.com сайтынан біле аласыз.</translation>
+<translation id="3434512374684753970">Аудио және бейне</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" кеңейтімі <ph name="CODE_TYPE" /> кодын сұрауда</translation>
 <translation id="3435738964857648380">Қауіпсіздік</translation>
 <translation id="343578350365773421">Қағаз бітті</translation>
@@ -2832,6 +2834,7 @@
 <translation id="3873423927483480833">PIN кодтарын көрсету</translation>
 <translation id="3873915545594852654">ARC++ ақауы орын алды.</translation>
 <translation id="3874164307099183178">Google Assistant қолданбасын қосу</translation>
+<translation id="3875783148670536197">Орындалуын көру</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> жаңа браузер қойындысында ашылуға орнатылған, қолдау көрсету сілтемелері де браузерде ашылады. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> құрылғысына арналған Nearby Share параметрлері (<ph name="USER_EMAIL" /> аккаунтының атынан бөлісуде).</translation>
 <translation id="3879748587602334249">Жүктеп алу менеджері</translation>
@@ -4467,6 +4470,7 @@
 <translation id="562935524653278697">Әкімшіңіз бетбелгілерді, тарихты, құпия сөздерді және басқа параметрлерді синхрондау мүмкіндігін бөгеген.</translation>
 <translation id="5631017369956619646">Орталық процессорды пайдалану</translation>
 <translation id="5632059346822207074">Рұқсат сұралды, жауап беру үшін Ctrl + Forward пернелер тіркесімін басыңыз.</translation>
+<translation id="5632485077360054581">Орындалуын көру</translation>
 <translation id="5632566673632479864"><ph name="EMAIL" /> енді негізгі аккаунтыңыз емес. Аккаунтыңызды <ph name="DOMAIN" /> домені басқаратындықтан, бетбелгілер, тарих, құпия сөздер және басқа параметрлер құрылғыңыздан өшіріледі.</translation>
 <translation id="5632592977009207922">Жүктеп алынуда, <ph name="PERCENT_REMAINING" />% қалды</translation>
 <translation id="563371367637259496">Мобильдік</translation>

@@ -25,6 +25,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="1145536944570833626">Futa data iliyopo.</translation>
 <translation id="1147031633655575115">Umeingia katika akaunti kama <ph name="USER" /></translation>
 <translation id="1154984953698510061">Angalia Vichupo Vingine</translation>
+<translation id="1164064664035028907">Tumia Nenosiri Thabiti:</translation>
 <translation id="1165039591588034296">Hitilafu</translation>
 <translation id="1172898394251786223">Sehemu inayofuata</translation>
 <translation id="1176932207622159128">Haiwezi Kuhifadhi Picha</translation>
@@ -139,6 +140,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="2268044343513325586">Chuja</translation>
 <translation id="2271351792809375263">Tumia manenosiri uliyohifadhi kwenye Chrome, katika programu zingine kwenye kifaa chako</translation>
 <translation id="2273327106802955778">Menyu zaidi</translation>
+<translation id="2286505070150039482">Maandishi Yaliyoangaziwa</translation>
 <translation id="2302742851632557585">Badilisha Nenosiri kwenye Tovuti</translation>
 <translation id="2316709634732130529">Tumia Nenosiri Linalopendekezwa</translation>
 <translation id="2320166752086256636">Ficha kibodi</translation>
@@ -309,6 +311,7 @@ Fuata hatua zifuatazo:</translation>
 <translation id="3803696231112616155">Jitolee kutafsiri tovuti hii</translation>
 <translation id="385051799172605136">Rudi nyuma</translation>
 <translation id="3858860766373142691">Jina</translation>
+<translation id="3861486700625780712">Acha kufuata</translation>
 <translation id="3892144330757387737">Utapata historia yako hapa</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3913386780052199712">Umeingia katika akaunti kwenye Chrome</translation>
@@ -406,6 +409,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="481968316161811770">Data ya Vidakuzi na Tovuti</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} na kingine kimoja}other{{domain} na vingine {count}}}</translation>
 <translation id="4826218269716039351">Zuia vya Wengine</translation>
+<translation id="4826726074642088322">Shiriki Maandishi Yaliyoangaziwa</translation>
 <translation id="48274138579728272">Tia Alama Kuwa Umesoma</translation>
 <translation id="4833686396768033263">Vichupo vya Hivi Punde Havipatikani</translation>
 <translation id="4833786495304741580">Hutuma kiotomatiki takwimu za matumizi na ripoti za programu kuacha kufanya kazi kwa Google.</translation>
@@ -601,6 +605,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="6497772452874122664">Ikiwa unaiamini <ph name="TIME" />, unaweza kutumia nenosiri la tovuti nyingine ulilohifadhi.
 
 Jaribu kutumia nenosiri la kipekee kwa kila tovuti.</translation>
+<translation id="650279896687777322">Pata Maelezo Zaidi...</translation>
 <translation id="651505212789431520">Ungependa Kughairi Usawazishaji? Unaweza kuwasha kipengele cha kusawazisha wakati wowote katika Mipangilio.</translation>
 <translation id="6524918542306337007">Hali Fiche Haipatikani</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -639,6 +644,7 @@ Katika hali fiche, tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvin
 <translation id="6807889908376551050">Onyesha Zote...</translation>
 <translation id="681368974849482173">Umeunda kipengee</translation>
 <translation id="681450999322335505">Shirika lako limezima kipengele cha kusawazisha.</translation>
+<translation id="683022620450280906">Unaweza kutumia manenosiri uliyohifadhi, kwenye kifaa chochote. Manenosiri hayo huhifadhiwa kwenye Kidhibiti cha Manenosiri cha Google kwa ajili ya <ph name="EMAIL" /></translation>
 <translation id="6830804042318138535">Soma Zaidi</translation>
 <translation id="6831043979455480757">Tafsiri</translation>
 <translation id="6842136130964845393">Ili uhakikishe kwamba unaweza kufikia manenosiri uliyoyahifadhi kila wakati, thibitisha kwamba ni wewe</translation>

@@ -1047,6 +1047,7 @@
 <translation id="204914487372604757">കുറുക്കുവഴി സൃഷ്ടിക്കുക</translation>
 <translation id="2050339315714019657">പോർട്രെയ്റ്റ്</translation>
 <translation id="2053312383184521053">നിഷക്രിയ നില ഡാറ്റ</translation>
+<translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> എന്നതിൽ വിഭജിച്ച <ph name="SITE_NAME" /> എന്ന സൈറ്റിനുള്ള സൈറ്റ് ഡാറ്റ മായ്ക്കണോ?</translation>
 <translation id="2055585478631012616">തുറന്നിരിക്കുന്ന ടാബുകളിൽ നിന്ന് ഉൾപ്പെടെ, ഈ സൈറ്റുകളിൽ നിന്ന് നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്യപ്പെടും.</translation>
 <translation id="205560151218727633">Google അസിസ്‌റ്റന്‍റ് ലോഗോ</translation>
 <translation id="2058456167109518507">ഉപകരണം കണ്ടെത്തി</translation>
@@ -2389,6 +2390,7 @@
 <translation id="3433621910545056227">ക്ഷമിക്കണം! ഉപകരണ ഇൻസ്റ്റലേഷൻ-സമയ ആട്രിബ്യൂട്ട് ലോക്ക് സ്ഥാപിക്കുന്നതിൽ സിസ്റ്റം പരാജയപ്പെട്ടു.</translation>
 <translation id="3434107140712555581">ബാറ്ററി: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">നിങ്ങളുടെ കുട്ടിയുടെ അധിക വെബ്, ആപ്പ് ആക്റ്റിവിറ്റി ക്രമീകരണം ഓണാക്കിയിട്ടുണ്ടെങ്കിൽ, ഈ ഡാറ്റ അവരുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കപ്പെട്ടേക്കാം. ഈ ക്രമീകരണത്തെ കുറിച്ചും അതെങ്ങനെയാണ് ക്രമപ്പെടുത്തുന്നത് എന്നതിനെ കുറിച്ചും families.google.com എന്നതിൽ കൂടുതലറിയുക.</translation>
+<translation id="3434512374684753970">ഓഡിയോയും വീഡിയോയും</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" നിങ്ങളുടെ <ph name="CODE_TYPE" /> അഭ്യർത്ഥിക്കുന്നു</translation>
 <translation id="3435738964857648380">സുരക്ഷ</translation>
 <translation id="343578350365773421">പേപ്പറില്ല</translation>
@@ -2835,6 +2837,7 @@
 <translation id="3873423927483480833">പിന്നുകൾ കാണിക്കുക</translation>
 <translation id="3873915545594852654">ARC++ എന്നതിൽ ഒരു പ്രശ്‌നമുണ്ടായി.</translation>
 <translation id="3874164307099183178">Google Assistant ഓണാക്കുക</translation>
+<translation id="3875783148670536197">എങ്ങനെയെന്ന് എന്നെ കാണിക്കുക</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ഒരു പുതിയ ബ്രൗസർ ടാബിൽ തുറക്കാൻ സജ്ജീകരിച്ചു, പിന്തുണയുള്ള ലിങ്കുകളും ബ്രൗസറിൽ തുറക്കും. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> എന്നയാളുടെ ഉപകരണത്തിന്റെ 'സമീപമുള്ള പങ്കിടൽ' ക്രമീകരണം, <ph name="USER_EMAIL" /> എന്ന അക്കൗണ്ടിന് കീഴിൽ പങ്കിടുന്നു.</translation>
 <translation id="3879748587602334249">ഡൗൺലോഡ് മാനേജർ</translation>
@@ -4469,6 +4472,7 @@
 <translation id="562935524653278697">നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ, മറ്റ് ക്രമീകരണം എന്നിവ സമന്വയിപ്പിക്കുന്നത് അഡ്‌മിൻ പ്രവർത്തനരഹിതമാക്കി.</translation>
 <translation id="5631017369956619646">CPU ഉപയോഗം</translation>
 <translation id="5632059346822207074">അനുമതി അഭ്യർത്ഥിച്ചു, പ്രതികരിക്കാൻ Ctrl + Forward അമർത്തുക</translation>
+<translation id="5632485077360054581">എങ്ങനെയെന്ന് എന്നെ കാണിക്കുക</translation>
 <translation id="5632566673632479864">നിങ്ങളുടെ അക്കൗണ്ട് <ph name="EMAIL" />, ഇനി പ്രാഥമിക അക്കൗണ്ടായി അംഗീകരിക്കില്ല. <ph name="DOMAIN" /> ഈ അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നതിനാൽ, നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകളും ചരിത്രവും പാസ്‌വേഡുകളും മറ്റ് ക്രമീകരവും ഈ ഉപകരണത്തിൽ നിന്ന് മായ്‌ക്കുന്നതാണ്.</translation>
 <translation id="5632592977009207922">ഡൗൺലോഡ് ചെയ്യുന്നു, <ph name="PERCENT_REMAINING" />% ശേഷിക്കുന്നു</translation>
 <translation id="563371367637259496">മൊബൈല്‍</translation>

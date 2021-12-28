@@ -234,6 +234,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7448255348454382571">Reiniciar Chromium OS</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> ‑ Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium necesita permiso para acceder a la cámara en este sitio web</translation>
+<translation id="7467949745582939695">¿Reiniciar Chromium?</translation>
 <translation id="7483335560992089831">No se puede instalar la misma versión de Chromium que se está ejecutando actualmente. Cierra Chromium y vuelve a intentarlo.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium se reiniciará dentro de 1 minuto}other{Chromium se reiniciará dentro de # minutos}}</translation>
 <translation id="7549178288319965365">Información de Chromium OS</translation>

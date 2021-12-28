@@ -1061,6 +1061,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="204914487372604757">Criar atalho</translation>
 <translation id="2050339315714019657">Retrato</translation>
 <translation id="2053312383184521053">Dados em estado de inatividade</translation>
+<translation id="2054240652864153171">Limpar os dados do site <ph name="SITE_NAME" /> particionados em <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Sua conta será desconectada desses sites, inclusive nas guias abertas.</translation>
 <translation id="205560151218727633">Logotipo do Google Assistente</translation>
 <translation id="2058456167109518507">Dispositivo detectado</translation>
@@ -2407,6 +2408,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3433621910545056227">Ops! O sistema falhou ao estabelecer o bloqueio de atributos da hora de instalação do dispositivo.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Se a configuração "Atividade na Web e de apps adicional" estiver ativada para a criança, esses dados poderão ser salvos na Conta do Google dela. Saiba mais sobre essas configurações e como ajustá-las em families.google.com.</translation>
+<translation id="3434512374684753970">Áudio e vídeo</translation>
 <translation id="3435688026795609344">A extensão "<ph name="EXTENSION_NAME" />" está solicitando seu <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="343578350365773421">Sem papel</translation>
@@ -2853,6 +2855,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3873423927483480833">Mostrar PINs</translation>
 <translation id="3873915545594852654">Ocorreu um problema com o ARC++.</translation>
 <translation id="3874164307099183178">Ativar o Google Assistente</translation>
+<translation id="3875783148670536197">Me ajude a fazer isso</translation>
 <translation id="3875815154304214043">O app <ph name="APP_NAME" /> está configurado para ser aberto em uma nova guia do navegador. Links compatíveis também serão abertos dessa forma. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Configurações do "Compartilhar por proximidade" para o dispositivo de <ph name="USER_NAME" />, compartilhando com a conta <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Gerenciador de downloads</translation>
@@ -4490,6 +4493,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="562935524653278697">Seu administrador desativou a sincronização dos seus favoritos, histórico, senhas e outras configurações.</translation>
 <translation id="5631017369956619646">Uso da CPU</translation>
 <translation id="5632059346822207074">Permissão solicitada, pressione Ctrl + Avançar para responder</translation>
+<translation id="5632485077360054581">Me ajude a fazer isso</translation>
 <translation id="5632566673632479864">Não é mais permitido usar sua conta <ph name="EMAIL" /> como a principal. Como essa conta é gerenciada por <ph name="DOMAIN" />, seus favoritos, histórico, senhas e outras configurações serão excluídos deste dispositivo.</translation>
 <translation id="5632592977009207922">Download em andamento, <ph name="PERCENT_REMAINING" />% restante(s)</translation>
 <translation id="563371367637259496">Celular</translation>

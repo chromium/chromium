@@ -592,6 +592,7 @@
 <translation id="1600857548979126453">الدخول إلى الواجهة الخلفية لبرنامج تصحيح أخطاء الصفحة</translation>
 <translation id="1601560923496285236">تطبيق</translation>
 <translation id="1602085790802918092">جارٍ بدء تشغيل الآلة الافتراضية</translation>
+<translation id="1603411913360944381">حذف الجهاز <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(التصفح المتخفي)</translation>
 <translation id="1604432177629086300">تعذّرت الطباعة. يُرجى التحقق من الطابعة وإعادة المحاولة.</translation>
 <translation id="1605744057217831567">الاطّلاع على جميع بيانات المواقع الإلكترونية وأذوناتها</translation>
@@ -6054,6 +6055,7 @@
 <translation id="7307129035224081534">متوقف مؤقتًا</translation>
 <translation id="7308643132139167865">لغات المواقع الإلكترونية</translation>
 <translation id="7310598146671372464">‏تعذّر تسجيل الدخول لأن الخادم لا يدعم أنواع ترميز Kerberos المحدَّدة. يُرجى الاتصال بمشرفك.</translation>
+<translation id="7312210124139670355">‏المشرف يعيد ضبط شريحة eSIM حاليًا. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="7320213904474460808">الاتصال بالشبكة تلقائيًا</translation>
 <translation id="7321545336522791733">خادم يتعذر الوصول إليه</translation>
 <translation id="7324297612904500502">منتدى الإصدار التجريبي</translation>

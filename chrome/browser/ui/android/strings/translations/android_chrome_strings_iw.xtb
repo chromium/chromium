@@ -90,6 +90,7 @@
 <translation id="147113415845704694">‏אפשר לנסות לשאול "What’s the weather today?‎"</translation>
 <translation id="1477626028522505441">הורדת <ph name="FILE_NAME" /> נכשלה עקב בעיות בשרת.</translation>
 <translation id="148482509007564431">תהליך שמירת הסימנייה</translation>
+<translation id="1488775391433859242">‏יש לך אפשרות להשתמש בטלפון הזה כדי להיכנס לחשבון במחשב שמוצג בו קוד ה-QR הזה.</translation>
 <translation id="1492417797159476138">שם המשתמש הזה כבר נשמר לאתר זה</translation>
 <translation id="1493287004536771723">בחרת לעקוב אחר <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">מנוע חיפוש</translation>
@@ -189,6 +190,7 @@
 <translation id="2122601567107267586">לא ניתן היה לפתוח את היישום</translation>
 <translation id="2126426811489709554">‏מבוסס על Chrome</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> נשמרו</translation>
+<translation id="2132122640199389833">הסרת כל המכשירים המקושרים</translation>
 <translation id="213279576345780926">הכרטיסייה "<ph name="TAB_TITLE" />" נסגרה</translation>
 <translation id="2139186145475833000">הוספה לדף הבית</translation>
 <translation id="2141396931810938595">על סמך השימוש שלך</translation>
@@ -265,6 +267,7 @@
 <translation id="2534582914273493287">‏כתובות URL שבהן ביקרת יישלחו אל Google</translation>
 <translation id="2536728043171574184">מוצג העתק לא מקוון של עמוד זה</translation>
 <translation id="2546283357679194313">‏נתוני אתר וקובצי Cookie</translation>
+<translation id="2549516196460093976">‏יש לך אפשרות להשתמש בטאבלט הזה כדי להיכנס לחשבון במחשב שמוצג בו קוד ה-QR הזה.</translation>
 <translation id="2558692642259318568">אם לא רוצים שפעילות הגלישה תישמר במכשיר, אפשר לנסות את המצב הפרטי</translation>
 <translation id="2561519700418191927">תצוגות מקדימות של סרטונים</translation>
 <translation id="2567385386134582609">תמונה</translation>
@@ -451,6 +454,7 @@
 <translation id="3563767357928833671">מוצג התוכן שבלוח</translation>
 <translation id="3566923219790363270">‏Chrome עדיין מתכונן ל-VR. יש להפעיל מחדש את Chrome מאוחר יותר.</translation>
 <translation id="3568688522516854065">כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, יש להיכנס לחשבון ולהפעיל את הסנכרון</translation>
+<translation id="357465026686164600">שימוש בטלפון בתור מפתח אבטחה</translation>
 <translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="3587482841069643663">הכול</translation>
 <translation id="3587596251841506391">סיוע לשיפור האבטחה באינטרנט</translation>
@@ -520,6 +524,7 @@
 <translation id="4000212216660919741">דף הבית במצב אופליין</translation>
 <translation id="4016425174436051808">לא ניתן לעקוב. משהו השתבש.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{שעה אחת}two{שעתיים}many{# שעות}other{# שעות}}</translation>
+<translation id="4035877632587724847">אין אישור</translation>
 <translation id="4045764304651014138">נתוני שימוש במכשיר</translation>
 <translation id="405399507749852140">קבלת התראות על הנחות באתר כלשהו</translation>
 <translation id="4056223980640387499">חום-ספיה</translation>
@@ -579,6 +584,7 @@
 <translation id="4450672886426705087">‏תוצאות חיפוש מ-Google.</translation>
 <translation id="4452411734226507615">סגירת הכרטיסייה <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">התווסף לסימניות ב-<ph name="FOLDER_NAME" /></translation>
+<translation id="4461614516424362539">‏קישור של מכשיר אחר באמצעות קוד QR יאפשר לך להשתמש בטלפון הזה כמפתח אבטחה. אם הקישור יוסר, יהיה עליך לסרוק קוד QR כדי לקשר שוב את המכשיר.</translation>
 <translation id="4472118726404937099">כדי לסנכרן ולהתאים אישית את החוויה במכשירים שונים, יש להיכנס לחשבון ולהפעיל את הסנכרון</translation>
 <translation id="4479839115899251637">מחיקה מרשימת הקריאה</translation>
 <translation id="4479972344484327217">‏מתבצעת התקנה של <ph name="MODULE" /> ל-Chrome…</translation>
@@ -649,6 +655,7 @@
 
 כדי לשנות את ההגדרה הזו צריך <ph name="BEGIN_LINK" />לאפס את הסנכרון<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">שם על הכרטיס</translation>
+<translation id="481574578487123132">מכשירים מקושרים</translation>
 <translation id="4818017973810341238">‏אימות Digital Asset Links נכשל בכתובת <ph name="VIOLATED_URL" /></translation>
 <translation id="4831037795716408498">הורדת תוכן</translation>
 <translation id="4834007576107377210">ניתן לעיין בהוראות של מנוע החיפוש שמשמש אותך לגבי מחיקת היסטוריית החיפושים, אם רלוונטי</translation>
@@ -681,6 +688,7 @@
 <translation id="4941179133499732445">אפשר להקיש על המיקרופון כדי לחפש באמצעות הקול</translation>
 <translation id="4943703118917034429">מציאות מדומה</translation>
 <translation id="4943872375798546930">אין תוצאות</translation>
+<translation id="4950924971025849764">‏אם נכנסת לאותו חשבון Google במכשירים אחרים, הטלפון הזה יכול לשמש בהם כמפתח אבטחה.</translation>
 <translation id="4957722034734105353">למידע נוסף...</translation>
 <translation id="4961107849584082341">אפשר לתרגם את הדף הזה לשפה כלשהי</translation>
 <translation id="4971735654804503942">‏הגנה מהירה יותר ואקטיבית מפני אתרים, הורדות ותוספים מסוכנים. המערכת מזהירה אותך בנוגע לחשיפה של סיסמאות. כשמצב ההגנה הזה בשימוש, נתוני גלישה נשלחים אל Google.</translation>
@@ -781,6 +789,7 @@
 <translation id="55737423895878184">יש הרשאה לגישה אל המיקום ולהצגת הודעות</translation>
 <translation id="5578795271662203820">חיפוש התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">אפשר לבחור מה לסנכרן בכל שלב דרך <ph name="BEGIN_LINK1" />ההגדרות<ph name="END_LINK1" />.</translation>
+<translation id="5590372121997663538">אני רוצה להשאיר את החיבור פעיל במחשב הזה</translation>
 <translation id="5599455543593328020">מצב אנונימי</translation>
 <translation id="5599941490345670218">‏Google Assistant יכולה להשלים עבורך פעולות באתרים שונים</translation>
 <translation id="5620163320393916465">אין סיסמאות שמורות</translation>
@@ -862,6 +871,7 @@
 <translation id="5995726099713306770">להוריד שוב את הדף?</translation>
 <translation id="6000066717592683814">‏להמשיך להשתמש ב-Google</translation>
 <translation id="6000203700195075278">מעקב מחודש</translation>
+<translation id="6002122790816966947">המכשירים שלך</translation>
 <translation id="6005538289190791541">הצעה לסיסמה</translation>
 <translation id="6032091552407840792">תקופת הניסיון הזו פעילה רק ב<ph name="BEGIN_LINK" />אזורים מסוימים<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">‏באמצעות <ph name="BEGIN_LINK" />ארגז חול לפרטיות<ph name="END_LINK" />, מפתחים ב-Chrome טכנולוגיות חדשות שמגינות עליך מפני מעקב באתרים שונים תוך שמירה על האופי הפתוח של רשת האינטרנט.
@@ -991,6 +1001,7 @@
 <translation id="6640207029842583248">חסימה כל הזמן</translation>
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6643649862576733715">מיון לפי כמות הנתונים שנחסכו</translation>
+<translation id="6645629752388991326">שליטה במכשירים שיקבלו הרשאה לכניסה לחשבון, תוך שימוש בטלפון הזה כמפתח אבטחה.</translation>
 <translation id="6648459603387803038">‏מנהל המערכת יכול לשנות את הגדרת הדפדפן שלך מרחוק. בנוסף, ניתן לנהל את הפעילות במכשיר הזה מחוץ ל-Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוסף}two{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוספים}many{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוספים}other{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוספים}}</translation>
 <translation id="6649642165559792194">הצגת התמונה בתצוגה מקדימה <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@
 <translation id="6710213216561001401">הקודם</translation>
 <translation id="671481426037969117">זמן השימוש באפליקציה <ph name="FQDN" /> הסתיים. הטיימר יופעל מחדש מחר ואז אפשר יהיה להשתמש שוב באפליקציה.</translation>
 <translation id="6715020873764921614">רוצה להוריד את <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) בכל זאת?</translation>
+<translation id="6719634564325948108">‏לקשר באמצעות קוד QR?</translation>
 <translation id="6738516213925468394">הנתונים שלך הוצפנו באמצעות <ph name="BEGIN_LINK" />ביטוי סיסמה לסנכרון<ph name="END_LINK" /> בתאריך <ph name="TIME" />. צריך להזין אותו כדי להתחיל את הסנכרון.</translation>
 <translation id="6738867403308150051">ההורדה מתבצעת...</translation>
 <translation id="6751521182688001123">פתיחת כרטיסייה חדשה במהירות. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>

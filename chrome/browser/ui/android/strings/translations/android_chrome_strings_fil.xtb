@@ -90,6 +90,7 @@
 <translation id="147113415845704694">Subukan ang “Kumusta ang lagay ng panahon ngayon?”</translation>
 <translation id="1477626028522505441">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa mga isyu sa server.</translation>
 <translation id="148482509007564431">Proseso ng pag-save ng bookmark</translation>
+<translation id="1488775391433859242">Puwede mong gamitin ang teleponong ito para mag-sign in sa computer na nagpapakita sa QR code na ito.</translation>
 <translation id="1492417797159476138">Na-save mo na ang username na ito para sa site na ito</translation>
 <translation id="1493287004536771723">Sinusubaybayan mo ang <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">Search engine</translation>
@@ -189,6 +190,7 @@ Mag-tap ng anumang salita para maghanap. Para pinuhin ang iyong paghahanap, pind
 <translation id="2122601567107267586">Hindi mabuksan ang app</translation>
 <translation id="2126426811489709554">Pinapagana ng Chrome</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> ang natipid</translation>
+<translation id="2132122640199389833">Alisin ang lahat ng naka-link na device</translation>
 <translation id="213279576345780926">Isinarang <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Idagdag sa Home screen</translation>
 <translation id="2141396931810938595">Batay sa iyong paggamit</translation>
@@ -265,6 +267,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2534582914273493287">Ipinapadala sa Google ang mga URL na binibisita mo</translation>
 <translation id="2536728043171574184">Tinitingnan ang isang offline na kopya ng page na ito</translation>
 <translation id="2546283357679194313">Cookies at data ng site</translation>
+<translation id="2549516196460093976">Puwede mong gamitin ang tablet na ito para mag-sign in sa computer na nagpapakita sa QR code na ito.</translation>
 <translation id="2558692642259318568">Para mag-browse nang hindi nagse-save ng aktibidad sa iyong device, subukan ang Incognito</translation>
 <translation id="2561519700418191927">Mga preview ng video</translation>
 <translation id="2567385386134582609">LARAWAN</translation>
@@ -451,6 +454,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3563767357928833671">Ipinapakita ang mga content ng clipboard</translation>
 <translation id="3566923219790363270">Naghahanda pa rin ang Chrome para sa VR. I-restart ang Chrome sa ibang pagkakataon.</translation>
 <translation id="3568688522516854065">Para makuha ang iyong mga tab sa iba mo pang device, mag-sign in at i-on ang pag-sync</translation>
+<translation id="357465026686164600">Telepono bilang security key</translation>
 <translation id="3577473026931028326">Nagkaproblema. Subukan ulit.</translation>
 <translation id="3587482841069643663">Lahat</translation>
 <translation id="3587596251841506391">Pahusayin ang seguridad sa web</translation>
@@ -520,6 +524,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="4000212216660919741">Offline Home</translation>
 <translation id="4016425174436051808">Hindi masubaybayan. Nagkaproblema.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# oras}one{# oras}other{# na oras}}</translation>
+<translation id="4035877632587724847">Huwag payagan</translation>
 <translation id="4045764304651014138">Data ng paggamit</translation>
 <translation id="405399507749852140">Makatanggap ng mga alerto kapag bumaba ang presyo sa alinmang site</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -579,6 +584,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="4450672886426705087">Mga resulta ng paghahanap mula sa Google.</translation>
 <translation id="4452411734226507615">Isara ang tab na <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Na-bookmark sa <ph name="FOLDER_NAME" /></translation>
+<translation id="4461614516424362539">Kapag nag-link ka ng ibang device gamit ang isang QR code, puwede nitong gamitin ang teleponong ito bilang security key. Kung aalisin mo ito, kakailanganin mong mag-scan ng QR code para i-link ulit ito.</translation>
 <translation id="4472118726404937099">Para mag-sync at mag-personalize sa mga device, mag-sign in at i-on ang pag-sync</translation>
 <translation id="4479839115899251637">I-delete sa reading list</translation>
 <translation id="4479972344484327217">Ini-install ang <ph name="MODULE" /> para sa Chrome…</translation>
@@ -649,6 +655,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 
 Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Pangalang makikita sa card</translation>
+<translation id="481574578487123132">Mga naka-link na device</translation>
 <translation id="4818017973810341238">Hindi na-verify ang mga link ng digital asset sa <ph name="VIOLATED_URL" /></translation>
 <translation id="4831037795716408498">Mag-download ng content</translation>
 <translation id="4834007576107377210">Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history ng paghahanap mo, kung naaangkop</translation>
@@ -681,6 +688,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="4941179133499732445">I-tap ang mic para maghanap gamit ang iyong boses</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">Walang mga resulta</translation>
+<translation id="4950924971025849764">Kapag naka-sign in ka sa iisang Google Account, puwedeng gamitin ng iba pang device ang teleponong ito bilang security key.</translation>
 <translation id="4957722034734105353">Matuto pa...</translation>
 <translation id="4961107849584082341">Isalin ang page na ito sa anumang wika</translation>
 <translation id="4971735654804503942">Mas mabilis at proactive na proteksyon laban sa mga mapanganib na website, download, at extension. Binibigyan ka ng babala tungkol sa mga paglabag sa password. Kinakailangang magpadala ng data mula sa pag-browse sa Google.</translation>
@@ -781,6 +789,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="55737423895878184">Pinapayagan ang lokasyon at mga notification</translation>
 <translation id="5578795271662203820">Hanapin sa <ph name="SEARCH_ENGINE" /> ang larawan</translation>
 <translation id="5581519193887989363">Mapipili mo kung ano ang isi-sync anumang oras sa <ph name="BEGIN_LINK1" />mga setting<ph name="END_LINK1" />.</translation>
+<translation id="5590372121997663538">Tandaan ang computer na ito</translation>
 <translation id="5599455543593328020">Incognito mode</translation>
 <translation id="5599941490345670218">Makakakumpleto ang Google Assistant ng mga pagkilos sa lahat ng website para sa iyo</translation>
 <translation id="5620163320393916465">Walang naka-save na password</translation>
@@ -862,6 +871,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5995726099713306770">I-download ulit ang page?</translation>
 <translation id="6000066717592683814">Panatilihin ang Google</translation>
 <translation id="6000203700195075278">Subaybayan ulit</translation>
+<translation id="6002122790816966947">Ang iyong mga device</translation>
 <translation id="6005538289190791541">Iminumungkahing password</translation>
 <translation id="6032091552407840792">Aktibo lang ang trial na ito sa <ph name="BEGIN_LINK" />ilang rehiyon<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Sa pamamagitan ng <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, nagde-develop ang Chrome ng mga bagong teknolohiya para protektahan ka laban sa cross-site na pagsubaybay habang pinapanatili ang bukas na web.
@@ -991,6 +1001,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6640207029842583248">I-block sa lahat ng pagkakataon</translation>
 <translation id="6643016212128521049">I-clear</translation>
 <translation id="6643649862576733715">Pagbukud-bukurin ayon sa dami ng data na natipid</translation>
+<translation id="6645629752388991326">Kontrolin kung aling mga device ang puwedeng mag-sign in sa pamamagitan ng paggamit sa device na ito bilang security key.</translation>
 <translation id="6648459603387803038">Puwedeng baguhin ng iyong administrator ang setup ng browser mo sa remote na paraan. Puwede ring pamahalaan sa labas ng Chrome ang aktibidad sa device na ito.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> iba pa}one{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> iba pa}other{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> na iba pa}}</translation>
 <translation id="6649642165559792194">I-preview ang larawang <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6710213216561001401">Nauna</translation>
 <translation id="671481426037969117">Natapos na ang iyong timer ng <ph name="FQDN" />. Magsisimula itong muli bukas.</translation>
 <translation id="6715020873764921614">Gusto mo pa rin bang i-download ang <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
+<translation id="6719634564325948108">Kumonekta gamit ang QR code?</translation>
 <translation id="6738516213925468394">Na-encrypt ang data mo gamit ang iyong <ph name="BEGIN_LINK" />passphrase sa pag-sync<ph name="END_LINK" /> noong <ph name="TIME" />. Ilagay ito para simulan ang pag-sync.</translation>
 <translation id="6738867403308150051">Nagda-download...</translation>
 <translation id="6751521182688001123">Mabilis na magbukas ng bagong tab. Para i-edit ang shortcut na ito, pindutin ito nang matagal.</translation>

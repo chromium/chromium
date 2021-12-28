@@ -226,6 +226,7 @@
 <translation id="7448255348454382571">Рестартиране на Chromium OS</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium се нуждае от разрешение за достъп до камерата ви за този сайт</translation>
+<translation id="7467949745582939695">Да се рестартира ли Chromium?</translation>
 <translation id="7483335560992089831">Не може да се инсталира същата версия на Chromium, която се използва понастоящем. Моля, затворете браузъра и опитайте отново.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium ще се стартира отново след 1 минута}other{Chromium ще се стартира отново след # минути}}</translation>
 <translation id="7549178288319965365">Всичко за Chromium OS</translation>

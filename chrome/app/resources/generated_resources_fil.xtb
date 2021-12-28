@@ -592,6 +592,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1600857548979126453">I-access ang backend ng debugger ng pahina</translation>
 <translation id="1601560923496285236">Ilapat</translation>
 <translation id="1602085790802918092">Sinisimulan ang virtual machine</translation>
+<translation id="1603411913360944381">Kalimutan ang <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Incognito)</translation>
 <translation id="1604432177629086300">Hindi ma-print. Suriin ang printer at subukan ulit.</translation>
 <translation id="1605744057217831567">Tingnan ang lahat ng data at pahintulot ng site</translation>
@@ -1060,6 +1061,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="204914487372604757">Lumikha ng shortcut sa </translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2053312383184521053">Data sa Idle na Estado</translation>
+<translation id="2054240652864153171">I-clear ang data ng site para sa <ph name="SITE_NAME" /> na naka-partition sa <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Masa-sign out ka sa mga site na ito, pati na rin sa mga nakabukas na tab</translation>
 <translation id="205560151218727633">Logo ng Google Assistant</translation>
 <translation id="2058456167109518507">Na-detect ang device</translation>
@@ -2405,6 +2407,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3433621910545056227">Naku! Nabigo ang system na itatag ang lock sa mga katangian sa oras ng pag-install.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Kung naka-on ang karagdagang setting ng Aktibidad sa Web at App para sa iyong anak, posibleng ma-save ang data na ito sa kanyang Google Account. Matuto pa tungkol sa mga setting na ito at kung paano isaayos ang mga ito sa families.google.com.</translation>
+<translation id="3434512374684753970">Audio at Video</translation>
 <translation id="3435688026795609344">Hinihiling ng "<ph name="EXTENSION_NAME" />" ang iyong <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="343578350365773421">Wala nang papel</translation>
@@ -2851,6 +2854,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3873423927483480833">Ipakita ang Mga PIN</translation>
 <translation id="3873915545594852654">Nagkaproblema sa ARC++.</translation>
 <translation id="3874164307099183178">I-on ang Google Assistant</translation>
+<translation id="3875783148670536197">Ipakita sa Akin Kung Paano</translation>
 <translation id="3875815154304214043">Nakatakdang magbukas ang <ph name="APP_NAME" /> sa isang bagong tab ng browser, magbubukas din ang mga sinusuportahang link sa browser. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Mga setting ng Nearby Share para sa device ni <ph name="USER_NAME" />, ibinabahagi sa ilalim ng account na <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Download manager</translation>
@@ -4487,6 +4491,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="562935524653278697">Na-disable ng administrator mo ang pag-sync ng iyong mga bookmark, history, password at iba pang mga setting.</translation>
 <translation id="5631017369956619646">Paggamit sa CPU</translation>
 <translation id="5632059346822207074">Humiling ng pahintulot, pindutin ang Ctrl + Forward para tumugon</translation>
+<translation id="5632485077360054581">Ipakita sa akin kung paano</translation>
 <translation id="5632566673632479864">Hindi na pinapayagan ang iyong account na <ph name="EMAIL" /> bilang pangunahing account. Dahil pinapamahalaan ng <ph name="DOMAIN" /> ang account na ito, iki-clear ang iyong mga bookmark, history, password, at iba pang setting sa device na ito.</translation>
 <translation id="5632592977009207922">Nagda-download, <ph name="PERCENT_REMAINING" />% ang natitira</translation>
 <translation id="563371367637259496">Mobile</translation>
@@ -6067,6 +6072,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7307129035224081534">Naka-pause</translation>
 <translation id="7308643132139167865">Mga wika ng website</translation>
 <translation id="7310598146671372464">Hindi makapag-log in. Hindi sinusuportahan ng server ang mga natukoy na uri ng Kerberos na pag-encrypt. Makipag-ugnayan sa iyong administrator.</translation>
+<translation id="7312210124139670355">Nire-reset ng iyong administrator ang eSIM mo. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="7320213904474460808">Pumili ng default na network</translation>
 <translation id="7321545336522791733">Hindi makakonekta sa server</translation>
 <translation id="7324297612904500502">Forum sa Beta</translation>

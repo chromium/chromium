@@ -140,6 +140,7 @@
 <translation id="2268044343513325586">Pinuhin</translation>
 <translation id="2271351792809375263">Gamitin ang mga password na na-save mo sa iba pang app sa iyong device</translation>
 <translation id="2273327106802955778">Higit pang menu</translation>
+<translation id="2286505070150039482">Naka-highlight na Text</translation>
 <translation id="2302742851632557585">Palitan ang Password sa Website</translation>
 <translation id="2316709634732130529">Gamitin ang Iminumungkahing Password</translation>
 <translation id="2320166752086256636">Itago ang keyboard</translation>
@@ -310,6 +311,7 @@ Sundin ang mga hakbang sa ibaba:</translation>
 <translation id="3803696231112616155">Mag-alok na isalin ang site na ito</translation>
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="3858860766373142691">Pangalan</translation>
+<translation id="3861486700625780712">Huwag nang subaybayan</translation>
 <translation id="3892144330757387737">Makikita mo rito ang iyong history</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3913386780052199712">Naka-sign in sa Chrome</translation>
@@ -407,6 +409,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="481968316161811770">Cookies, Data ng Site</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} at 1 pa}one{{domain} at {count} pa}other{{domain} at {count} pa}}</translation>
 <translation id="4826218269716039351">I-block ang Third-Party</translation>
+<translation id="4826726074642088322">Ibahagi ang Naka-highlight</translation>
 <translation id="48274138579728272">Markahan Bilang Nabasa Na</translation>
 <translation id="4833686396768033263">Hindi Available ang Mga Kamakailang Tab</translation>
 <translation id="4833786495304741580">Awtomatikong nagpapadala sa Google ng mga istatistika sa paggamit at ulat ng pag-crash.</translation>
@@ -602,6 +605,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="6497772452874122664">Kung pinagkakatiwalaan mo ang <ph name="TIME" />, puwede kang gumamit ng naka-save na password mula sa isa pang site.
 
 Subukang gumamit ng natatanging password para sa bawat site.</translation>
+<translation id="650279896687777322">Matuto pa...</translation>
 <translation id="651505212789431520">Kanselahin ang Pag-sync? Puwede mong i-on ang pag-sync anumang oras sa Mga Setting.</translation>
 <translation id="6524918542306337007">Hindi Available ang Incognito Mode</translation>
 <translation id="6537746030088321027">example.com</translation>

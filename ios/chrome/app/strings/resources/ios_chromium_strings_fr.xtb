@@ -76,6 +76,7 @@
 <translation id="6424492062988593837">Chromium a été amélioré ! Une nouvelle version est désormais disponible.</translation>
 <translation id="6752854822223394465">Votre organisation configure Chromium…</translation>
 <translation id="6820823224820483452">Chromium n'est pas parvenu à vérifier tous les mots de passe. Réessayez demain.</translation>
+<translation id="7006920032187763988">Vous pouvez utiliser les mots de passe enregistrés dans le Gestionnaire de mots de passe dans d'autres applis sur votre iPad.</translation>
 <translation id="7018284295775193585">Impossible de mettre à jour Chromium</translation>
 <translation id="7045244423563602563">Personnalisez Chromium</translation>
 <translation id="7099326575020694068">Chromium ne peut pas utiliser votre appareil photo en mode Vue fractionnée.</translation>
@@ -102,11 +103,13 @@
 <translation id="8073677936375100957">Supprimer vos données Chromium sur cet appareil ?</translation>
 <translation id="8175055321229419309">Conseil : <ph name="BEGIN_LINK" />Placez Chromium dans le dock.<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium n'est pas parvenu à rechercher les mises à jour. Réessayez plus tard.</translation>
+<translation id="858114650497379505">Vous pouvez utiliser les mots de passe enregistrés dans le Gestionnaire de mots de passe dans d'autres applis sur votre iPhone.</translation>
 <translation id="8586442755830160949">Copyright Auteurs de Chromium <ph name="YEAR" />. Tous droits réservés.</translation>
 <translation id="8663480472502753423">Garder Chromium à jour</translation>
 <translation id="8776843108004031667">Ce compte et les données non enregistrées seront supprimés de Chromium.</translation>
 <translation id="894437814105052438">Lorsque vous vous déconnectez, Chromium cesse de synchroniser vos données avec votre compte Google. Les données déjà synchronisées ne sont pas effacées.</translation>
 <translation id="9022552996538154597">Se connecter à Chromium</translation>
+<translation id="9059693977935746710">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe pour <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Version de Chromium obsolète</translation>
 <translation id="9110075932708282655">Utiliser Chromium par défaut</translation>
 <translation id="921174536258924340">Chromium n'est pas parvenu à vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe enregistrés dans votre compte Google<ph name="END_LINK" />.</translation>

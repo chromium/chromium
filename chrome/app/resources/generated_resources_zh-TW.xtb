@@ -1048,6 +1048,7 @@
 <translation id="204914487372604757">建立捷徑</translation>
 <translation id="2050339315714019657">直向</translation>
 <translation id="2053312383184521053">閒置狀態資料</translation>
+<translation id="2054240652864153171">要清除 <ph name="SITE_NAME" /> 在 <ph name="PARTITION_SITE_NAME" /> 上分割的網站資料嗎？</translation>
 <translation id="2055585478631012616">系統會將你登出這些網站 (這項操作會套用到所有已開啟的分頁)。</translation>
 <translation id="205560151218727633">Google 助理標誌</translation>
 <translation id="2058456167109518507">偵測到裝置</translation>
@@ -2390,6 +2391,7 @@
 <translation id="3433621910545056227">糟糕！系統無法鎖定裝置安裝時的屬性。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">如果貴子女的「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在他們的 Google 帳戶中。如要進一步瞭解這些設定及其調整方式，請前往 families.google.com。</translation>
+<translation id="3434512374684753970">音訊和影片</translation>
 <translation id="3435688026795609344">「<ph name="EXTENSION_NAME" />」要求你提供 <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="343578350365773421">紙張已用盡</translation>
@@ -2836,6 +2838,7 @@
 <translation id="3873423927483480833">顯示 PIN 碼</translation>
 <translation id="3873915545594852654">ARC++ 發生問題。</translation>
 <translation id="3874164307099183178">開啟 Google 助理</translation>
+<translation id="3875783148670536197">顯示操作說明</translation>
 <translation id="3875815154304214043">「<ph name="APP_NAME" />」已設為會在新的瀏覽器分頁中開啟，支援的連結也會在瀏覽器中開啟。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />在裝置上的「鄰近分享」設定，透過 <ph name="USER_EMAIL" /> 進行分享。</translation>
 <translation id="3879748587602334249">下載管理員</translation>
@@ -4470,6 +4473,7 @@
 <translation id="562935524653278697">你的管理員停用了書籤、歷史記錄、密碼和其他設定的同步功能。</translation>
 <translation id="5631017369956619646">CPU 使用率</translation>
 <translation id="5632059346822207074">已要求權限，按下 Ctrl + Forward 鍵即可回覆</translation>
+<translation id="5632485077360054581">顯示操作說明</translation>
 <translation id="5632566673632479864">你已不能再將 <ph name="EMAIL" /> 設為主要帳戶。這個帳戶是由 <ph name="DOMAIN" /> 所管理，因此系統會將您的書籤、歷史記錄、密碼和其他設定從這個裝置上清除。</translation>
 <translation id="5632592977009207922">下載中，還剩 <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">行動網路</translation>

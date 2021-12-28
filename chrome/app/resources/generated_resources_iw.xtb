@@ -590,6 +590,7 @@
 <translation id="1600857548979126453">להיכנס לניפוי הבאגים העורפי של הדף</translation>
 <translation id="1601560923496285236">החלה</translation>
 <translation id="1602085790802918092">המערכת מפעילה את המכונה הווירטואלית</translation>
+<translation id="1603411913360944381">מחיקת <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(אנונימי)</translation>
 <translation id="1604432177629086300">לא ניתן היה להדפיס. יש לבדוק את המדפסת ולנסות שוב.</translation>
 <translation id="1605744057217831567">הצגת כל הנתונים מאתרים וההרשאות</translation>
@@ -6066,6 +6067,7 @@
 <translation id="7307129035224081534">מושהה</translation>
 <translation id="7308643132139167865">שפות לאתרים</translation>
 <translation id="7310598146671372464">‏ההתחברות נכשלה. השרת לא תומך בסוגי הצפנת Kerberos שצוינו. צריך לפנות אל מנהל המערכת.</translation>
+<translation id="7312210124139670355">‏ה-eSIM הזה עובר איפוס בהוראת האדמין שלך. הפעולה עשויה להימשך מספר דקות.</translation>
 <translation id="7320213904474460808">הגדרת הרשת כברירת המחדל</translation>
 <translation id="7321545336522791733">השרת אינו נגיש</translation>
 <translation id="7324297612904500502">פורום ביטא</translation>

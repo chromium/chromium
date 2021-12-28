@@ -231,6 +231,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7448255348454382571">重启 Chromium 操作系统</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium 开发者版</translation>
 <translation id="7451052299415159299">Chromium 需要获得相应权限，才能允许此网站使用您的摄像头</translation>
+<translation id="7467949745582939695">重新启动 Chromium？</translation>
 <translation id="7483335560992089831">无法安装与当前运行的版本相同的 Chromium。请关闭 Chromium 并重试。</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium 将在 1 分钟后重新启动}other{Chromium 将在 # 分钟后重新启动}}</translation>
 <translation id="7549178288319965365">关于 Chromium 操作系统</translation>

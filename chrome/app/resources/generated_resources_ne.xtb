@@ -585,6 +585,7 @@
 <translation id="1600857548979126453">पृष्ठ डिबजर ब्याकएन्ड पहुँच गर्नुहोस्</translation>
 <translation id="1601560923496285236">लागु गर्नुहोस्</translation>
 <translation id="1602085790802918092">भर्चुअल मेसिन सुरु हुँदै छ</translation>
+<translation id="1603411913360944381"><ph name="DEVICE_NAME" /> हटाउनुहोस्</translation>
 <translation id="1603914832182249871">(इन्कगनिटो)</translation>
 <translation id="1604432177629086300">प्रिन्ट गर्न सकिएन। प्रिन्टरको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1605744057217831567">सबै साइट डेटा र साइटलाई दिइएका अनुमति हेर्नुहोस्</translation>
@@ -6050,6 +6051,7 @@
 <translation id="7307129035224081534">पज गरियो</translation>
 <translation id="7308643132139167865">वेबसाइटका भाषाहरू</translation>
 <translation id="7310598146671372464">लग इन गर्न सकिएन। सर्भरले Kerberos नामक तोकिएको इन्क्रिप्सनका प्रकारहरूलाई समर्थन गर्दैन। आफ्नो प्रशासकसँग सम्पर्क गर्नुहोस्।</translation>
+<translation id="7312210124139670355">तपाईंका एड्मिन तपाईंको eSIM रिसेट गर्दै हुनुहुन्छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="7320213904474460808">डिफल्ट नेटवर्क बनाउनुहोस्</translation>
 <translation id="7321545336522791733">सर्भर पहुँचयोग्य छैन</translation>
 <translation id="7324297612904500502">बिटा फोरम</translation>
@@ -7253,7 +7255,7 @@
 <translation id="8535005006684281994">नेटस्केप प्रमाणपत्र नविकरण URL</translation>
 <translation id="8536956381488731905">कुञ्जी थिच्दा आवाज आउने पारियोस्</translation>
 <translation id="8539727552378197395">हैन (Http मात्र)</translation>
-<translation id="8539766201049804895">स्तरवृद्धि गर्नुहोस्</translation>
+<translation id="8539766201049804895">अपग्रेड गर्नुहोस्</translation>
 <translation id="8540136935098276800">सही ढाँचा भएको URL प्रविष्टि गर्नुहोस्</translation>
 <translation id="8540503336857689453">तपाईंको डेटाको सुरक्षार्थ, लुकाइएको नेटवर्क प्रयोग नगर्न सिफारिस गरिन्छ।</translation>
 <translation id="854071720451629801">पढिसकिएको भनी चिन्ह लगाउनुहोस्</translation>

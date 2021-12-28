@@ -90,6 +90,7 @@
 <translation id="147113415845704694">Prova de dir "Quin temps farà avui?"</translation>
 <translation id="1477626028522505441">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa de problemes amb el servidor.</translation>
 <translation id="148482509007564431">Flux per desar l'adreça d'interès</translation>
+<translation id="1488775391433859242">Pots utilitzar aquest telèfon per iniciar la sessió en l'ordinador que està mostrant aquest codi QR.</translation>
 <translation id="1492417797159476138">Ja has desat aquest nom d'usuari per a aquest lloc web</translation>
 <translation id="1493287004536771723">Segueixes <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">Motor de cerca</translation>
@@ -189,6 +190,7 @@ Toca qualsevol paraula per cercar. Per definir millor la cerca, mantén premut e
 <translation id="2122601567107267586">L'aplicació no s'ha pogut obrir</translation>
 <translation id="2126426811489709554">Amb la tecnologia de Chrome</translation>
 <translation id="2131665479022868825">Dades estalviades: <ph name="DATA" /></translation>
+<translation id="2132122640199389833">Suprimeix tots els dispositius enllaçats</translation>
 <translation id="213279576345780926">Pestanya <ph name="TAB_TITLE" /> tancada</translation>
 <translation id="2139186145475833000">Afegeix a pantalla d'inici</translation>
 <translation id="2141396931810938595">Segons l'ús que en fas</translation>
@@ -265,6 +267,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2534582914273493287">Els URL que visites s'envien a Google</translation>
 <translation id="2536728043171574184">S'està mostrant una còpia sense connexió d'aquesta pàgina</translation>
 <translation id="2546283357679194313">Dades de llocs web i galetes</translation>
+<translation id="2549516196460093976">Pots utilitzar aquesta tauleta per iniciar la sessió a l'ordinador que està mostrant el codi QR.</translation>
 <translation id="2558692642259318568">Per navegar sense desar l'activitat al teu dispositiu, prova el mode d'incògnit</translation>
 <translation id="2561519700418191927">Previsualitzacions de vídeo</translation>
 <translation id="2567385386134582609">IMATGE</translation>
@@ -451,6 +454,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3563767357928833671">Es mostren els continguts del porta-retalls</translation>
 <translation id="3566923219790363270">Encara s'està preparant Chrome per a la RV. Reinicia'l més tard.</translation>
 <translation id="3568688522516854065">Inicia la sessió i activa la sincronització per accedir a les pestanyes dels altres dispositius que tinguis</translation>
+<translation id="357465026686164600">Telèfon com a clau de seguretat</translation>
 <translation id="3577473026931028326">S'ha produït un error. Torna-ho a provar.</translation>
 <translation id="3587482841069643663">Tots</translation>
 <translation id="3587596251841506391">Millora la seguretat al web</translation>
@@ -520,6 +524,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="4000212216660919741">Pàgina d'inici sense connexió</translation>
 <translation id="4016425174436051808">No es pot seguir. S'ha produït un error.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
+<translation id="4035877632587724847">No permetis</translation>
 <translation id="4045764304651014138">Dades d'ús</translation>
 <translation id="405399507749852140">Si el preu baixa en qualsevol lloc web, rebràs una alerta</translation>
 <translation id="4056223980640387499">Sèpia</translation>
@@ -579,6 +584,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="4450672886426705087">Resultats de la cerca de Google.</translation>
 <translation id="4452411734226507615">Tanca la pestanya <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Adreça d'interès afegida a <ph name="FOLDER_NAME" /></translation>
+<translation id="4461614516424362539">Quan enllaces un altre dispositiu amb un codi QR, pot utilitzar aquest telèfon com a clau de seguretat. Si el suprimeixes, hauràs d'escanejar el codi QR per tornar-lo a enllaçar.</translation>
 <translation id="4472118726404937099">Per sincronitzar i personalitzar el contingut en tots els dispositius, inicia la sessió i activa la sincronització</translation>
 <translation id="4479839115899251637">Treu de llista de lectura</translation>
 <translation id="4479972344484327217">S'està instal·lant <ph name="MODULE" /> per a Chrome…</translation>
@@ -649,6 +655,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 
 Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronització<ph name="END_LINK" />.</translation>
 <translation id="4807098396393229769">Titular de la targeta</translation>
+<translation id="481574578487123132">Dispositius enllaçats</translation>
 <translation id="4818017973810341238">La verificació de Digital Asset Links ha fallat a <ph name="VIOLATED_URL" /></translation>
 <translation id="4831037795716408498">Baixar contingut</translation>
 <translation id="4834007576107377210">Consulta les instruccions del teu motor de cerca per suprimir l'historial de cerques, si escau</translation>
@@ -681,6 +688,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="4941179133499732445">Toca el micròfon per cercar amb la veu</translation>
 <translation id="4943703118917034429">Realitat virtual</translation>
 <translation id="4943872375798546930">No hi ha cap resultat</translation>
+<translation id="4950924971025849764">Quan tens la sessió iniciada al mateix Compte de Google, els altres dispositius poden utilitzar aquest telèfon com a clau de seguretat.</translation>
 <translation id="4957722034734105353">Més informació...</translation>
 <translation id="4961107849584082341">Tradueix aquesta pàgina a qualsevol idioma</translation>
 <translation id="4971735654804503942">Protecció més ràpida i proactiva contra llocs web, baixades i extensions perillosos. T'avisa sobre violacions de les contrasenyes. Requereix que les dades de navegació s'enviïn a Google.</translation>
@@ -781,6 +789,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="55737423895878184">Es permeten la ubicació i les notificacions</translation>
 <translation id="5578795271662203820">Cerca aquesta imatge a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Sempre pots anar a la <ph name="BEGIN_LINK1" />configuració<ph name="END_LINK1" /> per decidir què vols sincronitzar.</translation>
+<translation id="5590372121997663538">Recorda aquest ordinador</translation>
 <translation id="5599455543593328020">Mode d'incògnit</translation>
 <translation id="5599941490345670218">L'Assistent de Google pot dur a terme accions per tu en llocs web</translation>
 <translation id="5620163320393916465">No hi ha cap contrasenya desada</translation>
@@ -862,6 +871,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5995726099713306770">Vols tornar a baixar la pàgina?</translation>
 <translation id="6000066717592683814">Continua amb Google</translation>
 <translation id="6000203700195075278">Torna a seguir</translation>
+<translation id="6002122790816966947">Els teus dispositius</translation>
 <translation id="6005538289190791541">Contrasenya suggerida</translation>
 <translation id="6032091552407840792">Aquesta prova només està activa en <ph name="BEGIN_LINK" />algunes regions<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Amb <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome està desenvolupant noves tecnologies per protegir-te dels mecanismes de seguiment entre llocs web, alhora que preserva el web obert.
@@ -991,6 +1001,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6640207029842583248">Bloqueja sempre</translation>
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6643649862576733715">Ordena per quantitat de dades estalviades</translation>
+<translation id="6645629752388991326">Controla quins dispositius poden iniciar la sessió utilitzant aquest dispositiu com a clau de seguretat.</translation>
 <translation id="6648459603387803038">L'administrador pot modificar la configuració del navegador de manera remota. És possible que l'activitat d'aquest dispositiu també es gestioni fora de Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> més}other{<ph name="CONTACT_PREVIEW" />\u2026 i <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> més}}</translation>
 <translation id="6649642165559792194">Previsualitza la imatge <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="671481426037969117">S'ha esgotat el temps definit al temporitzador per a <ph name="FQDN" />. Es tornarà a iniciar demà.</translation>
 <translation id="6715020873764921614">Vols baixar <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) igualment?</translation>
+<translation id="6719634564325948108">Vols connectar amb el codi QR?</translation>
 <translation id="6738516213925468394">Les teves dades es van encriptar el dia <ph name="TIME" /> amb la teva <ph name="BEGIN_LINK" />frase de contrasenya de sincronització<ph name="END_LINK" />. Introdueix-la per començar la sincronització.</translation>
 <translation id="6738867403308150051">S'està baixant...</translation>
 <translation id="6751521182688001123">Obre ràpidament una pestanya nova. Mantingues premuda aquesta drecera per editar-la.</translation>

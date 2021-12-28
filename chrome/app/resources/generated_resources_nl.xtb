@@ -588,6 +588,7 @@
 <translation id="1600857548979126453">Back-end voor foutopsporing van pagina openen</translation>
 <translation id="1601560923496285236">Toepassen</translation>
 <translation id="1602085790802918092">De virtuele machine wordt gestart</translation>
+<translation id="1603411913360944381"><ph name="DEVICE_NAME" /> vergeten</translation>
 <translation id="1603914832182249871">(Incognito)</translation>
 <translation id="1604432177629086300">Kan niet afdrukken. Controleer de printer en probeer het opnieuw.</translation>
 <translation id="1605744057217831567">Alle sitegegevens en -rechten bekijken</translation>
@@ -1047,6 +1048,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="204914487372604757">Snelle link maken</translation>
 <translation id="2050339315714019657">Staand</translation>
 <translation id="2053312383184521053">Gegevens van inactieve status</translation>
+<translation id="2054240652864153171">Sitegegevens wissen voor <ph name="SITE_NAME" /> gepartitioneerd op <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Je wordt uitgelogd bij deze sites, ook in geopende tabbladen</translation>
 <translation id="205560151218727633">Google Assistent-logo</translation>
 <translation id="2058456167109518507">Apparaat gedetecteerd</translation>
@@ -2388,6 +2390,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3433621910545056227">Het systeem kan de vergrendeling van de instellingen ten tijde van de apparaatinstallatie niet uitvoeren.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind. Meer informatie over deze instellingen en hoe je deze kunt aanpassen vind je op families.google.com.</translation>
+<translation id="3434512374684753970">Audio en video</translation>
 <translation id="3435688026795609344"><ph name="EXTENSION_NAME" /> vraagt om je <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Beveiliging</translation>
 <translation id="343578350365773421">Papier is op</translation>
@@ -2834,6 +2837,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3873423927483480833">Pincodes bekijken</translation>
 <translation id="3873915545594852654">Er is een probleem opgetreden met ARC++.</translation>
 <translation id="3874164307099183178">De Google Assistent aanzetten</translation>
+<translation id="3875783148670536197">Laten zien</translation>
 <translation id="3875815154304214043">Er is ingesteld dat <ph name="APP_NAME" /> wordt geopend in een nieuw browsertabblad. Ondersteunde links worden ook geopend in de browser. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Instellingen voor Dichtbij delen voor het apparaat van <ph name="USER_NAME" />, delen via het account <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Downloadbeheer</translation>
@@ -4467,6 +4471,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="562935524653278697">Je beheerder heeft de synchronisatie van je bookmarks, geschiedenis, wachtwoorden en andere instellingen uitgezet.</translation>
 <translation id="5631017369956619646">CPU-gebruik</translation>
 <translation id="5632059346822207074">Rechten gevraagd, druk op Ctrl + Volgende om te reageren</translation>
+<translation id="5632485077360054581">Laten zien</translation>
 <translation id="5632566673632479864">Je account <ph name="EMAIL" /> is niet meer toegestaan als het primaire account. Omdat dit account wordt beheerd door <ph name="DOMAIN" />, worden je bookmarks, geschiedenis, wachtwoorden en andere instellingen gewist op dit apparaat.</translation>
 <translation id="5632592977009207922">Downloaden, <ph name="PERCENT_REMAINING" />% resterend</translation>
 <translation id="563371367637259496">Mobiel</translation>
@@ -6047,6 +6052,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7307129035224081534">Onderbroken</translation>
 <translation id="7308643132139167865">Websitetalen</translation>
 <translation id="7310598146671372464">Kan niet inloggen. De server ondersteunt de opgegeven Kerberos-versleutelingstypen niet. Neem contact op met je beheerder.</translation>
+<translation id="7312210124139670355">Je beheerder reset je e-simkaart. Dit kan een paar minuten duren.</translation>
 <translation id="7320213904474460808">Standaardnetwerk gebruiken</translation>
 <translation id="7321545336522791733">Server niet bereikbaar</translation>
 <translation id="7324297612904500502">Bètaforum</translation>

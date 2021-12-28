@@ -1016,6 +1016,7 @@ Nueva instalación</translation>
 <translation id="7860671499921112077">Desliza tres dedos hacia arriba para acceder a la vista general</translation>
 <translation id="7866482334467279021">activado</translation>
 <translation id="7868900307798234037">Desbloqueando con huella digital</translation>
+<translation id="7872195908557044066">Tu administrador está restableciendo tu eSIM. Espera unos minutos.</translation>
 <translation id="7872786842639831132">No</translation>
 <translation id="7875575368831396199">Parece que el Bluetooth de <ph name="DEVICE_TYPE" /> está desactivado. Activa el Bluetooth para usar la función Mi teléfono.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Cambia el dispositivo a la versión anterior ahora}=1{Cambia el dispositivo a la versión anterior en un plazo de 1 segundo}other{Cambia el dispositivo a la versión anterior en un plazo de # segundos}}</translation>

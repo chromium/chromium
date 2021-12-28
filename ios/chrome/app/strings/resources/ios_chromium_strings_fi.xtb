@@ -77,6 +77,7 @@
 <translation id="6424492062988593837">Chromiumista tuli juuri entistä parempi! Uusi versio on saatavilla.</translation>
 <translation id="6752854822223394465">Organisaatiosi ottaa käyttöön Chromiumia…</translation>
 <translation id="6820823224820483452">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna.</translation>
+<translation id="7006920032187763988">Voit käyttää Salasanojen ylläpitoon tallennettuja salasanoja muissa iPadisi sovelluksissa.</translation>
 <translation id="7018284295775193585">Chromiumin päivitys ei onnistu</translation>
 <translation id="7045244423563602563">Tee Chromiumista näköisesi</translation>
 <translation id="7099326575020694068">Chromium ei voi käyttää kameraa jaetussa näkymässä.</translation>
@@ -103,11 +104,13 @@
 <translation id="8073677936375100957">Poistetaanko Chromium-data tältä laitteelta?</translation>
 <translation id="8175055321229419309">Vinkki: <ph name="BEGIN_LINK" />Siirrä Chromium Dockiin<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ei voinut tarkistaa, onko päivityksiä saatavilla. Yritä myöhemmin uudelleen.</translation>
+<translation id="858114650497379505">Voit käyttää Salasanojen ylläpitoon tallennettuja salasanoja muissa iPhonesi sovelluksissa.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="8663480472502753423">Pidä Chromium ajan tasalla</translation>
 <translation id="8776843108004031667">Tämä tili ja kaikki tallentamaton data poistetaan Chromiumista.</translation>
 <translation id="894437814105052438">Kun kirjaudut ulos, Chromium ei synkronoi uutta dataa Google-tilillesi. Aiemmin synkronoitu data säilytetään tilillä.</translation>
 <translation id="9022552996538154597">Kirjaudu sisään Chromiumiin</translation>
+<translation id="9059693977935746710">Sinun ei tarvitse muistaa tätä salasanaa. Se tallennetaan Salasanojen ylläpitoon sähköpostiosoitteella <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium on vanhentunut</translation>
 <translation id="9110075932708282655">Käytä oletuksena Chromiumia</translation>
 <translation id="921174536258924340">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna tai <ph name="BEGIN_LINK" />tarkista salasanat Google-tililtä<ph name="END_LINK" />.</translation>

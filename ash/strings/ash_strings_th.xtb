@@ -586,6 +586,7 @@
 <translation id="4831034276697007977">แน่ใจไหมว่าต้องการปิดการคลิกอัตโนมัติ</translation>
 <translation id="4849058404725798627">ไฮไลต์วัตถุที่มีโฟกัสแป้นพิมพ์</translation>
 <translation id="485592688953820832">ไม่มีการดำเนินการ (หยุดชั่วคราว)</translation>
+<translation id="485634149294284819">ป้อนเมนูแป้นพิมพ์</translation>
 <translation id="4860284199500934869">ตรวจสอบการเชื่อมต่อเครือข่ายเพื่อดาวน์โหลด <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">ระบบจะพยายามดาวน์โหลดภายหลัง โดยจะส่งคำพูดไปประมวลผลที่ Google จนกว่าจะดาวน์โหลดเสร็จ</translation>
 <translation id="4868492592575313542">เปิดใช้งานอยู่</translation>
@@ -1098,6 +1099,7 @@
 <translation id="8380784334203145311">ราตรีสวัสดิ์</translation>
 <translation id="8388750414311082622">นำพื้นที่ทำงานสุดท้ายออกไม่ได้</translation>
 <translation id="8394567579869570560">ผู้ปกครองของคุณล็อกอุปกรณ์นี้ไว้</translation>
+<translation id="8401850874595457088">ป้อนเมนูภาษา</translation>
 <translation id="8412677897383510995">แสดงการตั้งค่าการแสดงผล</translation>
 <translation id="8413272770729657668">การบันทึกจะเริ่มใน 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (กล่อง)</translation>

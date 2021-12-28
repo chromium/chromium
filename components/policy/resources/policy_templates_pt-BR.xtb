@@ -336,6 +336,7 @@
       Quando ela é desativada ou deixada sem definição, a opção "Imprimir como imagem" não é exibida para usuários na visualização de impressão do <ph name="PRODUCT_NAME" />, e os PDFs são impressos normalmente, sem que sejam rasterizados antes do envio.</translation>
 <translation id="1435659902881071157">Configuração de rede em nível de dispositivo</translation>
 <translation id="1438739959477268107">Configuração padrão de geração de chaves</translation>
+<translation id="1440408958042020947">Permite que os usuários que ativaram o recurso Seu smartphone acessem fotos e vídeos recentes capturados no smartphone deles</translation>
 <translation id="1449083855104537880">Se esta política for definida como verdadeira, as opções de acessibilidade serão exibidas no menu da bandeja do sistema. Se você definir a política como falsa, as opções não serão exibidas no menu.
 
       Se você definir a política, os usuários não poderão mudá-la. Se a política não for definida, as opções de acessibilidade não serão exibidas no menu, mas os usuários podem fazê-las aparecer por meio da página Configurações.
@@ -2306,6 +2307,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3606571057705314194">Seletor de perfil desativado na inicialização</translation>
 <translation id="3627678165642179114">Ativar ou desativar serviço da web de verificação ortográfica</translation>
 <translation id="3628480121685794414">Ativar impressão simplex</translation>
+<translation id="3634125384445314047">Permitir que fotos e vídeos recentes capturados no smartphone sejam acessados usando o recurso Seu smartphone.</translation>
 <translation id="3643284063603988867">Ativar o recurso "Lembrar senha"</translation>
 <translation id="3646859102161347133">Definir tipo de lupa</translation>
 <translation id="3647212518036289905">Definir a política especifica qual biblioteca GSSAPI será usada para a autenticação HTTP. Defina a política como um nome de biblioteca ou um caminho completo.
@@ -6285,6 +6287,11 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
           Esta política fornece um valor substituto para as políticas <ph name="IDLE_ACTION_AC_POLICY_NAME" /> e <ph name="IDLE_ACTION_BATTERY_POLICY_NAME" /> mais específicas. Se esta política for definida, os valores dela serão usados quando a respectiva política mais específica não for definida.
 
           Se esta política não for definida, o comportamento das políticas mais específicas não será afetado.</translation>
+<translation id="8349255653850367353">Se esta configuração for ativada, os usuários que já ativaram o recurso Seu smartphone vão poder ver e fazer o download de fotos e vídeos do smartphone pelo Chrome OS.
+
+      Se a configuração estiver desativada, os usuários não vão ter permissão para usar o recurso. Se a política <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> estiver desativada, os usuários também não vão ter permissão para usar o recurso.
+
+      Se essa política for deixada sem definição, o padrão será permitido tanto para usuários gerenciados por empresas quanto para os não gerenciados.</translation>
 <translation id="8357681633047935212">Limitar a duração de uma sessão de usuário</translation>
 <translation id="8357989008292691856">Lista de permissões de login de usuário</translation>
 <translation id="8359734107661430198">Ativar a API ExampleDeprecatedFeature até 02/09/2008</translation>
@@ -6754,6 +6761,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Se a política não for definida ou se você inserir uma string vazia, o dispositivo usará o fuso horário ativo no momento, mas os usuários poderão mudá-lo.</translation>
 <translation id="8880294585549584028">Permitir acesso de gravação de arquivos e diretórios nestes sites</translation>
 <translation id="8882006618241293596">Bloquear o plug-in <ph name="FLASH_PLUGIN_NAME" /> nestes sites</translation>
+<translation id="8882255181490012651">Não permite que usuários que ativaram o recurso Seu smartphone acessem fotos e vídeos recentes capturados no smartphone deles</translation>
 <translation id="8887709920496070892">O tempo, em milissegundos, sem entrada do usuário após o qual uma caixa de diálogo de alerta é exibida.</translation>
 <translation id="8890438048579188548">Ocultar avisos de suspensão de uso de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8892286064305622118">Espaço livre em disco necessário para o <ph name="PLUGIN_VM_NAME" /></translation>

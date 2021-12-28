@@ -338,6 +338,7 @@
       如果將這項政策設為 Disabled 或不設定，<ph name="PRODUCT_NAME" /> 不會在列印預覽中為使用者提供「以圖片形式列印」選項，PDF 將和往常一樣列印，不會在傳送至目的地前光柵化為圖片。</translation>
 <translation id="1435659902881071157">裝置層級網路設定</translation>
 <translation id="1438739959477268107">預設金鑰產生設定</translation>
+<translation id="1440408958042020947">允許 Phone Hub 的使用者存取手機上最近拍攝的相片和影片</translation>
 <translation id="1449083855104537880">將這項政策設為 True 時，系統匣選單中會顯示無障礙工具選項。如果將這項政策設為 False，選單中不會顯示無障礙工具選項。
 
       如果設定這項政策，使用者將無法變更。如果未設定，選單中不會顯示無障礙工具選項，但使用者可以前往「設定」頁面將其設為顯示。
@@ -2269,6 +2270,7 @@
 <translation id="3606571057705314194">瀏覽器啟動時不顯示設定檔選擇畫面</translation>
 <translation id="3627678165642179114">啟用或停用拼字檢查網路服務</translation>
 <translation id="3628480121685794414">啟用單面列印</translation>
+<translation id="3634125384445314047">允許他人透過 Phone Hub 存取手機上最近拍攝的相片和影片。</translation>
 <translation id="3643284063603988867">啟用「記住密碼」功能</translation>
 <translation id="3646859102161347133">設定螢幕放大鏡類型</translation>
 <translation id="3647212518036289905">你可以透過這項政策指定要用於 HTTP 驗證的 GSSAPI 程式庫。請將這項政策設為程式庫名稱或完整路徑。
@@ -6197,6 +6199,11 @@
           這項政策會針對內容更具體的 <ph name="IDLE_ACTION_AC_POLICY_NAME" /> 和 <ph name="IDLE_ACTION_BATTERY_POLICY_NAME" /> 政策提供備用值。如果設定這項政策，但未設定內容更具體的相關政策，系統就會使用這項政策的值。
 
           如果不設定這項政策，內容更具體的政策行為將不會受到影響。</translation>
+<translation id="8349255653850367353">如果啟用這項設定，已採用 Phone Hub 的使用者將能夠透過 Chrome OS 查看及下載手機上最近拍攝的相片和影片。
+
+      如果停用這項設定，使用者就無法使用這項功能。如果停用 <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> 政策，使用者也將無法使用這項功能。
+
+      如果不設定這項政策，預設值是允許受企業管理以及未受管理的使用者執行這項功能。</translation>
 <translation id="8357681633047935212">限制使用者工作階段的時間長度</translation>
 <translation id="8357989008292691856">登入使用者許可清單</translation>
 <translation id="8359734107661430198">從 2008 年 9 月 2 日開始啟用 ExampleDeprecatedFeature API</translation>
@@ -6652,6 +6659,7 @@
       如果未設定或輸入空白字串，裝置會使用目前採用的時區，但使用者可以變更這項設定。</translation>
 <translation id="8880294585549584028">允許這些網站對檔案和目錄的寫入權限</translation>
 <translation id="8882006618241293596">禁止在這些網站上執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
+<translation id="8882255181490012651">禁止 Phone Hub 的使用者存取手機上最近拍攝的相片和影片</translation>
 <translation id="8887709920496070892">顯示警告對話方塊前的閒置時間長度 (以毫秒為單位)。如果使用者在這段時間內沒有任何動作，系統就會顯示警告對話方塊</translation>
 <translation id="8890438048579188548">隱藏 <ph name="CLOUD_PRINT_NAME" />淘汰警告訊息</translation>
 <translation id="8892286064305622118"><ph name="PLUGIN_VM_NAME" /> 需要的可用磁碟空間</translation>

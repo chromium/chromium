@@ -25,6 +25,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="1145536944570833626">Smazat existující data.</translation>
 <translation id="1147031633655575115">Jste přihlášeni jako <ph name="USER" /></translation>
 <translation id="1154984953698510061">Zobrazit další karty</translation>
+<translation id="1164064664035028907">Použijte silné heslo:</translation>
 <translation id="1165039591588034296">Chyba</translation>
 <translation id="1172898394251786223">Další pole</translation>
 <translation id="1176932207622159128">Obrázek nelze uložit</translation>
@@ -139,6 +140,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="2268044343513325586">Upřesnit</translation>
 <translation id="2271351792809375263">Používejte hesla, která jste si uložili v Chromu, také v jiných aplikacích v zařízení</translation>
 <translation id="2273327106802955778">Nabídka Další</translation>
+<translation id="2286505070150039482">Zvýrazněný text</translation>
 <translation id="2302742851632557585">Změnit heslo na webu</translation>
 <translation id="2316709634732130529">Použít navrhované heslo</translation>
 <translation id="2320166752086256636">Skrýt klávesnici</translation>
@@ -309,6 +311,7 @@ Postupujte podle následujících pokynů:</translation>
 <translation id="3803696231112616155">Nabízet překlad tohoto webu</translation>
 <translation id="385051799172605136">Zpět</translation>
 <translation id="3858860766373142691">Název</translation>
+<translation id="3861486700625780712">Ukončit sledování</translation>
 <translation id="3892144330757387737">Zde najdete svou historii</translation>
 <translation id="3897092660631435901">Nabídka</translation>
 <translation id="3913386780052199712">Jste přihlášeni do Chromu jako</translation>
@@ -406,6 +409,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="481968316161811770">Soubory cookie a data webů</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} a 1 další}few{{domain} a {count} další}many{{domain} a {count} dalšího}other{{domain} a {count} dalších}}</translation>
 <translation id="4826218269716039351">Blokovat cookie třetích stran</translation>
+<translation id="4826726074642088322">Sdílet zvýrazněný obsah</translation>
 <translation id="48274138579728272">Označit jako přečtené</translation>
 <translation id="4833686396768033263">Nedávno použité karty nejsou k dispozici</translation>
 <translation id="4833786495304741580">Automaticky odesílá statistiky o využívání a zprávy o selhání do Googlu</translation>
@@ -601,6 +605,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="6497772452874122664">Pokud webu <ph name="TIME" /> důvěřujete, můžete použít uložené heslo k jinému webu.
 
 Pro každý web se pokuste použít jedinečné heslo.</translation>
+<translation id="650279896687777322">Další informace…</translation>
 <translation id="651505212789431520">Zrušit synchronizaci? Synchronizaci můžete kdykoliv zapnout v Nastavení.</translation>
 <translation id="6524918542306337007">Anonymní režim není k dispozici</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -639,6 +644,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="6807889908376551050">Zobrazit vše…</translation>
 <translation id="681368974849482173">Položka byla vytvořena</translation>
 <translation id="681450999322335505">Vaše organizace vypnula synchronizaci.</translation>
+<translation id="683022620450280906">Uložená hesla můžete používat v libovolném zařízení. Ukládají se do Správce hesel Google pro účet <ph name="EMAIL" />.</translation>
 <translation id="6830804042318138535">Další informace</translation>
 <translation id="6831043979455480757">Přeložit</translation>
 <translation id="6842136130964845393">Aby bylo zajištěno, že budete mít vždy přístup k uloženým heslům, ověřte svou totožnost</translation>

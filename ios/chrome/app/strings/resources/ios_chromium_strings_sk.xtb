@@ -77,6 +77,7 @@
 <translation id="6424492062988593837">Systém Chromium bol práve vylepšený. K dispozícii je nová verzia.</translation>
 <translation id="6752854822223394465">Vaša organizácia nastavuje Chromium…</translation>
 <translation id="6820823224820483452">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra.</translation>
+<translation id="7006920032187763988">Heslá, ktoré ste uložili do správcu hesiel, môžete v iPade použiť v iných aplikáciách.</translation>
 <translation id="7018284295775193585">Chromium sa nedá aktualizovať</translation>
 <translation id="7045244423563602563">Upravte Chromium podľa seba</translation>
 <translation id="7099326575020694068">Chromium nemôže použiť váš fotoaparát v režime Rozdelené zobrazenie</translation>
@@ -103,11 +104,13 @@
 <translation id="8073677936375100957">Chcete vymazať údaje prehliadača Chromium z tohto zariadenia?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Presuňte Chromium do doku<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Prehliadaču Chromium sa nepodarilo skontrolovať dostupnosť aktualizácií. Skúste to neskôr.</translation>
+<translation id="858114650497379505">Heslá, ktoré ste uložili do správcu hesiel, môžete v iPhone použiť v iných aplikáciách.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autori Chromium. Všetky práva vyhradené.</translation>
 <translation id="8663480472502753423">Udržujte prehliadač Chromium aktuálny</translation>
 <translation id="8776843108004031667">Tento účet bude spolu so všetkými neuloženými údajmi odstránený z prehliadača Chromium.</translation>
 <translation id="894437814105052438">Keď sa odhlásite, Chromium prestane synchronizovať nové údaje do vášho účtu Google. Údaje, ktoré boli synchronizované predtým, v účte zostanú.</translation>
 <translation id="9022552996538154597">Prihlásiť sa do prehliadača Chromium</translation>
+<translation id="9059693977935746710">Toto heslo si nebudete musieť pamätať. Uloží sa do správcu hesiel v účte <ph name="EMAIL" />.</translation>
 <translation id="9089354809943900324">Prehliadač Chromium je zastaraný</translation>
 <translation id="9110075932708282655">Predvolene používať Chromium</translation>
 <translation id="921174536258924340">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google<ph name="END_LINK" />.</translation>

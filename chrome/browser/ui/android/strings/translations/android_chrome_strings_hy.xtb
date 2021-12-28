@@ -90,6 +90,7 @@
 <translation id="147113415845704694">Փորձեք հարցնել․ «What’s the weather today?» (Ի՞նչ եղանակ է այսօր)։</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ սերվերի հետ կապված խնդրի պատճառով:</translation>
 <translation id="148482509007564431">Էջանիշի պահման էջ</translation>
+<translation id="1488775391433859242">Դուք կարող եք օգտագործել այս հեռախոսը՝ հաշիվ մուտք գործելու համակարգչում, որում ցուցադրված է այս QR կոդը։</translation>
 <translation id="1492417797159476138">Օգտանունն արդեն պահված է այս կայքի համար</translation>
 <translation id="1493287004536771723">Դուք հետևում եք <ph name="SITE_NAME" /> կայքին</translation>
 <translation id="1506061864768559482">Որոնողական համակարգ</translation>
@@ -189,6 +190,7 @@
 <translation id="2122601567107267586">Չհաջողվեց բացել հավելվածը</translation>
 <translation id="2126426811489709554">Աշխատում է Chrome-ով</translation>
 <translation id="2131665479022868825">Խնայվել է <ph name="DATA" /></translation>
+<translation id="2132122640199389833">Հեռացնել բոլոր կապված սարքերը</translation>
 <translation id="213279576345780926">Փակված <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Ավելացնել գլխավոր էկրանին</translation>
 <translation id="2141396931810938595">Ձեր օգտագործման հիման վրա</translation>
@@ -265,6 +267,7 @@
 <translation id="2534582914273493287">Ձեր այցելած էջերի URL-ներն ուղարկվում են Google-ին</translation>
 <translation id="2536728043171574184">Դուք դիտում եք տվյալ էջի անցանց պատճենը</translation>
 <translation id="2546283357679194313">Cookie ֆայլեր և կայքի տվյալներ</translation>
+<translation id="2549516196460093976">Դուք կարող եք օգտագործել այս պլանշետը՝ հաշիվ մուտք գործելու համակարգչում, որում ցուցադրված է այս QR կոդը։</translation>
 <translation id="2558692642259318568">Որպեսզի դիտարկիչի պատմությունը չպահվի սարքում, միացրեք ինկոգնիտո ռեժիմը</translation>
 <translation id="2561519700418191927">Տեսանյութերի նախադիտում</translation>
 <translation id="2567385386134582609">ՊԱՏԿԵՐ</translation>
@@ -451,6 +454,7 @@
 <translation id="3563767357928833671">Ցուցադրվում է սեղմատախտակի բովանդակությունը</translation>
 <translation id="3566923219790363270">Chrome-ը դեռ նախապատրաստվում է VR-ի համար։ Վերագործարկեք այն ավելի ուշ։</translation>
 <translation id="3568688522516854065">Ձեր մյուս սարքերում եղած ներդիրներն օգտագործելու համար մտեք հաշիվ և միացրեք համաժամացումը</translation>
+<translation id="357465026686164600">Հեռախոսը՝ որպես անվտանգության բանալի</translation>
 <translation id="3577473026931028326">Սխալ առաջացավ։ Նորից փորձեք։</translation>
 <translation id="3587482841069643663">Բոլորը</translation>
 <translation id="3587596251841506391">Օգնեք բարելավել անվտանգությունը</translation>
@@ -520,6 +524,7 @@
 <translation id="4000212216660919741">Home անցանց ռեժիմում</translation>
 <translation id="4016425174436051808">Սխալի պատճառով չհաջողվեց բաժանորդագրվել։</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ժամ}one{# ժամ}other{# ժամ}}</translation>
+<translation id="4035877632587724847">Չթույլատրել</translation>
 <translation id="4045764304651014138">Օգտագործման տվյալներ</translation>
 <translation id="405399507749852140">Դուք ծանուցում կստանաք, երբ որևէ կայքում գնիջեցում լինի</translation>
 <translation id="4056223980640387499">Սեպիա</translation>
@@ -579,6 +584,7 @@
 <translation id="4450672886426705087">Որոնման արդյունքներ Google-ից։</translation>
 <translation id="4452411734226507615">Փակել <ph name="TAB_TITLE" /> ներդիրը</translation>
 <translation id="4452548195519783679">Էջանիշը պահվել է <ph name="FOLDER_NAME" />-ում</translation>
+<translation id="4461614516424362539">Դուք կարող եք օգտագործել այս հեռախոսը որպես անվտանգության բանալի սարքերում, որոնք կապված են QR կոդի միջոցով։ Եթե սարքը հեռացնեք կապվածների ցանկից, անհրաժեշտ կլինի այնտեղ նորից սկանավորել QR կոդը։</translation>
 <translation id="4472118726404937099">Սարքերը համաժամացնելու և անհատականացնելու համար մտեք հաշիվ և միացրեք համաժամացումը</translation>
 <translation id="4479839115899251637">Ջնջել ընթերցանության ցանկից</translation>
 <translation id="4479972344484327217">«<ph name="MODULE" />» բաղադրիչը տեղադրվում է Chrome-ի համար…</translation>
@@ -649,6 +655,7 @@
 
 Այս կարգավորումը փոփոխելու համար <ph name="BEGIN_LINK" />վերակայեք համաժամացումը<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Քարտապանի անունը</translation>
+<translation id="481574578487123132">Կապված սարքեր</translation>
 <translation id="4818017973810341238">Չհաջողվեց հաստատել թվային օբյեկտների հղումները <ph name="VIOLATED_URL" /> էջում</translation>
 <translation id="4831037795716408498">Բովանդակության ներբեռնում</translation>
 <translation id="4834007576107377210">Որոնման պատմությունը ջնջելու համար դիտեք համապատասխան որոնողական համակարգի հրահանգները։</translation>
@@ -681,6 +688,7 @@
 <translation id="4941179133499732445">Հպեք խոսափողին՝ ձայնային հրահանգների միջոցով որոնելու համար</translation>
 <translation id="4943703118917034429">Վիրտուալ իրականություն</translation>
 <translation id="4943872375798546930">Արդյունքներ չկան</translation>
+<translation id="4950924971025849764">Դուք կարող եք օգտագործել այս հեռախոսը որպես անվտանգության բանալի, երբ մուտք եք գործում միևնույն Google հաշիվ այլ սարքերում։</translation>
 <translation id="4957722034734105353">Իմանալ ավելին…</translation>
 <translation id="4961107849584082341">Թարգմանել կայքը</translation>
 <translation id="4971735654804503942">Ավելի արագ և արդյունավետ պաշտպանություն վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից։ Զգուշացնում է ձեզ գաղտնաբառերի արտահոսքի մասին։ Պահանջվում է դիտարկիչի աշխատանքի մասին տվյալների ուղարկում Google-ին։</translation>
@@ -781,6 +789,7 @@
 <translation id="55737423895878184">Տեղորոշումն ու ծանուցումները թույլատրված են</translation>
 <translation id="5578795271662203820">Որոնել այս պատկերը <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="5581519193887989363">Ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK1" />կարգավորումներ<ph name="END_LINK1" /> և ընտրել, թե ինչն եք ուզում համաժամացնել:</translation>
+<translation id="5590372121997663538">Հիշել այս համակարգիչը</translation>
 <translation id="5599455543593328020">Ինկոգնիտո ռեժիմ</translation>
 <translation id="5599941490345670218">Google Օգնականը ձեր հրահանգով կարող է կատարել գործողություններ կայքերում</translation>
 <translation id="5620163320393916465">Պահված գաղտնաբառեր չկան</translation>
@@ -862,6 +871,7 @@
 <translation id="5995726099713306770">Նորից ներբեռնե՞լ էջը</translation>
 <translation id="6000066717592683814">Օգտագործել Google-ը</translation>
 <translation id="6000203700195075278">Նորից բաժանորդագրվել</translation>
+<translation id="6002122790816966947">Ձեր սարքերը</translation>
 <translation id="6005538289190791541">Առաջարկվող գաղտնաբառ</translation>
 <translation id="6032091552407840792">Այս փորձնական գործառույթը հասանելի է միայն <ph name="BEGIN_LINK" />որոշ տարածաշրջաններում<ph name="END_LINK" />։</translation>
 <translation id="6033245666633565791"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />-ի օգնությամբ Chrome-ը մշակում է նոր տեխնոլոգիաներ, որոնք պաշտպանում են ձեզ գործողությունների միջկայքային հետագծման մեխանիզմներից։
@@ -991,6 +1001,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="6640207029842583248">Միշտ արգելափակել</translation>
 <translation id="6643016212128521049">Մաքրել</translation>
 <translation id="6643649862576733715">Դասավորել ըստ պահված տվյալների ծավալի</translation>
+<translation id="6645629752388991326">Ընտրեք, թե որ սարքերում կարող եք հաշիվ մտնել՝ այս սարքը որպես անվտանգության բանալի օգտագործելու միջոցով։</translation>
 <translation id="6648459603387803038">Ձեր ադմինիստրատորը կարող է հեռակա փոխել ձեր դիտարկիչի կարգավորումները։ Սարքում արվող գործողությունները նույնպես կարող են կառավարվել Chrome-ից դուրս։</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}one{<ph name="CONTACT_PREVIEW" />\u2026 ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}other{<ph name="CONTACT_PREVIEW" />\u2026 ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}}</translation>
 <translation id="6649642165559792194">Նախադիտել պատկերը <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="6710213216561001401">Նախորդը</translation>
 <translation id="671481426037969117"><ph name="FQDN" />-ի համար նախատեսված ժամանակը լրացել է։ Վաղը այն նորից կաշխատի:</translation>
 <translation id="6715020873764921614">Միևնույն է ներբեռնե՞լ <ph name="FILE_NAME" /> ֆայլը (<ph name="FILE_SIZE" />)։</translation>
+<translation id="6719634564325948108">Կապե՞լ QR կոդի միջոցով</translation>
 <translation id="6738516213925468394">Ձեր տվյալները գաղտնագրվել են <ph name="BEGIN_LINK" />համաժամացման ձեր անցաբառի<ph name="END_LINK" /> միջոցով (<ph name="TIME" />): Համաժամացումը սկսելու համար մուտքագրեք անցաբառը:</translation>
 <translation id="6738867403308150051">Ներբեռնում…</translation>
 <translation id="6751521182688001123">Արագ բացեք նոր ներդիր։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>

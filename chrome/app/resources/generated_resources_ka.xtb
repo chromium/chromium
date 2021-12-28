@@ -1048,6 +1048,7 @@
 <translation id="204914487372604757">მალსახმობის შექმნა</translation>
 <translation id="2050339315714019657">პორტრეტი</translation>
 <translation id="2053312383184521053">უმოქმედო მდგომარეობის მონაცემები</translation>
+<translation id="2054240652864153171">გსურთ, გაასუფთაოთ საიტის მონაცემები <ph name="SITE_NAME" />-ისთვის, რომელიც დაყოფილია <ph name="PARTITION_SITE_NAME" />-ზე?</translation>
 <translation id="2055585478631012616">თქვენ გამოხვალთ ამ საიტებიდან, მათ შორის, გახსნილ ჩანართებზე</translation>
 <translation id="205560151218727633">Google ასისტენტის ლოგო</translation>
 <translation id="2058456167109518507">აღმოჩენილია მოწყობილობა</translation>
@@ -2390,6 +2391,7 @@
 <translation id="3433621910545056227">უი! სისტემამ ვერ დააყენა მოწყობილობის ინსტალაციის დროის ატრიბუტების ბლოკი.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">თუ თქვენი შვილისთვის ჩართულია ვებსა და აპებში დამატებითი აქტივობის პარამეტრი, აღნიშნული მონაცემები შესაძლოა შეინახოს მის Google ანგარიშში. ამ პარამეტრების და მათი დარეგულირების შესახებ დამატებითი ინფორმაცია ხელმისაწვდომია შემდეგ მისამართზე: families.google.com.</translation>
+<translation id="3434512374684753970">აუდიო და ვიდეო</translation>
 <translation id="3435688026795609344">„<ph name="EXTENSION_NAME" />“-ს თქვენი <ph name="CODE_TYPE" /> სჭირდება</translation>
 <translation id="3435738964857648380">უსაფრთხოება</translation>
 <translation id="343578350365773421">ქაღალდი ამოიწურა</translation>
@@ -2836,6 +2838,7 @@
 <translation id="3873423927483480833">PIN-კოდების ჩვენება</translation>
 <translation id="3873915545594852654">წარმოიქმნა ARC++-თან დაკავშირებული პრობლემა.</translation>
 <translation id="3874164307099183178">Google ასისტენტის ჩართვა</translation>
+<translation id="3875783148670536197">ინსტრუქციის ნახვა</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> გაიხსნება ბრაუზერის ახალ ჩანართში. ბრაუზერშივე გაიხსნება სხვა მხარდაჭერილი ბმულები. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">მახლობლად გაზიარების პარამეტრები <ph name="USER_NAME" />-ის მოწყობილობისთვის, ზიარდება <ph name="USER_EMAIL" />-ის სახელით.</translation>
 <translation id="3879748587602334249">ჩამოტვირთვის მენეჯერი</translation>
@@ -4471,6 +4474,7 @@
 <translation id="562935524653278697">თქვენი სანიშნეების, ისტორიის, პაროლების და სხვა პარამეტრების სინქრონიზაცია გათიშულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="5631017369956619646">CPU-ს გამოყენება</translation>
 <translation id="5632059346822207074">მოთხოვნილია ნებართვა, გამოხმაურებისთვის დააჭირეთ კლავიშთა კომბინაციას Ctrl + წინ</translation>
+<translation id="5632485077360054581">ინსტრუქციის ნახვა</translation>
 <translation id="5632566673632479864">თქვენი ანგარიში (<ph name="EMAIL" />) აღარ დაიშვება ძირითადი ანგარიშის სახით. ვინაიდან ამ ანგარიშს მართავს <ph name="DOMAIN" />, თქვენი სანიშნეები, ისტორია, პაროლები და სხვა პარამეტრები წაიშლება ამ მოწყობილობიდან.</translation>
 <translation id="5632592977009207922">მიმდინარეობს ჩამოტვირთვა, დარჩენილია <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">მობილური</translation>

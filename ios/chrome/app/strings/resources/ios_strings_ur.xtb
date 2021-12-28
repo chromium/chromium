@@ -140,6 +140,7 @@
 <translation id="2268044343513325586">بہتر بنائیں</translation>
 <translation id="2271351792809375263">‏وہ پاس ورڈز استعمال کریں جو آپ نے اپنے آلے پر موجود دیگر ایپس میں Chrome میں محفوظ کیے ہیں</translation>
 <translation id="2273327106802955778">مزید مینو</translation>
+<translation id="2286505070150039482">نمایاں کردہ ٹیکسٹ</translation>
 <translation id="2302742851632557585">ویب سائٹ پر پاس ورڈ تبدیل کریں</translation>
 <translation id="2316709634732130529">تجویز کردہ پاس ورڈ استعمال کریں</translation>
 <translation id="2320166752086256636">کی بورڈ چھپائیں</translation>
@@ -310,6 +311,7 @@
 <translation id="3803696231112616155">اس سائٹ کا ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3858860766373142691">نام</translation>
+<translation id="3861486700625780712">پیروی ختم کریں</translation>
 <translation id="3892144330757387737">آپ کو اپنی سرگزشت یہاں ملے گی</translation>
 <translation id="3897092660631435901">مینو</translation>
 <translation id="3913386780052199712">‏Chrome میں سائن ان ہے</translation>
@@ -407,6 +409,7 @@
 <translation id="481968316161811770">کوکیز، سائٹ کا ڈیٹا</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} اور 1 دیگر}other{{domain} اور {count} دیگر}}</translation>
 <translation id="4826218269716039351">فریق ثالث مسدود کریں</translation>
+<translation id="4826726074642088322">نمایاں کرنے کا اشتراک کریں</translation>
 <translation id="48274138579728272">پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="4833686396768033263">حالیہ ٹیبز دستیاب نہیں ہیں</translation>
 <translation id="4833786495304741580">‏Google کو خودکار طور پر استعمال کے اعداد و شمار اور کریش رپورٹس بھیجتی ہے۔</translation>
@@ -602,6 +605,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6497772452874122664">اگر آپ کو <ph name="TIME" /> پر اعتماد ہے تو آپ کسی اور سائٹ سے محفوظ کردہ پاس ورڈ استعمال کر سکتے ہیں۔
 
 ہر سائٹ کے لئے ایک منفرد پاس ورڈ استعمال کرنے کی کوشش کریں۔</translation>
+<translation id="650279896687777322">مزید جانیں...</translation>
 <translation id="651505212789431520">مطابقت پذیری منسوخ کریں؟ آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو آن کر سکتے ہیں۔</translation>
 <translation id="6524918542306337007">پوشیدگی وضع دستیاب نہیں ہے</translation>
 <translation id="6537746030088321027">example.com</translation>

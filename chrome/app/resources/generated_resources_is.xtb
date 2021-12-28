@@ -592,6 +592,7 @@
 <translation id="1600857548979126453">Fá aðgang að bakvinnslu síðuvilluleitar</translation>
 <translation id="1601560923496285236">Nota</translation>
 <translation id="1602085790802918092">Ræsir sýndarvélina</translation>
+<translation id="1603411913360944381">Gleyma <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Huliðsstilling)</translation>
 <translation id="1604432177629086300">Ekki var hægt að prenta. Athugaðu prentarann og reyndu aftur.</translation>
 <translation id="1605744057217831567">Skoða öll gögn og allar heimildir vefsvæðis</translation>
@@ -1060,6 +1061,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="204914487372604757">Búa til flýtileið</translation>
 <translation id="2050339315714019657">Skammsnið</translation>
 <translation id="2053312383184521053">Gögn aðgerðaleysis</translation>
+<translation id="2054240652864153171">Hreinsa vefsvæðagögn fyrir <ph name="SITE_NAME" /> sem var skipt niður á <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Þú verður skráð(ur) út af þessum vefsvæðum, þar á meðal í opnum flipum</translation>
 <translation id="205560151218727633">Lógó Google hjálpara</translation>
 <translation id="2058456167109518507">Tæki fannst</translation>
@@ -2404,6 +2406,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3433621910545056227">Úbbs! Kerfinu mistókst að koma á eigindalás við uppsetningu tækisins.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Ef kveikt er á ítarlegri vef- og forritavirkni fyrir barnið geta þessi gögn verið vistuð á Google reikningi barnsins. Fáðu frekari upplýsingar um þessar stillingar og hvernig þær eru stilltar á families.google.com.</translation>
+<translation id="3434512374684753970">Hljóð og mynd</translation>
 <translation id="3435688026795609344">„<ph name="EXTENSION_NAME" />“ biður um <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Öryggi</translation>
 <translation id="343578350365773421">Enginn pappír</translation>
@@ -2850,6 +2853,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3873423927483480833">Sýna PIN-númer</translation>
 <translation id="3873915545594852654">Vandamál með ARC++ kom upp.</translation>
 <translation id="3874164307099183178">Kveikja á Google hjálpara</translation>
+<translation id="3875783148670536197">Fá leiðbeiningar</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> er stillt á að opnast í nýjum vafraflipa, studdir tenglar verða einnig opnaðir í vafranum. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Stillingar nærdeilingar fyrir tækið sem <ph name="USER_NAME" /> á og deilir með reikningnum <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Niðurhalsstjórnun</translation>
@@ -4486,6 +4490,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="562935524653278697">Kerfisstjóri hefur gert samstillingu bókamerkja, ferla, aðgangsorða og annarra stillinga óvirka.</translation>
 <translation id="5631017369956619646">Örgjörvanotkun</translation>
 <translation id="5632059346822207074">Heimildar óskað, ýttu á Ctrl + Áfram til að svara</translation>
+<translation id="5632485077360054581">Fá leiðbeiningar</translation>
 <translation id="5632566673632479864">Reikningurinn þinn <ph name="EMAIL" /> er ekki lengur leyfður sem aðalreikningur. Þar sem <ph name="DOMAIN" /> stýrir þessum reikningi verða bókamerkin þín, ferillinn, aðgangsorðin og aðrar stillingar hreinsuð úr tækinu.</translation>
 <translation id="5632592977009207922">Sækir, <ph name="PERCENT_REMAINING" />% eftir</translation>
 <translation id="563371367637259496">Farsímakerfi</translation>
@@ -6066,6 +6071,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7307129035224081534">Hlé</translation>
 <translation id="7308643132139167865">Tungumál vefsvæða</translation>
 <translation id="7310598146671372464">Ekki tókst að skrá þig inn. Þjónninn styður ekki Kerberos-dulkóðunargerðirnar sem eru tilgreindar. Hafðu samband við kerfisstjóra.</translation>
+<translation id="7312210124139670355">Stjórnandinn er að endurstilla eSIM. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="7320213904474460808">Sjálfgefið eftir netkerfi</translation>
 <translation id="7321545336522791733">Ekki næst í þjón</translation>
 <translation id="7324297612904500502">Beta-umræðusvæði</translation>

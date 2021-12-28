@@ -90,6 +90,7 @@
 <translation id="147113415845704694">جرِب سؤال "ما هي حالة الطقس اليوم؟"</translation>
 <translation id="1477626028522505441">تعذّر تنزيل الملف <ph name="FILE_NAME" /> بسبب مشاكل بالخادم.</translation>
 <translation id="148482509007564431">مسار حفظ الإشارات المرجعية</translation>
+<translation id="1488775391433859242">‏يمكنك استخدام هذا الهاتف لتسجيل الدخول إلى حساب Google على جهاز الكمبيوتر الذي يعرض رمز الاستجابة السريعة هذا.</translation>
 <translation id="1492417797159476138">سبق لك حفظ اسم المستخدم لهذا الموقع الإلكتروني.</translation>
 <translation id="1493287004536771723">تتم حاليًا متابعة <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">محرك البحث</translation>
@@ -189,6 +190,7 @@
 <translation id="2122601567107267586">تعذر فتح التطبيق</translation>
 <translation id="2126426811489709554">‏يدعمها Chrome</translation>
 <translation id="2131665479022868825">تم توفير <ph name="DATA" /></translation>
+<translation id="2132122640199389833">إزالة جميع الأجهزة المرتبطة</translation>
 <translation id="213279576345780926">تم إغلاق <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">الإضافة إلى الشاشة الرئيسية</translation>
 <translation id="2141396931810938595">حسب معدّل استخدامك</translation>
@@ -265,6 +267,7 @@
 <translation id="2534582914273493287">‏يتم إرسال عناوين URL التي تزورها إلى Google</translation>
 <translation id="2536728043171574184">عرض نسخة بلا اتصال من هذه الصفحة</translation>
 <translation id="2546283357679194313">ملفات تعريف الارتباط وبيانات المواقع</translation>
+<translation id="2549516196460093976">‏يمكنك استخدام هذا الجهاز اللوحي لتسجيل الدخول إلى حساب Google على جهاز الكمبيوتر الذي يعرض رمز الاستجابة السريعة هذا.</translation>
 <translation id="2558692642259318568">لتصفُّح الويب بدون حفظ أي نشاط على جهازك، يمكنك استخدام وضع التصفُّح المتخفي.</translation>
 <translation id="2561519700418191927">معاينات الفيديوهات</translation>
 <translation id="2567385386134582609">صورة</translation>
@@ -451,6 +454,7 @@
 <translation id="3563767357928833671">تم عرض محتوى الحافظة.</translation>
 <translation id="3566923219790363270">‏لا يزال Chrome يستعد للواقع الافتراضي. يُرجى إعادة تشغيل Chrome لاحقًا.</translation>
 <translation id="3568688522516854065">للحصول على علامات التبويب من أجهزتك الأخرى، يُرجى تسجيل الدخول وتفعيل المزامنة.</translation>
+<translation id="357465026686164600">استخدام الهاتف كمفتاح أمان</translation>
 <translation id="3577473026931028326">حدث خطأ. يُرجى إعادة المحاولة.</translation>
 <translation id="3587482841069643663">الكل</translation>
 <translation id="3587596251841506391">المساعدة في تحسين الأمان على الويب</translation>
@@ -520,6 +524,7 @@
 <translation id="4000212216660919741">الصفحة الرئيسية بلا اتصال بالإنترنت</translation>
 <translation id="4016425174436051808">تتعذّر متابعة الخلاصة. حدث خطأ.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{ساعة واحدة (#)}zero{# ساعة}two{ساعتان (#)}few{# ساعات}many{# ساعةً}other{# ساعة}}</translation>
+<translation id="4035877632587724847">عدم السماح</translation>
 <translation id="4045764304651014138">بيانات الاستخدام</translation>
 <translation id="405399507749852140">يمكنك الحصول على تنبيهات في حال انخفاض السعر على أي موقع إلكتروني</translation>
 <translation id="4056223980640387499">بني داكن</translation>
@@ -579,6 +584,7 @@
 <translation id="4450672886426705087">‏نتائج بحث من Google</translation>
 <translation id="4452411734226507615">إغلاق علامة التبويب <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">أُضيفَت إشارة مرجعية إلى <ph name="FOLDER_NAME" /></translation>
+<translation id="4461614516424362539">عند ربط جهاز آخر باستخدام رمز الاستجابة السريعة، يمكن لهذا الجهاز استخدام هذا الهاتف كمفتاح أمان. وإذا أزَلت هذا الجهاز، يجب مسح رمز الاستجابة السريعة ضوئيًا لربط الجهاز مرة أخرى.</translation>
 <translation id="4472118726404937099">للمزامنة والتخصيص على جميع الأجهزة، يُرجى تسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="4479839115899251637">الحذف من قائمة القراءة</translation>
 <translation id="4479972344484327217">‏جارٍ تثبيت <ph name="MODULE" /> لمتصفِّح Chrome…</translation>
@@ -649,6 +655,7 @@
 
 لتغيير هذا الإعداد، يُرجى <ph name="BEGIN_LINK" />إعادة ضبط المزامنة<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">الاسم كما على البطاقة</translation>
+<translation id="481574578487123132">الأجهزة المرتبطة</translation>
 <translation id="4818017973810341238">تعذَّر التحقُّق من روابط تنقل إلى مواد عرض رقمية على <ph name="VIOLATED_URL" />.</translation>
 <translation id="4831037795716408498">تنزيل المحتوى</translation>
 <translation id="4834007576107377210">اطّلِع على تعليمات محرك البحث بشأن حذف سجلّ البحث، إن أمكن.</translation>
@@ -681,6 +688,7 @@
 <translation id="4941179133499732445">انقر على الميكروفون لاستخدام البحث الصوتي.</translation>
 <translation id="4943703118917034429">الواقع الافتراضي</translation>
 <translation id="4943872375798546930">لا نتائج</translation>
+<translation id="4950924971025849764">‏عند تسجيل الدخول إلى حساب Google نفسه على أجهزة أخرى، يمكن لهذه الأجهزة استخدام هذا الهاتف كمفتاح أمان.</translation>
 <translation id="4957722034734105353">مزيد من المعلومات...</translation>
 <translation id="4961107849584082341">ترجمة هذه الصفحة إلى أي لغة</translation>
 <translation id="4971735654804503942">‏يوفّر حماية استباقية وسريعة من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة، ويُحذّرك من عمليات اختراق كلمة المرور. يتطلّب إرسال بيانات التصفّح إلى Google.</translation>
@@ -781,6 +789,7 @@
 <translation id="55737423895878184">مسموح بالإشعارات وتحديد الموقع الجغرافي</translation>
 <translation id="5578795271662203820">البحث في <ph name="SEARCH_ENGINE" /> عن هذه الصورة</translation>
 <translation id="5581519193887989363">يمكنك دائمًا اختيار ما تريد مزامنته في <ph name="BEGIN_LINK1" />الإعدادات<ph name="END_LINK1" />.</translation>
+<translation id="5590372121997663538">تذكّر جهاز الكمبيوتر هذا</translation>
 <translation id="5599455543593328020">وضع "التصفّح المتخفي"</translation>
 <translation id="5599941490345670218">‏بإمكان "مساعد Google" إكمال الإجراءات التي تريدها على المواقع الإلكترونية.</translation>
 <translation id="5620163320393916465">ما مِن كلمات مرور محفوظة.</translation>
@@ -862,6 +871,7 @@
 <translation id="5995726099713306770">هل تريد تنزيل الصفحة مرة أخرى؟</translation>
 <translation id="6000066717592683814">‏الاستمرار في استخدام محرك Google</translation>
 <translation id="6000203700195075278">المتابعة مجدّدًا</translation>
+<translation id="6002122790816966947">أجهزتك</translation>
 <translation id="6005538289190791541">كلمة المرور المُقترحَة</translation>
 <translation id="6032091552407840792">لا يتوفّر هذا الإصدار التجريبي سوى في <ph name="BEGIN_LINK" />بعض المناطق<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">‏من خلال <ph name="BEGIN_LINK" />مبادرة حماية الخصوصية<ph name="END_LINK" />، نعمل في Chrome على تطوير تقنيات جديدة لحمايتك من آليات التتبُّع في جميع المواقع الإلكترونية مع الحفاظ على محتوى شبكة الإنترنت المفتوحة المتاحة للجميع.
@@ -991,6 +1001,7 @@
 <translation id="6640207029842583248">حظر ملفات تعريف الارتباط طوال الوقت</translation>
 <translation id="6643016212128521049">محو</translation>
 <translation id="6643649862576733715">الترتيب حسب مقدار البيانات التي تم توفيرها</translation>
+<translation id="6645629752388991326">‏يمكنك التحكّم في الأجهزة التي يمكن تسجيل الدخول إلى حساب Google عليها باستخدام هذا الجهاز كمفتاح أمان.</translation>
 <translation id="6648459603387803038">‏يمكن لمشرفك تغيير إعداد المتصفِّح عن بُعد. وقد تتم أيضًا إدارة النشاط على هذا الجهاز خارج Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />\u2026 وجهة اتصال إضافية واحدة <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}zero{‏<ph name="CONTACT_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهة اتصال إضافية}two{‏<ph name="CONTACT_PREVIEW" />\u2026 وجهتا اتصال إضافيتان (<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />)}few{‏<ph name="CONTACT_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهات اتصال إضافية}many{‏<ph name="CONTACT_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهة اتصال إضافية}other{‏<ph name="CONTACT_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهة اتصال إضافية}}</translation>
 <translation id="6649642165559792194">معاينة صورة <ph name="BEGIN_NEW" />ميزة جديدة<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@
 <translation id="6710213216561001401">السابق</translation>
 <translation id="671481426037969117">انقضى وقت موقّت <ph name="FQDN" />، وسيبدأ عمله مرّةً أخرى غدًا.</translation>
 <translation id="6715020873764921614">هل تريد تنزيل <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) على أي حال؟</translation>
+<translation id="6719634564325948108">هل تريد ربط جهاز كمبيوتر باستخدام رمز الاستجابة السريعة؟</translation>
 <translation id="6738516213925468394">تم ترميز بياناتك باستخدام <ph name="BEGIN_LINK" />عبارة مرور المزامنة<ph name="END_LINK" /> في <ph name="TIME" />. يُرجى إدخالها لبدء المزامنة.</translation>
 <translation id="6738867403308150051">جارٍ التنزيل…</translation>
 <translation id="6751521182688001123">يتيح لك هذا الزر فتح علامة تبويب جديدة بسرعة. ولتعديل هذا الاختصار، انقر مع الاستمرار.</translation>

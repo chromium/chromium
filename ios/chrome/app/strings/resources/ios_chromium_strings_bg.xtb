@@ -77,6 +77,7 @@
 <translation id="6424492062988593837">Chromium току-що се подобри! Налице е нова версия.</translation>
 <translation id="6752854822223394465">Организацията ви настройва Chromium...</translation>
 <translation id="6820823224820483452">Chromium не успя да провери всички пароли. Опитайте отново утре.</translation>
+<translation id="7006920032187763988">Можете да използвате паролите, които сте запазили в мениджъра на паролите, в други приложения на вашия iPad.</translation>
 <translation id="7018284295775193585">Chromium не може да се актуализира</translation>
 <translation id="7045244423563602563">Персонализирайте Chromium според вкуса си</translation>
 <translation id="7099326575020694068">Chromium не може да използва камерата ви в режим на разделен изглед</translation>
@@ -103,11 +104,13 @@
 <translation id="8073677936375100957">Искате ли данните ви в Chromium да бъдат изчистени от устройството?</translation>
 <translation id="8175055321229419309">Съвет: <ph name="BEGIN_LINK" />Преместете Chromium в лентата „Dock“<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium не можа да провери за актуализации. Опитайте отново по-късно.</translation>
+<translation id="858114650497379505">Можете да използвате паролите, които сте запазили в мениджъра на паролите, в други приложения на вашия iPhone.</translation>
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> Авторите на Chromium. Всички права запазени.</translation>
 <translation id="8663480472502753423">Поддържане на браузъра Chromium актуален</translation>
 <translation id="8776843108004031667">Този профил и всички незапазени данни ще бъдат премахнати от Chromium.</translation>
 <translation id="894437814105052438">Когато излезете от профила си, Chromium няма да синхронизира новите данни с профила ви в Google. Синхронизираните по-рано данни продължават да се съхраняват в профила ви.</translation>
 <translation id="9022552996538154597">Вход в Chromium</translation>
+<translation id="9059693977935746710">Няма да е нужно да помните тази парола. Тя ще бъде запазена в мениджъра на паролите за <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium не е актуален</translation>
 <translation id="9110075932708282655">Използване на Chromium по подразбиране</translation>
 <translation id="921174536258924340">Chromium не успя да провери всички пароли. Опитайте отново утре или <ph name="BEGIN_LINK" />ги проверете в профила си в Google<ph name="END_LINK" />.</translation>

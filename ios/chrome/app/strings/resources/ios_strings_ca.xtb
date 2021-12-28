@@ -140,6 +140,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2268044343513325586">Restringeix</translation>
 <translation id="2271351792809375263">Utilitza les contrasenyes que tens desades a Chrome en altres aplicacions del teu dispositiu</translation>
 <translation id="2273327106802955778">Més opcions del menú</translation>
+<translation id="2286505070150039482">Text marcat</translation>
 <translation id="2302742851632557585">Canvia la contrasenya al lloc web</translation>
 <translation id="2316709634732130529">Utilitza la contrasenya suggerida</translation>
 <translation id="2320166752086256636">Amaga el teclat</translation>
@@ -310,6 +311,7 @@ Segueix aquests passos:</translation>
 <translation id="3803696231112616155">Proposa traduir aquest lloc web</translation>
 <translation id="385051799172605136">Enrere</translation>
 <translation id="3858860766373142691">Nom</translation>
+<translation id="3861486700625780712">Deixa de seguir</translation>
 <translation id="3892144330757387737">Trobaràs l'historial aquí</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3913386780052199712">Sessió iniciada a Chrome</translation>
@@ -407,6 +409,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="481968316161811770">Galetes, dades llocs</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} i 1 més}other{{domain} i {count} més}}</translation>
 <translation id="4826218269716039351">Bloqueja les galetes de tercers</translation>
+<translation id="4826726074642088322">Comparteix el text marcat</translation>
 <translation id="48274138579728272">Marca com a llegit</translation>
 <translation id="4833686396768033263">Les pestanyes recents no estan disponibles</translation>
 <translation id="4833786495304741580">Envia automàticament a Google estadístiques d'ús i informes d'error.</translation>
@@ -602,6 +605,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="6497772452874122664">Si confies en <ph name="TIME" />, pots utilitzar una contrasenya desada d'un altre lloc web.
 
 Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
+<translation id="650279896687777322">Més informació...</translation>
 <translation id="651505212789431520">Vols cancel·lar la sincronització? Pots activar la sincronització en qualsevol moment des de la configuració.</translation>
 <translation id="6524918542306337007">El mode d'incògnit no està disponible</translation>
 <translation id="6537746030088321027">exemple.cat</translation>

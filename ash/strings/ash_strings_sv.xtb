@@ -1015,6 +1015,7 @@ Nyligen installerad</translation>
 <translation id="7860671499921112077">Öppna översikten genom att svepa uppåt med tre fingrar</translation>
 <translation id="7866482334467279021">på</translation>
 <translation id="7868900307798234037">Låser upp med fingeravtryck</translation>
+<translation id="7872195908557044066">eSIM-kortet återställs av administratören. Vänta några minuter.</translation>
 <translation id="7872786842639831132">Av</translation>
 <translation id="7875575368831396199">Det verkar som om Bluetooth har inaktiverats på <ph name="DEVICE_TYPE" />. Aktivera Bluetooth om du vill använda Phone Hub.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Byt till en tidigare version av enheten nu}=1{Byt till en tidigare version av enheten inom en sekund}other{Byt till en tidigare version av enheten inom # sekunder}}</translation>

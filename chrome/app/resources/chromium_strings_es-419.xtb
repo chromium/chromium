@@ -226,6 +226,7 @@
 <translation id="7448255348454382571">Reiniciar el SO Chromium</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" />: Chromium para desarrolladores</translation>
 <translation id="7451052299415159299">Chromium necesita permiso para acceder a tu cámara para este sitio</translation>
+<translation id="7467949745582939695">¿Quieres reiniciar Chromium?</translation>
 <translation id="7483335560992089831">No es posible instalar la misma versión de Chromium que se está ejecutando. Cierra Chromium y vuelve a intentarlo.</translation>
 <translation id="753534427205733210">{0,plural, =1{Se reiniciará Chromium en 1 minuto}other{Se reiniciará Chromium en # minutos}}</translation>
 <translation id="7549178288319965365">Acerca del Sistema operativo Chromium</translation>

@@ -591,6 +591,7 @@
 <translation id="1600857548979126453">Mengakses backend debugger halaman</translation>
 <translation id="1601560923496285236">Terapkan</translation>
 <translation id="1602085790802918092">Memulai mesin virtual</translation>
+<translation id="1603411913360944381">Lupakan <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Samaran)</translation>
 <translation id="1604432177629086300">Tidak dapat mencetak. Periksa printer dan coba lagi.</translation>
 <translation id="1605744057217831567">Lihat semua data situs dan izin</translation>
@@ -6066,6 +6067,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="7307129035224081534">Dijeda</translation>
 <translation id="7308643132139167865">Bahasa situs</translation>
 <translation id="7310598146671372464">Gagal login. Server tidak mendukung jenis enkripsi Kerberos yang ditentukan. Harap hubungi administrator.</translation>
+<translation id="7312210124139670355">Administrator sedang mereset eSIM Anda. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="7320213904474460808">Jadikan jaringan default</translation>
 <translation id="7321545336522791733">Server tidak dapat dijangkau</translation>
 <translation id="7324297612904500502">Forum Beta</translation>

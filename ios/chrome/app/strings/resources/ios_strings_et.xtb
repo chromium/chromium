@@ -25,6 +25,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="1145536944570833626">Kustutage olemasolevad andmed.</translation>
 <translation id="1147031633655575115">Sisse logitud kasutajana <ph name="USER" /></translation>
 <translation id="1154984953698510061">Kuva muud vahelehed</translation>
+<translation id="1164064664035028907">Kasutage tugevat parooli:</translation>
 <translation id="1165039591588034296">Viga</translation>
 <translation id="1172898394251786223">Järgmine väli</translation>
 <translation id="1176932207622159128">Ei saa salvestada</translation>
@@ -139,6 +140,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="2268044343513325586">Täpsustamine</translation>
 <translation id="2271351792809375263">Kasutage Chrome'i salvestatud paroole oma seadme muudes rakendustes</translation>
 <translation id="2273327106802955778">Rohkem menüü-üksusi</translation>
+<translation id="2286505070150039482">Esiletõstetud tekst</translation>
 <translation id="2302742851632557585">Muuda veebisaidi parooli</translation>
 <translation id="2316709634732130529">Kasuta soovitatud parooli</translation>
 <translation id="2320166752086256636">Peida klaviatuur</translation>
@@ -309,6 +311,7 @@ Järgige allolevaid juhiseid.</translation>
 <translation id="3803696231112616155">Selle saidi tõlkimise pakkumine</translation>
 <translation id="385051799172605136">Tagasi</translation>
 <translation id="3858860766373142691">Nimi</translation>
+<translation id="3861486700625780712">Lõpeta jälgimine</translation>
 <translation id="3892144330757387737">Leiate oma ajaloo siit</translation>
 <translation id="3897092660631435901">Menüü</translation>
 <translation id="3913386780052199712">Chrome'i sisse logitud</translation>
@@ -406,6 +409,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="481968316161811770">Küpsis., saidi andm.</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ja veel 1}other{{domain} ja veel {count}}}</translation>
 <translation id="4826218269716039351">Kolmanda osapoole küpsisefailide blokeerimine</translation>
+<translation id="4826726074642088322">Esiletõstu jagamine</translation>
 <translation id="48274138579728272">Märgi loetuks</translation>
 <translation id="4833686396768033263">Leht Hiljutised vahelehed pole saadaval</translation>
 <translation id="4833786495304741580">Google'ile saadetakse automaatselt kasutusstatistikat ja krahhiaruandeid.</translation>
@@ -601,6 +605,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="6497772452874122664">Kui usaldate saiti <ph name="TIME" />, saate kasutada mõne teise saidi jaoks salvestatud parooli.
 
 Üritage iga saidi puhul kasutada kordumatut parooli.</translation>
+<translation id="650279896687777322">Lisateave …</translation>
 <translation id="651505212789431520">Kas tühistada sünkroonimine? Saate sünkroonimise seadetes alati sisse lülitada.</translation>
 <translation id="6524918542306337007">Inkognito režiim pole saadaval</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -639,6 +644,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="6807889908376551050">Kuva kõik ...</translation>
 <translation id="681368974849482173">Üksus on loodud</translation>
 <translation id="681450999322335505">Teie organisatsioon lülitas sünkroonimise välja.</translation>
+<translation id="683022620450280906">Saate salvestatud paroole kasutada mis tahes seadmes. Need salvestatakse konto <ph name="EMAIL" /> Google'i paroolihaldurisse.</translation>
 <translation id="6830804042318138535">Lisateave</translation>
 <translation id="6831043979455480757">Tõlgi</translation>
 <translation id="6842136130964845393">Selleks, et saaksite alati oma salvesatud paroolidele juurde pääseda, kinnitage oma isik</translation>

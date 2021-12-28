@@ -591,6 +591,7 @@
 <translation id="1600857548979126453">Доступ да адладчыка старонак</translation>
 <translation id="1601560923496285236">Ужыць</translation>
 <translation id="1602085790802918092">Ідзе запуск віртуальнай машыны</translation>
+<translation id="1603411913360944381">Выдаліць прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="1603914832182249871">(інкогніта)</translation>
 <translation id="1604432177629086300">Не ўдалося надрукаваць. Праверце прынтар і паўтарыце спробу.</translation>
 <translation id="1605744057217831567">Паказаць усе даныя і дазволы сайтаў</translation>
@@ -6050,6 +6051,7 @@
 <translation id="7307129035224081534">Прыпынена</translation>
 <translation id="7308643132139167865">Мовы вэб-сайтаў</translation>
 <translation id="7310598146671372464">Не ўдалося ўвайсці. Сервер не падтрымлівае ўказаныя тыпы шыфравання Kerberos. Звярніцеся да адміністратара.</translation>
+<translation id="7312210124139670355">Адміністратар выконвае скід вашай eSIM-карты. Гэта можа заняць некалькі хвілін.</translation>
 <translation id="7320213904474460808">Стандартная сетка</translation>
 <translation id="7321545336522791733">Сервер недаступны</translation>
 <translation id="7324297612904500502">Форум бэта-версіі</translation>

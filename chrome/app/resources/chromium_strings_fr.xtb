@@ -233,6 +233,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7448255348454382571">Redémarrer Chromium OS</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium pour les développeurs</translation>
 <translation id="7451052299415159299">Chromium a besoin de votre autorisation pour accéder à votre appareil photo pour ce site</translation>
+<translation id="7467949745582939695">Relancer Chromium ?</translation>
 <translation id="7483335560992089831">Impossible d'installer la même version de Chromium que celle qui est en cours d'exécution. Veuillez fermer Chromium, puis réessayer.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium va être relancé dans 1 minute}one{Chromium va être relancé dans # minute}other{Chromium va être relancé dans # minutes}}</translation>
 <translation id="7549178288319965365">À propos de Chromium OS</translation>

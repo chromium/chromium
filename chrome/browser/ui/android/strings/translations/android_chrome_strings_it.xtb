@@ -90,6 +90,7 @@
 <translation id="147113415845704694">Prova "Che tempo fa oggi?"</translation>
 <translation id="1477626028522505441">Download di <ph name="FILE_NAME" /> non riuscito a causa di problemi del server.</translation>
 <translation id="148482509007564431">Flusso di salvataggio dei preferiti</translation>
+<translation id="1488775391433859242">Puoi utilizzare questo telefono per accedere sul computer che mostra questo codice QR.</translation>
 <translation id="1492417797159476138">Hai già salvato questo nome utente per questo sito</translation>
 <translation id="1493287004536771723">Stai seguendo <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">Motore di ricerca</translation>
@@ -189,6 +190,7 @@ Tocca una parola per eseguire una ricerca. Per perfezionare la ricerca, tocca e 
 <translation id="2122601567107267586">Impossibile aprire l'app</translation>
 <translation id="2126426811489709554">Con tecnologia Chrome</translation>
 <translation id="2131665479022868825">Dati risparmiati: <ph name="DATA" /></translation>
+<translation id="2132122640199389833">Rimuovi tutti i dispositivi collegati</translation>
 <translation id="213279576345780926">La scheda <ph name="TAB_TITLE" /> è stata chiusa</translation>
 <translation id="2139186145475833000">Aggiungi a schermata Home</translation>
 <translation id="2141396931810938595">In base al tuo utilizzo</translation>
@@ -265,6 +267,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2534582914273493287">Gli URL che visiti vengono inviati a Google</translation>
 <translation id="2536728043171574184">È visualizzata una copia offline della pagina</translation>
 <translation id="2546283357679194313">Cookie e dati dei siti</translation>
+<translation id="2549516196460093976">Puoi utilizzare questo tablet per accedere sul computer che mostra questo codice QR.</translation>
 <translation id="2558692642259318568">Prova la modalità in incognito per navigare senza salvare la tua attività sul dispositivo</translation>
 <translation id="2561519700418191927">Anteprime video</translation>
 <translation id="2567385386134582609">IMMAGINE</translation>
@@ -451,6 +454,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3563767357928833671">Contenuti degli Appunti visualizzati</translation>
 <translation id="3566923219790363270">La modalità VR è ancora nella fase preparatoria in Chrome. Riavvia Chrome più tardi.</translation>
 <translation id="3568688522516854065">Accedi e attiva la sincronizzazione per trovare le tue schede degli altri dispositivi</translation>
+<translation id="357465026686164600">Telefono come token di sicurezza</translation>
 <translation id="3577473026931028326">Si è verificato un errore. Riprova.</translation>
 <translation id="3587482841069643663">Tutti</translation>
 <translation id="3587596251841506391">Aumenta la sicurezza sul Web</translation>
@@ -520,6 +524,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="4000212216660919741">Home page offline</translation>
 <translation id="4016425174436051808">Non è possibile seguire. Si è verificato un errore.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ora}one{# hrs}other{# ore}}</translation>
+<translation id="4035877632587724847">Non consentire</translation>
 <translation id="4045764304651014138">Dati sull'utilizzo</translation>
 <translation id="405399507749852140">Ricevi avvisi se il prezzo cala su qualsiasi sito</translation>
 <translation id="4056223980640387499">Seppia</translation>
@@ -579,6 +584,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="4450672886426705087">Risultati di ricerca di Google.</translation>
 <translation id="4452411734226507615">Chiudi la scheda <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Preferito aggiunto in: <ph name="FOLDER_NAME" /></translation>
+<translation id="4461614516424362539">Quando colleghi un altro dispositivo con un codice QR, questo può usare il telefono come token di sicurezza. Se lo rimuovi, dovrai scansionare un codice QR per ricollegarlo.</translation>
 <translation id="4472118726404937099">Accedi e attiva la sincronizzazione per sincronizzare e personalizzare tutti i dispositivi</translation>
 <translation id="4479839115899251637">Elimina da Elenco lettura</translation>
 <translation id="4479972344484327217">Installazione di <ph name="MODULE" /> per Chrome…</translation>
@@ -649,6 +655,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 
 Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincronizzazione<ph name="END_LINK" />.</translation>
 <translation id="4807098396393229769">Nome sulla carta di credito</translation>
+<translation id="481574578487123132">Dispositivi collegati</translation>
 <translation id="4818017973810341238">La verifica di Digital Asset Links non è riuscita in <ph name="VIOLATED_URL" /></translation>
 <translation id="4831037795716408498">Scaricare contenuti</translation>
 <translation id="4834007576107377210">Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia delle ricerche, se applicabile</translation>
@@ -681,6 +688,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4941179133499732445">Tocca il microfono per cercare tramite comandi vocali</translation>
 <translation id="4943703118917034429">Realtà virtuale</translation>
 <translation id="4943872375798546930">Nessun risultato</translation>
+<translation id="4950924971025849764">Quando hai eseguito l'accesso allo stesso Account Google, gli altri dispositivi possono utilizzare questo telefono come token di sicurezza.</translation>
 <translation id="4957722034734105353">Ulteriori informazioni...</translation>
 <translation id="4961107849584082341">Traduci questa pagina in qualsiasi lingua</translation>
 <translation id="4971735654804503942">Sistemi di protezione proattivi e più rapidi da estensioni, siti web e download pericolosi. Ricevi un avviso in caso di violazioni della password. Richiede l'invio dei dati di navigazione a Google.</translation>
@@ -781,6 +789,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="55737423895878184">La geolocalizzazione e le notifiche sono consentite</translation>
 <translation id="5578795271662203820">Cerca questa immagine su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle <ph name="BEGIN_LINK1" />impostazioni<ph name="END_LINK1" />.</translation>
+<translation id="5590372121997663538">Ricorda questo computer</translation>
 <translation id="5599455543593328020">Modalità di navigazione in incognito</translation>
 <translation id="5599941490345670218">L'Assistente Google può completare azioni per te sui siti web</translation>
 <translation id="5620163320393916465">Nessuna password salvata</translation>
@@ -862,6 +871,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5995726099713306770">Vuoi scaricare di nuovo la pagina?</translation>
 <translation id="6000066717592683814">Mantieni Google</translation>
 <translation id="6000203700195075278">Segui di nuovo</translation>
+<translation id="6002122790816966947">I tuoi dispositivi</translation>
 <translation id="6005538289190791541">Password consigliata</translation>
 <translation id="6032091552407840792">Questa prova è attiva soltanto in <ph name="BEGIN_LINK" />alcune aree geografiche<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Con <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome sviluppa nuove tecnologie che ti tutelano dai meccanismi di tracciamento tra siti salvaguardando al contempo il Web aperto.
@@ -991,6 +1001,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6640207029842583248">Blocca sempre</translation>
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6643649862576733715">Ordina per quantità di dati risparmiati</translation>
+<translation id="6645629752388991326">Controlla quali dispositivi possono eseguire l'accesso usando questo dispositivo come token di sicurezza.</translation>
 <translation id="6648459603387803038">L'amministratore può modificare da remoto la configurazione del browser. L'attività svolta su questo dispositivo potrebbe essere gestita anche al di fuori di Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Anteprima immagine <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6710213216561001401">Precedente</translation>
 <translation id="671481426037969117">Il timer di <ph name="FQDN" /> è scaduto. Verrà riavviato domani.</translation>
 <translation id="6715020873764921614">Vuoi comunque scaricare <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
+<translation id="6719634564325948108">Vuoi eseguire la connessione con il codice QR?</translation>
 <translation id="6738516213925468394">I tuoi dati sono stati criptati con la tua <ph name="BEGIN_LINK" />passphrase di sincronizzazione<ph name="END_LINK" /> in data <ph name="TIME" />. Inseriscila per avviare la sincronizzazione.</translation>
 <translation id="6738867403308150051">Download in corso…</translation>
 <translation id="6751521182688001123">Apri rapidamente una nuova scheda. Tocca e tieni premuto per modificare questa scorciatoia.</translation>

@@ -25,6 +25,7 @@
 <translation id="2574249610672786438">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chrome, se prijavite v vseh napravah</translation>
 <translation id="2576431527583832481">Chrome je izboljšan! Na voljo je nova različica.</translation>
 <translation id="257708665678654955">Želite, da Google Chrome naslednjič ponudi prevod strani v jeziku <ph name="LANGUAGE_NAME" /> s tega spletnega mesta?</translation>
+<translation id="2671426118752779020">Gesla, ki ste jih shranili v Googlovem upravitelju gesel, lahko uporabite v drugih aplikacijah v iPhonu.</translation>
 <translation id="2695886661449553974">Chrome ni mogel preveriti, ali so na voljo posodobitve. Poskusite pozneje.</translation>
 <translation id="2732745070297234559">Chromu ni uspelo preveriti vseh gesel. Poskusite znova jutri.</translation>
 <translation id="2869959624320573933">Prijava v Chrome</translation>
@@ -85,6 +86,7 @@
 <translation id="7165736900384873061">Začetek uporabe bralnika kod QR Google Chroma</translation>
 <translation id="7172660552945675509">Nasvet: <ph name="BEGIN_LINK" />premaknite Chrome v vrstico z aplikacijami<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome uporablja funkcijo Face ID za zagotavljanje pooblaščenega dostopa do vaših gesel.</translation>
+<translation id="72119412072970160">Gesla, ki ste jih shranili v Googlovem upravitelju gesel, lahko uporabite v drugih aplikacijah v iPadu.</translation>
 <translation id="7261678641327190792">Chrome ne more preveriti vaših gesel</translation>
 <translation id="7272930098487145294">Če želite shraniti slike, se dotaknite aplikacije Settings in dovolite, da Chrome dodaja fotografijam</translation>
 <translation id="7275945473750112644">Vaš račun upravlja domena <ph name="HOSTED_DOMAIN" />, zato bodo podatki v Chromu izbrisani iz te naprave.</translation>
@@ -112,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Ostanite varni z Google Chromom</translation>
 <translation id="8772179140489533211">Pokaže pozive za prijavo v Chrome.</translation>
+<translation id="8788269841521769222">Tega gesla si ne bo treba zapomniti. Shranjeno bo v Google Upravitelju gesel za račun <ph name="EMAIL" />.</translation>
 <translation id="9112744793181547300">Želite nastaviti Chrome kot privzeto možnost?</translation>
 </translationbundle>

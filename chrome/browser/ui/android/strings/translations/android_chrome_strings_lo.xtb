@@ -90,6 +90,7 @@
 <translation id="147113415845704694">ລອງເວົ້າວ່າ “ອາກາດມື້ນີ້ເປັນແນວໃດ?”</translation>
 <translation id="1477626028522505441">ການ​ດາວ​ໂຫຼ​ດ <ph name="FILE_NAME" /> ລົ້ມເຫລວເນື່ອງ​ຈາກ​ບັນຫາ​ເຊີບ​ເວີ.</translation>
 <translation id="148482509007564431">ຂັ້ນຕອນການບັນທຶກບຸກມາກ</translation>
+<translation id="1488775391433859242">ທ່ານສາມາດໃຊ້ໂທລະສັບນີ້ເພື່ອເຂົ້າສູ່ລະບົບຢູ່ຄອມພິວເຕີທີ່ສະແດງລະຫັດ QR ນີ້ໄດ້.</translation>
 <translation id="1492417797159476138">ທ່ານໄດ້ບັນທຶກຊື່ຜູ້ໃຊ້ນີ້ສຳລັບເວັບໄຊນີ້ຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="1493287004536771723">ທ່ານກຳລັງຕິດຕາມ <ph name="SITE_NAME" /> ຢູ່</translation>
 <translation id="1506061864768559482">ເຄື່ອງ​ຈັກ​ຄົ້ນ​ຫາ</translation>
@@ -189,6 +190,7 @@
 <translation id="2122601567107267586">ບໍ່ສາມາດເປີດແອັບໄດ້</translation>
 <translation id="2126426811489709554">ຂັບ​ເຄື່ອນ​ໂດຍ Chrome</translation>
 <translation id="2131665479022868825">ປະຢັດໄດ້ <ph name="DATA" /></translation>
+<translation id="2132122640199389833">ລຶບອຸປະກອນທີ່ລິ້ງໄວ້ທັງໝົດອອກ</translation>
 <translation id="213279576345780926">ປິດ <ph name="TAB_TITLE" /> ແລ້ວ</translation>
 <translation id="2139186145475833000">ເພີ່ມໃສ່ໜ້າຈໍຫຼັກ</translation>
 <translation id="2141396931810938595">ອ້າງອີງຈາກການນຳໃຊ້ຂອງທ່ານ</translation>
@@ -265,6 +267,7 @@
 <translation id="2534582914273493287">URL ທີ່ທ່ານເຂົ້າຈະຖືກສົ່ງໄປໃຫ້ Google</translation>
 <translation id="2536728043171574184">ກຳ​ລັງ​ເຂົ້າ​ເບິ່ງ​ສຳ​ເນົາ​ອັອບ​ລາຍ​ຂອງ​ໜ້າ​ນີ້</translation>
 <translation id="2546283357679194313">ຄຸກກີ້ ແລະຂໍ້ມູນເວັບໄຊທ໌...</translation>
+<translation id="2549516196460093976">ທ່ານສາມາດໃຊ້ແທັບເລັດນີ້ເພື່ອເຂົ້າສູ່ລະບົບຢູ່ຄອມພິວເຕີທີ່ສະແດງລະຫັດ QR ນີ້ໄດ້.</translation>
 <translation id="2558692642259318568">ເພື່ອທ່ອງເວັບໂດຍບໍ່ບັນທຶກການເຄື່ອນໄຫວໄປໃສ່ອຸປະກອນຂອງທ່ານ, ໃຫ້ລອງໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="2561519700418191927">ຕົວຢ່າງວິດີໂອ</translation>
 <translation id="2567385386134582609">ຮູບ</translation>
@@ -451,6 +454,7 @@
 <translation id="3563767357928833671">ສະແດງເນື້ອຫາຄລິບບອດແລ້ວ</translation>
 <translation id="3566923219790363270">Chrome ຍັງກະກຽມສໍາລັບ VR ຢູ່. ເປີດ Chrome ໃໝ່ໃນພາຍໃໝ່.</translation>
 <translation id="3568688522516854065">ເພື່ອໂຫຼດແຖບຂອງທ່ານຈາກອຸປະກອນອື່ນ, ກະລຸນາເປີດການຊິ້ງຂໍ້ມູນກ່ອນ</translation>
+<translation id="357465026686164600">ໃຊ້ໂທລະສັບເປັນກະແຈຄວາມປອດໄພ</translation>
 <translation id="3577473026931028326">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງໃໝ່.</translation>
 <translation id="3587482841069643663">ທັງໝົດ</translation>
 <translation id="3587596251841506391">ຊ່ວຍປັບປຸງຄວາມປອດໄພໃນເວັັບ</translation>
@@ -520,6 +524,7 @@
 <translation id="4000212216660919741">ໜ້າຫຼັກອອບລາຍຢູ່</translation>
 <translation id="4016425174436051808">ບໍ່ສາມາດຕິດຕາມໄດ້. ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ຊົ່ວໂມງ}other{# ຊົ່ວໂມງ}}</translation>
+<translation id="4035877632587724847">ບໍ່ອະນຸຍາດ</translation>
 <translation id="4045764304651014138">ຂໍ້ມູນການນຳໃຊ້</translation>
 <translation id="405399507749852140">ຮັບການແຈ້ງເຕືອນຫາກມີການຫຼຸດລາຄາຢູ່ເວັບໄຊໃດກໍຕາມ</translation>
 <translation id="4056223980640387499">ສີນໍ້າຕານດໍາ</translation>
@@ -579,6 +584,7 @@
 <translation id="4450672886426705087">ຜົນການຊອກຫາຈາກ Google.</translation>
 <translation id="4452411734226507615">ປິດແຖບ <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">ເພີ່ມບຸກມາກໃສ່ <ph name="FOLDER_NAME" /> ແລ້ວ</translation>
+<translation id="4461614516424362539">ເມື່ອທ່ານລິ້ງອຸປະກອນອື່ນດ້ວຍລະຫັດ QR, ມັນຈະສາມາດໃຊ້ໂທລະສັບນີ້ເປັນກະແຈຄວາມປອດໄພໄດ້. ຫາກທ່ານລຶບມັນອອກ, ທ່ານຈະຕ້ອງສະແດງລະຫັດ QR ເພື່ອລິ້ງມັນຄືນໃໝ່.</translation>
 <translation id="4472118726404937099">ເພື່ອຊິ້ງຂໍ້ມູນ ແລະ ປັບແຕ່ງເປັນແບບສ່ວນຕົວໃນທົ່ວອຸປະກອນ, ກະລຸນາເຂົ້າສູ່ລະບົບ ແລະ ເປີດການຊິ້ງຂໍ້ມູນກ່ອນ</translation>
 <translation id="4479839115899251637">ລຶບອອກຈາກລາຍຊື່ການອ່ານ</translation>
 <translation id="4479972344484327217">ກຳລັງຕິດຕັ້ງ <ph name="MODULE" /> ສໍາລັບ Chrome…</translation>
@@ -649,6 +655,7 @@
 
 ເພື່ອປ່ຽນການຕັ້ງຄ່ານີ້, ກະລຸນາ <ph name="BEGIN_LINK" />ຣີເຊັດການຊິິ້ງຂໍ້ມູນ<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">ຊື່​ຢູ່ໃນ​ບັດ</translation>
+<translation id="481574578487123132">ອຸປະກອນທີ່ລິ້ງແລ້ວ</translation>
 <translation id="4818017973810341238">ການຢັ້ງຢືນລິ້ງເນື້ອຫາດິຈິຕອນໃນ <ph name="VIOLATED_URL" /> ບໍ່ສຳເລັດ</translation>
 <translation id="4831037795716408498">ດາວໂຫຼດເນື້ອຫາ</translation>
 <translation id="4834007576107377210">ກະລຸນາອ່ານຄຳແນະນຳຂອງໂປຣແກຣມຊອກຫາຂອງທ່ານສຳລັບວິທີການລຶບປະຫວັດການຊອກຫາ, ຖ້າມີ</translation>
@@ -681,6 +688,7 @@
 <translation id="4941179133499732445">ແຕະໃສ່ໄມເພື່ອຊອກຫາດ້ວຍສຽງຂອງທ່ານ</translation>
 <translation id="4943703118917034429">ເວີຊົວ ຣິອາລິຕີ</translation>
 <translation id="4943872375798546930">ບໍ່​ມີ​ຜົນ​ໄດ້​ຮັບ</translation>
+<translation id="4950924971025849764">ເມື່ອທ່ານເຂົ້າສູ່ລະບົບຫາບັນຊີ Google ດຽວກັນ, ອຸປະກອນອື່ນຈະສາມາດໃຊ້ໂທລະສັບນີ້ເປັນກະແຈຄວາມປອດໄພໄດ້.</translation>
 <translation id="4957722034734105353">ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ...</translation>
 <translation id="4961107849584082341">ແປໜ້ານີ້ເປັນພາສາໃດໆກໍໄດ້</translation>
 <translation id="4971735654804503942">ການປົກປ້ອງແບບເຊີງບຸກທີ່ໄວກວ່າຕໍ່ກັບເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ເປັນອັນຕະລາຍ. ເຕືອນທ່ານກ່ຽວກັບການລະເມີດລະຫັດຜ່ານ. ຈຳເປັນຕ້ອງສົ່ງຂໍ້ມູນການທ່ອງເວັບໃຫ້ Google.</translation>
@@ -781,6 +789,7 @@
 <translation id="55737423895878184">ອະນຸຍາດການແຈ້ງເຕືອນ ແລະ ສະຖານທີ່</translation>
 <translation id="5578795271662203820">ຄົ້ນ​ຫາ <ph name="SEARCH_ENGINE" /> ​ຮູບ​ນີ້</translation>
 <translation id="5581519193887989363">ທ່ານສາມາດເລືອກສິ່ງທີ່ຈະຊິ້ງຂໍ້ມູນໄດ້ໃນ <ph name="BEGIN_LINK1" />ການຕັ້ງຄ່າ<ph name="END_LINK1" />.</translation>
+<translation id="5590372121997663538">ຈື່ຄອມພິວເຕີນີ້ໄວ້</translation>
 <translation id="5599455543593328020">ໂໝດທີ່ບໍ່ເຜີຍຕົວຕົນ</translation>
 <translation id="5599941490345670218">ຜູ້ຊ່ວຍ Google ສາມາດເຮັດຄຳສັ່ງຕ່າງໆໃຫ້ສຳເລັດໃນທົ່ວເວັບໄຊໃຫ້ທ່ານໄດ້</translation>
 <translation id="5620163320393916465">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້</translation>
@@ -862,6 +871,7 @@
 <translation id="5995726099713306770">ດາວໂຫຼດໜ້າອີກເທື່ອໜຶ່ງບໍ່?</translation>
 <translation id="6000066717592683814">ດຳເນີນການໃຊ້ Google</translation>
 <translation id="6000203700195075278">ຕິດຕາມຄືນໃໝ່</translation>
+<translation id="6002122790816966947">ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="6005538289190791541">ລະຫັດຜ່ານທີ່ແນະນຳ</translation>
 <translation id="6032091552407840792">ການທົດລອງໃຊ້ນີ້ແມ່ນໃຊ້ໄດ້ສະເພາະໃນ <ph name="BEGIN_LINK" />ບາງພາກພື້ນ<ph name="END_LINK" /> ເທົ່ານັ້ນ.</translation>
 <translation id="6033245666633565791">ດ້ວຍ <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome ກຳລັງພັດທະນາເທັກໂນໂລຢີໃໝ່ເພື່ອປ້ອງກັນທ່ານຈາກການຕິດຕາມຂ້າມເວັບໄຊໃນຂະນະທີ່ຍັງຄົງຮັກສາຄວາມເປີດກວ້າງຂອງເວັບໄວ້.
@@ -991,6 +1001,7 @@
 <translation id="6640207029842583248">ບລັອກຕະຫຼອດເວລາ</translation>
 <translation id="6643016212128521049">ລຶບ</translation>
 <translation id="6643649862576733715">ຮຽງຕາມປະລິມານອິນເຕີເນັດທີ່ປະຢັດໄດ້</translation>
+<translation id="6645629752388991326">ຄວບຄຸມວ່າອຸປະກອນໃດສາມາດເຂົ້າສູ່ລະບົບໄດ້ໂດຍການໃຊ້ອຸປະກອນນີ້ເປັນກະແຈຄວາມປອດໄພ.</translation>
 <translation id="6648459603387803038">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດປ່ຽນການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຈາກທາງໄກໄດ້. ການເຄື່ອນໄຫວໃນອຸປະກອນນີ້ອາດຈະຖືກຈັດການຢູ່ນອກ Chrome ໄດ້ເຊັ່ນກັນ.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ລາຍຊື່ຜູ້ຕິດຕໍ່}other{<ph name="CONTACT_PREVIEW" />\u2026 ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ລາຍຊື່ຜູ້ຕິດຕໍ່}}</translation>
 <translation id="6649642165559792194">ເບິ່ງຕົວຢ່າງຮູບ <ph name="BEGIN_NEW" />ໃໝ່<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@
 <translation id="6710213216561001401">ຜ່ານມາ</translation>
 <translation id="671481426037969117">ເວລາແອັບ <ph name="FQDN" /> ຂອງທ່ານໝົດແລ້ວ. ມັນຈະເລີ່ມໃໝ່ໃນມື້ອື່ນ.</translation>
 <translation id="6715020873764921614">ທ່ານຕ້ອງການຢືນຢັນໃຫ້ດາວໂຫຼດ <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ບໍ່?</translation>
+<translation id="6719634564325948108">ເຊື່ອມຕໍ່ດ້ວຍລະຫັດ QR ບໍ?</translation>
 <translation id="6738516213925468394">ຂໍ້ມູນຂອງທ່ານຖືກເຂົ້າລະຫັດໄວ້ດ້ວຍ <ph name="BEGIN_LINK" />ລະຫັດຜ່ານການຊິ້ງຂໍ້ມູນ<ph name="END_LINK" /> ເມື່ອ <ph name="TIME" />. ກະລຸນາປ້ອນມັນເພື່ອເລີ່ມການຊິ້ງຂໍ້ມູນ</translation>
 <translation id="6738867403308150051">ກໍາລັງດາວ​ໂຫຼດ...</translation>
 <translation id="6751521182688001123">ເປີດແຖບໃໝ່ແບບໄວໆ. ເພື່ອແກ້ໄຂທາງລັດນີ້, ໃຫ້ແຕະຄ້າງໄວ້.</translation>

@@ -25,6 +25,7 @@
 <translation id="1145536944570833626">מחיקת נתונים קיימים.</translation>
 <translation id="1147031633655575115">נכנסת כ-<ph name="USER" /></translation>
 <translation id="1154984953698510061">הצגת כרטיסיות אחרות</translation>
+<translation id="1164064664035028907">שימוש בסיסמה החזקה:</translation>
 <translation id="1165039591588034296">שגיאה</translation>
 <translation id="1172898394251786223">השדה הבא</translation>
 <translation id="1176932207622159128">לא ניתן לשמור את התמונה</translation>
@@ -139,6 +140,7 @@
 <translation id="2268044343513325586">צמצום</translation>
 <translation id="2271351792809375263">‏יש להשתמש בסיסמאות ששמרת ב-Chrome לאפליקציות אחרות במכשיר</translation>
 <translation id="2273327106802955778">התפריט 'עוד'</translation>
+<translation id="2286505070150039482">הטקסט המודגש</translation>
 <translation id="2302742851632557585">שינוי הסיסמה באתר</translation>
 <translation id="2316709634732130529">שימוש בסיסמה המוצעת</translation>
 <translation id="2320166752086256636">הסתרת מקלדת</translation>
@@ -309,6 +311,7 @@
 <translation id="3803696231112616155">הצגה של הצעה לתרגם את הדף הזה</translation>
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3858860766373142691">שם</translation>
+<translation id="3861486700625780712">ביטול המעקב</translation>
 <translation id="3892144330757387737">ההיסטוריה זמינה כאן</translation>
 <translation id="3897092660631435901">תפריט</translation>
 <translation id="3913386780052199712">‏נכנסת ל-Chrome</translation>
@@ -406,6 +409,7 @@
 <translation id="481968316161811770">‏קובצי cookie, נתוני אתרים</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ואחד נוסף}two{{domain} ו-{count} נוספים}many{{domain} ו-{count} נוספים}other{{domain} ו-{count} נוספים}}</translation>
 <translation id="4826218269716039351">חסימת צדדים שלישיים</translation>
+<translation id="4826726074642088322">שיתוף של הטקסט המודגש</translation>
 <translation id="48274138579728272">סימון כפריט שנקרא</translation>
 <translation id="4833686396768033263">הכרטיסיות האחרונות אינן זמינות</translation>
 <translation id="4833786495304741580">‏שליחת דוחות קריסה וסטטיסטיקות שימוש אל Google באופן אוטומטי.</translation>
@@ -601,6 +605,7 @@
 <translation id="6497772452874122664">אם הכתובת <ph name="TIME" /> מהימנה מבחינתך, אפשר להשתמש בסיסמה שנשמרה באתר אחר.
 
 כדאי לנסות להשתמש בסיסמה ייחודית בכל אתר.</translation>
+<translation id="650279896687777322">למידע נוסף…</translation>
 <translation id="651505212789431520">לבטל את הסנכרון? אפשר להפעיל את הסנכרון בכל זמן דרך 'הגדרות'.</translation>
 <translation id="6524918542306337007">מצב אנונימי אינו זמין</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -639,6 +644,7 @@
 <translation id="6807889908376551050">הצגת הכול...</translation>
 <translation id="681368974849482173">הפריט נוצר</translation>
 <translation id="681450999322335505">הארגון שלך השבית את הסנכרון.</translation>
+<translation id="683022620450280906">‏אפשר להשתמש בסיסמאות השמורות שלך בכל מכשיר. הן נשמרות במנהל הסיסמאות של Google בחשבון <ph name="EMAIL" /></translation>
 <translation id="6830804042318138535">להמשך קריאה</translation>
 <translation id="6831043979455480757">תרגום</translation>
 <translation id="6842136130964845393">כדי לוודא שתמיד תהיה לך גישה לסיסמאות השמורות, עליך לאמת את זהותך</translation>

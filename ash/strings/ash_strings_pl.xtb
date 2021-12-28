@@ -586,6 +586,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4831034276697007977">Czy na pewno chcesz wyłączyć automatyczne kliknięcia?</translation>
 <translation id="4849058404725798627">Podświetlaj obiekt wybrany za pomocą klawiatury</translation>
 <translation id="485592688953820832">Brak działania (wstrzymaj)</translation>
+<translation id="485634149294284819">Otwórz menu klawiatury</translation>
 <translation id="4860284199500934869">Aby pobrać plik <ph name="FILENAME" />, sprawdź połączenie sieciowe</translation>
 <translation id="486056901304535126">Spróbuję je pobrać później. Do momentu ukończenia pobierania mowa będzie wysyłana do Google i tam przetwarzana.</translation>
 <translation id="4868492592575313542">aktywna</translation>
@@ -1014,6 +1015,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7860671499921112077">Przesuń 3 palcami w górę, aby otworzyć Przegląd</translation>
 <translation id="7866482334467279021">włączono</translation>
 <translation id="7868900307798234037">Odblokowano odciskiem palca</translation>
+<translation id="7872195908557044066">Administrator resetuje Twoją kartę eSIM. Zaczekaj kilka minut.</translation>
 <translation id="7872786842639831132">Wyłączono</translation>
 <translation id="7875575368831396199">Wygląda na to, że Twoje urządzenie (<ph name="DEVICE_TYPE" />) ma wyłączony Bluetooth. Włącz go, by korzystać ze sterowania telefonem.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego teraz}=1{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu 1 sekundy}few{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # sekund}many{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # sekund}other{Przywróć na tym urządzeniu wcześniejszą wersję systemu operacyjnego w ciągu # sekundy}}</translation>
@@ -1096,6 +1098,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8380784334203145311">Dobranoc,</translation>
 <translation id="8388750414311082622">Ostatniego biurka nie można usunąć.</translation>
 <translation id="8394567579869570560">Twój rodzic zablokował urządzenie</translation>
+<translation id="8401850874595457088">Otwórz menu języka</translation>
 <translation id="8412677897383510995">Pokaż ustawienia wyświetlania</translation>
 <translation id="8413272770729657668">Nagrywanie rozpocznie się za 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (obudowa)</translation>

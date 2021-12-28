@@ -585,6 +585,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1600857548979126453">Auf das Back-End für Seiten-Debugger zugreifen</translation>
 <translation id="1601560923496285236">Übernehmen</translation>
 <translation id="1602085790802918092">Virtuelle Maschine wird gestartet</translation>
+<translation id="1603411913360944381"><ph name="DEVICE_NAME" /> entfernen</translation>
 <translation id="1603914832182249871">(Anonym)</translation>
 <translation id="1604432177629086300">Drucken nicht möglich. Überprüfen Sie den Drucker und versuchen Sie es noch einmal.</translation>
 <translation id="1605744057217831567">Alle Websitedaten und -berechtigungen ansehen</translation>
@@ -6045,6 +6046,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7307129035224081534">Pausiert</translation>
 <translation id="7308643132139167865">Websitesprachen</translation>
 <translation id="7310598146671372464">Fehler beim Anmelden. Der Server unterstützt keine angegebenen Kerberos-Verschlüsselungstypen. Bitte wenden Sie sich an Ihren Administrator.</translation>
+<translation id="7312210124139670355">Ihr Administrator setzt Ihre eSIM zurück. Das kann einige Minuten dauern.</translation>
 <translation id="7320213904474460808">Netzwerk als Standard festlegen</translation>
 <translation id="7321545336522791733">Server nicht erreichbar</translation>
 <translation id="7324297612904500502">Beta-Forum</translation>

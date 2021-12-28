@@ -77,6 +77,7 @@
 <translation id="6424492062988593837">한층 개선된 Chromium의 최신 버전이 출시되었습니다.</translation>
 <translation id="6752854822223394465">조직에서 Chromium을 설정하는 중...</translation>
 <translation id="6820823224820483452">Chromium에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도해 보세요.</translation>
+<translation id="7006920032187763988">비밀번호 관리자에 저장된 비밀번호를 iPad의 다른 앱에서 사용할 수 있습니다</translation>
 <translation id="7018284295775193585">Chromium을 업데이트할 수 없습니다.</translation>
 <translation id="7045244423563602563">나만의 Chromium 만들기</translation>
 <translation id="7099326575020694068">Chromium에서는 분할 모드에서 카메라를 사용할 수 없습니다.</translation>
@@ -103,11 +104,13 @@
 <translation id="8073677936375100957">기기에서 Chromium 데이터를 삭제하시겠습니까?</translation>
 <translation id="8175055321229419309">도움말: <ph name="BEGIN_LINK" />Chromium을 내 Dock에 추가하세요.<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium에서 업데이트를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
+<translation id="858114650497379505">비밀번호 관리자에 저장된 비밀번호를 iPhone의 다른 앱에서 사용할 수 있습니다</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8663480472502753423">Chromium을 최신 상태로 유지합니다.</translation>
 <translation id="8776843108004031667">이 계정 및 저장되지 않은 모든 데이터가 Chromium에서 삭제됩니다.</translation>
 <translation id="894437814105052438">로그아웃하면 Chromium에서 더 이상 새로운 데이터를 내 Google 계정에 동기화하지 않습니다. 이전에 동기화된 데이터는 계정에 그대로 유지됩니다.</translation>
 <translation id="9022552996538154597">Chromium에 로그인</translation>
+<translation id="9059693977935746710">이 비밀번호를 기억하지 않아도 됩니다. <ph name="EMAIL" />의 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>
 <translation id="9089354809943900324">Chromium이 이전 버전임</translation>
 <translation id="9110075932708282655">Chromium을 기본 브라우저로 사용</translation>
 <translation id="921174536258924340">Chromium에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도하거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>

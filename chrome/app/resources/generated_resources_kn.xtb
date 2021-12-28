@@ -593,6 +593,7 @@
 <translation id="1600857548979126453">ಡೀಬಗರ್ ಅನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳುವ ಪುಟವನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="1601560923496285236">ಅನ್ವಯಿಸು</translation>
 <translation id="1602085790802918092">ವರ್ಚುವಲ್ ಯಂತ್ರವನ್ನು ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="1603411913360944381"><ph name="DEVICE_NAME" /> ಅನ್ನು ಮರೆತುಬಿಡಿ</translation>
 <translation id="1603914832182249871">(ಅದೃಶ್ಯ)</translation>
 <translation id="1604432177629086300">ಪ್ರಿಂಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪ್ರಿಂಟರ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="1605744057217831567">ಎಲ್ಲಾ ಸೈಟ್ ಡೇಟಾ ಮತ್ತು ಅನುಮತಿಗಳನ್ನು ನೋಡಿ</translation>
@@ -1052,6 +1053,7 @@
 <translation id="204914487372604757">ಒಳದಾರಿಯನ್ನು ರಚಿಸು</translation>
 <translation id="2050339315714019657">ಪೋರ್ಟ್ರೇಟ್</translation>
 <translation id="2053312383184521053">ತಟಸ್ಥ ಸ್ಥಿತಿಯ ಡೇಟಾ</translation>
+<translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> ನಲ್ಲಿ ವಿಭಜಿಸಲಾದ <ph name="SITE_NAME" /> ನ ಸೈಟ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಬೇಕೆ?</translation>
 <translation id="2055585478631012616">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳಲ್ಲೂ ಸೇರಿದಂತೆ, ಈ ಸೈಟ್‌ಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="205560151218727633">Google ಸಹಾಯಕದ ಲೋಗೋ</translation>
 <translation id="2058456167109518507">ಸಾಧನ ಪತ್ತೆಯಾಗಿದೆ</translation>
@@ -2396,6 +2398,7 @@
 <translation id="3433621910545056227">ಓಹ್! ಸಾಧನ ಇನ್‌ಸ್ಟಾಲೇಶನ್-ಸಮಯದ ಲಕ್ಷಣಗಳ ಲಾಕ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಿಸ್ಟಂ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">ನಿಮ್ಮ ಮಗುವಿಗಾಗಿ, ಹೆಚ್ಚುವರಿ ವೆಬ್ ಮತ್ತು ಆ್ಯಪ್‌ ಚಟುವಟಿಕೆಯನ್ನು ಆನ್ ಮಾಡಿದ್ದರೆ, ಈ ಡೇಟಾವನ್ನು ಅವರ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಬಹುದು. ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಕುರಿತು ಮತ್ತು ಇವುಗಳನ್ನು ಹೇಗೆ ಹೊಂದಿಸುವುದು ಎಂಬ ಕುರಿತು families.google.com ನಲ್ಲಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
+<translation id="3434512374684753970">ಆಡಿಯೋ ಮತ್ತು ವೀಡಿಯೊ</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" ನಿಮ್ಮ <ph name="CODE_TYPE" /> ಅನ್ನು ವಿನಂತಿಸುತ್ತಿದೆ</translation>
 <translation id="3435738964857648380">ಭದ್ರತೆ</translation>
 <translation id="343578350365773421">ಪೇಪರ್ ಖಾಲಿಯಾಗಿದೆ</translation>
@@ -2843,6 +2846,7 @@
 <translation id="3873423927483480833">ಪಿನ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3873915545594852654">ARC++ ನಲ್ಲಿ ಸಮಸ್ಯೆ ಸಂಭವಿಸಿದೆ.</translation>
 <translation id="3874164307099183178">Google Assistant ಆನ್ ಮಾಡಿ</translation>
+<translation id="3875783148670536197">ಹೇಗೆಂದು ನನಗೆ ತೋರಿಸಿ</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ಅನ್ನು ಹೊಸ ಬ್ರೌಸರ್ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಲು ಹೊಂದಿಸಲಾಗಿದೆ. ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಬೆಂಬಲಿತ ಲಿಂಕ್‌ಗಳು ಸಹ ತೆರೆಯುತ್ತವೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_EMAIL" /> ಖಾತೆಯ ಅಡಿಯಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿರುವ <ph name="USER_NAME" /> ಅವರ ಸಾಧನಕ್ಕಾಗಿ Nearby ಶೇರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು.</translation>
 <translation id="3879748587602334249">ಡೌನ್‌ಲೋಡ್ ನಿರ್ವಾಹಕ</translation>
@@ -4480,6 +4484,7 @@
 <translation id="562935524653278697">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಸಿಂಕ್ ಮಾಡುವಿಕೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
 <translation id="5631017369956619646">CPU ಬಳಕೆ</translation>
 <translation id="5632059346822207074">ಅನುಮತಿಯನ್ನು ವಿನಂತಿಸಲಾಗಿದೆ, ಪ್ರತಿಕ್ರಿಯಿಸಲು Ctrl + ಫಾರ್ವರ್ಡ್ ಒತ್ತಿರಿ</translation>
+<translation id="5632485077360054581">ಹೇಗೆಂದು ನನಗೆ ತೋರಿಸಿ</translation>
 <translation id="5632566673632479864">ಪ್ರಾಥಮಿಕ ಖಾತೆಯಾಗಿ ನಿಮ್ಮ ಖಾತೆಯ <ph name="EMAIL" /> ಅನ್ನು ಇನ್ನು ಮುಂದೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ. ಈ ಖಾತೆಯನ್ನು <ph name="DOMAIN" /> ನಿರ್ವಹಿಸುತ್ತಿರುವ ಕಾರಣದಿಂದ, ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಈ ಸಾಧನದಿಂದ ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="5632592977009207922">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ, <ph name="PERCENT_REMAINING" />% ಬಾಕಿ ಉಳಿದಿದೆ</translation>
 <translation id="563371367637259496">ಮೊಬೈಲ್</translation>
@@ -6061,6 +6066,7 @@
 <translation id="7307129035224081534">ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7308643132139167865">ವೆಬ್‌ಸೈಟ್ ಭಾಷೆಗಳು</translation>
 <translation id="7310598146671372464">ಲಾಗಿನ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ. ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾದ Kerberos ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಪ್ರಕಾರಗಳನ್ನು ಸರ್ವರ್ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
+<translation id="7312210124139670355">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಮ್ಮ eSIM ಅನ್ನು ರೀಸೆಟ್ ಮಾಡುತ್ತಿದ್ದಾರೆ. ಇದಕ್ಕೆ ಕೆಲವು ನಿಮಿಷಗಳ ಕಾಲಾವಕಾಶ ಬೇಕಾಗಬಹುದು.</translation>
 <translation id="7320213904474460808">ನೆಟ್‌ವರ್ಕ್ ಡೀಫಾಲ್ಟ್ ಮಾಡಿ</translation>
 <translation id="7321545336522791733">ಸರ್ವರ್ ತಲುಪಲಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="7324297612904500502">ಬೀಟಾ ಫೋರಮ್‌</translation>

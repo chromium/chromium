@@ -1016,6 +1016,7 @@ Yeni yüklenmiş</translation>
 <translation id="7860671499921112077">Genel Bakış'a girmek için üç parmakla yukarı kaydırın</translation>
 <translation id="7866482334467279021">açık</translation>
 <translation id="7868900307798234037">Parmak iziyle kilit açılıyor</translation>
+<translation id="7872195908557044066">Yöneticiniz eSIM'inizi sıfırlıyor. Birkaç dakika bekleyin.</translation>
 <translation id="7872786842639831132">Kapalı</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" /> cihazınızda Bluetooth kapalı görünüyor. Telefon Merkezini kullanmak için lütfen Bluetooth'u açın.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Cihazı şimdi önceki sürüme geçirin}=1{Cihazı 1 saniye içinde önceki sürüme geçirin}other{Cihazı # saniye içinde önceki sürüme geçirin}}</translation>

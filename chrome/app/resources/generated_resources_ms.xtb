@@ -591,6 +591,7 @@
 <translation id="1600857548979126453">Akses bahagian belakang penyahpepijat halaman</translation>
 <translation id="1601560923496285236">Gunakan</translation>
 <translation id="1602085790802918092">Memulakan mesin maya</translation>
+<translation id="1603411913360944381">Lupakan <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Inkognito)</translation>
 <translation id="1604432177629086300">Tidak dapat mencetak. Semak pencetak dan cuba lagi.</translation>
 <translation id="1605744057217831567">Lihat semua data laman dan kebenaran</translation>
@@ -1059,6 +1060,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="204914487372604757">Cipta pintasan</translation>
 <translation id="2050339315714019657">Potret</translation>
 <translation id="2053312383184521053">Data Keadaan Melahu</translation>
+<translation id="2054240652864153171">Kosongkan data laman untuk <ph name="SITE_NAME" /> yang dipisahkan pada <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Anda akan dilog keluar daripada tapak ini, termasuk dalam tab yang terbuka</translation>
 <translation id="205560151218727633">Logo Google Assistant</translation>
 <translation id="2058456167109518507">Peranti dikesan</translation>
@@ -2404,6 +2406,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3433621910545056227">Op! Sistem gagal mewujudkan kunci atribut masa pemasangan peranti.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Jika tetapan Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan pada Akaun Googlenya. Ketahui lebih lanjut tentang tetapan ini dan cara melaraskan tetapan ini melalui families.google.com.</translation>
+<translation id="3434512374684753970">Audio &amp; Video</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" meminta <ph name="CODE_TYPE" /> anda</translation>
 <translation id="3435738964857648380">Keselamatan</translation>
 <translation id="343578350365773421">Kehabisan kertas</translation>
@@ -2850,6 +2853,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3873423927483480833">Tunjukkan PIN</translation>
 <translation id="3873915545594852654">Masalah berkaitan ARC++ telah berlaku.</translation>
 <translation id="3874164307099183178">Hidupkan Google Assistant</translation>
+<translation id="3875783148670536197">Tunjukkan Caranya</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ditetapkan untuk dibuka dalam tab penyemak imbas baharu, pautan yang disokong juga akan dibuka dalam penyemak imbas. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Tetapan Kongsi Berdekatan untuk peranti <ph name="USER_NAME" />, berkongsi menggunakan akaun <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Pengurus muat turun</translation>
@@ -4486,6 +4490,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="562935524653278697">Pentadbir anda telah melumpuhkan penyegerakan penanda halaman, sejarah, kata laluan dan tetapan lain.</translation>
 <translation id="5631017369956619646">Penggunaan CPU</translation>
 <translation id="5632059346822207074">Kebenaran diminta, tekan Ctrl + Maju untuk memberikan respons</translation>
+<translation id="5632485077360054581">Tunjukkan caranya</translation>
 <translation id="5632566673632479864">Akaun <ph name="EMAIL" /> anda tidak dibenarkan menjadi akaun utama lagi. Oleh sebab akaun ini diurus oleh <ph name="DOMAIN" />, penanda halaman, sejarah, kata laluan dan tetapan anda yang lain akan dipadamkan daripada peranti ini.</translation>
 <translation id="5632592977009207922">Memuat turun, tinggal <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Mudah Alih</translation>
@@ -6066,6 +6071,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="7307129035224081534">Dijeda</translation>
 <translation id="7308643132139167865">Bahasa laman web</translation>
 <translation id="7310598146671372464">Gagal log masuk. Pelayan tidak menyokong jenis penyulitan Kerberos yang dinyatakan. Sila hubungi pentadbir anda.</translation>
+<translation id="7312210124139670355">Pentadbir sedang menetapkan semula eSIM anda. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="7320213904474460808">Kembali ke rangkaian secara lalai</translation>
 <translation id="7321545336522791733">Pelayan tidak dapat dihubungi</translation>
 <translation id="7324297612904500502">Forum Beta</translation>

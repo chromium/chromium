@@ -591,6 +591,7 @@
 <translation id="1600857548979126453">Få åtkomst till serverdelen för felsökning av sida</translation>
 <translation id="1601560923496285236">Verkställ</translation>
 <translation id="1602085790802918092">Den virtuella maskinen startas</translation>
+<translation id="1603411913360944381">Glöm <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Inkognito)</translation>
 <translation id="1604432177629086300">Utskriften misslyckades. Kontrollera skrivaren och försök igen.</translation>
 <translation id="1605744057217831567">Se all webbplatsdata och alla behörigheter</translation>
@@ -6066,6 +6067,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7307129035224081534">Pausad</translation>
 <translation id="7308643132139167865">Språk på webbplatser</translation>
 <translation id="7310598146671372464">Det gick inte att logga in. Servern har inte stöd för de angivna typerna av Kerberos-kryptering. Kontakta administratören.</translation>
+<translation id="7312210124139670355">eSIM-kortet återställs av administratören. Det kan ta några minuter.</translation>
 <translation id="7320213904474460808">Standardnätverk</translation>
 <translation id="7321545336522791733">Servern kan inte nås</translation>
 <translation id="7324297612904500502">Forum för betaversionen</translation>

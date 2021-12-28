@@ -594,6 +594,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1600857548979126453">Dostopajte do podsistema iskalnika napak na strani</translation>
 <translation id="1601560923496285236">Uporabi</translation>
 <translation id="1602085790802918092">Zagon navideznega računalnika</translation>
+<translation id="1603411913360944381">Pozabi napravo <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Anonimni način)</translation>
 <translation id="1604432177629086300">Ni bilo mogoče tiskati. Preverite tiskalnik in poskusite znova.</translation>
 <translation id="1605744057217831567">Ogled vseh podatkov spletnih mest in dovoljenj</translation>
@@ -1062,6 +1063,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="204914487372604757">Ustvari bližnjico</translation>
 <translation id="2050339315714019657">Pokončno</translation>
 <translation id="2053312383184521053">Podatki o stanju nedejavnosti</translation>
+<translation id="2054240652864153171">Želite izbrisati podatke spletnega mesta <ph name="SITE_NAME" />, razdeljenega na <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Odjavljeni boste s teh spletnih mest, vključno s tistimi na odprtih zavihkih</translation>
 <translation id="205560151218727633">Logotip Pomočnika Google</translation>
 <translation id="2058456167109518507">Zaznana je bila naprava</translation>
@@ -2407,6 +2409,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3433621910545056227">Ojej!  Sistemu ni uspelo zakleniti atributov časa namestitve naprave.</translation>
 <translation id="3434107140712555581">Akumulator: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Če ste za otroka vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu Google. Preberite več o teh nastavitvah in njihovem prilagajanju na families.google.com.</translation>
+<translation id="3434512374684753970">Zvok in video</translation>
 <translation id="3435688026795609344">Razširitev »<ph name="EXTENSION_NAME" />« zahteva to: <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Varnost</translation>
 <translation id="343578350365773421">Ni več papirja</translation>
@@ -2853,6 +2856,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3873423927483480833">Prikaz kod PIN</translation>
 <translation id="3873915545594852654">Prišlo je do težave s tehnologijo ARC++.</translation>
 <translation id="3874164307099183178">Vklop Pomočnika Google</translation>
+<translation id="3875783148670536197">Postopek</translation>
 <translation id="3875815154304214043">Aplikacija <ph name="APP_NAME" /> je nastavljena, da se odpre na novem zavihku brskalnika. Podprte povezave se bodo tudi odprle v brskalniku. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Nastavitve Deljenja v bližini za napravo uporabnika <ph name="USER_NAME" />, deljenje z računom <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Upravitelj prenosov</translation>
@@ -4491,6 +4495,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="562935524653278697">Skrbnik je onemogočil sinhroniziranje zaznamkov, zgodovine, gesel in drugih nastavitev.</translation>
 <translation id="5631017369956619646">Uporaba CPE</translation>
 <translation id="5632059346822207074">Zahtevano je dovoljenje; pritisnite Ctrl + tipko za naprej, če se želite odzvati.</translation>
+<translation id="5632485077360054581">Postopek</translation>
 <translation id="5632566673632479864">Vaš račun <ph name="EMAIL" /> ni več dovoljen kot glavni račun. Ker ta račun upravlja domena <ph name="DOMAIN" />, bodo vaši zaznamki, zgodovina, gesla in druge nastavitve izbrisani iz te naprave.</translation>
 <translation id="5632592977009207922">Prenos, še <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Mobilno omrežje</translation>
@@ -6071,6 +6076,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7307129035224081534">Zaustavljeno</translation>
 <translation id="7308643132139167865">Jeziki spletnih mest</translation>
 <translation id="7310598146671372464">Prijava ni uspela. Strežnik ne podpira navedenih vrst šifriranja Kerberos. Obrnite se na skrbnika.</translation>
+<translation id="7312210124139670355">Skrbnik ponastavlja vašo kartico eSIM. To lahko traja nekaj minut.</translation>
 <translation id="7320213904474460808">Privzeto omrežje</translation>
 <translation id="7321545336522791733">Strežnik ni dosegljiv</translation>
 <translation id="7324297612904500502">Forum za beto</translation>

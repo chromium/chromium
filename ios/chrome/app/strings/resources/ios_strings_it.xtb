@@ -140,6 +140,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2268044343513325586">Perfeziona</translation>
 <translation id="2271351792809375263">Usa le password salvate su Chrome in altre app sul tuo dispositivo</translation>
 <translation id="2273327106802955778">Menu Altro</translation>
+<translation id="2286505070150039482">Testo evidenziato</translation>
 <translation id="2302742851632557585">Cambia password sul sito web</translation>
 <translation id="2316709634732130529">Utilizza la password suggerita</translation>
 <translation id="2320166752086256636">Nascondi tastiera</translation>
@@ -310,6 +311,7 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="3803696231112616155">Proponi di tradurre questo sito</translation>
 <translation id="385051799172605136">Indietro</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3861486700625780712">Non seguire più</translation>
 <translation id="3892144330757387737">Qui troverai la tua cronologia</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3913386780052199712">Accesso a Chrome eseguito</translation>
@@ -407,6 +409,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="481968316161811770">Cookie, dati dei siti</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e 1 altra}one{{domain} e altre {count}}other{{domain} e altre {count}}}</translation>
 <translation id="4826218269716039351">Blocca i cookie di terze parti</translation>
+<translation id="4826726074642088322">Condividi evidenziazione</translation>
 <translation id="48274138579728272">Contrassegna come letto</translation>
 <translation id="4833686396768033263">Schede recenti non disponibili</translation>
 <translation id="4833786495304741580">Invia automaticamente a Google statistiche sull'utilizzo e report sugli arresti anomali.</translation>
@@ -602,6 +605,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="6497772452874122664">Se ritieni attendibile il sito <ph name="TIME" />, puoi usare una password salvata da un altro sito.
 
 Cerca di usare una password univoca per ogni sito.</translation>
+<translation id="650279896687777322">Scopri di più…</translation>
 <translation id="651505212789431520">Annullare la sincronizzazione? Puoi attivare la sincronizzazione in qualsiasi momento nelle impostazioni.</translation>
 <translation id="6524918542306337007">Modalità di navigazione in incognito non disponibile</translation>
 <translation id="6537746030088321027">example.com</translation>

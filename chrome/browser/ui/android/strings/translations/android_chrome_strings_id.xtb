@@ -90,6 +90,7 @@
 <translation id="147113415845704694">Coba “Bagaimana cuaca hari ini?”</translation>
 <translation id="1477626028522505441">Download <ph name="FILE_NAME" /> gagal karena masalah server.</translation>
 <translation id="148482509007564431">Alur penyimpanan bookmark</translation>
+<translation id="1488775391433859242">Anda dapat menggunakan ponsel ini untuk login di komputer yang menampilkan kode QR ini.</translation>
 <translation id="1492417797159476138">Anda telah menyimpan nama pengguna ini untuk situs ini</translation>
 <translation id="1493287004536771723">Anda mengikuti <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">Mesin telusur</translation>
@@ -189,6 +190,7 @@ Ketuk kata apa pun untuk menelusuri. Untuk menyaring penelusuran, sentuh lama un
 <translation id="2122601567107267586">Tidak dapat membuka aplikasi</translation>
 <translation id="2126426811489709554">Diberdayakan oleh Chrome</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> dihemat</translation>
+<translation id="2132122640199389833">Hapus semua perangkat tertaut</translation>
 <translation id="213279576345780926">Menutup <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Tambahkan ke Layar Utama</translation>
 <translation id="2141396931810938595">Berdasarkan penggunaan Anda</translation>
@@ -265,6 +267,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="2534582914273493287">URL yang Anda buka akan dikirim ke Google</translation>
 <translation id="2536728043171574184">Melihat salinan offline halaman ini</translation>
 <translation id="2546283357679194313">Cookie dan data situs</translation>
+<translation id="2549516196460093976">Anda dapat menggunakan tablet ini untuk login di komputer yang menampilkan kode QR ini.</translation>
 <translation id="2558692642259318568">Untuk menjelajah tanpa menyimpan aktivitas ke perangkat, coba tab Samaran</translation>
 <translation id="2561519700418191927">Pratinjau video</translation>
 <translation id="2567385386134582609">GAMBAR</translation>
@@ -451,6 +454,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3563767357928833671">Konten papan klip ditampilkan</translation>
 <translation id="3566923219790363270">Chrome masih bersiap untuk menggunakan VR. Mulai ulang Chrome nanti.</translation>
 <translation id="3568688522516854065">Untuk membuka tab dari perangkat Anda yang lain, login dan aktifkan sinkronisasi</translation>
+<translation id="357465026686164600">Ponsel sebagai kunci keamanan</translation>
 <translation id="3577473026931028326">Terjadi error. Coba lagi.</translation>
 <translation id="3587482841069643663">Semua</translation>
 <translation id="3587596251841506391">Bantu sempurnakan keamanan di web</translation>
@@ -520,6 +524,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="4000212216660919741">Beranda Offline</translation>
 <translation id="4016425174436051808">Tidak dapat mengikuti. Terjadi error.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# jam}other{# jam}}</translation>
+<translation id="4035877632587724847">Jangan izinkan</translation>
 <translation id="4045764304651014138">Data penggunaan</translation>
 <translation id="405399507749852140">Dapatkan notifikasi jika ada diskon di situs mana pun</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -579,6 +584,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="4450672886426705087">Hasil penelusuran dari Google.</translation>
 <translation id="4452411734226507615">Tutup tab <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Dibookmark ke <ph name="FOLDER_NAME" /></translation>
+<translation id="4461614516424362539">Jika Anda menautkan perangkat lain dengan kode QR, perangkat tersebut dapat menggunakan ponsel ini sebagai kunci keamanan. Jika Anda menghapusnya, Anda harus memindai kode QR untuk menautkannya lagi.</translation>
 <translation id="4472118726404937099">Untuk menyinkronkan dan mempersonalisasi berbagai perangkat, login dan aktifkan sinkronisasi</translation>
 <translation id="4479839115899251637">Hapus dari daftar bacaan</translation>
 <translation id="4479972344484327217">Menginstal <ph name="MODULE" /> untuk Chrome…</translation>
@@ -649,6 +655,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 
 Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Nama di kartu</translation>
+<translation id="481574578487123132">Perangkat tertaut</translation>
 <translation id="4818017973810341238">Verifikasi Digital Asset Links gagal di <ph name="VIOLATED_URL" /></translation>
 <translation id="4831037795716408498">Download content</translation>
 <translation id="4834007576107377210">Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memungkinkan</translation>
@@ -681,6 +688,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="4941179133499732445">Ketuk mikrofon untuk menelusuri dengan suara Anda</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">Tidak ada hasil</translation>
+<translation id="4950924971025849764">Jika Anda login ke Akun Google yang sama, perangkat lainnya dapat menggunakan ponsel ini sebagai kunci keamanan.</translation>
 <translation id="4957722034734105353">Pelajari selengkapnya...</translation>
 <translation id="4961107849584082341">Terjemahkan halaman ini ke bahasa apa pun</translation>
 <translation id="4971735654804503942">Perlindungan lebih cepat dan proaktif terhadap situs, download, dan ekstensi berbahaya. Memberi Anda peringatan terkait kebocoran sandi. Mengharuskan pengiriman data penjelajahan ke Google.</translation>
@@ -781,6 +789,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="55737423895878184">Lokasi dan notifikasi diizinkan</translation>
 <translation id="5578795271662203820">Telusuri <ph name="SEARCH_ENGINE" /> untuk gambar ini</translation>
 <translation id="5581519193887989363">Anda dapat memilih konten apa yang akan disinkronkan di <ph name="BEGIN_LINK1" />setelan<ph name="END_LINK1" /> kapan saja.</translation>
+<translation id="5590372121997663538">Ingat komputer ini</translation>
 <translation id="5599455543593328020">Mode Samaran</translation>
 <translation id="5599941490345670218">Asisten Google dapat menyelesaikan tindakan di seluruh situs untuk Anda</translation>
 <translation id="5620163320393916465">Tidak ada sandi yang tersimpan</translation>
@@ -862,6 +871,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5995726099713306770">Download halaman lagi?</translation>
 <translation id="6000066717592683814">Tetap menggunakan Google</translation>
 <translation id="6000203700195075278">Ikuti kembali</translation>
+<translation id="6002122790816966947">Perangkat Anda</translation>
 <translation id="6005538289190791541">Sandi yang disarankan</translation>
 <translation id="6032091552407840792">Uji coba ini hanya aktif di <ph name="BEGIN_LINK" />beberapa wilayah<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Dengan <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome mengembangkan teknologi baru untuk mengamankan Anda dari pelacakan lintas situs sekaligus mempertahankan web terbuka.
@@ -991,6 +1001,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6640207029842583248">Blokir sepanjang waktu</translation>
 <translation id="6643016212128521049">Hapus</translation>
 <translation id="6643649862576733715">Urutkan menurut jumlah kuota yang dihemat</translation>
+<translation id="6645629752388991326">Kontrol perangkat mana yang dapat login dengan menggunakan perangkat ini sebagai kunci keamanan.</translation>
 <translation id="6648459603387803038">Administrator dapat mengubah penyiapan browser Anda dari jarak jauh. Aktivitas di perangkat ini juga dapat dikelola di luar Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lainnya}other{<ph name="CONTACT_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lainnya}}</translation>
 <translation id="6649642165559792194">Lihat pratinjau gambar <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="671481426037969117">Timer <ph name="FQDN" /> Anda telah berakhir. Timer akan dimulai lagi besok.</translation>
 <translation id="6715020873764921614">Ingin tetap mendownload <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
+<translation id="6719634564325948108">Terhubung dengan Kode QR?</translation>
 <translation id="6738516213925468394">Data Anda dienkripsi dengan <ph name="BEGIN_LINK" />frasa sandi sinkronisasi<ph name="END_LINK" /> pada tanggal <ph name="TIME" />. Masukkan frasa sandi untuk memulai sinkronisasi.</translation>
 <translation id="6738867403308150051">Mendownload…</translation>
 <translation id="6751521182688001123">Buka tab baru dengan cepat. Sentuh lama untuk mengedit pintasan ini.</translation>

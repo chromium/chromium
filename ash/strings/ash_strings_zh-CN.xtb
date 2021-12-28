@@ -1015,6 +1015,7 @@
 <translation id="7860671499921112077">若要进入“概览”模式，请用三根手指向上滑动</translation>
 <translation id="7866482334467279021">开启</translation>
 <translation id="7868900307798234037">正在使用指纹解锁</translation>
+<translation id="7872195908557044066">您的管理员正在重置您的 eSIM 卡。请稍等几分钟。</translation>
 <translation id="7872786842639831132">关闭</translation>
 <translation id="7875575368831396199">您的 <ph name="DEVICE_TYPE" /> 上的蓝牙似乎未开启。请开启蓝牙以便使用 Phone Hub。</translation>
 <translation id="7877557217297072640">{0,plural, =0{请立即将设备回滚到上一个版本}=1{请在 1 秒内将设备回滚到上一个版本}other{请在 # 秒内将设备回滚到上一个版本}}</translation>

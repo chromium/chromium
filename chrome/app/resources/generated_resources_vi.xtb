@@ -591,6 +591,7 @@
 <translation id="1600857548979126453">Truy cập chương trình phụ trợ trình gỡ lỗi trang</translation>
 <translation id="1601560923496285236">Áp dụng</translation>
 <translation id="1602085790802918092">Đang khởi động máy ảo</translation>
+<translation id="1603411913360944381">Bỏ qua <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Ẩn danh)</translation>
 <translation id="1604432177629086300">Không in được. Vui lòng kiểm tra máy in rồi thử lại.</translation>
 <translation id="1605744057217831567">Xem tất cả dữ liệu và quyền của trang web</translation>
@@ -6066,6 +6067,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7307129035224081534">Đã tạm dừng</translation>
 <translation id="7308643132139167865">Ngôn ngữ cho trang web</translation>
 <translation id="7310598146671372464">Không đăng nhập được. Máy chủ không hỗ trợ loại mã hóa Kerberos đã chỉ định. Vui lòng liên hệ với quản trị viên của bạn.</translation>
+<translation id="7312210124139670355">Quản trị viên đang đặt lại eSIM của bạn. Quá trình này có thể mất vài phút.</translation>
 <translation id="7320213904474460808">Đặt mạng mặc định</translation>
 <translation id="7321545336522791733">Máy chủ không truy cập được</translation>
 <translation id="7324297612904500502">Diễn đàn beta</translation>

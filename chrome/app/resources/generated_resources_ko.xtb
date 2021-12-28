@@ -591,6 +591,7 @@
 <translation id="1600857548979126453">페이지 디버거 백엔드에 액세스</translation>
 <translation id="1601560923496285236">적용</translation>
 <translation id="1602085790802918092">가상 머신 시작 중</translation>
+<translation id="1603411913360944381"><ph name="DEVICE_NAME" /> 삭제</translation>
 <translation id="1603914832182249871">(시크릿 모드)</translation>
 <translation id="1604432177629086300">인쇄할 수 없음: 프린터를 확인하고 다시 시도해 보세요</translation>
 <translation id="1605744057217831567">모든 사이트 데이터 및 권한 보기</translation>
@@ -6063,6 +6064,7 @@
 <translation id="7307129035224081534">일시중지됨</translation>
 <translation id="7308643132139167865">웹사이트 언어</translation>
 <translation id="7310598146671372464">로그인하지 못했습니다. 서버가 지정된 Kerberos 암호화 유형을 지원하지 않습니다. 관리자에게 문의하세요.</translation>
+<translation id="7312210124139670355">관리자가 eSIM을 재설정하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="7320213904474460808">기본 네트워크 설정</translation>
 <translation id="7321545336522791733">서버에 연결할 수 없음</translation>
 <translation id="7324297612904500502">베타 포럼</translation>

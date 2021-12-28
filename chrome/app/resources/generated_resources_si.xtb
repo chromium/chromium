@@ -1049,6 +1049,7 @@
 <translation id="204914487372604757">කෙටිමඟ තනන්න</translation>
 <translation id="2050339315714019657">සිරස්</translation>
 <translation id="2053312383184521053">නිහඬ තත්වයේ දත්ත</translation>
+<translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> හි වෙන් කර ඇති <ph name="SITE_NAME" /> සඳහා අඩවි දත්ත සහ අවසර හිස් කරන්නද?</translation>
 <translation id="2055585478631012616">ඔබ විවෘත පටිති ඇතුළුව මෙම වෙබ් අඩවිවලින් වරනු ලැබේ</translation>
 <translation id="205560151218727633">Google සහායක ලාංඡනය</translation>
 <translation id="2058456167109518507">උපාංගය අනාවරණය කර ඇත</translation>
@@ -2393,6 +2394,7 @@
 <translation id="3433621910545056227">අපොයි!  පද්ධතිය උපාංගයේ ස්ථාපන-කාල උපලක්ෂණ අගුල පිහිටුවීමට අසමත් විය.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">ඔබේ දරුවා සඳහා අමතර වෙබ් සහ යෙදුම් ක්‍රියාකාරකම් සැකසීම සක්‍රීය කර තිබේ නම්, මෙම දත්ත ඔවුන්ගේ Google ගිණුමට සුරැකිය හැක. මෙම සැකසීම් සහ ඒවා සීරුමාරු කරන ආකාරය ගැන families.google.com හි තවත් දැන ගන්න.</translation>
+<translation id="3434512374684753970">ශ්‍රව්‍ය සහ වීඩියෝ</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" ඔබේ <ph name="CODE_TYPE" /> ඉල්ලමින්</translation>
 <translation id="3435738964857648380">ආරක්ෂක</translation>
 <translation id="343578350365773421">කඩදාසි නැත</translation>
@@ -2840,6 +2842,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3873423927483480833">රහස් අංක පෙන්වන්න</translation>
 <translation id="3873915545594852654">ARC++ සමඟ ගැටලුවක් ඇති විය.</translation>
 <translation id="3874164307099183178">Google සහකරු සක්‍රීය කරන්න</translation>
+<translation id="3875783148670536197">කෙසේද කියා මට පෙන්වන්න</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> නව බ්‍රව්සර ටැබයක විවෘත කිරීමට සකසා ඇති අතර, සහාය දක්වන සබැඳි බ්‍රව්සරයේද විවෘත වනු ඇත. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />ගේ උපාංගය සඳහා ළඟ බෙදා ගැනීමේ සැකසීම්, <ph name="USER_EMAIL" /> යටතේ බෙදා ගනිමින්.</translation>
 <translation id="3879748587602334249">බාගැනීමේ කළමනාකරු</translation>
@@ -4476,6 +4479,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="562935524653278697">ඔබේ පරිපාලක ඔබේ පිටුසන්, ඉතිහාසය, මුරපද, සහ වෙනත් සැකසීම් සමමුහුර්ත කිරීම අබල කර ඇත.</translation>
 <translation id="5631017369956619646">CPU භාවිතය</translation>
 <translation id="5632059346822207074">අවසරය ඉල්ලන ලදි, ප්‍රතිචාර දැක්වීමට Ctrl + ඉදිරියට ඔබන්න</translation>
+<translation id="5632485077360054581">කෙසේද කියා මට පෙන්වන්න</translation>
 <translation id="5632566673632479864">ඔබේ <ph name="EMAIL" /> ගිණුමට තවදුරටත් ප්‍රධාන ගිණුම ලෙස අවසර දෙනු නොලැබේ. මෙම ගිණුම <ph name="DOMAIN" /> විසින් කළමනා කරනු ලබන බැවින්, ඔබේ පිටුසන්, ඉතිහාසය, මුරපද, සහ අනෙකුත් සැකසීම් මෙම උපාංගයෙන් හිස් කරනු ලැබේ.</translation>
 <translation id="5632592977009207922">බාගනිමින්, <ph name="PERCENT_REMAINING" />% ඉතිරියි</translation>
 <translation id="563371367637259496">ජංගම</translation>

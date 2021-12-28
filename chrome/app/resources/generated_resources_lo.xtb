@@ -589,6 +589,7 @@
 <translation id="1600857548979126453">ເຂົ້າຫາດ້ານຫຼັງຂອງຕົວແກ້ໄຂບັນຫາໜ້າ</translation>
 <translation id="1601560923496285236">ນໍາໃຊ້</translation>
 <translation id="1602085790802918092">ກຳລັງເລີ່ມເຄື່ອງສະເໝືອນ</translation>
+<translation id="1603411913360944381">ລືມ <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(ບໍ່​ເຜີຍ​ຕົນ​ຕົວ)</translation>
 <translation id="1604432177629086300">ບໍ່ສາມາດພິມໄດ້. ກວດເບິ່ງເຄື່ອງພິມ ແລ້ວລອງອີກຄັ້ງ.</translation>
 <translation id="1605744057217831567">ເບິ່ງຂໍ້ມູນເວັບໄຊ ແລະ ການອະນຸຍາດທັງໝົດ</translation>
@@ -6062,6 +6063,7 @@
 <translation id="7307129035224081534">ຢຸດໄວ້ຊົ່ວຄາວ</translation>
 <translation id="7308643132139167865">ພາສາເວັບໄຊ</translation>
 <translation id="7310598146671372464">ເຂົ້າສູ່ລະບົບບໍ່ໄດ້. ເຊີບເວີບໍ່ຮອງຮັບການເຂົ້າລະຫັດປະເພດ Kerberos. ກະລຸນາຕິດຕໍ່ຫາຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
+<translation id="7312210124139670355">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານກຳລັງຣີເຊັດ eSIM ທ່ານຢູ່. ຂັ້ນຕອນນີ້ອາດໃຊ້ເວລາສອງສາມນາທີ.</translation>
 <translation id="7320213904474460808">ໃຫ້ເປັນເຄືອຂ່າຍເລີ່ມຕົ້ນ</translation>
 <translation id="7321545336522791733">ບໍ່ສາມາດຕິດຕໍ່ຫາເຊີບເວີໄດ້</translation>
 <translation id="7324297612904500502">ເວທີເບຕ້າ</translation>

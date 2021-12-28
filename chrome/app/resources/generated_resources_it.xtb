@@ -589,6 +589,7 @@
 <translation id="1600857548979126453">Accesso al backend del debugger delle pagine</translation>
 <translation id="1601560923496285236">Applica</translation>
 <translation id="1602085790802918092">Avvio della macchina virtuale</translation>
+<translation id="1603411913360944381">Elimina <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(In incognito)</translation>
 <translation id="1604432177629086300">Stampa non riuscita. Controlla la stampante e riprova</translation>
 <translation id="1605744057217831567">Visualizza tutte le autorizzazioni e i dati dei siti</translation>
@@ -1048,6 +1049,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="204914487372604757">Crea scorciatoia</translation>
 <translation id="2050339315714019657">Verticale</translation>
 <translation id="2053312383184521053">Dati sullo stato di inattività</translation>
+<translation id="2054240652864153171">Vuoi cancellare i dati del sito <ph name="SITE_NAME" /> partizionati su <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Uscirai da questi siti (schede aperte incluse)</translation>
 <translation id="205560151218727633">Logo dell'Assistente Google</translation>
 <translation id="2058456167109518507">Dispositivo rilevato</translation>
@@ -2390,6 +2392,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3433621910545056227">Spiacenti. Il sistema non è riuscito a stabilire il blocco degli attributi del tempo di installazione del dispositivo.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google. Ulteriori informazioni su queste impostazioni e su come configurarle sono disponibili all'indirizzo families.google.com.</translation>
+<translation id="3434512374684753970">Audio e video</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" richiede il tuo codice <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Sicurezza</translation>
 <translation id="343578350365773421">Carta esaurita</translation>
@@ -2836,6 +2839,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3873423927483480833">Mostra i codici PIN</translation>
 <translation id="3873915545594852654">Si è verificato un problema con ARC++.</translation>
 <translation id="3874164307099183178">Attivare l'Assistente Google</translation>
+<translation id="3875783148670536197">Mostrami come fare</translation>
 <translation id="3875815154304214043">L'app <ph name="APP_NAME" /> è stata impostata in modo da essere aperta in una nuova scheda del browser; anche i link supportati verranno aperti nel browser. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Impostazioni di Condivisione nelle vicinanze per il dispositivo di <ph name="USER_NAME" />, con l'account <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Gestione dei download</translation>
@@ -4471,6 +4475,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="562935524653278697">L'amministratore ha disattivato la sincronizzazione dei tuoi preferiti, della cronologia, delle password e di altre impostazioni.</translation>
 <translation id="5631017369956619646">Utilizzo CPU</translation>
 <translation id="5632059346822207074">Autorizzazione richiesta, premi Ctrl + Avanti per rispondere</translation>
+<translation id="5632485077360054581">Mostrami come fare</translation>
 <translation id="5632566673632479864">Il tuo account <ph name="EMAIL" /> non è più consentito come account principale. Siccome l'account è gestito da <ph name="DOMAIN" />, i preferiti, la cronologia, le password e altre impostazioni verranno cancellati da questo dispositivo.</translation>
 <translation id="5632592977009207922">Download in corso: <ph name="PERCENT_REMAINING" />% rimanente</translation>
 <translation id="563371367637259496">Mobile</translation>
@@ -6051,6 +6056,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7307129035224081534">In pausa</translation>
 <translation id="7308643132139167865">Lingue dei siti web</translation>
 <translation id="7310598146671372464">Impossibile accedere. Il server non supporta i tipi di crittografia Kerberos specificati. Contatta l'amministratore.</translation>
+<translation id="7312210124139670355">Il tuo amministratore sta reimpostando l'eSIM. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="7320213904474460808">Scegli rete predefinita</translation>
 <translation id="7321545336522791733">Server non raggiungibile</translation>
 <translation id="7324297612904500502">Forum per la versione Beta</translation>

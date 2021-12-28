@@ -586,6 +586,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4831034276697007977">Viltu örugglega slökkva á sjálfvirkum smellum?</translation>
 <translation id="4849058404725798627">Auðkenna hlut með lyklaborðsfókus</translation>
 <translation id="485592688953820832">Engin aðgerð (hlé)</translation>
+<translation id="485634149294284819">Opna lyklaborðsvalmynd</translation>
 <translation id="4860284199500934869">Athugaðu nettenginguna til að sækja <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Reynt verður að hlaða niður síðar. Tal verður sent til Google til úrvinnslu þar til niðurhali er lokið.</translation>
 <translation id="4868492592575313542">virkjað</translation>
@@ -1015,6 +1016,7 @@ Ný uppsetning</translation>
 <translation id="7860671499921112077">Strjúktu upp með þremur fingrum til að opna Yfirlit.</translation>
 <translation id="7866482334467279021">kveikja</translation>
 <translation id="7868900307798234037">Tekur úr lás með fingrafari</translation>
+<translation id="7872195908557044066">Stjórnandinn er að endurstilla eSIM. Hinkraðu í nokkrar mínútur.</translation>
 <translation id="7872786842639831132">Slökkt</translation>
 <translation id="7875575368831396199">Svo virðist sem slökkt sé á Bluetooth í <ph name="DEVICE_TYPE" />. Kveiktu á Bluetooth til að nota Símstöð.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Færðu tækið í fyrri útgáfu núna}=1{Færa verður tækið í fyrri útgáfu innan 1 sekúndu}one{Færa verður tækið í fyrri útgáfu innan # sekúndu}other{Færa verður tækið í fyrri útgáfu innan # sekúndna}}</translation>
@@ -1097,6 +1099,7 @@ Ný uppsetning</translation>
 <translation id="8380784334203145311">Gott kvöld,</translation>
 <translation id="8388750414311082622">Ekki er hægt að fjarlægja fyrra skjáborð.</translation>
 <translation id="8394567579869570560">Foreldri þitt læsti þessu tæki</translation>
+<translation id="8401850874595457088">Opna tungumálavalmynd</translation>
 <translation id="8412677897383510995">Sýna skjástillingar</translation>
 <translation id="8413272770729657668">Upptaka hefst eftir 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (hulstur)</translation>

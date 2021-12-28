@@ -234,6 +234,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7448255348454382571">Reštartovanie systému Chromium OS</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium potrebuje povolenie pre tento web na prístup k fotoaparátu</translation>
+<translation id="7467949745582939695">Chcete Chromium znova spustiť?</translation>
 <translation id="7483335560992089831">Nemôžete nainštalovať rovnakú verziu prehliadača Chromium ako je tá, ktorá je momentálne spustená. Zatvorte prehliadač Chromium a skúste to znova.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium sa reštartuje o 1 minútu}few{Chromium sa reštartuje o # minúty}many{Chromium sa reštartuje o # minúty}other{Chromium sa reštartuje o # minút}}</translation>
 <translation id="7549178288319965365">Informácie o systéme Chromium OS</translation>

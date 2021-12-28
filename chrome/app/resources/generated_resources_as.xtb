@@ -589,6 +589,7 @@
 <translation id="1600857548979126453">পৃষ্ঠা ডিবাগাৰ বেকএণ্ড এক্সেছ কৰক</translation>
 <translation id="1601560923496285236">প্ৰয়োগ কৰক</translation>
 <translation id="1602085790802918092">ভাৰ্ছুৱেল মেচিনটো আৰম্ভ কৰি থকা হৈছে</translation>
+<translation id="1603411913360944381"><ph name="DEVICE_NAME" /> পাহৰি যাওক</translation>
 <translation id="1603914832182249871">(ইনক’গনিট’)</translation>
 <translation id="1604432177629086300">প্ৰিণ্ট কৰিব পৰা নগ'ল। প্ৰিণ্টাৰটো পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="1605744057217831567">ছাইটৰ আটাইবোৰ ডেটা আৰু অনুমতি চাওক</translation>
@@ -1057,6 +1058,7 @@
 <translation id="204914487372604757">শ্বৰ্টকাট সৃষ্টি কৰক</translation>
 <translation id="2050339315714019657">প’ৰ্ট্ৰেইট</translation>
 <translation id="2053312383184521053">নিষ্ক্ৰিয় স্থিতিৰ ডেটা</translation>
+<translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" />ত বিভাজন কৰা <ph name="SITE_NAME" />ৰ বাবে ছাইটৰ ডেটা মচিবনে?</translation>
 <translation id="2055585478631012616">খোলা থকা টেবসমূহকে ধৰি আপুনি এই ছাইটসমূহৰ পৰা ছাইন আউট হৈ যাব</translation>
 <translation id="205560151218727633">Google সহায়কৰ ল’গ’</translation>
 <translation id="2058456167109518507">ডিভাইচ চিনাক্ত কৰা হৈছে</translation>
@@ -2401,6 +2403,7 @@
 <translation id="3433621910545056227">আমি দুঃখিত!  ছিষ্টেমটোৱে ডিভাইচটোৰ ইনষ্টলেশ্বনৰ সময়ৰ এট্রিবিউট লক স্থাপন কৰিব নোৱাৰিলে।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">যদি আপোনাৰ শিশুৰ বাবে অতিৰিক্ত ৱেব আৰু এপৰ কার্যকলাপ অন কৰা হয়, তেন্তে এই ডেটা তেওঁৰ Google একাউণ্টত ছেভ কৰা হ’ব পাৰে। এই ছেটিংসমূহৰ বিষয়ে আৰু সেইবোৰ কেনেদৰে মিলাব পাৰি সেই বিষয়ে জানিবলৈ families.google.comলৈ যাওক।</translation>
+<translation id="3434512374684753970">অডিঅ' আৰু ভিডিঅ'</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />"এ আপোনাৰ <ph name="CODE_TYPE" />ৰ বাবে অনুৰোধ কৰিছে</translation>
 <translation id="3435738964857648380">সুৰক্ষা</translation>
 <translation id="343578350365773421">কাগজ শেষ হৈছে</translation>
@@ -2847,6 +2850,7 @@
 <translation id="3873423927483480833">পিনসমূহ দেখুৱাওক</translation>
 <translation id="3873915545594852654">ARC++ৰ ক্ষেত্ৰত এটা সমস্যাই দেখা দিছে।</translation>
 <translation id="3874164307099183178">Google Assistant অন কৰক</translation>
+<translation id="3875783148670536197">কেনেকৈ কৰে মোক দেখুৱাওক</translation>
 <translation id="3875815154304214043">এটা নতুন ব্ৰাউজাৰৰ টেবত খুলিবলৈ <ph name="APP_NAME" /> ছেট কৰা আছে, সমৰ্থিত লিংকসমূহো ব্ৰাউজাৰটোত খুলিব। <ph name="BEGIN_LINK_LEARN_MORE" />অধিক জানক<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />ৰ ডিভাইচৰ Nearby Share কৰাৰ সুবিধাটোৰ ছেটিং, <ph name="USER_EMAIL" /> একাউণ্টৰ অধীনত শ্বেয়াৰ কৰি থকা হৈছে।</translation>
 <translation id="3879748587602334249">ডাউনল’ড মেনেজাৰ</translation>
@@ -4482,6 +4486,7 @@
 <translation id="562935524653278697">আপোনাৰ প্ৰশাসকে আপোনাৰ বুকমার্ক, ইতিহাস, পাছৱর্ড আৰু অন্য ছেটিংসমূহ ছিংক কৰা সুবিধাটো অক্ষম কৰিছে।</translation>
 <translation id="5631017369956619646">চিপিইউৰ ব্যৱহাৰ</translation>
 <translation id="5632059346822207074">অনুমতিৰ বাবে অনুৰোধ জনোৱা হৈছে, সঁহাৰি জনাবলৈ ক’ণ্ট্ৰল + ফৰৱাৰ্ডত টিপক</translation>
+<translation id="5632485077360054581">কেনেকৈ কৰে মোক দেখুৱাওক</translation>
 <translation id="5632566673632479864">আপোনাৰ একাউণ্ট <ph name="EMAIL" />ক প্ৰাথমিক একাউণ্ট হিচাপে আৰু ব্যৱহাৰ কৰিবলৈ অনুমতি দিয়া নহয়। কাৰণ এই একাউণ্টটো <ph name="DOMAIN" />এ পৰিচালনা কৰে, আপোনাৰ বুকমাৰ্ক, ইতিহাস, পাছৱৰ্ড আৰু অন্য ছেটিংসমূহ এই ডিভাইচৰ পৰা মচা হ’ব।</translation>
 <translation id="5632592977009207922">ডাউনল’ড কৰি থকা হৈছে, <ph name="PERCENT_REMAINING" />% বাকী আছে</translation>
 <translation id="563371367637259496">ম’বাইল</translation>
@@ -6062,6 +6067,7 @@
 <translation id="7307129035224081534">প'জ কৰা হ'ল</translation>
 <translation id="7308643132139167865">ৱেবছাইটৰ ভাষা</translation>
 <translation id="7310598146671372464">লগইন কৰিব পৰা নগ’ল৷ ছাৰ্ভাৰটোৱে নিৰ্দিষ্ট কৰা Kerberosৰ এনক্ৰিপশ্বন প্ৰকাৰসমূহ সমৰ্থন নকৰে৷ আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।</translation>
+<translation id="7312210124139670355">আপোনাৰ প্ৰশাসকে আপোনাৰ ই-ছিম ৰিছেট কৰি আছে। এই কামটোৰ বাবে কেইমিনিটমান সময় লাগিব পাৰে।</translation>
 <translation id="7320213904474460808">নেটৱৰ্কক ডিফ’ল্ট বনাওক</translation>
 <translation id="7321545336522791733">ছাৰ্ভাৰৰ লগত সংযোগ কৰিব পৰা নাই</translation>
 <translation id="7324297612904500502">বিটা ফ’ৰাম</translation>

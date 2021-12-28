@@ -140,6 +140,7 @@
 <translation id="2268044343513325586">துல்லியமாக்கு</translation>
 <translation id="2271351792809375263">Chromeமில் நீங்கள் சேமித்துள்ள கடவுச்சொற்களை உங்கள் சாதனத்தில் உள்ள பிற ஆப்ஸில் பயன்படுத்தலாம்</translation>
 <translation id="2273327106802955778">மேலும் விருப்பங்களுக்கான மெனு</translation>
+<translation id="2286505070150039482">ஹைலைட் செய்யப்பட்ட வார்த்தைகள்</translation>
 <translation id="2302742851632557585">இணையதளத்தில் கடவுச்சொல்லை மாற்றுங்கள்</translation>
 <translation id="2316709634732130529">பரிந்துரைக்கப்பட்ட கடவுச்சொல்லைப் பயன்படுத்து</translation>
 <translation id="2320166752086256636">கீபோர்டை மறை</translation>
@@ -310,6 +311,7 @@
 <translation id="3803696231112616155">இந்தத் தளத்தை மொழிபெயர்</translation>
 <translation id="385051799172605136">திரும்பு</translation>
 <translation id="3858860766373142691">பெயர்</translation>
+<translation id="3861486700625780712">பின்தொடர்வதை நிறுத்து</translation>
 <translation id="3892144330757387737">உங்கள் வரலாற்றை இங்கே பார்ப்பீர்கள்</translation>
 <translation id="3897092660631435901">மெனு</translation>
 <translation id="3913386780052199712">Chromeமில் நுழைந்துள்ளீர்கள்</translation>
@@ -407,6 +409,7 @@
 <translation id="481968316161811770">குக்கீகள், தளத் தரவு</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain}, மேலும் 1 தாவல்}other{{domain}, மேலும் {count} தாவல்கள்}}</translation>
 <translation id="4826218269716039351">மூன்றாம் தரப்புக் குக்கீகளைத் தடு</translation>
+<translation id="4826726074642088322">ஹைலைட் செய்தவற்றைப் பகிர்</translation>
 <translation id="48274138579728272">படித்ததாகக் குறி</translation>
 <translation id="4833686396768033263">சமீபத்திய தாவல்களைப் பார்க்க முடியாது</translation>
 <translation id="4833786495304741580">தானாகவே பயன்பாட்டுப் புள்ளிவிவரங்களையும் சிதைவு அறிக்கைகளையும் Googleளுக்கு அனுப்பும்.</translation>
@@ -602,6 +605,7 @@
 <translation id="6497772452874122664"><ph name="TIME" /> தளம் நம்பகமானது என நீங்கள் கருதினால் வேறொரு தளத்தில் சேமித்த கடவுச்சொல்லைப் பயன்படுத்தலாம்.
 
 ஒவ்வொரு தளத்திற்கும் தனித்துவமான கடவுச்சொல்லைப் பயன்படுத்த முயலவும்.</translation>
+<translation id="650279896687777322">மேலும் அறிக...</translation>
 <translation id="651505212789431520">ஒத்திசைவை ரத்துசெய்யவா? அமைப்புகளில் ஒத்திசைவை எந்த நேரத்திலும் இயக்கலாம்.</translation>
 <translation id="6524918542306337007">மறைநிலைப் பயன்முறையைப் பயன்படுத்த முடியாது</translation>
 <translation id="6537746030088321027">example.com</translation>

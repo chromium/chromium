@@ -231,6 +231,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7448255348454382571">Chromium OS-i taaskäivitamine</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium vajab selle saidi puhul luba, et teie kaamerale juurde pääseda</translation>
+<translation id="7467949745582939695">Kas käivitada Chromium uuesti?</translation>
 <translation id="7483335560992089831">Ei saa installida sama Chromiumi versiooni, mis praegu töötab. Sulgege Chromium ja proovige uuesti.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium käivitatakse uuesti 1 minuti pärast}other{Chromium käivitatakse uuesti # minuti pärast}}</translation>
 <translation id="7549178288319965365">Teave Chromium OS-i kohta</translation>

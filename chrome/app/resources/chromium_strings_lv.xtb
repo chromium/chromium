@@ -229,6 +229,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="7448255348454382571">Chromium OS restartēšana</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> — Chromium izstrādātāju versija</translation>
 <translation id="7451052299415159299">Pārlūkam Chromium ir nepieciešama atļauja piekļūt jūsu kamerai šajā vietnē.</translation>
+<translation id="7467949745582939695">Vai atkārtoti palaist Chromium?</translation>
 <translation id="7483335560992089831">Nevar instalēt to pašu Chromium versiju, kas jau šobrīd darbojas. Aizveriet Chromium un mēģiniet vēlreiz.</translation>
 <translation id="753534427205733210">{0,plural, =1{Pārlūks Chromium pēc 1 minūtes tiks restartēts}zero{Pārlūks Chromium pēc # minūtēm tiks restartēts}one{Pārlūks Chromium pēc # minūtes tiks restartēts}other{Pārlūks Chromium pēc # minūtēm tiks restartēts}}</translation>
 <translation id="7549178288319965365">Par Chromium OS</translation>

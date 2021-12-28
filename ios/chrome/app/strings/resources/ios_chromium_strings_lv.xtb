@@ -77,6 +77,7 @@
 <translation id="6424492062988593837">Lietojumprogramma Chromium ir uzlabota! Ir pieejama jauna versija.</translation>
 <translation id="6752854822223394465">Notiek Chromium iestatīšana jūsu organizācijā...</translation>
 <translation id="6820823224820483452">Pārlūkprogrammā Chromium nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt.</translation>
+<translation id="7006920032187763988">Paroļu pārvaldniekā saglabātās paroles varat izmantot citās iPad planšetdatora lietotnēs.</translation>
 <translation id="7018284295775193585">Nevar atjaunināt pārlūku Chromium.</translation>
 <translation id="7045244423563602563">Pielāgojiet pārlūku Chromium savām vajadzībām</translation>
 <translation id="7099326575020694068">Chromium nevar izmantot kameru dalītā skata režīmā.</translation>
@@ -103,11 +104,13 @@
 <translation id="8073677936375100957">Vai dzēst jūsu Chromium datus no šīs ierīces?</translation>
 <translation id="8175055321229419309">Padoms. <ph name="BEGIN_LINK" />Pārvietojiet pārlūku Chromium uz savu doku<ph name="END_LINK" />.</translation>
 <translation id="8240981428553046115">Pārlūkā Chromium nevarēja pārbaudīt atjauninājumu pieejamību. Vēlāk mēģiniet vēlreiz.</translation>
+<translation id="858114650497379505">Paroļu pārvaldniekā saglabātās paroles varat izmantot citās iPhone tālruņa lietotnēs.</translation>
 <translation id="8586442755830160949">Autortiesības <ph name="YEAR" /> Chromium autori. Visas tiesības paturētas.</translation>
 <translation id="8663480472502753423">Jaunākās Chromium iespējas</translation>
 <translation id="8776843108004031667">Šis konts un visi nesaglabātie dati tiks noņemti no pārlūka Chromium.</translation>
 <translation id="894437814105052438">Ja izrakstīsieties, jaunie dati pārlūkā Chromium netiks sinhronizēti ar jūsu Google kontu. Iepriekš sinhronizētie dati kontā saglabājas.</translation>
 <translation id="9022552996538154597">Pierakstieties pārlūkā Chromium</translation>
+<translation id="9059693977935746710">Jums nebūs jāatceras šī parole. Tā tiks saglabāta konta <ph name="EMAIL" /> paroļu pārvaldniekā.</translation>
 <translation id="9089354809943900324">Chromium versija ir novecojusi.</translation>
 <translation id="9110075932708282655">Chromium izmantošana pēc noklusējuma</translation>
 <translation id="921174536258924340">Pārlūkprogrammā Chromium nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt vai <ph name="BEGIN_LINK" />pārbaudiet paroles savā Google kontā<ph name="END_LINK" />.</translation>

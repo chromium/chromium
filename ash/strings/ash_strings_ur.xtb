@@ -586,6 +586,7 @@
 <translation id="4831034276697007977">کیا آپ واقعی خودکار کلکس کو آف کرنا چاہتے ہیں؟</translation>
 <translation id="4849058404725798627">کی بورڈ فوکس کی مدد سے آبجیکٹ کو نمایاں کریں</translation>
 <translation id="485592688953820832">کوئی کارروائی نہیں (موقوف کریں)</translation>
+<translation id="485634149294284819">کی بورڈ مینو درج کریں</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> کو ڈاؤن لوڈ کرنے کے ليے اپنا نیٹ ورک کنکشن چیک کریں</translation>
 <translation id="486056901304535126">‏بعد میں ڈاؤن لوڈ کرنے کی کوشش کی جائے گی۔ اسپیچ پروسیسنگ کے لیے Google کو بھیجی جائے گی جب تک کہ ڈاؤن لوڈ مکمل نہ ہو جائے۔</translation>
 <translation id="4868492592575313542">فعال</translation>
@@ -1014,6 +1015,7 @@
 <translation id="7860671499921112077">مجموعی جائزے میں داخل ہونے کے لیے تین انگلیوں سے اوپر سوائپ کریں</translation>
 <translation id="7866482334467279021">آن</translation>
 <translation id="7868900307798234037">فنگر پرنٹ سے غیر مقفل کیا جا رہا ہے</translation>
+<translation id="7872195908557044066">‏آپ کا منتظم آپ کی eSIM کو ری سیٹ کر رہا ہے۔ کچھ منٹ انتظار کریں۔</translation>
 <translation id="7872786842639831132">آف</translation>
 <translation id="7875575368831396199">ایسا لگتا ہے کہ آپ کے <ph name="DEVICE_TYPE" /> پر بلوٹوتھ آف ہے۔ فون ہب کا استعمال کرنے کیلئے براہ کرم بلوٹوتھ آن کریں۔</translation>
 <translation id="7877557217297072640">{0,plural, =0{ابھی آلہ کو گزشتہ ورژن میں تبدیل کریں}=1{1 سیکنڈ کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}other{# سیکنڈ کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}}</translation>
@@ -1096,6 +1098,7 @@
 <translation id="8380784334203145311">شب بخیر،</translation>
 <translation id="8388750414311082622">آخری ڈیسک ہٹایا نہیں جا سکا۔</translation>
 <translation id="8394567579869570560">آپ کے والد/والدہ نے اس آلے کو مقفل کر دیا</translation>
+<translation id="8401850874595457088">زبان مینو درج کریں</translation>
 <translation id="8412677897383510995">ڈسپلے کی ترتیبات دکھائیں</translation>
 <translation id="8413272770729657668">ریکارڈنگ شروع ہونے والی ہے 3، 2، 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (کیس)</translation>

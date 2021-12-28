@@ -1061,6 +1061,7 @@
 <translation id="204914487372604757">ਸ਼ਾਰਟਕੱਟ ਬਣਾਓ</translation>
 <translation id="2050339315714019657">ਪੋਰਟਰੇਟ</translation>
 <translation id="2053312383184521053">ਨਿਸ਼ਕਿਰਿਆ ਸਥਿਤੀ ਡਾਟਾ</translation>
+<translation id="2054240652864153171">ਕੀ <ph name="PARTITION_SITE_NAME" /> 'ਤੇ ਵੰਡੀ ਗਈ <ph name="SITE_NAME" /> ਲਈ ਸਾਈਟ ਡਾਟਾ ਕਲੀਅਰ ਕਰਨਾ ਹੈ?</translation>
 <translation id="2055585478631012616">ਖੁੱਲ੍ਹੀਆਂ ਟੈਬਾਂ ਸਮੇਤ, ਤੁਹਾਨੂੰ ਇਹਨਾਂ ਸਾਈਟਾਂ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="205560151218727633">Google Assistant ਲੋਗੋ</translation>
 <translation id="2058456167109518507">ਡੀਵਾਈਸ ਦਾ ਪਤਾ ਲੱਗਿਆ</translation>
@@ -2405,6 +2406,7 @@
 <translation id="3433621910545056227">ਓਹੋ! ਸਿਸਟਮ ਡੀਵਾਈਸ ਸਥਾਪਨਾ-ਸਮਾਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਾਕ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">ਜੇ ਤੁਹਾਡੇ ਬੱਚੇ ਲਈ ਵਧੀਕ 'ਵੈੱਬ ਅਤੇ ਐਪ ਸਰਗਰਮੀ' ਸੈਟਿੰਗ ਚਾਲੂ ਹੋਵੇ, ਤਾਂ ਇਹ ਡਾਟਾ ਉਹਨਾਂ ਦੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। families.google.com 'ਤੇ ਇਹਨਾਂ ਸੈਟਿੰਗਾਂ ਅਤੇ ਉਹਨਾਂ ਨੂੰ ਵਿਵਸਥਿਤ ਕਰਨ ਦੇ ਤਰੀਕੇ ਬਾਰੇ ਹੋਰ ਜਾਣੋ।</translation>
+<translation id="3434512374684753970">ਆਡੀਓ ਅਤੇ ਵੀਡੀਓ</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" ਵੱਲੋਂ ਤੁਹਾਡੇ <ph name="CODE_TYPE" /> ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="3435738964857648380">ਸੁਰੱਖਿਆ</translation>
 <translation id="343578350365773421">ਕਾਗਜ਼ ਖਤਮ ਹੋਏ</translation>
@@ -2851,6 +2853,7 @@
 <translation id="3873423927483480833">ਪਿੰਨਾਂ ਦਿਖਾਓ</translation>
 <translation id="3873915545594852654">ARC++ ਵਿੱਚ ਕੋਈ ਸਮੱਸਿਆ ਆਈ।</translation>
 <translation id="3874164307099183178">Google Assistant ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="3875783148670536197">ਮੈਨੂੰ ਤਰੀਕਾ ਦਿਖਾਓ</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ਕਿਸੇ ਨਵੀਂ ਬ੍ਰਾਊਜ਼ਰ ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹੇ ਜਾਣ ਲਈ ਤਿਆਰ ਹੈ, ਸਹਾਇਤਾ ਲਈ ਲਿੰਕ ਵੀ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਹੀ ਖੁੱਲ੍ਹਣਗੇ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> ਦੇ ਡੀਵਾਈਸ ਲਈ 'ਨਜ਼ਦੀਕੀ ਸਾਂਝ' ਸੈਟਿੰਗਾਂ ਨੂੰ, <ph name="USER_EMAIL" /> ਖਾਤੇ ਦੇ ਅਧੀਨ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="3879748587602334249">ਡਾਊਨਲੋਡ ਪ੍ਰਬੰਧਕ</translation>
@@ -4487,6 +4490,7 @@
 <translation id="562935524653278697">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਬੁੱਕਮਾਰਕਾਂ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡਾਂ, ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਦਾ ਸਮਕਾਲੀਕਰਨ ਕਰਨਾ ਅਯੋਗ ਬਣਾਇਆ ਹੈ।</translation>
 <translation id="5631017369956619646">CPU ਵਰਤੋਂ</translation>
 <translation id="5632059346822207074">ਇਜਾਜ਼ਤ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਗਈ, ਜਵਾਬ ਦੇਣ ਲਈ Ctrl + Forward ਨੂੰ ਦਬਾਓ</translation>
+<translation id="5632485077360054581">ਮੈਨੂੰ ਤਰੀਕਾ ਦਿਖਾਓ</translation>
 <translation id="5632566673632479864">ਹੁਣ ਤੁਹਾਡੇ ਖਾਤੇ <ph name="EMAIL" /> ਨੂੰ ਮੁੱਖ ਖਾਤੇ ਵਜੋਂ ਵਰਤਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ। ਕਿਉਂਕਿ ਇਸ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਇਸ ਲਈ ਤੁਹਾਡੇ ਬੁੱਕਮਾਰਕਾਂ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਕਲੀਅਰ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="5632592977009207922">ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ, <ph name="PERCENT_REMAINING" />% ਸਮਾਂ ਬਾਕੀ</translation>
 <translation id="563371367637259496">ਮੋਬਾਈਲ</translation>

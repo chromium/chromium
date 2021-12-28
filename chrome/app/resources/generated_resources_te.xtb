@@ -1059,6 +1059,7 @@
 <translation id="204914487372604757">షార్ట్‌కట్‌ను సృష్టించు</translation>
 <translation id="2050339315714019657">పోర్ట్రెయిట్</translation>
 <translation id="2053312383184521053">నిష్క్రియ స్థితి డేటా</translation>
+<translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" />లో విభజించిన <ph name="SITE_NAME" /> సైట్ డేటాను క్లియర్ చేయాలా?</translation>
 <translation id="2055585478631012616">అలాగే మీరు తెరిచిన ట్యాబ్‌లతో సహా, ఆయా సైట్‌ల నుండి పూర్తిగా సైన్ అవుట్ చేయబడతారు</translation>
 <translation id="205560151218727633">Google సహాయకం లోగో</translation>
 <translation id="2058456167109518507">పరికరం కనుగొనబడింది</translation>
@@ -2404,6 +2405,7 @@
 <translation id="3433621910545056227">అయ్యో!  పరికరం ఇన్‌స్టాలేషన్-సమయ లక్షణాల లాక్‌ను ఏర్పాటు చేయడంలో సిస్టమ్ విఫలమైంది.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">మీ చిన్నారి కోసం అదనపు వెబ్ &amp; యాప్ యాక్టివిటీ సెట్టింగ్‌ను ఆన్ చేసినట్లయితే, ఈ డేటా వారి Google ఖాతాలో సేవ్ చేయబడవచ్చు. ఈ సెట్టింగ్‌ల గురించి, వాటిని ఎలా సర్దుబాటు చేయాలనే దాని గురించి families.google.comలో మరింత తెలుసుకోండి.</translation>
+<translation id="3434512374684753970">ఆడియో &amp; వీడియో</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" మీ <ph name="CODE_TYPE" />ని అభ్యర్థిస్తోంది</translation>
 <translation id="3435738964857648380">భద్రత</translation>
 <translation id="343578350365773421">కాగితం లేదు</translation>
@@ -2850,6 +2852,7 @@
 <translation id="3873423927483480833">పిన్‌లను చూపుతుంది</translation>
 <translation id="3873915545594852654">ARC++కి సంబంధించి ఒక సమస్య సంభవించింది.</translation>
 <translation id="3874164307099183178">Google Assistantను ఆన్ చేయండి</translation>
+<translation id="3875783148670536197">ఎలా చేయాలో నాకు చూపించు</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> కొత్త బ్రౌజర్ ట్యాబ్‌లో తెరవడానికి సెట్ చేయబడింది, అదే బ్రౌజర్‌లో సపోర్ట్ చేసే లింక్‌లు కూడా తెరవబడతాయి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> పరికరం కోసం సమీప షేర్ సెట్టింగ్‌లు, <ph name="USER_EMAIL" /> ఖాతా ద్వారా షేర్ చేయబడుతున్నాయి.</translation>
 <translation id="3879748587602334249">డౌన్‌లోడ్ మేనేజ‌ర్‌</translation>
@@ -4486,6 +4489,7 @@
 <translation id="562935524653278697">మీ నిర్వాహకుడు మీ బుక్‌మార్క్‌లు, చరిత్ర, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌ల సింక్‌ను నిలిపివేశారు.</translation>
 <translation id="5631017369956619646">CPU ఉపయోగం</translation>
 <translation id="5632059346822207074">అనుమతి కోసం రిక్వెస్ట్ చేశారు, ప్రతిస్పందించడానికి Ctrl + Forwardను నొక్కండి</translation>
+<translation id="5632485077360054581">ఎలా చేయాలో నాకు చూపించు</translation>
 <translation id="5632566673632479864">మీ ఖాతా <ph name="EMAIL" /> ఇకపై ప్రాథమిక ఖాతాగా అనుమతించబడదు. ఈ ఖాతా <ph name="DOMAIN" /> ద్వారా నిర్వహించబడుతోంది కాబట్టి, మీ బుక్‌మార్క్‌లు, చరిత్ర, పాస్‌వర్డ్‌లు మరియు ఇతర సెట్టింగ్‌లు ఈ పరికరం నుండి తొలగించబడతాయి.</translation>
 <translation id="5632592977009207922">డౌన్‌లోడ్ చేస్తోంది, <ph name="PERCENT_REMAINING" />% మిగిలి ఉంది</translation>
 <translation id="563371367637259496">మొబైల్</translation>

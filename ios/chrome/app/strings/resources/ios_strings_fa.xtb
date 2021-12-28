@@ -25,6 +25,7 @@
 <translation id="1145536944570833626">حذف داده‌های موجود.</translation>
 <translation id="1147031633655575115">با <ph name="USER" /> به سیستم وارد شده‌اید</translation>
 <translation id="1154984953698510061">دیدن برگه‌های دیگر</translation>
+<translation id="1164064664035028907">از گذرواژه قوی استفاده کنید:</translation>
 <translation id="1165039591588034296">خطا</translation>
 <translation id="1172898394251786223">فیلد بعدی</translation>
 <translation id="1176932207622159128">ذخیره تصویر ممکن نشد</translation>
@@ -139,6 +140,7 @@
 <translation id="2268044343513325586">فیلتر</translation>
 <translation id="2271351792809375263">‏از گذرواژه‌های ذخیره‌شده در Chrome در دیگر برنامه‌های دستگاهتان استفاده کنید</translation>
 <translation id="2273327106802955778">منوی بیشتر</translation>
+<translation id="2286505070150039482">نوشتار برجسته‌شده</translation>
 <translation id="2302742851632557585">گذرواژه را در وب‌سایت تغییر دهید</translation>
 <translation id="2316709634732130529">استفاده از گذرواژه پیشنهادی</translation>
 <translation id="2320166752086256636">پنهان کردن صفحه‌کلید</translation>
@@ -309,6 +311,7 @@
 <translation id="3803696231112616155">پیشنهاد ترجمه این سایت</translation>
 <translation id="385051799172605136">بازگشت</translation>
 <translation id="3858860766373142691">نام</translation>
+<translation id="3861486700625780712">لغو دنبال کردن</translation>
 <translation id="3892144330757387737">سابقه را اینجا خواهید دید</translation>
 <translation id="3897092660631435901">منو</translation>
 <translation id="3913386780052199712">‏به Chrome وارد شد</translation>
@@ -406,6 +409,7 @@
 <translation id="481968316161811770">کوکی‌ها، داده‌های سایت</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain}، و ۱ مورد دیگر}one{{domain} و {count} مورد دیگر}other{{domain} و {count} مورد دیگر}}</translation>
 <translation id="4826218269716039351">مسدود کردن کوکی‌های شخص ثالث</translation>
+<translation id="4826726074642088322">هم‌رسانی مورد برجسته</translation>
 <translation id="48274138579728272">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
 <translation id="4833686396768033263">«برگه‌های اخیر» دردسترس نیست</translation>
 <translation id="4833786495304741580">‏به‌طور خودکار آمار کاربرد و گزارش‌های خرابی را به Google ارسال می‌کند.</translation>
@@ -601,6 +605,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6497772452874122664">اگر به <ph name="TIME" /> اعتماد دارید، می‌توانید از گذرواژه ذخیره‌شده برای سایتی دیگر استفاده کنید.
 
 از گذرواژه غیرتکراری برای همه سایت‌ها استفاده کنید.</translation>
+<translation id="650279896687777322">بیشتر بدانید…</translation>
 <translation id="651505212789431520">همگام‌سازی لغو شود؟ هرزمان خواستید می‌توانید همگام‌سازی را در «تنظیمات» روشن کنید.</translation>
 <translation id="6524918542306337007">«حالت ناشناس» دردسترس نیست</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -639,6 +644,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6807889908376551050">نمایش همه...</translation>
 <translation id="681368974849482173">مورد ایجاد شد</translation>
 <translation id="681450999322335505">سازمانتان همگام‌سازی را خاموش کرده است.</translation>
+<translation id="683022620450280906">‏می‌توانید از گذرواژه‌های ذخیره‌شده در هر دستگاهی استفاده کنید. این گذرواژه‌ها در «مدیر گذرواژه Google» برای <ph name="EMAIL" /> ذخیره می‌شود</translation>
 <translation id="6830804042318138535">بیشتر بخوانید</translation>
 <translation id="6831043979455480757">ترجمه</translation>
 <translation id="6842136130964845393">برای اینکه مطمئن شوید همیشه می‌توانید به گذرواژه‌های ذخیره‌شده دسترسی داشته باشید، هویتتان را به‌تأیید برسانید</translation>

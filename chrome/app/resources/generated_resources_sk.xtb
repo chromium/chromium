@@ -590,6 +590,7 @@
 <translation id="1600857548979126453">Pristupovať k ladiacemu nástroju stránok na strane servera</translation>
 <translation id="1601560923496285236">Použiť</translation>
 <translation id="1602085790802918092">Spúšťa sa virtuálny počítač</translation>
+<translation id="1603411913360944381">Odstrániť zariadenie <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Inkognito)</translation>
 <translation id="1604432177629086300">Tlač zlyhala. Skontrolujte tlačiareň a skúste to znova.</translation>
 <translation id="1605744057217831567">Zobraziť všetky dáta webov a povolenia</translation>
@@ -2294,7 +2295,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3333190335304955291">Túto službu môžete vypnúť v Nastaveniach.</translation>
 <translation id="3333961966071413176">Všetky kontakty</translation>
 <translation id="3334632933872291866"><ph name="WINDOW_TITLE" /> – video sa prehráva v režime obraz v obraze</translation>
-<translation id="3335947283844343239">Znova otvoriť zatvorenú kartu</translation>
+<translation id="3335947283844343239">Znova otvoriť zavretú kartu</translation>
 <translation id="3336855445806447827">Neviem</translation>
 <translation id="3337568642696914359">Nepovoliť webom obsluhovať protokoly</translation>
 <translation id="3340251637492627067">Vaša organizácia vyžaduje, aby sa vhodné stiahnuté súbory ukladali v službe <ph name="WEB_DRIVE" />. Po prihlásení dôjde k uloženiu jedinečného overovacieho tokena, ktorý sa bude používať v prípade budúcich vhodných stiahnutých súborov.</translation>
@@ -6052,6 +6053,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7307129035224081534">Pozastavená</translation>
 <translation id="7308643132139167865">Jazyky webov</translation>
 <translation id="7310598146671372464">Nepodarilo sa prihlásiť. Server nepodporuje stanovené typy šifrovania Kerberos. Kontaktujte správcu.</translation>
+<translation id="7312210124139670355">Správca resetuje vašu eSIM kartu. Môže trvať niekoľko minút.</translation>
 <translation id="7320213904474460808">Preferovať sieť</translation>
 <translation id="7321545336522791733">Server je nedostupný</translation>
 <translation id="7324297612904500502">Beta fórum</translation>

@@ -25,6 +25,7 @@ Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um
 <translation id="1145536944570833626">Eyða fyrirliggjandi gögnum.</translation>
 <translation id="1147031633655575115">Skráð(ur) inn sem <ph name="USER" /></translation>
 <translation id="1154984953698510061">Birta aðra flipa</translation>
+<translation id="1164064664035028907">Notaðu traust aðgangsorð:</translation>
 <translation id="1165039591588034296">Villa</translation>
 <translation id="1172898394251786223">Næsti reitur</translation>
 <translation id="1176932207622159128">Ekki er hægt að vista mynd</translation>
@@ -139,6 +140,7 @@ Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um
 <translation id="2268044343513325586">Þrengja</translation>
 <translation id="2271351792809375263">Notaðu aðgangsorðin sem þú vistaðir í Chrome í öðrum forritum tækisins</translation>
 <translation id="2273327106802955778">Valmynd fyrir meira</translation>
+<translation id="2286505070150039482">Áherslumerktur texti</translation>
 <translation id="2302742851632557585">Breyta aðgangsorði á vefsvæði</translation>
 <translation id="2316709634732130529">Nota tillögu að aðgangsorði</translation>
 <translation id="2320166752086256636">Fela lyklaborð</translation>
@@ -309,6 +311,7 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="3803696231112616155">Bjóðast til að þýða þetta vefsvæði</translation>
 <translation id="385051799172605136">Til baka</translation>
 <translation id="3858860766373142691">Heiti</translation>
+<translation id="3861486700625780712">Hætta að fylgjast með</translation>
 <translation id="3892144330757387737">Þú finnur ferilinn þinn hér</translation>
 <translation id="3897092660631435901">Valmynd</translation>
 <translation id="3913386780052199712">Skráð(ur) inn á Chrome</translation>
@@ -406,6 +409,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="481968316161811770">Fótspor, gögn vefsvæða</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} og 1 í viðbót}one{{domain} og {count} í viðbót}other{{domain} og {count} í viðbót}}</translation>
 <translation id="4826218269716039351">Loka á þriðju aðila</translation>
+<translation id="4826726074642088322">Deila áherslumerkingu</translation>
 <translation id="48274138579728272">Merkja sem lesið</translation>
 <translation id="4833686396768033263">Nýlegir flipar eru ekki í boði</translation>
 <translation id="4833786495304741580">Sendir sjálfkrafa talnagögn um notkun og tilkynningar um hrun til Google.</translation>
@@ -601,6 +605,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="6497772452874122664">Ef þú treystir <ph name="TIME" /> geturðu notað vistað aðgangsorð af öðru vefsvæði.
 
 Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
+<translation id="650279896687777322">Nánar...</translation>
 <translation id="651505212789431520">Hætta við samstillingu? Hægt er að kveikja á samstillingu hvenær sem er í stillingunum.</translation>
 <translation id="6524918542306337007">Huliðsstilling er ekki tiltæk</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -639,6 +644,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="6807889908376551050">Sýna alla...</translation>
 <translation id="681368974849482173">Atriði búið til</translation>
 <translation id="681450999322335505">Fyrirtækið þitt slökkti á samstillingu.</translation>
+<translation id="683022620450280906">Þú getur notað vistuð aðgangsorð í hvaða tæki sem er. Þau eru vistuð í aðgangsorðastjórnun Google fyrir <ph name="EMAIL" /></translation>
 <translation id="6830804042318138535">Lesa meira</translation>
 <translation id="6831043979455480757">Þýða</translation>
 <translation id="6842136130964845393">Staðfestu að þetta sért þú til að tryggja aðgang þinn að vistuðum aðgangsorðum</translation>

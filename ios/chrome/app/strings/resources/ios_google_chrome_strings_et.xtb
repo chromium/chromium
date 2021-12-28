@@ -25,6 +25,7 @@
 <translation id="2574249610672786438">Selleks et näha vahelehti kõikjalt, kus Chrome'i kasutate, logige kõigisse oma seadmetesse sisse</translation>
 <translation id="2576431527583832481">Chrome muutus just veelgi paremaks! Saadaval on uus versioon.</translation>
 <translation id="257708665678654955">Kas soovite, et Google Chrome pakuks järgmisel korral sellel saidil <ph name="LANGUAGE_NAME" /> keeles olevate lehtede tõlkimise võimalust?</translation>
+<translation id="2671426118752779020">Saate Google'i paroolihaldurisse salvestatud paroole oma iPhone'i muudes rakendustes kasutada.</translation>
 <translation id="2695886661449553974">Chrome ei saanud värskendusi otsida. Proovige hiljem uuesti.</translation>
 <translation id="2732745070297234559">Chrome'il ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>
 <translation id="2869959624320573933">Logige Chromeʼi sisse</translation>
@@ -85,6 +86,7 @@
 <translation id="7165736900384873061">Google Chrome'i QR-skanneri kasutamise alustamine</translation>
 <translation id="7172660552945675509">Nõuanne: <ph name="BEGIN_LINK" />lisage Chrome dokki<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome kasutab paroolide volitatud juurdepääsu kontrollimiseks Face ID-d.</translation>
+<translation id="72119412072970160">Saate Google'i paroolihaldurisse salvestatud paroole oma iPadi muudes rakendustes kasutada.</translation>
 <translation id="7261678641327190792">Chrome'ile ei õnnestu teie paroole kontrollida</translation>
 <translation id="7272930098487145294">Piltide salvestamiseks puudutage valikut Seaded, et lubada Chrome'il fotode lisamine</translation>
 <translation id="7275945473750112644">Teie kontot haldab <ph name="HOSTED_DOMAIN" />, seega kustutatakse teie Chrome'i andmed sellest seadmest</translation>
@@ -112,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Turvalisus Google Chrome'iga</translation>
 <translation id="8772179140489533211">Kuvatakse viibad Chrome'i sisselogimiseks.</translation>
+<translation id="8788269841521769222">Te ei pea seda parooli meelde jätma. See salvestatakse konto <ph name="EMAIL" /> Google'i paroolihaldurisse.</translation>
 <translation id="9112744793181547300">Kas määrata Chrome vaikebrauseriks?</translation>
 </translationbundle>

@@ -25,6 +25,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="1145536944570833626">Elimina os datos existentes.</translation>
 <translation id="1147031633655575115">Tes a sesión iniciada como <ph name="USER" /></translation>
 <translation id="1154984953698510061">Ver outras pestanas</translation>
+<translation id="1164064664035028907">Usa o contrasinal seguro:</translation>
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1172898394251786223">Campo seguinte</translation>
 <translation id="1176932207622159128">Impos. gardar imaxe</translation>
@@ -139,6 +140,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="2268044343513325586">Refina</translation>
 <translation id="2271351792809375263">Utiliza os contrasinais que tes gardados en Chrome noutras aplicacións do teu dispositivo</translation>
 <translation id="2273327106802955778">Menú Máis</translation>
+<translation id="2286505070150039482">Texto destacado</translation>
 <translation id="2302742851632557585">Cambiar contrasinal no sitio web</translation>
 <translation id="2316709634732130529">Utilizar contrasinal suxerido</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
@@ -309,6 +311,7 @@ Sigue os pasos indicados a continuación:</translation>
 <translation id="3803696231112616155">Ofrecer traducir este sitio</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3861486700625780712">Deixar de seguir</translation>
 <translation id="3892144330757387737">Aquí atoparás o teu historial</translation>
 <translation id="3897092660631435901">Menú</translation>
 <translation id="3913386780052199712">Sesión iniciada en Chrome</translation>
@@ -406,6 +409,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="481968316161811770">Cookies, datos do sitio</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e 1 máis}other{{domain} e {count} máis}}</translation>
 <translation id="4826218269716039351">Bloquear cookies de terceiros</translation>
+<translation id="4826726074642088322">Compartir texto destacado</translation>
 <translation id="48274138579728272">Marcar como lido</translation>
 <translation id="4833686396768033263">As pestanas recentes non están dispoñibles</translation>
 <translation id="4833786495304741580">Envía estatísticas de uso e informes de fallos automaticamente a Google.</translation>
@@ -601,6 +605,7 @@ Non poden utilizalas para ver a túa actividade de navegación en distintos siti
 <translation id="6497772452874122664">Se confías en <ph name="TIME" />, podes usar un contrasinal gardado doutro sitio.
 
 Tenta usar un contrasinal distinto para cada sitio.</translation>
+<translation id="650279896687777322">Máis información…</translation>
 <translation id="651505212789431520">Queres cancelar a sincronización? Podes activala en calquera momento en Configuración.</translation>
 <translation id="6524918542306337007">O modo de incógnito non está dispoñible</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -639,6 +644,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6807889908376551050">Mostrar todas...</translation>
 <translation id="681368974849482173">Creouse o elemento</translation>
 <translation id="681450999322335505">A túa organización desactivou a sincronización.</translation>
+<translation id="683022620450280906">Podes usar os contrasinais gardados en calquera dispositivo. Estes gárdanse no xestor de contrasinais de Google para <ph name="EMAIL" /></translation>
 <translation id="6830804042318138535">Ler máis</translation>
 <translation id="6831043979455480757">Traducir</translation>
 <translation id="6842136130964845393">Para asegurarte de poder acceder sempre aos contrasinais que teñas gardados, verifica a túa identidade</translation>

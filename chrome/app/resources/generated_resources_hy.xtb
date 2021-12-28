@@ -590,6 +590,7 @@
 <translation id="1600857548979126453">Մտնել էջերի վրիպազերծման ծառայություն</translation>
 <translation id="1601560923496285236">Կիրառել</translation>
 <translation id="1602085790802918092">Վիրտուալ մեքենան գործարկվում է</translation>
+<translation id="1603411913360944381">Հեռացնել <ph name="DEVICE_NAME" /> սարքը</translation>
 <translation id="1603914832182249871">(Ինկոգնիտո)</translation>
 <translation id="1604432177629086300">Չհաջողվեց տպել: Ստուգեք տպիչը և նորից փորձեք:</translation>
 <translation id="1605744057217831567">Տեսնել կայքի բոլոր տվյալները և թույլտվությունները</translation>
@@ -1049,6 +1050,7 @@
 <translation id="204914487372604757">Ստեղծել դյուրանցում</translation>
 <translation id="2050339315714019657">Ուղղաձիգ</translation>
 <translation id="2053312383184521053">Անգործուն վիճակի տվյալներ</translation>
+<translation id="2054240652864153171">Ջնջե՞լ <ph name="PARTITION_SITE_NAME" /> կայքում առանձնացված <ph name="SITE_NAME" /> կայքի տվյալները</translation>
 <translation id="2055585478631012616">Դուք դուրս կգրվեք հաշվից այս կայքերում և բաց ներդիրներում</translation>
 <translation id="205560151218727633">Google Օգնականի լոգո</translation>
 <translation id="2058456167109518507">Հայտնաբերվել է սարք</translation>
@@ -2390,6 +2392,7 @@
 <translation id="3433621910545056227">Համակարգին չհաջողվեց կողպել սարքի հատկությունները՝ տեղադրման ժամանակ:</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Եթե Վեբ որոնման և հավելվածների լրացուցիչ պատմությունը միացված է, այս տվյալները կպահվեն երեխայի Google հաշվում։ Այս կարգավորումների մասին ավելին իմանալու և դրանք ըստ ձեր հայեցողության փոփոխելու համար անցեք families.google.com էջ։</translation>
+<translation id="3434512374684753970">Ձայն և տեսապատկեր</translation>
 <translation id="3435688026795609344">«<ph name="EXTENSION_NAME" />» ընդլայնումը պահանջում է ձեր <ph name="CODE_TYPE" /> կոդը</translation>
 <translation id="3435738964857648380">Անվտանգություն</translation>
 <translation id="343578350365773421">Թուղթ չկա</translation>
@@ -2836,6 +2839,7 @@
 <translation id="3873423927483480833">Ցուցադրել PIN կոդերը</translation>
 <translation id="3873915545594852654">Չհաջողվեց գործարկել ARC++ը։</translation>
 <translation id="3874164307099183178">Միացնել Google Օգնականը</translation>
+<translation id="3875783148670536197">Ցույց տալ, թե ինչպես</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> հավելվածը և աջակցվող հղումները կբացվեն դիտարկիչի նոր ներդիրում։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">«Փոխանակում մոտակա սարքերի հետ» գործառույթի կարգավորումները <ph name="USER_NAME" />-ի սարքի համար։ Փոխանակումը կատարվում է <ph name="USER_EMAIL" /> հաշվով։</translation>
 <translation id="3879748587602334249">Ներբեռնման կառավարիչ</translation>
@@ -4474,6 +4478,7 @@
 <translation id="562935524653278697">Ադմինիստրատորն անջատել է ձեր էջանիշների, այցելությունների պատմության, գաղտնաբառերի և մյուս կարգավորումների համաժամացումը:</translation>
 <translation id="5631017369956619646">CPU-ի օգտագործումը</translation>
 <translation id="5632059346822207074">Պահանջվում է թույլտվություն։ Արձագանքելու համար սեղմեք Ctrl + Forward։</translation>
+<translation id="5632485077360054581">Ցույց տալ, թե ինչպես</translation>
 <translation id="5632566673632479864">Ձեր <ph name="EMAIL" /> հաշիվն այլևս չի կարող օգտագործվել որպես հիմնական հաշիվ: Քանի որ այս հաշիվը կառավարվում է <ph name="DOMAIN" /> տիրույթի կողմից, ձեր էջանիշները, այցելությունների պատմությունը, գաղտնաբառերը և մյուս կարգավորումները կջնջվեն այս սարքից:</translation>
 <translation id="5632592977009207922">Ներբեռնվում է, մնացել է <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Բջջային</translation>
@@ -6054,6 +6059,7 @@
 <translation id="7307129035224081534">Դադարեցված է</translation>
 <translation id="7308643132139167865">Կայքերի լեզուներ</translation>
 <translation id="7310598146671372464">Չհաջողվեց մտնել հաշիվ: Սերվերը չի աջակցում Kerberos գաղտնագրման նշված տեսակները: Կապվեք ձեր ադմինիստրատորի հետ:</translation>
+<translation id="7312210124139670355">Ադմինիստրատորը վերակայում է ձեր eSIM-ը։ Դա կարող է մի քանի րոպե տևել։</translation>
 <translation id="7320213904474460808">Կանխադրված ցանց</translation>
 <translation id="7321545336522791733">Սերվերն անհասանելի է</translation>
 <translation id="7324297612904500502">Բետա ֆորում</translation>

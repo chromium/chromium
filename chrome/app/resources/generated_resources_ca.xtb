@@ -588,6 +588,7 @@
 <translation id="1600857548979126453">Accedir al servidor de depuració de pàgina</translation>
 <translation id="1601560923496285236">Aplica</translation>
 <translation id="1602085790802918092">S'està iniciant la màquina virtual</translation>
+<translation id="1603411913360944381">Oblida <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Incògnit)</translation>
 <translation id="1604432177629086300">No s'ha pogut imprimir. Comprova la impressora i torna-ho a provar.</translation>
 <translation id="1605744057217831567">Mostra totes les dades i els permisos dels llocs web</translation>
@@ -6050,6 +6051,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7307129035224081534">En pausa</translation>
 <translation id="7308643132139167865">Idiomes del lloc web</translation>
 <translation id="7310598146671372464">No s'ha pogut iniciar la sessió. El servidor no admet els tipus d'encriptació de Kerberos especificats. Contacta amb l'administrador.</translation>
+<translation id="7312210124139670355">L'administrador està restablint l'eSIM. Aquest procés pot tardar uns minuts.</translation>
 <translation id="7320213904474460808">Estableix com a xarxa predeterminada</translation>
 <translation id="7321545336522791733">No s'ha pogut accedir al servidor</translation>
 <translation id="7324297612904500502">Fòrum per a la versió beta</translation>

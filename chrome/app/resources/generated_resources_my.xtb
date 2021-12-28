@@ -590,6 +590,7 @@
 <translation id="1600857548979126453">debugger backend စာမျက်နှာကို အသုံးပြုမည်</translation>
 <translation id="1601560923496285236">ကျင့်သုံးရန်</translation>
 <translation id="1602085790802918092">ပကတိအသွင်စက်ကို စတင်နေသည်</translation>
+<translation id="1603411913360944381"><ph name="DEVICE_NAME" /> ကို မေ့ပစ်ရန်</translation>
 <translation id="1603914832182249871">(ရုပ်ဖျက်)</translation>
 <translation id="1604432177629086300">ပုံနှိပ်ထုတ်၍ မရပါ။ ပရင်တာကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="1605744057217831567">ဝဘ်ဆိုက် ဒေတာနှင့် ခွင့်ပြုချက်များအားလုံးကို ကြည့်ရန်</translation>
@@ -1057,6 +1058,7 @@
 <translation id="204914487372604757">ဖြတ်လမ်း ဖန်တီးရန်</translation>
 <translation id="2050339315714019657">ဒေါင်လိုက်</translation>
 <translation id="2053312383184521053">မလှုပ်မရှား အခြေအနေ ဒေတာ</translation>
+<translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> တွင် ပိုင်းခြားထားသည့် <ph name="SITE_NAME" /> အတွက် ဝဘ်ဆိုက် ဒေတာကို ဖယ်ရှားမလား။</translation>
 <translation id="2055585478631012616">ဖွင့်ထားသော တဘ်များအပါအဝင် ဤဝဘ်ဆိုက်များမှ သင် ထွက်သွားပါမည်</translation>
 <translation id="205560151218727633">Google assistant တံဆိပ်</translation>
 <translation id="2058456167109518507">စက်ပစ္စည်း တွေ့ရှိထားသည်</translation>
@@ -2402,6 +2404,7 @@
 <translation id="3433621910545056227">အို၊ သော့ချရန် လိုအပ်သည့် စက်ပစ္စည်းတပ်ဆင်ချိန်အား စနစ်မှ မစတင်နိုင်ပါ။</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">သင့်ကလေးအတွက် ထပ်တိုး 'ဝဘ်နှင့် အက်ပ်လုပ်ဆောင်ချက်' ကို ဖွင့်ထားသည့်အခါ ဤဒေတာကို သူ၏ Google အကောင့်သို့ သိမ်းသွားပါမည်။ ဤဆက်တင်များနှင့် ၎င်းတို့အား ချိန်ညှိနည်းကို families.google.com တွင် ပိုမိုလေ့လာပါ။</translation>
+<translation id="3434512374684753970">အသံနှင့် ဗီဒီယို</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" သည် သင့် <ph name="CODE_TYPE" /> ကို တောင်းဆိုနေသည်</translation>
 <translation id="3435738964857648380">လုံခြုံရေး</translation>
 <translation id="343578350365773421">စာရွက်ကုန်နေသည်</translation>
@@ -2848,6 +2851,7 @@
 <translation id="3873423927483480833">ပင်နံပါတ်များ ပြရန်</translation>
 <translation id="3873915545594852654">ARC++ နှင့်ပက်သတ်၍ ပြဿနာရှိနေသည်။</translation>
 <translation id="3874164307099183178">Google Assistant ဖွင့်ရန်</translation>
+<translation id="3875783148670536197">လုပ်နည်း ပြရန်</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ကို ဘရောင်ဇာတဘ်အသစ်တွင် ဖွင့်ရန် သတ်မှတ်ထားသည်။ ပံ့ပိုးထားသည့်လင့်ခ်များကိုလည်း ဘရောင်ဇာတွင် ဖွင့်ပါမည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> ၏ စက်အတွက် 'အနီးတစ်ဝိုက် မျှဝေခြင်း' ဆက်တင်များ၊ <ph name="USER_EMAIL" /> အကောင့်အောက်တွင် မျှဝေထားသည်။</translation>
 <translation id="3879748587602334249">ဒေါင်းလုဒ်မန်နေဂျာ</translation>
@@ -4484,6 +4488,7 @@
 <translation id="562935524653278697">သင့်စီမံခန့်ခွဲသူသည် သင့်စာညှပ်များ၊ မှတ်တမ်း၊ စကားဝှက်များနှင့် အခြားဆက်တင်များအား စင့်ခ်လုပ်ခြင်းကို ပိတ်ထားပါသည်။</translation>
 <translation id="5631017369956619646">CPU သုံးစွဲမှု</translation>
 <translation id="5632059346822207074">ခွင့်ပြုချက်တောင်းထားသည်၊ တုံ့ပြန်ရန် 'Ctrl + ညာညွှန်မြား' ကို နှိပ်ပါ</translation>
+<translation id="5632485077360054581">လုပ်နည်း ပြရန်</translation>
 <translation id="5632566673632479864">သင်၏ <ph name="EMAIL" /> အကောင့်ကို ပင်မအကောင့်အဖြစ် ခွင့်ပြုတော့မည် မဟုတ်ပါ။ ဤအကောင့်ကို <ph name="DOMAIN" /> က စီမံခန့်ခွဲထားသည့်အတွက် သင့်လိပ်စာများ၊ မှတ်တမ်း၊ စကားဝှက်များနှင့် အခြားဆက်တင်များကို ဤစက်ပစ္စည်းမှ ရှင်းထုတ်သွားမည် ဖြစ်သည်။</translation>
 <translation id="5632592977009207922">ဒေါင်းလုဒ်လုပ်နေသည်၊ <ph name="PERCENT_REMAINING" />% ကျန်သည်</translation>
 <translation id="563371367637259496">မိုဘိုင်းလ်</translation>
@@ -6061,6 +6066,7 @@
 <translation id="7307129035224081534">ခေတ္တရပ်ထားသည်</translation>
 <translation id="7308643132139167865">ဝဘ်ဆိုက် ဘာသာစကားများ</translation>
 <translation id="7310598146671372464">စနစ်သို့ ဝင်၍မရပါ။ ဆာဗာသည် သတ်မှတ်ထားသည့် Kerberos အသွင်ဝှက်ခြင်း အမျိုးအစားများကို ပံ့ပိုးမထားပါ။ သင်၏ စီမံခန့်ခွဲသူကို ဆက်သွယ်ပါ။</translation>
+<translation id="7312210124139670355">သင်၏စီမံခန့်ခွဲသူသည် eSIM ကို ပြင်ဆင်သတ်မှတ်နေသည်။ မိနစ်အနည်းငယ် ကြာနိုင်ပါသည်။</translation>
 <translation id="7320213904474460808">မူရင်း ကွန်ရက်</translation>
 <translation id="7321545336522791733">ဆာဗာကိုချိတ်ဆက်၍မရပါ</translation>
 <translation id="7324297612904500502">စမ်းသပ်ဆော့ဖ်ဝဲဖိုရမ်</translation>

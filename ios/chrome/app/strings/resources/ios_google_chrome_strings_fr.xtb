@@ -25,6 +25,7 @@
 <translation id="2574249610672786438">Pour retrouver vos onglets Chrome quel que soit l'appareil utilisé, connectez-vous à votre compte</translation>
 <translation id="2576431527583832481">Google Chrome s'est amélioré ! Une nouvelle version est désormais disponible.</translation>
 <translation id="257708665678654955">Souhaitez-vous que Google Chrome vous propose de traduire les pages de ce site rédigées en <ph name="LANGUAGE_NAME" /> lors de votre prochaine visite ?</translation>
+<translation id="2671426118752779020">Vous pouvez utiliser les mots de passe enregistrés dans le Gestionnaire de mots de passe Google dans d'autres applis sur votre iPhone.</translation>
 <translation id="2695886661449553974">Chrome n'est pas parvenu à rechercher les mises à jour. Réessayez plus tard.</translation>
 <translation id="2732745070297234559">Chrome n'est pas parvenu à vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="2869959624320573933">Connectez-vous à Chrome</translation>
@@ -85,6 +86,7 @@
 <translation id="7165736900384873061">Commencer à utiliser le lecteur de code QR Google Chrome</translation>
 <translation id="7172660552945675509">Conseil : <ph name="BEGIN_LINK" />Placez Chrome dans le dock.<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome utilise Face ID pour autoriser l'accès à vos mots de passe.</translation>
+<translation id="72119412072970160">Vous pouvez utiliser les mots de passe enregistrés dans le Gestionnaire de mots de passe Google dans d'autres applis sur votre iPad.</translation>
 <translation id="7261678641327190792">Chrome ne parvient pas à vérifier vos mots de passe</translation>
 <translation id="7272930098487145294">Pour enregistrer une image, appuyez sur "Paramètres" afin que Chrome puisse l'ajouter à vos photos</translation>
 <translation id="7275945473750112644">Votre compte étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chrome seront effacées de cet appareil</translation>
@@ -112,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Restez protégé avec Google Chrome</translation>
 <translation id="8772179140489533211">Permet d'afficher des invites de connexion à Chrome.</translation>
+<translation id="8788269841521769222">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe Google pour <ph name="EMAIL" /></translation>
 <translation id="9112744793181547300">Utiliser Chrome par défaut ?</translation>
 </translationbundle>

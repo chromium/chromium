@@ -585,6 +585,7 @@
 <translation id="1600857548979126453">访问页面调试程序后端</translation>
 <translation id="1601560923496285236">应用</translation>
 <translation id="1602085790802918092">正在启动虚拟机</translation>
+<translation id="1603411913360944381">清除“<ph name="DEVICE_NAME" />”</translation>
 <translation id="1603914832182249871">（无痕）</translation>
 <translation id="1604432177629086300">无法打印。请检查打印机，然后重试。</translation>
 <translation id="1605744057217831567">查看所有网站数据和权限</translation>
@@ -6045,6 +6046,7 @@
 <translation id="7307129035224081534">已暂停</translation>
 <translation id="7308643132139167865">网站语言</translation>
 <translation id="7310598146671372464">未能成功登录。服务器不支持指定的 Kerberos 加密类型。请与您的管理员联系。</translation>
+<translation id="7312210124139670355">您的管理员正在重置您的 eSIM 卡。这可能需要几分钟的时间。</translation>
 <translation id="7320213904474460808">设置默认网络</translation>
 <translation id="7321545336522791733">无法连接到服务器</translation>
 <translation id="7324297612904500502">Chrome（测试版）论坛</translation>

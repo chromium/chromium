@@ -587,6 +587,7 @@
 <translation id="1600857548979126453">Acceder ao back-end de depuración de páxinas</translation>
 <translation id="1601560923496285236">Aplicar</translation>
 <translation id="1602085790802918092">Iniciando máquina virtual</translation>
+<translation id="1603411913360944381">Esquecer <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Incógnito)</translation>
 <translation id="1604432177629086300">Non se puido imprimir. Comproba a impresora e téntao de novo.</translation>
 <translation id="1605744057217831567">Ver todos os permisos e os datos dos sitios</translation>
@@ -6048,6 +6049,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7307129035224081534">En pausa</translation>
 <translation id="7308643132139167865">Idiomas dos sitios web</translation>
 <translation id="7310598146671372464">Non se puido iniciar sesión. O servidor non admite os tipos especificados de encriptación Kerberos. Ponte en contacto co teu administrador.</translation>
+<translation id="7312210124139670355">O teu administrador está restablecendo a eSIM. Esta acción pode tardar uns minutos.</translation>
 <translation id="7320213904474460808">Establecer rede como predeterminada</translation>
 <translation id="7321545336522791733">Non se pode acceder ao servidor</translation>
 <translation id="7324297612904500502">Foro de Chrome Beta</translation>

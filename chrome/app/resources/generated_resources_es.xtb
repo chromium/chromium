@@ -588,6 +588,7 @@
 <translation id="1600857548979126453">Acceder al servidor de depuración de página</translation>
 <translation id="1601560923496285236">Aplicar</translation>
 <translation id="1602085790802918092">Iniciando la máquina virtual</translation>
+<translation id="1603411913360944381">Olvidar <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Incógnito)</translation>
 <translation id="1604432177629086300">No se ha podido imprimir. Comprueba la impresora y vuelve a intentarlo.</translation>
 <translation id="1605744057217831567">Ver todos los datos y permisos de sitios</translation>
@@ -6049,6 +6050,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7307129035224081534">En pausa</translation>
 <translation id="7308643132139167865">Idiomas de sitios web</translation>
 <translation id="7310598146671372464">No se ha podido iniciar sesión. El servidor no admite los tipos de cifrado Kerberos especificados. Ponte en contacto con tu administrador.</translation>
+<translation id="7312210124139670355">Tu administrador está restableciendo tu eSIM. Este proceso puede tardar unos minutos.</translation>
 <translation id="7320213904474460808">Establecer como red predeterminada</translation>
 <translation id="7321545336522791733">No se puede acceder al servidor</translation>
 <translation id="7324297612904500502">Foro beta</translation>

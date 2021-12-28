@@ -588,6 +588,7 @@
 <translation id="1600857548979126453">صفحہ ڈیبگر بیک اینڈ تک رسائی حاصل کریں</translation>
 <translation id="1601560923496285236">لاگو کریں</translation>
 <translation id="1602085790802918092">ورچوئل مشین شروع ہو رہی ہے</translation>
+<translation id="1603411913360944381"><ph name="DEVICE_NAME" /> بھول جائیں</translation>
 <translation id="1603914832182249871">(پوشیدگی)</translation>
 <translation id="1604432177629086300">پرنٹ نہیں کیا جا سکا۔ پرنٹر چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="1605744057217831567">سبھی سائٹ کا ڈیٹا اور اجازتیں دیکھیں</translation>
@@ -1047,6 +1048,7 @@
 <translation id="204914487372604757">شارٹ کٹ بنائیں</translation>
 <translation id="2050339315714019657">پورٹریٹ</translation>
 <translation id="2053312383184521053">معطل صورتحال کا ڈیٹا</translation>
+<translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> پر تقسیم کردہ <ph name="SITE_NAME" /> کے لیے سائٹ ڈیٹا کو صاف کریں؟</translation>
 <translation id="2055585478631012616">اوپن ٹیبز سمیت، آپ ان سائٹس سے سائن آؤٹ ہو جائیں گے</translation>
 <translation id="205560151218727633">‏Google اسسٹنٹ لوگو</translation>
 <translation id="2058456167109518507">آلہ کا پتا چلا</translation>
@@ -2388,6 +2390,7 @@
 <translation id="3433621910545056227">افوہ!  سسٹم آلے کے انسٹالیشن کے وقت کے انتسابات کا لاک تشکیل دینے میں ناکام ہوگیا۔</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">‏اگر آپ کے بچے کیلئے ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو اس کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ families.google.com پر ان ترتیبات اور ان کو ایڈجسٹ کرنے کے طریقے کے بارے میں مزید جانيں۔</translation>
+<translation id="3434512374684753970">آڈیو اور ویڈیو</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" آپ کے <ph name="CODE_TYPE" /> کی درخواست کر رہا ہے</translation>
 <translation id="3435738964857648380">سیکیورٹی</translation>
 <translation id="343578350365773421">کاغذ ختم ہو گیا</translation>
@@ -2834,6 +2837,7 @@
 <translation id="3873423927483480833">‏PINs دکھائیں</translation>
 <translation id="3873915545594852654">‏++ARC کے ساتھ ایک مسئلہ پیش آگیا۔</translation>
 <translation id="3874164307099183178">‏Google اسسٹنٹ آن کریں</translation>
+<translation id="3875783148670536197">مجھے طریقہ دکھائیں</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> نئے براؤزر ٹیب میں کھلنے کیلئے سیٹ ہے، سپورٹ کردہ لنکس بھی براؤزر میں کھلیں گے۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_EMAIL" /> اکاؤنٹ کے تحت اشتراک کرتے ہوئے <ph name="USER_NAME" /> کے آلہ کیلئے قریبی آلات کے ساتھ اشتراک کی ترتیبات۔</translation>
 <translation id="3879748587602334249">ڈاؤن لوڈ مینیجر</translation>
@@ -4468,6 +4472,7 @@
 <translation id="562935524653278697">آپ کے منتظم نے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کی مطابقت پذیری غیر فعال کر دی ہے۔</translation>
 <translation id="5631017369956619646">‏CPU کا استعمال</translation>
 <translation id="5632059346822207074">‏اجازت کی درخواست کی گئی، جواب دینے کے ليے Ctrl + Forward دبائیں</translation>
+<translation id="5632485077360054581">مجھے طریقہ دکھائیں</translation>
 <translation id="5632566673632479864">آپ کا اکاؤنٹ <ph name="EMAIL" /> اب بنیادی اکاؤنٹ کے طور پر اجازت یافتہ نہیں ہے۔ چونکہ یہ اکاؤنٹ <ph name="DOMAIN" /> کے زیر انتظام ہے، لہذا آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کو اس آلہ سے صاف کر دیا جائے گا۔</translation>
 <translation id="5632592977009207922">ڈاؤن لوڈ ہو رہا ہے، <ph name="PERCENT_REMAINING" /> فیصد باقی ہے</translation>
 <translation id="563371367637259496">موبائل</translation>
@@ -6048,6 +6053,7 @@
 <translation id="7307129035224081534">موقوف ہو گیا</translation>
 <translation id="7308643132139167865">ویب سائٹ کی زبانیں</translation>
 <translation id="7310598146671372464">‏لاگ ان کرنا ناکام ہو گیا۔ سرور متعین Kerberos مرموز کاری کی اقسام کو سپورٹ نہیں کرتا ہے۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
+<translation id="7312210124139670355">‏آپ کا منتظم آپ کی eSIM کو ری سیٹ کر رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="7320213904474460808">نیٹ ورک کو ترجیح دیں</translation>
 <translation id="7321545336522791733">سرور ناقابل رسائی ہے</translation>
 <translation id="7324297612904500502">بی ٹا فورم</translation>

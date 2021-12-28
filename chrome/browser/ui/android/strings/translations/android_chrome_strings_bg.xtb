@@ -90,6 +90,7 @@
 <translation id="147113415845704694">Попитайте „What’s the weather today?“</translation>
 <translation id="1477626028522505441">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради проблеми в сървъра.</translation>
 <translation id="148482509007564431">Поток за запазване на отметка</translation>
+<translation id="1488775391433859242">Можете да използвате този телефон, за да влезете в профила си на компютъра, на който се показва QR кодът.</translation>
 <translation id="1492417797159476138">Вече запазихте това потребителско име за този сайт</translation>
 <translation id="1493287004536771723">Следвате <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">Търсеща машина</translation>
@@ -189,6 +190,7 @@
 <translation id="2122601567107267586">Приложението не можа да бъде отворено</translation>
 <translation id="2126426811489709554">Предоставено от Chrome</translation>
 <translation id="2131665479022868825">Спестихте <ph name="DATA" /></translation>
+<translation id="2132122640199389833">Премахване на всички свързани устройства</translation>
 <translation id="213279576345780926">Затворихте „<ph name="TAB_TITLE" />“</translation>
 <translation id="2139186145475833000">Добавяне към началния екран</translation>
 <translation id="2141396931810938595">Въз основа на използването</translation>
@@ -265,6 +267,7 @@
 <translation id="2534582914273493287">Посещаваните от вас URL адреси се изпращат до Google</translation>
 <translation id="2536728043171574184">Преглеждате офлайн копие на страницата</translation>
 <translation id="2546283357679194313">„Бисквитки“ и данни за сайтове</translation>
+<translation id="2549516196460093976">Можете да използвате този таблет, за да влезете в профила си на компютъра, на който се показва QR кодът.</translation>
 <translation id="2558692642259318568">За да сърфирате, без активността да се запазва на устройството ви, изпробвайте режим „инкогнито“</translation>
 <translation id="2561519700418191927">Визуализиране на видеоклипове</translation>
 <translation id="2567385386134582609">ИЗОБРАЖЕНИЕ</translation>
@@ -451,6 +454,7 @@
 <translation id="3563767357928833671">Съдържанието на буферната памет е показано</translation>
 <translation id="3566923219790363270">Chrome все още се подготвя за VR. Рестартирайте браузъра по-късно.</translation>
 <translation id="3568688522516854065">Влезте в профила си и включете синхронизирането, за да получите разделите си от другите си устройства</translation>
+<translation id="357465026686164600">Телефон като ключ за сигурност</translation>
 <translation id="3577473026931028326">Нещо се обърка. Опитайте отново.</translation>
 <translation id="3587482841069643663">Всички</translation>
 <translation id="3587596251841506391">Помогнете за по-сигурна мрежа</translation>
@@ -520,6 +524,7 @@
 <translation id="4000212216660919741">Начална страница в офлайн режим</translation>
 <translation id="4016425174436051808">Следенето не е възможно. Нещо се обърка.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ч}other{# ч}}</translation>
+<translation id="4035877632587724847">Забраняване</translation>
 <translation id="4045764304651014138">Данни за употребата</translation>
 <translation id="405399507749852140">Получаване на сигнали при понижение на цената в който и да е сайт</translation>
 <translation id="4056223980640387499">Сепия</translation>
@@ -579,6 +584,7 @@
 <translation id="4450672886426705087">Резултати от търсенето с Google.</translation>
 <translation id="4452411734226507615">Затваряне на раздела „<ph name="TAB_TITLE" />“</translation>
 <translation id="4452548195519783679">Отметката бе запазена в/ъв „<ph name="FOLDER_NAME" />“</translation>
+<translation id="4461614516424362539">Когато свържете друго устройство чрез QR код, то може да използва този телефон като ключ за сигурност. Ако го премахнете, трябва пак да сканирате QR код, за да го свържете отново.</translation>
 <translation id="4472118726404937099">Влезте в профила си и включете синхронизирането, за да се възползвате от синхронизиране и персонализиране на всички устройства</translation>
 <translation id="4479839115899251637">Изтр. от списъка за четене</translation>
 <translation id="4479972344484327217">Модулът „<ph name="MODULE" />“ за Chrome се инсталира…</translation>
@@ -649,6 +655,7 @@
 
 За да промените тази настройка, <ph name="BEGIN_LINK" />нулирайте синхронизирането<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Име върху картата</translation>
+<translation id="481574578487123132">Свързани устройства</translation>
 <translation id="4818017973810341238">Потвърждаването на връзките към дигитални активи на адрес <ph name="VIOLATED_URL" /> не бе успешно</translation>
 <translation id="4831037795716408498">Изтегляне на съдържание</translation>
 <translation id="4834007576107377210">Вижте инструкциите на търсещата си машина относно изтриването на историята на търсенията ви (ако е приложимо)</translation>
@@ -681,6 +688,7 @@
 <translation id="4941179133499732445">Докоснете иконата на микрофон, за да търсите чрез гласа си</translation>
 <translation id="4943703118917034429">Виртуална реалност</translation>
 <translation id="4943872375798546930">Няма резултати</translation>
+<translation id="4950924971025849764">Когато сте влезли в един и същ профил в Google, другите устройства могат да използват този телефон като ключ за сигурност.</translation>
 <translation id="4957722034734105353">Научете повече...</translation>
 <translation id="4961107849584082341">Превод на тази страница на който и да е език</translation>
 <translation id="4971735654804503942">По-бърза, изпреварваща защита срещу опасни уебсайтове, изтеглени файлове и разширения. Предупреждава ви за разкрити пароли. За да действа, до Google трябва да се изпращат данни за сърфирането.</translation>
@@ -781,6 +789,7 @@
 <translation id="55737423895878184">Достъпът до местоположението и известията са разрешени</translation>
 <translation id="5578795271662203820">Търсене на изображението със: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK1" />настройките<ph name="END_LINK1" />.</translation>
+<translation id="5590372121997663538">Запомняне на този компютър</translation>
 <translation id="5599455543593328020">Режим „инкогнито“</translation>
 <translation id="5599941490345670218">Google Асистент може да извършва действия в уебсайтове вместо вас</translation>
 <translation id="5620163320393916465">Няма запазени пароли</translation>
@@ -862,6 +871,7 @@
 <translation id="5995726099713306770">Искате ли отново да изтеглите страницата?</translation>
 <translation id="6000066717592683814">Запазване на Google</translation>
 <translation id="6000203700195075278">Повторно следене</translation>
+<translation id="6002122790816966947">Вашите устройства</translation>
 <translation id="6005538289190791541">Предложена парола</translation>
 <translation id="6032091552407840792">Този експеримент е активен само в <ph name="BEGIN_LINK" />някои региони<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Чрез <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> Chrome разработва нови технологии, за да ви предпазва от проследяване в различни сайтове, съхранявайки отворената мрежа.
@@ -991,6 +1001,7 @@
 <translation id="6640207029842583248">Блокиране във всички случаи</translation>
 <translation id="6643016212128521049">Изчистване</translation>
 <translation id="6643649862576733715">Сортирайте по количество спестени данни</translation>
+<translation id="6645629752388991326">Управлявайте това, кои устройства могат да влизат чрез използване на това устройство като ключ за сигурност.</translation>
 <translation id="6648459603387803038">Администраторът ви може отдалечено да променя настройките на браузъра. Възможно е активността на това устройство да се управлява и извън Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Визуализация <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@
 <translation id="6710213216561001401">Предишно</translation>
 <translation id="671481426037969117">Таймерът ви за <ph name="FQDN" /> изтече и ще се стартира отново утре.</translation>
 <translation id="6715020873764921614">Искате ли да изтеглите <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) въпреки това?</translation>
+<translation id="6719634564325948108">Да се установи ли връзка чрез QR код?</translation>
 <translation id="6738516213925468394">На <ph name="TIME" /> данните ви бяха шифровани с <ph name="BEGIN_LINK" />пропуска ви за синхронизиране<ph name="END_LINK" />. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="6738867403308150051">Изтегля се…</translation>
 <translation id="6751521182688001123">Бързо отваряне на нов раздел. За да редактирате този пряк път, докоснете и задръжте.</translation>

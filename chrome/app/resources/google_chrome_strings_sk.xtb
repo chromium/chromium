@@ -64,6 +64,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2467438592969358367">Google Chrome sa pokúša exportovať vaše heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="2485422356828889247">Odinštalovať</translation>
 <translation id="2534507159460261402">Google Pay (skopírované do Chromu)</translation>
+<translation id="2563121210305478421">Chcete Chrome znova spustiť?</translation>
 <translation id="2574930892358684005">Používateľ <ph name="EXISTING_USER" /> je už do tohto profilu Chromu prihlásený. Ak chcete oddeliť svoje prehliadanie, Chrome vám môže vytvoriť vlastný profil.</translation>
 <translation id="2580411288591421699">Nie je možné nainštalovať rovnakú verziu prehliadača Google Chrome, ako je aktuálne spustená verzia. Zavrite Google Chrome a skúste znova.</translation>
 <translation id="2586406160782125153">Táto akcia odstráni zo zariadenia údaje prehliadania. Ak budete chcieť svoje údaje neskôr opäť načítať, prihláste sa do Chromu ako používateľ <ph name="USER_EMAIL" />.</translation>
@@ -298,6 +299,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Tiež určuje, ktorá stránka sa zobrazí pri spustení prehliadača Chrome.</translation>
 <translation id="8686817260976772516">Profilmi Chromu môžete oddeliť všetok svoj obsah v Chrome. Vytvorte profily pre rodinu aj priateľov alebo si rozdeľte obsah na prácu a zábavu.</translation>
+<translation id="8712767363896337380">Takmer aktualizované. Dokončite aktualizáciu opätovným spustením Chromu.</translation>
 <translation id="873133009373065397">Google Chrome nedokáže určiť alebo nastaviť predvolený prehliadač</translation>
 <translation id="8823341990149967727">Prehliadač Chrome je zastaraný</translation>
 <translation id="8834965163890861871">Google Chrome sa pokúša upraviť heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>

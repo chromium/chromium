@@ -140,6 +140,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="2268044343513325586">Tinh chỉnh</translation>
 <translation id="2271351792809375263">Sử dụng mật khẩu bạn đã lưu vào Chrome cho các ứng dụng khác trên thiết bị của bạn</translation>
 <translation id="2273327106802955778">Menu khác</translation>
+<translation id="2286505070150039482">Văn bản được đánh dấu</translation>
 <translation id="2302742851632557585">Đổi mật khẩu trên trang web</translation>
 <translation id="2316709634732130529">Sử dụng mật khẩu đề xuất</translation>
 <translation id="2320166752086256636">Ẩn bàn phím</translation>
@@ -310,6 +311,7 @@ Hãy làm theo các bước sau:</translation>
 <translation id="3803696231112616155">Đề xuất dịch trang web này</translation>
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="3858860766373142691">Tên</translation>
+<translation id="3861486700625780712">Ngừng theo dõi</translation>
 <translation id="3892144330757387737">Bạn sẽ thấy lịch sử hoạt động ở đây</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3913386780052199712">Đã đăng nhập vào Chrome</translation>
@@ -407,6 +409,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="481968316161811770">Cookie, Dữ liệu trang web</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} và 1 thẻ khác}other{{domain} và {count} thẻ khác}}</translation>
 <translation id="4826218269716039351">Chặn cookie của bên thứ ba</translation>
+<translation id="4826726074642088322">Chia sẻ nội dung được đánh dấu</translation>
 <translation id="48274138579728272">Đánh dấu là đã đọc</translation>
 <translation id="4833686396768033263">Không có các thẻ gần đây</translation>
 <translation id="4833786495304741580">Tự động gửi số liệu thống kê sử dụng và báo cáo sự cố cho Google.</translation>
@@ -602,6 +605,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="6497772452874122664">Nếu tin tưởng <ph name="TIME" />, bạn có thể sử dụng mật khẩu đã lưu của một trang web khác.
 
 Hãy cố gắng sử dụng một mật khẩu riêng cho mỗi trang web.</translation>
+<translation id="650279896687777322">Tìm hiểu thêm...</translation>
 <translation id="651505212789431520">Bạn muốn hủy đồng bộ hóa? Bạn có thể bật tính năng đồng bộ hóa bất cứ lúc nào trong phần Cài đặt.</translation>
 <translation id="6524918542306337007">Không có Chế độ ẩn danh</translation>
 <translation id="6537746030088321027">example.com</translation>

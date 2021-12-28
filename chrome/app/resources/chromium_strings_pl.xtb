@@ -229,6 +229,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7448255348454382571">Ponowne uruchomienie Chromium OS</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium potrzebuje uprawnień dostępu do aparatu na tej stronie</translation>
+<translation id="7467949745582939695">Uruchomić ponownie Chromium?</translation>
 <translation id="7483335560992089831">Nie można zainstalować tej samej wersji Chromium co obecnie uruchomiona. Zamknij Chromium i spróbuj ponownie.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium uruchomi się ponownie za 1 minutę}few{Chromium uruchomi się ponownie za # minuty}many{Chromium uruchomi się ponownie za # minut}other{Chromium uruchomi się ponownie za # minuty}}</translation>
 <translation id="7549178288319965365">System operacyjny Chromium – informacje</translation>

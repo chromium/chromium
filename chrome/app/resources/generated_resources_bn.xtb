@@ -1061,6 +1061,7 @@
 <translation id="204914487372604757">শর্টকাট তৈরি করুন</translation>
 <translation id="2050339315714019657">প্রতিকৃতি</translation>
 <translation id="2053312383184521053">নিষ্ক্রিয় অবস্থার ডেটা</translation>
+<translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" />-এ বিভাজিত <ph name="SITE_NAME" />-এর জন্য সাইট ডেটা মুছুবেন?</translation>
 <translation id="2055585478631012616">যেকোনও খোলা ট্যাব ছাড়াও এই সব সাইটগুলি থেকে আপনি সাইন-আউট হয়ে যাবেন</translation>
 <translation id="205560151218727633">Google অ্যাসিস্ট্যান্ট লোগো</translation>
 <translation id="2058456167109518507">ডিভাইস শনাক্ত করা হয়েছে</translation>
@@ -2405,6 +2406,7 @@
 <translation id="3433621910545056227">ওহো! সিস্টেমটি ডিভাইস ইনস্টলেশন-সময় অ্যাট্রিবিউটস লক স্থাপন করতে ব্যর্থ হয়েছে৷</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">অতিরিক্ত 'ওয়েব ও অ্যাপ অ্যাক্টিভিটি' সেটিং আপনার সন্তানের ডিভাইসের জন্য চালু করা থাকলে, এই ডেটা তাদের Google অ্যাকাউন্টে সেভ করা হতে পারে। এই সেটিং এবং এটি কীভাবে অ্যাডজাস্ট করবেন সেই সম্পর্কে families.google.com লিঙ্কে গিয়ে আরও জানুন।</translation>
+<translation id="3434512374684753970">অডিও ও ভিডিও</translation>
 <translation id="3435688026795609344">আপনার  "<ph name="EXTENSION_NAME" />" <ph name="CODE_TYPE" /> এর অনুরোধ করছে</translation>
 <translation id="3435738964857648380">নিরাপত্তা</translation>
 <translation id="343578350365773421">কাগজ ফুরিয়ে গেছে</translation>
@@ -2851,6 +2853,7 @@
 <translation id="3873423927483480833">পিন দেখুন</translation>
 <translation id="3873915545594852654">ARC++ নিয়ে একটি সমস্যা হয়েছে।</translation>
 <translation id="3874164307099183178">Google Assistant অ্যাপ চালু করুন</translation>
+<translation id="3875783148670536197">কীভাবে করতে হবে তা দেখান</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> নতুন ব্রাউজার ট্যাবে খোলার জন্য তৈরি, কাজ করে এমন লিঙ্কও ব্রাউজারে খুলবে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />-এর ডিভাইসে 'নিয়ারবাই শেয়ার' সেটিংস, <ph name="USER_EMAIL" /> অ্যাকাউন্টের মাধ্যমে শেয়ার করছেন।</translation>
 <translation id="3879748587602334249">ডাউনলোড ম্যানেজার</translation>
@@ -4487,6 +4490,7 @@
 <translation id="562935524653278697">আপনার অ্যাডমিনিস্ট্রেটর বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংসের সিঙ্ক করা বন্ধ করেছে।</translation>
 <translation id="5631017369956619646">CPU ব্যবহার</translation>
 <translation id="5632059346822207074">অনুমতি চাওয়া হয়েছে, উত্তর দিতে Ctrl + 'ফরওয়ার্ড' বোতাম প্রেস করুন</translation>
+<translation id="5632485077360054581">কীভাবে করতে হবে তা দেখান</translation>
 <translation id="5632566673632479864">আপনার <ph name="EMAIL" /> অ্যাকাউন্ট আর প্রাথমিক অ্যাকাউন্ট হিসেবে ব্যবহার করা যাবে না। যেহেতু <ph name="DOMAIN" /> আপনার এই অ্যাকাউন্ট ম্যানেজ করে তাই আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস এই ডিভাইস থেকে মুছে ফেলা হবে।</translation>
 <translation id="5632592977009207922">ডাউনলোড হচ্ছে, <ph name="PERCENT_REMAINING" />% বাকি আছে</translation>
 <translation id="563371367637259496">মোবাইল</translation>

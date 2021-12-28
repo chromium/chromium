@@ -588,6 +588,7 @@
 <translation id="1600857548979126453">Sayfa hata ayıklayıcı arka ucuna erişme</translation>
 <translation id="1601560923496285236">Uygula</translation>
 <translation id="1602085790802918092">Sanal makine başlatılıyor</translation>
+<translation id="1603411913360944381"><ph name="DEVICE_NAME" /> adlı cihazı unut</translation>
 <translation id="1603914832182249871">(Gizli mod)</translation>
 <translation id="1604432177629086300">Yazdırılamadı. Yazıcıyı kontrol edip tekrar deneyin.</translation>
 <translation id="1605744057217831567">Tüm site verilerini ve izinlerini görün</translation>
@@ -6049,6 +6050,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7307129035224081534">Duraklatıldı</translation>
 <translation id="7308643132139167865">Web sitesi dilleri</translation>
 <translation id="7310598146671372464">Giriş yapılamadı. Sunucu belirtilen Kerberos şifreleme türlerini desteklemiyor. Lütfen yöneticinizle iletişim kurun.</translation>
+<translation id="7312210124139670355">Yöneticiniz eSIM'inizi sıfırlıyor. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="7320213904474460808">Varsayılan olarak ağa bağlan</translation>
 <translation id="7321545336522791733">Sunucuya ulaşılamıyor</translation>
 <translation id="7324297612904500502">Beta Forumu</translation>

@@ -1059,7 +1059,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="204914487372604757">Napravi prečicu</translation>
 <translation id="2050339315714019657">Uspravno</translation>
 <translation id="2053312383184521053">Podaci o stanju neaktivnosti</translation>
-<translation id="2054240652864153171">Izbrisati podatke web-lokacije za <ph name="SITE_NAME" /> podijeljene na <ph name="PARTITION_SITE_NAME" />?</translation>
+<translation id="2054240652864153171">Obrisati podatke web lokacije za <ph name="SITE_NAME" /> podijeljene na <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Odjavit ćete se s ovih web lokacija, uključujući otvorene kartice</translation>
 <translation id="205560151218727633">Logotip Google asistenta</translation>
 <translation id="2058456167109518507">Otkriven je uređaj</translation>
@@ -2404,7 +2404,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3433621910545056227">Ups!  Sistem nije uspio uspostaviti zaključavanje atributa za vrijeme instalacije na uređaju.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Ako je za vaše dijete uključena postavka za dodatnu Aktivnost na webu i u aplikacijama, ovi podaci mogu biti sačuvani na Google računu djeteta. Na stranici families.google.com saznajte više o ovim postavkama i kako ih prilagoditi.</translation>
-<translation id="3434512374684753970">Slika i zvuk</translation>
+<translation id="3434512374684753970">Zvuk i videozapis</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" traži vaš <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Sigurnost</translation>
 <translation id="343578350365773421">Nema papira</translation>

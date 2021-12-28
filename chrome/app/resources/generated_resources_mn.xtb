@@ -1056,6 +1056,7 @@
 <translation id="204914487372604757">Богино холболт үүсгэх</translation>
 <translation id="2050339315714019657">Хөрөг зураг</translation>
 <translation id="2053312383184521053">Идэвхгүй хэлбэрийн өгөгдөл</translation>
+<translation id="2054240652864153171"><ph name="SITE_NAME" /> дээр хуваагдсан <ph name="PARTITION_SITE_NAME" /> сайтын өгөгдлийг арилгах уу?</translation>
 <translation id="2055585478631012616">Та эдгээр сайтаас гарах бөгөөд үүнд нээлттэй табын сайтууд мөн багтана</translation>
 <translation id="205560151218727633">Google туслахын лого</translation>
 <translation id="2058456167109518507">Төхөөрөмж илэрсэн</translation>
@@ -2401,6 +2402,7 @@
 <translation id="3433621910545056227">Анхаарна уу! Систем төхөөрөмжийг суурьлуулж чадахгүй байна.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Хэрэв таны хүүхдийн Веб, аппын нэмэлт үйл ажиллагааны тохиргоо асаалттай байвал энэ өгөгдлийг түүний Google Бүртгэлд хадгалж болзошгүй. Эдгээр тохиргооны талаар болон тэднийг хэрхэн тохируулах тухай нэмэлт мэдээллийг families.google.com дээрээс авна уу.</translation>
+<translation id="3434512374684753970">Аудио болон видео</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" таны <ph name="CODE_TYPE" />-г хүсэж байна</translation>
 <translation id="3435738964857648380">Нууцлал</translation>
 <translation id="343578350365773421">Цаас дууссан</translation>
@@ -2847,6 +2849,7 @@
 <translation id="3873423927483480833">ПИН харуулах</translation>
 <translation id="3873915545594852654">ARC++-д асуудал гарлаа.</translation>
 <translation id="3874164307099183178">Google Туслахыг асаах</translation>
+<translation id="3875783148670536197">Надад хэрхэн хийхийг харуулна уу</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" />-г хөтчийн шинэ табд нээхээр тохируулсан бөгөөд дэмжигдсэн холбооснуудыг мөн хөтчид нээнэ. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_EMAIL" /> бүртгэлээр хуваалцаж байгаа <ph name="USER_NAME" />-н төхөөрөмжийн Ойролцоо хуваалцах тохиргоо.</translation>
 <translation id="3879748587602334249">Таталтын менежер</translation>
@@ -4483,6 +4486,7 @@
 <translation id="562935524653278697">Таны админ хавчуурга, түүх, нууц үг болон бусад тохиргоог синк хийхийг цуцалсан.</translation>
 <translation id="5631017369956619646">CPU-ийн хэрэглээ</translation>
 <translation id="5632059346822207074">Зөвшөөрлийн хүсэлт тавьсан. Хариу өгөхийн тулд Ctrl + Forward дээр дарна уу</translation>
+<translation id="5632485077360054581">Надад хэрхэн хийхийг харуулна уу</translation>
 <translation id="5632566673632479864">Таны <ph name="EMAIL" /> бүртгэл цаашид үндсэн бүртгэлээр зөвшөөрөгдөхөө больсон байна. Энэ бүртгэлийг <ph name="DOMAIN" />-с удирддаг тул таны хавчуурга, түүх, нууц үг болон бусад тохиргоог энэ төхөөрөмжөөс устгах болно.</translation>
 <translation id="5632592977009207922">Татаж байна, <ph name="PERCENT_REMAINING" />% үлдсэн</translation>
 <translation id="563371367637259496">Мобайл</translation>

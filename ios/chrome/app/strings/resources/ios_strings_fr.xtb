@@ -25,6 +25,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1145536944570833626">Supprimer les données existantes</translation>
 <translation id="1147031633655575115">Connecté en tant que <ph name="USER" /></translation>
 <translation id="1154984953698510061">Voir les autres onglets</translation>
+<translation id="1164064664035028907">Utilisez un mot de passe sécurisé :</translation>
 <translation id="1165039591588034296">Erreur</translation>
 <translation id="1172898394251786223">Champ suivant</translation>
 <translation id="1176932207622159128">Imposs. enreg. image</translation>
@@ -139,6 +140,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2268044343513325586">Affiner</translation>
 <translation id="2271351792809375263">Utilisez les mots de passe enregistrés dans Chrome dans d'autres applis sur votre appareil</translation>
 <translation id="2273327106802955778">Menu Plus</translation>
+<translation id="2286505070150039482">Texte en surbrillance</translation>
 <translation id="2302742851632557585">Changer de mot de passe sur le site Web</translation>
 <translation id="2316709634732130529">Utiliser le mot de passe suggéré</translation>
 <translation id="2320166752086256636">Masquer le clavier</translation>
@@ -309,6 +311,7 @@ Suivez les étapes ci-dessous :</translation>
 <translation id="3803696231112616155">Proposer de traduire ce site</translation>
 <translation id="385051799172605136">Retour</translation>
 <translation id="3858860766373142691">Nom</translation>
+<translation id="3861486700625780712">Se désabonner</translation>
 <translation id="3892144330757387737">Votre historique s'affichera ici</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3913386780052199712">Connecté à Google Chrome</translation>
@@ -406,6 +409,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="481968316161811770">Cookies/données site</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} et 1 autre}one{{domain} et {count} autre}other{{domain} et {count} autres}}</translation>
 <translation id="4826218269716039351">Bloquer les cookies tiers</translation>
+<translation id="4826726074642088322">Partager le texte en surbrillance</translation>
 <translation id="48274138579728272">Marquer comme lu</translation>
 <translation id="4833686396768033263">Onglets récents indisponibles</translation>
 <translation id="4833786495304741580">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
@@ -601,6 +605,7 @@ En revanche, ils ne peuvent pas en utiliser pour voir votre activité de navigat
 <translation id="6497772452874122664">Si vous jugez le site <ph name="TIME" /> fiable, vous pouvez utiliser un mot de passe enregistré pour un autre site.
 
 Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</translation>
+<translation id="650279896687777322">En savoir plus…</translation>
 <translation id="651505212789431520">Annuler la synchronisation ? Vous pouvez activer la synchronisation à tout moment dans les paramètres.</translation>
 <translation id="6524918542306337007">Mode navigation privée indisponible</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -639,6 +644,7 @@ Lorsque vous êtes en navigation privée, ils ne peuvent pas utiliser de cookies
 <translation id="6807889908376551050">Tout afficher…</translation>
 <translation id="681368974849482173">Élément créé</translation>
 <translation id="681450999322335505">Votre organisation a désactivé la synchronisation.</translation>
+<translation id="683022620450280906">Vous pouvez utiliser les mots de passe enregistrés sur n'importe quel appareil. Ils sont enregistrés dans le Gestionnaire de mots de passe Google pour <ph name="EMAIL" />.</translation>
 <translation id="6830804042318138535">Afficher plus</translation>
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="6842136130964845393">Pour toujours avoir accès à vos mots de passe enregistrés, confirmez votre identité</translation>

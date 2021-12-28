@@ -586,6 +586,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4831034276697007977">Ali ste prepričani, da želite izklopiti samodejne klike?</translation>
 <translation id="4849058404725798627">Označitev predmeta s fokusom na tipkovnici</translation>
 <translation id="485592688953820832">Brez dejanj (zaustavitev)</translation>
+<translation id="485634149294284819">Odpiranje menija za tipkovnico</translation>
 <translation id="4860284199500934869">Preverite omrežno povezavo za prenos datoteke <ph name="FILENAME" />.</translation>
 <translation id="486056901304535126">Poskus prenosa bo izveden pozneje. Govor bo poslan Googlu v obdelavo, dokler prenos ne bo dokončan.</translation>
 <translation id="4868492592575313542">aktivirano</translation>
@@ -1015,6 +1016,7 @@ Nova namestitev</translation>
 <translation id="7860671499921112077">Če želite odpreti pregled, povlecite s tremi prsti navzgor.</translation>
 <translation id="7866482334467279021">vklopljeno</translation>
 <translation id="7868900307798234037">Odklepanje s prstnim odtisom</translation>
+<translation id="7872195908557044066">Skrbnik ponastavlja vašo kartico eSIM. Počakajte nekaj minut.</translation>
 <translation id="7872786842639831132">Izklopljeno</translation>
 <translation id="7875575368831396199">Videti je, da je v napravi <ph name="DEVICE_TYPE" /> izklopljen Bluetooth. Vklopite Bluetooth, če želite uporabljati telefonsko središče.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Spremenite napravo na prejšnjo različico zdaj}=1{Spremenite napravo na prejšnjo različico v 1 sekundi}one{Spremenite napravo na prejšnjo različico v # sekundi}two{Spremenite napravo na prejšnjo različico v # sekundah}few{Spremenite napravo na prejšnjo različico v # sekundah}other{Spremenite napravo na prejšnjo različico v # sekundah}}</translation>
@@ -1097,6 +1099,7 @@ Nova namestitev</translation>
 <translation id="8380784334203145311">Lahko noč,</translation>
 <translation id="8388750414311082622">Zadnjega namizja ni mogoče odstraniti.</translation>
 <translation id="8394567579869570560">Tvoj starš je zaklenil to napravo</translation>
+<translation id="8401850874595457088">Odpiranje menija za jezik</translation>
 <translation id="8412677897383510995">Prikaz nastavitev zaslona</translation>
 <translation id="8413272770729657668">Snemanje se začne čez 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (škatlica)</translation>

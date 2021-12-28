@@ -1048,6 +1048,7 @@
 <translation id="204914487372604757">สร้างทางลัด</translation>
 <translation id="2050339315714019657">แนวตั้ง</translation>
 <translation id="2053312383184521053">ข้อมูลของสถานะไม่มีการใช้งาน</translation>
+<translation id="2054240652864153171">ล้างข้อมูลเว็บไซต์ของ <ph name="SITE_NAME" /> ซึ่งแบ่งพาร์ติชันใน <ph name="PARTITION_SITE_NAME" /> ใช่ไหม</translation>
 <translation id="2055585478631012616">คุณจะออกจากระบบของเว็บไซต์เหล่านี้ รวมถึงในแท็บที่เปิดอยู่</translation>
 <translation id="205560151218727633">โลโก้ Google Assistant</translation>
 <translation id="2058456167109518507">อุปกรณ์ที่ตรวจพบ</translation>
@@ -2389,6 +2390,7 @@
 <translation id="3433621910545056227">อ๊ะ! ระบบไม่สามารถสร้างการล็อกแอตทริบิวต์เวลาการติดตั้งของอุปกรณ์ได้</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปสำหรับบุตรหลาน ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของบุตรหลาน ดูข้อมูลเพิ่มเติมเกี่ยวกับการตั้งค่าเหล่านี้และวิธีปรับเปลี่ยนที่ families.google.com</translation>
+<translation id="3434512374684753970">เสียงและวิดีโอ</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" ขอ <ph name="CODE_TYPE" /> ของคุณ</translation>
 <translation id="3435738964857648380">ความปลอดภัย</translation>
 <translation id="343578350365773421">กระดาษหมด</translation>
@@ -2835,6 +2837,7 @@
 <translation id="3873423927483480833">แสดง PIN</translation>
 <translation id="3873915545594852654">เกิดปัญหาเกี่ยวกับ ARC++</translation>
 <translation id="3874164307099183178">เปิด Google Assistant</translation>
+<translation id="3875783148670536197">แสดงวิธีการ</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ได้รับการตั้งค่าให้เปิดในแท็บเบราว์เซอร์ใหม่ ลิงก์ที่รองรับจะเปิดในเบราว์เซอร์นี้เช่นกัน <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">การตั้งค่าการแชร์ใกล้เคียงสำหรับอุปกรณ์ของ <ph name="USER_NAME" /> ที่แชร์โดยใช้บัญชี <ph name="USER_EMAIL" /></translation>
 <translation id="3879748587602334249">Download Manager</translation>
@@ -4470,6 +4473,7 @@
 <translation id="562935524653278697">ผู้ดูแลระบบของคุณได้ปิดใช้การซิงค์ของบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ</translation>
 <translation id="5631017369956619646">การใช้ CPU</translation>
 <translation id="5632059346822207074">ขอสิทธิ์ กด Ctrl + ไปข้างหน้าเพื่อตอบกลับ</translation>
+<translation id="5632485077360054581">แสดงวิธีการ</translation>
 <translation id="5632566673632479864">บัญชี <ph name="EMAIL" /> ของคุณไม่ได้รับอนุญาตในฐานะบัญชีหลักอีกต่อไป เนื่องจากบัญชีนี้จัดการโดย <ph name="DOMAIN" /> ระบบจะล้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ ของคุณจากอุปกรณ์นี้</translation>
 <translation id="5632592977009207922">กำลังดาวน์โหลด เหลือ <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">มือถือ</translation>

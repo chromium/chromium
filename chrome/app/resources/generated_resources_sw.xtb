@@ -588,6 +588,7 @@
 <translation id="1600857548979126453">Fikia sehemu ya nyuma ya kitatuzi ukurasa</translation>
 <translation id="1601560923496285236">Tekeleza</translation>
 <translation id="1602085790802918092">Inawasha mashine pepe</translation>
+<translation id="1603411913360944381">Sahau <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Hali fiche)</translation>
 <translation id="1604432177629086300">Imeshindwa kuchapisha. Angalia printa kisha ujaribu tena</translation>
 <translation id="1605744057217831567">Angalia data ya tovuti na ruhusa zote</translation>
@@ -6060,6 +6061,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="7307129035224081534">Umesitishwa</translation>
 <translation id="7308643132139167865">Lugha za tovuti</translation>
 <translation id="7310598146671372464">Imeshindwa kuingia katika akaunti. Seva haitumii aina zilizobainishwa za usimbaji fiche wa Kerberos. Tafadhali wasiliana na msimamizi wako.</translation>
+<translation id="7312210124139670355">Msimamizi wako anabadilisha mipangilio ya eSIM yako. Hatua hii inaweza kuchukua dakika kadhaa.</translation>
 <translation id="7320213904474460808">Weka kuwa mtandao chaguomsingi</translation>
 <translation id="7321545336522791733">Seva haifikiki</translation>
 <translation id="7324297612904500502">Mfumo wa Beta</translation>

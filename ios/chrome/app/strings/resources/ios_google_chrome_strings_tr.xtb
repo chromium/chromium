@@ -25,6 +25,7 @@
 <translation id="2574249610672786438">Chrome kullandığınız her yerde sekmelerinizi görmek için tüm cihazlarınızda oturum açın.</translation>
 <translation id="2576431527583832481">Chrome daha da iyi hale geldi! Yeni bir sürüm var.</translation>
 <translation id="257708665678654955">Google Chrome'un bir dahaki sefere bu siteden <ph name="LANGUAGE_NAME" /> dilindeki sayfaları çevirmeyi önermesini ister misiniz?</translation>
+<translation id="2671426118752779020">Google Şifre Yöneticisi'ne kaydettiğiniz şifreleri iPhone'unuzdaki diğer uygulamalarda kullanabilirsiniz.</translation>
 <translation id="2695886661449553974">Chrome, güncellemeleri denetleyemedi. Daha sonra tekrar deneyin.</translation>
 <translation id="2732745070297234559">Chrome, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin.</translation>
 <translation id="2869959624320573933">Chrome'da Oturum Açın</translation>
@@ -85,6 +86,7 @@
 <translation id="7165736900384873061">Google Chrome QR tarayıcısını kullanmaya başlayın</translation>
 <translation id="7172660552945675509">İpucu: <ph name="BEGIN_LINK" />Chrome'u yuva bölümüne taşıyın<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome, şifrelerinize yetkili erişim sağlanması için Face ID kullanır.</translation>
+<translation id="72119412072970160">Google Şifre Yöneticisi'ne kaydettiğiniz şifreleri iPad'inizdeki diğer uygulamalarda kullanabilirsiniz.</translation>
 <translation id="7261678641327190792">Chrome, şifrelerinizi kontrol edemiyor</translation>
 <translation id="7272930098487145294">Resimleri kaydetmek için Ayarlar'a dokunup Chrome'un resimlerinize eklemesine izin verin</translation>
 <translation id="7275945473750112644">Hesabınız, <ph name="HOSTED_DOMAIN" /> tarafından yönetildiği için Chrome verileri bu cihazdan silinecek</translation>
@@ -112,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chrome ile Güvende Kalın</translation>
 <translation id="8772179140489533211">Chrome'da oturum açmak için istekleri gösterir.</translation>
+<translation id="8788269841521769222">Bu şifreyi hatırlamanız gerekmez. <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilir</translation>
 <translation id="9112744793181547300">Chrome Varsayılan olarak ayarlansın mı?</translation>
 </translationbundle>

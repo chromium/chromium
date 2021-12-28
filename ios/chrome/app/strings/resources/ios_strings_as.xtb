@@ -140,6 +140,7 @@
 <translation id="2268044343513325586">পৰিষ্কৰণ</translation>
 <translation id="2271351792809375263">আপুনি Chromeত ছেভ কৰি থোৱা পাছৱৰ্ডসমূহ আপোনাৰ ডিভাইচত অন্য এপ্‌সমূহত ব্যৱহাৰ কৰক</translation>
 <translation id="2273327106802955778">অধিক বিকল্পৰ মেনু</translation>
+<translation id="2286505070150039482">হাইলাইট কৰা পাঠ</translation>
 <translation id="2302742851632557585">ৱেবছাইটত পাছৱৰ্ড সলনি কৰক</translation>
 <translation id="2316709634732130529">চুপাৰিছ কৰা পাছৱৰ্ড ব্যৱহাৰ কৰক</translation>
 <translation id="2320166752086256636">কীব'ৰ্ড লুকুৱাওক</translation>
@@ -310,6 +311,7 @@
 <translation id="3803696231112616155">এই ছাইটটো অনুবাদ কৰাৰ প্ৰস্তাৱ দিয়ক</translation>
 <translation id="385051799172605136">উভতি যাওক</translation>
 <translation id="3858860766373142691">নাম</translation>
+<translation id="3861486700625780712">আনফ’ল’ কৰক</translation>
 <translation id="3892144330757387737">ইয়াত আপুনি নিজৰ ইতিহাস বিচাৰি পাব</translation>
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3913386780052199712">Chromeত ছাইন ইন কৰা হ’ল</translation>
@@ -407,6 +409,7 @@
 <translation id="481968316161811770">কুকি, ছাইটৰ ডেটা</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} আৰু অন্য ১ টা}one{{domain} আৰু অন্য {count} টা}other{{domain} আৰু অন্য {count} টা}}</translation>
 <translation id="4826218269716039351">তৃতীয় পক্ষক অৱৰোধ কৰক</translation>
+<translation id="4826726074642088322">হাইলাইট শ্বেয়াৰ কৰক</translation>
 <translation id="48274138579728272">পঢ়া হৈছে বুলি চিহ্নিত কৰক</translation>
 <translation id="4833686396768033263">শেহতীয়া টেবসমূহ উপলব্ধ নহয়</translation>
 <translation id="4833786495304741580">Googleলৈ স্বয়ংক্ৰিয়ভাৱে ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্ট পঠিয়ায়</translation>
@@ -602,6 +605,7 @@
 <translation id="6497772452874122664">যদি আপোনাৰ <ph name="TIME" />ৰ ওপৰত বিশ্বাস আছে, তেন্তে আপুনি অন্য এটা ছাইটৰ বাবে ছেভ কৰি থোৱা এটা পাছৱৰ্ড ব্যৱহাৰ কৰিব পাৰে।
 
 প্ৰতিটো ছাইটৰ বাবে এটা অদ্বিতীয় পাছৱৰ্ড ব্যৱহাৰ কৰিবলৈ চেষ্টা কৰক।</translation>
+<translation id="650279896687777322">অধিক জানক...</translation>
 <translation id="651505212789431520">ছিংক কৰাটো বাতিল কৰিবনে? আপুনি ছেটিংসমূহলৈ গৈ যিকোনো সময়তে ছিংক অন কৰিব পাৰে।</translation>
 <translation id="6524918542306337007">ইনক’গনিট’ ম’ডটো উপলব্ধ নহয়</translation>
 <translation id="6537746030088321027">example.com</translation>

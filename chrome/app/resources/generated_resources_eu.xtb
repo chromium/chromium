@@ -588,6 +588,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1600857548979126453">Atzitu orriaren araztailearen backenda</translation>
 <translation id="1601560923496285236">Aplikatu</translation>
 <translation id="1602085790802918092">Makina birtuala abiarazten</translation>
+<translation id="1603411913360944381">Ahaztu <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Ezkutuko modua)</translation>
 <translation id="1604432177629086300">Ezin izan da inprimatu. Begiratu inprimagailua eta saiatu berriro.</translation>
 <translation id="1605744057217831567">Ikusi webguneetako datu eta baimen guztiak</translation>
@@ -6049,6 +6050,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7307129035224081534">Pausatuta</translation>
 <translation id="7308643132139167865">Webguneen hizkuntzak</translation>
 <translation id="7310598146671372464">Ezin izan da hasi saioa. Zerbitzariak ez ditu onartzen zehaztutako Kerberos enkriptatze motak. Jarri administratzailearekin harremanetan.</translation>
+<translation id="7312210124139670355">Administratzailea zure eSIM txartela berrezartzen ari da. Agian minutu batzuk beharko dira.</translation>
 <translation id="7320213904474460808">Lehenetsi sarea</translation>
 <translation id="7321545336522791733">Ezin da konektatu zerbitzarira</translation>
 <translation id="7324297612904500502">Beta foroa</translation>

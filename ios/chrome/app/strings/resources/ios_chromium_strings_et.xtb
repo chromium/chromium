@@ -77,6 +77,7 @@
 <translation id="6424492062988593837">Chromium muutus just veelgi paremaks! Saadaval on uus versioon.</translation>
 <translation id="6752854822223394465">Teie organisatsioon seadistab Chromiumi …</translation>
 <translation id="6820823224820483452">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>
+<translation id="7006920032187763988">Saate paroolihaldurisse salvestatud paroole oma iPadi muudes rakendustes kasutada.</translation>
 <translation id="7018284295775193585">Chromiumit ei saa värskendada</translation>
 <translation id="7045244423563602563">Isikupärastage Chromiumi</translation>
 <translation id="7099326575020694068">Chromium ei saa poolitatud vaate režiimis kaamerat kasutada</translation>
@@ -103,11 +104,13 @@
 <translation id="8073677936375100957">Kas kustutada sellest seadmest Chromiumi andmed?</translation>
 <translation id="8175055321229419309">Nõuanne: <ph name="BEGIN_LINK" />lisage Chromium dokki<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ei saanud värskendusi otsida. Proovige hiljem uuesti.</translation>
+<translation id="858114650497379505">Saate paroolihaldurisse salvestatud paroole oma iPhone'i muudes rakendustes kasutada.</translation>
 <translation id="8586442755830160949">Autoriõigus <ph name="YEAR" /> The Chromium Authors. Kõik õigused on kaitstud.</translation>
 <translation id="8663480472502753423">Hoidke Chromium ajakohasena</translation>
 <translation id="8776843108004031667">See konto ja kõik salvestamata andmed eemaldatakse Chromiumist.</translation>
 <translation id="894437814105052438">Väljalogimisel ei sünkrooni Chromium teie Google'i kontoga uusi andmeid. Varem sünkroonitud andmed jäävad kontole.</translation>
 <translation id="9022552996538154597">Logige Chromiumi sisse</translation>
+<translation id="9059693977935746710">Te ei pea seda parooli meelde jätma. See salvestatakse konto <ph name="EMAIL" /> paroolihaldurisse.</translation>
 <translation id="9089354809943900324">Chromium on aegunud</translation>
 <translation id="9110075932708282655">Kasutage Chromiumi vaikimisi</translation>
 <translation id="921174536258924340">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti või <ph name="BEGIN_LINK" />kontrollige oma Google'i kontol paroole<ph name="END_LINK" />.</translation>

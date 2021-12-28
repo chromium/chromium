@@ -1060,6 +1060,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="204914487372604757">Кыска жол түзүү</translation>
 <translation id="2050339315714019657">Тигинен</translation>
 <translation id="2053312383184521053">Сенек абалындагы дайындар</translation>
+<translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> сайтында бөлүнгөн <ph name="SITE_NAME" /> сайтындагы маалымат өчүрүлсүнбү?</translation>
 <translation id="2055585478631012616">Сиз бул сайттардан, анын ичинде ачылып турган өтмөктөрдөн чыгарыласыз</translation>
 <translation id="205560151218727633">Google Жардамчынын логотиби</translation>
 <translation id="2058456167109518507">Түзмөк табылды</translation>
@@ -2405,6 +2406,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3433621910545056227">Ой! Тутум түзмөктү орнотуу убакытынын аттрибуттарынын кулпусу негизделбей калды.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Эгер кошумча Колдонмолор жана Интернеттеги аракеттер таржымалы балаңыз үчүн күйгүзүлгөн болсо, бул маалымат анын Google аккаунтуна сакталышы мүмкүн. Төмөнкү шилтеме менен өтүп, бул жөндөөлөр жана аларды кантип тууралоо керек экендиги жөнүндө кеңири маалымат алыңыз: families.google.com.</translation>
+<translation id="3434512374684753970">Аудио жана видео</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" сиздин <ph name="CODE_TYPE" /> кодуңузду сурап жатат</translation>
 <translation id="3435738964857648380">Коопсуздук</translation>
 <translation id="343578350365773421">Кагаз түгөндү</translation>
@@ -2851,6 +2853,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3873423927483480833">PIN-коддорду көрсөтүү</translation>
 <translation id="3873915545594852654">Төмөнкүнү иштетүүдө ката кетти: ARC++.</translation>
 <translation id="3874164307099183178">Google Жардамчыны күйгүзүү</translation>
+<translation id="3875783148670536197">Кантип?</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> серепчинин жаңы өтмөгүндө ачылат. Колдоого алынган шилтемелер да серепчиде ачылат. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Түзмөгүнүн Nearby Share жөндөөлөрү менен <ph name="USER_NAME" /> маалыматты <ph name="USER_EMAIL" /> аккаунту аркылуу бөлүшөт.</translation>
 <translation id="3879748587602334249">Жүктөп алгыч</translation>
@@ -4487,6 +4490,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="562935524653278697">Администраторуңуз кыстармалар, таржымал, сырсөздөр жана башка жөндөөлөрүңүздү шайкештирүүнү өчүрүп койгон.</translation>
 <translation id="5631017369956619646">CPU колдонулушу</translation>
 <translation id="5632059346822207074">Уруксат суралды. Жооп берүү үчүн Ctrl + Алдыга баскычтарын басыңыз</translation>
+<translation id="5632485077360054581">Кантип?</translation>
 <translation id="5632566673632479864"><ph name="EMAIL" /> аккаунтуңуз негизги аккаунт болбой калды. Бул аккаунт <ph name="DOMAIN" /> тарабынан башкарылгандыктан, кыстармалар, таржымал, сырсөздөр жана башка жөндөөлөр бул түзмөктөн тазаланат.</translation>
 <translation id="5632592977009207922">Жүктөлүп алынууда, <ph name="PERCENT_REMAINING" />% калды</translation>
 <translation id="563371367637259496">Мобилдик</translation>

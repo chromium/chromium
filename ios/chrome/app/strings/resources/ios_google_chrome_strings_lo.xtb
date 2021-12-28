@@ -25,6 +25,7 @@
 <translation id="2574249610672786438">ເພື່ອເຫັນແຖບຂອງທ່ານຈາກທຸກບ່ອນທີ່ທ່ານໃຊ້ Chrome, ກະລຸນາເຂົ້າສູ່ລະບົບໃນອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
 <translation id="2576431527583832481">Chrome ​ດີກ​ວ່າເກົ່າແລ້ວ​! ມີລຸ້ນ​ໃຫມ່​ໃຫ້​​ໃຊ້​.</translation>
 <translation id="257708665678654955">ທ່ານຕ້ອງການໃຫ້ Google Chrome ສະເໜີແປໜ້າ <ph name="LANGUAGE_NAME" /> ຈາກເວັບໄຊນີ້ໃນຄັ້ງຕໍ່ໄປບໍ່?</translation>
+<translation id="2671426118752779020">ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ທ່ານບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ໃນແອັບອື່ນຢູ່ iPhone ຂອງທ່ານໄດ້.</translation>
 <translation id="2695886661449553974">Chrome ບໍ່ສາມາດກວດການອັບເດດໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫລັງ.</translation>
 <translation id="2732745070297234559">Chrome ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ກະລຸນາລອງໃໝ່ໃນມື້ອື່ນ.</translation>
 <translation id="2869959624320573933">ເຂົ້າສູ່ລະບົບຫາ Chrome</translation>
@@ -85,6 +86,7 @@
 <translation id="7165736900384873061">ເລີ່ມໃຊ້ເຄື່ອງສະແກນ QR ຂອງ Google Chrome</translation>
 <translation id="7172660552945675509">ເຄັດລັບ: <ph name="BEGIN_LINK" />ຍ້າຍ Chrome ໄປໃສ່ດັອກຂອງທ່ານ<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome ໃຊ້ Face ID ເພື່ອຮັບປະກັນການເຂົ້າເຖິງລະຫັດຜ່ານຂອງທ່ານແບບໄດ້ຮັບອະນຸຍາດ.</translation>
+<translation id="72119412072970160">ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ທ່ານບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ໃນແອັບອື່ນຢູ່ iPad ຂອງທ່ານໄດ້.</translation>
 <translation id="7261678641327190792">Chrome ບໍ່ສາມາດກວດລະຫັດຜ່ານຂອງທ່ານໄດ້</translation>
 <translation id="7272930098487145294">ເພື່ອບັນທຶກຮູບພາບ, ກະລຸນາແຕະໃສ່ການຕັ້ງຄ່າເພື່ອອະນຸຍາດໃຫ້ Chrome ເພີ່ມໃສ່ຮູບພາບຂອງທ່ານ</translation>
 <translation id="7275945473750112644">ບັນຊີຂອງທ່ານຖືກຈັດການໂດຍ <ph name="HOSTED_DOMAIN" />, ດັ່ງນັ້ນຂໍ້ມູນ Chrome ຂອງທ່ານຈະຖືກລຶບລ້າງຈາກອຸປະກອນນີ້</translation>
@@ -112,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">ທ່ອງເວັບຢ່າງປອດໄພດ້ວຍ Google Chrome</translation>
 <translation id="8772179140489533211">ສະແດງຂໍ້ຄວາມເພື່ອເຂົ້າສູ່ລະບົບຫາ Chrome.</translation>
+<translation id="8788269841521769222">ທ່ານບໍ່ຈຳເປັນຕ້ອງຈື່ລະຫັດຜ່ານນີ້. ມັນຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ສຳລັບ <ph name="EMAIL" /></translation>
 <translation id="9112744793181547300">ຕັ້ງ Chrome ເປັນຄ່າເລີ່ມຕົ້ນບໍ?</translation>
 </translationbundle>

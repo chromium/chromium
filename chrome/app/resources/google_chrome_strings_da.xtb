@@ -62,6 +62,7 @@
 <translation id="2467438592969358367">Google Chrome anmoder om at eksportere dine adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="2485422356828889247">Afinstaller</translation>
 <translation id="2534507159460261402">Google Pay (kopieret til Chrome)</translation>
+<translation id="2563121210305478421">Vil du genstarte Chrome?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> er allerede logget ind på denne Chrome-profil. Hvis du vil holde din browsing adskilt, kan Chrome oprette en ny profil til dig selv.</translation>
 <translation id="2580411288591421699">Det er ikke muligt at installere den samme version af Google Chrome, som allerede kører. Luk Google Chrome, og prøv igen.</translation>
 <translation id="2586406160782125153">Denne handling sletter dine browserdata på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chrome som <ph name="USER_EMAIL" />.</translation>
@@ -293,6 +294,7 @@
 <translation id="8669527147644353129">Hjælp til Google Chrome</translation>
 <translation id="8679801911857917785">Den styrer også, hvilken side der vises, når du åbner Chrome.</translation>
 <translation id="8686817260976772516">Du kan organisere alle dine ting i Chrome ved hjælp af Chrome-profiler. Opret profiler til dine venner og din familie, eller brug dem til at holde arbejde og fornøjelse adskilt.</translation>
+<translation id="8712767363896337380">Næsten opdateret! Genstart Chrome for at fuldføre opdateringen.</translation>
 <translation id="873133009373065397">Google Chrome kan ikke fastlægge eller angive standardbrowseren</translation>
 <translation id="8823341990149967727">Chrome er forældet</translation>
 <translation id="8834965163890861871">Google Chrome forsøger at redigere adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>

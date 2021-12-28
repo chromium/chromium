@@ -1049,6 +1049,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="204914487372604757">Criar atalho</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2053312383184521053">Dados do estado inativo</translation>
+<translation id="2054240652864153171">Limpar os dados de sites para <ph name="SITE_NAME" /> particionado em <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">A sua sessão nestes sites será terminada, incluindo em separadores abertos.</translation>
 <translation id="205560151218727633">Logótipo do Assistente Google</translation>
 <translation id="2058456167109518507">Dispositivo detetado</translation>
@@ -2392,6 +2393,7 @@ Pretende pará-lo?</translation>
 <translation id="3433621910545056227">Ups! Falha do sistema ao estabelecer o bloqueio dos atributos de hora-instalação do dispositivo.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Se a definição Atividade da Web e de apps adicional estiver ativada para a criança, estes dados podem ser guardados na respetiva Conta Google. Saiba mais acerca destas definições e como as pode ajustar em families.google.com.</translation>
+<translation id="3434512374684753970">Áudio e vídeo</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" está a solicitar o seu <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="343578350365773421">Sem papel</translation>
@@ -2838,6 +2840,7 @@ Pretende pará-lo?</translation>
 <translation id="3873423927483480833">Mostrar PINs</translation>
 <translation id="3873915545594852654">Ocorreu um problema com o ARC++.</translation>
 <translation id="3874164307099183178">Ativar Assistente Google</translation>
+<translation id="3875783148670536197">Mostrar-me como</translation>
 <translation id="3875815154304214043">A app <ph name="APP_NAME" /> está definida para abrir num novo separador do navegador e os links suportados também serão abertos no navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Definições da funcionalidade Partilhar na proximidade para o dispositivo de <ph name="USER_NAME" />, a partilhar na conta <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Gestor de transferências</translation>
@@ -4474,6 +4477,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="562935524653278697">O seu gestor desativou a sincronização dos seus marcadores, histórico, palavras-passe e outras definições.</translation>
 <translation id="5631017369956619646">Utilização da CPU</translation>
 <translation id="5632059346822207074">Autorização solicitada, prima Ctrl + Avançar para responder</translation>
+<translation id="5632485077360054581">Mostrar-me como</translation>
 <translation id="5632566673632479864">A sua conta <ph name="EMAIL" /> já não é permitida como a conta principal. Como esta conta é gerida por <ph name="DOMAIN" />, os marcadores, o histórico, as palavras-passe e outras definições serão apagados deste dispositivo.</translation>
 <translation id="5632592977009207922">A transferir, resta(m) <ph name="PERCENT_REMAINING" />%…</translation>
 <translation id="563371367637259496">Móvel</translation>

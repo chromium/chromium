@@ -1015,6 +1015,7 @@ Installeret for nylig</translation>
 <translation id="7860671499921112077">Stryg opad med tre fingre for at åbne oversigten</translation>
 <translation id="7866482334467279021">til</translation>
 <translation id="7868900307798234037">Låser op med fingeraftryk</translation>
+<translation id="7872195908557044066">Din administrator er ved at nulstille dit eSIM. Vent et par minutter.</translation>
 <translation id="7872786842639831132">Fra</translation>
 <translation id="7875575368831396199">Det ser ud til, at Bluetooth er deaktiveret på din <ph name="DEVICE_TYPE" />. Aktivér Bluetooth for at bruge Telefonstyring.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Skift til en tidligere version af enheden nu}=1{Skift til en tidligere version af enheden inden for 1 sekund}one{Skift til en tidligere version af enheden inden for # sekund}other{Skift til en tidligere version af enheden inden for # sekunder}}</translation>

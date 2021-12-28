@@ -1049,6 +1049,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="204914487372604757">Creează o comandă rapidă</translation>
 <translation id="2050339315714019657">Portret</translation>
 <translation id="2053312383184521053">Date pentru starea inactivă</translation>
+<translation id="2054240652864153171">Ștergi datele site-ului <ph name="SITE_NAME" /> cu partiții la <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Te vei deconecta de la site-uri, inclusiv din filele deschise</translation>
 <translation id="205560151218727633">Sigla Asistentului Google</translation>
 <translation id="2058456167109518507">S-a detectat un dispozitiv</translation>
@@ -2391,6 +2392,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3433621910545056227">Hopa! Sistemul nu a reușit să blocheze atributele la instalarea pe gadget.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google. Află mai multe despre aceste setări și cum să le modifici la families.google.com.</translation>
+<translation id="3434512374684753970">Audio și video</translation>
 <translation id="3435688026795609344">„<ph name="EXTENSION_NAME" />” solicită <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Securitate</translation>
 <translation id="343578350365773421">Lipsă hârtie</translation>
@@ -2837,6 +2839,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3873423927483480833">Afișează codurile PIN</translation>
 <translation id="3873915545594852654">A apărut o eroare la ARC++.</translation>
 <translation id="3874164307099183178">Activează Asistentul Google</translation>
+<translation id="3875783148670536197">Arată-mi cum</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> este setată să se deschidă într-o nouă filă de browser. Linkurile acceptate se vor deschide tot în browser. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Setările Trimiterii în apropiere pentru dispozitivul utilizatorului <ph name="USER_NAME" />, care permite accesul din contul <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Manager de descărcări</translation>
@@ -4472,6 +4475,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="562935524653278697">Administratorul a dezactivat sincronizarea marcajelor, istoricului, parolelor și a altor setări.</translation>
 <translation id="5631017369956619646">Utilizarea procesorului</translation>
 <translation id="5632059346822207074">Permisiune necesară, apasă Ctrl + tasta Înainte pentru a răspunde</translation>
+<translation id="5632485077360054581">Arată-mi cum</translation>
 <translation id="5632566673632479864">Contul tău <ph name="EMAIL" /> nu mai are permisiunea de a fi contul principal. Deoarece acest cont este gestionat de <ph name="DOMAIN" />, vor fi șterse marcajele, istoricul, parolele și alte setări de pe acest dispozitiv.</translation>
 <translation id="5632592977009207922">Se descarcă, a mai rămas <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Mobilă</translation>

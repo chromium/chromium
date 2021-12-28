@@ -1015,6 +1015,7 @@
 <translation id="7860671499921112077">최근 사용을 시작하려면 세 손가락을 사용해 위로 스와이프하세요.</translation>
 <translation id="7866482334467279021">사용</translation>
 <translation id="7868900307798234037">지문으로 잠금 해제</translation>
+<translation id="7872195908557044066">관리자가 eSIM을 재설정하는 중입니다. 잠시만 기다려 주세요.</translation>
 <translation id="7872786842639831132">꺼짐</translation>
 <translation id="7875575368831396199"><ph name="DEVICE_TYPE" />의 블루투스가 꺼져 있는 것 같습니다. 휴대전화 허브를 사용하려면 블루투스를 사용 설정하세요.</translation>
 <translation id="7877557217297072640">{0,plural, =0{지금 기기를 이전 버전으로 되돌리세요}=1{1초 이내에 기기를 이전 버전으로 되돌리세요}other{#초 이내에 기기를 이전 버전으로 되돌리세요}}</translation>

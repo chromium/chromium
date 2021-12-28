@@ -232,6 +232,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7448255348454382571">Reinicia Chromium OS</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">Per visitar aquest lloc web, Chromium necessita permís per accedir a la càmera</translation>
+<translation id="7467949745582939695">Vols tornar a iniciar Chromium?</translation>
 <translation id="7483335560992089831">No es pot instal·lar la mateixa versió de Chromium que s'està executant actualment. Tanqueu Chromium i torneu-ho a provar.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium es reiniciarà d'aquí a 1 minut}other{Chromium es reiniciarà d'aquí a # minuts}}</translation>
 <translation id="7549178288319965365">About Chromium OS</translation>

@@ -90,6 +90,7 @@
 <translation id="147113415845704694">Prøv at sige "Hvordan er vejret i dag?"</translation>
 <translation id="1477626028522505441">Download af <ph name="FILE_NAME" /> mislykkedes på grund af serverproblemer.</translation>
 <translation id="148482509007564431">Flow til lagring af bogmærker</translation>
+<translation id="1488775391433859242">Du kan bruge denne telefon til at logge ind på den computer, der viser QR-koden.</translation>
 <translation id="1492417797159476138">Du har allerede gemt dette brugernavn for dette website</translation>
 <translation id="1493287004536771723">Du følger <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">Søgemaskine</translation>
@@ -189,6 +190,7 @@ Tryk på et ord for at søge. Du kan tilpasse søgningen ved at holde fingeren n
 <translation id="2122601567107267586">Appen kunne ikke åbnes</translation>
 <translation id="2126426811489709554">Leveret af Chrome</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> sparet</translation>
+<translation id="2132122640199389833">Fjern alle tilknyttede enheder</translation>
 <translation id="213279576345780926">Lukkede <ph name="TAB_TITLE" /></translation>
 <translation id="2139186145475833000">Føj til startskærm</translation>
 <translation id="2141396931810938595">Baseret på din brug</translation>
@@ -265,6 +267,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2534582914273493287">Webadresser, du besøger, sendes til Google</translation>
 <translation id="2536728043171574184">Du ser en offlinekopi af denne side</translation>
 <translation id="2546283357679194313">Cookies og websitedata</translation>
+<translation id="2549516196460093976">Du kan bruge denne tablet til at logge ind på den computer, der viser QR-koden.</translation>
 <translation id="2558692642259318568">Prøv inkognitotilstand, hvis du vil surfe, uden at din aktivitet gemmes på enheden</translation>
 <translation id="2561519700418191927">Forhåndsvisning af videoer</translation>
 <translation id="2567385386134582609">BILLEDE</translation>
@@ -451,6 +454,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3563767357928833671">Indholdet af udklipsholderen vises</translation>
 <translation id="3566923219790363270">Chrome er stadig i gang med at forberede VR. Genstart Chrome senere.</translation>
 <translation id="3568688522516854065">Log ind, og aktivér synkronisering for at få adgang til dine faner på dine andre enheder</translation>
+<translation id="357465026686164600">Telefon som sikkerhedsnøgle</translation>
 <translation id="3577473026931028326">Der opstod en fejl. Prøv igen.</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587596251841506391">Gør sikkerheden på nettet bedre</translation>
@@ -520,6 +524,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="4000212216660919741">Hjemmet er offline</translation>
 <translation id="4016425174436051808">Indholdet kan ikke følges. Der opstod en fejl.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# t.}one{# t.}other{# t.}}</translation>
+<translation id="4035877632587724847">Tillad ikke</translation>
 <translation id="4045764304651014138">Brugsdata</translation>
 <translation id="405399507749852140">Få besked, hvis prisen falder på et website</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -579,6 +584,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="4450672886426705087">Søgeresultater fra Google.</translation>
 <translation id="4452411734226507615">Luk fanen <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bogmærket er gemt i <ph name="FOLDER_NAME" /></translation>
+<translation id="4461614516424362539">Når du tilknytter en anden enhed med en QR-kode, kan den bruge denne telefon som en sikkerhedsnøgle. Hvis du fjerner den, skal du scanne en QR-kode for at tilknytte den igen.</translation>
 <translation id="4472118726404937099">Log ind, og aktivér synkronisering for at synkronisere og tilpasse på alle dine enheder</translation>
 <translation id="4479839115899251637">Slet fra læseliste</translation>
 <translation id="4479972344484327217">Installerer <ph name="MODULE" /> til Chrome…</translation>
@@ -649,6 +655,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 
 Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkronisering<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Navn på kort</translation>
+<translation id="481574578487123132">Tilknyttede enheder</translation>
 <translation id="4818017973810341238">Digital Asset Links kunne ikke bekræftes på <ph name="VIOLATED_URL" /></translation>
 <translation id="4831037795716408498">Download indhold</translation>
 <translation id="4834007576107377210">Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant</translation>
@@ -681,6 +688,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="4941179133499732445">Tryk på mikrofonen for at søge med din stemme</translation>
 <translation id="4943703118917034429">Virtual reality</translation>
 <translation id="4943872375798546930">Ingen resultater</translation>
+<translation id="4950924971025849764">Når du er logget ind på den samme Google-konto, kan andre enheder bruge denne telefon som en sikkerhedsnøgle.</translation>
 <translation id="4957722034734105353">Flere oplysninger...</translation>
 <translation id="4961107849584082341">Oversæt denne side til et hvilket som helst sprog</translation>
 <translation id="4971735654804503942">Hurtigere proaktiv beskyttelse mod skadelige websites, downloads og udvidelser. Advarer dig om læk af adgangskoder. Kræver, at browserdata sendes til Google.</translation>
@@ -781,6 +789,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="55737423895878184">Placering og notifikationer er tilladt</translation>
 <translation id="5578795271662203820">Søg efter billedet på <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK1" />indstillingerne<ph name="END_LINK1" />.</translation>
+<translation id="5590372121997663538">Husk denne computer</translation>
 <translation id="5599455543593328020">Inkognitotilstand</translation>
 <translation id="5599941490345670218">Google Assistent kan udføre handlinger på websites for dig</translation>
 <translation id="5620163320393916465">Der er ingen gemte adgangskoder</translation>
@@ -862,6 +871,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5995726099713306770">Vil du downloade siden igen?</translation>
 <translation id="6000066717592683814">Behold Google</translation>
 <translation id="6000203700195075278">Følg igen</translation>
+<translation id="6002122790816966947">Dine enheder</translation>
 <translation id="6005538289190791541">Foreslået adgangskode</translation>
 <translation id="6032091552407840792">Denne prøveperiode er kun aktiv i <ph name="BEGIN_LINK" />nogle områder<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Med <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> udvikler Chrome nye teknologier, der beskytter dig mod sporing på tværs af forskellige websites og samtidig bevarer det åbne net.
@@ -991,6 +1001,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6640207029842583248">Bloker altid</translation>
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6643649862576733715">Sortér efter mængden af data, der blev sparet</translation>
+<translation id="6645629752388991326">Styr, hvilke enheder der kan logge ind, ved at bruge denne enhed som en sikkerhedsnøgle.</translation>
 <translation id="6648459603387803038">Din administrator kan ændre konfigurationen af din browser via fjernadgang. Aktivitet på denne enhed administreres muligvis også uden for Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> mere}one{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> mere}other{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> mere}}</translation>
 <translation id="6649642165559792194">Se forhåndsvisning af <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="671481426037969117">Din timer for <ph name="FQDN" /> udløb. Den starter igen i morgen.</translation>
 <translation id="6715020873764921614">Vil du downloade <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) alligevel?</translation>
+<translation id="6719634564325948108">Vil du oprette forbindelse med en QR-kode?</translation>
 <translation id="6738516213925468394">Dine data blev krypteret med din <ph name="BEGIN_LINK" />adgangssætning til synkronisering<ph name="END_LINK" /> <ph name="TIME" />. Indtast adgangssætningen for at starte synkroniseringen.</translation>
 <translation id="6738867403308150051">Downloader…</translation>
 <translation id="6751521182688001123">Åbn hurtigt en ny fane. Hold fingeren nede for at redigere denne genvej.</translation>

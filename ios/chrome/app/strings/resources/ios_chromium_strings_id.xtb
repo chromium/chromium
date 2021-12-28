@@ -77,6 +77,7 @@
 <translation id="6424492062988593837">Chromium jadi semakin baik! Versi baru telah tersedia.</translation>
 <translation id="6752854822223394465">Organisasi Anda sedang menyiapkan Chromium ...</translation>
 <translation id="6820823224820483452">Chromium tidak dapat memeriksa semua sandi. Coba lagi besok.</translation>
+<translation id="7006920032187763988">Anda dapat menggunakan sandi yang Anda simpan ke Pengelola Sandi di aplikasi lain pada iPad.</translation>
 <translation id="7018284295775193585">Chromium tidak dapat diupdate</translation>
 <translation id="7045244423563602563">Sesuaikan Chromium dengan Selera Anda</translation>
 <translation id="7099326575020694068">Chromium tidak dapat menggunakan kamera dalam mode Layar Terpisah</translation>
@@ -103,11 +104,13 @@
 <translation id="8073677936375100957">Hapus data Chromium Anda dari perangkat ini?</translation>
 <translation id="8175055321229419309">Tips: <ph name="BEGIN_LINK" />Pindahkan Chromium ke dok<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium tidak dapat memeriksa update. Coba lagi nanti.</translation>
+<translation id="858114650497379505">Anda dapat menggunakan sandi yang Anda simpan ke Pengelola Sandi di aplikasi lain pada iPhone.</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Semua hak dilindungi undang-undang.</translation>
 <translation id="8663480472502753423">Pastikan Chromium selalu terupdate</translation>
 <translation id="8776843108004031667">Akun ini dan semua data yang tidak disimpan akan dihapus dari Chromium.</translation>
 <translation id="894437814105052438">Jika Anda logout, Chromium tidak akan menyinkronkan data baru apa pun ke Akun Google Anda. Data yang sebelumnya disinkronkan tetap tersimpan di akun.</translation>
 <translation id="9022552996538154597">Login ke Chromium</translation>
+<translation id="9059693977935746710">Anda tidak perlu mengingat sandi ini. Sandi akan disimpan ke Pengelola Sandi untuk <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium terlalu lawas</translation>
 <translation id="9110075932708282655">Gunakan Chromium secara Default</translation>
 <translation id="921174536258924340">Chromium tidak dapat memeriksa semua sandi. Coba lagi besok atau <ph name="BEGIN_LINK" />periksa sandi di Akun Google Anda<ph name="END_LINK" />.</translation>

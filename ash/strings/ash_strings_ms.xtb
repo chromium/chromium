@@ -587,6 +587,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4831034276697007977">Adakah anda pasti mahu mematikan klik automatik?</translation>
 <translation id="4849058404725798627">Serlahkan objek dengan fokus papan kekunci</translation>
 <translation id="485592688953820832">Tiada tindakan (jeda)</translation>
+<translation id="485634149294284819">Masukkan menu papan kekunci</translation>
 <translation id="4860284199500934869">Semak sambungan rangkaian anda untuk memuat turun <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Muat turun akan cuba dilakukan kemudian. Pertuturan akan dihantar kepada Google untuk diproses sehingga muat turun selesai.</translation>
 <translation id="4868492592575313542">diaktifkan</translation>
@@ -1016,6 +1017,7 @@ Pemasangan baharu</translation>
 <translation id="7860671499921112077">Leret ke atas dengan tiga jari untuk memasuki Ikhtisar</translation>
 <translation id="7866482334467279021">dihidupkan</translation>
 <translation id="7868900307798234037">Membuka kunci dengan cap jari</translation>
+<translation id="7872195908557044066">Pentadbir sedang menetapkan semula eSIM anda. Tunggu beberapa minit.</translation>
 <translation id="7872786842639831132">Mati</translation>
 <translation id="7875575368831396199">Nampaknya Bluetooth dimatikan pada <ph name="DEVICE_TYPE" /> anda. Sila hidupkan Bluetooth untuk menggunakan Hab Telefon.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Tukar peranti kepada versi sebelumnya sekarang}=1{Tukar peranti kepada versi sebelumnya dalam masa 1 saat}other{Tukar peranti kepada versi sebelumnya dalam masa # saat}}</translation>
@@ -1098,6 +1100,7 @@ Pemasangan baharu</translation>
 <translation id="8380784334203145311">Selamat malam,</translation>
 <translation id="8388750414311082622">Meja terakhir tidak boleh dialih keluar.</translation>
 <translation id="8394567579869570560">Ibu/bapa anda mengunci peranti ini</translation>
+<translation id="8401850874595457088">Masukkan menu bahasa</translation>
 <translation id="8412677897383510995">Tunjukkan tetapan paparan</translation>
 <translation id="8413272770729657668">Rakaman akan bermula dalam masa 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Bekas)</translation>

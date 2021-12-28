@@ -586,6 +586,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4831034276697007977">Sigurado ka bang gusto mong i-off ang mga awtomatikong pag-click?</translation>
 <translation id="4849058404725798627">I-highlight ang bagay sa pamamagitan ng pag-focus ng keyboard</translation>
 <translation id="485592688953820832">Walang pagkilos (i-pause)</translation>
+<translation id="485634149294284819">Menu na maglagay ng keyboard</translation>
 <translation id="4860284199500934869">Suriin ang iyong koneksyon ng network para ma-download ang <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Susubukan mamaya ang pag-download. Ipapadala ang speech sa Google para sa pagpoproseso hanggang sa makumpleto ang pag-download.</translation>
 <translation id="4868492592575313542">na-activate</translation>
@@ -1015,6 +1016,7 @@ Kaka-install lang</translation>
 <translation id="7860671499921112077">Mag-swipe pataas gamit ang tatlong daliri para makapasok sa Overview</translation>
 <translation id="7866482334467279021">naka-on</translation>
 <translation id="7868900307798234037">Ina-unlock gamit ang fingerprint</translation>
+<translation id="7872195908557044066">Nire-reset ng iyong administrator ang eSIM mo. Maghintay nang ilang minuto.</translation>
 <translation id="7872786842639831132">Naka-off</translation>
 <translation id="7875575368831396199">Mukhang naka-off ang Bluetooth sa iyong <ph name="DEVICE_TYPE" />. Paki-on ang Bluetooth para magamit ang Phone Hub.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Ibalik sa nakaraang bersyon ang device ngayon}=1{Ibalik sa nakaraang bersyon ang device sa loob ng 1 segundo}one{Ibalik sa nakaraang bersyon ang device sa loob ng # segundo}other{Ibalik sa nakaraang bersyon ang device sa loob ng # na segundo}}</translation>
@@ -1097,6 +1099,7 @@ Kaka-install lang</translation>
 <translation id="8380784334203145311">Magandang gabi,</translation>
 <translation id="8388750414311082622">Hindi puwedeng alisin ang huling desk.</translation>
 <translation id="8394567579869570560">Ni-lock ng iyong magulang ang device na ito</translation>
+<translation id="8401850874595457088">Menu na maglagay ng wika</translation>
 <translation id="8412677897383510995">Ipakita ang mga setting ng display</translation>
 <translation id="8413272770729657668">Magsisimula ang pag-record pagkalipas ng 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Case)</translation>

@@ -25,6 +25,7 @@
 <translation id="1145536944570833626">Изтриване на съществуващите данни.</translation>
 <translation id="1147031633655575115">Влезли сте като <ph name="USER" /></translation>
 <translation id="1154984953698510061">Преглед на другите раздели</translation>
+<translation id="1164064664035028907">Използване на надеждна парола:</translation>
 <translation id="1165039591588034296">Грешка</translation>
 <translation id="1172898394251786223">Следващото поле</translation>
 <translation id="1176932207622159128">Изобр. не може да се запази</translation>
@@ -139,6 +140,7 @@
 <translation id="2268044343513325586">Прецизиране</translation>
 <translation id="2271351792809375263">Използвайте паролите, които сте запазили в Chrome, в други приложения на устройството си</translation>
 <translation id="2273327106802955778">Меню „Още“</translation>
+<translation id="2286505070150039482">Откроен текст</translation>
 <translation id="2302742851632557585">Промяна на паролата на уебсайта</translation>
 <translation id="2316709634732130529">Ползване на предложената парола</translation>
 <translation id="2320166752086256636">Скриване на клавиатурата</translation>
@@ -309,6 +311,7 @@
 <translation id="3803696231112616155">Предлагане да се преведе този сайт</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Име</translation>
+<translation id="3861486700625780712">Прекратяване на следенето</translation>
 <translation id="3892144330757387737">Тук ще се показва историята ви</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3913386780052199712">Влязохте в Chrome</translation>
@@ -406,6 +409,7 @@
 <translation id="481968316161811770">„Бисквитки“ и данни за сайтове</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и още 1}other{{domain} и още {count}}}</translation>
 <translation id="4826218269716039351">Блокиране на трети страни</translation>
+<translation id="4826726074642088322">Споделяне на открояването</translation>
 <translation id="48274138579728272">Означаване като прочетено</translation>
 <translation id="4833686396768033263">Скорошните раздели не са налице</translation>
 <translation id="4833786495304741580">Автоматично изпраща до Google статистически данни за употребата и сигнали за сривове.</translation>
@@ -601,6 +605,7 @@
 <translation id="6497772452874122664">Ако имате доверие на <ph name="TIME" />, можете да използвате запазена парола за друг сайт.
 
 Опитайте да използвате уникална парола за всеки сайт.</translation>
+<translation id="650279896687777322">Научете повече...</translation>
 <translation id="651505212789431520">Да се анулира ли синхронизирането? Можете да го включите по всяко време в „Настройки“.</translation>
 <translation id="6524918542306337007">Режимът „инкогнито“ не е налице</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -639,6 +644,7 @@
 <translation id="6807889908376551050">Показване на всички...</translation>
 <translation id="681368974849482173">Елементът е създаден</translation>
 <translation id="681450999322335505">Организацията ви изключи синхронизирането.</translation>
+<translation id="683022620450280906">Можете да използвате запазените пароли на което и да е устройство. Те се запазват в мениджъра на паролите в Google за <ph name="EMAIL" /></translation>
 <translation id="6830804042318138535">Прочетете повече</translation>
 <translation id="6831043979455480757">Превод</translation>
 <translation id="6842136130964845393">Потвърдете, че сте вие, за да имате постоянен достъп до запазените си пароли</translation>

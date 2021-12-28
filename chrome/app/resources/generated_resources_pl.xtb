@@ -590,6 +590,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1600857548979126453">Dostęp do backendu debugera stron</translation>
 <translation id="1601560923496285236">Zastosuj</translation>
 <translation id="1602085790802918092">Uruchamiam maszynę wirtualną</translation>
+<translation id="1603411913360944381">Zapomnij urządzenie <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Incognito)</translation>
 <translation id="1604432177629086300">Nie udało się wydrukować. Sprawdź drukarkę i spróbuj jeszcze raz.</translation>
 <translation id="1605744057217831567">Zobacz wszystkie dane witryn i uprawnienia</translation>
@@ -1045,6 +1046,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="204914487372604757">Utwórz skrót</translation>
 <translation id="2050339315714019657">Pionowo</translation>
 <translation id="2053312383184521053">Dane o stanie bezczynności</translation>
+<translation id="2054240652864153171">Wyczyścić dane witryny <ph name="SITE_NAME" /> rozdzielone na stronie <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Wylogujemy Cię z tych stron, także na otwartych kartach</translation>
 <translation id="205560151218727633">Logo Asystenta Google</translation>
 <translation id="2058456167109518507">Wykryto urządzenie</translation>
@@ -2386,6 +2388,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3433621910545056227">Ups! System nie mógł ustanowić blokady atrybutów urządzenia na czas instalacji.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na jego koncie. Więcej informacji o tych ustawieniach i sposobie ich zmiany znajdziesz na families.google.com.</translation>
+<translation id="3434512374684753970">Audio i wideo</translation>
 <translation id="3435688026795609344"><ph name="EXTENSION_NAME" /> żąda kodu <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
 <translation id="343578350365773421">Brak papieru</translation>
@@ -2832,6 +2835,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3873423927483480833">Pokaż kody PIN</translation>
 <translation id="3873915545594852654">Wystąpił problem z ARC++.</translation>
 <translation id="3874164307099183178">Włącz Asystenta Google</translation>
+<translation id="3875783148670536197">Pokaż jak</translation>
 <translation id="3875815154304214043">Aplikacja <ph name="APP_NAME" /> jest skonfigurowana do otwierania się w nowej karcie przeglądarki. W przeglądarce będą się też otwierać obsługiwane linki. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Ustawienia Udostępniania w pobliżu dotyczące urządzenia, którego używa <ph name="USER_NAME" />, przypisane do konta <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Menedżer pobierania</translation>
@@ -4466,6 +4470,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="562935524653278697">Synchronizację zakładek, historii, haseł i innych ustawień wyłączył administrator.</translation>
 <translation id="5631017369956619646">Wykorzystanie procesora</translation>
 <translation id="5632059346822207074">Zgłoszono prośbę o uprawnienia. Aby odpowiedzieć, naciśnij Ctrl + Dalej.</translation>
+<translation id="5632485077360054581">Pokaż jak</translation>
 <translation id="5632566673632479864">Twoje konto <ph name="EMAIL" /> nie może być już kontem podstawowym. To konto jest zarządzane przez <ph name="DOMAIN" />, dlatego Twoje zakładki, historia, hasła i inne ustawienia zostaną usunięte z tego urządzenia.</translation>
 <translation id="5632592977009207922">Pobieram, pozostało <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Telefony komórkowe</translation>
@@ -6046,6 +6051,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7307129035224081534">Wstrzymano</translation>
 <translation id="7308643132139167865">Języki wyświetlania stron internetowych</translation>
 <translation id="7310598146671372464">Logowanie nie udało się. Serwer nie obsługuje wybranych typów szyfrowania Kerberos. Skontaktuj się z administratorem.</translation>
+<translation id="7312210124139670355">Administrator resetuje Twoją kartę eSIM. Może to potrwać kilka minut.</translation>
 <translation id="7320213904474460808">Łącz domyślnie z siecią</translation>
 <translation id="7321545336522791733">Serwer niedostępny</translation>
 <translation id="7324297612904500502">Forum użytkowników wersji beta</translation>

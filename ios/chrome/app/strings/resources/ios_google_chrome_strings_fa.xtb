@@ -25,6 +25,7 @@
 <translation id="2574249610672786438">‏در همه دستگاه‌هایی که در آن‌ها از Chrome استفاده می‌کنید، به سیستم وارد شوید تا بتوانید برگه‌هایتان را ببینید</translation>
 <translation id="2576431527583832481">‏‫Chrome بهتر شده است! نسخه جدید آن در دسترس است.</translation>
 <translation id="257708665678654955">‏می‌خواهید دفعه بعد Google Chrome ترجمه صفحات <ph name="LANGUAGE_NAME" /> این سایت را به شما پیشنهاد دهد؟</translation>
+<translation id="2671426118752779020">‏می‌توانید از گذرواژه‌های ذخیره‌شده در «مدیر گذرواژه Google» در برنامه‌های دیگر iPhone خودتان استفاده کنید.</translation>
 <translation id="2695886661449553974">‏Chrome موفق نشد به‌روزرسانی‌ها را بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="2732745070297234559">‏Chrome نمی‌تواند همه گذرواژه‌هایتان را بررسی کند. فردا دوباره امتحان کنید.</translation>
 <translation id="2869959624320573933">‏ورود به سیستم Chrome</translation>
@@ -85,6 +86,7 @@
 <translation id="7165736900384873061">‏استفاده از اسکنر QR در Google Chrome را شروع کنید</translation>
 <translation id="7172660552945675509">‏نکته: <ph name="BEGIN_LINK" />Chrome را به داکتان انتقال دهید<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">‏Chrome برای اطمینان از دسترسی مجاز به گذرواژه‌هایتان از «شناسه تشخیص چهره» استفاده می‌کند.</translation>
+<translation id="72119412072970160">‏می‌توانید از گذرواژه‌های ذخیره‌شده در «مدیر گذرواژه Google» در برنامه‌های دیگر iPad خودتان استفاده کنید.</translation>
 <translation id="7261678641327190792">‏Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند</translation>
 <translation id="7272930098487145294">‏برای ذخیره کردن تصاویر، روی «تنظیمات» ضربه بزنید و به Chrome اجازه دهید آن‌ها را به عکس‌ها اضافه کند</translation>
 <translation id="7275945473750112644">‏<ph name="HOSTED_DOMAIN" /> حسابتان را مدیریت می‌کند، درنتیجه داده‌های Chrome شما از این دستگاه پاک خواهد شد</translation>
@@ -112,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">‏با Google Chrome ایمن بمانید</translation>
 <translation id="8772179140489533211">‏برای ورود به سیستم Chrome درخواست نشان می‌دهد.</translation>
+<translation id="8788269841521769222">‏لازم نیست این گذرواژه را به‌خاطر بسپارید. این گذرواژه در «مدیر گذرواژه Google» برای <ph name="EMAIL" /> ذخیره خواهد شد</translation>
 <translation id="9112744793181547300">‏Chrome به‌عنوان پیش‌فرض تنظیم شود؟</translation>
 </translationbundle>

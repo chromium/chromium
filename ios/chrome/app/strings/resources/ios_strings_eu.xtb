@@ -140,6 +140,7 @@
 <translation id="2268044343513325586">Mugatu</translation>
 <translation id="2271351792809375263">Erabili Chrome-n gordetako pasahitzak gailuko beste aplikazio batzuetan</translation>
 <translation id="2273327106802955778">"Gehiago" menua</translation>
+<translation id="2286505070150039482">Nabarmendutako testua</translation>
 <translation id="2302742851632557585">Aldatu pasahitza webgunean</translation>
 <translation id="2316709634732130529">Erabili iradokitako pasahitza</translation>
 <translation id="2320166752086256636">Ezkutatu teklatua</translation>
@@ -310,6 +311,7 @@ Jarraitu beheko urratsei:</translation>
 <translation id="3803696231112616155">Eskaini webgunea itzultzea</translation>
 <translation id="385051799172605136">Atzera</translation>
 <translation id="3858860766373142691">Izena</translation>
+<translation id="3861486700625780712">Utzi jarraitzeari</translation>
 <translation id="3892144330757387737">Historia aurkituko duzu hemen</translation>
 <translation id="3897092660631435901">Menua</translation>
 <translation id="3913386780052199712">Chrome-n saioa hasita daukazu</translation>
@@ -407,6 +409,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="481968316161811770">Cookieak, webguneetako datuak</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} eta beste bat}other{{domain} eta beste {count}}}</translation>
 <translation id="4826218269716039351">Blokeatu hirugarrenen cookieak</translation>
+<translation id="4826726074642088322">Partekatu nabarmendutako edukia</translation>
 <translation id="48274138579728272">Markatu irakurritako gisa</translation>
 <translation id="4833686396768033263">Ez daude erabilgarri azken fitxak</translation>
 <translation id="4833786495304741580">Erabilera-estatistikak eta hutsegite-txostenak automatikoki bidaltzen dizkio Google-ri.</translation>
@@ -602,6 +605,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="6497772452874122664"><ph name="TIME" /> fidagarria dela uste baduzu, beste webgune batetik gordetako pasahitz bat erabil dezakezu.
 
 Erabili pasahitz esklusibo bat webgune bakoitzerako.</translation>
+<translation id="650279896687777322">Lortu informazio gehiago…</translation>
 <translation id="651505212789431520">Sinkronizazioa bertan behera utzi nahi duzu? Sinkronizazioa aktibatzeko, joan "Ezarpenak" atalera.</translation>
 <translation id="6524918542306337007">Ez dago erabilgarri ezkutuko modua</translation>
 <translation id="6537746030088321027">example.com</translation>

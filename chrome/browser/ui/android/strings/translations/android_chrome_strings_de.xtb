@@ -90,6 +90,7 @@
 <translation id="147113415845704694">Sagen Sie zum Beispiel „Wie ist das Wetter heute?“</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> konnte aufgrund von Serverproblemen nicht heruntergeladen werden.</translation>
 <translation id="148482509007564431">Ablauf zum Speichern von Lesezeichen</translation>
+<translation id="1488775391433859242">Sie können sich über dieses Smartphone auf dem Computer anmelden, auf dem dieser QR-Code angezeigt wird.</translation>
 <translation id="1492417797159476138">Sie haben diesen Nutzernamen für diese Website bereits gespeichert</translation>
 <translation id="1493287004536771723">Sie folgen „<ph name="SITE_NAME" />“</translation>
 <translation id="1506061864768559482">Suchmaschine</translation>
@@ -189,6 +190,7 @@ Tippen Sie auf ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche 
 <translation id="2122601567107267586">App konnte nicht geöffnet werden</translation>
 <translation id="2126426811489709554">Powered by Chrome</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> eingespart</translation>
+<translation id="2132122640199389833">Alle verknüpften Geräte entfernen</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> geschlossen</translation>
 <translation id="2139186145475833000">Zum Startbildschirm zufügen</translation>
 <translation id="2141396931810938595">Auf Grundlage Ihrer Nutzung</translation>
@@ -265,6 +267,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2534582914273493287">URLs von Websites, die Sie besuchen, werden an Google gesendet</translation>
 <translation id="2536728043171574184">Eine Offline-Kopie dieser Seite wird angezeigt.</translation>
 <translation id="2546283357679194313">Cookies und Websitedaten</translation>
+<translation id="2549516196460093976">Sie können sich über dieses Tablet auf dem Computer anmelden, auf dem dieser QR-Code angezeigt wird.</translation>
 <translation id="2558692642259318568">Mit dem Inkognitomodus können Sie surfen, ohne dass Ihre Aktivitäten auf Ihrem Gerät gespeichert werden</translation>
 <translation id="2561519700418191927">Videovorschauen</translation>
 <translation id="2567385386134582609">BILD</translation>
@@ -451,6 +454,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="3563767357928833671">Inhalte der Zwischenablage werden angezeigt</translation>
 <translation id="3566923219790363270">VR ist noch nicht bereit. Starten Sie Chrome später neu.</translation>
 <translation id="3568688522516854065">Melden Sie sich an und aktivieren Sie die Synchronisierung, um Ihre Tabs von Ihren anderen Geräten abzurufen</translation>
+<translation id="357465026686164600">Smartphone als Sicherheitsschlüssel</translation>
 <translation id="3577473026931028326">Ein Fehler ist aufgetreten. Versuchen Sie es noch einmal.</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587596251841506391">Dabei helfen, das Web sicherer zu machen</translation>
@@ -520,6 +524,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="4000212216660919741">Offline-Startseite</translation>
 <translation id="4016425174436051808">Folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
+<translation id="4035877632587724847">Nicht zulassen</translation>
 <translation id="4045764304651014138">Nutzungsdaten</translation>
 <translation id="405399507749852140">Sie werden bei einem Preisnachlass benachrichtigt</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -579,6 +584,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="4450672886426705087">Google-Suchergebnisse.</translation>
 <translation id="4452411734226507615">Tab "<ph name="TAB_TITLE" />" schließen</translation>
 <translation id="4452548195519783679">Als Lesezeichen in "<ph name="FOLDER_NAME" />" gespeichert</translation>
+<translation id="4461614516424362539">Wenn Sie ein weiteres Gerät per QR-Code verknüpfen, kann es dieses Smartphone als Sicherheitsschlüssel verwenden. Wenn Sie es entfernen, müssen Sie noch einmal einen QR-Code scannen, um es wieder zu verknüpfen.</translation>
 <translation id="4472118726404937099">Melden Sie sich an und aktivieren Sie die Synchronisierung, um geräteübergreifend zu synchronisieren und zu personalisieren</translation>
 <translation id="4479839115899251637">Von der Leseliste löschen</translation>
 <translation id="4479972344484327217"><ph name="MODULE" /> für Chrome wird installiert…</translation>
@@ -649,6 +655,7 @@ Eventuell finden Sie unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 
 Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie die Synchronisierung zurück<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Name auf Karte</translation>
+<translation id="481574578487123132">Verknüpfte Geräte</translation>
 <translation id="4818017973810341238">Verifizierung der Digital Asset Links unter <ph name="VIOLATED_URL" /> fehlgeschlagen</translation>
 <translation id="4831037795716408498">Inhalte herunterladen</translation>
 <translation id="4834007576107377210">Informationen zum Löschen Ihres Suchverlaufs finden Sie in der Anleitung Ihrer Suchmaschine</translation>
@@ -681,6 +688,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="4941179133499732445">Tippen Sie auf das Mikrofon, um die Sprachsuche zu verwenden</translation>
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">Keine Ergebnisse</translation>
+<translation id="4950924971025849764">Wenn Sie im selben Google-Konto angemeldet sind, können andere Geräte dieses Smartphone als Sicherheitsschlüssel verwenden.</translation>
 <translation id="4957722034734105353">Weitere Informationen...</translation>
 <translation id="4961107849584082341">Lassen Sie sich diese Seite in eine beliebige Sprache übersetzen</translation>
 <translation id="4971735654804503942">Schnellerer und dynamischerer Schutz gegen schädliche Websites, Downloads und Erweiterungen. Warnt Sie im Fall von Datenpannen, bei denen Passwörter preisgegeben werden. Hierfür müssen Browserdaten an Google gesendet werden.</translation>
@@ -781,6 +789,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="55737423895878184">Standortermittlung und Benachrichtigungen sind erlaubt</translation>
 <translation id="5578795271662203820">In <ph name="SEARCH_ENGINE" /> nach dem Bild suchen</translation>
 <translation id="5581519193887989363">Sie können in den <ph name="BEGIN_LINK1" />Einstellungen<ph name="END_LINK1" /> auswählen, was Sie synchronisieren möchten.</translation>
+<translation id="5590372121997663538">Diesen Computer merken</translation>
 <translation id="5599455543593328020">Inkognitomodus</translation>
 <translation id="5599941490345670218">Google Assistant kann Aktionen auf Websites für Sie durchführen</translation>
 <translation id="5620163320393916465">Keine gespeicherten Passwörter</translation>
@@ -862,6 +871,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5995726099713306770">Seite noch einmal herunterladen?</translation>
 <translation id="6000066717592683814">Google beibehalten</translation>
 <translation id="6000203700195075278">Wieder folgen</translation>
+<translation id="6002122790816966947">Meine Geräte</translation>
 <translation id="6005538289190791541">Vorgeschlagenes Passwort</translation>
 <translation id="6032091552407840792">Diese Testversion ist probeweise nur in <ph name="BEGIN_LINK" />ausgewählten Regionen verfügbar<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Im Rahmen der Initiative <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> werden neue Technologien entwickelt, die zum Schutz vor websiteübergreifenden Tracking-Mechanismen und zum Erhalt des offenen Webs beitragen.
@@ -991,6 +1001,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6640207029842583248">Immer blockieren</translation>
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6643649862576733715">Nach Menge der gespeicherten Daten sortieren</translation>
+<translation id="6645629752388991326">Sie können festlegen, welche Geräte dieses Gerät als Sicherheitsschlüssel für die Anmeldung verwenden können.</translation>
 <translation id="6648459603387803038">Ihr Administrator kann die Browsereinstellungen per Remotezugriff ändern. Aktivitäten auf diesem Gerät können auch außerhalb von Chrome verwaltet werden.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> weitere}other{<ph name="CONTACT_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> weitere}}</translation>
 <translation id="6649642165559792194">Bildvorschau <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6710213216561001401">Zurück</translation>
 <translation id="671481426037969117">Ihr <ph name="FQDN" />-Timer ist abgelaufen. Morgen startet er neu.</translation>
 <translation id="6715020873764921614">Möchten Sie <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) trotzdem herunterladen?</translation>
+<translation id="6719634564325948108">Über QR-Code verbinden?</translation>
 <translation id="6738516213925468394">Ihre Daten wurden am <ph name="TIME" /> mit Ihrer <ph name="BEGIN_LINK" />Synchronisierungspassphrase<ph name="END_LINK" /> verschlüsselt. Geben Sie diese ein, um die Synchronisierung zu starten.</translation>
 <translation id="6738867403308150051">Wird heruntergeladen...</translation>
 <translation id="6751521182688001123">Öffnet schnell einen neuen Tab. Zum Ändern Schaltfläche gedrückt halten.</translation>

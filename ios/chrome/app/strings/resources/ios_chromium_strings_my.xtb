@@ -77,6 +77,7 @@
 <translation id="6424492062988593837">Chromium သည် ပိုလို့ကို ကောင်းလာပါပြီ! ဗားရှင်း အသစ် ရနိုင်ပြီ။</translation>
 <translation id="6752854822223394465">သင့်အဖွဲ့အစည်းသည် Chromium ကို စနစ်ထည့်သွင်းနေသည်...</translation>
 <translation id="6820823224820483452">Chromium က စကားဝှက်အားလုံးကို စစ်ဆေး၍မရပါ။ မနက်ဖြန် ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="7006920032187763988">သင့် iPad ၏ အခြားအက်ပ်များရှိ ‘စကားဝှက်မန်နေဂျာ’ တွင် သိမ်းထားသော စကားဝှက်များကို သုံးနိုင်သည်။</translation>
 <translation id="7018284295775193585">Chromium က အပ်ဒိတ်မလုပ်နိုင်ပါ</translation>
 <translation id="7045244423563602563">Chromium ကို သင့်စိတ်ကြိုက်ပြင်ဆင်လိုက်ပါ</translation>
 <translation id="7099326575020694068">မျက်နှာပြင်ခွဲခြမ်းပြသသည့်မုဒ်တွင် Chromium သည် သင့်ကင်မရာကို အသုံးပြု၍ မရပါ</translation>
@@ -103,11 +104,13 @@
 <translation id="8073677936375100957">ဤစက်မှ သင်၏ Chromium ဒေတာများကို ဖယ်ရှားလိုပါသလား။</translation>
 <translation id="8175055321229419309">အကြံပြုချက်− <ph name="BEGIN_LINK" />Chromium ကို အမြန်သုံးလင့်ခ်ဘားတန်းသို့ ရွှေ့ထားပါ<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium က အပ်ဒိတ်များကို စစ်ဆေး၍မရခဲ့ပါ။ နောက်မှ ထပ်စမ်းပါ။</translation>
+<translation id="858114650497379505">သင့် iPhone ၏ အခြားအက်ပ်များရှိ ‘စကားဝှက်မန်နေဂျာ’ တွင် သိမ်းထားသော စကားဝှက်များကို သုံးနိုင်သည်။</translation>
 <translation id="8586442755830160949">မူပိုင်ခွင့် <ph name="YEAR" /> The Chromium ပြုစုသူများ။ မူပိုင်ခွင့်များ အားလုံးကို ချုပ်ထိန်းထားသည်။</translation>
 <translation id="8663480472502753423">Chromium ကို အပ်ဒိတ်ဖြစ်နေစေသည်</translation>
 <translation id="8776843108004031667">ဤအကောင့်နှင့် သိမ်းမထားသော ဒေတာမှန်သမျှကို Chromium မှ ဖယ်ရှားပါမည်။</translation>
 <translation id="894437814105052438">သင်အကောင့်မှထွက်သောအခါ Chromium သည် သင့် Google Account သို့ ဒေတာအသစ်များကို စင့်ခ်လုပ်မည်မဟုတ်ပါ။ ယခင်က စင့်ခ်လုပ်ထားသောဒေတာများ အကောင့်တွင် ဆက်ရှိနေပါမည်။</translation>
 <translation id="9022552996538154597">Chromium ကို လက်မှတ်ထိုး ဝင်ရန်</translation>
+<translation id="9059693977935746710">ဤစကားဝှက်ကို မှတ်ထားစရာ မလိုပါ။ ၎င်းကို <ph name="EMAIL" /> အတွက် ‘စကားဝှက်မန်နေဂျာ’ တွင် သိမ်းပါမည်</translation>
 <translation id="9089354809943900324">Chromium မှာ ဟောင်းသွားပြီ</translation>
 <translation id="9110075932708282655">Chromium ကို ပုံသေသုံးပါ</translation>
 <translation id="921174536258924340">Chromium က စကားဝှက်အားလုံးကို စစ်ဆေး၍မရပါ။ မနက်ဖြန် ထပ်စမ်းကြည့်ပါ သို့မဟုတ် <ph name="BEGIN_LINK" />သင်၏ Google Account ရှိ စကားဝှက်များကို စစ်ဆေးပါ။<ph name="END_LINK" /></translation>

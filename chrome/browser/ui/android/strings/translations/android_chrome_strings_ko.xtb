@@ -90,6 +90,7 @@
 <translation id="147113415845704694">"오늘 날씨 어때?"라고 말해 보세요.</translation>
 <translation id="1477626028522505441">서버 문제로 인해 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
 <translation id="148482509007564431">북마크 저장 흐름</translation>
+<translation id="1488775391433859242">이 휴대전화를 사용하여 이 QR 코드를 표시하는 컴퓨터에 로그인할 수 있습니다.</translation>
 <translation id="1492417797159476138">이미 사이트에 사용 중인 사용자 이름입니다.</translation>
 <translation id="1493287004536771723"><ph name="SITE_NAME" /> 사이트를 팔로우 중입니다.</translation>
 <translation id="1506061864768559482">검색엔진</translation>
@@ -189,6 +190,7 @@
 <translation id="2122601567107267586">앱을 열 수 없음</translation>
 <translation id="2126426811489709554">Chrome에서 실행 중</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> 절약됨</translation>
+<translation id="2132122640199389833">연결된 기기 모두 삭제</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> 닫음</translation>
 <translation id="2139186145475833000">홈 화면에 추가</translation>
 <translation id="2141396931810938595">사용량 기준</translation>
@@ -265,6 +267,7 @@
 <translation id="2534582914273493287">내가 방문한 URL이 Google에 전송됩니다.</translation>
 <translation id="2536728043171574184">이 페이지의 오프라인 사본 보는 중</translation>
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
+<translation id="2549516196460093976">이 태블릿을 사용하여 이 QR 코드를 표시하는 컴퓨터에 로그인할 수 있습니다.</translation>
 <translation id="2558692642259318568">기기에 활동을 저장하지 않고 탐색하려면 시크릿 모드를 사용해 보세요.</translation>
 <translation id="2561519700418191927">동영상 미리보기</translation>
 <translation id="2567385386134582609">이미지</translation>
@@ -451,6 +454,7 @@
 <translation id="3563767357928833671">클립보드 콘텐츠 표시됨</translation>
 <translation id="3566923219790363270">Chrome에서 아직 VR을 준비하고 있습니다. 나중에 Chrome을 다시 시작하세요.</translation>
 <translation id="3568688522516854065">다른 기기에서 탭을 가져오려면 로그인하고 동기화를 사용 설정하세요.</translation>
+<translation id="357465026686164600">휴대전화를 보안 키로 사용</translation>
 <translation id="3577473026931028326">문제가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="3587482841069643663">전체</translation>
 <translation id="3587596251841506391">웹 보안 개선에 참여</translation>
@@ -520,6 +524,7 @@
 <translation id="4000212216660919741">오프라인 홈</translation>
 <translation id="4016425174436051808">팔로우할 수 없습니다. 문제가 발생했습니다.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{#시간}other{#시간}}</translation>
+<translation id="4035877632587724847">허용 안함</translation>
 <translation id="4045764304651014138">사용 데이터</translation>
 <translation id="405399507749852140">사이트에서 가격이 인하되면 알림이 전송됩니다</translation>
 <translation id="4056223980640387499">세피아</translation>
@@ -579,6 +584,7 @@
 <translation id="4450672886426705087">Google 검색결과입니다.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> 탭 닫기</translation>
 <translation id="4452548195519783679">북마크를 <ph name="FOLDER_NAME" />에 추가함</translation>
+<translation id="4461614516424362539">다른 기기를 QR 코드로 연결할 때 이 휴대전화를 보안 키로 사용할 수 있습니다. 삭제하면 QR 코드를 스캔해야 다시 연결할 수 있습니다.</translation>
 <translation id="4472118726404937099">모든 기기에서 동기화하고 맞춤설정하려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="4479839115899251637">읽기 목록에서 삭제</translation>
 <translation id="4479972344484327217">Chrome에 <ph name="MODULE" />을(를) 설치하고 있습니다…</translation>
@@ -649,6 +655,7 @@
 
 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />하세요.</translation>
 <translation id="4807098396393229769">카드 명의</translation>
+<translation id="481574578487123132">연결된 기기</translation>
 <translation id="4818017973810341238"><ph name="VIOLATED_URL" />에서 디지털 애셋 링크 확인에 실패함</translation>
 <translation id="4831037795716408498">콘텐츠 다운로드하기</translation>
 <translation id="4834007576107377210">Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진의 검색 기록 삭제 안내를 확인하세요.</translation>
@@ -681,6 +688,7 @@
 <translation id="4941179133499732445">마이크를 탭하여 음성으로 검색하세요.</translation>
 <translation id="4943703118917034429">가상 현실</translation>
 <translation id="4943872375798546930">검색결과가 없습니다.</translation>
+<translation id="4950924971025849764">같은 Google 계정으로 로그인되어 있으면 다른 기기에서 이 휴대전화를 보안 키로 사용할 수 있습니다.</translation>
 <translation id="4957722034734105353">자세히 알아보기...</translation>
 <translation id="4961107849584082341">이 페이지를 원하는 언어로 번역하세요.</translation>
 <translation id="4971735654804503942">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다. 비밀번호 유출에 관해 알립니다. Google에 인터넷 사용 기록을 전송해야 합니다.</translation>
@@ -781,6 +789,7 @@
 <translation id="55737423895878184">위치 및 알림이 허용되었습니다</translation>
 <translation id="5578795271662203820"><ph name="SEARCH_ENGINE" />에서 이 이미지 검색</translation>
 <translation id="5581519193887989363">언제든지 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />에서 동기화할 항목을 선택할 수 있습니다.</translation>
+<translation id="5590372121997663538">이 컴퓨터 기억하기</translation>
 <translation id="5599455543593328020">시크릿 모드</translation>
 <translation id="5599941490345670218">Google 어시스턴트가 사용자를 위해 여러 웹사이트에서 작업을 완료할 수 있습니다.</translation>
 <translation id="5620163320393916465">저장된 비밀번호 없음</translation>
@@ -862,6 +871,7 @@
 <translation id="5995726099713306770">페이지를 다시 다운로드하시겠습니까?</translation>
 <translation id="6000066717592683814">계속 Google 사용</translation>
 <translation id="6000203700195075278">다시 팔로우</translation>
+<translation id="6002122790816966947">내 기기</translation>
 <translation id="6005538289190791541">추천 비밀번호</translation>
 <translation id="6032091552407840792">이 무료 체험은 <ph name="BEGIN_LINK" />일부 지역<ph name="END_LINK" />에서만 진행됩니다.</translation>
 <translation id="6033245666633565791"><ph name="BEGIN_LINK" />개인 정보 보호 샌드박스<ph name="END_LINK" />를 통해 Chrome은 오픈 웹의 장점을 유지하면서 크로스 사이트 추적으로부터 사용자를 보호하는 새로운 기술을 개발하고 있습니다.
@@ -991,6 +1001,7 @@
 <translation id="6640207029842583248">항상 차단</translation>
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6643649862576733715">저장된 데이터 양에 따라 정렬</translation>
+<translation id="6645629752388991326">이 기기를 보안 키로 사용하여 로그인할 수 있는 기기를 제어합니다.</translation>
 <translation id="6648459603387803038">관리자가 원격으로 브라우저 설정을 변경할 수 있습니다. 이 기기의 활동은 Chrome 외부에서도 관리할 수 있습니다.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />개}other{<ph name="CONTACT_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />개}}</translation>
 <translation id="6649642165559792194">이미지 미리보기 표시 <ph name="BEGIN_NEW" />새로운 기능<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@
 <translation id="6710213216561001401">이전</translation>
 <translation id="671481426037969117"><ph name="FQDN" /> 타이머가 종료되었습니다. 타이머는 내일 다시 시작됩니다.</translation>
 <translation id="6715020873764921614">그래도 <ph name="FILE_NAME" />(<ph name="FILE_SIZE" />) 파일을 다운로드하시겠습니까?</translation>
+<translation id="6719634564325948108">QR 코드로 연결하시겠습니까?</translation>
 <translation id="6738516213925468394"><ph name="TIME" />자로 <ph name="BEGIN_LINK" />동기화 암호<ph name="END_LINK" />를 통해 데이터가 암호화되었습니다. 동기화를 시작하려면 암호를 입력하세요.</translation>
 <translation id="6738867403308150051">다운로드 중...</translation>
 <translation id="6751521182688001123">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 길게 터치하세요.</translation>

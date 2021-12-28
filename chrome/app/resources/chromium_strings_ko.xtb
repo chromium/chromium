@@ -234,6 +234,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7448255348454382571">Chromium OS 다시 시작</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - 개발자용 Chromium</translation>
 <translation id="7451052299415159299">이 사이트에서 카메라에 액세스하려면 Chromium에 권한이 필요합니다</translation>
+<translation id="7467949745582939695">Chromium을 다시 시작하시겠습니까?</translation>
 <translation id="7483335560992089831">이미 실행 중인 Chromium과 동일한 버전을 설치할 수 없습니다. Chromium을 종료한 뒤 다시 시도하세요.</translation>
 <translation id="753534427205733210">{0,plural, =1{1분 후 Chromium이 다시 시작됩니다}other{#분 후 Chromium이 다시 시작됩니다}}</translation>
 <translation id="7549178288319965365">Chromium OS 정보</translation>

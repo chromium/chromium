@@ -589,6 +589,7 @@
 <translation id="1600857548979126453">دسترسی به مرحله پایانی اشکال‌زدای صفحه</translation>
 <translation id="1601560923496285236">اعمال</translation>
 <translation id="1602085790802918092">درحال شروع دستگاه مجازی</translation>
+<translation id="1603411913360944381">فراموش کردن <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(ناشناس)</translation>
 <translation id="1604432177629086300">چاپ نشد چاپگر را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="1605744057217831567">دیدن همه داده‌ها و اجازه‌های سایت</translation>
@@ -6063,6 +6064,7 @@
 <translation id="7307129035224081534">موقتاً متوقف شد</translation>
 <translation id="7308643132139167865">زبان‌های وب‌سایت</translation>
 <translation id="7310598146671372464">‏ورود به سیستم انجام نشد. این سرور از رمزگذاری‌های Kerberos مشخص‌شده پشتیبانی نمی‌کند. لطفاً با سرپرست سیستم تماس بگیرید.</translation>
+<translation id="7312210124139670355">سرپرستتان درحال بازنشاندن سیم‌کارت داخلی شما است. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="7320213904474460808">شبکه پیش‌فرض</translation>
 <translation id="7321545336522791733">سرور غیرقابل دسترسی است</translation>
 <translation id="7324297612904500502">تالار گفتمان بتا</translation>

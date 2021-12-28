@@ -25,6 +25,7 @@
 <translation id="2574249610672786438">Untuk melihat tab Chrome Anda dari perangkat lain, login ke semua perangkat Anda</translation>
 <translation id="2576431527583832481">Chrome jadi semakin baik! Versi baru telah tersedia.</translation>
 <translation id="257708665678654955">Ingin Google Chrome menawarkan untuk menerjemahkan halaman berbahasa <ph name="LANGUAGE_NAME" /> dari situs ini saat Anda mengunjunginya lagi?</translation>
+<translation id="2671426118752779020">Anda dapat menggunakan sandi yang Anda simpan ke Pengelola Sandi Google di aplikasi lain pada iPhone.</translation>
 <translation id="2695886661449553974">Chrome tidak dapat memeriksa update. Coba lagi nanti.</translation>
 <translation id="2732745070297234559">Chrome tidak dapat memeriksa semua sandi. Coba lagi besok.</translation>
 <translation id="2869959624320573933">Login ke Chrome</translation>
@@ -85,6 +86,7 @@
 <translation id="7165736900384873061">Mulai menggunakan pemindai QR Google Chrome</translation>
 <translation id="7172660552945675509">Kiat: <ph name="BEGIN_LINK" />Pindahkan Chrome ke dok<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome menggunakan Face ID untuk memastikan akses terotorisasi ke sandi Anda.</translation>
+<translation id="72119412072970160">Anda dapat menggunakan sandi yang Anda simpan ke Pengelola Sandi Google di aplikasi lain pada iPad.</translation>
 <translation id="7261678641327190792">Chrome tidak dapat memeriksa sandi Anda</translation>
 <translation id="7272930098487145294">Untuk menyimpan gambar, ketuk Setelan untuk mengizinkan Chrome menambahkannya ke galeri foto Anda</translation>
 <translation id="7275945473750112644">Akun Anda dikelola oleh <ph name="HOSTED_DOMAIN" />, sehingga data Chrome Anda akan dihapus dari perangkat ini</translation>
@@ -112,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Tetap Aman dengan Google Chrome</translation>
 <translation id="8772179140489533211">Menampilkan perintah untuk login ke Chrome.</translation>
+<translation id="8788269841521769222">Anda tidak perlu mengingat sandi ini. Sandi akan disimpan ke Pengelola Sandi Google untuk <ph name="EMAIL" /></translation>
 <translation id="9112744793181547300">Setel Chrome sebagai Default?</translation>
 </translationbundle>

@@ -90,6 +90,7 @@
 <translation id="147113415845704694">Prófaðu „What’s the weather today?“</translation>
 <translation id="1477626028522505441">Niðurhal á <ph name="FILE_NAME" /> mistókst vegna vandamála á netþjóni.</translation>
 <translation id="148482509007564431">Vistun bókamerkja</translation>
+<translation id="1488775391433859242">Þú getur notað þennan síma til að skrá þig inn í tölvunni sem birtir þennan QR-kóða.</translation>
 <translation id="1492417797159476138">Þú varst þegar búin(n) að vista þetta notandanafn fyrir vefsvæðið</translation>
 <translation id="1493287004536771723">Þú fylgist með <ph name="SITE_NAME" /></translation>
 <translation id="1506061864768559482">Leitarvél</translation>
@@ -189,6 +190,7 @@
 <translation id="2122601567107267586">Ekki var hægt að opna forritið</translation>
 <translation id="2126426811489709554">Keyrt af Chrome</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> spöruð</translation>
+<translation id="2132122640199389833">Fjarlægja öll tengd tæki</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> lokað</translation>
 <translation id="2139186145475833000">Setja á heimaskjá</translation>
 <translation id="2141396931810938595">Miðað við notkun þína</translation>
@@ -265,6 +267,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="2534582914273493287">Vefslóðir sem þú opnar eru sendar til Google</translation>
 <translation id="2536728043171574184">Skoðar ótengt afrit af þessari síðu</translation>
 <translation id="2546283357679194313">Fótspor og gögn vefsvæða</translation>
+<translation id="2549516196460093976">Þú getur notað þessa spjaldtölvu til að skrá þig inn í tölvunni sem birtir þennan QR-kóða.</translation>
 <translation id="2558692642259318568">Prófaðu að nota huliðsstillinguna til að vafra án þess að vista virkni í tækinu</translation>
 <translation id="2561519700418191927">Forskoðun myndskeiða</translation>
 <translation id="2567385386134582609">MYND</translation>
@@ -451,6 +454,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3563767357928833671">Efni klippiborðs sýnt</translation>
 <translation id="3566923219790363270">Chrome er enn að undirbúa sig fyrir sýndarveruleika. Endurræstu Chrome síðar.</translation>
 <translation id="3568688522516854065">Skráðu þig inn og kveiktu á samstillingu til að fá aðgang að flipunum þínum í öðrum tækjum</translation>
+<translation id="357465026686164600">Sími sem öryggislykill</translation>
 <translation id="3577473026931028326">Eitthvað fór úrskeiðis. Reyndu aftur.</translation>
 <translation id="3587482841069643663">Allar</translation>
 <translation id="3587596251841506391">Hjálpaðu við að bæta netöryggi</translation>
@@ -520,6 +524,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="4000212216660919741">Ónettengt</translation>
 <translation id="4016425174436051808">Ekkki er hægt að fylgja. Eitthvað fór úrskeiðis.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# klst.}one{# klst.}other{# klst.}}</translation>
+<translation id="4035877632587724847">Ekki leyfa</translation>
 <translation id="4045764304651014138">Notkunargögn</translation>
 <translation id="405399507749852140">Fáðu tilkynningu ef verðlækkun verður á einhverju vefsvæði</translation>
 <translation id="4056223980640387499">Brúnn blær</translation>
@@ -579,6 +584,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="4450672886426705087">Leitarniðurstöður Google.</translation>
 <translation id="4452411734226507615">Loka flipanum <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Bókamerki var búið til í <ph name="FOLDER_NAME" /></translation>
+<translation id="4461614516424362539">Þegar þú notar QR-kóða til að tengja annað tæki getur það notað þennan síma sem öryggislykil. Ef þú fjarlægir það þarftu að skanna QR-kóða til að tengja það aftur.</translation>
 <translation id="4472118726404937099">Skráðu þig inn og kveiktu á samstillingu til að hafa allt samstillt og sérsniðið í tækjunum þínum</translation>
 <translation id="4479839115899251637">Eyða af leslista</translation>
 <translation id="4479972344484327217">Setur upp <ph name="MODULE" /> fyrir Chrome…</translation>
@@ -649,6 +655,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 
 Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla samstillingu<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Nafn á korti</translation>
+<translation id="481574578487123132">Tengd tæki</translation>
 <translation id="4818017973810341238">Staðfesting tengla stafrænna eigna mistókst á <ph name="VIOLATED_URL" /></translation>
 <translation id="4831037795716408498">Sækja innihald</translation>
 <translation id="4834007576107377210">Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það á við</translation>
@@ -681,6 +688,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="4941179133499732445">Ýttu á hljóðnemann til að leita með röddinni</translation>
 <translation id="4943703118917034429">Sýndarveruleiki</translation>
 <translation id="4943872375798546930">Engar niðurstöður</translation>
+<translation id="4950924971025849764">Önnur tæki geta notað þennan síma sem öryggislykil þegar þú ert skráð(ur) inn á sama Google reikninginn.</translation>
 <translation id="4957722034734105353">Frekari upplýsingar...</translation>
 <translation id="4961107849584082341">Þýddu þessa síðu yfir á hvaða tungumál sem er</translation>
 <translation id="4971735654804503942">Hraðari forvirk vörn gegn hættulegum vefsvæðum, niðurhali og viðbótum. Varar þig við berskjölduðum aðgangsorðum. Krefst þess að vefskoðunargögn verði send til Google.</translation>
@@ -781,6 +789,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="55737423895878184">Staðsetning og tilkynningar eru leyfðar</translation>
 <translation id="5578795271662203820">Leita að þessari mynd á <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Þú getur alltaf valið hvað á að samstilla í <ph name="BEGIN_LINK1" />stillingunum<ph name="END_LINK1" />.</translation>
+<translation id="5590372121997663538">Muna eftir þessari tölvu</translation>
 <translation id="5599455543593328020">Huliðsstilling</translation>
 <translation id="5599941490345670218">Google hjálparinn getur lokið aðgerðum á ýmsum vefsvæðum fyrir þig</translation>
 <translation id="5620163320393916465">Engin vistuð aðgangsorð</translation>
@@ -862,6 +871,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5995726099713306770">Sækja síðu aftur?</translation>
 <translation id="6000066717592683814">Nota Google áfram</translation>
 <translation id="6000203700195075278">Fylgja aftur</translation>
+<translation id="6002122790816966947">Tækin þín</translation>
 <translation id="6005538289190791541">Útbúið aðgangsorð</translation>
 <translation id="6032091552407840792">Þessi prufuútgáfa er aðeins virk á <ph name="BEGIN_LINK" />sumum svæðum<ph name="END_LINK" />.</translation>
 <translation id="6033245666633565791">Chrome notar <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> til að þróa nýja tækni sem verndar þig fyrir rakningartækni en varðveitir á sama tíma opna vefinn.
@@ -991,6 +1001,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6640207029842583248">Útiloka alltaf</translation>
 <translation id="6643016212128521049">Hreinsa</translation>
 <translation id="6643649862576733715">Raða eftir gagnasparnaði</translation>
+<translation id="6645629752388991326">Stjórnaðu því hvaða tæki geta skráð sig inn með því að nota þetta tæki sem öryggislykil.</translation>
 <translation id="6648459603387803038">Kerfisstjórinn þinn getur breytt uppsetningu vafrans með fjartengingu. Virkni þinni í þessu tæki er einnig hægt að stjórna utan Chrome.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> í viðbót}one{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> í viðbót}other{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> í viðbót}}</translation>
 <translation id="6649642165559792194">Forskoða mynd <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
@@ -1007,6 +1018,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="6710213216561001401">Til baka</translation>
 <translation id="671481426037969117">Tímamælir <ph name="FQDN" /> rann út. Hann byrjar aftur á morgun.</translation>
 <translation id="6715020873764921614">Viltu samt sem áður sækja <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
+<translation id="6719634564325948108">Tengja með QR-kóða?</translation>
 <translation id="6738516213925468394">Gögnin þín voru dulkóðuð með <ph name="BEGIN_LINK" />aðgangsorði samstillingar<ph name="END_LINK" /> <ph name="TIME" />. Sláðu það inn til að hefja samstillingu.</translation>
 <translation id="6738867403308150051">Sækir…</translation>
 <translation id="6751521182688001123">Opna nýjan flipa hratt. Haltu fingri á þessari flýtileið til að breyta henni.</translation>

@@ -1061,6 +1061,7 @@
 <translation id="204914487372604757">Креирај кратенка</translation>
 <translation id="2050339315714019657">Портрет</translation>
 <translation id="2053312383184521053">Податоци во состојба на неактивност</translation>
+<translation id="2054240652864153171">Да се избришат податоците од сајтот <ph name="SITE_NAME" /> поделени во партиции на <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Ќе ве одјавиме од овие сајтови, вклучително и од отворените картички</translation>
 <translation id="205560151218727633">Лого на „Помошникот на Google“</translation>
 <translation id="2058456167109518507">Откриен е уред</translation>
@@ -2406,6 +2407,7 @@
 <translation id="3433621910545056227">Уф! Системот не успеа да воспостави заклучување на уредот за атрибути за време на инсталацијата.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Ако сте ја вклучиле дополнителната поставка „Активност на интернет и апликации“ за вашето дете, овие податоци може да се зачувуваат во сметката на Google на детето. Дознајте повеќе за поставкиве и за тоа како да ги приспособите на families.google.com.</translation>
+<translation id="3434512374684753970">Аудио и видео</translation>
 <translation id="3435688026795609344">„<ph name="EXTENSION_NAME" />“ го бара вашиот <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Безбедност</translation>
 <translation id="343578350365773421">Нема хартија</translation>
@@ -2852,6 +2854,7 @@
 <translation id="3873423927483480833">Прикажете ги PIN-кодовите</translation>
 <translation id="3873915545594852654">Настана проблем со ARC++.</translation>
 <translation id="3874164307099183178">Вклучување на „Помошникот на Google“</translation>
+<translation id="3875783148670536197">Покажи ми како</translation>
 <translation id="3875815154304214043">Апликацијата <ph name="APP_NAME" /> е поставена да се отвора во нова картичка од прелистувачот, а поддржаните линкови исто така ќе се отвораат во прелистувачот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Поставки за „Споделување во близина“ за уредот на <ph name="USER_NAME" /> што споделува под сметката <ph name="USER_EMAIL" /></translation>
 <translation id="3879748587602334249">Управник со преземања</translation>
@@ -4488,6 +4491,7 @@
 <translation id="562935524653278697">Администраторот ја оневозможил синхронизацијата на обележувачите, историјата, лозинките и другите поставки.</translation>
 <translation id="5631017369956619646">Употреба на ЦПУ</translation>
 <translation id="5632059346822207074">Побарана е дозвола. Притиснете Ctrl + „Напред“ за да одговорите</translation>
+<translation id="5632485077360054581">Покажи ми како</translation>
 <translation id="5632566673632479864">Вашата сметка <ph name="EMAIL" /> веќе не е дозволена како примарна сметка. Бидејќи <ph name="DOMAIN" /> управува со сметкава, обележувачите, историјата, лозинките и другите поставки ќе се избришат од уредов.</translation>
 <translation id="5632592977009207922">Се презема, уште <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Мобилна</translation>

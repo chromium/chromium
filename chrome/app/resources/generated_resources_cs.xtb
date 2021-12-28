@@ -590,6 +590,7 @@
 <translation id="1600857548979126453">Získat přístup k ladicímu programu stránky na serveru</translation>
 <translation id="1601560923496285236">Použít</translation>
 <translation id="1602085790802918092">Probíhá spouštění virtuálního počítače</translation>
+<translation id="1603411913360944381">Zapomenout zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Anonymní režim)</translation>
 <translation id="1604432177629086300">Tisk se nezdařil. Zkontrolujte tiskárnu a zkuste to znovu.</translation>
 <translation id="1605744057217831567">Zobrazit veškerá data webů a oprávnění</translation>
@@ -6050,6 +6051,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7307129035224081534">Pozastaveno</translation>
 <translation id="7308643132139167865">Jazyky webových stránek</translation>
 <translation id="7310598146671372464">Přihlášení se nezdařilo. Server nepodporuje zadané typy šifrování Kerberos. Obraťte se na svého administrátora.</translation>
+<translation id="7312210124139670355">Administrátor resetuje vaši eSIM. Může to trvat několik minut.</translation>
 <translation id="7320213904474460808">Nastavit výchozí síť</translation>
 <translation id="7321545336522791733">Server je nedostupný</translation>
 <translation id="7324297612904500502">Fórum beta</translation>

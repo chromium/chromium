@@ -1015,6 +1015,7 @@ Nouvelle installation</translation>
 <translation id="7860671499921112077">Balayez l'écran vers le haut avec trois doigts pour accéder à l'aperçu</translation>
 <translation id="7866482334467279021">activé</translation>
 <translation id="7868900307798234037">Déverrouillage en cours avec votre empreinte digitale</translation>
+<translation id="7872195908557044066">Votre administrateur réinitialise votre eSIM. Patientez quelques minutes.</translation>
 <translation id="7872786842639831132">Désactivé</translation>
 <translation id="7875575368831396199">Apparemment, le Bluetooth est désactivé sur votre <ph name="DEVICE_TYPE" />. Activez-le pour utiliser Phone Hub.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Rétablir une version antérieure de l'appareil maintenant}=1{Rétablir une version antérieure de l'appareil d'ici 1 seconde}one{Rétablir une version antérieure de l'appareil d'ici # seconde}other{Rétablir une version antérieure de l'appareil d'ici # secondes}}</translation>
