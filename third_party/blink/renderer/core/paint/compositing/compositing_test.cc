@@ -2555,4 +2555,45 @@ TEST_P(CompositingSimTest, CompositorAnimationOfNonInvertibleTransform) {
   EXPECT_TRUE(CcLayerByDOMElementId("animation")->DrawsContent());
 }
 
+TEST_P(CompositingSimTest, CompositorAnimationRevealsChild) {
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        @keyframes anim {
+          0% { transform: rotateX(90deg); }
+          99% { transform: rotateX(90deg); }
+          100% { transform: rotateX(360deg); }
+        }
+        #animation {
+          animation-name: anim;
+          animation-duration: 999s;
+          transform-style: preserve-3d;
+          background: green;
+          width: 100px;
+          height: 100px;
+        }
+        #child {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 50px;
+          height: 100px;
+          background: green;
+          will-change: transform;
+          transform: translateZ(16px);
+        }
+      </style>
+      <div id="animation">
+        <div id="child"></div>
+      </div>
+  )HTML");
+  Compositor().BeginFrame();
+  EXPECT_TRUE(CcLayerByDOMElementId("animation"));
+  EXPECT_TRUE(CcLayerByDOMElementId("animation")->DrawsContent());
+  // Though #child is not initially visible, it should be painted because it can
+  // animate into view.
+  EXPECT_TRUE(CcLayerByDOMElementId("child"));
+  EXPECT_TRUE(CcLayerByDOMElementId("child")->DrawsContent());
+}
+
 }  // namespace blink

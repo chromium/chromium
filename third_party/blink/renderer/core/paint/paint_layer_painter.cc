@@ -243,13 +243,9 @@ bool PaintLayerPainter::ShouldUseInfiniteCullRectInternal(
           return true;
         }
 
-        // Ensure content under animating transforms is not culled out, even if
-        // the initial matrix is non-invertible.
-        if (transform->HasActiveTransformAnimation() &&
-            !transform->IsIdentityOr2DTranslation() &&
-            !transform->Matrix().IsInvertible()) {
+        // Ensure content under animating transforms is not culled out.
+        if (transform->HasActiveTransformAnimation())
           return true;
-        }
 
         // As an optimization, skip cull rect updating for non-composited
         // transforms which have already been painted. This is because the cull
