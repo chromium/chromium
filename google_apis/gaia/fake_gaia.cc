@@ -978,42 +978,41 @@ void FakeGaia::HandleGetCheckConnectionInfo(const HttpRequest& request,
 
 void FakeGaia::HandleGetReAuthProofToken(const HttpRequest& request,
                                          BasicHttpResponse* http_response) {
-  base::DictionaryValue response_dict;
-  std::unique_ptr<base::DictionaryValue> error =
-      std::make_unique<base::DictionaryValue>();
+  base::Value response_dict(base::Value::Type::DICTIONARY);
+  base::Value error(base::Value::Type::DICTIONARY);
 
   switch (next_reauth_status_) {
     case GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess:
-      response_dict.SetString("encodedRapt", "abc123");
+      response_dict.SetStringKey("encodedRapt", "abc123");
       FormatOkJSONResponse(response_dict, http_response);
       break;
 
     case GaiaAuthConsumer::ReAuthProofTokenStatus::kInvalidGrant:
-      error->SetString("message", "INVALID_GRANT");
-      response_dict.SetDictionary("error", std::move(error));
+      error.SetStringKey("message", "INVALID_GRANT");
+      response_dict.SetKey("error", std::move(error));
       FormatJSONResponse(response_dict, net::HTTP_BAD_REQUEST, http_response);
       break;
 
     case GaiaAuthConsumer::ReAuthProofTokenStatus::kInvalidRequest:
-      error->SetString("message", "INVALID_REQUEST");
-      response_dict.SetDictionary("error", std::move(error));
+      error.SetStringKey("message", "INVALID_REQUEST");
+      response_dict.SetKey("error", std::move(error));
       FormatJSONResponse(response_dict, net::HTTP_BAD_REQUEST, http_response);
       break;
 
     case GaiaAuthConsumer::ReAuthProofTokenStatus::kUnauthorizedClient:
-      error->SetString("message", "UNAUTHORIZED_CLIENT");
-      response_dict.SetDictionary("error", std::move(error));
+      error.SetStringKey("message", "UNAUTHORIZED_CLIENT");
+      response_dict.SetKey("error", std::move(error));
       FormatJSONResponse(response_dict, net::HTTP_FORBIDDEN, http_response);
       break;
 
     case GaiaAuthConsumer::ReAuthProofTokenStatus::kInsufficientScope:
-      error->SetString("message", "INSUFFICIENT_SCOPE");
-      response_dict.SetDictionary("error", std::move(error));
+      error.SetStringKey("message", "INSUFFICIENT_SCOPE");
+      response_dict.SetKey("error", std::move(error));
       FormatJSONResponse(response_dict, net::HTTP_FORBIDDEN, http_response);
       break;
 
     case GaiaAuthConsumer::ReAuthProofTokenStatus::kCredentialNotSet:
-      response_dict.SetDictionary("error", std::move(error));
+      response_dict.SetKey("error", std::move(error));
       FormatJSONResponse(response_dict, net::HTTP_FORBIDDEN, http_response);
       break;
 
