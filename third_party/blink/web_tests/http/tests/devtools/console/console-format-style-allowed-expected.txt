@@ -9,7 +9,5 @@ Styled text #0: contain: paint; display: inline-block; max-width: 100%; border: 
 console-format-style-allowed.js:16 text-* is fine by us!
 Styled text #0: contain: paint; display: inline-block; max-width: 100%; text-decoration: none;
 console-format-style-allowed.js:18 Display, on the other hand, is bad news.
-Styled text #0: contain: paint; display: inline-block; max-width: 100%;
 console-format-style-allowed.js:19 And position too.
-Styled text #0: contain: paint; display: inline-block; max-width: 100%;
 
