@@ -32,7 +32,7 @@ int TypeToPrefValue(SessionStartupPref::Type type) {
   }
 }
 
-void URLListToPref(const base::ListValue* url_list, SessionStartupPref* pref) {
+void URLListToPref(const base::Value* url_list, SessionStartupPref* pref) {
   pref->urls.clear();
   for (const base::Value& i : url_list->GetList()) {
     const std::string* url_text = i.GetIfString();
@@ -117,8 +117,7 @@ SessionStartupPref SessionStartupPref::GetStartupPref(
 
   // Always load the urls, even if the pref type isn't URLS. This way the
   // preferences panels can show the user their last choice.
-  const base::ListValue* url_list = &base::Value::AsListValue(
-      *prefs->GetList(prefs::kURLsToRestoreOnStartup));
+  const base::Value* url_list = prefs->GetList(prefs::kURLsToRestoreOnStartup);
   URLListToPref(url_list, &pref);
 
   return pref;
