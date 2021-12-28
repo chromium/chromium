@@ -395,6 +395,21 @@ bool ParseIA5String(Input in, std::string* out) {
   return true;
 }
 
+bool ParseVisibleString(Input in, std::string* out) {
+  // ITU-T X.680:
+  // VisibleString : "Defining registration number 6" + SPACE
+  // 6 includes all the characters from '!' .. '~' (33 .. 126), space is 32.
+  // Also ITU-T X.691 says it much more clearly:
+  // "for VisibleString [the range] is 32 to 126 ... For VisibleString .. all
+  // the values in the range are present."
+  for (char c : in.AsStringPiece()) {
+    if (static_cast<uint8_t>(c) < 32 || static_cast<uint8_t>(c) > 126)
+      return false;
+  }
+  *out = in.AsString();
+  return true;
+}
+
 bool ParsePrintableString(Input in, std::string* out) {
   for (char c : in.AsStringPiece()) {
     if (!(base::IsAsciiAlpha(c) || c == ' ' || (c >= '\'' && c <= ':') ||

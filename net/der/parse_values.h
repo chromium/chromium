@@ -132,6 +132,11 @@ NET_EXPORT bool ParseGeneralizedTime(const Input& in,
 // |out| as ASCII, returning true if successful.
 NET_EXPORT bool ParseIA5String(Input in, std::string* out) WARN_UNUSED_RESULT;
 
+// Reads a DER-encoded ASN.1 VisibleString value from |in| and stores the result
+// in |out| as ASCII, returning true if successful.
+NET_EXPORT bool ParseVisibleString(Input in,
+                                   std::string* out) WARN_UNUSED_RESULT;
+
 // Reads a DER-encoded ASN.1 PrintableString value from |in| and stores the
 // result in |out| as ASCII, returning true if successful.
 NET_EXPORT bool ParsePrintableString(Input in,

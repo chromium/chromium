@@ -396,6 +396,21 @@ TEST(ParseValuesTest, ParseIA5String) {
   EXPECT_FALSE(ParseIA5String(invalid_der, &s));
 }
 
+TEST(ParseValuesTest, ParseVisibleString) {
+  const Input valid_der({0x46, 0x6f, 0x6f, 0x20, 0x62, 0x61, 0x72, 0x7e});
+  std::string s;
+  EXPECT_TRUE(ParseVisibleString(valid_der, &s));
+  EXPECT_EQ("Foo bar\x7e", s);
+
+  // 0x7f is not a valid character in VisibleString
+  const Input invalid_der({0x46, 0x6f, 0x7f, 0x20, 0x62, 0x61, 0x72});
+  EXPECT_FALSE(ParseVisibleString(invalid_der, &s));
+
+  // 0x1f is not a valid character in VisibleString
+  const Input invalid_der2({0x46, 0x6f, 0x1f, 0x20, 0x62, 0x61, 0x72});
+  EXPECT_FALSE(ParseVisibleString(invalid_der2, &s));
+}
+
 TEST(ParseValuesTest, ParsePrintableString) {
   const Input valid_der({0x46, 0x6f, 0x6f, 0x20, 0x62, 0x61, 0x72});
   std::string s;

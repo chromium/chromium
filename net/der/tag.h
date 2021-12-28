@@ -38,6 +38,7 @@ const Tag kTeletexString = CBS_ASN1_T61STRING;
 const Tag kIA5String = CBS_ASN1_IA5STRING;
 const Tag kUtcTime = CBS_ASN1_UTCTIME;
 const Tag kGeneralizedTime = CBS_ASN1_GENERALIZEDTIME;
+const Tag kVisibleString = CBS_ASN1_VISIBLESTRING;
 const Tag kUniversalString = CBS_ASN1_UNIVERSALSTRING;
 const Tag kBmpString = CBS_ASN1_BMPSTRING;
 
