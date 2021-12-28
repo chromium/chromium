@@ -32,7 +32,7 @@ void WaylandDrm::Instantiate(WaylandConnection* connection,
   DCHECK_EQ(interface, kInterfaceName);
 
   if (connection->drm_ ||
-      !!wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
+      !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
   }
 
