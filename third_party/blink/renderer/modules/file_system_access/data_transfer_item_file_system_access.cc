@@ -42,10 +42,10 @@ ScriptPromise DataTransferItemFileSystemAccess::getAsFileSystemHandle(
     return ScriptPromise::CastUndefined(script_state);
   }
 
-  mojo::Remote<mojom::blink::FileSystemAccessManager> nfs_manager;
+  mojo::Remote<mojom::blink::FileSystemAccessManager> fsa_manager;
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   execution_context->GetBrowserInterfaceBroker().GetInterface(
-      nfs_manager.BindNewPipeAndPassReceiver());
+      fsa_manager.BindNewPipeAndPassReceiver());
 
   const DataObjectItem& data_object_item =
       *data_transfer_item.GetDataObjectItem();
@@ -58,12 +58,12 @@ ScriptPromise DataTransferItemFileSystemAccess::getAsFileSystemHandle(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
 
-  // We need to move `nfs_manager` into GetEntryFromDataTransferToken in order
+  // We need to move `fsa_manager` into GetEntryFromDataTransferToken in order
   // to keep it in scope long enough for the callback to be executed. To do this
-  // we extract `raw_nfs_manager` from `nfs_manager` and move `nfs_manager` into
+  // we extract `raw_fsa_manager` from `fsa_manager` and move `fsa_manager` into
   // the GetEntryFromDataTransferToken callback.
-  auto* raw_nfs_manager = nfs_manager.get();
-  raw_nfs_manager->GetEntryFromDataTransferToken(
+  auto* raw_fsa_manager = fsa_manager.get();
+  raw_fsa_manager->GetEntryFromDataTransferToken(
       std::move(token_remote),
       WTF::Bind(
           [](mojo::Remote<mojom::blink::FileSystemAccessManager>,
@@ -75,7 +75,7 @@ ScriptPromise DataTransferItemFileSystemAccess::getAsFileSystemHandle(
             resolver->Resolve(FileSystemHandle::CreateFromMojoEntry(
                 std::move(entry), ExecutionContext::From(script_state)));
           },
-          std::move(nfs_manager), WrapPersistent(resolver)));
+          std::move(fsa_manager), WrapPersistent(resolver)));
 
   return result;
 }
