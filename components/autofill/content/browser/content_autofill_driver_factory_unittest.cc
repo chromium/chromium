@@ -165,39 +165,40 @@ TEST_F(ContentAutofillDriverFactoryTest, TabHidden) {
   factory_->OnVisibilityChanged(content::Visibility::HIDDEN);
 }
 
-// Test case with one frame, with BFcache enabled or disabled depending on the
-// parameter.
-class ContentAutofillDriverFactoryTest_WithOrWithoutBfCache
+// Test case with one frame, with BFcache and AutofillAcrossIframes enabled or
+// disabled depending on the parameter.
+class ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes
     : public ContentAutofillDriverFactoryTest,
-      public ::testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  ContentAutofillDriverFactoryTest_WithOrWithoutBfCache() {
+  ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes() {
     std::vector<base::Feature> enabled;
     // Allow BackForwardCache for all devices regardless of their memory.
     std::vector<base::Feature> disabled{
         ::features::kBackForwardCacheMemoryControls};
+    (autofill_across_iframes() ? enabled : disabled)
+        .push_back(features::kAutofillAcrossIframes);
     (use_bfcache() ? enabled : disabled)
         .push_back(::features::kBackForwardCache);
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
   }
 
-  bool use_bfcache() { return GetParam(); }
+  bool use_bfcache() { return std::get<0>(GetParam()); }
+  bool autofill_across_iframes() { return std::get<1>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         ContentAutofillDriverFactoryTest_WithOrWithoutBfCache,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
+    testing::Combine(testing::Bool(), testing::Bool()));
 
 // Tests that that a same-documentation navigation does not touch the factory's
 // router.
-TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCache,
+TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
        SameDocumentNavigation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kAutofillAcrossIframes);
-
   content::RenderFrameHost* orig_rfh = main_rfh();
   ContentAutofillDriver* orig_driver = factory_->DriverForFrame(orig_rfh);
 
@@ -222,7 +223,7 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCache,
 
 // Tests that that a driver survives a same-origin navigation but is reset
 // afterwards.
-TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCache,
+TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
        SameOriginNavigation) {
   content::RenderFrameHost* orig_rfh = main_rfh();
   ContentAutofillDriver* orig_driver = factory_->DriverForFrame(orig_rfh);
@@ -246,7 +247,7 @@ TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCache,
 
 // Tests that that a driver is removed and replaced with a fresh one after a
 // cross-origin navigation.
-TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCache,
+TEST_P(ContentAutofillDriverFactoryTest_WithOrWithoutBfCacheAndIframes,
        CrossOriginNavigation) {
   content::RenderFrameHost* orig_rfh = main_rfh();
   content::GlobalRenderFrameHostId orig_rfh_id = orig_rfh->GetGlobalId();
