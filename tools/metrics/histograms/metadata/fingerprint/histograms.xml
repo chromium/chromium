@@ -22,6 +22,19 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Fingerprint.Auth.Error" enum="FingerprintError"
+    expires_after="2022-04-10">
+  <owner>patrykd@google.com</owner>
+  <owner>tomhughes@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Tracks the error during fingerprint authentication session. It is recorded
+    every time authentication session (unlock screen, web auth, etc.) ends with
+    error.
+  </summary>
+</histogram>
+
 <histogram name="Fingerprint.Auth.ScanResult" enum="FingerprintScanResult"
     expires_after="2022-04-10">
   <owner>rsorokin@chromium.org</owner>
@@ -31,7 +44,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks the scan result during fingerprint authentication session. It is
     recorded every time user touches the fingerprint sensor while authenticating
-    (unlock screen, web auth, etc.).
+    (unlock screen, web auth, etc.) and session is not finished with error.
   </summary>
 </histogram>
 
