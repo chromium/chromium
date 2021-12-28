@@ -686,9 +686,8 @@ void ExtensionAppsChromeOs::OnSystemFeaturesPrefChanged() {
     return;
   }
 
-  const base::ListValue* disabled_system_features_pref =
-      &base::Value::AsListValue(*local_state->GetList(
-          policy::policy_prefs::kSystemFeaturesDisableList));
+  const base::Value* disabled_system_features_pref =
+      local_state->GetList(policy::policy_prefs::kSystemFeaturesDisableList);
   if (!disabled_system_features_pref) {
     return;
   }
@@ -962,7 +961,7 @@ content::WebContents* ExtensionAppsChromeOs::LaunchImpl(
 }
 
 void ExtensionAppsChromeOs::UpdateAppDisabledState(
-    const base::ListValue* disabled_system_features_pref,
+    const base::Value* disabled_system_features_pref,
     int feature,
     const std::string& app_id,
     bool is_disabled_mode_changed) {
