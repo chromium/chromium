@@ -23,6 +23,7 @@ import android.os.IBinder;
 import android.os.LocaleList;
 import android.os.Parcel;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.view.KeyEvent;
@@ -91,13 +92,17 @@ public class AwAutofillTest {
     public static final String FILE = "/login.html";
     public static final String FILE_URL = "file:///android_asset/autofill.html";
 
-    public static final int AUTOFILL_VIEW_ENTERED = 1;
-    public static final int AUTOFILL_VIEW_EXITED = 2;
-    public static final int AUTOFILL_VALUE_CHANGED = 3;
-    public static final int AUTOFILL_COMMIT = 4;
-    public static final int AUTOFILL_CANCEL = 5;
-    public static final int AUTOFILL_SESSION_STARTED = 6;
-    public static final int AUTOFILL_QUERY_DONE = 7;
+    public static final int AUTOFILL_VIEW_ENTERED = 0;
+    public static final int AUTOFILL_VIEW_EXITED = 1;
+    public static final int AUTOFILL_VALUE_CHANGED = 2;
+    public static final int AUTOFILL_COMMIT = 3;
+    public static final int AUTOFILL_CANCEL = 4;
+    public static final int AUTOFILL_SESSION_STARTED = 5;
+    public static final int AUTOFILL_QUERY_DONE = 6;
+    public static final int AUTOFILL_EVENT_MAX = 7;
+
+    public static final String[] EVENT = {"VIEW_ENTERED", "VIEW_EXITED", "VALUE_CHANGED", "COMMIT",
+            "CANCEL", "SESSION_STARTED", "QUERY_DONE"};
 
     /**
      * This class only implements the necessary methods of ViewStructure for testing.
@@ -1196,12 +1201,11 @@ public class AwAutofillTest {
         assertEquals(1, values.size());
         assertEquals("a", values.get(0).second.getTextValue());
         executeJavaScriptAndWaitForResult("document.getElementById('text1').value='c';");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            // There is no AUTOFILL_CANCEL from Android P.
-            assertEquals(3, getCallbackCount());
-        } else {
-            assertEquals(4, getCallbackCount());
-        }
+        // Check no new event occurs, this is best effort checking, the event here could be leaked
+        // from previous dispatchDownAndUpKeyEvents().
+        assertEquals("Events in the queue "
+                        + buildEventList(mEventQueue.toArray(new Integer[mEventQueue.size()])),
+                cnt, getCallbackCount());
         dispatchDownAndUpKeyEvents(KeyEvent.KEYCODE_B);
         // Check if NotifyVirtualValueChanged() called one more time and value is 'cb', this
         // means javascript change didn't trigger the NotifyVirtualValueChanged().
@@ -2974,18 +2978,25 @@ public class AwAutofillTest {
             Object[] objectArray = mEventQueue.toArray();
             mEventQueue.clear();
             Integer[] resultArray = Arrays.copyOf(objectArray, objectArray.length, Integer[].class);
-            Assert.assertArrayEquals("Expect: " + Arrays.toString(adjustedEventArray)
-                            + " Result: " + Arrays.toString(resultArray),
+            Assert.assertArrayEquals("Expect: " + buildEventList(adjustedEventArray)
+                            + " Result: " + buildEventList(resultArray),
                     adjustedEventArray, resultArray);
             return adjustedEventArray.length;
         } catch (TimeoutException e) {
             Object[] objectArray = mEventQueue.toArray();
             Integer[] resultArray = Arrays.copyOf(objectArray, objectArray.length, Integer[].class);
-            Assert.assertArrayEquals("Expect:" + Arrays.toString(adjustedEventArray)
-                            + " Result:" + Arrays.toString(resultArray),
+            Assert.assertArrayEquals("Expect:" + buildEventList(adjustedEventArray)
+                            + " Result:" + buildEventList(resultArray),
                     adjustedEventArray, resultArray);
             throw e;
         }
+    }
+
+    private static String buildEventList(Integer[] eventArray) {
+        Assert.assertEquals(EVENT.length, AUTOFILL_EVENT_MAX);
+        List<String> result = new ArrayList<String>(eventArray.length);
+        for (Integer event : eventArray) result.add(EVENT[event]);
+        return TextUtils.join(",", result);
     }
 
     private void dispatchDownAndUpKeyEvents(final int code) throws Throwable {
