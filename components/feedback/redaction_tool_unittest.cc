@@ -369,6 +369,9 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
             RedactCustomPatterns("serial               |0x1cc04417"));
   EXPECT_EQ("serial|<Serial: 10>", RedactCustomPatterns("serial|0x1cc04418"));
   EXPECT_EQ("serial|<Serial: 11>", RedactCustomPatterns("serial|agnagna"));
+  // redact attested device id that is also a serial number
+  EXPECT_EQ("\"attested_device_id\"=\"<Serial: 12>\"",
+            RedactCustomPatterns("\"attested_device_id\"=\"5CD045B0DZ\""));
 
   EXPECT_EQ("\"gaia_id\":\"<GAIA: 1>\"",
             RedactCustomPatterns("\"gaia_id\":\"1234567890\""));

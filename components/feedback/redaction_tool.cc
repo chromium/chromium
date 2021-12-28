@@ -73,6 +73,9 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
      "([0-9a-zA-Z\\-.:\\/\\\\\\x00-\\x09\\x0B-\\x1F]+)(\\b)",
      PIIType::kSerial},
     {"Serial", "( Serial Number )(\\d+)(\\b)", PIIType::kSerial},
+    // The attested device id, a serial number, that comes from vpd_2.0.txt.
+    {"Serial", "(\"attested_device_id\"=\")([0-9a-zA-Z]+)(\")",
+     PIIType::kSerial},
 
     // GAIA IDs
     {"GAIA", R"xxx((\"?\bgaia_id\"?[=:]['\"])(\d+)(\b['\"]))xxx",
@@ -244,6 +247,7 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
 #define LS32 NCG(H16 ":" H16 "|" IPV4ADDRESS)
 #define WB "\\b"
 
+// clang-format off
 #define IPV6ADDRESS NCG( \
                                           WB NCG(H16 ":") "{6}" LS32 WB "|" \
                                         "::" NCG(H16 ":") "{5}" LS32 WB "|" \
@@ -254,6 +258,7 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
   OPT_NCG( WB NCG(H16 ":") "{0,4}" H16) "::"                    LS32 WB "|" \
   OPT_NCG( WB NCG(H16 ":") "{0,5}" H16) "::"                    H16  WB "|" \
   OPT_NCG( WB NCG(H16 ":") "{0,6}" H16) "::")
+// clang-format on
 
 #define IPVFUTURE                     \
   "v" HEXDIG                          \
