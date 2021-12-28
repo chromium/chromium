@@ -197,25 +197,10 @@ class PermissionsClient {
                                         const GURL& embedding_origin);
 
 #if defined(OS_ANDROID)
-  // Returns whether the permission is controlled by the default search
-  // engine (DSE). For example, in Chrome, making a search engine default
-  // automatically grants notification permissions for the associated origin.
-  virtual bool IsPermissionControlledByDse(
-      content::BrowserContext* browser_context,
-      ContentSettingsType type,
-      const url::Origin& origin);
-
   // Returns whether the given origin matches the default search engine (DSE)
   // origin.
   virtual bool IsDseOrigin(content::BrowserContext* browser_context,
                            const url::Origin& origin);
-
-  // Resets the permission if it's controlled by the default search
-  // engine (DSE). The return value is true if the permission was reset.
-  virtual bool ResetPermissionIfControlledByDse(
-      content::BrowserContext* browser_context,
-      ContentSettingsType type,
-      const url::Origin& origin);
 
   // Retrieves the InfoBarManager for the web contents. The returned
   // pointer has the same lifetime as |web_contents|.

@@ -138,7 +138,6 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/oom_intervention/oom_intervention_tab_helper.h"
-#include "chrome/browser/android/search_permissions/search_geolocation_disclosure_tab_helper.h"
 #include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -431,7 +430,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     performance_hints::PerformanceHintsObserver::CreateForWebContents(
         web_contents);
   }
-  SearchGeolocationDisclosureTabHelper::CreateForWebContents(web_contents);
   video_tutorials::VideoTutorialTabHelper::CreateForWebContents(web_contents);
 #else
   if (accuracy_tips::AccuracyWebContentsObserver::IsEnabled(web_contents)) {

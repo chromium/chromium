@@ -995,14 +995,6 @@ extern const char kLatestVersionWhenClickedUpdateMenuItem[];
 extern const char kCommerceMerchantViewerMessagesShownTime[];
 #endif
 
-#if defined(OS_ANDROID)
-extern const char kSearchGeolocationDisclosureDismissed[];
-extern const char kSearchGeolocationDisclosureShownCount[];
-extern const char kSearchGeolocationDisclosureLastShowDate[];
-extern const char kSearchGeolocationPreDisclosureMetricsRecorded[];
-extern const char kSearchGeolocationPostDisclosureMetricsRecorded[];
-#endif
-
 extern const char kDSEGeolocationSettingDeprecated[];
 
 extern const char kDSEPermissionsSettings[];

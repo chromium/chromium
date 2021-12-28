@@ -28,6 +28,9 @@ class HostContentSettingsMap;
 class PrefService;
 class Profile;
 
+// NOTE(crbug/1230193): The DSE auto-granted permissions have been disabled and
+// all of the previously granted permissions are reverted in the initialization
+// step.
 // Helper class to manage DSE permissions. It keeps the setting valid by
 // watching change to the CCTLD and DSE.
 // Glossary:
@@ -47,10 +50,6 @@ class SearchPermissionsService : public KeyedService {
     // Returns the origin of the DSE. If the current DSE is Google this will
     // return the current CCTLD.
     virtual url::Origin GetDSEOrigin() = 0;
-
-    // Set a callback that will be called if the DSE or CCTLD changes for any
-    // reason.
-    virtual void SetDSEChangedCallback(base::RepeatingClosure callback) = 0;
   };
 
   // Factory implementation will not create a service in incognito.
@@ -77,20 +76,8 @@ class SearchPermissionsService : public KeyedService {
 
   explicit SearchPermissionsService(Profile* profile);
 
-  // Returns whether the given permission is being configured for the DSE for
-  // the given origin.
-  bool IsPermissionControlledByDSE(ContentSettingsType type,
-                                   const url::Origin& requesting_origin);
-
   // Returns whether the given origin matches the DSE origin.
   bool IsDseOrigin(const url::Origin& origin);
-  bool IsDSEAutograntEnabled(ContentSettingsType type);
-
-  // Resets the DSE permission for a single ContentSettingsType.
-  void ResetDSEPermission(ContentSettingsType type);
-
-  // Reset all supported DSE permissions.
-  void ResetDSEPermissions();
 
   // KeyedService:
   void Shutdown() override;
@@ -104,23 +91,6 @@ class SearchPermissionsService : public KeyedService {
 
   ~SearchPermissionsService() override;
 
-  // When the DSE CCTLD changes (either by changing their DSE or by changing
-  // their CCTLD) we carry over the geolocation/notification permissions from
-  // the last DSE CCTLD. Before carrying them over, we store the old value
-  // of the permissions in a pref so the user's settings can be restored if
-  // they change DSE in the future.
-  // We resolve conflicts in the following way:
-  // * If the DSE CCTLD origin permission is BLOCK, but the old DSE's permission
-  //   is ALLOW, change the DSE permission setting to BLOCK.
-  // * If the DSE CCTLD origin permission is ALLOW, but the old DSE's permission
-  //   is BLOCK, change the DSE permission setting to BLOCK but restore it to
-  //   ASK later.
-  // * If the user changes the DSE CCTLD origin permission, we restore it back
-  //   to ASK when they change DSE.
-  // Also, if the DSE changes and geolocation is enabled, we reset the
-  // geolocation disclosure so that it will be shown again.
-  void OnDSEChanged();
-
   // Restore the setting for an origin before it became the DSE. Returns the
   // setting that the origin was set to before restoring the old value.
   ContentSetting RestoreOldSettingAndReturnPrevious(
@@ -129,15 +99,6 @@ class SearchPermissionsService : public KeyedService {
       ContentSetting setting_to_restore,
       bool preserve_block_setting);
 
-  // Helper function for OnDSEChanged which transitions the DSE setting for a
-  // specific permission. It returns the content setting to be restored later
-  // for |new_dse_origin|.
-  ContentSetting UpdatePermissionAndReturnPrevious(ContentSettingsType type,
-                                                   const GURL& old_dse_origin,
-                                                   const GURL& new_dse_origin,
-                                                   ContentSetting old_setting,
-                                                   bool dse_name_changed);
-
   // Initialize the DSE permission settings if they haven't already been
   // initialized. Also, if they haven't been initialized, reset whether the DSE
   // geolocation disclosure has been shown to ensure user who may have seen it
@@ -145,7 +106,6 @@ class SearchPermissionsService : public KeyedService {
   void InitializeSettingsIfNeeded();
 
   PrefValue GetDSEPref();
-  void SetDSEPref(const PrefValue& pref);
 
   // Retrieve the content setting for the given permission/origin.
   ContentSetting GetContentSetting(const GURL& origin,
@@ -168,6 +128,12 @@ class SearchPermissionsService : public KeyedService {
 
   void SetSearchEngineDelegateForTest(
       std::unique_ptr<SearchEngineDelegate> delegate);
+
+  // Simulate an existing `prefs::kDSEPermissionsSettings` entry with the
+  // provided settings. Used to test automatically reverting the pre-granted DSE
+  // permissions.
+  void SetDSEPrefForTesting(ContentSetting geolocation_setting_to_restore,
+                            ContentSetting notifications_setting_to_restore);
 
   raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;

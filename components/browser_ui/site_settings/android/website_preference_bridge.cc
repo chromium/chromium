@@ -79,24 +79,6 @@ HostContentSettingsMap* GetHostContentSettingsMap(
   return GetHostContentSettingsMap(unwrap(jbrowser_context_handle));
 }
 
-// Reset the give permission for the DSE if the permission and origin are
-// controlled by the DSE.
-bool MaybeResetDSEPermission(BrowserContext* browser_context,
-                             ContentSettingsType type,
-                             const GURL& origin,
-                             const GURL& embedder,
-                             ContentSetting setting) {
-  if (!embedder.is_empty() && embedder != origin)
-    return false;
-
-  if (setting != CONTENT_SETTING_DEFAULT)
-    return false;
-
-  return permissions::PermissionsClient::Get()
-      ->ResetPermissionIfControlledByDse(browser_context, type,
-                                         url::Origin::Create(origin));
-}
-
 ScopedJavaLocalRef<jstring> ConvertOriginToJavaString(
     JNIEnv* env,
     const std::string& origin) {
@@ -242,11 +224,6 @@ void SetPermissionSettingForOrigin(
         ->RemoveEmbargoAndResetCounts(origin_url, content_type);
   }
 
-  if (MaybeResetDSEPermission(browser_context, content_type, origin_url,
-                              embedder_url, setting)) {
-    return;
-  }
-
   permissions::PermissionUmaUtil::ScopedRevocationReporter
       scoped_revocation_reporter(
           browser_context, origin_url, embedder_url, content_type,
@@ -361,12 +338,6 @@ static void SetNotificationSettingForOrigin(
   permissions::PermissionsClient::Get()
       ->GetPermissionDecisionAutoBlocker(browser_context)
       ->RemoveEmbargoAndResetCounts(url, ContentSettingsType::NOTIFICATIONS);
-
-  if (MaybeResetDSEPermission(browser_context,
-                              ContentSettingsType::NOTIFICATIONS, url, GURL(),
-                              setting)) {
-    return;
-  }
 
   permissions::PermissionUmaUtil::ScopedRevocationReporter
       scoped_revocation_reporter(
@@ -706,17 +677,6 @@ static void JNI_WebsitePreferenceBridge_ClearMediaLicenses(
       user_prefs::UserPrefs::Get(browser_context), base::Time(),
       base::Time::Max(), base::BindRepeating(&OriginMatcher, origin),
       base::DoNothing());
-}
-
-static jboolean JNI_WebsitePreferenceBridge_IsPermissionControlledByDSE(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jbrowser_context_handle,
-    int content_settings_type,
-    const JavaParamRef<jstring>& jorigin) {
-  return permissions::PermissionsClient::Get()->IsPermissionControlledByDse(
-      unwrap(jbrowser_context_handle),
-      static_cast<ContentSettingsType>(content_settings_type),
-      url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin))));
 }
 
 static jboolean JNI_WebsitePreferenceBridge_IsDSEOrigin(

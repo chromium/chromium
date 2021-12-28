@@ -35,15 +35,6 @@ class TestSearchEngineDelegate
   url::Origin GetDSEOrigin() override {
     return url::Origin::Create(GURL(kDSETestUrl));
   }
-
-  void SetDSEChangedCallback(base::RepeatingClosure callback) override {
-    dse_changed_callback_ = std::move(callback);
-  }
-
-  void UpdateDSEOrigin() { dse_changed_callback_.Run(); }
-
- private:
-  base::RepeatingClosure dse_changed_callback_;
 };
 }  // namespace
 #endif
@@ -106,22 +97,17 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
 #if defined(OS_ANDROID)
 TEST_F(GeolocationPermissionContextDelegateTests,
        SearchGeolocationInIncognito) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      permissions::features::kRevertDSEAutomaticPermissions);
-
   GURL requesting_frame(kDSETestUrl);
 
   SearchPermissionsService* service =
       SearchPermissionsService::Factory::GetForBrowserContext(profile());
   std::unique_ptr<TestSearchEngineDelegate> delegate =
       std::make_unique<TestSearchEngineDelegate>();
-  TestSearchEngineDelegate* delegate_ptr = delegate.get();
   service->SetSearchEngineDelegateForTest(std::move(delegate));
-  delegate_ptr->UpdateDSEOrigin();
+  service->InitializeSettingsIfNeeded();
 
-  // The DSE should be auto-granted geolocation.
-  ASSERT_EQ(CONTENT_SETTING_ALLOW,
+  // The DSE geolocation should not be auto-granted even in a non-OTR profile.
+  ASSERT_EQ(CONTENT_SETTING_ASK,
             PermissionManagerFactory::GetForProfile(profile())
                 ->GetPermissionStatus(ContentSettingsType::GEOLOCATION,
                                       requesting_frame, requesting_frame)
@@ -130,7 +116,7 @@ TEST_F(GeolocationPermissionContextDelegateTests,
   Profile* otr_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
-  // A DSE setting of ALLOW should not flow through to incognito.
+  // The DSE geolocation should not be auto-granted in an OTR profile.
   ASSERT_EQ(CONTENT_SETTING_ASK,
             PermissionManagerFactory::GetForProfile(otr_profile)
                 ->GetPermissionStatus(ContentSettingsType::GEOLOCATION,

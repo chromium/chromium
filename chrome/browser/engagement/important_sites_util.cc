@@ -38,9 +38,7 @@
 #include "url/origin.h"
 #include "url/url_util.h"
 
-#if defined(OS_ANDROID)
-#include "chrome/browser/android/search_permissions/search_permissions_service.h"
-#else
+#if !defined(OS_ANDROID)
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -292,19 +290,6 @@ void PopulateInfoMapWithContentTypeAllowed(
     if (site.GetContentSetting() != CONTENT_SETTING_ALLOW)
       continue;
     GURL url(site.primary_pattern.ToString());
-
-#if defined(OS_ANDROID)
-    SearchPermissionsService* search_permissions_service =
-        SearchPermissionsService::Factory::GetInstance()->GetForBrowserContext(
-            profile);
-    // If the permission is controlled by the Default Search Engine then don't
-    // consider it important. The DSE gets these permissions by default.
-    if (search_permissions_service &&
-        search_permissions_service->IsPermissionControlledByDSE(
-            content_type, url::Origin::Create(url))) {
-      continue;
-    }
-#endif
 
     MaybePopulateImportantInfoForReason(url, &content_origins, reason,
                                         absl::nullopt, output);

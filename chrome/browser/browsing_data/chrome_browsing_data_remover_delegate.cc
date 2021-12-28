@@ -140,7 +140,6 @@
 #include "chrome/browser/android/customtabs/origin_verifier.h"
 #include "chrome/browser/android/explore_sites/explore_sites_service_factory.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
-#include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/android/webapps/webapp_registry.h"
 #include "chrome/browser/feed/android/feed_service_factory.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
@@ -693,12 +692,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     content::HostZoomMap* zoom_map =
         content::HostZoomMap::GetDefaultForBrowserContext(profile_);
     zoom_map->ClearZoomLevels(delete_begin, delete_end_);
-#else
-    // Reset the Default Search Engine permissions to their default.
-    SearchPermissionsService* search_permissions_service =
-        SearchPermissionsService::Factory::GetForBrowserContext(profile_);
-    search_permissions_service->ResetDSEPermissions();
-#endif
+#endif  // !defined(OS_ANDROID)
   }
 
   //////////////////////////////////////////////////////////////////////////////

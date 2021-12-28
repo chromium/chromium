@@ -50,11 +50,6 @@ class GeolocationPermissionContext : public PermissionContextBase {
     // Returns whether |requesting_origin| is the default search engine.
     virtual bool IsRequestingOriginDSE(content::BrowserContext* browser_context,
                                        const GURL& requesting_origin) = 0;
-
-    // Called after NotifyPermissionSet() has been called from this context.
-    virtual void FinishNotifyPermissionSet(const PermissionRequestID& id,
-                                           const GURL& requesting_origin,
-                                           const GURL& embedding_origin) = 0;
 #endif
   };
 

@@ -5,7 +5,6 @@
 #include "chrome/browser/android/preferences/browser_prefs_android.h"
 
 #include "chrome/browser/android/preferences/clipboard_android.h"
-#include "chrome/browser/android/search_permissions/search_geolocation_disclosure_tab_helper.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/notifications/notification_platform_bridge_android.h"
 #include "chrome/browser/webauthn/android/cable_module_android.h"
@@ -21,7 +20,6 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
 
 void RegisterUserProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   NotificationPlatformBridgeAndroid::RegisterProfilePrefs(registry);
-  SearchGeolocationDisclosureTabHelper::RegisterProfilePrefs(registry);
 }
 
 }  // namespace android

@@ -33,9 +33,6 @@ class GeolocationPermissionContextDelegateAndroid
   PrefService* GetPrefs(content::BrowserContext* browser_context) override;
   bool IsRequestingOriginDSE(content::BrowserContext* browser_context,
                              const GURL& requesting_origin) override;
-  void FinishNotifyPermissionSet(const permissions::PermissionRequestID& id,
-                                 const GURL& requesting_origin,
-                                 const GURL& embedding_origin) override;
 };
 
 #endif  // CHROME_BROWSER_GEOLOCATION_GEOLOCATION_PERMISSION_CONTEXT_DELEGATE_ANDROID_H_

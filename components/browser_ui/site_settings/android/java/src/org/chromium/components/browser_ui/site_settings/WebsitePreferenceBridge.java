@@ -146,16 +146,6 @@ public class WebsitePreferenceBridge {
     }
 
     /**
-     * Returns whether the DSE (Default Search Engine) controls the given permission the given
-     * origin.
-     */
-    public static boolean isPermissionControlledByDSE(BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType, String origin) {
-        return WebsitePreferenceBridgeJni.get().isPermissionControlledByDSE(
-                browserContextHandle, contentSettingsType, origin);
-    }
-
-    /**
      * Returns whether the DSE (Default Search Engine) origin matches the given origin.
      */
     public static boolean isDSEOrigin(BrowserContextHandle browserContextHandle, String origin) {
@@ -392,8 +382,6 @@ public class WebsitePreferenceBridge {
         void setPermissionSettingForOrigin(BrowserContextHandle browserContextHandle,
                 @ContentSettingsType int contentSettingsType, String origin, String embedder,
                 @ContentSettingValues int value);
-        boolean isPermissionControlledByDSE(BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingsType, String origin);
         boolean isDSEOrigin(BrowserContextHandle browserContextHandle, String origin);
         boolean getAdBlockingActivated(BrowserContextHandle browserContextHandle, String origin);
         boolean isContentSettingEnabled(

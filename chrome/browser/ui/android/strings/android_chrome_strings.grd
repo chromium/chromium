@@ -442,21 +442,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_SEARCH_ENGINE_SETTINGS" desc="Title for Search Engine settings. [CHAR_LIMIT=32]">
         Search engine
       </message>
-      <message name="IDS_SEARCH_ENGINE_LOCATION_AND_NOTIFICATIONS_ALLOWED" desc="The text of a link displayed when location and notifications permissions for a particular search engine are allowed.">
-        Location and notifications are allowed
-      </message>
-      <message name="IDS_SEARCH_ENGINE_LOCATION_ALLOWED" desc="The text of a link displayed when the location permission for a particular search engine is allowed.">
-        Location is allowed
-      </message>
-      <message name="IDS_SEARCH_ENGINE_NOTIFICATIONS_ALLOWED" desc="The text of a link displayed when the notifications permission for a particular search engine is allowed.">
-        Notifications are allowed
-      </message>
-      <message name="IDS_SEARCH_ENGINE_NOTIFICATIONS_ALLOWED_SYSTEM_LOCATION_DISABLED" desc="The text of a link displayed when the location and notifications permissions for a particular search engine are allowed but system location location is turned off. Contains a link to the settings menu to change it.">
-        Notifications are allowed. Location is off for this device.
-      </message>
-      <message name="IDS_SEARCH_ENGINE_SYSTEM_LOCATION_DISABLED" desc="The text of a link displayed when the user has granted geolocation to a particular search engine but system location is turned off. Contains a link to the settings menu to change it.">
-        Location is off; turn it on in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
 
       <message name="IDS_SEARCH_ENGINE_RECENTLY_VISITED" desc="Header for the list of recently visited search engines.">
         Recently visited

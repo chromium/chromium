@@ -427,8 +427,6 @@ void GeolocationPermissionContextAndroid::FinishNotifyPermissionSet(
   GeolocationPermissionContext::NotifyPermissionSet(
       id, requesting_origin, embedding_origin, std::move(callback), persist,
       content_setting, /*is_one_time=*/false);
-
-  delegate_->FinishNotifyPermissionSet(id, requesting_origin, embedding_origin);
 }
 
 void GeolocationPermissionContextAndroid::SetLocationSettingsForTesting(

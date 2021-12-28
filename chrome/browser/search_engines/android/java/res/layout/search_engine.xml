@@ -34,16 +34,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
-        <TextView
-            android:id="@+id/location_permission"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="-12dp"
-            android:layout_marginTop="-12dp"
-            android:gravity="center_vertical"
-            android:minHeight="48dp"
-            android:paddingBottom="12dp"
-            android:paddingTop="12dp" />
     </LinearLayout>
 
 </LinearLayout>

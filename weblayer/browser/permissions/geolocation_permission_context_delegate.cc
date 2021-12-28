@@ -41,11 +41,6 @@ bool GeolocationPermissionContextDelegate::IsRequestingOriginDSE(
     const GURL& requesting_origin) {
   return false;
 }
-
-void GeolocationPermissionContextDelegate::FinishNotifyPermissionSet(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin) {}
 #endif
 
 }  // namespace weblayer

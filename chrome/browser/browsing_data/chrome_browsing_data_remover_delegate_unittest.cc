@@ -244,26 +244,6 @@ class TestWebappRegistry : public WebappRegistry {
     // Mocks out a JNI call.
   }
 };
-
-// TestSearchEngineDelegate
-class TestSearchEngineDelegate
-    : public SearchPermissionsService::SearchEngineDelegate {
- public:
-  std::u16string GetDSEName() override { return std::u16string(); }
-
-  url::Origin GetDSEOrigin() override {
-    return url::Origin::Create(GURL("https://search.com"));
-  }
-
-  void SetDSEChangedCallback(base::RepeatingClosure callback) override {
-    dse_changed_callback_ = std::move(callback);
-  }
-
-  void UpdateDSEOrigin() { dse_changed_callback_.Run(); }
-
- private:
-  base::RepeatingClosure dse_changed_callback_;
-};
 #endif
 
 class RemoveCookieTester {
@@ -1198,14 +1178,6 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
         profile_->GetBrowsingDataRemoverDelegate())
         ->OverrideWebappRegistryForTesting(
             std::make_unique<TestWebappRegistry>());
-
-    SearchPermissionsService* service =
-        SearchPermissionsService::Factory::GetForBrowserContext(profile_.get());
-    auto delegate = std::make_unique<TestSearchEngineDelegate>();
-    dse_origin_ = delegate->GetDSEOrigin().GetURL();
-    TestSearchEngineDelegate* delegate_ptr = delegate.get();
-    service->SetSearchEngineDelegateForTest(std::move(delegate));
-    delegate_ptr->UpdateDSEOrigin();
 #endif
   }
 
@@ -1304,8 +1276,6 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
 
   TestingProfile* GetProfile() { return profile_.get(); }
 
-  GURL dse_origin() const { return dse_origin_; }
-
   bool Match(const GURL& origin,
              uint64_t mask,
              storage::SpecialStoragePolicy* policy) {
@@ -1331,7 +1301,6 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<network::NetworkContext> network_context_;
   std::unique_ptr<TestingProfile> profile_;
-  GURL dse_origin_;
 };
 
 // TODO(crbug.com/812589): Disabled due to flakiness in cookie store
@@ -2243,25 +2212,13 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
   // removed and an explicit wait should be added.
   task_environment()->RunUntilIdle();
 
-#if defined(OS_ANDROID)
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      permissions::features::kRevertDSEAutomaticPermissions);
-#endif  // OS_ANDROID
-
   const GURL kOrigin1("http://host1.com:1");
   const GURL kOrigin2("http://host2.com:1");
   const GURL kOrigin3("http://host3.com:1");
-  const bool has_dse_origin = !dse_origin().is_empty();
   auto* map = HostContentSettingsMapFactory::GetForProfile(GetProfile());
   map->SetContentSettingDefaultScope(kOrigin1, kOrigin1,
                                      ContentSettingsType::GEOLOCATION,
                                      CONTENT_SETTING_ALLOW);
-  if (has_dse_origin) {
-    map->SetContentSettingDefaultScope(dse_origin(), dse_origin(),
-                                       ContentSettingsType::GEOLOCATION,
-                                       CONTENT_SETTING_BLOCK);
-  }
   map->SetContentSettingDefaultScope(kOrigin2, kOrigin2,
                                      ContentSettingsType::NOTIFICATIONS,
                                      CONTENT_SETTING_ALLOW);
@@ -2278,49 +2235,20 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {
   ContentSettingsForOneType host_settings;
   map->GetSettingsForOneType(ContentSettingsType::GEOLOCATION, &host_settings);
 
-  if (has_dse_origin) {
-    ASSERT_EQ(2u, host_settings.size());
-    EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(dse_origin()),
-              host_settings[0].primary_pattern)
-        << host_settings[0].primary_pattern.ToString();
-    EXPECT_EQ(ContentSettingsPattern::Wildcard(),
-              host_settings[0].secondary_pattern)
-        << host_settings[0].secondary_pattern.ToString();
-    EXPECT_EQ(CONTENT_SETTING_ALLOW, host_settings[0].GetContentSetting());
-
-    EXPECT_EQ(ContentSettingsPattern::Wildcard(),
-              host_settings[1].primary_pattern)
-        << host_settings[1].primary_pattern.ToString();
-    EXPECT_EQ(CONTENT_SETTING_ASK, host_settings[1].GetContentSetting());
-  } else {
-    ASSERT_EQ(1u, host_settings.size());
-    EXPECT_EQ(ContentSettingsPattern::Wildcard(),
-              host_settings[0].primary_pattern)
-        << host_settings[0].primary_pattern.ToString();
-    EXPECT_EQ(CONTENT_SETTING_ASK, host_settings[0].GetContentSetting());
-  }
+  ASSERT_EQ(1u, host_settings.size());
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(),
+            host_settings[0].primary_pattern)
+      << host_settings[0].primary_pattern.ToString();
+  EXPECT_EQ(CONTENT_SETTING_ASK, host_settings[0].GetContentSetting());
 
   map->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS,
                              &host_settings);
 
-  if (has_dse_origin) {
-    ASSERT_EQ(2u, host_settings.size());
-    EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(dse_origin()),
-              host_settings[0].primary_pattern)
-        << host_settings[0].primary_pattern.ToString();
-    EXPECT_EQ(CONTENT_SETTING_ALLOW, host_settings[0].GetContentSetting());
-
-    EXPECT_EQ(ContentSettingsPattern::Wildcard(),
-              host_settings[1].primary_pattern)
-        << host_settings[1].primary_pattern.ToString();
-    EXPECT_EQ(CONTENT_SETTING_ASK, host_settings[1].GetContentSetting());
-  } else {
-    ASSERT_EQ(1u, host_settings.size());
-    EXPECT_EQ(ContentSettingsPattern::Wildcard(),
-              host_settings[0].primary_pattern)
-        << host_settings[0].primary_pattern.ToString();
-    EXPECT_EQ(CONTENT_SETTING_ASK, host_settings[0].GetContentSetting());
-  }
+  ASSERT_EQ(1u, host_settings.size());
+  EXPECT_EQ(ContentSettingsPattern::Wildcard(),
+            host_settings[0].primary_pattern)
+      << host_settings[0].primary_pattern.ToString();
+  EXPECT_EQ(CONTENT_SETTING_ASK, host_settings[0].GetContentSetting());
 
   map->GetSettingsForOneType(ContentSettingsType::COOKIES, &host_settings);
   ASSERT_EQ(1u, host_settings.size());

@@ -635,13 +635,9 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                 return;
             }
             String overrideSummary;
-            if (isPermissionControlledByDSE(ContentSettingsType.NOTIFICATIONS)) {
-                overrideSummary = getDSECategorySummary(value);
-            } else {
-                overrideSummary = isEmbargoed
-                        ? getString(R.string.automatically_blocked)
-                        : getString(ContentSettingsResources.getCategorySummary(value));
-            }
+            overrideSummary = isEmbargoed
+                    ? getString(R.string.automatically_blocked)
+                    : getString(ContentSettingsResources.getCategorySummary(value));
 
             // On Android O this preference is read-only, so we replace the existing pref with a
             // regular Preference that takes users to OS settings on click.
@@ -658,9 +654,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             });
         } else {
             setupContentSettingsPreference(preference, value, isEmbargoed);
-            if (isPermissionControlledByDSE(ContentSettingsType.NOTIFICATIONS) && value != null) {
-                updatePreferenceForDSESetting(preference, value);
-            }
         }
     }
 
@@ -954,9 +947,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
         setupContentSettingsPreference(
                 preference, permission, isPermissionEmbargoed(ContentSettingsType.GEOLOCATION));
-        if (isPermissionControlledByDSE(ContentSettingsType.GEOLOCATION) && permission != null) {
-            updatePreferenceForDSESetting(preference, permission);
-        }
     }
 
     private void setUpSoundPreference(Preference preference) {
@@ -1049,26 +1039,6 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                 : getString(R.string.website_settings_permissions_blocked_dse);
     }
 
-    /**
-     * Returns true if the DSE (default search engine) geolocation and notifications permissions
-     * are configured for the DSE.
-     */
-    private boolean isPermissionControlledByDSE(@ContentSettingsType int contentSettingsType) {
-        return WebsitePreferenceBridge.isPermissionControlledByDSE(
-                getSiteSettingsDelegate().getBrowserContextHandle(), contentSettingsType,
-                mSite.getAddress().getOrigin());
-    }
-
-    /**
-     * Updates the location preference to indicate that the site has access to location (via X-Geo)
-     * for searches that happen from the omnibox.
-     * @param preference The Location preference to modify.
-     */
-    private void updatePreferenceForDSESetting(
-            Preference preference, @ContentSettingValues int value) {
-        preference.setSummary(getDSECategorySummary(value));
-    }
-
     public @ContentSettingsType int getContentSettingsTypeFromPreferenceKey(String preferenceKey) {
         if (mPreferenceMap == null) {
             mPreferenceMap = new HashMap<>();
@@ -1110,12 +1080,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         }
 
         mSite.setContentSetting(browserContextHandle, type, permission);
-        if (isPermissionControlledByDSE(type)) {
-            preference.setSummary(getDSECategorySummary(permission));
-        } else {
-            preference.setSummary(
-                    getString(ContentSettingsResources.getCategorySummary(permission)));
-        }
+        preference.setSummary(getString(ContentSettingsResources.getCategorySummary(permission)));
         preference.setIcon(getContentSettingsIcon(type, permission));
 
         if (mWebsiteSettingsObserver != null) {

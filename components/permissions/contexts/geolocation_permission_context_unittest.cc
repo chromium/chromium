@@ -110,10 +110,6 @@ class TestGeolocationPermissionContextDelegate
     return dse_origin_ &&
            dse_origin_.value() == url::Origin::Create(requesting_origin);
   }
-
-  void FinishNotifyPermissionSet(const PermissionRequestID& id,
-                                 const GURL& requesting_origin,
-                                 const GURL& embedding_origin) override {}
 #endif
 
   void SetDSEOriginForTesting(const url::Origin& dse_origin) {

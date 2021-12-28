@@ -698,6 +698,20 @@ const char kSyncFirstRunCompleted[] = "sync.first_run_completed";
 const char kArcAppReinstallState[] = "arc_app_reinstall_state";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 12/2021.
+#if defined(OS_ANDROID)
+const char kSearchGeolocationDisclosureDismissed[] =
+    "search_geolocation_disclosure.dismissed";
+const char kSearchGeolocationDisclosureShownCount[] =
+    "search_geolocation_disclosure.shown_count";
+const char kSearchGeolocationDisclosureLastShowDate[] =
+    "search_geolocation_disclosure.last_show_date";
+const char kSearchGeolocationPreDisclosureMetricsRecorded[] =
+    "search_geolocation_pre_disclosure_metrics_recorded";
+const char kSearchGeolocationPostDisclosureMetricsRecorded[] =
+    "search_geolocation_post_disclosure_metrics_recorded";
+#endif  // defined(OS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -905,6 +919,16 @@ void RegisterProfilePrefsForMigration(
 
   registry->RegisterDictionaryPref(kArcAppReinstallState);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if defined(OS_ANDROID)
+  registry->RegisterBooleanPref(kSearchGeolocationDisclosureDismissed, false);
+  registry->RegisterIntegerPref(kSearchGeolocationDisclosureShownCount, 0);
+  registry->RegisterInt64Pref(kSearchGeolocationDisclosureLastShowDate, 0);
+  registry->RegisterBooleanPref(kSearchGeolocationPreDisclosureMetricsRecorded,
+                                false);
+  registry->RegisterBooleanPref(kSearchGeolocationPostDisclosureMetricsRecorded,
+                                false);
+#endif
 }
 
 }  // namespace
@@ -1778,6 +1802,15 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 12/2021.
   profile_prefs->ClearPref(kArcAppReinstallState);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Added 12/2021.
+#if defined(OS_ANDROID)
+  profile_prefs->ClearPref(kSearchGeolocationDisclosureDismissed);
+  profile_prefs->ClearPref(kSearchGeolocationDisclosureShownCount);
+  profile_prefs->ClearPref(kSearchGeolocationDisclosureLastShowDate);
+  profile_prefs->ClearPref(kSearchGeolocationPreDisclosureMetricsRecorded);
+  profile_prefs->ClearPref(kSearchGeolocationPostDisclosureMetricsRecorded);
+#endif  // defined(OS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/engagement/important_sites_util.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -73,34 +72,25 @@ class ImportantSitesUtilBrowserTest : public AndroidBrowserTest {
     ASSERT_NO_FATAL_FAILURE(GetDefaultSearchURL());
   }
 
-  void SetUp() override {
-    features_.InitAndDisableFeature(
-        permissions::features::kRevertDSEAutomaticPermissions);
-    AndroidBrowserTest::SetUp();
-  }
-
-  void TearDown() override {
-    features_.Reset();
-    AndroidBrowserTest::TearDown();
-  }
-
  private:
   GURL default_search_url_;
-  base::test::ScopedFeatureList features_;
 };
 
-// An origin with notification permission should be considered important, unless
-// it is the default search engine, which gets the permission auto-granted.
+// An origin with notification permission should be considered important, even
+// if it's the default search engine origin. Because the DSE does not have any
+// special permissions anymore.
 IN_PROC_BROWSER_TEST_F(ImportantSitesUtilBrowserTest,
-                       DSENotConsideredImportantInRegularMode) {
+                       DSEConsideredImportantInRegularMode) {
   const char kTestURL[] = "https://a.com/";
   const url::Origin kDSEOrigin = url::Origin::Create(default_search_url());
+  const std::string kDSERegistrableDomain("google.com");
   const url::Origin kNonDSEOrigin = url::Origin::Create(GURL(kTestURL));
 
   GrantNotificationPermissionForOrigin(kDSEOrigin);
   GrantNotificationPermissionForOrigin(kNonDSEOrigin);
-  EXPECT_THAT(GetImportantDomains(profile()),
-              ::testing::ElementsAre(kNonDSEOrigin.host()));
+  EXPECT_THAT(
+      GetImportantDomains(profile()),
+      ::testing::ElementsAre(kNonDSEOrigin.host(), kDSERegistrableDomain));
 
   // Important site calculation in incognito mode used to crash in Android
   // pre-O where notification channels are not yet used, see crbug.com/989890.
@@ -113,8 +103,9 @@ IN_PROC_BROWSER_TEST_F(ImportantSitesUtilBrowserTest,
   ASSERT_TRUE(incognito_profile);
   ASSERT_TRUE(incognito_profile->IsOffTheRecord());
 
-  EXPECT_THAT(GetImportantDomains(profile()),
-              ::testing::ElementsAre(kNonDSEOrigin.host()));
+  EXPECT_THAT(
+      GetImportantDomains(profile()),
+      ::testing::ElementsAre(kNonDSEOrigin.host(), kDSERegistrableDomain));
 }
 
 }  // namespace site_engagement
