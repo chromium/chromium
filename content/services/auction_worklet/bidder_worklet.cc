@@ -306,7 +306,7 @@ BidderWorklet::V8State::V8State(
 void BidderWorklet::V8State::SetWorkletScript(
     WorkletLoader::Result worklet_script) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  worklet_script_ = worklet_script.TakeScript();
+  worklet_script_ = WorkletLoader::TakeScript(std::move(worklet_script));
 }
 
 void BidderWorklet::V8State::ReportWin(
