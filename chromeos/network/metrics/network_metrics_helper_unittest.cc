@@ -54,6 +54,38 @@ const char kEthernetEapConnectResultAllHistogram[] =
 const char kEthernetNoEapConnectResultAllHistogram[] =
     "Network.Ash.Ethernet.NoEap.ConnectionResult.All";
 
+// LogUserInitiatedConnectionResult() Cellular histograms.
+const char kCellularConnectResultUserInitiatedHistogram[] =
+    "Network.Ash.Cellular.ConnectionResult.UserInitiated";
+const char kCellularESimConnectResultUserInitiatedHistogram[] =
+    "Network.Ash.Cellular.ESim.ConnectionResult.UserInitiated";
+const char kCellularPSimConnectResultUserInitiatedHistogram[] =
+    "Network.Ash.Cellular.PSim.ConnectionResult.UserInitiated";
+
+// LogUserInitiatedConnectionResult() VPN histograms.
+const char kVpnConnectResultUserInitiatedHistogram[] =
+    "Network.Ash.VPN.ConnectionResult.UserInitiated";
+const char kVpnBuiltInConnectResultUserInitiatedHistogram[] =
+    "Network.Ash.VPN.TypeBuiltIn.ConnectionResult.UserInitiated";
+const char kVpnThirdPartyConnectResultUserInitiatedHistogram[] =
+    "Network.Ash.VPN.TypeThirdParty.ConnectionResult.UserInitiated";
+
+// LogUserInitiatedConnectionResult() WiFi histograms.
+const char kWifiConnectResultUserInitiatedHistogram[] =
+    "Network.Ash.WiFi.ConnectionResult.UserInitiated";
+const char kWifiOpenConnectResultUserInitiatedHistogram[] =
+    "Network.Ash.WiFi.SecurityOpen.ConnectionResult.UserInitiated";
+const char kWifiPasswordProtectedConnectResultUserInitiatedHistogram[] =
+    "Network.Ash.WiFi.SecurityPasswordProtected.ConnectionResult.UserInitiated";
+
+// LogUserInitiatedConnectionResult() Ethernet histograms.
+const char kEthernetConnectResultUserInitiatedHistogram[] =
+    "Network.Ash.Ethernet.ConnectionResult.UserInitiated";
+const char kEthernetEapConnectResultUserInitiatedHistogram[] =
+    "Network.Ash.Ethernet.Eap.ConnectionResult.UserInitiated";
+const char kEthernetNoEapConnectResultUserInitiatedHistogram[] =
+    "Network.Ash.Ethernet.NoEap.ConnectionResult.UserInitiated";
+
 const char kTestGuid[] = "test_guid";
 const char kTestServicePath[] = "/service/network";
 const char kTestServicePath1[] = "/service/network1";
@@ -101,7 +133,7 @@ class NetworkMetricsHelperTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
 };
 
-TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultCellularESim) {
+TEST_F(NetworkMetricsHelperTest, CellularESim) {
   shill_service_client_->AddService(kTestServicePath, kTestGuid, kTestName,
                                     shill::kTypeCellular, shill::kStateIdle,
                                     /*visible=*/true);
@@ -116,9 +148,18 @@ TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultCellularESim) {
                                       1);
   histogram_tester_->ExpectTotalCount(kCellularPSimConnectResultAllHistogram,
                                       0);
+
+  NetworkMetricsHelper::LogUserInitiatedConnectionResult(
+      kTestGuid, shill::kErrorNotRegistered);
+  histogram_tester_->ExpectTotalCount(
+      kCellularConnectResultUserInitiatedHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kCellularESimConnectResultUserInitiatedHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kCellularPSimConnectResultUserInitiatedHistogram, 0);
 }
 
-TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultCellularPSim) {
+TEST_F(NetworkMetricsHelperTest, CellularPSim) {
   shill_service_client_->AddService(kTestServicePath, kTestGuid, kTestName,
                                     shill::kTypeCellular, shill::kStateIdle,
                                     /*visible=*/true);
@@ -131,9 +172,18 @@ TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultCellularPSim) {
                                       1);
   histogram_tester_->ExpectTotalCount(kCellularESimConnectResultAllHistogram,
                                       0);
+
+  NetworkMetricsHelper::LogUserInitiatedConnectionResult(
+      kTestGuid, shill::kErrorNotRegistered);
+  histogram_tester_->ExpectTotalCount(
+      kCellularConnectResultUserInitiatedHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kCellularPSimConnectResultUserInitiatedHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kCellularESimConnectResultUserInitiatedHistogram, 0);
 }
 
-TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultVPN) {
+TEST_F(NetworkMetricsHelperTest, VPN) {
   const std::vector<const std::string> kProviders{{
       shill::kProviderL2tpIpsec,
       shill::kProviderArcVpn,
@@ -143,6 +193,7 @@ TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultVPN) {
   }};
 
   size_t expected_all_count = 0;
+  size_t expected_user_initiated_count = 0;
   size_t expected_built_in_count = 0;
   size_t expected_third_party_count = 0;
 
@@ -164,6 +215,7 @@ TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultVPN) {
       ++expected_built_in_count;
     }
     ++expected_all_count;
+    ++expected_user_initiated_count;
 
     NetworkMetricsHelper::LogAllConnectionResult(kTestGuid,
                                                  shill::kErrorNotRegistered);
@@ -174,12 +226,23 @@ TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultVPN) {
     histogram_tester_->ExpectTotalCount(kVpnThirdPartyConnectResultAllHistogram,
                                         expected_third_party_count);
 
+    NetworkMetricsHelper::LogUserInitiatedConnectionResult(
+        kTestGuid, shill::kErrorNotRegistered);
+    histogram_tester_->ExpectTotalCount(kVpnConnectResultUserInitiatedHistogram,
+                                        expected_user_initiated_count);
+    histogram_tester_->ExpectTotalCount(
+        kVpnBuiltInConnectResultUserInitiatedHistogram,
+        expected_built_in_count);
+    histogram_tester_->ExpectTotalCount(
+        kVpnThirdPartyConnectResultUserInitiatedHistogram,
+        expected_third_party_count);
+
     shill_service_client_->RemoveService(kTestServicePath);
     base::RunLoop().RunUntilIdle();
   }
 }
 
-TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultWifiOpen) {
+TEST_F(NetworkMetricsHelperTest, WifiOpen) {
   shill_service_client_->AddService(kTestServicePath, kTestGuid, kTestName,
                                     shill::kTypeWifi, shill::kStateIdle,
                                     /*visible=*/true);
@@ -194,9 +257,18 @@ TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultWifiOpen) {
   histogram_tester_->ExpectTotalCount(kWifiOpenConnectResultAllHistogram, 1);
   histogram_tester_->ExpectTotalCount(
       kWifiPasswordProtectedConnectResultAllHistogram, 0);
+
+  NetworkMetricsHelper::LogUserInitiatedConnectionResult(
+      kTestGuid, shill::kErrorNotRegistered);
+  histogram_tester_->ExpectTotalCount(kWifiConnectResultUserInitiatedHistogram,
+                                      1);
+  histogram_tester_->ExpectTotalCount(
+      kWifiOpenConnectResultUserInitiatedHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kWifiPasswordProtectedConnectResultUserInitiatedHistogram, 0);
 }
 
-TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultWifiPasswordProtected) {
+TEST_F(NetworkMetricsHelperTest, WifiPasswordProtected) {
   shill_service_client_->AddService(kTestServicePath, kTestGuid, kTestName,
                                     shill::kTypeWifi, shill::kStateIdle,
                                     /*visible=*/true);
@@ -211,9 +283,18 @@ TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultWifiPasswordProtected) {
   histogram_tester_->ExpectTotalCount(kWifiOpenConnectResultAllHistogram, 0);
   histogram_tester_->ExpectTotalCount(
       kWifiPasswordProtectedConnectResultAllHistogram, 1);
+
+  NetworkMetricsHelper::LogUserInitiatedConnectionResult(
+      kTestGuid, shill::kErrorNotRegistered);
+  histogram_tester_->ExpectTotalCount(kWifiConnectResultUserInitiatedHistogram,
+                                      1);
+  histogram_tester_->ExpectTotalCount(
+      kWifiOpenConnectResultUserInitiatedHistogram, 0);
+  histogram_tester_->ExpectTotalCount(
+      kWifiPasswordProtectedConnectResultUserInitiatedHistogram, 1);
 }
 
-TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultEthernetNoEap) {
+TEST_F(NetworkMetricsHelperTest, EthernetNoEap) {
   shill_service_client_->AddService(kTestServicePath, kTestGuid, kTestName,
                                     shill::kTypeEthernet, shill::kStateIdle,
                                     /*visible=*/true);
@@ -228,9 +309,18 @@ TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultEthernetNoEap) {
   histogram_tester_->ExpectTotalCount(kEthernetEapConnectResultAllHistogram, 0);
   histogram_tester_->ExpectTotalCount(kEthernetNoEapConnectResultAllHistogram,
                                       1);
+
+  NetworkMetricsHelper::LogUserInitiatedConnectionResult(
+      kTestGuid, shill::kErrorNotRegistered);
+  histogram_tester_->ExpectTotalCount(
+      kEthernetConnectResultUserInitiatedHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kEthernetEapConnectResultUserInitiatedHistogram, 0);
+  histogram_tester_->ExpectTotalCount(
+      kEthernetNoEapConnectResultUserInitiatedHistogram, 1);
 }
 
-TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultEthernetEap) {
+TEST_F(NetworkMetricsHelperTest, EthernetEap) {
   ShillDeviceClient::TestInterface* device_test =
       network_handler_test_helper_->device_test();
   device_test->ClearDevices();
@@ -268,6 +358,14 @@ TEST_F(NetworkMetricsHelperTest, LogAllConnectionResultEthernetEap) {
   histogram_tester_->ExpectTotalCount(kEthernetEapConnectResultAllHistogram, 1);
   histogram_tester_->ExpectTotalCount(kEthernetNoEapConnectResultAllHistogram,
                                       0);
+  NetworkMetricsHelper::LogUserInitiatedConnectionResult(
+      kTestGuid, shill::kErrorNotRegistered);
+  histogram_tester_->ExpectTotalCount(
+      kEthernetConnectResultUserInitiatedHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kEthernetEapConnectResultUserInitiatedHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kEthernetNoEapConnectResultUserInitiatedHistogram, 0);
 }
 
 }  // namespace chromeos

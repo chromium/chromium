@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_METRICS_SHILL_CONNECT_RESULT_H_
-#define CHROMEOS_NETWORK_METRICS_SHILL_CONNECT_RESULT_H_
+#ifndef CHROMEOS_NETWORK_METRICS_CONNECTION_RESULTS_H_
+#define CHROMEOS_NETWORK_METRICS_CONNECTION_RESULTS_H_
 
 #include <string>
 
@@ -86,9 +86,51 @@ enum class ShillConnectResult {
   kMaxValue = kErrorEapRemoteTlsFailed,
 };
 
+// This enum is used to track user-initiated connection results from
+// NetworkConnectionHandler. With the exception of kSuccess and kUnknown,
+// these enums are mapped to relevant NetworkConnectionHandler errors
+// associated to user initiated connection errors.
+// These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+enum class UserInitiatedConnectResult {
+  kUnknown = 0,
+  kSuccess = 1,
+  kErrorNotFound = 2,
+  kErrorConnected = 3,
+  kErrorConnecting = 4,
+  kErrorPassphraseRequired = 5,
+  kErrorBadPassphrase = 6,
+  kErrorCertificateRequired = 7,
+  kErrorAuthenticationRequired = 8,
+  kErrorConfigurationRequired = 9,
+  kErrorConfigureFailed = 10,
+  kErrorConnectFailed = 11,
+  kErrorDisconnectFailed = 12,
+  kErrorConnectCanceled = 13,
+  kErrorNotConnected = 14,
+  kErrorCertLoadTimeout = 15,
+  kErrorBlockedByPolicy = 16,
+  kErrorHexSsidRequired = 17,
+  kErrorActivateFailed = 18,
+  kErrorEnabledOrDisabledWhenNotAvailable = 19,
+  kErrorTetherAttemptWithNoDelegate = 20,
+  kErrorCellularInhibitFailure = 21,
+  kErrorCellularOutOfCredits = 22,
+  kErrorESimProfileIssue = 23,
+  kErrorSimLocked = 24,
+  kErrorCellularDeviceBusy = 25,
+  kErrorConnectTimeout = 26,
+  kConnectableCellularTimeout = 27,
+  kMaxValue = kConnectableCellularTimeout,
+};
+
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 ShillConnectResult ShillErrorToConnectResult(const std::string& error_name);
 
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+UserInitiatedConnectResult NetworkConnectionErrorToConnectResult(
+    const std::string& error_name);
+
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_METRICS_SHILL_CONNECT_RESULT_H_
+#endif  // CHROMEOS_NETWORK_METRICS_CONNECTION_RESULTS_H_

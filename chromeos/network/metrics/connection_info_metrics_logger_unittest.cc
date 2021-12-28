@@ -10,7 +10,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/metrics/shill_connect_result.h"
+#include "chromeos/network/metrics/connection_results.h"
+#include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/prefs/testing_pref_service.h"
@@ -28,6 +29,11 @@ const char kCellularConnectResultAllHistogram[] =
     "Network.Ash.Cellular.ConnectionResult.All";
 const char kWifiConnectResultAllHistogram[] =
     "Network.Ash.WiFi.ConnectionResult.All";
+
+const char kCellularConnectResultUserInitiatedHistogram[] =
+    "Network.Ash.Cellular.ConnectionResult.UserInitiated";
+const char kWifiConnectResultUserInitiatedHistogram[] =
+    "Network.Ash.WiFi.ConnectionResult.UserInitiated";
 
 const char kCellularGuid[] = "test_guid";
 const char kCellularServicePath[] = "/service/network";
@@ -95,6 +101,18 @@ class ConnectionInfoMetricsLoggerTest : public testing::Test {
         ->connection_info_metrics_logger_->DisconnectRequested(service_path);
   }
 
+  void TriggerUserInitiatedConnectSuccess(const std::string& service_path) {
+    chromeos::NetworkHandler::Get()
+        ->connection_info_metrics_logger_->ConnectSucceeded(service_path);
+  }
+
+  void TriggerUserInitiatedConnectFailure(const std::string& service_path,
+                                          const std::string& error_name) {
+    chromeos::NetworkHandler::Get()
+        ->connection_info_metrics_logger_->ConnectFailed(service_path,
+                                                         error_name);
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
@@ -103,6 +121,31 @@ class ConnectionInfoMetricsLoggerTest : public testing::Test {
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple local_state_;
 };
+
+TEST_F(ConnectionInfoMetricsLoggerTest, UserInitiatedConnectDisconnect) {
+  SetUpGenericCellularNetwork();
+  SetUpGenericWifiNetwork();
+  histogram_tester_->ExpectTotalCount(
+      kCellularConnectResultUserInitiatedHistogram, 0);
+
+  TriggerUserInitiatedConnectSuccess(kCellularServicePath);
+  histogram_tester_->ExpectTotalCount(
+      kCellularConnectResultUserInitiatedHistogram, 1);
+
+  TriggerUserInitiatedConnectSuccess(kWifiServicePath);
+  histogram_tester_->ExpectTotalCount(kWifiConnectResultUserInitiatedHistogram,
+                                      1);
+
+  TriggerUserInitiatedConnectFailure(
+      kCellularServicePath, NetworkConnectionHandler::kErrorConnectFailed);
+  histogram_tester_->ExpectTotalCount(
+      kCellularConnectResultUserInitiatedHistogram, 2);
+
+  TriggerUserInitiatedConnectFailure(
+      kWifiServicePath, NetworkConnectionHandler::kErrorConnectFailed);
+  histogram_tester_->ExpectTotalCount(kWifiConnectResultUserInitiatedHistogram,
+                                      2);
+}
 
 TEST_F(ConnectionInfoMetricsLoggerTest, AutoStatusTransitions) {
   SetUpGenericCellularNetwork();

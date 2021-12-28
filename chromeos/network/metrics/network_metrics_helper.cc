@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "chromeos/network/metrics/shill_connect_result.h"
+#include "chromeos/network/metrics/connection_results.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -18,6 +18,8 @@ namespace {
 
 const char kNetworkMetricsPrefix[] = "Network.Ash.";
 const char kAllConnectionResultSuffix[] = ".ConnectionResult.All";
+const char kUserInitiatedConnectionResultSuffix[] =
+    ".ConnectionResult.UserInitiated";
 
 const char kWifi[] = "WiFi";
 const char kWifiOpen[] = "WiFi.SecurityOpen";
@@ -140,15 +142,39 @@ void NetworkMetricsHelper::LogAllConnectionResult(
   DCHECK(GetNetworkStateHandler());
   const NetworkState* network_state =
       GetNetworkStateHandler()->GetNetworkStateFromGuid(guid);
+  if (!network_state)
+    return;
 
   ShillConnectResult connect_result =
-      shill_error.has_value() ? ShillErrorToConnectResult(*shill_error)
-                              : ShillConnectResult::kSuccess;
+      shill_error ? ShillErrorToConnectResult(*shill_error)
+                  : ShillConnectResult::kSuccess;
 
   for (const auto& network_type : GetNetworkTypeHistogramNames(network_state)) {
     base::UmaHistogramEnumeration(
         kNetworkMetricsPrefix + network_type + kAllConnectionResultSuffix,
         connect_result);
+  }
+}
+
+// static
+void NetworkMetricsHelper::LogUserInitiatedConnectionResult(
+    const std::string& guid,
+    const absl::optional<std::string>& network_connection_error) {
+  DCHECK(GetNetworkStateHandler());
+  const NetworkState* network_state =
+      GetNetworkStateHandler()->GetNetworkStateFromGuid(guid);
+  if (!network_state)
+    return;
+
+  UserInitiatedConnectResult connect_result =
+      network_connection_error
+          ? NetworkConnectionErrorToConnectResult(*network_connection_error)
+          : UserInitiatedConnectResult::kSuccess;
+
+  for (const auto& network_type : GetNetworkTypeHistogramNames(network_state)) {
+    base::UmaHistogramEnumeration(kNetworkMetricsPrefix + network_type +
+                                      kUserInitiatedConnectionResultSuffix,
+                                  connect_result);
   }
 }
 

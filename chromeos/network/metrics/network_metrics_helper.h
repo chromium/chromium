@@ -13,6 +13,7 @@ namespace chromeos {
 
 // Provides APIs for logging to general network metrics that apply to all
 // network types and their variants.
+// TODO(b/211823175): Replace NetworkMetricsHelper with plain helper methods.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetricsHelper {
  public:
   // Logs connection result for network with given |guid|. If |shill_error| has
@@ -20,6 +21,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetricsHelper {
   static void LogAllConnectionResult(
       const std::string& guid,
       const absl::optional<std::string>& shill_error = absl::nullopt);
+
+  // Logs result of a user initiated connection attempt for a network with a
+  // given |guid|. If |network_connection_error| has no value, a connection
+  // success is logged.
+  static void LogUserInitiatedConnectionResult(
+      const std::string& guid,
+      const absl::optional<std::string>& network_connection_error =
+          absl::nullopt);
 
   NetworkMetricsHelper();
   ~NetworkMetricsHelper();

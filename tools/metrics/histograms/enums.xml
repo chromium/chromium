@@ -88861,6 +88861,37 @@ Full version information for the fingerprint enum values:
   <int value="0" label="WiFi Scan"/>
 </enum>
 
+<enum name="UserInitiatedNetworkConnectResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Not Found"/>
+  <int value="3" label="Invalid state: Connected"/>
+  <int value="4" label="Invalid state: Connecting"/>
+  <int value="5" label="Invalid state: Not Connected"/>
+  <int value="6" label="Passphrase Required"/>
+  <int value="7" label="Bad Passphrase"/>
+  <int value="8" label="Certificate Required"/>
+  <int value="9" label="Authentication Required"/>
+  <int value="10" label="Configuration Required"/>
+  <int value="11" label="Configure Failed"/>
+  <int value="12" label="Connect Failed"/>
+  <int value="13" label="Disconnect Failed"/>
+  <int value="14" label="Connect Canceled"/>
+  <int value="15" label="Cert Load Timeout"/>
+  <int value="16" label="Blocked By Policy"/>
+  <int value="17" label="Hex Ssid Required"/>
+  <int value="18" label="Activate Failed"/>
+  <int value="19" label="Enabled Or Disabled When Not Available"/>
+  <int value="20" label="Tether Attempt With No Delegate"/>
+  <int value="21" label="Cellular Inhibit Failure"/>
+  <int value="22" label="Cellular Out Of Credits"/>
+  <int value="23" label="ESim Profile Issue"/>
+  <int value="24" label="Sim Locked"/>
+  <int value="25" label="Cellular Device Busy"/>
+  <int value="26" label="Connect Timeout"/>
+  <int value="27" label="Connectable Cellular Timeout"/>
+</enum>
+
 <enum name="UserInteractionType">
   <int value="0" label="keyboard"/>
   <int value="1" label="tap or click"/>

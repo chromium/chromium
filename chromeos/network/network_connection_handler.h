@@ -49,7 +49,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
  public:
   // Constants for |error_name| from |error_callback| for Connect. Whenever a
   // new error name associated to cellular connections is added,
-  // CellularMetricsLogger should be updated as well.
+  // ConnectionInfoMetricsLogger and CellularMetricsLogger should be updated as
+  // well.
 
   //  No network matching |service_path| is found (hidden networks must be
   //  configured before connecting).

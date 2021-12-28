@@ -22,6 +22,7 @@ class NetworkStateHandler;
 // This class adds observers on network state and makes the following
 // measurements on all networks:
 // 1. Success rate of all connection attempts.
+// 2. Success rate of user initiated connection attempts.
 // TODO(b/207589664): MORE TBA
 //
 // Note: This class does not start logging metrics until Init() is
@@ -73,6 +74,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ConnectionInfoMetricsLogger
 
   // NetworkConnectionObserver::
   void DisconnectRequested(const std::string& service_path) override;
+  void ConnectSucceeded(const std::string& service_path) override;
+  void ConnectFailed(const std::string& service_path,
+                     const std::string& error_name) override;
 
   void UpdateConnectionInfo(const NetworkState* network,
                             bool disconnect_requested = false);

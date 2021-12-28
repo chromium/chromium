@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/metrics/shill_connect_result.h"
+#include "chromeos/network/metrics/connection_results.h"
 
+#include "chromeos/network/network_connection_handler.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -128,6 +129,72 @@ ShillConnectResult ShillErrorToConnectResult(const std::string& error_name) {
     return ShillConnectResult::kErrorEapRemoteTlsFailed;
 
   return ShillConnectResult::kUnknown;
+}
+
+UserInitiatedConnectResult NetworkConnectionErrorToConnectResult(
+    const std::string& error_name) {
+  if (error_name == NetworkConnectionHandler::kErrorNotFound) {
+    return UserInitiatedConnectResult::kErrorNotFound;
+  } else if (error_name == NetworkConnectionHandler::kErrorConnected) {
+    return UserInitiatedConnectResult::kErrorConnected;
+  } else if (error_name == NetworkConnectionHandler::kErrorConnecting) {
+    return UserInitiatedConnectResult::kErrorConnecting;
+  } else if (error_name == NetworkConnectionHandler::kErrorPassphraseRequired) {
+    return UserInitiatedConnectResult::kErrorPassphraseRequired;
+  } else if (error_name == NetworkConnectionHandler::kErrorBadPassphrase) {
+    return UserInitiatedConnectResult::kErrorBadPassphrase;
+  } else if (error_name ==
+             NetworkConnectionHandler::kErrorCertificateRequired) {
+    return UserInitiatedConnectResult::kErrorCertificateRequired;
+  } else if (error_name ==
+             NetworkConnectionHandler::kErrorAuthenticationRequired) {
+    return UserInitiatedConnectResult::kErrorAuthenticationRequired;
+  } else if (error_name ==
+             NetworkConnectionHandler::kErrorConfigurationRequired) {
+    return UserInitiatedConnectResult::kErrorConfigurationRequired;
+  } else if (error_name == NetworkConnectionHandler::kErrorConfigureFailed) {
+    return UserInitiatedConnectResult::kErrorConfigureFailed;
+  } else if (error_name == NetworkConnectionHandler::kErrorConnectFailed) {
+    return UserInitiatedConnectResult::kErrorConnectFailed;
+  } else if (error_name == NetworkConnectionHandler::kErrorDisconnectFailed) {
+    return UserInitiatedConnectResult::kErrorDisconnectFailed;
+  } else if (error_name == NetworkConnectionHandler::kErrorConnectCanceled) {
+    return UserInitiatedConnectResult::kErrorConnectCanceled;
+  } else if (error_name == NetworkConnectionHandler::kErrorNotConnected) {
+    return UserInitiatedConnectResult::kErrorNotConnected;
+  } else if (error_name == NetworkConnectionHandler::kErrorCertLoadTimeout) {
+    return UserInitiatedConnectResult::kErrorCertLoadTimeout;
+  } else if (error_name == NetworkConnectionHandler::kErrorBlockedByPolicy) {
+    return UserInitiatedConnectResult::kErrorBlockedByPolicy;
+  } else if (error_name == NetworkConnectionHandler::kErrorHexSsidRequired) {
+    return UserInitiatedConnectResult::kErrorHexSsidRequired;
+  } else if (error_name == NetworkConnectionHandler::kErrorActivateFailed) {
+    return UserInitiatedConnectResult::kErrorActivateFailed;
+  } else if (error_name == NetworkConnectionHandler::
+                               kErrorEnabledOrDisabledWhenNotAvailable) {
+    return UserInitiatedConnectResult::kErrorEnabledOrDisabledWhenNotAvailable;
+  } else if (error_name ==
+             NetworkConnectionHandler::kErrorTetherAttemptWithNoDelegate) {
+    return UserInitiatedConnectResult::kErrorTetherAttemptWithNoDelegate;
+  } else if (error_name ==
+             NetworkConnectionHandler::kErrorCellularInhibitFailure) {
+    return UserInitiatedConnectResult::kErrorCellularInhibitFailure;
+  } else if (error_name ==
+             NetworkConnectionHandler::kErrorCellularOutOfCredits) {
+    return UserInitiatedConnectResult::kErrorCellularOutOfCredits;
+  } else if (error_name == NetworkConnectionHandler::kErrorESimProfileIssue) {
+    return UserInitiatedConnectResult::kErrorESimProfileIssue;
+  } else if (error_name == NetworkConnectionHandler::kErrorSimLocked) {
+    return UserInitiatedConnectResult::kErrorSimLocked;
+  } else if (error_name == NetworkConnectionHandler::kErrorCellularDeviceBusy) {
+    return UserInitiatedConnectResult::kErrorCellularDeviceBusy;
+  } else if (error_name == NetworkConnectionHandler::kErrorConnectTimeout) {
+    return UserInitiatedConnectResult::kErrorConnectTimeout;
+  } else if (error_name ==
+             NetworkConnectionHandler::kConnectableCellularTimeout) {
+    return UserInitiatedConnectResult::kConnectableCellularTimeout;
+  }
+  return UserInitiatedConnectResult::kUnknown;
 }
 
 }  // namespace chromeos

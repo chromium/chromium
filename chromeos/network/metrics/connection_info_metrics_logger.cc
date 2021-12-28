@@ -102,6 +102,29 @@ void ConnectionInfoMetricsLogger::DisconnectRequested(
   UpdateConnectionInfo(network, /*disconnect_requested=*/true);
 }
 
+void ConnectionInfoMetricsLogger::ConnectSucceeded(
+    const std::string& service_path) {
+  const NetworkState* network =
+      network_state_handler_->GetNetworkState(service_path);
+
+  if (!network)
+    return;
+
+  NetworkMetricsHelper::LogUserInitiatedConnectionResult(network->guid());
+}
+
+void ConnectionInfoMetricsLogger::ConnectFailed(const std::string& service_path,
+                                                const std::string& error_name) {
+  const NetworkState* network =
+      network_state_handler_->GetNetworkState(service_path);
+
+  if (!network)
+    return;
+
+  NetworkMetricsHelper::LogUserInitiatedConnectionResult(network->guid(),
+                                                         error_name);
+}
+
 void ConnectionInfoMetricsLogger::UpdateConnectionInfo(
     const NetworkState* network,
     bool disconnect_requested) {

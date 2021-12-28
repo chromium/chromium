@@ -22,6 +22,26 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AshNetworkType">
+<!-- The following variants are names of network types tracked in the Chrome layer.
+  These are used for various Network.Ash.* histograms to record network connection
+  information events. -->
+
+  <variant name="Cellular"/>
+  <variant name="Cellular.ESim"/>
+  <variant name="Cellular.PSim"/>
+  <variant name="Ethernet"/>
+  <variant name="Ethernet.Eap"/>
+  <variant name="Ethernet.NoEap"/>
+  <variant name="Tether"/>
+  <variant name="VPN"/>
+  <variant name="VPN.TypeBuiltIn"/>
+  <variant name="VPN.TypeThirdParty"/>
+  <variant name="WiFi"/>
+  <variant name="WiFi.SecurityOpen"/>
+  <variant name="WiFi.SecurityPasswordProtected"/>
+</variants>
+
 <histogram name="Network.3G.Gobi.Activation" units="ms" expires_after="M85">
   <obsolete>
     Removed 12/2020
@@ -117,21 +137,18 @@ chromium-metrics-reviews@google.com.
     a disconnected state without a user initiated disconnect, a shill failure
     reason is emitted.
   </summary>
-  <token key="NetworkType">
-    <variant name="Cellular"/>
-    <variant name="Cellular.ESim"/>
-    <variant name="Cellular.PSim"/>
-    <variant name="Ethernet"/>
-    <variant name="Ethernet.Eap"/>
-    <variant name="Ethernet.NoEap"/>
-    <variant name="Tether"/>
-    <variant name="VPN"/>
-    <variant name="VPN.TypeBuiltIn"/>
-    <variant name="VPN.TypeThirdParty"/>
-    <variant name="WiFi"/>
-    <variant name="WiFi.SecurityOpen"/>
-    <variant name="WiFi.SecurityPasswordProtected"/>
-  </token>
+  <token key="NetworkType" variants="AshNetworkType"/>
+</histogram>
+
+<histogram name="Network.Ash.{NetworkType}.ConnectionResult.UserInitiated"
+    enum="ShillConnectResult" expires_after="2022-11-01">
+  <owner>hsuregan@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the result of a user initiated connection attempt. Logged when a
+    network of type {NetworkType} connection succeeds or fails.
+  </summary>
+  <token key="NetworkType" variants="AshNetworkType"/>
 </histogram>
 
 <histogram name="Network.Cellular.Activation.StatusAtLogin"
