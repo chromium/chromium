@@ -92,7 +92,7 @@
 <translation id="174937106936716857">மொத்த ஃபைலின் எண்ணிக்கை</translation>
 <translation id="1773212559869067373">அடையாளச் சான்றிதழ் பயனரின் கம்ப்யூட்டரில் நிராகரிக்கப்பட்டது</translation>
 <translation id="1775381402323441512">வீடியோ தகவல்</translation>
-<translation id="180035236176489073">இந்தக் கோப்புகளை அணுக ஆன்லைனில் இருக்க வேண்டும்.</translation>
+<translation id="180035236176489073">இந்த ஃபைல்களை அணுக ஆன்லைனில் இருக்க வேண்டும்.</translation>
 <translation id="1807938677607439181">எல்லா கோப்புகளும்</translation>
 <translation id="1810764548349082891">மாதிரிக்காட்சி இல்லை</translation>
 <translation id="1812302367230252929">அம்ஹரிக் ஒலிபெயர்ப்பு</translation>
@@ -407,7 +407,7 @@
 <translation id="4656293982926141856">இந்தக் கம்ப்யூட்டர்</translation>
 <translation id="4656777537938206294">ஃபைல்களை ஆஃப்லைனில் பயன்படுத்தலாம்</translation>
 <translation id="4658782175094886150">பனியில் இருக்கும் நபர்</translation>
-<translation id="4669606053856530811">இந்தக் கோப்புகளை '<ph name="SOURCE_NAME" />' இன் உறுப்பினர்களுடன் பகிரவில்லை எனில், அவர்கள் அவற்றுக்கான அணுகலை இழப்பார்கள்.</translation>
+<translation id="4669606053856530811">இந்த ஃபைல்களை '<ph name="SOURCE_NAME" />' இன் உறுப்பினர்களுடன் பகிரவில்லை எனில், அவர்கள் அவற்றுக்கான அணுகலை இழப்பார்கள்.</translation>
 <translation id="4690246192099372265">ஸ்வீடிஷ்</translation>
 <translation id="4693155481716051732">சூஷி</translation>
 <translation id="4694604912444486114">குரங்கு</translation>
@@ -829,7 +829,7 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">சாதனத்தின் மாடல்</translation>
 <translation id="8208580316430297579">கலைப்பணி</translation>
-<translation id="8223479393428528563">இந்தக் கோப்புகளை ஆஃப்லைனில் பயன்படுத்துவதற்காகச் சேமிக்க, ஆன்லைனிற்கு சென்று, கோப்புகளில் வலது-கிளிக் செய்து, <ph name="OFFLINE_CHECKBOX_NAME" /> விருப்பத்தைத் தேர்தெடுக்கவும்.</translation>
+<translation id="8223479393428528563">இந்த ஃபைல்களை ஆஃப்லைனில் பயன்படுத்துவதற்காகச் சேமிக்க, ஆன்லைனிற்கு சென்று, ஃபைல்களில் வலது-கிளிக் செய்து, <ph name="OFFLINE_CHECKBOX_NAME" /> விருப்பத்தைத் தேர்தெடுக்கவும்.</translation>
 <translation id="8249296373107784235">கைவிடு</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="8261561378965667560">சீனம் (அரே)</translation>
