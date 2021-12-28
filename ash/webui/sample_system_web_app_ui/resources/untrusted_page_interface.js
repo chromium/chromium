@@ -18,16 +18,17 @@ export const PARENT_PAGE_ORIGIN = 'chrome://sample-system-web-app';
  * @implements {ash.mojom.sample_swa.ChildUntrustedPage}
  */
 class ChildUntrustedPageImpl {
-  private receiver_ = new ChildUntrustedPageReceiver(this);
+  constructor() {
+    this.receiver_ = new ChildUntrustedPageReceiver(this);
+  }
 
   // Returns a Mojo remote that should be send to the parent page to be bound.
   bindNewPipeAndPassRemote() {
     return this.receiver_.$.bindNewPipeAndPassRemote();
   }
 
-  doSomethingForParent(task: string) {
-    document.querySelector<HTMLParagraphElement>('#parent-task')!.innerText =
-        task;
+  doSomethingForParent(task) {
+    document.querySelector('#parent-task').innerText = task;
 
     // For testing, report the received task.
     window.parent.postMessage(
