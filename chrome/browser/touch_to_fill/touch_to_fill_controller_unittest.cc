@@ -164,6 +164,9 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_No_Auth) {
       "PasswordManager.TouchToFill.NumCredentialsShown", 1, 1);
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.FilledCredentialWasFromAndroidApp", false, 1);
+  histogram_tester().ExpectUniqueSample(
+      "PasswordManager.TouchToFill.Outcome",
+      TouchToFillController::TouchToFillOutcome::kCredentialFilled, 1);
 
   auto entries = test_recorder().GetEntriesByName(UkmBuilder::kEntryName);
   ASSERT_EQ(1u, entries.size());
@@ -243,6 +246,10 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Failure) {
               Authenticate(BiometricAuthRequester::kTouchToFill, _))
       .WillOnce(RunOnceCallback<1>(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
+
+  histogram_tester().ExpectUniqueSample(
+      "PasswordManager.TouchToFill.Outcome",
+      TouchToFillController::TouchToFillOutcome::kReauthenticationFailed, 1);
 }
 
 TEST_F(TouchToFillControllerTest, Show_Empty) {
@@ -355,6 +362,9 @@ TEST_F(TouchToFillControllerTest, Dismiss) {
   test_recorder().ExpectEntryMetric(
       entries[0], UkmBuilder::kUserActionName,
       static_cast<int64_t>(TouchToFillController::UserAction::kDismissed));
+  histogram_tester().ExpectUniqueSample(
+      "PasswordManager.TouchToFill.Outcome",
+      TouchToFillController::TouchToFillOutcome::kSheetDismissed, 1);
 }
 
 TEST_F(TouchToFillControllerTest, DestroyedWhileAuthRunning) {

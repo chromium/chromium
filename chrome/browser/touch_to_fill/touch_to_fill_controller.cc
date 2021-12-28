@@ -135,6 +135,8 @@ void TouchToFillController::OnManagePasswordsSelected() {
   password_client_->NavigateToManagePasswordsPage(
       password_manager::ManagePasswordsReferrer::kTouchToFill);
 
+  base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome",
+                                TouchToFillOutcome::kManagePasswordsSelected);
   ukm::builders::TouchToFill_Shown(source_id_)
       .SetUserAction(static_cast<int64_t>(UserAction::kSelectedManagePasswords))
       .Record(ukm::UkmRecorder::Get());
@@ -147,6 +149,8 @@ void TouchToFillController::OnDismiss() {
 
   std::exchange(driver_, nullptr)->TouchToFillClosed(ShowVirtualKeyboard(true));
 
+  base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome",
+                                TouchToFillOutcome::kSheetDismissed);
   ukm::builders::TouchToFill_Shown(source_id_)
       .SetUserAction(static_cast<int64_t>(UserAction::kDismissed))
       .Record(ukm::UkmRecorder::Get());
@@ -164,6 +168,8 @@ void TouchToFillController::OnReauthCompleted(UiCredential credential,
   if (!auth_successful) {
     std::exchange(driver_, nullptr)
         ->TouchToFillClosed(ShowVirtualKeyboard(true));
+    base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome",
+                                  TouchToFillOutcome::kReauthenticationFailed);
     return;
   }
 
@@ -179,4 +185,7 @@ void TouchToFillController::FillCredential(const UiCredential& credential) {
 
   std::exchange(driver_, nullptr)
       ->FillSuggestion(credential.username(), credential.password());
+
+  base::UmaHistogramEnumeration("PasswordManager.TouchToFill.Outcome",
+                                TouchToFillOutcome::kCredentialFilled);
 }

@@ -2743,6 +2743,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-06-19">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
+  <owner>kolos@chromium.org</owner>
   <summary>
     The index of a selected credential in the Touch To Fill sheet. Only recorded
     when the sheet showed at least two entries.
@@ -2753,6 +2754,7 @@ chromium-metrics-reviews@google.com.
     enum="BottomSheet.StateChangeReason" expires_after="2022-06-19">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
+  <owner>kolos@chromium.org</owner>
   <summary>
     The reason why a user dismissed the Touch To Fill sheet. Recorded once for
     each dismissal.
@@ -2764,6 +2766,18 @@ chromium-metrics-reviews@google.com.
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <summary>The number of credentials shown in the Touch To Fill sheet.</summary>
+</histogram>
+
+<histogram name="PasswordManager.TouchToFill.Outcome"
+    enum="TouchToFill.Outcome" expires_after="2022-06-19">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    The final outcome that closes the Touch To Fill sheet (e.g. credentials
+    filling, settings opened, failed reauth, sheet dismissal). Recorded once for
+    each closing.
+  </summary>
 </histogram>
 
 <histogram name="PasswordManager.TouchToFill.UserAction"

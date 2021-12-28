@@ -43,6 +43,19 @@ class TouchToFillController {
     kSelectedManagePasswords = 2,
   };
 
+  // The final outcome that closes the Touch To Fill sheet.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. Needs to stay in sync with
+  // TouchToFill.Outcome in enums.xml.
+  enum class TouchToFillOutcome {
+    kCredentialFilled = 0,
+    kSheetDismissed = 1,
+    kReauthenticationFailed = 2,
+    kManagePasswordsSelected = 3,
+    kMaxValue = kManagePasswordsSelected,
+  };
+
   // No-op constructor for tests.
   TouchToFillController(
       base::PassKey<class TouchToFillControllerTest>,

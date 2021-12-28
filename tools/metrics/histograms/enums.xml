@@ -85997,6 +85997,13 @@ would be helpful to identify which type is being sent.
       label="Bubbling Root-scroller, scrollable document, handled application"/>
 </enum>
 
+<enum name="TouchToFill.Outcome">
+  <int value="0" label="Credenential is filled"/>
+  <int value="1" label="Sheet is dismissed"/>
+  <int value="2" label="Reauthentication failed"/>
+  <int value="3" label="'Manage Passwords' was selected"/>
+</enum>
+
 <enum name="TouchToFill.UserAction">
   <int value="0" label="Selected Credential"/>
   <int value="1" label="Dismissed"/>
