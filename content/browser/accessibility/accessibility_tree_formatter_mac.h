@@ -61,13 +61,6 @@ class CONTENT_EXPORT AccessibilityTreeFormatterMac
 
   base::Value PopulateLocalPosition(const id node,
                                     const NSRect& root_rect) const;
-  base::Value PopulateTextPosition(
-      const BrowserAccessibility::AXPosition& position,
-      const ui::AXTreeIndexerMac*) const;
-  base::Value PopulateTextMarkerRange(id marker_range,
-                                      const ui::AXTreeIndexerMac*) const;
-  base::Value PopulateObject(id, const ui::AXTreeIndexerMac*) const;
-  base::Value PopulateArray(NSArray*, const ui::AXTreeIndexerMac*) const;
 
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node) const override;

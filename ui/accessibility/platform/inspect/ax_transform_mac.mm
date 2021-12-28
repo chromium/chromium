@@ -5,6 +5,11 @@
 #include "ui/accessibility/platform/inspect/ax_transform_mac.h"
 
 #include "base/strings/sys_string_conversions.h"
+#include "ui/accessibility/ax_range.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform_node_cocoa.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager.h"
+#include "ui/accessibility/platform/ax_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils.h"
 
 namespace ui {
@@ -80,6 +85,15 @@ base::Value AXNSObjectToBaseValue(id value, const AXTreeIndexerMac* indexer) {
     }
   }
 
+  // AXTextMarker
+  if (IsAXTextMarker(value)) {
+    return AXTextMarkerToBaseValue(value, indexer);
+  }
+
+  // AXTextMarkerRange
+  if (IsAXTextMarkerRange(value))
+    return AXTextMarkerRangeToBaseValue(value, indexer);
+
   // Accessible object
   if (IsNSAccessibilityElement(value) || IsAXUIElement(value)) {
     return AXElementToBaseValue(value, indexer);
@@ -92,6 +106,70 @@ base::Value AXNSObjectToBaseValue(id value, const AXTreeIndexerMac* indexer) {
 
 base::Value AXElementToBaseValue(id node, const AXTreeIndexerMac* indexer) {
   return base::Value(AXMakeConst(indexer->IndexBy(node)));
+}
+
+base::Value AXPositionToBaseValue(
+    const AXPlatformNodeDelegate::AXPosition& position,
+    const AXTreeIndexerMac* indexer) {
+  if (position->IsNullPosition())
+    return AXNilToBaseValue();
+
+  const AXPlatformTreeManager* manager = static_cast<AXPlatformTreeManager*>(
+      AXTreeManagerMap::GetInstance().GetManager(position->tree_id()));
+  if (!manager)
+    return AXNilToBaseValue();
+
+  AXPlatformNode* platform_node_anchor =
+      manager->GetPlatformNodeFromTree(position->anchor_id());
+  if (!platform_node_anchor)
+    return AXNilToBaseValue();
+
+  AXPlatformNodeCocoa* cocoa_anchor =
+      platform_node_anchor->GetNativeViewAccessible();
+  if (!cocoa_anchor)
+    return AXNilToBaseValue();
+
+  std::string affinity;
+  switch (position->affinity()) {
+    case ax::mojom::TextAffinity::kNone:
+      affinity = "none";
+      break;
+    case ax::mojom::TextAffinity::kDownstream:
+      affinity = "down";
+      break;
+    case ax::mojom::TextAffinity::kUpstream:
+      affinity = "up";
+      break;
+  }
+
+  base::Value value(base::Value::Type::DICTIONARY);
+  value.SetPath(AXMakeSetKey(AXMakeOrderedKey("anchor", 0)),
+                AXElementToBaseValue(cocoa_anchor, indexer));
+  value.SetIntPath(AXMakeSetKey(AXMakeOrderedKey("offset", 1)),
+                   position->text_offset());
+  value.SetStringPath(AXMakeSetKey(AXMakeOrderedKey("affinity", 2)),
+                      AXMakeConst(affinity));
+  return value;
+}
+
+base::Value AXTextMarkerToBaseValue(id text_marker,
+                                    const AXTreeIndexerMac* indexer) {
+  return AXPositionToBaseValue(AXTextMarkerToAXPosition(text_marker), indexer);
+}
+
+base::Value AXTextMarkerRangeToBaseValue(id text_marker_range,
+                                         const AXTreeIndexerMac* indexer) {
+  AXPlatformNodeDelegate::AXRange ax_range =
+      AXTextMarkerRangeToAXRange(text_marker_range);
+  if (ax_range.IsNull())
+    return AXNilToBaseValue();
+
+  base::Value value(base::Value::Type::DICTIONARY);
+  value.SetPath("anchor",
+                AXPositionToBaseValue(ax_range.anchor()->Clone(), indexer));
+  value.SetPath("focus",
+                AXPositionToBaseValue(ax_range.focus()->Clone(), indexer));
+  return value;
 }
 
 base::Value AXNilToBaseValue() {

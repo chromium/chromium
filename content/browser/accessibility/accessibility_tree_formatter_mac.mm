@@ -15,7 +15,6 @@
 #include "content/browser/accessibility/browser_accessibility_mac.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/public/browser/ax_inspect_factory.h"
-#include "ui/accessibility/platform/ax_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
@@ -148,7 +147,7 @@ std::string AccessibilityTreeFormatterMac::EvaluateScript(
     } else if (value.IsNotApplicable()) {
       result = base::Value(kNotApplicable);
     } else {
-      result = PopulateObject(*value, &indexer);
+      result = AXNSObjectToBaseValue(*value, &indexer);
     }
 
     scripts.Append(property_node.ToString() + "=" + AXFormatValue(result));
@@ -226,7 +225,7 @@ void AccessibilityTreeFormatterMac::AddProperties(
     for (NSString* attribute : attributes) {
       dict->SetPath(
           SysNSStringToUTF8(attribute),
-          PopulateObject(AXAttributeValueOf(node, attribute), indexer));
+          AXNSObjectToBaseValue(AXAttributeValueOf(node, attribute), indexer));
     }
     return;
   }
@@ -246,7 +245,7 @@ void AccessibilityTreeFormatterMac::AddProperties(
       continue;
     }
     dict->SetPath(property_node.original_property,
-                  PopulateObject(*value, indexer));
+                  AXNSObjectToBaseValue(*value, indexer));
   }
 }
 
@@ -266,86 +265,6 @@ base::Value AccessibilityTreeFormatterMac::PopulateLocalPosition(
   return AXNSPointToBaseValue(NSMakePoint(
       static_cast<int>(node_position.x - root_left),
       static_cast<int>(-node_position.y - node_size.height - root_top)));
-}
-
-base::Value AccessibilityTreeFormatterMac::PopulateObject(
-    id value,
-    const AXTreeIndexerMac* indexer) const {
-  // NSArray
-  if ([value isKindOfClass:[NSArray class]]) {
-    return PopulateArray((NSArray*)value, indexer);
-  }
-
-  // AXTextMarker
-  if (ui::IsAXTextMarker(value)) {
-    return PopulateTextPosition(ui::AXTextMarkerToAXPosition(value), indexer);
-  }
-
-  // AXTextMarkerRange
-  if (ui::IsAXTextMarkerRange(value))
-    return PopulateTextMarkerRange(value, indexer);
-
-  return AXNSObjectToBaseValue(value, indexer);
-}
-
-base::Value AccessibilityTreeFormatterMac::PopulateTextPosition(
-    const BrowserAccessibility::AXPosition& position,
-    const AXTreeIndexerMac* indexer) const {
-  if (position->IsNullPosition())
-    return AXNilToBaseValue();
-
-  auto* manager = BrowserAccessibilityManager::FromID(position->tree_id());
-  DCHECK(manager) << "A non-null position should have an associated AX tree.";
-  BrowserAccessibility* anchor = manager->GetFromID(position->anchor_id());
-  DCHECK(anchor) << "A non-null position should have a non-null anchor node.";
-  BrowserAccessibilityCocoa* cocoa_anchor = ToBrowserAccessibilityCocoa(anchor);
-
-  std::string affinity;
-  switch (position->affinity()) {
-    case ax::mojom::TextAffinity::kNone:
-      affinity = "none";
-      break;
-    case ax::mojom::TextAffinity::kDownstream:
-      affinity = "down";
-      break;
-    case ax::mojom::TextAffinity::kUpstream:
-      affinity = "up";
-      break;
-  }
-
-  base::Value set(base::Value::Type::DICTIONARY);
-  set.SetPath(AXMakeSetKey(AXMakeOrderedKey("anchor", 0)),
-              AXElementToBaseValue(cocoa_anchor, indexer));
-  set.SetIntPath(AXMakeSetKey(AXMakeOrderedKey("offset", 1)),
-                 position->text_offset());
-  set.SetStringPath(AXMakeSetKey(AXMakeOrderedKey("affinity", 2)),
-                    AXMakeConst(affinity));
-  return set;
-}
-
-base::Value AccessibilityTreeFormatterMac::PopulateTextMarkerRange(
-    id marker_range,
-    const AXTreeIndexerMac* indexer) const {
-  ui::AXPlatformNodeDelegate::AXRange ax_range =
-      ui::AXTextMarkerRangeToAXRange(marker_range);
-  if (ax_range.IsNull())
-    return AXNilToBaseValue();
-
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetPath("anchor",
-               PopulateTextPosition(ax_range.anchor()->Clone(), indexer));
-  dict.SetPath("focus",
-               PopulateTextPosition(ax_range.focus()->Clone(), indexer));
-  return dict;
-}
-
-base::Value AccessibilityTreeFormatterMac::PopulateArray(
-    NSArray* node_array,
-    const AXTreeIndexerMac* indexer) const {
-  base::Value list(base::Value::Type::LIST);
-  for (NSUInteger i = 0; i < [node_array count]; i++)
-    list.Append(PopulateObject([node_array objectAtIndex:i], indexer));
-  return list;
 }
 
 std::string AccessibilityTreeFormatterMac::ProcessTreeForOutput(
