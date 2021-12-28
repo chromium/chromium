@@ -441,6 +441,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
  public:
   // Subset of parameters passed to SellerWorklet's ScoreAd method.
   struct ScoreAdParams {
+    ScoreAdCallback callback;
     double bid;
     url::Origin interest_group_owner;
   };
@@ -472,11 +473,11 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
                const std::vector<GURL>& browser_signal_ad_components,
                uint32_t browser_signal_bidding_duration_msecs,
                ScoreAdCallback score_ad_callback) override {
-    score_ad_callback_ = std::move(score_ad_callback);
-    score_ad_params_ = std::make_unique<ScoreAdParams>();
-    score_ad_params_->bid = bid;
-    score_ad_params_->interest_group_owner =
-        browser_signal_interest_group_owner;
+    ScoreAdParams score_ad_params;
+    score_ad_params.callback = std::move(score_ad_callback);
+    score_ad_params.bid = bid;
+    score_ad_params.interest_group_owner = browser_signal_interest_group_owner;
+    score_ad_params_.emplace_front(std::move(score_ad_params));
     if (score_ad_run_loop_)
       score_ad_run_loop_->Quit();
   }
@@ -506,26 +507,21 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
         .Run(true /* success */, std::vector<std::string>() /* errors */);
   }
 
-  // Waits until ScoreAd() has been invoked, if it hasn't been already.
-  std::unique_ptr<ScoreAdParams> WaitForScoreAd() {
+  // Waits until ScoreAd() has been invoked, if it hasn't been already. It's up
+  // to the caller to invoke the returned ScoreAdParams::callback to continue
+  // the auction.
+  ScoreAdParams WaitForScoreAd() {
     DCHECK(!score_ad_run_loop_);
     DCHECK(!load_worklet_callback_);
-    if (!score_ad_params_) {
+    if (score_ad_params_.empty()) {
       score_ad_run_loop_ = std::make_unique<base::RunLoop>();
       score_ad_run_loop_->Run();
       score_ad_run_loop_.reset();
-      DCHECK(score_ad_params_);
+      DCHECK(!score_ad_params_.empty());
     }
-    return std::move(score_ad_params_);
-  }
-
-  // Invokes the ScoreAdCallback for the most recent ScoreAd() call with the
-  // provided score. WaitForScoreAd() must have been invoked first.
-  void InvokeScoreAdCallback(double score) {
-    DCHECK(score_ad_callback_);
-    DCHECK(!score_ad_params_);
-    std::move(score_ad_callback_)
-        .Run(score, std::vector<std::string>() /* errors */);
+    ScoreAdParams out = std::move(score_ad_params_.front());
+    score_ad_params_.pop_front();
+    return out;
   }
 
   void WaitForReportResult() {
@@ -560,8 +556,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       load_worklet_callback_;
 
   std::unique_ptr<base::RunLoop> score_ad_run_loop_;
-  std::unique_ptr<ScoreAdParams> score_ad_params_;
-  ScoreAdCallback score_ad_callback_;
+  std::list<ScoreAdParams> score_ad_params_;
 
   std::unique_ptr<base::RunLoop> report_result_run_loop_;
   ReportResultCallback report_result_callback_;
@@ -2366,7 +2361,7 @@ TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {
     bidder1_worklet.reset();
     bidder2_worklet.reset();
 
-    base::RunLoop().RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     EXPECT_THAT(observer_log_,
                 testing::UnorderedElementsAre(
@@ -2446,7 +2441,7 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
       bidder1_worklet.reset();
       // Can't flush the closed pipe without reaching into AuctionRunner, so use
       // RunUntilIdle() instead.
-      base::RunLoop().RunUntilIdle();
+      task_environment_.RunUntilIdle();
 
       if (!seller_worklet_loads_first)
         seller_worklet->CompleteLoading();
@@ -2473,9 +2468,9 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
 
       // The auction should be scored without waiting on the crashed kBidder1.
       auto score_ad_params = seller_worklet->WaitForScoreAd();
-      EXPECT_EQ(kBidder2, score_ad_params->interest_group_owner);
-      EXPECT_EQ(7, score_ad_params->bid);
-      seller_worklet->InvokeScoreAdCallback(11);
+      EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
+      EXPECT_EQ(7, score_ad_params.bid);
+      std::move(score_ad_params.callback).Run(/*score=*/11, /*errors=*/{});
 
       // Finish the auction.
       seller_worklet->WaitForReportResult();
@@ -2543,15 +2538,15 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
 
   // Score Bidder1's bid.
   auto score_ad_params = seller_worklet->WaitForScoreAd();
-  EXPECT_EQ(kBidder1, score_ad_params->interest_group_owner);
-  EXPECT_EQ(7, score_ad_params->bid);
-  seller_worklet->InvokeScoreAdCallback(11 /* score */);
+  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+  EXPECT_EQ(7, score_ad_params.bid);
+  std::move(score_ad_params.callback).Run(/*score=*/11, /*errors=*/{});
 
   // Score Bidder2's bid.
   score_ad_params = seller_worklet->WaitForScoreAd();
-  EXPECT_EQ(kBidder2, score_ad_params->interest_group_owner);
-  EXPECT_EQ(5, score_ad_params->bid);
-  seller_worklet->InvokeScoreAdCallback(10 /* score */);
+  EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
+  EXPECT_EQ(5, score_ad_params.bid);
+  std::move(score_ad_params.callback).Run(/*score=*/10, /*errors=*/{});
 
   // Bidder1 crashes while running ReportWin.
   seller_worklet->WaitForReportResult();
@@ -2583,12 +2578,12 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
 TEST_F(AuctionRunnerTest, SellerCrash) {
   enum class CrashPhase {
     kLoad,
-    kLoadAfterBiddersLoaded,
+    kLoadAfterBidsReceived,
     kScoreBid,
     kReportResult,
   };
   for (CrashPhase crash_phase :
-       {CrashPhase::kLoad, CrashPhase::kLoadAfterBiddersLoaded,
+       {CrashPhase::kLoad, CrashPhase::kLoadAfterBidsReceived,
         CrashPhase::kScoreBid, CrashPhase::kReportResult}) {
     SCOPED_TRACE(static_cast<int>(crash_phase));
 
@@ -2618,9 +2613,9 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
       bidder2_worklet->InvokeGenerateBidCallback(7 /* bid */,
                                                  GURL("https://ad2.com/"));
       // Wait for bids to be received.
-      base::RunLoop().RunUntilIdle();
+      task_environment_.RunUntilIdle();
 
-      if (crash_phase == CrashPhase::kLoadAfterBiddersLoaded) {
+      if (crash_phase == CrashPhase::kLoadAfterBidsReceived) {
         // Need to close the AuctionWorkletService pipes so callbacks can be
         // destroyed without DCHECKing.
         mock_auction_process_manager_->ClosePipes();
@@ -2628,25 +2623,29 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
         break;
       }
 
+      // Seller worklet finishes loading, and receives both bids.
       seller_worklet->CompleteLoading();
 
-      // Wait for Bidder1's bid.
+      // Wait for both bids.
       auto score_ad_params = seller_worklet->WaitForScoreAd();
+      auto score_ad_params2 = seller_worklet->WaitForScoreAd();
+      // Wait for SendPendingSignalsRequests() invocation.
+      task_environment_.RunUntilIdle();
+
       if (crash_phase == CrashPhase::kScoreBid) {
         seller_worklet.reset();
         break;
       }
       // Score Bidder1's bid.
       bidder1_worklet.reset();
-      EXPECT_EQ(kBidder1, score_ad_params->interest_group_owner);
-      EXPECT_EQ(5, score_ad_params->bid);
-      seller_worklet->InvokeScoreAdCallback(10 /* score */);
+      EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+      EXPECT_EQ(5, score_ad_params.bid);
+      std::move(score_ad_params.callback).Run(/*score=*/10, /*errors=*/{});
 
       // Score Bidder2's bid.
-      score_ad_params = seller_worklet->WaitForScoreAd();
-      EXPECT_EQ(kBidder2, score_ad_params->interest_group_owner);
-      EXPECT_EQ(7, score_ad_params->bid);
-      seller_worklet->InvokeScoreAdCallback(11 /* score */);
+      EXPECT_EQ(kBidder2, score_ad_params2.interest_group_owner);
+      EXPECT_EQ(7, score_ad_params2.bid);
+      std::move(score_ad_params2.callback).Run(/*score=*/11, /*errors=*/{});
 
       seller_worklet->WaitForReportResult();
       DCHECK_EQ(CrashPhase::kReportResult, crash_phase);
@@ -2723,9 +2722,9 @@ TEST_F(AuctionRunnerTest, NullAdComponents) {
     if (test_case.expect_successful_bid) {
       // Since the bid was valid, it should be scored.
       auto score_ad_params = seller_worklet->WaitForScoreAd();
-      EXPECT_EQ(kBidder1, score_ad_params->interest_group_owner);
-      EXPECT_EQ(1, score_ad_params->bid);
-      seller_worklet->InvokeScoreAdCallback(/*score=*/11);
+      EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+      EXPECT_EQ(1, score_ad_params.bid);
+      std::move(score_ad_params.callback).Run(/*score=*/11, /*errors=*/{});
 
       // Finish the auction.
       seller_worklet->WaitForReportResult();
@@ -2810,9 +2809,9 @@ TEST_F(AuctionRunnerTest, AdComponentsLimit) {
     if (num_components <= blink::kMaxAdAuctionAdComponents) {
       // Since the bid was valid, it should be scored.
       auto score_ad_params = seller_worklet->WaitForScoreAd();
-      EXPECT_EQ(kBidder1, score_ad_params->interest_group_owner);
-      EXPECT_EQ(1, score_ad_params->bid);
-      seller_worklet->InvokeScoreAdCallback(/*score=*/11);
+      EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+      EXPECT_EQ(1, score_ad_params.bid);
+      std::move(score_ad_params.callback).Run(/*score=*/11, /*errors=*/{});
 
       // Finish the auction.
       seller_worklet->WaitForReportResult();
@@ -3031,9 +3030,9 @@ TEST_F(AuctionRunnerTest, BadSellerReportUrl) {
   bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/absl::nullopt);
 
   auto score_ad_params = seller_worklet->WaitForScoreAd();
-  EXPECT_EQ(kBidder1, score_ad_params->interest_group_owner);
-  EXPECT_EQ(5, score_ad_params->bid);
-  seller_worklet->InvokeScoreAdCallback(10 /* score */);
+  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+  EXPECT_EQ(5, score_ad_params.bid);
+  std::move(score_ad_params.callback).Run(/*score=*/10, /*errors=*/{});
 
   // Bidder1 never gets to report anything, since the seller providing a bad
   // report URL aborts the auction.
@@ -3079,9 +3078,9 @@ TEST_F(AuctionRunnerTest, BadBidderReportUrl) {
   bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/absl::nullopt);
 
   auto score_ad_params = seller_worklet->WaitForScoreAd();
-  EXPECT_EQ(kBidder1, score_ad_params->interest_group_owner);
-  EXPECT_EQ(5, score_ad_params->bid);
-  seller_worklet->InvokeScoreAdCallback(10 /* score */);
+  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+  EXPECT_EQ(5, score_ad_params.bid);
+  std::move(score_ad_params.callback).Run(/*score=*/10, /*errors=*/{});
 
   seller_worklet->WaitForReportResult();
   seller_worklet->InvokeReportResultCallback(
@@ -3224,9 +3223,9 @@ TEST_F(AuctionRunnerTest, DestroyBidderWorkletWithoutBid) {
   bidder2_worklet->InvokeGenerateBidCallback(7 /* bid */,
                                              GURL("https://ad2.com/"));
   auto score_ad_params = seller_worklet->WaitForScoreAd();
-  EXPECT_EQ(kBidder2, score_ad_params->interest_group_owner);
-  EXPECT_EQ(7, score_ad_params->bid);
-  seller_worklet->InvokeScoreAdCallback(11 /* score */);
+  EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
+  EXPECT_EQ(7, score_ad_params.bid);
+  std::move(score_ad_params.callback).Run(/*score=*/11, /*errors=*/{});
 
   // Finish the auction.
   seller_worklet->WaitForReportResult();
@@ -3279,17 +3278,17 @@ TEST_F(AuctionRunnerTest, Tie) {
     bidder1_worklet->InvokeGenerateBidCallback(5 /* bid */,
                                                GURL("https://ad1.com/"));
     auto score_ad_params = seller_worklet->WaitForScoreAd();
-    EXPECT_EQ(kBidder1, score_ad_params->interest_group_owner);
-    EXPECT_EQ(5, score_ad_params->bid);
-    seller_worklet->InvokeScoreAdCallback(10 /* score */);
+    EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+    EXPECT_EQ(5, score_ad_params.bid);
+    std::move(score_ad_params.callback).Run(/*score=*/10, /*errors=*/{});
 
     // Bidder2 returns a bid, which is then scored.
     bidder2_worklet->InvokeGenerateBidCallback(5 /* bid */,
                                                GURL("https://ad2.com/"));
     score_ad_params = seller_worklet->WaitForScoreAd();
-    EXPECT_EQ(kBidder2, score_ad_params->interest_group_owner);
-    EXPECT_EQ(5, score_ad_params->bid);
-    seller_worklet->InvokeScoreAdCallback(10 /* score */);
+    EXPECT_EQ(kBidder2, score_ad_params.interest_group_owner);
+    EXPECT_EQ(5, score_ad_params.bid);
+    std::move(score_ad_params.callback).Run(/*score=*/10, /*errors=*/{});
     // Need to flush the service pipe to make sure the AuctionRunner has
     // received the score.
     seller_worklet->Flush();
@@ -3341,6 +3340,111 @@ TEST_F(AuctionRunnerTest, Tie) {
     EXPECT_THAT(result_.errors, testing::ElementsAre());
     CheckHistograms(AuctionRunner::AuctionResult::kSuccess,
                     2 /* expected_interest_groups */, 2 /* expected_owners */);
+  }
+}
+
+// Test worklets completing in an order different from the one in which they're
+// invoked.
+TEST_F(AuctionRunnerTest, WorkletOrder) {
+  // Events that can ordered differently for each loop iteration. All events
+  // must happen, and a bid must be generated before it is scored.
+  enum class Event {
+    kBid1Generated,
+    kBid2Generated,
+    kBid1Scored,
+    kBid2Scored,
+  };
+
+  // All possible orderings. This test assumes the order bidders are loaded in
+  // is deterministic, which currently is the case (though that may change down
+  // the line).
+  const Event kTestCases[][4] = {
+      {Event::kBid1Generated, Event::kBid1Scored, Event::kBid2Generated,
+       Event::kBid2Scored},
+      {Event::kBid1Generated, Event::kBid2Generated, Event::kBid1Scored,
+       Event::kBid2Scored},
+      {Event::kBid1Generated, Event::kBid2Generated, Event::kBid2Scored,
+       Event::kBid1Scored},
+      {Event::kBid2Generated, Event::kBid2Scored, Event::kBid1Generated,
+       Event::kBid1Scored},
+      {Event::kBid2Generated, Event::kBid1Generated, Event::kBid2Scored,
+       Event::kBid1Scored},
+      {Event::kBid2Generated, Event::kBid1Generated, Event::kBid1Scored,
+       Event::kBid2Scored},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    for (bool bidder1_wins : {false, true}) {
+      StartStandardAuctionWithMockService();
+
+      auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+      ASSERT_TRUE(seller_worklet);
+      auto bidder1_worklet = mock_auction_process_manager_->TakeBidderWorklet(
+          kBidder1, kBidder1Name);
+      ASSERT_TRUE(bidder1_worklet);
+      auto bidder2_worklet = mock_auction_process_manager_->TakeBidderWorklet(
+          kBidder2, kBidder2Name);
+      ASSERT_TRUE(bidder2_worklet);
+
+      seller_worklet->CompleteLoading();
+
+      MockSellerWorklet::ScoreAdParams score_ad_params1;
+      MockSellerWorklet::ScoreAdParams score_ad_params2;
+
+      for (Event event : test_case) {
+        switch (event) {
+          case Event::kBid1Generated:
+            bidder1_worklet->InvokeGenerateBidCallback(
+                /*bid=*/9, GURL("https://ad1.com/"));
+            score_ad_params1 = seller_worklet->WaitForScoreAd();
+            EXPECT_EQ(kBidder1, score_ad_params1.interest_group_owner);
+            EXPECT_EQ(9, score_ad_params1.bid);
+            break;
+          case Event::kBid2Generated:
+            bidder2_worklet->InvokeGenerateBidCallback(
+                /*bid=*/10, GURL("https://ad2.com/"));
+            score_ad_params2 = seller_worklet->WaitForScoreAd();
+            EXPECT_EQ(kBidder2, score_ad_params2.interest_group_owner);
+            EXPECT_EQ(10, score_ad_params2.bid);
+            break;
+          case Event::kBid1Scored:
+            std::move(score_ad_params1.callback)
+                .Run(/*score=*/bidder1_wins ? 11 : 9, /*errors=*/{});
+            // Wait for the AuctionRunner to receive the score.
+            task_environment_.RunUntilIdle();
+            break;
+          case Event::kBid2Scored:
+            std::move(score_ad_params2.callback)
+                .Run(/*score=*/10, /*errors=*/{});
+            // Wait for the AuctionRunner to receive the score.
+            task_environment_.RunUntilIdle();
+            break;
+        }
+      }
+
+      // Finish the auction.
+      seller_worklet->WaitForReportResult();
+      seller_worklet->InvokeReportResultCallback();
+
+      mock_auction_process_manager_->WaitForWinningBidderReload();
+      auto winning_worklet = mock_auction_process_manager_->TakeBidderWorklet(
+          bidder1_wins ? kBidder1 : kBidder2,
+          bidder1_wins ? kBidder1Name : kBidder2Name);
+      winning_worklet->WaitForReportWin();
+      winning_worklet->InvokeReportWinCallback();
+      auction_run_loop_->Run();
+      EXPECT_THAT(result_.errors, testing::ElementsAre());
+
+      if (bidder1_wins) {
+        EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+        EXPECT_EQ(4u, result_.bidder1_prev_wins.size());
+        ASSERT_EQ(3u, result_.bidder2_prev_wins.size());
+      } else {
+        EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
+        EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+        ASSERT_EQ(4u, result_.bidder2_prev_wins.size());
+      }
+    }
   }
 }
 
