@@ -2946,7 +2946,7 @@ class PDFExtensionSaveTest : public PDFExtensionComboBoxTest {
 };
 
 // Flaky, http://crbug.com/1269103
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
 #define MAYBE_Save DISABLED_Save
 #else
 #define MAYBE_Save Save
@@ -3015,7 +3015,7 @@ class PDFExtensionSaveWithPolicyTest : public PDFExtensionSaveTest {
 };
 
 // Flaky, http://crbug.com/1269103
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
 #define MAYBE_SaveWithPolicy DISABLED_SaveWithPolicy
 #else
 #define MAYBE_SaveWithPolicy SaveWithPolicy
@@ -3038,7 +3038,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest, MAYBE_SaveWithPolicy) {
 }
 
 // Flaky, http://crbug.com/1269103
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_SaveWithPolicyUniqueNumberSuffix \
   DISABLED_SaveWithPolicyUniqueNumberSuffix
 #else
@@ -3068,7 +3068,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionSaveWithPolicyTest,
 }
 
 // Flaky, http://crbug.com/1269103
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_CHROMEOS)
 #define MAYBE_SaveWithPolicyUniqueTimeSuffix \
   DISABLED_SaveWithPolicyUniqueTimeSuffix
 #else
