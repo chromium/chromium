@@ -50,11 +50,11 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Tests for the power bookmark experience.
+ * Render tests for the Shopping power bookmarks experience.
  */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-public class PowerBookmarkTest extends DummyUiActivityTestCase {
+public class PowerBookmarkShoppingItemRowRenderTest extends DummyUiActivityTestCase {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams = new NightModeParams().getParameters();
 
@@ -82,7 +82,7 @@ public class PowerBookmarkTest extends DummyUiActivityTestCase {
     private PowerBookmarkShoppingItemRow mPowerBookmarkShoppingItemRow;
     private ViewGroup mContentView;
 
-    public PowerBookmarkTest(boolean nightModeEnabled) {
+    public PowerBookmarkShoppingItemRowRenderTest(boolean nightModeEnabled) {
         // Sets a fake background color to make the screenshots easier to compare with bare eyes.
         NightModeTestUtils.setUpNightModeForDummyUiActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);

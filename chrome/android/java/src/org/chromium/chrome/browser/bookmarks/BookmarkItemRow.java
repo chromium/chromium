@@ -100,4 +100,8 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
                 icon, mUrl, fallbackColor, mIconGenerator, getResources(), mDisplayedIconSize);
         setStartIconDrawable(iconDrawable);
     }
+
+    protected boolean getFaviconCancelledForTesting() {
+        return mFaviconCancelled;
+    }
 }
