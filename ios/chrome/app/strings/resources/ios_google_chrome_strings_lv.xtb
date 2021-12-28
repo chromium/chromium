@@ -25,6 +25,7 @@
 <translation id="2574249610672786438">Lai skatītu cilnes no ierīcēm, kurās lietojat pārlūku Chrome, pierakstieties visās savās ierīcēs.</translation>
 <translation id="2576431527583832481">Pārlūkprogramma Chrome ir uzlabota! Ir pieejama jauna versija.</translation>
 <translation id="257708665678654955">Vai vēlaties, lai Google Chrome nākamreiz piedāvātu tulkot šīs vietnes lapas, kuru saturs ir šādā valodā: <ph name="LANGUAGE_NAME" />?</translation>
+<translation id="2671426118752779020">Google paroļu pārvaldniekā saglabātās paroles varat izmantot citās iPhone tālruņa lietotnēs.</translation>
 <translation id="2695886661449553974">Pārlūkā Chrome nevarēja pārbaudīt atjauninājumu pieejamību. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="2732745070297234559">Pārlūkprogrammā Chrome nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt.</translation>
 <translation id="2869959624320573933">Pierakstīšanās pārlūkprogrammā Chrome</translation>
@@ -85,6 +86,7 @@
 <translation id="7165736900384873061">Darba sākšana ar Google Chrome QR skeneri</translation>
 <translation id="7172660552945675509">Padoms. <ph name="BEGIN_LINK" />Pārvietojiet pārlūku Chrome uz savu doku<ph name="END_LINK" />.</translation>
 <translation id="7173660919484573146">Chrome izmanto Face ID, lai jūsu parolēm varētu piekļūt tikai pilnvarotas personas.</translation>
+<translation id="72119412072970160">Google paroļu pārvaldniekā saglabātās paroles varat izmantot citās iPad planšetdatora lietotnēs.</translation>
 <translation id="7261678641327190792">Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles.</translation>
 <translation id="7272930098487145294">Lai saglabātu attēlus, pieskarieties vienumam Iestatījumi un atļaujiet Chrome pievienot fotoattēlus.</translation>
 <translation id="7275945473750112644">Jūsu konts tiek pārvaldīts domēnā <ph name="HOSTED_DOMAIN" />, tāpēc jūsu Chrome dati no šīs ierīces tiks dzēsti</translation>
@@ -112,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Droša pārlūkošana, izmantojot pārlūku Google Chrome</translation>
 <translation id="8772179140489533211">Tiek rādīti aicinājumi pierakstīties pārlūkā Chrome.</translation>
+<translation id="8788269841521769222">Jums nebūs jāatceras šī parole. Tā tiks saglabāta konta <ph name="EMAIL" /> Google paroļu pārvaldniekā.</translation>
 <translation id="9112744793181547300">Vai iestatīt Chrome kā noklusējuma pārlūku?</translation>
 </translationbundle>

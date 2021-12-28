@@ -25,6 +25,7 @@
 <translation id="1145536944570833626">מחיקת נתונים קיימים.</translation>
 <translation id="1147031633655575115">נכנסת כ-<ph name="USER" /></translation>
 <translation id="1154984953698510061">הצגת כרטיסיות אחרות</translation>
+<translation id="1164064664035028907">שימוש בסיסמה החזקה:</translation>
 <translation id="1165039591588034296">שגיאה</translation>
 <translation id="1172898394251786223">השדה הבא</translation>
 <translation id="1176932207622159128">לא ניתן לשמור את התמונה</translation>
@@ -637,6 +638,7 @@
 <translation id="6807889908376551050">הצגת הכול...</translation>
 <translation id="681368974849482173">הפריט נוצר</translation>
 <translation id="681450999322335505">הארגון שלך השבית את הסנכרון.</translation>
+<translation id="683022620450280906">‏אפשר להשתמש בסיסמאות השמורות שלך בכל מכשיר. הן נשמרות במנהל הסיסמאות של Google בחשבון <ph name="EMAIL" /></translation>
 <translation id="6830804042318138535">להמשך קריאה</translation>
 <translation id="6831043979455480757">תרגום</translation>
 <translation id="6842136130964845393">כדי לוודא שתמיד תהיה לך גישה לסיסמאות השמורות, עליך לאמת את זהותך</translation>

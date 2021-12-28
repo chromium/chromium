@@ -77,6 +77,7 @@
 <translation id="6424492062988593837">Chromium er nú enn betra! Ný útgáfa er í boði.</translation>
 <translation id="6752854822223394465">Fyrirtækið þitt er að setja upp Chromium...</translation>
 <translation id="6820823224820483452">Chromium gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun.</translation>
+<translation id="7006920032187763988">Þú getur notað aðgangsorðin sem þú vistaðir í aðgangsorðastjórnun í öðrum forritum í iPad.</translation>
 <translation id="7018284295775193585">Ekki er hægt að uppfæra Chromium</translation>
 <translation id="7045244423563602563">Lagaðu Chromium að þínum þörfum</translation>
 <translation id="7099326575020694068">Chromium getur ekki notað myndavélina á tvískiptum skjá</translation>
@@ -103,11 +104,13 @@
 <translation id="8073677936375100957">Viltu hreinsa Chromium gögnin þín úr þessu tæki?</translation>
 <translation id="8175055321229419309">Ábending: <ph name="BEGIN_LINK" />Færðu Chromium í forritastikuna<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium gat ekki leitað að uppfærslum. Reyndu aftur síðar.</translation>
+<translation id="858114650497379505">Þú getur notað aðgangsorðin sem þú vistaðir í aðgangsorðastjórnun í öðrum forritum í iPhone.</translation>
 <translation id="8586442755830160949">Höfundarréttur <ph name="YEAR" /> höfundar Chromium. Allur réttur áskilinn.</translation>
 <translation id="8663480472502753423">Haltu Chromium uppfærðu</translation>
 <translation id="8776843108004031667">Þessi reikningur og öll óvistuð gögn verða fjarlægð úr Chromium.</translation>
 <translation id="894437814105052438">Þegar þú skráir þig út mun Chromium ekki samstilla ný gögn við Google reikninginn þinn. Gögn sem voru samstillt áður verða áfram á reikningnum.</translation>
 <translation id="9022552996538154597">Skráðu þig inn á Chromium</translation>
+<translation id="9059693977935746710">Þú þarft ekki að muna þetta aðgangsorð. Það verður vistað í aðgangsorðastjórnun fyrir <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium er úrelt</translation>
 <translation id="9110075932708282655">Nota Chromium sjálfgefið</translation>
 <translation id="921174536258924340">Chromium gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun eða <ph name="BEGIN_LINK" />athugaðu aðgangsorð á Google reikningnum þínum.<ph name="END_LINK" /></translation>

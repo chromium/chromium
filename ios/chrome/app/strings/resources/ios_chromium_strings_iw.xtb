@@ -77,6 +77,7 @@
 <translation id="6424492062988593837">‏‫Chromium ממשיך להשתפר! קיימת גרסה חדשה.</translation>
 <translation id="6752854822223394465">‏הארגון שלך מגדיר את Chromium…</translation>
 <translation id="6820823224820483452">‏Chromium לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר.</translation>
+<translation id="7006920032187763988">‏יש לך אפשרות להשתמש בסיסמאות ששמרת במנהל הסיסמאות באפליקציות אחרות ב-iPad.</translation>
 <translation id="7018284295775193585">‏לא ניתן לעדכן את Chromium</translation>
 <translation id="7045244423563602563">‏אפשר להתאים אישית את Chromium בדרך שנוחה לך</translation>
 <translation id="7099326575020694068">‏Chromium לא יכול להשתמש במצלמה במצב תצוגה מפוצלת</translation>
@@ -103,11 +104,13 @@
 <translation id="8073677936375100957">‏למחוק את נתוני Chromium שלך מהמכשיר הזה?</translation>
 <translation id="8175055321229419309">‏טיפ: <ph name="BEGIN_LINK" />העבר את Chromium לשורת המשימות<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">‏Chromium לא הצליח לחפש עדכונים. אפשר לנסות שוב מאוחר יותר.</translation>
+<translation id="858114650497379505">‏יש לך אפשרות להשתמש בסיסמאות ששמרת במנהל הסיסמאות באפליקציות אחרות ב-iPhone.</translation>
 <translation id="8586442755830160949">‏Copyright <ph name="YEAR" /> The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="8663480472502753423">‏Chromium יתעדכן באופן קבוע</translation>
 <translation id="8776843108004031667">‏החשבון הזה וכל הנתונים שלא נשמרו יוסרו מ-Chromium.</translation>
 <translation id="894437814105052438">‏לאחר היציאה מהחשבון, לא יתבצע סנכרון של נתונים חדשים מ-Chromium בחשבון Google שלך. נתונים שסונכרנו בעבר יישארו בחשבון.</translation>
 <translation id="9022552996538154597">‏כניסה אל Chromium</translation>
+<translation id="9059693977935746710">אין צורך לזכור את הסיסמה הזו. היא תישמר במנהל הסיסמאות בחשבון <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">‏Chromium אינו מעודכן</translation>
 <translation id="9110075932708282655">‏שימוש ב-Chromium כברירת מחדל</translation>
 <translation id="921174536258924340">‏Chromium לא הצליח לבדוק את כל הסיסמאות. אפשר לנסות שוב מחר או <ph name="BEGIN_LINK" />לבדוק את הסיסמאות בחשבון Google.<ph name="END_LINK" /></translation>

@@ -77,6 +77,7 @@
 <translation id="6424492062988593837">Chromium introduciu melloras. Está dispoñible unha nova versión.</translation>
 <translation id="6752854822223394465">A túa organización está configuranndo Chromium…</translation>
 <translation id="6820823224820483452">Chromium non puido comprobar todos os contrasinais. Téntao de novo mañá.</translation>
+<translation id="7006920032187763988">Podes utilizar os contrasinais que gardaches no xestor de contrasinais noutras aplicacións do teu iPad.</translation>
 <translation id="7018284295775193585">Chromium non se pode actualizar</translation>
 <translation id="7045244423563602563">Personaliza Chromium</translation>
 <translation id="7099326575020694068">Chromium non pode usar a cámara no modo Vista dividida</translation>
@@ -103,11 +104,13 @@
 <translation id="8073677936375100957">Queres borrar os teus datos de Chromium deste dispositivo?</translation>
 <translation id="8175055321229419309">Consello: <ph name="BEGIN_LINK" />Engade Chromium á barra de aplicacións<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium non puido buscar actualizacións. Téntao máis tarde.</translation>
+<translation id="858114650497379505">Podes utilizar os contrasinais que gardaches no xestor de contrasinais noutras aplicacións do teu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" />, os autores de Chromium. Reservados todos os dereitos.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualizado</translation>
 <translation id="8776843108004031667">Esta conta e os datos que estean sen gardar quitaranse de Chromium.</translation>
 <translation id="894437814105052438">Cando peches sesión, Chromium non sincronizará datos novos coa túa Conta de Google. Os datos que se sincronizasen antes permanecerán na conta.</translation>
 <translation id="9022552996538154597">Iniciar sesión en Chromium</translation>
+<translation id="9059693977935746710">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais para <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium está desactualizado</translation>
 <translation id="9110075932708282655">Utiliza Chromium de forma predeterminada</translation>
 <translation id="921174536258924340">Chromium non puido comprobar todos os contrasinais. Podes tentalo de novo mañá ou ben <ph name="BEGIN_LINK" />comprobar os contrasinais da túa Conta de Google<ph name="END_LINK" />.</translation>

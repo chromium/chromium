@@ -25,6 +25,7 @@
 <translation id="2574249610672786438">Para ver as túas pestanas desde calquera dispositivo no que utilices Chrome, inicia sesión en todos eles</translation>
 <translation id="2576431527583832481">Chrome introduciu melloras. Hai dispoñible unha nova versión.</translation>
 <translation id="257708665678654955">Queres que a próxima vez Google Chrome che ofreza a posibilidade de traducir as páxinas en <ph name="LANGUAGE_NAME" /> deste sitio?</translation>
+<translation id="2671426118752779020">Podes utilizar os contrasinais que gardaches no xestor de contrasinais de Google noutras aplicacións do teu iPhone.</translation>
 <translation id="2695886661449553974">Chrome non puido buscar actualizacións. Téntao máis tarde.</translation>
 <translation id="2732745070297234559">Chrome non puido comprobar todos os contrasinais. Téntao de novo mañá.</translation>
 <translation id="2869959624320573933">Inicia sesión en Chrome</translation>
@@ -85,6 +86,7 @@
 <translation id="7165736900384873061">Comeza a usar o escáner de códigos QR de Google Chrome</translation>
 <translation id="7172660552945675509">Consello: <ph name="BEGIN_LINK" />Engade Chrome á túa barra de aplicacións<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome utiliza Face ID para garantir o acceso autorizado aos contrasinais.</translation>
+<translation id="72119412072970160">Podes utilizar os contrasinais que gardaches no xestor de contrasinais de Google noutras aplicacións do teu iPad.</translation>
 <translation id="7261678641327190792">Chrome non puido comprobar os teus contrasinais</translation>
 <translation id="7272930098487145294">Se queres gardar imaxes, toca Configuración para que Chrome poida engadir as túas fotos</translation>
 <translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" /> xestiona a túa conta, polo que se borrarán os teus datos de Chrome deste dispositivo</translation>
@@ -112,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Protexe a túa seguranza con Google Chrome</translation>
 <translation id="8772179140489533211">Mostra solicitudes para iniciar sesión en Chrome.</translation>
+<translation id="8788269841521769222">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais de Google para <ph name="EMAIL" /></translation>
 <translation id="9112744793181547300">Queres definir Chrome como navegador predeterminado?</translation>
 </translationbundle>

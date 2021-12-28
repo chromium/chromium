@@ -25,6 +25,7 @@
 <translation id="2574249610672786438">Каб мець доступ да сваіх укладак з усіх прылад, на якіх вы выкарыстоўваеце Chrome, увайдзіце на іх ва ўліковы запіс</translation>
 <translation id="2576431527583832481">Chrome стаў яшчэ лепшым! З'явілася новая версія.</translation>
 <translation id="257708665678654955">Ці хочаце, каб Google Chrome наступны раз прапаноўваў перакласці старонкі гэтага сайта на наступнай мове: <ph name="LANGUAGE_NAME" />?</translation>
+<translation id="2671426118752779020">Вы можаце выкарыстоўваць паролі, захаваныя ў Менеджары пароляў Google, у іншых праграмах на iPhone.</translation>
 <translation id="2695886661449553974">Браўзеру Chrome не ўдалося праверыць наяўнасць абнаўленняў. Паўтарыце спробу пазней.</translation>
 <translation id="2732745070297234559">Браўзеру Chrome не ўдалося праверыць усе паролі. Паўтарыце спробу заўтра.</translation>
 <translation id="2869959624320573933">Увайдзіце ў Chrome</translation>
@@ -85,6 +86,7 @@
 <translation id="7165736900384873061">Пачніце карыстацца QR-сканерам Google Chrome</translation>
 <translation id="7172660552945675509">Парада. <ph name="BEGIN_LINK" />Перамясціце Chrome на паліцу праграм<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome выкарыстоўвае Face ID для забеспячэння аўтарызаванага доступу да вашых пароляў.</translation>
+<translation id="72119412072970160">Вы можаце выкарыстоўваць паролі, захаваныя ў Менеджары пароляў Google, у іншых праграмах на iPad.</translation>
 <translation id="7261678641327190792">Браўзеру Chrome не ўдаецца праверыць паролі</translation>
 <translation id="7272930098487145294">Каб магчы захоўваць відарысы, націсніце "Налады" і дазвольце Chrome дадаваць вашы фота</translation>
 <translation id="7275945473750112644">Вашым уліковым запісам кіруе дамен <ph name="HOSTED_DOMAIN" />, таму даныя Chrome будуць выдалены з гэтай прылады</translation>
@@ -112,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Падбайце аб бяспецы сваіх даных, выкарыстоўваючы Google Chrome</translation>
 <translation id="8772179140489533211">Будуць паказвацца запыты ўваходу ў Chrome.</translation>
+<translation id="8788269841521769222">Вам не трэба запамінаць гэты пароль. Ён будзе захаваны ў Менеджары пароляў Google уліковага запісу <ph name="EMAIL" /></translation>
 <translation id="9112744793181547300">Зрабіць Chrome стандартным браўзерам?</translation>
 </translationbundle>

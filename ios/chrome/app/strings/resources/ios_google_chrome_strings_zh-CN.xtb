@@ -25,6 +25,7 @@
 <translation id="2574249610672786438">要查看您在其他设备上用 Chrome 打开的标签页，请在所有设备上登录</translation>
 <translation id="2576431527583832481">Chrome 浏览器刚刚经过了改进！新版本已推出。</translation>
 <translation id="257708665678654955">下次访问这个网站时，您希望 Google Chrome 翻译其中的<ph name="LANGUAGE_NAME" />网页吗？</translation>
+<translation id="2671426118752779020">您可在 iPhone 上的其他应用内使用已保存至 Google 密码管理器的密码。</translation>
 <translation id="2695886661449553974">Chrome 无法检查是否有更新。请稍后再试。</translation>
 <translation id="2732745070297234559">Chrome 无法检查所有密码。请明天再试。</translation>
 <translation id="2869959624320573933">登录 Chrome</translation>
@@ -85,6 +86,7 @@
 <translation id="7165736900384873061">开始使用 Google Chrome QR 码扫描器</translation>
 <translation id="7172660552945675509">提示：<ph name="BEGIN_LINK" />将 Chrome 移到 Dock 中<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome 会使用面容 ID 来确保对您密码的访问均已获授权。</translation>
+<translation id="72119412072970160">您可在 iPad 上的其他应用内使用已保存至 Google 密码管理器的密码。</translation>
 <translation id="7261678641327190792">Chrome 无法检查您的密码</translation>
 <translation id="7272930098487145294">若要保存图片，请点按“设置”并允许 Chrome 添加照片</translation>
 <translation id="7275945473750112644">您的帐号是由 <ph name="HOSTED_DOMAIN" /> 管理，所以您在此设备上存储的 Chrome 数据将会被清除</translation>
@@ -112,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Google Chrome 可确保您始终处于保护之下</translation>
 <translation id="8772179140489533211">显示意在引导用户登录 Chrome 的提示。</translation>
+<translation id="8788269841521769222">您不需要记住此密码。系统会将它保存到 <ph name="EMAIL" /> 的 Google 密码管理器中</translation>
 <translation id="9112744793181547300">将 Chrome 设为默认浏览器？</translation>
 </translationbundle>

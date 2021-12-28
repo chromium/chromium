@@ -25,6 +25,7 @@ Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um
 <translation id="1145536944570833626">Eyða fyrirliggjandi gögnum.</translation>
 <translation id="1147031633655575115">Skráð(ur) inn sem <ph name="USER" /></translation>
 <translation id="1154984953698510061">Birta aðra flipa</translation>
+<translation id="1164064664035028907">Notaðu traust aðgangsorð:</translation>
 <translation id="1165039591588034296">Villa</translation>
 <translation id="1172898394251786223">Næsti reitur</translation>
 <translation id="1176932207622159128">Ekki er hægt að vista mynd</translation>
@@ -637,6 +638,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="6807889908376551050">Sýna alla...</translation>
 <translation id="681368974849482173">Atriði búið til</translation>
 <translation id="681450999322335505">Fyrirtækið þitt slökkti á samstillingu.</translation>
+<translation id="683022620450280906">Þú getur notað vistuð aðgangsorð í hvaða tæki sem er. Þau eru vistuð í aðgangsorðastjórnun Google fyrir <ph name="EMAIL" /></translation>
 <translation id="6830804042318138535">Lesa meira</translation>
 <translation id="6831043979455480757">Þýða</translation>
 <translation id="6842136130964845393">Staðfestu að þetta sért þú til að tryggja aðgang þinn að vistuðum aðgangsorðum</translation>
