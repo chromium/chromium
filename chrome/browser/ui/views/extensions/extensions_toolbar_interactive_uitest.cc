@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 
 #include "base/containers/cxx20_erase.h"
 #include "base/path_service.h"
@@ -17,17 +17,17 @@
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/view_utils.h"
 
-ExtensionsToolbarBrowserTest::ExtensionsToolbarBrowserTest() = default;
+ExtensionsToolbarUITest::ExtensionsToolbarUITest() = default;
 
-ExtensionsToolbarBrowserTest::~ExtensionsToolbarBrowserTest() = default;
+ExtensionsToolbarUITest::~ExtensionsToolbarUITest() = default;
 
-Profile* ExtensionsToolbarBrowserTest::profile() {
+Profile* ExtensionsToolbarUITest::profile() {
   return browser()->profile();
 }
 
 scoped_refptr<const extensions::Extension>
-ExtensionsToolbarBrowserTest::LoadTestExtension(const std::string& path,
-                                                bool allow_incognito) {
+ExtensionsToolbarUITest::LoadTestExtension(const std::string& path,
+                                           bool allow_incognito) {
   extensions::ChromeTestExtensionLoader loader(profile());
   loader.set_allow_incognito_access(allow_incognito);
   base::FilePath test_data_dir;
@@ -44,41 +44,41 @@ ExtensionsToolbarBrowserTest::LoadTestExtension(const std::string& path,
   return extension;
 }
 
-void ExtensionsToolbarBrowserTest::AppendExtension(
+void ExtensionsToolbarUITest::AppendExtension(
     scoped_refptr<const extensions::Extension> extension) {
   extensions_.push_back(std::move(extension));
 }
 
-void ExtensionsToolbarBrowserTest::SetUpIncognitoBrowser() {
+void ExtensionsToolbarUITest::SetUpIncognitoBrowser() {
   incognito_browser_ = CreateIncognitoBrowser();
 }
 
-void ExtensionsToolbarBrowserTest::SetUpOnMainThread() {
+void ExtensionsToolbarUITest::SetUpOnMainThread() {
   DialogBrowserTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
   views::test::ReduceAnimationDuration(GetExtensionsToolbarContainer());
 }
 
 ExtensionsToolbarContainer*
-ExtensionsToolbarBrowserTest::GetExtensionsToolbarContainer() const {
+ExtensionsToolbarUITest::GetExtensionsToolbarContainer() const {
   return GetExtensionsToolbarContainerForBrowser(browser());
 }
 
 ExtensionsToolbarContainer*
-ExtensionsToolbarBrowserTest::GetExtensionsToolbarContainerForBrowser(
+ExtensionsToolbarUITest::GetExtensionsToolbarContainerForBrowser(
     Browser* browser) const {
   return BrowserView::GetBrowserViewForBrowser(browser)
       ->toolbar()
       ->extensions_container();
 }
 
-std::vector<ToolbarActionView*>
-ExtensionsToolbarBrowserTest::GetToolbarActionViews() const {
+std::vector<ToolbarActionView*> ExtensionsToolbarUITest::GetToolbarActionViews()
+    const {
   return GetToolbarActionViewsForBrowser(browser());
 }
 
 std::vector<ToolbarActionView*>
-ExtensionsToolbarBrowserTest::GetToolbarActionViewsForBrowser(
+ExtensionsToolbarUITest::GetToolbarActionViewsForBrowser(
     Browser* browser) const {
   std::vector<ToolbarActionView*> views;
   for (auto* view :
@@ -90,7 +90,7 @@ ExtensionsToolbarBrowserTest::GetToolbarActionViewsForBrowser(
 }
 
 std::vector<ToolbarActionView*>
-ExtensionsToolbarBrowserTest::GetVisibleToolbarActionViews() const {
+ExtensionsToolbarUITest::GetVisibleToolbarActionViews() const {
   auto views = GetToolbarActionViews();
   base::EraseIf(views, [](views::View* view) { return !view->GetVisible(); });
   return views;

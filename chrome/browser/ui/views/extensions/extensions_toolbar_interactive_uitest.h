@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_BROWSERTEST_H_
-#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_BROWSERTEST_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_INTERACTIVE_UITEST_H_
+#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_INTERACTIVE_UITEST_H_
 
 #include <string>
 #include <vector>
@@ -19,23 +19,19 @@ namespace extensions {
 class Extension;
 }
 
-// Base class for browser tests that use the toolbar area. This is used for
-// browser test fixtures that are generally related to the
-// ExtensionsToolbarContainer in the ToolbarView area.
-// At the point of writing this is intended for use by browser tests for
-// ExtensionsToolbarContainer and ExtensionsMenuView which which is triggered
-// from the former container.
-// Separating those test suites is done to clarify what the suite is primarily
-// trying to test.
-class ExtensionsToolbarBrowserTest : public DialogBrowserTest {
+// Base class for interactive ui tests that use the toolbar area. This is used
+// for browser test fixtures that are generally related to the
+// ExtensionsToolbarContainer in the ToolbarView area. For example, this is used
+// by ExtensionsToolbarContainer and ExtensionsMenuView separately to clarify
+// what the suite is primarily trying to test.
+class ExtensionsToolbarUITest : public DialogBrowserTest {
  public:
-  ExtensionsToolbarBrowserTest(const ExtensionsToolbarBrowserTest&) = delete;
-  ExtensionsToolbarBrowserTest& operator=(const ExtensionsToolbarBrowserTest&) =
-      delete;
+  ExtensionsToolbarUITest(const ExtensionsToolbarUITest&) = delete;
+  ExtensionsToolbarUITest& operator=(const ExtensionsToolbarUITest&) = delete;
 
  protected:
-  ExtensionsToolbarBrowserTest();
-  ~ExtensionsToolbarBrowserTest() override;
+  ExtensionsToolbarUITest();
+  ~ExtensionsToolbarUITest() override;
 
   void SetUpOnMainThread() override;
 
@@ -83,4 +79,4 @@ class ExtensionsToolbarBrowserTest : public DialogBrowserTest {
   std::vector<scoped_refptr<const extensions::Extension>> extensions_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_BROWSERTEST_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_INTERACTIVE_UITEST_H_

@@ -21,9 +21,9 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/browser/ui/views/hover_button_controller.h"
@@ -52,8 +52,7 @@
 
 using ::testing::ElementsAre;
 
-class ExtensionsMenuViewInteractiveUITest
-    : public ExtensionsToolbarBrowserTest {
+class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
  public:
   static base::flat_set<ExtensionsMenuItemView*> GetExtensionsMenuItemViews() {
     return ExtensionsMenuView::GetExtensionsMenuViewForTesting()
@@ -115,7 +114,7 @@ class ExtensionsMenuViewInteractiveUITest
   }
 
   bool VerifyUi() override {
-    EXPECT_TRUE(ExtensionsToolbarBrowserTest::VerifyUi());
+    EXPECT_TRUE(ExtensionsToolbarUITest::VerifyUi());
 
     if (ui_test_name_ == "ReloadPageBubble") {
       ExtensionsToolbarContainer* const container =
@@ -158,7 +157,7 @@ class ExtensionsMenuViewInteractiveUITest
     }
 
     // Use default implementation for other tests.
-    ExtensionsToolbarBrowserTest::DismissUi();
+    ExtensionsToolbarUITest::DismissUi();
   }
 
   void DismissUninstallDialog() {
