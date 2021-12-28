@@ -417,16 +417,16 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
   // Because the user ID (i.e. email address) contains '.', the code here
   // cannot use the dots notation (path expantion) hence is verbose.
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* prefs_images = &base::Value::AsDictionaryValue(
-      *local_state->GetDictionary(kUserImageProperties));
+  const base::Value* prefs_images =
+      local_state->GetDictionary(kUserImageProperties);
   if (prefs_images) {
-    const base::DictionaryValue* image_properties = nullptr;
-    prefs_images->GetDictionaryWithoutPathExpansion(account_id().GetUserEmail(),
-                                                    &image_properties);
+    const base::Value* image_properties =
+        prefs_images->FindDictKey(account_id().GetUserEmail());
     if (image_properties) {
-      std::string value;
-      image_properties->GetString(kImagePathNodeName, &value);
-      old_image_path = base::FilePath::FromUTF8Unsafe(value);
+      const std::string* value =
+          image_properties->FindStringKey(kImagePathNodeName);
+      if (value)
+        old_image_path = base::FilePath::FromUTF8Unsafe(*value);
     }
   }
 
@@ -493,15 +493,14 @@ UserImageManagerImpl::~UserImageManagerImpl() {}
 
 void UserImageManagerImpl::LoadUserImage() {
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* prefs_images = &base::Value::AsDictionaryValue(
-      *local_state->GetDictionary(kUserImageProperties));
+  const base::Value* prefs_images =
+      local_state->GetDictionary(kUserImageProperties);
   if (!prefs_images)
     return;
   user_manager::User* user = GetUserAndModify();
 
-  const base::DictionaryValue* image_properties = nullptr;
-  prefs_images->GetDictionaryWithoutPathExpansion(account_id_.GetUserEmail(),
-                                                  &image_properties);
+  const base::Value* image_properties =
+      prefs_images->FindDictKey(account_id_.GetUserEmail());
 
   // If the user image for `user_id` is managed by policy and the policy-set
   // image is being loaded and persisted right now, let that job continue. It
@@ -514,8 +513,8 @@ void UserImageManagerImpl::LoadUserImage() {
     return;
   }
 
-  int image_index = user_manager::User::USER_IMAGE_INVALID;
-  image_properties->GetInteger(kImageIndexNodeName, &image_index);
+  int image_index = image_properties->FindIntKey(kImageIndexNodeName)
+                        .value_or(user_manager::User::USER_IMAGE_INVALID);
   if (default_user_image::IsValidIndex(image_index)) {
     user->SetImage(std::make_unique<user_manager::UserImage>(
                        default_user_image::GetDefaultImage(image_index)),
@@ -529,11 +528,11 @@ void UserImageManagerImpl::LoadUserImage() {
     return;
   }
 
-  std::string image_url_string;
-  image_properties->GetString(kImageURLNodeName, &image_url_string);
-  GURL image_url(image_url_string);
-  std::string image_path;
-  image_properties->GetString(kImagePathNodeName, &image_path);
+  const std::string* image_url_string =
+      image_properties->FindStringKey(kImageURLNodeName);
+  GURL image_url(image_url_string ? *image_url_string : std::string());
+  const std::string* image_path =
+      image_properties->FindStringKey(kImagePathNodeName);
 
   user->SetImageURL(image_url);
   user->SetStubImage(
@@ -541,16 +540,16 @@ void UserImageManagerImpl::LoadUserImage() {
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LOGIN_DEFAULT_USER)),
       image_index, true);
-  DCHECK(!image_path.empty() ||
+  DCHECK((image_path && !image_path->empty()) ||
          image_index == user_manager::User::USER_IMAGE_PROFILE);
-  if (image_path.empty()) {
+  if (!image_path || image_path->empty()) {
     // Return if the profile image is to be used but has not been downloaded
     // yet. The profile image will be downloaded after login.
     return;
   }
 
   job_ = std::make_unique<Job>(this);
-  job_->LoadImage(base::FilePath(image_path), image_index, image_url);
+  job_->LoadImage(base::FilePath(*image_path), image_index, image_url);
 }
 
 void UserImageManagerImpl::UserLoggedIn(bool user_is_new, bool user_is_local) {

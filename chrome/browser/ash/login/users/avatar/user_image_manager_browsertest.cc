@@ -74,6 +74,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -222,23 +223,19 @@ class UserImageManagerTestBase : public LoginManagerTest,
   void ExpectUserImageInfo(const AccountId& account_id,
                            int image_index,
                            const base::FilePath& image_path) {
-    const base::DictionaryValue* images_pref =
-        &base::Value::AsDictionaryValue(*local_state_->GetDictionary(
-            UserImageManagerImpl::kUserImageProperties));
+    const base::Value* images_pref =
+        local_state_->GetDictionary(UserImageManagerImpl::kUserImageProperties);
     ASSERT_TRUE(images_pref);
-    const base::DictionaryValue* image_properties = NULL;
-    images_pref->GetDictionaryWithoutPathExpansion(account_id.GetUserEmail(),
-                                                   &image_properties);
+    const base::Value* image_properties =
+        images_pref->FindDictKey(account_id.GetUserEmail());
     ASSERT_TRUE(image_properties);
-    int actual_image_index;
-    std::string actual_image_path;
-    ASSERT_TRUE(
-        image_properties->GetInteger(UserImageManagerImpl::kImageIndexNodeName,
-                                     &actual_image_index) &&
-        image_properties->GetString(UserImageManagerImpl::kImagePathNodeName,
-                                    &actual_image_path));
-    EXPECT_EQ(image_index, actual_image_index);
-    EXPECT_EQ(image_path.value(), actual_image_path);
+    absl::optional<int> actual_image_index =
+        image_properties->FindIntKey(UserImageManagerImpl::kImageIndexNodeName);
+    const std::string* actual_image_path = image_properties->FindStringKey(
+        UserImageManagerImpl::kImagePathNodeName);
+    ASSERT_TRUE(actual_image_index.has_value() && actual_image_path);
+    EXPECT_EQ(image_index, actual_image_index.value());
+    EXPECT_EQ(image_path.value(), *actual_image_path);
   }
 
   // Verifies that there is no image info for `account_id` in dictionary

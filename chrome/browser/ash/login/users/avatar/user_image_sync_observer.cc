@@ -19,6 +19,7 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace {
@@ -166,9 +167,17 @@ void UserImageSyncObserver::UpdateLocalImageFromSynced() {
 
 bool UserImageSyncObserver::GetSyncedImageIndex(int* index) {
   *index = user_manager::User::USER_IMAGE_INVALID;
-  const base::DictionaryValue* dict =
-      &base::Value::AsDictionaryValue(*prefs_->GetDictionary(kUserImageInfo));
-  return dict && dict->GetInteger(kImageIndex, index);
+  const base::Value* dict = prefs_->GetDictionary(kUserImageInfo);
+  if (!dict)
+    return false;
+  absl::optional<int> maybe_index = dict->FindIntKey(kImageIndex);
+  if (!maybe_index.has_value()) {
+    *index = user_manager::User::USER_IMAGE_INVALID;
+    return false;
+  }
+
+  *index = maybe_index.value();
+  return true;
 }
 
 }  // namespace ash
