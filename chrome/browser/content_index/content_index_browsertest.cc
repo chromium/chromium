@@ -249,7 +249,8 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, GetVisuals) {
   EXPECT_FALSE(icon.isNull());
 }
 
-IN_PROC_BROWSER_TEST_F(ContentIndexTest, LaunchUrl) {
+// TODO(crbug.com/1282979): Test is flaky on various platforms.
+IN_PROC_BROWSER_TEST_F(ContentIndexTest, DISABLED_LaunchUrl) {
   RunScript("AddContent('my-id')");
   base::RunLoop().RunUntilIdle();  // Wait for the provider to get the content.
 
