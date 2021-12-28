@@ -39,10 +39,9 @@ class ManifestTest : public testing::Test {
   class ManifestData {
    public:
     explicit ManifestData(base::StringPiece name);
+    explicit ManifestData(base::Value manifest);
     ManifestData(base::Value manifest, base::StringPiece name);
-
     ManifestData(ManifestData&& other);
-
     ~ManifestData();
 
     const std::string& name() const { return name_; }

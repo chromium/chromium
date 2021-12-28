@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/json/json_reader.h"
+#include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
@@ -165,6 +167,13 @@ scoped_refptr<const Extension> ExtensionBuilder::Build() {
   return extension;
 }
 
+base::Value ExtensionBuilder::BuildManifest() {
+  CHECK(manifest_data_ || manifest_value_);
+  return manifest_data_
+             ? base::Value::FromUniquePtrValue(manifest_data_->GetValue())
+             : manifest_value_->Clone();
+}
+
 ExtensionBuilder& ExtensionBuilder::AddPermission(
     const std::string& permission) {
   CHECK(manifest_data_);
@@ -207,6 +216,16 @@ ExtensionBuilder& ExtensionBuilder::SetVersion(const std::string& version) {
   return *this;
 }
 
+ExtensionBuilder& ExtensionBuilder::AddJSON(base::StringPiece json) {
+  CHECK(manifest_data_);
+  std::string wrapped_json = base::StringPrintf("{%s}", json.data());
+  base::JSONReader::ValueWithError parsed =
+      base::JSONReader::ReadAndReturnValueWithError(wrapped_json);
+  CHECK(parsed.value) << "Failed to parse json for extension '"
+                      << manifest_data_->name << "':" << parsed.error_message;
+  return MergeManifest(*parsed.value);
+}
+
 ExtensionBuilder& ExtensionBuilder::SetPath(const base::FilePath& path) {
   path_ = path;
   return *this;
@@ -225,16 +244,19 @@ ExtensionBuilder& ExtensionBuilder::SetManifest(
   return *this;
 }
 
-ExtensionBuilder& ExtensionBuilder::MergeManifest(
-    std::unique_ptr<base::DictionaryValue> manifest) {
+ExtensionBuilder& ExtensionBuilder::MergeManifest(const base::Value& to_merge) {
+  CHECK(to_merge.is_dict());
   if (manifest_data_) {
-    base::DictionaryValue* extra_dict = nullptr;
-    manifest_data_->get_extra()->GetAsDictionary(&extra_dict);
-    extra_dict->MergeDictionary(manifest.get());
+    manifest_data_->get_extra()->MergeDictionary(&to_merge);
   } else {
-    manifest_value_->MergeDictionary(manifest.get());
+    manifest_value_->MergeDictionary(&to_merge);
   }
   return *this;
+}
+
+ExtensionBuilder& ExtensionBuilder::MergeManifest(
+    std::unique_ptr<base::DictionaryValue> manifest) {
+  return MergeManifest(*manifest);
 }
 
 ExtensionBuilder& ExtensionBuilder::AddFlags(int init_from_value_flags) {

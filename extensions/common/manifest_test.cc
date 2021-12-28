@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_paths.h"
+#include "extensions/common/manifest_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -25,6 +26,13 @@ using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 namespace {
+
+std::string GetNameFromManifest(const base::Value& manifest) {
+  if (!manifest.is_dict())
+    return std::string();
+  const std::string* name = manifest.FindStringKey(manifest_keys::kName);
+  return name ? *name : std::string();
+}
 
 // |manifest_path| is an absolute path to a manifest file.
 base::Value LoadManifestFile(const base::FilePath& manifest_path,
@@ -76,11 +84,14 @@ ManifestTest::ManifestData::ManifestData(base::Value manifest,
     : name_(name), manifest_(std::move(manifest)) {
   CHECK(manifest_.is_dict()) << "Manifest must be a dictionary. " << name_;
 }
+ManifestTest::ManifestData::ManifestData(base::Value manifest)
+    : name_(GetNameFromManifest(manifest)), manifest_(std::move(manifest)) {
+  CHECK(manifest_.is_dict()) << "Manifest must be a dictionary.";
+  CHECK(!name_.empty()) << R"("name" must be specified in the manifest.)";
+}
 
 ManifestTest::ManifestData::ManifestData(ManifestData&& other) = default;
-
-ManifestTest::ManifestData::~ManifestData() {
-}
+ManifestTest::ManifestData::~ManifestData() = default;
 
 const base::Value& ManifestTest::ManifestData::GetManifest(
     const base::FilePath& test_data_dir,

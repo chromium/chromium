@@ -77,6 +77,11 @@ class ExtensionBuilder {
   ExtensionBuilder(ExtensionBuilder&& other);
   ExtensionBuilder& operator=(ExtensionBuilder&& other);
 
+  // Returns the base::Value for the manifest, rather than constructing a full
+  // extension. This is useful if you want to then use this in a ManifestTest or
+  // to write a manifest with a TestExtensionDir.
+  base::Value BuildManifest();
+
   // Can only be called once, after which it's invalid to use the builder.
   // CHECKs that the extension was created successfully.
   scoped_refptr<const Extension> Build();
@@ -139,6 +144,15 @@ class ExtensionBuilder {
     return *this;
   }
 
+  // A shortcut for adding raw JSON to the extension manifest. Useful if
+  // constructing the values with a ValueBuilder is more painful than seeing
+  // them with a string.
+  // This JSON should be what you would add at the root node of the manifest;
+  // for instance:
+  // builder.AddJSON(R"("content_scripts": [...], "action": {})");
+  // Keys specified in `json` take precedence over previously-set values.
+  ExtensionBuilder& AddJSON(base::StringPiece json);
+
   //////////////////////////////////////////////////////////////////////////////
   // Utility methods for use with custom manifest construction.
 
@@ -158,6 +172,7 @@ class ExtensionBuilder {
 
   // Merge another manifest into the current manifest, with new keys taking
   // precedence.
+  ExtensionBuilder& MergeManifest(const base::Value& manifest);
   ExtensionBuilder& MergeManifest(
       std::unique_ptr<base::DictionaryValue> manifest);
 
