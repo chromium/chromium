@@ -381,7 +381,9 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
 
       optimization_guide::proto::Hint* hint = get_hints_response.add_hints();
       hint->set_key_representation(optimization_guide::proto::HOST);
-      hint->set_key(https_url_.host());
+      hint->set_key(search_results_page_url_.host());
+      hint->add_allowlisted_optimizations()->set_optimization_type(
+          optimization_guide::proto::OptimizationType::NOSCRIPT);
       optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
       page_hint->set_page_pattern("page pattern");
 
@@ -477,6 +479,15 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
+IN_PROC_BROWSER_TEST_F(HintsFetcherDisabledBrowserTest, HintsFetcherDisabled) {
+  const base::HistogramTester* histogram_tester = GetHistogramTester();
+
+  // Expect that the histogram for HintsFetcher to be 0 because the OnePlatform
+  // is not enabled.
+  histogram_tester->ExpectTotalCount(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
+}
+
 // This test class enables OnePlatform Hints.
 class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
  public:
@@ -506,11 +517,7 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
   void SetUpOnMainThread() override {
     // Register an optimization type, so hints will be fetched at page
     // navigation.
-    OptimizationGuideKeyedServiceFactory::GetForProfile(
-        Profile::FromBrowserContext(browser()
-                                        ->tab_strip_model()
-                                        ->GetActiveWebContents()
-                                        ->GetBrowserContext()))
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
         ->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
 
     HintsFetcherDisabledBrowserTest::SetUpOnMainThread();
@@ -521,6 +528,18 @@ class HintsFetcherBrowserTest : public HintsFetcherDisabledBrowserTest {
         OptimizationGuideKeyedServiceFactory::GetForProfile(
             browser()->profile());
     return keyed_service->GetTopHostProvider();
+  }
+
+  void CanApplyOptimizationOnDemand(
+      const std::vector<GURL>& urls,
+      const std::vector<optimization_guide::proto::OptimizationType>&
+          optimization_types,
+      optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
+          callback) {
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+        ->CanApplyOptimizationOnDemand(
+            urls, optimization_types,
+            optimization_guide::proto::CONTEXT_BOOKMARKS, callback);
   }
 };
 
@@ -555,15 +574,6 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherEnabled) {
       1);
   histogram_tester->ExpectUniqueSample(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount", 1, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(HintsFetcherDisabledBrowserTest, HintsFetcherDisabled) {
-  const base::HistogramTester* histogram_tester = GetHistogramTester();
-
-  // Expect that the histogram for HintsFetcher to be 0 because the OnePlatform
-  // is not enabled.
-  histogram_tester->ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
@@ -857,6 +867,156 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest, HintsFetcherFetches) {
       1);
   histogram_tester->ExpectUniqueSample(
       "OptimizationGuide.HintsFetcher.GetHintsRequest.HintCount", 1, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
+                       OnDemandFetchRepeatedlyWithCache) {
+  SetNetworkConnectionOnline();
+
+  SetResponseType(
+      optimization_guide::HintsFetcherRemoteResponseType::kSuccessful);
+
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  ogks->RegisterOptimizationTypes(
+      {optimization_guide::proto::OptimizationType::NOSCRIPT});
+
+  {
+    base::HistogramTester histogram_tester;
+    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+    CanApplyOptimizationOnDemand(
+        {search_results_page_url()},
+        {optimization_guide::proto::OptimizationType::NOSCRIPT},
+        base::BindRepeating(
+            [](base::RunLoop* run_loop, const GURL& url,
+               const base::flat_map<
+                   optimization_guide::proto::OptimizationType,
+                   optimization_guide::OptimizationGuideDecisionWithMetadata>&
+                   decisions) {
+              // Expect one decision per requested type.
+              EXPECT_EQ(decisions.size(), 1u);
+              auto it = decisions.find(
+                  optimization_guide::proto::OptimizationType::NOSCRIPT);
+              EXPECT_NE(it, decisions.end());
+              EXPECT_EQ(it->second.decision,
+                        optimization_guide::OptimizationGuideDecision::kTrue);
+
+              run_loop->Quit();
+            },
+            run_loop.get()));
+    run_loop->Run();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.HintsFetcher.RequestStatus.Bookmarks",
+        optimization_guide::HintsFetcherRequestStatus::kSuccess, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+    CanApplyOptimizationOnDemand(
+        {search_results_page_url()},
+        {optimization_guide::proto::OptimizationType::NOSCRIPT},
+        base::BindRepeating(
+            [](base::RunLoop* run_loop, const GURL& url,
+               const base::flat_map<
+                   optimization_guide::proto::OptimizationType,
+                   optimization_guide::OptimizationGuideDecisionWithMetadata>&
+                   decisions) {
+              // Expect one decision per requested type.
+              EXPECT_EQ(decisions.size(), 1u);
+              auto it = decisions.find(
+                  optimization_guide::proto::OptimizationType::NOSCRIPT);
+              EXPECT_NE(it, decisions.end());
+              EXPECT_EQ(it->second.decision,
+                        optimization_guide::OptimizationGuideDecision::kTrue);
+
+              run_loop->Quit();
+            },
+            run_loop.get()));
+    run_loop->Run();
+
+    // Second time should not refetch since have all the right info already.
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.HintsFetcher.RequestStatus.Bookmarks", 0);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
+                       OnDemandFetchRepeatedlyNoCache) {
+  SetNetworkConnectionOnline();
+
+  SetResponseType(
+      optimization_guide::HintsFetcherRemoteResponseType::kSuccessful);
+
+  OptimizationGuideKeyedService* ogks =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  ogks->RegisterOptimizationTypes(
+      {optimization_guide::proto::OptimizationType::NOSCRIPT});
+
+  GURL url_with_no_hints("https://urlwithnohints.com/notcached");
+
+  {
+    base::HistogramTester histogram_tester;
+    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+    CanApplyOptimizationOnDemand(
+        {url_with_no_hints},
+        {optimization_guide::proto::OptimizationType::NOSCRIPT},
+        base::BindRepeating(
+            [](base::RunLoop* run_loop, const GURL& url,
+               const base::flat_map<
+                   optimization_guide::proto::OptimizationType,
+                   optimization_guide::OptimizationGuideDecisionWithMetadata>&
+                   decisions) {
+              // Expect one decision per requested type.
+              EXPECT_EQ(decisions.size(), 1u);
+              auto it = decisions.find(
+                  optimization_guide::proto::OptimizationType::NOSCRIPT);
+              EXPECT_NE(it, decisions.end());
+              EXPECT_EQ(it->second.decision,
+                        optimization_guide::OptimizationGuideDecision::kFalse);
+
+              run_loop->Quit();
+            },
+            run_loop.get()));
+    run_loop->Run();
+
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.HintsFetcher.RequestStatus.Bookmarks",
+        optimization_guide::HintsFetcherRequestStatus::kSuccess, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+    CanApplyOptimizationOnDemand(
+        {url_with_no_hints},
+        {optimization_guide::proto::OptimizationType::NOSCRIPT},
+        base::BindRepeating(
+            [](base::RunLoop* run_loop, const GURL& url,
+               const base::flat_map<
+                   optimization_guide::proto::OptimizationType,
+                   optimization_guide::OptimizationGuideDecisionWithMetadata>&
+                   decisions) {
+              // Expect one decision per requested type.
+              EXPECT_EQ(decisions.size(), 1u);
+              auto it = decisions.find(
+                  optimization_guide::proto::OptimizationType::NOSCRIPT);
+              EXPECT_NE(it, decisions.end());
+              EXPECT_EQ(it->second.decision,
+                        optimization_guide::OptimizationGuideDecision::kFalse);
+
+              run_loop->Quit();
+            },
+            run_loop.get()));
+    run_loop->Run();
+
+    // Second time should not refetch since no hosts or urls match.
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.HintsFetcher.RequestStatus.Bookmarks",
+        optimization_guide::HintsFetcherRequestStatus::kNoHostsOrURLsToFetch,
+        1);
+  }
 }
 
 // Test that the hints are fetched at the time of the navigation.
