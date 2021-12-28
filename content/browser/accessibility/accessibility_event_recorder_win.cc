@@ -245,7 +245,11 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
   std::wstring html_id;
 
   if (has_ia2) {
+    // IA2::get_states can kill the recorder.
     iaccessible2->get_states(&ia2_state);
+    if (!instance_)
+      return;
+
     base::win::ScopedBstr attributes_bstr;
     if (S_OK == iaccessible2->get_attributes(attributes_bstr.Receive())) {
       std::vector<std::wstring> ia2_attributes = base::SplitString(
