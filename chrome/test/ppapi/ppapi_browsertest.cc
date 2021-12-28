@@ -1248,7 +1248,10 @@ void CheckTestHostNameUsedWithCorrectNetworkIsolationKey(Browser* browser) {
   EXPECT_EQ(net::OK, result1.error);
   ASSERT_TRUE(result1.resolved_addresses.has_value());
   ASSERT_EQ(1u, result1.resolved_addresses->size());
-  EXPECT_EQ(browser->tab_strip_model()->GetActiveWebContents()->GetURL().host(),
+  EXPECT_EQ(browser->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetLastCommittedURL()
+                .host(),
             result1.resolved_addresses.value()[0].ToStringWithoutPort());
 
   // Check that the entry isn't present in the cache with the empty
