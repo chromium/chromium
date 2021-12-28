@@ -1055,7 +1055,8 @@ void SelectionController::UpdateSelectionForMouseDrag(
 
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
                          HitTestRequest::kMove);
-  HitTestLocation location(last_known_mouse_position_in_root_frame);
+  HitTestLocation location(
+      view->ConvertFromRootFrame(last_known_mouse_position_in_root_frame));
   HitTestResult result(request, location);
   layout_view->HitTest(location, result);
   UpdateSelectionForMouseDrag(result, drag_start_pos_in_root_frame,
