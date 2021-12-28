@@ -100,6 +100,12 @@ void LoggedInSpokenFeedbackTest::SendKeyPressWithControl(ui::KeyboardCode key) {
       nullptr, key, true, false, false, false)));
 }
 
+void LoggedInSpokenFeedbackTest::SendKeyPressWithControlAndAlt(
+    ui::KeyboardCode key) {
+  ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      nullptr, key, true, false, true, false)));
+}
+
 void LoggedInSpokenFeedbackTest::SendKeyPressWithShift(ui::KeyboardCode key) {
   ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
       nullptr, key, false, true, false, false)));
@@ -1486,6 +1492,38 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ClipboardCopySpeech) {
   sm_.Call([this]() { SendKeyPressWithSearchAndControl(ui::VKEY_C); });
   sm_.ExpectSpeech("copy Foo.");
 
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, KeyboardShortcutViewer) {
+  EnableChromeVox();
+  SendKeyPressWithControlAndAlt(ui::VKEY_OEM_2 /* forward slash */);
+  sm_.ExpectSpeech("Shortcuts, window");
+
+  // Move through all tabs; make a few expectations along the way.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("Popular Shortcuts, tab");
+  sm_.ExpectSpeech("1 of 7");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("Accessibility, tab");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("Popular Shortcuts, tab");
+  sm_.ExpectSpeech("7 of 7");
+
+  // Moving forward again should dive into the list of shortcuts for the
+  // category.
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("Copy selected content to the clipboard, Ctrl plus c");
+  sm_.ExpectSpeech("List item");
+  sm_.ExpectSpeech("1 of 21");
+  sm_.ExpectSpeech("Popular Shortcuts");
+  sm_.ExpectSpeech("Tab");
+  sm_.ExpectSpeech("List");
+  sm_.ExpectSpeech("with 21 items");
   sm_.Replay();
 }
 
