@@ -253,6 +253,7 @@ void BrowserServiceLacros::OpenUrl(const GURL& url, OpenUrlCallback callback) {
   if (url.SchemeIs(content::kChromeUIScheme) &&
       (url.host() == chrome::kChromeUIFlagsHost ||
        url.host() == chrome::kChromeUIVersionHost ||
+       url.host() == chrome::kChromeUIAboutHost ||
        url.host() == chrome::kChromeUIComponentsHost)) {
     if (ActivateTabMatchingURLWithoutRef(profile, url)) {
       std::move(callback).Run();
