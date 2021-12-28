@@ -183,7 +183,7 @@ bool SupervisedUserURLFilter::ShouldSkipParentManualAllowlistFiltering(
   content::WebContents* outer_most_content =
       contents->GetOutermostWebContents();
 
-  return outer_most_content->GetURL() ==
+  return outer_most_content->GetLastCommittedURL() ==
          GURL(SupervisedUserService::GetEduCoexistenceLoginUrl());
 }
 
