@@ -94,7 +94,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cras.DeviceNoiseCancellationEnabled" units="BooleanEnabled"
-    expires_after="2022-12-01">
+    expires_after="M99">
+  <obsolete>
+    Replaced by Cras.DeviceNoiseCancellationStatus in M99.
+  </obsolete>
 <!-- Name completed by histogram_suffixes
      name="Cras.DeviceType" -->
 
@@ -103,6 +106,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     Record whether Noise Cancellation is enabled or disabled for the supported
     device. It is recorded when the device is opened.
+  </summary>
+</histogram>
+
+<histogram name="Cras.DeviceNoiseCancellationStatus"
+    enum="CrasNoiseCancellationStatus" expires_after="2022-12-01">
+<!-- Name completed by histogram_suffixes
+     name="Cras.DeviceType" -->
+
+  <owner>johnylin@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    Record the staus of Noise Cancellation (blocked/disabled/enabled) for the
+    supported device. It is recorded when the device is opened.
   </summary>
 </histogram>
 

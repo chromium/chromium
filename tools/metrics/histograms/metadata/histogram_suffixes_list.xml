@@ -3249,6 +3249,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="USB" label="USB device."/>
   <affected-histogram name="Cras.DeviceGain"/>
   <affected-histogram name="Cras.DeviceNoiseCancellationEnabled"/>
+  <affected-histogram name="Cras.DeviceNoiseCancellationStatus"/>
   <affected-histogram name="Cras.DeviceVolume"/>
 </histogram_suffixes>
 

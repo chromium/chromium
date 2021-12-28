@@ -17607,6 +17607,17 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   </int>
 </enum>
 
+<enum name="CrasNoiseCancellationStatus">
+  <summary>
+    List of status types of Noise Cancellation for the supported audio device.
+    This list should be aligned with CRAS:
+    https://chromium.googlesource.com/chromiumos/third_party/adhd/+/main/cras/src/server/cras_alsa_io.c
+  </summary>
+  <int value="0" label="CRAS_NOISE_CANCELLATION_BLOCKED"/>
+  <int value="1" label="CRAS_NOISE_CANCELLATION_DISABLED"/>
+  <int value="2" label="CRAS_NOISE_CANCELLATION_ENABLED"/>
+</enum>
+
 <enum name="CreatePersistentHistogramResult">
   <int value="0" label="Success: Histogram created in persistent space."/>
   <int value="1" label="Error: Invalid metadata pointer. (coding error)"/>
