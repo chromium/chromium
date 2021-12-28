@@ -164,8 +164,8 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
                                       1);
 }
 
-// Disabled on Windows and ChromeOS due to flakes: crbug.com/1263465.
-#if defined(OS_CHROMEOS) || defined(OS_WIN)
+// Disabled on Windows, ChromeOS, and Linux due to flakes: crbug.com/1263465.
+#if defined(OS_CHROMEOS) || defined(OS_WIN) || defined(OS_LINUX)
 #define MAYBE_DirectNavigationWithToggleToBasic \
   DISABLED_DirectNavigationWithToggleToBasic
 #else
