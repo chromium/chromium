@@ -366,7 +366,6 @@
 <translation id="3037517125981011456">‏יוצגו הודעות לצורך כניסה אל Chrome</translation>
 <translation id="3046945242843292318">בפעם הבאה ניתן יהיה להיכנס לאתר מהר יותר</translation>
 <translation id="3055259925215945098">הסימניה הועברה</translation>
-<translation id="305593374596241526">‏הגישה למיקום כבויה. יש להפעיל אותה ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{סימנייה אחת (<ph name="BOOKMARKS_COUNT_ONE" />)}two{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}many{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}other{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}}</translation>
 <translation id="3062802207422175757">‏ב-Chrome מחכים לך מאמרים בנושאים שמעניינים אותך</translation>
 <translation id="3066573403916685335">רד למטה</translation>
@@ -410,7 +409,6 @@
 <translation id="3284510035090979597">עזרה פרואקטיבית</translation>
 <translation id="3285080554353377245">‏סרטוני הסבר על השימוש ב-Chrome</translation>
 <translation id="3288003805934695103">הדף נטען מחדש</translation>
-<translation id="32895400574683172">יש הרשאה להצגת הודעות</translation>
 <translation id="3290991969712132877">רוצה להגיע לכאן מהר יותר? ניתן להוסיף את הדף הזה למסך הבית דרך לחצן האפשרויות הנוספות</translation>
 <translation id="3295530008794733555">יותר מהירות. פחות נתונים.</translation>
 <translation id="3297344142967351106">האסיסטנט</translation>
@@ -519,7 +517,6 @@
 <translation id="3976396876660209797">הסרה ויצירה מחדש של מקש הקיצור הזה</translation>
 <translation id="3985215325736559418">האם להוריד שוב את <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">העתקת קישור</translation>
-<translation id="3988213473815854515">ניתנה הרשאת מיקום</translation>
 <translation id="3988466920954086464">בחלונית הזו אפשר לראות תוצאות חיפוש מיידי</translation>
 <translation id="4000212216660919741">דף הבית במצב אופליין</translation>
 <translation id="4016425174436051808">לא ניתן לעקוב. משהו השתבש.</translation>
@@ -786,7 +783,6 @@
 <translation id="555816257274242153">המעקב אחר מחירים הופסק</translation>
 <translation id="5561549206367097665">בהמתנה לרשת…</translation>
 <translation id="5568069709869097550">אי אפשר להיכנס</translation>
-<translation id="55737423895878184">יש הרשאה לגישה אל המיקום ולהצגת הודעות</translation>
 <translation id="5578795271662203820">חיפוש התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">אפשר לבחור מה לסנכרן בכל שלב דרך <ph name="BEGIN_LINK1" />ההגדרות<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">אני רוצה להשאיר את החיבור פעיל במחשב הזה</translation>
@@ -1437,7 +1433,6 @@
 <translation id="8998729206196772491">‏בחרת להיכנס עם חשבון המנוהל על-ידי <ph name="MANAGED_DOMAIN" /> ולהעניק למנהל שלו שליטה על הנתונים שלך ב-Chrome. הנתונים שלך ישויכו לצמיתות אל החשבון הזה. יציאה מ-Chrome תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו בחשבון Google.</translation>
 <translation id="9022774213089566801">אתרים עם ביקורים תכופים</translation>
 <translation id="9028914725102941583">יש להפעיל את הסנכרון כדי להפעיל שיתוף בין מכשירים</translation>
-<translation id="9040142327097499898">יש הרשאה להצגת הודעות. המיקום כבוי בשביל המכשיר הזה.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{סרטון אחד (#)}two{# סרטונים}many{# סרטונים}other{# סרטונים}}</translation>
 <translation id="9042893549633094279">פרטיות ואבטחה</translation>
 <translation id="9050666287014529139">ביטוי סיסמה</translation>

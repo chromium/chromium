@@ -366,7 +366,6 @@
 <translation id="3037517125981011456">Показва подкани за влизане в Chrome</translation>
 <translation id="3046945242843292318">Стигнете до този сайт по-бързо следващия път</translation>
 <translation id="3055259925215945098">Отметката бе преместена</translation>
-<translation id="305593374596241526">Местоположението е изключено. Включете го от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> отметка}other{<ph name="BOOKMARKS_COUNT_MANY" /> отметки}}</translation>
 <translation id="3062802207422175757">Статии, свързани с интересите ви, в Chrome</translation>
 <translation id="3066573403916685335">Преместване надолу</translation>
@@ -410,7 +409,6 @@
 <translation id="3284510035090979597">Превантивна помощ</translation>
 <translation id="3285080554353377245">Видеоклипове за използването на Chrome</translation>
 <translation id="3288003805934695103">Презаредете страницата.</translation>
-<translation id="32895400574683172">Известията са разрешени</translation>
 <translation id="3290991969712132877">За да отваряте тази страница по-бързо, добавете я към началния екран чрез бутона „Още опции“</translation>
 <translation id="3295530008794733555">Сърфирайте по-бързо. Използвайте по-малко данни.</translation>
 <translation id="3297344142967351106">Гласова помощ</translation>
@@ -519,7 +517,6 @@
 <translation id="3976396876660209797">Премахнете и създайте отново този пряк път</translation>
 <translation id="3985215325736559418">Искате ли отново да изтеглите „<ph name="FILE_NAME" />“?</translation>
 <translation id="3987993985790029246">Връзка: Коп.</translation>
-<translation id="3988213473815854515">Местоположението е разрешено</translation>
 <translation id="3988466920954086464">Отворете този панел, за да видите динамичните резултати от търсенето</translation>
 <translation id="4000212216660919741">Начална страница в офлайн режим</translation>
 <translation id="4016425174436051808">Следенето не е възможно. Нещо се обърка.</translation>
@@ -786,7 +783,6 @@
 <translation id="555816257274242153">Проследяването на цената бе прекратено</translation>
 <translation id="5561549206367097665">Изчаква се връзка с мрежата…</translation>
 <translation id="5568069709869097550">Не може да се влезе</translation>
-<translation id="55737423895878184">Достъпът до местоположението и известията са разрешени</translation>
 <translation id="5578795271662203820">Търсене на изображението със: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK1" />настройките<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Запомняне на този компютър</translation>
@@ -1437,7 +1433,6 @@
 <translation id="8998729206196772491">Влизате с профил, управляван от <ph name="MANAGED_DOMAIN" />, и предоставяте на администратора му контрол върху данните си в Chrome. Те ще се свържат за постоянно с този профил. При излизане от профила в браузъра информацията ви ще се изтрие от устройството, но ще продължи да се съхранява в профила ви в Google.</translation>
 <translation id="9022774213089566801">Често посещавани</translation>
 <translation id="9028914725102941583">Включете синхронизирането, за да споделяте на всички устройства</translation>
-<translation id="9040142327097499898">Известията са разрешени. Местоположението е изключено за това устройство.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# видеоклип}other{# видеоклипа}}</translation>
 <translation id="9042893549633094279">Поверителност и сигурност</translation>
 <translation id="9050666287014529139">Парола</translation>

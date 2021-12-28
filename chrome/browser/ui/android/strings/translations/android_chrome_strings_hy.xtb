@@ -366,7 +366,6 @@
 <translation id="3037517125981011456">Ցույց է տալիս հաղորդագրություն Chrome-ում մուտք գործելու համար</translation>
 <translation id="3046945242843292318">Հաջորդ անգամ ավելի արագ անցեք այս կայք</translation>
 <translation id="3055259925215945098">Էջանիշը տեղափոխվեց</translation>
-<translation id="305593374596241526">Տեղորոշումն անջատված է: Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />:</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> էջանիշ}one{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}other{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}}</translation>
 <translation id="3062802207422175757">Ձեր հետաքրքրությունների հիման վրա ընտրված հոդվածներ՝ Chrome-ում</translation>
 <translation id="3066573403916685335">Տեղափոխել վար</translation>
@@ -410,7 +409,6 @@
 <translation id="3284510035090979597">Օգնություն՝ անհրաժեշտ պահին</translation>
 <translation id="3285080554353377245">Տեսանյութեր Chrome-ի օգտագործման մասին</translation>
 <translation id="3288003805934695103">Վերաբեռնել էջը</translation>
-<translation id="32895400574683172">Ծանուցումները թույլատրված են</translation>
 <translation id="3290991969712132877">Այս էջն ավելի արագ բացելու համար ավելացրեք այն հիմնական էկրանին «Այլ ընտրանքներ» կոճակի օգնությամբ։</translation>
 <translation id="3295530008794733555">Որոնեք ավելի արագ: Օգտագործեք ավելի քիչ թրաֆիկ:</translation>
 <translation id="3297344142967351106">Ձայնային հուշումներ</translation>
@@ -519,7 +517,6 @@
 <translation id="3976396876660209797">Հեռացրեք այս դյուրանցումն ու նորից ստեղծեք այն</translation>
 <translation id="3985215325736559418">Ուզո՞ւմ եք նորից ներբեռնել <ph name="FILE_NAME" /> ֆայլը:</translation>
 <translation id="3987993985790029246">Պատճենել հղումը</translation>
-<translation id="3988213473815854515">Տեղադրության որոշումը թույլատրված է</translation>
 <translation id="3988466920954086464">Որոնման արդյունքներն ակնթարթորեն կհայտնվեն այս վահանակում</translation>
 <translation id="4000212216660919741">Home անցանց ռեժիմում</translation>
 <translation id="4016425174436051808">Սխալի պատճառով չհաջողվեց բաժանորդագրվել։</translation>
@@ -786,7 +783,6 @@
 <translation id="555816257274242153">Գների հետագծումը դադարեցված է</translation>
 <translation id="5561549206367097665">Ցանցի որոնում…</translation>
 <translation id="5568069709869097550">Չհաջողվեց մուտք գործել</translation>
-<translation id="55737423895878184">Տեղորոշումն ու ծանուցումները թույլատրված են</translation>
 <translation id="5578795271662203820">Որոնել այս պատկերը <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="5581519193887989363">Ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK1" />կարգավորումներ<ph name="END_LINK1" /> և ընտրել, թե ինչն եք ուզում համաժամացնել:</translation>
 <translation id="5590372121997663538">Հիշել այս համակարգիչը</translation>
@@ -1437,7 +1433,6 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="8998729206196772491">Դուք մուտք եք գործում <ph name="MANAGED_DOMAIN" /> տիրույթի կողմից կառավարվող հաշիվ` դրա ադմինիստրատորին թույլ տալով վերահսկել ձեր Chrome-ի տվյալները: Ձեր տվյալները մշտապես կկապվեն այս հաշվի հետ: Եթե դուրս գաք Chrome-ից, այս սարքում պահված տվյալները կջնջվեն, սակայն կպահպանվեն ձեր Google հաշվում:</translation>
 <translation id="9022774213089566801">Հաճախ այցելած</translation>
 <translation id="9028914725102941583">Միացրեք համաժամացումը՝ մի սարքի տվյալներով մյուսի հետ կիսվելու համար</translation>
-<translation id="9040142327097499898">Ծանուցումները թույլատրված են: Սարքի տեղորոշումն անջատված է:</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# տեսանյութ}one{# տեսանյութ}other{# տեսանյութ}}</translation>
 <translation id="9042893549633094279">Գաղտնիություն և անվտանգություն</translation>
 <translation id="9050666287014529139">Անցաբառ</translation>

@@ -366,7 +366,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3037517125981011456">Shfaq kërkesa për t'u identifikuar në Chrome</translation>
 <translation id="3046945242843292318">Shko më shpejt te ky sajt herën tjetër</translation>
 <translation id="3055259925215945098">Faqeshënuesi u zhvendos</translation>
-<translation id="305593374596241526">Vendndodhja është joaktive. Aktivizoje te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> faqeshënues}other{<ph name="BOOKMARKS_COUNT_MANY" /> faqeshënues}}</translation>
 <translation id="3062802207422175757">Artikuj rreth interesave të tua në Chrome</translation>
 <translation id="3066573403916685335">Lëviz poshtë</translation>
@@ -410,7 +409,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3284510035090979597">Ndihmë proaktive</translation>
 <translation id="3285080554353377245">Video rreth mënyrës se si të përdorësh Chrome</translation>
 <translation id="3288003805934695103">Të ringarkosh faqen</translation>
-<translation id="32895400574683172">Njoftimet janë të lejuara</translation>
 <translation id="3290991969712132877">Për të ardhur më shpejt këtu, shtoje këtë faqe në "Ekranin tënd bazë" nga butoni "Opsione të tjera"</translation>
 <translation id="3295530008794733555">Shfleto më shpejt. Përdor më pak të dhëna.</translation>
 <translation id="3297344142967351106">Ndihma zanore</translation>
@@ -519,7 +517,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3976396876660209797">Hiqe këtë shkurtore dhe rikrijoje</translation>
 <translation id="3985215325736559418">Dëshiron që ta shkarkosh përsëri <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Kopjo lidhjen</translation>
-<translation id="3988213473815854515">Vendndodhja nuk lejohet</translation>
 <translation id="3988466920954086464">Shiko rezultatet e çastit të kërkimit në këtë panel</translation>
 <translation id="4000212216660919741">Shtëpia jashtë linje</translation>
 <translation id="4016425174436051808">Nuk mund të ndiqet. Ndodhi një gabim.</translation>
@@ -786,7 +783,6 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="555816257274242153">Monitorimi i çmimit u ndalua</translation>
 <translation id="5561549206367097665">Në pritje të rrjetit…</translation>
 <translation id="5568069709869097550">Nuk mund të identifkohet</translation>
-<translation id="55737423895878184">Vendndodhja dhe njoftimet janë të lejuara</translation>
 <translation id="5578795271662203820">Kërko në <ph name="SEARCH_ENGINE" /> për këtë imazh</translation>
 <translation id="5581519193887989363">Mund të zgjedhësh gjithmonë se çfarë do të sinkronizosh te <ph name="BEGIN_LINK1" />cilësimet<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Kujtoje këtë kompjuter</translation>
@@ -1437,7 +1433,6 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8998729206196772491">Po identifikohesh me një llogari të menaxhuar nga <ph name="MANAGED_DOMAIN" /> dhe po i jep administratorit të saj kontroll mbi të dhënat e tua të Chrome. Duke dalë nga Chrome do të fshihen të dhënat e tua nga kjo pajisje, por do të mbeten të ruajtura në llogarinë tënde të Google.</translation>
 <translation id="9022774213089566801">Të vizituara shpesh</translation>
 <translation id="9028914725102941583">Aktivizo sinkronizimin për të ndarë mes pajisjeve</translation>
-<translation id="9040142327097499898">Njoftimet janë të lejuara. Vendndodhja është joaktive për këtë pajisje.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# video}}</translation>
 <translation id="9042893549633094279">Privatësia dhe siguria</translation>
 <translation id="9050666287014529139">Shprehje kalimi</translation>

@@ -366,7 +366,6 @@
 <translation id="3037517125981011456">顯示登入 Chrome 的指示</translation>
 <translation id="3046945242843292318">之後可更快前往此網站</translation>
 <translation id="3055259925215945098">已移動書籤</translation>
-<translation id="305593374596241526">位置資訊功能已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟此功能。</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個書籤}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個書籤}}</translation>
 <translation id="3062802207422175757">您感興趣的文章和內容，一切盡在 Chrome</translation>
 <translation id="3066573403916685335">向下移動</translation>
@@ -410,7 +409,6 @@
 <translation id="3284510035090979597">主動提供協助</translation>
 <translation id="3285080554353377245">關於如何使用 Chrome 的影片</translation>
 <translation id="3288003805934695103">重新載入網頁</translation>
-<translation id="32895400574683172">允許顯示通知</translation>
 <translation id="3290991969712132877">如要更快速開啟此網頁，請使用「更多選項」按鈕將此網頁新增到主畫面</translation>
 <translation id="3295530008794733555">瀏覽速度更快。使用較少流動數據。</translation>
 <translation id="3297344142967351106">語音助手</translation>
@@ -519,7 +517,6 @@
 <translation id="3976396876660209797">移除並重新建立此捷徑</translation>
 <translation id="3985215325736559418">您要再次下載 <ph name="FILE_NAME" /> 嗎？</translation>
 <translation id="3987993985790029246">複製連結</translation>
-<translation id="3988213473815854515">位置已獲允許</translation>
 <translation id="3988466920954086464">您可以在此面板查看即時搜尋結果</translation>
 <translation id="4000212216660919741">離線首頁</translation>
 <translation id="4016425174436051808">無法追蹤，發生錯誤。</translation>
@@ -786,7 +783,6 @@
 <translation id="555816257274242153">已停止追蹤價格</translation>
 <translation id="5561549206367097665">正在等待網絡連線…</translation>
 <translation id="5568069709869097550">無法登入</translation>
-<translation id="55737423895878184">允許分享位置資訊和顯示通知</translation>
 <translation id="5578795271662203820">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
 <translation id="5581519193887989363">您隨時可在<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />中選擇要同步的資料。</translation>
 <translation id="5590372121997663538">記住此電腦</translation>
@@ -1437,7 +1433,6 @@
 <translation id="8998729206196772491">您即將登入由 <ph name="MANAGED_DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chrome 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chrome，系統將刪除此裝置上的資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
 <translation id="9022774213089566801">經常瀏覽</translation>
 <translation id="9028914725102941583">開啟同步功能，即可在所有裝置上分享內容</translation>
-<translation id="9040142327097499898">允許顯示通知。此裝置的位置資訊功能已關閉。</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# 部影片}other{# 部影片}}</translation>
 <translation id="9042893549633094279">私隱權和安全性</translation>
 <translation id="9050666287014529139">複雜密碼</translation>

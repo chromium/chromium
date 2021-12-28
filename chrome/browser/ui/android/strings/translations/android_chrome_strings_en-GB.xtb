@@ -366,7 +366,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3037517125981011456">Shows prompts to sign in to Chrome</translation>
 <translation id="3046945242843292318">Get to this site quicker next time</translation>
 <translation id="3055259925215945098">Bookmark moved</translation>
-<translation id="305593374596241526">Location is off; turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmarks}}</translation>
 <translation id="3062802207422175757">Articles on your interests on Chrome</translation>
 <translation id="3066573403916685335">Move Down</translation>
@@ -410,7 +409,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3284510035090979597">Proactive help</translation>
 <translation id="3285080554353377245">Videos about how to use Chrome</translation>
 <translation id="3288003805934695103">Reloading the page</translation>
-<translation id="32895400574683172">Notifications are allowed</translation>
 <translation id="3290991969712132877">To get here quicker, add this page to your home screen from the 'More options' button</translation>
 <translation id="3295530008794733555">Browse faster. Use less data.</translation>
 <translation id="3297344142967351106">Voice assistance</translation>
@@ -519,7 +517,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3976396876660209797">Remove and recreate this shortcut</translation>
 <translation id="3985215325736559418">Do you want to download <ph name="FILE_NAME" /> again?</translation>
 <translation id="3987993985790029246">Copy link</translation>
-<translation id="3988213473815854515">Location is allowed</translation>
 <translation id="3988466920954086464">See instant search results in this panel</translation>
 <translation id="4000212216660919741">Offline Home</translation>
 <translation id="4016425174436051808">Can’t follow. Something went wrong.</translation>
@@ -786,7 +783,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="555816257274242153">Stopped tracking price</translation>
 <translation id="5561549206367097665">Waiting for network…</translation>
 <translation id="5568069709869097550">Can't sign in</translation>
-<translation id="55737423895878184">Location and notifications are allowed</translation>
 <translation id="5578795271662203820">Search <ph name="SEARCH_ENGINE" /> for this image</translation>
 <translation id="5581519193887989363">You can always choose what to sync in <ph name="BEGIN_LINK1" />settings<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Remember this computer</translation>
@@ -1437,7 +1433,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8998729206196772491">You are signing in with an account managed by <ph name="MANAGED_DOMAIN" /> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.</translation>
 <translation id="9022774213089566801">Frequently visited</translation>
 <translation id="9028914725102941583">Turn on sync to share across devices</translation>
-<translation id="9040142327097499898">Notifications are allowed. Location is off for this device.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# Video}other{# Videos}}</translation>
 <translation id="9042893549633094279">Privacy and security</translation>
 <translation id="9050666287014529139">Passphrase</translation>

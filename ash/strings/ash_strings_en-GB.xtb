@@ -586,6 +586,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4831034276697007977">Are you sure that you want to turn off automatic clicks?</translation>
 <translation id="4849058404725798627">Highlight object with keyboard focus</translation>
 <translation id="485592688953820832">No action (pause)</translation>
+<translation id="485634149294284819">Enter keyboard menu</translation>
 <translation id="4860284199500934869">Check your network connection to download <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Download will be attempted later. Speech will be sent to Google for processing until download is completed.</translation>
 <translation id="4868492592575313542">activated</translation>
@@ -1098,6 +1099,7 @@ New install</translation>
 <translation id="8380784334203145311">Good night,</translation>
 <translation id="8388750414311082622">Last desk can't be removed.</translation>
 <translation id="8394567579869570560">Your parent has locked this device</translation>
+<translation id="8401850874595457088">Enter language menu</translation>
 <translation id="8412677897383510995">Show display settings</translation>
 <translation id="8413272770729657668">Recording starting in 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (case)</translation>

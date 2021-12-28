@@ -1050,6 +1050,7 @@
 <translation id="204914487372604757">Создать ярлык</translation>
 <translation id="2050339315714019657">Книжная</translation>
 <translation id="2053312383184521053">Данные о состоянии бездействия</translation>
+<translation id="2054240652864153171">Удалить данные <ph name="SITE_NAME" />, секционированные на сайте <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Вы автоматически выйдете из аккаунта на этих сайтах (в том числе на открытых вкладках).</translation>
 <translation id="205560151218727633">Логотип Google Ассистента</translation>
 <translation id="2058456167109518507">Обнаружено устройство</translation>
@@ -2391,6 +2392,7 @@
 <translation id="3433621910545056227">Системе не удалось заблокировать атрибуты устройства на время установки.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Если у ребенка включена запись дополнительной истории приложений и веб-поиска, эта информация может сохраняться в его аккаунте. Узнать больше об этой функции и о том, как изменить ее настройки, можно на странице families.google.com.</translation>
+<translation id="3434512374684753970">Аудио и видео</translation>
 <translation id="3435688026795609344">Расширение "<ph name="EXTENSION_NAME" />" запрашивает <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Безопасность</translation>
 <translation id="343578350365773421">Закончилась бумага</translation>
@@ -2837,6 +2839,7 @@
 <translation id="3873423927483480833">Показать PIN-коды</translation>
 <translation id="3873915545594852654">Не удалось запустить ARC++.</translation>
 <translation id="3874164307099183178">Включить Google Ассистента</translation>
+<translation id="3875783148670536197">Показать</translation>
 <translation id="3875815154304214043">Приложение "<ph name="APP_NAME" />" и поддерживаемые ссылки будут открываться в новой вкладке браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Настройки функции "Обмен с окружением" для устройства пользователя <ph name="USER_NAME" /> с аккаунтом <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Диспетчер загрузки</translation>
@@ -4472,6 +4475,7 @@
 <translation id="562935524653278697">Ваш администратор отключил синхронизацию закладок, истории, паролей и настроек.</translation>
 <translation id="5631017369956619646">Использование процессора</translation>
 <translation id="5632059346822207074">Требуется разрешение. Нажмите Ctrl + Косая черта, чтобы ответить.</translation>
+<translation id="5632485077360054581">Показать</translation>
 <translation id="5632566673632479864">Ваш аккаунт (<ph name="EMAIL" />) больше нельзя использовать в качестве основного. Поскольку этот аккаунт находится под управлением администраторов домена <ph name="DOMAIN" />, все закладки, пароли и настройки, а также история будут удалены с устройства.</translation>
 <translation id="5632592977009207922">Идет скачивание: осталось <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Мобильная сеть</translation>

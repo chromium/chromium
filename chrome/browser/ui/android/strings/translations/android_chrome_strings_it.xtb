@@ -366,7 +366,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3037517125981011456">Vengono mostrate richieste di accesso a Chrome</translation>
 <translation id="3046945242843292318">Accedi più velocemente a questo sito la prossima volta</translation>
 <translation id="3055259925215945098">Preferito spostato</translation>
-<translation id="305593374596241526">La geolocalizzazione non è attiva; attivala nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> preferito}one{<ph name="BOOKMARKS_COUNT_MANY" /> preferiti}other{<ph name="BOOKMARKS_COUNT_MANY" /> preferiti}}</translation>
 <translation id="3062802207422175757">Articoli relativi ai tuoi interessi su Chrome</translation>
 <translation id="3066573403916685335">Sposta giù</translation>
@@ -410,7 +409,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3284510035090979597">Assistenza tempestiva</translation>
 <translation id="3285080554353377245">Video relativi all'utilizzo di Chrome</translation>
 <translation id="3288003805934695103">Ricaricare la pagina</translation>
-<translation id="32895400574683172">Le notifiche sono consentite</translation>
 <translation id="3290991969712132877">Per potervi accedere più rapidamente, aggiungi questa pagina alla schermata Home dal pulsante Altre opzioni</translation>
 <translation id="3295530008794733555">Naviga più velocemente. Consuma meno dati.</translation>
 <translation id="3297344142967351106">Assistenza vocale</translation>
@@ -519,7 +517,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3976396876660209797">Rimuovi e ricrea la scorciatoia</translation>
 <translation id="3985215325736559418">Scaricare di nuovo <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Copia link</translation>
-<translation id="3988213473815854515">La geolocalizzazione è consentita</translation>
 <translation id="3988466920954086464">Visualizza i risultati della ricerca immediata in questo riquadro</translation>
 <translation id="4000212216660919741">Home page offline</translation>
 <translation id="4016425174436051808">Non è possibile seguire. Si è verificato un errore.</translation>
@@ -786,7 +783,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="555816257274242153">Monitoraggio del prezzo interrotto</translation>
 <translation id="5561549206367097665">In attesa della rete…</translation>
 <translation id="5568069709869097550">Non riesco a effettuare l'accesso</translation>
-<translation id="55737423895878184">La geolocalizzazione e le notifiche sono consentite</translation>
 <translation id="5578795271662203820">Cerca questa immagine su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle <ph name="BEGIN_LINK1" />impostazioni<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Ricorda questo computer</translation>
@@ -1437,7 +1433,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8998729206196772491">Stai per eseguire l'accesso con un account gestito da <ph name="MANAGED_DOMAIN" /> e consentire al relativo amministratore di avere il controllo dei tuoi dati di Chrome. I tuoi dati verranno associati definitivamente a questo account. Se esci da Chrome, i dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="9022774213089566801">Più visitati</translation>
 <translation id="9028914725102941583">Attiva la sincronizzazione per la condivisione tra dispositivi</translation>
-<translation id="9040142327097499898">Le notifiche sono consentite. La geolocalizzazione non è attiva per questo dispositivo.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}one{# video}other{# video}}</translation>
 <translation id="9042893549633094279">Privacy e sicurezza</translation>
 <translation id="9050666287014529139">Passphrase</translation>

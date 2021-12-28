@@ -232,6 +232,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7448255348454382571">Перезапустіть ОС Chromium</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Версія Chromium для розробників</translation>
 <translation id="7451052299415159299">Chromium потрібен дозвіл на використання камери, щоб надати цьому сайту доступ до неї</translation>
+<translation id="7467949745582939695">Перезапустити Chromium?</translation>
 <translation id="7483335560992089831">Неможливо встановити версію Chromium, аналогічну запущеній зараз. Закрийте Chromium і повторіть спробу.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium перезапуститься через 1 хвилину}one{Chromium перезапуститься через # хвилину}few{Chromium перезапуститься через # хвилини}many{Chromium перезапуститься через # хвилин}other{Chromium перезапуститься через # хвилини}}</translation>
 <translation id="7549178288319965365">Про ОС Chromium</translation>

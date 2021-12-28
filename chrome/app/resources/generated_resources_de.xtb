@@ -1045,6 +1045,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="204914487372604757">Verknüpfung erstellen</translation>
 <translation id="2050339315714019657">Hochformat</translation>
 <translation id="2053312383184521053">Daten für inaktiven Zustand</translation>
+<translation id="2054240652864153171">Websitedaten für <ph name="SITE_NAME" />, die auf <ph name="PARTITION_SITE_NAME" /> partioniert sind, löschen?</translation>
 <translation id="2055585478631012616">Sie werden von diesen Websites abgemeldet, auch in offenen Tabs</translation>
 <translation id="205560151218727633">Google Assistant-Logo</translation>
 <translation id="2058456167109518507">Gerät erkannt</translation>
@@ -2387,6 +2388,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3433621910545056227">Hoppla! Das System konnte die Attributsperre für die Installationszeit des Geräts nicht einrichten.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Wenn die Einstellung "Zusätzliche Web- &amp; App-Aktivitäten" für Ihr Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert. Unter families.google.com finden Sie weitere Informationen zu dieser Einstellung. Dort erfahren Sie auch, wie Sie sie ändern können.</translation>
+<translation id="3434512374684753970">Audio &amp; Video</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" fordert Ihren <ph name="CODE_TYPE" /> an.</translation>
 <translation id="3435738964857648380">Sicherheit</translation>
 <translation id="343578350365773421">Kein Papier mehr</translation>
@@ -2833,6 +2835,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3873423927483480833">PINs anzeigen</translation>
 <translation id="3873915545594852654">Ein Problem mit ARC++ ist aufgetreten.</translation>
 <translation id="3874164307099183178">Google Assistant einschalten</translation>
+<translation id="3875783148670536197">Zeigen</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> wird in einem neuen Browsertab geöffnet. Unterstützte Links werden ebenfalls im Browser geöffnet. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Nearby Share-Einstellungen für das Gerät von <ph name="USER_NAME" />. Die Freigabe erfolgt unter dem Konto <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Download-Manager</translation>
@@ -4466,6 +4469,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="562935524653278697">Ihr Administrator hat die Synchronisierung Ihres Verlaufs sowie Ihrer Lesezeichen, Passwörter und sonstigen Einstellungen deaktiviert.</translation>
 <translation id="5631017369956619646">CPU-Auslastung</translation>
 <translation id="5632059346822207074">Berechtigung angefordert. Drücken Sie „Ctrl + Weiter“, um zu reagieren.</translation>
+<translation id="5632485077360054581">Zeigen</translation>
 <translation id="5632566673632479864">Ihr Konto <ph name="EMAIL" /> ist nicht mehr als primäres Konto zugelassen. Da dieses Konto von <ph name="DOMAIN" /> verwaltet wird, werden Ihr Verlauf sowie Ihre Lesezeichen, Passwörter und sonstigen Einstellungen von diesem Gerät gelöscht.</translation>
 <translation id="5632592977009207922">Wird heruntergeladen, <ph name="PERCENT_REMAINING" /> % verbleibend</translation>
 <translation id="563371367637259496">Mobil</translation>

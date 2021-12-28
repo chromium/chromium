@@ -1048,6 +1048,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="204914487372604757">Crea la drecera</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2053312383184521053">Dades de l'estat d'inactivitat</translation>
+<translation id="2054240652864153171">Vols esborrar les dades del lloc web <ph name="SITE_NAME" /> amb particions a <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Se't tancarà la sessió d'aquests llocs web, també de les pestanyes obertes</translation>
 <translation id="205560151218727633">Logotip de l'Assistent de Google</translation>
 <translation id="2058456167109518507">S'ha detectat un dispositiu</translation>
@@ -2389,6 +2390,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3433621910545056227">El sistema no ha pogut establir el bloqueig dels atributs del temps d'instal·lació del dispositiu.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Si l'opció Activitat al web i en aplicacions addicional està activada per al teu fill, és possible que aquestes dades es desin al seu Compte de Google. Per obtenir més informació sobre aquestes opcions de configuració i sobre com pots modificar-les, ves a families.google.com.</translation>
+<translation id="3434512374684753970">Àudio i vídeo</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" sol·licita el teu codi <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Seguretat</translation>
 <translation id="343578350365773421">No queda paper</translation>
@@ -2835,6 +2837,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3873423927483480833">Mostra els PIN</translation>
 <translation id="3873915545594852654">S'ha produït un problema amb ARC++.</translation>
 <translation id="3874164307099183178">Activa l'Assistent de Google</translation>
+<translation id="3875783148670536197">Mostra'm com</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> s'ha configurat per obrir-se en una pestanya nova del navegador. Els enllaços compatibles també s'obriran al navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Configuració de Compartició Nearby per al dispositiu de <ph name="USER_NAME" />, amb el compte <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Gestor de baixades</translation>
@@ -4471,6 +4474,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="562935524653278697">L'administrador ha desactivat la sincronització de les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració.</translation>
 <translation id="5631017369956619646">Ús de la CPU</translation>
 <translation id="5632059346822207074">S'ha sol·licitat permís, prem Ctrl+Endavant per respondre</translation>
+<translation id="5632485077360054581">Mostra'm com</translation>
 <translation id="5632566673632479864">Ja no es permet que <ph name="EMAIL" /> sigui el compte principal. Com que <ph name="DOMAIN" /> gestiona aquest compte, s'esborraran d'aquest dispositiu les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració.</translation>
 <translation id="5632592977009207922">S'està baixant. Queda un <ph name="PERCENT_REMAINING" />%.</translation>
 <translation id="563371367637259496">Mòbil</translation>

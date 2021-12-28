@@ -340,6 +340,7 @@ Als dit beleid wordt toegepast of niet is ingesteld, bepaalt de browser welk Use
       Als dit beleid op Uit staat of niet is ingesteld, laat <ph name="PRODUCT_NAME" /> de optie 'Afdrukken als afbeelding' niet aan gebruikers zien in het afdrukvoorbeeld. Pdf's worden dan zoals gewoonlijk afgedrukt zonder te worden gerasterd als afbeelding voordat ze naar de afdrukbestemming worden gestuurd.</translation>
 <translation id="1435659902881071157">Netwerkconfiguratie op apparaatniveau</translation>
 <translation id="1438739959477268107">Standaardinstelling voor het genereren van sleutels</translation>
+<translation id="1440408958042020947">Hierdoor kunnen gebruikers die Telefoonhub toestaan, toegang krijgen tot recente foto's en video's die ze hebben gemaakt op hun telefoon</translation>
 <translation id="1449083855104537880">Als je het beleid instelt op True, worden de toegankelijkheidsopties weergegeven in het systeemvakmenu. Als je het beleid instelt op False, worden de opties niet weergegeven in het menu.
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, worden de toegankelijkheidsopties niet weergegeven in het menu, maar kunnen gebruikers ze tonen via de pagina Instellingen.
@@ -2279,6 +2280,7 @@ Er worden geen automatische updatecontroles geblokkeerd door dit beleid, maar de
 <translation id="3606571057705314194">Profielkiezer staat uit bij opstarten</translation>
 <translation id="3627678165642179114">Webservice voor spellingcontrole aan- of uitzetten</translation>
 <translation id="3628480121685794414">Enkelzijdig afdrukken aanzetten</translation>
+<translation id="3634125384445314047">Recente foto's en video's die op de telefoon zijn gemaakt, toegankelijk maken via Telefoonhub.</translation>
 <translation id="3643284063603988867">Functie 'Wachtwoord onthouden' aanzetten</translation>
 <translation id="3646859102161347133">Het type vergrootglas instellen</translation>
 <translation id="3647212518036289905">Als je het beleid instelt, geef je aan welke GSSAPI-bibliotheek moet worden gebruikt voor HTTP-verificatie. Stel het beleid in op een bibliotheeknaam of een volledig pad.
@@ -6227,6 +6229,11 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
           Dit beleid levert een reservewaarde voor de specifiekere beleidsregels <ph name="IDLE_ACTION_AC_POLICY_NAME" /> en <ph name="IDLE_ACTION_BATTERY_POLICY_NAME" />. Als dit beleid is ingesteld, wordt de bijbehorende waarde gebruikt als het respectieve specifiekere beleid niet is ingesteld.
 
           Als dit beleid niet is ingesteld, heeft dit geen invloed op het gedrag van de specifiekere beleidsregels.</translation>
+<translation id="8349255653850367353">Als je deze instelling aanzet, kunnen gebruikers die Phone Hub al hebben toegestaan recente foto's die ze op hun telefoon hebben gemaakt, bekijken en downloaden via Chrome OS.
+
+      Als je deze instelling uitzet, mogen gebruikers deze functie niet gebruiken. Als het beleid <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> is gedeactiveerd, kunnen gebruikers deze functie ook niet gebruiken.
+
+      Als je dit beleid niet instelt, is de standaardoptie toegestaan voor zowel zakelijk beheerde gebruikers als niet-beheerde gebruikers.</translation>
 <translation id="8357681633047935212">Beperk de duur van een gebruikerssessie</translation>
 <translation id="8357989008292691856">Toelatingslijst met gebruikers die mogen inloggen</translation>
 <translation id="8359734107661430198">API voor ExampleDeprecatedFeature tot en met 02-09-2008 aanzetten</translation>
@@ -6688,6 +6695,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
       Als je het beleid niet instelt of een lege tekenreeks opgeeft, gebruikt het apparaat de momenteel actieve tijdzone. Gebruikers kunnen de tijdzone wijzigen.</translation>
 <translation id="8880294585549584028">Schrijftoegang tot bestanden en directory's voor deze sites toestaan</translation>
 <translation id="8882006618241293596">De <ph name="FLASH_PLUGIN_NAME" />-plug-in blokkeren op deze sites</translation>
+<translation id="8882255181490012651">Hierdoor kunnen gebruikers die Telefoonhub toestaan, geen toegang krijgen tot recente foto's en video's die ze hebben gemaakt op hun telefoon</translation>
 <translation id="8887709920496070892">De tijdsduur zonder gebruikersinvoer waarna een waarschuwingsdialoogvenster wordt getoond (in milliseconden)</translation>
 <translation id="8890438048579188548">Waarschuwingen over beëindiging van <ph name="CLOUD_PRINT_NAME" /> verbergen</translation>
 <translation id="8892286064305622118">Vrije schijfruimte vereist voor <ph name="PLUGIN_VM_NAME" /></translation>

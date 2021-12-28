@@ -366,7 +366,6 @@
 <translation id="3037517125981011456">Chromeకు సైన్ ఇన్ చేయడానికి ప్రాంప్ట్‌లను చూపిస్తుంది</translation>
 <translation id="3046945242843292318">తర్వాతిసారి ఈ సైట్‌కు త్వరగా చేరండి</translation>
 <translation id="3055259925215945098">బుక్‌మార్క్ తరలించబడింది</translation>
-<translation id="305593374596241526">స్థానం ఆఫ్ చేయబడింది; దీనిని <ph name="BEGIN_LINK" />Android సెట్టింగ్‌లు<ph name="END_LINK" />లో ఆన్ చేయండి.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> బుక్‌మార్క్}other{<ph name="BOOKMARKS_COUNT_MANY" /> బుక్‌మార్క్‌లు}}</translation>
 <translation id="3062802207422175757">Chromeలోని మీ అభిరుచులకు అనుగుణమైన కథనాలు</translation>
 <translation id="3066573403916685335">క్రిందికి తరలించండి</translation>
@@ -410,7 +409,6 @@
 <translation id="3284510035090979597">తనకు తానుగా సహాయం</translation>
 <translation id="3285080554353377245">Chromeను ఎలా ఉపయోగించాలనే దానికి సంబంధించిన వీడియోలు</translation>
 <translation id="3288003805934695103">పేజీని మళ్లీ లోడ్ చేయడం</translation>
-<translation id="32895400574683172">నోటిఫికేషన్‌లు అనుమతించబడతాయి</translation>
 <translation id="3290991969712132877">ఈ పేజీని త్వరగా యాక్సెస్ చేయడానికి, 'మరిన్ని ఎంపికలు' బటన్ నుండి మీ మొదటి స్క్రీన్‌కు దీనిని జోడించండి</translation>
 <translation id="3295530008794733555">మరింత వేగంగా బ్రౌజ్ చేయండి. తక్కువ డేటాని ఉపయోగించండి.</translation>
 <translation id="3297344142967351106">వాయిస్ సహాయం</translation>
@@ -519,7 +517,6 @@
 <translation id="3976396876660209797">ఈ షార్ట్‌కట్‌ను తీసివేసి, పునఃసృష్టించండి</translation>
 <translation id="3985215325736559418">మీరు <ph name="FILE_NAME" />ని మళ్లీ డౌన్‌లోడ్ చేయాలని అనుకుంటున్నారా?</translation>
 <translation id="3987993985790029246">లింక్‌ను కాపీ చేయి</translation>
-<translation id="3988213473815854515">స్థానం అనుమతించబడింది</translation>
 <translation id="3988466920954086464">ఈ ప్యానెల్‌లో తక్షణ శోధన ఫలితాలను చూడండి</translation>
 <translation id="4000212216660919741">ఆఫ్‌లైన్ హోమ్</translation>
 <translation id="4016425174436051808">ఫాలో చేయడం సాధ్యపడదు. ఏదో తప్పు జరిగింది.</translation>
@@ -786,7 +783,6 @@
 <translation id="555816257274242153">ధరను ట్రాక్ చేయడం ఆపివేయబడింది</translation>
 <translation id="5561549206367097665">నెట్‌వర్క్ కోసం వేచి ఉంది…</translation>
 <translation id="5568069709869097550">సైన్ ఇన్ చేయడం సాధ్యపడలేదు</translation>
-<translation id="55737423895878184">స్థానం మరియు నోటిఫికేషన్‌లు అనుమతించబడతాయి</translation>
 <translation id="5578795271662203820">ఈ చిత్రం కోసం <ph name="SEARCH_ENGINE" />లో వెతకండి</translation>
 <translation id="5581519193887989363">మీరు ఎప్పుడైనా <ph name="BEGIN_LINK1" />సెట్టింగ్‌ల<ph name="END_LINK1" /> ద్వారా వేటిని సింక్ చేయాలో ఎంచుకోవచ్చు.</translation>
 <translation id="5590372121997663538">ఈ కంప్యూటర్‌ను గుర్తుంచుకోవాలి</translation>
@@ -1437,7 +1433,6 @@
 <translation id="8998729206196772491">మీరు <ph name="MANAGED_DOMAIN" /> నిర్వహణలో ఉన్న ఖాతా నుండి సైన్ ఇన్ చేస్తున్నారు. దీని నిర్వాహకులకు మీ Chrome డేటాపై నియంత్రణను అందిస్తున్నారు. మీ డేటా శాశ్వతంగా ఈ ఖాతాకు అనుబంధించబడుతుంది. Chrome నుండి సైన్ అవుట్ చేయడం వ‌ల్ల ఈ పరికరం నుండి మీ డేటా తొలగించబడుతుంది. కానీ ఇది మీ Google ఖాతాలో అలాగే నిల్వ చేయబడి ఉంటుంది.</translation>
 <translation id="9022774213089566801">తరచుగా సందర్శించినవి</translation>
 <translation id="9028914725102941583">పరికరాలలో షేర్ చేయడానికి, సింక్‌ను ఆన్ చేయండి</translation>
-<translation id="9040142327097499898">నోటిఫికేషన్‌లు అనుమతించబడ్డాయి. ఈ పరికరానికి స్థానం ఆఫ్ చేయబడింది.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# వీడియో}other{# వీడియోలు}}</translation>
 <translation id="9042893549633094279">గోప్యత, సెక్యూరిటీ</translation>
 <translation id="9050666287014529139">రహస్య పదబంధం</translation>

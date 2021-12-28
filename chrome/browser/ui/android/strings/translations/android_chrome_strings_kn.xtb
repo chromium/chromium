@@ -366,7 +366,6 @@
 <translation id="3037517125981011456">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಾಂಪ್ಟ್‌ಗಳನ್ನು ತೋರಿಸುತ್ತದೆ</translation>
 <translation id="3046945242843292318">ಮುಂದಿನ ಬಾರಿ ಈ ಸೈಟ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="3055259925215945098">ಬುಕ್‌ಮಾರ್ಕ್ ಸರಿಸಲಾಗಿದೆ</translation>
-<translation id="305593374596241526">ಸ್ಥಳ ಆಫ್ ಆಗಿದೆ; <ph name="BEGIN_LINK" />Android ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಇದನ್ನು ಆನ್‌ ಮಾಡಿ.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ಬುಕ್‌ಮಾರ್ಕ್‌}one{<ph name="BOOKMARKS_COUNT_MANY" /> ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}other{<ph name="BOOKMARKS_COUNT_MANY" /> ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು}}</translation>
 <translation id="3062802207422175757">Chrome ನಲ್ಲಿ ನಿಮ್ಮ ಆಸಕ್ತಿಗಳಿಗೆ ಅನುಗುಣವಾಗಿರುವ ಲೇಖನಗಳು</translation>
 <translation id="3066573403916685335">ಕೆಳಕ್ಕೆ ಸರಿಸಿ</translation>
@@ -410,7 +409,6 @@
 <translation id="3284510035090979597">ಪೂರ್ವಭಾವಿ ಸಹಾಯ</translation>
 <translation id="3285080554353377245">Chrome ಬಳಸುವ ಕುರಿತು ವೀಡಿಯೊಗಳು</translation>
 <translation id="3288003805934695103">ಪುಟ ಮರುಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
-<translation id="32895400574683172">ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="3290991969712132877">ಇಲ್ಲಿಗೆ ತ್ವರಿತವಾಗಿ ತಲುಪಲು, ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು ಬಟನ್‌ನಿಂದ ಈ ಪುಟವನ್ನು ನಿಮ್ಮ ಮುಖಪುಟದ ಪರದೆಗೆ ಸೇರಿಸಿ</translation>
 <translation id="3295530008794733555">ವೇಗವಾಗಿ ಬ್ರೌಸ್ ಮಾಡಿ. ಕಡಿಮೆ ಡೇಟಾವನ್ನು ಬಳಸಿ.</translation>
 <translation id="3297344142967351106">ಧ್ವನಿ ಸಹಾಯಕ</translation>
@@ -519,7 +517,6 @@
 <translation id="3976396876660209797">ಈ ಶಾರ್ಟ್‌ಕಟ್‌ ಅನ್ನು ತೆಗೆದುಹಾಕಿ ಮತ್ತು ಮರುರಚಿಸಿ</translation>
 <translation id="3985215325736559418"><ph name="FILE_NAME" /> ಅನ್ನು ಮತ್ತೆ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ನೀವು ಬಯಸುವಿರಾ?</translation>
 <translation id="3987993985790029246">ಲಿಂಕ್ ನಕಲಿಸಿ</translation>
-<translation id="3988213473815854515">ಸ್ಥಳವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="3988466920954086464">ಈ ಫಲಕದಲ್ಲಿ ತತ್‌ಕ್ಷಣ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="4000212216660919741">ಆಫ್‌ಲೈನ್ ಹೋಮ್</translation>
 <translation id="4016425174436051808">ಅನುಸರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>
@@ -785,7 +782,6 @@
 <translation id="555816257274242153">ಬೆಲೆ ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="5561549206367097665">ನೆಟ್‌ವರ್ಕ್‌ಗಾಗಿ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="5568069709869097550">ಸೈನ್ ಇನ್ ಆಗಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
-<translation id="55737423895878184">ಸ್ಥಳ ಮತ್ತು ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="5578795271662203820">ಈ ಚಿತ್ರಕ್ಕಾಗಿ <ph name="SEARCH_ENGINE" /> ನಲ್ಲಿ ಹುಡುಕಾಡಿ</translation>
 <translation id="5581519193887989363">ನೀವು ಏನನ್ನು ಸಿಂಕ್ ಮಾಡಬೇಕು ಎಂಬುದನ್ನು <ph name="BEGIN_LINK1" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK1" /> ಯಾವಾಗ ಬೇಕಾದರೂ ಆರಿಸಿಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="5590372121997663538">ಈ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ನೆನಪಿನಲ್ಲಿಡಿ</translation>
@@ -1436,7 +1432,6 @@
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> ನಿರ್ವಹಿಸಿದ ಖಾತೆಯ ಮೂಲಕ ನೀವು ಸೈನ್‍‍ ಇನ್ ಮಾಡುತ್ತಿರುವಿರಿ ಮತ್ತು ಅದರ ನಿರ್ವಾಹಕ ನಿಯಂತ್ರಣವನ್ನು ನಿಮ್ಮ Chrome ಡೇಟಾದ ಮೂಲಕ ನೀಡುತ್ತಿರುವಿರಿ. ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಶಾಶ್ವತವಾಗಿ ಈ ಖಾತೆಯೊಂದಿಗೆ ಜೋಡಿಸಲಾಗುತ್ತದೆ. Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡುವುದರಿಂದ ಈ ಸಾಧನದಿಂದ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ, ಆದರೆ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿಯೇ ಇರುತ್ತದೆ.</translation>
 <translation id="9022774213089566801">ಆಗಾಗ್ಗೆ ಭೇಟಿ ನೀಡಿರುವುದು</translation>
 <translation id="9028914725102941583">ಸಾಧನಗಳಾದ್ಯಂತ ಹಂಚಿಕೊಳ್ಳಲು, ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
-<translation id="9040142327097499898">ಅಧಿಸೂಚನೆಗಳಿಗೆ ಅನುಮತಿಯಿದೆ. ಈ ಸಾಧನದ ಸ್ಥಳ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# ವೀಡಿಯೊ}one{# ವೀಡಿಯೊಗಳು}other{# ವೀಡಿಯೊಗಳು}}</translation>
 <translation id="9042893549633094279">ಗೌಪ್ಯತೆ ಮತ್ತು ಭದ್ರತೆ</translation>
 <translation id="9050666287014529139">ಪಾಸ್‌ಫ್ರೇಸ್</translation>

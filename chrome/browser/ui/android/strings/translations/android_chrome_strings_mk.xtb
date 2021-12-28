@@ -366,7 +366,6 @@
 <translation id="3037517125981011456">Прикажува prompt за најава на Chrome</translation>
 <translation id="3046945242843292318">Стигнете на сајтов побрзо следниот пат</translation>
 <translation id="3055259925215945098">Обележувачот е преместен</translation>
-<translation id="305593374596241526">Локацијата е исклучена, вклучете ја во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> обележувач}one{<ph name="BOOKMARKS_COUNT_MANY" /> обележувач}other{<ph name="BOOKMARKS_COUNT_MANY" /> обележувачи}}</translation>
 <translation id="3062802207422175757">Статии за она што ве интересира на Chrome</translation>
 <translation id="3066573403916685335">Премести долу</translation>
@@ -410,7 +409,6 @@
 <translation id="3284510035090979597">Проактивна помош</translation>
 <translation id="3285080554353377245">Видеа за користењето на Chrome</translation>
 <translation id="3288003805934695103">Повторно да ја вчитате страницата</translation>
-<translation id="32895400574683172">Известувањата се дозволени</translation>
 <translation id="3290991969712132877">За побрз пристап до страницава, додајте ја на почетниот екран преку копчето „Повеќе опции“</translation>
 <translation id="3295530008794733555">Прелистувајте побрзо. Користете помалку мобилен интернет.</translation>
 <translation id="3297344142967351106">Гласовна помош</translation>
@@ -519,7 +517,6 @@
 <translation id="3976396876660209797">Отстранете ја и создајте ја повторно кратенкава</translation>
 <translation id="3985215325736559418">Дали сакате да ја преземете датотеката <ph name="FILE_NAME" /> повторно?</translation>
 <translation id="3987993985790029246">Копирај линк</translation>
-<translation id="3988213473815854515">Локацијата е дозволена</translation>
 <translation id="3988466920954086464">Гледајте инстант резултати од пребарување на таблава</translation>
 <translation id="4000212216660919741">Офлајн</translation>
 <translation id="4016425174436051808">Не може да се следи. Нешто тргна наопаку.</translation>
@@ -786,7 +783,6 @@
 <translation id="555816257274242153">Запре следењето цени</translation>
 <translation id="5561549206367097665">Се чека мрежа…</translation>
 <translation id="5568069709869097550">Не може да се најавите</translation>
-<translation id="55737423895878184">Локацијата и известувањата се дозволени</translation>
 <translation id="5578795271662203820">Пребарај во <ph name="SEARCH_ENGINE" /> за сликава</translation>
 <translation id="5581519193887989363">Секогаш може да изберете што да синхронизирате во <ph name="BEGIN_LINK1" />Поставки<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Запомни го компјутеров</translation>
@@ -1437,7 +1433,6 @@
 <translation id="8998729206196772491">Се најавувате со сметка управувана од <ph name="MANAGED_DOMAIN" /> и му давате контрола над податоците на Chrome на нејзиниот администратор. Вашите податоци ќе бидат трајно врзани за оваа сметка. Одјавувањето од Chrome ќе ги избрише податоците од уредов, но тие ќе останат зачувани на сметката на Google.</translation>
 <translation id="9022774213089566801">Често посетувани</translation>
 <translation id="9028914725102941583">Вклучете ја синхронизацијата за да споделувате на сите уреди</translation>
-<translation id="9040142327097499898">Дозволени се известувања. Локацијата е исклучена за уредов.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# видео}one{# видео}other{# видеа}}</translation>
 <translation id="9042893549633094279">Приватност и безбедност</translation>
 <translation id="9050666287014529139">Пристапна фраза</translation>

@@ -366,7 +366,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3037517125981011456">Viser anmodninger om at logge ind i Chrome</translation>
 <translation id="3046945242843292318">Nå hurtigere frem til dette website næste gang</translation>
 <translation id="3055259925215945098">Bogmærket blev flyttet</translation>
-<translation id="305593374596241526">Placering er slået fra. Du kan aktivere den i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bogmærke}one{<ph name="BOOKMARKS_COUNT_MANY" /> bogmærke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bogmærker}}</translation>
 <translation id="3062802207422175757">Artikler om dine interesser i Chrome</translation>
 <translation id="3066573403916685335">Flyt ned</translation>
@@ -410,7 +409,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3284510035090979597">Proaktiv hjælp</translation>
 <translation id="3285080554353377245">Videoer om, hvordan du bruger Chrome</translation>
 <translation id="3288003805934695103">Genindlæse siden</translation>
-<translation id="32895400574683172">Notifikationer er tilladt</translation>
 <translation id="3290991969712132877">Føj denne side til din startskærm ved hjælp af knappen Flere valgmuligheder for hurtigt at vende tilbage hertil</translation>
 <translation id="3295530008794733555">Få hurtigere browsing. Brug mindre data.</translation>
 <translation id="3297344142967351106">Stemmesøgning</translation>
@@ -519,7 +517,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3976396876660209797">Fjern og genskab denne genvej</translation>
 <translation id="3985215325736559418">Vil du downloade <ph name="FILE_NAME" /> igen?</translation>
 <translation id="3987993985790029246">Kopiér linket</translation>
-<translation id="3988213473815854515">Placeringen er tilladt</translation>
 <translation id="3988466920954086464">Se direkte søgeresultater i dette panel</translation>
 <translation id="4000212216660919741">Hjemmet er offline</translation>
 <translation id="4016425174436051808">Indholdet kan ikke følges. Der opstod en fejl.</translation>
@@ -786,7 +783,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="555816257274242153">Der holdes ikke længere øje med prisen</translation>
 <translation id="5561549206367097665">Venter på netværk…</translation>
 <translation id="5568069709869097550">Kan ikke logge ind</translation>
-<translation id="55737423895878184">Placering og notifikationer er tilladt</translation>
 <translation id="5578795271662203820">Søg efter billedet på <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK1" />indstillingerne<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Husk denne computer</translation>
@@ -1437,7 +1433,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8998729206196772491">Du er ved at logge ind med en konto, der administreres af <ph name="MANAGED_DOMAIN" />, hvilket giver administratoren kontrol over dine Chrome-data. Dine data tilknyttes denne konto permanent. Hvis du logger ud af Chrome, slettes dine data fra denne enhed, men de forbliver gemt på din Google-konto.</translation>
 <translation id="9022774213089566801">Ofte besøgte</translation>
 <translation id="9028914725102941583">Aktivér synkronisering for at dele mellem enheder</translation>
-<translation id="9040142327097499898">Notifikationer er tilladt. Placering er deaktiveret for denne enhed.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}one{# video}other{# videoer}}</translation>
 <translation id="9042893549633094279">Sikkerhed og privatliv</translation>
 <translation id="9050666287014529139">Adgangssætning</translation>

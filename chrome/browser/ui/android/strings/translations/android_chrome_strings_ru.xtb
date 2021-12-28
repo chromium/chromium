@@ -366,7 +366,6 @@
 <translation id="3037517125981011456">Показывать подсказки для входа в Chrome</translation>
 <translation id="3046945242843292318">В следующий раз вы сможете открыть этот сайт быстрее.</translation>
 <translation id="3055259925215945098">Закладка перемещена</translation>
-<translation id="305593374596241526">Определение местоположения отключено. Включите его в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладок}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}}</translation>
 <translation id="3062802207422175757">Прочитайте в Chrome статьи, подобранные с учетом ваших интересов.</translation>
 <translation id="3066573403916685335">Перейти вниз</translation>
@@ -410,7 +409,6 @@
 <translation id="3284510035090979597">Помощь в нужный момент</translation>
 <translation id="3285080554353377245">Видео о том, как пользоваться Chrome</translation>
 <translation id="3288003805934695103">Обновите страницу.</translation>
-<translation id="32895400574683172">Может отправлять уведомления</translation>
 <translation id="3290991969712132877">Для быстрого доступа добавьте эту страницу на главный экран, нажав кнопку настроек "Ещё".</translation>
 <translation id="3295530008794733555">Быстрый просмотр сайтов и экономия трафика</translation>
 <translation id="3297344142967351106">Голосовой помощник</translation>
@@ -519,7 +517,6 @@
 <translation id="3976396876660209797">Удалите этот ярлык и создайте его заново</translation>
 <translation id="3985215325736559418">Скачать файл <ph name="FILE_NAME" /> ещё раз?</translation>
 <translation id="3987993985790029246">Копировать ссылку</translation>
-<translation id="3988213473815854515">Доступ к геоданным разрешен</translation>
 <translation id="3988466920954086464">Результаты поиска появятся на этой панели.</translation>
 <translation id="4000212216660919741">Офлайн</translation>
 <translation id="4016425174436051808">Не удалось подписаться. Что-то пошло не так.</translation>
@@ -786,7 +783,6 @@
 <translation id="555816257274242153">Отслеживание цен прекращено.</translation>
 <translation id="5561549206367097665">Поиск сети…</translation>
 <translation id="5568069709869097550">Не удается войти</translation>
-<translation id="55737423895878184">Может определять местоположение и отправлять уведомления</translation>
 <translation id="5578795271662203820">Найти это изображение в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK1" />настройках<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Запомнить этот компьютер</translation>
@@ -1437,7 +1433,6 @@
 <translation id="8998729206196772491">Вы входите в аккаунт, которым управляет администратор домена <ph name="MANAGED_DOMAIN" />. Он может контролировать ваши данные Chrome, которые теперь будут связаны с управляемым аккаунтом. При выходе из системы все данные Chrome, хранящиеся на этом устройстве, будут удалены, но останутся в вашем аккаунте Google.</translation>
 <translation id="9022774213089566801">Часто посещаемые</translation>
 <translation id="9028914725102941583">Включите синхронизацию</translation>
-<translation id="9040142327097499898">Отправка уведомлений разрешена, но определение местоположения отключено.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# видеофайл}one{# видеофайл}few{# видеофайла}many{# видеофайлов}other{# видеофайла}}</translation>
 <translation id="9042893549633094279">Конфиденциальность и безопасность</translation>
 <translation id="9050666287014529139">Кодовая фраза</translation>

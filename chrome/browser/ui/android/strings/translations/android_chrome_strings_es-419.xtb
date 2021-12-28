@@ -366,7 +366,6 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3037517125981011456">Muestra mensajes para acceder a Chrome.</translation>
 <translation id="3046945242843292318">Vuelve a acceder a este sitio más rápido</translation>
 <translation id="3055259925215945098">Se movió el favorito</translation>
-<translation id="305593374596241526">La ubicación está desactivada; actívala en <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> favorito}other{<ph name="BOOKMARKS_COUNT_MANY" /> favoritos}}</translation>
 <translation id="3062802207422175757">Artículos de Chrome relacionados con tus intereses</translation>
 <translation id="3066573403916685335">Bajar</translation>
@@ -410,7 +409,6 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3284510035090979597">Ayuda proactiva</translation>
 <translation id="3285080554353377245">Videos sobre cómo usar Chrome</translation>
 <translation id="3288003805934695103">Volver a cargar la página.</translation>
-<translation id="32895400574683172">Las notificaciones están habilitadas</translation>
 <translation id="3290991969712132877">Para acceder aquí más rápido, agrega esta página a tu pantalla principal desde el botón Más opciones</translation>
 <translation id="3295530008794733555">Navega más rápido; usa menos datos</translation>
 <translation id="3297344142967351106">Asistencia de voz</translation>
@@ -519,7 +517,6 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="3976396876660209797">Quita y vuelve a crear este acceso directo</translation>
 <translation id="3985215325736559418">¿No quieres descargar <ph name="FILE_NAME" /> de nuevo?</translation>
 <translation id="3987993985790029246">Copiar vínculo</translation>
-<translation id="3988213473815854515">Se admite la ubicación.</translation>
 <translation id="3988466920954086464">Los resultados de la búsqueda instantánea se muestran en este panel</translation>
 <translation id="4000212216660919741">Página principal sin conexión</translation>
 <translation id="4016425174436051808">No se puede seguir. Se produjo un error.</translation>
@@ -786,7 +783,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="555816257274242153">Dejaste de seguir el precio</translation>
 <translation id="5561549206367097665">Esperando red…</translation>
 <translation id="5568069709869097550">No puedo acceder</translation>
-<translation id="55737423895878184">La ubicación y las notificaciones están habilitadas</translation>
 <translation id="5578795271662203820">Buscar esta imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">En la <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" />, puedes elegir los datos para sincronizar en cualquier momento.</translation>
 <translation id="5590372121997663538">Recordar esta computadora</translation>
@@ -1437,7 +1433,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8998729206196772491">Estás accediendo con una cuenta administrada por <ph name="MANAGED_DOMAIN" /> y dándole permiso a su administrador para que controle tus datos de Chrome. Tus datos se vincularán de forma permanente a esta cuenta. Si sales de Chrome, tus datos se borrarán en este dispositivo, pero quedarán guardados en tu cuenta de Google.</translation>
 <translation id="9022774213089566801">Visitados con frecuencia</translation>
 <translation id="9028914725102941583">Activa la sincronización para compartir contenido entre dispositivos</translation>
-<translation id="9040142327097499898">Las notificaciones están habilitadas. La ubicación está desactivada en este dispositivo.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# videos}}</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
 <translation id="9050666287014529139">Frase de contraseña</translation>

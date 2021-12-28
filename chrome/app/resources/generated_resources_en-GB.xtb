@@ -1060,6 +1060,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="204914487372604757">Create shortcut</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2053312383184521053">Idle State Data</translation>
+<translation id="2054240652864153171">Clear site data for <ph name="SITE_NAME" /> partitioned on <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">You’ll be signed out of these sites, including in open tabs</translation>
 <translation id="205560151218727633">Google assistant logo</translation>
 <translation id="2058456167109518507">Device detected</translation>
@@ -2405,6 +2406,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3433621910545056227">Oops!  The system failed to establish the device installation-time attributes lock.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account. Find out more about these settings and how to adjust them at families.google.com.</translation>
+<translation id="3434512374684753970">Audio and video</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" is requesting your <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Security</translation>
 <translation id="343578350365773421">Out of paper</translation>
@@ -2851,6 +2853,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3873423927483480833">Show PINs</translation>
 <translation id="3873915545594852654">A problem with ARC++ occurred.</translation>
 <translation id="3874164307099183178">Turn on Google Assistant</translation>
+<translation id="3875783148670536197">Show me how</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> is set to open in a new browser tab. Supported links will also open in the browser. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Nearby Share settings for <ph name="USER_NAME" />'s device, sharing under the account <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Download manager</translation>
@@ -4487,6 +4490,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="562935524653278697">Your administrator has disabled syncing of your bookmarks, history, passwords and other settings.</translation>
 <translation id="5631017369956619646">CPU Usage</translation>
 <translation id="5632059346822207074">Permission requested, press Ctrl + Forward to respond</translation>
+<translation id="5632485077360054581">Show me how</translation>
 <translation id="5632566673632479864">Your account <ph name="EMAIL" /> is no longer allowed as the primary account. Because this account is managed by <ph name="DOMAIN" />, your bookmarks, history, passwords and other settings will be cleared from this device.</translation>
 <translation id="5632592977009207922">Downloading, <ph name="PERCENT_REMAINING" />% remaining</translation>
 <translation id="563371367637259496">Mobile</translation>

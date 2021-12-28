@@ -366,7 +366,6 @@
 <translation id="3037517125981011456">Chromeত ছাইন ইন কৰিবলৈ প্ৰম্প্‌ট প্ৰদৰ্শন কৰে</translation>
 <translation id="3046945242843292318">পৰৱৰ্তী সময়ত এই ছাইটটোলৈ ক্ষিপ্ৰতাৰে আহক</translation>
 <translation id="3055259925215945098">বুকমাৰ্ক স্থানান্তৰ কৰা হৈছে</translation>
-<translation id="305593374596241526">অৱস্থান অফ আছে <ph name="BEGIN_LINK" />Android ছেটিংসমূহত<ph name="END_LINK" /> অন কৰক।</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" />টা বুকমাৰ্ক}one{<ph name="BOOKMARKS_COUNT_MANY" />টা বুকমাৰ্ক}other{<ph name="BOOKMARKS_COUNT_MANY" />টা বুকমাৰ্ক}}</translation>
 <translation id="3062802207422175757">Chromeত আপোনাৰ আগ্ৰহৰ বিষয়বস্তু সম্পৰ্কীয় প্ৰবন্ধসমূহ</translation>
 <translation id="3066573403916685335">তললৈ নিয়ক</translation>
@@ -410,7 +409,6 @@
 <translation id="3284510035090979597">আগতীয়া সহায়</translation>
 <translation id="3285080554353377245">Chrome কেনেকৈ ব্যৱহাৰ কৰিব লাগে সেই সম্পৰ্কে ভিডিঅ'</translation>
 <translation id="3288003805934695103">এই পৃষ্ঠাটো পুনৰ ল’ড কৰি থকা হৈছে</translation>
-<translation id="32895400574683172">জাননীৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="3290991969712132877">দ্ৰুততাৰে ইয়ালৈ আহিবলৈ অধিক বিকল্পৰ বুটামৰ জৰিয়তে এই পৃষ্ঠাখন আপোনাৰ গৃহ স্ক্ৰীনত যোগ দিয়ক</translation>
 <translation id="3295530008794733555">ক্ষিপ্ৰভাৱে ব্ৰাউজ কৰক। কম ডেটা খৰচ কৰক।</translation>
 <translation id="3297344142967351106">ধ্বনিৰ সহায়ত ডিভাইচৰ ব্যৱহাৰ</translation>
@@ -519,7 +517,6 @@
 <translation id="3976396876660209797">এই শ্বৰ্টকাটটো আঁতৰাই ইয়াক আকৌ বনাওক</translation>
 <translation id="3985215325736559418">আপুনি <ph name="FILE_NAME" /> পুনৰ ডাউনল'ড কৰিব খোজে নেকি?</translation>
 <translation id="3987993985790029246">লিংক প্ৰতিলিপি কৰক</translation>
-<translation id="3988213473815854515">অৱস্থানৰ অনুমতি দিয়া হৈছে</translation>
 <translation id="3988466920954086464">এই পেনেলটোত তাৎক্ষণিকভাৱে সন্ধানৰ ফলাফল চাওক</translation>
 <translation id="4000212216660919741">অফলাইন গৃহপৃষ্ঠা</translation>
 <translation id="4016425174436051808">ফ’ল’ কৰিব নোৱাৰি। কিবা ভুল হ’ল।</translation>
@@ -786,7 +783,6 @@
 <translation id="555816257274242153">মূল্য ট্ৰেক কৰাটো অক্ষম কৰা হ’ল</translation>
 <translation id="5561549206367097665">নেটৱৰ্কৰ বাবে অপেক্ষাৰত…</translation>
 <translation id="5568069709869097550">ছাইন ইন কৰিব নোৱাৰি</translation>
-<translation id="55737423895878184">অৱস্থান আৰু জাননীক অনুমতি দিয়া হৈছে</translation>
 <translation id="5578795271662203820">এই ছবিৰ বাবে <ph name="SEARCH_ENGINE" />ত সন্ধান কৰক</translation>
 <translation id="5581519193887989363">আপুনি কি ছিংক কৰিব লাগে সেয়া <ph name="BEGIN_LINK1" />ছেটিংসমূহ<ph name="END_LINK1" />-লৈ গৈ যেতিয়াই মন যায় তেতিয়াই সলনি কৰিব পাৰে।</translation>
 <translation id="5590372121997663538">এই কম্পিউটাৰটো মনত ৰাখিব</translation>
@@ -1437,7 +1433,6 @@
 <translation id="8998729206196772491">আপুনি <ph name="MANAGED_DOMAIN" />এ পৰিচালনা কৰা এটা একাউণ্টৰ জৰিয়তে ছাইন ইন কৰিছে আৰু সেইটোৰ প্ৰশাসকে আপোনাৰ Chrome ডেটা নিয়ন্ত্ৰণ কৰিবলৈ সুবিধা দিছে। আপোনাৰ ডেটা এই একাউণ্টটোৰ সৈতে স্থায়ীভাৱে সংযুক্তহৈ থাকিব। Chromeৰ পৰা ছাইন আউট কৰিলে আপোনাৰ ডেটা মচা যাব কিন্ত সেইবোৰ আপোনাৰ Google একাউণ্টত জমা হৈয়ে থাকিব।</translation>
 <translation id="9022774213089566801">সঘনাই যোৱা</translation>
 <translation id="9028914725102941583">সমগ্ৰ ডিভাইচত শ্বেয়াৰ কৰিবলৈ ছিংক অন কৰক</translation>
-<translation id="9040142327097499898">জাননীৰ অনুমতি দিয়া হৈছে। এই ডিভাইচটোৰ বাবে অৱস্থান অফ কৰা আছে।</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{#টা ভিডিঅ’}one{#টা ভিডিঅ’}other{#টা ভিডিঅ’}}</translation>
 <translation id="9042893549633094279">গোপনীয়তা আৰু সুৰক্ষা</translation>
 <translation id="9050666287014529139">পাছফ্ৰেজ</translation>

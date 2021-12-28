@@ -340,6 +340,7 @@
       Se questo criterio viene impostato su Disattivato o se non viene configurato, l'opzione Stampa come immagine di <ph name="PRODUCT_NAME" /> non sarà disponibile per gli utenti nella finestra Anteprima di stampa e i PDF verranno stampati normalmente senza essere rasterizzati in un'immagine prima di essere inviati alla destinazione.</translation>
 <translation id="1435659902881071157">Configurazione di rete a livello di dispositivo</translation>
 <translation id="1438739959477268107">Impostazione generazione di chiavi predefinite</translation>
+<translation id="1440408958042020947">Consente agli utenti che hanno attivato Phone Hub di accedere a foto e video recenti acquisiti sul loro telefono</translation>
 <translation id="1449083855104537880">Se il criterio è impostato su True, le opzioni di accessibilità vengono mostrate nel menu della barra delle applicazioni. Se il criterio è impostato su False, le opzioni non appaiono nel menu.
 
       Se imposti il criterio, gli utenti non possono modificarlo. Se il criterio non è impostato, le opzioni di accessibilità non vengono mostrate nel menu, ma gli utenti possono farle apparire dalla pagina Impostazioni.
@@ -2296,6 +2297,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3606571057705314194">Selettore profilo disattivato all'avvio</translation>
 <translation id="3627678165642179114">Attiva o disattiva il servizio web di controllo ortografico</translation>
 <translation id="3628480121685794414">Attiva stampa su un lato</translation>
+<translation id="3634125384445314047">Consenti l'accesso tramite Phone Hub a foto e video recenti acquisiti sul telefono.</translation>
 <translation id="3643284063603988867">Attiva la funzionalità "Ricorda password"</translation>
 <translation id="3646859102161347133">Impostazione tipo di ingrandimento dello schermo</translation>
 <translation id="3647212518036289905">La configurazione del criterio consente di specificare quale libreria GSSAPI utilizzare per l'autenticazione HTTP. Imposta il criterio sul nome di una libreria o su un percorso completo.
@@ -6276,6 +6278,11 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
           Questo criterio consente di fornire un valore di riserva per i criteri più specifici <ph name="IDLE_ACTION_AC_POLICY_NAME" /> e <ph name="IDLE_ACTION_BATTERY_POLICY_NAME" />. Se questo criterio viene impostato, il suo valore viene utilizzato se non viene impostato il rispettivo criterio più specifico.
 
           Se questo criterio non viene impostato, il comportamento dei criteri più specifici rimane invariato.</translation>
+<translation id="8349255653850367353">Se questa impostazione viene attivata, gli utenti che hanno già attivato Phone Hub potranno visualizzare e scaricare su Chrome OS foto e video recenti acquisiti sul proprio telefono.
+
+      Se viene disattivata, gli utenti non potranno usare questa funzionalità. Gli utenti non potranno usare questa funzionalità anche se viene disattivato il criterio <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" />.
+
+      Se questo criterio non viene configurato, per impostazione predefinita la funzionalità è consentita sia per gli utenti gestiti a livello aziendale sia per quelli non gestiti.</translation>
 <translation id="8357681633047935212">Limita la durata di una sessione utente</translation>
 <translation id="8357989008292691856">Elenco di utenti autorizzati ad accedere</translation>
 <translation id="8359734107661430198">Attiva l'API ExampleDeprecatedFeature valida fino al 02/09/2008</translation>
@@ -6738,6 +6745,7 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
       Se il criterio non viene impostato o se inserisci una stringa vuota, sul dispositivo viene usato il fuso orario attualmente attivo, che però potrà essere cambiato dagli utenti.</translation>
 <translation id="8880294585549584028">Consenti l'accesso di scrittura di file e directory su questi siti</translation>
 <translation id="8882006618241293596">Blocca il plug-in <ph name="FLASH_PLUGIN_NAME" /> su questi siti</translation>
+<translation id="8882255181490012651">Non consente agli utenti che hanno attivato Phone Hub di accedere a foto e video recenti acquisiti sul loro telefono</translation>
 <translation id="8887709920496070892">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale viene mostrata una finestra di dialogo di avviso.</translation>
 <translation id="8890438048579188548">Nascondi avvisi di ritiro di <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="8892286064305622118">Spazio libero su disco necessario per <ph name="PLUGIN_VM_NAME" /></translation>

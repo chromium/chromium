@@ -366,7 +366,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3037517125981011456">Hiển thị lời nhắc đăng nhập vào Chrome</translation>
 <translation id="3046945242843292318">Truy cập trang web này nhanh hơn vào lần tới</translation>
 <translation id="3055259925215945098">Đã di chuyển dấu trang</translation>
-<translation id="305593374596241526">Đã tắt vị trí; hãy bật vị trí trong mục <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> dấu trang}other{<ph name="BOOKMARKS_COUNT_MANY" /> dấu trang}}</translation>
 <translation id="3062802207422175757">Các bài viết về chủ đề mà bạn quan tâm trên Chrome</translation>
 <translation id="3066573403916685335">Di chuyển xuống</translation>
@@ -410,7 +409,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3284510035090979597">Trợ giúp chủ động</translation>
 <translation id="3285080554353377245">Video về cách sử dụng Chrome</translation>
 <translation id="3288003805934695103">Đang tải lại trang</translation>
-<translation id="32895400574683172">Cho phép thông báo</translation>
 <translation id="3290991969712132877">Để truy cập nhanh hơn, hãy thêm trang này vào Màn hình chính từ nút Tùy chọn khác</translation>
 <translation id="3295530008794733555">Duyệt web nhanh hơn. Sử dụng ít dữ liệu hơn.</translation>
 <translation id="3297344142967351106">Trợ lý thoại</translation>
@@ -519,7 +517,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3976396876660209797">Xóa và tạo lại lối tắt này</translation>
 <translation id="3985215325736559418">Bạn có muốn tải lại <ph name="FILE_NAME" /> xuống không?</translation>
 <translation id="3987993985790029246">Sao chép đường liên kết</translation>
-<translation id="3988213473815854515">Vị trí được cho phép</translation>
 <translation id="3988466920954086464">Xem kết quả tìm kiếm tức thì trong bảng điều khiển này</translation>
 <translation id="4000212216660919741">Nhà ở chế độ không kết nối Internet</translation>
 <translation id="4016425174436051808">Không thể theo dõi. Đã xảy ra lỗi.</translation>
@@ -786,7 +783,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="555816257274242153">Đã dừng theo dõi giá</translation>
 <translation id="5561549206367097665">Đang chờ mạng…</translation>
 <translation id="5568069709869097550">Không thể đăng nhập</translation>
-<translation id="55737423895878184">Cho phép vị trí và thông báo</translation>
 <translation id="5578795271662203820">Tìm ảnh này trên <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Bạn luôn có thể chọn nội dung muốn đồng bộ hóa trong phần <ph name="BEGIN_LINK1" />cài đặt<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Nhớ máy tính này</translation>
@@ -1437,7 +1433,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8998729206196772491">Bạn đang đăng nhập bằng tài khoản do <ph name="MANAGED_DOMAIN" /> quản lý và cấp cho quản trị viên quyền kiểm soát dữ liệu Chrome của bạn. Dữ liệu của bạn sẽ được liên kết vĩnh viễn với tài khoản này. Việc đăng xuất khỏi Chrome sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu sẽ vẫn được lưu trữ trong Tài khoản Google.</translation>
 <translation id="9022774213089566801">Truy cập thường xuyên</translation>
 <translation id="9028914725102941583">Bật tính năng đồng bộ hóa để chia sẻ giữa các thiết bị</translation>
-<translation id="9040142327097499898">Cho phép thông báo. Đã tắt vị trí đối với thiết bị này.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# video}}</translation>
 <translation id="9042893549633094279">Quyền riêng tư và bảo mật</translation>
 <translation id="9050666287014529139">Cụm mật khẩu</translation>

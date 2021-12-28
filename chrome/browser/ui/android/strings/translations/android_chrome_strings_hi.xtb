@@ -363,7 +363,6 @@
 <translation id="3037517125981011456">Chrome में साइन इन करने के निर्देश दिखाता है</translation>
 <translation id="3046945242843292318">अगली बार यह साइट तेज़ी से ऐक्सेस हो</translation>
 <translation id="3055259925215945098">बुकमार्क को एक से दूसरी जगह ले जाया गया</translation>
-<translation id="305593374596241526">स्थान सेवा बंद है, उसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> बुकमार्क}one{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}other{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}}</translation>
 <translation id="3062802207422175757">Chrome पर आपकी पसंद के लेख</translation>
 <translation id="3066573403916685335">नीचे ले जाएं</translation>
@@ -407,7 +406,6 @@
 <translation id="3284510035090979597">बिन मांगे मदद</translation>
 <translation id="3285080554353377245">Chrome को इस्तेमाल करने का तरीका बताने वाला वीडियो</translation>
 <translation id="3288003805934695103">पेज को पुनः लोड करें</translation>
-<translation id="32895400574683172">सूचनाओं की अनुमति है</translation>
 <translation id="3290991969712132877">इसे और जल्दी ऐक्सेस करने के लिए, 'ज़्यादा विकल्प' बटन पर क्लिक करके, इस पेज को अपनी होम स्क्रीन पर जोड़ें</translation>
 <translation id="3295530008794733555">तेज़ी से ब्राउज़ करें. कम डेटा इस्तेमाल करें.</translation>
 <translation id="3297344142967351106">आवाज़ से डिवाइस का इस्तेमाल करना</translation>
@@ -515,7 +513,6 @@
 <translation id="3976396876660209797">इस शॉर्टकट को निकालें और इसे फिर से बनाएं</translation>
 <translation id="3985215325736559418">क्या आप <ph name="FILE_NAME" /> को फिर से डाउनलोड करना चाहते हैं?</translation>
 <translation id="3987993985790029246">लिंक की प्रति बनाएं</translation>
-<translation id="3988213473815854515">स्‍थान अनुमत है</translation>
 <translation id="3988466920954086464">झटपट खोज नतीजे इस पैनल में देखें</translation>
 <translation id="4000212216660919741">ऑफ़लाइन होम</translation>
 <translation id="4016425174436051808">फ़ॉलो नहीं कर सकते. कोई गड़बड़ी हुई.</translation>
@@ -778,7 +775,6 @@
 <translation id="555816257274242153">कीमत को ट्रैक करना रोका गया</translation>
 <translation id="5561549206367097665">नेटवर्क का इंतज़ार किया जा रहा है…</translation>
 <translation id="5568069709869097550">साइन इन नहीं किया जा सकता</translation>
-<translation id="55737423895878184">स्थान और सूचनाओं की अनुमति है</translation>
 <translation id="5578795271662203820">इस इमेज के लिए <ph name="SEARCH_ENGINE" /> पर खोजें</translation>
 <translation id="5581519193887989363">आप जब चाहें तब <ph name="BEGIN_LINK1" />सेटिंग<ph name="END_LINK1" /> में जाकर किसी भी चीज़ को सिंक करने का विकल्प चुन सकते हैं.</translation>
 <translation id="5599455543593328020">गुप्त मोड</translation>
@@ -1425,7 +1421,6 @@
 <translation id="8998729206196772491">आप <ph name="MANAGED_DOMAIN" /> से प्रबंधित खाते में साइन इन कर रहे हैं और उसके एडमिन को अपने Chrome डेटा पर नियंत्रण दे रहे हैं. आपका डेटा इस खाते से स्थायी रूप से जुड़ जाएगा. Chrome से साइन आउट करने से आपका डेटा इस डिवाइस से मिट जाएगा, लेकिन वह आपके Google खाते में बना रहेगा.</translation>
 <translation id="9022774213089566801">अक्सर देखी जाने वाली वेबसाइटें</translation>
 <translation id="9028914725102941583">सभी डिवाइस पर शेयर करने के लिए सिंक की सुविधा चालू करें</translation>
-<translation id="9040142327097499898">सूचनाओं की अनुमति है. इस डिवाइस के लिए स्थान की जानकारी बंद है.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# वीडियो}one{# वीडियो}other{# वीडियो}}</translation>
 <translation id="9042893549633094279">निजता और सुरक्षा</translation>
 <translation id="9050666287014529139">पासफ़्रेज़ (लंबा पासवर्ड)</translation>

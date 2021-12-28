@@ -366,7 +366,6 @@
 <translation id="3037517125981011456">Chrome मा साइन इन गर्ने निर्देशन देखाउँछ</translation>
 <translation id="3046945242843292318">अर्को पटक यो साइट अझ छिटो खोल्नुहोस्</translation>
 <translation id="3055259925215945098">बुकमार्क सारियो</translation>
-<translation id="305593374596241526">स्थानसम्बन्धी सुविधा निष्क्रिय छ; <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई सक्रिय गर्नुहोस्।</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> पुस्तक चिन्ह}other{<ph name="BOOKMARKS_COUNT_MANY" /> पुस्तक चिन्हहरू}}</translation>
 <translation id="3062802207422175757">Chrome मा तपाईंको रुचिका विषयसँग सम्बन्धित लेखहरू पढ्नुहोस्</translation>
 <translation id="3066573403916685335">तल सार्नुहोस्</translation>
@@ -410,7 +409,6 @@
 <translation id="3284510035090979597">क्रियाशील मद्दत</translation>
 <translation id="3285080554353377245">Chrome प्रयोग गर्ने तरिका देखाउने भिडियोहरू</translation>
 <translation id="3288003805934695103">पृष्ठलाई पुनः लोड गर्नुहोस्</translation>
-<translation id="32895400574683172">यस कार्यका लागि सूचनाहरूलाई अनुमति दिइएको छ</translation>
 <translation id="3290991969712132877">यही पेजमा अझ छिटो जान 'थप विकल्पहरू' बटनमा क्लिक गरी आफ्नो होम स्क्रिनमा सो पेज हाल्नुहोस्</translation>
 <translation id="3295530008794733555">अझ छिटो ब्राउज गर्नुहोस्। कम डेटा प्रयोग गर्नुहोस्।</translation>
 <translation id="3297344142967351106">आवाज सहायता</translation>
@@ -519,7 +517,6 @@
 <translation id="3976396876660209797">यो सर्टकट हटाउनुहोस्‌ र यसलाई पुन: सिर्जना गर्नुहोस्‌</translation>
 <translation id="3985215325736559418">तपाईं फेरि <ph name="FILE_NAME" /> डाउनलोड गर्न चाहनुहुन्छ?</translation>
 <translation id="3987993985790029246">लिंक प्रतिलिपि गर्नुहोस्</translation>
-<translation id="3988213473815854515">स्थानलाई अनुमति दिइएको छ</translation>
 <translation id="3988466920954086464">यस प्यानलमा खोजका तात्कालिक परिणामहरू हेर्नुहोस्</translation>
 <translation id="4000212216660919741">अफलाइन गृहपृष्ठ</translation>
 <translation id="4016425174436051808">फलो गर्न सकिएन। केही चिज गडबड भयो।</translation>
@@ -785,7 +782,6 @@
 <translation id="555816257274242153">मूल्य ट्रयाक गर्ने सुविधा अफ गरिएको छ</translation>
 <translation id="5561549206367097665">नेटवर्कको प्रतीक्षा गर्दै…</translation>
 <translation id="5568069709869097550">साइन इन गर्न सक्दैन</translation>
-<translation id="55737423895878184">यस कार्यका लागि लोकेसन सर्भिस तथा सूचनाहरूलाई अनुमति छ</translation>
 <translation id="5578795271662203820">यस छविको लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="5581519193887989363">तपाईं जुनसुकै बेला <ph name="BEGIN_LINK1" />सेटिङहरू<ph name="END_LINK1" /> मा गई सिंक गर्ने कुरा छनौट गर्न सक्नुहुन्छ।</translation>
 <translation id="5590372121997663538">यो कम्प्युटर याद राखियोस्</translation>
@@ -1436,7 +1432,6 @@
 <translation id="8998729206196772491">तपाईं <ph name="MANAGED_DOMAIN" /> द्वारा व्यवस्थापन गरिएको खाता मार्फत साइन इन गर्दै हुनुहुन्छ र त्यसको प्रशासकलाई तपाईंको Chrome को डेटालाई नियन्त्रण गर्न दिँदै हुनुहुन्छ। तपाईंको डेटा सदाका लागि यस खातामा बाँधिनेछ। Chrome बाट साइन आउट गर्नाले तपाईंको डेटा यस डिभाइसबाट मेटिनेछ तर यो तपाईंको Google खातामा भण्डारण गरिएको अवस्थामा रहनेछ।</translation>
 <translation id="9022774213089566801">बारम्बार हेरिएका</translation>
 <translation id="9028914725102941583">यन्त्रहरूभरि आदान प्रदान गर्न सिंक गर्ने सुविधा सक्रिय गर्नुहोस्</translation>
-<translation id="9040142327097499898">सूचनाहरूलाई अनुमति दिइएको छ। यो डिभाइसमा स्थानसम्बन्धी सुविधा निष्क्रिय पारिएको छ।</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# भिडियो}other{# भिडियोहरू}}</translation>
 <translation id="9042893549633094279">गोपनीयता र सुरक्षा</translation>
 <translation id="9050666287014529139">पासफ्रेज</translation>

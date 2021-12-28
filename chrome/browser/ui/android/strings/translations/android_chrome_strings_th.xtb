@@ -366,7 +366,6 @@
 <translation id="3037517125981011456">แสดงข้อความแจ้งให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="3046945242843292318">ไปที่เว็บไซต์นี้ได้เร็วขึ้นในครั้งถัดไป</translation>
 <translation id="3055259925215945098">ย้ายบุ๊กมาร์กแล้ว</translation>
-<translation id="305593374596241526">ตอนนี้ตำแหน่งปิดอยู่ เปิดตำแหน่งได้ใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /></translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{บุ๊กมาร์ก <ph name="BOOKMARKS_COUNT_ONE" /> รายการ}other{บุ๊กมาร์ก <ph name="BOOKMARKS_COUNT_MANY" /> รายการ}}</translation>
 <translation id="3062802207422175757">บทความที่เกี่ยวข้องกับความสนใจของคุณใน Chrome</translation>
 <translation id="3066573403916685335">เลื่อนลง</translation>
@@ -410,7 +409,6 @@
 <translation id="3284510035090979597">ความช่วยเหลือแบบเสนอโดยไม่ต้องขอ</translation>
 <translation id="3285080554353377245">วิดีโอเกี่ยวกับวิธีใช้ Chrome</translation>
 <translation id="3288003805934695103">โหลดหน้าใหม่</translation>
-<translation id="32895400574683172">อนุญาตให้แสดงการแจ้งเตือน</translation>
 <translation id="3290991969712132877">หากต้องการไปที่หน้านี้ให้เร็วขึ้น ให้เพิ่มลงในหน้าจอหลักโดยใช้ปุ่ม "ตัวเลือกเพิ่มเติม"</translation>
 <translation id="3295530008794733555">ท่องเว็บได้เร็วขึ้น ใช้เน็ตน้อยลง</translation>
 <translation id="3297344142967351106">เสียงผู้ช่วย</translation>
@@ -519,7 +517,6 @@
 <translation id="3976396876660209797">นำทางลัดนี้ออกแล้วสร้างใหม่</translation>
 <translation id="3985215325736559418">คุณต้องการดาวน์โหลด <ph name="FILE_NAME" /> อีกครั้งไหม</translation>
 <translation id="3987993985790029246">คัดลอกลิงก์</translation>
-<translation id="3988213473815854515">อนุญาตตำแหน่ง</translation>
 <translation id="3988466920954086464">ดูผลการค้นหาทันใจในแผงนี้</translation>
 <translation id="4000212216660919741">หน้าแรกออฟไลน์</translation>
 <translation id="4016425174436051808">ติดตามไม่ได้ เกิดข้อผิดพลาด</translation>
@@ -786,7 +783,6 @@
 <translation id="555816257274242153">หยุดติดตามราคาแล้ว</translation>
 <translation id="5561549206367097665">กำลังรอเครือข่าย…</translation>
 <translation id="5568069709869097550">ไม่สามารถลงชื่อเข้าใช้</translation>
-<translation id="55737423895878184">อนุญาตให้ใช้ตำแหน่งและแสดงการแจ้งเตือน</translation>
 <translation id="5578795271662203820">ค้นหาภาพนี้ใน <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK1" />การตั้งค่า<ph name="END_LINK1" /></translation>
 <translation id="5590372121997663538">จำคอมพิวเตอร์เครื่องนี้</translation>
@@ -1437,7 +1433,6 @@
 <translation id="8998729206196772491">คุณกำลังลงชื่อเข้าใช้ด้วยบัญชีที่จัดการโดย <ph name="MANAGED_DOMAIN" /> และทำให้ผู้ดูแลระบบของโดเมนควบคุมข้อมูล Chrome ของคุณได้ ข้อมูลดังกล่าวจะโยงกับบัญชีนี้อย่างถาวร การออกจากระบบ Chrome จะลบข้อมูลของคุณออกจากอุปกรณ์เครื่องนี้ แต่ข้อมูลจะยังจัดเก็บอยู่ในบัญชี Google</translation>
 <translation id="9022774213089566801">เข้าชมบ่อย</translation>
 <translation id="9028914725102941583">เปิดการซิงค์เพื่อแชร์ข้ามอุปกรณ์</translation>
-<translation id="9040142327097499898">อนุญาตให้แสดงการแจ้งเตือน ตำแหน่งสำหรับอุปกรณ์เครื่องนี้ปิดอยู่</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{วิดีโอ # รายการ}other{วิดีโอ # รายการ}}</translation>
 <translation id="9042893549633094279">ข้อมูลส่วนบุคคลและความปลอดภัย</translation>
 <translation id="9050666287014529139">ข้อความรหัสผ่าน</translation>

@@ -1048,6 +1048,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="204914487372604757">Sortu lasterbidea</translation>
 <translation id="2050339315714019657">Bertikala</translation>
 <translation id="2053312383184521053">Jarduerarik gabeko egoeraren datuak</translation>
+<translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" /> webgunean zatituta dagoen <ph name="SITE_NAME" /> webguneko datuak garbitu nahi dituzu?</translation>
 <translation id="2055585478631012616">Webgune horietako saioa amaituko da, baita irekita dauden fitxetakoa ere</translation>
 <translation id="205560151218727633">Google-ren Laguntzailea zerbitzuaren logotipoa</translation>
 <translation id="2058456167109518507">Hautemandako gailua</translation>
@@ -2389,6 +2390,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3433621910545056227">Sistemak ezin izan du ezarri gailuaren instalazio-atributuen blokeoa.</translation>
 <translation id="3434107140712555581">% <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="3434272557872943250">Haurraren kontuko Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek haren Google-ko kontuan gordetzea. Lortu ezarpen horiei buruzko informazio gehiago eta ikasi haiek doitzen families.google.com helbidean.</translation>
+<translation id="3434512374684753970">Audioa eta bideoa</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" luzapenak <ph name="CODE_TYPE" /> kodea eskatu du</translation>
 <translation id="3435738964857648380">Segurtasuna</translation>
 <translation id="343578350365773421">Papera agortu da</translation>
@@ -2835,6 +2837,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3873423927483480833">Erakutsi PIN kodeak</translation>
 <translation id="3873915545594852654">Arazo bat izan da ARC++ eginbidearekin.</translation>
 <translation id="3874164307099183178">Aktibatu Google-ren Laguntzailea</translation>
+<translation id="3875783148670536197">Erakutsi nola</translation>
 <translation id="3875815154304214043">Arakatzaileko beste fitxa batean irekitzeko konfiguratuta dago <ph name="APP_NAME" />. Esteka bateragarriak ere irekiko dira arakatzailean. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Nearby Share-ren ezarpenak <ph name="USER_NAME" /> erabiltzailearen gailurako; <ph name="USER_EMAIL" /> kontuaren bidez partekatzen dira.</translation>
 <translation id="3879748587602334249">Deskargen kudeatzailea</translation>
@@ -4470,6 +4473,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="562935524653278697">Laster-marken, historiaren, pasahitzen eta bestelako ezarpen batzuen sinkronizazioa desgaitu du administratzaileak.</translation>
 <translation id="5631017369956619646">PUZren erabilera</translation>
 <translation id="5632059346822207074">Baimena eskatu da. Erantzuteko, sakatu Kontrol eta Aurrera.</translation>
+<translation id="5632485077360054581">Erakutsi nola</translation>
 <translation id="5632566673632479864"><ph name="EMAIL" /> kontua ezin da erabili jada kontu nagusi gisa. Kontu hau <ph name="DOMAIN" /> domeinuak kudeatzen duenez, kendu egingo dira gailutik laster-markak, historia, pasahitzak eta bestelako ezarpenak.</translation>
 <translation id="5632592977009207922">Deskargatzen; % <ph name="PERCENT_REMAINING" /> geratzen da</translation>
 <translation id="563371367637259496">Sare mugikorra</translation>

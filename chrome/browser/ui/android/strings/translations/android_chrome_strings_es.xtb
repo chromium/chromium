@@ -366,7 +366,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3037517125981011456">Muestra solicitudes para iniciar sesión en Chrome</translation>
 <translation id="3046945242843292318">Llega más rápido a este sitio la próxima vez</translation>
 <translation id="3055259925215945098">Marcador movido</translation>
-<translation id="305593374596241526">La ubicación está desactivada. Actívala en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> marcador}other{<ph name="BOOKMARKS_COUNT_MANY" /> marcadores}}</translation>
 <translation id="3062802207422175757">Artículos sobre tus intereses en Chrome</translation>
 <translation id="3066573403916685335">Mover hacia abajo</translation>
@@ -410,7 +409,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3284510035090979597">Ayuda proactiva</translation>
 <translation id="3285080554353377245">Vídeos sobre cómo usar Chrome</translation>
 <translation id="3288003805934695103">Volver a cargar la página</translation>
-<translation id="32895400574683172">Las notificaciones están permitidas</translation>
 <translation id="3290991969712132877">Para acceder a esta página más rápido, añádela a tu pantalla de inicio con el botón Más opciones</translation>
 <translation id="3295530008794733555">Navega más rápido. Usa menos datos.</translation>
 <translation id="3297344142967351106">Asistente de voz</translation>
@@ -519,7 +517,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3976396876660209797">Quita esta combinación de teclas y vuelve a crearla</translation>
 <translation id="3985215325736559418">¿Quieres volver a descargar el archivo <ph name="FILE_NAME" />?</translation>
 <translation id="3987993985790029246">Copiar enlace</translation>
-<translation id="3988213473815854515">Se permite la ubicación</translation>
 <translation id="3988466920954086464">Ver resultados de búsqueda instantánea en este panel</translation>
 <translation id="4000212216660919741">Página principal del modo sin conexión</translation>
 <translation id="4016425174436051808">No se puede seguir. Se ha producido un error.</translation>
@@ -786,7 +783,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="555816257274242153">Se ha dejado de seguir el precio</translation>
 <translation id="5561549206367097665">Esperando red…</translation>
 <translation id="5568069709869097550">No puedo iniciar sesión</translation>
-<translation id="55737423895878184">Las notificaciones y la ubicación están permitidas</translation>
 <translation id="5578795271662203820">Buscar esta imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5581519193887989363">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK1" />ajustes<ph name="END_LINK1" />.</translation>
 <translation id="5590372121997663538">Recordar este ordenador</translation>
@@ -1437,7 +1433,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8998729206196772491">Estás iniciando sesión con una cuenta gestionada por <ph name="MANAGED_DOMAIN" />, lo que significa que vas a proporcionar a su administrador el control sobre tus datos de Chrome. Los datos se vincularán de forma permanente a esta cuenta. Si cierras sesión en Chrome, se eliminarán los datos de este dispositivo, pero permanecerán almacenados en tu cuenta de Google.</translation>
 <translation id="9022774213089566801">Visitados con frecuencia</translation>
 <translation id="9028914725102941583">Activar la sincronización para compartir con otros dispositivos</translation>
-<translation id="9040142327097499898">Las notificaciones están permitidas. La ubicación está desactivada en este dispositivo.</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vídeo}other{# vídeos}}</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
 <translation id="9050666287014529139">Frase de contraseña</translation>
