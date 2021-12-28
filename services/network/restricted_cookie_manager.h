@@ -20,6 +20,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/cookies/cookie_partition_key_collection.h"
 #include "net/cookies/cookie_store.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
@@ -83,10 +84,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
     origin_ = new_origin;
   }
   void OverrideIsolationInfoForTesting(
-      const net::IsolationInfo& new_isolation_info) {
-    isolation_info_ = new_isolation_info;
-    ComputeCookiePartitionKey();
-  }
+      const net::IsolationInfo& new_isolation_info);
 
   const CookieSettings& cookie_settings() const { return cookie_settings_; }
 
@@ -127,10 +125,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
  private:
   // The state associated with a CookieChangeListener.
   class Listener;
-
-  // Computes the cookie partition key that this instance will have access to.
-  // Should only be called in the constructor or in ...ForTesting methods.
-  void ComputeCookiePartitionKey();
 
   // Returns true if the RCM instance can read and/or set partitioned cookies.
   bool IsPartitionedCookiesEnabled() const;
@@ -210,11 +204,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Cookie partition key that the instance of RestrictedCookieManager will have
-  // access to.
+  // access to. Must be set only in the constructor or in *ForTesting methods.
   absl::optional<net::CookiePartitionKey> cookie_partition_key_;
   // CookiePartitionKeyCollection that is either empty if
   // `cookie_partition_key_` is nullopt. If `cookie_partition_key_` is not null,
-  // the key collection contains its value.
+  // the key collection contains its value. Must be kept in sync with
+  // `cookie_partition_key_`.
   net::CookiePartitionKeyCollection cookie_partition_key_collection_;
 
   // Contains a mapping of url/site -> recent cookie updates for duplicate

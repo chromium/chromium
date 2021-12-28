@@ -138,6 +138,16 @@ net::CookieOptions MakeOptionsForGet(
   return options;
 }
 
+// Computes the cookie partition key that corresponds to the given
+// `cookie_store` and `isolation_info`.
+absl::optional<net::CookiePartitionKey> ComputeCookiePartitionKey(
+    const net::CookieStore* cookie_store,
+    const net::IsolationInfo& isolation_info) {
+  return net::CookieAccessDelegate::CreateCookiePartitionKey(
+      cookie_store->cookie_access_delegate(),
+      isolation_info.network_isolation_key());
+}
+
 }  // namespace
 
 bool CookieWithAccessResultComparer::operator()(
@@ -332,7 +342,10 @@ RestrictedCookieManager::RestrictedCookieManager(
   DCHECK(cookie_store);
   CHECK(origin_ == isolation_info_.frame_origin().value() ||
         role_ != mojom::RestrictedCookieManagerRole::SCRIPT);
-  ComputeCookiePartitionKey();
+  cookie_partition_key_ =
+      ComputeCookiePartitionKey(cookie_store, isolation_info);
+  cookie_partition_key_collection_ =
+      net::CookiePartitionKeyCollection::FromOptional(cookie_partition_key_);
 }
 
 RestrictedCookieManager::~RestrictedCookieManager() {
@@ -347,10 +360,11 @@ RestrictedCookieManager::~RestrictedCookieManager() {
   }
 }
 
-void RestrictedCookieManager::ComputeCookiePartitionKey() {
-  cookie_partition_key_ = net::CookieAccessDelegate::CreateCookiePartitionKey(
-      cookie_store_->cookie_access_delegate(),
-      isolation_info_.network_isolation_key());
+void RestrictedCookieManager::OverrideIsolationInfoForTesting(
+    const net::IsolationInfo& new_isolation_info) {
+  isolation_info_ = new_isolation_info;
+  cookie_partition_key_ =
+      ComputeCookiePartitionKey(cookie_store_, isolation_info_);
   cookie_partition_key_collection_ =
       net::CookiePartitionKeyCollection::FromOptional(cookie_partition_key_);
 }
