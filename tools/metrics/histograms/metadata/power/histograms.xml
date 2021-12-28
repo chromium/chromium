@@ -1519,7 +1519,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="PowerML.SmartDimModel.RequestCanceledDuration" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>amoylan@chromium.org</owner>
   <owner>napper@chromium.org</owner>
   <owner>napper@chromium.org</owner>

@@ -536,7 +536,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DataUse.AppTabState" units="bytes" expires_after="2022-04-24">
+<histogram name="DataUse.AppTabState" units="bytes" expires_after="2022-06-26">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -591,7 +591,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DataUse.BytesSent" units="bytes" expires_after="2022-04-24">
+<histogram name="DataUse.BytesSent" units="bytes" expires_after="2022-06-26">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -642,7 +642,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DataUse.TrafficSize.User" units="bytes"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>

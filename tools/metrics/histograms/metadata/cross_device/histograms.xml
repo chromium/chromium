@@ -1797,7 +1797,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.ReceiveAdvertisementToAuthentication.EffectiveSuccessRateWithRetries"
-    enum="BooleanSuccess" expires_after="2022-04-24">
+    enum="BooleanSuccess" expires_after="2022-06-26">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

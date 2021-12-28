@@ -2206,7 +2206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrotliFilter.CompressionPercent" units="%"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>eustas@chromium.org</owner>
   <summary>Compressed/Decompressed size ratio.</summary>
 </histogram>
@@ -14875,7 +14875,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Supervision.ParentAccessCode.Action"
-    enum="ParentAccessCodeAction" expires_after="2022-04-24">
+    enum="ParentAccessCodeAction" expires_after="2022-06-26">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
