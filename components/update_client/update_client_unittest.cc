@@ -2833,14 +2833,16 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
   EXPECT_EQ(ComponentState::kUpdated, items[5].state);
   EXPECT_STREQ("jebgalgnebhfojomionfpkfelancnnkf", items[5].id.c_str());
 
-  const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(
-      *config()->GetPrefService()->GetDictionary("updateclientdata"));
-  std::string pv;
-  dict->GetString("apps.jebgalgnebhfojomionfpkfelancnnkf.pv", &pv);
-  EXPECT_STREQ("1.0", pv.c_str());
-  std::string fingerprint;
-  dict->GetString("apps.jebgalgnebhfojomionfpkfelancnnkf.fp", &fingerprint);
-  EXPECT_STREQ("some-fingerprint", fingerprint.c_str());
+  const base::Value* dict =
+      config()->GetPrefService()->GetDictionary("updateclientdata");
+  const std::string* pv =
+      dict->FindStringPath("apps.jebgalgnebhfojomionfpkfelancnnkf.pv");
+  ASSERT_TRUE(pv);
+  EXPECT_STREQ("1.0", pv->c_str());
+  const std::string* fingerprint =
+      dict->FindStringPath("apps.jebgalgnebhfojomionfpkfelancnnkf.fp");
+  ASSERT_TRUE(fingerprint);
+  EXPECT_STREQ("some-fingerprint", fingerprint->c_str());
 
   update_client->RemoveObserver(&observer);
 }
