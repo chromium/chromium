@@ -143,7 +143,6 @@ extern const char kChromeUIOmniboxHost[];
 extern const char kChromeUIOmniboxURL[];
 #if defined(OS_CHROMEOS)
 extern const char kChromeUIAppDisabledURL[];
-extern const char kChromeUIOsCroshAppURL[];
 extern const char kChromeUIOsFlagsAppURL[];
 extern const char kChromeUIOsUrlAppURL[];
 #endif
@@ -330,9 +329,6 @@ extern const char kChromeUIUserImageURL[];
 extern const char kChromeUIVmHost[];
 extern const char kChromeUIVmUrl[];
 
-extern const char kOsUICroshURL[];
-extern const char kOsUIFileManagerURL[];
-extern const char kOsUITerminalURL[];
 extern const char kOsUIAccountManagerErrorURL[];
 extern const char kOsUIAccountManagerWelcomeURL[];
 extern const char kOsUIAccountMigrationWelcomeURL[];

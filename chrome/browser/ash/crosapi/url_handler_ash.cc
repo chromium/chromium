@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
@@ -18,6 +19,20 @@
 #include "url/url_constants.h"
 
 namespace {
+
+// Various schemes which we use and which are not defined anywhere.
+const char kChromeScheme[] = "chrome";
+const char kChromeUrlPrefix[] = "chrome://";
+const char kChromeUntrustedScheme[] = "chrome-untrusted";
+
+const char kFileManagerHost[] = "file-manager";
+
+// Checks if a given URL is a valid file manager URL (trusted or untrusted).
+bool IsFileManagerUrl(const GURL& url) {
+  return url.has_host() && url.host() == kFileManagerHost && url.has_scheme() &&
+         (url.scheme() == kChromeScheme ||
+          url.scheme() == kChromeUntrustedScheme);
+}
 
 // Show a chrome:// (os://) app for a given URL.
 void ShowOsAppForProfile(Profile* profile,
@@ -85,21 +100,18 @@ void UrlHandlerAsh::OpenUrl(const GURL& url) {
       target_url == GURL(chrome::kOsUIFlagsURL)) {
     app_id = web_app::SystemAppType::OS_FLAGS;
     target_url = GURL(chrome::kChromeUIFlagsURL);
-  } else if (target_url == GURL(chrome::kChromeUIUntrustedCroshURL) ||
-             target_url == GURL(chrome::kOsUICroshURL) ||
-             target_url == GURL(chrome::kChromeUIOsCroshAppURL)) {
+  } else if (target_url == GURL(chrome::kChromeUIUntrustedCroshURL)) {
     app_id = web_app::SystemAppType::CROSH;
-    target_url = GURL(chrome::kChromeUIUntrustedCroshURL);
+  } else if (IsFileManagerUrl(target_url)) {
+    app_id = web_app::SystemAppType::FILE_MANAGER;
+  } else if (target_url == GURL(chrome::kChromeUIScanningAppURL)) {
+    app_id = web_app::SystemAppType::SCANNING;
   } else if (ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
                  target_url)) {
     app_id = web_app::SystemAppType::OS_URL_HANDLER;
-    // Convert a os://<url> into a chrome://<url> or chrome-untrusted://<url>.
-    if (target_url == GURL(chrome::kOsUITerminalURL) ||
-        target_url == GURL(chrome::kOsUIFileManagerURL)) {
-      target_url = GURL("chrome-untrusted://" + target_url.host());
-    } else if (crosapi::gurl_os_handler_utils::IsAshOsUrl(target_url)) {
+    if (crosapi::gurl_os_handler_utils::IsAshOsUrl(target_url)) {
       target_url =
-          GURL("chrome://" +
+          GURL(kChromeUrlPrefix +
                crosapi::gurl_os_handler_utils::AshOsUrlHost(target_url));
     }
   } else {
