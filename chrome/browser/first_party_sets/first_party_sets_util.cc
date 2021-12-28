@@ -8,10 +8,8 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace {
 
@@ -45,27 +43,10 @@ void MaybeWriteSetsToDisk(const base::FilePath& path, const std::string& sets) {
   }
 }
 
-void OnGetUpdatedSets(const base::FilePath& path, const std::string& sets) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&MaybeWriteSetsToDisk, path, sets));
-}
-
-void SendPersistedSets(
-    base::OnceCallback<void(base::OnceCallback<void(const std::string&)>,
-                            const std::string&)> send_sets,
-    const base::FilePath& path,
-    const std::string& sets) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::move(send_sets).Run(base::BindOnce(&OnGetUpdatedSets, path), sets);
-}
-
 }  // namespace
 
 // static
 FirstPartySetsUtil* FirstPartySetsUtil::GetInstance() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   static base::NoDestructor<FirstPartySetsUtil> instance;
   return instance.get();
 }
@@ -74,14 +55,36 @@ void FirstPartySetsUtil::SendAndUpdatePersistedSets(
     const base::FilePath& user_data_dir,
     base::OnceCallback<void(base::OnceCallback<void(const std::string&)>,
                             const std::string&)> send_sets) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!user_data_dir.empty());
   const base::FilePath persisted_sets_path =
       user_data_dir.Append(kPersistedFirstPartySetsFileName);
 
+  // base::Unretained(this) is safe here because this is a static singleton.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&LoadSetsFromDisk, persisted_sets_path),
-      base::BindOnce(&SendPersistedSets, std::move(send_sets),
+      base::BindOnce(&FirstPartySetsUtil::SendPersistedSets,
+                     base::Unretained(this), std::move(send_sets),
                      persisted_sets_path));
+}
+
+void FirstPartySetsUtil::OnGetUpdatedSets(const base::FilePath& path,
+                                          const std::string& sets) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&MaybeWriteSetsToDisk, path, sets));
+}
+
+void FirstPartySetsUtil::SendPersistedSets(
+    base::OnceCallback<void(base::OnceCallback<void(const std::string&)>,
+                            const std::string&)> send_sets,
+    const base::FilePath& path,
+    const std::string& sets) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // base::Unretained(this) is safe here because this is a static singleton.
+  std::move(send_sets).Run(base::BindOnce(&FirstPartySetsUtil::OnGetUpdatedSets,
+                                          base::Unretained(this), path),
+                           sets);
 }

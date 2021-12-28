@@ -13,7 +13,7 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
-#include "content/public/test/browser_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,8 +30,7 @@ class FirstPartySetsUtilTest : public ::testing::Test {
  protected:
   base::ScopedTempDir scoped_dir_;
   base::FilePath persisted_sets_path_;
-  // Need to satisfy DCHECK_CURRENTLY_ON(BrowserThread::UI).
-  content::BrowserTaskEnvironment env_;
+  base::test::TaskEnvironment env_;
 };
 
 TEST_F(FirstPartySetsUtilTest, SendAndUpdatePersistedSets_FileNotExist) {
