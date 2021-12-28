@@ -1538,6 +1538,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="V8.WasmCacheCount" units="count" expires_after="2022-06-30">
   <owner>ahaas@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Number of times a WebAssembly module being added to the browser cache. With
     dynamic tiering, caching is triggered repeatedly whenever the amount of
@@ -1550,6 +1551,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="V8.WasmCatchCount" units="count" expires_after="2022-09-01">
   <owner>thibaudm@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Number of exceptions caught so far in an isolate, recorded on each caught
     exception.
@@ -1560,6 +1562,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-06-30">
   <owner>ahaas@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     After deserialization, all functions that were not in the serialized module
     are compiled with the baseline compiler. This metric measures the time spent
@@ -1573,6 +1576,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Time to compile a WebAssembly function. Recorded on each compilation of a
     single function, either synchronous, asynchronous, or lazily.
@@ -1590,6 +1594,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Peak memory used to compile a WebAssembly function. Recorded for each
     TurboFan compilation of a WebAssembly function.
@@ -1600,6 +1605,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-06-12">
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Time to compile a huge WebAssembly function. A function is considered huge
     if it is larger than 100kB. Recorded on each compilation of such a function,
@@ -1611,6 +1617,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-06-19">
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Peak memory used to compile a huge WebAssembly function. A function is
     considered huge if it is larger than 100kB. Recorded for each TurboFan
@@ -1623,6 +1630,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Time to asynchronously compile a WebAssembly module (using the
     'WebAssembly.compile' API). Recorded on each asynchronous WebAssembly
@@ -1635,6 +1643,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Time to compile a WebAssembly module. Recorded on each synchronous
     WebAssembly compilation.
@@ -1652,6 +1661,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Time to asynchronously compile a WebAssembly module using streaming
     compilation (via the 'WebAssembly.compileStreaming' API). Recorded on each
@@ -1666,6 +1676,7 @@ chromium-metrics-reviews@google.com.
   <owner>ahaas@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Time to deserialize a WebAssembly module when the WebAssembly module is
     loaded from the cache. Recorded whenever a WebAssembly module gets
@@ -1678,6 +1689,7 @@ chromium-metrics-reviews@google.com.
   <owner>bbudge@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Time to asynchronously compile or deserialize a WebAssembly module during
     streaming compilation (via the 'WebAssembly.compileStreaming' API). Recorded
@@ -1708,6 +1720,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Function count per WebAssembly module. Recorded for each WebAssembly module
     which is decoded for validation, compilation, or deserialization.
@@ -1719,6 +1732,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Size of a huge WebAssembly function in bytes. A function is considered huge
     if it is larger than 100kB. Recorded on each compilation of a single
@@ -1731,6 +1745,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Time to instantiate a WebAssembly module. Recorded on each instantiation of
     a WebAssembly module.
@@ -1747,6 +1762,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-06-30">
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Time spend for lazily compiling WebAssembly functions. Recorded on each lazy
     compilation event (which typically compiles one function).
@@ -1760,6 +1776,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>ahaas@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Number of 64KiB pages a WebAssembly module declares as its maximum
     requirement. Recorded on each instantiation of a WebAssembly module.
@@ -1771,6 +1788,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>ahaas@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     The result of attempts to allocate WebAssembly.Memory buffers. Recorded on
     each attempt to allocate a WebAssembly.Memory buffer.
@@ -1782,6 +1800,7 @@ chromium-metrics-reviews@google.com.
   <owner>clemensb@chromium.org</owner>
   <owner>jkummerow@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Whether the system supports memory protection keys in userspace (MPK / PKU /
     PKEY). This is determined once per process and recorded once per isolate
@@ -1797,6 +1816,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>ahaas@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Number of 64KiB pages a WebAssembly module declares as its minimum
     requirement. Recorded on each instantiation of a WebAssembly module.
@@ -1808,6 +1828,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     The amount of generated code in MiB for one WebAssembly module. Recorded
     when baseline compilation finished.
@@ -1819,6 +1840,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     The amount of committed code space in MiB used by individual WebAssembly
     modules. Recorded for each live module after each full GC.
@@ -1830,6 +1852,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     The percentage of WebAssembly code freed by garbage collection (ratio of
     total freed code to total generated code so far). Recorded for each live
@@ -1842,6 +1865,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     The amount of generated code in MiB for one WebAssembly module. Recorded
     when top-tier compilation finished.
@@ -1853,6 +1877,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Number of code GCs triggered per WebAssembly module. Recorded after each
     code GC.
@@ -1864,6 +1889,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     The number of code spaces (i.e. individual reservations) of a WebAssembly
     module. Recorded on every code space allocation.
@@ -1875,6 +1901,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>ahaas@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Size of the wire bytes of a WebAssembly module. Recorded for each
     WebAssembly module which is decoded for validation, compilation, or
@@ -1886,6 +1913,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-09-01">
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Number of WebAssembly native modules live in a Wasm engine (typically per
     process). Recorded whenever a new native module is created.
@@ -1896,6 +1924,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-09-01">
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Number of WebAssembly native modules live in an isolate. Recorded whenever a
     new native module is created.
@@ -1905,6 +1934,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="V8.WasmReThrowCount" units="count" expires_after="2022-09-01">
   <owner>thibaudm@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Number of exceptions rethrown so far in an isolate, recorded on each
     rethrown exception.
@@ -1914,6 +1944,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="V8.WasmThrowCount" units="count" expires_after="2022-09-01">
   <owner>thibaudm@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Number of exceptions thrown so far in an isolate, recorded on each thrown
     exception.
@@ -1925,6 +1956,7 @@ chromium-metrics-reviews@google.com.
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Time to tier-up a WebAssembly module, i.e. the time between baseline
     compilation finishes and top-tier compilation finishes. Recorded whenever an
@@ -1937,6 +1969,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-09-01">
   <owner>thibaudm@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Time since the last time an exception was caught in WebAssembly, recorded
     when the next exception is caught (per isolate).
@@ -1947,6 +1980,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-09-01">
   <owner>thibaudm@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Time since the last time an exception was rethrown in WebAssembly, recorded
     when the next exception is rethrown (per isolate).
@@ -1957,6 +1991,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2022-09-01">
   <owner>thibaudm@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
   <summary>
     Time since the last time an exception was thrown in WebAssembly, recorded
     when the next exception is thrown (per isolate).
