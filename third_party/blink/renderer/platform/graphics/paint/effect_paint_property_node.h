@@ -255,6 +255,14 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     return state_.direct_compositing_reasons &
            CompositingReason::kWillChangeOpacity;
   }
+  bool RequiresCompositingForWillChangeFilter() const {
+    return state_.direct_compositing_reasons &
+           CompositingReason::kWillChangeFilter;
+  }
+  bool RequiresCompositingForWillChangeBackdropFilter() const {
+    return state_.direct_compositing_reasons &
+           CompositingReason::kWillChangeBackdropFilter;
+  }
 
   // Whether the effect node uses the backdrop as an input. This includes
   // exotic blending modes and backdrop filters.

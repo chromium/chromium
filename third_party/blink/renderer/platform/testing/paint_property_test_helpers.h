@@ -116,7 +116,9 @@ inline scoped_refptr<EffectPaintPropertyNode> CreateBackdropFilterEffect(
     const TransformPaintPropertyNodeOrAlias& local_transform_space,
     const ClipPaintPropertyNodeOrAlias* output_clip,
     CompositorFilterOperations backdrop_filter,
-    float opacity = 1.0f) {
+    float opacity = 1.0f,
+    CompositingReasons compositing_reasons =
+        CompositingReason::kBackdropFilter) {
   EffectPaintPropertyNode::State state;
   state.local_transform_space = &local_transform_space;
   state.output_clip = output_clip;
@@ -125,7 +127,7 @@ inline scoped_refptr<EffectPaintPropertyNode> CreateBackdropFilterEffect(
         base::WrapUnique(new EffectPaintPropertyNode::BackdropFilterInfo{
             std::move(backdrop_filter)});
   }
-  state.direct_compositing_reasons = CompositingReason::kBackdropFilter;
+  state.direct_compositing_reasons = compositing_reasons;
   state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
       NewUniqueObjectId(), CompositorElementIdNamespace::kPrimary);
   state.opacity = opacity;
@@ -134,10 +136,13 @@ inline scoped_refptr<EffectPaintPropertyNode> CreateBackdropFilterEffect(
 
 inline scoped_refptr<EffectPaintPropertyNode> CreateBackdropFilterEffect(
     const EffectPaintPropertyNodeOrAlias& parent,
-    CompositorFilterOperations backdrop_filter) {
-  return CreateBackdropFilterEffect(
-      parent, parent.Unalias().LocalTransformSpace(),
-      parent.Unalias().OutputClip(), backdrop_filter);
+    CompositorFilterOperations backdrop_filter,
+    CompositingReasons compositing_reasons =
+        CompositingReason::kBackdropFilter) {
+  return CreateBackdropFilterEffect(parent,
+                                    parent.Unalias().LocalTransformSpace(),
+                                    parent.Unalias().OutputClip(),
+                                    backdrop_filter, 1.0f, compositing_reasons);
 }
 
 inline scoped_refptr<EffectPaintPropertyNode>

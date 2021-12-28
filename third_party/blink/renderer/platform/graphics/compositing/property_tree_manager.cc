@@ -1141,12 +1141,16 @@ void PropertyTreeManager::BuildEffectNodesRecursively(
 
 static cc::RenderSurfaceReason RenderSurfaceReasonForEffect(
     const EffectPaintPropertyNode& effect) {
-  if (!effect.Filter().IsEmpty())
+  if (!effect.Filter().IsEmpty() ||
+      effect.RequiresCompositingForWillChangeFilter()) {
     return cc::RenderSurfaceReason::kFilter;
+  }
   if (effect.HasActiveFilterAnimation())
     return cc::RenderSurfaceReason::kFilterAnimation;
-  if (effect.BackdropFilter())
+  if (effect.BackdropFilter() ||
+      effect.RequiresCompositingForWillChangeBackdropFilter()) {
     return cc::RenderSurfaceReason::kBackdropFilter;
+  }
   if (effect.HasActiveBackdropFilterAnimation())
     return cc::RenderSurfaceReason::kBackdropFilterAnimation;
   if (effect.BlendMode() != SkBlendMode::kSrcOver &&

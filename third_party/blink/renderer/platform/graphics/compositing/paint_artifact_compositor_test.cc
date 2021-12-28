@@ -4218,6 +4218,17 @@ TEST_P(PaintArtifactCompositorTest, FilterCreatesRenderSurface) {
   EXPECT_OPACITY(LayerAt(0)->effect_tree_index(), 1.f, kHasRenderSurface);
 }
 
+TEST_P(PaintArtifactCompositorTest, WillChangeFilterCreatesRenderSurface) {
+  auto e1 = CreateFilterEffect(e0(), CompositorFilterOperations(),
+                               CompositingReason::kWillChangeFilter);
+  Update(TestPaintArtifact()
+             .Chunk(t0(), c0(), *e1)
+             .RectDrawing(gfx::Rect(150, 150, 100, 100), Color::kWhite)
+             .Build());
+  ASSERT_EQ(1u, LayerCount());
+  EXPECT_OPACITY(LayerAt(0)->effect_tree_index(), 1.f, kHasRenderSurface);
+}
+
 TEST_P(PaintArtifactCompositorTest, FilterAnimationCreatesRenderSurface) {
   auto e1 = CreateAnimatingFilterEffect(e0());
   Update(TestPaintArtifact()
@@ -4232,6 +4243,19 @@ TEST_P(PaintArtifactCompositorTest, BackdropFilterCreatesRenderSurface) {
   CompositorFilterOperations filter;
   filter.AppendBlurFilter(5);
   auto e1 = CreateBackdropFilterEffect(e0(), filter);
+  Update(TestPaintArtifact()
+             .Chunk(t0(), c0(), *e1)
+             .RectDrawing(gfx::Rect(150, 150, 100, 100), Color::kWhite)
+             .Build());
+  ASSERT_EQ(1u, LayerCount());
+  EXPECT_OPACITY(LayerAt(0)->effect_tree_index(), 1.f, kHasRenderSurface);
+}
+
+TEST_P(PaintArtifactCompositorTest,
+       WillChangeBackdropFilterCreatesRenderSurface) {
+  auto e1 =
+      CreateBackdropFilterEffect(e0(), CompositorFilterOperations(),
+                                 CompositingReason::kWillChangeBackdropFilter);
   Update(TestPaintArtifact()
              .Chunk(t0(), c0(), *e1)
              .RectDrawing(gfx::Rect(150, 150, 100, 100), Color::kWhite)
