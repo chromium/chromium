@@ -43,6 +43,7 @@ component("common") {
     "//ash/services/quick_pair/public/mojom",
     "//base",
     "//chromeos/components/feature_usage",
+    "//device/bluetooth",
     "//device/bluetooth/public/cpp",
   ]
 }

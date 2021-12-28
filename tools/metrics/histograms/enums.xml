@@ -8684,6 +8684,17 @@ Called by update_bad_message_reasons.py.-->
   <int value="7" label="Not connectable"/>
 </enum>
 
+<enum name="BluetoothDeviceConnectErrorCode">
+  <int value="0" label="Authorization Cancelled"/>
+  <int value="1" label="Authorization Failed"/>
+  <int value="2" label="Authorization Rejected"/>
+  <int value="3" label="Authorization Timeout"/>
+  <int value="4" label="Failed"/>
+  <int value="5" label="In Progress"/>
+  <int value="6" label="Unknown"/>
+  <int value="7" label="Unsupported Device"/>
+</enum>
+
 <enum name="BluetoothDeviceType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Computer"/>

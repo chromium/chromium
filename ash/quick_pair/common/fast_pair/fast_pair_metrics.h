@@ -9,6 +9,7 @@
 #include "ash/quick_pair/common/pair_failure.h"
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "device/bluetooth/bluetooth_device.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -83,6 +84,10 @@ void RecordTotalGattConnectionTime(base::TimeDelta total_gatt_connection_time);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordGattConnectionResult(bool success);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordGattConnectionErrorCode(
+    device::BluetoothDevice::ConnectErrorCode error_code);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordPairingFailureReason(const Device& device, PairFailure failure);

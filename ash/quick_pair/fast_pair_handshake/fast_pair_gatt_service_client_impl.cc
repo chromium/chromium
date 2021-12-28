@@ -128,8 +128,9 @@ void FastPairGattServiceClientImpl::OnGattConnection(
   RecordGattConnectionResult(/*success=*/!error_code.has_value());
 
   if (error_code) {
-    QP_LOG(WARNING) << "Error creating GATT connection to device due to error: "
-                    << error_code.value();
+    QP_LOG(WARNING) << "Error creating GATT connection to device at address:["
+                    << device_address_ << "].";
+    RecordGattConnectionErrorCode(error_code.value());
     NotifyInitializedError(PairFailure::kCreateGattConnection);
   } else {
     QP_LOG(VERBOSE)

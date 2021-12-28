@@ -29,6 +29,8 @@ const char kTotalGattConnectionTimeMetric[] =
     "Bluetooth.ChromeOS.FastPair.TotalGattConnectionTime";
 const char kGattConnectionResult[] =
     "Bluetooth.ChromeOS.FastPair.GattConnection.Result";
+const char kGattConnectionErrorMetric[] =
+    "Bluetooth.ChromeOS.FastPair.GattConnection.ErrorReason";
 const char kFastPairPairFailureInitialMetric[] =
     "Bluetooth.ChromeOS.FastPair.PairFailure.InitialPairingProtocol";
 const char kFastPairPairFailureSubsequentMetric[] =
@@ -123,6 +125,13 @@ void RecordTotalGattConnectionTime(base::TimeDelta total_gatt_connection_time) {
 
 void RecordGattConnectionResult(bool success) {
   base::UmaHistogramBoolean(kGattConnectionResult, success);
+}
+
+void RecordGattConnectionErrorCode(
+    device::BluetoothDevice::ConnectErrorCode error_code) {
+  base::UmaHistogramEnumeration(
+      kGattConnectionErrorMetric, error_code,
+      device::BluetoothDevice::NUM_CONNECT_ERROR_CODES);
 }
 
 void RecordPairingResult(const Device& device, bool success) {

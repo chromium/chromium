@@ -245,6 +245,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.GattConnection.ErrorReason"
+    enum="BluetoothDeviceConnectErrorCode" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the Connect error code from a failure to create a Gatt connection
+    during the Fast Pair pairing protocol. Emitted following the attempted
+    creation of the Gatt service client during the key based pairing exchange.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.GattConnection.Result"
     enum="BooleanSuccess" expires_after="2022-06-20">
   <owner>shanefitz@google.com</owner>
