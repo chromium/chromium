@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="GoogleUpdate.ErrorHresult" enum="Hresult"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>The HRESULT for a failed on-demand update check.</summary>
@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GoogleUpdate.UpgradeResult" enum="GoogleUpdateUpgradeStatus"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>grt@chromium.org</owner>
   <owner>ydago@chromium.org</owner>
   <summary>The result of an on-demand update check.</summary>

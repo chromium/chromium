@@ -986,7 +986,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MultiWindow.OpenInNewWindow" enum="WindowActivityOrigin"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>marq@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -1436,7 +1436,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabGrid.Selection.CloseTabs" units="Tabs"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>mrefaat@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <owner>bling-team@google.com</owner>

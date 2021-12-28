@@ -66,7 +66,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ClickToCallDialerPresent" enum="BooleanPresent"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ClickToCallSelectedAppIndex" units="index"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
 <!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
 
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.ClickToCallSelectedDeviceIndex" units="index"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
 <!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
 
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -266,7 +266,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.MessageAckTime" units="ms" expires_after="2022-04-24">
+<histogram name="Sharing.MessageAckTime" units="ms" expires_after="2022-06-26">
 <!-- Name completed by histogram_suffixes name="SharingChannelType",
      name="SharingDevicePlatform" and name="SharingMessage" -->
 

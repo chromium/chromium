@@ -669,7 +669,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Bluetooth.Mojo.PendingConnectAtShutdown.NumberOfServiceDiscoveriesInProgress"
-    units="count" expires_after="2022-04-21">
+    units="count" expires_after="2022-06-26">
   <owner>jonmann@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
@@ -786,7 +786,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.Characteristic.ReadValue.Outcome"
-    enum="WebBluetoothGATTOperationOutcome" expires_after="2022-04-24">
+    enum="WebBluetoothGATTOperationOutcome" expires_after="2022-06-26">
   <owner>cmumford@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -810,7 +810,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.Characteristic.WriteValue.Outcome"
-    enum="WebBluetoothGATTOperationOutcome" expires_after="2022-04-24">
+    enum="WebBluetoothGATTOperationOutcome" expires_after="2022-06-26">
   <owner>cmumford@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -822,7 +822,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.ChooserInteraction" enum="BooleanInvalid"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

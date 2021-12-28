@@ -41,7 +41,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioBuffer.SampleRate384kHz" units="Hz"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The sample rate (in Hz) requested by createBuffer(). Recorded for every call
@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioBuffer.SampleRateRatio384kHz" units="units"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The ratio of the buffer sample rate from createBuffer() to the context
@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContextOptions.sampleRate" units="Hz"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The sample rate requested by developer to be used as the sample rate when
@@ -270,7 +270,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.PushPullFIFO.UnderflowGlitches" enum="Boolean"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>hongchan@chromium.org</owner>
   <summary>
     Captures if WebAudio caused glitches or not due to the FIFO underflow. It is

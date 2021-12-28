@@ -1003,7 +1003,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.BWE.InitiallyLostPackets" units="packets"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>holmer@chromium.org</owner>
   <summary>
     The number of video packets lost durig the first 2 seconds in a WebRTC call.
@@ -1076,7 +1076,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.BWE.Probing.TimePerProbeCluster" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>jonasolsson@chromium.org</owner>
   <owner>crodbro@chromium.org</owner>
   <summary>
@@ -1173,7 +1173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Call.LifetimeInSeconds" units="seconds"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>asapersson@chromium.org</owner>
   <summary>
     The lifetime of a call. Recorded when a Call instance is destroyed.
@@ -1429,7 +1429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.BundlePolicy"
-    enum="PeerConnectionBundlePolicy" expires_after="2022-04-24">
+    enum="PeerConnectionBundlePolicy" expires_after="2022-06-26">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1440,7 +1440,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.BundleUsage"
-    enum="PeerConnectionBundleUsage" expires_after="2022-04-24">
+    enum="PeerConnectionBundleUsage" expires_after="2022-06-26">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1640,7 +1640,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.KeyProtocol"
-    enum="PeerConnectionKeyProtocol" expires_after="2022-04-24">
+    enum="PeerConnectionKeyProtocol" expires_after="2022-06-26">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1830,7 +1830,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpFormatReceived"
-    enum="PeerConnectionSdpFormatReceived" expires_after="2022-04-24">
+    enum="PeerConnectionSdpFormatReceived" expires_after="2022-06-26">
   <owner>steveanton@chromium.org</owner>
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
@@ -1979,7 +1979,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ThermalState" enum="ThermalState"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>eshr@google.com</owner>
   <owner>hbos@chromium.org</owner>
   <summary>
@@ -2029,7 +2029,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.UsagePattern"
-    enum="WebRtcPeerConnectionUsagePattern" expires_after="2022-04-24">
+    enum="WebRtcPeerConnectionUsagePattern" expires_after="2022-06-26">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>

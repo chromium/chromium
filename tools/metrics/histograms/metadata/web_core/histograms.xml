@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.FindInPage.DurationBetweenKeystrokes" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>jarhar@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <summary>
@@ -119,7 +119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.FindInPage.TaskDuration" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>rakina@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <summary>

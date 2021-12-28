@@ -179,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.OnDemand.OneHundredPercentEventsDropped"
-    units="count" expires_after="2022-04-24">
+    units="count" expires_after="2022-06-26">
   <owner>mschillaci@google.com</owner>
   <owner>abigailbklein@google.com</owner>
   <summary>
@@ -229,7 +229,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.UserFontSizePref.Change" units="%"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>twellington@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -240,7 +240,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.UserFontSizePref.OnStartup" units="%"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>twellington@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -1377,7 +1377,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Performance.ProcessDeferredAccessibilityEvents"
-    units="ms" expires_after="2022-04-24">
+    units="ms" expires_after="2022-06-26">
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1389,7 +1389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Performance.SendPendingAccessibilityEvents"
-    units="ms" expires_after="2022-04-24">
+    units="ms" expires_after="2022-06-26">
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1400,7 +1400,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Performance.Tree.Unserialize" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>aleventhal@chromium.org</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1827,7 +1827,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DomDistiller.ReaderShownForPageLoad" enum="Boolean"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>mdjones@chromium.org</owner>
   <summary>
     Records if the panel became visible at any point after a page was navigated.
@@ -2042,7 +2042,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.Native" enum="TextToSpeechNative"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>katie@chromium.org</owner>
   <summary>
     True if an utterance is spoken with native speech provided by the operating
@@ -2062,7 +2062,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextToSpeech.Utterance.TextLength" units="bytes"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>katie@chromium.org</owner>
   <summary>
     The length of an utterance to be spoken via synthesized text-to-speech.

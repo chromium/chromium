@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="VideoTutorials.LanguagePicker.LanguageSelected"
-    units="position" expires_after="2022-04-24">
+    units="position" expires_after="2022-06-26">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>

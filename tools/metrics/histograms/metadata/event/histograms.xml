@@ -927,7 +927,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Event.Latency.ScrollBegin.Scrollbar.TimeToScrollUpdateSwapBegin4"
-    units="microseconds" expires_after="2022-04-24">
+    units="microseconds" expires_after="2022-06-26">
   <owner>nzolghadr@chromium.org</owner>
   <owner>gerchiko@microsoft.com</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1558,7 +1558,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.Latency.ScrollUpdate.TimeToScrollUpdateSwapBegin2"
-    units="microseconds" expires_after="2022-04-24">
+    units="microseconds" expires_after="2022-06-26">
   <owner>nzolghadr@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel/touch event and start of the frame
@@ -2321,7 +2321,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EventLatency.TotalLatency" units="microseconds"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>mohsen@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>

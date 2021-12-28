@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.Events2" units="bitfield value"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.MissingContactFields"
-    enum="PaymentRequestMissingContactFields" expires_after="2022-04-24">
+    enum="PaymentRequestMissingContactFields" expires_after="2022-06-26">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.MissingPaymentFields"
-    enum="PaymentRequestMissingPaymentFields" expires_after="2022-04-24">
+    enum="PaymentRequestMissingPaymentFields" expires_after="2022-06-26">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.MissingShippingFields"
-    enum="PaymentRequestMissingShippingFields" expires_after="2022-04-24">
+    enum="PaymentRequestMissingShippingFields" expires_after="2022-06-26">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>

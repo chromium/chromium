@@ -91,7 +91,7 @@ chromium-metrics-reviews@google.com.
   <summary>The frequency of selection of each avatar.</summary>
 </histogram>
 
-<histogram name="Profile.BookmarksSize" units="MB" expires_after="2022-04-24">
+<histogram name="Profile.BookmarksSize" units="MB" expires_after="2022-06-26">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>Size of the bookmarks database.</summary>
@@ -126,7 +126,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.CookiesSize" units="MB" expires_after="2022-04-24">
+<histogram name="Profile.CookiesSize" units="MB" expires_after="2022-06-26">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>Size of the cookies database.</summary>
@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.DeleteProfileAction" enum="ProfileDeleteAction"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>anthonyvd@chromium.org</owner>
@@ -250,7 +250,7 @@ chromium-metrics-reviews@google.com.
   <summary>Size of the extension cookies database.</summary>
 </histogram>
 
-<histogram name="Profile.FaviconsSize" units="MB" expires_after="2022-04-24">
+<histogram name="Profile.FaviconsSize" units="MB" expires_after="2022-06-26">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>Size of the favicons database.</summary>
@@ -298,7 +298,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Profile.HistorySize" units="MB" expires_after="2022-04-24">
+<histogram name="Profile.HistorySize" units="MB" expires_after="2022-06-26">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>Size of the history database.</summary>
@@ -329,7 +329,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.Incognito.MovedToBackgroundAfterDuration"
-    units="minutes" expires_after="2022-04-24">
+    units="minutes" expires_after="2022-06-26">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -340,7 +340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.Incognito.ResumedAfterReportedDuration"
-    units="minutes" expires_after="2022-04-24">
+    units="minutes" expires_after="2022-06-26">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -392,7 +392,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.Menu.OpenedAfterAvatarAnimation" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>droger@chromium.org</owner>
   <owner>jkrcal@chromium.org</owner>
   <summary>
@@ -417,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.NetUserCount" enum="ProfileNetUserCount"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>rogerta@chromium.org</owner>
   <summary>
     Counts of users added and deleted. Percentages are not meaningful. Please
@@ -651,7 +651,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Profile.State.SyncEnabled" enum="BooleanEnabled"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -859,7 +859,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfileChooser.HasProfilesShown" enum="BooleanShown"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>vasilii@chromium.org</owner>
   <owner>ewald@chromium.org</owner>
   <summary>
@@ -1023,7 +1023,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.UserAction" enum="ProfilePickerAction"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

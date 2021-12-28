@@ -42,14 +42,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.RemoteHungProcessTerminateReason"
-    enum="RemoteHungProcessTerminateReason" expires_after="2022-04-24">
+    enum="RemoteHungProcessTerminateReason" expires_after="2022-06-26">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>The reason of remote hang processes termination.</summary>
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.RemoteProcessInteractionResult"
-    enum="RemoteProcessInteractionResult" expires_after="2022-04-24">
+    enum="RemoteProcessInteractionResult" expires_after="2022-06-26">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -119,7 +119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TimeToNotify" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>

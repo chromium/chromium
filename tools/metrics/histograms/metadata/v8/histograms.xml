@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileLazyMicroSeconds" units="microseconds"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>hablich@chromium.org</owner>
   <summary>
     Aggregated time spent compiling functions lazily during a single script
@@ -395,7 +395,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.ExecuteMicroSeconds" units="microseconds"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>cbruni@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -520,7 +520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Compact.Cpp" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -544,7 +544,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Mark.Cpp" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -591,7 +591,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GC.Cycle.MainThread.Full.Cpp" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -612,7 +612,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GC.Cycle.MainThread.Full.Sweep.Cpp" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -644,7 +644,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GC.Cycle.Memory.Freed.Full.Cpp" units="KB"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -788,7 +788,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GC.Event.MainThread.Full.Incremental.Sweep.Cpp" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -830,7 +830,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCBackgroundMarking" units="ms" expires_after="2022-04-24">
+<histogram name="V8.GCBackgroundMarking" units="ms" expires_after="2022-06-26">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1081,7 +1081,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GCMarkCompactReason" enum="GarbageCollectionReason"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Reason a mark-compact garbage collection was started in V8.</summary>
@@ -1272,7 +1272,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.RegExpBacktracks" units="backtracks"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>jgruber@chromium.org</owner>
   <owner>mvstanton@chromium.org</owner>
   <summary>
