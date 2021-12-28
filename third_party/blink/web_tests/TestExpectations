@@ -6889,6 +6889,9 @@ crbug.com/1144171 http/tests/devtools/report-API-errors.js [ Skip ]
 crbug.com/1157861 http/tests/devtools/extensions/extensions-resources.js [ Failure Pass ]
 crbug.com/1157861 http/tests/devtools/console/paintworklet-console-selector.js [ Failure Pass ]
 
+# Temporarily disabled to land crrev.com/c/3358537
+crbug.com/1282837 http/tests/devtools/console/console-format-style.js [ Skip ]
+
 # Wpt importer Sheriff 2020-12-11
 crbug.com/626703 [ Linux ] wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.html [ Failure Pass ]
 
