@@ -646,6 +646,7 @@
     { "name": "google.to", "policy": "google", "include_subdomains": true, "pins": "google" },
     { "name": "google.tt", "policy": "google", "include_subdomains": true, "pins": "google" },
     { "name": "googleusercontent.com", "policy": "google", "include_subdomains": true, "pins": "google" },
+    { "name": "google.ua", "policy": "google", "include_subdomains": true, "pins": "google" },
     { "name": "google.us", "policy": "google", "include_subdomains": true, "pins": "google" },
     { "name": "google.uz", "policy": "google", "include_subdomains": true, "pins": "google" },
     { "name": "google.vg", "policy": "google", "include_subdomains": true, "pins": "google" },
