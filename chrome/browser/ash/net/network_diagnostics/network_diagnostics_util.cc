@@ -64,7 +64,7 @@ std::vector<std::string> GetRandomHosts(int num_hosts, int prefix_length) {
   std::vector<std::string> random_hosts;
   std::vector<std::string> random_prefixes =
       GetRandomPrefixes(num_hosts, prefix_length);
-  DCHECK(random_prefixes.size() == num_hosts);
+  DCHECK(random_prefixes.size() == 1U * num_hosts);
   for (int i = 0; i < num_hosts; i++) {
     random_hosts.push_back(random_prefixes[i] + GetGstaticHostSuffix());
   }
