@@ -385,6 +385,75 @@ TEST(ParseValuesTest, ParseBitStringSevenOneBitsUnusedBitIsOne) {
   EXPECT_FALSE(ParseBitString(Input(kData), &bit_string));
 }
 
+TEST(ParseValuesTest, ParseIA5String) {
+  const Input valid_der({0x46, 0x6f, 0x6f, 0x20, 0x62, 0x61, 0x72, 0x01, 0x7f});
+  std::string s;
+  EXPECT_TRUE(ParseIA5String(valid_der, &s));
+  EXPECT_EQ("Foo bar\x01\x7f", s);
+
+  // 0x80 is not a valid character in IA5String.
+  const Input invalid_der({0x46, 0x6f, 0x80, 0x20, 0x62, 0x61, 0x72});
+  EXPECT_FALSE(ParseIA5String(invalid_der, &s));
+}
+
+TEST(ParseValuesTest, ParsePrintableString) {
+  const Input valid_der({0x46, 0x6f, 0x6f, 0x20, 0x62, 0x61, 0x72});
+  std::string s;
+  EXPECT_TRUE(ParsePrintableString(valid_der, &s));
+  EXPECT_EQ("Foo bar", s);
+
+  // 0x5f '_' is not a valid character in PrintableString.
+  const Input invalid_der({0x46, 0x6f, 0x5f, 0x20, 0x62, 0x61, 0x72});
+  EXPECT_FALSE(ParsePrintableString(invalid_der, &s));
+}
+
+TEST(ParseValuesTest, ParseTeletexStringAsLatin1) {
+  const Input valid_der({0x46, 0x6f, 0xd6, 0x20, 0x62, 0x61, 0x72});
+  std::string s;
+  EXPECT_TRUE(ParseTeletexStringAsLatin1(valid_der, &s));
+  EXPECT_EQ("FoÖ bar", s);
+}
+
+TEST(ParseValuesTest, ParseBmpString) {
+  const Input valid_der(
+      {0x00, 0x66, 0x00, 0x6f, 0x00, 0x6f, 0x00, 0x62, 0x00, 0x61, 0x00, 0x72});
+  std::string s;
+  EXPECT_TRUE(ParseBmpString(valid_der, &s));
+  EXPECT_EQ("foobar", s);
+
+  const Input valid_nonascii_der({0x27, 0x28, 0x26, 0xa1, 0x2b, 0x50});
+  EXPECT_TRUE(ParseBmpString(valid_nonascii_der, &s));
+  EXPECT_EQ("✨⚡⭐", s);
+
+  // BmpString must encode characters in pairs of 2 bytes.
+  const Input invalid_odd_der({0x00, 0x66, 0x00, 0x6f, 0x00});
+  EXPECT_FALSE(ParseBmpString(invalid_odd_der, &s));
+
+  // UTF-16BE encoding of U+1D11E, MUSICAL SYMBOL G CLEF, which is not valid in
+  // UCS-2.
+  const Input invalid_bmp_valid_utf16_with_surrogate({0xd8, 0x34, 0xdd, 0x1e});
+  EXPECT_FALSE(ParseBmpString(invalid_bmp_valid_utf16_with_surrogate, &s));
+}
+
+TEST(ParseValuesTest, ParseUniversalString) {
+  const Input valid_der({0x00, 0x00, 0x00, 0x66, 0x00, 0x00, 0x00, 0x6f,
+                         0x00, 0x00, 0x00, 0x6f, 0x00, 0x00, 0x00, 0x62,
+                         0x00, 0x00, 0x00, 0x61, 0x00, 0x00, 0x00, 0x72});
+  std::string s;
+  EXPECT_TRUE(ParseUniversalString(valid_der, &s));
+  EXPECT_EQ("foobar", s);
+
+  const Input valid_non_ascii_der({0x0,  0x1,  0xf4, 0xe,  0x0,  0x0, 0x0,
+                                   0x20, 0x0,  0x1,  0xd1, 0x1e, 0x0, 0x0,
+                                   0x26, 0x69, 0x0,  0x0,  0x26, 0x6b});
+  EXPECT_TRUE(ParseUniversalString(valid_non_ascii_der, &s));
+  EXPECT_EQ("🐎 𝄞♩♫", s);
+
+  // UniversalString must encode characters in groups of 4 bytes.
+  const Input invalid_non_4_multiple_der({0x00, 0x00, 0x00, 0x66, 0x00, 0x00});
+  EXPECT_FALSE(ParseUniversalString(invalid_non_4_multiple_der, &s));
+}
+
 }  // namespace test
 }  // namespace der
 }  // namespace net

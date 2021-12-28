@@ -7,64 +7,13 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversion_utils.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/sys_byteorder.h"
-#include "base/third_party/icu/icu_utf.h"
+#include "net/der/parse_values.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
 namespace net {
 
 namespace {
-
-// Converts a BMPString value in Input |in| to UTF-8.
-//
-// If the conversion is successful, returns true and stores the result in
-// |out|. Otherwise it returns false and leaves |out| unmodified.
-bool ConvertBmpStringValue(const der::Input& in, std::string* out) {
-  if (in.Length() % 2 != 0)
-    return false;
-
-  std::u16string in_16bit;
-  if (in.Length()) {
-    memcpy(base::WriteInto(&in_16bit, in.Length() / 2 + 1), in.UnsafeData(),
-           in.Length());
-  }
-  for (char16_t& c : in_16bit) {
-    // BMPString is UCS-2 in big-endian order.
-    c = base::NetToHost16(c);
-
-    // BMPString only supports codepoints in the Basic Multilingual Plane;
-    // surrogates are not allowed.
-    if (CBU_IS_SURROGATE(c))
-      return false;
-  }
-  return base::UTF16ToUTF8(in_16bit.data(), in_16bit.size(), out);
-}
-
-// Converts a UniversalString value in Input |in| to UTF-8.
-//
-// If the conversion is successful, returns true and stores the result in
-// |out|. Otherwise it returns false and leaves |out| unmodified.
-bool ConvertUniversalStringValue(const der::Input& in, std::string* out) {
-  if (in.Length() % 4 != 0)
-    return false;
-
-  std::vector<uint32_t> in_32bit(in.Length() / 4);
-  if (in.Length())
-    memcpy(in_32bit.data(), in.UnsafeData(), in.Length());
-  for (const uint32_t c : in_32bit) {
-    // UniversalString is UCS-4 in big-endian order.
-    uint32_t codepoint = base::NetToHost32(c);
-    if (!CBU_IS_UNICODE_CHAR(codepoint))
-      return false;
-
-    base::WriteUnicodeCharacter(codepoint, out);
-  }
-  return true;
-}
 
 // Returns a string containing the dotted numeric form of |oid|, or an empty
 // string on error.
@@ -185,49 +134,19 @@ der::Input TypeEmailAddressOid() {
 
 bool X509NameAttribute::ValueAsString(std::string* out) const {
   switch (value_tag) {
-    case der::kTeletexString: {
-      // Convert from Latin-1 to UTF-8.
-      size_t utf8_length = value.Length();
-      for (size_t i = 0; i < value.Length(); i++) {
-        if (value.UnsafeData()[i] > 0x7f)
-          utf8_length++;
-      }
-      out->reserve(utf8_length);
-      for (size_t i = 0; i < value.Length(); i++) {
-        uint8_t u = value.UnsafeData()[i];
-        if (u <= 0x7f) {
-          out->push_back(u);
-        } else {
-          out->push_back(0xc0 | (u >> 6));
-          out->push_back(0x80 | (u & 0x3f));
-        }
-      }
-      DCHECK_EQ(utf8_length, out->size());
-      return true;
-    }
+    case der::kTeletexString:
+      return der::ParseTeletexStringAsLatin1(value, out);
     case der::kIA5String:
-      for (char c : value.AsStringPiece()) {
-        if (static_cast<uint8_t>(c) > 127)
-          return false;
-      }
-      *out = value.AsString();
-      return true;
+      return der::ParseIA5String(value, out);
     case der::kPrintableString:
-      for (char c : value.AsStringPiece()) {
-        if (!(base::IsAsciiAlpha(c) || c == ' ' || (c >= '\'' && c <= ':') ||
-              c == '=' || c == '?')) {
-          return false;
-        }
-      }
-      *out = value.AsString();
-      return true;
+      return der::ParsePrintableString(value, out);
     case der::kUtf8String:
       *out = value.AsString();
       return true;
     case der::kUniversalString:
-      return ConvertUniversalStringValue(value, out);
+      return der::ParseUniversalString(value, out);
     case der::kBmpString:
-      return ConvertBmpStringValue(value, out);
+      return der::ParseBmpString(value, out);
     default:
       return false;
   }
@@ -253,9 +172,9 @@ bool X509NameAttribute::ValueAsStringUnsafe(std::string* out) const {
       *out = value.AsString();
       return true;
     case der::kUniversalString:
-      return ConvertUniversalStringValue(value, out);
+      return der::ParseUniversalString(value, out);
     case der::kBmpString:
-      return ConvertBmpStringValue(value, out);
+      return der::ParseBmpString(value, out);
     default:
       NOTREACHED();
       return false;

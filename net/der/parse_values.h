@@ -128,6 +128,33 @@ NET_EXPORT bool ParseUTCTimeRelaxed(const Input& in,
 NET_EXPORT bool ParseGeneralizedTime(const Input& in,
                                      GeneralizedTime* out) WARN_UNUSED_RESULT;
 
+// Reads a DER-encoded ASN.1 IA5String value from |in| and stores the result in
+// |out| as ASCII, returning true if successful.
+NET_EXPORT bool ParseIA5String(Input in, std::string* out) WARN_UNUSED_RESULT;
+
+// Reads a DER-encoded ASN.1 PrintableString value from |in| and stores the
+// result in |out| as ASCII, returning true if successful.
+NET_EXPORT bool ParsePrintableString(Input in,
+                                     std::string* out) WARN_UNUSED_RESULT;
+
+// Reads a DER-encoded ASN.1 TeletexString value from |in|, treating it as
+// Latin-1, and stores the result in |out| as UTF-8, returning true if
+// successful.
+//
+// This is for compatibility with legacy implementations that would use Latin-1
+// encoding but tag it as TeletexString.
+NET_EXPORT bool ParseTeletexStringAsLatin1(Input in,
+                                           std::string* out) WARN_UNUSED_RESULT;
+
+// Reads a DER-encoded ASN.1 UniversalString value from |in| and stores the
+// result in |out| as UTF-8, returning true if successful.
+NET_EXPORT bool ParseUniversalString(Input in,
+                                     std::string* out) WARN_UNUSED_RESULT;
+
+// Reads a DER-encoded ASN.1 BMPString value from |in| and stores the
+// result in |out| as UTF-8, returning true if successful.
+NET_EXPORT bool ParseBmpString(Input in, std::string* out) WARN_UNUSED_RESULT;
+
 }  // namespace der
 
 }  // namespace net
