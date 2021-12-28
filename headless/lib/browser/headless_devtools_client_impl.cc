@@ -189,7 +189,7 @@ void HeadlessDevToolsClientImpl::ReceiveProtocolMessage(
   }
 
   bool success = false;
-  if (message_dict->HasKey("id"))
+  if (message_dict->FindKey("id"))
     success = DispatchMessageReply(std::move(message), *message_dict);
   else
     success = DispatchEvent(std::move(message), *message_dict);
