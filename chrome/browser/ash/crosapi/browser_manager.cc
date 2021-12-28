@@ -505,17 +505,17 @@ void BrowserManager::InitializeAndStart() {
 
   PrepareLacrosPolicies();
 
-  const bool is_enabled = browser_util::IsLacrosEnabled();
+  const bool is_lacros_enabled = browser_util::IsLacrosEnabled();
 
   // As a switch between Ash and Lacros mode requires an Ash restart plus
   // profile migration, the state will not change while the system is up.
   // At this point we are starting Lacros for the first time and with that the
   // operation mode is 'locked in'.
   crosapi::lacros_startup_state::SetLacrosStartupState(
-      is_enabled, browser_util::IsLacrosPrimaryBrowser());
+      is_lacros_enabled, browser_util::IsLacrosPrimaryBrowser());
 
   // Must be checked after user session start because it depends on user type.
-  if (is_enabled) {
+  if (is_lacros_enabled) {
     component_update_observation_.Observe(component_update_service_);
     SetState(State::MOUNTING);
     browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,

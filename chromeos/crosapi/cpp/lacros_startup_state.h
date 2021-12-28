@@ -12,9 +12,14 @@ namespace crosapi {
 namespace lacros_startup_state {
 
 // Transfers the Lacros startup state from the browser level to lower levels
-// like components.
+// like components. If |is_lacros_enabled| is true, Lacros is enabled. If
+// |is_primary_enabled| is true, it means that Lacros is the primary browser and
+// Ash is only used for system operations.
+// Note: As the state cannot state wile Ash is running (profile migration,
+// browser restart and other things required) this will be set when Ash
+// determines if Lacros should get launched or not.
 COMPONENT_EXPORT(CROSAPI)
-void SetLacrosStartupState(bool is_enabled, bool is_primary_enabled);
+void SetLacrosStartupState(bool is_lacros_enabled, bool is_primary_enabled);
 
 // Mirroring the Lacros enabled flag for components and other lower than browser
 // components for dependent feature development.

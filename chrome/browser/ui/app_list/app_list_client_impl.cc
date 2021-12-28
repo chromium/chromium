@@ -76,6 +76,16 @@ bool IsSessionActive() {
          session_manager::SessionState::ACTIVE;
 }
 
+bool CanBeHandledAsSystemUrl(const GURL& sanitized_url,
+                             ui::PageTransition transition) {
+  if (!PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_TYPED) &&
+      !PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_GENERATED)) {
+    return false;
+  }
+  return ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
+      sanitized_url);
+}
+
 }  // namespace
 
 AppListClientImpl::AppListClientImpl()
@@ -561,11 +571,7 @@ void AppListClientImpl::OpenURL(Profile* profile,
   if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
     const GURL sanitized_url =
         crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
-    if ((PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_TYPED) ||
-         PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_GENERATED)) &&
-        ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
-            sanitized_url)) {
-      // Let our os url handler take care of the call.
+    if (CanBeHandledAsSystemUrl(sanitized_url, transition)) {
       crosapi::UrlHandlerAsh().OpenUrl(sanitized_url);
     } else {
       // Send the url to the current primary browser.
