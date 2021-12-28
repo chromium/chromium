@@ -427,8 +427,6 @@ crbug.com/1007229 external/wpt/intersection-observer/same-origin-grand-child-ifr
 
 crbug.com/936084 external/wpt/css/css-sizing/max-content-input-001.html [ Failure ]
 
-crbug.com/1123630 [ Mac10.12 ] fast/forms/focus-rect/focus-ring-zoom.html [ Failure ]
-
 crbug.com/849459 fragmentation/repeating-thead-under-repeating-thead.html [ Failure ]
 
 # These fail when device_scale_factor is changed, but only for anti-aliasing:
