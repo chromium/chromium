@@ -8,7 +8,6 @@
 // This file consists of request conversion functions between blink and network.
 
 #include "base/memory/ref_counted.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace network {
 class ResourceRequestBody;
@@ -16,8 +15,6 @@ struct ResourceRequest;
 }  // namespace network
 
 namespace blink {
-
-PLATFORM_EXPORT const char* ImageAcceptHeader();
 
 class ResourceRequestHead;
 class ResourceRequestBody;

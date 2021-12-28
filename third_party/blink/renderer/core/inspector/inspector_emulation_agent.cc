@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_emulation_agent.h"
 
 #include "third_party/blink/public/common/input/web_touch_event.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/web/web_render_theme.h"
@@ -525,7 +526,7 @@ void InspectorEmulationAgent::FrameStartedLoading(LocalFrame*) {
 
 AtomicString InspectorEmulationAgent::OverrideAcceptImageHeader(
     const HashSet<String>* disabled_image_types) {
-  String header(ImageAcceptHeader());
+  String header(network_utils::ImageAcceptHeader());
   for (String type : *disabled_image_types) {
     // The header string is expected to be like
     // `image/jxl,image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8`

@@ -149,6 +149,7 @@
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -5092,6 +5093,61 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SaveCanvasImage) {
   EXPECT_EQ(1u, waiter->NumDownloadsSeenInState(DownloadItem::COMPLETE));
   CheckDownloadStates(1, DownloadItem::COMPLETE);
   EXPECT_TRUE(DidShowFileChooser());
+}
+
+// Tests that accept header is correctly set when using context menu to download
+// an image.
+IN_PROC_BROWSER_TEST_F(DownloadTest, ContextMenuSaveImageWithAcceptHeader) {
+  EnableFileChooser(true);
+  embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/downloads/large_image.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  GURL download_url =
+      embedded_test_server()->GetURL("/downloads/large_image.png");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  // Try to download a canvas image via a context menu.
+  std::unique_ptr<content::DownloadTestObserver> waiter(
+      new content::DownloadTestObserverTerminal(
+          DownloadManagerForBrowser(browser()), 1,
+          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
+
+  net::HttpRequestHeaders headers;
+  base::RunLoop request_waiter;
+  URLLoaderInterceptor request_listener(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url == download_url) {
+          headers = params->url_request.headers;
+          request_waiter.Quit();
+        }
+        return false;
+      }));
+
+  // Right-click on the link and choose Save Image As. This will download the
+  // image.
+  ContextMenuNotificationObserver context_menu_observer(
+      IDC_CONTENT_CONTEXT_SAVEIMAGEAS);
+
+  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
+  blink::WebMouseEvent mouse_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = blink::WebMouseEvent::Button::kRight;
+  mouse_event.SetPositionInWidget(15, 15);
+  mouse_event.click_count = 1;
+  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      mouse_event);
+  mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
+  tab->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      mouse_event);
+  waiter->WaitForFinished();
+  std::string accept_header;
+  headers.GetHeader(net::HttpRequestHeaders::kAccept, &accept_header);
+  EXPECT_EQ(accept_header, blink::network_utils::ImageAcceptHeader());
+  EXPECT_EQ(1u, waiter->NumDownloadsSeenInState(DownloadItem::COMPLETE));
+  CheckDownloadStates(1, DownloadItem::COMPLETE);
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)

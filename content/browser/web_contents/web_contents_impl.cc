@@ -4939,14 +4939,13 @@ void WebContentsImpl::SaveFrameWithHeaders(
     params->set_method("POST");
   params->set_prompt(true);
 
-  if (headers.empty()) {
-    params->set_prefer_cache(true);
-  } else {
+  if (!headers.empty()) {
     for (download::DownloadUrlParameters::RequestHeadersNameValuePair
              key_value : ParseDownloadHeaders(headers)) {
       params->add_request_header(key_value.first, key_value.second);
     }
   }
+  params->set_prefer_cache(true);
   params->set_suggested_name(suggested_filename);
   params->set_download_source(download::DownloadSource::WEB_CONTENTS_API);
   params->set_isolation_info(rfhi.ComputeIsolationInfoForNavigation(url));

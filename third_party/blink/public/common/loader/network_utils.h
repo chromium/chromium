@@ -17,6 +17,9 @@ namespace network_utils {
 BLINK_COMMON_EXPORT bool AlwaysAccessNetwork(
     const scoped_refptr<net::HttpResponseHeaders>& headers);
 
+// Returns the accept header for image resources.
+BLINK_COMMON_EXPORT const char* ImageAcceptHeader();
+
 }  // namespace network_utils
 }  // namespace blink
 

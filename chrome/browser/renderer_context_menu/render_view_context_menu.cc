@@ -171,6 +171,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
+#include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
@@ -3327,15 +3328,20 @@ void RenderViewContextMenu::ExecSaveAs() {
     RecordDownloadSource(DOWNLOAD_INITIATED_BY_CONTEXT_MENU);
     const GURL& url = params_.src_url;
     content::Referrer referrer = CreateReferrer(url, params_);
-    std::string headers;
-
     RenderFrameHost* frame_host =
         (params_.media_type == ContextMenuDataMediaType::kPlugin)
             ? source_web_contents_->GetOuterWebContentsFrame()
             : GetRenderFrameHost();
     if (frame_host) {
+      net::HttpRequestHeaders headers;
+
+      if (params_.media_type == ContextMenuDataMediaType::kImage) {
+        headers.SetHeaderIfMissing(net::HttpRequestHeaders::kAccept,
+                                   blink::network_utils::ImageAcceptHeader());
+      }
       source_web_contents_->SaveFrameWithHeaders(
-          url, referrer, headers, params_.suggested_filename, frame_host);
+          url, referrer, headers.ToString(), params_.suggested_filename,
+          frame_host);
     }
   }
 }
