@@ -77,8 +77,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   bool has_hit_test_data = layout_view_.HasEffectiveAllowedTouchAction() ||
                            layout_view_.InsideBlockingWheelEventHandler();
   bool painting_background_in_contents_space =
-      BoxDecorationData::IsPaintingBackgroundInContentsSpace(paint_info,
-                                                             layout_view_);
+      paint_info.IsPaintingBackgroundInContentsSpace();
 
   Element* element = DynamicTo<Element>(layout_view_.GetNode());
   bool has_region_capture_data = element && element->GetRegionCaptureCropId();
@@ -128,7 +127,7 @@ void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
   bool should_apply_root_background_behavior =
       document.IsHTMLDocument() || document.IsXHTMLDocument();
 
-  bool should_paint_background = !paint_info.SkipRootBackground() &&
+  bool should_paint_background = !paint_info.ShouldSkipBackground() &&
                                  layout_view_.HasBoxDecorationBackground();
 
   LayoutObject* root_object = nullptr;

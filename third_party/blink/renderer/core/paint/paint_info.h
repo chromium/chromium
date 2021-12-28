@@ -102,12 +102,10 @@ struct CORE_EXPORT PaintInfo {
     return paint_flags_ & kPaintLayerPaintingRenderingResourceSubtree;
   }
 
-  // TODO(wangxianzhu): Rename this function to ShouldSkipBackground() for CAP.
-  bool SkipRootBackground() const {
+  bool ShouldSkipBackground() const {
     return paint_flags_ & kPaintLayerPaintingSkipRootBackground;
   }
   void SetSkipsBackground(bool b) {
-    DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
     if (b)
       paint_flags_ |= kPaintLayerPaintingSkipRootBackground;
     else
@@ -194,11 +192,9 @@ struct CORE_EXPORT PaintInfo {
   void SetIsInFragmentTraversal() { fragment_id_ = WTF::kNotFound; }
 
   bool IsPaintingBackgroundInContentsSpace() const {
-    DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
     return is_painting_background_in_contents_space;
   }
   void SetIsPaintingBackgroundInContentsSpace(bool b) {
-    DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
     is_painting_background_in_contents_space = b;
   }
 

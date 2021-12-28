@@ -94,15 +94,13 @@ PhysicalRect BoxModelObjectPainter::AdjustRectForScrolledContent(
     const PhysicalRect& rect) {
   if (!info.is_clipped_with_local_scrolling)
     return rect;
-
-  const auto& this_box = To<LayoutBox>(box_model_);
-  if (BoxDecorationData::IsPaintingBackgroundInContentsSpace(paint_info,
-                                                             this_box))
+  if (paint_info.IsPaintingBackgroundInContentsSpace())
     return rect;
 
   GraphicsContext& context = paint_info.context;
   // Clip to the overflow area.
   // TODO(chrishtr): this should be pixel-snapped.
+  const auto& this_box = To<LayoutBox>(box_model_);
   context.Clip(gfx::RectF(this_box.OverflowClipRect(rect.offset)));
 
   // Adjust the paint rect to reflect a scrolled content box with borders at
@@ -152,9 +150,7 @@ bool BoxModelObjectPainter::IsPaintingBackgroundInContentsSpace(
   if (!box_model_.IsBox())
     return false;
 
-  const auto& this_box = To<LayoutBox>(box_model_);
-  return BoxDecorationData::IsPaintingBackgroundInContentsSpace(paint_info,
-                                                                this_box);
+  return paint_info.IsPaintingBackgroundInContentsSpace();
 }
 
 }  // namespace blink

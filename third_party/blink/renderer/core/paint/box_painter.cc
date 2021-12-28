@@ -65,8 +65,7 @@ void BoxPainter::PaintBoxDecorationBackground(
   const DisplayItemClient* background_client = nullptr;
   absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
   bool painting_background_in_contents_space =
-      BoxDecorationData::IsPaintingBackgroundInContentsSpace(paint_info,
-                                                             layout_box_);
+      paint_info.IsPaintingBackgroundInContentsSpace();
   gfx::Rect visual_rect;
   if (painting_background_in_contents_space) {
     // For the case where we are painting the background in the contents space,
@@ -256,8 +255,7 @@ void BoxPainter::PaintMaskImages(const PaintInfo& paint_info,
 void BoxPainter::RecordHitTestData(const PaintInfo& paint_info,
                                    const PhysicalRect& paint_rect,
                                    const DisplayItemClient& background_client) {
-  if (BoxDecorationData::IsPaintingBackgroundInContentsSpace(paint_info,
-                                                             layout_box_) &&
+  if (paint_info.IsPaintingBackgroundInContentsSpace() &&
       layout_box_.EffectiveAllowedTouchAction() == TouchAction::kAuto &&
       !layout_box_.InsideBlockingWheelEventHandler()) {
     return;
