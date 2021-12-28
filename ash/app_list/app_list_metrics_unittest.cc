@@ -80,15 +80,14 @@ int64_t GetPrimaryDisplayId() {
 }
 
 // Used to test that app launched metrics are properly recorded.
-class AppListAppLaunchedMetricTest : public AshTestBase {
+class AppListMetricsTest : public AshTestBase {
  public:
-  AppListAppLaunchedMetricTest() = default;
+  AppListMetricsTest() = default;
 
-  AppListAppLaunchedMetricTest(const AppListAppLaunchedMetricTest&) = delete;
-  AppListAppLaunchedMetricTest& operator=(const AppListAppLaunchedMetricTest&) =
-      delete;
+  AppListMetricsTest(const AppListMetricsTest&) = delete;
+  AppListMetricsTest& operator=(const AppListMetricsTest&) = delete;
 
-  ~AppListAppLaunchedMetricTest() override = default;
+  ~AppListMetricsTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -212,9 +211,21 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
   std::unique_ptr<ShelfViewTestAPI> shelf_test_api_;
 };
 
+// Suite for tests that only apply to peeking launcher (and can be deleted when
+// ProductivityLauncher is the default).
+class AppListMetricsPeekingLauncherTest : public AppListMetricsTest {
+ public:
+  AppListMetricsPeekingLauncherTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kProductivityLauncher);
+  }
+  ~AppListMetricsPeekingLauncherTest() override = default;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Test that the histogram records an app launch from the shelf while the half
 // launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, HalfLaunchFromShelf) {
+TEST_F(AppListMetricsPeekingLauncherTest, HalfLaunchFromShelf) {
   base::HistogramTester histogram_tester;
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -234,7 +245,7 @@ TEST_F(AppListAppLaunchedMetricTest, HalfLaunchFromShelf) {
 
 // Test that the histogram records an app launch from the search box while the
 // half launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, HalfLaunchFromSearchBox) {
+TEST_F(AppListMetricsPeekingLauncherTest, HalfLaunchFromSearchBox) {
   base::HistogramTester histogram_tester;
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -254,7 +265,7 @@ TEST_F(AppListAppLaunchedMetricTest, HalfLaunchFromSearchBox) {
 
 // Test that the histogram records an app launch from the search box while the
 // fullscreen search launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, FullscreenSearchLaunchFromSearchBox) {
+TEST_F(AppListMetricsPeekingLauncherTest, FullscreenSearchLaunchFromSearchBox) {
   base::HistogramTester histogram_tester;
 
   // Press search + shift to transition to kFullscreenAllApps.
@@ -276,7 +287,7 @@ TEST_F(AppListAppLaunchedMetricTest, FullscreenSearchLaunchFromSearchBox) {
 
 // Test that the histogram records an app launch from the shelf while the
 // fullscreen search launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, FullscreenSearchLaunchFromShelf) {
+TEST_F(AppListMetricsPeekingLauncherTest, FullscreenSearchLaunchFromShelf) {
   base::HistogramTester histogram_tester;
 
   // Press search + shift to transition to kFullscreenAllApps.
@@ -297,7 +308,7 @@ TEST_F(AppListAppLaunchedMetricTest, FullscreenSearchLaunchFromShelf) {
 
 // Test that the histogram records an app launch from a suggestion chip while
 // the fullscreen all apps launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, FullscreenAllAppsLaunchFromChip) {
+TEST_F(AppListMetricsPeekingLauncherTest, FullscreenAllAppsLaunchFromChip) {
   base::HistogramTester histogram_tester;
 
   // Press search + shift to transition to kFullscreenAllApps.
@@ -314,7 +325,7 @@ TEST_F(AppListAppLaunchedMetricTest, FullscreenAllAppsLaunchFromChip) {
 
 // Test that the histogram records an app launch from the app grid while the
 // fullscreen all apps launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, FullscreenAllAppsLaunchFromGrid) {
+TEST_F(AppListMetricsPeekingLauncherTest, FullscreenAllAppsLaunchFromGrid) {
   base::HistogramTester histogram_tester;
 
   // Press search + shift to transition to kFullscreenAllApps.
@@ -331,7 +342,7 @@ TEST_F(AppListAppLaunchedMetricTest, FullscreenAllAppsLaunchFromGrid) {
 
 // Test that the histogram records an app launch from the shelf while the
 // fullscreen all apps launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, FullscreenAllAppsLaunchFromShelf) {
+TEST_F(AppListMetricsPeekingLauncherTest, FullscreenAllAppsLaunchFromShelf) {
   base::HistogramTester histogram_tester;
 
   // Press search + shift to transition to kFullscreenAllApps.
@@ -348,7 +359,7 @@ TEST_F(AppListAppLaunchedMetricTest, FullscreenAllAppsLaunchFromShelf) {
 
 // Test that the histogram records an app launch from the shelf while the
 // peeking launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, PeekingLaunchFromShelf) {
+TEST_F(AppListMetricsPeekingLauncherTest, PeekingLaunchFromShelf) {
   base::HistogramTester histogram_tester;
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -364,7 +375,7 @@ TEST_F(AppListAppLaunchedMetricTest, PeekingLaunchFromShelf) {
 
 // Test that the histogram records an app launch from a suggestion chip while
 // the peeking launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, PeekingLaunchFromChip) {
+TEST_F(AppListMetricsPeekingLauncherTest, PeekingLaunchFromChip) {
   base::HistogramTester histogram_tester;
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -380,7 +391,7 @@ TEST_F(AppListAppLaunchedMetricTest, PeekingLaunchFromChip) {
 
 // Test that the histogram records an app launch from the shelf while the
 // launcher is closed.
-TEST_F(AppListAppLaunchedMetricTest, ClosedLaunchFromShelf) {
+TEST_F(AppListMetricsPeekingLauncherTest, ClosedLaunchFromShelf) {
   base::HistogramTester histogram_tester;
 
   GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
@@ -408,9 +419,26 @@ TEST_F(AppListAppLaunchedMetricTest, ClosedLaunchFromShelf) {
       2 /* Number of times launched from shelf */);
 }
 
+// Suite for tests that run in tablet mode, parameterized by feature
+// ProductivityLauncher.
+class AppListMetricsTabletTest : public AppListMetricsTest,
+                                 public testing::WithParamInterface<bool> {
+ public:
+  AppListMetricsTabletTest() {
+    const bool enable = GetParam();
+    feature_list_.InitWithFeatureState(features::kProductivityLauncher, enable);
+  }
+  ~AppListMetricsTabletTest() override = default;
+
+  base::test::ScopedFeatureList feature_list_;
+};
+INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
+                         AppListMetricsTabletTest,
+                         testing::Bool());
+
 // Test that the histogram records an app launch from the shelf while the
 // homecher all apps state is showing.
-TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromShelf) {
+TEST_P(AppListMetricsTabletTest, HomecherAllAppsLaunchFromShelf) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   base::HistogramTester histogram_tester;
 
@@ -426,7 +454,7 @@ TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromShelf) {
 
 // Test that the histogram records an app launch from the app grid while the
 // homecher all apps state is showing.
-TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromGrid) {
+TEST_P(AppListMetricsTabletTest, HomecherAllAppsLaunchFromGrid) {
   base::HistogramTester histogram_tester;
 
   // Enable tablet mode.
@@ -443,7 +471,11 @@ TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromGrid) {
 
 // Test that the histogram records an app launch from a suggestion chip while
 // the homecher all apps state is showing.
-TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromChip) {
+TEST_P(AppListMetricsTabletTest, HomecherAllAppsLaunchFromChip) {
+  // ProductivityLauncher does not use suggestion chips.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   base::HistogramTester histogram_tester;
 
   GetAppListTestHelper()->WaitUntilIdle();
@@ -461,7 +493,7 @@ TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromChip) {
 
 // Test that the histogram records an app launch from the shelf while the
 // homecher search state is showing.
-TEST_F(AppListAppLaunchedMetricTest, HomecherSearchLaunchFromShelf) {
+TEST_P(AppListMetricsTabletTest, HomecherSearchLaunchFromShelf) {
   base::HistogramTester histogram_tester;
 
   // Enable tablet mode.
@@ -483,7 +515,11 @@ TEST_F(AppListAppLaunchedMetricTest, HomecherSearchLaunchFromShelf) {
 
 // Test that the histogram records an app launch from the search box while the
 // homercher search state is showing.
-TEST_F(AppListAppLaunchedMetricTest, HomecherSearchLaunchFromSearchBox) {
+TEST_P(AppListMetricsTabletTest, HomecherSearchLaunchFromSearchBox) {
+  // ProductivityLauncher does not tile search results.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   base::HistogramTester histogram_tester;
 
   // Enable tablet mode.
@@ -504,21 +540,21 @@ TEST_F(AppListAppLaunchedMetricTest, HomecherSearchLaunchFromSearchBox) {
       1 /* Number of times launched from search box */);
 }
 
-class AppListProductivityAppLaunchedMetricTest
-    : public AppListAppLaunchedMetricTest {
+// Tests with feature ProductivityLauncher enabled.
+class AppListMetricsProductivityLauncherTest : public AppListMetricsTest {
  public:
-  AppListProductivityAppLaunchedMetricTest() {
+  AppListMetricsProductivityLauncherTest() {
     scoped_feature_list_.InitWithFeatures({features::kProductivityLauncher},
                                           {});
   }
-  ~AppListProductivityAppLaunchedMetricTest() override = default;
+  ~AppListMetricsProductivityLauncherTest() override = default;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that the histogram records an app launch from a recent app suggestion
 // while the bubble launcher all apps is showing.
-TEST_F(AppListProductivityAppLaunchedMetricTest,
+TEST_F(AppListMetricsProductivityLauncherTest,
        BubbleAllAppsLaunchFromRecentApps) {
   base::HistogramTester histogram_tester;
   auto* helper = GetAppListTestHelper();
@@ -548,7 +584,7 @@ TEST_F(AppListProductivityAppLaunchedMetricTest,
 
 // Test that the histogram records an app launch from a recent app suggestion
 // while the homecher all apps is showing.
-TEST_F(AppListProductivityAppLaunchedMetricTest, HomecherLaunchFromRecentApps) {
+TEST_F(AppListMetricsProductivityLauncherTest, HomecherLaunchFromRecentApps) {
   base::HistogramTester histogram_tester;
   auto* helper = GetAppListTestHelper();
 
