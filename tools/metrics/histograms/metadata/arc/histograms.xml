@@ -667,7 +667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.CpuRestrictionDisabled{ArcThrottleObservers}" units="ms"
-    expires_after="2021-11-21">
+    expires_after="2022-09-01">
   <owner>wvk@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>
@@ -1402,7 +1402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.PlayStoreShown.TimeDelta{ArcUserTypes}" units="ms"
-    expires_after="2021-03-11">
+    expires_after="2022-09-01">
   <owner>yusukes@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>
@@ -1602,7 +1602,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.Runtime.Performance.CommitDeviation2{ArcPerformanceAppCategories}"
-    units="microseconds" expires_after="2021-12-31">
+    units="microseconds" expires_after="2022-09-01">
   <owner>khmel@google.com</owner>
   <owner>camurcu@google.com</owner>
   <summary>
@@ -1636,7 +1636,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.FPS2{ArcPerformanceAppCategories}"
-    units="fps" expires_after="2021-12-31">
+    units="fps" expires_after="2022-09-01">
   <owner>khmel@google.com</owner>
   <owner>camurcu@google.com</owner>
   <summary>
@@ -1664,7 +1664,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.Generic.FirstFrameRendered" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2022-09-01">
   <owner>camurcu@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>
@@ -1675,7 +1675,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.Generic.FrameTime" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-09-01">
   <owner>camurcu@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>
@@ -1685,7 +1685,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.Generic.Jankiness" units="%"
-    expires_after="2022-04-03">
+    expires_after="2022-09-01">
   <owner>camurcu@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>
@@ -1696,7 +1696,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.Runtime.Performance.RenderQuality2{ArcPerformanceAppCategories}"
-    units="%" expires_after="2021-12-31">
+    units="%" expires_after="2022-09-01">
   <owner>khmel@google.com</owner>
   <owner>camurcu@google.com</owner>
   <summary>
@@ -1889,7 +1889,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.UiAvailable.AlreadyProvisioned.TimeDelta{ArcUserTypes}"
-    units="ms" expires_after="2022-01-02">
+    units="ms" expires_after="2022-09-01">
   <owner>khmel@google.com</owner>
   <owner>yusukes@google.com</owner>
   <summary>
@@ -1902,7 +1902,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.UiAvailable.InSessionProvisioning.TimeDelta{ArcUserTypes}"
-    units="ms" expires_after="2021-11-01">
+    units="ms" expires_after="2022-09-01">
   <owner>khmel@google.com</owner>
   <owner>yusukes@google.com</owner>
   <summary>
@@ -1915,7 +1915,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.UiAvailable.OobeProvisioning.TimeDelta{ArcUserTypes}"
-    units="ms" expires_after="2022-01-02">
+    units="ms" expires_after="2022-09-01">
   <owner>khmel@google.com</owner>
   <owner>yusukes@google.com</owner>
   <summary>
