@@ -188,19 +188,19 @@ static bool ShouldMatchHoverOrActive(
   return false;
 }
 
-static bool IsFirstChild(Element& element) {
+static bool IsFirstChild(const Element& element) {
   return !ElementTraversal::PreviousSibling(element);
 }
 
-static bool IsLastChild(Element& element) {
+static bool IsLastChild(const Element& element) {
   return !ElementTraversal::NextSibling(element);
 }
 
-static bool IsFirstOfType(Element& element, const QualifiedName& type) {
+static bool IsFirstOfType(const Element& element, const QualifiedName& type) {
   return !ElementTraversal::PreviousSibling(element, HasTagName(type));
 }
 
-static bool IsLastOfType(Element& element, const QualifiedName& type) {
+static bool IsLastOfType(const Element& element, const QualifiedName& type) {
   return !ElementTraversal::NextSibling(element, HasTagName(type));
 }
 
