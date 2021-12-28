@@ -287,6 +287,87 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeSendMessage) {
       RunExtensionTest("runtime/send_message", {.page_url = "test.html"}));
 }
 
+// Simple test for chrome.runtime.getBackgroundPage with a persistent background
+// page.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeGetBackgroundPage) {
+  static constexpr char kManifest[] = R"(
+      {
+        "name": "getBackgroundPage",
+        "version": "1.0",
+        "background": {
+          "scripts": ["background.js"]
+        },
+        "manifest_version": 2
+      })";
+
+  static constexpr char kBackground[] = "window.backgroundExists = true;";
+  static constexpr char kTestPage[] = R"(<script src="test.js"></script>)";
+  static constexpr char kTestJS[] = R"(
+    chrome.test.runTests([
+      function getBackgroundPage() {
+        chrome.runtime.getBackgroundPage((page) => {
+          chrome.test.assertTrue(page.backgroundExists);
+          chrome.test.succeed();
+        });
+      }
+    ]);
+  )";
+
+  TestExtensionDir dir;
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  dir.WriteFile(FILE_PATH_LITERAL("test.html"), kTestPage);
+  dir.WriteFile(FILE_PATH_LITERAL("test.js"), kTestJS);
+
+  ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(), {.page_url = "test.html"},
+                               /*load_options=*/{}));
+}
+
+// Simple test for chrome.runtime.getBackgroundPage with an MV3 service worker
+// extension, which should return an error due to there being no background
+// page.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeGetBackgroundPageMV3) {
+  static constexpr char kManifest[] = R"(
+      {
+        "name": "getBackgroundPage",
+        "version": "1.0",
+        "background": {
+          "service_worker": "worker.js"
+        },
+        "manifest_version": 3
+      })";
+
+  static constexpr char kWorker[] = "// We're just expecting an error";
+  static constexpr char kTestPage[] = R"(<script src="test.js"></script>)";
+  static constexpr char kTestJS[] = R"(
+    chrome.test.runTests([
+      function getBackgroundPage() {
+        chrome.runtime.getBackgroundPage((page) => {
+          chrome.test.assertEq(undefined, page);
+          chrome.test.assertLastError('You do not have a background page.');
+          chrome.test.succeed();
+        });
+      },
+
+      async function getBackGroundPagePromise() {
+        await chrome.test.assertPromiseRejects(
+            chrome.runtime.getBackgroundPage(),
+            'Error: You do not have a background page.');
+        chrome.test.succeed();
+      }
+    ]);
+  )";
+
+  TestExtensionDir dir;
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorker);
+  dir.WriteFile(FILE_PATH_LITERAL("test.html"), kTestPage);
+  dir.WriteFile(FILE_PATH_LITERAL("test.js"), kTestJS);
+
+  ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(), {.page_url = "test.html"},
+                               /*load_options=*/{}));
+}
+
 // Tests that updating a terminated extension sends runtime.onInstalled event
 // with correct previousVersion.
 // Regression test for https://crbug.com/724563.

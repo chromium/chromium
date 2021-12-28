@@ -152,24 +152,22 @@
         "name": "getBackgroundPage",
         "type": "function",
         "description": "Retrieves the JavaScript 'window' object for the background page running inside the current extension/app. If the background page is an event page, the system will ensure it is loaded before calling the callback. If there is no background page, an error is set.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "backgroundPage",
-                // Note: Only optional because we don't support validation
-                // for custom callbacks.
-                "optional": true,
-                "type": "object",
-                "isInstanceOf": "Window",
-                "additionalProperties": { "type": "any" },
-                "description": "The JavaScript 'window' object for the background page."
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "backgroundPage",
+              // Note: Only optional because we don't support validation
+              // for custom callbacks.
+              "optional": true,
+              "type": "object",
+              "isInstanceOf": "Window",
+              "additionalProperties": { "type": "any" },
+              "description": "The JavaScript 'window' object for the background page."
+            }
+          ]
+        }
       },
       {
         "name": "openOptionsPage",

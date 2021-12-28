@@ -64,17 +64,19 @@ constexpr char kGetBackgroundPage[] = "runtime.getBackgroundPage";
 constexpr char kGetPackageDirectoryEntry[] = "runtime.getPackageDirectoryEntry";
 
 // The custom callback supplied to runtime.getBackgroundPage to find and return
-// the background page to the original callback. The original callback is
-// curried in through the Data.
+// the background page to the original callback.
 void GetBackgroundPageCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
 
-  DCHECK(!info.Data().IsEmpty());
-  if (info.Data()->IsNull())
-    return;
+  // Custom callbacks are called with the arguments of the callback function and
+  // the response from the API. Since the custom callback here handles all the
+  // logic we should have just received the callback function to call with the
+  // result.
+  DCHECK_EQ(1, info.Length());
+  CHECK(info[0]->IsFunction());
 
   // The ScriptContext should always be valid, because otherwise the
   // getBackgroundPage() request should have been invalidated (and this should
@@ -85,8 +87,8 @@ void GetBackgroundPageCallback(
       ExtensionFrameHelper::GetV8BackgroundPageMainFrame(
           isolate, script_context->extension()->id());
   v8::Local<v8::Value> args[] = {background_page};
-  script_context->SafeCallFunction(info.Data().As<v8::Function>(),
-                                   base::size(args), args);
+  script_context->SafeCallFunction(info[0].As<v8::Function>(), base::size(args),
+                                   args);
 }
 
 }  // namespace
@@ -366,17 +368,11 @@ RequestResult RuntimeHooksDelegate::HandleConnectNative(
 RequestResult RuntimeHooksDelegate::HandleGetBackgroundPage(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
   DCHECK(script_context->extension());
-
-  // TODO(crbug.com/1276061): This API should be restricted to MV2 as MV3
-  // extensions don't ever use background pages. In the meantime ensure we're
-  // not trying to send promise based request through here.
-  DCHECK_NE(binding::AsyncResponseType::kPromise, parse_result.async_type);
 
   RequestResult result(RequestResult::NOT_HANDLED);
   if (!v8::Function::New(script_context->v8_context(),
-                         &GetBackgroundPageCallback, arguments[0])
+                         &GetBackgroundPageCallback)
            .ToLocal(&result.custom_callback)) {
     return RequestResult(RequestResult::THROWN);
   }
