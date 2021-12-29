@@ -60,7 +60,7 @@ compile_js_files = [
   "test_bridge.ts",
   "thumbnailer.js",
   "timer.ts",
-  "toast.js",
+  "toast.ts",
   "tooltip.js",
   "type.ts",
   "unload.ts",
