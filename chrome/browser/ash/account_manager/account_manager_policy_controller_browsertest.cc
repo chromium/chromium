@@ -91,11 +91,16 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    ProfileHelper::Get()->RemoveUserFromListForTesting(primary_account_id_);
+    GetFakeUserManager()->RemoveUserFromList(primary_account_id_);
     identity_test_environment_adaptor_.reset();
     profile_.reset();
     base::RunLoop().RunUntilIdle();
     scoped_user_manager_.reset();
+  }
+
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
   }
 
   std::vector<::account_manager::Account> GetAccountManagerAccounts() {
@@ -187,17 +192,9 @@ IN_PROC_BROWSER_TEST_F(
             accounts[0].key.id());
 }
 
-// TODO(crbug.com/1271335): Flaky on ChromeOS
-#if defined(OS_CHROMEOS)
-#define MAYBE_SecondaryAccountsAreRemovedAfterAccountTypeChangedWithCoexistenceEnabled \
-  DISABLED_SecondaryAccountsAreRemovedAfterAccountTypeChangedWithCoexistenceEnabled
-#else
-#define MAYBE_SecondaryAccountsAreRemovedAfterAccountTypeChangedWithCoexistenceEnabled \
-  SecondaryAccountsAreRemovedAfterAccountTypeChangedWithCoexistenceEnabled
-#endif
 IN_PROC_BROWSER_TEST_F(
     AccountManagerPolicyControllerTest,
-    MAYBE_SecondaryAccountsAreRemovedAfterAccountTypeChangedWithCoexistenceEnabled) {
+    SecondaryAccountsAreRemovedAfterAccountTypeChangedWithCoexistenceEnabled) {
   std::vector<::account_manager::Account> accounts =
       GetAccountManagerAccounts();
   const std::vector<::account_manager::Account>::size_type
