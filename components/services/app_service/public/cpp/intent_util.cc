@@ -610,22 +610,20 @@ base::Value ConvertIntentToValue(const apps::mojom::IntentPtr& intent) {
 absl::optional<std::string> GetStringValueFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
-  if (!dict.HasKey(key_name))
+  const base::Value* value = dict.FindKey(key_name);
+  if (!value)
     return absl::nullopt;
 
-  const std::string* value = dict.FindStringKey(key_name);
-  if (!value || value->empty())
+  const std::string* string_value = value->GetIfString();
+  if (!string_value || string_value->empty())
     return absl::nullopt;
 
-  return *value;
+  return *string_value;
 }
 
 apps::mojom::OptionalBool GetBoolValueFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
-  if (!dict.HasKey(key_name))
-    return apps::mojom::OptionalBool::kUnknown;
-
   absl::optional<bool> value = dict.FindBoolKey(key_name);
   if (!value.has_value())
     return apps::mojom::OptionalBool::kUnknown;
@@ -636,9 +634,6 @@ apps::mojom::OptionalBool GetBoolValueFromDict(
 
 absl::optional<GURL> GetGurlValueFromDict(const base::DictionaryValue& dict,
                                           const std::string& key_name) {
-  if (!dict.HasKey(key_name))
-    return absl::nullopt;
-
   const std::string* url_spec = dict.FindStringKey(key_name);
   if (!url_spec)
     return absl::nullopt;
@@ -653,9 +648,6 @@ absl::optional<GURL> GetGurlValueFromDict(const base::DictionaryValue& dict,
 absl::optional<std::vector<apps::mojom::IntentFilePtr>> GetFilesFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
-  if (!dict.HasKey(key_name))
-    return absl::nullopt;
-
   const base::Value* value = dict.FindListKey(key_name);
   if (!value || !value->is_list() || value->GetList().empty())
     return absl::nullopt;
@@ -675,9 +667,6 @@ absl::optional<std::vector<apps::mojom::IntentFilePtr>> GetFilesFromDict(
 absl::optional<std::vector<std::string>> GetCategoriesFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
-  if (!dict.HasKey(key_name))
-    return absl::nullopt;
-
   const base::Value* value = dict.FindListKey(key_name);
   if (!value || !value->is_list() || value->GetList().empty())
     return absl::nullopt;
@@ -692,9 +681,6 @@ absl::optional<std::vector<std::string>> GetCategoriesFromDict(
 absl::optional<base::flat_map<std::string, std::string>> GetExtrasFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
-  if (!dict.HasKey(key_name))
-    return absl::nullopt;
-
   const base::Value* value = dict.FindDictKey(key_name);
   if (!value || !value->is_dict())
     return absl::nullopt;
