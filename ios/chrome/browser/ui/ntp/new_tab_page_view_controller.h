@@ -83,11 +83,8 @@
 // omnibox back to initial state.
 - (void)setContentOffsetToTop;
 
-// Updates the ContentSuggestionsViewController and its header for the current
-// layout.
-// TODO(crbug.com/1170995): Remove once ContentSuggestions can be added as part
-// of a header.
-- (void)updateContentSuggestionForCurrentLayout;
+// Lays out content above feed and adjusts content suggestions.
+- (void)updateNTPLayout;
 
 // Returns the current height of the content suggestions content.
 - (CGFloat)contentSuggestionsContentHeight;
