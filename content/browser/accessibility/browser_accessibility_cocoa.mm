@@ -2134,6 +2134,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
 
   NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
   BrowserAccessibility* focusedChild = _owner->manager()->GetFocus();
+
   // "IsDescendantOf" also returns true when the two objects are equivalent.
   if (focusedChild && focusedChild != _owner &&
       focusedChild->IsDescendantOf(_owner)) {
@@ -2141,7 +2142,8 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     // children because there could only be at most one selected child. The
     // selected child should also be equivalent to the focused child, because
     // selection is tethered to the focus.
-    if (!GetState(_owner, ax::mojom::State::kMultiselectable)) {
+    if (!GetState(_owner, ax::mojom::State::kMultiselectable) &&
+        focusedChild->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected)) {
       [ret addObject:ToBrowserAccessibilityCocoa(focusedChild)];
       return ret;
     }
