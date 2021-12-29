@@ -3333,6 +3333,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "full-restore-for-lacros",
+    "owners": [ "dominickn", "nancylingwang", "sammiequon", "xdai" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "fullscreen-viewport-adjustment-experiment",
     "owners": [ "thegreenfrog", "bling-flags@google.com" ],
     // Needed for manual testing of fallback flow on iOS.

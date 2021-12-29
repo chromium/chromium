@@ -50191,6 +50191,7 @@ from previous Chrome versions.
   <int value="-1938263248" label="enable-extension-info-dialog"/>
   <int value="-1937145719" label="EnableWebAppUninstallFromOsSettings:enabled"/>
   <int value="-1937077699" label="http-form-warning"/>
+  <int value="-1937038119" label="FullRestoreForLacros:disabled"/>
   <int value="-1936032607" label="enable-experimental-webassembly-features"/>
   <int value="-1935787681" label="SystemNotifications:disabled"/>
   <int value="-1935230557"
@@ -50325,6 +50326,7 @@ from previous Chrome versions.
   <int value="-1854372227" label="VrBrowsingExperimentalFeatures:enabled"/>
   <int value="-1853877370" label="CastStreamingVp9:disabled"/>
   <int value="-1853570433" label="AdvancedPpdAttributes:enabled"/>
+  <int value="-1853050064" label="FullRestoreForLacros:enabled"/>
   <int value="-1851980281" label="TabGroupsCollapse:enabled"/>
   <int value="-1849706663" label="enable-password-force-saving:disabled"/>
   <int value="-1849703825" label="WebUIFeedback:disabled"/>
