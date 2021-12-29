@@ -112,7 +112,7 @@ TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClickedByUser) {
   std::string expected_url =
       std::string(kChromeWebstoreUrl) + std::string(kFakeExtensionId);
   EXPECT_EQ(GURL(expected_url),
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+            browser()->tab_strip_model()->GetWebContentsAt(0)->GetVisibleURL());
 }
 
 TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClosedByBrowser) {
