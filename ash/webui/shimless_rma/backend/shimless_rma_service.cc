@@ -464,6 +464,8 @@ void ShimlessRmaService::RoFirmwareUpdateComplete(
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
+  state_proto_.mutable_update_ro_firmware()->set_choice(
+      rmad::UpdateRoFirmwareState::RMAD_UPDATE_CHOICE_CONTINUE);
   TransitionNextStateGeneric(std::move(callback));
 }
 

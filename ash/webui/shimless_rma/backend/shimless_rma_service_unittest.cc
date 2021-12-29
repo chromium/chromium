@@ -1325,6 +1325,8 @@ TEST_F(ShimlessRmaServiceTest, RoFirmwareUpdateComplete) {
   fake_rmad_client_()->check_state_callback =
       base::BindRepeating([](const rmad::RmadState& state) {
         EXPECT_EQ(state.state_case(), rmad::RmadState::kUpdateRoFirmware);
+        EXPECT_EQ(state.update_ro_firmware().choice(),
+                  rmad::UpdateRoFirmwareState::RMAD_UPDATE_CHOICE_CONTINUE);
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
