@@ -5,21 +5,15 @@
 #ifndef SERVICES_NETWORK_SCT_AUDITING_SCT_AUDITING_CACHE_H_
 #define SERVICES_NETWORK_SCT_AUDITING_SCT_AUDITING_CACHE_H_
 
-#include <map>
-#include <vector>
-
 #include "base/component_export.h"
 #include "base/containers/lru_cache.h"
-#include "base/time/time.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "base/timer/timer.h"
 #include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/sct_auditing_delegate.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -78,12 +72,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
     traffic_annotation_ = traffic_annotation;
   }
-  void set_url_loader_factory(
-      mojo::PendingRemote<mojom::URLLoaderFactory> factory) {
-    url_loader_factory_.Bind(std::move(factory));
+  net::MutableNetworkTrafficAnnotationTag traffic_annotation() {
+    return traffic_annotation_;
   }
+  GURL report_uri() { return report_uri_; }
 
-  base::LRUCache<net::SHA256HashValue, bool>* GetCacheForTesting() {
+  base::LRUCache<net::HashValue, bool>* GetCacheForTesting() {
     return &dedupe_cache_;
   }
 
@@ -94,7 +88,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   // Value `bool` is ignored in the dedupe cache. This cache only stores
   // recently seen hashes of SCTs in order to deduplicate on SCTs, and the bool
   // will always be `true`.
-  base::LRUCache<net::SHA256HashValue, bool> dedupe_cache_;
+  base::LRUCache<net::HashValue, bool> dedupe_cache_;
   // Tracks high-water-mark of `dedupe_cache_.size()`.
   size_t dedupe_cache_size_hwm_ = 0;
 
@@ -102,7 +96,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   double sampling_rate_ = 0;
   GURL report_uri_;
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
-  mojo::Remote<mojom::URLLoaderFactory> url_loader_factory_;
 
   base::RepeatingTimer histogram_timer_;
 };

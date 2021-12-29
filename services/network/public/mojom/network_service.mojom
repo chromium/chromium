@@ -29,8 +29,6 @@ import "services/network/public/mojom/network_quality_estimator_manager.mojom";
 import "services/network/public/mojom/network_service_test.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
-import "services/network/public/mojom/url_loader.mojom";
-import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
@@ -308,15 +306,13 @@ interface NetworkService {
 
   // Configures SCT auditing.
   // This allows the embedder to specify whether SCT auditing should be enabled,
-  // what sampling rate to use on reports, and which URLLoaderFactory to use for
-  // sending reports.
-  // TODO(cthomp): Document what happens if the URLLoaderFactory is destroyed.
+  // what sampling rate to use on reports, where reports should be sent, and the
+  // traffic annotation to use.
   [EnableIf=is_ct_supported]
   ConfigureSCTAuditing(bool enabled,
                        double sampling_rate,
                        url.mojom.Url report_uri,
-                       MutableNetworkTrafficAnnotationTag traffic_annotation,
-                       pending_remote<network.mojom.URLLoaderFactory> factory);
+                       MutableNetworkTrafficAnnotationTag traffic_annotation);
 
 
   // Updates the log list used for CT verification. `update_time` should

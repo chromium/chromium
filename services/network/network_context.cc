@@ -515,6 +515,7 @@ NetworkContext::NetworkContext(
 #if BUILDFLAG(IS_CT_SUPPORTED)
   if (params_->ct_policy)
     SetCTPolicy(std::move(params_->ct_policy));
+
   sct_auditing_handler()->SetEnabled(params_->enable_sct_auditing);
 #endif
 

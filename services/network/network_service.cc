@@ -692,13 +692,11 @@ void NetworkService::ConfigureSCTAuditing(
     bool enabled,
     double sampling_rate,
     const GURL& reporting_uri,
-    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-    mojo::PendingRemote<mojom::URLLoaderFactory> factory) {
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   sct_auditing_cache_->set_enabled(enabled);
   sct_auditing_cache_->set_sampling_rate(sampling_rate);
   sct_auditing_cache_->set_report_uri(reporting_uri);
   sct_auditing_cache_->set_traffic_annotation(traffic_annotation);
-  sct_auditing_cache_->set_url_loader_factory(std::move(factory));
 }
 
 void NetworkService::UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,

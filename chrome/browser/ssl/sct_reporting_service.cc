@@ -68,14 +68,11 @@ void SCTReportingService::ReconfigureAfterNetworkRestart() {
   bool is_sct_auditing_enabled =
       base::FeatureList::IsEnabled(features::kSCTAuditing);
   double sct_sampling_rate = features::kSCTAuditingSamplingRate.Get();
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
-  SystemNetworkContextManager::GetInstance()->GetURLLoaderFactory()->Clone(
-      factory_remote.InitWithNewPipeAndPassReceiver());
   content::GetNetworkService()->ConfigureSCTAuditing(
       is_sct_auditing_enabled, sct_sampling_rate,
       SCTReportingService::GetReportURLInstance(),
-      net::MutableNetworkTrafficAnnotationTag(kSCTAuditReportTrafficAnnotation),
-      std::move(factory_remote));
+      net::MutableNetworkTrafficAnnotationTag(
+          kSCTAuditReportTrafficAnnotation));
 }
 
 SCTReportingService::SCTReportingService(

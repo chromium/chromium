@@ -69,6 +69,7 @@ class SCTAuditingCacheTest : public testing::Test {
         network_service_.get(),
         network_context_remote.BindNewPipeAndPassReceiver(),
         std::move(context_params));
+    InitSCTAuditing(network_service_->sct_auditing_cache());
   }
 
  protected:
@@ -85,7 +86,8 @@ class SCTAuditingCacheTest : public testing::Test {
     url_loader_factory_ = std::make_unique<TestURLLoaderFactory>();
     mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
     url_loader_factory_->Clone(factory_remote.InitWithNewPipeAndPassReceiver());
-    cache->set_url_loader_factory(std::move(factory_remote));
+    network_context_->sct_auditing_handler()->SetURLLoaderFactoryForTesting(
+        std::move(factory_remote));
   }
 
   // Getter for TestURLLoaderFactory to allow tests to specify responses.
@@ -166,15 +168,15 @@ void MakeTestSCTAndStatus(
 
 // Computes the cache key from a list of SCTs. This matches how SCTAuditingCache
 // computes cache keys internally.
-net::SHA256HashValue ComputeCacheKey(
+net::HashValue ComputeCacheKey(
     net::SignedCertificateTimestampAndStatusList sct_list) {
-  net::SHA256HashValue cache_key;
+  net::HashValue cache_key(net::HASH_VALUE_SHA256);
   SHA256_CTX ctx;
   SHA256_Init(&ctx);
   std::string encoded_sct;
   net::ct::EncodeSignedCertificateTimestamp(sct_list.at(0).sct, &encoded_sct);
   SHA256_Update(&ctx, encoded_sct.data(), encoded_sct.size());
-  SHA256_Final(reinterpret_cast<uint8_t*>(&cache_key), &ctx);
+  SHA256_Final(reinterpret_cast<uint8_t*>(cache_key.data()), &ctx);
   return cache_key;
 }
 
@@ -229,7 +231,7 @@ TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
   const net::HostPortPair host_port_pair2("example2.com", 443);
   const net::HostPortPair host_port_pair3("example3.com", 443);
 
-  net::SHA256HashValue first_key;
+  net::HashValue first_key(net::HASH_VALUE_SHA256);
   {
     net::SignedCertificateTimestampAndStatusList sct_list;
     MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
@@ -349,7 +351,7 @@ TEST_F(SCTAuditingCacheTest, DeduplicationUpdatesLastSeenTime) {
 
   EXPECT_EQ(2u, cache.GetCacheForTesting()->size());
 
-  net::SHA256HashValue evicted_key = ComputeCacheKey(sct_list2);
+  net::HashValue evicted_key = ComputeCacheKey(sct_list2);
   EXPECT_EQ(cache.GetCacheForTesting()->Get(evicted_key),
             cache.GetCacheForTesting()->end());
 }
@@ -453,8 +455,9 @@ TEST_F(SCTAuditingCacheTest, ReportSentWithServerError) {
 TEST_F(SCTAuditingCacheTest, HighWaterMarkMetrics) {
   base::HistogramTester histograms;
 
-  SCTAuditingCache cache(5);
-  InitSCTAuditing(&cache);
+  // Use the default Cache from the test NetworkService to avoid emitting extra
+  // histograms.
+  auto* cache = network_service_->sct_auditing_cache();
 
   const net::HostPortPair host_port_pair1("example1.com", 443);
   const net::HostPortPair host_port_pair2("example2.com", 443);
@@ -464,17 +467,17 @@ TEST_F(SCTAuditingCacheTest, HighWaterMarkMetrics) {
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions1", "signature1", base::Time::Now(),
                        net::ct::SCT_STATUS_OK, &sct_list1);
-  cache.MaybeEnqueueReport(network_context_.get(), host_port_pair1,
-                           chain_.get(), sct_list1);
+  cache->MaybeEnqueueReport(network_context_.get(), host_port_pair1,
+                            chain_.get(), sct_list1);
 
   net::SignedCertificateTimestampAndStatusList sct_list2;
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions2", "signature2", base::Time::Now(),
                        net::ct::SCT_STATUS_OK, &sct_list2);
-  cache.MaybeEnqueueReport(network_context_.get(), host_port_pair2,
-                           chain_.get(), sct_list2);
+  cache->MaybeEnqueueReport(network_context_.get(), host_port_pair2,
+                            chain_.get(), sct_list2);
 
-  EXPECT_EQ(2u, cache.GetCacheForTesting()->size());
+  EXPECT_EQ(2u, cache->GetCacheForTesting()->size());
   EXPECT_EQ(2u, network_context_->sct_auditing_handler()
                     ->GetPendingReportersForTesting()
                     ->size());

@@ -76,9 +76,9 @@ const net::BackoffEntry::Policy SCTAuditingReporter::kDefaultBackoffPolicy = {
 constexpr size_t kMaxRetries = 15;
 
 SCTAuditingReporter::SCTAuditingReporter(
-    net::SHA256HashValue reporter_key,
+    net::HashValue reporter_key,
     std::unique_ptr<sct_auditing::SCTClientReport> report,
-    mojom::URLLoaderFactory& url_loader_factory,
+    mojom::URLLoaderFactory* url_loader_factory,
     const GURL& report_uri,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     ReporterDoneCallback done_callback)
@@ -95,7 +95,7 @@ SCTAuditingReporter::SCTAuditingReporter(
   // and deduplication), so some cost of copying is reasonable. If more
   // optimization is needed, this could potentially use a mojo::SharedRemote
   // or a WrappedPendingSharedURLLoaderFactory instead.
-  url_loader_factory.Clone(
+  url_loader_factory->Clone(
       url_loader_factory_remote_.BindNewPipeAndPassReceiver());
 
   // Override the retry delay if set by tests.

@@ -751,7 +751,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   raw_ptr<certificate_transparency::ChromeCTPolicyEnforcer>
       ct_policy_enforcer_ = nullptr;
 
-  SCTAuditingHandler sct_auditing_handler_;
+  SCTAuditingHandler sct_auditing_handler_{this};
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

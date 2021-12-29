@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/time/time.h"
 #include "components/version_info/version_info.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
@@ -105,8 +106,8 @@ void SCTAuditingCache::MaybeEnqueueReport(
   if (tls_report->included_sct().empty())
     return;
 
-  net::SHA256HashValue cache_key;
-  SHA256_Final(reinterpret_cast<uint8_t*>(&cache_key), &ctx);
+  net::HashValue cache_key(net::HASH_VALUE_SHA256);
+  SHA256_Final(reinterpret_cast<uint8_t*>(cache_key.data()), &ctx);
 
   // Check if the SCTs are already in the cache. This will update the last seen
   // time if they are present in the cache.
@@ -154,15 +155,7 @@ void SCTAuditingCache::MaybeEnqueueReport(
   if (dedupe_cache_.size() > dedupe_cache_size_hwm_)
     dedupe_cache_size_hwm_ = dedupe_cache_.size();
 
-  // Ensure that the URLLoaderFactory is still bound.
-  if (!url_loader_factory_ || !url_loader_factory_.is_connected()) {
-    // TODO(cthomp): Should this signal to embedder that something has failed?
-    return;
-  }
-
-  context->sct_auditing_handler()->AddReporter(
-      cache_key, std::move(report), *url_loader_factory_, report_uri_,
-      traffic_annotation_);
+  context->sct_auditing_handler()->AddReporter(cache_key, std::move(report));
 }
 
 void SCTAuditingCache::ClearCache() {

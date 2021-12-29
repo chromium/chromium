@@ -44,12 +44,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   // Callback to notify the SCTAuditingHandler that this reporter has completed.
   // The SHA256HashValue `reporter_key` is passed to uniquely identify this
   // reporter instance.
-  using ReporterDoneCallback = base::OnceCallback<void(net::SHA256HashValue)>;
+  using ReporterDoneCallback = base::OnceCallback<void(net::HashValue)>;
 
   SCTAuditingReporter(
-      net::SHA256HashValue reporter_key,
+      net::HashValue reporter_key,
       std::unique_ptr<sct_auditing::SCTClientReport> report,
-      mojom::URLLoaderFactory& url_loader_factory,
+      mojom::URLLoaderFactory* url_loader_factory,
       const GURL& report_uri,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       ReporterDoneCallback done_callback);
@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
 
   void Start();
 
-  net::SHA256HashValue key() { return reporter_key_; }
+  net::HashValue key() { return reporter_key_; }
   sct_auditing::SCTClientReport* report() { return report_.get(); }
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -81,7 +81,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   void SendReport();
   void OnSendReportComplete(scoped_refptr<net::HttpResponseHeaders> headers);
 
-  net::SHA256HashValue reporter_key_;
+  net::HashValue reporter_key_;
   std::unique_ptr<sct_auditing::SCTClientReport> report_;
   mojo::Remote<mojom::URLLoaderFactory> url_loader_factory_remote_;
   std::unique_ptr<SimpleURLLoader> url_loader_;

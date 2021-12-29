@@ -179,12 +179,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
                     ParseHeadersCallback callback) override;
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void ClearSCTAuditingCache() override;
-  void ConfigureSCTAuditing(
-      bool enabled,
-      double sampling_rate,
-      const GURL& reporting_uri,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      mojo::PendingRemote<mojom::URLLoaderFactory> factory) override;
+  void ConfigureSCTAuditing(bool enabled,
+                            double sampling_rate,
+                            const GURL& reporting_uri,
+                            const net::MutableNetworkTrafficAnnotationTag&
+                                traffic_annotation) override;
   void UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
                        base::Time update_time) override;
   void SetCtEnforcementEnabled(bool enabled) override;
