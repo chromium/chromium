@@ -8,7 +8,6 @@ import * as Comlink from '../../lib/comlink.js';
 import runFFmpeg from '../../lib/ffmpeg.js';
 import {WaitableEvent} from '../../waitable_event.js';
 import {AsyncWriter} from '../async_writer.js';
-import {VideoProcessor} from '../video_processor_interface.js';
 
 import {VideoProcessorArgs} from './video_processor_args.js';
 
@@ -250,7 +249,7 @@ class OutputDevice {
  * A ffmpeg-based video processor that can process input and output data
  * incrementally.
  */
-class FFMpegVideoProcessor implements VideoProcessor {
+class FFMpegVideoProcessor {
   private readonly inputDevice = new InputDevice();
   private readonly outputDevice: OutputDevice;
   private readonly jobQueue = new AsyncJobQueue();
@@ -371,6 +370,11 @@ class FFMpegVideoProcessor implements VideoProcessor {
     this.outputDevice.close();
   }
 }
+
+// Only export types to ensure that the file is not imported by other files at
+// runtime.
+export type VideoProcessorConstructor = typeof FFMpegVideoProcessor;
+export type VideoProcessor = FFMpegVideoProcessor;
 
 /**
  * Expose the VideoProcessor constructor to given end point.

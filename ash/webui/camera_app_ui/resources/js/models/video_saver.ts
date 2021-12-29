@@ -13,12 +13,15 @@ import * as util from '../util.js';
 
 import {AsyncWriter} from './async_writer.js';
 import {
+  VideoProcessor,
+  VideoProcessorConstructor,
+} from './ffmpeg/video_processor.js';
+import {
   createGifArgs,
   createMp4Args,
 } from './ffmpeg/video_processor_args.js';
 import {createPrivateTempVideoFile} from './file_system.js';
 import {FileAccessEntry} from './file_system_access_entry.js';
-import {VideoProcessor} from './video_processor_interface.js';
 
 const FFMpegVideoProcessor = (async () => {
   const workerChannel = new MessageChannel();
@@ -27,18 +30,19 @@ const FFMpegVideoProcessor = (async () => {
           '/js/untrusted_video_processor_helper.js');
   await videoProcessorHelper.connectToWorker(
       Comlink.transfer(workerChannel.port2, [workerChannel.port2]));
-  return Comlink.wrap<typeof VideoProcessor>(workerChannel.port1);
+  return Comlink.wrap<VideoProcessorConstructor>(workerChannel.port1);
 })();
 
 
-async function createVideoProcessor(
-    output: AsyncWriter, videoRotation: number): Promise<VideoProcessor> {
+async function createVideoProcessor(output: AsyncWriter, videoRotation: number):
+    Promise<Comlink.Remote<VideoProcessor>> {
   return new (await FFMpegVideoProcessor)(
       Comlink.proxy(output), createMp4Args(videoRotation, output.seekable()));
 }
 
 async function createGifVideoProcessor(
-    output: AsyncWriter, resolution: Resolution): Promise<VideoProcessor> {
+    output: AsyncWriter,
+    resolution: Resolution): Promise<Comlink.Remote<VideoProcessor>> {
   return new (await FFMpegVideoProcessor)(
       Comlink.proxy(output), createGifArgs(resolution));
 }
@@ -57,7 +61,7 @@ function createWriterForIntent(intent: Intent): AsyncWriter {
 export class VideoSaver {
   constructor(
       private readonly file: FileAccessEntry,
-      private readonly processor: VideoProcessor) {}
+      private readonly processor: Comlink.Remote<VideoProcessor>) {}
 
   /**
    * Writes video data to result video.
@@ -113,7 +117,7 @@ export class VideoSaver {
 export class GifSaver {
   constructor(
       private readonly blobs: Blob[],
-      private readonly processor: VideoProcessor) {}
+      private readonly processor: Comlink.Remote<VideoProcessor>) {}
 
   write(frame: Uint8ClampedArray): void {
     this.processor.write(new Blob([frame]));
