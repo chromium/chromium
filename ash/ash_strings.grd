@@ -2923,6 +2923,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_LOGIN_PUBLIC_ACCOUNT_SIGNOUT_REMINDER" desc="Text shown in the public account user pod, reminding the user to log out.">
         Your internet session will be cleared when you sign out. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
       </message>
+      <message name="IDS_ASH_LOGIN_PUBLIC_ACCOUNT_KEYBOARD_MENU_ACCESSIBLE_NAME" desc="Text to be spoken when the focus is set to the button that opens the keyboard menu for the given public account.">
+        Enter keyboard menu
+      </message>
+      <message name="IDS_ASH_LOGIN_PUBLIC_ACCOUNT_LANGUAGE_MENU_ACCESSIBLE_NAME" desc="Text to be spoken when the focus is set to the button that opens the language menu for the given public account.">
+        Enter language menu
+      </message>
       <message name="IDS_ASH_LOGIN_PUBLIC_SESSION_LANGUAGE_AND_INPUT" desc="Link in managed session pod that shows a section which allows the user to change the UI language and keyboard layout.">
         Choose language and keyboard
       </message>
