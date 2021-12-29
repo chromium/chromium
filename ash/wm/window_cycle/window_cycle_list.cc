@@ -420,8 +420,12 @@ void WindowCycleList::Scroll(int offset) {
   if (current_index_ > 1)
     InitWindowCycleView();
 
-  if (cycle_view_)
+  // The windows should not shift position when selecting when there's enough
+  // room to display all windows.
+  if (cycle_view_ && cycle_view_->CalculatePreferredSize().width() ==
+                         cycle_view_->CalculateMaxWidth()) {
     cycle_view_->ScrollToWindow(windows_[current_index_]);
+  }
 }
 
 int WindowCycleList::GetOffsettedWindowIndex(int offset) const {

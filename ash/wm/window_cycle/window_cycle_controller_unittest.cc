@@ -1615,6 +1615,7 @@ TEST_F(WindowCycleControllerTest, TouchScroll) {
 // Tests that a vertical touch scroll doesn't crash. See crbug.com/1224969.
 TEST_F(WindowCycleControllerTest, VerticalTouchScroll) {
   const gfx::Rect bounds(0, 0, 200, 200);
+  std::unique_ptr<aura::Window> window4 = CreateTestWindow(bounds);
   std::unique_ptr<aura::Window> window3 = CreateTestWindow(bounds);
   std::unique_ptr<aura::Window> window2 = CreateTestWindow(bounds);
   std::unique_ptr<aura::Window> window1 = CreateTestWindow(bounds);
