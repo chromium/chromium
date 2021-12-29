@@ -503,5 +503,4 @@ Polymer({
     return loadTimeData.getBoolean('isNearbyShareBackgroundScanningEnabled') &&
         is_hardware_supported;
   },
-
 });

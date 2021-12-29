@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/android_sms/android_sms_service.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
@@ -243,13 +244,33 @@ const std::vector<SearchConcept>& GetNearbyShareOnSearchConcepts() {
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kNearbyShareDataUsage}},
-      {IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICES_NEARBY_SHARING_NOTIFICATION,
-       mojom::kNearbyShareSubpagePath,
-       mojom::SearchResultIcon::kNearbyShare,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kDevicesNearbyAreSharingNotificationOnOff}},
   });
+  return *tags;
+}
+
+const std::vector<SearchConcept>&
+GetNearbyShareBackgroundScanningOnSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICES_NEARBY_SHARING_NOTIFICATION_ON,
+        mojom::kNearbyShareSubpagePath,
+        mojom::SearchResultIcon::kNearbyShare,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting =
+             mojom::Setting::kDevicesNearbyAreSharingNotificationOnOff}}});
+  return *tags;
+}
+
+const std::vector<SearchConcept>&
+GetNearbyShareBackgroundScanningOffSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_NEARBY_SHARE_DEVICES_NEARBY_SHARING_NOTIFICATION_OFF,
+        mojom::kNearbyShareSubpagePath,
+        mojom::SearchResultIcon::kNearbyShare,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting =
+             mojom::Setting::kDevicesNearbyAreSharingNotificationOnOff}}});
   return *tags;
 }
 
@@ -302,12 +323,15 @@ MultiDeviceSection::MultiDeviceSection(
       eche_app_manager_(eche_app_manager) {
   if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
           profile)) {
-    pref_change_registrar_.Init(pref_service_);
-    pref_change_registrar_.Add(
-        ::prefs::kNearbySharingEnabledPrefName,
-        base::BindRepeating(&MultiDeviceSection::OnNearbySharingEnabledChanged,
-                            base::Unretained(this)));
-    OnNearbySharingEnabledChanged();
+    NearbySharingService* nearby_sharing_service =
+        NearbySharingServiceFactory::GetForBrowserContext(profile);
+    nearby_sharing_service->GetSettings()->AddSettingsObserver(
+        settings_receiver_.BindNewPipeAndPassRemote());
+
+    NearbyShareSettings* nearby_share_settings =
+        nearby_sharing_service->GetSettings();
+    OnEnabledChanged(nearby_share_settings->GetEnabled());
+    RefreshNearbyBackgroundScanningShareSearchConcepts();
   }
 
   // Note: |multidevice_setup_client_| is null when multi-device features are
@@ -705,10 +729,44 @@ void MultiDeviceSection::OnFeatureStatesChanged(
     updater.AddSearchTags(GetMultiDeviceOptedInPhoneHubAppsSearchConcepts());
 }
 
-void MultiDeviceSection::OnNearbySharingEnabledChanged() {
-  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+bool MultiDeviceSection::IsFeatureSupported(
+    multidevice_setup::mojom::Feature feature) {
+  const FeatureState feature_state =
+      multidevice_setup_client_->GetFeatureState(feature);
+  return feature_state != FeatureState::kNotSupportedByPhone &&
+         feature_state != FeatureState::kNotSupportedByChromebook;
+}
 
-  if (pref_service_->GetBoolean(::prefs::kNearbySharingEnabledPrefName)) {
+void MultiDeviceSection::RefreshNearbyBackgroundScanningShareSearchConcepts() {
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  NearbySharingService* nearby_sharing_service =
+      NearbySharingServiceFactory::GetForBrowserContext(profile());
+  NearbyShareSettings* nearby_share_settings =
+      nearby_sharing_service->GetSettings();
+
+  if (!nearby_share_settings->is_fast_initiation_hardware_supported()) {
+    updater.RemoveSearchTags(
+        GetNearbyShareBackgroundScanningOnSearchConcepts());
+    updater.RemoveSearchTags(
+        GetNearbyShareBackgroundScanningOffSearchConcepts());
+    return;
+  }
+
+  if (nearby_share_settings->GetFastInitiationNotificationState() ==
+      nearby_share::mojom::FastInitiationNotificationState::kEnabled) {
+    updater.AddSearchTags(GetNearbyShareBackgroundScanningOnSearchConcepts());
+    updater.RemoveSearchTags(
+        GetNearbyShareBackgroundScanningOffSearchConcepts());
+  } else {
+    updater.AddSearchTags(GetNearbyShareBackgroundScanningOffSearchConcepts());
+    updater.RemoveSearchTags(
+        GetNearbyShareBackgroundScanningOnSearchConcepts());
+  }
+}
+
+void MultiDeviceSection::OnEnabledChanged(bool enabled) {
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+  if (enabled) {
     updater.RemoveSearchTags(GetNearbyShareOffSearchConcepts());
     updater.AddSearchTags(GetNearbyShareOnSearchConcepts());
   } else {
@@ -717,12 +775,14 @@ void MultiDeviceSection::OnNearbySharingEnabledChanged() {
   }
 }
 
-bool MultiDeviceSection::IsFeatureSupported(
-    multidevice_setup::mojom::Feature feature) {
-  const FeatureState feature_state =
-      multidevice_setup_client_->GetFeatureState(feature);
-  return feature_state != FeatureState::kNotSupportedByPhone &&
-         feature_state != FeatureState::kNotSupportedByChromebook;
+void MultiDeviceSection::OnFastInitiationNotificationStateChanged(
+    nearby_share::mojom::FastInitiationNotificationState state) {
+  RefreshNearbyBackgroundScanningShareSearchConcepts();
+}
+
+void MultiDeviceSection::OnIsFastInitiationHardwareSupportedChanged(
+    bool is_supported) {
+  RefreshNearbyBackgroundScanningShareSearchConcepts();
 }
 
 }  // namespace settings
