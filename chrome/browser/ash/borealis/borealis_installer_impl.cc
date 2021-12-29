@@ -159,7 +159,7 @@ class BorealisInstallerImpl::Installation
         guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
     apps_observation_.Observe(apps_registry);
     absl::optional<guest_os::GuestOsRegistryService::Registration> main_app =
-        apps_registry->GetRegistration(kBorealisMainAppId);
+        apps_registry->GetRegistration(kClientAppId);
     if (main_app.has_value() && main_app->VmType() ==
                                     guest_os::GuestOsRegistryService::VmType::
                                         ApplicationList_VmType_BOREALIS) {
@@ -186,7 +186,7 @@ class BorealisInstallerImpl::Installation
     }
 
     for (const auto& app : inserted_apps) {
-      if (app == kBorealisMainAppId) {
+      if (app == kClientAppId) {
         MainAppFound(true);
         break;
       }

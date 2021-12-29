@@ -22,7 +22,7 @@ BorealisAppUninstaller::BorealisAppUninstaller(Profile* profile)
 
 void BorealisAppUninstaller::Uninstall(std::string app_id,
                                        OnUninstalledCallback callback) {
-  if (app_id == kBorealisAppId || app_id == kBorealisMainAppId) {
+  if (app_id == kInstallerAppId || app_id == kClientAppId) {
     BorealisService::GetForProfile(profile_)->Installer().Uninstall(
         base::BindOnce(
             [](OnUninstalledCallback callback, BorealisUninstallResult result) {
@@ -56,7 +56,7 @@ void BorealisAppUninstaller::Uninstall(std::string app_id,
   // TODO(174282035): Changeup string usage and finish tests.
   absl::optional<guest_os::GuestOsRegistryService::Registration> main_app =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_)
-          ->GetRegistration(kBorealisMainAppId);
+          ->GetRegistration(kClientAppId);
   if (!main_app.has_value()) {
     LOG(ERROR) << "Failed to retrieve a registration for the Borealis main app";
     std::move(callback).Run(UninstallResult::kError);
@@ -71,7 +71,7 @@ void BorealisAppUninstaller::Uninstall(std::string app_id,
   std::string uninstall_string = main_app->DesktopFileId() + prefix +
                                  base::NumberToString(*uninstall_app_id);
   borealis::BorealisService::GetForProfile(profile_)->AppLauncher().Launch(
-      kBorealisMainAppId, {uninstall_string},
+      kClientAppId, {uninstall_string},
       base::BindOnce(
           [](OnUninstalledCallback callback,
              BorealisAppLauncher::LaunchResult result) {

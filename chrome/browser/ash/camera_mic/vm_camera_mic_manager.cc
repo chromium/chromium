@@ -306,7 +306,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
         break;
       case VmType::kBorealis:
         chrome::ShowAppManagementPage(
-            profile_, borealis::kBorealisMainAppId,
+            profile_, borealis::kClientAppId,
             AppManagementEntryPoint::kAppManagementMainViewBorealis);
         break;
     }

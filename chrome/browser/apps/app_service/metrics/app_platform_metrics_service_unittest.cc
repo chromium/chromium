@@ -183,11 +183,10 @@ class AppPlatformMetricsServiceTest : public testing::Test {
                  true /* should_notify_initialized */);
     deltas.clear();
 
-    deltas.push_back(MakeApp(/*app_id=*/borealis::kBorealisMainAppId,
-                             apps::mojom::AppType::kBorealis, "",
-                             apps::mojom::Readiness::kReady,
-                             apps::mojom::InstallReason::kUser,
-                             apps::mojom::InstallSource::kUnknown));
+    deltas.push_back(MakeApp(
+        /*app_id=*/borealis::kClientAppId, apps::mojom::AppType::kBorealis, "",
+        apps::mojom::Readiness::kReady, apps::mojom::InstallReason::kUser,
+        apps::mojom::InstallSource::kUnknown));
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kBorealis,
                  true /* should_notify_initialized */);
     deltas.clear();
@@ -1499,7 +1498,7 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
 
   proxy->Launch(
-      /*app_id=*/borealis::kBorealisMainAppId, ui::EventFlags::EF_NONE,
+      /*app_id=*/borealis::kClientAppId, ui::EventFlags::EF_NONE,
       apps::mojom::LaunchSource::kFromChromeInternal, nullptr);
   VerifyAppsLaunchUkm("app://borealis/client", AppTypeName::kBorealis,
                       apps::mojom::LaunchSource::kFromChromeInternal);

@@ -139,13 +139,13 @@ class SelfActivationPermissionGranter
 
   void OnWindowStarted(const std::string& app_id,
                        aura::Window* window) override {
-    if (app_id == kBorealisMainAppId)
+    if (app_id == kClientAppId)
       exo::GrantPermissionToActivateIndefinitely(window);
   }
 
   void OnWindowFinished(const std::string& app_id,
                         aura::Window* window) override {
-    if (app_id == kBorealisMainAppId)
+    if (app_id == kClientAppId)
       exo::RevokePermissionToActivate(window);
   }
 

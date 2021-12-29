@@ -30,8 +30,8 @@ void BorealisAppLauncher::Launch(const BorealisContext& ctx,
                                  const std::vector<std::string>& args,
                                  OnLaunchedCallback callback) {
   // Launching the borealis app is a legacy way of launching its main app
-  if (app_id == kBorealisAppId) {
-    Launch(ctx, kBorealisMainAppId, args, std::move(callback));
+  if (app_id == kInstallerAppId) {
+    Launch(ctx, kClientAppId, args, std::move(callback));
     return;
   }
 

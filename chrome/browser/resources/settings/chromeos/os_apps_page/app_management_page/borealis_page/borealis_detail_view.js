@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const kBorealisMainAppId = 'epfhbkiklgmlkhfpbcdleadnhcfdjfmo';
+const kBorealisClientAppId = 'epfhbkiklgmlkhfpbcdleadnhcfdjfmo';
 
 import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -44,7 +44,7 @@ Polymer({
    * @protected
    */
   isMainApp_() {
-    return this.app_.id === kBorealisMainAppId;
+    return this.app_.id === kBorealisClientAppId;
   },
 
   /**
@@ -54,7 +54,7 @@ Polymer({
   onBorealisLinkClicked_(event) {
     event.detail.event.preventDefault();
     const params = new URLSearchParams;
-    params.append('id', kBorealisMainAppId);
+    params.append('id', kBorealisClientAppId);
     Router.getInstance().navigateTo(routes.APP_MANAGEMENT_DETAIL, params);
   },
 });

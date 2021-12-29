@@ -23,8 +23,8 @@
 
 namespace borealis {
 
-const char kBorealisAppId[] = "dkecggknbdokeipkgnhifhiokailichf";
-const char kBorealisMainAppId[] = "epfhbkiklgmlkhfpbcdleadnhcfdjfmo";
+const char kInstallerAppId[] = "dkecggknbdokeipkgnhifhiokailichf";
+const char kClientAppId[] = "epfhbkiklgmlkhfpbcdleadnhcfdjfmo";
 const char kIgnoredAppIdPrefix[] = "org.chromium.borealis.xid.";
 const char kBorealisDlcName[] = "borealis-dlc";
 const char kAllowedScheme[] = "c3RlYW0=";
@@ -126,7 +126,7 @@ void FeedbackFormUrl(Profile* const profile,
 
   // Exclude windows that aren't games.
   if (app_id.find(kIgnoredAppIdPrefix) != std::string::npos ||
-      app_id == kBorealisMainAppId) {
+      app_id == kClientAppId) {
     std::move(url_callback).Run(GURL());
     return;
   }

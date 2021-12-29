@@ -41,7 +41,7 @@ void BorealisSplashScreenView::Show(Profile* profile) {
     views::DialogDelegate::CreateDialogWidget(std::move(delegate), nullptr,
                                               nullptr);
     delegate_->GetWidget()->GetNativeWindow()->SetProperty(
-        ash::kShelfIDKey, ash::ShelfID(borealis::kBorealisAppId).Serialize());
+        ash::kShelfIDKey, ash::ShelfID(borealis::kInstallerAppId).Serialize());
   }
   delegate_->GetWidget()->Show();
 }

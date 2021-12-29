@@ -448,9 +448,9 @@ ukm::SourceId AppPlatformMetrics::GetSourceIdForBorealis(
     Profile* profile,
     const std::string& app_id) {
   // Most Borealis apps are identified by a numeric ID, except these.
-  if (app_id == borealis::kBorealisMainAppId) {
+  if (app_id == borealis::kClientAppId) {
     return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis("client");
-  } else if (app_id == borealis::kBorealisAppId) {
+  } else if (app_id == borealis::kInstallerAppId) {
     return ukm::AppSourceUrlRecorder::GetSourceIdForBorealis("installer");
   } else if (app_id.find(borealis::kIgnoredAppIdPrefix) != std::string::npos) {
     // These are not real apps from a user's point of view,
