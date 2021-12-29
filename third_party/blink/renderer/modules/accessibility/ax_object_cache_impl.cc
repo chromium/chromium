@@ -1021,7 +1021,19 @@ bool AXObjectCacheImpl::IsRelevantSlotElement(const HTMLSlotElement& slot) {
     return true;
 
   const Element* parent_element = DynamicTo<Element>(parent);
-  return parent_element ? parent_element->IsInCanvasSubtree() : false;
+  if (!parent_element)
+    return false;
+
+  // Authors can include elements as "Fallback content" inside a <canvas> in
+  // order to provide an alternative means to interact with the canvas using
+  // a screen reader. Those should always be included.
+  if (parent_element->IsInCanvasSubtree())
+    return true;
+
+  // LayoutObject::CreateObject() will not create an object for elements
+  // with display:contents. If we do not include a <slot> for that reason,
+  // any descendants will be not be included in the accessibility tree.
+  return parent_element->HasDisplayContentsStyle();
 }
 
 // static
