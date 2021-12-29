@@ -176,7 +176,9 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   std::string device_address_;
   bool is_initialized_ = false;
 
+  // Initial timestamps used to calculate duration to log to metrics.
   base::TimeTicks gatt_connection_start_time_;
+  base::TimeTicks notify_keybased_start_time_;
 
   device::BluetoothRemoteGattCharacteristic* key_based_characteristic_ =
       nullptr;

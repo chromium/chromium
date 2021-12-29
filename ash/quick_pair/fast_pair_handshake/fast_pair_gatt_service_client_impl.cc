@@ -406,6 +406,7 @@ void FastPairGattServiceClientImpl::WriteRequestAsync(
                              public_key_vec.end());
   }
 
+  notify_keybased_start_time_ = base::TimeTicks::Now();
   key_based_characteristic_->WriteRemoteCharacteristic(
       data_to_write_vec,
       device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
@@ -487,6 +488,8 @@ void FastPairGattServiceClientImpl::GattCharacteristicValueChanged(
     key_based_write_request_timer_.Stop();
     std::move(key_based_write_response_callback_)
         .Run(value, /*failure=*/absl::nullopt);
+    RecordNotifyKeyBasedCharacteristicTime(base::TimeTicks::Now() -
+                                           notify_keybased_start_time_);
   } else if (characteristic == passkey_characteristic_ &&
              passkey_write_response_callback_) {
     passkey_write_request_timer_.Stop();
