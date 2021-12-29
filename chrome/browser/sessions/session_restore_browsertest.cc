@@ -158,7 +158,15 @@ void WaitForTabsToLoad(Browser* browser) {
 
 class SessionRestoreTest : public InProcessBrowserTest {
  public:
-  SessionRestoreTest() = default;
+  SessionRestoreTest() {
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    // Disable What's New for non-branded builds where the welcome page will be
+    // disabled. Otherwise the bots may run with a configuration (What's New
+    // enabled + Welcome disabled) that does not actually occur in production,
+    // and causes tests to flake.
+    scoped_feature_list_.InitAndDisableFeature(features::kChromeWhatsNewUI);
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  }
   ~SessionRestoreTest() override = default;
 
  protected:
@@ -288,6 +296,10 @@ class SessionRestoreTest : public InProcessBrowserTest {
   raw_ptr<const BrowserList> active_browser_list_ = nullptr;
 
  private:
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   memory_pressure::test::FakeMemoryPressureMonitor
       fake_memory_pressure_monitor_;
 };
@@ -2168,10 +2180,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAllBrowsers) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_EQ(profile_manager->GetNumberOfProfiles(), 2u);
   ASSERT_EQ(chrome::GetTotalBrowserCount(), 4u);
-
-  // Avoid showing What's New.
-  PrefService* pref_service = g_browser_process->local_state();
-  pref_service->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
 
   // Close all profiles associated with the second profile.
   MultiBrowserObserver removed_observer(2,

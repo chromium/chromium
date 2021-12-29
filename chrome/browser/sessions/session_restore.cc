@@ -65,6 +65,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/url_constants.h"
@@ -339,9 +340,12 @@ class SessionRestoreImpl : public BrowserListObserver {
     Browser* browser = nullptr;
     if (!created_tabbed_browser && always_create_tabbed_browser_) {
       browser = Browser::Create(Browser::CreateParams(profile_, false));
-      if (startup_tabs_.empty()) {
+      if (startup_tabs_.empty() ||
+          (startup_tabs_.size() == 1 &&
+           startup_tabs_[0].url == whats_new::GetWebUIStartupURL())) {
         // No tab browsers were created and no URLs were supplied on the command
-        // line. Open the new tab page.
+        // line, or only the What's New page is specified at startup and may or
+        // may not add a tab. Open the new tab page.
         startup_tabs_.emplace_back(GURL(chrome::kChromeUINewTabURL));
       }
       AppendURLsToBrowser(browser, startup_tabs_);
@@ -892,15 +896,22 @@ class SessionRestoreImpl : public BrowserListObserver {
 
   // Appends the urls in |startup_tabs| to |browser|.
   void AppendURLsToBrowser(Browser* browser, const StartupTabs& startup_tabs) {
-    for (size_t i = 0; i < startup_tabs.size(); ++i) {
+    bool is_first_tab = true;
+    for (const auto& startup_tab : startup_tabs) {
+      const GURL& url = startup_tab.url;
+      if (url == whats_new::GetWebUIStartupURL()) {
+        whats_new::StartWhatsNewFetch(browser);
+        continue;
+      }
       int add_types = TabStripModel::ADD_FORCE_INDEX;
-      if (i == 0)
+      if (is_first_tab)
         add_types |= TabStripModel::ADD_ACTIVE;
-      NavigateParams params(browser, startup_tabs[i].url,
-                            ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-      params.disposition = i == 0 ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                                  : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+      NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+      params.disposition = is_first_tab
+                               ? WindowOpenDisposition::NEW_FOREGROUND_TAB
+                               : WindowOpenDisposition::NEW_BACKGROUND_TAB;
       params.tabstrip_add_types = add_types;
+      is_first_tab = false;
       Navigate(&params);
     }
   }

@@ -92,13 +92,24 @@ namespace {
 
 void AddWhatsNewTab(Browser* browser) {
   chrome::AddTabAt(browser, GetWebUIStartupURL(), 0, true);
-  browser->tab_strip_model()->ActivateTabAt(0);
+  browser->tab_strip_model()->ActivateTabAt(
+      browser->tab_strip_model()->IndexOfFirstNonPinnedTab());
 }
 
 class WhatsNewFetcher : public BrowserListObserver {
  public:
   explicit WhatsNewFetcher(Browser* browser) : browser_(browser) {
     BrowserList::AddObserver(this);
+    if (IsRemoteContentDisabled()) {
+      // Don't fetch network content if this is the case, just pretend the tab
+      // was retrieved successfully. Do so asynchronously to simulate the
+      // production code better.
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(&WhatsNewFetcher::OpenWhatsNewTabForTest,
+                                    base::Unretained(this)));
+      return;
+    }
+
     LogLoadEvent(LoadEvent::kLoadStart);
     auto traffic_annotation =
         net::DefineNetworkTrafficAnnotation("whats_new_handler", R"(
@@ -168,6 +179,14 @@ class WhatsNewFetcher : public BrowserListObserver {
     base::UmaHistogramEnumeration("WhatsNew.LoadEvent", event);
   }
 
+  void OpenWhatsNewTabForTest() {
+    if (browser_closed_or_inactive_)
+      return;
+
+    AddWhatsNewTab(browser_);
+    delete this;
+  }
+
   void OnResponseLoaded(std::unique_ptr<std::string> body) {
     int error_or_response_code = simple_loader_->NetError();
     const auto& headers = simple_loader_->ResponseInfo()
@@ -206,15 +225,6 @@ class WhatsNewFetcher : public BrowserListObserver {
 }  // namespace
 
 void StartWhatsNewFetch(Browser* browser) {
-  if (IsRemoteContentDisabled()) {
-    // Don't fetch network content if this is the case, just pretend the tab was
-    // retrieved successfully. Do so asynchronously to simulate the production
-    // code better.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(AddWhatsNewTab, browser));
-    return;
-  }
-
   new WhatsNewFetcher(browser);
 }
 
