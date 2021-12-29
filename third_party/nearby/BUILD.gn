@@ -256,27 +256,58 @@ source_set("core_internal_mediums") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 
-source_set("core_internal_mediums_webrtc") {
+source_set("core_internal_mediums_utils") {
   public_configs = [ ":nearby_include_config" ]
   sources = [
     "src/cpp/core/internal/mediums/utils.cc",
-    "src/cpp/core/internal/mediums/webrtc/connection_flow.cc",
-    "src/cpp/core/internal/mediums/webrtc/signaling_frames.cc",
-    "src/cpp/core/internal/mediums/webrtc/webrtc_socket.cc",
     "src/cpp/core/internal/mediums/webrtc_peer_id.cc",
   ]
   public = [
+    "//third_party/abseil-cpp:absl",
     "src/cpp/core/internal/mediums/utils.h",
+    "src/cpp/core/internal/mediums/webrtc_peer_id.h",
+    "src/cpp/core/internal/mediums/webrtc_socket.h",
+  ]
+  public_deps = [
+    ":core_internal_mediums_webrtc_data_types",
+    ":offline_wire_formats_proto",
+    ":platform_base",
+    ":platform_public_types",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+source_set("core_internal_mediums_webrtc_data_types") {
+  public_configs = [ ":nearby_include_config" ]
+  sources = [ "src/cpp/core/internal/mediums/webrtc/webrtc_socket_impl.cc" ]
+  public = [ "src/cpp/core/internal/mediums/webrtc/webrtc_socket_impl.h" ]
+  public_deps = [
+    ":core_types",
+    ":platform_base",
+    ":platform_public_types",
+    "//third_party/webrtc_overrides:webrtc_component",
+  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}
+
+source_set("core_internal_mediums_webrtc") {
+  public_configs = [ ":nearby_include_config" ]
+  sources = [
+    "src/cpp/core/internal/mediums/webrtc/connection_flow.cc",
+    "src/cpp/core/internal/mediums/webrtc/signaling_frames.cc",
+  ]
+  public = [
     "src/cpp/core/internal/mediums/webrtc/connection_flow.h",
     "src/cpp/core/internal/mediums/webrtc/data_channel_listener.h",
     "src/cpp/core/internal/mediums/webrtc/local_ice_candidate_listener.h",
     "src/cpp/core/internal/mediums/webrtc/session_description_wrapper.h",
     "src/cpp/core/internal/mediums/webrtc/signaling_frames.h",
-    "src/cpp/core/internal/mediums/webrtc/webrtc_socket.h",
-    "src/cpp/core/internal/mediums/webrtc_peer_id.h",
-    "src/cpp/core/internal/mediums/webrtc_socket_wrapper.h",
   ]
   public_deps = [
+    ":core_internal_mediums_utils",
+    ":core_internal_mediums_webrtc_data_types",
     ":core_types",
     ":platform_base",
     ":platform_public_comm",

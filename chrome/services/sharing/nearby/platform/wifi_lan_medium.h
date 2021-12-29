@@ -114,6 +114,8 @@ class WifiLanMedium : public api::WifiLanMedium {
   bool StartDiscovery(const std::string& service_type,
                       DiscoveredServiceCallback callback) override;
   bool StopDiscovery(const std::string& service_type) override;
+  absl::optional<std::pair<std::int32_t, std::int32_t>> GetDynamicPortRange()
+      override;
   /*==========================================================================*/
 
   // Removes |event| from the set of pending events and signals |event|. Calls

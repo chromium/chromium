@@ -323,6 +323,11 @@ bool WifiLanMedium::StopDiscovery(const std::string& service_type) {
   NOTIMPLEMENTED();
   return false;
 }
+absl::optional<std::pair<std::int32_t, std::int32_t>>
+WifiLanMedium::GetDynamicPortRange() {
+  NOTIMPLEMENTED();
+  return absl::nullopt;
+}
 /*============================================================================*/
 // End: Not implemented
 /*============================================================================*/
