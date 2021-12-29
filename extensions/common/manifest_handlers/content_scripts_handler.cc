@@ -77,27 +77,36 @@ std::unique_ptr<UserScript> CreateUserScript(
   if (content_script.all_frames)
     result->set_match_all_frames(*content_script.all_frames);
 
-  // match_origin_as_fallback
-  bool has_match_origin_as_fallback = false;
+  // match_origin_as_fallback and match_about_blank.
+  // Note: `match_about_blank` is ignored if `match_origin_as_fallback` was
+  // specified. `match_origin_as_fallback` can only be specified for extensions
+  // running manifest version 3 or higher. `match_about_blank` can be specified
+  // by any extensions (and is used by MV3+ extensions for compatibility).
+  absl::optional<MatchOriginAsFallbackBehavior> match_origin_as_fallback;
+
   if (content_script.match_origin_as_fallback &&
       base::FeatureList::IsEnabled(
           extensions_features::kContentScriptsMatchOriginAsFallback)) {
-    has_match_origin_as_fallback = true;
-    result->set_match_origin_as_fallback(
-        *content_script.match_origin_as_fallback
-            ? MatchOriginAsFallbackBehavior::kAlways
-            : MatchOriginAsFallbackBehavior::kNever);
+    if (extension->manifest_version() >= 3) {
+      match_origin_as_fallback = *content_script.match_origin_as_fallback
+                                     ? MatchOriginAsFallbackBehavior::kAlways
+                                     : MatchOriginAsFallbackBehavior::kNever;
+    } else {
+      extension->AddInstallWarning(
+          InstallWarning(errors::kMatchOriginAsFallbackRestrictedToMV3,
+                         ContentScriptsKeys::kContentScripts));
+    }
   }
 
-  // match_about_blank
-  // Note: match_about_blank is ignored if |match_origin_as_fallback| was
-  // specified.
-  if (!has_match_origin_as_fallback && content_script.match_about_blank) {
-    result->set_match_origin_as_fallback(
+  if (!match_origin_as_fallback && content_script.match_about_blank) {
+    match_origin_as_fallback =
         *content_script.match_about_blank
             ? MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree
-            : MatchOriginAsFallbackBehavior::kNever);
+            : MatchOriginAsFallbackBehavior::kNever;
   }
+
+  if (match_origin_as_fallback)
+    result->set_match_origin_as_fallback(*match_origin_as_fallback);
 
   bool wants_file_access = false;
   if (!script_parsing::ParseMatchPatterns(

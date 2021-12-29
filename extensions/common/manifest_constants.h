@@ -435,6 +435,7 @@ extern const char kLocalesTreeMissing[];
 extern const char kManifestParseError[];
 extern const char kManifestUnreadable[];
 extern const char kManifestVersionTooHighWarning[];
+extern const char kMatchOriginAsFallbackRestrictedToMV3[];
 extern const char kMissingFile[];
 extern const char16_t kMultipleOverrides[];
 extern const char kNoWildCardsInPaths[];

@@ -1331,7 +1331,7 @@ void ContentScriptRelatedFrameTest::SetUpOnMainThread() {
   constexpr char kContentScriptManifest[] =
       R"({
            "name": "Content Script injection in related frames",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "content_scripts": [{
              "matches": ["http://example.com/*"],

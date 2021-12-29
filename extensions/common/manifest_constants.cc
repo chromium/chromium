@@ -643,6 +643,9 @@ const char kManifestVersionTooHighWarning[] =
     "Certain features may not work as expected.";
 const char kMissingFile[] =
     "At least one js or css file is required for 'content_scripts[*]'.";
+const char kMatchOriginAsFallbackRestrictedToMV3[] =
+    "The 'match_origin_as_fallback' property is restricted to extensions with "
+    "'manifest_version' set to 3 or higher.";
 const char16_t kMultipleOverrides[] =
     u"An extension cannot override more than one page.";
 const char kNoWildCardsInPaths[] =
