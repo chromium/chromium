@@ -160,8 +160,11 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
 
   if (SupportsClientFrameShadow()) {
     // Set the frame decoration insets.
-    auto insets = layout->MirroredFrameBorderInsets();
-    auto insets_px = gfx::ScaleToCeiledInsets(insets, scale);
+    const gfx::Insets insets =
+        (window->GetPlatformWindowState() == ui::PlatformWindowState::kNormal)
+            ? layout->MirroredFrameBorderInsets()
+            : gfx::Insets();
+    const gfx::Insets insets_px = gfx::ScaleToCeiledInsets(insets, scale);
     window->SetDecorationInsets(showing_frame ? &insets_px : nullptr);
 
     // Set the input region.
