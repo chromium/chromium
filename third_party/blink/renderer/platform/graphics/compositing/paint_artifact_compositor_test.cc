@@ -4025,21 +4025,16 @@ TEST_P(PaintArtifactCompositorTest, OpacityAnimationRenderSurfaces) {
   EXPECT_EQ(effect_ids[2], effect_ids[3]);
   EXPECT_OPACITY(effect_ids[2], 1.f, kHasRenderSurface);
 
-  // TODO(crbug.com/937573): It's an invalid case that an animating effect
-  // doesn't have a layer, but we still keep the case in this test case because
-  // it does occur in CompositeAfterPaint mode before the bug is fixed.
   const auto& effect_tree = GetPropertyTrees().effect_tree;
   int id_a = effect_tree.Node(effect_ids[0])->parent_id;
   EXPECT_EQ(id_a, effect_tree.Node(effect_ids[1])->parent_id);
-  EXPECT_OPACITY(id_a, 1.f, kNoRenderSurface);
+  EXPECT_OPACITY(id_a, 1.f, kHasRenderSurface);
 
   // Effect |c| has one direct and one indirect compositing layers, so has
   // render surface.
   EXPECT_OPACITY(effect_ids[4], 1.f, kHasRenderSurface);
-
-  // TODO(crbug.com/937573): Same as |a|.
   EXPECT_OPACITY(effect_tree.Node(effect_ids[4])->parent_id, 1.f,
-                 kNoRenderSurface);
+                 kHasRenderSurface);
 }
 
 TEST_P(PaintArtifactCompositorTest, OpacityRenderSurfacesWithBackdropChildren) {
@@ -4133,7 +4128,7 @@ TEST_P(PaintArtifactCompositorTest, OpacityIndirectlyAffectingTwoLayers) {
   EXPECT_OPACITY(opacity_id, 0.5f, kHasRenderSurface);
 }
 
-TEST_P(PaintArtifactCompositorTest, WillChangeOpacityRenderSurface) {
+TEST_P(PaintArtifactCompositorTest, WillChangeOpacityRenderSurfaceWithLayer) {
   auto opacity =
       CreateOpacityEffect(e0(), 1.f, CompositingReason::kWillChangeOpacity);
   auto child_composited_transform =
@@ -4156,6 +4151,38 @@ TEST_P(PaintArtifactCompositorTest, WillChangeOpacityRenderSurface) {
 }
 
 TEST_P(PaintArtifactCompositorTest,
+       WillChangeOpacityRenderSurfaceWithoutLayer) {
+  auto opacity =
+      CreateOpacityEffect(e0(), 1.f, CompositingReason::kWillChangeOpacity);
+  auto child_composited_transform =
+      CreateTransform(t0(), TransformationMatrix(), FloatPoint3D(),
+                      CompositingReason::k3DTransform);
+  auto grandchild_composited_transform =
+      CreateTransform(*child_composited_transform, TransformationMatrix(),
+                      FloatPoint3D(), CompositingReason::k3DTransform);
+  auto child_effect = CreateOpacityEffect(*opacity, 1.f);
+  auto grandchild_effect = CreateOpacityEffect(*child_effect, 1.f);
+
+  TestPaintArtifact artifact;
+  artifact.Chunk(*child_composited_transform, c0(), *child_effect)
+      .RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kBlack);
+  artifact.Chunk(*grandchild_composited_transform, c0(), *grandchild_effect)
+      .RectDrawing(gfx::Rect(150, 150, 100, 100), Color::kWhite);
+  Update(artifact.Build());
+  ASSERT_EQ(2u, LayerCount());
+
+  const auto& effect_tree = GetPropertyTrees().effect_tree;
+  int layer0_effect_id = LayerAt(0)->effect_tree_index();
+  EXPECT_OPACITY(layer0_effect_id, 1.f, kNoRenderSurface);
+  int layer1_effect_id = LayerAt(1)->effect_tree_index();
+  EXPECT_OPACITY(layer1_effect_id, 1.f, kNoRenderSurface);
+  // |opacity| affects both layer0 and layer1 which don't have render surfaces,
+  // so it should have a render surface.
+  int opacity_id = effect_tree.Node(layer0_effect_id)->parent_id;
+  EXPECT_OPACITY(opacity_id, 1.f, kHasRenderSurface);
+}
+
+TEST_P(PaintArtifactCompositorTest,
        OpacityIndirectlyAffectingTwoLayersWithOpacityAnimations) {
   auto opacity = CreateAnimatingOpacityEffect(e0());
   auto child_composited_effect = CreateAnimatingOpacityEffect(*opacity);
@@ -4171,7 +4198,7 @@ TEST_P(PaintArtifactCompositorTest,
   ASSERT_EQ(2u, LayerCount());
 
   const auto& effect_tree = GetPropertyTrees().effect_tree;
-  // layer0's opacity animation needs a render surfafce because it affects
+  // layer0's opacity animation needs a render surface because it affects
   // both layer0 and layer1.
   int layer0_effect_id = LayerAt(0)->effect_tree_index();
   EXPECT_OPACITY(layer0_effect_id, 1.f, kHasRenderSurface);

@@ -1123,6 +1123,12 @@ void PropertyTreeManager::BuildEffectNodesRecursively(
     }
   } else {
     next_effect.SetCcNodeId(new_sequence_number_, real_effect_node_id);
+    if (cc_effect_id_to_blink_effect_node_.size() <=
+        static_cast<wtf_size_t>(real_effect_node_id)) {
+      cc_effect_id_to_blink_effect_node_.resize(real_effect_node_id + 1);
+    }
+    DCHECK(!cc_effect_id_to_blink_effect_node_[real_effect_node_id]);
+    cc_effect_id_to_blink_effect_node_[real_effect_node_id] = &next_effect;
   }
 
   CompositorElementId compositor_element_id =
@@ -1199,6 +1205,87 @@ void PropertyTreeManager::PopulateCcEffectNode(
   effect_node.document_transition_shared_element_id =
       effect.DocumentTransitionSharedElementId();
   effect_node.shared_element_resource_id = effect.SharedElementResourceId();
+}
+
+cc::RenderSurfaceReason
+PropertyTreeManager::ConditionalRenderSurfaceReasonForEffect(
+    const cc::EffectNode& effect) const {
+  if (effect.HasRenderSurface())
+    return cc::RenderSurfaceReason::kNone;
+  if (effect.blend_mode != SkBlendMode::kSrcOver)
+    return cc::RenderSurfaceReason::kBlendModeDstIn;
+  if (effect.opacity != 1.f)
+    return cc::RenderSurfaceReason::kOpacity;
+  if (static_cast<wtf_size_t>(effect.id) <
+      cc_effect_id_to_blink_effect_node_.size()) {
+    if (const auto* blink_effect_node =
+            cc_effect_id_to_blink_effect_node_[effect.id]) {
+      if (blink_effect_node->RequiresCompositingForWillChangeOpacity())
+        return cc::RenderSurfaceReason::kOpacity;
+      if (blink_effect_node->HasActiveOpacityAnimation())
+        return cc::RenderSurfaceReason::kOpacityAnimation;
+    }
+  }
+  // Applying a rounded corner clip to more than one layer descendant
+  // with highest quality requires a render surface, due to the possibility
+  // of antialiasing issues on the rounded corner edges.
+  // is_fast_rounded_corner means to intentionally prefer faster compositing
+  // and less memory over highest quality.
+  if (effect.mask_filter_info.HasRoundedCorners() &&
+      !effect.is_fast_rounded_corner)
+    return cc::RenderSurfaceReason::kRoundedCorner;
+  return cc::RenderSurfaceReason::kNone;
+}
+
+// Every effect is supposed to have render surface enabled for grouping, but we
+// can omit one if the effect is opacity or blend-mode only, render surface is
+// not forced, and the effect has only one layer or render surface. This is both
+// for optimization and not introducing sub-pixel differences in web tests.
+// TODO(crbug.com/504464): There is ongoing work in cc to delay render surface
+// decision until later phase of the pipeline. Remove premature optimization
+// here once the work is ready.
+void PropertyTreeManager::AddConditionalRenderSurfaceReasons(
+    const cc::LayerList& layers) {
+  auto& effect_tree = GetEffectTree();
+  // This vector is indexed by effect node id. The value is the number of
+  // layers and sub-render-surfaces controlled by this effect.
+  Vector<int> effect_layer_counts(static_cast<wtf_size_t>(effect_tree.size()));
+  // Initialize the vector to count directly controlled layers.
+  for (const auto& layer : layers) {
+    if (layer->DrawsContent())
+      effect_layer_counts[layer->effect_tree_index()]++;
+  }
+
+  // In the effect tree, parent always has lower id than children, so the
+  // following loop will check descendants before parents and accumulate
+  // effect_layer_counts.
+  for (int id = static_cast<int>(effect_tree.size() - 1);
+       id > cc::EffectTree::kSecondaryRootNodeId; id--) {
+    auto* effect = effect_tree.Node(id);
+    if (effect_layer_counts[id] > 1) {
+      auto reason = ConditionalRenderSurfaceReasonForEffect(*effect);
+      if (reason != cc::RenderSurfaceReason::kNone) {
+        // The render surface candidate needs a render surface because it
+        // controls more than 1 layer.
+        effect->render_surface_reason = reason;
+      }
+    }
+
+    // We should not have visited the parent.
+    DCHECK_NE(-1, effect_layer_counts[effect->parent_id]);
+    if (effect->HasRenderSurface()) {
+      // A sub-render-surface counts as one controlled layer of the parent.
+      effect_layer_counts[effect->parent_id]++;
+    } else {
+      // Otherwise all layers count as controlled layers of the parent.
+      effect_layer_counts[effect->parent_id] += effect_layer_counts[id];
+    }
+
+#if DCHECK_IS_ON()
+    // Mark we have visited this effect.
+    effect_layer_counts[id] = -1;
+#endif
+  }
 }
 
 }  // namespace blink
