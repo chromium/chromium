@@ -1157,4 +1157,39 @@ TEST_F(AttributionManagerImplTest, TimeFromConversionToReportSendHistogram) {
                                 kFirstReportingWindow.InHours(), 1);
 }
 
+TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
+  base::HistogramTester histograms;
+
+  attribution_manager_->HandleSource(
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+
+  // Prevent the report from being sent until after its original report time.
+  SetOfflineAndWaitForObserversToBeNotified(true);
+  task_environment_.FastForwardBy(kFirstReportingWindow + base::Days(3));
+  EXPECT_THAT(network_sender_->calls(), IsEmpty());
+
+  SetOfflineAndWaitForObserversToBeNotified(false);
+  task_environment_.FastForwardBy(kExpiredReportOffset);
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+
+  histograms.ExpectUniqueTimeSample("Conversions.ExtraReportDelay2",
+                                    base::Days(3) + kExpiredReportOffset, 1);
+}
+
+TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {
+  base::HistogramTester histograms;
+
+  attribution_manager_->HandleSource(
+      SourceBuilder(clock().Now()).SetExpiry(kImpressionExpiry).Build());
+  attribution_manager_->HandleTrigger(DefaultTrigger());
+
+  attribution_manager_->SendReportsForWebUI(base::DoNothing());
+  task_environment_.FastForwardBy(base::TimeDelta());
+  EXPECT_THAT(network_sender_->calls(), SizeIs(1));
+
+  histograms.ExpectTotalCount("Conversions.ExtraReportDelay2", 0);
+  histograms.ExpectTotalCount("Conversions.TimeFromConversionToReportSend", 0);
+}
+
 }  // namespace content

@@ -102,24 +102,13 @@ ConversionReportSendOutcome ConvertToConversionReportSendOutcome(
 }
 
 // Called when |report| is to be sent over network, for logging metrics.
-void LogMetricsOnReportSend(const AttributionReport& report) {
-  // Reports sent from the WebUI should not log metrics.
-  //
-  // TODO(apaseltiner): This erroneously logs metrics for WebUI reports because
-  // we use now instead of `base::Time::Min()` in
-  // `OnGetReportsToSendFromWebUI()`. Bug introduced in
-  // https://crrev.com/c/3118988 due to lack of test coverage.
-  if (report.report_time() == base::Time::Min())
-    return;
-
+void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
   // Use a large time range to capture users that might not open the browser for
   // a long time while a conversion report is pending. Revisit this range if it
   // is non-ideal for real world data.
-  base::Time now = base::Time::Now();
   base::Time original_report_time =
       ComputeReportTime(report.source(), report.conversion_time());
   base::TimeDelta time_since_original_report_time = now - original_report_time;
-  // TODO(apaseltiner): Add a test for this histogram.
   base::UmaHistogramCustomTimes(
       "Conversions.ExtraReportDelay2", time_since_original_report_time,
       base::Seconds(1), base::Days(24), /*buckets=*/100);
@@ -418,7 +407,7 @@ void AttributionManagerImpl::OnGetReportsToSend(
   // ordering on their conversion metadata bits.
   base::RandomShuffle(reports.begin(), reports.end());
 
-  SendReports(std::move(reports), base::DoNothing());
+  SendReports(std::move(reports), /*log_metrics=*/true, base::DoNothing());
   StartGetReportsToSendTimer();
 }
 
@@ -436,14 +425,16 @@ void AttributionManagerImpl::OnGetReportsToSendFromWebUI(
   }
 
   auto barrier = base::BarrierClosure(reports.size(), std::move(done));
-  SendReports(std::move(reports), std::move(barrier));
+  SendReports(std::move(reports), /*log_metrics=*/false, std::move(barrier));
 }
 
 void AttributionManagerImpl::SendReports(std::vector<AttributionReport> reports,
+                                         bool log_metrics,
                                          base::RepeatingClosure done) {
+  const base::Time now = clock_->Now();
   for (AttributionReport& report : reports) {
     DCHECK(report.report_id().has_value());
-    DCHECK_LE(report.report_time(), clock_->Now());
+    DCHECK_LE(report.report_time(), now);
 
     bool inserted = reports_being_sent_.emplace(*report.report_id()).second;
     if (!inserted) {
@@ -469,7 +460,8 @@ void AttributionManagerImpl::SendReports(std::vector<AttributionReport> reports,
       continue;
     }
 
-    LogMetricsOnReportSend(report);
+    if (log_metrics)
+      LogMetricsOnReportSend(report, now);
 
     GURL report_url = report.ReportURL();
     std::string report_body = report.ReportBody();

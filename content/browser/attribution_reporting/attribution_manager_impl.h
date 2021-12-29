@@ -154,6 +154,7 @@ class CONTENT_EXPORT AttributionManagerImpl
                                    std::vector<AttributionReport> reports);
 
   void SendReports(std::vector<AttributionReport> reports,
+                   bool log_metrics,
                    base::RepeatingClosure done);
   void OnReportSent(base::OnceClosure done,
                     AttributionReport report,
