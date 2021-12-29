@@ -331,7 +331,7 @@ void UdpTransportImpl::OnSent(const scoped_refptr<net::IOBuffer>& buf,
 
 void UdpTransportImpl::SetUdpOptions(const base::DictionaryValue& options) {
   SetSendBufferSize(GetTransportSendBufferSize(options));
-  if (options.HasKey(kOptionDscp)) {
+  if (options.FindKey(kOptionDscp)) {
     // The default DSCP value for cast is AF41. Which gives it a higher
     // priority over other traffic.
     SetDscp(net::DSCP_AF41);

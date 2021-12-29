@@ -430,10 +430,10 @@ void CastTransportImpl::SetOptions(const base::DictionaryValue& options) {
 
   // Set Wifi options.
   int wifi_options = 0;
-  if (options.HasKey(kOptionWifiDisableScan)) {
+  if (options.FindKey(kOptionWifiDisableScan)) {
     wifi_options |= net::WIFI_OPTIONS_DISABLE_SCAN;
   }
-  if (options.HasKey(kOptionWifiMediaStreamingMode)) {
+  if (options.FindKey(kOptionWifiMediaStreamingMode)) {
     wifi_options |= net::WIFI_OPTIONS_MEDIA_STREAMING_MODE;
   }
   if (wifi_options)
