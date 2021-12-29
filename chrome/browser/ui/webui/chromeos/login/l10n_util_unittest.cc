@@ -57,53 +57,50 @@ class L10nUtilTest : public testing::Test {
   L10nUtilTest(const L10nUtilTest&) = delete;
   L10nUtilTest& operator=(const L10nUtilTest&) = delete;
 
-  ~L10nUtilTest() override;
+  ~L10nUtilTest() override = default;
 
   void SetInputMethods1();
   void SetInputMethods2();
 
+ protected:
+  MockInputMethodManagerWithInputMethods input_manager_;
+
  private:
   base::test::TaskEnvironment task_environment_;
   system::ScopedFakeStatisticsProvider scoped_fake_statistics_provider_;
-  MockInputMethodManagerWithInputMethods* input_manager_;
 };
 
-L10nUtilTest::L10nUtilTest()
-    : input_manager_(new MockInputMethodManagerWithInputMethods) {
-  ash::input_method::InitializeForTesting(input_manager_);
+L10nUtilTest::L10nUtilTest() {
   auto mock_component_extension_ime_manager_delegate = std::make_unique<
       input_method::MockComponentExtensionIMEManagerDelegate>();
-  input_manager_->SetComponentExtensionIMEManager(
+  input_manager_.SetComponentExtensionIMEManager(
       std::make_unique<ComponentExtensionIMEManager>(
           std::move(mock_component_extension_ime_manager_delegate)));
 
   base::RunLoop().RunUntilIdle();
 }
 
-L10nUtilTest::~L10nUtilTest() {
-  ash::input_method::Shutdown();
-}
-
 void L10nUtilTest::SetInputMethods1() {
-  input_manager_->AddInputMethod("xkb:us::eng", "us", "en-US");
-  input_manager_->AddInputMethod("xkb:fr::fra", "fr", "fr");
-  input_manager_->AddInputMethod("xkb:be::fra", "be", "fr");
-  input_manager_->AddInputMethod("xkb:ie::ga", "ga", "ga");
+  input_manager_.AddInputMethod("xkb:us::eng", "us", "en-US");
+  input_manager_.AddInputMethod("xkb:fr::fra", "fr", "fr");
+  input_manager_.AddInputMethod("xkb:be::fra", "be", "fr");
+  input_manager_.AddInputMethod("xkb:ie::ga", "ga", "ga");
 }
 
 void L10nUtilTest::SetInputMethods2() {
-  input_manager_->AddInputMethod("xkb:us::eng", "us", "en-US");
-  input_manager_->AddInputMethod("xkb:ch:fr:fra", "ch(fr)", "fr");
-  input_manager_->AddInputMethod("xkb:ch::ger", "ch", "de");
-  input_manager_->AddInputMethod("xkb:it::ita", "it", "it");
-  input_manager_->AddInputMethod("xkb:ie::ga", "ga", "ga");
+  input_manager_.AddInputMethod("xkb:us::eng", "us", "en-US");
+  input_manager_.AddInputMethod("xkb:ch:fr:fra", "ch(fr)", "fr");
+  input_manager_.AddInputMethod("xkb:ch::ger", "ch", "de");
+  input_manager_.AddInputMethod("xkb:it::ita", "it", "it");
+  input_manager_.AddInputMethod("xkb:ie::ga", "ga", "ga");
 }
 
 TEST_F(L10nUtilTest, GetUILanguageList) {
   SetInputMethods1();
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
-  std::unique_ptr<base::ListValue> list(GetUILanguageList(NULL, std::string()));
+  std::unique_ptr<base::ListValue> list(
+      GetUILanguageList(NULL, std::string(), &input_manager_));
 
   VerifyOnlyUILanguages(*list);
 }
@@ -167,7 +164,8 @@ TEST_F(L10nUtilTest, GetUILanguageListMulti) {
   SetInputMethods2();
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
-  std::unique_ptr<base::ListValue> list(GetUILanguageList(NULL, std::string()));
+  std::unique_ptr<base::ListValue> list(
+      GetUILanguageList(NULL, std::string(), &input_manager_));
 
   VerifyOnlyUILanguages(*list);
 
@@ -188,8 +186,8 @@ TEST_F(L10nUtilTest, GetUILanguageListWithMostRelevant) {
   most_relevant_language_codes.push_back("nonexistent");
 
   // This requires initialized StatisticsProvider (see L10nUtilTest()).
-  std::unique_ptr<base::ListValue> list(
-      GetUILanguageList(&most_relevant_language_codes, std::string()));
+  std::unique_ptr<base::ListValue> list(GetUILanguageList(
+      &most_relevant_language_codes, std::string(), &input_manager_));
 
   VerifyOnlyUILanguages(*list);
 

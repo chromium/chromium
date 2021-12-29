@@ -35,6 +35,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/remove_user_delegate.h"
 #include "components/user_manager/user_names.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace {
 using ash::SupervisedAction;
@@ -239,7 +240,7 @@ void LoginScreenClientImpl::RequestPublicSessionKeyboardLayouts(
   chromeos::GetKeyboardLayoutsForLocale(
       base::BindOnce(&LoginScreenClientImpl::SetPublicSessionKeyboardLayout,
                      weak_ptr_factory_.GetWeakPtr(), account_id, locale),
-      locale);
+      locale, ash::input_method::InputMethodManager::Get());
 }
 
 void LoginScreenClientImpl::HandleAccelerator(

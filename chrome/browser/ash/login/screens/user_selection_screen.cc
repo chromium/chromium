@@ -110,7 +110,8 @@ std::unique_ptr<base::ListValue> GetPublicSessionLocales(
   // Construct the list of available locales. This list consists of the
   // recommended locales, followed by all others.
   std::unique_ptr<base::ListValue> available_locales =
-      GetUILanguageList(&recommended_locales, std::string());
+      GetUILanguageList(&recommended_locales, std::string(),
+                        input_method::InputMethodManager::Get());
 
   // Select the the first recommended locale that is actually available or the
   // current UI locale if none of them are available.

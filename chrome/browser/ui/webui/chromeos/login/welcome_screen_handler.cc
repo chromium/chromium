@@ -274,11 +274,10 @@ void WelcomeScreenHandler::GetAdditionalParameters(
 
   const std::string application_locale =
       g_browser_process->GetApplicationLocale();
+  input_method::InputMethodManager* input_method_manager =
+      input_method::InputMethodManager::Get();
   const std::string selected_input_method =
-      input_method::InputMethodManager::Get()
-          ->GetActiveIMEState()
-          ->GetCurrentInputMethod()
-          .id();
+      input_method_manager->GetActiveIMEState()->GetCurrentInputMethod().id();
 
   base::Value language_list{base::Value::Type::LIST};
   if (screen_) {
@@ -294,9 +293,10 @@ void WelcomeScreenHandler::GetAdditionalParameters(
     language_list = std::move(*GetMinimalUILanguageList());
 
   dict->SetKey("languageList", std::move(language_list));
-  dict->SetKey("inputMethodsList",
-               GetAndActivateLoginKeyboardLayouts(application_locale,
-                                                  selected_input_method));
+  dict->SetKey(
+      "inputMethodsList",
+      GetAndActivateLoginKeyboardLayouts(
+          application_locale, selected_input_method, input_method_manager));
   dict->SetKey("timezoneList", GetTimezoneList());
   dict->SetKey("demoModeCountryList", DemoSession::GetCountryList());
 

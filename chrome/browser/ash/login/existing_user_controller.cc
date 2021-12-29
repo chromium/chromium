@@ -1317,7 +1317,7 @@ void ExistingUserController::LoginAsPublicSessionWithPolicyStoreReady(
         base::BindOnce(
             &ExistingUserController::SetPublicSessionKeyboardLayoutAndLogin,
             weak_factory_.GetWeakPtr(), new_user_context),
-        locale);
+        locale, input_method::InputMethodManager::Get());
     return;
   }
 
