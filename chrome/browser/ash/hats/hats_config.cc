@@ -100,4 +100,14 @@ const HatsConfig kHatsArcGamesSurvey = {
     prefs::kHatsArcGamesSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
+// Audio Survey -- shown after a user closed an audio stream living for more
+// than 3 minutes
+const HatsConfig kHatsAudioSurvey = {
+    ::features::kHappinessTrackingSystemAudio,  // feature
+    "Browser.ChromeOS.HatsSatisfaction.Audio",  // histogram_name
+    base::Days(90),                             // new_device_threshold
+    prefs::kHatsAudioDeviceIsSelected,          // is_selected_pref_name
+    prefs::kHatsAudioSurveyCycleEndTs,          // cycle_end_timestamp_pref_name
+};
+
 }  // namespace ash

@@ -389,6 +389,9 @@ extern const base::Feature kHappinessTrackingSystemSmartLock;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kHappinessTrackingSystemArcGames;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kHappinessTrackingSystemAudio;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)

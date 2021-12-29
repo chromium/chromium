@@ -52,6 +52,7 @@ extern const HatsConfig kHatsOnboardingSurvey;
 extern const HatsConfig kHatsSmartLockSurvey;
 extern const HatsConfig kHatsUnlockSurvey;
 extern const HatsConfig kHatsArcGamesSurvey;
+extern const HatsConfig kHatsAudioSurvey;
 
 }  // namespace ash
 

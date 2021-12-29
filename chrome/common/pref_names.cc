@@ -768,28 +768,28 @@ const char kKeyPermissionsOneTimeMigrationDone[] =
 const char kUnifiedDesktopEnabledByDefault[] =
     "settings.display.unified_desktop_enabled_by_default";
 
-// An int64 pref. This is a timestamp of the most recent time the profile took
-// or dismissed HaTS (happiness-tracking) survey.
+// An int64 pref. This is a timestamp, microseconds after epoch, of the most
+// recent time the profile took or dismissed HaTS (happiness-tracking) survey.
 const char kHatsLastInteractionTimestamp[] = "hats_last_interaction_timestamp";
 
-// An int64 pref. This is the timestamp that indicates the end of the most
-// recent survey cycle (general survey).
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicates the end of the most recent survey cycle (general survey).
 const char kHatsSurveyCycleEndTimestamp[] = "hats_survey_cycle_end_timestamp";
 
 // A boolean pref. Indicates if the device is selected for HaTS in the current
 // survey cycle (general survey).
 const char kHatsDeviceIsSelected[] = "hats_device_is_selected";
 
-// An int64 pref. This is the timestamp that indicates the end of the ENT
-// survey
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicates the end of the ENT survey
 const char kHatsEntSurveyCycleEndTs[] = "hats_ent_cycle_end_timestamp";
 
 // A boolean pref. Indicates if the device is selected for the HaTS ENT
 // survey
 const char kHatsEntDeviceIsSelected[] = "hats_ent_device_is_selected";
 
-// An int64 pref. This is the timestamp that indicates the end of the Stability
-// survey
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicates the end of the Stability survey
 const char kHatsStabilitySurveyCycleEndTs[] =
     "hats_stability_cycle_end_timestamp";
 
@@ -798,8 +798,8 @@ const char kHatsStabilitySurveyCycleEndTs[] =
 const char kHatsStabilityDeviceIsSelected[] =
     "hats_stability_device_is_selected";
 
-// An int64 pref. This is the timestamp that indicates the end of the HaTS
-// Performance survey
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicates the end of the HaTS Performance survey
 const char kHatsPerformanceSurveyCycleEndTs[] =
     "hats_performance_cycle_end_timestamp";
 
@@ -808,8 +808,8 @@ const char kHatsPerformanceSurveyCycleEndTs[] =
 const char kHatsPerformanceDeviceIsSelected[] =
     "hats_performance_device_is_selected";
 
-// An int64 pref. This is the timestamp that indicates the end of the Onboarding
-// Experience survey
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicates the end of the Onboarding Experience survey
 const char kHatsOnboardingSurveyCycleEndTs[] =
     "hats_onboarding_cycle_end_timestamp";
 
@@ -818,16 +818,16 @@ const char kHatsOnboardingSurveyCycleEndTs[] =
 const char kHatsOnboardingDeviceIsSelected[] =
     "hats_onboarding_device_is_selected";
 
-// An int64 pref. This is the timestamp that indicates the end of the most
-// recent Unlock Experience survey cycle.
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicates the end of the most recent Unlock Experience survey cycle.
 const char kHatsUnlockSurveyCycleEndTs[] = "hats_unlock_cycle_end_timestamp";
 
 // A boolean pref. Indicates if the device is selected for the HaTS Unlock
 // Experience survey
 const char kHatsUnlockDeviceIsSelected[] = "hats_unlock_device_is_selected";
 
-// An int64 pref. This is the timestamp that indicates the end of the most
-// recent Smart Lock Experience survey cycle.
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicates the end of the most recent Smart Lock Experience survey cycle.
 const char kHatsSmartLockSurveyCycleEndTs[] =
     "hats_smartlock_cycle_end_timestamp";
 
@@ -836,14 +836,21 @@ const char kHatsSmartLockSurveyCycleEndTs[] =
 const char kHatsSmartLockDeviceIsSelected[] =
     "hats_smartlock_device_is_selected";
 
-// An int64 pref. This is the timestamp that indicates the end of the most
-// recent ARC Games survey cycle.
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicates the end of the most recent ARC Games survey cycle.
 const char kHatsArcGamesSurveyCycleEndTs[] =
     "hats_arc_games_cycle_end_timestamp";
 
 // A boolean pref. Indicates if the device is selected for the ARC Games survey
 const char kHatsArcGamesDeviceIsSelected[] =
     "hats_arc_games_device_is_selected";
+
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicates the end of the most recent Audio survey cycle.
+const char kHatsAudioSurveyCycleEndTs[] = "hats_audio_cycle_end_timestamp";
+
+// A boolean pref. Indicates if the device is selected for the Audio survey
+const char kHatsAudioDeviceIsSelected[] = "hats_audio_device_is_selected";
 
 // A boolean pref. Indicates if we've already shown a notification to inform the
 // current user about the quick unlock feature.

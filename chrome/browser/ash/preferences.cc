@@ -421,6 +421,10 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kHatsArcGamesDeviceIsSelected, false);
 
+  registry->RegisterInt64Pref(::prefs::kHatsAudioSurveyCycleEndTs, 0);
+
+  registry->RegisterBooleanPref(::prefs::kHatsAudioDeviceIsSelected, false);
+
   registry->RegisterBooleanPref(::prefs::kPinUnlockFeatureNotificationShown,
                                 false);
   registry->RegisterBooleanPref(

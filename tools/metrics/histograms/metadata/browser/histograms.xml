@@ -109,6 +109,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Survey">
     <variant name=".ArcGames"/>
+    <variant name=".Audio"/>
     <variant name=".Ent"/>
     <variant name=".General"/>
     <variant name=".OnboardingExperience"/>

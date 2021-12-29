@@ -295,6 +295,8 @@ extern const char kHatsSmartLockDeviceIsSelected[];
 extern const char kHatsSmartLockSurveyCycleEndTs[];
 extern const char kHatsArcGamesDeviceIsSelected[];
 extern const char kHatsArcGamesSurveyCycleEndTs[];
+extern const char kHatsAudioDeviceIsSelected[];
+extern const char kHatsAudioSurveyCycleEndTs[];
 extern const char kEolStatus[];
 extern const char kEndOfLifeDate[];
 extern const char kEolNotificationDismissed[];
