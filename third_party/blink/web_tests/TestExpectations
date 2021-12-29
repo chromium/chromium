@@ -7925,7 +7925,6 @@ crbug.com/1249176 [ Mac11-arm64 ] external/wpt/xhr/send-no-response-event-loaden
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/inspector-protocol/network/blocked-cookie-same-site-strict.js [ Crash Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/inspector-protocol/network/xhr-post-replay-cors.js [ Crash Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/security/cross-origin-shared-worker-allowed.html [ Crash Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] http/tests/security/cors-rfc1918/internal-to-internal-xhr.html [ Crash Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] media/autoplay/webaudio-audio-context-init.html [ Crash Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] media/picture-in-picture/v2/detached-iframe.html [ Crash Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/composite-relative-keyframes/external/wpt/css/css-transforms/animation/transform-interpolation-005.html [ Crash Pass ]
