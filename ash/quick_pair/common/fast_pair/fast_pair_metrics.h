@@ -107,6 +107,9 @@ void RecordKeyPairGenerationResult(bool success);
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordDataEncryptorCreateResult(bool success);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordWriteKeyBasedCharacteristicResult(bool success);
+
 }  // namespace quick_pair
 }  // namespace ash
 

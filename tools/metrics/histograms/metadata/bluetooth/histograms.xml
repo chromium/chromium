@@ -285,6 +285,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.KeyBasedPairing.Write.Result"
+    enum="BooleanSuccess" expires_after="2022-06-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records success or failure of writing to the key-based pairing Gatt
+    characteristic of the device during the handshake. Emitted following the
+    writing request in FastPairHandshake.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.KeyGenerationResult"
     enum="BooleanSuccess" expires_after="2022-06-20">
   <owner>shanefitz@google.com</owner>

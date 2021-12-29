@@ -89,6 +89,8 @@ void FastPairHandshakeImpl::OnDataEncryptorCreateAsync(
 void FastPairHandshakeImpl::OnWriteResponse(
     std::vector<uint8_t> response_bytes,
     absl::optional<PairFailure> failure) {
+  RecordWriteKeyBasedCharacteristicResult(/*success=*/!failure.has_value());
+
   if (failure) {
     QP_LOG(WARNING) << __func__
                     << ": Failed to write request: " << failure.value();

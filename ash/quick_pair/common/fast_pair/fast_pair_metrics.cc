@@ -61,6 +61,8 @@ const char kKeyGenerationResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.KeyGenerationResult";
 const char kDataEncryptorCreateResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.FastPairDataEncryptor.CreateResult";
+const char kWriteKeyBasedCharacteristicResult[] =
+    "Bluetooth.ChromeOS.FastPair.KeyBasedPairing.Write.Result";
 
 }  // namespace
 
@@ -208,6 +210,10 @@ void RecordKeyPairGenerationResult(bool success) {
 
 void RecordDataEncryptorCreateResult(bool success) {
   base::UmaHistogramBoolean(kDataEncryptorCreateResultMetric, success);
+}
+
+void RecordWriteKeyBasedCharacteristicResult(bool success) {
+  base::UmaHistogramBoolean(kWriteKeyBasedCharacteristicResult, success);
 }
 
 }  // namespace quick_pair
