@@ -836,10 +836,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_HAS_FOCUS(input_text_field());
 }
 
-// TODO(crbug.com/1229797): Switch to TEST_P and AssistantPageClamshellTest.
-// It fails with kProductivityLauncher enabled because the vertical position of
-// the suggestion chip doesn't match.
-TEST_F(AssistantPageViewTest,
+TEST_P(AssistantPageClamshellTest,
        ShouldNotScrollSuggestionChipsWhenSubmittingQuery) {
   ShowAssistantUiInTextMode();
   MockTextInteraction()
