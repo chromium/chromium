@@ -1495,26 +1495,20 @@ bool AttributionStorageSql::InitializeSchema(bool db_empty) {
   if (db_empty)
     return CreateSchema();
 
-  int current_version = kCurrentVersionNumber;
-  if (!sql::MetaTable::DoesTableExist(db_.get())) {
-    // Version 1 of the schema did not have a metadata table.
-    current_version = 1;
-    if (!meta_table_.Init(db_.get(), current_version, kCompatibleVersionNumber))
-      return false;
-  } else {
-    if (!meta_table_.Init(db_.get(), current_version, kCompatibleVersionNumber))
-      return false;
-    current_version = meta_table_.GetVersionNumber();
-  }
+  // Create the meta table if it doesn't already exist. The only version for
+  // which this is the case is version 1.
+  if (!meta_table_.Init(db_.get(), /*version=*/1, kCompatibleVersionNumber))
+    return false;
 
-  if (current_version == kCurrentVersionNumber)
+  int version = meta_table_.GetVersionNumber();
+  if (version == kCurrentVersionNumber)
     return true;
 
   // Recreate the DB if the version is deprecated or too new. In the latter
   // case, the DB will never work until Chrome is re-upgraded. Assume the user
   // will continue using this Chrome version and raze the DB to get attribution
   // reporting working.
-  if (current_version <= kDeprecatedVersionNumber ||
+  if (version <= kDeprecatedVersionNumber ||
       meta_table_.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
     // Note that this also razes the meta table, so it will need to be
     // initialized again.
