@@ -17,10 +17,9 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-
 namespace {
+
 constexpr char kTestString[] = "test";
-}
 
 using AssistantTextElementViewTest = AshTestBase;
 
@@ -55,6 +54,10 @@ TEST_F(AssistantTextElementViewTest, DarkAndLightTheme) {
 TEST_F(AssistantTextElementViewTest, DarkAndLightModeFlagOff) {
   ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
 
+  // ProductivityLauncher uses DarkLightMode colors.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+
   std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
   AssistantTextElementView* text_element_view = widget->SetContentsView(
       std::make_unique<AssistantTextElementView>(kTestString));
@@ -63,4 +66,6 @@ TEST_F(AssistantTextElementViewTest, DarkAndLightModeFlagOff) {
       static_cast<views::Label*>(text_element_view->children().at(0));
   EXPECT_EQ(label->GetEnabledColor(), kTextColorPrimary);
 }
+
+}  // namespace
 }  // namespace ash

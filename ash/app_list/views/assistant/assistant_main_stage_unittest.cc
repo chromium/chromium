@@ -54,7 +54,7 @@ TEST_F(AssistantMainStageTest, DarkAndLightTheme) {
 
   ShowAssistantUi();
 
-  views::View* main_stage = main_view()->GetViewByID(kMainStage);
+  views::View* main_stage = page_view()->GetViewByID(kMainStage);
   views::Separator* separator = static_cast<views::Separator*>(
       main_stage->GetViewByID(kHorizontalSeparator));
 
@@ -79,18 +79,25 @@ TEST_F(AssistantMainStageTest, DarkAndLightTheme) {
 TEST_F(AssistantMainStageTest, DarkAndLightModeFlagOff) {
   ASSERT_FALSE(features::IsDarkLightModeEnabled());
 
+  // ProductivityLauncher uses DarkLightMode colors.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+
   ShowAssistantUi();
 
-  views::View* main_stage = main_view()->GetViewByID(kMainStage);
+  views::View* main_stage = page_view()->GetViewByID(kMainStage);
   views::Separator* separator = static_cast<views::Separator*>(
       main_stage->GetViewByID(kHorizontalSeparator));
 
-  ASSERT_FALSE(main_view()->GetNativeTheme()->ShouldUseDarkColors());
+  ASSERT_FALSE(page_view()->GetNativeTheme()->ShouldUseDarkColors());
 
   // We use default color of views::Separator. Expects that Separator::GetColor
   // returns 0 as we have not specified a color.
   EXPECT_EQ(separator->GetColor(), 0u);
   EXPECT_EQ(GetCenterColor(separator), gfx::kGoogleGrey300);
+
+  // Avoid test teardown issues by explicitly closing the launcher.
+  CloseAssistantUi();
 }
 
 }  // namespace ash

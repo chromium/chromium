@@ -26,13 +26,20 @@ using AssistantZeroStateViewUnittest = AssistantAshTestBase;
 TEST_F(AssistantZeroStateViewUnittest, Theme) {
   ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
 
+  // ProductivityLauncher uses DarkLightMode colors.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+
   ShowAssistantUi();
 
   const views::Label* greeting_label = static_cast<views::Label*>(
-      main_view()->GetViewByID(AssistantViewID::kGreetingLabel));
+      page_view()->GetViewByID(AssistantViewID::kGreetingLabel));
 
   EXPECT_EQ(greeting_label->GetBackgroundColor(), SK_ColorWHITE);
   EXPECT_EQ(greeting_label->GetEnabledColor(), kTextColorPrimary);
+
+  // Avoid test teardown issues by explicitly closing the launcher.
+  CloseAssistantUi();
 }
 
 TEST_F(AssistantZeroStateViewUnittest, ThemeDarkLightMode) {
@@ -44,7 +51,7 @@ TEST_F(AssistantZeroStateViewUnittest, ThemeDarkLightMode) {
   ShowAssistantUi();
 
   const views::Label* greeting_label = static_cast<views::Label*>(
-      main_view()->GetViewByID(AssistantViewID::kGreetingLabel));
+      page_view()->GetViewByID(AssistantViewID::kGreetingLabel));
 
   EXPECT_EQ(greeting_label->GetBackgroundColor(),
             assistant_colors::ResolveColor(

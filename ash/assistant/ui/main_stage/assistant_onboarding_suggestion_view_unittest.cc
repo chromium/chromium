@@ -133,6 +133,10 @@ TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
 TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightModeFlagOff) {
   ASSERT_FALSE(features::IsDarkLightModeEnabled());
 
+  // ProductivityLauncher uses DarkLightMode colors.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
 
   AssistantOnboardingSuggestionView* suggestion_view_0 =

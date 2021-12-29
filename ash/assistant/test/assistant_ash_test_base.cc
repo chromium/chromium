@@ -12,6 +12,7 @@
 #include "ash/assistant/test/test_assistant_setup.h"
 #include "ash/assistant/ui/main_stage/assistant_onboarding_suggestion_view.h"
 #include "ash/assistant/ui/main_stage/suggestion_chip_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
@@ -216,6 +217,10 @@ bool AssistantAshTestBase::IsVisible() {
 }
 
 views::View* AssistantAshTestBase::main_view() {
+  DCHECK(!features::IsProductivityLauncherEnabled())
+      << "ProductivityLauncher does not have a main_view(). Prefer "
+         "page_view(), which is supported both with and without "
+         "ProductivityLauncher enabled.";
   return test_api_->main_view();
 }
 

@@ -202,6 +202,10 @@ TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
 TEST_F(SuggestionChipViewTest, DarkAndLightModeFlagOff) {
   ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
 
+  // ProductivityLauncher uses DarkLightMode colors.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+
   auto widget = CreateFramelessTestWidget();
   auto* suggestion_chip_view =
       widget->SetContentsView(std::make_unique<SuggestionChipView>(

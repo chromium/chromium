@@ -33,7 +33,7 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
   ShowAssistantUi();
 
   views::View* assistant_dialog_plate =
-      app_list_view()->GetViewByID(AssistantViewID::kDialogPlate);
+      page_view()->GetViewByID(AssistantViewID::kDialogPlate);
   views::Textfield* assistant_text_field = static_cast<views::Textfield*>(
       assistant_dialog_plate->GetViewByID(AssistantViewID::kTextQueryField));
 
@@ -53,13 +53,21 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
 TEST_F(AssistantDialogPlateTest, DarkAndLightModeFlagOff) {
   ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
 
+  // ProductivityLauncher uses DarkLightMode colors.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+
   ShowAssistantUi();
 
   views::View* assistant_dialog_plate =
-      app_list_view()->GetViewByID(AssistantViewID::kDialogPlate);
+      page_view()->GetViewByID(AssistantViewID::kDialogPlate);
   views::Textfield* assistant_text_field = static_cast<views::Textfield*>(
       assistant_dialog_plate->GetViewByID(AssistantViewID::kTextQueryField));
 
   EXPECT_EQ(assistant_text_field->GetTextColor(), kTextColorPrimary);
+
+  // Avoid test teardown issues by explicitly closing the launcher.
+  CloseAssistantUi();
 }
+
 }  // namespace ash

@@ -167,8 +167,6 @@ class AssistantOnboardingViewTest : public AssistantAshTestBase {
   base::test::ScopedRestoreICUDefaultLocale locale_{"en_US"};
 };
 
-}  // namespace
-
 // Tests -----------------------------------------------------------------------
 
 TEST_F(AssistantOnboardingViewTest, ShouldHaveExpectedGreeting) {
@@ -499,10 +497,18 @@ TEST_F(AssistantOnboardingViewTest, DarkAndLightTheme) {
 TEST_F(AssistantOnboardingViewTest, DarkAndLightModeFlagOff) {
   ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
 
+  // ProductivityLauncher uses DarkLightMode colors.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+
   ShowAssistantUi();
 
   EXPECT_EQ(greeting_label()->GetEnabledColor(), kTextColorPrimary);
   EXPECT_EQ(intro_label()->GetEnabledColor(), kTextColorPrimary);
+
+  // Avoid test teardown issues by explicitly closing the launcher.
+  CloseAssistantUi();
 }
 
+}  // namespace
 }  // namespace ash
