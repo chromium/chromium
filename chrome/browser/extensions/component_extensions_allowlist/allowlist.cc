@@ -79,7 +79,6 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
     case IDR_ARC_SUPPORT_MANIFEST:
     case IDR_AUDIO_PLAYER_MANIFEST:
     case IDR_CHROME_APP_MANIFEST:
-    case IDR_DEMO_APP_MANIFEST:
     case IDR_ECHO_MANIFEST:
     case IDR_FILEMANAGER_MANIFEST:
     case IDR_IMAGE_LOADER_MANIFEST:

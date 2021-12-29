@@ -49,7 +49,6 @@ namespace {
 const char* kOemAccessibleExtensions[] = {
     "mlbmkoenclnokonejhlfakkeabdlmpek",  // TimeScapes,
     "nhpmmldpbfjofkipjaieeomhnmcgihfm",  // Retail Demo (public session),
-    "klimoghijjogocdbaikffefjfcfheiel",  // Retail Demo (OOBE),
 };
 
 // Returns the `AccountId` associated with the specified `profile`.
