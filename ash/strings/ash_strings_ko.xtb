@@ -586,6 +586,7 @@
 <translation id="4831034276697007977">자동 클릭을 사용 중지하시겠습니까?</translation>
 <translation id="4849058404725798627">키보드 포커스로 개체 강조표시</translation>
 <translation id="485592688953820832">작업 없음(일시중지)</translation>
+<translation id="485634149294284819">키보드 선택 메뉴</translation>
 <translation id="4860284199500934869"><ph name="FILENAME" /> 파일을 다운로드하려면 네트워크 연결 상태를 확인하세요.</translation>
 <translation id="486056901304535126">다운로드가 나중에 시도됩니다. 다운로드가 완료될 때까지는 음성이 Google로 전송되어 처리됩니다.</translation>
 <translation id="4868492592575313542">활성화됨</translation>
@@ -1098,6 +1099,7 @@
 <translation id="8380784334203145311">편안한 밤 보내세요</translation>
 <translation id="8388750414311082622">마지막 데스크는 삭제할 수 없습니다.</translation>
 <translation id="8394567579869570560">부모님이 이 기기를 잠갔습니다.</translation>
+<translation id="8401850874595457088">언어 선택 메뉴</translation>
 <translation id="8412677897383510995">디스플레이 설정 표시</translation>
 <translation id="8413272770729657668">녹화가 곧 시작됩니다. 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%(케이스)</translation>

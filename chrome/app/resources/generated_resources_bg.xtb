@@ -1056,6 +1056,7 @@
 <translation id="204914487372604757">Създаване на пряк път</translation>
 <translation id="2050339315714019657">Вертикално</translation>
 <translation id="2053312383184521053">Данни за състоянието на неактивност</translation>
+<translation id="2054240652864153171">Да се изчистят ли данните за сайта <ph name="SITE_NAME" />, отделени в <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Ще излезете от профила си в тези сайтове, включително в отворените раздели</translation>
 <translation id="205560151218727633">Лого на Google Асистент</translation>
 <translation id="2058456167109518507">Открито е устройство</translation>
@@ -2401,6 +2402,7 @@
 <translation id="3433621910545056227">Ами сега!  Системата не успя да заключи атрибутите за времето за инсталиране за устройството.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">Ако настройката „Допълнителна активност в мрежата и приложенията“ е включена за детето ви, тези данни може да се запазват в профила му в Google. На адрес families.google.com можете да научите повече за тези настройки и как да ги коригирате.</translation>
+<translation id="3434512374684753970">Аудио и видео</translation>
 <translation id="3435688026795609344"><ph name="EXTENSION_NAME" /> изисква вашия <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Сигурност</translation>
 <translation id="343578350365773421">Няма хартия</translation>
@@ -2848,6 +2850,7 @@
 <translation id="3873423927483480833">Показване на ПИН кодовете</translation>
 <translation id="3873915545594852654">Възникна проблем със СИПС++.</translation>
 <translation id="3874164307099183178">Включване на Google Асистент</translation>
+<translation id="3875783148670536197">Покажете ми как</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ще се отваря в нов раздел на браузъра. Поддържаните връзки също ще се отварят в браузъра. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Настройки за функцията „Споделяне наблизо“ за устройството на <ph name="USER_NAME" />, което споделя чрез профила <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Мениджър на изтеглянията</translation>
@@ -4485,6 +4488,7 @@
 <translation id="562935524653278697">Администраторът ви е деактивирал синхронизирането на вашите отметки, история, пароли и други настройки.</translation>
 <translation id="5631017369956619646">Използване на процесора</translation>
 <translation id="5632059346822207074">Изисква се разрешение. Натиснете Ctrl + бутона за преминаване напред, за да отговорите</translation>
+<translation id="5632485077360054581">Покажете ми как</translation>
 <translation id="5632566673632479864">Профилът ви <ph name="EMAIL" /> вече не може да се използва като основен. Тъй като този профил се управлява от <ph name="DOMAIN" />, вашите отметки, история, пароли и други настройки ще бъдат изчистени от устройството.</translation>
 <translation id="5632592977009207922">Изтегля се, още<ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">Мобилна мрежа</translation>
