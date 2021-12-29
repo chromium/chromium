@@ -64,6 +64,7 @@ enum class PairFailure {
   kPairingConnect = 21,
   // Failed to bond to device via public address.
   kAddressConnect = 22,
+  kMaxValue = kAddressConnect,
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

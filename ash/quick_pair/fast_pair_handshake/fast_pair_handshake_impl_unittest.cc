@@ -97,6 +97,8 @@ const char kDataEncryptorCreateResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.FastPairDataEncryptor.CreateResult";
 const char kWriteKeyBasedCharacteristicResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.KeyBasedPairing.Write.Result";
+const char kWriteKeyBasedCharacteristicPairFailureMetric[] =
+    "Bluetooth.ChromeOS.FastPair.KeyBasedPairing.Write.PairFailure";
 
 }  // namespace
 
@@ -163,6 +165,8 @@ TEST_F(FastPairHandshakeImplTest, DataEncryptorCreateError) {
   histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicResultMetric,
                                       0);
   histogram_tester().ExpectTotalCount(kDataEncryptorCreateResultMetric, 0);
+  histogram_tester().ExpectTotalCount(
+      kWriteKeyBasedCharacteristicPairFailureMetric, 0);
   data_encryptor_factory_.SetFailedRetrieval();
   fake_fast_pair_gatt_service_client()->RunOnGattClientInitializedCallback();
   EXPECT_EQ(failure_.value(), PairFailure::kDataEncryptorRetrieval);
@@ -170,12 +174,16 @@ TEST_F(FastPairHandshakeImplTest, DataEncryptorCreateError) {
   histogram_tester().ExpectTotalCount(kDataEncryptorCreateResultMetric, 1);
   histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicResultMetric,
                                       0);
+  histogram_tester().ExpectTotalCount(
+      kWriteKeyBasedCharacteristicPairFailureMetric, 0);
 }
 
 TEST_F(FastPairHandshakeImplTest, WriteResponseError) {
   histogram_tester().ExpectTotalCount(kDataEncryptorCreateResultMetric, 0);
   histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicResultMetric,
                                       0);
+  histogram_tester().ExpectTotalCount(
+      kWriteKeyBasedCharacteristicPairFailureMetric, 0);
   fake_fast_pair_gatt_service_client()->RunOnGattClientInitializedCallback();
   fake_fast_pair_gatt_service_client()->RunWriteResponseCallback(
       std::vector<uint8_t>(), PairFailure::kKeyBasedPairingCharacteristicWrite);
@@ -184,9 +192,13 @@ TEST_F(FastPairHandshakeImplTest, WriteResponseError) {
   histogram_tester().ExpectTotalCount(kDataEncryptorCreateResultMetric, 1);
   histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicResultMetric,
                                       1);
+  histogram_tester().ExpectTotalCount(
+      kWriteKeyBasedCharacteristicPairFailureMetric, 1);
 }
 
 TEST_F(FastPairHandshakeImplTest, ParseResponseError) {
+  histogram_tester().ExpectTotalCount(
+      kWriteKeyBasedCharacteristicPairFailureMetric, 0);
   fake_fast_pair_gatt_service_client()->RunOnGattClientInitializedCallback();
   fake_fast_pair_gatt_service_client()->RunWriteResponseCallback(
       std::vector<uint8_t>());
@@ -194,6 +206,8 @@ TEST_F(FastPairHandshakeImplTest, ParseResponseError) {
   EXPECT_EQ(failure_.value(),
             PairFailure::kKeybasedPairingResponseDecryptFailure);
   EXPECT_FALSE(handshake_->completed_successfully());
+  histogram_tester().ExpectTotalCount(
+      kWriteKeyBasedCharacteristicPairFailureMetric, 0);
 }
 
 TEST_F(FastPairHandshakeImplTest, ParseResponseWrongType) {

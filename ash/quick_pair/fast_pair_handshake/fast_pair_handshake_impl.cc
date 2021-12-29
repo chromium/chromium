@@ -94,6 +94,7 @@ void FastPairHandshakeImpl::OnWriteResponse(
   if (failure) {
     QP_LOG(WARNING) << __func__
                     << ": Failed to write request: " << failure.value();
+    RecordWriteKeyBasedCharacteristicPairFailure(failure.value());
     std::move(on_complete_callback_).Run(device_, failure.value());
     return;
   }

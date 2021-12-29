@@ -510,6 +510,7 @@ void FastPairGattServiceClientImpl::OnWriteRequestError(
   QP_LOG(WARNING) << "WriteRemoteCharacteristic to key-based pairing "
                      "characteristic failed due to GATT error: "
                   << ToString(error);
+  RecordWriteRequestGattError(error);
   NotifyWriteRequestError(PairFailure::kKeyBasedPairingCharacteristicWrite);
 }
 

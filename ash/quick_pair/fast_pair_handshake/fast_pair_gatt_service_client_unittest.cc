@@ -44,6 +44,8 @@ const char kGattConnectionResult[] =
     "Bluetooth.ChromeOS.FastPair.GattConnection.Result";
 const char kGattConnectionErrorMetric[] =
     "Bluetooth.ChromeOS.FastPair.GattConnection.ErrorReason";
+const char kWriteKeyBasedCharacteristicGattError[] =
+    "Bluetooth.ChromeOS.FastPair.KeyBasedPairing.Write.GattErrorReason";
 
 constexpr base::TimeDelta kConnectingTestTimeout = base::Seconds(5);
 
@@ -542,6 +544,7 @@ class FastPairGattServiceClientTest : public testing::Test {
 TEST_F(FastPairGattServiceClientTest, GattServiceDiscoveryTimeout) {
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
   histogram_tester().ExpectTotalCount(kGattConnectionResult, 0);
+  histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
   SuccessfulGattConnectionSetUp();
   FastForwardTimeByConnetingTimeout();
   NotifyGattDiscoveryCompleteForService();
@@ -550,29 +553,34 @@ TEST_F(FastPairGattServiceClientTest, GattServiceDiscoveryTimeout) {
   EXPECT_FALSE(ServiceIsSet());
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 1);
   histogram_tester().ExpectTotalCount(kGattConnectionResult, 1);
+  histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
 }
 
 TEST_F(FastPairGattServiceClientTest, FailedGattConnection) {
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
   histogram_tester().ExpectTotalCount(kGattConnectionResult, 0);
   histogram_tester().ExpectTotalCount(kGattConnectionErrorMetric, 0);
+  histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
   FailedGattConnectionSetUp();
   EXPECT_EQ(GetInitializedCallbackResult(), PairFailure::kCreateGattConnection);
   EXPECT_FALSE(ServiceIsSet());
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
   histogram_tester().ExpectTotalCount(kGattConnectionResult, 1);
   histogram_tester().ExpectTotalCount(kGattConnectionErrorMetric, 1);
+  histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
 }
 
 TEST_F(FastPairGattServiceClientTest, GattConnectionSuccess) {
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
   histogram_tester().ExpectTotalCount(kGattConnectionResult, 0);
   histogram_tester().ExpectTotalCount(kGattConnectionErrorMetric, 0);
+  histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
   SuccessfulGattConnectionSetUp();
   NotifyGattDiscoveryCompleteForService();
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 1);
   histogram_tester().ExpectTotalCount(kGattConnectionResult, 1);
   histogram_tester().ExpectTotalCount(kGattConnectionErrorMetric, 0);
+  histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
 }
 
 TEST_F(FastPairGattServiceClientTest, IgnoreNonFastPairServices) {
@@ -645,6 +653,7 @@ TEST_F(FastPairGattServiceClientTest, KeyBasedStartNotifyTimeout) {
 }
 
 TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequest) {
+  histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
   SuccessfulGattConnectionSetUp();
   NotifyGattDiscoveryCompleteForService();
   EXPECT_EQ(GetInitializedCallbackResult(), absl::nullopt);
@@ -652,9 +661,11 @@ TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequest) {
   WriteRequestToKeyBased();
   TriggerKeyBasedGattChanged();
   EXPECT_EQ(GetWriteCallbackResult(), absl::nullopt);
+  histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
 }
 
 TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequestError) {
+  histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
   SetKeyBasedWriteError();
   SuccessfulGattConnectionSetUp();
   NotifyGattDiscoveryCompleteForService();
@@ -664,6 +675,7 @@ TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequestError) {
   TriggerKeyBasedGattChanged();
   EXPECT_EQ(GetWriteCallbackResult(),
             PairFailure::kKeyBasedPairingCharacteristicWrite);
+  histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 1);
 }
 
 TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequestTimeout) {

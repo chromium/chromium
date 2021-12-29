@@ -110,6 +110,13 @@ void RecordDataEncryptorCreateResult(bool success);
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordWriteKeyBasedCharacteristicResult(bool success);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordWriteKeyBasedCharacteristicPairFailure(PairFailure failure);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordWriteRequestGattError(
+    device::BluetoothGattService::GattErrorCode error);
+
 }  // namespace quick_pair
 }  // namespace ash
 

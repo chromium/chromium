@@ -8750,6 +8750,17 @@ Called by update_bad_message_reasons.py.-->
   <int value="3" label="Not Paired"/>
 </enum>
 
+<enum name="BluetoothGattServiceGattErrorCode">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="In Progress"/>
+  <int value="3" label="Invalid Length"/>
+  <int value="4" label="Not Permitted"/>
+  <int value="5" label="Not Authorized"/>
+  <int value="6" label="Not Paired"/>
+  <int value="7" label="Not Supported"/>
+</enum>
+
 <enum name="BluetoothPairingMethod">
   <int value="0" label="No user interaction required"/>
   <int value="1" label="PIN Code requested from user"/>

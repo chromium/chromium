@@ -21,15 +21,20 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattService {
  public:
   // Interacting with Characteristics and Descriptors can produce
   // this set of errors.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. This enum should be kept in sync
+  // with the BluetoothGattServiceGattErrorCode enum in
+  // src/tools/metrics/histograms/enums.xml.
   enum GattErrorCode {
     GATT_ERROR_UNKNOWN = 0,
-    GATT_ERROR_FAILED,
-    GATT_ERROR_IN_PROGRESS,
-    GATT_ERROR_INVALID_LENGTH,
-    GATT_ERROR_NOT_PERMITTED,
-    GATT_ERROR_NOT_AUTHORIZED,
-    GATT_ERROR_NOT_PAIRED,
-    GATT_ERROR_NOT_SUPPORTED
+    GATT_ERROR_FAILED = 1,
+    GATT_ERROR_IN_PROGRESS = 2,
+    GATT_ERROR_INVALID_LENGTH = 3,
+    GATT_ERROR_NOT_PERMITTED = 4,
+    GATT_ERROR_NOT_AUTHORIZED = 5,
+    GATT_ERROR_NOT_PAIRED = 6,
+    GATT_ERROR_NOT_SUPPORTED = 7,
+    kMaxValue = GATT_ERROR_NOT_SUPPORTED,
   };
 
   // The ErrorCallback is used by methods to asynchronously report errors.
