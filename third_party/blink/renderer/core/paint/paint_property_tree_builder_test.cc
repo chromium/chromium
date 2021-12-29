@@ -637,11 +637,7 @@ TEST_P(PaintPropertyTreeBuilderTest, Transform) {
             transform_properties->PaintOffsetTranslation()->Translation2D());
   EXPECT_EQ(DocScrollTranslation(),
             transform_properties->PaintOffsetTranslation()->Parent());
-
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_TRUE(
-        transform_properties->Transform()->HasDirectCompositingReasons());
-  }
+  EXPECT_TRUE(transform_properties->Transform()->HasDirectCompositingReasons());
 
   CHECK_EXACT_VISUAL_RECT(PhysicalRect(173, 556, 400, 300),
                           transform->GetLayoutObject(),
@@ -683,10 +679,7 @@ TEST_P(PaintPropertyTreeBuilderTest, Preserve3D3DTransformedDescendant) {
       preserve->GetLayoutObject()->FirstFragment().PaintProperties();
 
   EXPECT_TRUE(preserve_properties->Transform());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_TRUE(
-        preserve_properties->Transform()->HasDirectCompositingReasons());
-  }
+  EXPECT_TRUE(preserve_properties->Transform()->HasDirectCompositingReasons());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, Perspective3DTransformedDescendant) {
@@ -705,10 +698,8 @@ TEST_P(PaintPropertyTreeBuilderTest, Perspective3DTransformedDescendant) {
       perspective->GetLayoutObject()->FirstFragment().PaintProperties();
 
   EXPECT_TRUE(perspective_properties->Transform());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_TRUE(
-        perspective_properties->Transform()->HasDirectCompositingReasons());
-  }
+  EXPECT_TRUE(
+      perspective_properties->Transform()->HasDirectCompositingReasons());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest,
@@ -728,10 +719,8 @@ TEST_P(PaintPropertyTreeBuilderTest,
       perspective->GetLayoutObject()->FirstFragment().PaintProperties();
 
   EXPECT_TRUE(perspective_properties->Transform());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_TRUE(
-        perspective_properties->Transform()->HasDirectCompositingReasons());
-  }
+  EXPECT_TRUE(
+      perspective_properties->Transform()->HasDirectCompositingReasons());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest,
@@ -789,10 +778,7 @@ TEST_P(PaintPropertyTreeBuilderTest, WillChangeTransform) {
   EXPECT_EQ(FloatPoint3D(), transform_properties->Transform()->Origin());
   EXPECT_EQ(gfx::Vector2dF(50, 100),
             transform_properties->PaintOffsetTranslation()->Translation2D());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_TRUE(
-        transform_properties->Transform()->HasDirectCompositingReasons());
-  }
+  EXPECT_TRUE(transform_properties->Transform()->HasDirectCompositingReasons());
 
   CHECK_EXACT_VISUAL_RECT(PhysicalRect(50, 100, 400, 300),
                           transform->GetLayoutObject(),
@@ -837,12 +823,6 @@ TEST_P(PaintPropertyTreeBuilderTest, WillChangeContents) {
 TEST_P(PaintPropertyTreeBuilderTest,
        BackfaceVisibilityWithPseudoStacking3DChildren) {
   ScopedBackfaceVisibilityInteropForTest bfi_enabled(true);
-  // TODO(chrishtr, dbaron): implement for CAP. This entails computing
-  // has_backface_invisible_ancestor_in_same_3d_context in the pre-paint tree
-  // walk.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <div style="backface-visibility: hidden; transform-style: preserve-3d">
       <div id=child style="isolation: isolate"></div>
@@ -2125,14 +2105,8 @@ TEST_P(PaintPropertyTreeBuilderTest,
 
   EXPECT_EQ(DocContentClip(),
             &child.FirstFragment().LocalBorderBoxProperties().Clip());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(DocScrollTranslation(),
-              &child.FirstFragment().LocalBorderBoxProperties().Transform());
-  } else {
-    // For SPv1, |child| is composited so we created PaintOffsetTranslation.
-    EXPECT_EQ(child.FirstFragment().PaintProperties()->PaintOffsetTranslation(),
-              &child.FirstFragment().LocalBorderBoxProperties().Transform());
-  }
+  EXPECT_EQ(DocScrollTranslation(),
+            &child.FirstFragment().LocalBorderBoxProperties().Transform());
   EXPECT_EQ(scroller_properties->Effect(),
             &child.FirstFragment().LocalBorderBoxProperties().Effect());
   CHECK_EXACT_VISUAL_RECT(PhysicalRect(0, 0, 800, 10000), &scroller,
@@ -3013,14 +2987,14 @@ TEST_P(PaintPropertyTreeBuilderTest, Preserve3DCreatesSharedRenderingContext) {
       b->FirstFragment().PaintProperties();
   ASSERT_TRUE(a_properties->Transform() && b_properties->Transform());
   EXPECT_NE(a_properties->Transform(), b_properties->Transform());
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_TRUE(a_properties->Transform()->HasRenderingContext());
-    EXPECT_FALSE(a_properties->Transform()->FlattensInheritedTransform());
-    EXPECT_TRUE(b_properties->Transform()->HasRenderingContext());
-    EXPECT_FALSE(b_properties->Transform()->FlattensInheritedTransform());
-    EXPECT_EQ(a_properties->Transform()->RenderingContextId(),
-              b_properties->Transform()->RenderingContextId());
-  }
+
+  EXPECT_TRUE(a_properties->Transform()->HasRenderingContext());
+  EXPECT_FALSE(a_properties->Transform()->FlattensInheritedTransform());
+  EXPECT_TRUE(b_properties->Transform()->HasRenderingContext());
+  EXPECT_FALSE(b_properties->Transform()->FlattensInheritedTransform());
+  EXPECT_EQ(a_properties->Transform()->RenderingContextId(),
+            b_properties->Transform()->RenderingContextId());
+
   CHECK_EXACT_VISUAL_RECT(PhysicalRect(8, 8, 30, 40), a,
                           frame_view->GetLayoutView());
   CHECK_EXACT_VISUAL_RECT(PhysicalRect(8, 48, 20, 10), b,
@@ -3145,10 +3119,9 @@ TEST_P(PaintPropertyTreeBuilderTest, FlatTransformStyleEndsRenderingContext) {
 
   // #a should participate in a rendering context (due to its parent), but its
   // child #b should not.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_TRUE(a_properties->Transform()->HasRenderingContext());
-    EXPECT_FALSE(b_properties->Transform()->HasRenderingContext());
-  }
+  EXPECT_TRUE(a_properties->Transform()->HasRenderingContext());
+  EXPECT_FALSE(b_properties->Transform()->HasRenderingContext());
+
   CHECK_EXACT_VISUAL_RECT(PhysicalRect(8, 8, 30, 40), a,
                           frame_view->GetLayoutView());
   CHECK_EXACT_VISUAL_RECT(PhysicalRect(8, 8, 10, 20), b,
@@ -3178,16 +3151,15 @@ TEST_P(PaintPropertyTreeBuilderTest, NestedRenderingContexts) {
   ASSERT_FALSE(a->StyleRef().Preserves3D());
   ASSERT_TRUE(a_properties->Transform() && b_properties->Transform());
 
-  // #a should participate in a rendering context (due to its parent). Its
-  // child does preserve 3D, but since #a does not, #a's rendering context is
-  // not passed on to its children. Thus #b ends up in a separate rendering
-  // context rooted at its parent.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_TRUE(a_properties->Transform()->HasRenderingContext());
-    EXPECT_TRUE(b_properties->Transform()->HasRenderingContext());
-    EXPECT_NE(a_properties->Transform()->RenderingContextId(),
-              b_properties->Transform()->RenderingContextId());
-  }
+  // #a should participate in a rendering context (due to its parent). Its child
+  //  does preserve 3D, but since #a does not, #a's rendering context is not
+  //  passed on to its children. Thus #b ends up in a separate rendering
+  //  context rooted at its parent.
+  EXPECT_TRUE(a_properties->Transform()->HasRenderingContext());
+  EXPECT_TRUE(b_properties->Transform()->HasRenderingContext());
+  EXPECT_NE(a_properties->Transform()->RenderingContextId(),
+            b_properties->Transform()->RenderingContextId());
+
   CHECK_EXACT_VISUAL_RECT(PhysicalRect(8, 8, 50, 60), a,
                           frame_view->GetLayoutView());
   CHECK_EXACT_VISUAL_RECT(PhysicalRect(8, 8, 10, 20), b,
@@ -4739,85 +4711,56 @@ TEST_P(PaintPropertyTreeBuilderTest, CompositedUnderMultiColumn) {
       GetLayoutObjectByElementId("non-composited-child");
   LayoutObject* composited_child =
       GetLayoutObjectByElementId("composited-child");
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // Compositing doesn't affect CAP fragmentation.
-    EXPECT_EQ(2u, NumFragments(composited));
-    if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
-      EXPECT_EQ(PhysicalOffset(0, 0), FragmentAt(composited, 0).PaintOffset());
-      EXPECT_EQ(1u, FragmentAt(composited, 0).FragmentID());
-      EXPECT_EQ(PhysicalOffset(0, 0), FragmentAt(composited, 1).PaintOffset());
-      EXPECT_EQ(2u, FragmentAt(composited, 1).FragmentID());
-      EXPECT_EQ(2u, NumFragments(non_composited_child));
-      EXPECT_EQ(PhysicalOffset(0, 0),
-                FragmentAt(non_composited_child, 0).PaintOffset());
-      EXPECT_EQ(1u, FragmentAt(non_composited_child, 0).FragmentID());
-      EXPECT_EQ(PhysicalOffset(0, 0),
-                FragmentAt(non_composited_child, 1).PaintOffset());
-      EXPECT_EQ(2u, FragmentAt(non_composited_child, 1).FragmentID());
-      EXPECT_EQ(1u, NumFragments(composited_child));
-      EXPECT_EQ(PhysicalOffset(0, 0),
-                FragmentAt(composited_child, 0).PaintOffset());
-      EXPECT_EQ(2u, FragmentAt(composited_child, 0).FragmentID());
-    } else {
-      EXPECT_EQ(PhysicalOffset(100, 100),
-                FragmentAt(composited, 0).PaintOffset());
-      EXPECT_EQ(PhysicalOffset(100, -200),
-                FragmentAt(composited, 0).LegacyPaginationOffset());
-      EXPECT_EQ(LayoutUnit(200),
-                FragmentAt(composited, 0).LogicalTopInFlowThread());
-      EXPECT_EQ(PhysicalOffset(200, -100),
-                FragmentAt(composited, 1).PaintOffset());
-      EXPECT_EQ(PhysicalOffset(200, -400),
-                FragmentAt(composited, 1).LegacyPaginationOffset());
-      EXPECT_EQ(LayoutUnit(400),
-                FragmentAt(composited, 1).LogicalTopInFlowThread());
-      EXPECT_EQ(2u, NumFragments(non_composited_child));
-      EXPECT_EQ(PhysicalOffset(100, 100),
-                FragmentAt(non_composited_child, 0).PaintOffset());
-      EXPECT_EQ(PhysicalOffset(100, -200),
-                FragmentAt(non_composited_child, 0).LegacyPaginationOffset());
-      EXPECT_EQ(LayoutUnit(200),
-                FragmentAt(non_composited_child, 0).LogicalTopInFlowThread());
-      EXPECT_EQ(PhysicalOffset(200, -100),
-                FragmentAt(non_composited_child, 1).PaintOffset());
-      EXPECT_EQ(PhysicalOffset(200, -400),
-                FragmentAt(non_composited_child, 1).LegacyPaginationOffset());
-      EXPECT_EQ(LayoutUnit(400),
-                FragmentAt(non_composited_child, 1).LogicalTopInFlowThread());
-      EXPECT_EQ(1u, NumFragments(composited_child));
-      EXPECT_EQ(PhysicalOffset(200, 50),
-                FragmentAt(composited_child, 0).PaintOffset());
-      EXPECT_EQ(PhysicalOffset(200, -400),
-                FragmentAt(composited_child, 0).LegacyPaginationOffset());
-      EXPECT_EQ(LayoutUnit(400),
-                FragmentAt(composited_child, 0).LogicalTopInFlowThread());
-    }
-  } else if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
-    // Expectations for non-CompositeAfterPaint + LayoutNGBlockFragmentation
-    // haven't been corrected, but there should be no need, since
-    // CompositeAfterPaint has shipped.
+
+  EXPECT_EQ(2u, NumFragments(composited));
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_EQ(PhysicalOffset(0, 0), FragmentAt(composited, 0).PaintOffset());
+    EXPECT_EQ(1u, FragmentAt(composited, 0).FragmentID());
+    EXPECT_EQ(PhysicalOffset(0, 0), FragmentAt(composited, 1).PaintOffset());
+    EXPECT_EQ(2u, FragmentAt(composited, 1).FragmentID());
+    EXPECT_EQ(2u, NumFragments(non_composited_child));
+    EXPECT_EQ(PhysicalOffset(0, 0),
+              FragmentAt(non_composited_child, 0).PaintOffset());
+    EXPECT_EQ(1u, FragmentAt(non_composited_child, 0).FragmentID());
+    EXPECT_EQ(PhysicalOffset(0, 0),
+              FragmentAt(non_composited_child, 1).PaintOffset());
+    EXPECT_EQ(2u, FragmentAt(non_composited_child, 1).FragmentID());
+    EXPECT_EQ(1u, NumFragments(composited_child));
+    EXPECT_EQ(PhysicalOffset(0, 0),
+              FragmentAt(composited_child, 0).PaintOffset());
+    EXPECT_EQ(2u, FragmentAt(composited_child, 0).FragmentID());
   } else {
-    // SPv1 forces single fragment for composited layers.
-    EXPECT_EQ(1u, NumFragments(composited));
     EXPECT_EQ(PhysicalOffset(100, 100),
               FragmentAt(composited, 0).PaintOffset());
     EXPECT_EQ(PhysicalOffset(100, -200),
               FragmentAt(composited, 0).LegacyPaginationOffset());
     EXPECT_EQ(LayoutUnit(200),
               FragmentAt(composited, 0).LogicalTopInFlowThread());
-    EXPECT_EQ(1u, NumFragments(non_composited_child));
+    EXPECT_EQ(PhysicalOffset(200, -100),
+              FragmentAt(composited, 1).PaintOffset());
+    EXPECT_EQ(PhysicalOffset(200, -400),
+              FragmentAt(composited, 1).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(400),
+              FragmentAt(composited, 1).LogicalTopInFlowThread());
+    EXPECT_EQ(2u, NumFragments(non_composited_child));
     EXPECT_EQ(PhysicalOffset(100, 100),
               FragmentAt(non_composited_child, 0).PaintOffset());
     EXPECT_EQ(PhysicalOffset(100, -200),
               FragmentAt(non_composited_child, 0).LegacyPaginationOffset());
     EXPECT_EQ(LayoutUnit(200),
               FragmentAt(non_composited_child, 0).LogicalTopInFlowThread());
+    EXPECT_EQ(PhysicalOffset(200, -100),
+              FragmentAt(non_composited_child, 1).PaintOffset());
+    EXPECT_EQ(PhysicalOffset(200, -400),
+              FragmentAt(non_composited_child, 1).LegacyPaginationOffset());
+    EXPECT_EQ(LayoutUnit(400),
+              FragmentAt(non_composited_child, 1).LogicalTopInFlowThread());
     EXPECT_EQ(1u, NumFragments(composited_child));
-    EXPECT_EQ(PhysicalOffset(100, 250),
+    EXPECT_EQ(PhysicalOffset(200, 50),
               FragmentAt(composited_child, 0).PaintOffset());
-    EXPECT_EQ(PhysicalOffset(100, -200),
+    EXPECT_EQ(PhysicalOffset(200, -400),
               FragmentAt(composited_child, 0).LegacyPaginationOffset());
-    EXPECT_EQ(LayoutUnit(200),
+    EXPECT_EQ(LayoutUnit(400),
               FragmentAt(composited_child, 0).LogicalTopInFlowThread());
   }
 }
@@ -5326,16 +5269,8 @@ TEST_P(PaintPropertyTreeBuilderTest, MaskEscapeClip) {
   EXPECT_EQ(mask_clip, target_properties->Mask()->OutputClip());
 
   const auto* absolute = GetLayoutObjectByElementId("absolute");
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_EQ(
-        DocScrollTranslation(),
-        &absolute->FirstFragment().LocalBorderBoxProperties().Transform());
-  } else {
-    // For SPv1, |absolute| is composited so we created PaintOffsetTranslation.
-    EXPECT_EQ(
-        absolute->FirstFragment().PaintProperties()->PaintOffsetTranslation(),
-        &absolute->FirstFragment().LocalBorderBoxProperties().Transform());
-  }
+  EXPECT_EQ(DocScrollTranslation(),
+            &absolute->FirstFragment().LocalBorderBoxProperties().Transform());
   EXPECT_EQ(mask_clip,
             &absolute->FirstFragment().LocalBorderBoxProperties().Clip());
 }
@@ -5924,7 +5859,7 @@ TEST_P(PaintPropertyTreeBuilderTest, ClipPathInheritanceWithoutMutation) {
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, CompositedLayerSkipsFragmentClip) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
 
   SetBodyInnerHTML(R"HTML(
@@ -6021,20 +5956,10 @@ TEST_P(PaintPropertyTreeBuilderTest, RepeatingFixedPositionInPagedMedia) {
   EXPECT_EQ(3u, NumFragments(fixed));
   for (int i = 0; i < 3; i++) {
     const auto& fragment = FragmentAt(fixed, i);
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      // In CompositeAfterPaint, we don't composite and create
-      // PaintOffsetTranslation for the fixed-position element during printing.
-      EXPECT_EQ(PhysicalOffset(20, 400 * i - 180), fragment.PaintOffset());
-      EXPECT_FALSE(fragment.PaintProperties());
-    } else {
-      // In pre-CompositeAfterPaint, we create PaintOffsetTranslation because
-      // the fixed-position element is currently composited.
-      EXPECT_EQ(PhysicalOffset(0, 0), fragment.PaintOffset());
-      EXPECT_EQ(gfx::Vector2dF(20, 400 * i - 180),
-                fragment.PaintProperties()
-                    ->PaintOffsetTranslation()
-                    ->Translation2D());
-    }
+    // We don't composite and create PaintOffsetTranslation for the
+    // fixed-position element during printing.
+    EXPECT_EQ(PhysicalOffset(20, 400 * i - 180), fragment.PaintOffset());
+    EXPECT_FALSE(fragment.PaintProperties());
     EXPECT_EQ(LayoutUnit(400 * i), fragment.LogicalTopInFlowThread());
   }
 
@@ -6688,10 +6613,6 @@ TEST_P(PaintPropertyTreeBuilderTest, SimpleOpacityChangeDoesNotCausePacUpdate) {
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, SimpleScrollChangeDoesNotCausePacUpdate) {
-  // TODO(vmpstr): Make this test pass for CompositeAfterPaint.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   SetHtmlInnerHTML(R"HTML(
     <style>
       #element {
@@ -6787,34 +6708,6 @@ TEST_P(PaintPropertyTreeBuilderTest,
 
   EXPECT_TRUE(
       GetDocument().View()->GetPaintArtifactCompositor()->NeedsUpdate());
-}
-
-TEST_P(PaintPropertyTreeBuilderTest,
-       ColumnSpanAllUnderContainPaintAndClipPath) {
-  // This test doesn't apply in CompositeAfterPaint mode.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
-  SetBodyInnerHTML(R"HTML(
-    <div style="columns: 2; width: 200px">
-      <div id="clip-path" style="clip-path: circle(70%); background: blue">
-        <div style="contain: paint">
-          <div id="span-all" style="column-span: all; will-change: transform">
-            column-span: all
-          </div>
-        </div>
-      </div>
-    </div>
-  )HTML");
-
-  // TODO(crbug.com/803649): For now we don't let the span-all to escape clips
-  // across an effect having output clip.
-  const auto* clip_path_properties = PaintPropertiesForElement("clip-path");
-  const auto& span_all_state = GetLayoutObjectByElementId("span-all")
-                                   ->FirstFragment()
-                                   .LocalBorderBoxProperties();
-  EXPECT_EQ(clip_path_properties->ClipPathClip(),
-            span_all_state.Clip().Parent()->Parent());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, VideoClipRect) {
@@ -7010,12 +6903,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollPropertyHierarchy) {
 
   // |fixed| escapes both top and middle scrollers.
   auto& fixed_fragment = GetLayoutObjectByElementId("fixed")->FirstFragment();
-  // The difference is because of the extra PaintOffsetTranslation on |fixed|
-  // in pre-CompositeAfterPaint.
-  EXPECT_EQ(DocPreTranslation(),
-            RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
-                ? &fixed_fragment.PreTransform()
-                : fixed_fragment.PreTransform().Parent());
+  EXPECT_EQ(DocPreTranslation(), &fixed_fragment.PreTransform());
   EXPECT_EQ(top_properties->OverflowClip()->Parent(),
             &fixed_fragment.PreClip());
 
@@ -7023,12 +6911,8 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollPropertyHierarchy) {
   // by |top-scroller| (position: relative)
   auto& absolute_fragment =
       GetLayoutObjectByElementId("absolute")->FirstFragment();
-  // The difference is because of the extra PaintOffsetTranslation on |absolute|
-  // in pre-CompositeAfterPaint.
   EXPECT_EQ(top_properties->ScrollTranslation(),
-            RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
-                ? &absolute_fragment.PreTransform()
-                : absolute_fragment.PreTransform().Parent());
+            &absolute_fragment.PreTransform());
   EXPECT_EQ(top_properties->OverflowClip(), &absolute_fragment.PreClip());
 
   // |relative| is contained by |middle-scroller|.
@@ -7112,8 +6996,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGChildBackdropFilter) {
   auto* svg_properties = PaintPropertiesForElement("svg");
   ASSERT_TRUE(svg_properties);
   ASSERT_TRUE(svg_properties->PaintOffsetTranslation());
-  EXPECT_EQ(
-      !RuntimeEnabledFeatures::CompositeAfterPaintEnabled(),
+  EXPECT_FALSE(
       svg_properties->PaintOffsetTranslation()->HasDirectCompositingReasons());
 
   auto* svg_text_properties = PaintPropertiesForElement("text");

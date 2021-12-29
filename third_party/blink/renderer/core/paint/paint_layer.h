@@ -361,28 +361,11 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                             const PhysicalRect& damage_rect,
                             const PhysicalOffset& offset_from_root) const;
 
-  enum CalculateBoundsOptions {
-    // Include clips between this layer and its ancestor layer (inclusive).
-    kIncludeAncestorClips = 0x1,
-    // Include transforms, irrespective of if they are applied via composition
-    // or painting.
-    kIncludeTransforms = 0x2,
-    // Include child layers (recursive) whether composited or not.
-    kIncludeCompositedChildLayers = 0x4,
-    // Include transform for the ancestor layer (|composited_layer| in the
-    // initial call) if |PaintsWithTransform|
-    kMaybeIncludeTransformForAncestorLayer = 0x8
-  };
-
   // Bounding box relative to some ancestor layer. Pass offsetFromRoot if known.
   PhysicalRect PhysicalBoundingBox(
       const PhysicalOffset& offset_from_root) const;
   PhysicalRect PhysicalBoundingBox(const PaintLayer* ancestor_layer) const;
   PhysicalRect FragmentsBoundingBox(const PaintLayer* ancestor_layer) const;
-
-  gfx::Rect ExpandedBoundingBoxForCompositingOverlapTest(
-      bool use_clipped_bounding_rect) const;
-  PhysicalRect BoundingBoxForCompositing() const;
 
   // Static position is set in parent's coordinate space.
   LayoutUnit StaticInlinePosition() const { return static_inline_position_; }
@@ -523,7 +506,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // Returns true if the layer is fixed position and will not move with
   // scrolling.
   bool FixedToViewport() const;
-  bool IsAffectedByScrollOf(const PaintLayer* ancestor) const;
 
   // FIXME: This should probably return a ScrollableArea but a lot of internal
   // methods are mistakenly exposed.
@@ -550,11 +532,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       const PaintLayer* ancestor_scroll_container_layer) {
     ancestor_scroll_container_layer_ = ancestor_scroll_container_layer;
   }
-
-  // These two do not include any applicable scroll offset of the
-  // root PaintLayer, unless CompositingOptimizationsEnabled is on.
-  const gfx::Rect ClippedAbsoluteBoundingBox() const;
-  const gfx::Rect UnclippedAbsoluteBoundingBox() const;
 
   const PaintLayer* AncestorScrollContainerLayer() const {
     return ancestor_scroll_container_layer_;
@@ -720,7 +697,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   void Trace(Visitor*) const override;
 
  private:
-  PhysicalRect LocalBoundingBoxForCompositingOverlapTest() const;
   void Update3DTransformedDescendantStatus();
 
   // Bounding box in the coordinates of this layer.
@@ -854,20 +830,14 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     needs_paint_phase_float_ |= layer.needs_paint_phase_float_;
   }
 
-  bool IsTopMostNotAffectedByScrollOf(const PaintLayer* ancestor) const;
-
   void ExpandRectForSelfPaintingDescendants(const PaintLayer& composited_layer,
-                                            PhysicalRect& result,
-                                            unsigned options) const;
+                                            PhysicalRect& result) const;
 
   // The return value is in the space of |stackingParent|, if non-null, or
   // |this| otherwise.
   PhysicalRect BoundingBoxForCompositingInternal(
       const PaintLayer& composited_layer,
-      const PaintLayer* stacking_parent,
-      unsigned options) const;
-  bool ShouldApplyTransformToBoundingBox(const PaintLayer& composited_layer,
-                                         unsigned options) const;
+      const PaintLayer* stacking_parent) const;
 
   // This is private because PaintLayerStackingNode is only for PaintLayer and
   // PaintLayerPaintOrderIterator.
