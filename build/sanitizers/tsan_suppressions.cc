@@ -16,7 +16,7 @@
 // for the instructions on writing suppressions.
 char kTSanDefaultSuppressions[] =
     // False positives in libdbus.so, libdconfsettings.so, libflashplayer.so,
-    // libgio.so, libglib.so and libgobject.so.
+    // libgio.so, libglib.so, libgobject.so, and libfontconfig.so.1.
     // Since we don't instrument them, we cannot reason about the
     // synchronization in them.
     "race:libdbus*.so\n"
@@ -25,6 +25,7 @@ char kTSanDefaultSuppressions[] =
     "race:libgio*.so\n"
     "race:libglib*.so\n"
     "race:libgobject*.so\n"
+    "race:libfontconfig.so.1\n"
 
     // Intentional race in ToolsSanityTest.DataRace in base_unittests.
     "race:base/tools_sanity_unittest.cc\n"
