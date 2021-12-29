@@ -52,10 +52,9 @@ class ExtensionInfoTest : public extensions::ExtensionServiceTestBase {
                        : extensions::ExtensionBuilder::Type::EXTENSION));
     extensionBuilder.SetID(id)
         .SetVersion(kVersion)
+        .SetManifestVersion(kManifestVersion)
         .SetManifestKey(extensions::manifest_keys::kDescription, kDescription)
         .SetManifestKey(extensions::manifest_keys::kHomepageURL, kHomepage)
-        .SetManifestKey(extensions::manifest_keys::kManifestVersion,
-                        kManifestVersion)
         .SetLocation(location)
         .AddPermission(kPermission1)
         .AddPermission(kPermission2)

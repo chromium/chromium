@@ -120,11 +120,10 @@ TEST_F(StorageAreaTest, InvalidInvocationError) {
 }
 
 TEST_F(StorageAreaTest, HasOnChanged) {
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo")
-          .SetManifestKey("manifest_version", 3)
-          .AddPermission("storage")
-          .Build();
+  scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
+                                                 .SetManifestVersion(3)
+                                                 .AddPermission("storage")
+                                                 .Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());
@@ -160,11 +159,10 @@ TEST_F(StorageAreaTest, HasOnChanged) {
 }
 
 TEST_F(StorageAreaTest, PromiseBasedFunctionsForManifestV3) {
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo")
-          .SetManifestKey("manifest_version", 3)
-          .AddPermission("storage")
-          .Build();
+  scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
+                                                 .SetManifestVersion(3)
+                                                 .AddPermission("storage")
+                                                 .Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());
@@ -210,11 +208,10 @@ TEST_F(StorageAreaTest, PromiseBasedFunctionsForManifestV3) {
 }
 
 TEST_F(StorageAreaTest, PromiseBasedFunctionsDisallowedForManifestV2) {
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder("foo")
-          .SetManifestKey("manifest_version", 2)
-          .AddPermission("storage")
-          .Build();
+  scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
+                                                 .SetManifestVersion(2)
+                                                 .AddPermission("storage")
+                                                 .Build();
   RegisterExtension(extension);
 
   v8::HandleScope handle_scope(isolate());

@@ -106,10 +106,11 @@ class ExtensionBuilder {
       const std::string& script_name,
       const std::vector<std::string>& match_patterns);
 
-  // Shortcut for setting a specific manifest version. Typically we'd use
-  // SetManifestKey() or SetManifestPath() for these, but provide a faster
-  // route for version, since it's so central.
+  // Shortcuts for extremely popular keys.
+  // Typically we'd use SetManifestKey() or SetManifestPath() for these, but
+  // provide a faster route for these, since they're so central.
   ExtensionBuilder& SetVersion(const std::string& version);
+  ExtensionBuilder& SetManifestVersion(int manifest_version);
 
   // Shortcuts to setting values on the manifest dictionary without needing to
   // go all the way through MergeManifest(). Sample usage:

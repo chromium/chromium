@@ -25,6 +25,7 @@ struct ExtensionBuilder::ManifestData {
   absl::optional<ActionType> action;
   absl::optional<BackgroundContext> background_context;
   absl::optional<std::string> version;
+  absl::optional<int> manifest_version;
 
   // A ContentScriptEntry includes a string name, and a vector of string
   // match patterns.
@@ -36,7 +37,7 @@ struct ExtensionBuilder::ManifestData {
   std::unique_ptr<base::DictionaryValue> GetValue() const {
     DictionaryBuilder manifest;
     manifest.Set(manifest_keys::kName, name)
-        .Set(manifest_keys::kManifestVersion, 2)
+        .Set(manifest_keys::kManifestVersion, manifest_version.value_or(2))
         .Set(manifest_keys::kVersion, version.value_or("0.1"))
         .Set(manifest_keys::kDescription, "some description");
 
@@ -213,6 +214,12 @@ ExtensionBuilder& ExtensionBuilder::AddContentScript(
 ExtensionBuilder& ExtensionBuilder::SetVersion(const std::string& version) {
   CHECK(manifest_data_);
   manifest_data_->version = version;
+  return *this;
+}
+
+ExtensionBuilder& ExtensionBuilder::SetManifestVersion(int manifest_version) {
+  CHECK(manifest_data_);
+  manifest_data_->manifest_version = manifest_version;
   return *this;
 }
 

@@ -55,7 +55,7 @@ ExtensionsToolbarUnitTest::InstallExtensionWithHostPermissions(
     const std::vector<std::string>& host_permissions) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(name)
-          .SetManifestKey("manifest_version", 3)
+          .SetManifestVersion(3)
           .SetManifestKey("host_permissions", ToListValue(host_permissions))
           .SetID(crx_file::id_util::GenerateId(name))
           .Build();
