@@ -901,7 +901,8 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that sync is turned on after the user chose to turn on
 // sync in the advanced sync settings screen.
-- (void)testCustomSyncOn {
+// TODO(crbug.com/1283229): re-enable the test.
+- (void)DISABLED_testCustomSyncOn {
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
