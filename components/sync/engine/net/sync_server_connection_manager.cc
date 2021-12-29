@@ -37,7 +37,6 @@ class Connection : public CancelationSignal::Observer {
                     const std::string& access_token,
                     const std::string& payload);
   bool ReadBufferResponse(std::string* buffer_out, HttpResponse* response);
-  bool ReadDownloadResponse(HttpResponse* response, std::string* buffer_out);
 
   // CancelationSignal::Observer overrides.
   void OnCancelationSignalReceived() override;
@@ -129,20 +128,6 @@ bool Connection::ReadBufferResponse(std::string* buffer_out,
   const int64_t bytes_read =
       ReadResponse(buffer_out, static_cast<int>(response->content_length));
   if (bytes_read != response->content_length) {
-    response->server_status = HttpResponse::IO_ERROR;
-    return false;
-  }
-  return true;
-}
-
-bool Connection::ReadDownloadResponse(HttpResponse* response,
-                                      std::string* buffer_out) {
-  const int64_t bytes_read =
-      ReadResponse(buffer_out, static_cast<int>(response->content_length));
-
-  if (bytes_read != response->content_length) {
-    LOG(ERROR) << "Mismatched content lengths, server claimed "
-               << response->content_length << ", but sent " << bytes_read;
     response->server_status = HttpResponse::IO_ERROR;
     return false;
   }
