@@ -157,7 +157,7 @@ class AccountManagerUIHandlerTest
 
   void TearDownOnMainThread() override {
     handler_.reset();
-    ProfileHelper::Get()->RemoveUserFromListForTesting(primary_account_id_);
+    GetFakeUserManager()->RemoveUserFromList(primary_account_id_);
     profile_.reset();
     base::RunLoop().RunUntilIdle();
     user_manager_enabler_.reset();
@@ -211,6 +211,11 @@ class AccountManagerUIHandlerTest
         ::account_manager::AccountKey{GetDeviceAccountInfo().id,
                                       GetDeviceAccountInfo().account_type},
         GetDeviceAccountInfo().email, GetDeviceAccountInfo().token);
+  }
+
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
   }
 
   void UpsertAccount(std::string email) {
