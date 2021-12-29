@@ -122,6 +122,11 @@ void DlpContentManager::CheckPrintingRestriction(
   std::move(callback).Run(true);
 }
 
+void DlpContentManager::SetIsScreenShareWarningModeEnabledForTesting(
+    bool is_enabled) {
+  is_screen_share_warning_mode_enabled_ = is_enabled;
+}
+
 DlpContentManager::DlpContentManager() = default;
 DlpContentManager::~DlpContentManager() = default;
 

@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
@@ -240,8 +241,11 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
     }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    // TODO(crbug.com/1259605): pass the stop callback instead of
+    // base::DoNothing().
     policy::DlpContentManagerAsh::Get()->OnScreenCaptureStarted(
-        label, screen_capture_ids, application_title_, state_change_callback);
+        label, screen_capture_ids, application_title_, base::DoNothing(),
+        state_change_callback);
 #endif
 
     // If a custom |ui_| is specified, notify it that the stream started and let

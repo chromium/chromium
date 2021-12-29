@@ -64,6 +64,8 @@ class DlpContentManager : public DlpContentObserver {
       OnDlpRestrictionCheckedCallback callback) = 0;
 
  protected:
+  void SetIsScreenShareWarningModeEnabledForTesting(bool is_enabled);
+
   // Structure that relates a list of confidential contents to the
   // corresponding restriction level.
   struct ConfidentialContentsInfo {
@@ -156,7 +158,7 @@ class DlpContentManager : public DlpContentObserver {
   std::unique_ptr<DlpWarnNotifier> warn_notifier_;
 
   // TODO(https://crbug.com/1278733): Remove this flag
-  const bool is_screen_share_warning_mode_enabled_ = false;
+  bool is_screen_share_warning_mode_enabled_ = false;
 };
 
 }  // namespace policy

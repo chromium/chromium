@@ -68,6 +68,11 @@ bool DlpContentManagerAshTestHelper::HasAnyContentCached() const {
   return manager_->user_allowed_contents_cache_.GetSizeForTesting() != 0;
 }
 
+void DlpContentManagerAshTestHelper::EnableScreenShareWarningMode() {
+  DCHECK(manager_);
+  manager_->SetIsScreenShareWarningModeEnabledForTesting(/*is_enabled=*/true);
+}
+
 base::TimeDelta DlpContentManagerAshTestHelper::GetPrivacyScreenOffDelay()
     const {
   DCHECK(manager_);

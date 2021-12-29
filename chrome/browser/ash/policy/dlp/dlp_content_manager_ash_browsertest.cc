@@ -41,9 +41,11 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/desktop_streams_registry.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -139,6 +141,50 @@ class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
       EXPECT_THAT(events_[i], IsDlpPolicyEvent(CreateDlpPolicyEvent(
                                   kSrcPattern, restriction, level)));
     }
+  }
+
+  void StartDesktopScreenShare(
+      content::WebContents* web_contents,
+      blink::mojom::MediaStreamRequestResult expected_result) {
+    const GURL origin(kExampleUrl);
+    const std::string id =
+        content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
+            web_contents->GetMainFrame()->GetProcess()->GetID(),
+            web_contents->GetMainFrame()->GetRoutingID(),
+            url::Origin::Create(origin),
+            content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
+                                    content::DesktopMediaID::kFakeId),
+            /*extension_name=*/"",
+            content::DesktopStreamRegistryType::kRegistryStreamTypeDesktop);
+    content::MediaStreamRequest request(
+        web_contents->GetMainFrame()->GetProcess()->GetID(),
+        web_contents->GetMainFrame()->GetRoutingID(), /*page_request_id=*/0,
+        origin, /*user_gesture=*/false, blink::MEDIA_GENERATE_STREAM,
+        /*requested_audio_device_id=*/std::string(), id,
+        blink::mojom::MediaStreamType::NO_SERVICE,
+        blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
+        /*disable_local_echo=*/false,
+        /*request_pan_tilt_zoom_permission=*/false,
+        /*region_capture_capable=*/false);
+    DesktopCaptureAccessHandler access_handler{
+        std::make_unique<FakeDesktopMediaPickerFactory>()};
+
+    base::test::TestFuture<
+        std::reference_wrapper<const blink::MediaStreamDevices>,
+        blink::mojom::MediaStreamRequestResult,
+        std::unique_ptr<content::MediaStreamUI>>
+        test_future;
+
+    access_handler.HandleRequest(
+        web_contents, request,
+        test_future.GetCallback<const blink::MediaStreamDevices&,
+                                blink::mojom::MediaStreamRequestResult,
+                                std::unique_ptr<content::MediaStreamUI>>(),
+        /*extension=*/nullptr);
+
+    ASSERT_TRUE(test_future.Wait()) << "MediaResponseCallback timed out.";
+
+    EXPECT_EQ(test_future.Get<1>(), expected_result);
   }
 
  protected:
@@ -567,8 +613,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       browser()->window()->GetNativeWindow()->GetRootWindow();
   const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
       content::DesktopMediaID::TYPE_SCREEN, root_window);
-  manager->OnScreenCaptureStarted("label", {media_id}, u"example.com",
-                                  base::DoNothing());
+  manager->OnScreenCaptureStarted(
+      "label", {media_id}, u"example.com",
+      base::BindOnce([]() { FAIL() << "Stop callback should not be called."; }),
+      base::DoNothing());
 
   EXPECT_FALSE(
       display_service_tester.GetNotification(kScreenSharePausedNotificationId));
@@ -651,6 +699,29 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
 }
 
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenShareRestricted) {
+  SetupReporting();
+  const GURL origin(kExampleUrl);
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), origin));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  helper_->ChangeConfidentiality(web_contents, kScreenShareRestricted);
+
+  StartDesktopScreenShare(
+      web_contents, blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED);
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              DlpRulesManager::Level::kBlock, 1u);
+  // TODO(https://crbug.com/1246386): change below to TRUE after switching to
+  // CheckScreenShareRestriction which will also show the DLP notification.
+  EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenShareBlockedNotificationId));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, false, 0);
+}
+
 // Starting screen sharing and navigating other tabs should create exactly one
 // reporting event.
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenShareReporting) {
@@ -660,50 +731,10 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenShareReporting) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), origin));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Setup screen sharing (media stream)
-  auto picker_factory = std::make_unique<FakeDesktopMediaPickerFactory>();
-  DesktopCaptureAccessHandler access_handler{std::move(picker_factory)};
-
-  const std::string id =
-      content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
-          web_contents->GetMainFrame()->GetProcess()->GetID(),
-          web_contents->GetMainFrame()->GetRoutingID(),
-          url::Origin::Create(origin),
-          content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
-                                  content::DesktopMediaID::kFakeId),
-          /*extension_name=*/"",
-          content::DesktopStreamRegistryType::kRegistryStreamTypeDesktop);
-  content::MediaStreamRequest request(
-      web_contents->GetMainFrame()->GetProcess()->GetID(),
-      web_contents->GetMainFrame()->GetRoutingID(), /*page_request_id=*/0,
-      origin, /*user_gesture=*/false, blink::MEDIA_GENERATE_STREAM,
-      /*requested_audio_device_id=*/std::string(), id,
-      blink::mojom::MediaStreamType::NO_SERVICE,
-      blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-      /*disable_local_echo=*/false,
-      /*request_pan_tilt_zoom_permission=*/false,
-      /*region_capture_capable=*/false);
-
-  base::test::TestFuture<
-      std::reference_wrapper<const blink::MediaStreamDevices>,
-      blink::mojom::MediaStreamRequestResult,
-      std::unique_ptr<content::MediaStreamUI>>
-      test_future;
-
   helper_->ChangeConfidentiality(web_contents, kScreenShareReported);
 
-  access_handler.HandleRequest(
-      web_contents, request,
-      test_future.GetCallback<const blink::MediaStreamDevices&,
-                              blink::mojom::MediaStreamRequestResult,
-                              std::unique_ptr<content::MediaStreamUI>>(),
-      /*extension=*/nullptr);
-
-  ASSERT_TRUE(test_future.Wait()) << "Callback timed out.";
-
-  EXPECT_EQ(test_future.Get<1>(), blink::mojom::MediaStreamRequestResult::OK);
-
+  StartDesktopScreenShare(web_contents,
+                          blink::mojom::MediaStreamRequestResult::OK);
   CheckEvents(DlpRulesManager::Restriction::kScreenShare,
               DlpRulesManager::Level::kReport, 1u);
   EXPECT_FALSE(display_service_tester.GetNotification(

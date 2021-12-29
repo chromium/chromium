@@ -44,6 +44,8 @@ class DlpContentManagerAshTestHelper {
 
   bool HasAnyContentCached() const;
 
+  void EnableScreenShareWarningMode();
+
   base::TimeDelta GetPrivacyScreenOffDelay() const;
 
   DlpContentManagerAsh* GetContentManager() const;

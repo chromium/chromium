@@ -12,6 +12,7 @@
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/dlp/dlp_window_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
@@ -122,6 +123,7 @@ class DlpContentManagerAsh : public DlpContentManager,
       const std::string& label,
       std::vector<content::DesktopMediaID> screen_capture_ids,
       const std::u16string& application_title,
+      base::OnceClosure stop_callback,
       content::MediaStreamUI::StateChangeCallback state_change_callback);
 
   // Called when screen capture is stopped.
@@ -155,14 +157,14 @@ class DlpContentManagerAsh : public DlpContentManager,
   // Used to keep track of running screen shares.
   class ScreenShareInfo {
    public:
-    ScreenShareInfo();
     ScreenShareInfo(
         const std::string& label,
         const content::DesktopMediaID& media_id,
         const std::u16string& application_title,
+        base::OnceClosure stop_callback,
         content::MediaStreamUI::StateChangeCallback state_change_callback);
-    ScreenShareInfo(const ScreenShareInfo& other);
-    ScreenShareInfo& operator=(const ScreenShareInfo& other);
+    ScreenShareInfo(const ScreenShareInfo& other) = delete;
+    ScreenShareInfo& operator=(const ScreenShareInfo& other) = delete;
     ~ScreenShareInfo();
 
     bool operator==(const ScreenShareInfo& other) const;
@@ -179,6 +181,8 @@ class DlpContentManagerAsh : public DlpContentManager,
     // Resumes a paused screen share.
     // No-op if the screen share is already running.
     void Resume();
+    // Stops the screen share. Can only be called once.
+    void Stop();
 
     // If necessary, hides or shows the paused/resumed notification for this
     // screen share. The notification should be updated after changing the state
@@ -189,12 +193,15 @@ class DlpContentManagerAsh : public DlpContentManager,
     // share.
     void HideNotifications();
 
+    base::WeakPtr<ScreenShareInfo> GetWeakPtr();
+
    private:
     enum class NotificationState {
       kNotShowingNotification,
       kShowingPausedNotification,
       kShowingResumedNotification
     };
+    enum class State { kRunning, kPaused, kStopped };
     // Shows (if |show| is true) or hides (if |show| is false) paused
     // notification for this screen share. Does nothing if the notification is
     // already in the required state.
@@ -208,10 +215,13 @@ class DlpContentManagerAsh : public DlpContentManager,
     content::DesktopMediaID media_id_;
     // TODO(crbug.com/1264793): Don't cache the application name.
     std::u16string application_title_;
+    base::OnceClosure stop_callback_;
     content::MediaStreamUI::StateChangeCallback state_change_callback_;
-    bool is_running_ = true;
+    State state_ = State::kRunning;
     NotificationState notification_state_ =
         NotificationState::kNotShowingNotification;
+
+    base::WeakPtrFactory<ScreenShareInfo> weak_factory_{this};
   };
 
   // Structure to keep track of a running video capture.
@@ -265,6 +275,10 @@ class DlpContentManagerAsh : public DlpContentManager,
   // in the corresponding areas.
   void CheckRunningVideoCapture();
 
+  // Removes screen share from |running_screen_shares_|.
+  void RemoveScreenShare(const std::string& label,
+                         const content::DesktopMediaID& media_id);
+
   // Checks and stops the running screen shares if restricted content appeared
   // in the corresponding areas.
   void CheckRunningScreenShares();
@@ -286,7 +300,7 @@ class DlpContentManagerAsh : public DlpContentManager,
   // the user to avoid future warnings.
   void OnDlpScreenShareWarnDialogReply(
       const DlpConfidentialContents& confidential_contents,
-      ScreenShareInfo screen_share,
+      base::WeakPtr<ScreenShareInfo> screen_share,
       bool should_proceed);
 
   // Map of window observers for the current confidential WebContents.
@@ -307,7 +321,7 @@ class DlpContentManagerAsh : public DlpContentManager,
   absl::optional<VideoCaptureInfo> running_video_capture_info_;
 
   // List of the currently running screen shares.
-  std::vector<ScreenShareInfo> running_screen_shares_;
+  std::vector<base::WeakPtr<ScreenShareInfo>> running_screen_shares_;
 };
 
 // Helper class to call SetDlpContentManagerAshForTesting and
