@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "media/base/decode_status.h"
 #include "media/base/decoder_factory.h"
@@ -66,10 +67,11 @@ struct TestParams {
 class MockVideoDecoder : public media::VideoDecoder {
  public:
   explicit MockVideoDecoder(bool is_platform_decoder)
-      : is_platform_decoder_(is_platform_decoder) {}
+      : is_platform_decoder_(is_platform_decoder),
+        current_decoder_type_(media::VideoDecoderType::kTesting) {}
 
   media::VideoDecoderType GetDecoderType() const override {
-    return media::VideoDecoderType::kTesting;
+    return current_decoder_type_;
   }
   void Initialize(const media::VideoDecoderConfig& config,
                   bool low_delay,
@@ -100,9 +102,14 @@ class MockVideoDecoder : public media::VideoDecoder {
   // Since DecoderSelector always allows platform decoders, pretend that we are
   // a platform decoder.
   bool IsPlatformDecoder() const override { return is_platform_decoder_; }
+  // We can set the type of decoder we want.
+  void SetDecoderType(media::VideoDecoderType expected_decoder_type) {
+    current_decoder_type_ = expected_decoder_type;
+  }
 
  private:
   const bool is_platform_decoder_;
+  media::VideoDecoderType current_decoder_type_;
 };
 
 class MockDecoderFactory : public media::DecoderFactory {
@@ -129,8 +136,12 @@ class MockDecoderFactory : public media::DecoderFactory {
 
   // Return the first, usually only, decoder.  Only works before we've provided
   // it via CreateVideoDecoders.
-  MockVideoDecoder* decoder() const { return decoders_[0].get(); }
+  MockVideoDecoder* decoder() const {
+    EXPECT_TRUE(!decoders_.empty());
+    return decoders_[0].get();
+  }
   MockVideoDecoder* last_decoder() const {
+    EXPECT_TRUE(!decoders_.empty());
     return decoders_[decoders_.size() - 1].get();
   }
   // Return true if and only if we have decoders ready that we haven't sent to
@@ -181,19 +192,27 @@ class RTCVideoDecoderStreamAdapterTest
                          TestParams::UseHwDecoders::kYes),
         decoded_image_callback_(decoded_cb_.Get()),
         sdp_format_(webrtc::SdpVideoFormat(
-            webrtc::CodecTypeToPayloadString(webrtc::kVideoCodecVP9))) {
+            webrtc::CodecTypeToPayloadString(webrtc::kVideoCodecVP9))),
+        spatial_index_(0) {
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+#if defined(OS_WIN)
+    enabled_features.push_back(::media::kD3D11Vp9kSVCHWDecoding);
+#endif
     if (GetParam().use_chrome_sw_decoders ==
         TestParams::UseChromeSwDecoders::kYes) {
-      feature_list_.InitAndEnableFeature(::media::kExposeSwDecodersToWebRTC);
+      enabled_features.push_back(::media::kExposeSwDecodersToWebRTC);
     } else {
-      feature_list_.InitAndDisableFeature(::media::kExposeSwDecodersToWebRTC);
+      disabled_features.push_back(::media::kExposeSwDecodersToWebRTC);
     }
+
     decoder_factory_ = std::make_unique<MockDecoderFactory>();
     // Create one hw decoder.
     decoder_factory_->CreatePendingDecoder(true);
     // Unless specifically overridden by a test, the gpu claims to support any
     // decoder config.
     SetGpuFactorySupport(true);
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   RTCVideoDecoderStreamAdapterTest(const RTCVideoDecoderStreamAdapterTest&) =
@@ -273,6 +292,7 @@ class RTCVideoDecoderStreamAdapterTest
   int32_t Decode(uint32_t timestamp, bool missing_frames = false) {
     webrtc::EncodedImage input_image;
     static const uint8_t data[1] = {0};
+    input_image.SetSpatialIndex(spatial_index_);
     input_image.SetEncodedData(
         webrtc::EncodedImageBuffer::Create(data, sizeof(data)));
     input_image._frameType = webrtc::VideoFrameType::kVideoFrameKey;
@@ -324,6 +344,9 @@ class RTCVideoDecoderStreamAdapterTest
     use_hw_decoders_ = use_hw_decoders;
   }
 
+  // We can set the spatial index we want, the default value is 0.
+  void SetSpatialIndex(int spatial_index) { spatial_index_ = spatial_index; }
+
   webrtc::EncodedImage GetEncodedImageWithColorSpace(uint32_t timestamp) {
     webrtc::EncodedImage input_image;
     static const uint8_t data[1] = {0};
@@ -362,6 +385,8 @@ class RTCVideoDecoderStreamAdapterTest
   media::VideoDecoderConfig vda_config_;
 
   base::test::ScopedFeatureList feature_list_;
+
+  int spatial_index_;
 };
 
 TEST_P(RTCVideoDecoderStreamAdapterTest, Create_UnknownFormat) {
@@ -581,6 +606,40 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, LowResSelectsCorrectDecoder) {
   Decode(0);
   task_environment_.RunUntilIdle();
 }
+
+#if defined(OS_WIN)
+TEST_P(RTCVideoDecoderStreamAdapterTest, UseD3D11ToDecodeVP9kSVCStream) {
+  auto* decoder = decoder_factory_->decoder();
+  EXPECT_TRUE(decoder->IsPlatformDecoder());
+  SetSpatialIndex(2);
+  decoder->SetDecoderType(media::VideoDecoderType::kD3D11);
+  EXPECT_TRUE(BasicSetup());
+  EXPECT_CALL(*decoder, Decode_(_, _))
+      .WillOnce(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+  EXPECT_EQ(Decode(0, false), WEBRTC_VIDEO_CODEC_OK);
+  task_environment_.RunUntilIdle();
+  EXPECT_CALL(decoded_cb_, Run(_));
+  FinishDecode(0);
+  EXPECT_TRUE(BasicTeardown());
+}
+#endif
+
+// On ChromeOS, only based on x86(use VaapiDecoder) architecture has the ability
+// to decode VP9 kSVC Stream. Other cases should fallback to sw decoder.
+#if !(defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH))
+TEST_P(RTCVideoDecoderStreamAdapterTest,
+       FallbackToSoftwareWhenDecodeVP9kSVCStream) {
+  auto* decoder = decoder_factory_->decoder();
+  EXPECT_TRUE(decoder->IsPlatformDecoder());
+  SetSpatialIndex(2);
+  EXPECT_TRUE(BasicSetup());
+  // kTesting will represent hw decoders for other use cases mentioned above.
+  EXPECT_CALL(*decoder, Decode_(_, _)).Times(0);
+  EXPECT_EQ(Decode(0, false), WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(BasicTeardown());
+}
+#endif
 
 INSTANTIATE_TEST_SUITE_P(
     UseHwDecoding,
