@@ -250,6 +250,9 @@ void AttributionInternalsHandlerImpl::OnReportDropped(
     case CreateReportStatus::kDroppedForNoise:
       status = mojom::WebUIAttributionReport::Status::kDroppedForNoise;
       break;
+    case CreateReportStatus::kRateLimited:
+      status = mojom::WebUIAttributionReport::Status::kDroppedDueToRateLimiting;
+      break;
     default:
       NOTREACHED();
       return;

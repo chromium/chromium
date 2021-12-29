@@ -782,8 +782,10 @@ TEST_F(AttributionStorageTest, MaxAttributionReportsBetweenSites) {
             MaybeCreateAndStoreReport(conversion));
   EXPECT_EQ(CreateReportStatus::kSuccess,
             MaybeCreateAndStoreReport(conversion));
-  EXPECT_EQ(CreateReportStatus::kRateLimited,
-            MaybeCreateAndStoreReport(conversion));
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(conversion),
+              AllOf(Property(&CreateReportResult::status,
+                             CreateReportStatus::kRateLimited),
+                    Property(&CreateReportResult::dropped_report, IsTrue())));
 
   const AttributionReport expected_report =
       GetExpectedReport(impression, conversion);

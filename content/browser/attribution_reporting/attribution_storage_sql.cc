@@ -671,7 +671,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     case RateLimitTable::AttributionAllowedStatus::kAllowed:
       break;
     case RateLimitTable::AttributionAllowedStatus::kNotAllowed:
-      return CreateReportResult(CreateReportStatus::kRateLimited);
+      return CreateReportResult(CreateReportStatus::kRateLimited,
+                                std::move(report));
     case RateLimitTable::AttributionAllowedStatus::kError:
       return CreateReportResult(CreateReportStatus::kInternalError);
   }

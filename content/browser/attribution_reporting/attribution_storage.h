@@ -193,7 +193,7 @@ class AttributionStorage {
     Status status_;
 
     // Null unless `status` is `kSuccessDroppedLowerPriority`,
-    // `kPriorityTooLow`, or `kDroppedForNoise`.
+    // `kRateLimited`, `kPriorityTooLow`, or `kDroppedForNoise`.
     absl::optional<AttributionReport> dropped_report_;
 
     // Null unless `dropped_report_`'s source was deactivated.

@@ -25,6 +25,7 @@ CreateReportResult::CreateReportResult(
           dropped_report_source_deactivation_reason),
       report_time_(report_time) {
   DCHECK_EQ(status_ == Status::kSuccessDroppedLowerPriority ||
+                status_ == Status::kRateLimited ||
                 status_ == Status::kPriorityTooLow ||
                 status_ == Status::kDroppedForNoise,
             dropped_report_.has_value());
