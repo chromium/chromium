@@ -20,6 +20,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -51,14 +52,14 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
                             .value(EnabledFeature.TRANSLATIONS)
                             .name("enableTranslations"),
                     new ParameterSet()
+                            .value(EnabledFeature.CONTEXTUAL_TRIGGERS)
+                            .name("enableContextualTriggers"),
+                    new ParameterSet()
                             .value(EnabledFeature.PRIVACY_NEUTRAL)
                             .name("enablePrivacyNeutralEngagement"),
                     new ParameterSet()
                             .value(EnabledFeature.PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES)
-                            .name("enablePrivacyNeutralWithRelatedSearches"),
-                    new ParameterSet()
-                            .value(EnabledFeature.CONTEXTUAL_TRIGGERS)
-                            .name("enableContextualTriggers"));
+                            .name("enablePrivacyNeutralWithRelatedSearches"));
         }
     }
 
@@ -114,20 +115,25 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testPrivacyNeutralPeekExpand(@EnabledFeature int enabledFeature) throws Exception {
+    public void testPrivacyNeutralPeekExpandMaximize(@EnabledFeature int enabledFeature)
+            throws Exception {
+        mPolicy.overrideAllowSendingPageUrlForTesting(true);
         mPolicy.overrideDecidedStateForTesting(false);
         longPressNode(SEARCH_NODE);
         assertPeekingPanelNonResolve();
+        fakeResponse(mFakeServer.buildResolvedSearchTermWithRelatedSearches(SEARCH_NODE_TERM));
         tapPeekingBarToExpandAndAssert();
+        mPanel.updatePanelToStateForTest(OverlayPanel.PanelState.EXPANDED);
         if (enabledFeature == EnabledFeature.PRIVACY_NEUTRAL
                 || enabledFeature == EnabledFeature.PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES) {
             // PRIVACY_NEUTRAL feature includes Delayed Intelligence which resolves during the
             // expand.
-            fakeResponse(false, 200, SEARCH_NODE_TERM, SEARCH_NODE_TERM, "alternate-term", false);
             assertExpandedPanelResolve(SEARCH_NODE_TERM);
         } else {
             assertExpandedPanelNonResolve();
         }
+        maximizePanel();
+        // TODO(donnd): consider asserting that no caption or other intelligent UI is showing.
         closePanel();
     }
 }

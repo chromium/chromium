@@ -1437,4 +1437,20 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         // Simulate the tap.
         handleClick(xPosition, yPosition);
     }
+
+    /**
+     * Updates the panel as if a transition from one state to the given state has just been
+     * completed. The caller should first set the panel to the supplied "to" state. This method just
+     * makes the panel notify its subcomponents that the transition has been completed.
+     * @param panelState The "to" state that has just been completed by the test.
+     */
+    @VisibleForTesting
+    public void updatePanelToStateForTest(@PanelState int panelState) {
+        // Use a switch to just support the implemented state(s) and fail if others are attempted.
+        switch (panelState) {
+            case PanelState.EXPANDED:
+                updatePanelForExpansion(1.0f);
+                break;
+        }
+    }
 }

@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -651,35 +652,8 @@ class ContextualSearchFakeServer
         registerFakeResolveSearch(germanFakeTapSearch);
 
         // Setup the "intelligence" node to return Related Searches along with the usual result.
-        JSONObject rSearch1 = new JSONObject();
-        rSearch1.put("title", "Related Search 1");
-        JSONObject rSearch2 = new JSONObject();
-        rSearch2.put("title", "Related Search 2");
-        JSONObject rSearch3 = new JSONObject();
-        rSearch3.put("title", "Related Search 3");
-        JSONArray rSearches = new JSONArray();
-        rSearches.put(rSearch1);
-        rSearches.put(rSearch2);
-        rSearches.put(rSearch3);
-        JSONObject suggestions = new JSONObject();
-        suggestions.put("content", rSearches);
-        // Also add selection suggestions, which are shown in the Bar, so we can exercise that code.
-        JSONObject rBar1 = new JSONObject();
-        rBar1.put("title", "Selection Related 1");
-        JSONObject rBar2 = new JSONObject();
-        rBar2.put("title", "Selection Related 2");
-        JSONObject rBar3 = new JSONObject();
-        rBar3.put("title", "Selection Related 3");
-        JSONArray selectionSearches = new JSONArray();
-        selectionSearches.put(rBar1);
-        selectionSearches.put(rBar2);
-        selectionSearches.put(rBar3);
-        suggestions.put("selection", selectionSearches);
-
         ResolvedSearchTerm intelligenceWithRelatedSearches =
-                new ResolvedSearchTerm.Builder(false, 200, "Intelligence", "Intelligence")
-                        .setRelatedSearchesJson(suggestions.toString())
-                        .build();
+                buildResolvedSearchTermWithRelatedSearches("Intelligence");
         FakeResolveSearch fakeSearchWithRelatedSearches =
                 new FakeResolveSearch("intelligence", intelligenceWithRelatedSearches);
         registerFakeResolveSearch(fakeSearchWithRelatedSearches);
@@ -722,6 +696,44 @@ class ContextualSearchFakeServer
      */
     public FakeResolveSearch getFakeResolveSearch(String id) {
         return mFakeResolveSearches.get(id);
+    }
+
+    /**
+     * Returns a {@link ResolvedSearchTerm} build to include sample Related Searches that uses the
+     * given string for the Search Term.
+     * @param searchTerm The string to use for the Search Term and Display Text.
+     * @return a {@link ResolvedSearchTerm} that includes some sample Related Searches of all types.
+     * @throws JSONException
+     */
+    public ResolvedSearchTerm buildResolvedSearchTermWithRelatedSearches(String searchTerm)
+            throws JSONException {
+        JSONObject rSearch1 = new JSONObject();
+        rSearch1.put("title", "Related Search 1");
+        JSONObject rSearch2 = new JSONObject();
+        rSearch2.put("title", "Related Search 2");
+        JSONObject rSearch3 = new JSONObject();
+        rSearch3.put("title", "Related Search 3");
+        JSONArray rSearches = new JSONArray();
+        rSearches.put(rSearch1);
+        rSearches.put(rSearch2);
+        rSearches.put(rSearch3);
+        JSONObject suggestions = new JSONObject();
+        suggestions.put("content", rSearches);
+        // Also add selection suggestions, which are shown in the Bar, so we can exercise that code.
+        JSONObject rBar1 = new JSONObject();
+        rBar1.put("title", "Selection Related 1");
+        JSONObject rBar2 = new JSONObject();
+        rBar2.put("title", "Selection Related 2");
+        JSONObject rBar3 = new JSONObject();
+        rBar3.put("title", "Selection Related 3");
+        JSONArray selectionSearches = new JSONArray();
+        selectionSearches.put(rBar1);
+        selectionSearches.put(rBar2);
+        selectionSearches.put(rBar3);
+        suggestions.put("selection", selectionSearches);
+        return new ResolvedSearchTerm.Builder(false, 200, searchTerm, searchTerm)
+                .setRelatedSearchesJson(suggestions.toString())
+                .build();
     }
 
     /**

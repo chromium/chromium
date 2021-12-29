@@ -659,7 +659,7 @@ public class ContextualSearchInstrumentationBase {
      * Fakes a server response with the parameters given. {@See
      * ContextualSearchManager#handleSearchTermResolutionResponse}.
      */
-    private void fakeResponse(ResolvedSearchTerm resolvedSearchTerm) {
+    protected void fakeResponse(ResolvedSearchTerm resolvedSearchTerm) {
         if (mFakeServer.getSearchTermRequested() != null) {
             InstrumentationRegistry.getInstrumentation().runOnMainSync(
                     new FakeResponseOnMainThread(resolvedSearchTerm));
@@ -1028,6 +1028,7 @@ public class ContextualSearchInstrumentationBase {
      */
     private void resetCounters() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // TODO(donnd): Use SharedPreferencesManager instead to access SharedPreferences.
             SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
             boolean freStatus =
                     prefs.getBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false);
@@ -1047,6 +1048,28 @@ public class ContextualSearchInstrumentationBase {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> { mPanel.peekPanel(StateChangeReason.UNKNOWN); });
         waitForPanelToPeek();
+    }
+
+    /**
+     * Force the Panel to expand, and wait for it to do so.
+     */
+    protected void expandPanel() {
+        // TODO(donnd): use a consistent method of running these test tasks, and it's probably
+        // best to use TestThreadUtils.runOnUiThreadBlocking as done elsewhere in this file.
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(
+                () -> { mPanel.expandPanel(StateChangeReason.UNKNOWN); });
+        waitForPanelToExpand();
+    }
+
+    /**
+     * Force the Panel to maximize, and wait for it to do so.
+     */
+    protected void maximizePanel() {
+        // TODO(donnd): use a consistent method of running these test tasks, and it's probably
+        // best to use TestThreadUtils.runOnUiThreadBlocking as done elsewhere in this file.
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(
+                () -> { mPanel.maximizePanel(StateChangeReason.UNKNOWN); });
+        waitForPanelToMaximize();
     }
 
     /**
