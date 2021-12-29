@@ -8,10 +8,9 @@ import {reportError} from './error.js';
 import {Filenamer} from './models/file_namer.js';
 import * as filesystem from './models/file_system.js';
 import {
-  DirectoryAccessEntry,  // eslint-disable-line no-unused-vars
-  FileAccessEntry,       // eslint-disable-line no-unused-vars
+  DirectoryAccessEntry,
+  FileAccessEntry,
 } from './models/file_system_access_entry.js';
-// eslint-disable-next-line no-unused-vars
 import {ResultSaver} from './models/result_saver.js';
 import {VideoSaver} from './models/video_saver.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
@@ -19,6 +18,7 @@ import {extractImageFromBlob} from './thumbnailer.js';
 import {
   ErrorLevel,
   ErrorType,
+  Metadata,
   MimeType,
   VideoType,
 } from './type.js';
@@ -28,36 +28,21 @@ import {
  */
 class CoverPhoto {
   /**
-   * @param {!FileAccessEntry} file File entry of cover photo.
-   * @param {?string} url Url to its cover photo. Might be null if the cover is
-   *     failed to load.
-   * @param {boolean} draggable If the file type support share by dragg/drop
-   *     cover photo.
+   * @param file File entry of cover photo.
+   * @param url Url to its cover photo. Might be null if the cover is failed to
+   *     load.
+   * @param draggable If the file type support share by dragg/drop cover photo.
    */
-  constructor(file, url, draggable) {
-    /**
-     * @type {!FileAccessEntry}
-     * @const
-     */
-    this.file = file;
-
-    /**
-     * @type {?string}
-     * @const
-     */
-    this.url = url;
-
-    /**
-     * @const {boolean}
-     */
-    this.draggable = draggable;
-  }
+  constructor(
+      readonly file: FileAccessEntry,
+      readonly url: string|null,
+      readonly draggable: boolean,
+  ) {}
 
   /**
    * File name of the cover photo.
-   * @return {string}
    */
-  get name() {
+  get name(): string {
     return this.file.name;
   }
 
@@ -72,10 +57,8 @@ class CoverPhoto {
 
   /**
    * Creates CoverPhoto objects from photo file.
-   * @param {!FileAccessEntry} file
-   * @return {!Promise<?CoverPhoto>}
    */
-  static async create(file) {
+  static async create(file: FileAccessEntry): Promise<CoverPhoto|null> {
     const blob = await file.file();
     if (blob.size === 0) {
       reportError(
@@ -101,96 +84,77 @@ class CoverPhoto {
 
 /**
  * Creates a controller for the gallery-button.
- * @implements {ResultSaver}
  */
-export class GalleryButton {
+export class GalleryButton implements ResultSaver {
   /**
-   * @public
+   * Cover photo from latest saved picture.
    */
+  private cover: CoverPhoto|null = null;
+
+  private readonly button = dom.get('#gallery-enter', HTMLButtonElement);
+
+  /**
+   * Directory holding saved pictures showing in gallery.
+   */
+  private directory: DirectoryAccessEntry|null = null;
+
+  private readonly coverPhoto: HTMLImageElement;
+
   constructor() {
-    /**
-     * Cover photo from latest saved picture.
-     * @type {?CoverPhoto}
-     * @private
-     */
-    this.cover_ = null;
+    this.coverPhoto = dom.getFrom(this.button, 'img', HTMLImageElement);
 
-    /**
-     * @type {!HTMLButtonElement}
-     * @private
-     */
-    this.button_ = dom.get('#gallery-enter', HTMLButtonElement);
-
-    /**
-     * @type {!HTMLImageElement}
-     * @private
-     */
-    this.coverPhoto_ = dom.getFrom(this.button_, 'img', HTMLImageElement);
-
-    /**
-     * Directory holding saved pictures showing in gallery.
-     * @type {?DirectoryAccessEntry}
-     * @private
-     */
-    this.directory_ = null;
-
-    this.button_.addEventListener('click', async () => {
-      if (this.cover_ !== null) {
-        await ChromeHelper.getInstance().openFileInGallery(
-            this.cover_.file.name);
+    this.button.addEventListener('click', () => {
+      if (this.cover !== null) {
+        ChromeHelper.getInstance().openFileInGallery(this.cover.file.name);
       }
     });
   }
 
   /**
    * Initializes the gallery button.
-   * @param {!DirectoryAccessEntry} dir Directory holding saved pictures
-   *     showing in gallery.
+   * @param dir Directory holding saved pictures showing in gallery.
    */
-  async initialize(dir) {
-    this.directory_ = dir;
-    await this.checkCover_();
+  async initialize(dir: DirectoryAccessEntry): Promise<void> {
+    this.directory = dir;
+    await this.checkCover();
   }
 
   /**
-   * @param {?FileAccessEntry} file File to be set as cover photo.
-   * @return {!Promise}
-   * @private
+   * @param file File to be set as cover photo.
    */
-  async updateCover_(file) {
+  private async updateCover(file: FileAccessEntry|null): Promise<void> {
     const cover = file === null ? null : await CoverPhoto.create(file);
-    if (this.cover_ === cover) {
+    if (this.cover === cover) {
       return;
     }
-    if (this.cover_ !== null) {
-      this.cover_.release();
+    if (this.cover !== null) {
+      this.cover.release();
     }
-    this.cover_ = cover;
+    this.cover = cover;
 
-    this.button_.hidden = cover === null;
-    this.coverPhoto_.classList.toggle('draggable', cover?.draggable ?? false);
-    this.coverPhoto_.src = cover?.url ?? '';
+    this.button.hidden = cover === null;
+    this.coverPhoto.classList.toggle('draggable', cover?.draggable ?? false);
+    this.coverPhoto.src = cover?.url ?? '';
 
     if (cover !== null) {
       ChromeHelper.getInstance().monitorFileDeletion(file.name, () => {
-        this.checkCover_();
+        this.checkCover();
       });
     }
   }
 
   /**
    * Checks validity of cover photo from camera directory.
-   * @private
    */
-  async checkCover_() {
-    if (this.directory_ === null) {
+  private async checkCover(): Promise<void> {
+    if (this.directory === null) {
       return;
     }
-    const dir = this.directory_;
+    const dir = this.directory;
 
     // Checks existence of cached cover photo.
-    if (this.cover_ !== null) {
-      if (await dir.isExist(this.cover_.name)) {
+    if (this.cover !== null) {
+      if (await dir.isExist(this.cover.name)) {
         return;
       }
     }
@@ -198,7 +162,7 @@ export class GalleryButton {
     // Rescan file system.
     const files = await filesystem.getEntries();
     if (files.length === 0) {
-      await this.updateCover_(null);
+      await this.updateCover(null);
       return;
     }
     const filesWithTime = await Promise.all(
@@ -209,13 +173,11 @@ export class GalleryButton {
     const lastFile =
         filesWithTime.reduce((last, cur) => last.time > cur.time ? last : cur)
             .file;
-    await this.updateCover_(lastFile);
+    await this.updateCover(lastFile);
   }
 
-  /**
-   * @override
-   */
-  async savePhoto(blob, name, metadata) {
+  async savePhoto(blob: Blob, name: string, metadata: Metadata|null):
+      Promise<void> {
     const file = await filesystem.saveBlob(blob, name);
     if (metadata !== null) {
       const metadataBlob =
@@ -225,34 +187,25 @@ export class GalleryButton {
 
     ChromeHelper.getInstance().sendNewCaptureBroadcast(
         {isVideo: false, name: file.name});
-    await this.updateCover_(file);
+    await this.updateCover(file);
   }
 
-  /**
-   * @override
-   */
-  async saveGif(blob, name) {
+  async saveGif(blob: Blob, name: string): Promise<void> {
     const file = await filesystem.saveBlob(blob, name);
-    await this.updateCover_(file);
+    await this.updateCover(file);
   }
 
-  /**
-   * @override
-   */
-  async startSaveVideo(videoRotation) {
+  async startSaveVideo(videoRotation: number): Promise<VideoSaver> {
     const file = await filesystem.createVideoFile(VideoType.MP4);
     return VideoSaver.createForFile(file, videoRotation);
   }
 
-  /**
-   * @override
-   */
-  async finishSaveVideo(video) {
+  async finishSaveVideo(video: VideoSaver): Promise<void> {
     const file = await video.endWrite();
     assert(file !== null);
 
     ChromeHelper.getInstance().sendNewCaptureBroadcast(
         {isVideo: true, name: file.name});
-    await this.updateCover_(file);
+    await this.updateCover(file);
   }
 }

@@ -20,7 +20,7 @@ compile_js_files = [
   "face.ts",
   "flag.ts",
   "focus_ring.ts",
-  "gallerybutton.js",
+  "gallerybutton.ts",
   "geometry.ts",
   "h264.js",
   "i18n_string.ts",
