@@ -13,8 +13,6 @@
 #include "chromeos/dbus/rmad/rmad.pb.h"
 #include "chromeos/dbus/rmad/rmad_client.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
-#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
-#include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -187,10 +185,6 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
                           bool reboot,
                           absl::optional<rmad::AbortRmaReply> response);
   void OnGetLog(GetLogCallback callback, absl::optional<std::string> log);
-  void OnNetworkListResponse(
-      BeginFinalizationCallback callback,
-      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
-          response);
 
   void OnOsUpdateStatusCallback(update_engine::Operation operation,
                                 double progress,
@@ -233,9 +227,6 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   mojo::Remote<mojom::FinalizationObserver> finalization_observer_;
   mojo::Remote<mojom::UpdateRoFirmwareObserver> update_ro_firmware_observer_;
   mojo::Receiver<mojom::ShimlessRmaService> receiver_{this};
-
-  mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
-      remote_cros_network_config_;
 
   VersionUpdater version_updater_;
   base::OnceCallback<void(const std::string& version)> check_os_callback_;

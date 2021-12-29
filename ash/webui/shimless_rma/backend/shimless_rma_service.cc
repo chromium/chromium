@@ -48,7 +48,8 @@ bool HaveAllowedNetworkConnection() {
       chromeos::NetworkHandler::Get()->network_state_handler();
   const chromeos::NetworkState* network =
       network_state_handler->DefaultNetwork();
-  // TODO(gavindodd): Confirm that metered networks should be excluded.
+  // TODO(gavindodd): Confirm that metered networks should be excluded. This
+  // should only be true for cellular networks which are already blocked.
   const bool metered = network_state_handler->default_network_is_metered();
   // Return true if connected to an unmetered network.
   return network && network->IsConnectedState() && !metered;
@@ -84,8 +85,6 @@ ShimlessRmaService::ShimlessRmaService(
     std::unique_ptr<ShimlessRmaDelegate> shimless_rma_delegate)
     : shimless_rma_delegate_(std::move(shimless_rma_delegate)) {
   chromeos::RmadClient::Get()->AddObserver(this);
-  GetNetworkConfigService(
-      remote_cros_network_config_.BindNewPipeAndPassReceiver());
   version_updater_.SetStatusCallback(
       base::BindRepeating(&ShimlessRmaService::OnOsUpdateStatusCallback,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -157,11 +156,9 @@ void ShimlessRmaService::BeginFinalization(BeginFinalizationCallback callback) {
       rmad::WelcomeState::RMAD_CHOICE_FINALIZE_REPAIR);
 
   if (!HaveAllowedNetworkConnection()) {
-    remote_cros_network_config_->GetNetworkStateList(
-        NetworkFilter::New(FilterType::kVisible, NetworkType::kAll,
-                           /*limit=*/0),
-        base::BindOnce(&ShimlessRmaService::OnNetworkListResponse,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    mojo_state_ = mojom::State::kConfigureNetwork;
+    std::move(callback).Run(mojom::State::kConfigureNetwork, can_abort_,
+                            can_go_back_, rmad::RmadErrorCode::RMAD_ERROR_OK);
   } else {
     check_os_callback_ =
         base::BindOnce(&ShimlessRmaService::OsUpdateOrNextRmadStateCallback,
@@ -1072,34 +1069,6 @@ void ShimlessRmaService::OnAbortRmaResponse(
       shimless_rma_delegate_->RestartChrome();
     }
   }
-}
-
-void ShimlessRmaService::OnNetworkListResponse(
-    BeginFinalizationCallback callback,
-    std::vector<NetworkStatePropertiesPtr> response) {
-  for (const NetworkStatePropertiesPtr& network : response) {
-    if (network->connection_state == ConnectionStateType::kOnline) {
-      switch (network->type) {
-        case NetworkType::kWiFi:
-        case NetworkType::kEthernet:
-          mojo_state_ = mojom::State::kUpdateOs;
-          std::move(callback).Run(mojom::State::kUpdateOs, can_abort_,
-                                  can_go_back_,
-                                  rmad::RmadErrorCode::RMAD_ERROR_OK);
-          return;
-        case NetworkType::kAll:  // filter-only type
-        case NetworkType::kCellular:
-        case NetworkType::kMobile:
-        case NetworkType::kTether:
-        case NetworkType::kVPN:
-        case NetworkType::kWireless:  // filter-only type
-          continue;
-      }
-    }
-  }
-  mojo_state_ = mojom::State::kConfigureNetwork;
-  std::move(callback).Run(mojom::State::kConfigureNetwork, can_abort_,
-                          can_go_back_, rmad::RmadErrorCode::RMAD_ERROR_OK);
 }
 
 void ShimlessRmaService::OnOsUpdateStatusCallback(
