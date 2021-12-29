@@ -17,6 +17,7 @@ import sys
 import toml
 
 from lib import common
+from lib import consts
 
 
 class CrateKey:
@@ -240,6 +241,20 @@ def write_cargo_toml_in_tempdir(dir: str,
                                        "{}.rs".format(bin["name"])),
                           mode="w") as f:
                     f.write("bin main.rs")
+    # Workspaces in a crate's Cargo.toml need to point to other Cargo.toml files
+    # on disk, and those Cargo.toml files require a lib or binary source as
+    # well. We don't support building workspaces, but cargo will die if it can't
+    # find them.
+    if "workspace" in orig_toml_parsed:
+        for m in orig_toml_parsed["workspace"].get("members", []):
+            workspace_dir = os.path.join(dir, *(m.split("/")))
+            os.makedirs(workspace_dir)
+            with open(os.path.join(workspace_dir, "Cargo.toml"), mode="w") as f:
+                f.write(consts.FAKE_EMPTY_CARGO_TOML)
+            bin_dir = os.path.join(workspace_dir, "src", "bin")
+            os.makedirs(bin_dir)
+            with open(os.path.join(bin_dir, "main.rs"), mode="w") as f:
+                f.write("workspace {} bin main.rs".format(m))
 
     # Generate a patch that points the current crate, to the temp dir, and all
     # others to `consts.THIRD_PARTY`. This is to deal with build/dev deps that

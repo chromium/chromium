@@ -63,6 +63,11 @@ _CARGO_DEPS = \
     r"(?: (?P<features>[^( ][^ ]*))?(?: \(\*\))?"
 CARGO_DEPS_REGEX = re.compile(_CARGO_DEPS)
 
+FAKE_EMPTY_CARGO_TOML = """[package]
+name = "fake"
+version = "0.0.0"
+"""
+
 # Header at the top of BUILD.gn files. The %YEAR% is substituted with the
 # appropriate year.
 GN_HEADER = \
