@@ -144,7 +144,7 @@ void ContextualSearchDelegate::StartSearchTermResolutionRequest(
 
   // Decide if the URL should be sent with the context.
   if (context_->CanSendBasePageUrl())
-    context_->SetBasePageUrl(web_contents->GetURL());
+    context_->SetBasePageUrl(web_contents->GetLastCommittedURL());
 
   // Issue the resolve request.
   ResolveSearchTermFromContext();

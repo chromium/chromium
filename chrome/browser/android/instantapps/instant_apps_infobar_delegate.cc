@@ -111,7 +111,7 @@ void InstantAppsInfoBarDelegate::DidStartNavigation(
     return;
   if (!user_navigated_away_from_launch_url_ &&
       !GURL(url_).EqualsIgnoringRef(
-          navigation_handle->GetWebContents()->GetURL())) {
+          navigation_handle->GetWebContents()->GetLastCommittedURL())) {
     user_navigated_away_from_launch_url_ =
         PageTransitionInitiatedByUser(navigation_handle);
   }

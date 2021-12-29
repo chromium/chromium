@@ -195,7 +195,7 @@ BookmarkBridge::GetBookmarkIdForWebContents(
             Profile::FromBrowserContext(web_contents->GetBrowserContext())
                 ->IsOffTheRecord());
   GURL url = dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(
-      web_contents->GetURL());
+      web_contents->GetLastCommittedURL());
 
   // TODO(crbug.com/1150559): This is a hack to avoid a historical issue that
   // this function doesn't wait for any backend loaded.
