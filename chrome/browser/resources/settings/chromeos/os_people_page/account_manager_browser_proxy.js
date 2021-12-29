@@ -57,6 +57,13 @@ export class AccountManagerBrowserProxy {
   removeAccount(account) {}
 
   /**
+   * Changes ARC availability for |account|.
+   * @param {?Account} account
+   * @param {?boolean} isAvailableInArc new ARC availability value
+   */
+  changeArcAvailability(account, isAvailableInArc) {}
+
+  /**
    * Displays the Account Manager welcome dialog if required.
    */
   showWelcomeDialogIfRequired() {}
@@ -89,6 +96,11 @@ export class AccountManagerBrowserProxyImpl {
   /** @override */
   removeAccount(account) {
     chrome.send('removeAccount', [account]);
+  }
+
+  /** @override */
+  changeArcAvailability(account, isAvailableInArc) {
+    chrome.send('changeArcAvailability', [account, isAvailableInArc]);
   }
 
   /** @override */

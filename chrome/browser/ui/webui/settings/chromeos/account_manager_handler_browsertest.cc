@@ -29,13 +29,19 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
+using testing::Contains;
+using testing::Not;
+
 using ::account_manager::AccountManager;
 
+constexpr char kSecondaryAccount1Email[] = "secondary1@example.com";
+constexpr char kSecondaryAccount2Email[] = "secondary2@example.com";
 constexpr char kGetAccountsMessage[] = "getAccounts";
 constexpr char kHandleFunctionName[] = "handleFunctionName";
 
@@ -102,6 +108,10 @@ absl::optional<account_manager::Account> GetAccountByKey(
 
 std::string ValueOrEmpty(const std::string* str) {
   return str ? *str : std::string();
+}
+
+MATCHER_P(AccountEmailEqual, other, "") {
+  return arg.raw_email == other;
 }
 
 }  // namespace
@@ -322,8 +332,8 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
 
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
                        OnGetAccountsWithSecondaryAccounts) {
-  UpsertAccount("secondary1@example.com");
-  UpsertAccount("secondary2@example.com");
+  UpsertAccount(kSecondaryAccount1Email);
+  UpsertAccount(kSecondaryAccount2Email);
   const std::vector<::account_manager::Account> account_manager_accounts =
       GetAccountsFromAccountManager();
   ASSERT_EQ(3UL, account_manager_accounts.size());
@@ -444,6 +454,43 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
     AccountManagerUIHandlerTest::TearDownOnMainThread();
   }
 
+  base::flat_set<::account_manager::Account> GetAccountsAvailableInArc() const {
+    base::flat_set<::account_manager::Account> accounts;
+
+    base::RunLoop run_loop;
+    account_apps_availability_->GetAccountsAvailableInArc(
+        base::BindLambdaForTesting(
+            [&accounts,
+             &run_loop](const base::flat_set<::account_manager::Account>&
+                            stored_accounts) {
+              accounts = stored_accounts;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+
+    return accounts;
+  }
+
+  absl::optional<::account_manager::Account> FindAccountByEmail(
+      const std::vector<::account_manager::Account>& accounts,
+      const std::string& email) {
+    for (const auto& account : accounts) {
+      if (account.raw_email == email)
+        return account;
+    }
+    return absl::nullopt;
+  }
+
+  absl::optional<const base::Value> FindAccountDictByEmail(
+      const base::span<const base::Value>& accounts,
+      const std::string& email) {
+    for (const base::Value& account : accounts) {
+      if (ValueOrEmpty(account.FindStringKey("email")) == email)
+        return account.Clone();
+    }
+    return absl::nullopt;
+  }
+
   ash::AccountAppsAvailability* account_apps_availability() {
     return account_apps_availability_;
   }
@@ -456,10 +503,8 @@ class AccountManagerUIHandlerTestWithArcAccountRestrictions
 
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
                        CheckIsAvailableInArcValue) {
-  const std::string secondary_email_1 = "secondary1@example.com";
-  const std::string secondary_email_2 = "secondary2@example.com";
-  UpsertAccount(secondary_email_1);
-  UpsertAccount(secondary_email_2);
+  UpsertAccount(kSecondaryAccount1Email);
+  UpsertAccount(kSecondaryAccount2Email);
   const std::vector<::account_manager::Account> account_manager_accounts =
       GetAccountsFromAccountManager();
   ASSERT_EQ(3UL, account_manager_accounts.size());
@@ -467,13 +512,17 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
   // Wait for accounts to propagate to IdentityManager.
   base::RunLoop().RunUntilIdle();
 
-  for (const auto& account : account_manager_accounts) {
-    if (account.raw_email == secondary_email_1) {
-      account_apps_availability()->SetIsAccountAvailableInArc(account, true);
-    } else if (account.raw_email == secondary_email_2) {
-      account_apps_availability()->SetIsAccountAvailableInArc(account, false);
-    }
-  }
+  absl::optional<::account_manager::Account> account_1 =
+      FindAccountByEmail(account_manager_accounts, kSecondaryAccount1Email);
+  ASSERT_TRUE(account_1.has_value());
+  absl::optional<::account_manager::Account> account_2 =
+      FindAccountByEmail(account_manager_accounts, kSecondaryAccount2Email);
+  ASSERT_TRUE(account_2.has_value());
+
+  account_apps_availability()->SetIsAccountAvailableInArc(account_1.value(),
+                                                          true);
+  account_apps_availability()->SetIsAccountAvailableInArc(account_2.value(),
+                                                          false);
 
   // Call "getAccounts".
   base::Value args(base::Value::Type::LIST);
@@ -498,16 +547,94 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
   EXPECT_TRUE(device_account.FindBoolKey("isAvailableInArc").value());
 
   // Check secondary accounts.
-  for (const base::Value& account : result) {
-    if (ValueOrEmpty(account.FindStringKey("id")) == GetDeviceAccountInfo().id)
-      continue;
+  absl::optional<const base::Value> secondary_1_dict =
+      FindAccountDictByEmail(result, kSecondaryAccount1Email);
+  ASSERT_TRUE(secondary_1_dict.has_value());
+  absl::optional<const base::Value> secondary_2_dict =
+      FindAccountDictByEmail(result, kSecondaryAccount2Email);
+  ASSERT_TRUE(secondary_2_dict.has_value());
 
-    std::string email = ValueOrEmpty(account.FindStringKey("email"));
-    if (email == secondary_email_1) {
-      EXPECT_TRUE(account.FindBoolKey("isAvailableInArc").value());
-    } else if (email == secondary_email_2) {
-      EXPECT_FALSE(account.FindBoolKey("isAvailableInArc").value());
-    }
+  absl::optional<bool> is_available_1 =
+      secondary_1_dict.value().FindBoolKey("isAvailableInArc");
+  ASSERT_TRUE(is_available_1.has_value());
+  absl::optional<bool> is_available_2 =
+      secondary_2_dict.value().FindBoolKey("isAvailableInArc");
+  ASSERT_TRUE(is_available_2.has_value());
+
+  // The values should match `SetIsAccountAvailableInArc` calls.
+  EXPECT_TRUE(is_available_1.value());
+  EXPECT_FALSE(is_available_2.value());
+}
+
+IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTestWithArcAccountRestrictions,
+                       HandleChangeArcAvailabilityChangesArcAvailability) {
+  UpsertAccount(kSecondaryAccount1Email);
+  UpsertAccount(kSecondaryAccount2Email);
+  const std::vector<::account_manager::Account> account_manager_accounts =
+      GetAccountsFromAccountManager();
+  ASSERT_EQ(3UL, account_manager_accounts.size());
+
+  // Wait for accounts to propagate to IdentityManager.
+  base::RunLoop().RunUntilIdle();
+
+  absl::optional<::account_manager::Account> account_1 =
+      FindAccountByEmail(account_manager_accounts, kSecondaryAccount1Email);
+  ASSERT_TRUE(account_1.has_value());
+  absl::optional<::account_manager::Account> account_2 =
+      FindAccountByEmail(account_manager_accounts, kSecondaryAccount2Email);
+  ASSERT_TRUE(account_2.has_value());
+
+  account_apps_availability()->SetIsAccountAvailableInArc(account_1.value(),
+                                                          true);
+  account_apps_availability()->SetIsAccountAvailableInArc(account_2.value(),
+                                                          false);
+
+  {
+    // Make sure that accounts have correct initial values.
+    const base::flat_set<::account_manager::Account> arc_accounts =
+        GetAccountsAvailableInArc();
+    EXPECT_THAT(arc_accounts,
+                Contains(AccountEmailEqual(kSecondaryAccount1Email)));
+    EXPECT_THAT(arc_accounts,
+                Not(Contains(AccountEmailEqual(kSecondaryAccount2Email))));
+  }
+
+  // Call "getAccounts".
+  base::Value args(base::Value::Type::LIST);
+  args.Append(kHandleFunctionName);
+  web_ui()->HandleReceivedMessage(kGetAccountsMessage,
+                                  &base::Value::AsListValue(args));
+
+  // Wait for the async calls to finish.
+  base::RunLoop().RunUntilIdle();
+
+  // Get results from JS callback.
+  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
+  const base::span<const base::Value> accounts_dict =
+      call_data.arg3()->GetList();
+  absl::optional<const base::Value> secondary_1_dict =
+      FindAccountDictByEmail(accounts_dict, kSecondaryAccount1Email);
+  ASSERT_TRUE(secondary_1_dict.has_value());
+
+  // Call "changeArcAvailability".
+  base::Value args_1(base::Value::Type::LIST);
+  args_1.Append(secondary_1_dict.value().Clone());  // account
+  args_1.Append(false);                             // is_available
+  web_ui()->HandleReceivedMessage("changeArcAvailability",
+                                  &base::Value::AsListValue(args_1));
+
+  // Wait for the async calls to finish.
+  base::RunLoop().RunUntilIdle();
+
+  {
+    // Make sure that account with kSecondaryAccount1Email is not available in
+    // ARC now.
+    const base::flat_set<::account_manager::Account> arc_accounts =
+        GetAccountsAvailableInArc();
+    EXPECT_THAT(arc_accounts,
+                Not(Contains(AccountEmailEqual(kSecondaryAccount1Email))));
+    EXPECT_THAT(arc_accounts,
+                Not(Contains(AccountEmailEqual(kSecondaryAccount2Email))));
   }
 }
 

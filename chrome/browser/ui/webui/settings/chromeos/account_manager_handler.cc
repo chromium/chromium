@@ -67,6 +67,14 @@ constexpr char kAccountRemovedToastId[] =
   return ::account_manager::AccountKey{id, account_type};
 }
 
+::account_manager::Account GetAccountFromJsCallback(
+    const base::DictionaryValue* const dictionary) {
+  ::account_manager::AccountKey key = GetAccountKeyFromJsCallback(dictionary);
+  const std::string* email = dictionary->FindStringKey("email");
+  DCHECK(email);
+  return ::account_manager::Account{key, *email};
+}
+
 bool IsSameAccount(const ::account_manager::AccountKey& account_key,
                    const AccountId& account_id) {
   switch (account_key.account_type()) {
@@ -222,6 +230,10 @@ void AccountManagerUIHandler::RegisterMessages() {
       base::BindRepeating(
           &AccountManagerUIHandler::HandleShowWelcomeDialogIfRequired,
           weak_factory_.GetWeakPtr()));
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "changeArcAvailability",
+      base::BindRepeating(&AccountManagerUIHandler::HandleChangeArcAvailability,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void AccountManagerUIHandler::SetProfileForTesting(Profile* profile) {
@@ -443,6 +455,25 @@ void AccountManagerUIHandler::HandleRemoveAccount(const base::ListValue* args) {
 void AccountManagerUIHandler::HandleShowWelcomeDialogIfRequired(
     const base::ListValue* args) {
   chromeos::AccountManagerWelcomeDialog::ShowIfRequired();
+}
+
+void AccountManagerUIHandler::HandleChangeArcAvailability(
+    const base::ListValue* args) {
+  DCHECK(ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+
+  // 2 args: account, is_available.
+  CHECK_GT(args->GetList().size(), 1);
+  const base::DictionaryValue* account_dict = nullptr;
+  args->GetList()[0].GetAsDictionary(&account_dict);
+  CHECK(account_dict);
+  const absl::optional<bool> is_available = args->GetList()[1].GetIfBool();
+  CHECK(is_available.has_value());
+
+  const ::account_manager::Account account =
+      GetAccountFromJsCallback(account_dict);
+  account_apps_availability_->SetIsAccountAvailableInArc(account,
+                                                         is_available.value());
+  // Note: the observer call will update the UI.
 }
 
 void AccountManagerUIHandler::OnJavascriptAllowed() {

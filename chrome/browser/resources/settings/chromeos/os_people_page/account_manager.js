@@ -421,4 +421,46 @@ Polymer({
     this.$.removeConfirmationDialog.close();
     this.$$('#add-account-button').focus();
   },
+
+  /**
+   * Get the test for button that changes ARC availability.
+   * @private
+   */
+  getChangeArcAvailabilityLabel_() {
+    if (!this.actionMenuAccount_) {
+      return '';
+    }
+    // TODO(crbug.com/1260909): Use real strings.
+    return this.actionMenuAccount_.isAvailableInArc ?
+        'Don\'t share with Android apps' :
+        'Share with Android apps';
+  },
+
+  /**
+   * Change ARC availability for |this.actionMenuAccount_|.
+   * Closes the 'More actions' menu and focuses the 'More actions' button for
+   * |this.actionMenuAccount_|.
+   * @private
+   */
+  onChangeArcAvailability_() {
+    this.$$('cr-action-menu').close();
+    const newArcAvailability = !this.actionMenuAccount_.isAvailableInArc;
+    this.browserProxy_.changeArcAvailability(
+        this.actionMenuAccount_, newArcAvailability);
+
+    const actionMenuAccountIndex =
+        this.$$('#account-list').items.indexOf(this.actionMenuAccount_);
+    if (actionMenuAccountIndex >= 0) {
+      // Focus 'More actions' button for the current account.
+      this.shadowRoot
+          .querySelectorAll('.icon-more-vert')[actionMenuAccountIndex]
+          .focus();
+    } else {
+      console.error(
+          'Couldn\'t find active account in the list: ',
+          this.actionMenuAccount_);
+      this.$$('#add-account-button').focus();
+    }
+    this.actionMenuAccount_ = null;
+  },
 });

@@ -90,6 +90,9 @@ class AccountManagerUIHandler
   // WebUI "showWelcomeDialogIfRequired" message callback.
   void HandleShowWelcomeDialogIfRequired(const base::ListValue* args);
 
+  // WebUI "changeArcAvailability" message callback.
+  void HandleChangeArcAvailability(const base::ListValue* args);
+
   // |account_manager::AccountManager::CheckDummyGaiaTokenForAllAccounts|
   // callback.
   void OnCheckDummyGaiaTokenForAllAccounts(
