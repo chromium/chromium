@@ -310,6 +310,27 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
     frame_monitoring_stopped.Wait();
   }
 
+  bool IsMetronomeSourceActive(
+      scoped_refptr<MetronomeSource> metronome_source) {
+    bool is_active;
+    base::WaitableEvent event;
+    // It's possible to check IsActive() from any thread, but because stopping
+    // a timer unsubscibes from the metronome asynchronously, checking for
+    // activity on the IO thread ensures any pending listeners have been
+    // removed before getting the status.
+    platform_support_->GetIOTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](scoped_refptr<MetronomeSource> metronome_source,
+                          bool* is_active, base::WaitableEvent* event) {
+                         *is_active = metronome_source->IsActive();
+                         event->Signal();
+                       },
+                       metronome_source, base::Unretained(&is_active),
+                       base::Unretained(&event)));
+    event.Wait();
+    return is_active;
+  }
+
   void SetFrameValidationCallback(VideoCaptureDeliverFrameCB callback) {
     frame_validation_callback_ = std::move(callback);
   }
@@ -376,11 +397,11 @@ TEST_F(VideoTrackAdapterFixtureTest, MetronomeIsUsedWhileFrameMonitoring) {
                                                 media::PIXEL_FORMAT_NV12);
   CreateAdapter(stream_format);
 
-  EXPECT_FALSE(metronome_source->IsActive());
+  EXPECT_FALSE(IsMetronomeSourceActive(metronome_source));
   StartFrameMonitoring();
-  EXPECT_TRUE(metronome_source->IsActive());
+  EXPECT_TRUE(IsMetronomeSourceActive(metronome_source));
   StopFrameMonitoring();
-  EXPECT_FALSE(metronome_source->IsActive());
+  EXPECT_FALSE(IsMetronomeSourceActive(metronome_source));
 }
 
 TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {

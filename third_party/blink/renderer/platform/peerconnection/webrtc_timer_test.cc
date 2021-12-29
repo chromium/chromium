@@ -460,6 +460,7 @@ TEST_F(WebRtcTimerTest, StopTimerFromInsideCallbackWithoutMetronome) {
   EXPECT_EQ(recursive_stopper.callback_count(), 1u);
 }
 
+// Ensures stopping inside the timer callback does not deadlock.
 TEST_F(WebRtcTimerTest, StopTimerFromInsideCallbackWithMetronome) {
   // Stops its own timer from inside the callback after a tick.
   RecursiveStopper recursive_stopper(metronome_provider_, kMetronomeTick);
@@ -470,6 +471,42 @@ TEST_F(WebRtcTimerTest, StopTimerFromInsideCallbackWithMetronome) {
   // Ensure we are stopped, the callback count does not increase.
   task_environment_.FastForwardBy(kMetronomeTick);
   EXPECT_EQ(recursive_stopper.callback_count(), 1u);
+}
+
+// Ensures in-parallel stopping while the task may be running does not
+// deadlock in race condition. Coverage for https://crbug.com/1281399.
+TEST(WebRtcTimerRealThreadsTest, StopTimerWithRaceCondition) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
+      base::test::TaskEnvironment::TimeSource::SYSTEM_TIME);
+  scoped_refptr<MetronomeSource> metronome_source(
+      base::MakeRefCounted<MetronomeSource>(kMetronomeTick));
+  scoped_refptr<MetronomeProvider> metronome_provider(
+      base::MakeRefCounted<MetronomeProvider>());
+
+  CallbackListener listener;
+  WebRtcTimer timer(metronome_provider, listener.task_runner(),
+                    base::BindRepeating(&CallbackListener::Callback,
+                                        base::Unretained(&listener)));
+
+  scoped_refptr<base::SequencedTaskRunner> dedicated_task_runner =
+      base::ThreadPool::CreateSingleThreadTaskRunner(
+          {}, base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+
+  // Create a race condition between running the timer's task and stopping the
+  // timer.
+  timer.StartOneShot(base::Milliseconds(0));
+  base::WaitableEvent event;
+  dedicated_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](WebRtcTimer* timer, base::WaitableEvent* event) {
+                       timer->Stop();
+                       event->Signal();
+                     },
+                     base::Unretained(&timer), base::Unretained(&event)));
+  event.Wait();
+
+  timer.Shutdown();
 }
 
 TEST_F(WebRtcTimerTest, IsActive) {
