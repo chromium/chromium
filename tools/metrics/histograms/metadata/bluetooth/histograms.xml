@@ -245,6 +245,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.FastPairDataEncryptor.CreateResult"
+    enum="BooleanSuccess" expires_after="2022-06-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records success or failure of creating the FastPairDataEncryptor during the
+    Fast Pair handshake process: exchanging the secret key with the device for
+    subsequent encryption used to write to the device. The handshake occurs on
+    the device discovery, before the user elects to begin the pairing process.
+    Emitted in the FastPair handshake (key exchange with the device) following
+    the async call to create the data encryptor.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.GattConnection.ErrorReason"
     enum="BluetoothDeviceConnectErrorCode" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>

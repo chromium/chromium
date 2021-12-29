@@ -59,6 +59,8 @@ const char kFastPairAccountKeyWriteFailureRetroactiveMetric[] =
     "Bluetooth.ChromeOS.FastPair.AccountKeyFailure.RetroactivePairingProtocol";
 const char kKeyGenerationResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.KeyGenerationResult";
+const char kDataEncryptorCreateResultMetric[] =
+    "Bluetooth.ChromeOS.FastPair.FastPairDataEncryptor.CreateResult";
 
 }  // namespace
 
@@ -202,6 +204,10 @@ void RecordAccountKeyResult(const Device& device, bool success) {
 
 void RecordKeyPairGenerationResult(bool success) {
   base::UmaHistogramBoolean(kKeyGenerationResultMetric, success);
+}
+
+void RecordDataEncryptorCreateResult(bool success) {
+  base::UmaHistogramBoolean(kDataEncryptorCreateResultMetric, success);
 }
 
 }  // namespace quick_pair

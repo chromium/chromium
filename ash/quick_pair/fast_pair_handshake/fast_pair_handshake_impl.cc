@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_impl.h"
 
+#include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
@@ -58,6 +59,9 @@ void FastPairHandshakeImpl::OnGattClientInitializedCallback(
 
 void FastPairHandshakeImpl::OnDataEncryptorCreateAsync(
     std::unique_ptr<FastPairDataEncryptor> fast_pair_data_encryptor) {
+  bool success = fast_pair_data_encryptor != nullptr;
+  RecordDataEncryptorCreateResult(/*success=*/success);
+
   if (!fast_pair_data_encryptor) {
     QP_LOG(WARNING) << __func__
                     << ": Fast Pair Data Encryptor failed to be created.";

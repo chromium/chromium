@@ -10,7 +10,6 @@
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_device.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace quick_pair {
@@ -104,6 +103,9 @@ void RecordAccountKeyResult(const Device& device, bool success);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordKeyPairGenerationResult(bool success);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordDataEncryptorCreateResult(bool success);
 
 }  // namespace quick_pair
 }  // namespace ash
