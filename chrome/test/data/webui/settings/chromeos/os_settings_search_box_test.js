@@ -5,16 +5,34 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 // #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {OpenWindowProxyImpl, Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {eventToPromise} from 'chrome://test/test_util.js';
 // #import {FakeUserActionRecorder} from './fake_user_action_recorder.m.js';
 // #import {FakeSettingsSearchHandler} from './fake_settings_search_handler.m.js';
 // #import {setSearchHandlerForTesting, setUserActionRecorderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {TestBrowserProxy} from '../../test_browser_proxy.js';
 // clang-format on
 
 /** @fileoverview Runs tests for the OS settings search box. */
+
+/**
+ * @implements {settings.OpenWindowProxy}
+ */
+class TestOpenWindowProxy extends TestBrowserProxy {
+  constructor() {
+    super([
+      'openURL',
+    ]);
+  }
+
+  /** @override */
+  openURL(url) {
+    this.methodCalled('openURL', url);
+  }
+}
 
 suite('OSSettingsSearchBox', () => {
   // TODO(hsuregan): Keep count and add getters for metrics.
@@ -58,6 +76,9 @@ suite('OSSettingsSearchBox', () => {
 
   /** @type {?HTMLElement} */
   let noResultsSection;
+
+  /** @type {?TestOpenWindowProxy} */
+  let openWindowProxy = null;
 
   function isTextSelected() {
     const input = field.$.searchInput;
@@ -144,6 +165,9 @@ suite('OSSettingsSearchBox', () => {
   setup(function() {
     setupSearchBox();
     settings.Router.getInstance().navigateTo(settings.routes.BASIC);
+
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
   });
 
   teardown(async () => {
@@ -342,6 +366,87 @@ suite('OSSettingsSearchBox', () => {
     assertEquals(router.getCurrentRoute().path, '/networks');
     assertEquals(router.getQueryParameters().get('type'), 'WiFi');
   });
+
+  test(
+      'Keypress Enter on personalization hub result can open a new window',
+      async () => {
+        // Enable personalization hub feature.
+        loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
+        assertTrue(loadTimeData.getBoolean('isPersonalizationHubEnabled'));
+
+        const result = fakeResult('Wallpaper', 'personalization?settingId=500');
+        result.id.setting = chromeos.settings.mojom.Setting.kOpenWallpaper;
+
+        settingsSearchHandler.setFakeResults([result]);
+        await simulateSearch('fake query 1');
+        await waitForListUpdate();
+
+        const selectedOsRow = searchBox.getSelectedOsSearchResultRow_();
+        assertTrue(!!selectedOsRow);
+        assertEquals('cr:open-in-new', selectedOsRow.getActionTypeIcon_());
+
+        // Keypress with Enter key on any row specifically causes navigation to
+        // selected row's route. This can't happen unless the row is focused.
+        const enterEvent = new KeyboardEvent(
+            'keypress', {cancelable: true, key: 'Enter', keyCode: 13});
+        selectedOsRow.$.searchResultContainer.dispatchEvent(enterEvent);
+
+        assertEquals(1, openWindowProxy.getCallCount('openURL'));
+      });
+
+  test(
+      'Clicking on personalization hub result can open a new window',
+      async () => {
+        // Enable personalization hub feature.
+        loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
+        assertTrue(loadTimeData.getBoolean('isPersonalizationHubEnabled'));
+
+        const result = fakeResult('Wallpaper', 'personalization?settingId=500');
+        result.id.setting = chromeos.settings.mojom.Setting.kOpenWallpaper;
+
+        settingsSearchHandler.setFakeResults([result]);
+        await simulateSearch('fake query 1');
+        await waitForListUpdate();
+
+        const selectedOsRow = searchBox.getSelectedOsSearchResultRow_();
+        assertTrue(!!selectedOsRow);
+        assertEquals('cr:open-in-new', selectedOsRow.getActionTypeIcon_());
+
+        // Clicking on the searchResultContainer of the row opens a new window.
+        selectedOsRow.$.searchResultContainer.click();
+
+        assertEquals(1, openWindowProxy.getCallCount('openURL'));
+      });
+
+  test(
+      'Clicking on personalization hub result causes route change' +
+          ' if personalization hub feature is disabled',
+      async () => {
+        // Disable personalization hub feature.
+        loadTimeData.overrideValues({isPersonalizationHubEnabled: false});
+        assertFalse(loadTimeData.getBoolean('isPersonalizationHubEnabled'));
+
+        const result = fakeResult('Wallpaper', 'personalization?settingId=500');
+        result.id.setting = chromeos.settings.mojom.Setting.kOpenWallpaper;
+
+        settingsSearchHandler.setFakeResults([result]);
+        await simulateSearch('fake query 2');
+        await waitForListUpdate();
+
+        const selectedOsRow = searchBox.getSelectedOsSearchResultRow_();
+        assertTrue(!!selectedOsRow);
+        assertEquals('cr:arrow-forward', selectedOsRow.getActionTypeIcon_());
+
+        // Clicking on the searchResultContainer of the row correctly changes
+        // the route and dropdown to close.
+        selectedOsRow.$.searchResultContainer.click();
+        assertFalse(dropDown.opened);
+        assertEquals(0, openWindowProxy.getCallCount('openURL'));
+        const router = settings.Router.getInstance();
+        assertEquals(router.getQueryParameters().get('search'), 'fake query 2');
+        assertEquals(router.getCurrentRoute().path, '/personalization');
+        assertEquals(router.getQueryParameters().get('settingId'), '500');
+      });
 
   test('Keypress Enter on row causes route change', async () => {
     settingsSearchHandler.setFakeResults(

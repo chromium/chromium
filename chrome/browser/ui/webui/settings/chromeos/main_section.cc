@@ -167,6 +167,9 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "appManagementIntentSettingsEnabled",
       base::FeatureList::IsEnabled(::features::kAppManagementIntentSettings));
 
+  html_source->AddBoolean("isPersonalizationHubEnabled",
+                          ash::features::IsPersonalizationHubEnabled());
+
   // Add the System Web App resources for Settings.
   html_source->AddResourcePath("icon-192.png", IDR_SETTINGS_LOGO_192);
 

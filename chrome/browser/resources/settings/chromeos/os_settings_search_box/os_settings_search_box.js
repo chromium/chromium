@@ -512,7 +512,7 @@ Polymer({
     }
 
     if (e.key === 'Enter') {
-      this.getSelectedOsSearchResultRow_().navigateToSearchResultRoute();
+      this.getSelectedOsSearchResultRow_().onSearchResultSelected();
       return;
     }
 

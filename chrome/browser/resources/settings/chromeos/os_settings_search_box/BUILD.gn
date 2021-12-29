@@ -21,6 +21,7 @@ js_library("os_search_result_row") {
     "..:os_route.m",
     "..:route_observer_behavior",
     "..:search_handler.m",
+    "../..:open_window_proxy",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

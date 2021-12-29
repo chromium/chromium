@@ -198,6 +198,13 @@ js_library("lifetime_browser_proxy") {
   extra_deps = [ ":build_ts" ]
 }
 
+js_library("open_window_proxy") {
+  sources = [
+    "$root_gen_dir/chrome/browser/resources/settings/tsc/open_window_proxy.js",
+  ]
+  extra_deps = [ ":build_ts" ]
+}
+
 js_library("router") {
   deps = [
     "//ui/webui/resources/js:assert.m",
