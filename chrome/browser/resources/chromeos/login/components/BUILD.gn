@@ -61,6 +61,7 @@ group("closure_compile_module") {
     ":oobe_select.m",
     ":oobe_types.m",
     ":security_token_pin.m",
+    ":test_util.m",
     ":throbber_notice.m",
     ":web_view_helper.m",
     ":web_view_loader.m",
@@ -283,16 +284,22 @@ js_library("oobe_types.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("security_token_pin.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/security_token_pin.m.js" ]
+  deps = [ "./behaviors:oobe_i18n_behavior" ]
+  extra_deps = [ ":security_token_pin_module" ]
+}
+
 js_library("throbber_notice.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/throbber_notice.m.js" ]
   deps = [ "./behaviors:oobe_i18n_behavior" ]
   extra_deps = [ ":throbber_notice_module" ]
 }
 
-js_library("security_token_pin.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/security_token_pin.m.js" ]
-  deps = [ "./behaviors:oobe_i18n_behavior" ]
-  extra_deps = [ ":security_token_pin_module" ]
+js_library("test_util.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/test_util.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("web_view_helper.m") {
@@ -432,6 +439,7 @@ js_modulizer("modulize") {
     "oobe_types.js",
     "web_view_helper.js",
     "web_view_loader.js",
+    "test_util.js",
   ]
   namespace_rewrites = []
 }

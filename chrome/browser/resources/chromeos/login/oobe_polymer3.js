@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Oobe} from './cr_ui.m.js';
+import {DebuggerUI} from './debug/debug.m.js';
+import {loadTimeData} from './i18n_setup.js';
+import 'chrome://oobe/components/test_util.m.js';
+
 import 'chrome://oobe/screens/common/app_downloading.m.js';
 import 'chrome://oobe/screens/common/app_launch_splash.m.js';
 import 'chrome://oobe/screens/common/adb_sideloading.m.js';
@@ -45,10 +50,6 @@ import 'chrome://oobe/screens/oobe/oobe_eula.m.js';
 import 'chrome://oobe/screens/oobe/welcome.m.js';
 import 'chrome://oobe/screens/oobe/packaged_license.m.js';
 import 'chrome://oobe/screens/oobe/update.m.js';
-
-import {Oobe} from './cr_ui.m.js';
-import {DebuggerUI} from './debug/debug.m.js';
-import {loadTimeData} from './i18n_setup.js';
 
 function initializeDebugger() {
   if (document.readyState === 'loading')
