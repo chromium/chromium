@@ -156,7 +156,7 @@ void CloudPolicyClientRegistrationHelper::OnGetUserInfoFailure(
 void CloudPolicyClientRegistrationHelper::OnGetUserInfoSuccess(
     const base::DictionaryValue* data) {
   user_info_fetcher_.reset();
-  if (!data->HasKey(kGetHostedDomainKey)) {
+  if (!data->FindKey(kGetHostedDomainKey)) {
     DVLOG(1) << "User not from a hosted domain - skipping registration";
     RequestCompleted();
     return;
