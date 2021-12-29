@@ -1365,6 +1365,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "drag-and-drop-android",
+    "owners": [ "wenyufu", "clank-app-team@google.com" ],
+    "expiry_milestone": 104
+  },
+  {
     "name": "draw-predicted-ink-point",
     "owners": [ "joalmei@microsoft.com" ],
     "expiry_milestone": 98

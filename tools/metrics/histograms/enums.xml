@@ -50835,6 +50835,7 @@ from previous Chrome versions.
   <int value="-1482685863" label="enable-request-tablet-site"/>
   <int value="-1481990501" label="Windows10CustomTitlebar:disabled"/>
   <int value="-1481918315" label="SmsReceiverCrossDevice:enabled"/>
+  <int value="-1481777496" label="DragAndDropAndroid:disabled"/>
   <int value="-1480926949" label="MaterialDesignBookmarks:enabled"/>
   <int value="-1480866718" label="ash-disable-login-dim-and-blur"/>
   <int value="-1480606359" label="AssistantIntentPageUrl:enabled"/>
@@ -55147,6 +55148,7 @@ from previous Chrome versions.
   <int value="1707873180"
       label="OmniboxOnFocusSuggestionsContextualWebAllowSRP:disabled"/>
   <int value="1708118086" label="TextFragmentAnchor:disabled"/>
+  <int value="1709255374" label="DragAndDropAndroid:enabled"/>
   <int value="1709898387"
       label="AutofillUseUnassociatedListedElements:enabled"/>
   <int value="1710630380"

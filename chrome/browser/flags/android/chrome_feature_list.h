@@ -86,6 +86,7 @@ extern const base::Feature kDownloadNotificationBadge;
 extern const base::Feature kDownloadProgressInfoBar;
 extern const base::Feature kDownloadProgressMessage;
 extern const base::Feature kDownloadRename;
+extern const base::Feature kDragAndDropAndroid;
 extern const base::Feature kDuetTabStripIntegrationAndroid;
 extern const base::Feature kDynamicColorAndroid;
 extern const base::Feature kEnableDangerousDownloadDialog;

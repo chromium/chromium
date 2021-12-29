@@ -3083,6 +3083,10 @@ const char kCpuAffinityRestrictToLittleCoresDescription[] =
     "Restricts Chrome threads to LITTLE cores on devices with big.LITTLE or "
     "similar CPU architectures.";
 
+const char kDragAndDropAndroidName[] = "Drag and drop on Android";
+const char kDragAndDropAndroidDescription[] =
+    "Enable drag and drop images and links from web contents on Android.";
+
 const char kDynamicColorAndroidName[] = "Dynamic colors on Android";
 const char kDynamicColorAndroidDescription[] =
     "Enabled dynamic colors on supported devices, such as Pixel devices "

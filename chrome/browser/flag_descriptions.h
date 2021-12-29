@@ -1762,6 +1762,9 @@ extern const char kContextualTriggersSelectionSizeDescription[];
 extern const char kCpuAffinityRestrictToLittleCoresName[];
 extern const char kCpuAffinityRestrictToLittleCoresDescription[];
 
+extern const char kDragAndDropAndroidName[];
+extern const char kDragAndDropAndroidDescription[];
+
 extern const char kDynamicColorAndroidName[];
 extern const char kDynamicColorAndroidDescription[];
 

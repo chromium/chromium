@@ -7750,6 +7750,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kLinkCapturingUiUpdate)}
 #endif
 
+#if defined(OS_ANDROID)
+    {"drag-and-drop-android", flag_descriptions::kDragAndDropAndroidName,
+     flag_descriptions::kDragAndDropAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDragAndDropAndroid)},
+#endif  // defined(OS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
