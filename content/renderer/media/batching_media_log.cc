@@ -31,7 +31,7 @@ void Log(const media::MediaLogRecord& event) {
   if (event.type == media::MediaLogRecord::Type::kMediaStatus) {
     DVLOG(1) << "MediaEvent: " << ToJSON(event);
   } else if (event.type == media::MediaLogRecord::Type::kMessage &&
-             event.params.HasKey("error")) {
+             event.params.FindKey("error")) {
     DVLOG(1) << "MediaEvent: " << ToJSON(event);
   } else if (event.type != media::MediaLogRecord::Type::kMediaPropertyChange) {
     DVLOG(1) << "MediaEvent: " << ToJSON(event);
@@ -98,7 +98,7 @@ void BatchingMediaLog::AddLogRecordLocked(
         break;
 
       case media::MediaLogRecord::Type::kMediaEventTriggered: {
-        DCHECK(event->params.HasKey(MediaLog::kEventKey));
+        DCHECK(event->params.FindKey(MediaLog::kEventKey));
         const auto* event_key =
             event->params.FindStringKey(MediaLog::kEventKey);
         if (*event_key == kDurationChangedMessage) {
@@ -114,7 +114,7 @@ void BatchingMediaLog::AddLogRecordLocked(
       }
 
       case media::MediaLogRecord::Type::kMessage:
-        if (event->params.HasKey(media::MediaLogMessageLevelToString(
+        if (event->params.FindKey(media::MediaLogMessageLevelToString(
                 media::MediaLogMessageLevel::kERROR)) &&
             !cached_media_error_for_message_) {
           cached_media_error_for_message_ = *event;
