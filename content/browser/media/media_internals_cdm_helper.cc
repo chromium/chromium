@@ -41,61 +41,60 @@ std::string GetCdmSessionTypeName(media::CdmSessionType session_type) {
   }
 }
 
-std::unique_ptr<base::ListValue> VideoCodecProfilesToValue(
+base::Value VideoCodecProfilesToValue(
     const std::vector<media::VideoCodecProfile>& profiles) {
-  auto list = std::make_unique<base::ListValue>();
+  base::Value list(base::Value::Type::LIST);
   for (const auto& profile : profiles)
-    list->Append(media::GetProfileName(profile));
+    list.Append(media::GetProfileName(profile));
   return list;
 }
 
-std::unique_ptr<base::DictionaryValue> CdmCapabilityToValue(
-    const media::CdmCapability& cdm_capability) {
-  auto dict = std::make_unique<base::DictionaryValue>();
+base::Value CdmCapabilityToValue(const media::CdmCapability& cdm_capability) {
+  base::Value dict(base::Value::Type::DICTIONARY);
 
-  auto audio_codec_list = std::make_unique<base::ListValue>();
+  base::Value audio_codec_list(base::Value::Type::LIST);
   for (const auto& audio_codec : cdm_capability.audio_codecs)
-    audio_codec_list->Append(media::GetCodecName(audio_codec));
-  dict->SetList("Audio Codecs", std::move(audio_codec_list));
+    audio_codec_list.Append(media::GetCodecName(audio_codec));
+  dict.SetKey("Audio Codecs", std::move(audio_codec_list));
 
-  auto video_codec_dict = std::make_unique<base::DictionaryValue>();
+  auto* video_codec_dict =
+      dict.SetKey("Video Codecs", base::Value(base::Value::Type::DICTIONARY));
   for (const auto& video_codec_map : cdm_capability.video_codecs) {
     auto codec_name = media::GetCodecName(video_codec_map.first);
     auto& profiles = video_codec_map.second;
-    video_codec_dict->SetList(codec_name, VideoCodecProfilesToValue(profiles));
+    video_codec_dict->SetPath(codec_name, VideoCodecProfilesToValue(profiles));
   }
-  dict->SetDictionary("Video Codecs", std::move(video_codec_dict));
 
-  auto encryption_scheme_list = std::make_unique<base::ListValue>();
+  base::Value encryption_scheme_list(base::Value::Type::LIST);
   for (const auto& encryption_scheme : cdm_capability.encryption_schemes) {
-    encryption_scheme_list->Append(
+    encryption_scheme_list.Append(
         media::GetEncryptionSchemeName(encryption_scheme));
   }
-  dict->SetList("Encryption Schemes", std::move(encryption_scheme_list));
+  dict.SetKey("Encryption Schemes", std::move(encryption_scheme_list));
 
-  auto session_type_list = std::make_unique<base::ListValue>();
+  base::Value session_type_list(base::Value::Type::LIST);
   for (const auto& session_type : cdm_capability.session_types)
-    session_type_list->Append(GetCdmSessionTypeName(session_type));
-  dict->SetList("Session Types", std::move(session_type_list));
+    session_type_list.Append(GetCdmSessionTypeName(session_type));
+  dict.SetKey("Session Types", std::move(session_type_list));
 
   return dict;
 }
 
-std::unique_ptr<base::DictionaryValue> CdmInfoToValue(const CdmInfo& cdm_info) {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("key_system", cdm_info.key_system);
-  dict->SetString("robustness", cdm_info.name);
-  dict->SetString("name", GetCdmInfoRobustnessName(cdm_info.robustness));
-  dict->SetString("version", cdm_info.version.GetString());
-  dict->SetString("path", cdm_info.path.AsUTF8Unsafe());
+base::Value CdmInfoToValue(const CdmInfo& cdm_info) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("key_system", cdm_info.key_system);
+  dict.SetStringKey("robustness", cdm_info.name);
+  dict.SetStringKey("name", GetCdmInfoRobustnessName(cdm_info.robustness));
+  dict.SetStringKey("version", cdm_info.version.GetString());
+  dict.SetStringKey("path", cdm_info.path.AsUTF8Unsafe());
 
   if (cdm_info.capability) {
-    dict->SetDictionary("capability",
-                        CdmCapabilityToValue(cdm_info.capability.value()));
+    dict.SetKey("capability",
+                CdmCapabilityToValue(cdm_info.capability.value()));
   } else {
     // This could happen if hardware secure capabilities are overridden or
     // hardware video decode is disabled from command line.
-    dict->SetString("capability", "No Capability");
+    dict.SetStringKey("capability", "No Capability");
   }
 
   return dict;
@@ -152,10 +151,9 @@ void MediaInternalsCdmHelper::OnCdmInfoFinalized(
 void MediaInternalsCdmHelper::SendCdmUpdate() {
   auto cdms = CdmRegistryImpl::GetInstance()->GetRegisteredCdms();
 
-  base::ListValue cdm_list;
+  base::Value cdm_list(base::Value::Type::LIST);
   for (const auto& cdm_info : cdms) {
-    auto cdm_info_dict = CdmInfoToValue(cdm_info);
-    cdm_list.Append(std::move(cdm_info_dict));
+    cdm_list.Append(CdmInfoToValue(cdm_info));
   }
 
   return MediaInternals::GetInstance()->SendUpdate(
