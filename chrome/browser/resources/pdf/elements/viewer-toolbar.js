@@ -8,13 +8,14 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import './icons.js';
-// <if expr="enable_ink">
-import './viewer-annotations-bar.js';
-// </if>
 import './viewer-download-controls.js';
 import './viewer-page-selector.js';
 import './shared-css.js';
 import './shared-vars.js';
+// <if expr="enable_ink">
+import './viewer-annotations-bar.js';
+import './viewer-annotations-mode-dialog.js';
+// </if>
 
 import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

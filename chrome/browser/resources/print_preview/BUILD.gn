@@ -93,39 +93,45 @@ preprocess_if_expr("preprocess_pdf") {
   out_manifest = "$target_gen_dir/$preprocess_pdf_manifest"
   in_files = [
     "pdf/browser_api.js",
-    "pdf/constants.js",
-    "pdf/controller.js",
-    "pdf/gesture_detector.js",
     "pdf/index.css",
     "pdf/index_pp.html",
     "pdf/internal_plugin.js",
     "pdf/main.js",
-    "pdf/metrics.js",
-    "pdf/open_pdf_params_parser.js",
-    "pdf/pdf_scripting_api.js",
-    "pdf/pdf_viewer_utils.js",
-    "pdf/pdf_viewer_base.js",
     "pdf/toolbar_manager.js",
-    "pdf/viewport.js",
-    "pdf/viewport_scroller.js",
-    "pdf/zoom_manager.js",
   ]
 }
 
 preprocess_if_expr("preprocess_pdf_generated") {
-  deps = [ "../pdf:web_components" ]
+  deps = [
+    "../pdf:copy_print_preview_files",
+    "../pdf:web_components",
+  ]
   in_folder = get_path_info("..", "gen_dir")
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_pdf_gen_manifest"
   in_files = [
+    # Files produced by :copy_print_preview_files.
+    "pdf/constants.js",
+    "pdf/controller.js",
     "pdf/elements/icons.js",
     "pdf/elements/shared-vars.js",
     "pdf/elements/viewer-error-dialog.js",
+    "pdf/gesture_detector.js",
+    "pdf/metrics.js",
+    "pdf/open_pdf_params_parser.js",
+    "pdf/pdf_scripting_api.js",
+    "pdf/pdf_viewer_pp.js",
+    "pdf/pdf_viewer_shared_style.js",
+    "pdf/pdf_viewer_utils.js",
+    "pdf/viewport.js",
+    "pdf/viewport_scroller.js",
+    "pdf/zoom_manager.js",
+
+    # Other files (not part of PDF Viewer's ts_library).
     "pdf/elements/viewer-page-indicator.js",
     "pdf/elements/viewer-zoom-button.js",
     "pdf/elements/viewer-zoom-toolbar.js",
-    "pdf/pdf_viewer_pp.js",
-    "pdf/pdf_viewer_shared_style.js",
+    "pdf/pdf_viewer_base.js",
   ]
 }
 
