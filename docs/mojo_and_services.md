@@ -491,6 +491,39 @@ void PopulateFrameBinders(RenderFrameHostImpl* host,
 }
 ```
 
+Workers also have `BrowserInterfaceBroker` connections between the renderer and
+the corresponding remote implementation in the browser process. Adding new
+worker-specific interfaces is similar to the steps detailed above for frames,
+with the following differences:
+ - For Dedicated Workers, add a new method to
+   [`DedicatedWorkerHost`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/worker_host/dedicated_worker_host.h)
+   and register it in
+   [`PopulateDedicatedWorkerBinders`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/browser_interface_binders.cc;l=1126;drc=e24e0a914ff0da18e78044ebad7518afe9e13847)
+ - For Shared Workers, add a new method to
+   [`SharedWorkerHost`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/worker_host/shared_worker_host.h)
+   and register it in
+   [`PopulateSharedWorkerBinders`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/browser_interface_binders.cc;l=1232;drc=e24e0a914ff0da18e78044ebad7518afe9e13847)
+ - For Service Workers, add a new method to
+   [`ServiceWorkerHost`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/service_worker/service_worker_host.h)
+   and register it in
+   [`PopulateServiceWorkerBinders`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/browser_interface_binders.cc;l=1326;drc=e24e0a914ff0da18e78044ebad7518afe9e13847)
+
+Interfaces can also be added at the process level using the
+`BrowserInterfaceBroker` connection between the Blink `Platform` object in the
+renderer and the corresponding `RenderProcessHost` object in the browser
+process. This allows any thread (including frame and worker threads) in the
+renderer to access the interface, but comes with additional overhead because
+the `BrowserInterfaceBroker` implementation used must be thread-safe. To add a
+new process-level interface, add a new method to `RenderProcessHostImpl` and
+register it using a call to
+[`AddUIThreadInterface`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/renderer_host/render_process_host_impl.h;l=918;drc=ec5eaba0e021b757d5cbbf2c27ac8f06809d81e9)
+in
+[`RenderProcessHostImpl::RegisterMojoInterfaces`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/renderer_host/render_process_host_impl.cc;l=2317;drc=a817d852ea2f2085624d64154ad847dfa3faaeb6).
+On the renderer side, use
+[`Platform::GetBrowserInterfaceBroker`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/public/platform/platform.h;l=781;drc=ee1482552c4c97b40f15605fe6a52565cfe74548)
+to retrieve the corresponding `BrowserInterfaceBroker` object to call
+`GetInterface` on.
+
 For binding an embedder-specific document-scoped interface, override
 [`ContentBrowserClient::RegisterBrowserInterfaceBindersForFrame()`](https://cs.chromium.org/chromium/src/content/public/browser/content_browser_client.h?rcl=3eb14ce219e383daa0cd8d743f475f9d9ce8c81a&l=999)
 and add the binders to the provided map.
@@ -508,7 +541,30 @@ helper in `browser_interface_binders.cc`. However, it is recommended
 to have the renderer and browser sides consistent if possible.
 ***
 
-TODO: add information about workers.
+### Navigation-Associated Interfaces
+
+For cases where the ordering of messages from different frames is important,
+and when messages need to be ordered correctly with respect to the messages
+implementing navigation, navigation-associated interfaces can be used.
+Navigation-associated interfaces leverage connections from each frame to the
+corresponding `RenderFrameHostImpl` object and send messages from each
+connection over the same FIFO pipe that's used for messages relating to
+navigation. As a result, messages sent after a navigation are guaranteed to
+arrive in the browser process after the navigation-related messages, and the
+ordering of messages sent from different frames of the same document is
+preserved as well.
+
+To add a new navigation-associated interface, create a new method for
+`RenderFrameHostImpl` and register it with a call to
+`associated_registry_->AddInterface` in
+[`RenderFrameHostImpl::SetUpMojoConnection`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/renderer_host/render_frame_host_impl.cc;l=8365;drc=a817d852ea2f2085624d64154ad847dfa3faaeb6).
+From the renderer, use
+[`LocalFrame::GetRemoteNavigationAssociatedInterfaces`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/frame/local_frame.h;l=409;drc=19f17a30e102f811bc90a13f79e8ad39193a6403)
+to get an object to call
+`GetInterface` on (this call is similar to
+`BrowserInterfaceBroker::GetInterface` except that it takes a
+[pending associated receiver](https://chromium.googlesource.com/chromium/src/+/main/mojo/public/cpp/bindings/README.md#associated-interfaces)
+instead of a pending receiver).
 
 ## Additional Support
 
