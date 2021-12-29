@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/feedback_uploader.h"
@@ -25,7 +26,8 @@ namespace feedback {
 
 class FeedbackData : public FeedbackCommon {
  public:
-  FeedbackData(FeedbackUploader* uploader, TracingManager* tracing_manager);
+  FeedbackData(base::WeakPtr<feedback::FeedbackUploader> uploader,
+               TracingManager* tracing_manager);
 
   FeedbackData(const FeedbackData&) = delete;
   FeedbackData& operator=(const FeedbackData&) = delete;
@@ -114,7 +116,9 @@ class FeedbackData : public FeedbackCommon {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const raw_ptr<feedback::FeedbackUploader> uploader_ = nullptr;  // Not owned.
+  // The uploader_ is tied to a profile. When the profile is deleted, the
+  // uploader_ will be destroyed.
+  base::WeakPtr<feedback::FeedbackUploader> uploader_;
 
   std::string attached_filename_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::string attached_file_uuid_ GUARDED_BY_CONTEXT(sequence_checker_);

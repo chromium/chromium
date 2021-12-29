@@ -32,11 +32,9 @@ const char kHistogramsAttachmentName[] = "histograms.zip";
 
 }  // namespace
 
-FeedbackData::FeedbackData(FeedbackUploader* uploader,
+FeedbackData::FeedbackData(base::WeakPtr<feedback::FeedbackUploader> uploader,
                            TracingManager* tracing_manager)
-    : uploader_(uploader), tracing_manager_(tracing_manager) {
-  CHECK(uploader_);
-}
+    : uploader_(std::move(uploader)), tracing_manager_(tracing_manager) {}
 
 FeedbackData::~FeedbackData() = default;
 
@@ -87,7 +85,7 @@ void FeedbackData::AttachAndCompressFileData(std::string attached_filedata) {
     return;
   ++pending_op_count_;
   base::FilePath attached_file =
-                  base::FilePath::FromUTF8Unsafe(attached_filename_);
+      base::FilePath::FromUTF8Unsafe(attached_filename_);
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&FeedbackData::CompressFile, this, attached_file,
@@ -123,7 +121,7 @@ bool FeedbackData::IsDataComplete() {
 
 void FeedbackData::SendReport() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (IsDataComplete() && !report_sent_) {
+  if (uploader_ && IsDataComplete() && !report_sent_) {
     report_sent_ = true;
     userfeedback::ExtensionSubmit feedback_data;
     PrepareReport(&feedback_data);

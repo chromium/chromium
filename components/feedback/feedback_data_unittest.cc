@@ -72,7 +72,10 @@ class FeedbackDataTest : public testing::Test {
         test_shared_loader_factory_,
         base::BindOnce(&FeedbackDataTest::set_send_report_callback,
                        base::Unretained(this)));
-    data_ = base::MakeRefCounted<FeedbackData>(uploader_.get(), nullptr);
+    base::WeakPtr<feedback::FeedbackUploader> wkptr_uploader =
+        base::AsWeakPtr(uploader_.get());
+    data_ =
+        base::MakeRefCounted<FeedbackData>(std::move(wkptr_uploader), nullptr);
   }
 
   void Send() {
