@@ -173,12 +173,12 @@
         "name": "openOptionsPage",
         "type": "function",
         "description": "<p>Open your Extension's options page, if possible.</p><p>The precise behavior may depend on your manifest's <code><a href=\"optionsV2\">options_ui</a></code> or <code><a href=\"options\">options_page</a></code> key, or what Chrome happens to support at the time. For example, the page may be opened in a new tab, within chrome://extensions, within an App, or it may just focus an open options page. It will never cause the caller page to reload.</p><p>If your Extension does not declare an options page, or Chrome failed to create one for some other reason, the callback will set $(ref:lastError).</p>",
-        "parameters": [{
-          "type": "function",
+        "parameters": [],
+        "returns_async": {
           "name": "callback",
           "parameters": [],
           "optional": true
-        }]
+        }
       },
       {
         "name": "getManifest",
@@ -220,15 +220,14 @@
             "name": "url",
             "maxLength": 255,
             "description": "URL to be opened after the extension is uninstalled. This URL must have an http: or https: scheme. Set an empty string to not open a new tab upon uninstallation."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called when the uninstall URL is set. If the given URL is invalid, $(ref:runtime.lastError) will be set.",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called when the uninstall URL is set. If the given URL is invalid, $(ref:runtime.lastError) will be set.",
+          "parameters": []
+        }
       },
       {
         "name": "reload",
@@ -281,14 +280,14 @@
             "type": "integer",
             "name": "seconds",
             "description": "Time to wait in seconds before rebooting the device, or -1 to cancel a scheduled reboot."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "description": "A callback to be invoked when a restart request was successfully rescheduled.",
-            "optional": true
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "A callback to be invoked when a restart request was successfully rescheduled.",
+          "parameters": [],
+          "optional": true
+        }
       },
       {
         "name": "connect",
@@ -398,19 +397,17 @@
         "name": "getPlatformInfo",
         "type": "function",
         "description": "Returns information about the current platform.",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "description": "Called with results",
-            "parameters": [
-              {
-                "name": "platformInfo",
-                "$ref": "PlatformInfo"
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called with results",
+          "parameters": [
+            {
+              "name": "platformInfo",
+              "$ref": "PlatformInfo"
+            }
+          ]
+        }
       },
       {
         "name": "getPackageDirectoryEntry",
