@@ -32,15 +32,13 @@ namespace reporting {
 namespace {
 
 // Wifi constants.
-constexpr char kInterfaceName[] = "interface_name";
 constexpr char kAccessPointAddress[] = "access_point";
-constexpr bool kPowerManagementEnabled = true;
 constexpr bool kEncryptionOn = true;
+constexpr bool kPowerManagementOn = true;
 constexpr int64_t kTxBitRateMbps = 8;
 constexpr int64_t kRxBitRateMbps = 4;
 constexpr int64_t kTxPowerDbm = 2;
 constexpr int64_t kLinkQuality = 1;
-constexpr int kSignalLevelDbm = 10;
 
 struct FakeNetworkData {
   std::string guid;
@@ -277,9 +275,9 @@ TEST_F(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
        false /* is_portal */, true /* is_visible */, true /* is_configured */}};
 
   auto telemetry_info = CreateWifiResult(
-      kInterfaceName, kPowerManagementEnabled, kAccessPointAddress,
-      kTxBitRateMbps, kRxBitRateMbps, kTxPowerDbm, kEncryptionOn, kLinkQuality,
-      kSignalLevelDbm);
+      "path3", kPowerManagementOn, kAccessPointAddress, kTxBitRateMbps,
+      kRxBitRateMbps, kTxPowerDbm, kEncryptionOn, kLinkQuality,
+      /*signal_level=*/0);
   chromeos::cros_healthd::FakeCrosHealthdClient::Get()
       ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   TelemetryData result = NetworkTelemetrySamplerTestHelper(networks_data);
@@ -303,24 +301,23 @@ TEST_F(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
             networks_data[1].gateway);
   EXPECT_EQ(result.networks_telemetry().network_telemetry(0).type(),
             NetworkType::WIFI);
-
-  ASSERT_TRUE(result.networks_telemetry()
-                  .network_telemetry(0)
-                  .network_interface_telemetry(0)
-                  .has_wireless_interface());
-  const auto& wireless_interface = result.networks_telemetry()
-                                       .network_telemetry(0)
-                                       .network_interface_telemetry(0)
-                                       .wireless_interface();
-  EXPECT_EQ(wireless_interface.power_management_enabled(),
-            kPowerManagementEnabled);
-  EXPECT_EQ(wireless_interface.access_point_address(), kAccessPointAddress);
-  EXPECT_EQ(wireless_interface.tx_bit_rate_mbps(), kTxBitRateMbps);
-  EXPECT_EQ(wireless_interface.rx_bit_rate_mbps(), kRxBitRateMbps);
-  EXPECT_EQ(wireless_interface.tx_power_dbm(), kTxPowerDbm);
-  EXPECT_EQ(wireless_interface.encryption_on(), kEncryptionOn);
-  EXPECT_EQ(wireless_interface.link_quality(), kLinkQuality);
-  EXPECT_EQ(wireless_interface.signal_level_dbm(), kSignalLevelDbm);
+  EXPECT_EQ(
+      result.networks_telemetry().network_telemetry(0).access_point_address(),
+      kAccessPointAddress);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).tx_bit_rate_mbps(),
+            kTxBitRateMbps);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).rx_bit_rate_mbps(),
+            kRxBitRateMbps);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).tx_power_dbm(),
+            kTxPowerDbm);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).encryption_on(),
+            kEncryptionOn);
+  EXPECT_EQ(result.networks_telemetry().network_telemetry(0).link_quality(),
+            kLinkQuality);
+  EXPECT_EQ(result.networks_telemetry()
+                .network_telemetry(0)
+                .power_management_enabled(),
+            kPowerManagementOn);
 
   // TETHER
   EXPECT_EQ(result.networks_telemetry().network_telemetry(1).guid(),
@@ -337,6 +334,23 @@ TEST_F(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
             networks_data[2].gateway);
   EXPECT_EQ(result.networks_telemetry().network_telemetry(1).type(),
             NetworkType::TETHER);
+  // Make sure wireless info wasn't added to tether.
+  EXPECT_FALSE(result.networks_telemetry()
+                   .network_telemetry(1)
+                   .has_access_point_address());
+  EXPECT_FALSE(
+      result.networks_telemetry().network_telemetry(1).has_tx_bit_rate_mbps());
+  EXPECT_FALSE(
+      result.networks_telemetry().network_telemetry(1).has_rx_bit_rate_mbps());
+  EXPECT_FALSE(
+      result.networks_telemetry().network_telemetry(1).has_tx_power_dbm());
+  EXPECT_FALSE(
+      result.networks_telemetry().network_telemetry(1).has_encryption_on());
+  EXPECT_FALSE(
+      result.networks_telemetry().network_telemetry(1).has_link_quality());
+  EXPECT_FALSE(result.networks_telemetry()
+                   .network_telemetry(1)
+                   .power_management_enabled());
 }
 }  // namespace
 }  // namespace reporting

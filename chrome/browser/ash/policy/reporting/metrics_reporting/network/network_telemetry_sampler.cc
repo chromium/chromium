@@ -11,12 +11,94 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
+#include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace reporting {
 namespace {
+
+void HandleNetworkResult(
+    MetricCallback callback,
+    MetricData metric_data,
+    chromeos::cros_healthd::mojom::TelemetryInfoPtr result) {
+  const auto& network_result = result->network_interface_result;
+  if (network_result.is_null()) {
+    std::move(callback).Run(metric_data);
+    return;
+  }
+
+  switch (network_result->which()) {
+    case chromeos::cros_healthd::mojom::NetworkInterfaceResult::Tag::ERROR: {
+      DVLOG(1) << "cros_healthd: Error getting network result: "
+               << network_result->get_error()->msg;
+      break;
+    }
+
+    case chromeos::cros_healthd::mojom::NetworkInterfaceResult::Tag::
+        NETWORK_INTERFACE_INFO: {
+      for (const auto& network_info :
+           network_result->get_network_interface_info()) {
+        // Handle wireless interface telemetry
+        if (network_info->is_wireless_interface_info()) {
+          auto* network_telemetry_list = metric_data.mutable_telemetry_data()
+                                             ->mutable_networks_telemetry();
+          ::reporting::NetworkTelemetry* network_telemetry_out = nullptr;
+
+          const auto& wireless_info =
+              network_info->get_wireless_interface_info();
+          for (int i = 0; i < network_telemetry_list->network_telemetry_size();
+               ++i) {
+            const auto& network = network_telemetry_list->network_telemetry(i);
+
+            // Find a matching network from network health probe.
+            if (!network.has_device_path()) {
+              continue;
+            }
+            int name_idx = network.device_path().rfind("/");
+            if (name_idx == std::string::npos ||
+                name_idx >= network.device_path().length() - 1) {
+              continue;
+            }
+
+            // Matching network found.
+            if (wireless_info->interface_name ==
+                network.device_path().substr(name_idx + 1)) {
+              network_telemetry_out =
+                  network_telemetry_list->mutable_network_telemetry(i);
+              // Power management can be set even if the device is not connected
+              // to an access point.
+              network_telemetry_out->set_power_management_enabled(
+                  wireless_info->power_management_on);
+
+              // wireless link info is only avialble when the device is
+              // connected to the access point.
+              if (wireless_info->wireless_link_info) {
+                const auto& wireless_link_info =
+                    wireless_info->wireless_link_info;
+                network_telemetry_out->set_tx_bit_rate_mbps(
+                    wireless_link_info->tx_bit_rate_mbps);
+                network_telemetry_out->set_rx_bit_rate_mbps(
+                    wireless_link_info->rx_bit_rate_mbps);
+                network_telemetry_out->set_tx_power_dbm(
+                    wireless_link_info->tx_power_dBm);
+                network_telemetry_out->set_encryption_on(
+                    wireless_link_info->encyption_on);
+                network_telemetry_out->set_link_quality(
+                    wireless_link_info->link_quality);
+                network_telemetry_out->set_access_point_address(
+                    wireless_link_info->access_point_address_str);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  std::move(callback).Run(std::move(metric_data));
+}
 
 NetworkConnectionState GetNetworkConnectionState(
     const chromeos::NetworkState* network) {
@@ -100,11 +182,11 @@ void OnHttpsLatencySamplerCompleted(MetricCallback callback,
     }
   }
 
-  CrosHealthdMetricSampler sampler(
-      chromeos::cros_healthd::mojom::ProbeCategoryEnum::kNetworkInterface,
-      ::reporting::CrosHealthdMetricSampler::MetricType::kTelemetry);
-  sampler.SetMetricData(std::move(metric_data));
-  sampler.Collect(std::move(callback));
+  chromeos::cros_healthd::ServiceConnection::GetInstance()->ProbeTelemetryInfo(
+      std::vector<chromeos::cros_healthd::mojom::ProbeCategoryEnum>{
+          chromeos::cros_healthd::mojom::ProbeCategoryEnum::kNetworkInterface},
+      base::BindOnce(HandleNetworkResult, std::move(callback),
+                     std::move(metric_data)));
 }
 }  // namespace
 

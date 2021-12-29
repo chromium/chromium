@@ -87,38 +87,20 @@ message NetworkTelemetry {
   optional string gateway = 6;
   // Network connection type.
   optional NetworkType type = 7;
-  // Telemetry related to a specific type of network interface.
-  repeated NetworkInterfaceTelemetry network_interface_telemetry = 8;
-}
-
-// Telemetry that is specific to a certain type of network interface.
-message NetworkInterfaceTelemetry {
-  // Name of the wireless interface
-  optional string interface_name = 1;
-  // The interface represented in the message.
-  oneof interface {
-    // Telemetry for wireless interfaces.
-    WirelessInterfaceTelemetry wireless_interface = 2;
-  }
-}
-
-message WirelessInterfaceTelemetry {
-  // If power management for wifi is enabled.
-  optional bool power_management_enabled = 1;
   // Access point address.
-  optional string access_point_address = 2;
+  optional string access_point_address = 8;
   // Transmission bit rate measured in Mbps.
-  optional int64 tx_bit_rate_mbps = 3;
+  optional int64 tx_bit_rate_mbps = 9;
   // Receiving bit rate measured in Mbps.
-  optional int64 rx_bit_rate_mbps = 4;
+  optional int64 rx_bit_rate_mbps = 10;
   // Transmission power measured in dBm.
-  optional int32 tx_power_dbm = 5;
+  optional int32 tx_power_dbm = 11;
   // Is wifi encryption key on or not.
-  optional bool encryption_on = 6;
+  optional bool encryption_on = 12;
   // Wifi link quality.
-  optional int64 link_quality = 7;
-  // Wifi signal level in dBm.
-  optional int32 signal_level_dbm = 8;
+  optional int64 link_quality = 13;
+  // Wifi power management enabled
+  optional bool power_management_enabled = 14;
 }
 
 // Configured networks telemetry data.
