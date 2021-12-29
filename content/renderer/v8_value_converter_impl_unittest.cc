@@ -217,35 +217,36 @@ class V8ValueConverterImplTest : public testing::Test {
                   .ToLocalChecked(),
               val)
         .Check();
-    std::unique_ptr<base::DictionaryValue> dictionary(
-        base::DictionaryValue::From(converter.FromV8Value(object, context)));
+    std::unique_ptr<base::Value> dictionary(
+        converter.FromV8Value(object, context));
     ASSERT_TRUE(dictionary.get());
+    ASSERT_TRUE(dictionary->is_dict());
 
     if (expected_value) {
-      base::Value* temp = nullptr;
-      ASSERT_TRUE(dictionary->Get("test", &temp));
+      const base::Value* temp = dictionary->FindKey("test");
+      ASSERT_TRUE(temp);
       EXPECT_EQ(expected_type, temp->type());
-      EXPECT_TRUE(expected_value->Equals(temp));
+      EXPECT_EQ(*expected_value, *temp);
     } else {
-      EXPECT_FALSE(dictionary->HasKey("test"));
+      EXPECT_FALSE(dictionary->FindKey("test"));
     }
 
     v8::Local<v8::Array> array(v8::Array::New(isolate_));
     array->Set(context, 0, val).Check();
-    std::unique_ptr<base::ListValue> list(
-        base::ListValue::From(converter.FromV8Value(array, context)));
+    std::unique_ptr<base::Value> list(converter.FromV8Value(array, context));
     ASSERT_TRUE(list.get());
+    ASSERT_TRUE(list->is_list());
     if (expected_value) {
-      base::Value* temp = nullptr;
-      ASSERT_TRUE(list->Get(0, &temp));
-      EXPECT_EQ(expected_type, temp->type());
-      EXPECT_TRUE(expected_value->Equals(temp));
+      ASSERT_FALSE(list->GetList().empty());
+      const base::Value& temp = list->GetList()[0];
+      EXPECT_EQ(expected_type, temp.type());
+      EXPECT_EQ(*expected_value, temp);
     } else {
       // Arrays should preserve their length, and convert unconvertible
       // types into null.
-      base::Value* temp = nullptr;
-      ASSERT_TRUE(list->Get(0, &temp));
-      EXPECT_EQ(base::Value::Type::NONE, temp->type());
+      ASSERT_FALSE(list->GetList().empty());
+      const base::Value& temp = list->GetList()[0];
+      EXPECT_EQ(base::Value::Type::NONE, temp.type());
     }
   }
 
