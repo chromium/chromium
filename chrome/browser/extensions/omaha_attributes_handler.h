@@ -57,13 +57,12 @@ class OmahaAttributesHandler {
   void HandleMalwareOmahaAttribute(const ExtensionId& extension_id,
                                    const base::Value& attributes);
   // Performs action based on `attributes` for the `extension_id`. If the
-  // extension is not in the `greylist_state` or the `feature_flag` is disabled,
-  // remove it from the Omaha blocklist state and maybe re-enable it. Otherwise,
-  // add it to the Omaha blocklist state and maybe disable it. `reason` is used
-  // for logging UMA metrics.
+  // extension is not in the `greylist_state`, remove it from the Omaha
+  // blocklist state and maybe re-enable it. Otherwise, add it to the Omaha
+  // blocklist state and maybe disable it. `reason` is used for logging UMA
+  // metrics.
   void HandleGreylistOmahaAttribute(const ExtensionId& extension_id,
                                     const base::Value& attributes,
-                                    const base::Feature& feature_flag,
                                     BitMapBlocklistState greylist_state,
                                     ExtensionUpdateCheckDataKey reason);
 

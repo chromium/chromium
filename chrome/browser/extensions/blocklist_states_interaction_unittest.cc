@@ -9,7 +9,6 @@
 #include "components/safe_browsing/buildflags.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/test/extension_state_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,8 +30,6 @@ constexpr char kTestExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 class BlocklistStatesInteractionUnitTest : public ExtensionServiceTestBase {
  public:
   BlocklistStatesInteractionUnitTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kDisablePolicyViolationExtensionsRemotely);
     // Set this flag to true so the acknowledged bit is not automatically set
     // by the extension error controller on the first run.
     ExtensionPrefs::SetRunAlertsInFirstRunForTest();
