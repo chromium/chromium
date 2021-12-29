@@ -7,6 +7,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/views/app_list_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_image_view.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/root_window_controller.h"
@@ -980,6 +981,10 @@ TEST_P(ScrollableShelfViewRTLTest, MouseWheelOnEmptyShelfShouldExpandAppList) {
   // stay hidden. When we mouse wheel over the empty area of the shelf, the
   // launcher should expand. https://crbug.com/1071218
 
+  // This behavior only applies to peeking launcher.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   // Add a couple of apps to start, so we have some to put the cursor over for
   // testing.
   AddAppShortcut();
@@ -1077,18 +1082,20 @@ TEST_P(ScrollableShelfViewRTLTest, VerifyScrollEvent) {
   // Sufficient speed to exceed the threshold.
   constexpr int scroll_speed = 50;
 
-  // Verifies that scrolling vertically on scrollable shelf should open the
-  // launcher.
-  GetEventGenerator()->ScrollSequence(start_point, base::TimeDelta(),
-                                      /*x_offset=*/0, scroll_speed,
-                                      scroll_steps, num_fingers);
-  EXPECT_EQ(AppListViewState::kPeeking, Shell::Get()
-                                            ->app_list_controller()
-                                            ->presenter()
-                                            ->GetView()
-                                            ->app_list_state());
-  EXPECT_EQ(default_strategy,
-            scrollable_shelf_view_->layout_strategy_for_test());
+  if (!features::IsProductivityLauncherEnabled()) {
+    // Verifies that scrolling vertically on scrollable shelf should open the
+    // launcher.
+    GetEventGenerator()->ScrollSequence(start_point, base::TimeDelta(),
+                                        /*x_offset=*/0, scroll_speed,
+                                        scroll_steps, num_fingers);
+    EXPECT_EQ(AppListViewState::kPeeking, Shell::Get()
+                                              ->app_list_controller()
+                                              ->presenter()
+                                              ->GetView()
+                                              ->app_list_state());
+    EXPECT_EQ(default_strategy,
+              scrollable_shelf_view_->layout_strategy_for_test());
+  }
 
   // Verifies that scrolling horizontally should be handled by the
   // scrollable shelf.
@@ -1104,6 +1111,10 @@ TEST_P(ScrollableShelfViewRTLTest, VerifyScrollEvent) {
 // scrollable shelf view doesn't swallow the events like it did before this
 // behavior was added.
 TEST_P(ScrollableShelfViewRTLTest, HorizontalScrollingOnVerticalShelf) {
+  // This behavior only applies to peeking launcher.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   constexpr int scroll_steps = 1;
   constexpr int num_fingers = 2;
 
