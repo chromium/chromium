@@ -151,7 +151,7 @@ class DlpContentManager : public DlpContentObserver {
   // TODO(crbug.com/1264803): Change to DlpConfidentialContentsCache
   DlpConfidentialContentsCache user_allowed_contents_cache_;
 
-  DlpReportingManager* reporting_manager_;
+  raw_ptr<DlpReportingManager> reporting_manager_{nullptr};
 
   std::unique_ptr<DlpWarnNotifier> warn_notifier_;
 

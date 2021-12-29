@@ -146,17 +146,8 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest, ContextMenuStaysOpen) {
   EXPECT_TRUE(shell_test_api.IsContextMenuShown());
 }
 
-// TODO(crbug.com/1281985) Disabled due to MSAN use-of-uninitialized-value
-// errors.
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_DlpWarningDialogOnVideoEndDismissed \
-  DISABLED_DlpWarningDialogOnVideoEndDismissed
-#else
-#define MAYBE_DlpWarningDialogOnVideoEndDismissed \
-  DlpWarningDialogOnVideoEndDismissed
-#endif
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
-                       MAYBE_DlpWarningDialogOnVideoEndDismissed) {
+                       DlpWarningDialogOnVideoEndDismissed) {
   ASSERT_TRUE(browser());
   StartVideoRecording();
 
@@ -183,17 +174,8 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   loop.Run();
 }
 
-// TODO(crbug.com/1281985) Disabled due to MSAN use-of-uninitialized-value
-// errors.
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_DlpWarningDialogOnVideoEndAccepted \
-  DISABLED_DlpWarningDialogOnVideoEndAccepted
-#else
-#define MAYBE_DlpWarningDialogOnVideoEndAccepted \
-  DlpWarningDialogOnVideoEndAccepted
-#endif
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
-                       MAYBE_DlpWarningDialogOnVideoEndAccepted) {
+                       DlpWarningDialogOnVideoEndAccepted) {
   ASSERT_TRUE(browser());
   StartVideoRecording();
 
@@ -214,17 +196,8 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   loop.Run();
 }
 
-// TODO(crbug.com/1281985) Disabled due to MSAN use-of-uninitialized-value
-// errors.
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_DlpWarningDialogOnSessionInitDismissed \
-  DISABLED_DlpWarningDialogOnSessionInitDismissed
-#else
-#define MAYBE_DlpWarningDialogOnSessionInitDismissed \
-  DlpWarningDialogOnSessionInitDismissed
-#endif
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
-                       MAYBE_DlpWarningDialogOnSessionInitDismissed) {
+                       DlpWarningDialogOnSessionInitDismissed) {
   ASSERT_TRUE(browser());
 
   MarkActiveTabAsDlpWarnedForScreenCapture(browser());
@@ -244,17 +217,8 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
 }
 
-// TODO(crbug.com/1281985) Disabled due to MSAN use-of-uninitialized-value
-// errors.
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_DlpWarningDialogOnSessionInitAccepted \
-  DISABLED_DlpWarningDialogOnSessionInitAccepted
-#else
-#define MAYBE_DlpWarningDialogOnSessionInitAccepted \
-  DlpWarningDialogOnSessionInitAccepted
-#endif
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
-                       MAYBE_DlpWarningDialogOnSessionInitAccepted) {
+                       DlpWarningDialogOnSessionInitAccepted) {
   ASSERT_TRUE(browser());
 
   MarkActiveTabAsDlpWarnedForScreenCapture(browser());
@@ -274,17 +238,8 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
 }
 
-// TODO(crbug.com/1281985) Disabled due to MSAN use-of-uninitialized-value
-// errors.
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_DlpWarningDialogOnPerformingCaptureDismissed \
-  DISABLED_DlpWarningDialogOnPerformingCaptureDismissed
-#else
-#define MAYBE_DlpWarningDialogOnPerformingCaptureDismissed \
-  DlpWarningDialogOnPerformingCaptureDismissed
-#endif
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
-                       MAYBE_DlpWarningDialogOnPerformingCaptureDismissed) {
+                       DlpWarningDialogOnPerformingCaptureDismissed) {
   ASSERT_TRUE(browser());
 
   // Start the session before a window becomes restricted.
@@ -311,17 +266,8 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
 }
 
-// TODO(crbug.com/1281985) Disabled due to MSAN use-of-uninitialized-value
-// errors.
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_DlpWarningDialogOnPerformingCaptureAccepted \
-  DISABLED_DlpWarningDialogOnPerformingCaptureAccepted
-#else
-#define MAYBE_DlpWarningDialogOnPerformingCaptureAccepted \
-  DlpWarningDialogOnPerformingCaptureAccepted
-#endif
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
-                       MAYBE_DlpWarningDialogOnPerformingCaptureAccepted) {
+                       DlpWarningDialogOnPerformingCaptureAccepted) {
   ASSERT_TRUE(browser());
 
   // Start the session before a window becomes restricted.
@@ -351,17 +297,8 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   loop.Run();
 }
 
-// TODO(crbug.com/1281985) Disabled due to MSAN use-of-uninitialized-value
-// errors.
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_DlpWarningDialogOnCountdownEndDismissed \
-  DISABLED_DlpWarningDialogOnCountdownEndDismissed
-#else
-#define MAYBE_DlpWarningDialogOnCountdownEndDismissed \
-  DlpWarningDialogOnCountdownEndDismissed
-#endif
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
-                       MAYBE_DlpWarningDialogOnCountdownEndDismissed) {
+                       DlpWarningDialogOnCountdownEndDismissed) {
   ASSERT_TRUE(browser());
   ash::CaptureModeTestApi test_api;
   test_api.StartForFullscreen(/*for_video=*/true);
@@ -389,17 +326,8 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
 }
 
-// TODO(crbug.com/1281985) Disabled due to MSAN use-of-uninitialized-value
-// errors.
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_DlpWarningDialogOnCountdownEndAccepted \
-  DISABLED_DlpWarningDialogOnCountdownEndAccepted
-#else
-#define MAYBE_DlpWarningDialogOnCountdownEndAccepted \
-  DlpWarningDialogOnCountdownEndAccepted
-#endif
 IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
-                       MAYBE_DlpWarningDialogOnCountdownEndAccepted) {
+                       DlpWarningDialogOnCountdownEndAccepted) {
   ASSERT_TRUE(browser());
   ash::CaptureModeTestApi test_api;
   test_api.StartForFullscreen(/*for_video=*/true);
@@ -433,18 +361,9 @@ IN_PROC_BROWSER_TEST_F(CaptureModeBrowserTest,
   loop.Run();
 }
 
-// TODO(crbug.com/1281985) Disabled due to MSAN use-of-uninitialized-value
-// errors.
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_DlpWarningDialogOnCaptureScreenshotsOfAllDisplaysDismissed \
-  DISABLED_DlpWarningDialogOnCaptureScreenshotsOfAllDisplaysDismissed
-#else
-#define MAYBE_DlpWarningDialogOnCaptureScreenshotsOfAllDisplaysDismissed \
-  DlpWarningDialogOnCaptureScreenshotsOfAllDisplaysDismissed
-#endif
 IN_PROC_BROWSER_TEST_F(
     CaptureModeBrowserTest,
-    MAYBE_DlpWarningDialogOnCaptureScreenshotsOfAllDisplaysDismissed) {
+    DlpWarningDialogOnCaptureScreenshotsOfAllDisplaysDismissed) {
   ASSERT_TRUE(browser());
 
   MarkActiveTabAsDlpWarnedForScreenCapture(browser());
@@ -463,18 +382,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(test_api.IsPendingDlpCheck());
 }
 
-// TODO(crbug.com/1281985) Disabled due to MSAN use-of-uninitialized-value
-// errors.
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_DlpWarningDialogOnFullscreenScreenCaptureShortcutAccepted \
-  DISABLED_DlpWarningDialogOnFullscreenScreenCaptureShortcutAccepted
-#else
-#define MAYBE_DlpWarningDialogOnFullscreenScreenCaptureShortcutAccepted \
-  DlpWarningDialogOnFullscreenScreenCaptureShortcutAccepted
-#endif
 IN_PROC_BROWSER_TEST_F(
     CaptureModeBrowserTest,
-    MAYBE_DlpWarningDialogOnFullscreenScreenCaptureShortcutAccepted) {
+    DlpWarningDialogOnFullscreenScreenCaptureShortcutAccepted) {
   ASSERT_TRUE(browser());
 
   MarkActiveTabAsDlpWarnedForScreenCapture(browser());
