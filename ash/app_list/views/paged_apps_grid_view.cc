@@ -252,7 +252,7 @@ void PagedAppsGridView::OnTabletModeChanged(bool started) {
   // Enable/Disable folder icons's background blur based on tablet mode.
   for (const auto& entry : view_model()->entries()) {
     auto* item_view = static_cast<AppListItemView*>(entry.view);
-    if (item_view->item()->is_folder())
+    if (item_view->item() && item_view->item()->is_folder())
       item_view->SetBackgroundBlurEnabled(started);
   }
 

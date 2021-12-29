@@ -427,7 +427,8 @@ bool PagedViewStructure::IsValidReorderTargetIndex(
   // The user can drag an item view to another page's end. Also covers the case
   // where a dragged folder item is being reparented to the last target index of
   // the root level grid.
-  if (index.page <= total_pages() &&
+  if ((index.page < total_pages() ||
+       (index.page == total_pages() && mode_ == Mode::kPartialPages)) &&
       GetLastTargetIndexOfPage(index.page) == index) {
     return true;
   }

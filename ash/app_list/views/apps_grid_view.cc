@@ -1577,9 +1577,9 @@ void AppsGridView::HandleKeyboardFoldering(ui::KeyboardCode key_code) {
       MoveItemToFolder(selected_view_->item(), target_index);
   a11y_announcer_->AnnounceKeyboardFoldering(
       moving_view_title, target_view_title, target_view_is_folder);
+  Layout();
   DCHECK(folder_item->is_folder());
   folder_item->RequestFocus();
-  Layout();
   RecordAppMovingTypeMetrics(kMoveByKeyboardIntoFolder);
 }
 
@@ -1788,8 +1788,8 @@ void AppsGridView::HandleKeyboardReparent(
   AnnounceReorder(target_index);
   ReparentItemForReorder(reparented_view->item(), target_index);
 
-  GetViewAtIndex(target_index)->RequestFocus();
   Layout();
+  GetViewAtIndex(target_index)->RequestFocus();
   RecordAppMovingTypeMetrics(kMoveByKeyboardOutOfFolder);
 }
 
@@ -1929,7 +1929,7 @@ void AppsGridView::MoveItemInModel(AppListItem* item, const GridIndex& target) {
       view_structure_.GetTargetItemListIndexForMove(item, target);
 
   const bool moving_to_new_page =
-      !item->IsInFolder() &&
+      view_structure_.mode() == PagedViewStructure::Mode::kPartialPages &&
       (target.page == GetTotalPages() ||
        (target.page == GetTotalPages() - 1 &&
         view_structure_.GetLastTargetIndexOfPage(target.page).slot == 0));
@@ -2290,8 +2290,9 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardMove(
     // A forward move on the last item in |view_model_| should result in page
     // creation.
     if (target_model_index == view_model_.view_size()) {
-      // If the move is within a folder, do not allow page creation.
-      if (folder_delegate_)
+      // Only grid structure with partial pages supports page creation by
+      // keyboard move.
+      if (view_structure_.mode() != PagedViewStructure::Mode::kPartialPages)
         return source_index;
       // If |source_index| is the last item in the grid on a page by itself,
       // moving right to a new page should be a no-op.
@@ -2303,8 +2304,8 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardMove(
     target_index = GetIndexOfView(
         static_cast<const AppListItemView*>(GetItemViewAt(std::min(
             std::max(0, target_model_index), view_model_.view_size() - 1))));
-    if (!folder_delegate_ && key_code == backward &&
-        target_index.page < source_index.page &&
+    if (view_structure_.mode() == PagedViewStructure::Mode::kPartialPages &&
+        key_code == backward && target_index.page < source_index.page &&
         !view_structure_.IsFullPage(target_index.page)) {
       // Apps swap positions if the target page is the same as the
       // destination page, or the target page is full. If the page is not
@@ -2376,6 +2377,20 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardReparent(
     return folder_index;
 
   GridIndex target_index = GetTargetGridIndexForKeyboardMove(key_code);
+
+  // If the item is expected to be positioned after the parent view,
+  // `GetTargetGridIndexForKeyboardMove()` may return folder index to indicate
+  // no-op operation for move (e.g. if the folder is the last item), assuming
+  // that there are no slots available. Reparent is an insertion operation, so
+  // creating an extra trailing slot is allowed.
+  if (target_index == folder_index &&
+      (key_code != ui::VKEY_UP && key_code != backward)) {
+    if (view_structure_.IsFullPage(target_index.page)) {
+      return GridIndex(target_index.page + 1, 0);
+    }
+    return GridIndex(target_index.page, target_index.slot + 1);
+  }
+
   // Ensure the item is placed on the same page as the folder when possible.
   if (target_index.page < folder_index.page) {
     target_index.page = folder_index.page;
@@ -2435,9 +2450,9 @@ void AppsGridView::HandleKeyboardMove(ui::KeyboardCode key_code) {
     // |target_page| may change due to a page collapsing.
     target_page = std::min(GetTotalPages() - 1, target_index.page);
   }
+  Layout();
   EnsureViewVisible(GridIndex(target_page, target_index.slot));
   SetSelectedView(original_selected_view);
-  Layout();
   AnnounceReorder(target_index);
 
   if (target_index.page != original_selected_view_index.page &&

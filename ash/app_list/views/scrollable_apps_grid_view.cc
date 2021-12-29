@@ -299,8 +299,9 @@ gfx::Vector2d ScrollableAppsGridView::GetGridCenteringOffset(int page) const {
 }
 
 void ScrollableAppsGridView::EnsureViewVisible(const GridIndex& index) {
-  // TODO(https://crbug.com/1245865): Make sure that the view at |index| is
-  // visible. Mainly called when keyboard reordering item views.
+  AppListItemView* view = GetViewAtIndex(index);
+  if (view)
+    view->ScrollViewToVisible();
 }
 
 const gfx::Vector2d ScrollableAppsGridView::CalculateTransitionOffset(
