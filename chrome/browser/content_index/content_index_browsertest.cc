@@ -249,16 +249,13 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, GetVisuals) {
   EXPECT_FALSE(icon.isNull());
 }
 
-// TODO(crbug.com/1282979): Test is flaky on various platforms.
-IN_PROC_BROWSER_TEST_F(ContentIndexTest, DISABLED_LaunchUrl) {
+IN_PROC_BROWSER_TEST_F(ContentIndexTest, LaunchUrl) {
   RunScript("AddContent('my-id')");
   base::RunLoop().RunUntilIdle();  // Wait for the provider to get the content.
 
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
-  GURL current_url = browser()
-                         ->tab_strip_model()
-                         ->GetActiveWebContents()
-                         ->GetLastCommittedURL();
+  GURL current_url =
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
   EXPECT_TRUE(base::EndsWith(current_url.spec(),
                              "/content_index/content_index.html",
                              base::CompareCase::SENSITIVE));
@@ -275,10 +272,8 @@ IN_PROC_BROWSER_TEST_F(ContentIndexTest, DISABLED_LaunchUrl) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
-  current_url = browser()
-                    ->tab_strip_model()
-                    ->GetActiveWebContents()
-                    ->GetLastCommittedURL();
+  current_url =
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
   EXPECT_TRUE(base::EndsWith(current_url.spec(),
                              "/content_index/content_index.html?launch",
                              base::CompareCase::SENSITIVE));
