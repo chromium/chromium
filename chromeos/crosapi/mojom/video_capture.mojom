@@ -64,7 +64,6 @@ union VideoBufferHandle {
   GpuMemoryBufferHandle gpu_memory_buffer_handle@1;
 };
 
-// Identical to |video_capture.mojom.DeviceAccessResultCode|.
 [Stable, Extensible]
 enum DeviceAccessResultCode {
   NOT_INITIALIZED,

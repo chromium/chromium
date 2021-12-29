@@ -147,7 +147,7 @@ void VirtualDeviceEnabledDeviceFactory::CreateDevice(
         base::BindOnce(&VirtualDeviceEnabledDeviceFactory::
                            OnVirtualDeviceConsumerConnectionErrorOrClose,
                        base::Unretained(this), device_id));
-    std::move(callback).Run(mojom::DeviceAccessResultCode::SUCCESS);
+    std::move(callback).Run(media::VideoCaptureError::kNone);
     return;
   }
 

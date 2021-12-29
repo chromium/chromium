@@ -41,7 +41,7 @@ class PushVideoStreamSubscriptionImpl
 
   void OnDeviceStartSucceededWithSettings(
       const media::VideoCaptureParams& settings);
-  void OnDeviceStartFailed();
+  void OnDeviceStartFailed(media::VideoCaptureError error);
 
   // mojom::PushVideoStreamSubscription implementation.
   void Activate() override;

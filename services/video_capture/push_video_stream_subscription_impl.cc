@@ -56,7 +56,10 @@ void PushVideoStreamSubscriptionImpl::OnDeviceStartSucceededWithSettings(
   status_ = Status::kNotYetActivated;
 }
 
-void PushVideoStreamSubscriptionImpl::OnDeviceStartFailed() {
+void PushVideoStreamSubscriptionImpl::OnDeviceStartFailed(
+    media::VideoCaptureError error) {
+  DCHECK_NE(error, media::VideoCaptureError::kNone);
+
   if (status_ != Status::kCreationCallbackNotYetRun) {
     // Creation callback has already been run from a previous device start.
     return;
