@@ -197,20 +197,6 @@ void OpenTabForSyncTrustedVaultUserAction(Browser* browser, const GURL& url) {
   Navigate(&params);
 }
 
-// Returns true if the user has consented to browser sync-the-feature or
-// Chrome OS sync.
-bool HasUserOptedInToSync(const syncer::SyncUserSettings* settings) {
-  if (settings->IsFirstSetupComplete())
-    return true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsSyncConsentOptionalEnabled() &&
-      settings->IsOsSyncFeatureEnabled()) {
-    return true;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  return false;
-}
-
 absl::optional<AvatarSyncErrorType> GetTrustedVaultError(
     const syncer::SyncService* sync_service,
     const PrefService* pref_service) {
@@ -278,7 +264,7 @@ absl::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
   if (!service->HasSyncConsent()) {
     // Only trusted vault errors can be shown if the account isn't a consented
     // primary account.
-    // Note the condition checked is not HasUserOptedInToSync(), because the
+    // Note the condition checked is not IsFirstSetupComplete(), because the
     // setup incomplete case is treated separately below. See the comment in
     // ShouldRequestSyncConfirmation() about dashboard resets.
     return GetTrustedVaultError(service, profile->GetPrefs());
@@ -367,7 +353,7 @@ bool ShouldRequestSyncConfirmation(const syncer::SyncService* service) {
 
 bool ShouldShowSyncPassphraseError(const syncer::SyncService* service) {
   const syncer::SyncUserSettings* settings = service->GetUserSettings();
-  return HasUserOptedInToSync(settings) &&
+  return settings->IsFirstSetupComplete() &&
          settings->IsPassphraseRequiredForPreferredDataTypes();
 }
 
@@ -378,7 +364,7 @@ bool ShouldShowSyncKeysMissingError(const syncer::SyncService* sync_service,
     return false;
   }
 
-  if (HasUserOptedInToSync(settings)) {
+  if (settings->IsFirstSetupComplete()) {
     return true;
   }
 
@@ -413,7 +399,7 @@ bool ShouldShowTrustedVaultDegradedRecoverabilityError(
     return false;
   }
 
-  if (HasUserOptedInToSync(settings)) {
+  if (settings->IsFirstSetupComplete()) {
     return true;
   }
 

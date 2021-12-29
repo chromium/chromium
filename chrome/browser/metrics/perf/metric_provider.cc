@@ -200,8 +200,6 @@ MetricProvider::RecordAttemptStatus MetricProvider::AppSyncStateForUserProfile(
   // the OS settings. Otherwise, we read from Chrome settings. We then check if
   // the sync feature is enabled and the App Sync toggle is on.
   if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    if (!sync_settings->IsOsSyncFeatureEnabled())
-      return RecordAttemptStatus::kOSSyncFeatureDisabled;
     if (!sync_settings->GetSelectedOsTypes().Has(
             syncer::UserSelectableOsType::kOsApps))
       return RecordAttemptStatus::kOSAppSyncDisabled;

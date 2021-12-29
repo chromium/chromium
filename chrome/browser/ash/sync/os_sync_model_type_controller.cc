@@ -32,24 +32,6 @@ OsSyncModelTypeController::OsSyncModelTypeController(
   DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
   DCHECK(pref_service_);
   DCHECK(sync_service_);
-  pref_registrar_.Init(pref_service_);
-  pref_registrar_.Add(
-      syncer::prefs::kOsSyncFeatureEnabled,
-      base::BindRepeating(&OsSyncModelTypeController::OnUserPrefChanged,
-                          base::Unretained(this)));
 }
 
 OsSyncModelTypeController::~OsSyncModelTypeController() = default;
-
-syncer::DataTypeController::PreconditionState
-OsSyncModelTypeController::GetPreconditionState() const {
-  DCHECK(CalledOnValidThread());
-  return pref_service_->GetBoolean(syncer::prefs::kOsSyncFeatureEnabled)
-             ? PreconditionState::kPreconditionsMet
-             : PreconditionState::kMustStopAndClearData;
-}
-
-void OsSyncModelTypeController::OnUserPrefChanged() {
-  DCHECK(CalledOnValidThread());
-  sync_service_->DataTypePreconditionChanged(type());
-}

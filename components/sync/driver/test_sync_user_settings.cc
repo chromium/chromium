@@ -115,14 +115,6 @@ UserSelectableOsTypeSet TestSyncUserSettings::GetRegisteredSelectableOsTypes()
     const {
   return UserSelectableOsTypeSet::All();
 }
-
-bool TestSyncUserSettings::IsOsSyncFeatureEnabled() const {
-  return os_sync_feature_enabled_;
-}
-
-void TestSyncUserSettings::SetOsSyncFeatureEnabled(bool enabled) {
-  os_sync_feature_enabled_ = enabled;
-}
 #endif
 
 bool TestSyncUserSettings::IsCustomPassphraseAllowed() const {

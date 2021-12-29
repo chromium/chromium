@@ -21,6 +21,7 @@ class SyncService;
 // Controls syncing of Chrome OS ModelTypes that run in sync transport-only
 // mode and are tied to the OS sync feature consent (APP_LIST, OS_PREFERENCES,
 // and OS_PRIORITY_PREFERENCES).
+// TODO(https://crbug.com/1274802): Remove this.
 class OsSyncableServiceModelTypeController
     : public syncer::SyncableServiceBasedModelTypeController {
  public:
@@ -39,17 +40,9 @@ class OsSyncableServiceModelTypeController
   OsSyncableServiceModelTypeController& operator=(
       const OsSyncableServiceModelTypeController&) = delete;
 
-  // DataTypeController:
-  PreconditionState GetPreconditionState() const override;
-
  private:
-  // Callback for changes to the OS sync feature enabled pref.
-  void OnUserPrefChanged();
-
   PrefService* const pref_service_;
   syncer::SyncService* const sync_service_;
-
-  PrefChangeRegistrar pref_registrar_;
 };
 
 #endif  // CHROME_BROWSER_ASH_SYNC_OS_SYNCABLE_SERVICE_MODEL_TYPE_CONTROLLER_H_

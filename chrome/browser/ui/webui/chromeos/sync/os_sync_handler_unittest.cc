@@ -136,8 +136,7 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
 
   // Expects that an "os-sync-prefs-changed" event was sent to the WebUI and
   // returns the data passed to that event.
-  void ExpectOsSyncPrefsSent(bool* feature_enabled,
-                             const DictionaryValue** os_sync_prefs) {
+  void ExpectOsSyncPrefsSent(const DictionaryValue** os_sync_prefs) {
     const TestWebUI::CallData& call_data = *web_ui_.call_data().back();
     EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
 
@@ -145,9 +144,7 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
     EXPECT_TRUE(event);
     EXPECT_EQ(*event, "os-sync-prefs-changed");
 
-    EXPECT_TRUE(call_data.arg2()->is_bool());
-    *feature_enabled = call_data.arg2()->GetBool();
-    EXPECT_TRUE(call_data.arg3()->GetAsDictionary(os_sync_prefs));
+    EXPECT_TRUE(call_data.arg2()->GetAsDictionary(os_sync_prefs));
   }
 
   void NotifySyncStateChanged() { handler_->OnStateChanged(sync_service_); }
@@ -173,7 +170,6 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(OsSyncHandlerTest, OsSyncPrefsSentOnNavigateToPage) {
-  user_settings_->SetOsSyncFeatureEnabled(true);
   handler_->HandleDidNavigateToOsSyncPage(nullptr);
 
   ASSERT_EQ(1U, web_ui_.call_data().size());
@@ -181,19 +177,6 @@ TEST_F(OsSyncHandlerTest, OsSyncPrefsSentOnNavigateToPage) {
 
   std::string event_name = call_data.arg1()->GetString();
   EXPECT_EQ(event_name, "os-sync-prefs-changed");
-
-  bool feature_enabled = call_data.arg2()->GetBool();
-  EXPECT_TRUE(feature_enabled);
-}
-
-TEST_F(OsSyncHandlerTest, OsSyncPrefsWhenFeatureIsDisabled) {
-  user_settings_->SetOsSyncFeatureEnabled(false);
-  handler_->HandleDidNavigateToOsSyncPage(nullptr);
-
-  ASSERT_EQ(1U, web_ui_.call_data().size());
-  const TestWebUI::CallData& call_data = *web_ui_.call_data().back();
-  bool feature_enabled = call_data.arg2()->GetBool();
-  EXPECT_FALSE(feature_enabled);
 }
 
 TEST_F(OsSyncHandlerTest, OpenConfigPageBeforeSyncEngineInitialized) {
@@ -225,38 +208,6 @@ TEST_F(OsSyncHandlerTest, OnlyStartEngineWhenConfiguringSync) {
   sync_service_->SetTransportState(SyncService::TransportState::INITIALIZING);
   NotifySyncStateChanged();
   EXPECT_FALSE(user_settings_->IsSyncRequested());
-}
-
-TEST_F(OsSyncHandlerTest, UserEnablesFeatureThenNavigatesAway) {
-  // Open the page with the feature disabled.
-  user_settings_->SetOsSyncFeatureEnabled(false);
-  handler_->HandleDidNavigateToOsSyncPage(nullptr);
-
-  // Clicking "Turn on" doesn't set the pref yet.
-  base::ListValue args;
-  args.Append(base::Value(true));  // feature_enabled
-  handler_->HandleSetOsSyncFeatureEnabled(&args);
-  EXPECT_FALSE(user_settings_->IsOsSyncFeatureEnabled());
-
-  // The pref is set when the user navigates away.
-  handler_->HandleDidNavigateAwayFromOsSyncPage(nullptr);
-  EXPECT_TRUE(user_settings_->IsOsSyncFeatureEnabled());
-}
-
-TEST_F(OsSyncHandlerTest, UserEnablesFeatureThenClosesSettings) {
-  // Open the page with the feature disabled.
-  user_settings_->SetOsSyncFeatureEnabled(false);
-  handler_->HandleDidNavigateToOsSyncPage(nullptr);
-
-  // Clicking "Turn on" doesn't set the pref yet.
-  base::ListValue args;
-  args.Append(base::Value(true));  // feature_enabled
-  handler_->HandleSetOsSyncFeatureEnabled(&args);
-  EXPECT_FALSE(user_settings_->IsOsSyncFeatureEnabled());
-
-  // The pref is set when the settings window closes and destroys the handler.
-  handler_.reset();
-  EXPECT_TRUE(user_settings_->IsOsSyncFeatureEnabled());
 }
 
 TEST_F(OsSyncHandlerTest, TestSyncEverything) {
@@ -309,10 +260,8 @@ TEST_F(OsSyncHandlerTest, ShowSetupSyncEverything) {
   SetWallperEnabledPref(true);
   handler_->HandleDidNavigateToOsSyncPage(nullptr);
 
-  bool feature_enabled;
   const DictionaryValue* dictionary;
-  ExpectOsSyncPrefsSent(&feature_enabled, &dictionary);
-  EXPECT_TRUE(feature_enabled);
+  ExpectOsSyncPrefsSent(&dictionary);
   CheckBool(dictionary, "syncAllOsTypes", true);
   CheckBool(dictionary, "osAppsRegistered", true);
   CheckBool(dictionary, "osPreferencesRegistered", true);
@@ -328,10 +277,8 @@ TEST_F(OsSyncHandlerTest, ShowSetupManuallySyncAll) {
   SetWallperEnabledPref(true);
   handler_->HandleDidNavigateToOsSyncPage(nullptr);
 
-  bool feature_enabled;
   const DictionaryValue* dictionary;
-  ExpectOsSyncPrefsSent(&feature_enabled, &dictionary);
-  EXPECT_TRUE(feature_enabled);
+  ExpectOsSyncPrefsSent(&dictionary);
   CheckConfigDataTypeArguments(dictionary, CHOOSE_WHAT_TO_SYNC,
                                UserSelectableOsTypeSet::All(),
                                /*wallpaper_enabled=*/true);
@@ -343,10 +290,8 @@ TEST_F(OsSyncHandlerTest, ShowSetupSyncForAllTypesIndividually) {
     user_settings_->SetSelectedOsTypes(/*sync_all_os_types=*/false, types);
     handler_->HandleDidNavigateToOsSyncPage(nullptr);
 
-    bool feature_enabled;
     const DictionaryValue* dictionary;
-    ExpectOsSyncPrefsSent(&feature_enabled, &dictionary);
-    EXPECT_TRUE(feature_enabled);
+    ExpectOsSyncPrefsSent(&dictionary);
     CheckConfigDataTypeArguments(dictionary, CHOOSE_WHAT_TO_SYNC, types,
                                  /*wallpaper_enabled=*/false);
   }
@@ -355,10 +300,8 @@ TEST_F(OsSyncHandlerTest, ShowSetupSyncForAllTypesIndividually) {
   user_settings_->SetSelectedOsTypes(/*sync_all_os_types=*/false, /*types=*/{});
   SetWallperEnabledPref(true);
   handler_->HandleDidNavigateToOsSyncPage(nullptr);
-  bool feature_enabled;
   const DictionaryValue* dictionary;
-  ExpectOsSyncPrefsSent(&feature_enabled, &dictionary);
-  EXPECT_TRUE(feature_enabled);
+  ExpectOsSyncPrefsSent(&dictionary);
   CheckConfigDataTypeArguments(dictionary, CHOOSE_WHAT_TO_SYNC, /*types=*/{},
                                /*wallpaper_enabled=*/true);
 }

@@ -63,16 +63,12 @@ constexpr char kSyncConsent[] = "sync-consent";
 
 const test::UIPath kOverviewDialog = {kSyncConsent,
                                       "syncConsentOverviewDialog"};
-const test::UIPath kSplitSettingsDialog = {kSyncConsent,
-                                           "splitSettingsSyncConsentDialog"};
 const test::UIPath kReviewSettingsCheckBox = {kSyncConsent,
                                               "reviewSettingsBox"};
 const test::UIPath kNonSplitSettingsAcceptButton = {
     kSyncConsent, "nonSplitSettingsAcceptButton"};
 const test::UIPath kNonSplitSettingsDeclineButton = {
     kSyncConsent, "nonSplitSettingsDeclineButton"};
-const test::UIPath kAcceptButton = {kSyncConsent, "acceptButton"};
-const test::UIPath kDeclineButton = {kSyncConsent, "declineButton"};
 
 syncer::SyncUserSettings* GetSyncUserSettings() {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -147,41 +143,27 @@ class SyncConsentTest
     OobeBaseTest::SetUpOnMainThread();
     LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
         true;
-    if (features::IsSyncConsentOptionalEnabled()) {
+
+    if (features::IsMinorModeRestrictionEnabled() && is_minor_user_) {
       expected_consent_ids_ = {
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_SYNC_DESCRIPTION,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_PERSONALIZE_GOOGLE_SERVICES_NAME,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION,
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE,
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2,
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME_2,
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_2,
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION,
           IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE2,
-          IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT2,
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_TURN_ON_SYNC,
       };
     } else {
-      if (features::IsMinorModeRestrictionEnabled() && is_minor_user_) {
-        expected_consent_ids_ = {
-            IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE,
-            IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2,
-            IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME_2,
-            IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_2,
-            IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION,
-            IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE2,
-            IDS_LOGIN_SYNC_CONSENT_SCREEN_TURN_ON_SYNC,
-        };
-      } else {
-        expected_consent_ids_ = {
-            IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE,
-            IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2,
-            IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME_2,
-            IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_2,
-            IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION,
-            IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER,
-            IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT_AND_CONTINUE,
-        };
-      }
+      expected_consent_ids_ = {
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE_WITH_DEVICE,
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE_2,
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME_2,
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME_2,
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION,
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_REVIEW_SYNC_OPTIONS_LATER,
+          IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT_AND_CONTINUE,
+      };
     }
 
     SyncConsentScreen::SetSyncConsentScreenExitTestDelegate(this);
@@ -362,14 +344,10 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTest, AbortedSetup) {
   EXPECT_TRUE(settings->IsSyncEverythingEnabled());
 }
 
-// Tests of the consent recorder with SyncConsentOptional disabled. The
-// SyncConsentOptional suite below has its own consent recorder tests.
 class SyncConsentRecorderTest : public SyncConsentTest {
  public:
   SyncConsentRecorderTest() {
-    features_.InitWithFeatures(
-        /*enabled_features=*/{features::kSyncSettingsCategorization},
-        /*disabled_features=*/{features::kSyncConsentOptional});
+    features_.InitAndEnableFeature(features::kSyncSettingsCategorization);
   }
   ~SyncConsentRecorderTest() override = default;
 
@@ -485,262 +463,13 @@ INSTANTIATE_TEST_SUITE_P(All,
                          SyncConsentPolicyDisabledTest,
                          testing::Bool());
 
-// Additional tests of the consent dialog that are only applicable when the
-// SyncConsentOptional flag enabled.
-class SyncConsentOptionalTest : public SyncConsentTest {
- public:
-  SyncConsentOptionalTest() {
-    sync_feature_list_.InitWithFeatures(
-        {
-            features::kSyncSettingsCategorization,
-            features::kSyncConsentOptional,
-        },
-        {});
-  }
-  ~SyncConsentOptionalTest() override = default;
-
- private:
-  base::test::ScopedFeatureList sync_feature_list_;
-};
-
-// Flaky failures on sanitizer builds. https://crbug.com/1054377
-#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
-#define MAYBE_DefaultFlow DISABLED_DefaultFlow
-#else
-#define MAYBE_DefaultFlow DefaultFlow
-#endif
-IN_PROC_BROWSER_TEST_F(SyncConsentOptionalTest, MAYBE_DefaultFlow) {
-  LoginToSyncConsentScreen();
-  WaitForScreenShown();
-
-  // OS sync is disabled by default.
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  PrefService* prefs = profile->GetPrefs();
-  EXPECT_FALSE(prefs->GetBoolean(syncer::prefs::kOsSyncFeatureEnabled));
-
-  // Dialog not completed yet.
-  EXPECT_FALSE(prefs->GetBoolean(prefs::kSyncOobeCompleted));
-
-  // Wait for content to load.
-  SyncConsentScreen* screen = GetSyncConsentScreen();
-  ConsentRecordedWaiter consent_recorded_waiter;
-  screen->SetDelegateForTesting(&consent_recorded_waiter);
-  screen->SetProfileSyncDisabledByPolicyForTesting(false);
-  screen->SetProfileSyncEngineInitializedForTesting(true);
-  screen->OnStateChanged(nullptr);
-  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
-
-  // Dialog is visible.
-  test::OobeJS().ExpectVisiblePath(kSplitSettingsDialog);
-
-  // Click the accept button and wait for the JS to C++ callback.
-  test::OobeJS().ClickOnPath(kAcceptButton);
-  consent_recorded_waiter.Wait();
-  screen->SetDelegateForTesting(nullptr);
-
-  // Consent was recorded for the confirmation button.
-  EXPECT_EQ(SyncConsentScreen::CONSENT_GIVEN,
-            consent_recorded_waiter.consent_given_);
-  EXPECT_EQ("Got it", consent_recorded_waiter.consent_confirmation_string_);
-  EXPECT_EQ(IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT2,
-            consent_recorded_waiter.consent_confirmation_id_);
-
-  // Consent was recorded for all descriptions, including the confirmation
-  // button label.
-  std::vector<int> expected_ids = {
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_TITLE,
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_SUBTITLE,
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_NAME,
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_OS_SYNC_DESCRIPTION,
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_NAME,
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_SYNC_DESCRIPTION,
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_PERSONALIZE_GOOGLE_SERVICES_NAME,
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_PERSONALIZE_GOOGLE_SERVICES_DESCRIPTION,
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT2,
-      IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE2,
-  };
-  EXPECT_THAT(consent_recorded_waiter.consent_description_ids_,
-              testing::UnorderedElementsAreArray(expected_ids));
-
-  // OS sync should be on.
-  syncer::SyncUserSettings* settings = GetSyncUserSettings();
-  EXPECT_TRUE(settings->IsOsSyncFeatureEnabled());
-
-  // Browser sync is on.
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
-  EXPECT_TRUE(settings->IsSyncRequested());
-  EXPECT_TRUE(settings->IsFirstSetupComplete());
-  EXPECT_TRUE(settings->IsSyncEverythingEnabled());
-
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NEXT);
-  histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Sync-consent.Next", 1);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Sync-consent", 1);
-  histogram_tester_.ExpectUniqueSample(
-      "OOBE.SyncConsentScreen.Behavior",
-      SyncConsentScreen::SyncScreenBehavior::kShow, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "OOBE.SyncConsentScreen.UserChoice",
-      SyncConsentScreenHandler::UserChoice::kAccepted, 1);
-  histogram_tester_.ExpectUniqueSample("OOBE.SyncConsentScreen.SyncEnabled",
-                                       true, 1);
-
-  // Dialog is completed.
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kSyncOobeCompleted));
-}
-
-// Flaky failures on sanitizer builds. https://crbug.com/1054377
-#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
-#define MAYBE_DisableSync DISABLED_DisableSync
-#else
-#define MAYBE_DisableSync DisableSync
-#endif
-IN_PROC_BROWSER_TEST_F(SyncConsentOptionalTest, MAYBE_DisableSync) {
-  LoginToSyncConsentScreen();
-
-  // Wait for content to load.
-  SyncConsentScreen* screen = GetSyncConsentScreen();
-  ConsentRecordedWaiter consent_recorded_waiter;
-  screen->SetDelegateForTesting(&consent_recorded_waiter);
-  screen->SetProfileSyncDisabledByPolicyForTesting(false);
-  screen->SetProfileSyncEngineInitializedForTesting(true);
-  screen->OnStateChanged(nullptr);
-  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
-
-  // Click the decline button and wait for the JS to C++ callback.
-  test::OobeJS().ClickOnPath(kDeclineButton);
-  consent_recorded_waiter.Wait();
-  screen->SetDelegateForTesting(nullptr);
-
-  // OS sync is off.
-  PrefService* prefs = ProfileManager::GetPrimaryUserProfile()->GetPrefs();
-  EXPECT_FALSE(prefs->GetBoolean(syncer::prefs::kOsSyncFeatureEnabled));
-
-  // For historical reasons, browser sync is still on. However, all data types
-  // are disabled.
-  syncer::SyncUserSettings* settings = GetSyncUserSettings();
-  EXPECT_TRUE(settings->IsSyncRequested());
-  EXPECT_TRUE(settings->IsFirstSetupComplete());
-  EXPECT_FALSE(settings->IsSyncEverythingEnabled());
-  EXPECT_TRUE(settings->GetSelectedTypes().Empty());
-
-  histogram_tester_.ExpectUniqueSample(
-      "OOBE.SyncConsentScreen.Behavior",
-      SyncConsentScreen::SyncScreenBehavior::kShow, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "OOBE.SyncConsentScreen.UserChoice",
-      SyncConsentScreenHandler::UserChoice::kDeclined, 1);
-  histogram_tester_.ExpectUniqueSample("OOBE.SyncConsentScreen.SyncEnabled",
-                                       false, 1);
-
-  // Dialog is completed.
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kSyncOobeCompleted));
-}
-
-IN_PROC_BROWSER_TEST_F(SyncConsentOptionalTest, LanguageSwitch) {
-  SwitchLanguage("es");
-  LoginToSyncConsentScreen();
-
-  SyncConsentScreen* screen = GetSyncConsentScreen();
-  ConsentRecordedWaiter consent_recorded_waiter;
-  screen->SetDelegateForTesting(&consent_recorded_waiter);
-
-  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
-  test::OobeJS().TapOnPath(kAcceptButton);
-  consent_recorded_waiter.Wait();
-  screen->SetDelegateForTesting(nullptr);
-
-  EXPECT_THAT(consent_recorded_waiter.consent_description_strings_,
-              UnorderedElementsAreArray(GetLocalizedExpectedConsentStrings()));
-  EXPECT_THAT(
-      consent_recorded_waiter.consent_confirmation_string_,
-      Eq(GetLocalizedConsentString(IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT2)));
-}
-
-IN_PROC_BROWSER_TEST_F(SyncConsentOptionalTest, LanguageVariant) {
-  SwitchLanguage("en-GB");
-  LoginToSyncConsentScreen();
-
-  SyncConsentScreen* screen = GetSyncConsentScreen();
-  ConsentRecordedWaiter consent_recorded_waiter;
-  screen->SetDelegateForTesting(&consent_recorded_waiter);
-
-  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
-  test::OobeJS().TapOnPath(kAcceptButton);
-  consent_recorded_waiter.Wait();
-  screen->SetDelegateForTesting(nullptr);
-
-  EXPECT_THAT(consent_recorded_waiter.consent_description_strings_,
-              UnorderedElementsAreArray(GetLocalizedExpectedConsentStrings()));
-  EXPECT_THAT(
-      consent_recorded_waiter.consent_confirmation_string_,
-      Eq(GetLocalizedConsentString(IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT2)));
-}
-
-IN_PROC_BROWSER_TEST_F(SyncConsentOptionalTest, SkippedNotBrandedBuild) {
-  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
-      false;
-  LoginToSyncConsentScreen();
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NOT_APPLICABLE);
-
-  // OS sync should be on.
-  syncer::SyncUserSettings* settings = GetSyncUserSettings();
-  EXPECT_TRUE(settings->IsOsSyncFeatureEnabled());
-
-  // Browser sync is on.
-  EXPECT_TRUE(settings->IsSyncRequested());
-  EXPECT_TRUE(settings->IsFirstSetupComplete());
-
-  // Dialog is completed.
-  PrefService* prefs = ProfileManager::GetPrimaryUserProfile()->GetPrefs();
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kSyncOobeCompleted));
-
-  histogram_tester_.ExpectUniqueSample(
-      "OOBE.SyncConsentScreen.Behavior",
-      SyncConsentScreen::SyncScreenBehavior::kSkipAndEnableNonBrandedBuild, 1);
-  histogram_tester_.ExpectUniqueSample("OOBE.SyncConsentScreen.SyncEnabled",
-                                       true, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(SyncConsentOptionalTest, SkippedSyncDisabledByPolicy) {
-  SyncConsentScreen::SetProfileSyncDisabledByPolicyForTesting(true);
-  LoginToSyncConsentScreen();
-  WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NOT_APPLICABLE);
-
-  // OS sync should be off.
-  syncer::SyncUserSettings* settings = GetSyncUserSettings();
-  EXPECT_FALSE(settings->IsOsSyncFeatureEnabled());
-
-  // Browser sync is off.
-  EXPECT_FALSE(settings->IsSyncRequested());
-  EXPECT_FALSE(settings->IsFirstSetupComplete());
-
-  // Dialog is completed.
-  PrefService* prefs = ProfileManager::GetPrimaryUserProfile()->GetPrefs();
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kSyncOobeCompleted));
-
-  histogram_tester_.ExpectUniqueSample(
-      "OOBE.SyncConsentScreen.Behavior",
-      SyncConsentScreen::SyncScreenBehavior::kSkipPermissionsPolicy, 1);
-  // We don't test SyncEnabled because this test fakes the policy disable and
-  // the sync engine is still enabled.
-}
-
 // Tests for Active Directory accounts, which skip the dialog because they do
 // not use sync.
 class SyncConsentActiveDirectoryTest : public OobeBaseTest {
  public:
   SyncConsentActiveDirectoryTest() {
-    sync_feature_list_.InitWithFeatures(
-        {
-            features::kSyncSettingsCategorization,
-            features::kSyncConsentOptional,
-        },
-        {});
+    sync_feature_list_.InitWithFeatures({features::kSyncSettingsCategorization},
+                                        {});
   }
   ~SyncConsentActiveDirectoryTest() override = default;
 
@@ -760,11 +489,8 @@ IN_PROC_BROWSER_TEST_F(SyncConsentActiveDirectoryTest, LoginDoesNotStartSync) {
       "test-user@locally-managed.localhost", "password");
   test::WaitForPrimaryUserSessionStart();
 
-  // OS sync is off.
-  syncer::SyncUserSettings* settings = GetSyncUserSettings();
-  EXPECT_FALSE(settings->IsOsSyncFeatureEnabled());
-
   // Browser sync is off.
+  syncer::SyncUserSettings* settings = GetSyncUserSettings();
   EXPECT_FALSE(settings->IsSyncRequested());
   EXPECT_FALSE(settings->IsFirstSetupComplete());
 

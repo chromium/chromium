@@ -13,36 +13,14 @@
 namespace os_sync_util {
 namespace {
 
-void MaybeMigratePreferencesForSyncConsentOptional(PrefService* prefs) {
-  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
-
-  if (!ash::features::IsSyncConsentOptionalEnabled()) {
-    // Always enable the OS sync if SyncConsentOptional is disabled. Before the
-    // SyncConsentOptional launch it's impossible to disable/enable the OS sync
-    // from the UI.
-    prefs->SetBoolean(syncer::prefs::kOsSyncFeatureEnabled, true);
-    return;
-  }
-
-  // TODO(https://crbug.com/1246357) Add a migration code here. To handle switch
-  // between SyncConsentOptional being disabled and enabled
-  prefs->SetBoolean(syncer::prefs::kOsSyncFeatureEnabled, false);
-}
-
 // Returns true if the prefs were migrated.
 bool MaybeMigratePreferencesForSyncSettingsCategorization(PrefService* prefs) {
   // Migration code can be removed when SyncSettingsCategorization has been
   // fully deployed to stable channel for a couple milestones.
   if (!chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-    // SyncSettingsCategorization should be launched before SyncConsentOptional.
-    DCHECK(!chromeos::features::IsSyncConsentOptionalEnabled());
-
     // Reset the migration flag because this might be a rollback of the feature.
     // We want migration to happen again when the feature is enabled.
     prefs->SetBoolean(syncer::prefs::kOsSyncPrefsMigrated, false);
-    // Reset the OS sync pref to its default state, such that we get the same
-    // migration behavior next time SyncSettingsCategorization is enabled.
-    prefs->SetBoolean(syncer::prefs::kOsSyncFeatureEnabled, false);
 
     prefs->ClearPref(syncer::prefs::kSyncAllOsTypes);
     prefs->ClearPref(syncer::prefs::kSyncOsApps);
@@ -77,8 +55,6 @@ bool MaybeMigratePreferencesForSyncSettingsCategorization(PrefService* prefs) {
     prefs->SetBoolean(syncer::prefs::kOsSyncPrefsMigrated, true);
     migrated_this_time = true;
   }
-
-  MaybeMigratePreferencesForSyncConsentOptional(prefs);
 
   return migrated_this_time;
 }

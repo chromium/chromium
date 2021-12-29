@@ -452,13 +452,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
     extension_system->ready().Post(FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
 
-    // Many pinned app tests assume OS sync is enabled.
-    if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
-      syncer::SyncService* sync_service =
-          SyncServiceFactory::GetForProfile(profile());
-      sync_service->GetUserSettings()->SetOsSyncFeatureEnabled(true);
-    }
-
     app_list_syncable_service_ =
         app_list::AppListSyncableServiceFactory::GetForProfile(profile());
     StartAppSyncService(app_list_syncable_service_->GetAllSyncDataForTesting());
@@ -1174,39 +1167,16 @@ class ChromeShelfControllerTest : public ChromeShelfControllerTestBase,
  public:
   ChromeShelfControllerTest() {
     if (ShouldEnableSyncSettingsCategorization()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{chromeos::features::
-                                    kSyncSettingsCategorization},
-          /*disabled_features=*/{chromeos::features::kSyncConsentOptional});
+      feature_list_.InitAndEnableFeature(
+          chromeos::features::kSyncSettingsCategorization);
     } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{
-              chromeos::features::kSyncSettingsCategorization,
-              chromeos::features::kSyncConsentOptional});
+      feature_list_.InitAndDisableFeature(
+          chromeos::features::kSyncSettingsCategorization);
     }
   }
   ~ChromeShelfControllerTest() override = default;
 
   bool ShouldEnableSyncSettingsCategorization() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests for feature SyncConsentOptional. Exists as a separate class
-// because the feature must be initialized before
-// ChromeShelfControllerTestBase::SetUp().
-class ChromeShelfControllerSyncConsentOptionalTest
-    : public ChromeShelfControllerTestBase {
- public:
-  ChromeShelfControllerSyncConsentOptionalTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kSyncSettingsCategorization,
-                              chromeos::features::kSyncConsentOptional},
-        /*disabled_features=*/{});
-  }
-  ~ChromeShelfControllerSyncConsentOptionalTest() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -1552,26 +1522,6 @@ TEST_P(ChromeShelfControllerTest, PreinstalledApps) {
   AddWebApp(web_app::kGmailAppId);
   EXPECT_EQ("Chrome, Gmail, Calendar, Files, Messages, Youtube, App1",
             GetPinnedAppStatus());
-}
-
-TEST_F(ChromeShelfControllerSyncConsentOptionalTest, PreinstalledApps) {
-  // Simulate a user who opted out of sync.
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile());
-  sync_service->GetUserSettings()->SetOsSyncFeatureEnabled(false);
-
-  InitShelfController();
-  EXPECT_EQ("Chrome", GetPinnedAppStatus());
-
-  // Simulate the preinstalled app loader installing some apps. Don't start the
-  // pref sync service, because this user opted out of sync.
-  AddWebApp(web_app::kYoutubeAppId);
-  AddWebApp(web_app::kMessagesAppId);
-  AddWebApp(web_app::kGmailAppId);
-  AddWebApp(web_app::kGoogleDocsAppId);
-
-  // Default apps are pinned.
-  EXPECT_EQ("Chrome, Gmail, Messages, Youtube", GetPinnedAppStatus());
 }
 
 TEST_F(ChromeShelfControllerLacrosTest, LacrosPinnedByDefault) {

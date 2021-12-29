@@ -6,7 +6,6 @@
 
 #include "chrome/browser/ash/printing/printers_sync_bridge.h"
 #include "chrome/browser/sync/test/integration/printers_helper.h"
-#include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -114,28 +113,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientPrintersSyncTest, AddPrintServerPrinter) {
 
   // Verify that the print server address was saved correctly.
   EXPECT_EQ(kServerAddress, spec_printer->print_server_uri());
-}
-
-// Tests for SyncConsentOptional.
-class SingleClientPrintersOsSyncTest : public SyncConsentOptionalSyncTest {
- public:
-  SingleClientPrintersOsSyncTest()
-      : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {}
-  ~SingleClientPrintersOsSyncTest() override = default;
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientPrintersOsSyncTest,
-                       DisablingOsSyncFeatureDisablesDataType) {
-  ASSERT_TRUE(SetupSync());
-  syncer::SyncService* service = GetSyncService(0);
-  syncer::SyncUserSettings* settings = service->GetUserSettings();
-
-  EXPECT_TRUE(settings->IsOsSyncFeatureEnabled());
-  EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::PRINTERS));
-
-  settings->SetOsSyncFeatureEnabled(false);
-  EXPECT_FALSE(settings->IsOsSyncFeatureEnabled());
-  EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::PRINTERS));
 }
 
 }  // namespace

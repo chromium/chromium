@@ -145,18 +145,6 @@ UserSelectableOsTypeSet SyncUserSettingsImpl::GetRegisteredSelectableOsTypes()
   }
   return registered_types;
 }
-
-bool SyncUserSettingsImpl::IsOsSyncFeatureEnabled() const {
-  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
-  return prefs_->IsOsSyncFeatureEnabled();
-}
-
-void SyncUserSettingsImpl::SetOsSyncFeatureEnabled(bool enabled) {
-  DCHECK(chromeos::features::IsSyncSettingsCategorizationEnabled());
-  // OsSyncFeature can't be disabled unless SyncConsentOptional is on.
-  DCHECK(enabled || chromeos::features::IsSyncConsentOptionalEnabled());
-  prefs_->SetOsSyncFeatureEnabled(enabled);
-}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool SyncUserSettingsImpl::IsCustomPassphraseAllowed() const {

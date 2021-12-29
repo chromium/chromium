@@ -82,15 +82,11 @@ class SyncConsentScreenHandler : public BaseScreenHandler,
       const std::string& consent_confirmation);
 
   // WebUI message handlers for SplitSettingsSync.
+  // TODO(https://crbug.com/1278325): Remove these.
   void HandleAcceptAndContinue(const ::login::StringList& consent_description,
                                const std::string& consent_confirmation);
   void HandleDeclineAndContinue(const ::login::StringList& consent_description,
                                 const std::string& consent_confirmation);
-
-  // Helper for the accept and decline cases.
-  void Continue(const ::login::StringList& consent_description,
-                const std::string& consent_confirmation,
-                UserChoice choice);
 
   // Adds resource `resource_id` both to `builder` and to `known_string_ids_`.
   void RememberLocalizedValue(const std::string& name,

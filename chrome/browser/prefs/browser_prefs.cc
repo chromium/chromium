@@ -696,6 +696,9 @@ const char kSyncFirstRunCompleted[] = "sync.first_run_completed";
 
 // Deprecated 12/2021.
 const char kArcAppReinstallState[] = "arc_app_reinstall_state";
+
+// Deprecated 12/2021.
+const char kOsSyncFeatureEnabled[] = "sync.os_sync_feature_enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Deprecated 12/2021.
@@ -918,6 +921,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kSyncFirstRunCompleted, false);
 
   registry->RegisterDictionaryPref(kArcAppReinstallState);
+
+  registry->RegisterBooleanPref(kOsSyncFeatureEnabled, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_ANDROID)
@@ -1801,6 +1806,8 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 12/2021.
   profile_prefs->ClearPref(kArcAppReinstallState);
+
+  profile_prefs->ClearPref(kOsSyncFeatureEnabled);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Added 12/2021.
