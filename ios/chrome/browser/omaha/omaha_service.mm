@@ -709,21 +709,24 @@ void OmahaService::SendOrScheduleNextPing() {
 }
 
 void OmahaService::PersistStates() {
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  // As a workaround to crbug.com/1247282, dispatch back to the main thread.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
-  [defaults setDouble:next_tries_time_.ToCFAbsoluteTime()
-               forKey:kNextTriesTimesKey];
-  [defaults setDouble:current_ping_time_.ToCFAbsoluteTime()
-               forKey:kCurrentPingKey];
-  [defaults setDouble:last_sent_time_.ToCFAbsoluteTime()
-               forKey:kLastSentTimeKey];
-  [defaults setInteger:number_of_tries_ forKey:kNumberTriesKey];
-  [defaults setObject:base::SysUTF8ToNSString(last_sent_version_.GetString())
-               forKey:kLastSentVersionKey];
-  [defaults setInteger:last_server_date_ forKey:kLastServerDateKey];
+    [defaults setDouble:next_tries_time_.ToCFAbsoluteTime()
+                 forKey:kNextTriesTimesKey];
+    [defaults setDouble:current_ping_time_.ToCFAbsoluteTime()
+                 forKey:kCurrentPingKey];
+    [defaults setDouble:last_sent_time_.ToCFAbsoluteTime()
+                 forKey:kLastSentTimeKey];
+    [defaults setInteger:number_of_tries_ forKey:kNumberTriesKey];
+    [defaults setObject:base::SysUTF8ToNSString(last_sent_version_.GetString())
+                 forKey:kLastSentVersionKey];
+    [defaults setInteger:last_server_date_ forKey:kLastServerDateKey];
 
-  // Save critical state information for usage reporting.
-  [defaults synchronize];
+    // Save critical state information for usage reporting.
+    [defaults synchronize];
+  });
 }
 
 void OmahaService::OnURLLoadComplete(
