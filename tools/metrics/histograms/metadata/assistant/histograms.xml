@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Assistant.ButtonClickCount" enum="AssistantButtonId"
     expires_after="2022-04-11">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>meilinw@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>
     The number of times buttons on Assistant UI (e.g., minimize) are clicked.
   </summary>
@@ -96,8 +96,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Assistant.DspHotwordDetection"
     enum="DspHotwordDetectionStatus" expires_after="2022-06-12">
-  <owner>meilinw@chromium.org</owner>
   <owner>xiaohuic@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>
     Counts the number of times Dsp hotword gets detected in each status, to help
     capture the hotword false acceptance rate.
@@ -107,7 +107,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Assistant.EntryPoint" enum="AssistantEntryPoint"
     expires_after="2022-08-09">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>meilinw@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>
     Record the Assistant entry point where Assistant UI becomes visible.
     ChromeOS only.
@@ -117,7 +117,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Assistant.ExitPoint" enum="AssistantExitPoint"
     expires_after="2022-08-09">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>meilinw@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>
     Record the Assistant exit point where Assistant UI becomes invisible.
     ChromeOS only.
@@ -175,23 +175,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.QueryCountPerEntryPoint" enum="AssistantEntryPoint"
-    expires_after="2021-12-26">
+    expires_after="2022-12-26">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>meilinw@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>Number of queries fired for each entry point.</summary>
 </histogram>
 
 <histogram name="Assistant.QueryResponseType" enum="AssistantQueryResponseType"
     expires_after="2022-07-01">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>meilinw@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>The Assistant query response type.</summary>
 </histogram>
 
 <histogram name="Assistant.QuerySource" enum="AssistantQuerySource"
     expires_after="2022-05-01">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>meilinw@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>
     The source of Assistant query (e.g. dialog plate text field, voice input).
     Recorded when the query is committed.
@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Assistant.ServiceEnabledUserCount" enum="BooleanEnabled"
     expires_after="2022-04-24">
   <owner>xiaohuic@chromium.org</owner>
-  <owner>meilinw@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>
     Among eligible users, whether the user has the Assistant service enabled.
     Recorded once for every UMA upload. The set of eligible users includes all
@@ -227,8 +227,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Assistant.SetDspHotwordLocale" enum="BooleanSuccess"
     expires_after="2022-05-01">
-  <owner>meilinw@chromium.org</owner>
   <owner>xiaohuic@chromium.org</owner>
+  <owner>croissant-eng@chromium.org</owner>
   <summary>
     For each attempt to set the hotword locale for a DSP device, counts whether
     the attempt succeeded.
