@@ -1675,8 +1675,16 @@ using NavigationConsumingTest = ChromeNavigationBrowserTest;
 // The fullscreen API is spec'd to require a user activation (aka user gesture),
 // so use that API to test if navigation consumes the activation.
 // https://fullscreen.spec.whatwg.org/#allowed-to-request-fullscreen
+// https://crbug.com/1283289 Flaky on ChromeOS.
+#if defined(OS_CHROMEOS)
+#define MAYBE_NavigationConsumesUserGesture_Fullscreen \
+  DISABLED_NavigationConsumesUserGesture_Fullscreen
+#else
+#define MAYBE_NavigationConsumesUserGesture_Fullscreen \
+  NavigationConsumesUserGesture_Fullscreen
+#endif
 IN_PROC_BROWSER_TEST_F(NavigationConsumingTest,
-                       NavigationConsumesUserGesture_Fullscreen) {
+                       MAYBE_NavigationConsumesUserGesture_Fullscreen) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("/navigation_consumes_gesture.html")));
