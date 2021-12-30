@@ -6,6 +6,7 @@ import './icons.js';
 import './emoji_group.js';
 import './emoji_group_button.js';
 import './emoji_search.js';
+import './text_group_button.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -15,9 +16,10 @@ import {EMOJI_GROUP_SIZE_PX, EMOJI_ICON_SIZE, EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT
 import {EmojiButton} from './emoji_button.js';
 import {Feature} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
-import {createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK} from './events.js';
+import {CATEGORY_BUTTON_CLICK, createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK} from './events.js';
+import {V2_SUBCATEGORY_TABS} from './metadata_extension.js';
 import {RecentEmojiStore} from './store.js';
-import {Emoji, EmojiGroup, EmojiGroupData, EmojiVariants, StoredEmoji} from './types.js';
+import {Emoji, EmojiGroup, EmojiGroupData, EmojiVariants, StoredEmoji, SubcategoryData} from './types.js';
 
 const EMOJI_ORDERING_JSON = '/emoji_14_0_ordering.json';
 
@@ -122,8 +124,11 @@ export class EmojiPicker extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!string} */
+      /** @private {string} */
+      category: {type: String, value: 'emoji', observer: 'onCategoryChanged'},
+      /** @type {string} */
       emojiDataUrl: {type: String, value: EMOJI_ORDERING_JSON},
+      /** @private {!Array<!SubcategoryData>} */
       emojiGroupTabs: {type: Array},
       /** @private {?EmojiGroupData} */
       emojiData: {
@@ -134,8 +139,15 @@ export class EmojiPicker extends PolymerElement {
       preferenceMapping: {type: Object},
       /** @private {!EmojiGroup} */
       history: {type: Object},
-      /** @private {!string} */
+      /** @private {string} */
       search: {type: String, value: '', observer: 'onSearchChanged'},
+      /** @private {boolean} */
+      textSubcategoryBarEnabled: {
+        type: Boolean,
+        value: false,
+        computed: 'isTextSubcategoryBarEnabled(v2Enabled, category)',
+        reflectToAttribute: true
+      }
     };
   }
 
@@ -238,6 +250,15 @@ export class EmojiPicker extends PolymerElement {
       '--emoji-picker-top-padding': EMOJI_PICKER_TOP_PADDING_PX,
       '--emoji-spacing': EMOJI_SPACING_PX,
     });
+
+    // only after the next render is this.v2Enabled updated.
+    afterNextRender(this, () => {
+      if (this.v2Enabled) {
+        this.addEventListener(
+            CATEGORY_BUTTON_CLICK,
+            ev => this.set('category', ev.detail.categoryName));
+      }
+    });
   }
 
   /**
@@ -311,10 +332,13 @@ export class EmojiPicker extends PolymerElement {
     // focus and scroll to selected group's first emoji.
     const group =
         this.shadowRoot.querySelector(`div[data-group="${newGroup}"]`);
-    group.querySelector('emoji-group')
-        .shadowRoot.querySelector('#fake-focus-target')
-        .focus();
-    group.scrollIntoView();
+
+    if (group) {
+      group.querySelector('emoji-group')
+          .shadowRoot.querySelector('#fake-focus-target')
+          .focus();
+      group.scrollIntoView();
+    }
   }
 
   onEmojiScroll() {
@@ -561,6 +585,40 @@ export class EmojiPicker extends PolymerElement {
     if (newValue && newValue.length) {
       this.dispatchEvent(createCustomEvent(EMOJI_DATA_LOADED));
     }
+  }
+
+  /**
+   * Triggers when category property changes
+   * @param {string} newCategoryName
+   */
+  onCategoryChanged(newCategoryName) {
+    if (this.v2Enabled) {
+      const historyTab = this.emojiGroupTabs[0];
+      const categoryTabs =
+          V2_SUBCATEGORY_TABS.filter(tab => tab.category === newCategoryName);
+      this.set('emojiGroupTabs', [historyTab, ...categoryTabs]);
+    }
+  }
+
+  /**
+   * @private
+   * @param {SubcategoryData} tab
+   * @return {boolean}
+   */
+  isNonHistoryTab(tab) {
+    return tab.groupId !== 'history';
+  }
+
+  /**
+   * Returns true if the subcategory bar requires text group buttons.
+   * @private
+   * @param {boolean} v2Enabled
+   * @param {string} category
+   */
+  isTextSubcategoryBarEnabled(v2Enabled, category) {
+    // Categories that require its subcategory bar to be labelled by text.
+    const textCategories = ['symbol', 'emoticon'];
+    return v2Enabled && textCategories.includes(category);
   }
 }
 

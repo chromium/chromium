@@ -152,6 +152,25 @@
   .sr-only {
     user-select: none;
   }
+
+  /* Center vertically the history icon and text buttons.*/
+  :host([text-subcategory-bar-enabled]) #tabs {
+    align-items: center;
+  }
+
+  /* TODO(b/212459278, b/212459260): Reset bar, left and right chevron 
+  visibility again after finishing the subcategory bar layout implementation.*/
+  :host([text-subcategory-bar-enabled]) #bar {
+    visibility: hidden;
+  }
+
+  :host([text-subcategory-bar-enabled]) #left-chevron {
+    visibility: hidden;
+  }
+
+  :host([text-subcategory-bar-enabled]) #right-chevron {
+    visibility: hidden;
+  }
 </style>
 
 <div class="sr-only" aria-live="polite">
@@ -178,34 +197,55 @@
         on-click="onLeftChevronClick"
         iron-icon="emoji_picker:keyboard_arrow_left">
       </cr-icon-button>
-      <template is="dom-repeat" items="[[emojiGroupTabs]]">
-        <emoji-group-button data-group$="[[item.groupId]]"
-          group-id="[[item.groupId]]"
-          active="[[item.active]]"
-          disabled="[[item.disabled]]"
-          icon="[[item.icon]]" name="[[item.name]]">
-        </emoji-group-button>
+      <template is="dom-if" if="[[!textSubcategoryBarEnabled]]">
+        <template is="dom-repeat" items="[[emojiGroupTabs]]">
+          <emoji-group-button data-group$="[[item.groupId]]"
+            group-id="[[item.groupId]]"
+            active="[[item.active]]"
+            disabled="[[item.disabled]]"
+            icon="[[item.icon]]" name="[[item.name]]">
+          </emoji-group-button>
+        </template>
+        <!--Fake group button to increase maximum scrolling, need an icon to
+          render as invisible-->
+        <div class="fake"
+          tabindex="-1">
+        </div>
+        <div class="fake"
+          tabindex="-1">
+        </div>
+        <div class="fake"
+          tabindex="-1">
+        </div>
+        <div class="fake"
+          tabindex="-1">
+        </div>
+        <div class="fake"
+          tabindex="-1">
+        </div>
+        <div class="fake" id="RightChevronScrollTarget"
+          tabindex="-1">
+        </div>
       </template>
-      <!--Fake group button to increase maximum scrolling, need an icon to
-        render as invisible-->
-      <div class="fake"
-        tabindex="-1">
-      </div>
-      <div class="fake"
-        tabindex="-1">
-      </div>
-      <div class="fake"
-        tabindex="-1">
-      </div>
-      <div class="fake"
-        tabindex="-1">
-      </div>
-      <div class="fake"
-        tabindex="-1">
-      </div>
-      <div class="fake" id="RightChevronScrollTarget"
-        tabindex="-1">
-      </div>
+      <template is="dom-if" if="[[textSubcategoryBarEnabled]]">
+        <!-- Render history tab. -->
+        <emoji-group-button data-group$="[[emojiGroupTabs.0.groupId]]"
+          group-id="[[emojiGroupTabs.0.groupId]]"
+          active="[[emojiGroupTabs.0.active]]"
+          disabled="[[emojiGroupTabs.0.disabled]]"
+          icon="[[emojiGroupTabs.0.icon]]" name="[[emojiGroupTabs.0.name]]">
+        </emoji-group-button>
+        <!-- Render non-history tabs. -->
+        <template is="dom-repeat" items="[[emojiGroupTabs]]"
+          filter="isNonHistoryTab">
+          <text-group-button data-group$="[[item.groupId]]"
+            group-id="[[item.groupId]]"
+            active="[[item.active]]"
+            disabled="[[item.disabled]]"
+            name="[[item.name]]">
+          </text-group-button>
+        </template>
+      </template>
       <cr-icon-button id="right-chevron" class="chevron"
         on-click="onRightChevronClick"
         iron-icon="emoji_picker:keyboard_arrow_right">

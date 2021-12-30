@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @typedef {{name: !string, icon: !string, active: !boolean}} CategoryData
+ * @typedef {{name: string, icon: string, active: boolean}} CategoryData
  */
 export let CategoryData;
 
@@ -32,3 +32,9 @@ export let EmojiGroupData;
  * StoredEmoji
  */
 export let StoredEmoji;
+
+/**
+ * @typedef {{name: string, icon: string, groupId: string,
+ *            active: boolean, disabled: boolean}} SubcategoryData
+ */
+export let SubcategoryData;
