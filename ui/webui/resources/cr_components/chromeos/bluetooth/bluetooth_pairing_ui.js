@@ -110,6 +110,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       selectedPageId_: {
         type: String,
         value: BluetoothPairingSubpageId.DEVICE_SELECTION_PAGE,
+        observer: 'onSelectedPageIdChanged_',
       },
 
       /**
@@ -556,6 +557,24 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     }
 
     this.finishPendingCallbacksForTest_();
+  }
+
+  /** @private */
+  onSelectedPageIdChanged_() {
+    // If the current page changes to the device selection page, focus the item
+    // corresponding to the last device attempted to be paired with.
+    if (this.selectedPageId_ !==
+        BluetoothPairingSubpageId.DEVICE_SELECTION_PAGE) {
+      return;
+    }
+
+    const deviceSelectionPage =
+        this.shadowRoot.querySelector('#deviceSelectionPage');
+    if (!deviceSelectionPage) {
+      return;
+    }
+
+    deviceSelectionPage.attemptFocusLastSelectedItem();
   }
 
   /** @private */

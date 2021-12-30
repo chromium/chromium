@@ -104,6 +104,11 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     const ironPages = bluetoothPairingUi.shadowRoot.querySelector('iron-pages');
     ironPages.dispatchEvent(event);
     await flushTasks();
+
+    // Explicitly fail the pairing.
+    bluetoothConfig.getLastCreatedPairingHandler().completePairDevice(
+        /*success=*/ false);
+    await flushTasks();
   }
 
   /**
@@ -140,8 +145,6 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
 
     // Simulate pairing cancelation.
     await simulateCancelation();
-    deviceHandler.completePairDevice(/*success=*/ false);
-    await flushTasks();
 
     assertFalse(!!getEnterCodePage());
 
@@ -199,8 +202,6 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
 
     // Simulate pairing cancelation.
     await simulateCancelation();
-    deviceHandler.completePairDevice(/*success=*/ false);
-    await flushTasks();
 
     // We return to device selection page when pairing is cancelled.
     assertFalse(!!getDeviceRequestCodePage());
@@ -452,8 +453,6 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
 
     // Simulate pairing cancelation.
     await simulateCancelation();
-    deviceHandler.completePairDevice(/*success=*/ false);
-    await flushTasks();
 
     // We return to device selection page when pairing is cancelled.
     assertFalse(!!getConfirmCodePage());
@@ -670,8 +669,6 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
 
         // Simulate clicking 'Cancel'.
         await simulateCancelation();
-        deviceHandler.completePairDevice(/*success=*/ false);
-        await flushTasks();
         await waitAfterNextRender(bluetoothPairingUi);
 
         // The device selection page should be shown.
@@ -742,14 +739,21 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     assertTrue(!!getConfirmCodePage());
     assertEquals(getConfirmCodePage().code, pairingCode);
 
+    let attemptFocusLastSelectedItemCallCount = 0;
+    getDeviceSelectionPage().attemptFocusLastSelectedItem = () => {
+      attemptFocusLastSelectedItemCallCount++;
+    };
+
     // Simulate pairing failure.
     deviceHandler.completePairDevice(/*success=*/ false);
     await flushTasks();
 
     // The device selection page should be shown and failed device ID
-    // should be set since the pairing operation failed.
+    // should be set since the pairing operation failed. The device list item
+    // should be focused.
     assertTrue(!!getDeviceSelectionPage());
     assertEquals(getDeviceSelectionPage().failedPairingDeviceId, deviceId);
+    assertEquals(1, attemptFocusLastSelectedItemCallCount);
 
     // Retry pairing.
     await selectDevice(device.deviceProperties);
@@ -761,13 +765,13 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
 
     // Simulate clicking 'Cancel'.
     await simulateCancelation();
-    await flushTasks();
 
     // The device selection page should be shown, but no failed device ID
     // should be set since the operation was cancelled and did not explicitly
-    // fail.
+    // fail. The device list item should be focused.
     assertTrue(!!getDeviceSelectionPage());
     assertFalse(!!getDeviceSelectionPage().failedPairingDeviceId);
+    assertEquals(2, attemptFocusLastSelectedItemCallCount);
   });
 
   test('Disable Bluetooth during pairing', async function() {
