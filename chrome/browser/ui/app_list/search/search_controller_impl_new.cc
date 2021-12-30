@@ -35,6 +35,16 @@
 
 namespace app_list {
 
+namespace {
+
+// The period of time ("burn-in") to wait before publishing a first collection
+// of search results to the model updater.
+// TODO(crbug.com/1279686): Make this modifiable via a flag, for UX
+// experimentation.
+constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(100);
+
+}  // namespace
+
 SearchControllerImplNew::SearchControllerImplNew(
     AppListModelUpdater* model_updater,
     AppListControllerDelegate* list_controller,
@@ -52,6 +62,14 @@ SearchControllerImplNew::~SearchControllerImplNew() {}
 
 void SearchControllerImplNew::StartSearch(const std::u16string& query) {
   session_start_ = base::Time::Now();
+
+  // For query searches, begin the burn-in timer.
+  if (!query.empty()) {
+    burn_in_timer_.Start(
+        FROM_HERE, kBurnInPeriod,
+        base::BindOnce(&SearchControllerImplNew::RankAndPublish,
+                       base::Unretained(this), absl::nullopt));
+  }
 
   // TODO(crbug.com/1199206): We should move this histogram logic somewhere
   // else.
@@ -156,17 +174,46 @@ void SearchControllerImplNew::SetResults(
   }
 
   results_[provider_type] = std::move(results);
-  RankAndPublish(provider_type);
+
+  // If the burn-in period has not yet elapsed, don't call
+  // RankAndPublish here. This case is covered by a call scheduled
+  // from within Start().
+  // TODO(crbug.com/1199206): Refactor SetResults to split into query search /
+  // zero state pathways, and remove burn-in period from zero state.
+  if (base::Time::Now() - session_start_ > kBurnInPeriod) {
+    RankAndPublish(provider_type);
+  }
 }
 
 void SearchControllerImplNew::RankAndPublish(
-    const ash::AppListSearchResultType provider_type) {
+    const absl::optional<ash::AppListSearchResultType> provider_type) {
   DCHECK(ranker_);
 
-  // Update ranking of all results and categories. This ordering is important,
-  // as result scores may affect category scores.
-  ranker_->UpdateResultRanks(results_, provider_type);
-  ranker_->UpdateCategoryRanks(results_, categories_, provider_type);
+  // TODO(crbug.com/1199206): Refactor RankAndPublish to split into query search
+  // / zero state pathways, and remove burn-in period from zero state.
+  if (results_.empty()) {
+    // Happens if the burn-in period has elapsed without any results having been
+    // received from providers. Return early.
+    return;
+  }
+
+  if (!provider_type.has_value()) {
+    // Update ranking of all results and categories for all providers which
+    // have returned results.
+    for (const auto& type_results : results_) {
+      // This ordering is important, as result scores may affect category
+      // scores.
+      // TODO(crbug.com/1199206): Look into whether UpdateCategoryRanks needs to
+      // be run more than once.
+      ranker_->UpdateResultRanks(results_, type_results.first);
+      ranker_->UpdateCategoryRanks(results_, categories_, type_results.first);
+    }
+  } else {
+    // Update ranking of all results and categories for this provider. This
+    // ordering is important, as result scores may affect category scores.
+    ranker_->UpdateResultRanks(results_, *provider_type);
+    ranker_->UpdateCategoryRanks(results_, categories_, *provider_type);
+  }
 
   // Sort categories and create a vector of category enums in display order.
   std::sort(categories_.begin(), categories_.end(),

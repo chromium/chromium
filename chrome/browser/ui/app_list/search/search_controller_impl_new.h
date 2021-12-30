@@ -14,10 +14,12 @@
 
 #include "base/callback.h"
 #include "base/observer_list.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
 class AppListModelUpdater;
@@ -88,7 +90,8 @@ class SearchControllerImplNew : public SearchController {
   }
 
  private:
-  void RankAndPublish(const ash::AppListSearchResultType provider_type);
+  void RankAndPublish(
+      const absl::optional<ash::AppListSearchResultType> provider_type);
 
   Profile* profile_;
 
@@ -110,6 +113,11 @@ class SearchControllerImplNew : public SearchController {
 
   // Storage for category scores for the current query.
   CategoriesList categories_;
+
+  // A timer for the burn-in period. During the burn-in period, results are
+  // collected from search providers. Publication of results to the model
+  // updater is delayed until the burn-in period has elapsed.
+  base::OneShotTimer burn_in_timer_;
 
   std::unique_ptr<SearchMetricsObserver> metrics_observer_;
   using Providers = std::vector<std::unique_ptr<SearchProvider>>;

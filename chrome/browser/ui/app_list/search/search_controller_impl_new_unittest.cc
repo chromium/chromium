@@ -104,7 +104,8 @@ std::vector<std::unique_ptr<ChromeSearchResult>> MakeResults(
 
 class SearchControllerImplNewTest : public testing::Test {
  public:
-  SearchControllerImplNewTest() = default;
+  SearchControllerImplNewTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   SearchControllerImplNewTest(const SearchControllerImplNewTest&) = delete;
   SearchControllerImplNewTest& operator=(const SearchControllerImplNewTest&) =
       delete;
@@ -134,6 +135,10 @@ class SearchControllerImplNewTest : public testing::Test {
 
   void Wait() { task_environment_.RunUntilIdle(); }
 
+  void ElapseBurnInPeriod() {
+    task_environment_.FastForwardBy(base::Milliseconds(200));
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -157,6 +162,7 @@ TEST_F(SearchControllerImplNewTest, CategoriesOrderedCorrectly) {
 
   // Simulate starting a search.
   search_controller_->StartSearch(u"abc");
+  ElapseBurnInPeriod();
   // Simulate several providers returning results.
   search_controller_->SetResults(ash::AppListSearchResultType::kOmnibox,
                                  std::move(web_results));
@@ -179,6 +185,7 @@ TEST_F(SearchControllerImplNewTest, BestMatchesOrderedAboveOtherResults) {
       {{Category::kApps, 0.4}, {Category::kWeb, 0.2}});
 
   search_controller_->StartSearch(u"abc");
+  ElapseBurnInPeriod();
   // Simulate a provider returning and containing all of the above results. A
   // single provider wouldn't return many results like this, but that's
   // unimportant for the test.
@@ -186,6 +193,36 @@ TEST_F(SearchControllerImplNewTest, BestMatchesOrderedAboveOtherResults) {
                                  std::move(results));
 
   ExpectIdOrder({"a", "c", "d", "b"});
+}
+
+TEST_F(SearchControllerImplNewTest, SetResultsPreAndPostBurnIn) {
+  ranker_delegate_->SetCategoryRanks(
+      {{Category::kFiles, 0.3}, {Category::kWeb, 0.2}, {Category::kApps, 0.1}});
+  auto file_results = MakeResults({"a"}, {Category::kFiles}, {false}, {0.9});
+  auto web_results = MakeResults(
+      {"c", "d", "b"}, {Category::kWeb, Category::kWeb, Category::kWeb},
+      {false, false, false}, {0.2, 0.1, 0.4});
+  auto app_results = MakeResults({"e"}, {Category::kApps}, {false}, {0.1});
+
+  // Simulate starting a search.
+  search_controller_->StartSearch(u"abc");
+
+  // Simulate a provider returning results within the burn-in period.
+  search_controller_->SetResults(ash::AppListSearchResultType::kOmnibox,
+                                 std::move(web_results));
+  ExpectIdOrder({});
+
+  // Expect results to appear after burn-in period has elapsed.
+  ElapseBurnInPeriod();
+  ExpectIdOrder({"b", "c", "d"});
+
+  // Simulate several providers returning results after the burn-in period.
+  search_controller_->SetResults(ash::AppListSearchResultType::kInstalledApp,
+                                 std::move(app_results));
+  ExpectIdOrder({"b", "c", "d", "e"});
+  search_controller_->SetResults(ash::AppListSearchResultType::kFileSearch,
+                                 std::move(file_results));
+  ExpectIdOrder({"a", "b", "c", "d", "e"});
 }
 
 }  // namespace app_list
