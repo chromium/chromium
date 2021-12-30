@@ -61,7 +61,7 @@ compile_js_files = [
   "thumbnailer.js",
   "timer.ts",
   "toast.ts",
-  "tooltip.js",
+  "tooltip.ts",
   "type.ts",
   "unload.ts",
   "untrusted_ga_helper.js",

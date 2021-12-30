@@ -6,27 +6,24 @@ import * as dom from './dom.js';
 
 /**
  * Wrapper element that shows tooltip.
- * @type {?HTMLElement}
  */
-let wrapper = null;
+let wrapper: HTMLElement|null = null;
 
 /**
  * Hovered element whose tooltip to be shown.
- * @type {?HTMLElement}
  */
-let hovered = null;
+let hovered: HTMLElement|null = null;
 
 /**
  * Name of event triggered for positioning tooltip.
- * @const {string}
  */
 export const TOOLTIP_POSITION_EVENT_NAME = 'tooltipposition';
 
 /**
  * Positions tooltip relative to UI.
- * @param {!DOMRectReadOnly} rect UI's reference region.
+ * @param rect UI's reference region.
  */
-export function position(rect) {
+export function position(rect: DOMRectReadOnly): void {
   const [edgeMargin, elementMargin] = [5, 8];
   let tooltipTop = rect.top - wrapper.offsetHeight - elementMargin;
   if (tooltipTop < edgeMargin) {
@@ -45,7 +42,7 @@ export function position(rect) {
 /**
  * Hides the shown tooltip if any.
  */
-export function hide() {
+export function hide(): void {
   if (hovered) {
     hovered = null;
     wrapper.textContent = '';
@@ -55,9 +52,9 @@ export function hide() {
 
 /**
  * Shows a tooltip over the hovered element.
- * @param {!HTMLElement} element Hovered element whose tooltip to be shown.
+ * @param element Hovered element whose tooltip to be shown.
  */
-function show(element) {
+function show(element: HTMLElement) {
   hide();
   let message = element.getAttribute('aria-label');
   if (element instanceof HTMLInputElement) {
@@ -81,12 +78,11 @@ function show(element) {
 
 /**
  * Sets up tooltips for elements.
- * @param {!NodeListOf<!HTMLElement>} elements Elements whose tooltips to
- *     be shown.
- * @return {!NodeListOf<!HTMLElement>} Elements whose tooltips have been
- *     set up.
+ * @param elements Elements whose tooltips to be shown.
+ * @return Elements whose tooltips have been set up.
  */
-export function setup(elements) {
+export function setup(elements: NodeListOf<HTMLElement>):
+    NodeListOf<HTMLElement> {
   wrapper = dom.get('#tooltip', HTMLElement);
   elements.forEach((el) => {
     const handler = () => {
