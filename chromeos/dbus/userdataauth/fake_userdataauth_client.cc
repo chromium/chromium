@@ -25,6 +25,9 @@ constexpr uint64_t kDircryptoMigrationMaxProgress = 15;
 // Template for auth session ID.
 constexpr char kAuthSessionIdTemplate[] = "AuthSession-%d";
 
+// Guest username constant that mirrors the one in real cryptohome
+constexpr char kGuestUserName[] = "$guest";
+
 // Used to track the fake instance, mirrors the instance in the base class.
 FakeUserDataAuthClient* g_instance = nullptr;
 
@@ -75,25 +78,30 @@ void FakeUserDataAuthClient::Mount(
   ::user_data_auth::MountReply reply;
 
   cryptohome::AccountIdentifier account;
-  if (request.has_account() || request.guest_mount()) {
-    account = request.account();
+  if (request.guest_mount()) {
+    account.set_account_id(kGuestUserName);
+    reply.set_sanitized_username(GetStubSanitizedUsername(account));
   } else {
-    auto auth_session = auth_sessions_.find(request.auth_session_id());
-    DCHECK(auth_session != std::end(auth_sessions_));
-    account = auth_session->second.account;
+    if (request.has_account()) {
+      account = request.account();
+      reply.set_sanitized_username(GetStubSanitizedUsername(account));
+      if (mount_create_required_ && !request.has_create())
+        error = ::user_data_auth::CryptohomeErrorCode::
+            CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND;
+    } else {
+      auto auth_session = auth_sessions_.find(request.auth_session_id());
+      DCHECK(auth_session != std::end(auth_sessions_));
+      account = auth_session->second.account;
+    }
+
+    reply.set_sanitized_username(GetStubSanitizedUsername(account));
+    if (IsEcryptfsUserHome(account) && !request.to_migrate_from_ecryptfs() &&
+        request.force_dircrypto_if_available()) {
+      error = ::user_data_auth::CryptohomeErrorCode::
+          CRYPTOHOME_ERROR_MOUNT_OLD_ENCRYPTION;
+    }
   }
 
-  reply.set_sanitized_username(GetStubSanitizedUsername(account));
-
-  if (IsEcryptfsUserHome(request.account()) &&
-      !request.to_migrate_from_ecryptfs() &&
-      request.force_dircrypto_if_available()) {
-    error = ::user_data_auth::CryptohomeErrorCode::
-        CRYPTOHOME_ERROR_MOUNT_OLD_ENCRYPTION;
-  }
-  if (mount_create_required_ && !request.has_create())
-    error = ::user_data_auth::CryptohomeErrorCode::
-        CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND;
   reply.set_error(error);
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
@@ -258,6 +266,7 @@ void FakeUserDataAuthClient::StartAuthSession(
 void FakeUserDataAuthClient::AuthenticateAuthSession(
     const ::user_data_auth::AuthenticateAuthSessionRequest& request,
     AuthenticateAuthSessionCallback callback) {
+  last_authenticate_auth_session_request_ = request;
   ::user_data_auth::AuthenticateAuthSessionReply reply;
 
   const std::string auth_session_id = request.auth_session_id();

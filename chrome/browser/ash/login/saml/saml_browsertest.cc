@@ -27,6 +27,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/attestation/mock_machine_certificate_uploader.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
@@ -180,6 +181,10 @@ class SecretInterceptingFakeUserDataAuthClient : public FakeUserDataAuthClient {
   SecretInterceptingFakeUserDataAuthClient& operator=(
       const SecretInterceptingFakeUserDataAuthClient&) = delete;
 
+  void AuthenticateAuthSession(
+      const ::user_data_auth::AuthenticateAuthSessionRequest& request,
+      AuthenticateAuthSessionCallback callback) override;
+
   void Mount(const ::user_data_auth::MountRequest& request,
              MountCallback callback) override;
 
@@ -192,25 +197,32 @@ class SecretInterceptingFakeUserDataAuthClient : public FakeUserDataAuthClient {
 SecretInterceptingFakeUserDataAuthClient::
     SecretInterceptingFakeUserDataAuthClient() {}
 
+void SecretInterceptingFakeUserDataAuthClient::AuthenticateAuthSession(
+    const ::user_data_auth::AuthenticateAuthSessionRequest& request,
+    AuthenticateAuthSessionCallback callback) {
+  salted_hashed_secret_ = request.authorization().key().secret();
+  FakeUserDataAuthClient::AuthenticateAuthSession(request, std::move(callback));
+}
+
 void SecretInterceptingFakeUserDataAuthClient::Mount(
     const ::user_data_auth::MountRequest& request,
     MountCallback callback) {
-  salted_hashed_secret_ = request.authorization().key().secret();
+  if (request.has_authorization()) {
+    salted_hashed_secret_ = request.authorization().key().secret();
+  }
   FakeUserDataAuthClient::Mount(request, std::move(callback));
 }
 
 }  // namespace
 
-class SamlTest : public OobeBaseTest {
+class SamlTestBase : public OobeBaseTest {
  public:
-  SamlTest() {
-    fake_gaia_.set_initialize_fake_merge_session(false);
-  }
+  SamlTestBase() { fake_gaia_.set_initialize_fake_merge_session(false); }
 
-  SamlTest(const SamlTest&) = delete;
-  SamlTest& operator=(const SamlTest&) = delete;
+  SamlTestBase(const SamlTestBase&) = delete;
+  SamlTestBase& operator=(const SamlTestBase&) = delete;
 
-  ~SamlTest() override {}
+  ~SamlTestBase() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     OobeBaseTest::SetUpCommandLine(command_line);
@@ -333,14 +345,28 @@ class SamlTest : public OobeBaseTest {
 
  private:
   FakeSamlIdpMixin fake_saml_idp_mixin_{&mixin_host_, &fake_gaia_};
+};
 
-  base::test::ScopedFeatureList feature_list_;
+class SamlTest : public SamlTestBase, public testing::WithParamInterface<bool> {
+ public:
+  SamlTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kUseAuthsessionAuthentication);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kUseAuthsessionAuthentication);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that signin frame should display the SAML notice and the 'back' button
 // when SAML IdP page is loaded. And the 'back' button goes back to gaia on
 // clicking.
-IN_PROC_BROWSER_TEST_F(SamlTest, SamlUI) {
+IN_PROC_BROWSER_TEST_P(SamlTest, SamlUI) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFirstUserCorpExampleComEmail);
@@ -373,7 +399,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, SamlUI) {
 
 // The SAML IdP requires HTTP Protocol-level authentication (Basic in this
 // case).
-IN_PROC_BROWSER_TEST_F(SamlTest, IdpRequiresHttpAuth) {
+IN_PROC_BROWSER_TEST_P(SamlTest, IdpRequiresHttpAuth) {
   fake_saml_idp()->SetRequireHttpBasicAuth(true);
   fake_saml_idp()->SetLoginHTMLTemplate("saml_api_login.html");
   fake_saml_idp()->SetLoginAuthHTMLTemplate("saml_api_login_auth.html");
@@ -432,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, IdpRequiresHttpAuth) {
 }
 
 // Tests the sign-in flow when the credentials passing API is used.
-IN_PROC_BROWSER_TEST_F(SamlTest, CredentialPassingAPI) {
+IN_PROC_BROWSER_TEST_P(SamlTest, CredentialPassingAPI) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_api_login.html");
   fake_saml_idp()->SetLoginAuthHTMLTemplate("saml_api_login_auth.html");
@@ -471,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, CredentialPassingAPI) {
 
 // Tests the sign-in flow when the credentials passing API is used w/o 'confirm'
 // call. The password from the last 'add' should be used.
-IN_PROC_BROWSER_TEST_F(SamlTest, CredentialPassingAPIWithoutConfirm) {
+IN_PROC_BROWSER_TEST_P(SamlTest, CredentialPassingAPIWithoutConfirm) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_api_login.html");
   fake_saml_idp()->SetLoginAuthHTMLTemplate(
@@ -508,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, CredentialPassingAPIWithoutConfirm) {
 }
 
 // Tests the single password scraped flow.
-IN_PROC_BROWSER_TEST_F(SamlTest, ScrapedSingle) {
+IN_PROC_BROWSER_TEST_P(SamlTest, ScrapedSingle) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   StartSamlAndWaitForIdpPageLoad(
@@ -550,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, ScrapedSingle) {
 }
 
 // Tests password scraping from a dynamically created password field.
-IN_PROC_BROWSER_TEST_F(SamlTest, ScrapedDynamic) {
+IN_PROC_BROWSER_TEST_P(SamlTest, ScrapedDynamic) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFirstUserCorpExampleComEmail);
@@ -580,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, ScrapedDynamic) {
 }
 
 // Tests the multiple password scraped flow.
-IN_PROC_BROWSER_TEST_F(SamlTest, ScrapedMultiple) {
+IN_PROC_BROWSER_TEST_P(SamlTest, ScrapedMultiple) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
 
@@ -615,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, ScrapedMultiple) {
 }
 
 // Tests the no password scraped flow.
-IN_PROC_BROWSER_TEST_F(SamlTest, ScrapedNone) {
+IN_PROC_BROWSER_TEST_P(SamlTest, ScrapedNone) {
   base::HistogramTester histogram_tester;
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_no_passwords.html");
 
@@ -653,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, ScrapedNone) {
 // Types the second user e-mail into the GAIA login form but then authenticates
 // as the first user via SAML. Verifies that the logged-in user is correctly
 // identified as the first user.
-IN_PROC_BROWSER_TEST_F(SamlTest, UseAutenticatedUserEmailAddress) {
+IN_PROC_BROWSER_TEST_P(SamlTest, UseAutenticatedUserEmailAddress) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   // Type the second user e-mail into the GAIA login form.
   StartSamlAndWaitForIdpPageLoad(
@@ -677,7 +703,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, UseAutenticatedUserEmailAddress) {
 
 // Verifies that if the authenticated user's e-mail address cannot be retrieved,
 // an error message is shown.
-IN_PROC_BROWSER_TEST_F(SamlTest, FailToRetrieveAutenticatedUserEmailAddress) {
+IN_PROC_BROWSER_TEST_P(SamlTest, FailToRetrieveAutenticatedUserEmailAddress) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFirstUserCorpExampleComEmail);
@@ -694,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, FailToRetrieveAutenticatedUserEmailAddress) {
 
 // Tests the password confirm flow when more than one password is scraped: show
 // error on the first failure and fatal error on the second failure.
-IN_PROC_BROWSER_TEST_F(SamlTest, PasswordConfirmFlow) {
+IN_PROC_BROWSER_TEST_P(SamlTest, PasswordConfirmFlow) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
   StartSamlAndWaitForIdpPageLoad(
       saml_test_users::kFirstUserCorpExampleComEmail);
@@ -728,7 +754,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, PasswordConfirmFlow) {
 // Verifies that when the login flow redirects from one host to another, the
 // notice shown to the user is updated. This guards against regressions of
 // http://crbug.com/447818.
-IN_PROC_BROWSER_TEST_F(SamlTest, NoticeUpdatedOnRedirect) {
+IN_PROC_BROWSER_TEST_P(SamlTest, NoticeUpdatedOnRedirect) {
   // Start another https server at `kAdditionalIdPHost`.
   net::EmbeddedTestServer saml_https_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
@@ -782,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, NoticeUpdatedOnRedirect) {
 
 // Verifies that when GAIA attempts to redirect to a SAML IdP served over http,
 // not https, the redirect is blocked and an error message is shown.
-IN_PROC_BROWSER_TEST_F(SamlTest, HTTPRedirectDisallowed) {
+IN_PROC_BROWSER_TEST_P(SamlTest, HTTPRedirectDisallowed) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
 
   WaitForSigninScreen();
@@ -800,7 +826,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, HTTPRedirectDisallowed) {
 // Verifies that when GAIA attempts to redirect to a page served over http, not
 // https, via an HTML meta refresh, the redirect is blocked and an error message
 // is shown. This guards against regressions of http://crbug.com/359515.
-IN_PROC_BROWSER_TEST_F(SamlTest, MetaRefreshToHTTPDisallowed) {
+IN_PROC_BROWSER_TEST_P(SamlTest, MetaRefreshToHTTPDisallowed) {
   const GURL url = embedded_test_server()->base_url().Resolve("/SSO");
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login_instant_meta_refresh.html");
   fake_saml_idp()->SetRefreshURL(url);
@@ -816,7 +842,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, MetaRefreshToHTTPDisallowed) {
       IDS_LOGIN_FATAL_ERROR_TEXT_INSECURE_URL, base::UTF8ToUTF16(url.spec())));
 }
 
-class SAMLEnrollmentTest : public SamlTest {
+class SAMLEnrollmentTest : public SamlTestBase {
  public:
   SAMLEnrollmentTest();
 
@@ -850,7 +876,7 @@ void SAMLEnrollmentTest::SetUpOnMainThread() {
   token_info.email = saml_test_users::kFirstUserCorpExampleComEmail;
   fake_gaia_.fake_gaia()->IssueOAuthToken(kTestRefreshToken, token_info);
 
-  SamlTest::SetUpOnMainThread();
+  SamlTestBase::SetUpOnMainThread();
 }
 
 void SAMLEnrollmentTest::StartSamlAndWaitForIdpPageLoad(
@@ -892,7 +918,7 @@ IN_PROC_BROWSER_TEST_F(SAMLEnrollmentTest, WithCredentialsPassingAPI) {
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepDeviceAttributes);
 }
 
-class SAMLPolicyTest : public SamlTest {
+class SAMLPolicyTest : public SamlTestBase {
  public:
   SAMLPolicyTest();
 
@@ -950,7 +976,7 @@ SAMLPolicyTest::~SAMLPolicyTest() {}
 void SAMLPolicyTest::SetUpInProcessBrowserTestFixture() {
   SessionManagerClient::InitializeFakeInMemory();
 
-  SamlTest::SetUpInProcessBrowserTestFixture();
+  SamlTestBase::SetUpInProcessBrowserTestFixture();
 
   // Initialize device policy.
   std::set<std::string> device_affiliation_ids;
@@ -967,7 +993,7 @@ void SAMLPolicyTest::SetUpInProcessBrowserTestFixture() {
 }
 
 void SAMLPolicyTest::SetUpOnMainThread() {
-  SamlTest::SetUpOnMainThread();
+  SamlTestBase::SetUpOnMainThread();
 
   // Pretend that the test users' OAuth tokens are valid.
   user_manager::UserManager::Get()->SaveUserOAuthStatus(
@@ -1009,7 +1035,7 @@ void SAMLPolicyTest::SetUpOnMainThread() {
       ->SetupDefaultEnvironment();
 }
 void SAMLPolicyTest::SetUpCommandLine(base::CommandLine* command_line) {
-  SamlTest::SetUpCommandLine(command_line);
+  SamlTestBase::SetUpCommandLine(command_line);
 
   // Disable token check to allow offline sign-in for the fake gaia users.
   command_line->AppendSwitch(chromeos::switches::kDisableGaiaServices);
@@ -1528,7 +1554,7 @@ static_assert(
     "kTimeoutTaskDelay should be less than kBuildResponseTaskDelay to trigger "
     "timeout error in SAMLDeviceAttestationTest.TimeoutError test.");
 
-class SAMLDeviceAttestationTest : public SamlTest {
+class SAMLDeviceAttestationTest : public SamlTestBase {
  public:
   SAMLDeviceAttestationTest() = default;
 
@@ -1550,7 +1576,7 @@ class SAMLDeviceAttestationTest : public SamlTest {
 };
 
 void SAMLDeviceAttestationTest::SetUpInProcessBrowserTestFixture() {
-  SamlTest::SetUpInProcessBrowserTestFixture();
+  SamlTestBase::SetUpInProcessBrowserTestFixture();
 
   settings_provider_ = settings_helper_.device_settings();
 
@@ -1780,5 +1806,7 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, TimeoutError) {
       kSamlChallengeKeyHandlerResultMetric,
       attestation::TpmChallengeKeyResultCode::kTimeoutError, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, SamlTest, testing::Bool());
 
 }  // namespace ash

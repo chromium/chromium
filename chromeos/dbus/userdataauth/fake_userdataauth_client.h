@@ -169,6 +169,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     return last_migrate_to_dircrypto_request_.minimal_migration();
   }
 
+  // AuthenticateAuthSession() related:
+  const ::cryptohome::AuthorizationRequest&
+  get_last_authenticate_auth_session_authorization() {
+    return last_authenticate_auth_session_request_.authorization();
+  }
+
   // WaitForServiceToBeAvailable() related:
 
   // Changes the behavior of WaitForServiceToBeAvailable(). This method runs
@@ -256,6 +262,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
       last_migrate_to_dircrypto_request_;
 
   // AuthSession related fields:
+
+  // The AuthenticateAuthSessionRequest passed in for the last
+  // AuthenticateAuthSession() call.
+  ::user_data_auth::AuthenticateAuthSessionRequest
+      last_authenticate_auth_session_request_;
 
   // The auth sessions on file.
   base::flat_map<std::string, AuthSessionData> auth_sessions_;

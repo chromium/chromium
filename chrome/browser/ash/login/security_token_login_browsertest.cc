@@ -10,6 +10,7 @@
 
 #include "ash/components/login/auth/auth_status_consumer.h"
 #include "ash/components/login/auth/challenge_response/known_user_pref_utils.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/session/session_controller.h"
@@ -20,12 +21,14 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -209,6 +212,10 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
  protected:
   SecurityTokenLoginTest()
       : cryptohome_client_(new ChallengeResponseFakeUserDataAuthClient) {
+    // TODO(crbug.com/1274116) remove after AuthSession support for
+    // challenge-response
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kUseAuthsessionAuthentication);
     // Don't shut down when no browser is open, since it breaks the test and
     // since it's not the real Chrome OS behavior.
     set_exit_when_last_browser_closes(false);
@@ -355,13 +362,19 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
 
   // Unowned (referencing a global singleton)
   ChallengeResponseFakeUserDataAuthClient* const cryptohome_client_;
-  LoginManagerMixin login_manager_mixin_{&mixin_host_};
+  CryptohomeMixin cryptohome_mixin_{&mixin_host_};
+  LoginManagerMixin login_manager_mixin_{&mixin_host_,
+                                         {},
+                                         nullptr,
+                                         &cryptohome_mixin_};
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
   std::unique_ptr<TestCertificateProviderExtension>
       certificate_provider_extension_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests the successful challenge-response login flow, including entering the
