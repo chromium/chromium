@@ -8272,3 +8272,6 @@ crbug.com/1179857 [ Win ] http/tests/inspector-protocol/dom/dom-getFrameOwner.js
 
 # Sheriff 2021-12-22
 crbug.com/1283295 [ Mac ] fast/text-autosizing/hackernews-comments.html [ Pass Failure ]
+
+# Sheriff 2021-12-30
+crbug.com/1280512 [ Win ] fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Pass Failure ]
