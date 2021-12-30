@@ -104,17 +104,17 @@ class BluetoothNotificationControllerTest : public AshTestBase {
         by_user);
   }
 
-  void VerifyDiscoverableToastIsNotVisible() {
-    EXPECT_EQ(nullptr, GetCurrentOverlay());
-  }
-
-  void VerifyDiscoverableToastIsVisible() {
-    ToastOverlay* overlay = GetCurrentOverlay();
-    EXPECT_NE(nullptr, overlay);
-    EXPECT_EQ(
-        l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERABLE,
-                                   kTestAdapterName16),
-        overlay->GetText());
+  void VerifyDiscoverableToastVisibility(bool visible) {
+    if (visible) {
+      ToastOverlay* overlay = GetCurrentOverlay();
+      ASSERT_NE(nullptr, overlay);
+      EXPECT_EQ(
+          l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERABLE,
+                                     kTestAdapterName16),
+          overlay->GetText());
+    } else {
+      EXPECT_EQ(nullptr, GetCurrentOverlay());
+    }
   }
 
   void VerifyPairedNotificationIsNotVisible(
@@ -161,16 +161,16 @@ class BluetoothNotificationControllerTest : public AshTestBase {
 };
 
 TEST_F(BluetoothNotificationControllerTest, DiscoverableToast) {
-  VerifyDiscoverableToastIsNotVisible();
+  VerifyDiscoverableToastVisibility(/*visible=*/false);
 
   ShowDiscoverableToast(notification_controller_.get());
 
-  VerifyDiscoverableToastIsVisible();
+  VerifyDiscoverableToastVisibility(/*visible=*/true);
 }
 
 TEST_F(BluetoothNotificationControllerTest,
        DiscoverableToast_NearbyShareEnableHighVisibilityRequestActive) {
-  VerifyDiscoverableToastIsNotVisible();
+  VerifyDiscoverableToastVisibility(/*visible=*/false);
 
   auto* nearby_share_delegate_ = static_cast<TestNearbyShareDelegate*>(
       Shell::Get()->nearby_share_delegate());
@@ -178,12 +178,12 @@ TEST_F(BluetoothNotificationControllerTest,
 
   ShowDiscoverableToast(notification_controller_.get());
 
-  VerifyDiscoverableToastIsNotVisible();
+  VerifyDiscoverableToastVisibility(/*visible=*/false);
 }
 
 TEST_F(BluetoothNotificationControllerTest,
        DiscoverableToast_NearbyShareHighVisibilityOn) {
-  VerifyDiscoverableToastIsNotVisible();
+  VerifyDiscoverableToastVisibility(/*visible=*/false);
 
   auto* nearby_share_delegate_ = static_cast<TestNearbyShareDelegate*>(
       Shell::Get()->nearby_share_delegate());
@@ -191,7 +191,7 @@ TEST_F(BluetoothNotificationControllerTest,
 
   ShowDiscoverableToast(notification_controller_.get());
 
-  VerifyDiscoverableToastIsNotVisible();
+  VerifyDiscoverableToastVisibility(/*visible=*/false);
 }
 
 TEST_F(BluetoothNotificationControllerTest,

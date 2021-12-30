@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/system_notification_controller.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
@@ -22,8 +24,7 @@
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
-#include "ui/message_center/message_center.h"
-#include "ui/message_center/public/cpp/notification.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -55,6 +56,8 @@ class AutoConnectNotifierTest : public AshTestBase {
         chromeos::network_config::CrosNetworkConfigTestHelper>();
 
     AshTestBase::SetUp();
+
+    toast_manager_ = Shell::Get()->toast_manager();
 
     mock_notification_timer_ = new base::MockOneShotTimer();
     Shell::Get()
@@ -91,8 +94,19 @@ class AutoConnectNotifierTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  std::string GetNotificationId() {
-    return AutoConnectNotifier::kAutoConnectNotificationId;
+  ToastOverlay* GetCurrentOverlay() {
+    return toast_manager_->GetCurrentOverlayForTesting();
+  }
+
+  void VerifyAutoConnectToastVisibility(bool visible) {
+    if (visible) {
+      ToastOverlay* overlay = GetCurrentOverlay();
+      ASSERT_NE(nullptr, overlay);
+      EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_NETWORK_AUTOCONNECT),
+                overlay->GetText());
+    } else {
+      EXPECT_EQ(nullptr, GetCurrentOverlay());
+    }
   }
 
   // Ownership passed to Shell owned AutoConnectNotifier instance.
@@ -103,6 +117,7 @@ class AutoConnectNotifierTest : public AshTestBase {
       network_handler_test_helper_;
   std::unique_ptr<chromeos::network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
+  ToastManagerImpl* toast_manager_ = nullptr;
 };
 
 TEST_F(AutoConnectNotifierTest, NoExplicitConnectionRequested) {
@@ -112,10 +127,8 @@ TEST_F(AutoConnectNotifierTest, NoExplicitConnectionRequested) {
           chromeos::AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED);
   SuccessfullyJoinWifiNetwork();
 
-  message_center::Notification* notification =
-      message_center::MessageCenter::Get()->FindVisibleNotificationById(
-          GetNotificationId());
-  EXPECT_FALSE(notification);
+  // Toast should not be displayed.
+  VerifyAutoConnectToastVisibility(/*visible=*/false);
 }
 
 TEST_F(AutoConnectNotifierTest, AutoConnectDueToLoginOnly) {
@@ -126,10 +139,8 @@ TEST_F(AutoConnectNotifierTest, AutoConnectDueToLoginOnly) {
           chromeos::AutoConnectHandler::AUTO_CONNECT_REASON_LOGGED_IN);
   SuccessfullyJoinWifiNetwork();
 
-  message_center::Notification* notification =
-      message_center::MessageCenter::Get()->FindVisibleNotificationById(
-          GetNotificationId());
-  EXPECT_FALSE(notification);
+  // Toast should not be displayed.
+  VerifyAutoConnectToastVisibility(/*visible=*/false);
 }
 
 TEST_F(AutoConnectNotifierTest, NoConnectionBeforeTimerExpires) {
@@ -147,10 +158,8 @@ TEST_F(AutoConnectNotifierTest, NoConnectionBeforeTimerExpires) {
   // the timeout, no notification should be displayed.
   SuccessfullyJoinWifiNetwork();
 
-  message_center::Notification* notification =
-      message_center::MessageCenter::Get()->FindVisibleNotificationById(
-          GetNotificationId());
-  EXPECT_FALSE(notification);
+  // Toast should not be displayed.
+  VerifyAutoConnectToastVisibility(/*visible=*/false);
 }
 
 TEST_F(AutoConnectNotifierTest, ConnectToConnectedNetwork) {
@@ -163,13 +172,11 @@ TEST_F(AutoConnectNotifierTest, ConnectToConnectedNetwork) {
           chromeos::AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED);
   SuccessfullyJoinWifiNetwork();
 
-  message_center::Notification* notification =
-      message_center::MessageCenter::Get()->FindVisibleNotificationById(
-          GetNotificationId());
-  ASSERT_FALSE(notification);
+  // Toast should not be displayed.
+  VerifyAutoConnectToastVisibility(/*visible=*/false);
 }
 
-TEST_F(AutoConnectNotifierTest, NotificationDisplayed) {
+TEST_F(AutoConnectNotifierTest, ToastDisplayed) {
   NotifyConnectToNetworkRequested();
   chromeos::NetworkHandler::Get()
       ->auto_connect_handler()
@@ -177,11 +184,7 @@ TEST_F(AutoConnectNotifierTest, NotificationDisplayed) {
           chromeos::AutoConnectHandler::AUTO_CONNECT_REASON_POLICY_APPLIED);
   SuccessfullyJoinWifiNetwork();
 
-  message_center::Notification* notification =
-      message_center::MessageCenter::Get()->FindVisibleNotificationById(
-          GetNotificationId());
-  ASSERT_TRUE(notification);
-  EXPECT_EQ(GetNotificationId(), notification->id());
+  VerifyAutoConnectToastVisibility(/*visible=*/true);
 }
 
 }  // namespace ash
