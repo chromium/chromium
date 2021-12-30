@@ -546,6 +546,9 @@ void CalendarView::OnViewBoundsChanged(views::View* observed_view) {
   // observe it anymore.
   scoped_view_observer_.RemoveObservation(observed_view);
   ScrollToToday();
+  calendar_view_controller_->set_expanded_area_available_height(
+      scroll_view_->GetVisibleRect().height() -
+      calendar_view_controller_->row_height());
 }
 
 void CalendarView::OnViewFocused(View* observed_view) {
