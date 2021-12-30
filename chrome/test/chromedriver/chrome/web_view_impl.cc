@@ -1495,6 +1495,8 @@ Status GetNodeIdFromFunction(DevToolsClient* client,
                              bool* found_node,
                              int* node_id,
                              bool w3c_compliant) {
+  DCHECK(found_node);
+  DCHECK(node_id);
   std::string json;
   base::JSONWriter::Write(args, &json);
   std::string w3c = w3c_compliant ? "true" : "false";
@@ -1540,14 +1542,12 @@ Status GetNodeIdFromFunction(DevToolsClient* client,
     return status;
 
   absl::optional<int> maybe_node_id = cmd_result.FindIntKey("nodeId");
-
   if (!maybe_node_id)
     return Status(kUnknownError, "DOM.requestNode missing int 'nodeId'");
 
   // Note that this emulates the previous Deprecated GetInteger behavior, but
   // should likely be changed.
-  if (node_id)
-    *node_id = *maybe_node_id;
+  *node_id = *maybe_node_id;
   *found_node = true;
   return Status(kOk);
 }

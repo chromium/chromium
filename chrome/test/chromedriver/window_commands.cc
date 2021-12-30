@@ -371,6 +371,8 @@ Status WindowViewportSize(Session* session,
                           WebView* web_view,
                           int* innerWidth,
                           int* innerHeight) {
+  DCHECK(innerWidth);
+  DCHECK(innerHeight);
   std::unique_ptr<base::Value> value;
   base::ListValue args;
   Status status =
@@ -386,12 +388,12 @@ Status WindowViewportSize(Session* session,
   base::DictionaryValue* view_attrib;
   value->GetAsDictionary(&view_attrib);
   absl::optional<int> maybe_inner_width = view_attrib->FindIntKey("view_width");
-  if (innerWidth && maybe_inner_width)
+  if (maybe_inner_width)
     *innerWidth = *maybe_inner_width;
 
   absl::optional<int> maybe_inner_height =
       view_attrib->FindIntKey("view_height");
-  if (innerHeight && maybe_inner_height)
+  if (maybe_inner_height)
     *innerHeight = *maybe_inner_height;
   return Status(kOk);
 }
