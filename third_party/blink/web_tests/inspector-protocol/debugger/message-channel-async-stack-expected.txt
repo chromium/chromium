@@ -3,7 +3,7 @@ iframe created
 breakpoint set before postMessage
 paused at breakpoint
 requested stepInto with breakOnAsyncCall flag
-onmessage at iframe.js:0:29
+onmessage at iframe.js:0:21
 --postMessage--
 (anonymous) at test.js:3:16
 
