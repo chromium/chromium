@@ -199,7 +199,7 @@ TS_ENTRY_FILES = [
     "js/models/ffmpeg/video_processor.ts",
     "js/test_bridge.ts",
     "js/untrusted_ga_helper.js",
-    "js/untrusted_script_loader.js",
+    "js/untrusted_script_loader.ts",
     "js/untrusted_video_processor_helper.ts",
 ]
 

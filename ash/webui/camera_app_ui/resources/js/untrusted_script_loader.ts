@@ -5,19 +5,14 @@
 import * as Comlink from './lib/comlink.js';
 import {WaitableEvent} from './waitable_event.js';
 
-/**
- * @type {!WaitableEvent}
- */
 const domReady = new WaitableEvent();
 
 const exposedObjects = {loadScript};
 
 /**
  * Loads given script into the untrusted context.
- * @param {string} scriptUrl
- * @return {!Promise}
  */
-async function loadScript(scriptUrl) {
+async function loadScript(scriptUrl: string): Promise<void> {
   await domReady.wait();
   const module = await import(scriptUrl);
   Object.assign(exposedObjects, module);
