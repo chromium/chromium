@@ -67,6 +67,8 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // Update the position and size of toast.
   void UpdateOverlayBounds();
 
+  const std::u16string GetText();
+
  private:
   friend class ToastManagerImplTest;
 

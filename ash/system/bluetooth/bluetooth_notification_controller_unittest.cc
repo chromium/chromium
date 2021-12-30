@@ -13,6 +13,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/check.h"
@@ -35,8 +36,6 @@ namespace {
 
 const char kTestAdapterName[] = "Chromebook";
 const char16_t kTestAdapterName16[] = u"Chromebook";
-const char kTestAdapterAddress[] = "01:23:45:67:89:AB";
-const char16_t kTestAdapterAddress16[] = u"01:23:45:67:89:AB";
 
 class TestMessageCenter : public message_center::FakeMessageCenter {
  public:
@@ -74,8 +73,6 @@ class BluetoothNotificationControllerTest : public AshTestBase {
     ON_CALL(*mock_adapter_, IsPresent()).WillByDefault(Return(true));
     ON_CALL(*mock_adapter_, IsPowered()).WillByDefault(Return(true));
     ON_CALL(*mock_adapter_, GetName()).WillByDefault(Return(kTestAdapterName));
-    ON_CALL(*mock_adapter_, GetAddress())
-        .WillByDefault(Return(kTestAdapterAddress));
     device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
 
     notification_controller_ =
@@ -91,6 +88,8 @@ class BluetoothNotificationControllerTest : public AshTestBase {
         std::make_unique<NiceMock<device::MockBluetoothDevice>>(
             mock_adapter_.get(), 0 /* bluetooth_class */, "name_2", "address_2",
             false /* paired */, false /* connected */);
+
+    toast_manager_ = Shell::Get()->toast_manager();
   }
 
   void ClickPairedNotification(const device::BluetoothDevice* device) {
@@ -105,23 +104,17 @@ class BluetoothNotificationControllerTest : public AshTestBase {
         by_user);
   }
 
-  void VerifyDiscoverableNotificationIsNotVisible() {
-    EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
-        BluetoothNotificationController::
-            kBluetoothDeviceDiscoverableNotificationId));
+  void VerifyDiscoverableToastIsNotVisible() {
+    EXPECT_EQ(nullptr, GetCurrentOverlay());
   }
 
-  void VerifyDiscoverableNotificationIsVisible() {
-    message_center::Notification* visible_notification =
-        test_message_center_.FindVisibleNotificationById(
-            BluetoothNotificationController::
-                kBluetoothDeviceDiscoverableNotificationId);
-    EXPECT_TRUE(visible_notification);
-    EXPECT_EQ(std::u16string(), visible_notification->title());
+  void VerifyDiscoverableToastIsVisible() {
+    ToastOverlay* overlay = GetCurrentOverlay();
+    EXPECT_NE(nullptr, overlay);
     EXPECT_EQ(
         l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCOVERABLE,
-                                   kTestAdapterName16, kTestAdapterAddress16),
-        visible_notification->message());
+                                   kTestAdapterName16),
+        overlay->GetText());
   }
 
   void VerifyPairedNotificationIsNotVisible(
@@ -142,9 +135,8 @@ class BluetoothNotificationControllerTest : public AshTestBase {
               visible_notification->message());
   }
 
-  // Run the notification controller to simulate showing a notification by
-  // adding it to the TestMessageCenter.
-  void ShowDiscoverableNotification(
+  // Run the notification controller to simulate showing a toast.
+  void ShowDiscoverableToast(
       BluetoothNotificationController* notification_controller) {
     notification_controller->NotifyAdapterDiscoverable();
   }
@@ -155,46 +147,51 @@ class BluetoothNotificationControllerTest : public AshTestBase {
     notification_controller->NotifyPairedDevice(bluetooth_device);
   }
 
+  ToastOverlay* GetCurrentOverlay() {
+    return toast_manager_->GetCurrentOverlayForTesting();
+  }
+
   TestMessageCenter test_message_center_;
   scoped_refptr<device::MockBluetoothAdapter> mock_adapter_;
   std::unique_ptr<BluetoothNotificationController> notification_controller_;
   TestSystemTrayClient* system_tray_client_;
   std::unique_ptr<device::MockBluetoothDevice> bluetooth_device_1_;
   std::unique_ptr<device::MockBluetoothDevice> bluetooth_device_2_;
+  ToastManagerImpl* toast_manager_ = nullptr;
 };
 
-TEST_F(BluetoothNotificationControllerTest, DiscoverableNotification) {
-  VerifyDiscoverableNotificationIsNotVisible();
+TEST_F(BluetoothNotificationControllerTest, DiscoverableToast) {
+  VerifyDiscoverableToastIsNotVisible();
 
-  ShowDiscoverableNotification(notification_controller_.get());
+  ShowDiscoverableToast(notification_controller_.get());
 
-  VerifyDiscoverableNotificationIsVisible();
+  VerifyDiscoverableToastIsVisible();
 }
 
 TEST_F(BluetoothNotificationControllerTest,
-       DiscoverableNotification_NearbyShareEnableHighVisibilityRequestActive) {
-  VerifyDiscoverableNotificationIsNotVisible();
+       DiscoverableToast_NearbyShareEnableHighVisibilityRequestActive) {
+  VerifyDiscoverableToastIsNotVisible();
 
   auto* nearby_share_delegate_ = static_cast<TestNearbyShareDelegate*>(
       Shell::Get()->nearby_share_delegate());
   nearby_share_delegate_->set_is_enable_high_visibility_request_active(true);
 
-  ShowDiscoverableNotification(notification_controller_.get());
+  ShowDiscoverableToast(notification_controller_.get());
 
-  VerifyDiscoverableNotificationIsNotVisible();
+  VerifyDiscoverableToastIsNotVisible();
 }
 
 TEST_F(BluetoothNotificationControllerTest,
-       DiscoverableNotification_NearbyShareHighVisibilityOn) {
-  VerifyDiscoverableNotificationIsNotVisible();
+       DiscoverableToast_NearbyShareHighVisibilityOn) {
+  VerifyDiscoverableToastIsNotVisible();
 
   auto* nearby_share_delegate_ = static_cast<TestNearbyShareDelegate*>(
       Shell::Get()->nearby_share_delegate());
   nearby_share_delegate_->set_is_high_visibility_on(true);
 
-  ShowDiscoverableNotification(notification_controller_.get());
+  ShowDiscoverableToast(notification_controller_.get());
 
-  VerifyDiscoverableNotificationIsNotVisible();
+  VerifyDiscoverableToastIsNotVisible();
 }
 
 TEST_F(BluetoothNotificationControllerTest,

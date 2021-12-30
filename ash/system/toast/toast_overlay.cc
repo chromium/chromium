@@ -170,6 +170,10 @@ void ToastOverlay::UpdateOverlayBounds() {
   overlay_widget_->SetBounds(CalculateOverlayBounds());
 }
 
+const std::u16string ToastOverlay::GetText() {
+  return text_;
+}
+
 gfx::Rect ToastOverlay::CalculateOverlayBounds() {
   // If the native window has not been initialized, as in the first call, get
   // the default root window. Otherwise get the window for this overlay_widget
