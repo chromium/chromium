@@ -56,7 +56,7 @@ void ChromeAppListItem::TestApi::SetPosition(
 }
 
 void ChromeAppListItem::TestApi::SetName(const std::string& name) {
-  item_->SetName(name);
+  item_->SetChromeName(name);
 }
 
 // ChromeAppListItem
@@ -198,6 +198,8 @@ void ChromeAppListItem::SetFolderId(const std::string& folder_id) {
 
 void ChromeAppListItem::SetName(const std::string& name) {
   metadata_->name = name;
+  if (model_updater())
+    model_updater()->SetItemName(id(), name);
 }
 
 void ChromeAppListItem::SetPosition(const syncer::StringOrdinal& position) {

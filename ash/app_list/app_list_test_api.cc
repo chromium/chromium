@@ -34,6 +34,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/view_model.h"
 
 namespace ash {
@@ -135,6 +136,18 @@ void AppListTestApi::WaitUntilAppListAnimationIdle() {
 
 bool AppListTestApi::HasApp(const std::string& app_id) {
   return GetAppListModel()->FindItem(app_id);
+}
+
+std::u16string AppListTestApi::GetAppListItemViewName(
+    const std::string& item_id) {
+  views::ViewModelT<AppListItemView>* view_model =
+      GetTopLevelAppsGridView()->view_model();
+  for (int i = 0; i < view_model->view_size(); ++i) {
+    AppListItemView* app_list_item_view = view_model->view_at(i);
+    if (app_list_item_view->item()->id() == item_id)
+      return app_list_item_view->title()->GetText();
+  }
+  return u"";
 }
 
 std::vector<std::string> AppListTestApi::GetTopLevelViewIdList() {
