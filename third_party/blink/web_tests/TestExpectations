@@ -7963,16 +7963,16 @@ crbug.com/1179857 [ Mac10.13 ] http/tests/inspector-protocol/dom/dom-getFrameOwn
 crbug.com/1179857 [ Win ] http/tests/inspector-protocol/dom/dom-getFrameOwner.js [ Pass Timeout ]
 
 # Sheriff 2021-12-22
-crbug.com/1283295 [ Mac ] fast/text-autosizing/hackernews-comments.html [ Pass Failure ]
+crbug.com/1283295 [ Mac ] fast/text-autosizing/hackernews-comments.html [ Failure Pass ]
 
 # Sheriff 2021-12-30
-crbug.com/1229096 [ Win ] fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Pass Failure ]
-crbug.com/1227911 [ Linux ] external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-subdomain-2-yes-subdomain2.sub.https.html [ Pass Failure ]
-crbug.com/1227911 [ Linux ] external/wpt/html/browsers/origin/origin-keyed-agent-clusters/popups/opener-no-openee-yes-port.sub.https.html [ Pass Failure ]
-crbug.com/1227911 [ Linux ] external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-no-child-bad-subdomain.sub.https.html [ Pass Failure ]
-crbug.com/1227911 [ Linux ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-no-child-yes-same.sub.https.html [ Pass Failure ]
-crbug.com/1227911 [ Linux ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomain2.sub.https.html [ Pass Failure ]
-crbug.com/1279758 [ Win10.20h2 ] virtual/threaded-prefer-compositing/fast/scrolling/scroll-animation-on-by-default.html [ Pass Failure ]
-crbug.com/1229095 [ Linux ] virtual/gpu/fast/canvas/canvas-getImageData.html [ Pass Failure ]
+crbug.com/1229096 [ Win ] fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Pass ]
+crbug.com/1227911 [ Linux ] external/wpt/html/browsers/origin/origin-keyed-agent-clusters/iframe-navigation/parent-no-1-no-subdomain-2-yes-subdomain2.sub.https.html [ Failure Pass ]
+crbug.com/1227911 [ Linux ] external/wpt/html/browsers/origin/origin-keyed-agent-clusters/popups/opener-no-openee-yes-port.sub.https.html [ Failure Pass ]
+crbug.com/1227911 [ Linux ] external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-no-child-bad-subdomain.sub.https.html [ Failure Pass ]
+crbug.com/1227911 [ Linux ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-no-child-yes-same.sub.https.html [ Failure Pass ]
+crbug.com/1227911 [ Linux ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomain2.sub.https.html [ Failure Pass ]
+crbug.com/1279758 [ Win10.20h2 ] virtual/threaded-prefer-compositing/fast/scrolling/scroll-animation-on-by-default.html [ Failure Pass ]
+crbug.com/1229095 [ Linux ] virtual/gpu/fast/canvas/canvas-getImageData.html [ Failure Pass ]
 crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-setcookie-same-site-strict.js [ Pass Timeout ]
 crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax.js [ Pass Timeout ]
