@@ -90,14 +90,17 @@ namespace blink {
 WebRtcVideoTrackSource::WebRtcVideoTrackSource(
     bool is_screencast,
     absl::optional<bool> needs_denoising,
-    media::VideoCaptureFeedbackCB callback,
+    media::VideoCaptureFeedbackCB feedback_callback,
+    base::RepeatingClosure request_refresh_frame_callback,
     media::GpuVideoAcceleratorFactories* gpu_factories)
     : AdaptedVideoTrackSource(/*required_alignment=*/1),
       adapter_resources_(
           new WebRtcVideoFrameAdapter::SharedResources(gpu_factories)),
       is_screencast_(is_screencast),
       needs_denoising_(needs_denoising),
-      callback_(callback) {
+      feedback_callback_(std::move(feedback_callback)),
+      request_refresh_frame_callback_(
+          std::move(request_refresh_frame_callback)) {
   DETACH_FROM_THREAD(thread_checker_);
 }
 
@@ -130,16 +133,20 @@ absl::optional<bool> WebRtcVideoTrackSource::needs_denoising() const {
   return needs_denoising_;
 }
 
+void WebRtcVideoTrackSource::RequestRefreshFrame() {
+  request_refresh_frame_callback_.Run();
+}
+
 void WebRtcVideoTrackSource::SendFeedback() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (callback_.is_null()) {
+  if (feedback_callback_.is_null()) {
     return;
   }
   media::VideoCaptureFeedback feedback;
   feedback.max_pixels = video_adapter()->GetTargetPixels();
   feedback.max_framerate_fps = video_adapter()->GetMaxFramerate();
   feedback.Combine(adapter_resources_->GetFeedback());
-  callback_.Run(feedback);
+  feedback_callback_.Run(feedback);
 }
 
 void WebRtcVideoTrackSource::OnFrameCaptured(

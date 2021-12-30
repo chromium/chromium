@@ -42,13 +42,15 @@ class MockVideoTrackSourceProxy : public MockWebRtcVideoTrackSource {
 
 class MediaStreamVideoWebRtcSinkTest : public ::testing::Test {
  public:
-  void SetVideoTrack() {
+  MockMediaStreamVideoSource* SetVideoTrack() {
     registry_.Init();
-    registry_.AddVideoTrack("test video track");
+    MockMediaStreamVideoSource* source =
+        registry_.AddVideoTrack("test video track");
     auto video_components = registry_.test_stream()->VideoComponents();
     component_ = video_components[0];
     // TODO(hta): Verify that component_ is valid. When constraints produce
     // no valid format, using the track will cause a crash.
+    return source;
   }
 
   void SetVideoTrack(const absl::optional<bool>& noise_reduction) {
@@ -66,10 +68,9 @@ class MediaStreamVideoWebRtcSinkTest : public ::testing::Test {
   Persistent<MediaStreamComponent> component_;
   Persistent<MockPeerConnectionDependencyFactory> dependency_factory_ =
       MakeGarbageCollected<MockPeerConnectionDependencyFactory>();
-
- private:
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
+ private:
   blink::MockMediaStreamRegistry registry_;
 };
 
@@ -107,6 +108,17 @@ TEST_F(MediaStreamVideoWebRtcSinkTest,
           Field(&webrtc::VideoTrackSourceConstraints::max_fps,
                 Optional(34.0)))));
   sink.OnVideoConstraintsChanged(12, 34);
+}
+
+TEST_F(MediaStreamVideoWebRtcSinkTest, RequestsRefreshFrameFromSource) {
+  MockMediaStreamVideoSource* source = SetVideoTrack();
+  MediaStreamVideoWebRtcSink sink(
+      component_, dependency_factory_.Get(),
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting());
+  EXPECT_CALL(*source, OnRequestRefreshFrame);
+  sink.webrtc_video_track()->GetSource()->RequestRefreshFrame();
+  platform_->RunUntilIdle();
+  Mock::VerifyAndClearExpectations(source);
 }
 
 }  // namespace blink
