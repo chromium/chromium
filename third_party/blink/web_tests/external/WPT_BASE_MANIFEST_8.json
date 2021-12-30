@@ -82819,6 +82819,19 @@
        {}
       ]
      ],
+     "filters-under-will-change-opacity.html": [
+      "feb5355f8bcdc76502b554858df782632a7a319f",
+      [
+       null,
+       [
+        [
+         "/css/css-color/composited-filters-under-opacity-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "hex-001.html": [
       "0c90f877874316689e55623a69b1776646bef12d",
       [
@@ -120727,6 +120740,19 @@
        ]
       ]
      },
+     "image-rendering-border-image.html": [
+      "5f4c268d6b9bdd06c221a88b9179fcf64ef2bbf4",
+      [
+       null,
+       [
+        [
+         "/css/css-images/image-rendering-border-image-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
      "image-resolution": {
       "image-resolution-001.html": [
        "ad1ca8ba8e54258d9061ffb120a2460279832064",
@@ -256113,6 +256139,10 @@
        ]
       }
      },
+     "image-rendering-border-image-notref.html": [
+      "a7b06cf1bd45dd02b3241b2676912b5053779ff5",
+      []
+     ],
      "image-resolution": {
       "reference": {
        "100x100-blue-blur4px.html": [
@@ -256556,6 +256586,10 @@
       ],
       "ruler-v-50px.png": [
        "84141028020b7e8cdf2412acbca3c799ba50a534",
+       []
+      ],
+      "small-border.png": [
+       "0e978c592223b1692a0b082434283e2cdfbce298",
        []
       ],
       "square-purple.png": [
@@ -281800,10 +281834,6 @@
        "000a5cc25bb72b334d41ff05e7b8f22691f48f30",
        []
       ],
-      "ports.sub.js": [
-       "fb3f0ad5c402eefea666251fe177e74e94d36450",
-       []
-      ],
       "preflight.py": [
        "4181210b263b9e3ce377464bab63278330d97be4",
        []
@@ -281812,8 +281842,12 @@
        "48d27216bedf9aa1daf4d2a4e96f860e9315a0c3",
        []
       ],
-      "support.js": [
-       "e9e70fca517855a2ddebc91e0516f3f063627709",
+      "support.sub.js": [
+       "63c5d87d206f1161e8ecb68e5910ce893064f10b",
+       []
+      ],
+      "xhr-sender.html": [
+       "b131fa41f9a8bf14c5c0a1aac8fcc2593bec6c42",
        []
       ]
      },
@@ -414715,7 +414749,7 @@
     },
     "private-network-access": {
      "fetch.https.window.js": [
-      "e87a6396b0b99699d8ca79dee00914a01421ec78",
+      "2440f2e12a860b9f9e3b32bbf05484af2399575c",
       [
        "fetch/private-network-access/fetch.https.window.html?include=baseline",
        {
@@ -414730,11 +414764,7 @@
          ],
          [
           "script",
-          "resources/support.js"
-         ],
-         [
-          "script",
-          "resources/ports.sub.js"
+          "resources/support.sub.js"
          ],
          [
           "variant",
@@ -414773,11 +414803,7 @@
          ],
          [
           "script",
-          "resources/support.js"
-         ],
-         [
-          "script",
-          "resources/ports.sub.js"
+          "resources/support.sub.js"
          ],
          [
           "variant",
@@ -414816,11 +414842,7 @@
          ],
          [
           "script",
-          "resources/support.js"
-         ],
-         [
-          "script",
-          "resources/ports.sub.js"
+          "resources/support.sub.js"
          ],
          [
           "variant",
@@ -414859,11 +414881,7 @@
          ],
          [
           "script",
-          "resources/support.js"
-         ],
-         [
-          "script",
-          "resources/ports.sub.js"
+          "resources/support.sub.js"
          ],
          [
           "variant",
@@ -414902,11 +414920,7 @@
          ],
          [
           "script",
-          "resources/support.js"
-         ],
-         [
-          "script",
-          "resources/ports.sub.js"
+          "resources/support.sub.js"
          ],
          [
           "variant",
@@ -414933,7 +414947,7 @@
       ]
      ],
      "fetch.window.js": [
-      "e8f1b323dddb62c6525bc2c79c2936e760e93fe8",
+      "d4de08e4ebfab10f98e630c5e16d1925f4e344e5",
       [
        "fetch/private-network-access/fetch.window.html",
        {
@@ -414944,47 +414958,196 @@
          ],
          [
           "script",
-          "resources/support.js"
-         ],
-         [
-          "script",
-          "resources/ports.sub.js"
+          "resources/support.sub.js"
          ]
         ]
        }
       ]
      ],
      "websocket.https.window.js": [
-      "86eabab0a14ad40e2caed0e6788b5b56b54d00d7",
+      "0731896098bcefa614ebdf28765a04766b5e6cda",
       [
        "fetch/private-network-access/websocket.https.window.html",
        {
         "script_metadata": [
          [
           "script",
-          "resources/support.js"
-         ],
-         [
-          "script",
-          "resources/ports.sub.js"
+          "resources/support.sub.js"
          ]
         ]
        }
       ]
      ],
      "websocket.window.js": [
-      "23407ab5ef8bd5fef1dae15db978d479ed76ab7d",
+      "a44cfaedec78b2570e868f3b81ac59575c76bc54",
       [
        "fetch/private-network-access/websocket.window.html",
        {
         "script_metadata": [
          [
           "script",
-          "resources/support.js"
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "xhr.https.window.js": [
+      "ac811ee19aa4476626afafc2f3a2cd95d7b9e51a",
+      [
+       "fetch/private-network-access/xhr.https.window.html?include=from-local",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
          ],
          [
           "script",
-          "resources/ports.sub.js"
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/xhr.https.window.html?include=from-private",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/xhr.https.window.html?include=from-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/private-network-access/xhr.https.window.html?include=from-treat-as-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ]
+       }
+      ]
+     ],
+     "xhr.window.js": [
+      "c1b5bf83371841d14bba43b4f38f02769534cb3b",
+      [
+       "fetch/private-network-access/xhr.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
          ]
         ]
        }
