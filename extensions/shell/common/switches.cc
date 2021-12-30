@@ -20,15 +20,5 @@ const char kAppShellHostWindowSize[] = "app-shell-host-window-size";
 const char kAppShellPreferredNetwork[] = "app-shell-preferred-network";
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-// The directory breakpad should store minidumps in.
-const char kCrashDumpsDir[] = "crash-dumps-dir";
-
-// Enables metrics and crash reporting.
-const char kEnableReporting[] = "enable-reporting";
-#endif
-
 }  // namespace switches
 }  // namespace extensions

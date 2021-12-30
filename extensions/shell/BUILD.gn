@@ -208,16 +208,11 @@ source_set("app_shell_lib") {
 
   if (is_linux || is_chromeos_lacros) {
     sources += [
-      "app/shell_crash_reporter_client.cc",
-      "app/shell_crash_reporter_client.h",
       "browser/api/file_system/shell_file_system_delegate.cc",
       "browser/api/file_system/shell_file_system_delegate.h",
     ]
     deps += [
       "//build:branding_buildflags",
-      "//components/crash/core/app",
-      "//components/crash/core/common",
-      "//components/upload_list",
       "//components/version_info:generate_version_info",
     ]
   }
@@ -439,16 +434,5 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [ "//components/keyed_service/content" ]
-  }
-}
-
-if ((is_linux || is_chromeos_lacros) && is_official_build) {
-  extract_symbols("app_shell_linux_symbols") {
-    # testonly because :app_shell is testonly. See :app_shell_lib comment.
-    testonly = true
-
-    binary = "$root_out_dir/app_shell"
-    symbol_file = "$root_out_dir/app_shell.breakpad.$current_cpu"
-    deps = [ ":app_shell" ]
   }
 }

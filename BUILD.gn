@@ -581,9 +581,6 @@ group("gn_all") {
 
     if (enable_extensions) {
       deps += [ "//extensions/shell:app_shell" ]
-      if ((is_linux || is_chromeos_lacros) && is_official_build) {
-        deps += [ "//extensions/shell:app_shell_linux_symbols" ]
-      }
     }
 
     if (enable_nacl) {
