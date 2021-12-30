@@ -426,15 +426,18 @@ ExtensionTtsEngineSendTtsEventFunction::Run() {
       event->GetString(constants::kEventTypeKey, &event_type));
 
   int char_index = 0;
-  if (event->FindKey(constants::kCharIndexKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        event->GetInteger(constants::kCharIndexKey, &char_index));
+  const base::Value* char_index_value =
+      event->FindKey(constants::kCharIndexKey);
+  if (char_index_value) {
+    EXTENSION_FUNCTION_VALIDATE(char_index_value->is_int());
+    char_index = char_index_value->GetInt();
   }
 
   int length = -1;
-  if (event->FindKey(constants::kLengthKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        event->GetInteger(constants::kLengthKey, &length));
+  const base::Value* length_value = event->FindKey(constants::kLengthKey);
+  if (length_value) {
+    EXTENSION_FUNCTION_VALIDATE(length_value->is_int());
+    length = length_value->GetInt();
   }
 
   // Make sure the extension has included this event type in its manifest.
@@ -516,8 +519,11 @@ ExtensionTtsEngineSendTtsAudioFunction::Run() {
     audio_buffer[i] = *view;
 
   int char_index = 0;
-  EXTENSION_FUNCTION_VALIDATE(audio->GetInteger(
-      tts_extension_api_constants::kCharIndexKey, &char_index));
+  const base::Value* char_index_value =
+      audio->FindKey(tts_extension_api_constants::kCharIndexKey);
+  EXTENSION_FUNCTION_VALIDATE(char_index_value);
+  EXTENSION_FUNCTION_VALIDATE(char_index_value->is_int());
+  char_index = char_index_value->GetInt();
 
   absl::optional<bool> is_last_buffer =
       audio->FindBoolPath(tts_extension_api_constants::kIsLastBufferKey);

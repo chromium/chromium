@@ -287,9 +287,10 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
   }
 
   int src_id = -1;
-  if (options->FindKey(constants::kSrcIdKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetInteger(constants::kSrcIdKey, &src_id));
+  base::Value* src_id_value = options->FindKey(constants::kSrcIdKey);
+  if (src_id_value) {
+    EXTENSION_FUNCTION_VALIDATE(src_id_value->is_int());
+    src_id = src_id_value->GetInt();
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
