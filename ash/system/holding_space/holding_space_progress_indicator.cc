@@ -340,6 +340,12 @@ HoldingSpaceProgressIndicator::CreateForItem(const HoldingSpaceItem* item) {
   return std::make_unique<HoldingSpaceItemProgressIndicator>(item);
 }
 
+base::RepeatingClosureList::Subscription
+HoldingSpaceProgressIndicator::AddProgressChangedCallback(
+    base::RepeatingClosureList::CallbackType callback) {
+  return progress_changed_callback_list_.Add(std::move(callback));
+}
+
 void HoldingSpaceProgressIndicator::InvalidateLayer() {
   layer()->SchedulePaint(gfx::Rect(layer()->size()));
 }
@@ -469,12 +475,18 @@ void HoldingSpaceProgressIndicator::OnPaintLayer(
 }
 
 void HoldingSpaceProgressIndicator::UpdateVisualState() {
+  const auto previous_progress = progress_;
+
   // Cache `progress_`.
   progress_ = CalculateProgress();
   if (progress_.has_value()) {
     DCHECK_GE(progress_.value(), 0.f);
     DCHECK_LE(progress_.value(), 1.f);
   }
+
+  // Notify `progress_` changes.
+  if (progress_ != previous_progress)
+    progress_changed_callback_list_.Notify();
 }
 
 void HoldingSpaceProgressIndicator::OnProgressRingAnimationChanged(

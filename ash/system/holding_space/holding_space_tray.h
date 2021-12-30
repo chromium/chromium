@@ -18,6 +18,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -165,6 +166,10 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // enabled/ disabled by the user at runtime.
   bool PreviewsShown() const;
 
+  // Updates the `default_tray_icon_` to account for potential overlap with the
+  // inner icon of the `progress_indicator_` as both may occupy the same space.
+  void UpdateDefaultTrayIcon();
+
   // Updates this view (and its children) to reflect state as a potential drop
   // target. If `event` is `nullptr`, this view is *not* a drop target.
   // Otherwise this view is a drop target if the `event` is located within
@@ -203,6 +208,11 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // space items in the model attached to the holding space controller.
   // NOTE: The `ui::Layer` is *not* painted if there are no items in progress.
   std::unique_ptr<HoldingSpaceProgressIndicator> progress_indicator_;
+
+  // Subscription to receive notification of changes to the
+  // `progress_indicator_`'s underlying progress.
+  base::RepeatingClosureList::Subscription
+      progress_indicator_progress_changed_callback_list_subscription_;
 
   // When the holding space previews feature is enabled, the user can enable/
   // disable previews at runtime. This registrar is associated with the active

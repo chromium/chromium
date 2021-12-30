@@ -42,7 +42,9 @@
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/fill_layout.h"
@@ -56,6 +58,13 @@ using ::ui::mojom::DragOperation;
 
 // Animation.
 constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(167);
+constexpr base::TimeDelta kInProgressAnimationOpacityDuration =
+    base::Milliseconds(100);
+constexpr base::TimeDelta kInProgressAnimationScaleDelay =
+    base::Milliseconds(50);
+constexpr base::TimeDelta kInProgressAnimationScaleDuration =
+    base::Milliseconds(166);
+constexpr float kInProgressAnimationScaleFactor = 0.875f;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -235,6 +244,15 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   progress_indicator_ = HoldingSpaceProgressIndicator::CreateForController(
       HoldingSpaceController::Get());
   layer()->Add(progress_indicator_->layer());
+
+  // Subscribe to receive notification of changes to the `progress_indicator_`'s
+  // underlying progress. When progress changes, the `default_tray_icon_` may
+  // need to be updated since it occupies the same space as the inner icon of
+  // the `progress_indicator_`.
+  progress_indicator_progress_changed_callback_list_subscription_ =
+      progress_indicator_->AddProgressChangedCallback(base::BindRepeating(
+          &HoldingSpaceTray::UpdateDefaultTrayIcon, base::Unretained(this)));
+  UpdateDefaultTrayIcon();
 
   // Enable context menu, which supports an action to toggle item previews.
   SetContextMenuEnabled(true);
@@ -716,6 +734,61 @@ void HoldingSpaceTray::UpdatePreviewsIcon() {
 
 bool HoldingSpaceTray::PreviewsShown() const {
   return previews_tray_icon_->GetVisible();
+}
+
+void HoldingSpaceTray::UpdateDefaultTrayIcon() {
+  // Overlap between the `default_tray_icon_` and the `progress_indicator_` is
+  // only a concern if v2 animations are enabled.
+  if (!features::IsHoldingSpaceInProgressAnimationV2Enabled())
+    return;
+
+  const absl::optional<float>& progress = progress_indicator_->progress();
+
+  // If `progress` is not `complete`, there is potential for overlap between the
+  // `default_tray_icon_` and the `progress_indicator_`'s inner icon. To address
+  // this, hide the `default_tray_icon_` when `progress` is being indicated.
+  bool complete = progress == HoldingSpaceProgressIndicator::kProgressComplete;
+  float target_opacity = complete ? 1.f : 0.f;
+
+  // If `target_opacity` is already set there's nothing to do.
+  ui::Layer* const layer = default_tray_icon_->layer();
+  if (layer->GetTargetOpacity() == target_opacity)
+    return;
+
+  // If `target_opacity` is zero, it should be set immediately w/o animation.
+  if (target_opacity == 0.f) {
+    layer->GetAnimator()->StopAnimating();
+    layer->SetOpacity(0.f);
+    return;
+  }
+
+  // If `bounds` are empty, the `default_tray_icon_` has not yet been laid out
+  // and therefore any changes to its visual state need not be animated.
+  const gfx::Rect& bounds = default_tray_icon_->bounds();
+  if (bounds.IsEmpty()) {
+    layer->SetOpacity(1.f);
+    layer->SetTransform(gfx::Transform());
+    return;
+  }
+
+  const auto preemption_strategy =
+      ui::LayerAnimator::PreemptionStrategy::IMMEDIATELY_ANIMATE_TO_NEW_TARGET;
+  const auto transform = gfx::GetScaleTransform(
+      bounds.CenterPoint(), kInProgressAnimationScaleFactor);
+  const auto tween_type = gfx::Tween::Type::FAST_OUT_SLOW_IN_3;
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(preemption_strategy)
+      .Once()
+      .SetDuration(base::TimeDelta())
+      .SetOpacity(layer, 0.f)
+      .SetTransform(layer, transform)
+      .Then()
+      .SetDuration(kInProgressAnimationOpacityDuration)
+      .SetOpacity(layer, 1.f)
+      .Offset(kInProgressAnimationScaleDelay)
+      .SetDuration(kInProgressAnimationScaleDuration)
+      .SetTransform(layer, gfx::Transform(), tween_type);
 }
 
 void HoldingSpaceTray::UpdateDropTargetState(const ui::DropTargetEvent* event) {

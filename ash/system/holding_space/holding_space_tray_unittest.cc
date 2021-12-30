@@ -193,6 +193,32 @@ std::vector<HoldingSpaceCommandId> GetHoldingSpaceCommandIds() {
   return ids;
 }
 
+// PredicateWaiter -------------------------------------------------------------
+
+// A class capable of waiting until a predicate returns true.
+class PredicateWaiter {
+ public:
+  PredicateWaiter() = default;
+  PredicateWaiter(const PredicateWaiter&) = delete;
+  PredicateWaiter& operator=(const PredicateWaiter&) = delete;
+  ~PredicateWaiter() = default;
+
+  void WaitUntil(base::RepeatingCallback<bool()> predicate,
+                 base::TimeDelta polling_interval = base::Milliseconds(100)) {
+    DCHECK(polling_interval.is_positive());
+    if (predicate.Run())
+      return;
+    base::RunLoop run_loop;
+    base::RepeatingTimer scheduler;
+    scheduler.Start(FROM_HERE, polling_interval,
+                    base::BindLambdaForTesting([&]() {
+                      if (predicate.Run())
+                        run_loop.Quit();
+                    }));
+    run_loop.Run();
+  }
+};
+
 // ViewVisibilityChangedWaiter -------------------------------------------------
 
 // A class capable of waiting until a view's visibility is changed.
@@ -918,18 +944,31 @@ TEST_F(HoldingSpaceTrayTest, ShelfAlignmentChangeWithMultipleDisplays) {
   }
 }
 
-// Base class for tests of the holding space downloads section parameterized by
-// the set of holding space item types which are expected to appear there and
-// whether or not the in-progress downloads integration feature is enabled.
+// Base class for tests of the holding space downloads section parameterized by:
+// * the set of holding space item types which are expected to appear there
+// * whether the in-progress animation v2 is enabled
+// * whether the in-progress downloads integration feature is enabled
 class HoldingSpaceTrayDownloadsSectionTest
     : public HoldingSpaceTrayTest,
       public ::testing::WithParamInterface<
-          std::tuple<HoldingSpaceItem::Type, bool>> {
+          std::tuple<HoldingSpaceItem::Type,
+                     /*in_progress_animation_v2_enabled=*/bool,
+                     /*in_progress_downloads_integration_enabled=*/bool>> {
  public:
   HoldingSpaceTrayDownloadsSectionTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kHoldingSpaceInProgressDownloadsIntegration,
-        IsInProgressDownloadsIntegrationEnabled());
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+
+    // Feature: in-progress animation v2.
+    (IsInProgressAnimationV2Enabled() ? enabled_features : disabled_features)
+        .push_back(features::kHoldingSpaceInProgressAnimationV2);
+
+    // Feature: in-progress downloads integration.
+    (IsInProgressDownloadsIntegrationEnabled() ? enabled_features
+                                               : disabled_features)
+        .push_back(features::kHoldingSpaceInProgressDownloadsIntegration);
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   // Returns the max number of downloads given the test parameterization.
@@ -942,10 +981,16 @@ class HoldingSpaceTrayDownloadsSectionTest
   // Returns the holding space item type given the test parameterization.
   HoldingSpaceItem::Type GetType() const { return std::get<0>(GetParam()); }
 
+  // Returns whether in-progress animation v2 is enabled given test
+  // parameterization.
+  bool IsInProgressAnimationV2Enabled() const {
+    return std::get<1>(GetParam());
+  }
+
   // Returns whether in-progress downloads integration is enabled given test
   // parameterization.
   bool IsInProgressDownloadsIntegrationEnabled() const {
-    return std::get<1>(GetParam());
+    return std::get<2>(GetParam());
   }
 
  private:
@@ -963,7 +1008,8 @@ INSTANTIATE_TEST_SUITE_P(
                           HoldingSpaceItem::Type::kNearbyShare,
                           HoldingSpaceItem::Type::kPrintedPdf,
                           HoldingSpaceItem::Type::kScan),
-        ::testing::Bool()));
+        /*in_progress_animation_v2_enabled=*/::testing::Bool(),
+        /*in_progress_downloads_integration_enabled=*/::testing::Bool()));
 
 // Tests how download chips are updated during item addition, removal and
 // initialization.
@@ -1197,6 +1243,70 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   ASSERT_EQ(1u, download_chips.size());
   EXPECT_EQ(item_3->id(),
             HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
+}
+// Tests how opacity and transform for holding space tray's default tray icon is
+// adjusted to avoid overlap with the holding space tray's progress indicator.
+TEST_P(HoldingSpaceTrayDownloadsSectionTest,
+       DefaultTrayIconOpacityAndTransform) {
+  StartSession();
+
+  // Cache `default_tray_icon`.
+  views::View* const default_tray_icon =
+      GetTray()->GetViewByID(kHoldingSpaceTrayDefaultIconId);
+  ASSERT_TRUE(default_tray_icon);
+
+  // Cache `progress_indicator`.
+  HoldingSpaceProgressIndicator* const progress_indicator =
+      static_cast<HoldingSpaceProgressIndicator*>(
+          FindLayerWithName(GetTray(),
+                            HoldingSpaceProgressIndicator::kClassName)
+              ->owner());
+  ASSERT_TRUE(progress_indicator);
+
+  // Wait until the `progress_indicator` is synced with the model. Note that
+  // this happens asynchronously since the `progress_indicator` does so in
+  // response to compositor scheduling.
+  PredicateWaiter().WaitUntil(base::BindLambdaForTesting([&]() {
+    return progress_indicator->progress() ==
+           HoldingSpaceProgressIndicator::kProgressComplete;
+  }));
+
+  // Verify initial opacity/transform.
+  EXPECT_EQ(default_tray_icon->layer()->GetTargetOpacity(), 1.f);
+  EXPECT_EQ(default_tray_icon->layer()->GetTargetTransform(), gfx::Transform());
+
+  // Add an in-progress `item` to the model.
+  HoldingSpaceItem* const item = AddItem(
+      GetType(), base::FilePath("/tmp/fake_1"), HoldingSpaceProgress(0, 100));
+  ASSERT_TRUE(item);
+
+  // Wait until the `progress_indicator` is synced with the model. Note that
+  // this happens asynchronously since the `progress_indicator` does so in
+  // response to compositor scheduling.
+  PredicateWaiter().WaitUntil(base::BindLambdaForTesting(
+      [&]() { return progress_indicator->progress() == 0.f; }));
+
+  // When in-progress animation v2 is enabled, the `default_tray_icon` should
+  // not be visible so as to avoid overlap with the `progress_indicator`'s inner
+  // icon while in progress.
+  EXPECT_EQ(default_tray_icon->layer()->GetTargetOpacity(),
+            IsInProgressAnimationV2Enabled() ? 0.f : 1.f);
+  EXPECT_EQ(default_tray_icon->layer()->GetTargetTransform(), gfx::Transform());
+
+  // Complete the in-progress `item`.
+  model()->UpdateItem(item->id())->SetProgress(HoldingSpaceProgress(100, 100));
+
+  // Wait until the `progress_indicator` is synced with the model. Note that
+  // this happens asynchronously since the `progress_indicator` does so in
+  // response to compositor scheduling.
+  PredicateWaiter().WaitUntil(base::BindLambdaForTesting([&]() {
+    return progress_indicator->progress() ==
+           HoldingSpaceProgressIndicator::kProgressComplete;
+  }));
+
+  // Verify target opacity/transform.
+  EXPECT_EQ(default_tray_icon->layer()->GetTargetOpacity(), 1.f);
+  EXPECT_EQ(default_tray_icon->layer()->GetTargetTransform(), gfx::Transform());
 }
 
 // Tests how screen captures section is updated during item addition, removal

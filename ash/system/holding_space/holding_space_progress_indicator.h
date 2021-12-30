@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/ash_export.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "base/callback_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -22,8 +23,8 @@ class HoldingSpaceProgressRingAnimation;
 
 // A class owning a `ui::Layer` which paints indication of progress.
 // NOTE: The owned `layer()` is not painted if progress == `1.f`.
-class HoldingSpaceProgressIndicator : public ui::LayerOwner,
-                                      public ui::LayerDelegate {
+class ASH_EXPORT HoldingSpaceProgressIndicator : public ui::LayerOwner,
+                                                 public ui::LayerDelegate {
  public:
   static constexpr char kClassName[] = "HoldingSpaceProgressIndicator";
   static constexpr float kProgressComplete = 1.f;
@@ -43,6 +44,12 @@ class HoldingSpaceProgressIndicator : public ui::LayerOwner,
   static std::unique_ptr<HoldingSpaceProgressIndicator> CreateForItem(
       const HoldingSpaceItem* item);
 
+  // Adds the specified `callback` to be notified of `progress_` changes. The
+  // `callback` will continue to receive events so long as both `this` and the
+  // returned subscription exist.
+  base::RepeatingClosureList::Subscription AddProgressChangedCallback(
+      base::RepeatingClosureList::CallbackType callback);
+
   // Invoke to schedule repaint of the entire `layer()`.
   void InvalidateLayer();
 
@@ -51,6 +58,11 @@ class HoldingSpaceProgressIndicator : public ui::LayerOwner,
   // regardless of the value of `visible` provided.
   void SetInnerIconVisible(bool visible);
   bool inner_icon_visible() const { return inner_icon_visible_; }
+
+  // Returns the underlying `progress_` for which to paint indication.
+  // NOTE: If absent, progress is indeterminate.
+  // NOTE: If present, progress must be >= `0.f` and <= `1.f`.
+  const absl::optional<float>& progress() const { return progress_; }
 
  protected:
   // Each progress indicator is associated with an `animation_key_` which is
@@ -101,6 +113,9 @@ class HoldingSpaceProgressIndicator : public ui::LayerOwner,
   // NOTE: If absent, progress is indeterminate.
   // NOTE: If present, progress must be >= `0.f` and <= `1.f`.
   absl::optional<float> progress_;
+
+  // The list of callbacks for which to notify `progress_` changes.
+  base::RepeatingClosureList progress_changed_callback_list_;
 
   // Whether this progress indicator's inner icon is visible. Note that the
   // inner icon will only be painted while `progress_` is incomplete, regardless
