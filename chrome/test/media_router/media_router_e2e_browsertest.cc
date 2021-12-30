@@ -68,7 +68,8 @@ void MediaRouterE2EBrowserTest::TearDownOnMainThread() {
 void MediaRouterE2EBrowserTest::OnRouteResponseReceived(
     mojom::RoutePresentationConnectionPtr,
     const RouteRequestResult& result) {
-  ASSERT_TRUE(result.route());
+  ASSERT_TRUE(result.route())
+      << "RouteRequestResult code: " << result.result_code();
   route_id_ = result.route()->media_route_id();
 }
 
