@@ -99,6 +99,10 @@ const char kWriteKeyBasedCharacteristicResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.KeyBasedPairing.Write.Result";
 const char kWriteKeyBasedCharacteristicPairFailureMetric[] =
     "Bluetooth.ChromeOS.FastPair.KeyBasedPairing.Write.PairFailure";
+const char kKeyBasedCharacteristicDecryptTime[] =
+    "Bluetooth.ChromeOS.FastPair.KeyBasedPairing.DecryptTime";
+const char kKeyBasedCharacteristicDecryptResult[] =
+    "Bluetooth.ChromeOS.FastPair.KeyBasedPairing.DecryptResult";
 
 }  // namespace
 
@@ -197,6 +201,8 @@ TEST_F(FastPairHandshakeImplTest, WriteResponseError) {
 }
 
 TEST_F(FastPairHandshakeImplTest, ParseResponseError) {
+  histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptResult, 0);
   histogram_tester().ExpectTotalCount(
       kWriteKeyBasedCharacteristicPairFailureMetric, 0);
   fake_fast_pair_gatt_service_client()->RunOnGattClientInitializedCallback();
@@ -208,9 +214,13 @@ TEST_F(FastPairHandshakeImplTest, ParseResponseError) {
   EXPECT_FALSE(handshake_->completed_successfully());
   histogram_tester().ExpectTotalCount(
       kWriteKeyBasedCharacteristicPairFailureMetric, 0);
+  histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptResult, 1);
 }
 
 TEST_F(FastPairHandshakeImplTest, ParseResponseWrongType) {
+  histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptResult, 0);
   fake_fast_pair_gatt_service_client()->RunOnGattClientInitializedCallback();
   data_encryptor()->response(absl::make_optional(DecryptedResponse(
       FastPairMessageType::kProvidersPasskey,
@@ -221,9 +231,13 @@ TEST_F(FastPairHandshakeImplTest, ParseResponseWrongType) {
   EXPECT_EQ(failure_.value(),
             PairFailure::kIncorrectKeyBasedPairingResponseType);
   EXPECT_FALSE(handshake_->completed_successfully());
+  histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptResult, 1);
 }
 
 TEST_F(FastPairHandshakeImplTest, Success) {
+  histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptResult, 0);
   fake_fast_pair_gatt_service_client()->RunOnGattClientInitializedCallback();
   data_encryptor()->response(absl::make_optional(DecryptedResponse(
       FastPairMessageType::kKeyBasedPairingResponse,
@@ -233,6 +247,8 @@ TEST_F(FastPairHandshakeImplTest, Success) {
       std::vector<uint8_t>());
   EXPECT_FALSE(failure_.has_value());
   EXPECT_TRUE(handshake_->completed_successfully());
+  histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptTime, 1);
+  histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptResult, 1);
 }
 
 }  // namespace quick_pair

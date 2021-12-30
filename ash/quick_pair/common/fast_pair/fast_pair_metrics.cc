@@ -69,6 +69,10 @@ const char kWriteKeyBasedCharacteristicGattError[] =
     "Bluetooth.ChromeOS.FastPair.KeyBasedPairing.Write.GattErrorReason";
 const char kNotifyKeyBasedCharacteristicTime[] =
     "Bluetooth.ChromeOS.FastPair.KeyBasedPairing.NotifyTime";
+const char kKeyBasedCharacteristicDecryptTime[] =
+    "Bluetooth.ChromeOS.FastPair.KeyBasedPairing.DecryptTime";
+const char kKeyBasedCharacteristicDecryptResult[] =
+    "Bluetooth.ChromeOS.FastPair.KeyBasedPairing.DecryptResult";
 
 }  // namespace
 
@@ -233,6 +237,14 @@ void RecordWriteRequestGattError(
 
 void RecordNotifyKeyBasedCharacteristicTime(base::TimeDelta total_notify_time) {
   base::UmaHistogramTimes(kNotifyKeyBasedCharacteristicTime, total_notify_time);
+}
+
+void RecordKeyBasedCharacteristicDecryptTime(base::TimeDelta decrypt_time) {
+  base::UmaHistogramTimes(kKeyBasedCharacteristicDecryptTime, decrypt_time);
+}
+
+void RecordKeyBasedCharacteristicDecryptResult(bool success) {
+  base::UmaHistogramBoolean(kKeyBasedCharacteristicDecryptResult, success);
 }
 
 }  // namespace quick_pair

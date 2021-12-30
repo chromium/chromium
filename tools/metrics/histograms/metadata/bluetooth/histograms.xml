@@ -285,6 +285,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.KeyBasedPairing.DecryptResult"
+    enum="BooleanSuccess" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of decrypting the response from the key based
+    pairing characteristic. Emitted in the handshake flow after the response
+    bytes have been attempted to be decrypted.
+  </summary>
+</histogram>
+
+<histogram name="Bluetooth.ChromeOS.FastPair.KeyBasedPairing.DecryptTime"
+    units="ms" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total time it takes to decrypt a successful response from the
+    key based pairing characteristic. Emitted in the handshake flow after the
+    response bytes have been attempted to be decrypted, only after a successful
+    decryption.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.KeyBasedPairing.NotifyTime"
     units="ms" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>
@@ -464,44 +489,6 @@ chromium-metrics-reviews@google.com.
     <variant name="SubsequentPairingProtocol"
         summary="subsequent pairing protocol"/>
   </token>
-</histogram>
-
-<histogram
-    name="Bluetooth.ChromeOS.FastPair.WriteKeyBasedPairing.GattErrorReason"
-    enum="GattErrorCode" expires_after="2022-09-20">
-  <owner>shanefitz@google.com</owner>
-  <owner>julietlevesque@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Breaks down why a written attempt to the Key-based pairing Gatt
-    characteristic of a device failed if it was a result of a Gatt error.
-    Emitted following a OnWriteRequest error in the FastPairGattServiceClient.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.ChromeOS.FastPair.WriteKeyBasedPairing.PairFailure"
-    enum="FastPairPairFailure" expires_after="2022-09-20">
-  <owner>shanefitz@google.com</owner>
-  <owner>julietlevesque@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Breaks down why a written attempt to the Key-based pairing Gatt
-    characteristic of a device failed (see
-    'Bluetooth.ChromeOS.FastPair.WriteKeyBasedPairing.Result'). Emitted on the
-    OnWriteResponse event in the Fast Pair handshake.
-  </summary>
-</histogram>
-
-<histogram name="Bluetooth.ChromeOS.FastPair.WriteKeyBasedPairing.Result"
-    enum="BooleanSuccess" expires_after="2022-06-20">
-  <owner>shanefitz@google.com</owner>
-  <owner>julietlevesque@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records success or failure of writing to the Key-based pairing Gatt
-    characteristic of the device during the handshake. Emitted following the
-    writing request in FastPairHandshake.
-  </summary>
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.Forget.Result" enum="ForgetResult"

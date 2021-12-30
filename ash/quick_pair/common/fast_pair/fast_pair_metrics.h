@@ -120,6 +120,12 @@ void RecordWriteRequestGattError(
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordNotifyKeyBasedCharacteristicTime(base::TimeDelta total_notify_time);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordKeyBasedCharacteristicDecryptTime(base::TimeDelta decrypt_time);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordKeyBasedCharacteristicDecryptResult(bool success);
+
 }  // namespace quick_pair
 }  // namespace ash
 
