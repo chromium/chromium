@@ -24,6 +24,7 @@ const char kFREDefaultPromoTestingShortDelayParam[] =
 const char kFREUIIdentitySwitcherPositionParam[] =
     "signin_sync_screen_identity_position";
 const char kFREUIStringsSetParam[] = "signin_sync_screen_strings_set";
+const char kFRESecondUITrialName[] = "EnableFREUIModuleIOSV2";
 
 // Feature param and options for the identity switcher position.
 constexpr base::FeatureParam<SigninSyncScreenUIIdentitySwitcherPosition>::Option
@@ -68,9 +69,6 @@ const variations::VariationID
 const variations::VariationID
     kFREDefaultBrowserAndSmallDelayBeforeOtherPromosID = 3342138;
 
-// FRE UI Trial name.
-const char kFREUITrialName[] = "EnableFREUIModuleIOSV2";
-
 // Group names for the second trial of the FRE UI.
 const char kDisabledGroup[] = "Disabled";
 const char kIdentitySwitcherInTopAndOldStringsSetGroup[] =
@@ -105,7 +103,8 @@ void AssociateFieldTrialParamsForFRESecondTrialGroup(
   base::FieldTrialParams params;
   params[kFREUIIdentitySwitcherPositionParam] = position;
   params[kFREUIStringsSetParam] = stringsSet;
-  DCHECK(base::AssociateFieldTrialParams(kFREUITrialName, group_name, params));
+  DCHECK(base::AssociateFieldTrialParams(kEnableFREUIModuleIOS.name, group_name,
+                                         params));
 }
 }  // namespace
 
@@ -254,12 +253,12 @@ int CreateFirstRunSecondTrial(
     case version_info::Channel::CANARY:
     case version_info::Channel::DEV:
     case version_info::Channel::BETA:
-      new_fre_with_top_position_old_strings_set_percent = 0;
-      new_fre_with_top_position_new_strings_set_percent = 0;
-      new_fre_with_bottom_position_old_strings_set_percent = 0;
-      new_fre_with_bottom_position_new_strings_set_percent = 0;
-      new_fre_disabled_percent = 0;
-      new_fre_default_percent = 100;
+      new_fre_with_top_position_old_strings_set_percent = 20;
+      new_fre_with_top_position_new_strings_set_percent = 20;
+      new_fre_with_bottom_position_old_strings_set_percent = 20;
+      new_fre_with_bottom_position_new_strings_set_percent = 20;
+      new_fre_disabled_percent = 20;
+      new_fre_default_percent = 0;
       break;
     case version_info::Channel::STABLE:
       new_fre_with_top_position_old_strings_set_percent = 0;
@@ -272,7 +271,7 @@ int CreateFirstRunSecondTrial(
   }
 
   // Set up the trial and groups.
-  FirstRunFieldTrialConfig config(kFREUITrialName);
+  FirstRunFieldTrialConfig config(kFRESecondUITrialName);
 
   config.AddGroup(kIdentitySwitcherInTopAndOldStringsSetGroup,
                   kIdentitySwitcherInTopAndOldStringsSetID,
@@ -318,11 +317,11 @@ int CreateFirstRunSecondTrial(
       group_name == kIdentitySwitcherInBottomAndOldStringsSetGroup ||
       group_name == kIdentitySwitcherInBottomAndNewStringsSetGroup) {
     feature_list->RegisterFieldTrialOverride(
-        kFREUITrialName, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+        kEnableFREUIModuleIOS.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
         trial.get());
   } else if (group_name == kDisabledGroup) {
     feature_list->RegisterFieldTrialOverride(
-        kFREUITrialName, base::FeatureList::OVERRIDE_DISABLE_FEATURE,
+        kEnableFREUIModuleIOS.name, base::FeatureList::OVERRIDE_DISABLE_FEATURE,
         trial.get());
   }
 
@@ -343,10 +342,20 @@ void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
     // Experience yet.
     return;
   }
-  // Create trial and group user for the first time, or tag users again to
-  // ensure the experiment can be used to filter UMA metrics.
-  trial_group = CreateFirstRunTrial(low_entropy_provider, feature_list);
-  trial_group = CreateFirstRunSecondTrial(low_entropy_provider, feature_list);
+
+  // Don't create the trial if it was already created for testing. This is only
+  // expected when the browser is used for development purpose. The trial
+  // created when the about flag is set will have the same name as the feature.
+  // This condition is to avoid having multiple trials overriding the same
+  // feature. A trial might have also been created with the commandline
+  // arguments.
+  if (!base::FieldTrialList::TrialExists(kFRESecondUITrialName) &&
+      !base::FieldTrialList::TrialExists(kEnableFREUIModuleIOS.name)) {
+    // Create trial and group user for the first time, or tag users again to
+    // ensure the experiment can be used to filter UMA metrics.
+    trial_group = CreateFirstRunSecondTrial(low_entropy_provider, feature_list);
+  }
+
   // Persist the assigned group for subsequent runs.
   local_state->SetInteger(kTrialGroupPrefName, trial_group);
 }
