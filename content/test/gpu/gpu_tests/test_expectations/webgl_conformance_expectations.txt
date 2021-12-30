@@ -385,7 +385,7 @@ crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex
 crbug.com/1145861 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
 # OOM on hardware devices
 crbug.com/1145951 [ fuchsia fuchsia-board-astro ] conformance/rendering/multisample-corruption.html [ Failure ]
-crbug.com/1145951 [ fuchsia fuchsia-board-astro ] conformance/context/context-creation-and-destruction.html [ Failure ]
+crbug.com/1145951 [ fuchsia fuchsia-board-astro ] conformance/context/context-creation-and-destruction.html [ Skip ]
 crbug.com/1145951 [ fuchsia fuchsia-board-astro ] conformance/rendering/preservedrawingbuffer-leak.html [ Failure ]
 # Specific build issue
 crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
