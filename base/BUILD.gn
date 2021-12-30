@@ -1402,7 +1402,7 @@ mixed_component("base") {
   # module, to avoid increasing Chrome's executable size.
   assert_no_deps = [ ":native_unwinder_android" ]
 
-# TODO(crbug.com/1280708): Switch to enable_rust after we have NaCl support.
+  # TODO(crbug.com/1280708): Switch to enable_rust after we have NaCl support.
   if (toolchain_has_rust) {
     rs_crate_root = "lib.rs"
     rs_sources = [
@@ -2484,7 +2484,7 @@ mixed_component("base") {
     ]
   }
 
-  if (using_sanitizer) {
+  if (using_sanitizer && !is_fuchsia) {
     data += [ "//tools/valgrind/asan/" ]
     data_deps +=
         [ "//build/config/clang:llvm-symbolizer_data($host_toolchain)" ]

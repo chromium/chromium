@@ -61,8 +61,4 @@ group("deployment_resources") {
   foreach(fuchsia_additional_boot_image, fuchsia_additional_boot_images) {
     data += [ "${fuchsia_additional_boot_image}/" ]
   }
-
-  if (test_host_cpu == "x64") {
-    data_deps = [ "//build/config/clang:llvm-symbolizer_data($host_toolchain)" ]
-  }
 }
