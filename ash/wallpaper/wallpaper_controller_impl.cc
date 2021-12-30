@@ -509,7 +509,7 @@ bool IsEphemeralUser(const AccountId& id) {
     return user_manager::UserManager::Get()->IsUserNonCryptohomeDataEphemeral(
         id);
   }
-  NOTIMPLEMENTED();
+  // Unit tests may not have a UserManager.
   return false;
 }
 
@@ -519,7 +519,7 @@ user_manager::UserType GetUserType(const AccountId& id) {
     if (auto* user = user_manager::UserManager::Get()->FindUser(id))
       return user->GetType();
   }
-  NOTIMPLEMENTED();
+  // Unit tests may not have a UserManager.
   return user_manager::USER_TYPE_REGULAR;
 }
 
