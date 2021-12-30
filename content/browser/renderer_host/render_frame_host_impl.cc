@@ -2529,11 +2529,6 @@ void RenderFrameHostImpl::OnAssociatedInterfaceRequest(
 
   if (associated_registry_->TryBindInterface(interface_name, &handle))
     return;
-
-  if (GetContentClient()->browser()->BindAssociatedReceiverFromFrame(
-          this, interface_name, &handle)) {
-    return;
-  }
 }
 
 std::string RenderFrameHostImpl::ToDebugString() {
@@ -8365,6 +8360,8 @@ void RenderFrameHostImpl::CreateBroadcastChannelProvider(
 void RenderFrameHostImpl::SetUpMojoConnection() {
   CHECK(!associated_registry_);
 
+  // TODO(https://crbug.com/1265864): Move the registry logic below to another
+  // file to ensure security review coverage.
   associated_registry_ = std::make_unique<blink::AssociatedInterfaceRegistry>();
 
   auto bind_frame_host_receiver =
@@ -8513,6 +8510,12 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
   associated_registry_->AddInterface(
       base::BindRepeating(&RenderFrameHostImpl::CreateBroadcastChannelProvider,
                           base::Unretained(this)));
+
+  // Allow embedders to register their binders.
+  GetContentClient()
+      ->browser()
+      ->RegisterAssociatedInterfaceBindersForRenderFrameHost(
+          *this, *associated_registry_);
 
   mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
       remote_interfaces;

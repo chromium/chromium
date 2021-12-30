@@ -690,12 +690,9 @@ ContentBrowserClient::RunSecondaryMediaService() {
   return mojo::Remote<media::mojom::MediaService>();
 }
 
-bool ContentBrowserClient::BindAssociatedReceiverFromFrame(
-    RenderFrameHost* render_frame_host,
-    const std::string& interface_name,
-    mojo::ScopedInterfaceEndpointHandle* handle) {
-  return false;
-}
+void ContentBrowserClient::RegisterAssociatedInterfaceBindersForRenderFrameHost(
+    RenderFrameHost& render_frame_host,
+    blink::AssociatedInterfaceRegistry& associated_registry) {}
 
 ControllerPresentationServiceDelegate*
 ContentBrowserClient::GetControllerPresentationServiceDelegate(

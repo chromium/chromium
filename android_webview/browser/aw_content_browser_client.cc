@@ -105,6 +105,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -609,56 +610,60 @@ AwContentBrowserClient::CreateDevToolsManagerDelegate() {
   return std::make_unique<AwDevToolsManagerDelegate>();
 }
 
-bool AwContentBrowserClient::BindAssociatedReceiverFromFrame(
-    content::RenderFrameHost* render_frame_host,
-    const std::string& interface_name,
-    mojo::ScopedInterfaceEndpointHandle* handle) {
-  if (interface_name == autofill::mojom::AutofillDriver::Name_) {
-    autofill::ContentAutofillDriverFactory::BindAutofillDriver(
-        mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>(
-            std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name == content_capture::mojom::ContentCaptureReceiver::Name_) {
-    content_capture::OnscreenContentProvider::BindContentCaptureReceiver(
-        mojo::PendingAssociatedReceiver<
-            content_capture::mojom::ContentCaptureReceiver>(std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name == mojom::FrameHost::Name_) {
-    AwRenderViewHostExt::BindFrameHost(
-        mojo::PendingAssociatedReceiver<mojom::FrameHost>(std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name == page_load_metrics::mojom::PageLoadMetrics::Name_) {
-    page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
-        mojo::PendingAssociatedReceiver<
-            page_load_metrics::mojom::PageLoadMetrics>(std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name == printing::mojom::PrintManagerHost::Name_) {
-    AwPrintManager::BindPrintManagerHost(
-        mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>(
-            std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name ==
-      security_interstitials::mojom::InterstitialCommands::Name_) {
-    security_interstitials::SecurityInterstitialTabHelper::
-        BindInterstitialCommands(
-            mojo::PendingAssociatedReceiver<
-                security_interstitials::mojom::InterstitialCommands>(
-                std::move(*handle)),
-            render_frame_host);
-    return true;
-  }
-
-  return false;
+void AwContentBrowserClient::
+    RegisterAssociatedInterfaceBindersForRenderFrameHost(
+        content::RenderFrameHost& render_frame_host,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+  // TODO(https://crbug.com/1265864): Move the registry logic below to a
+  // dedicated file to ensure security review coverage.
+  // TODO(lingqi): Swap the parameters so that lambda functions are not needed.
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>
+             receiver) {
+        autofill::ContentAutofillDriverFactory::BindAutofillDriver(
+            std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+             content_capture::mojom::ContentCaptureReceiver> receiver) {
+        content_capture::OnscreenContentProvider::BindContentCaptureReceiver(
+            std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<mojom::FrameHost> receiver) {
+        AwRenderViewHostExt::BindFrameHost(std::move(receiver),
+                                           render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+             page_load_metrics::mojom::PageLoadMetrics> receiver) {
+        page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
+            std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
+             receiver) {
+        AwPrintManager::BindPrintManagerHost(std::move(receiver),
+                                             render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+             security_interstitials::mojom::InterstitialCommands> receiver) {
+        security_interstitials::SecurityInterstitialTabHelper::
+            BindInterstitialCommands(std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
 }
 
 void AwContentBrowserClient::ExposeInterfacesToRenderer(

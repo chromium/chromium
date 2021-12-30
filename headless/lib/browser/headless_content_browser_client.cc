@@ -44,6 +44,7 @@
 #include "net/ssl/ssl_private_key.h"
 #include "printing/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/switches.h"
 
@@ -142,21 +143,22 @@ void HeadlessContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
       &HeadlessContentBrowserClient::BindBadgeService, base::Unretained(this)));
 }
 
-bool HeadlessContentBrowserClient::BindAssociatedReceiverFromFrame(
-    content::RenderFrameHost* render_frame_host,
-    const std::string& interface_name,
-    mojo::ScopedInterfaceEndpointHandle* handle) {
+void HeadlessContentBrowserClient::
+    RegisterAssociatedInterfaceBindersForRenderFrameHost(
+        content::RenderFrameHost& render_frame_host,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+  // TODO(https://crbug.com/1265864): Move the registry logic below to a
+  // dedicated file to ensure security review coverage.
 #if BUILDFLAG(ENABLE_PRINTING)
-  if (interface_name == printing::mojom::PrintManagerHost::Name_) {
-    print_to_pdf::PdfPrintManager::BindPrintManagerHost(
-        mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>(
-            std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
+             receiver) {
+        print_to_pdf::PdfPrintManager::BindPrintManagerHost(std::move(receiver),
+                                                            render_frame_host);
+      },
+      &render_frame_host));
 #endif
-
-  return false;
 }
 
 std::unique_ptr<content::DevToolsManagerDelegate>

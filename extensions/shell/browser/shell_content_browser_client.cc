@@ -235,19 +235,18 @@ void ShellContentBrowserClient::ExposeInterfacesToRenderer(
       &EventRouter::BindForRenderer, render_process_host->GetID()));
 }
 
-bool ShellContentBrowserClient::BindAssociatedReceiverFromFrame(
-    content::RenderFrameHost* render_frame_host,
-    const std::string& interface_name,
-    mojo::ScopedInterfaceEndpointHandle* handle) {
-  if (interface_name == extensions::mojom::LocalFrameHost::Name_) {
-    ExtensionWebContentsObserver::BindLocalFrameHost(
-        mojo::PendingAssociatedReceiver<extensions::mojom::LocalFrameHost>(
-            std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-
-  return false;
+void ShellContentBrowserClient::
+    RegisterAssociatedInterfaceBindersForRenderFrameHost(
+        content::RenderFrameHost& render_frame_host,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<extensions::mojom::LocalFrameHost>
+             receiver) {
+        ExtensionWebContentsObserver::BindLocalFrameHost(std::move(receiver),
+                                                         render_frame_host);
+      },
+      &render_frame_host));
 }
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>

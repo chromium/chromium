@@ -81,10 +81,9 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
       content::RenderProcessHost* render_process_host) override;
-  bool BindAssociatedReceiverFromFrame(
-      content::RenderFrameHost* render_frame_host,
-      const std::string& interface_name,
-      mojo::ScopedInterfaceEndpointHandle* handle) override;
+  void RegisterAssociatedInterfaceBindersForRenderFrameHost(
+      content::RenderFrameHost& render_frame_host,
+      blink::AssociatedInterfaceRegistry& associated_registry) override;
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(
       content::NavigationHandle* navigation_handle) override;

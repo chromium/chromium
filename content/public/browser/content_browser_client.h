@@ -1132,8 +1132,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   //
   // The embedder can add entries to `policy_map` for interfaces that it
   // registers in `RegisterBrowserInterfaceBindersForFrame()` and
-  // `BindAssociatedReceiverFromFrame()`. It should not change or remove
-  // existing entries.
+  // `RegisterAssociatedInterfaceBindersForRenderFrameHost ()`. It should not
+  // change or remove existing entries.
   //
   // This function is called at most once, when the first RenderFrameHost is
   // created for prerendering a page that is same-origin to the page that
@@ -1155,13 +1155,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void RegisterWebUIInterfaceBrokers(
       WebUIBrowserInterfaceBrokerRegistry& registry) {}
 
-  // Content was unable to bind a receiver for this associated interface, so the
-  // embedder should try. Returns true if the |handle| was actually taken and
-  // bound; false otherwise.
-  virtual bool BindAssociatedReceiverFromFrame(
-      RenderFrameHost* render_frame_host,
-      const std::string& interface_name,
-      mojo::ScopedInterfaceEndpointHandle* handle);
+  // Allows the embedder to register browser channel-associated interfaces that
+  // are exposed through the RenderFrameHost.
+  virtual void RegisterAssociatedInterfaceBindersForRenderFrameHost(
+      RenderFrameHost& render_frame_host,
+      blink::AssociatedInterfaceRegistry& associated_registry);
 
   // Handles an unhandled incoming interface binding request from the GPU
   // process. Called on the IO thread.

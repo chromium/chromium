@@ -444,10 +444,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void RegisterBrowserInterfaceBindersForServiceWorker(
       mojo::BinderMapWithContext<const content::ServiceWorkerVersionBaseInfo&>*
           map) override;
-  bool BindAssociatedReceiverFromFrame(
-      content::RenderFrameHost* render_frame_host,
-      const std::string& interface_name,
-      mojo::ScopedInterfaceEndpointHandle* handle) override;
+  void RegisterAssociatedInterfaceBindersForRenderFrameHost(
+      content::RenderFrameHost& render_frame_host,
+      blink::AssociatedInterfaceRegistry& associated_registry) override;
   void BindGpuHostReceiver(mojo::GenericPendingReceiver receiver) override;
   void BindUtilityHostReceiver(mojo::GenericPendingReceiver receiver) override;
   void BindHostReceiverForRenderer(

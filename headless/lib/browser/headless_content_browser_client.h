@@ -38,10 +38,9 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   void RegisterBrowserInterfaceBindersForFrame(
       content::RenderFrameHost* render_frame_host,
       mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override;
-  bool BindAssociatedReceiverFromFrame(
-      content::RenderFrameHost* render_frame_host,
-      const std::string& interface_name,
-      mojo::ScopedInterfaceEndpointHandle* handle) override;
+  void RegisterAssociatedInterfaceBindersForRenderFrameHost(
+      content::RenderFrameHost& render_frame_host,
+      blink::AssociatedInterfaceRegistry& associated_registry) override;
   std::unique_ptr<content::DevToolsManagerDelegate>
   CreateDevToolsManagerDelegate() override;
   scoped_refptr<content::QuotaPermissionContext> CreateQuotaPermissionContext()

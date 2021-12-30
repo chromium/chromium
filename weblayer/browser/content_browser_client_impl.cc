@@ -77,6 +77,7 @@
 #include "services/network/network_service.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -860,59 +861,61 @@ ContentBrowserClientImpl::GetGeneratedCodeCacheSettings(
       true, 0, ProfileImpl::GetCachePath(context));
 }
 
-bool ContentBrowserClientImpl::BindAssociatedReceiverFromFrame(
-    content::RenderFrameHost* render_frame_host,
-    const std::string& interface_name,
-    mojo::ScopedInterfaceEndpointHandle* handle) {
-  if (interface_name == autofill::mojom::AutofillDriver::Name_) {
-    autofill::ContentAutofillDriverFactory::BindAutofillDriver(
-        mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>(
-            std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name == autofill::mojom::PasswordManagerDriver::Name_) {
-    PasswordManagerDriverFactory::BindPasswordManagerDriver(
-        mojo::PendingAssociatedReceiver<autofill::mojom::PasswordManagerDriver>(
-            std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name == content_capture::mojom::ContentCaptureReceiver::Name_) {
-    content_capture::OnscreenContentProvider::BindContentCaptureReceiver(
-        mojo::PendingAssociatedReceiver<
-            content_capture::mojom::ContentCaptureReceiver>(std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name == page_load_metrics::mojom::PageLoadMetrics::Name_) {
-    page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
-        mojo::PendingAssociatedReceiver<
-            page_load_metrics::mojom::PageLoadMetrics>(std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-  if (interface_name ==
-      security_interstitials::mojom::InterstitialCommands::Name_) {
-    security_interstitials::SecurityInterstitialTabHelper::
-        BindInterstitialCommands(
-            mojo::PendingAssociatedReceiver<
-                security_interstitials::mojom::InterstitialCommands>(
-                std::move(*handle)),
-            render_frame_host);
-    return true;
-  }
-  if (interface_name ==
-      subresource_filter::mojom::SubresourceFilterHost::Name_) {
-    subresource_filter::ContentSubresourceFilterThrottleManager::BindReceiver(
-        mojo::PendingAssociatedReceiver<
-            subresource_filter::mojom::SubresourceFilterHost>(
-            std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-
-  return false;
+void ContentBrowserClientImpl::
+    RegisterAssociatedInterfaceBindersForRenderFrameHost(
+        content::RenderFrameHost& render_frame_host,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+  // TODO(https://crbug.com/1265864): Move the registry logic below to a
+  // dedicated file to ensure security review coverage.
+  // TODO(lingqi): Swap the parameters so that lambda functions are not needed.
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>
+             receiver) {
+        autofill::ContentAutofillDriverFactory::BindAutofillDriver(
+            std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<autofill::mojom::PasswordManagerDriver>
+             receiver) {
+        PasswordManagerDriverFactory::BindPasswordManagerDriver(
+            std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+             content_capture::mojom::ContentCaptureReceiver> receiver) {
+        content_capture::OnscreenContentProvider::BindContentCaptureReceiver(
+            std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+             page_load_metrics::mojom::PageLoadMetrics> receiver) {
+        page_load_metrics::MetricsWebContentsObserver::BindPageLoadMetrics(
+            std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+             security_interstitials::mojom::InterstitialCommands> receiver) {
+        security_interstitials::SecurityInterstitialTabHelper::
+            BindInterstitialCommands(std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+             subresource_filter::mojom::SubresourceFilterHost> receiver) {
+        subresource_filter::ContentSubresourceFilterThrottleManager::
+            BindReceiver(std::move(receiver), render_frame_host);
+      },
+      &render_frame_host));
 }
 
 void ContentBrowserClientImpl::ExposeInterfacesToRenderer(

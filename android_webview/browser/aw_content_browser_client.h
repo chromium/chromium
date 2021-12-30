@@ -141,10 +141,9 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
       content::NavigationHandle* navigation_handle) override;
   std::unique_ptr<content::DevToolsManagerDelegate>
   CreateDevToolsManagerDelegate() override;
-  bool BindAssociatedReceiverFromFrame(
-      content::RenderFrameHost* render_frame_host,
-      const std::string& interface_name,
-      mojo::ScopedInterfaceEndpointHandle* handle) override;
+  void RegisterAssociatedInterfaceBindersForRenderFrameHost(
+      content::RenderFrameHost& render_frame_host,
+      blink::AssociatedInterfaceRegistry& associated_registry) override;
   void ExposeInterfacesToRenderer(
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,

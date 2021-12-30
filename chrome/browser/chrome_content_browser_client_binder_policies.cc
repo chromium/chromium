@@ -28,7 +28,7 @@ void RegisterPoliciesForNonAssociatedInterfaces(
 }
 
 // Registers policies for channel-associated interfaces registered in
-// `BindAssociatedReceiverFromFrame()`.
+// `RegisterAssociatedInterfaceBindersForRenderFrameHost()`.
 void RegisterPoliciesForChannelAssociatedInterfaces(
     content::MojoBinderPolicyMap& policy_map) {
   policy_map.SetAssociatedPolicy<page_load_metrics::mojom::PageLoadMetrics>(

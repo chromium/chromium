@@ -28,10 +28,11 @@ class WebContents;
 //
 // In order to expose the interface to all RenderFrames, a binder must be
 // registered for the interface. Typically this is done in
-// BindAssociatedReceiverFromFrame() in a ContentBrowserClient subclass.  Doing
-// that will expose the interface to all remote RenderFrame objects. If the
-// WebContents is destroyed at any point, the receivers will automatically
-// reset and will cease to dispatch further incoming messages.
+// RegisterAssociatedInterfaceBindersForRenderFrameHost() in a
+// ContentBrowserClient subclass.  Doing that will expose the interface to all
+// remote RenderFrame objects. If the WebContents is destroyed at any point, the
+// receivers will automatically reset and will cease to dispatch further
+// incoming messages.
 //
 // Because this object uses Channel-associated interface receivers, all messages
 // sent via these interfaces are ordered with respect to legacy Chrome IPC
