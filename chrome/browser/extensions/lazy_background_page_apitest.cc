@@ -785,6 +785,25 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, EventListenerCleanup) {
   EXPECT_FALSE(event_router->HasNonLazyEventListenerForTesting(kEvent));
 }
 
+// Tests that an extension can fetch a file scheme URL from the lazy background
+// page, if it has file access.
+IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest,
+                       FetchFileSchemeURLWithFileAccess) {
+  ASSERT_TRUE(RunExtensionTest(
+      "lazy_background_page/fetch_file_scheme_url_with_file_access", {},
+      {.allow_file_access = true}))
+      << message_;
+}
+
+// Tests that an extension can not fetch a file scheme URL from the lazy
+// background page, if it does not have file access.
+IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest,
+                       FetchFileSchemeURLWithNoFileAccess) {
+  ASSERT_TRUE(RunExtensionTest(
+      "lazy_background_page/fetch_file_scheme_url_with_no_file_access", {}))
+      << message_;
+}
+
 class PictureInPictureLazyBackgroundPageApiTest
     : public LazyBackgroundPageApiTest {
  public:

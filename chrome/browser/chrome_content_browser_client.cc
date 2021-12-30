@@ -4867,6 +4867,26 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
   return false;
 }
 #endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+void InitializeFileURLLoaderFactoryForExtension(
+    int render_process_id,
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    ChromeContentBrowserClient::NonNetworkURLLoaderFactoryMap* factories) {
+  // Extensions with the necessary permissions get access to file:// URLs that
+  // gets approval from ChildProcessSecurityPolicy. Keep this logic in sync with
+  // ExtensionWebContentsObserver::RenderFrameCreated.
+  Manifest::Type type = extension->GetType();
+  if ((type == Manifest::TYPE_EXTENSION ||
+       type == Manifest::TYPE_LEGACY_PACKAGED_APP) &&
+      extensions::util::AllowFileAccess(extension->id(), browser_context)) {
+    factories->emplace(
+        url::kFileScheme,
+        SpecialAccessFileURLLoaderFactory::Create(render_process_id));
+  }
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }  // namespace
 
 void ChromeContentBrowserClient::
@@ -4894,6 +4914,29 @@ void ChromeContentBrowserClient::
   factories->emplace(extensions::kExtensionScheme,
                      extensions::CreateExtensionURLLoaderFactory(
                          render_process_id, render_frame_id));
+
+  // This path will be taken for service workers, where there is no
+  // RenderFrameHost, but we still need to initialize file URL access.
+  if (render_frame_id == MSG_ROUTING_NONE) {
+    content::BrowserContext* browser_context =
+        content::RenderProcessHost::FromID(render_process_id)
+            ->GetBrowserContext();
+    extensions::ExtensionRegistry* extension_registry =
+        extensions::ExtensionRegistry::Get(browser_context);
+    for (const std::string& extension_id :
+         extensions::ProcessMap::Get(browser_context)
+             ->GetExtensionsInProcess(render_process_id)) {
+      const extensions::Extension* extension =
+          extension_registry->enabled_extensions().GetByID(extension_id);
+      // TODO(crbug.com/1280411) Factories should not be created for unloaded
+      // extensions.
+      if (!extension)
+        continue;
+
+      InitializeFileURLLoaderFactoryForExtension(
+          render_process_id, browser_context, extension, factories);
+    }
+  }
 
   // This logic should match
   // ChromeExtensionWebContentsObserver::RenderFrameCreated.
@@ -4956,19 +4999,9 @@ void ChromeContentBrowserClient::
                            frame_host, content::kChromeUIScheme,
                            std::move(allowed_webui_hosts)));
   }
-
-  // Extensions with the necessary permissions get access to file:// URLs that
-  // gets approval from ChildProcessSecurityPolicy. Keep this logic in sync with
-  // ExtensionWebContentsObserver::RenderFrameCreated.
-  Manifest::Type type = extension->GetType();
-  if ((type == Manifest::TYPE_EXTENSION ||
-       type == Manifest::TYPE_LEGACY_PACKAGED_APP) &&
-      extensions::util::AllowFileAccess(extension->id(),
-                                        web_contents->GetBrowserContext())) {
-    factories->emplace(
-        url::kFileScheme,
-        SpecialAccessFileURLLoaderFactory::Create(render_process_id));
-  }
+  InitializeFileURLLoaderFactoryForExtension(render_process_id,
+                                             web_contents->GetBrowserContext(),
+                                             extension, factories);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 

@@ -270,5 +270,19 @@ bool IsExtensionVisibleToContext(const Extension& extension,
          IsIncognitoEnabled(extension.id(), browser_context);
 }
 
+// Initializes file scheme access if the extension has such permission.
+void InitializeFileSchemeAccessForExtension(
+    int render_process_id,
+    const std::string& extension_id,
+    content::BrowserContext* browser_context) {
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
+  // TODO(karandeepb): This should probably use
+  // extensions::util::AllowFileAccess.
+  if (prefs->AllowFileAccess(extension_id)) {
+    content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestScheme(
+        render_process_id, url::kFileScheme);
+  }
+}
+
 }  // namespace util
 }  // namespace extensions

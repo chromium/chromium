@@ -1,0 +1,11 @@
+{
+  "name": "Lazy BG fetch test",
+  "description": "Test that fetching a file scheme URL succeeds",
+  "version": "1",
+  "manifest_version": 2,
+  "permissions": ["file:///*"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  }
+}

@@ -17,6 +17,7 @@
 #include "extensions/browser/extension_frame_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/kiosk/kiosk_delegate.h"
 #include "extensions/browser/process_manager.h"
@@ -154,13 +155,9 @@ void ExtensionWebContentsObserver::RenderFrameCreated(
   // ChromeContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories.
   if (type == Manifest::TYPE_EXTENSION ||
       type == Manifest::TYPE_LEGACY_PACKAGED_APP) {
-    ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
-    // TODO(karandeepb): This should probably use
-    // extensions::util::AllowFileAccess.
-    if (prefs->AllowFileAccess(extension->id())) {
-      content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestScheme(
-          render_frame_host->GetProcess()->GetID(), url::kFileScheme);
-    }
+    util::InitializeFileSchemeAccessForExtension(
+        render_frame_host->GetProcess()->GetID(), extension->id(),
+        browser_context_);
   }
 
   // Tells the new frame that it's hosted in an extension process.

@@ -1,0 +1,8 @@
+{
+  "name": "Service Worker-based background script",
+  "description": "Test that fetching a file scheme URL succeeds",
+  "version": "1",
+  "manifest_version": 3,
+  "host_permissions": ["file:///*"],
+  "background": {"service_worker": "service_worker_background.js"}
+}

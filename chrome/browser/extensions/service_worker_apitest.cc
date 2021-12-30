@@ -515,6 +515,28 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, ConsoleError) {
               HasSubstr("Logged from MV3 service worker"));
 }
 
+// Tests that an extension can fetch a file scheme URL from the service worker,
+// if it has file access.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
+                       FetchFileSchemeURLWithFileAccess) {
+  ASSERT_TRUE(
+      RunExtensionTest("service_worker/worker_based_background/"
+                       "fetch_file_scheme_url_with_file_access",
+                       {}, {.allow_file_access = true}))
+      << message_;
+}
+
+// Tests that an extension can not fetch a file scheme URL from the service
+// worker, if it does not have file access.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
+                       FetchFileSchemeURLWithNoFileAccess) {
+  ASSERT_TRUE(
+      RunExtensionTest("service_worker/worker_based_background/"
+                       "fetch_file_scheme_url_with_no_file_access",
+                       {}))
+      << message_;
+}
+
 // Tests chrome.runtime.onInstalled fires for extension service workers.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, OnInstalledEvent) {
   ASSERT_TRUE(RunExtensionTest(

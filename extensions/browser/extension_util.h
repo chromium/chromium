@@ -100,6 +100,12 @@ void ResetCorsOriginAccessListForExtension(
 bool IsExtensionVisibleToContext(const Extension& extension,
                                  content::BrowserContext* browser_context);
 
+// Initializes file scheme access if the extension has such permission.
+void InitializeFileSchemeAccessForExtension(
+    int render_process_id,
+    const std::string& extension_id,
+    content::BrowserContext* browser_context);
+
 }  // namespace util
 }  // namespace extensions
 
