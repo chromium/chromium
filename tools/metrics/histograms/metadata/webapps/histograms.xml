@@ -431,6 +431,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Preinstalled.AppToReplaceStillDefaultInstalledCount"
+    units="apps" expires_after="2022-04-17">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Preinstalled web app configs can specify a set of apps to uninstall after
+    the preinstalled web app is installed.
+
+    This records how many apps that are meant to be uninstalled are still
+    default installed; see https://crbug.com/1266234.
+
+    This gets recorded at start up after preinstalled web apps configs have been
+    applied.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Preinstalled.AppToReplaceStillInstalledCount"
     units="apps" expires_after="2022-04-17">
   <owner>alancutter@chromium.org</owner>
@@ -458,22 +474,6 @@ chromium-metrics-reviews@google.com.
 
     This records how many apps that are meant to be uninstalled are still
     installed and present in the Chrome OS shelf; see https://crbug.com/1266234.
-
-    This gets recorded at start up after preinstalled web apps configs have been
-    applied.
-  </summary>
-</histogram>
-
-<histogram name="WebApp.Preinstalled.AppToReplaceStillSyncInstalledCount"
-    units="apps" expires_after="2022-04-17">
-  <owner>alancutter@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Preinstalled web app configs can specify a set of apps to uninstall after
-    the preinstalled web app is installed.
-
-    This records how many apps that are meant to be uninstalled are still
-    installed due to Chrome app sync; see https://crbug.com/1266234.
 
     This gets recorded at start up after preinstalled web apps configs have been
     applied.

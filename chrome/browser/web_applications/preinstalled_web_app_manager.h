@@ -71,7 +71,7 @@ class PreinstalledWebAppManager {
   static const char* kHistogramInstallResult;
   static const char* kHistogramUninstallAndReplaceCount;
   static const char* kHistogramAppToReplaceStillInstalledCount;
-  static const char* kHistogramAppToReplaceStillSyncInstalledCount;
+  static const char* kHistogramAppToReplaceStillDefaultInstalledCount;
   static const char* kHistogramAppToReplaceStillInstalledInShelfCount;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

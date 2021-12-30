@@ -588,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
         1);
     histograms.ExpectUniqueSample(
         PreinstalledWebAppManager::
-            kHistogramAppToReplaceStillSyncInstalledCount,
+            kHistogramAppToReplaceStillDefaultInstalledCount,
         0, 1);
     histograms.ExpectUniqueSample(
         PreinstalledWebAppManager::
@@ -609,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
         1);
     histograms.ExpectUniqueSample(
         PreinstalledWebAppManager::
-            kHistogramAppToReplaceStillSyncInstalledCount,
+            kHistogramAppToReplaceStillDefaultInstalledCount,
         1, 1);
 
     // Neither app has been added to the shelf.
