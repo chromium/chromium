@@ -48,24 +48,7 @@
 #include "base/base_paths_mac.h"
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/crash/core/app/breakpad_linux.h"         // nogncheck
-#include "components/crash/core/app/crash_reporter_client.h"  // nogncheck
-#include "extensions/shell/app/shell_crash_reporter_client.h"
-#endif
-
 namespace {
-
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-extensions::ShellCrashReporterClient* GetCrashReporterClient() {
-  static base::NoDestructor<extensions::ShellCrashReporterClient> instance;
-  return instance.get();
-}
-#endif
 
 // Returns the same directory that the browser context will later be
 // initialized with.
@@ -160,15 +143,6 @@ void ShellMainDelegate::PreSandboxStartup() {
   std::string process_type =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kProcessType);
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  crash_reporter::SetCrashReporterClient(GetCrashReporterClient());
-  // Reporting for sub-processes will be initialized in ZygoteForked.
-  if (process_type != switches::kZygoteProcess)
-    breakpad::InitCrashReporter(process_type);
-#endif
-
   if (ProcessNeedsResourceBundle(process_type))
     ui::ResourceBundle::InitSharedInstanceWithPakPath(
         GetResourcesPakFilePath());
@@ -206,15 +180,6 @@ void ShellMainDelegate::ZygoteStarting(
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-void ShellMainDelegate::ZygoteForked() {
-  std::string process_type =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kProcessType);
-  breakpad::InitCrashReporter(process_type);
-}
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void ShellMainDelegate::PostEarlyInitialization(bool is_running_tests) {}
 #endif

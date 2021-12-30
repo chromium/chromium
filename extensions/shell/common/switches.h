@@ -18,13 +18,6 @@ extern const char kAppShellAllowRoaming[];
 extern const char kAppShellHostWindowSize[];
 extern const char kAppShellPreferredNetwork[];
 #endif
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-extern const char kCrashDumpsDir[];
-extern const char kEnableReporting[];
-#endif
-
 }  // namespace switches
 }  // namespace extensions
 

@@ -91,16 +91,6 @@ using content::BrowserContext;
 
 namespace extensions {
 
-namespace {
-
-// Intentionally dereferences a null pointer to test the crash reporter.
-void CrashForTest() {
-  int* bad_pointer = nullptr;
-  *bad_pointer = 0;
-}
-
-}  // namespace
-
 ShellBrowserMainParts::ShellBrowserMainParts(
     content::MainFunctionParams parameters,
     ShellBrowserMainDelegate* browser_main_delegate)
@@ -247,10 +237,6 @@ int ShellBrowserMainParts::PreMainMessageLoopRun() {
 
   content::ShellDevToolsManagerDelegate::StartHttpHandler(
       browser_context_.get());
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kBrowserCrashTest))
-    CrashForTest();
 
   // Skip these steps in integration tests.
   if (!parameters_.ui_task) {
