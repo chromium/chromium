@@ -413,14 +413,17 @@ class TabsSnapshotTest : public UserDataSnapshotBrowserTestBase {
     ASSERT_LE(tab_strip->count(), 3);
     if (tab_strip->count() == 3) {
       EXPECT_TRUE(content::WaitForLoadStop(tab_strip->GetWebContentsAt(2)));
-      EXPECT_EQ(tab_strip->GetWebContentsAt(2)->GetURL(), GURL("about:blank"));
+      EXPECT_EQ(tab_strip->GetWebContentsAt(2)->GetLastCommittedURL(),
+                GURL("about:blank"));
     }
 
     // embedded_test_server() might return a different hostname.
     content::WaitForLoadStop(tab_strip->GetWebContentsAt(0));
-    EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetURL().path(), "/title1.html");
+    EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path(),
+              "/title1.html");
     content::WaitForLoadStop(tab_strip->GetWebContentsAt(1));
-    EXPECT_EQ(tab_strip->GetWebContentsAt(1)->GetURL().path(), "/title2.html");
+    EXPECT_EQ(tab_strip->GetWebContentsAt(1)->GetLastCommittedURL().path(),
+              "/title2.html");
   }
 };
 
