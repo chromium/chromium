@@ -53,7 +53,7 @@ compile_js_files = [
   "mojo/util.ts",
   "nav.js",
   "new_feature_toast.js",
-  "perf.js",
+  "perf.ts",
   "snackbar.ts",
   "sound.ts",
   "state.js",
