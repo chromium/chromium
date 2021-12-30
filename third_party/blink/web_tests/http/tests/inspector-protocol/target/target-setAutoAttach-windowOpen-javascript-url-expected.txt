@@ -12,7 +12,6 @@ Received console message in the popup: {
             line : 1
             source : console-api
             text : 123
-            url : 
         }
     }
     sessionId : <string>
