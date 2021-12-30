@@ -17,17 +17,19 @@ using ::testing::Optional;
 void AssertDeviceMetricsCommand(const Command& command,
                                 const DeviceMetrics& device_metrics) {
   ASSERT_EQ("Page.setDeviceMetricsOverride", command.method);
-  int width, height;
-  ASSERT_TRUE(command.params.GetInteger("width", &width));
-  ASSERT_TRUE(command.params.GetInteger("height", &height));
+  absl::optional<int> width = command.params.FindIntKey("width");
+
+  absl::optional<int> height = command.params.FindIntKey("height");
+  ASSERT_TRUE(width);
+  ASSERT_TRUE(height);
   ASSERT_THAT(command.params.FindBoolKey("mobile"),
               Optional(device_metrics.mobile));
   ASSERT_THAT(command.params.FindBoolKey("fitWindow"),
               Optional(device_metrics.fit_window));
   ASSERT_THAT(command.params.FindBoolKey("textAutosizing"),
               Optional(device_metrics.text_autosizing));
-  ASSERT_EQ(device_metrics.width, width);
-  ASSERT_EQ(device_metrics.height, height);
+  ASSERT_EQ(device_metrics.width, *width);
+  ASSERT_EQ(device_metrics.height, *height);
   ASSERT_EQ(device_metrics.device_scale_factor,
             command.params.FindDoubleKey("deviceScaleFactor").value());
   ASSERT_EQ(device_metrics.font_scale_factor,

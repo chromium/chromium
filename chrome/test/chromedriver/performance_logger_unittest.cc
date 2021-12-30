@@ -304,9 +304,8 @@ TEST(PerformanceLogger, TracingStartStop) {
   EXPECT_EQ("benchmark", categories->GetList()[0].GetString());
   ASSERT_TRUE(categories->GetList()[1].is_string());
   EXPECT_EQ("blink.console", categories->GetList()[1].GetString());
-  int expected_interval = 0;
-  EXPECT_TRUE(cmd->params->GetInteger("bufferUsageReportingInterval",
-                                      &expected_interval));
+  int expected_interval =
+      cmd->params->FindIntKey("bufferUsageReportingInterval").value_or(-1);
   EXPECT_GT(expected_interval, 0);
   ASSERT_FALSE(client.PopSentCommand(&cmd));
 

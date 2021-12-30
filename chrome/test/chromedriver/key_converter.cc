@@ -668,9 +668,11 @@ Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
     }
   }
 
-  int modifiers;
-  if (!input_state->GetInteger("modifiers", &modifiers))
+  absl::optional<int> maybe_modifiers = input_state->FindIntKey("modifiers");
+  if (!maybe_modifiers)
     return Status(kUnknownError, "missing 'modifiers'");
+
+  int modifiers = *maybe_modifiers;
 
   bool is_modifier_key = false;
   bool is_special_key = false;

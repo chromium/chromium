@@ -58,8 +58,7 @@ class MockSyncWebSocket : public SyncWebSocket {
       EXPECT_TRUE(dict->GetDictionary("params", &params));
       if (!params)
         return false;
-      int param = -1;
-      EXPECT_TRUE(params->GetInteger("param", &param));
+      int param = params->FindIntKey("param").value_or(-1);
       EXPECT_EQ(1, param);
     }
     return true;
@@ -78,7 +77,11 @@ class MockSyncWebSocket : public SyncWebSocket {
     dict->reset(temp_dict->DeepCopy());
     if (!dict)
       return false;
-    EXPECT_TRUE((*dict)->GetInteger("id", &id_));
+    absl::optional<int> maybe_id = (*dict)->FindIntKey("id");
+    EXPECT_TRUE(maybe_id);
+    if (!maybe_id)
+      return false;
+    id_ = *maybe_id;
     EXPECT_TRUE((*dict)->GetString("method", method));
     // Because ConnectIfNecessary is not waiting for the response, Send can
     // set connect_complete to true
@@ -605,8 +608,7 @@ TEST(ParseInspectorMessage, EventWithParams) {
       0, &session_id, &type, &event, &response));
   ASSERT_EQ(internal::kEventMessageType, type);
   ASSERT_STREQ("method", event.method.c_str());
-  int key;
-  ASSERT_TRUE(event.params->GetInteger("key", &key));
+  int key = event.params->FindIntKey("key").value_or(-1);
   ASSERT_EQ(100, key);
   EXPECT_EQ("AB3A", session_id);
 }
@@ -650,8 +652,7 @@ TEST(ParseInspectorMessage, Command) {
   ASSERT_EQ(internal::kCommandResponseMessageType, type);
   ASSERT_EQ(1, response.id);
   ASSERT_FALSE(response.error.length());
-  int key;
-  ASSERT_TRUE(response.result->GetInteger("key", &key));
+  int key = response.result->FindIntKey("key").value_or(-1);
   ASSERT_EQ(1, key);
 }
 
@@ -1262,7 +1263,11 @@ class MockSyncWebSocket7 : public SyncWebSocket {
     EXPECT_TRUE(value->GetAsDictionary(&dict));
     if (!dict)
       return false;
-    EXPECT_TRUE(dict->GetInteger("id", &id_));
+    absl::optional<int> maybe_id = dict->FindIntKey("id");
+    EXPECT_TRUE(maybe_id);
+    if (!maybe_id)
+      return false;
+    id_ = *maybe_id;
     std::string method;
     EXPECT_TRUE(dict->GetString("method", &method));
     EXPECT_STREQ("method", method.c_str());

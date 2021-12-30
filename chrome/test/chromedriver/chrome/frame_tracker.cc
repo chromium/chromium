@@ -101,11 +101,11 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
                     "Runtime.executionContextCreated missing dict 'context'");
     }
 
-    int context_id;
     std::string frame_id;
     bool is_default = true;
 
-    if (!context->GetInteger("id", &context_id)) {
+    absl::optional<int> context_id = context->FindIntKey("id");
+    if (!context_id) {
       std::string json;
       base::JSONWriter::Write(*context, &json);
       return Status(kUnknownError, method + " has invalid 'context': " + json);
@@ -128,13 +128,14 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
     }
 
     if (is_default && !frame_id.empty())
-      frame_to_context_map_[frame_id] = context_id;
+      frame_to_context_map_[frame_id] = *context_id;
   } else if (method == "Runtime.executionContextDestroyed") {
-    int execution_context_id;
-    if (!params.GetInteger("executionContextId", &execution_context_id))
+    absl::optional<int> execution_context_id =
+        params.FindIntKey("executionContextId");
+    if (!execution_context_id)
       return Status(kUnknownError, method + " missing 'executionContextId'");
     for (auto entry : frame_to_context_map_) {
-      if (entry.second == execution_context_id) {
+      if (entry.second == *execution_context_id) {
         frame_to_context_map_.erase(entry.first);
         break;
       }

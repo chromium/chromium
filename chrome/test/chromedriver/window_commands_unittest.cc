@@ -151,8 +151,8 @@ TEST(WindowCommandsTest, ProcessInputActionSequencePointerMouse) {
   ASSERT_EQ("mouse", pointer_type);
   ASSERT_EQ("pointer1", id);
   action1->GetString("subtype", &action_type);
-  action1->GetInteger("x", &x);
-  action1->GetInteger("y", &y);
+  x = action1->FindIntKey("x").value_or(-1);
+  y = action1->FindIntKey("y").value_or(-1);
   ASSERT_EQ("pointerMove", action_type);
   ASSERT_EQ(30, x);
   ASSERT_EQ(60, y);
@@ -228,8 +228,8 @@ TEST(WindowCommandsTest, ProcessInputActionSequencePointerTouch) {
   ASSERT_EQ("touch", pointer_type);
   ASSERT_EQ("pointer1", id);
   action1->GetString("subtype", &action_type);
-  action1->GetInteger("x", &x);
-  action1->GetInteger("y", &y);
+  x = action1->FindIntKey("x").value_or(-1);
+  y = action1->FindIntKey("y").value_or(-1);
   ASSERT_EQ("pointerMove", action_type);
   ASSERT_EQ(30, x);
   ASSERT_EQ(60, y);

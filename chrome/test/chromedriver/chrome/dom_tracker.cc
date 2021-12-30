@@ -110,12 +110,12 @@ bool DomTracker::ProcessNode(const base::Value& node) {
   const base::DictionaryValue* dict;
   if (!node.GetAsDictionary(&dict))
     return false;
-  int node_id;
-  if (!dict->GetInteger("nodeId", &node_id))
+  absl::optional<int> node_id = dict->FindIntKey("nodeId");
+  if (!node_id)
     return false;
   std::string frame_id;
   if (dict->GetString("frameId", &frame_id)) {
-    node_to_frame_map_.insert(std::make_pair(node_id, frame_id));
+    node_to_frame_map_.insert(std::make_pair(*node_id, frame_id));
   }
 
   if (const base::Value* children = dict->FindKey("children"))

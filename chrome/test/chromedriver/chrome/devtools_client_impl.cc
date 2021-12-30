@@ -667,8 +667,9 @@ bool ParseInspectorMessage(const std::string& message,
   session_id->clear();
   if (message_dict->HasKey("sessionId"))
     message_dict->GetString("sessionId", session_id);
-  int id;
-  if (!message_dict->HasKey("id")) {
+
+  base::Value* id_value = message_dict->FindKey("id");
+  if (!id_value) {
     std::string method;
     if (!message_dict->GetString("method", &method))
       return false;
@@ -682,11 +683,11 @@ bool ParseInspectorMessage(const std::string& message,
     else
       event->params = std::make_unique<base::DictionaryValue>();
     return true;
-  } else if (message_dict->GetInteger("id", &id)) {
+  } else if (id_value->is_int()) {
     base::DictionaryValue* unscoped_error = nullptr;
     base::DictionaryValue* unscoped_result = nullptr;
     *type = kCommandResponseMessageType;
-    command_response->id = id;
+    command_response->id = id_value->GetInt();
     // As per Chromium issue 392577, DevTools does not necessarily return a
     // "result" dictionary for every valid response. In particular,
     // Tracing.start and Tracing.end command responses do not contain one.

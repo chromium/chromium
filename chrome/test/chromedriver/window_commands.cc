@@ -71,10 +71,9 @@ enum class PointerActionType { NOT_INITIALIZED, PRESS, MOVE, RELEASE, IDLE };
 
 Status GetMouseButton(const base::DictionaryValue& params,
                       MouseButton* button) {
-  int button_num;
-  if (!params.GetInteger("button", &button_num)) {
-    button_num = 0;  // Default to left mouse button.
-  } else if (button_num < 0 || button_num > 2) {
+  // Default to left mouse button.
+  int button_num = params.FindIntKey("button").value_or(0);
+  if (button_num < 0 || button_num > 2) {
     return Status(kInvalidArgument,
                   base::StringPrintf("invalid button: %d", button_num));
   }
@@ -335,11 +334,10 @@ Status ScrollCoordinateInToView(
     return status;
   base::DictionaryValue* view_attrib;
   value->GetAsDictionary(&view_attrib);
-  int view_x, view_y, view_width, view_height;
-  view_attrib->GetInteger("view_x", &view_x);
-  view_attrib->GetInteger("view_y", &view_y);
-  view_attrib->GetInteger("view_width", &view_width);
-  view_attrib->GetInteger("view_height", &view_height);
+  int view_x = view_attrib->FindIntKey("view_x").value_or(0);
+  int view_y = view_attrib->FindIntKey("view_y").value_or(0);
+  int view_width = view_attrib->FindIntKey("view_width").value_or(0);
+  int view_height = view_attrib->FindIntKey("view_height").value_or(0);
   *offset_x = x - view_x;
   *offset_y = y - view_y;
   if (*offset_x < 0 || *offset_x >= view_width || *offset_y < 0 ||
@@ -351,15 +349,16 @@ Status ScrollCoordinateInToView(
 Status ExecuteTouchEvent(
     Session* session, WebView* web_view, TouchEventType type,
     const base::DictionaryValue& params) {
-  int x, y;
-  if (!params.GetInteger("x", &x))
+  absl::optional<int> x = params.FindIntKey("x");
+  absl::optional<int> y = params.FindIntKey("y");
+  if (!x)
     return Status(kInvalidArgument, "'x' must be an integer");
-  if (!params.GetInteger("y", &y))
+  if (!y)
     return Status(kInvalidArgument, "'y' must be an integer");
-  int relative_x = x;
-  int relative_y = y;
-  Status status = ScrollCoordinateInToView(
-      session, web_view, x, y, &relative_x, &relative_y);
+  int relative_x = *x;
+  int relative_y = *y;
+  Status status = ScrollCoordinateInToView(session, web_view, *x, *y,
+                                           &relative_x, &relative_y);
   if (!status.IsOk())
     return status;
   std::vector<TouchEvent> events;
@@ -386,8 +385,14 @@ Status WindowViewportSize(Session* session,
     return status;
   base::DictionaryValue* view_attrib;
   value->GetAsDictionary(&view_attrib);
-  view_attrib->GetInteger("view_width", innerWidth);
-  view_attrib->GetInteger("view_height", innerHeight);
+  absl::optional<int> maybe_inner_width = view_attrib->FindIntKey("view_width");
+  if (innerWidth && maybe_inner_width)
+    *innerWidth = *maybe_inner_width;
+
+  absl::optional<int> maybe_inner_height =
+      view_attrib->FindIntKey("view_height");
+  if (innerHeight && maybe_inner_height)
+    *innerHeight = *maybe_inner_height;
   return Status(kOk);
 }
 
@@ -1077,17 +1082,18 @@ Status ExecuteMouseMoveTo(Session* session,
                           Timeout* timeout) {
   std::string element_id;
   bool has_element = params.GetString("element", &element_id);
-  int x_offset = 0;
-  int y_offset = 0;
-  bool has_offset = params.GetInteger("xoffset", &x_offset) &&
-      params.GetInteger("yoffset", &y_offset);
+  absl::optional<int> x_offset = params.FindIntKey("xoffset");
+  absl::optional<int> y_offset = params.FindIntKey("yoffset");
+  bool has_offset = x_offset.has_value() && y_offset.has_value();
   if (!has_element && !has_offset)
     return Status(kInvalidArgument,
                   "at least an element or offset should be set");
 
   WebPoint location;
   if (has_element) {
-    WebPoint offset(x_offset, y_offset);
+    WebPoint offset;
+    if (has_offset)
+      offset.Offset(*x_offset, *y_offset);
     Status status = ScrollElementIntoView(session, web_view, element_id,
         has_offset ? &offset : nullptr, &location);
     if (status.IsError())
@@ -1095,7 +1101,7 @@ Status ExecuteMouseMoveTo(Session* session,
   } else {
     location = session->mouse_position;
     if (has_offset)
-      location.Offset(x_offset, y_offset);
+      location.Offset(*x_offset, *y_offset);
   }
 
   std::vector<MouseEvent> events;
@@ -1234,14 +1240,14 @@ Status ExecuteTouchScroll(Session* session,
     if (status.IsError())
       return status;
   }
-  int xoffset;
-  if (!params.GetInteger("xoffset", &xoffset))
+  absl::optional<int> xoffset = params.FindIntKey("xoffset");
+  if (!xoffset)
     return Status(kInvalidArgument, "'xoffset' must be an integer");
-  int yoffset;
-  if (!params.GetInteger("yoffset", &yoffset))
+  absl::optional<int> yoffset = params.FindIntKey("yoffset");
+  if (!yoffset)
     return Status(kInvalidArgument, "'yoffset' must be an integer");
-  return web_view->SynthesizeScrollGesture(
-      location.x, location.y, xoffset, yoffset);
+  return web_view->SynthesizeScrollGesture(location.x, location.y, *xoffset,
+                                           *yoffset);
 }
 
 Status ProcessInputActionSequence(
@@ -1428,9 +1434,8 @@ Status ProcessInputActionSequence(
 
       if (subtype == "pointerDown" || subtype == "pointerUp") {
         if (pointer_type == "mouse" || pointer_type == "pen") {
-          int button;
-          if (!action_item->GetInteger("button", &button) || button < 0 ||
-              button > 4) {
+          int button = action_item->FindIntKey("button").value_or(-1);
+          if (button < 0 || button > 4) {
             return Status(
                 kInvalidArgument,
                 "'button' must be a non-negative int and between 0 and 4");
@@ -1442,14 +1447,14 @@ Status ProcessInputActionSequence(
           action->SetString("button", button_str);
         }
       } else if (subtype == "pointerMove" || subtype == "scroll") {
-        int x;
-        if (!action_item->GetInteger("x", &x))
+        absl::optional<int> x = action_item->FindIntKey("x");
+        if (!x.has_value())
           return Status(kInvalidArgument, "'x' must be an int");
-        int y;
-        if (!action_item->GetInteger("y", &y))
+        absl::optional<int> y = action_item->FindIntKey("y");
+        if (!y.has_value())
           return Status(kInvalidArgument, "'y' must be an int");
-        action->SetInteger("x", x);
-        action->SetInteger("y", y);
+        action->SetIntKey("x", *x);
+        action->SetIntKey("y", *y);
 
         std::string origin;
         if (action_item->FindKey("origin")) {
@@ -1480,14 +1485,14 @@ Status ProcessInputActionSequence(
           return status;
 
         if (subtype == "scroll") {
-          int delta_x;
-          if (!action_item->GetInteger("deltaX", &delta_x))
+          absl::optional<int> delta_x = action_item->FindIntKey("deltaX");
+          if (!delta_x)
             return Status(kInvalidArgument, "'delta x' must be an int");
-          int delta_y;
-          if (!action_item->GetInteger("deltaY", &delta_y))
+          absl::optional<int> delta_y = action_item->FindIntKey("deltaY");
+          if (!delta_y)
             return Status(kInvalidArgument, "'delta y' must be an int");
-          action->SetInteger("deltaX", delta_x);
-          action->SetInteger("deltaY", delta_y);
+          action->SetIntKey("deltaX", *delta_x);
+          action->SetIntKey("deltaY", *delta_y);
         }
       } else if (subtype == "pause") {
         Status status = ProcessPauseAction(action_item, action.get());
@@ -1651,9 +1656,13 @@ Status ExecutePerformActions(Session* session,
                 session, web_view, &viewport_width, &viewport_height);
             if (status.IsError())
               return status;
+            absl::optional<int> maybe_init_x = input_state->FindIntKey("x");
+            if (maybe_init_x)
+              init_x = *maybe_init_x;
 
-            input_state->GetInteger("x", &init_x);
-            input_state->GetInteger("y", &init_y);
+            absl::optional<int> maybe_init_y = input_state->FindIntKey("y");
+            if (maybe_init_y)
+              init_y = *maybe_init_y;
             action_locations.insert(
                 std::make_pair(id, gfx::Point(init_x, init_y)));
 
@@ -1745,9 +1754,8 @@ Status ExecutePerformActions(Session* session,
               tick_duration = std::max(tick_duration, duration);
 
               if (action_type == "scroll") {
-                int delta_x = 0, delta_y = 0;
-                action->GetInteger("deltaX", &delta_x);
-                action->GetInteger("deltaY", &delta_y);
+                int delta_x = action->FindIntKey("deltaX").value_or(0);
+                int delta_y = action->FindIntKey("deltaY").value_or(0);
                 std::vector<MouseEvent> dispatch_wheel_events;
                 MouseEvent event(StringToMouseEventType(action_type),
                                  StringToMouseButton(button_type[id]),
@@ -1969,13 +1977,12 @@ Status ExecuteSendCommandFromWebSocket(Session* session,
   if (!params.GetDictionary("params", &cmdParams)) {
     return Status(kInvalidArgument, "params not passed");
   }
-  int client_cmd_id;
-  if (!params.GetInteger("id", &client_cmd_id) ||
-      !CommandId::IsClientCommandId(client_cmd_id)) {
+  absl::optional<int> client_cmd_id = params.FindIntKey("id");
+  if (!client_cmd_id || !CommandId::IsClientCommandId(*client_cmd_id)) {
     return Status(kInvalidArgument, "command id must be negative");
   }
 
-  return web_view->SendCommandFromWebSocket(cmd, *cmdParams, client_cmd_id);
+  return web_view->SendCommandFromWebSocket(cmd, *cmdParams, *client_cmd_id);
 }
 
 Status ExecuteSendCommandAndGetResult(Session* session,

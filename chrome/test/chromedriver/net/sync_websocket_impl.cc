@@ -141,10 +141,10 @@ void SyncWebSocketImpl::Core::DetermineRecipient(const std::string& message,
     *send_to_chromedriver = true;
     return;
   }
-  int id;
+  base::Value* id = message_dict->FindKey("id");
   *send_to_chromedriver =
-      !message_dict->HasKey("id") || (message_dict->GetInteger("id", &id) &&
-                                      CommandId::IsChromeDriverCommandId(id));
+      id == nullptr ||
+      (id->is_int() && CommandId::IsChromeDriverCommandId(id->GetInt()));
 }
 
 void SyncWebSocketImpl::Core::OnClose() {

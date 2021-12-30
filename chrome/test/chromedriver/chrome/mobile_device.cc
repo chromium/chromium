@@ -40,13 +40,13 @@ Status FindMobileDevice(std::string device_name,
     return Status(kUnknownError,
                   "malformed device user agent: should be a string");
   }
-  int width = 0;
-  int height = 0;
-  if (!device->GetInteger("width",  &width)) {
+  absl::optional<int> maybe_width = device->FindIntKey("width");
+  absl::optional<int> maybe_height = device->FindIntKey("height");
+  if (!maybe_width) {
     return Status(kUnknownError,
                   "malformed device width: should be an integer");
   }
-  if (!device->GetInteger("height", &height)) {
+  if (!maybe_height) {
     return Status(kUnknownError,
                   "malformed device height: should be an integer");
   }
@@ -66,7 +66,7 @@ Status FindMobileDevice(std::string device_name,
     return Status(kUnknownError, "malformed mobile: should be a bool");
   }
   tmp_mobile_device->device_metrics = std::make_unique<DeviceMetrics>(
-      width, height, *maybe_device_scale_factor, *touch, *mobile);
+      *maybe_width, *maybe_height, *maybe_device_scale_factor, *touch, *mobile);
 
   *mobile_device = std::move(tmp_mobile_device);
   return Status(kOk);

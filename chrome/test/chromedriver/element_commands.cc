@@ -391,12 +391,18 @@ Status ExecuteFlick(Session* session,
     return status;
 
   int xoffset, yoffset, speed;
-  if (!params.GetInteger("xoffset", &xoffset))
+
+  absl::optional<int> maybe_xoffset = params.FindIntKey("xoffset");
+  if (!maybe_xoffset)
     return Status(kInvalidArgument, "'xoffset' must be an integer");
-  if (!params.GetInteger("yoffset", &yoffset))
+  xoffset = *maybe_xoffset;
+
+  absl::optional<int> maybe_yoffset = params.FindIntKey("yoffset");
+  if (!maybe_yoffset)
     return Status(kInvalidArgument, "'yoffset' must be an integer");
-  if (!params.GetInteger("speed", &speed))
-    return Status(kInvalidArgument, "'speed' must be an integer");
+  yoffset = *maybe_yoffset;
+
+  speed = params.FindIntKey("speed").value_or(-1);
   if (speed < 1)
     return Status(kInvalidArgument, "'speed' must be a positive integer");
 

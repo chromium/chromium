@@ -35,14 +35,11 @@ TEST(SessionCommandsTest, ExecuteGetTimeouts) {
   base::DictionaryValue* response;
   ASSERT_TRUE(value->GetAsDictionary(&response));
 
-  int script;
-  ASSERT_TRUE(response->GetInteger("script", &script));
+  int script = response->FindIntKey("script").value_or(-1);
   ASSERT_EQ(script, 30000);
-  int page_load;
-  ASSERT_TRUE(response->GetInteger("pageLoad", &page_load));
+  int page_load = response->FindIntKey("pageLoad").value_or(-1);
   ASSERT_EQ(page_load, 300000);
-  int implicit;
-  ASSERT_TRUE(response->GetInteger("implicit", &implicit));
+  int implicit = response->FindIntKey("implicit").value_or(-1);
   ASSERT_EQ(implicit, 0);
 }
 

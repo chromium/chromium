@@ -79,8 +79,8 @@ Status ConsoleLogger::OnLogEntryAdded(const base::DictionaryValue& params) {
     origin = source;
 
   std::string line_number;
-  int line = -1;
-  if (entry->GetInteger("lineNumber", &line)) {
+  int line = entry->FindIntKey("lineNumber").value_or(-1);
+  if (line >= 0) {
     line_number = base::StringPrintf("%d", line);
   } else {
     // No line number, but print anyway, just to maintain the number of fields
@@ -124,11 +124,11 @@ Status ConsoleLogger::OnRuntimeConsoleApiCalled(
         return Status(kUnknownError, "missing or invalid url");
       if (!url.empty())
         origin = url;
-      int line = -1;
-      if (!call_frame.GetInteger("lineNumber", &line))
+      int line = call_frame.FindIntKey("lineNumber").value_or(-1);
+      if (line < 0)
         return Status(kUnknownError, "missing or invalid lineNumber");
-      int column = -1;
-      if (!call_frame.GetInteger("columnNumber", &column))
+      int column = call_frame.FindIntKey("columnNumber").value_or(-1);
+      if (column < 0)
         return Status(kUnknownError, "missing or invalid columnNumber");
       line_column = base::StringPrintf("%d:%d", line, column);
     }
@@ -187,11 +187,11 @@ Status ConsoleLogger::OnRuntimeExceptionThrown(
   if (!exception_details->GetString("url", &origin))
     origin = "javascript";
 
-  int line = -1;
-  if (!exception_details->GetInteger("lineNumber", &line))
+  int line = exception_details->FindIntKey("lineNumber").value_or(-1);
+  if (line < 0)
     return Status(kUnknownError, "missing or invalid lineNumber");
-  int column = -1;
-  if (!exception_details->GetInteger("columnNumber", &column))
+  int column = exception_details->FindIntKey("columnNumber").value_or(-1);
+  if (column < 0)
     return Status(kUnknownError, "missing or invalid columnNumber");
   std::string line_column = base::StringPrintf("%d:%d", line, column);
 

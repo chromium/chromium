@@ -283,14 +283,14 @@ Status WebViewImpl::GetUrl(std::string* url) {
                                                    params, &result);
   if (status.IsError())
     return status;
-  int current_index = 0;
-  if (!result.GetInteger("currentIndex", &current_index))
+  absl::optional<int> current_index = result.FindIntKey("currentIndex");
+  if (!current_index)
     return Status(kUnknownError, "navigation history missing currentIndex");
   base::ListValue* entries = nullptr;
   if (!result.GetList("entries", &entries))
     return Status(kUnknownError, "navigation history missing entries");
   base::DictionaryValue* entry = nullptr;
-  if (!entries->GetDictionary(current_index, &entry))
+  if (!entries->GetDictionary(*current_index, &entry))
     return Status(kUnknownError, "navigation history missing entry");
   if (!entry->GetString("url", url))
     return Status(kUnknownError, "navigation history entry is missing url");
@@ -379,8 +379,8 @@ Status WebViewImpl::TraverseHistory(int delta, const Timeout* timeout) {
       return status;
   }
 
-  int current_index;
-  if (!result.GetInteger("currentIndex", &current_index))
+  absl::optional<int> current_index = result.FindIntKey("currentIndex");
+  if (!current_index)
     return Status(kUnknownError, "DevTools didn't return currentIndex");
 
   base::ListValue* entries;
@@ -388,17 +388,17 @@ Status WebViewImpl::TraverseHistory(int delta, const Timeout* timeout) {
     return Status(kUnknownError, "DevTools didn't return entries");
 
   base::DictionaryValue* entry;
-  if (!entries->GetDictionary(current_index + delta, &entry)) {
+  if (!entries->GetDictionary(*current_index + delta, &entry)) {
     // The WebDriver spec says that if there are no pages left in the browser's
     // history (i.e. |current_index + delta| is out of range), then we must not
     // navigate anywhere.
     return Status(kOk);
   }
 
-  int entry_id;
-  if (!entry->GetInteger("id", &entry_id))
+  absl::optional<int> entry_id = entry->FindIntKey("id");
+  if (!entry_id)
     return Status(kUnknownError, "history entry does not have an id");
-  params.SetInteger("entryId", entry_id);
+  params.SetInteger("entryId", *entry_id);
 
   return client_->SendCommandWithTimeout("Page.navigateToHistoryEntry", params,
                                          timeout);
@@ -1036,7 +1036,7 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
     }
 
     // figure out how many files there are
-    int numberOfFiles = 0;
+    absl::optional<int> numberOfFiles = 0;
     {
       base::DictionaryValue cmd_result;
       base::DictionaryValue params;
@@ -1047,12 +1047,13 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
                                                 params, &cmd_result);
       if (status.IsError())
         return status;
-      if (!cmd_result.GetInteger("result.value", &numberOfFiles))
+      numberOfFiles = cmd_result.FindIntPath("result.value");
+      if (!numberOfFiles)
         return Status(kUnknownError, "DevTools didn't return value");
     }
 
     // Ask for each Runtime.RemoteObject and add them to the list
-    for (int i = 0; i < numberOfFiles; i++) {
+    for (int i = 0; i < *numberOfFiles; i++) {
       std::string fileObjectId;
       {
         base::DictionaryValue cmd_result;
@@ -1237,13 +1238,13 @@ Status WebViewImpl::CallAsyncFunctionInternal(
     base::DictionaryValue* result_info = NULL;
     if (!query_value->GetAsDictionary(&result_info))
       return Status(kUnknownError, "async result info is not a dictionary");
-    int status_code;
-    if (!result_info->GetInteger("status", &status_code))
+    absl::optional<int> status_code = result_info->FindIntKey("status");
+    if (!status_code)
       return Status(kUnknownError, "async result info has no int 'status'");
-    if (status_code != kOk) {
+    if (*status_code != kOk) {
       std::string message;
       result_info->GetString("value", &message);
-      return Status(static_cast<StatusCode>(status_code), message);
+      return Status(static_cast<StatusCode>(*status_code), message);
     }
 
     if (base::Value* value = result_info->FindKey("value")) {
@@ -1468,15 +1469,15 @@ Status ParseCallFunctionResult(const base::Value& temp_result,
   const base::DictionaryValue* dict;
   if (!temp_result.GetAsDictionary(&dict))
     return Status(kUnknownError, "call function result must be a dictionary");
-  int status_code;
-  if (!dict->GetInteger("status", &status_code)) {
+  absl::optional<int> status_code = dict->FindIntKey("status");
+  if (!status_code) {
     return Status(kUnknownError,
                   "call function result missing int 'status'");
   }
-  if (status_code != kOk) {
+  if (*status_code != kOk) {
     std::string message;
     dict->GetString("value", &message);
-    return Status(static_cast<StatusCode>(status_code), message);
+    return Status(static_cast<StatusCode>(*status_code), message);
   }
   const base::Value* unscoped_value = dict->FindKey("value");
   if (unscoped_value == nullptr) {
@@ -1538,8 +1539,15 @@ Status GetNodeIdFromFunction(DevToolsClient* client,
   if (status.IsError())
     return status;
 
-  if (!cmd_result.GetInteger("nodeId", node_id))
+  absl::optional<int> maybe_node_id = cmd_result.FindIntKey("nodeId");
+
+  if (!maybe_node_id)
     return Status(kUnknownError, "DOM.requestNode missing int 'nodeId'");
+
+  // Note that this emulates the previous Deprecated GetInteger behavior, but
+  // should likely be changed.
+  if (node_id)
+    *node_id = *maybe_node_id;
   *found_node = true;
   return Status(kOk);
 }

@@ -158,14 +158,17 @@ Status ParseMobileEmulation(const base::Value& option,
     if (!mobile_emulation->GetDictionary("deviceMetrics", &metrics))
       return Status(kInvalidArgument, "'deviceMetrics' must be a dictionary");
 
-    int width = 0;
-    int height = 0;
-
-    if (metrics->FindKey("width") && !metrics->GetInteger("width", &width))
+    const base::Value* width_value = metrics->FindKey("width");
+    if (width_value && !width_value->is_int())
       return Status(kInvalidArgument, "'width' must be an integer");
 
-    if (metrics->FindKey("height") && !metrics->GetInteger("height", &height))
+    int width = width_value ? width_value->GetInt() : 0;
+
+    const base::Value* height_value = metrics->FindKey("height");
+    if (height_value && !height_value->is_int())
       return Status(kInvalidArgument, "'height' must be an integer");
+
+    int height = height_value ? height_value->GetInt() : 0;
 
     absl::optional<double> maybe_device_scale_factor =
         metrics->FindDoubleKey("pixelRatio");
@@ -332,11 +335,7 @@ Status ParseProxy(bool w3c_compliant,
       }
       std::string value = option_value->GetString();
       if (proxy_servers_options[i][0] == kSocksProxy) {
-        int socksVersion;
-        if (!proxy_dict->GetInteger("socksVersion", &socksVersion))
-          return Status(
-              kInvalidArgument,
-              "Specifying 'socksProxy' requires an integer for 'socksVersion'");
+        int socksVersion = proxy_dict->FindIntKey("socksVersion").value_or(-1);
         if (socksVersion < 0 || socksVersion > 255)
           return Status(
               kInvalidArgument,
