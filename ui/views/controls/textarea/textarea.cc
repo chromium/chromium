@@ -9,10 +9,13 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/canvas.h"
 
 namespace views {
 
 Textarea::Textarea() {
+  set_placeholder_text_draw_flags(placeholder_text_draw_flags() |
+                                  gfx::Canvas::MULTI_LINE);
   GetRenderText()->SetMultiline(true);
   GetRenderText()->SetVerticalAlignment(gfx::ALIGN_TOP);
   GetRenderText()->SetWordWrapBehavior(gfx::WRAP_LONG_WORDS);

@@ -236,6 +236,9 @@ class VIEWS_EXPORT Textfield : public View,
     placeholder_font_list_ = font_list;
   }
 
+  int placeholder_text_draw_flags() const {
+    return placeholder_text_draw_flags_;
+  }
   void set_placeholder_text_draw_flags(int flags) {
     placeholder_text_draw_flags_ = flags;
   }
