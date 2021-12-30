@@ -563,6 +563,8 @@ void CalendarView::OnViewFocused(View* observed_view) {
     focus_manager->SetFocusedView(
         current_month_->focused_cells()[calendar_view_controller_
                                             ->GetExpandedRowIndex()]);
+    AdjustDateCellVoxBounds();
+
     content_view_->SetFocusBehavior(FocusBehavior::NEVER);
     event_list_container_->SetFocusBehavior(FocusBehavior::ALWAYS);
     return;
@@ -593,6 +595,9 @@ void CalendarView::OnViewFocused(View* observed_view) {
     // the first visible non-grayed-out date of the next month.
     focus_manager->SetFocusedView(next_month_->focused_cells().front());
   }
+
+  AdjustDateCellVoxBounds();
+
   content_view_->SetFocusBehavior(FocusBehavior::NEVER);
 }
 
@@ -1085,6 +1090,9 @@ void CalendarView::OnEvent(ui::Event* event) {
           scroll_view_->GetVisibleRect().y() - PositionOfCurrentMonth();
       calendar_view_controller_->set_expanded_row_index(
           current_height / calendar_view_controller_->row_height());
+
+      AdjustDateCellVoxBounds();
+
       return;
     }
     case ui::VKEY_LEFT:
@@ -1106,6 +1114,9 @@ void CalendarView::OnEvent(ui::Event* event) {
           scroll_view_->GetVisibleRect().y() - PositionOfCurrentMonth();
       calendar_view_controller_->set_expanded_row_index(
           current_height / calendar_view_controller_->row_height());
+
+      AdjustDateCellVoxBounds();
+
       return;
     }
     default:
@@ -1136,6 +1147,19 @@ void CalendarView::OnContentsScrolled() {
                  next_month_->y() + next_month_->height() - kPrepareEndOfView) {
     ScrollDownOneMonth();
   }
+}
+
+void CalendarView::AdjustDateCellVoxBounds() {
+  auto* focused_view = GetFocusManager()->GetFocusedView();
+  DCHECK_EQ(focused_view->GetClassName(), CalendarDateCellView::kViewClassName);
+
+  // When the Chrome Vox focusing box is in a `ScrollView`, the hidden content
+  // height, which is `scroll_view_->GetVisibleRect().y()` should also be added.
+  // Otherwise the position of the Chrome Vox box is off.
+  gfx::Rect bounds = focused_view->GetBoundsInScreen();
+  focused_view->GetViewAccessibility().OverrideBounds(
+      gfx::RectF(bounds.x(), bounds.y() + scroll_view_->GetVisibleRect().y(),
+                 bounds.width(), bounds.height()));
 }
 
 BEGIN_METADATA(CalendarView, views::View)

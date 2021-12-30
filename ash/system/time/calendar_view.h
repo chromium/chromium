@@ -177,6 +177,9 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   // ScrollView callback.
   void OnContentsScrolled();
 
+  // Adjusts the Chrome Vox box position for date cells in the scroll view.
+  void AdjustDateCellVoxBounds();
+
   // Unowned.
   UnifiedSystemTrayController* controller_;
 
