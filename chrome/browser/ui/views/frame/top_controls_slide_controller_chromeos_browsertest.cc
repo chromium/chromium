@@ -1411,7 +1411,14 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestPermissionBubble) {
                                TopChromeShownState::kFullyHidden);
 }
 
-IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestToggleChromeVox) {
+// Flaky on ChromeOS Release bots. https://crbug.com/1033648
+#if defined(OS_CHROMEOS) && defined(NDEBUG)
+#define MAYBE_TestToggleChromeVox DISABLED_TestToggleChromeVox
+#else
+#define MAYBE_TestToggleChromeVox TestToggleChromeVox
+#endif
+IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
+                       MAYBE_TestToggleChromeVox) {
   ToggleTabletMode();
   ASSERT_TRUE(GetTabletModeEnabled());
   EXPECT_TRUE(top_controls_slide_controller()->IsEnabled());
