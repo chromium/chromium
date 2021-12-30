@@ -23,6 +23,9 @@ TEST(GurlOsHandlerUtilsTest, SanitizeAshURL) {
             GURL("http://version/1/"));
   EXPECT_EQ(SanitizeAshURL(GURL("http://version/foo/?bar")),
             GURL("http://version/foo/"));
+  EXPECT_EQ(SanitizeAshURL(GURL("http://version/foo/?bar"),
+                           /*include_path=*/false),
+            GURL("http://version/"));
   EXPECT_EQ(SanitizeAshURL(GURL("http://version/foo")),
             GURL("http://version/foo"));
 
@@ -61,6 +64,8 @@ TEST(GurlOsHandlerUtilsTest, SanitizeAshURL) {
             GURL("os://version/1"));
   EXPECT_EQ(SanitizeAshURL(GURL("os://version/1/?foo")),
             GURL("os://version/1"));
+  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1/?foo"), /*include_path=*/false),
+            GURL("os://version"));
 
   // Invalid syntax of kind will be detected by GURL as well.
   EXPECT_EQ(SanitizeAshURL(GURL("os://version/foo#")),
@@ -86,6 +91,8 @@ TEST(GurlOsHandlerUtilsTest, IsURLInList) {
   EXPECT_TRUE(IsUrlInList(GURL("os://version"), list_of_urls));
   EXPECT_TRUE(IsUrlInList(GURL("os://flags"), list_of_urls));
   EXPECT_TRUE(IsUrlInList(GURL("http://version"), list_of_urls));
+  // Sub hosts can - or cannot be supplied.
+  EXPECT_TRUE(IsUrlInList(GURL("os://version/12"), list_of_urls));
   // Does not exist.
   EXPECT_FALSE(IsUrlInList(GURL("http://flags"), list_of_urls));
   // Our internal URLs will be treated part in part in/sensitive. The scheme
