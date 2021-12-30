@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
@@ -1489,9 +1490,17 @@ class SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest
   base::test::ScopedFeatureList override_features_;
 };
 
+// Flaky on ARM Mac. http://crbug.com/1283307
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM_FAMILY)
+#define MAYBE_ShouldAcceptEncryptionKeysFromTheWeb \
+  DISABLED_ShouldAcceptEncryptionKeysFromTheWeb
+#else
+#define MAYBE_ShouldAcceptEncryptionKeysFromTheWeb \
+  ShouldAcceptEncryptionKeysFromTheWeb
+#endif
 IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriWithRecoveryAndPasswordsAccountStorageTest,
-    ShouldAcceptEncryptionKeysFromTheWeb) {
+    MAYBE_ShouldAcceptEncryptionKeysFromTheWeb) {
   // Mimic the account using a trusted vault passphrase.
   const std::vector<uint8_t> kTestEncryptionKey = {1, 2, 3, 4};
   SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
