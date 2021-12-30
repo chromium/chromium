@@ -284,23 +284,23 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
   score->Commit();
 
   // Now read back content settings and make sure we have the right values.
-  int stored_visits;
-  int stored_media_playbacks;
-  absl::optional<double> stored_last_media_playback_time;
   std::unique_ptr<base::DictionaryValue> values =
       base::DictionaryValue::From(settings_map->GetWebsiteSetting(
           origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
           nullptr));
-  values->GetInteger(MediaEngagementScore::kVisitsKey, &stored_visits);
-  values->GetInteger(MediaEngagementScore::kMediaPlaybacksKey,
-                     &stored_media_playbacks);
-  stored_last_media_playback_time =
+  absl::optional<int> stored_visits =
+      values->FindIntKey(MediaEngagementScore::kVisitsKey);
+  absl::optional<int> stored_media_playbacks =
+      values->FindIntKey(MediaEngagementScore::kMediaPlaybacksKey);
+  absl::optional<double> stored_last_media_playback_time =
       values->FindDoubleKey(MediaEngagementScore::kLastMediaPlaybackTimeKey);
-
-  EXPECT_THAT(values->FindBoolPath(MediaEngagementScore::kHasHighScoreKey),
+  EXPECT_TRUE(stored_visits);
+  EXPECT_TRUE(stored_media_playbacks);
+  EXPECT_TRUE(stored_last_media_playback_time);
+  EXPECT_THAT(values->FindBoolKey(MediaEngagementScore::kHasHighScoreKey),
               Optional(true));
-  EXPECT_EQ(stored_visits, example_num_visits + 1);
-  EXPECT_EQ(stored_media_playbacks, example_media_playbacks + 2);
+  EXPECT_EQ(*stored_visits, example_num_visits + 1);
+  EXPECT_EQ(*stored_media_playbacks, example_media_playbacks + 2);
   EXPECT_EQ(*stored_last_media_playback_time,
             test_clock.Now().ToInternalValue());
 
