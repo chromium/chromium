@@ -816,6 +816,37 @@ TEST_F(SwitchAccessAccessibilityEventRewriterTest, RespectsModifierRemappings) {
   EXPECT_EQ(SwitchAccessCommand::kSelect, delegate_->last_command());
 }
 
+TEST_F(SwitchAccessAccessibilityEventRewriterTest, UseFunctionKeyRemappings) {
+  // Set BrowserForward to be Switch Access' next button.
+  SetKeyCodesForSwitchAccessCommand(
+      {{ui::VKEY_BROWSER_FORWARD, {kSwitchAccessInternalDevice}}},
+      SwitchAccessCommand::kNext);
+
+  // Set F2 (the underlying value for BrowserForward) to be Switch Access'
+  // select button.
+  SetKeyCodesForSwitchAccessCommand(
+      {{ui::VKEY_F2, {kSwitchAccessInternalDevice}}},
+      SwitchAccessCommand::kSelect);
+
+  // Send a key event for F2.
+  generator_->PressKey(ui::VKEY_F2, ui::EF_NONE, 1 /* keyboard id */);
+  generator_->ReleaseKey(ui::VKEY_F2, ui::EF_NONE, 1 /* keyboard id */);
+
+  // Verify Switch Access treated it like BrowserForward.
+  EXPECT_EQ(1, delegate_->command_count());
+  EXPECT_EQ(SwitchAccessCommand::kNext, delegate_->last_command());
+
+  // Send a key event for BrowserForward.
+  generator_->PressKey(ui::VKEY_BROWSER_FORWARD, ui::EF_NONE,
+                       1 /* keyboard id */);
+  generator_->ReleaseKey(ui::VKEY_BROWSER_FORWARD, ui::EF_NONE,
+                         1 /* keyboard id */);
+
+  // Verify Switch Access also treats that like BrowserForward.
+  EXPECT_EQ(2, delegate_->command_count());
+  EXPECT_EQ(SwitchAccessCommand::kNext, delegate_->last_command());
+}
+
 class MagnifierTestDelegate : public AccessibilityEventRewriterDelegate {
  public:
   MagnifierTestDelegate() = default;

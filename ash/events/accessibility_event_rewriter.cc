@@ -180,6 +180,7 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
   const ui::KeyEvent* key_event = event.AsKeyEvent();
   ui::EventRewriterChromeOS::MutableKeyState state(key_event);
   event_rewriter_chromeos_->RewriteModifierKeys(*key_event, &state);
+  event_rewriter_chromeos_->RewriteFunctionKeys(*key_event, &state);
 
   std::unique_ptr<ui::Event> rewritten_event;
   ui::EventRewriterChromeOS::BuildRewrittenKeyEvent(*key_event, state,
