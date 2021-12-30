@@ -485,12 +485,6 @@ class AppsGridViewTest : public AshTestBase {
     event_generator->ClickRightButton();
   }
 
-  // Sends left mouse button press and release events to `view`. The events will
-  // be located at the view center point.
-  void SimulateLeftClickOnView(views::View* view) {
-    SimulateMouseClickAt(GetEventGenerator(), view);
-  }
-
   // Tests that the order of item views in the AppsGridView is in accordance
   // with the order in the view model.
   void TestAppListItemViewIndice() {
@@ -867,7 +861,7 @@ TEST_F(AppsGridViewNonBubbleTest, UMATestForLaunchingApps) {
   UpdateLayout();
 
   // Select the first app in grid and launch it.
-  SimulateLeftClickOnView(GetItemViewInTopLevelGrid(0));
+  LeftClickOn(GetItemViewInTopLevelGrid(0));
 
   // Test that histogram recorded app launch from grid.
   histogram_tester.ExpectBucketCount(
@@ -3825,17 +3819,17 @@ TEST_P(AppsGridViewClamshellAndTabletTest, RootGridUpdatesOnModelChange) {
   TestAppListItemViewIndice();
 
   // Verify that clicking an item activates it.
-  SimulateLeftClickOnView(view_model->view_at(0));
+  LeftClickOn(view_model->view_at(0));
   EXPECT_EQ("Item 0", GetTestAppListClient()->activate_item_last_id());
 
   // Clicking on the folder item transitions to folder view.
-  SimulateLeftClickOnView(view_model->view_at(3));
+  LeftClickOn(view_model->view_at(3));
   EXPECT_TRUE(GetAppListTestHelper()->IsInFolderView());
 
   ASSERT_EQ(5, folder_apps_grid_view()->view_model()->view_size());
 
   // Click on an item within the folder.
-  SimulateLeftClickOnView(folder_apps_grid_view()->view_model()->view_at(1));
+  LeftClickOn(folder_apps_grid_view()->view_model()->view_at(1));
   EXPECT_EQ("Item 4", GetTestAppListClient()->activate_item_last_id());
 
   // Switch model to original one, and verify the folder view gets closed.
@@ -3846,7 +3840,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest, RootGridUpdatesOnModelChange) {
   EXPECT_EQ(2, view_model->view_size());
   TestAppListItemViewIndice();
 
-  SimulateLeftClickOnView(view_model->view_at(1));
+  LeftClickOn(view_model->view_at(1));
   EXPECT_EQ("Item 1", GetTestAppListClient()->activate_item_last_id());
 
   Shell::Get()->app_list_controller()->ClearActiveModel();
@@ -3864,7 +3858,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
   UpdateLayout();
 
   // Open the folder view.
-  SimulateLeftClickOnView(apps_grid_view_->view_model()->view_at(1));
+  LeftClickOn(apps_grid_view_->view_model()->view_at(1));
   ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
 
   AppsGridView* const root_grid_view = apps_grid_view_;
@@ -3927,7 +3921,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest,
   UpdateLayout();
 
   // Open the folder view.
-  SimulateLeftClickOnView(apps_grid_view_->view_model()->view_at(1));
+  LeftClickOn(apps_grid_view_->view_model()->view_at(1));
   ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
 
   AppsGridView* const root_grid_view = apps_grid_view_;

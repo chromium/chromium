@@ -91,9 +91,7 @@ class PhoneHubTrayTest : public AshTestBase {
     phone_hub_tray_->PerformAction(key_event);
   }
 
-  void ClickTrayButton() {
-    SimulateMouseClickAt(GetEventGenerator(), phone_hub_tray_);
-  }
+  void ClickTrayButton() { LeftClickOn(phone_hub_tray_); }
 
   // When first connecting, the connecting view is shown for 30 seconds when
   // disconnected, so in order to show the disconnecting view, we need to fast
@@ -234,8 +232,7 @@ TEST_F(PhoneHubTrayTest, ShowNotificationOptInViewWhenAccessNotGranted) {
   EXPECT_TRUE(notification_opt_in_view()->GetVisible());
 
   // Simulate a click on "Dismiss" button.
-  SimulateMouseClickAt(GetEventGenerator(),
-                       notification_opt_in_dismiss_button());
+  LeftClickOn(notification_opt_in_dismiss_button());
 
   // Clicking on "Dismiss" should hide the view and also disable the ability to
   // show it again.
@@ -283,8 +280,7 @@ TEST_F(PhoneHubTrayTest, StartNotificationSetUpFlow) {
         EXPECT_TRUE(from_user_interaction);
       });
 
-  SimulateMouseClickAt(GetEventGenerator(),
-                       notification_opt_in_set_up_button());
+  LeftClickOn(notification_opt_in_set_up_button());
 
   // Simulate that notification access has been granted.
   GetNotificationAccessManager()->SetAccessStatusInternal(
@@ -343,7 +339,7 @@ TEST_F(PhoneHubTrayTest, StartOnboardingFlow) {
   EXPECT_EQ(0u, GetOnboardingUiTracker()->handle_get_started_call_count());
 
   // Simulate a click on the "Get started" button.
-  SimulateMouseClickAt(GetEventGenerator(), onboarding_get_started_button());
+  LeftClickOn(onboarding_get_started_button());
   // It should invoke the |HandleGetStarted| call.
   EXPECT_EQ(1u, GetOnboardingUiTracker()->handle_get_started_call_count());
 }
@@ -361,14 +357,14 @@ TEST_F(PhoneHubTrayTest, DismissOnboardingFlowByClickingAckButton) {
   EXPECT_TRUE(onboarding_main_view());
 
   // Simulate a click on the "Dismiss" button.
-  SimulateMouseClickAt(GetEventGenerator(), onboarding_dismiss_button());
+  LeftClickOn(onboarding_dismiss_button());
 
   // It should transit to show the dismiss prompt.
   EXPECT_TRUE(onboarding_dismiss_prompt_view());
   EXPECT_TRUE(onboarding_dismiss_prompt_view()->GetVisible());
 
   // Simulate a click on the "OK, got it" button to ack.
-  SimulateMouseClickAt(GetEventGenerator(), onboarding_dismiss_ack_button());
+  LeftClickOn(onboarding_dismiss_ack_button());
 
   // Clicking "Ok, got it" button should dismiss the bubble, hide the tray icon,
   // and disable the ability to show onboarding UI again.
@@ -390,7 +386,7 @@ TEST_F(PhoneHubTrayTest, DismissOnboardingFlowByClickingOutside) {
   EXPECT_TRUE(onboarding_main_view());
 
   // Simulate a click on the "Dismiss" button.
-  SimulateMouseClickAt(GetEventGenerator(), onboarding_dismiss_button());
+  LeftClickOn(onboarding_dismiss_button());
 
   // It should transit to show the dismiss prompt.
   EXPECT_TRUE(onboarding_dismiss_prompt_view());
@@ -425,7 +421,7 @@ TEST_F(PhoneHubTrayTest, ClickButtonsOnDisconnectedView) {
   EXPECT_EQ(PhoneHubViewID::kDisconnectedView, content_view()->GetID());
 
   // Simulates a click on the "Refresh" button.
-  SimulateMouseClickAt(GetEventGenerator(), disconnected_refresh_button());
+  LeftClickOn(disconnected_refresh_button());
 
   // Clicking "Refresh" button should schedule a connection attempt.
   EXPECT_EQ(2u, GetConnectionScheduler()->num_schedule_connection_now_calls());
@@ -440,7 +436,7 @@ TEST_F(PhoneHubTrayTest, ClickButtonsOnDisconnectedView) {
       });
 
   // Simulates a click on the "Learn more" button.
-  SimulateMouseClickAt(GetEventGenerator(), disconnected_learn_more_button());
+  LeftClickOn(disconnected_learn_more_button());
 }
 
 TEST_F(PhoneHubTrayTest, ClickButtonOnBluetoothDisabledView) {
@@ -460,8 +456,7 @@ TEST_F(PhoneHubTrayTest, ClickButtonOnBluetoothDisabledView) {
         EXPECT_TRUE(from_user_interaction);
       });
   // Simulate a click on "Learn more" button.
-  SimulateMouseClickAt(GetEventGenerator(),
-                       bluetooth_disabled_learn_more_button());
+  LeftClickOn(bluetooth_disabled_learn_more_button());
 }
 
 TEST_F(PhoneHubTrayTest, CloseBubbleWhileShowingSameView) {

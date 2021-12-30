@@ -141,11 +141,6 @@ class AppListBubbleViewTest : public AshTestBase {
     app_list_test_model_->CreateAndPopulateFolderWithApps(count);
   }
 
-  void LeftClickOn(views::View* view) {
-    GetEventGenerator()->MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
-    GetEventGenerator()->ClickLeftButton();
-  }
-
   SearchBoxView* GetSearchBoxView() {
     return GetAppListTestHelper()->GetBubbleSearchBoxView();
   }

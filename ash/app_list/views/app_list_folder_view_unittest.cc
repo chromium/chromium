@@ -48,7 +48,7 @@ TEST_F(AppListFolderViewProductivityLauncherTest,
   helper->ShowAppList();
   auto* apps_grid_view = helper->GetScrollableAppsGridView();
   views::View* folder_item = apps_grid_view->GetItemViewAt(0);
-  SimulateMouseClickAt(GetEventGenerator(), folder_item);
+  LeftClickOn(folder_item);
   ASSERT_TRUE(helper->IsInFolderView());
 
   auto* folder_view = helper->GetBubbleFolderView();

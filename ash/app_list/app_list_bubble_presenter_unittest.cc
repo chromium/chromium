@@ -164,17 +164,16 @@ TEST_F(AppListBubblePresenterTest, ToggleWithHomeButtonOnSecondaryDisplay) {
   // Click the home button on the secondary display.
   aura::Window* root =
       Shell::GetRootWindowForDisplayId(GetSecondaryDisplay().id());
-  HomeButton* button =
+  HomeButton* home_button =
       Shelf::ForWindow(root)->navigation_widget()->GetHomeButton();
-  GetEventGenerator()->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  LeftClickOn(home_button);
 
   // Widget is shown.
   EXPECT_TRUE(presenter->IsShowing());
   EXPECT_EQ(1u, NumberOfWidgetsInAppListContainer(GetSecondaryDisplay().id()));
 
   // Click the home button again.
-  GetEventGenerator()->ClickLeftButton();
+  LeftClickOn(home_button);
 
   // Widget is hidden.
   EXPECT_FALSE(presenter->IsShowing());
@@ -435,9 +434,7 @@ TEST_F(AppListBubblePresenterTest, ClickOnHomeButtonClosesBubble) {
   presenter->Show(GetPrimaryDisplay().id());
 
   // Click the home button.
-  HomeButton* button = GetPrimaryShelf()->navigation_widget()->GetHomeButton();
-  GetEventGenerator()->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  LeftClickOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
 
   EXPECT_FALSE(presenter->IsShowing());
 }

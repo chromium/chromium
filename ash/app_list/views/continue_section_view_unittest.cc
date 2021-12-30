@@ -152,9 +152,10 @@ class ContinueSectionViewTestBase : public AshTestBase {
     ASSERT_TRUE(GetAppsGridView());
   }
 
-  void SimulateRightClickOrLongPressAt(gfx::Point location) {
-    ui::test::EventGenerator* generator = GetEventGenerator();
+  void SimulateRightClickOrLongPressOn(const views::View* view) {
+    gfx::Point location = view->GetBoundsInScreen().CenterPoint();
     if (tablet_mode_param()) {
+      ui::test::EventGenerator* generator = GetEventGenerator();
       generator->set_current_screen_location(location);
       generator->PressTouch();
       ui::GestureEventDetails event_details(ui::ET_GESTURE_LONG_PRESS);
@@ -164,8 +165,7 @@ class ContinueSectionViewTestBase : public AshTestBase {
       generator->ReleaseTouch();
       GetAppListTestHelper()->WaitUntilIdle();
     } else {
-      generator->MoveMouseTo(location);
-      generator->ClickRightButton();
+      RightClickOn(view);
     }
   }
 
@@ -302,9 +302,7 @@ TEST_P(ContinueSectionViewTest, ClickOpensSearchResult) {
   EXPECT_EQ(continue_task_view->result()->id(), "id1");
 
   GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
-  GetEventGenerator()->MoveMouseTo(
-      continue_task_view->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  LeftClickOn(continue_task_view);
 
   // The item was activated.
   TestAppListClient* client = GetAppListTestHelper()->app_list_client();
@@ -325,8 +323,7 @@ TEST_P(ContinueSectionViewTest, TapOpensSearchResult) {
   EXPECT_EQ(continue_task_view->result()->id(), "id1");
 
   GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
-  GetEventGenerator()->GestureTapAt(
-      continue_task_view->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(continue_task_view);
 
   // The item was activated.
   TestAppListClient* client = GetAppListTestHelper()->app_list_client();
@@ -406,8 +403,7 @@ TEST_P(ContinueSectionViewTest, RightClickOpensContextMenu) {
   EXPECT_EQ(continue_task_view->result()->id(), "id1");
 
   GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
-  SimulateRightClickOrLongPressAt(
-      continue_task_view->GetBoundsInScreen().CenterPoint());
+  SimulateRightClickOrLongPressOn(continue_task_view);
   EXPECT_TRUE(continue_task_view->IsMenuShowing());
 }
 
@@ -424,8 +420,7 @@ TEST_P(ContinueSectionViewTest, OpenWithContextMenuOption) {
   EXPECT_EQ(continue_task_view->result()->id(), "id1");
 
   GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
-  SimulateRightClickOrLongPressAt(
-      continue_task_view->GetBoundsInScreen().CenterPoint());
+  SimulateRightClickOrLongPressOn(continue_task_view);
   EXPECT_TRUE(continue_task_view->IsMenuShowing());
   continue_task_view->ExecuteCommand(ContinueTaskCommandId::kOpenResult,
                                      ui::EventFlags::EF_NONE);
@@ -448,8 +443,7 @@ TEST_P(ContinueSectionViewTest, RemoveWithContextMenuOption) {
   EXPECT_EQ(continue_task_view->result()->id(), "id1");
 
   GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
-  SimulateRightClickOrLongPressAt(
-      continue_task_view->GetBoundsInScreen().CenterPoint());
+  SimulateRightClickOrLongPressOn(continue_task_view);
   EXPECT_TRUE(continue_task_view->IsMenuShowing());
   continue_task_view->ExecuteCommand(ContinueTaskCommandId::kRemoveResult,
                                      ui::EventFlags::EF_NONE);
@@ -476,8 +470,7 @@ TEST_P(ContinueSectionViewTest, ResultRemovedContextMenuCloses) {
   EXPECT_EQ(continue_task_view->result()->id(), "id2");
 
   GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
-  SimulateRightClickOrLongPressAt(
-      continue_task_view->GetBoundsInScreen().CenterPoint());
+  SimulateRightClickOrLongPressOn(continue_task_view);
   EXPECT_TRUE(continue_task_view->IsMenuShowing());
 
   RemoveSearchResultAt(1);
@@ -489,9 +482,7 @@ TEST_P(ContinueSectionViewTest, ResultRemovedContextMenuCloses) {
   // event is not consumed by a context menu.
   EXPECT_EQ(GetResultViewAt(0)->result()->id(), "id1");
   GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
-  GetEventGenerator()->MoveMouseTo(
-      GetResultViewAt(0)->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  LeftClickOn(GetResultViewAt(0));
 
   // The item was activated.
   TestAppListClient* client = GetAppListTestHelper()->app_list_client();
@@ -528,8 +519,7 @@ TEST_P(ContinueSectionViewTest, UpdateAppsOnModelChange) {
   EXPECT_EQ(std::vector<std::string>({"id21", "id22", "id23"}), GetResultIds());
 
   // Tap a result, and verify it gets activated.
-  GetEventGenerator()->GestureTapAt(
-      GetResultViewAt(2)->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(GetResultViewAt(2));
 
   // The item was activated.
   TestAppListClient* client = GetAppListTestHelper()->app_list_client();
@@ -739,8 +729,7 @@ TEST_P(ContinueSectionViewTest, TaskViewHasRippleWithMenuOpen) {
   EXPECT_EQ(continue_task_view->result()->id(), "id1");
 
   GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
-  SimulateRightClickOrLongPressAt(
-      continue_task_view->GetBoundsInScreen().CenterPoint());
+  SimulateRightClickOrLongPressOn(continue_task_view);
   EXPECT_TRUE(continue_task_view->IsMenuShowing());
 
   EXPECT_EQ(views::InkDropState::ACTIVATED,
@@ -761,14 +750,12 @@ TEST_P(ContinueSectionViewTest, TaskViewHidesRippleAfterMenuCloses) {
   EXPECT_EQ(continue_task_view->result()->id(), "id1");
 
   GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
-  SimulateRightClickOrLongPressAt(
-      continue_task_view->GetBoundsInScreen().CenterPoint());
+  SimulateRightClickOrLongPressOn(continue_task_view);
   EXPECT_TRUE(continue_task_view->IsMenuShowing());
 
   // Click on other task view to hide context menu.
   GetContinueSectionView()->GetWidget()->LayoutRootViewIfNecessary();
-  SimulateRightClickOrLongPressAt(
-      GetResultViewAt(2)->GetBoundsInScreen().CenterPoint());
+  SimulateRightClickOrLongPressOn(GetResultViewAt(2));
   EXPECT_FALSE(continue_task_view->IsMenuShowing());
 
   // Wait for the view to update the ink drop.

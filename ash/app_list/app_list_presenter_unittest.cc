@@ -451,11 +451,8 @@ class AppListBubbleAndTabletTest
     if (!productivity_launcher_param()) {
       widget_delegate->AsDialogDelegate()->CancelDialog();
     } else {
-      GetEventGenerator()->GestureTapAt(
-          static_cast<RemoveQueryConfirmationDialog*>(widget_delegate)
-              ->cancel_button_for_test()
-              ->GetBoundsInScreen()
-              .CenterPoint());
+      GestureTapOn(static_cast<RemoveQueryConfirmationDialog*>(widget_delegate)
+                       ->cancel_button_for_test());
     }
   }
 
@@ -465,11 +462,8 @@ class AppListBubbleAndTabletTest
     if (!productivity_launcher_param()) {
       widget_delegate->AsDialogDelegate()->AcceptDialog();
     } else {
-      GetEventGenerator()->GestureTapAt(
-          static_cast<RemoveQueryConfirmationDialog*>(widget_delegate)
-              ->accept_button_for_test()
-              ->GetBoundsInScreen()
-              .CenterPoint());
+      GestureTapOn(static_cast<RemoveQueryConfirmationDialog*>(widget_delegate)
+                       ->accept_button_for_test());
     }
   }
 
@@ -968,8 +962,7 @@ TEST_P(AppListBubbleAndTabletTest, RemoveSuggestionShowsConfirmDialog) {
   result_view->GetWidget()->LayoutRootViewIfNecessary();
 
   // Click the remove action button, this should surface a confirmation dialog.
-  generator->MoveMouseTo(action_view->GetBoundsInScreen().CenterPoint());
-  generator->ClickLeftButton();
+  LeftClickOn(action_view);
 
   EXPECT_TRUE(GetAppListTestHelper()
                   ->app_list_client()
@@ -1418,14 +1411,13 @@ TEST_F(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
   PopulateApps(3);
 
   // Tap the folder item to show it.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->GestureTapAt(
-      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(apps_grid_view_->GetItemViewAt(2));
   ASSERT_TRUE(AppListIsInFolderView());
 
   // Start dragging the first item in the active folder.
   AppListItemView* const dragged_view =
       folder_view()->items_grid_view()->GetItemViewAt(0);
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
@@ -1464,14 +1456,13 @@ TEST_F(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
   PopulateApps(3);
 
   // Tap the folder item to show it.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->GestureTapAt(
-      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(apps_grid_view_->GetItemViewAt(2));
   ASSERT_TRUE(AppListIsInFolderView());
 
   // Start dragging the first item in the active folder.
   AppListItemView* const dragged_view =
       folder_view()->items_grid_view()->GetItemViewAt(0);
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
@@ -1722,14 +1713,13 @@ TEST_F(PopulatedAppListTest, ScreenRotationDuringFolderItemDrag) {
   PopulateApps(10);
 
   // Tap the folder item to show it.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->GestureTapAt(
-      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(apps_grid_view_->GetItemViewAt(2));
   ASSERT_TRUE(AppListIsInFolderView());
 
   // Start dragging the first item in the active folder.
   AppListItemView* const dragged_view =
       folder_view()->items_grid_view()->GetItemViewAt(0);
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
@@ -1772,15 +1762,14 @@ TEST_F(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
   PopulateApps(10);
 
   // Tap the folder item to show it.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->GestureTapAt(
-      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(apps_grid_view_->GetItemViewAt(2));
   ASSERT_TRUE(AppListIsInFolderView());
 
   // Start dragging the first item in the active folder.
   AppListItemView* dragged_view =
       folder_view()->items_grid_view()->GetItemViewAt(0);
   AppListItem* dragged_item = dragged_view->item();
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
@@ -1832,10 +1821,9 @@ TEST_P(AppListBubbleAndTabletTest, AppsGridItemReparentToFolderDrag) {
   apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
 
   // Tap the folder item to show it.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
   AppListItemView* folder_item = apps_grid_view_->GetItemViewAt(2);
   ASSERT_TRUE(folder_item);
-  event_generator->GestureTapAt(folder_item->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(folder_item);
   ASSERT_TRUE(AppListIsInFolderView());
 
   // Start dragging the first item in the active folder.
@@ -1843,6 +1831,7 @@ TEST_P(AppListBubbleAndTabletTest, AppsGridItemReparentToFolderDrag) {
       folder_view()->items_grid_view()->GetItemViewAt(0);
   ASSERT_TRUE(dragged_view);
   AppListItem* dragged_item = dragged_view->item();
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
@@ -1911,10 +1900,7 @@ TEST_F(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   }
 
   // Open the newly created folder.
-  event_generator->MoveMouseTo(
-      apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen().CenterPoint());
-  event_generator->ClickLeftButton();
-  event_generator->ReleaseLeftButton();
+  LeftClickOn(apps_grid_view_->GetItemViewAt(3));
 
   // Verify that item views have no layers after the folder has been opened.
   apps_grid_test_api_->WaitForItemMoveAnimationDone();
@@ -2064,15 +2050,14 @@ TEST_F(PopulatedAppListTest, FolderItemDroppedRemovesBlankPage) {
   ASSERT_EQ(1, apps_grid_view_->pagination_model()->total_pages());
 
   // Tap the folder item to show its contents.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->GestureTapAt(
-      apps_grid_view_->GetItemViewAt(0)->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(apps_grid_view_->GetItemViewAt(0));
   ASSERT_TRUE(AppListIsInFolderView());
 
   // Start dragging the first item in the active folder.
   AppListItemView* dragged_view =
       folder_view()->items_grid_view()->GetItemViewAt(0);
   AppListItem* dragged_item = dragged_view->item();
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
   event_generator->MoveTouch(dragged_view->GetBoundsInScreen().CenterPoint());
   event_generator->PressTouch();
   ASSERT_TRUE(dragged_view->FireTouchDragTimerForTest());
@@ -3136,10 +3121,9 @@ TEST_P(AppListPresenterNonBubbleTest,
   const views::View* close_button =
       GetAppListView()->search_box_view()->close_button();
   if (test_mouse_event) {
-    ClickMouseAt(close_button->GetBoundsInScreen().CenterPoint());
+    LeftClickOn(close_button);
   } else {
-    GetEventGenerator()->GestureTapAt(
-        close_button->GetBoundsInScreen().CenterPoint());
+    GestureTapOn(close_button);
   }
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(search_box_view->is_search_box_active());
@@ -3147,9 +3131,9 @@ TEST_P(AppListPresenterNonBubbleTest,
   // Tap/Click the search box again, the result selection should be reset to the
   // first one.
   if (test_mouse_event) {
-    ClickMouseAt(GetPointInsideSearchbox());
+    LeftClickOn(search_box_view);
   } else {
-    GetEventGenerator()->GestureTapAt(GetPointInsideSearchbox());
+    GestureTapOn(search_box_view);
   }
 
   EXPECT_TRUE(search_box_view->is_search_box_active());
@@ -3380,10 +3364,7 @@ TEST_P(AppListPresenterTest, ShouldNotCrashOnItemClickAfterMonitorDisconnect) {
 
   // Click on an item.
   AppListItemView* item_view = apps_grid_view()->GetItemViewAt(0);
-  gfx::Point item_center = item_view->GetBoundsInScreen().CenterPoint();
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->MoveMouseTo(item_center);
-  generator->ClickLeftButton();
+  LeftClickOn(item_view);
 
   // No crash. No use-after-free detected by ASAN.
 }
@@ -3540,14 +3521,11 @@ TEST_P(AppListPresenterNonBubbleTest, MouseDragAfterDownwardFliing) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
 
   AppListView* view = GetAppListView();
-  const gfx::Point expand_arrow_point = view->app_list_main_view()
-                                            ->contents_view()
-                                            ->expand_arrow_view()
-                                            ->GetBoundsInScreen()
-                                            .CenterPoint();
+  const views::View* expand_arrow =
+      view->app_list_main_view()->contents_view()->expand_arrow_view();
 
   if (test_fullscreen)
-    GetEventGenerator()->GestureTapAt(expand_arrow_point);
+    GestureTapOn(expand_arrow);
   GetAppListTestHelper()->CheckState(test_fullscreen
                                          ? AppListViewState::kFullscreenAllApps
                                          : AppListViewState::kPeeking);
@@ -3561,7 +3539,7 @@ TEST_P(AppListPresenterNonBubbleTest, MouseDragAfterDownwardFliing) {
   // position.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   if (test_fullscreen)
-    GetEventGenerator()->GestureTapAt(expand_arrow_point);
+    GestureTapOn(expand_arrow);
   GetAppListTestHelper()->CheckState(test_fullscreen
                                          ? AppListViewState::kFullscreenAllApps
                                          : AppListViewState::kPeeking);
@@ -3798,15 +3776,14 @@ TEST_F(AppListPresenterTest, TapAutoHideShelfWithAppListOpened) {
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 
   // Tap the system tray should open system tray bubble and keep shelf visible.
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->GestureTapAt(
-      GetPrimaryUnifiedSystemTray()->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(GetPrimaryUnifiedSystemTray());
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
   GetAppListTestHelper()->CheckVisibility(false);
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 
   // Tap to dismiss the app list and the auto-hide shelf.
+  ui::test::EventGenerator* generator = GetEventGenerator();
   generator->GestureTapAt(gfx::Point(0, 0));
   EXPECT_FALSE(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
@@ -3841,8 +3818,7 @@ TEST_F(AppListPresenterTest, TapAutoHideShelfWithAppListOpened) {
 
   // App list should remain visible when tapping on a shelf app button.
   ASSERT_TRUE(shelf_view_test_api.GetButton(0));
-  generator->GestureTapAt(
-      shelf_view_test_api.GetButton(0)->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(shelf_view_test_api.GetButton(0));
   GetAppListTestHelper()->CheckVisibility(true);
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 }
@@ -3874,9 +3850,7 @@ TEST_F(AppListPresenterTest, ClickingShelfArrowDoesNotHideAppList) {
   // visible.
   const views::View* right_arrow = scrollable_shelf_view->right_arrow();
   ASSERT_TRUE(right_arrow->GetVisible());
-  GetEventGenerator()->MoveMouseTo(
-      right_arrow->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  LeftClickOn(right_arrow);
 
   GetAppListTestHelper()->CheckVisibility(true);
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
@@ -3884,9 +3858,7 @@ TEST_F(AppListPresenterTest, ClickingShelfArrowDoesNotHideAppList) {
   // Click left button - verify the app list stays visible.
   const views::View* left_arrow = scrollable_shelf_view->left_arrow();
   ASSERT_TRUE(left_arrow->GetVisible());
-  GetEventGenerator()->MoveMouseTo(
-      left_arrow->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+  LeftClickOn(left_arrow);
 
   GetAppListTestHelper()->CheckVisibility(true);
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
@@ -4116,8 +4088,7 @@ TEST_F(PopulatedAppListTest, TouchSelectionMenu) {
 
   // Open the folder.
   ASSERT_FALSE(AppListIsInFolderView());
-  GetEventGenerator()->GestureTapAt(
-      apps_grid_view_->GetItemViewAt(0)->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(apps_grid_view_->GetItemViewAt(0));
   ASSERT_TRUE(AppListIsInFolderView());
 
   // Check that the touch selection menu runner is not running.
@@ -4128,8 +4099,7 @@ TEST_F(PopulatedAppListTest, TouchSelectionMenu) {
   views::View* folder_name_view =
       folder_view()->folder_header_view()->GetFolderNameViewForTest();
   UpdateFolderName("folder_name");
-  GetEventGenerator()->GestureTapAt(
-      folder_name_view->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(folder_name_view);
 
   // Fire the timer to show the textfield quick menu.
   views::TextfieldTestApi textfield_test_api(
@@ -4146,8 +4116,7 @@ TEST_F(PopulatedAppListTest, TouchSelectionMenu) {
           ui::TouchSelectionMenuRunner::GetInstance()));
   views::LabelButton* button = test_api.GetFirstButton();
   ASSERT_TRUE(button);
-  gfx::Point point = button->GetBoundsInScreen().CenterPoint();
-  GetEventGenerator()->GestureTapAt(point);
+  GestureTapOn(button);
   EXPECT_FALSE(ui::TouchSelectionMenuRunner::GetInstance()->IsRunning());
 
   // Refresh the folder item name.

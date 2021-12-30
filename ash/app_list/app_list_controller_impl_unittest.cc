@@ -285,10 +285,7 @@ TEST_F(AppListControllerImplTest, HideRoundingCornersWhenEmojiShows) {
   ShowAppListNow(AppListViewState::kPeeking);
   SearchBoxView* search_box_view =
       GetAppListView()->app_list_main_view()->search_box_view();
-  gfx::Point center_point = search_box_view->GetBoundsInScreen().CenterPoint();
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(center_point);
-  event_generator->ClickRightButton();
+  RightClickOn(search_box_view);
 
   // Expect that the first item in the context menu should be "Emoji". Show the
   // emoji panel.
@@ -430,8 +427,7 @@ TEST_F(AppListControllerImplTest, VirtualKeyboardNotShownWhenUserStartsTyping) {
   EXPECT_FALSE(GetVirtualKeyboardWindow()->IsVisible());
 
   // The keyboard should get shown if the user taps on the search box.
-  GetEventGenerator()->GestureTapAt(
-      GetAppListView()->search_box_view()->GetBoundsInScreen().CenterPoint());
+  GestureTapOn(GetAppListView()->search_box_view());
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
   DismissAppListNow();
@@ -602,8 +598,7 @@ TEST_F(AppListControllerImplTest,
   window2->Show();
 
   // Tap at the textfield in |window1|. The virtual keyboard should be visible.
-  const gfx::Point tap_point = text_field_p->GetBoundsInScreen().CenterPoint();
-  GetEventGenerator()->GestureTapAt(tap_point);
+  GestureTapOn(text_field_p);
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
   // Tap at the center of |window2| to hide the virtual keyboard.

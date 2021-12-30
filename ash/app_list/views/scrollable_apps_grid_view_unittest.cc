@@ -504,8 +504,7 @@ TEST_F(ScrollableAppsGridViewTest, SmallFolderHasCorrectWidth) {
   ShowAppList();
 
   // Enter the folder view.
-  auto* generator = GetEventGenerator();
-  SimulateMouseClickAt(generator, apps_grid_view_->GetItemViewAt(0));
+  LeftClickOn(apps_grid_view_->GetItemViewAt(0));
   ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
 
   auto* folder_view = GetAppListTestHelper()->GetBubbleFolderView();
@@ -530,8 +529,7 @@ TEST_F(ScrollableAppsGridViewTest, DragItemToReorderInFolderRecordsHistogram) {
   ShowAppList();
 
   // Enter the folder view.
-  auto* generator = GetEventGenerator();
-  SimulateMouseClickAt(generator, apps_grid_view_->GetItemViewAt(0));
+  LeftClickOn(apps_grid_view_->GetItemViewAt(0));
   ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
 
   // Drag the first app in the folder.
@@ -539,6 +537,7 @@ TEST_F(ScrollableAppsGridViewTest, DragItemToReorderInFolderRecordsHistogram) {
 
   // Drag the item to the third position in the folder.
   gfx::Size tile_size = apps_grid_view_->GetTileViewSize();
+  auto* generator = GetEventGenerator();
   generator->MoveMouseBy(0, tile_size.height());
   generator->ReleaseLeftButton();
 
@@ -579,8 +578,7 @@ TEST_F(ScrollableAppsGridViewTest, DragItemOutOfFolderRecordsHistogram) {
   ShowAppList();
 
   // Enter the folder view.
-  auto* generator = GetEventGenerator();
-  SimulateMouseClickAt(generator, apps_grid_view_->GetItemViewAt(0));
+  LeftClickOn(apps_grid_view_->GetItemViewAt(0));
   ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
 
   // Drag the first app in the folder and move it out of the folder.
@@ -589,6 +587,7 @@ TEST_F(ScrollableAppsGridViewTest, DragItemOutOfFolderRecordsHistogram) {
   DragItemOutOfFolder();
 
   // Drag the app item to near the expected end position and end the drag.
+  auto* generator = GetEventGenerator();
   generator->MoveMouseTo(
       apps_grid_view_->GetItemViewAt(0)->GetBoundsInScreen().right_center() +
       gfx::Vector2d(20, 0));
@@ -617,8 +616,7 @@ TEST_F(ScrollableAppsGridViewTest,
   ShowAppList();
 
   // Enter the view of the first folder.
-  auto* generator = GetEventGenerator();
-  SimulateMouseClickAt(generator, apps_grid_view_->GetItemViewAt(0));
+  LeftClickOn(apps_grid_view_->GetItemViewAt(0));
   ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
 
   // Drag the first app in the folder and move it out of the folder.
@@ -626,6 +624,7 @@ TEST_F(ScrollableAppsGridViewTest,
   DragItemOutOfFolder();
 
   // Move the app item into the other folder and end the drag.
+  auto* generator = GetEventGenerator();
   generator->MoveMouseTo(
       apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen().CenterPoint());
   generator->ReleaseLeftButton();

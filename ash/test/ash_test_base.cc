@@ -477,12 +477,24 @@ void AshTestBase::PressAndReleaseKey(ui::KeyboardCode key_code, int flags) {
   GetEventGenerator()->PressAndReleaseKey(key_code, flags);
 }
 
-void AshTestBase::SimulateMouseClickAt(
-    ui::test::EventGenerator* event_generator,
-    const views::View* target_view) {
-  DCHECK(target_view);
-  event_generator->MoveMouseTo(target_view->GetBoundsInScreen().CenterPoint());
+void AshTestBase::LeftClickOn(const views::View* view) {
+  DCHECK(view);
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
   event_generator->ClickLeftButton();
+}
+
+void AshTestBase::RightClickOn(const views::View* view) {
+  DCHECK(view);
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickRightButton();
+}
+
+void AshTestBase::GestureTapOn(const views::View* view) {
+  DCHECK(view);
+  auto* event_generator = GetEventGenerator();
+  event_generator->GestureTapAt(view->GetBoundsInScreen().CenterPoint());
 }
 
 bool AshTestBase::EnterOverview(OverviewEnterExitType type) {

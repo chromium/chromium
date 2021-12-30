@@ -44,7 +44,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/display/screen.h"
-#include "ui/events/test/event_generator.h"
 
 namespace ash {
 
@@ -116,15 +115,7 @@ class AppListMetricsTest : public AshTestBase {
     // Get location of the shelf item.
     const views::ViewModel* view_model =
         GetPrimaryShelf()->GetShelfViewForTesting()->view_model_for_test();
-    gfx::Point center = view_model->view_at(kBrowserAppIndexOnShelf)
-                            ->GetBoundsInScreen()
-                            .CenterPoint();
-
-    // Click on the shelf item.
-    ui::test::EventGenerator* generator = GetEventGenerator();
-    generator->MoveMouseTo(center);
-    generator->ClickLeftButton();
-    generator->ReleaseLeftButton();
+    LeftClickOn(view_model->view_at(kBrowserAppIndexOnShelf));
   }
 
   void PopulateAndLaunchSearchBoxTileItem() {
@@ -623,12 +614,7 @@ class AppListShowSourceMetricTest : public AshTestBase {
 
  protected:
   void ClickHomeButton() {
-    HomeButton* home_button =
-        GetPrimaryShelf()->navigation_widget()->GetHomeButton();
-    gfx::Point center = home_button->GetCenterPoint();
-    views::View::ConvertPointToScreen(home_button, &center);
-    GetEventGenerator()->MoveMouseTo(center);
-    GetEventGenerator()->ClickLeftButton();
+    LeftClickOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
   }
 };
 

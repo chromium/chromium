@@ -262,7 +262,7 @@ TEST_F(BluetoothDeviceListItemViewTest,
 
 TEST_F(BluetoothDeviceListItemViewTest, NotifiesListenerWhenClicked) {
   EXPECT_FALSE(last_clicked_device_list_item());
-  SimulateMouseClickAt(GetEventGenerator(), bluetooth_device_list_item());
+  LeftClickOn(bluetooth_device_list_item());
   EXPECT_EQ(last_clicked_device_list_item(), bluetooth_device_list_item());
 }
 
