@@ -230,10 +230,6 @@ bool PopulateGalleryPrefInfoFromDictionary(
   absl::optional<double> total_size_in_bytes;
   absl::optional<double> last_attach_time;
   bool volume_metadata_valid = false;
-  int audio_count = 0;
-  int image_count = 0;
-  int video_count = 0;
-  int prefs_version = 0;
 
   if (!GetPrefId(dict, &pref_id) ||
       !dict.GetString(kMediaGalleriesDeviceIdKey, &device_id) ||
@@ -243,7 +239,8 @@ bool PopulateGalleryPrefInfoFromDictionary(
   }
 
   dict.GetString(kMediaGalleriesDisplayNameKey, &display_name);
-  dict.GetInteger(kMediaGalleriesPrefsVersionKey, &prefs_version);
+  int prefs_version =
+      dict.FindIntKey(kMediaGalleriesPrefsVersionKey).value_or(0);
 
   total_size_in_bytes = dict.FindDoubleKey(kMediaGalleriesSizeKey);
   last_attach_time = dict.FindDoubleKey(kMediaGalleriesLastAttachTimeKey);
@@ -255,12 +252,17 @@ bool PopulateGalleryPrefInfoFromDictionary(
     volume_metadata_valid = true;
   }
 
-  if (dict.GetInteger(kMediaGalleriesScanAudioCountKey, &audio_count) &&
-      dict.GetInteger(kMediaGalleriesScanImageCountKey, &image_count) &&
-      dict.GetInteger(kMediaGalleriesScanVideoCountKey, &video_count)) {
-    out_gallery_info->audio_count = audio_count;
-    out_gallery_info->image_count = image_count;
-    out_gallery_info->video_count = video_count;
+  absl::optional<int> audio_count =
+      dict.FindIntKey(kMediaGalleriesScanAudioCountKey);
+  absl::optional<int> image_count =
+      dict.FindIntKey(kMediaGalleriesScanImageCountKey);
+  absl::optional<int> video_count =
+      dict.FindIntKey(kMediaGalleriesScanVideoCountKey);
+
+  if (audio_count && image_count && video_count) {
+    out_gallery_info->audio_count = *audio_count;
+    out_gallery_info->image_count = *image_count;
+    out_gallery_info->video_count = *video_count;
   } else {
     out_gallery_info->audio_count = 0;
     out_gallery_info->image_count = 0;
