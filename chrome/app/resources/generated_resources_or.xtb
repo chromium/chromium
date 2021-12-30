@@ -1045,6 +1045,7 @@
 <translation id="204914487372604757">ସର୍ଟକଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="2050339315714019657">ପୋଟ୍ରେଟ୍‌</translation>
 <translation id="2053312383184521053">ନିଷ୍କ୍ରିୟ ସ୍ଥିତିରେ ଥିବା ଡାଟା</translation>
+<translation id="2054240652864153171"><ph name="PARTITION_SITE_NAME" />ରେ ପାର୍ଟିସନ କରାଯାଇଥିବା <ph name="SITE_NAME" /> ପାଇଁ ସାଇଟ ଡାଟା ଖାଲି କରିବେ କି?</translation>
 <translation id="2055585478631012616">ଖୋଲାଥିବା ଟାବ୍‌ଗୁଡ଼ିକ ସମେତ ଆପଣ ଏହି ସାଇଟ୍‌ଗୁଡ଼ିକରୁ ସାଇନ୍ ଆଉଟ୍ ହୋଇଯିବେ।</translation>
 <translation id="205560151218727633">Google ଆସିଷ୍ଟାଣ୍ଟ ଲୋଗୋ</translation>
 <translation id="2058456167109518507">ଡିଭାଇସ୍ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
@@ -2388,6 +2389,7 @@
 <translation id="3433621910545056227">ଓହୋ!  ସିଷ୍ଟମ୍‌, ଡିଭାଇସ୍‌ ଇନ୍‌ଷ୍ଟଲେସନ୍-ସମୟ ବୈଶିଷ୍ଟ୍ୟ ଲକ୍‌ ସ୍ଥାପନା କରିବାରେ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">ଯଦି ଆପଣଙ୍କ ପିଲା ପାଇଁ ଅତିରିକ୍ତ ୱେବ୍ ଏବଂ ଆପ୍ କାର୍ଯ୍ୟକଳାପ ସେଟିଂସ୍ ଚାଲୁ ଥାଏ, ତେବେ ଏହି ଡାଟା ତା'ର Google ଆକାଉଣ୍ଟରେ ସେଭ୍ ହୋଇପାରେ। ଏହି ସେଟିଂସ୍ ଏବଂ ସେଗୁଡ଼ିକୁ କିପରି ଆଡଜଷ୍ଟ କରାଯାଏ, ସେ ବିଷୟରେ families.google.comରେ ଅଧିକ ଜାଣନ୍ତୁ।</translation>
+<translation id="3434512374684753970">ଅଡିଓ ଏବଂ ଭିଡିଓ</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" ଆପଣଙ୍କ <ph name="CODE_TYPE" />ର ଅନୁରୋଧ କରୁଛି</translation>
 <translation id="3435738964857648380">ସୁରକ୍ଷା</translation>
 <translation id="343578350365773421">ପେପର୍‍ ଶେଷ ହୋଇଯାଇଛି</translation>
@@ -2834,6 +2836,7 @@
 <translation id="3873423927483480833">PIN ଦେଖାନ୍ତୁ</translation>
 <translation id="3873915545594852654">ARC++ ସହିତ ଏକ ସମସ୍ୟା ହୋ‍ଇଛି।</translation>
 <translation id="3874164307099183178">Google Assistant ଚାଲୁ କରନ୍ତୁ</translation>
+<translation id="3875783148670536197">କିପରି କରାଯାଏ ତାହା ମୋତେ ଦେଖାନ୍ତୁ</translation>
 <translation id="3875815154304214043">ଏକ ନୂଆ ବ୍ରାଉଜର୍ ଟାବରେ ଖୋଲିବା ପାଇଁ <ph name="APP_NAME" />କୁ ସେଟ୍ କରାଯାଇଛି, ସମର୍ଥିତ ଲିଙ୍କଗୁଡ଼ିକ ମଧ୍ୟ ବ୍ରାଉଜରରେ ଖୋଲିବ। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />ର ଡିଭାଇସ୍ ପାଇଁ Nearby Share ସେଟିଂସ୍ <ph name="USER_EMAIL" /> ଆକାଉଣ୍ଟ ଅଧୀନରେ ସେୟାର୍ କରାଯାଉଛି।</translation>
 <translation id="3879748587602334249">ଡାଉନ୍‌ଲୋଡ୍ ପରିଚାଳକ</translation>
@@ -4469,6 +4472,7 @@
 <translation id="562935524653278697">ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକ ଆପଣଙ୍କ ବୁକ୍‌ମାର୍କ, ଇତିବୃତ୍ତି, ପାସ୍‌ୱର୍ଡ ଏବଂ ଅନ୍ୟ ସେଟିଂସ୍‌ର ସିଙ୍କ୍‌ ଅକ୍ଷମ କରିଛନ୍ତି।</translation>
 <translation id="5631017369956619646">CPU ବ୍ୟବହାର</translation>
 <translation id="5632059346822207074">ଅନୁମତି ପାଇଁ ଅନୁରୋଧ କରାଯାଇଛି, ଉତ୍ତର ଦେବାକୁ Ctrl + Forward କୀ ଦବାନ୍ତୁ</translation>
+<translation id="5632485077360054581">କିପରି କରାଯାଏ ତାହା ମୋତେ ଦେଖାନ୍ତୁ</translation>
 <translation id="5632566673632479864">ଆପଣଙ୍କ ଆକାଉଣ୍ଟ <ph name="EMAIL" /> ଆଉ ପ୍ରାଥମିକ ଆକାଉଣ୍ଟ ଭାବେ ଅନୁମୋଦିତ ନୁହେଁ। ଯେହେତୁ ଏହି ଆକାଉଣ୍ଟ <ph name="DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳନା କରାଯାଉଛି, ତେଣୁ ଆପଣଙ୍କ ବୁକ୍‌ମାର୍କ, ଇତିବୃତ୍ତି, ପାସ୍‌ୱାର୍ଡ, ଏବଂ ଅନ୍ୟାନ୍ୟ ସେଟିଂସ୍ ଏହି ଡିଭାଇସ୍‌ରୁ ଖାଲି କରିଦିଆଯିବ।</translation>
 <translation id="5632592977009207922">ଡାଉନ୍‌ଲୋଡିଂ <ph name="PERCENT_REMAINING" />% ବାକି ଅଛି</translation>
 <translation id="563371367637259496">ମୋବାଇଲ୍</translation>

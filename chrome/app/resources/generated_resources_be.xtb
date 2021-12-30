@@ -1051,6 +1051,7 @@
 <translation id="204914487372604757">Стварыць ярлык</translation>
 <translation id="2050339315714019657">Кніжная</translation>
 <translation id="2053312383184521053">Даныя пра стан бяздзейнасці</translation>
+<translation id="2054240652864153171">Выдаліць даныя сайта <ph name="SITE_NAME" />, раздзеленыя на сайце <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Будзе выкананы выхад з гэтых сайтаў, у тым ліку на адкрытых укладках</translation>
 <translation id="205560151218727633">Лагатып памочніка Google</translation>
 <translation id="2058456167109518507">Выяўлена прылада</translation>
@@ -2392,6 +2393,7 @@
 <translation id="3433621910545056227">Памылка.  Сістэме не ўдалося заблакіраваць атрыбуты часу ўсталявання на прыладзе.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Калі для вашага дзіцяці ўключана налада "Дадатковыя дзеянні ў інтэрнэце і праграмах", то адпаведныя даныя могуць захоўвацца ў яго Уліковым запісе Google. Даведацца больш пра гэтыя налады і іх рэгуліроўку можна на сайце families.google.com.</translation>
+<translation id="3434512374684753970">Аўдыя і відэа</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" запытвае ў вас <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Бяспека</translation>
 <translation id="343578350365773421">Скончылася папера</translation>
@@ -2838,6 +2840,7 @@
 <translation id="3873423927483480833">Паказваць PIN-коды</translation>
 <translation id="3873915545594852654">Узнікла праблема з ARC++.</translation>
 <translation id="3874164307099183178">Уключыць Памочніка Google</translation>
+<translation id="3875783148670536197">Паказаць</translation>
 <translation id="3875815154304214043">У адпаведнасці з наладамі праграмы "<ph name="APP_NAME" />" яна будзе адкрывацца ў новай укладцы браўзера. Спасылкі, якія падтрымліваюцца, таксама будуць адкрывацца ў браўзеры. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Налады "Абагульвання паблізу" для прылады карыстальніка <ph name="USER_NAME" />; абагульванне ажыццяўляецца ад імені ўліковага запісу <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Менеджар спамповак</translation>
@@ -4471,6 +4474,7 @@
 <translation id="562935524653278697">Адміністратар выключыў сінхранізацыю закладак, гісторыі, пароляў і іншых налад.</translation>
 <translation id="5631017369956619646">Выкарыстанне ЦП</translation>
 <translation id="5632059346822207074">Запытаны дазвол. Каб адказаць, націсніце Ctrl + Forward</translation>
+<translation id="5632485077360054581">Паказаць</translation>
 <translation id="5632566673632479864">Уліковы запіс <ph name="EMAIL" /> больш не дазволена выкарыстоўваць як асноўны. Гэты ўліковы запіс знаходзіцца пад кіраваннем дамена <ph name="DOMAIN" />, таму з прылады будуць выдалены вашы закладкі, гісторыя, паролі і іншыя налады.</translation>
 <translation id="5632592977009207922">Ідзе спампоўванне, засталося <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Мабільная сетка</translation>

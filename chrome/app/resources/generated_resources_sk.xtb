@@ -1050,6 +1050,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="204914487372604757">Vytvoriť odkaz</translation>
 <translation id="2050339315714019657">Na výšku</translation>
 <translation id="2053312383184521053">Údaje stavu nečinnosti</translation>
+<translation id="2054240652864153171">Chcete vymazať dáta webu pre <ph name="SITE_NAME" /> segmentované na <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Systém vás odhlási z týchto webov (aj v otvorených kartách)</translation>
 <translation id="205560151218727633">Logo asistenta Google</translation>
 <translation id="2058456167109518507">Bolo rozpoznané zariadenie</translation>
@@ -2392,6 +2393,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3433621910545056227">Ojoj! Systému sa nepodarilo nastaviť zámku pre inštaláciu atribútov v zariadení.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Ak pre dieťa zapnete nastavenie ďalšej aktivity na internete a v aplikáciách, tieto údaje sa môžu uložiť do jeho účtu Google. Viac o týchto nastaveniach a o tom, ako ich upraviť, sa dozviete na families.google.com.</translation>
+<translation id="3434512374684753970">Zvuk a video</translation>
 <translation id="3435688026795609344">Rozšírenie <ph name="EXTENSION_NAME" /> požaduje <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Bezpečnosť</translation>
 <translation id="343578350365773421">Minul sa papier</translation>
@@ -2838,6 +2840,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3873423927483480833">Zobraziť kódy PIN</translation>
 <translation id="3873915545594852654">Vyskytol sa problém s ARC++.</translation>
 <translation id="3874164307099183178">Zapnúť Asistenta Google</translation>
+<translation id="3875783148670536197">Ukázať postup</translation>
 <translation id="3875815154304214043">Je nastavené, aby sa aplikácia <ph name="APP_NAME" /> otvárala na novej karte prehliadača. Podporované odkazy sa budú tiež otvárať v prehliadači. <ph name="BEGIN_LINK_LEARN_MORE" />Ďalšie informácie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Nastavenia Zdieľania nablízku v zariadení používateľa <ph name="USER_EMAIL" />, obsah sa zdieľa ako <ph name="USER_NAME" />.</translation>
 <translation id="3879748587602334249">Správca sťahovania</translation>
@@ -4473,6 +4476,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="562935524653278697">Váš správca zakázal synchronizáciu záložiek, histórie, hesiel a ďalších nastavení.</translation>
 <translation id="5631017369956619646">Využitie procesora</translation>
 <translation id="5632059346822207074">Vyžaduje sa povolenie, reagujte stlačením klávesov Ctrl + Ďalej</translation>
+<translation id="5632485077360054581">Ukázať postup</translation>
 <translation id="5632566673632479864">Účet <ph name="EMAIL" /> už nemôžete použiť ako hlavný účet. Keďže tento účet spravuje doména <ph name="DOMAIN" />, budú z tohto zariadenia vymazané vaše záložky, história, heslá a ďalšie nastavenia.</translation>
 <translation id="5632592977009207922">Sťahuje sa, zostáva <ph name="PERCENT_REMAINING" /> %</translation>
 <translation id="563371367637259496">Mobilná</translation>
@@ -6821,7 +6825,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8054563304616131773">Zadajte platnú e-mailovú adresu</translation>
 <translation id="8054883179223321715">K dispozícii pre konkrétne weby s videom</translation>
 <translation id="8054921503121346576">Klávesnica s konektorom USB bola pripojená</translation>
-<translation id="8057414620575339583">Bočné vyhľadávanie</translation>
+<translation id="8057414620575339583">Vyhľadávanie naboku</translation>
 <translation id="8058655154417507695">Rok ukončenia platnosti</translation>
 <translation id="8058986560951482265">Opakovane sa zastavuje</translation>
 <translation id="8059417245945632445">&amp;Preskúmať zariadenia</translation>

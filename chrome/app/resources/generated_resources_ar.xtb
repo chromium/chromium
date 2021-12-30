@@ -1052,6 +1052,7 @@
 <translation id="204914487372604757">إنشاء اختصار</translation>
 <translation id="2050339315714019657">رأسي</translation>
 <translation id="2053312383184521053">بيانات حالة الخمول</translation>
+<translation id="2054240652864153171">هل تريد محو بيانات الموقع الإلكتروني <ph name="SITE_NAME" /> التي تم تقسيمها على <ph name="PARTITION_SITE_NAME" />؟</translation>
 <translation id="2055585478631012616">سيتم تسجيل خروجك من هذه المواقع الإلكترونية، بما في ذلك ضمن علامات التبويب المفتوحة.</translation>
 <translation id="205560151218727633">‏شعار مساعد Google</translation>
 <translation id="2058456167109518507">تم رصد جهاز للاتصال</translation>
@@ -2396,6 +2397,7 @@
 <translation id="3433621910545056227">عفوًا!  تعذّر النظام في إنشاء قفل سمات وقت التثبيت بالجهاز.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3434272557872943250">‏في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات" لحسابك الفرعي، قد يتم حفظ هذه البيانات في حسابك على Google. تعرّف على المزيد حول هذه الإعدادات وطريقة ضبطها من خلال families.google.com.</translation>
+<translation id="3434512374684753970">الصوت والفيديو</translation>
 <translation id="3435688026795609344">تطلب الإضافة "<ph name="EXTENSION_NAME" />" الرمز <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">أمن المعلومات</translation>
 <translation id="343578350365773421">نفد الورق</translation>
@@ -2842,6 +2844,7 @@
 <translation id="3873423927483480833">إظهار أرقام التعريف الشخصية</translation>
 <translation id="3873915545594852654">‏حدثت مشكلة في "وقت تشغيل التطبيقات في Chrome (ARC++)".</translation>
 <translation id="3874164307099183178">‏تفعيل خدمة "مساعد Google"</translation>
+<translation id="3875783148670536197">الاطّلاع على الإرشادات</translation>
 <translation id="3875815154304214043">تم ضبط تطبيق <ph name="APP_NAME" /> بحيث يُفتَح في علامة تبويب متصفّح جديدة، وستُفتَح الروابط المتوافقة في المتصفّح أيضًا. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">إعدادات ميزة "المشاركة عن قرب" لجهاز <ph name="USER_NAME" /> الذي يشارك البيانات عبر حساب <ph name="USER_EMAIL" /></translation>
 <translation id="3879748587602334249">تطبيق إدارة التنزيل</translation>
@@ -4474,6 +4477,7 @@
 <translation id="562935524653278697">لقد أوقف مشرفك مزامنة الإشارات المرجعية والسجل وكلمات المرور والإعدادات الأخرى.</translation>
 <translation id="5631017369956619646">استخدام وحدة المعالجة المركزية</translation>
 <translation id="5632059346822207074">‏تم طلب الإذن، اضغط على Ctrl + السهم المتجه للأمام للاستجابة للطلب</translation>
+<translation id="5632485077360054581">الاطّلاع على الإرشادات</translation>
 <translation id="5632566673632479864">لم يعد حسابك <ph name="EMAIL" /> مسموحًا به كحساب أساسي. بما أنّ النطاق <ph name="DOMAIN" /> يدير هذا الحساب، سيتم محو الإشارات المرجعية والسِجلّ وكلمات المرور والإعدادات الأخرى من هذا الجهاز.</translation>
 <translation id="5632592977009207922">جارٍ التنزيل، تَبقَّى<ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">الجوّال</translation>

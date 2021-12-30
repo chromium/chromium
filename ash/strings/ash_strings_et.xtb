@@ -587,6 +587,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="4831034276697007977">Kas soovite automaatsed klikid kindlasti välja lülitada?</translation>
 <translation id="4849058404725798627">Klaviatuuri fookusega objekti esiletõstmine</translation>
 <translation id="485592688953820832">Toiming puudub (peatamine)</translation>
+<translation id="485634149294284819">Ava klaviatuurimenüü</translation>
 <translation id="4860284199500934869">Kontrollige oma võrguühendust, et fail <ph name="FILENAME" /> alla laadida</translation>
 <translation id="486056901304535126">Hiljem üritatakse uuesti alla laadida. Kõne saadetakse Google'ile töötlemiseks, kui allalaadimine on lõpetatud.</translation>
 <translation id="4868492592575313542">aktiveeritud</translation>
@@ -1099,6 +1100,7 @@ Uus installimine</translation>
 <translation id="8380784334203145311">Head ööd!</translation>
 <translation id="8388750414311082622">Viimast töölauda ei saa eemaldada.</translation>
 <translation id="8394567579869570560">Vanem lukustas selle seadme</translation>
+<translation id="8401850874595457088">Ava keelemenüü</translation>
 <translation id="8412677897383510995">Kuva kuvaseaded</translation>
 <translation id="8413272770729657668">Salvestamine algab: 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (ümbris)</translation>

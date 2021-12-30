@@ -2852,7 +2852,7 @@
 <translation id="3873423927483480833">顯示 PIN</translation>
 <translation id="3873915545594852654">ARC++ 發生問題。</translation>
 <translation id="3874164307099183178">開啟「Google 助理」</translation>
-<translation id="3875783148670536197">顯示操作說明</translation>
+<translation id="3875783148670536197">顯示方法</translation>
 <translation id="3875815154304214043">「<ph name="APP_NAME" />」已設定為在新瀏覽器分頁中開啟，支援的連結亦會在瀏覽器中開啟。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />的裝置的「咫尺共享」設定，所用分享帳戶為 <ph name="USER_EMAIL" />。</translation>
 <translation id="3879748587602334249">下載管理員</translation>
@@ -4490,7 +4490,7 @@
 <translation id="562935524653278697">您的管理員已停用書籤、記錄、密碼和其他設定的同步處理功能。</translation>
 <translation id="5631017369956619646">CPU 使用率</translation>
 <translation id="5632059346822207074">要求咗權限，㩒 Ctrl + Forward 就可以回覆</translation>
-<translation id="5632485077360054581">顯示操作說明</translation>
+<translation id="5632485077360054581">顯示方法</translation>
 <translation id="5632566673632479864">您的帳戶 <ph name="EMAIL" /> 已無法用作主要帳戶。 由於此帳戶由 <ph name="DOMAIN" /> 管理，因此系統將會從此裝置中清除您的書籤、記錄、密碼和其他設定。</translation>
 <translation id="5632592977009207922">下載中，尚餘 <ph name="PERCENT_REMAINING" />%</translation>
 <translation id="563371367637259496">流動網絡</translation>

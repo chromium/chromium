@@ -338,6 +338,7 @@
 如果此政策已停用或未设置，<ph name="PRODUCT_NAME" /> 将不会在“打印预览”对话框中向用户提供“以图片形式打印”选项，PDF 将会像平常一样打印，而不会在发送到目标打印机之前光栅化为图片。</translation>
 <translation id="1435659902881071157">设备级网络配置</translation>
 <translation id="1438739959477268107">默认的密钥生成设置</translation>
+<translation id="1440408958042020947">允许已选择启用 Phone Hub 的用户访问其手机上近期拍摄的照片和视频</translation>
 <translation id="1449083855104537880">如果此政策设为 True，无障碍选项将会显示在系统任务栏菜单中。如果此政策设为 False，这些选项就不会显示在菜单中。
 
       如果您设置了此政策，用户便无法更改它。如果您未设置此政策，无障碍选项将不会显示在菜单中，但用户可通过“设置”页面将其设为显示。
@@ -2273,6 +2274,7 @@
 <translation id="3606571057705314194">在浏览器启动时停用个人资料选择器</translation>
 <translation id="3627678165642179114">启用或停用拼写检查网络服务</translation>
 <translation id="3628480121685794414">启用单面打印</translation>
+<translation id="3634125384445314047">允许通过 Phone Hub 访问手机上近期拍摄的照片和视频。</translation>
 <translation id="3643284063603988867">启用“记住密码”功能</translation>
 <translation id="3646859102161347133">设置放大镜类型</translation>
 <translation id="3647212518036289905">通过设置此政策，您可以指定要用于 HTTP 身份验证的 GSSAPI 库。您可以将此政策设为库名称或完整路径。
@@ -6220,6 +6222,11 @@
           此政策可为更具体的 <ph name="IDLE_ACTION_AC_POLICY_NAME" /> 和 <ph name="IDLE_ACTION_BATTERY_POLICY_NAME" /> 政策提供后备值。如果您设置了此政策，但未分别设置更具体的政策，系统就会使用此值。
 
           如果您未设置此政策，更具体政策的行为便不会受到影响。</translation>
+<translation id="8349255653850367353">如果您启用了此设置，已选择启用 Phone Hub 功能的用户将能够在 Chrome 操作系统设备上查看和下载其手机上近期拍摄的照片和视频。
+
+      如果您停用了此设置，用户将无法使用该功能。如果 <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> 政策已停用，用户也将无法使用该功能。
+
+      如果此政策未设置，默认情况下，受企业管理的用户和非受管用户都能选择启用该功能。</translation>
 <translation id="8357681633047935212">限制用户会话的长度</translation>
 <translation id="8357989008292691856">登录用户许可名单</translation>
 <translation id="8359734107661430198">从 2008 年 9 月 2 日开始启用 ExampleDeprecatedFeature API</translation>
@@ -6681,6 +6688,7 @@
       如果您不设置此政策，或者输入了空字符串，设备会使用当前有效的时区，但用户可以更改它。</translation>
 <translation id="8880294585549584028">允许在这些网站上向文件和目录写入内容</translation>
 <translation id="8882006618241293596">禁止这些网站运行 <ph name="FLASH_PLUGIN_NAME" /> 插件</translation>
+<translation id="8882255181490012651">禁止已选择启用 Phone Hub 的用户访问其手机上近期拍摄的照片和视频</translation>
 <translation id="8887709920496070892">系统应在设备闲置多久（以毫秒为单位）后显示警告对话框</translation>
 <translation id="8890438048579188548">隐藏 <ph name="CLOUD_PRINT_NAME" />弃用警告</translation>
 <translation id="8892286064305622118"><ph name="PLUGIN_VM_NAME" /> 所需的可用磁盘空间</translation>
