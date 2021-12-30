@@ -256,7 +256,7 @@ void MediaRouterIntegrationBrowserTest::OpenDialogAndCastFile() {
   ASSERT_EQ(CastDialogView::kLocalFile, test_ui_->GetChosenSourceType());
   test_ui_->WaitForSinkAvailable(receiver_);
   test_ui_->StartCasting(receiver_);
-  ASSERT_EQ(file_url, GetActiveWebContents()->GetURL());
+  ASSERT_EQ(file_url, GetActiveWebContents()->GetVisibleURL());
 }
 
 void MediaRouterIntegrationBrowserTest::OpenDialogAndCastFileFails() {

@@ -46,7 +46,7 @@ IN_PROC_BROWSER_TEST_P(MediaRouterE2EBrowserTest,
   Wait(base::Seconds(10));
 
   // Expect that the current tab has the file open in it.
-  ASSERT_EQ(file_url, web_contents->GetURL());
+  ASSERT_EQ(file_url, web_contents->GetLastCommittedURL());
 
   // Expect that fullscreen is active.
   bool is_fullscreen = false;
