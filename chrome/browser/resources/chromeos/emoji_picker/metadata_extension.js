@@ -27,6 +27,7 @@ export const V2_SUBCATEGORY_TABS = [
     groupId: 'history',
     active: false,
     disabled: true,
+    pagination: 1
   },
   {
     name: 'Smileys & Emotion',
@@ -105,97 +106,111 @@ export const V2_SUBCATEGORY_TABS = [
     category: 'emoticon',
     groupId: '9',
     active: false,
-    disabled: false
+    disabled: false,
+    pagination: 1
   },
   {
     name: 'Smiling',
     category: 'emoticon',
     groupId: '10',
     active: false,
-    disabled: false
+    disabled: false,
+    pagination: 1
   },
   {
     name: 'Love',
     category: 'emoticon',
     groupId: '11',
     active: false,
-    disabled: false
+    disabled: false,
+    pagination: 1
   },
   {
     name: 'Hugging',
     category: 'emoticon',
     groupId: '12',
     active: false,
-    disabled: false
+    disabled: false,
+    pagination: 1
   },
   {
     name: 'Flexing',
     category: 'emoticon',
     groupId: '13',
     active: false,
-    disabled: false
+    disabled: false,
+    pagination: 1
   },
   {
     name: 'Animals',
     category: 'emoticon',
     groupId: '14',
     active: false,
-    disabled: false
+    disabled: false,
+    pagination: 2
   },
   {
     name: 'Surprise',
     category: 'emoticon',
     groupId: '15',
     active: false,
-    disabled: false
+    disabled: false,
+    pagination: 2
   },
   {
     name: 'Dancing',
     category: 'emoticon',
     groupId: '16',
     active: false,
-    disabled: false
+    disabled: false,
+    pagination: 2
   },
   {
-    name: 'Shruggle',
+    name: 'Shruggie',
     category: 'emoticon',
     groupId: '17',
     active: false,
-    disabled: false
+    disabled: false,
+    pagination: 2
   },
   {
     name: 'Table flip',
     category: 'emoticon',
     groupId: '18',
     active: false,
-    disabled: false
+    disabled: false,
+    pagination: 3
   },
   {
     name: 'Disapproval look',
     category: 'emoticon',
     groupId: '19',
     active: false,
-    disabled: false
+    disabled: false,
+    pagination: 3
   },
   {
     name: 'Crying',
     category: 'emoticon',
     groupId: '20',
     active: false,
-    disabled: false
+    disabled: false,
+    pagination: 3
   },
   {
     name: 'Nervous',
     category: 'emoticon',
     groupId: '21',
     active: false,
-    disabled: false
+    disabled: false,
+    pagination: 4
   },
   {
     name: 'Pointers',
     category: 'emoticon',
     groupId: '22',
     active: false,
-    disabled: false
+    disabled: false,
+    pagination: 4
   },
 ];

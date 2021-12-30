@@ -153,12 +153,19 @@
     user-select: none;
   }
 
+  .pagination {
+    align-items: center;
+    display: flex;
+    width: var(--emoji-picker-width);
+  }
+
   /* Center vertically the history icon and text buttons.*/
   :host([text-subcategory-bar-enabled]) #tabs {
     align-items: center;
+    grid-gap: unset;
   }
 
-  /* TODO(b/212459278, b/212459260): Reset bar, left and right chevron 
+  /* TODO(b/212459278, b/212459260): Reset bar, left and right chevron
   visibility again after finishing the subcategory bar layout implementation.*/
   :host([text-subcategory-bar-enabled]) #bar {
     visibility: hidden;
@@ -228,22 +235,43 @@
         </div>
       </template>
       <template is="dom-if" if="[[textSubcategoryBarEnabled]]">
-        <!-- Render history tab. -->
-        <emoji-group-button data-group$="[[emojiGroupTabs.0.groupId]]"
-          group-id="[[emojiGroupTabs.0.groupId]]"
-          active="[[emojiGroupTabs.0.active]]"
-          disabled="[[emojiGroupTabs.0.disabled]]"
-          icon="[[emojiGroupTabs.0.icon]]" name="[[emojiGroupTabs.0.name]]">
-        </emoji-group-button>
-        <!-- Render non-history tabs. -->
-        <template is="dom-repeat" items="[[emojiGroupTabs]]"
-          filter="isNonHistoryTab">
-          <text-group-button data-group$="[[item.groupId]]"
-            group-id="[[item.groupId]]"
-            active="[[item.active]]"
-            disabled="[[item.disabled]]"
-            name="[[item.name]]">
-          </text-group-button>
+        <div class="pagination">
+          <!-- Render history tab. -->
+          <emoji-group-button data-group$="[[emojiGroupTabs.0.groupId]]"
+            group-id="[[emojiGroupTabs.0.groupId]]"
+            active="[[emojiGroupTabs.0.active]]"
+            disabled="[[emojiGroupTabs.0.disabled]]"
+            icon="[[emojiGroupTabs.0.icon]]"
+            name="[[emojiGroupTabs.0.name]]"
+            class="tab">
+          </emoji-group-button>
+          <!-- Render non history tab. -->
+          <template is="dom-repeat"
+            items="[[getGroupTabsByPagination(emojiGroupTabs, 1)]]"
+            filter="isNonHistoryTab">
+            <text-group-button data-group$="[[item.groupId]]"
+              group-id="[[item.groupId]]"
+              active="[[item.active]]"
+              disabled="[[item.disabled]]"
+              name="[[item.name]]"
+              class="tab">
+            </text-group-button>
+          </template>
+        </div>
+        <template is="dom-repeat" as="pageNumber" filter="isNotFirstPage"
+          items="[[getPaginationArray(emojiGroupTabs)]]">
+          <div class="pagination">
+            <template is="dom-repeat" 
+              items="[[getGroupTabsByPagination(emojiGroupTabs, pageNumber)]]">
+              <text-group-button data-group$="[[item.groupId]]"
+                group-id="[[item.groupId]]"
+                active="[[item.active]]"
+                disabled="[[item.disabled]]"
+                name="[[item.name]]"
+                class="tab">
+              </text-group-button>
+            </template>
+          </div>
         </template>
       </template>
       <cr-icon-button id="right-chevron" class="chevron"

@@ -34,7 +34,7 @@ export let EmojiGroupData;
 export let StoredEmoji;
 
 /**
- * @typedef {{name: string, icon: string, groupId: string,
- *            active: boolean, disabled: boolean}} SubcategoryData
+ * @typedef {{name: string, icon: string, groupId: string, active: boolean,
+ *          disabled: boolean, pagination: ?number}} SubcategoryData
  */
 export let SubcategoryData;
