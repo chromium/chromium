@@ -41,11 +41,14 @@ class ShellMainDelegate : public content::ContentMainDelegate {
   void ZygoteStarting(std::vector<std::unique_ptr<content::ZygoteForkDelegate>>*
                           delegates) override;
 #endif
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  void ZygoteForked() override;
+#endif
 #if defined(OS_MAC)
   void PreBrowserMain() override;
 #endif
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   void PostEarlyInitialization(bool is_running_tests) override;
 #endif
