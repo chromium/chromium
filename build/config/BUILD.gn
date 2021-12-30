@@ -261,6 +261,9 @@ group("common_deps") {
   if (is_fuchsia) {
     public_deps +=
         [ "//third_party/fuchsia-sdk/sdk/build/config:runtime_library_group" ]
+    if (is_asan) {
+      public_deps += [ "//build/config/fuchsia:asan_runtime_library" ]
+    }
   }
 }
 
