@@ -2172,7 +2172,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
       quad_alpha = 1.f;
       DCHECK(cf);
     }
-    paint.setColorFilter(std::move(cf));
+    paint.setColorFilter(cf->makeComposed(paint.refColorFilter()));
   }
 
   if (needs_color_conversion_filter) {
