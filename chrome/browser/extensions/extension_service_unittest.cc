@@ -691,8 +691,8 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     ASSERT_FALSE(IsBlocked(extension_id));
   }
 
-  const base::DictionaryValue* GetExtensionPref(const std::string& extension_id,
-                                                const std::string& pref_path) {
+  const base::DictionaryValue* GetExtensionPref(
+      const std::string& extension_id) {
     const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(
         *profile()->GetPrefs()->GetDictionary(pref_names::kExtensions));
     if (!dict) {
@@ -707,15 +707,13 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
 
   bool IsPrefExist(const std::string& extension_id,
                    const std::string& pref_path) {
-    const base::DictionaryValue* pref =
-        GetExtensionPref(extension_id, pref_path);
+    const base::DictionaryValue* pref = GetExtensionPref(extension_id);
     return pref && pref->FindBoolPath(pref_path).has_value();
   }
 
   bool DoesIntegerPrefExist(const std::string& extension_id,
                             const std::string& pref_path) {
-    const base::DictionaryValue* pref =
-        GetExtensionPref(extension_id, pref_path);
+    const base::DictionaryValue* pref = GetExtensionPref(extension_id);
     if (!pref) {
       return false;
     }
