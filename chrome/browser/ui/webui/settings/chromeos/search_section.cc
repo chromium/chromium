@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -309,6 +310,9 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("shouldShowQuickAnswersSettings",
                           ShouldShowQuickAnswersSettings());
+  html_source->AddBoolean(
+      "syncSettingsCategorizationEnabled",
+      chromeos::features::IsSyncSettingsCategorizationEnabled());
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);
   html_source->AddLocalizedString("osSearchPageTitle",
