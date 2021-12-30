@@ -92,7 +92,7 @@ compile_js_files = [
   "views/ptz_panel.js",
   "views/review.ts",
   "views/settings.js",
-  "views/view.js",
+  "views/view.ts",
   "views/warning.js",
   "waitable_event.ts",
   "window_controller.js",
