@@ -8269,3 +8269,6 @@ crbug.com/1281792 external/wpt/event-timing/min-duration-threshold.html [ Failur
 crbug.com/1179857 [ Linux ] http/tests/inspector-protocol/dom/dom-getFrameOwner.js [ Failure Pass ]
 crbug.com/1179857 [ Mac10.13 ] http/tests/inspector-protocol/dom/dom-getFrameOwner.js [ Failure Pass ]
 crbug.com/1179857 [ Win ] http/tests/inspector-protocol/dom/dom-getFrameOwner.js [ Pass Timeout ]
+
+# Sheriff 2021-12-22
+crbug.com/1283295 [ Mac ] fast/text-autosizing/hackernews-comments.html [ Pass Failure ]
