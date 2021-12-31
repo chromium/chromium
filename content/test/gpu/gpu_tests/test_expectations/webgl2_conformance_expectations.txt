@@ -998,9 +998,12 @@ crbug.com/483282 [ linux amd ] deqp/functional/gles3/transformfeedback/array_sep
 crbug.com/483282 [ linux amd ] conformance2/glsl3/vector-dynamic-indexing.html [ Failure ]
 
 # Linux AMD RX 5500 XT
+crbug.com/1147232 [ linux amd-0x7340 angle-opengl passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 crbug.com/1152588 [ linux amd-0x7340 ] conformance2/rendering/multisampling-fragment-evaluation.html [ Failure ]
 crbug.com/1152590 [ linux amd-0x7340 no-passthrough ] conformance2/state/gl-get-calls.html [ Failure ]
 crbug.com/1152590 [ linux amd-0x7340 no-passthrough ] deqp/functional/gles3/integerstatequery.html [ Failure ]
+crbug.com/1283514 [ linux amd-0x7340 angle-opengl ] conformance2/textures/misc/angle-stuck-depth-textures.html [ Failure ]
+crbug.com/1283514 [ linux amd-0x7340 angle-opengl ] deqp/functional/gles3/fboinvalidate/whole.html [ Failure ]
 
 ####################
 # Android failures #

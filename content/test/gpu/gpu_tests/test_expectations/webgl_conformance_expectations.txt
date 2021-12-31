@@ -690,6 +690,9 @@ crbug.com/965594 [ linux amd angle-opengl passthrough ] conformance/more/conform
 crbug.com/angleproject/5213 [ linux amd-0x6613 angle-opengl passthrough ] conformance/context/deleted-object-behavior.html [ Failure ]
 crbug.com/angleproject/5213 [ linux amd-0x6613 angle-opengl passthrough ] conformance/renderbuffers/renderbuffer-initialization.html [ Failure ]
 
+# Linux AMD RX 5500 XT
+crbug.com/1147232 [ linux amd-0x7340 angle-opengl passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
+
 ####################
 # Android failures #
 ####################
