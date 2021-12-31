@@ -31,7 +31,9 @@ using message_center::Notification;
 
 namespace ash {
 
-class UnifiedMessageCenterBubbleTest : public AshTestBase {
+class UnifiedMessageCenterBubbleTest
+    : public AshTestBase,
+      public testing::WithParamInterface<bool> {
  public:
   UnifiedMessageCenterBubbleTest() = default;
 
@@ -41,6 +43,17 @@ class UnifiedMessageCenterBubbleTest : public AshTestBase {
       const UnifiedMessageCenterBubbleTest&) = delete;
 
   ~UnifiedMessageCenterBubbleTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatureState(features::kNotificationsRefresh,
+                                               IsNotificationsRefreshEnabled());
+
+    AshTestBase::SetUp();
+  }
+
+  bool IsNotificationsRefreshEnabled() const { return GetParam(); }
 
  protected:
   std::string AddWebNotification() {
@@ -69,7 +82,7 @@ class UnifiedMessageCenterBubbleTest : public AshTestBase {
     GetMessageCenterBubble()
         ->message_center_view()
         ->message_list_view()
-        ->DeleteRemovedNotifications();
+        ->ResetBounds();
   }
 
   UnifiedMessageCenterBubble* GetMessageCenterBubble() {
@@ -154,80 +167,14 @@ class UnifiedMessageCenterBubbleTest : public AshTestBase {
 
  private:
   int id_ = 0;
-};
-
-// TODO(crbug.com/1279984): Make this test a parameterized test. Currently fails
-// when NotificationRefresh enabled.
-TEST_F(UnifiedMessageCenterBubbleTest, HandleAccelerators) {
-  auto id = AddWebNotification();
-  WaitForAnimation();
-
-  // Open and focus message center.
-  DoAltShiftN();
-  WaitForAnimation();
-  EXPECT_TRUE(GetMessageCenterBubble()->IsMessageCenterVisible());
-  EXPECT_EQ(
-      1u,
-      message_center::MessageCenter::Get()->GetVisibleNotifications().size());
-
-  views::Widget* quick_settings_widget =
-      GetSystemTrayBubble()->GetBubbleWidget();
-  views::Widget* message_center_widget =
-      GetMessageCenterBubble()->GetBubbleWidget();
-  EXPECT_FALSE(quick_settings_widget->IsActive());
-  EXPECT_TRUE(message_center_widget->IsActive());
-
-  RemoveAllNotifications();
-  WaitForAnimation();
-  EXPECT_EQ(
-      0u,
-      message_center::MessageCenter::Get()->GetVisibleNotifications().size());
-  EXPECT_FALSE(quick_settings_widget->IsActive());
-  EXPECT_TRUE(message_center_widget->IsActive());
-  EXPECT_EQ(GetFirstMessageCenterFocusable(),
-            message_center_widget->GetFocusManager()->GetFocusedView());
-
-  // Press Esc to close system tray.
-  DoEsc();
-  WaitForAnimation();
-  EXPECT_EQ(nullptr,
-            GetPrimaryUnifiedSystemTray()->GetFocusManager()->GetFocusedView());
-}
-
-// Tests with NotificationsRefresh enabled and disabled.
-class ParameterizedMessageCenterBubbleTest
-    : public UnifiedMessageCenterBubbleTest,
-      public testing::WithParamInterface<bool> {
- public:
-  ParameterizedMessageCenterBubbleTest() = default;
-
-  ParameterizedMessageCenterBubbleTest(
-      const ParameterizedMessageCenterBubbleTest&) = delete;
-  ParameterizedMessageCenterBubbleTest& operator=(
-      const ParameterizedMessageCenterBubbleTest&) = delete;
-
-  ~ParameterizedMessageCenterBubbleTest() override = default;
-
-  // AshTestBase:
-  void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(features::kNotificationsRefresh,
-                                               IsNotificationsRefreshEnabled());
-
-    UnifiedMessageCenterBubbleTest::SetUp();
-  }
-
-  bool IsNotificationsRefreshEnabled() const { return GetParam(); }
-
- private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         ParameterizedMessageCenterBubbleTest,
+                         UnifiedMessageCenterBubbleTest,
                          testing::Bool() /* IsNotificationsRefreshEnabled() */);
 
-TEST_P(ParameterizedMessageCenterBubbleTest, PositionedAboveSystemTray) {
+TEST_P(UnifiedMessageCenterBubbleTest, PositionedAboveSystemTray) {
   const int total_notifications = 5;
   GetPrimaryUnifiedSystemTray()->ShowBubble();
   AddNotification();
@@ -256,7 +203,7 @@ TEST_P(ParameterizedMessageCenterBubbleTest, PositionedAboveSystemTray) {
   }
 }
 
-TEST_P(ParameterizedMessageCenterBubbleTest, FocusCycle) {
+TEST_P(UnifiedMessageCenterBubbleTest, FocusCycle) {
   GetPrimaryUnifiedSystemTray()->ShowBubble();
   AddNotification();
   AddNotification();
@@ -304,7 +251,7 @@ TEST_P(ParameterizedMessageCenterBubbleTest, FocusCycle) {
             GetFirstQuickSettingsFocusable());
 }
 
-TEST_P(ParameterizedMessageCenterBubbleTest, CollapseState) {
+TEST_P(UnifiedMessageCenterBubbleTest, CollapseState) {
   AddNotification();
   AddNotification();
 
@@ -355,7 +302,7 @@ TEST_P(ParameterizedMessageCenterBubbleTest, CollapseState) {
   EXPECT_FALSE(IsMessageCenterCollapsed());
 }
 
-TEST_P(ParameterizedMessageCenterBubbleTest, FocusCycleWithNoNotifications) {
+TEST_P(UnifiedMessageCenterBubbleTest, FocusCycleWithNoNotifications) {
   GetPrimaryUnifiedSystemTray()->ShowBubble();
 
   views::Widget* quick_settings_widget =
@@ -386,7 +333,7 @@ TEST_P(ParameterizedMessageCenterBubbleTest, FocusCycleWithNoNotifications) {
             GetFirstQuickSettingsFocusable());
 }
 
-TEST_P(ParameterizedMessageCenterBubbleTest, BubbleBounds) {
+TEST_P(UnifiedMessageCenterBubbleTest, BubbleBounds) {
   // Set display size where the message center is not collapsed.
   UpdateDisplay("0+0-1280×1024");
 
@@ -426,6 +373,44 @@ TEST_P(ParameterizedMessageCenterBubbleTest, BubbleBounds) {
   EXPECT_LT(GetMessageCenterBubble()->GetBoundsInScreen().bottom(),
             GetSystemTrayBubble()->GetBoundsInScreen().y());
   GetPrimaryUnifiedSystemTray()->CloseBubble();
+}
+
+TEST_P(UnifiedMessageCenterBubbleTest, HandleAccelerators) {
+  auto id = AddWebNotification();
+  WaitForAnimation();
+
+  // Open and focus message center.
+  DoAltShiftN();
+  WaitForAnimation();
+  EXPECT_TRUE(GetMessageCenterBubble()->IsMessageCenterVisible());
+  EXPECT_EQ(
+      1u,
+      message_center::MessageCenter::Get()->GetVisibleNotifications().size());
+
+  views::Widget* quick_settings_widget =
+      GetSystemTrayBubble()->GetBubbleWidget();
+  views::Widget* message_center_widget =
+      GetMessageCenterBubble()->GetBubbleWidget();
+  EXPECT_FALSE(quick_settings_widget->IsActive());
+  EXPECT_TRUE(message_center_widget->IsActive());
+
+  RemoveAllNotifications();
+  WaitForAnimation();
+  EXPECT_EQ(
+      0u,
+      message_center::MessageCenter::Get()->GetVisibleNotifications().size());
+  EXPECT_FALSE(quick_settings_widget->IsActive());
+  EXPECT_FALSE(message_center_widget->IsActive());
+
+  EXPECT_EQ(nullptr, GetFirstMessageCenterFocusable());
+  EXPECT_EQ(nullptr,
+            message_center_widget->GetFocusManager()->GetFocusedView());
+
+  // Press Esc to close system tray.
+  DoEsc();
+  WaitForAnimation();
+  EXPECT_EQ(nullptr,
+            GetPrimaryUnifiedSystemTray()->GetFocusManager()->GetFocusedView());
 }
 
 }  // namespace ash
