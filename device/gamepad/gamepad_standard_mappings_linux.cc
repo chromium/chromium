@@ -13,14 +13,16 @@
 namespace device {
 
 namespace {
-// The hid-sony driver in newer kernels uses an alternate mapping for Sony
-// Playstation 3 and Playstation 4 gamepads than in older kernels. To allow
-// applications to distinguish between the old mapping and the new mapping,
-// hid-sony sets the high bit of the bcdHID value.
+// The Linux kernel has been updated to improve the mapping exposed by Sony
+// Playstation controllers. If the high bit of the bcdHID value is set it
+// indicates that an improved mapping is used, otherwise the default mapping
+// is used.
 // Dualshock 4 devices are patched in 4.10:
 // https://github.com/torvalds/linux/commit/9131f8cc2b4eaf7c08d402243429e0bfba9aa0d6
 // Dualshock 3 and SIXAXIS devices are patched in 4.12:
 // https://github.com/torvalds/linux/commit/e19a267b9987135c00155a51e683e434b9abb56b
+// Dualsense devices are patched in 5.12:
+// https://github.com/torvalds/linux/commit/bc2e15a9a0228b10fece576d4f6a974c002ff07b
 const uint16_t kDualshockPatchedBcdHidMask = 0x8000;
 
 // Older versions of the Stadia Controller firmware use an alternate mapping
@@ -290,7 +292,9 @@ void MapperDualshock4(const Gamepad& input, Gamepad* mapped) {
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
-void MapperDualshock4New(const Gamepad& input, Gamepad* mapped) {
+// This mapping function is intended for Playstation 4 and 5 gamepads handled
+// by hid-sony (kernel 4.10+) and hid-playstation (kernel 5.12+).
+void MapperPs4Ps5(const Gamepad& input, Gamepad* mapped) {
   *mapped = input;
   mapped->buttons[BUTTON_INDEX_PRIMARY] = input.buttons[0];
   mapped->buttons[BUTTON_INDEX_SECONDARY] = input.buttons[1];
@@ -1001,10 +1005,13 @@ GamepadStandardMappingFunction GetGamepadStandardMappingFunction(
   // using the new mapping to allow downstream users to distinguish them.
   if (mapper == MapperDualshock4 &&
       (hid_specification_version & kDualshockPatchedBcdHidMask)) {
-    mapper = MapperDualshock4New;
+    mapper = MapperPs4Ps5;
   } else if (mapper == MapperDualshock3SixAxis &&
              (hid_specification_version & kDualshockPatchedBcdHidMask)) {
     mapper = MapperDualshock3SixAxisNew;
+  } else if (mapper == MapperDualSense &&
+             (hid_specification_version & kDualshockPatchedBcdHidMask)) {
+    mapper = MapperPs4Ps5;
   }
 
   // The Switch Joy-Con Charging Grip allows a pair of Joy-Cons to be docked
