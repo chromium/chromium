@@ -360,8 +360,9 @@ class LookalikeUrlNavigationThrottleBrowserTest
 
     SendInterstitialCommandSync(browser,
                                 SecurityInterstitialCommand::CMD_DONT_PROCEED);
-    EXPECT_EQ(expected_suggested_url,
-              browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+    EXPECT_EQ(
+        expected_suggested_url,
+        browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 
     // Clicking the link in the interstitial should also remove the original
     // URL from history.
@@ -401,8 +402,9 @@ class LookalikeUrlNavigationThrottleBrowserTest
     SendInterstitialCommandSync(browser,
                                 SecurityInterstitialCommand::CMD_DONT_PROCEED,
                                 /*punycode_interstitial=*/true);
-    EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
-              browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+    EXPECT_EQ(
+        GURL(chrome::kChromeUINewTabURL),
+        browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 
     histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
     histograms.ExpectBucketCount(lookalikes::kHistogramName, expected_event, 1);
@@ -437,8 +439,9 @@ class LookalikeUrlNavigationThrottleBrowserTest
     // interstitial and navigate to the original URL.
     SendInterstitialCommandSync(browser,
                                 SecurityInterstitialCommand::CMD_PROCEED);
-    EXPECT_EQ(navigated_url,
-              browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+    EXPECT_EQ(
+        navigated_url,
+        browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 
     // Clicking the link should cause the original URL to appear in history.
     ui_test_utils::HistoryEnumerator enumerator(browser->profile());
