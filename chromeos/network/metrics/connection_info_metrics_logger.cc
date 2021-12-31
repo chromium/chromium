@@ -138,13 +138,37 @@ void ConnectionInfoMetricsLogger::UpdateConnectionInfo(
   if (prev_info == curr_info)
     return;
 
-  // If a disconnect has been requested, maintain it until the status changes.
-  if (prev_info && prev_info->status == curr_info.status)
-    curr_info.was_disconnect_requested |= prev_info->was_disconnect_requested;
-  else
+  // If the connection status has changed, attempt to log automatic connection
+  // and disconnection metrics. Otherwise, if a disconnect has been requested,
+  // maintain the request until the status changes.
+  if (!prev_info || prev_info->status != curr_info.status) {
     AttemptLogAllConnectionResult(prev_info, curr_info);
-
+    AttemptLogConnectionStateResult(prev_info, curr_info);
+  } else if (prev_info && prev_info->was_disconnect_requested) {
+    curr_info.was_disconnect_requested = true;
+  }
   guid_to_connection_info_.insert_or_assign(network->guid(), curr_info);
+}
+
+void ConnectionInfoMetricsLogger::AttemptLogConnectionStateResult(
+    const absl::optional<ConnectionInfo>& prev_info,
+    const ConnectionInfo& curr_info) const {
+  if (curr_info.status == ConnectionInfo::Status::kConnected) {
+    NetworkMetricsHelper::LogConnectionStateResult(
+        curr_info.guid, NetworkMetricsHelper::ConnectionState::kConnected);
+    return;
+  }
+
+  // If the network becomes disconnected from a connected state without a
+  // user initiated disconnect request.
+  if (prev_info && prev_info->status == ConnectionInfo::Status::kConnected &&
+      curr_info.status == ConnectionInfo::Status::kDisconnected &&
+      (!prev_info->was_disconnect_requested)) {
+    NetworkMetricsHelper::LogConnectionStateResult(
+        curr_info.guid,
+        NetworkMetricsHelper::ConnectionState::kDisconnectedWithoutUserAction);
+    return;
+  }
 }
 
 void ConnectionInfoMetricsLogger::AttemptLogAllConnectionResult(

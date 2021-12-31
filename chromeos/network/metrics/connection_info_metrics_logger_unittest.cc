@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/metrics/connection_results.h"
+#include "chromeos/network/metrics/network_metrics_helper.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state_handler.h"
@@ -34,6 +35,11 @@ const char kCellularConnectResultUserInitiatedHistogram[] =
     "Network.Ash.Cellular.ConnectionResult.UserInitiated";
 const char kWifiConnectResultUserInitiatedHistogram[] =
     "Network.Ash.WiFi.ConnectionResult.UserInitiated";
+
+const char kCellularConnectionStateHistogram[] =
+    "Network.Ash.Cellular.DisconnectionsWithoutUserAction";
+const char kWifiConnectionStateHistogram[] =
+    "Network.Ash.WiFi.DisconnectionsWithoutUserAction";
 
 const char kCellularGuid[] = "test_guid";
 const char kCellularServicePath[] = "/service/network";
@@ -121,6 +127,43 @@ class ConnectionInfoMetricsLoggerTest : public testing::Test {
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple local_state_;
 };
+
+TEST_F(ConnectionInfoMetricsLoggerTest, ConnectionState) {
+  SetUpGenericCellularNetwork();
+  SetUpGenericWifiNetwork();
+
+  // Successful Cellular connect from disconnected to connected.
+  SetShillState(kCellularServicePath, shill::kStateIdle);
+  histogram_tester_->ExpectTotalCount(kCellularConnectionStateHistogram, 0);
+  SetShillState(kCellularServicePath, shill::kStateOnline);
+  histogram_tester_->ExpectTotalCount(kCellularConnectionStateHistogram, 1);
+  histogram_tester_->ExpectBucketCount(
+      kCellularConnectionStateHistogram,
+      NetworkMetricsHelper::ConnectionState::kConnected, 1);
+
+  // Disconnected Cellular without explicit request from user to disconnect.
+  SetShillState(kCellularServicePath, shill::kStateIdle);
+  histogram_tester_->ExpectTotalCount(kCellularConnectionStateHistogram, 2);
+  histogram_tester_->ExpectBucketCount(
+      kCellularConnectionStateHistogram,
+      NetworkMetricsHelper::ConnectionState::kDisconnectedWithoutUserAction, 1);
+
+  // Successful Wifi connect from disconnected to connected.
+  SetShillState(kWifiServicePath, shill::kStateIdle);
+  histogram_tester_->ExpectTotalCount(kWifiConnectionStateHistogram, 0);
+  SetShillState(kWifiServicePath, shill::kStateOnline);
+  histogram_tester_->ExpectTotalCount(kWifiConnectionStateHistogram, 1);
+  histogram_tester_->ExpectBucketCount(
+      kWifiConnectionStateHistogram,
+      NetworkMetricsHelper::ConnectionState::kConnected, 1);
+
+  // Disconnected Wifi without explicit request from user to disconnect.
+  SetShillState(kWifiServicePath, shill::kStateIdle);
+  histogram_tester_->ExpectTotalCount(kWifiConnectionStateHistogram, 2);
+  histogram_tester_->ExpectBucketCount(
+      kWifiConnectionStateHistogram,
+      NetworkMetricsHelper::ConnectionState::kDisconnectedWithoutUserAction, 1);
+}
 
 TEST_F(ConnectionInfoMetricsLoggerTest, UserInitiatedConnectDisconnect) {
   SetUpGenericCellularNetwork();

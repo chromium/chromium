@@ -23,7 +23,7 @@ class NetworkStateHandler;
 // measurements on all networks:
 // 1. Success rate of all connection attempts.
 // 2. Success rate of user initiated connection attempts.
-// TODO(b/207589664): MORE TBA
+// 3. Connected states and non-user initiated disconnections.
 //
 // Note: This class does not start logging metrics until Init() is
 // invoked.
@@ -81,6 +81,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ConnectionInfoMetricsLogger
   void UpdateConnectionInfo(const NetworkState* network,
                             bool disconnect_requested = false);
   void AttemptLogAllConnectionResult(
+      const absl::optional<ConnectionInfo>& prev_info,
+      const ConnectionInfo& curr_info) const;
+  void AttemptLogConnectionStateResult(
       const absl::optional<ConnectionInfo>& prev_info,
       const ConnectionInfo& curr_info) const;
   absl::optional<ConnectionInfo> GetCachedInfo(const std::string& guid) const;

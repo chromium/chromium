@@ -62708,6 +62708,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="IPv6"/>
 </enum>
 
+<enum name="NetworkConnectionState">
+  <int value="0" label="Connected"/>
+  <int value="1" label="Disconnected without explicit user action"/>
+</enum>
+
 <enum name="NetworkConnectionType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Ethernet"/>

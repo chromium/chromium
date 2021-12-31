@@ -20,6 +20,8 @@ const char kNetworkMetricsPrefix[] = "Network.Ash.";
 const char kAllConnectionResultSuffix[] = ".ConnectionResult.All";
 const char kUserInitiatedConnectionResultSuffix[] =
     ".ConnectionResult.UserInitiated";
+const char kDisconnectionsWithoutUserActionSuffix[] =
+    ".DisconnectionsWithoutUserAction";
 
 const char kWifi[] = "WiFi";
 const char kWifiOpen[] = "WiFi.SecurityOpen";
@@ -175,6 +177,22 @@ void NetworkMetricsHelper::LogUserInitiatedConnectionResult(
     base::UmaHistogramEnumeration(kNetworkMetricsPrefix + network_type +
                                       kUserInitiatedConnectionResultSuffix,
                                   connect_result);
+  }
+}
+
+// static
+void NetworkMetricsHelper::LogConnectionStateResult(const std::string& guid,
+                                                    ConnectionState status) {
+  DCHECK(GetNetworkStateHandler());
+  const NetworkState* network_state =
+      GetNetworkStateHandler()->GetNetworkStateFromGuid(guid);
+  if (!network_state)
+    return;
+
+  for (const auto& network_type : GetNetworkTypeHistogramNames(network_state)) {
+    base::UmaHistogramEnumeration(kNetworkMetricsPrefix + network_type +
+                                      kDisconnectionsWithoutUserActionSuffix,
+                                  status);
   }
 }
 

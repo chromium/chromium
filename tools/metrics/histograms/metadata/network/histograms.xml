@@ -151,6 +151,17 @@ chromium-metrics-reviews@google.com.
   <token key="NetworkType" variants="AshNetworkType"/>
 </histogram>
 
+<histogram name="Network.Ash.{NetworkType}.DisconnectionsWithoutUserAction"
+    enum="NetworkConnectionState" expires_after="2022-11-01">
+  <owner>hsuregan@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks when a network of type {NetworkType} is connected and when a network
+    of type {NetworkType} is disconnected without explicit user action.
+  </summary>
+  <token key="NetworkType" variants="AshNetworkType"/>
+</histogram>
+
 <histogram name="Network.Cellular.Activation.StatusAtLogin"
     enum="NetworkCellularActivationState" expires_after="2021-08-29">
   <obsolete>

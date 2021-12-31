@@ -16,6 +16,15 @@ namespace chromeos {
 // TODO(b/211823175): Replace NetworkMetricsHelper with plain helper methods.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetricsHelper {
  public:
+  // Network connection state. These values are persisted to logs.
+  // Entries should not be renumbered and numeric values should
+  // never be reused.
+  enum class ConnectionState {
+    kConnected = 0,
+    kDisconnectedWithoutUserAction = 1,
+    kMaxValue = kDisconnectedWithoutUserAction
+  };
+
   // Logs connection result for network with given |guid|. If |shill_error| has
   // no value, a connection success is logged.
   static void LogAllConnectionResult(
@@ -29,6 +38,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetricsHelper {
       const std::string& guid,
       const absl::optional<std::string>& network_connection_error =
           absl::nullopt);
+
+  // Logs to relevant connection states such as non-user initiated
+  // disconnections from a connected state and successful connections. More may
+  // be added if relevant.
+  static void LogConnectionStateResult(const std::string& guid,
+                                       ConnectionState status);
 
   NetworkMetricsHelper();
   ~NetworkMetricsHelper();

@@ -86,6 +86,39 @@ const char kEthernetEapConnectResultUserInitiatedHistogram[] =
 const char kEthernetNoEapConnectResultUserInitiatedHistogram[] =
     "Network.Ash.Ethernet.NoEap.ConnectionResult.UserInitiated";
 
+// LogConnectionStateResult() Cellular histograms.
+const char kCellularConnectionStateHistogram[] =
+    "Network.Ash.Cellular.DisconnectionsWithoutUserAction";
+const char kCellularESimConnectionStateHistogram[] =
+    "Network.Ash.Cellular.ESim.DisconnectionsWithoutUserAction";
+const char kCellularPSimConnectionStateHistogram[] =
+    "Network.Ash.Cellular.PSim.DisconnectionsWithoutUserAction";
+
+// LogConnectionStateResult() VPN histograms.
+const char kVpnConnectionStateHistogram[] =
+    "Network.Ash.VPN.DisconnectionsWithoutUserAction";
+const char kVpnBuiltInConnectionStateHistogram[] =
+    "Network.Ash.VPN.TypeBuiltIn.DisconnectionsWithoutUserAction";
+const char kVpnThirdPartyConnectionStateHistogram[] =
+    "Network.Ash.VPN.TypeThirdParty.DisconnectionsWithoutUserAction";
+
+// LogConnectionStateResult() WiFi histograms.
+const char kWifiConnectionStateHistogram[] =
+    "Network.Ash.WiFi.DisconnectionsWithoutUserAction";
+const char kWifiOpenConnectionStateHistogram[] =
+    "Network.Ash.WiFi.SecurityOpen.DisconnectionsWithoutUserAction";
+const char kWifiPasswordProtectedConnectionStateHistogram[] =
+    "Network.Ash.WiFi.SecurityPasswordProtected."
+    "DisconnectionsWithoutUserAction";
+
+// LogConnectionStateResult() Ethernet histograms.
+const char kEthernetConnectionStateHistogram[] =
+    "Network.Ash.Ethernet.DisconnectionsWithoutUserAction";
+const char kEthernetEapConnectionStateHistogram[] =
+    "Network.Ash.Ethernet.Eap.DisconnectionsWithoutUserAction";
+const char kEthernetNoEapConnectionStateHistogram[] =
+    "Network.Ash.Ethernet.NoEap.DisconnectionsWithoutUserAction";
+
 const char kTestGuid[] = "test_guid";
 const char kTestServicePath[] = "/service/network";
 const char kTestServicePath1[] = "/service/network1";
@@ -157,6 +190,12 @@ TEST_F(NetworkMetricsHelperTest, CellularESim) {
       kCellularESimConnectResultUserInitiatedHistogram, 1);
   histogram_tester_->ExpectTotalCount(
       kCellularPSimConnectResultUserInitiatedHistogram, 0);
+
+  NetworkMetricsHelper::LogConnectionStateResult(
+      kTestGuid, NetworkMetricsHelper::ConnectionState::kConnected);
+  histogram_tester_->ExpectTotalCount(kCellularESimConnectionStateHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kCellularConnectionStateHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kCellularPSimConnectionStateHistogram, 0);
 }
 
 TEST_F(NetworkMetricsHelperTest, CellularPSim) {
@@ -181,6 +220,12 @@ TEST_F(NetworkMetricsHelperTest, CellularPSim) {
       kCellularPSimConnectResultUserInitiatedHistogram, 1);
   histogram_tester_->ExpectTotalCount(
       kCellularESimConnectResultUserInitiatedHistogram, 0);
+
+  NetworkMetricsHelper::LogConnectionStateResult(
+      kTestGuid, NetworkMetricsHelper::ConnectionState::kConnected);
+  histogram_tester_->ExpectTotalCount(kCellularPSimConnectionStateHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kCellularConnectionStateHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kCellularESimConnectionStateHistogram, 0);
 }
 
 TEST_F(NetworkMetricsHelperTest, VPN) {
@@ -237,6 +282,15 @@ TEST_F(NetworkMetricsHelperTest, VPN) {
         kVpnThirdPartyConnectResultUserInitiatedHistogram,
         expected_third_party_count);
 
+    NetworkMetricsHelper::LogConnectionStateResult(
+        kTestGuid, NetworkMetricsHelper::ConnectionState::kConnected);
+    histogram_tester_->ExpectTotalCount(kVpnConnectionStateHistogram,
+                                        expected_user_initiated_count);
+    histogram_tester_->ExpectTotalCount(kVpnBuiltInConnectionStateHistogram,
+                                        expected_built_in_count);
+    histogram_tester_->ExpectTotalCount(kVpnThirdPartyConnectionStateHistogram,
+                                        expected_third_party_count);
+
     shill_service_client_->RemoveService(kTestServicePath);
     base::RunLoop().RunUntilIdle();
   }
@@ -266,6 +320,13 @@ TEST_F(NetworkMetricsHelperTest, WifiOpen) {
       kWifiOpenConnectResultUserInitiatedHistogram, 1);
   histogram_tester_->ExpectTotalCount(
       kWifiPasswordProtectedConnectResultUserInitiatedHistogram, 0);
+
+  NetworkMetricsHelper::LogConnectionStateResult(
+      kTestGuid, NetworkMetricsHelper::ConnectionState::kConnected);
+  histogram_tester_->ExpectTotalCount(kWifiConnectionStateHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kWifiOpenConnectionStateHistogram, 1);
+  histogram_tester_->ExpectTotalCount(
+      kWifiPasswordProtectedConnectionStateHistogram, 0);
 }
 
 TEST_F(NetworkMetricsHelperTest, WifiPasswordProtected) {
@@ -292,6 +353,13 @@ TEST_F(NetworkMetricsHelperTest, WifiPasswordProtected) {
       kWifiOpenConnectResultUserInitiatedHistogram, 0);
   histogram_tester_->ExpectTotalCount(
       kWifiPasswordProtectedConnectResultUserInitiatedHistogram, 1);
+
+  NetworkMetricsHelper::LogConnectionStateResult(
+      kTestGuid, NetworkMetricsHelper::ConnectionState::kConnected);
+  histogram_tester_->ExpectTotalCount(kWifiConnectionStateHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kWifiOpenConnectionStateHistogram, 0);
+  histogram_tester_->ExpectTotalCount(
+      kWifiPasswordProtectedConnectionStateHistogram, 1);
 }
 
 TEST_F(NetworkMetricsHelperTest, EthernetNoEap) {
@@ -318,6 +386,13 @@ TEST_F(NetworkMetricsHelperTest, EthernetNoEap) {
       kEthernetEapConnectResultUserInitiatedHistogram, 0);
   histogram_tester_->ExpectTotalCount(
       kEthernetNoEapConnectResultUserInitiatedHistogram, 1);
+
+  NetworkMetricsHelper::LogConnectionStateResult(
+      kTestGuid, NetworkMetricsHelper::ConnectionState::kConnected);
+  histogram_tester_->ExpectTotalCount(kEthernetConnectionStateHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kEthernetEapConnectionStateHistogram, 0);
+  histogram_tester_->ExpectTotalCount(kEthernetNoEapConnectionStateHistogram,
+                                      1);
 }
 
 TEST_F(NetworkMetricsHelperTest, EthernetEap) {
@@ -366,6 +441,13 @@ TEST_F(NetworkMetricsHelperTest, EthernetEap) {
       kEthernetEapConnectResultUserInitiatedHistogram, 1);
   histogram_tester_->ExpectTotalCount(
       kEthernetNoEapConnectResultUserInitiatedHistogram, 0);
+
+  NetworkMetricsHelper::LogConnectionStateResult(
+      kTestGuid, NetworkMetricsHelper::ConnectionState::kConnected);
+  histogram_tester_->ExpectTotalCount(kEthernetConnectionStateHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kEthernetEapConnectionStateHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kEthernetNoEapConnectionStateHistogram,
+                                      0);
 }
 
 }  // namespace chromeos
