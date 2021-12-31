@@ -1246,15 +1246,16 @@ void LocationBarView::WriteDragDataForView(views::View* sender,
   favicon::FaviconDriver* favicon_driver =
       favicon::ContentFaviconDriver::FromWebContents(web_contents);
   gfx::ImageSkia favicon = favicon_driver->GetFavicon().AsImageSkia();
-  button_drag_utils::SetURLAndDragImage(
-      web_contents->GetURL(), web_contents->GetTitle(), favicon, nullptr, data);
+  button_drag_utils::SetURLAndDragImage(web_contents->GetVisibleURL(),
+                                        web_contents->GetTitle(), favicon,
+                                        nullptr, data);
 }
 
 int LocationBarView::GetDragOperationsForView(views::View* sender,
                                               const gfx::Point& p) {
   DCHECK_EQ(location_icon_view_, sender);
   WebContents* web_contents = delegate_->GetWebContents();
-  return (web_contents && web_contents->GetURL().is_valid() &&
+  return (web_contents && web_contents->GetVisibleURL().is_valid() &&
           (!GetOmniboxView()->IsEditingOrEmpty()))
              ? (ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_LINK)
              : ui::DragDropTypes::DRAG_NONE;
