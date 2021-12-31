@@ -70,8 +70,9 @@ bool CreateTemporaryAndUnpackDirectories(
   base::FilePath temp_dir;
   if (!base::PathService::Get(
           ::IsUserAnAdmin() ? base::DIR_PROGRAM_FILES : base::DIR_TEMP,
-          &temp_dir))
+          &temp_dir)) {
     return false;
+  }
 
   if (!temp_path->Initialize(temp_dir, kTempPrefix)) {
     PLOG(ERROR) << "Could not create temporary path.";
