@@ -1759,7 +1759,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::MANDATORY_PROHIBITED));
 
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kAutoplayAllowlist, prefs::kAutoplayWhitelist,
+      key::kAutoplayAllowlist, prefs::kAutoplayAllowlist,
       base::Value::Type::LIST));
 
   // Handlers for policies with embedded JSON strings. These handlers are very

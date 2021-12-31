@@ -1065,7 +1065,7 @@ extern const char kDisplayCapturePermissionsPolicyEnabled[];
 #if !defined(OS_ANDROID)
 extern const char kSharedArrayBufferUnrestrictedAccessAllowed[];
 extern const char kAutoplayAllowed[];
-extern const char kAutoplayWhitelist[];
+extern const char kAutoplayAllowlist[];
 extern const char kBlockAutoplayEnabled[];
 #endif
 extern const char kSandboxExternalProtocolBlocked[];

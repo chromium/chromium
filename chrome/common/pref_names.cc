@@ -3104,7 +3104,7 @@ const char kSharedArrayBufferUnrestrictedAccessAllowed[] =
 const char kAutoplayAllowed[] = "media.autoplay_allowed";
 
 // Holds URL patterns that specify URLs that will be allowed to autoplay.
-const char kAutoplayWhitelist[] = "media.autoplay_whitelist";
+const char kAutoplayAllowlist[] = "media.autoplay_whitelist";
 
 // Boolean that specifies whether autoplay blocking is enabled.
 const char kBlockAutoplayEnabled[] = "media.block_autoplay";

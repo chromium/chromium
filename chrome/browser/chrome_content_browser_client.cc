@@ -811,9 +811,9 @@ bool IsAutoplayAllowedByPolicy(content::WebContents* contents,
 
   // Check if the current URL matches a URL pattern on the allowlist.
   const base::Value* autoplay_allowlist =
-      prefs->GetList(prefs::kAutoplayWhitelist);
+      prefs->GetList(prefs::kAutoplayAllowlist);
   return autoplay_allowlist &&
-         prefs->IsManagedPreference(prefs::kAutoplayWhitelist) &&
+         prefs->IsManagedPreference(prefs::kAutoplayAllowlist) &&
          IsURLAllowlisted(contents->GetURL(), autoplay_allowlist->GetList());
 }
 #endif
@@ -1302,7 +1302,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kSignedHTTPExchangeEnabled, true);
 #if !defined(OS_ANDROID)
   registry->RegisterBooleanPref(prefs::kAutoplayAllowed, false);
-  registry->RegisterListPref(prefs::kAutoplayWhitelist);
+  registry->RegisterListPref(prefs::kAutoplayAllowlist);
   registry->RegisterIntegerPref(prefs::kFetchKeepaliveDurationOnShutdown, 0);
   registry->RegisterBooleanPref(
       prefs::kSharedArrayBufferUnrestrictedAccessAllowed, false);
