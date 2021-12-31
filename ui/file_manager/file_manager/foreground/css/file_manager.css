@@ -2644,11 +2644,11 @@ body.files-ng #list-container
 }
 
 list.autocomplete-suggestions {
-  background-color: white;
+  background-color: var(--cros-bg-color-elevation-2);
   border-radius: 3px;
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 50%);
+  box-shadow: var(--cros-elevation-2-shadow);
   box-sizing: border-box;  /* To match the width with the search box's. */
-  color: rgb(90, 90, 90);
+  color: var(--cros-menu-label-color);
   flex: none;
   margin-inline-start: -36px;
   margin-top: 10px;
@@ -2678,7 +2678,7 @@ list.autocomplete-suggestions > li > div.detail-text {
 }
 
 list.autocomplete-suggestions > li > div.detail-text em {
-  color: rgb(150, 150, 150);
+  color: var(--cros-text-color-secondary);
   font-style: normal;
 }
 
@@ -2690,7 +2690,7 @@ list.autocomplete-suggestions > li > div[search-icon] {
 
 list.autocomplete-suggestions > [selected],
 list.autocomplete-suggestions > [lead] {
-  background-color: rgba(0, 0, 0, 8%);
+  background-color: var(--cros-menu-item-background-hover);
 }
 
 #gear-menu > cr-menu-item:not(.menuitem-button),
