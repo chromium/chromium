@@ -523,7 +523,10 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
   // Contextual Cards V5+ integration can provide the primary card tag, so
   // clients can tell what kind of card they have received.
   // TODO(donnd): make sure this works with a non-integer or missing value!
-  dict->GetInteger(kContextualSearchCardTag, coca_card_tag);
+  absl::optional<int> maybe_coca_card_tag =
+      dict->FindIntKey(kContextualSearchCardTag);
+  if (coca_card_tag && maybe_coca_card_tag)
+    *coca_card_tag = *maybe_coca_card_tag;
 
   // Any Contextual Cards integration.
   // For testing purposes check if there was a diagnostic from Contextual

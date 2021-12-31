@@ -232,21 +232,20 @@ SearchPermissionsService::PrefValue SearchPermissionsService::GetDSEPref() {
   PrefValue pref;
   std::u16string dse_name;
   std::string dse_origin;
-  int geolocation_setting_to_restore;
-  int notifications_setting_to_restore;
+  absl::optional<int> geolocation_setting_to_restore =
+      dict->FindIntKey(kDSEGeolocationSettingKey);
+  absl::optional<int> notifications_setting_to_restore =
+      dict->FindIntKey(kDSENotificationsSettingKey);
 
   if (dict->GetString(kDSENameKey, &dse_name) &&
       dict->GetString(kDSEOriginKey, &dse_origin) &&
-      dict->GetInteger(kDSEGeolocationSettingKey,
-                       &geolocation_setting_to_restore) &&
-      dict->GetInteger(kDSENotificationsSettingKey,
-                       &notifications_setting_to_restore)) {
+      geolocation_setting_to_restore && notifications_setting_to_restore) {
     pref.dse_name = dse_name;
     pref.dse_origin = dse_origin;
     pref.geolocation_setting_to_restore =
-        IntToContentSetting(geolocation_setting_to_restore);
+        IntToContentSetting(*geolocation_setting_to_restore);
     pref.notifications_setting_to_restore =
-        IntToContentSetting(notifications_setting_to_restore);
+        IntToContentSetting(*notifications_setting_to_restore);
   }
 
   return pref;
