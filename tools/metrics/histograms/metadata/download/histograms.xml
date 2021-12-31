@@ -1152,7 +1152,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.Shelf.VisibleTime" units="ms"
     expires_after="2022-10-10">
-  <owner>anise@chromium.org</owner>
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
     The time that the download shelf was visible until it was closed. This
@@ -1238,7 +1238,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Download.ShelfContextMenuAction"
     enum="DownloadShelfContextMenuAction" expires_after="2022-10-11">
-  <owner>anise@chromium.org</owner>
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@chromium.org</owner>
   <summary>
     This histogram is used to record the different actions and events associated

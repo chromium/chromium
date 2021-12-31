@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientDownload.DocumentAnalysisSuccess" units="Boolean"
     expires_after="2022-08-15">
-  <owner>anise@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     For each Office file analyzed by the SafeBrowsing download service, records
@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientDownload.DownloadRequestResponseCode"
     enum="HttpResponseCode" expires_after="2022-06-26">
-  <owner>anise@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
@@ -223,7 +223,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientDownload.ExtractDocumentFeaturesTimeMedium" units="ms"
     expires_after="2022-08-15">
-  <owner>anise@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records the time it takes for the SafeBrowsing download service to extract
@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SBClientDownload.SafeDownloadOpenedLatencyByContentType.{DownloadContent}"
     units="ms" expires_after="2022-09-30">
-  <owner>anise@chromium.org</owner>
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records the latency between when a safe {DownloadContent} download is

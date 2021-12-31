@@ -991,7 +991,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SafeBrowsing.EsbDisabled.LastEnabledInterval" units="days"
     expires_after="2022-05-01">
-  <owner>anise@chromium.org</owner>
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records the time interval between the last time Enhanced Safe Browsing was
@@ -1146,7 +1146,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SafeBrowsing.Macros.DocumentSize" units="KB"
     expires_after="2022-06-05">
-  <owner>anise@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records the size (in KB) of a download if it is a PDF or Office document
