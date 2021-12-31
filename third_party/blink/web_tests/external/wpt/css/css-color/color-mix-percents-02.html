@@ -9,6 +9,7 @@
 <meta name="assert" content="percent normalization for opaque mixes">
 <style>
     .test { background-color: red; width: 14em; height: 2em; margin-top: 0; margin-bottom: 0;}
+    .negative-test { background-color: rgb(68.4898% 36.015% 68.3102%); width: 14em; height: 2em; margin-top: 0; margin-bottom: 0;}
     .t1 { background-color: rgb(68.4898% 36.015% 68.3102%); }
     .t2 { background-color: color-mix(in lch, purple 50%, plum 50%);}
     .t3 { background-color: color-mix(in lch, purple 55%, plum 55%);}
@@ -24,6 +25,6 @@
     <div class="test t3"></div>
     <div class="test t4"></div>
     <div class="test t5"></div>
-    <div class="test t6"></div>
-    <div class="test t7"></div>
+    <div class="negative-test t6"></div>
+    <div class="negative-test t7"></div>
 </body>

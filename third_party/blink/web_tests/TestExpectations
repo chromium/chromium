@@ -2961,6 +2961,8 @@ crbug.com/626703 [ Mac11 ] external/wpt/css/css-flexbox/abspos/flex-abspos-stati
 crbug.com/626703 [ Mac11 ] external/wpt/html/syntax/speculative-parsing/generated/document-write/svg-script-src.tentative.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/fetch.https.window.html?include=from-treat-as-public [ Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/plz-dedicated-worker/external/wpt/fetch/private-network-access/fetch.window.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/without-coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/css/css-color/color-resolving-hwb.html [ Failure Skip Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/css/css-color/color-resolving-hwb.html [ Failure Skip Timeout ]
