@@ -167,7 +167,7 @@ scoped_refptr<FakeUsbDeviceInfo> CreateFakeHidDeviceInfo() {
   alternate_setting->class_code = 0x03;  // HID
 
   auto interface = device::mojom::UsbInterfaceInfo::New();
-  interface->interface_number = 1;
+  interface->interface_number = 0;
   interface->alternates.push_back(std::move(alternate_setting));
 
   auto config = device::mojom::UsbConfigurationInfo::New();
@@ -187,7 +187,7 @@ scoped_refptr<FakeUsbDeviceInfo> CreateFakeSmartCardDeviceInfo() {
   alternate_setting->class_code = 0x0B;  // Smart Card
 
   auto interface = device::mojom::UsbInterfaceInfo::New();
-  interface->interface_number = 1;
+  interface->interface_number = 0;
   interface->alternates.push_back(std::move(alternate_setting));
 
   auto config = device::mojom::UsbConfigurationInfo::New();
@@ -581,7 +581,7 @@ TEST_F(WebUsbServiceImplTest, AllowlistedImprivataExtension) {
   EXPECT_TRUE(set_configuration_future.Get());
 
   base::test::TestFuture<UsbClaimInterfaceResult> claim_interface_future;
-  device->ClaimInterface(1, claim_interface_future.GetCallback());
+  device->ClaimInterface(0, claim_interface_future.GetCallback());
   EXPECT_EQ(claim_interface_future.Get(), UsbClaimInterfaceResult::kSuccess);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(IS_CHROMEOS_ASH)
@@ -615,9 +615,9 @@ TEST_F(WebUsbServiceImplTest, AllowlistedSmartCardConnectorExtension) {
 
   // Add a smart card device. Also add an unrelated device, in order to test
   // that access is not automatically granted to it.
-  auto device_info =
+  auto ccid_device_info =
       device_manager()->AddDevice(CreateFakeSmartCardDeviceInfo());
-  device_manager()->AddDevice(CreateFakeHidDeviceInfo());
+  auto hid_device_info = device_manager()->AddDevice(CreateFakeHidDeviceInfo());
 
   // No need to grant permission. It is granted automatically for smart
   // card device.
@@ -628,20 +628,46 @@ TEST_F(WebUsbServiceImplTest, AllowlistedSmartCardConnectorExtension) {
   UsbTabHelper* tab_helper = UsbTabHelper::FromWebContents(web_contents());
   ASSERT_TRUE(tab_helper);
 
-  GetDevicesBlocking(service.get(), {device_info->guid});
+  // Check that the extensions is automatically granted access to the CCID
+  // device and can claim its interfaces.
+  {
+    GetDevicesBlocking(service.get(), {ccid_device_info->guid});
 
-  mojo::Remote<device::mojom::UsbDevice> device;
-  service->GetDevice(device_info->guid, device.BindNewPipeAndPassReceiver());
-  EXPECT_FALSE(tab_helper->IsDeviceConnected());
+    mojo::Remote<device::mojom::UsbDevice> device;
+    service->GetDevice(ccid_device_info->guid,
+                       device.BindNewPipeAndPassReceiver());
+    OpenDeviceBlocking(device.get());
 
-  OpenDeviceBlocking(device.get());
+    base::test::TestFuture<bool> set_configuration_future;
+    device->SetConfiguration(1, set_configuration_future.GetCallback());
+    EXPECT_TRUE(set_configuration_future.Get());
 
-  base::test::TestFuture<bool> set_configuration_future;
-  device->SetConfiguration(1, set_configuration_future.GetCallback());
-  EXPECT_TRUE(set_configuration_future.Get());
+    base::test::TestFuture<UsbClaimInterfaceResult> claim_interface_future;
+    device->ClaimInterface(0, claim_interface_future.GetCallback());
+    EXPECT_EQ(claim_interface_future.Get(), UsbClaimInterfaceResult::kSuccess);
+  }
 
-  base::test::TestFuture<UsbClaimInterfaceResult> claim_interface_future;
-  device->ClaimInterface(1, claim_interface_future.GetCallback());
-  EXPECT_EQ(claim_interface_future.Get(), UsbClaimInterfaceResult::kSuccess);
+  // Check that the extension, if granted permission to a HID device can't claim
+  // its interfaces.
+  {
+    GetChooserContext()->GrantDevicePermission(extension_origin,
+                                               *hid_device_info);
+    GetDevicesBlocking(service.get(),
+                       {ccid_device_info->guid, hid_device_info->guid});
+
+    mojo::Remote<device::mojom::UsbDevice> device;
+    service->GetDevice(hid_device_info->guid,
+                       device.BindNewPipeAndPassReceiver());
+    OpenDeviceBlocking(device.get());
+
+    base::test::TestFuture<bool> set_configuration_future;
+    device->SetConfiguration(1, set_configuration_future.GetCallback());
+    EXPECT_TRUE(set_configuration_future.Get());
+
+    base::test::TestFuture<UsbClaimInterfaceResult> claim_interface_future;
+    device->ClaimInterface(0, claim_interface_future.GetCallback());
+    EXPECT_EQ(claim_interface_future.Get(),
+              UsbClaimInterfaceResult::kProtectedClass);
+  }
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
