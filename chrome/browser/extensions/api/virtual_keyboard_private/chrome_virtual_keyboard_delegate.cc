@@ -568,9 +568,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   // TODO(b/171846787): Remove the 3 flags after they are removed from clients.
   features.Append(GenerateFeatureFlag("fstinputlogic", true));
   features.Append(GenerateFeatureFlag("hmminputlogic", true));
-  features.Append(GenerateFeatureFlag(
-      "imemozcproto",
-      base::FeatureList::IsEnabled(chromeos::features::kImeMozcProto)));
 
   features.Append(GenerateFeatureFlag(
       "borderedkey", base::FeatureList::IsEnabled(

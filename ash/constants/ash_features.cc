@@ -727,10 +727,6 @@ const base::Feature kSnoopingProtection{"SnoopingProtection",
 const base::Feature kVirtualKeyboardDarkMode{"VirtualKeyboardDarkMode",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enable or disable MOZC IME to use protobuf as interactive message format.
-const base::Feature kImeMozcProto{"ImeMozcProto",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, options page for each input method will be opened in ChromeOS
 // settings. Otherwise it will be opened in a new web page in Chrome browser.
 const base::Feature kImeOptionsInSettings{"ImeOptionsInSettings",
