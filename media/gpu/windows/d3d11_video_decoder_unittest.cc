@@ -273,16 +273,6 @@ TEST_F(D3D11VideoDecoderTest, SupportsVP9Profile0WithDecoderEnabled) {
   }
 }
 
-TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithLegacyGPU) {
-  SetGPUProfile(LegacyIntelGPU);
-  VideoDecoderConfig configuration = TestVideoConfig::NormalCodecProfile(
-      VideoCodec::kVP9, VP9PROFILE_PROFILE0);
-
-  EnableDecoder(D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0);
-  CreateDecoder();
-  InitializeDecoder(configuration, false);
-}
-
 TEST_F(D3D11VideoDecoderTest, DoesNotSupportVP9WithGPUWorkaroundDisableVPX) {
   gpu_workarounds_.disable_accelerated_vp9_decode = true;
   VideoDecoderConfig configuration = TestVideoConfig::NormalCodecProfile(
