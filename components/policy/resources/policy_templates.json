@@ -18697,6 +18697,37 @@
       If this policy is left not set, the default is allowed for both enterprise-managed users and non-managed users.''',
     },
     {
+      'name': 'EcheAllowed',
+      'owners': ['andychou@google.com', 'dhnishi@google.com', 'exo-core@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:99-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': False,
+      'default': True,
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allows users to click on Phone Hub notification to launch Eche application.',
+        },
+        {
+          'value': False,
+          'caption': 'Disallows users to click on Phone Hub notification to launch Eche application.',
+        },
+      ],
+      'id': 937,
+      'caption': '''Allow Eche to be enabled.''',
+      'tags': ['local-data-access', 'google-sharing'],
+      'desc': '''If this setting is enabled, users will be able to launch the Eche application, for example by clicking on a Phone Hub notification.
+
+      If this setting is disabled, users will not be able to launch the Eche application.
+
+      If this policy is left not set, the default is allowed for both enterprise-managed users and non-managed users.''',
+    },
+    {
       'name': 'NearbyShareAllowed',
       'owners': ['danlee@google.com', 'hansberry@chromium.org', 'better-together-dev@google.com'],
       'type': 'main',
@@ -30159,6 +30190,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 936,
+  'highest_id_currently_used': 937,
   'highest_atomic_group_id_currently_used': 41
 }
