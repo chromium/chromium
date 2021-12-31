@@ -26,6 +26,7 @@
 #include "content/public/common/user_agent.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
+#include "extensions/browser/api/messaging/messaging_api_message_filter.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_message_filter.h"
@@ -111,6 +112,8 @@ void ShellContentBrowserClient::RenderProcessWillLaunch(
   host->AddFilter(
       new ExtensionsGuestViewMessageFilter(
           render_process_id, browser_context));
+  host->AddFilter(
+      new MessagingAPIMessageFilter(render_process_id, browser_context));
   // PluginInfoMessageFilter is not required because app_shell does not have
   // the concept of disabled plugins.
 #if BUILDFLAG(ENABLE_NACL)
