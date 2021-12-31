@@ -417,7 +417,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest
             PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL))
         ->ClickLinkForTesting();
     EXPECT_EQ(chrome::kSafetyTipHelpCenterURL,
-              new_tab_observer.GetWebContents()->GetURL());
+              new_tab_observer.GetWebContents()->GetVisibleURL());
   }
 
   void CheckPageInfoDoesNotShowSafetyTipInfo(Browser* browser) {
@@ -438,7 +438,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest
               PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL))
           ->ClickLinkForTesting();
       EXPECT_EQ(chrome::kPageInfoHelpCenterURL,
-                new_tab_observer.GetWebContents()->GetURL());
+                new_tab_observer.GetWebContents()->GetVisibleURL());
     }
   }
 
@@ -665,8 +665,10 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 
   CloseWarningLeaveSite(browser());
   EXPECT_FALSE(IsUIShowing());
-  EXPECT_NE(kNavigatedUrl,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  EXPECT_NE(kNavigatedUrl, browser()
+                               ->tab_strip_model()
+                               ->GetActiveWebContents()
+                               ->GetLastCommittedURL());
 
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoDoesNotShowSafetyTipInfo(browser()));
 }
@@ -684,7 +686,8 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 
   content::WebContentsAddedObserver new_tab_observer;
   ClickLearnMoreLink();
-  EXPECT_NE(kNavigatedUrl, new_tab_observer.GetWebContents()->GetURL());
+  EXPECT_NE(kNavigatedUrl,
+            new_tab_observer.GetWebContents()->GetLastCommittedURL());
 }
 
 // Test that the Suspicious Site Safety Tip has no buttons and has the correct
@@ -725,8 +728,10 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
 
   EXPECT_TRUE(IsUIShowingOrSuspiciousSitesDisabled());
-  EXPECT_EQ(kNavigatedUrl,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  EXPECT_EQ(kNavigatedUrl, browser()
+                               ->tab_strip_model()
+                               ->GetActiveWebContents()
+                               ->GetLastCommittedURL());
 
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoShowsSafetyTipInfo(
       browser(), security_state::SafetyTipStatus::kBadReputation, GURL()));
@@ -744,8 +749,10 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 
   CloseWarningIgnore(views::Widget::ClosedReason::kCloseButtonClicked);
   EXPECT_FALSE(IsUIShowing());
-  EXPECT_EQ(kNavigatedUrl,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  EXPECT_EQ(kNavigatedUrl, browser()
+                               ->tab_strip_model()
+                               ->GetActiveWebContents()
+                               ->GetLastCommittedURL());
 
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoShowsSafetyTipInfo(
       browser(), security_state::SafetyTipStatus::kBadReputation, GURL()));
@@ -768,8 +775,10 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
 
   EXPECT_FALSE(IsUIShowing());
-  EXPECT_EQ(kNavigatedUrl,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  EXPECT_EQ(kNavigatedUrl, browser()
+                               ->tab_strip_model()
+                               ->GetActiveWebContents()
+                               ->GetLastCommittedURL());
 
   ASSERT_NO_FATAL_FAILURE(CheckPageInfoShowsSafetyTipInfo(
       browser(), security_state::SafetyTipStatus::kBadReputationIgnored,

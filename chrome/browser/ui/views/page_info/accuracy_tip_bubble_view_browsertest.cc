@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(AccuracyTipBubbleViewBrowserTest, OpenLearnMoreLink) {
   views::test::WidgetDestroyedWaiter waiter(view->GetWidget());
   view->AcceptDialog();
   EXPECT_EQ(GURL(chrome::kSafetyTipHelpCenterURL),
-            new_tab_observer.GetWebContents()->GetURL());
+            new_tab_observer.GetWebContents()->GetVisibleURL());
   waiter.Wait();
   EXPECT_FALSE(IsUIShowing());
 

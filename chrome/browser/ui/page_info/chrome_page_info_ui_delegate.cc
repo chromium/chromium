@@ -156,7 +156,8 @@ bool ChromePageInfoUiDelegate::IsMultipleTabsOpen() {
     DCHECK(tabs);
     for (int i = 0; i < tabs->count(); ++i) {
       content::WebContents* const web_contents = tabs->GetWebContentsAt(i);
-      if (web_contents->GetURL().DeprecatedGetOriginAsURL() == site_origin) {
+      if (web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL() ==
+          site_origin) {
         count++;
       }
     }
