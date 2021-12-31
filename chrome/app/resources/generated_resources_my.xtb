@@ -765,7 +765,7 @@
 <translation id="1761845175367251960"><ph name="NAME" /> ၏ အကောင့်များ</translation>
 <translation id="176193854664720708">လက်ဗွေ အာရုံခံကိရိယာသည် ဖွင့်ပိတ်ခလုတ်တွင် ရှိသည်။ ၎င်းကို လက်ချောင်းတစ်ချောင်းဖြင့် အသာထိပါ။</translation>
 <translation id="176272781006230109">ဈေးဝယ် အကြံပြုချက်များ</translation>
-<translation id="1763046204212875858">အပလီကေးရှင်း ဖြတ်လမ်းများ ဖန်တီးရန်</translation>
+<translation id="1763046204212875858">အပလီကေးရှင်း ဖြတ်လမ်းများ ပြုလုပ်ရန်</translation>
 <translation id="1763808908432309942">တဘ်အသစ်တွင် ဖွင့်ပေးသည်</translation>
 <translation id="1764226536771329714">အစမ်း</translation>
 <translation id="176587472219019965">ဝင်ဒိုး အသစ်</translation>
@@ -1051,7 +1051,7 @@
 <translation id="2048182445208425546">သင်၏ ကွန်ရက် အသုံးပြုမှုကို ရယူသုံးရန်</translation>
 <translation id="2048554637254265991">ကွန်တိန်နာမန်နေဂျာကို စတင်ရာတွင် အမှားရှိသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2048653237708779538">လုပ်ဆောင်ချက် မရနိုင်ပါ</translation>
-<translation id="204914487372604757">ဖြတ်လမ်း ဖန်တီးရန်</translation>
+<translation id="204914487372604757">ဖြတ်လမ်း ပြုလုပ်ရန်</translation>
 <translation id="2050339315714019657">ဒေါင်လိုက်</translation>
 <translation id="2053312383184521053">မလှုပ်မရှား အခြေအနေ ဒေတာ</translation>
 <translation id="2055585478631012616">ဖွင့်ထားသော တဘ်များအပါအဝင် ဤဝဘ်ဆိုက်များမှ သင် ထွက်သွားပါမည်</translation>
@@ -1605,7 +1605,7 @@
 <translation id="2606454609872547359">ChromeVox မပါဘဲ ရှေ့ဆက်ရန်</translation>
 <translation id="2606568927909309675">အင်္ဂလိပ်အသံနှင့် ဗီဒီယိုအတွက် စာတန်းများကို အလိုအလျောက်ပြုလုပ်ပေးသည်။ အသံနှင့် စာတန်းများကို သင့်စက်အတွင်းတွင်သာ လုံခြုံစွာ သိမ်းထားပါသည်။</translation>
 <translation id="2607101320794533334">အကြောင်းအရာ အများပိုင် သော့ အင်ဖို</translation>
-<translation id="2609896558069604090">ဖြတ်လမ်းများ ဖန်တီးရန်...</translation>
+<translation id="2609896558069604090">ဖြတ်လမ်းများ ပြုလုပ်ရန်...</translation>
 <translation id="2609980095400624569">ချိတ်ဆက်၍မရပါ</translation>
 <translation id="2610157865375787051">နားခြင်း</translation>
 <translation id="2610260699262139870">အရွယ်အစား အမှန်</translation>
@@ -4648,7 +4648,7 @@
 <translation id="5817069030404929329">ဤစက်ပစ္စည်းမှ စကားဝှက်များကို သင်၏ Google Account သို့ ရွှေ့မလား။</translation>
 <translation id="5817918615728894473">တွဲချိတ်ပါ</translation>
 <translation id="581840385858998009">နောက်ခံ၊ ချန်နယ်ပုံ၊ ဖန်သားပြင်နားချိန်နှင့် အခြားအရာများကို စိတ်ကြိုက်ပြင်ဆင်ပါ</translation>
-<translation id="5821565227679781414">ဖြတ်လမ်း ဖန်တီးရန်</translation>
+<translation id="5821565227679781414">ဖြတ်လမ်း ပြုလုပ်ရန်</translation>
 <translation id="5822095611691580107">ဘယ်ဘက်နားကြပ် ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%။</translation>
 <translation id="5825412242012995131">ဖွင့်ရန် (အကြံပြုထားသည်)</translation>
 <translation id="5826395379250998812">သင်၏ <ph name="DEVICE_TYPE" /> ကို သင့်ဖုန်းနှင့် ချိတ်ဆက်ပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
@@ -6184,7 +6184,7 @@
 <translation id="7439519621174723623">ရှေ့ဆက်ရန် စက်အမည်ထည့်ပါ</translation>
 <translation id="7441736921018636843">ဤဆက်တင်ကို ပြောင်းရန်အတွက် <ph name="BEGIN_LINK" />စင့်ခ်ကို ပြင်ဆင်သတ်မှတ်<ph name="END_LINK" /> ပြီး သင်၏ စင့်ခ်လုပ်ထားသည့် စကားဝှက်စာကို ဖယ်ရှားပါ</translation>
 <translation id="7441830548568730290">အခြားအသုံးပြုသူများ</translation>
-<translation id="744341768939279100">ပရိုဖိုင် အသစ်ကို ဖန်တီးရန်</translation>
+<translation id="744341768939279100">ပရိုဖိုင် အသစ်ကို ပြုလုပ်ရန်</translation>
 <translation id="744366959743242014">ဒေတာများကို ဖွင့်နေသည်၊ စက္ကန့်အနည်းငယ် ကြာနိုင်သည်။</translation>
 <translation id="7443806024147773267">သင်၏ Google အကောင့်သို့ လက်မှတ်ထိုးဝင်သည့်အခါတိုင်း သင့်စကားဝှက်များကို အသုံးပြုနိုင်သည်</translation>
 <translation id="7444970023873202833">Google Photos တွင် နောက်ထပ်အမှတ်တရများကို ရှာဖွေကြည့်ပါ</translation>
@@ -6262,7 +6262,7 @@
 <translation id="7520766081042531487">ရုပ်ဖျက်ဌာန-: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7522255036471229694">"Ok Google" ဟုပြောပါ</translation>
 <translation id="7523585675576642403">ပရိုဖိုင်ကို အမည်ပြောင်းရန်</translation>
-<translation id="7525067979554623046">ဖန်တီးရန်</translation>
+<translation id="7525067979554623046">ပြုလုပ်ရန်</translation>
 <translation id="7525625923260515951">ရွေးထားသောစာသားကို နားထောင်ရန်</translation>
 <translation id="7526658513669652747">{NUM_DOWNLOADS,plural, =1{နောက်ထပ် ၁ ခု}other{နောက်ထပ် {NUM_DOWNLOADS} ခု}}</translation>
 <translation id="7526989658317409655">အစားထိုးရန်နေရာ</translation>
@@ -7878,7 +7878,7 @@
 <translation id="9150079578948279438">ပရိုဖိုင်ကို ဖယ်ရှား၍မရပါ။ ထပ်စမ်းကြည့်ပါ (သို့) နည်းပညာအကူအညီအတွက် သင့်ဝန်ဆောင်မှုပေးသူကို ဆက်သွယ်ပါ။</translation>
 <translation id="9150860646299915960">သင်၏ Linux ကွန်တိန်နာကို အဆင့်မြှင့်ပါ</translation>
 <translation id="9154194610265714752">မွမ်းမံပြီး</translation>
-<translation id="91568222606626347">အလွယ်သုံး ဖန်တီးရန်</translation>
+<translation id="91568222606626347">အလွယ်သုံး ပြုလုပ်ရန်</translation>
 <translation id="9157096865782046368">၀.၈ စက္ကန့်</translation>
 <translation id="9157697743260533322">အသုံးပြုသူများ အားလုံးအတွက် အလိုအလျောက်အပ်ဒိတ်များ စနစထည့်သွင်းမှု ပြုလုပ်ခြင်း မအောင်မြင်ပါ (လေယာဉ်မထွက်မီ စတင်ခြင်း ချွတ်ယွင်းချက် − <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">ပရင်တာတံခါး ပွင့်နေသည်</translation>

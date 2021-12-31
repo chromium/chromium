@@ -589,6 +589,7 @@
 <translation id="4831034276697007977">هل تريد فعلاً إيقاف النقرات التلقائية؟</translation>
 <translation id="4849058404725798627">تمييز الكائن باستخدام تركيز لوحة المفاتيح</translation>
 <translation id="485592688953820832">عدم اتخاذ أي إجراء (إيقاف مؤقَّت)</translation>
+<translation id="485634149294284819">إدخال قائمة لوحة المفاتيح</translation>
 <translation id="4860284199500934869">يُرجى التحقّق من الاتصال بالشبكة لتنزيل الملف <ph name="FILENAME" />.</translation>
 <translation id="486056901304535126">‏ستتم إعادة محاولة التنزيل لاحقًا. وسيتم إرسال ملفات التعرّف على الكلام إلى Google لمعالجتها إلى حين اكتمال عملية التنزيل.</translation>
 <translation id="4868492592575313542">مفعّلة</translation>
@@ -1091,6 +1092,7 @@
 <translation id="8380784334203145311">ليلة سعيدة،</translation>
 <translation id="8388750414311082622">تتعذّر إزالة سطح المكتب الأخير.</translation>
 <translation id="8394567579869570560">قفّل أحد الوالدين هذا الجهاز</translation>
+<translation id="8401850874595457088">إدخال قائمة اللغة</translation>
 <translation id="8412677897383510995">إظهار إعدادات شاشة العرض</translation>
 <translation id="8413272770729657668">يبدأ التسجيل بعد 3، 2، 1.</translation>
 <translation id="8416730306157376817">%<ph name="BATTERY_PERCENTAGE" /> (الحافظة)</translation>

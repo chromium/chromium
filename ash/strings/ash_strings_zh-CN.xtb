@@ -588,6 +588,7 @@
 <translation id="4831034276697007977">确定要关闭自动点击吗？</translation>
 <translation id="4849058404725798627">突出显示键盘焦点所在对象</translation>
 <translation id="485592688953820832">不执行任何操作（暂停）</translation>
+<translation id="485634149294284819">进入键盘菜单</translation>
 <translation id="4860284199500934869">请检查您的网络连接状况以下载“<ph name="FILENAME" />”</translation>
 <translation id="486056901304535126">系统会于晚些时候再次尝试下载。系统会将语音发送给 Google 以供处理，直到下载完毕。</translation>
 <translation id="4868492592575313542">已启用</translation>
@@ -1090,6 +1091,7 @@
 <translation id="8380784334203145311">晚安！</translation>
 <translation id="8388750414311082622">无法移除最后一个桌面。</translation>
 <translation id="8394567579869570560">您的家长锁定了此设备</translation>
+<translation id="8401850874595457088">进入语言菜单</translation>
 <translation id="8412677897383510995">显示“显示设置”部分</translation>
 <translation id="8413272770729657668">录制倒计时：3、2、1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />%（保护套）</translation>

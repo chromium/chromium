@@ -588,6 +588,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4831034276697007977">Confirmes que vols desactivar els clics automàtics?</translation>
 <translation id="4849058404725798627">Ressalta l'objecte amb el focus del teclat</translation>
 <translation id="485592688953820832">No facis res (pausa)</translation>
+<translation id="485634149294284819">Menú per seleccionar el teclat</translation>
 <translation id="4860284199500934869">Comprova la connexió a la xarxa per baixar <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">La baixada s'intentarà més tard. Fins que es completi, s'enviarà la parla a Google perquè la processi.</translation>
 <translation id="4868492592575313542">activada</translation>
@@ -1090,6 +1091,7 @@ Instal·lació nova</translation>
 <translation id="8380784334203145311">Bona nit,</translation>
 <translation id="8388750414311082622">L'últim escriptori no es pot suprimir.</translation>
 <translation id="8394567579869570560">El teu pare o mare han bloquejat aquest dispositiu</translation>
+<translation id="8401850874595457088">Menú per seleccionar l'idioma</translation>
 <translation id="8412677897383510995">Mostra la configuració de la pantalla</translation>
 <translation id="8413272770729657668">La gravació començarà d'aquí a 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (estoig)</translation>

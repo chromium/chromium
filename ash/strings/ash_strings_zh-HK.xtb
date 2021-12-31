@@ -588,6 +588,7 @@
 <translation id="4831034276697007977">確定要關閉自動點擊功能嗎？</translation>
 <translation id="4849058404725798627">突顯鍵盤焦點所在的物件</translation>
 <translation id="485592688953820832">不執行任何操作 (暫停)</translation>
+<translation id="485634149294284819">輸入鍵盤選單</translation>
 <translation id="4860284199500934869">請檢查網路連線以下載「<ph name="FILENAME" />」</translation>
 <translation id="486056901304535126">系統稍後將再次嘗試下載，語音會暫時傳送給 Google 處理，直至下載完成。</translation>
 <translation id="4868492592575313542">已啟用</translation>
@@ -1088,6 +1089,7 @@
 <translation id="8380784334203145311">晚安，</translation>
 <translation id="8388750414311082622">無法移除最後一個桌面。</translation>
 <translation id="8394567579869570560">您的家長已鎖定此裝置</translation>
+<translation id="8401850874595457088">輸入語言選單</translation>
 <translation id="8412677897383510995">顯示螢幕設定</translation>
 <translation id="8413272770729657668">3、2、1，開始錄影</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (充電盒)</translation>

@@ -588,6 +588,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4831034276697007977">Voulez-vous vraiment désactiver les clics automatiques ?</translation>
 <translation id="4849058404725798627">Mettre l'objet sélectionné au clavier en surbrillance</translation>
 <translation id="485592688953820832">Aucune action (pause)</translation>
+<translation id="485634149294284819">Ouvrir le menu du clavier</translation>
 <translation id="4860284199500934869">Vérifiez votre connexion réseau pour télécharger <ph name="FILENAME" /></translation>
 <translation id="486056901304535126">Le téléchargement sera relancé plus tard. Les paroles seront envoyées à Google pour traitement une fois le téléchargement terminé.</translation>
 <translation id="4868492592575313542">a activé</translation>
@@ -1090,6 +1091,7 @@ Nouvelle installation</translation>
 <translation id="8380784334203145311">Bonsoir,</translation>
 <translation id="8388750414311082622">Impossible de supprimer le dernier bureau.</translation>
 <translation id="8394567579869570560">Ton parent a verrouillé cet appareil</translation>
+<translation id="8401850874595457088">Ouvrir le menu des langues</translation>
 <translation id="8412677897383510995">Paramètres d'affichage</translation>
 <translation id="8413272770729657668">L'enregistrement commence dans 3 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" /> % (étui)</translation>
