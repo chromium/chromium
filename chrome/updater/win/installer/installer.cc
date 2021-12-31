@@ -24,6 +24,7 @@
 
 #include <sddl.h>
 #include <shellapi.h>
+#include <shlobj.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -61,8 +62,15 @@ bool CreateTemporaryAndUnpackDirectories(
     base::FilePath* unpack_path) {
   DCHECK(temp_path && unpack_path);
 
+  // Because there is no UpdaterScope yet, ::IsUserAnAdmin() is used to
+  // determine whether the process is running with Admin privileges. If the
+  // process is running with Admin privileges, a secure unpack location under
+  // %ProgramFiles% (a directory that only admins can write to by default) is
+  // used.
   base::FilePath temp_dir;
-  if (!base::PathService::Get(base::DIR_TEMP, &temp_dir))
+  if (!base::PathService::Get(
+          ::IsUserAnAdmin() ? base::DIR_PROGRAM_FILES : base::DIR_TEMP,
+          &temp_dir))
     return false;
 
   if (!temp_path->Initialize(temp_dir, kTempPrefix)) {
