@@ -65,7 +65,7 @@ void BackgroundPrintingManager::OwnPrintPreviewDialog(
     std::unique_ptr<WebContents> preview_dialog) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(PrintPreviewDialogController::IsPrintPreviewURL(
-      preview_dialog->GetURL()));
+      preview_dialog->GetVisibleURL()));
   CHECK(!HasPrintPreviewDialog(preview_dialog.get()));
 
   WebContents* raw_preview_dialog = preview_dialog.get();
