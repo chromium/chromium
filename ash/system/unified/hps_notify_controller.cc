@@ -66,8 +66,8 @@ void HpsNotifyController::OnSessionStateChanged(
   const bool session_active =
       session_state == session_manager::SessionState::ACTIVE;
   ReconfigureHps(hps_available_, session_active, pref_enabled_);
-  UpdateIconVisibility(session_active, hps_state_ && session_active,
-                       pref_enabled_);
+  UpdateSnooperStatus(session_active, hps_state_ && session_active,
+                      pref_enabled_);
 }
 
 void HpsNotifyController::OnActiveUserPrefServiceChanged(
@@ -77,8 +77,8 @@ void HpsNotifyController::OnActiveUserPrefServiceChanged(
   const bool pref_enabled =
       pref_service->GetBoolean(prefs::kSnoopingProtectionEnabled);
   ReconfigureHps(hps_available_, session_active_, pref_enabled);
-  UpdateIconVisibility(session_active_, hps_state_ && pref_enabled,
-                       pref_enabled);
+  UpdateSnooperStatus(session_active_, hps_state_ && pref_enabled,
+                      pref_enabled);
 
   // Re-subscribe to pref changes.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -90,9 +90,9 @@ void HpsNotifyController::OnActiveUserPrefServiceChanged(
 }
 
 void HpsNotifyController::OnHpsNotifyChanged(hps::HpsResult hps_state) {
-  UpdateIconVisibility(session_active_,
-                       /*hps_state=*/hps_state == hps::HpsResult::POSITIVE,
-                       pref_enabled_);
+  UpdateSnooperStatus(session_active_,
+                      /*hps_state=*/hps_state == hps::HpsResult::POSITIVE,
+                      pref_enabled_);
 }
 
 void HpsNotifyController::OnRestart() {
@@ -103,7 +103,7 @@ void HpsNotifyController::OnRestart() {
 
 void HpsNotifyController::OnShutdown() {
   ReconfigureHps(/*hps_available=*/false, session_active_, pref_enabled_);
-  UpdateIconVisibility(session_active_, /*hps_state=*/false, pref_enabled_);
+  UpdateSnooperStatus(session_active_, /*hps_state=*/false, pref_enabled_);
 
   // We will be notified of the service starting back up again via our ongoing
   // observation of the DBus client.
@@ -117,30 +117,30 @@ void HpsNotifyController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool HpsNotifyController::IsIconVisible() const {
+bool HpsNotifyController::SnooperPresent() const {
   return session_active_ && hps_state_ && pref_enabled_;
 }
 
-void HpsNotifyController::UpdateIconVisibility(bool session_active,
-                                               bool hps_state,
-                                               bool pref_enabled) {
+void HpsNotifyController::UpdateSnooperStatus(bool session_active,
+                                              bool hps_state,
+                                              bool pref_enabled) {
   // We should only receive a "present" signal if the service is available and
   // configured.
   DCHECK((hps_available_ && hps_configured_) || !hps_state);
 
-  const bool old_visibility = IsIconVisible();
+  const bool old_state = SnooperPresent();
 
   session_active_ = session_active;
   hps_state_ = hps_state;
   pref_enabled_ = pref_enabled;
 
-  const bool new_visibility = IsIconVisible();
+  const bool new_state = SnooperPresent();
 
-  if (old_visibility == new_visibility)
+  if (old_state == new_state)
     return;
 
   for (auto& observer : observers_)
-    observer.ShouldUpdateVisibility(new_visibility);
+    observer.OnSnoopingStatusChanged(new_state);
 }
 
 void HpsNotifyController::ReconfigureHps(bool hps_available,
@@ -211,7 +211,7 @@ void HpsNotifyController::UpdateHpsState(
   LOG_IF(WARNING, !response.has_value())
       << "Polling the presence daemon failed";
 
-  UpdateIconVisibility(
+  UpdateSnooperStatus(
       session_active_,
       response.value_or(hps::HpsResult::NEGATIVE) == hps::HpsResult::POSITIVE,
       pref_enabled_);
@@ -224,8 +224,8 @@ void HpsNotifyController::UpdatePrefState() {
   const bool pref_enabled = pref_change_registrar_->prefs()->GetBoolean(
       prefs::kSnoopingProtectionEnabled);
   ReconfigureHps(hps_available_, session_active_, pref_enabled);
-  UpdateIconVisibility(session_active_, hps_state_ && pref_enabled,
-                       pref_enabled);
+  UpdateSnooperStatus(session_active_, hps_state_ && pref_enabled,
+                      pref_enabled);
 }
 
 }  // namespace ash

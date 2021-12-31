@@ -110,7 +110,7 @@ TEST_F(HpsNotifyControllerTestAbsent, Hidden) {
 
   EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
 
-  EXPECT_FALSE(controller_->IsIconVisible());
+  EXPECT_FALSE(controller_->SnooperPresent());
 }
 
 // Test that messages from the daemon toggle the icon.
@@ -120,15 +120,15 @@ TEST_F(HpsNotifyControllerTestAbsent, HpsStateChange) {
 
   EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 
-  EXPECT_FALSE(controller_->IsIconVisible());
+  EXPECT_FALSE(controller_->SnooperPresent());
 
   controller_->OnHpsNotifyChanged(hps::HpsResult::POSITIVE);
 
-  EXPECT_TRUE(controller_->IsIconVisible());
+  EXPECT_TRUE(controller_->SnooperPresent());
 
   controller_->OnHpsNotifyChanged(hps::HpsResult::NEGATIVE);
 
-  EXPECT_FALSE(controller_->IsIconVisible());
+  EXPECT_FALSE(controller_->SnooperPresent());
 }
 
 // Test that daemon signals are only enabled when session and pref state means
@@ -231,7 +231,7 @@ TEST_F(HpsNotifyControllerTestPresent, HpsState) {
   SetEnabledPref(true);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 
-  EXPECT_TRUE(controller_->IsIconVisible());
+  EXPECT_TRUE(controller_->SnooperPresent());
 }
 
 // Test that a user changing their preference toggles the icon.
@@ -240,12 +240,12 @@ TEST_F(HpsNotifyControllerTestPresent, PrefChanged) {
   SetEnabledPref(false);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
 
-  EXPECT_FALSE(controller_->IsIconVisible());
+  EXPECT_FALSE(controller_->SnooperPresent());
 
   SetEnabledPref(true);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 
-  EXPECT_TRUE(controller_->IsIconVisible());
+  EXPECT_TRUE(controller_->SnooperPresent());
 }
 
 // Test that eye icon isn't shown during the OOBE.
@@ -263,14 +263,14 @@ TEST_F(HpsNotifyControllerTestPresent, Oobe) {
   SetEnabledPref(true);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
 
-  EXPECT_FALSE(controller_->IsIconVisible());
+  EXPECT_FALSE(controller_->SnooperPresent());
 
   // Triggers an asynchronous DBus method call.
   session->SetSessionState(session_manager::SessionState::ACTIVE);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 
-  EXPECT_TRUE(controller_->IsIconVisible());
+  EXPECT_TRUE(controller_->SnooperPresent());
 }
 
 // Test that the eye icon isn't shown at the login page.
@@ -281,15 +281,15 @@ TEST_F(HpsNotifyControllerTestPresent, Login) {
   SetEnabledPref(true);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
 
-  EXPECT_FALSE(controller_->IsIconVisible());
+  EXPECT_FALSE(controller_->SnooperPresent());
 
   SimulateLogin();
 
   // Don't show until new user has enabled their preference.
-  EXPECT_FALSE(controller_->IsIconVisible());
+  EXPECT_FALSE(controller_->SnooperPresent());
 
   SetEnabledPref(true);
-  EXPECT_TRUE(controller_->IsIconVisible());
+  EXPECT_TRUE(controller_->SnooperPresent());
 }
 
 // Test that the controller handles service restarts.
@@ -298,14 +298,14 @@ TEST_F(HpsNotifyControllerTestPresent, Restarts) {
   SetEnabledPref(true);
 
   EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
-  EXPECT_TRUE(controller_->IsIconVisible());
+  EXPECT_TRUE(controller_->SnooperPresent());
 
   // Icon is hidden when service goes down. Could erroneously trigger an
   // asynchronous DBus method call.
   dbus_client_->set_hps_service_is_available(false);
   controller_->OnShutdown();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(controller_->IsIconVisible());
+  EXPECT_FALSE(controller_->SnooperPresent());
 
   // Icon returns when service restarts. Controller now polls the DBus service
   // which responds asynchronously.
@@ -314,7 +314,7 @@ TEST_F(HpsNotifyControllerTestPresent, Restarts) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(dbus_client_->hps_notify_count(), 2);
-  EXPECT_TRUE(controller_->IsIconVisible());
+  EXPECT_TRUE(controller_->SnooperPresent());
 }
 
 // Check that the controller state stays consistent even when the daemon starts
@@ -322,17 +322,17 @@ TEST_F(HpsNotifyControllerTestPresent, Restarts) {
 TEST_F(HpsNotifyControllerTestPresent, ClearHpsState) {
   SimulateLogin();
   SetEnabledPref(true);
-  EXPECT_EQ(controller_->IsIconVisible(), true);
+  EXPECT_EQ(controller_->SnooperPresent(), true);
 
   // This should internally clear the cached daemon state.
   SetEnabledPref(false);
-  EXPECT_EQ(controller_->IsIconVisible(), false);
+  EXPECT_EQ(controller_->SnooperPresent(), false);
 
   // Note: we don't exhaust the run loop here since we want to check the
   // controller state _before_ it is updated by asynchronous DBus calls.
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
       prefs::kSnoopingProtectionEnabled, true);
-  EXPECT_EQ(controller_->IsIconVisible(), false);
+  EXPECT_EQ(controller_->SnooperPresent(), false);
 }
 
 // Fixture with the DBus service initially unavailable (using a minimal set of
@@ -358,7 +358,7 @@ TEST_F(HpsNotifyControllerTestUnavailable, WaitForService) {
   EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 0);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
 
-  EXPECT_FALSE(controller_->IsIconVisible());
+  EXPECT_FALSE(controller_->SnooperPresent());
 
   // Triggers an asynchronous DBus method call.
   dbus_client_->set_hps_service_is_available(true);
@@ -371,7 +371,7 @@ TEST_F(HpsNotifyControllerTestUnavailable, WaitForService) {
   EXPECT_EQ(dbus_client_->hps_notify_count(), 1);
 
   // Controller now polls the DBus service which responds asynchronously.
-  EXPECT_TRUE(controller_->IsIconVisible());
+  EXPECT_TRUE(controller_->SnooperPresent());
 }
 
 // Fixture with an invalid feature config.

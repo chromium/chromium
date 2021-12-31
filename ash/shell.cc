@@ -797,8 +797,6 @@ Shell::~Shell() {
   ScreenAsh::CreateScreenForShutdown();
   display_configuration_controller_.reset();
 
-  hps_notify_controller_.reset();
-
   // These members access Shell in their destructors.
   wallpaper_controller_.reset();
   accessibility_controller_.reset();
@@ -918,6 +916,9 @@ Shell::~Shell() {
 
   shell_delegate_.reset();
 
+  // Is observed by `MessageCenterController`, so must be destructed after it.
+  hps_notify_controller_.reset();
+
   chromeos::UsbguardClient::Shutdown();
 
   // Must be shut down after detachable_base_handler_.
@@ -944,6 +945,10 @@ void Shell::Init(
   chromeos::InitializeDBusClient<chromeos::UsbguardClient>(dbus_bus.get());
 
   local_state_ = local_state;
+
+  // Is observed by `MessageCenterController`, so must be constructed before it.
+  if (features::IsSnoopingProtectionEnabled())
+    hps_notify_controller_ = std::make_unique<HpsNotifyController>();
 
   // This creates the MessageCenter object which is used by some other objects
   // initialized here, so it needs to come early.
@@ -975,8 +980,6 @@ void Shell::Init(
   media_notification_provider_ =
       std::make_unique<MediaNotificationProviderImpl>(
           shell_delegate_->GetMediaSessionService());
-  if (features::IsSnoopingProtectionEnabled())
-    hps_notify_controller_ = std::make_unique<HpsNotifyController>();
 
   tablet_mode_controller_ = std::make_unique<TabletModeController>();
 

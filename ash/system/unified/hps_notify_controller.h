@@ -21,8 +21,8 @@ class PrefRegistrySimple;
 
 namespace ash {
 
-// Pushes visibility changes to the snooping protection icon based on DBus
-// state, preferences and session type.
+// Pushes status changes to the snooping protection icon and notification
+// blocker based on DBus state, preferences and session type.
 class ASH_EXPORT HpsNotifyController
     : public SessionObserver,
       public chromeos::HpsDBusClient::Observer {
@@ -31,10 +31,9 @@ class ASH_EXPORT HpsNotifyController
    public:
     ~Observer() override = default;
 
-    // Called when an observing icon should show or hide itself because the
-    // snooping status has changed. Argument is true if an icon should now be
-    // visible.
-    virtual void ShouldUpdateVisibility(bool visible) = 0;
+    // Called when an observer should show or hide itself because the snooping
+    // status has changed. Argument is true if a snooper has now been detected.
+    virtual void OnSnoopingStatusChanged(bool snooper) = 0;
   };
 
   HpsNotifyController();
@@ -53,19 +52,19 @@ class ASH_EXPORT HpsNotifyController
   void OnRestart() override;
   void OnShutdown() override;
 
-  // Adds/removes views that are listening for visibility updates.
+  // Add/remove views that are listening for snooper presence.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // The current visibility state. Polled by views on construction.
-  bool IsIconVisible() const;
+  // The current snooper status.
+  bool SnooperPresent() const;
 
  private:
-  // Updates visibility state as appropriate given the signal, session and
+  // Updates snooper state as appropriate given the signal, session and
   // preference state. If changed, notifies observers.
-  void UpdateIconVisibility(bool session_active,
-                            bool hps_state,
-                            bool is_enabled);
+  void UpdateSnooperStatus(bool session_active,
+                           bool hps_state,
+                           bool is_enabled);
 
   // Requests the start or stop of the HPS snooping signal, so that the daemon
   // need not be running snooping logic while the user has the feature disabled.
@@ -105,7 +104,7 @@ class ASH_EXPORT HpsNotifyController
   // this feature.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
-  // The views that are listening for visibililty instructions.
+  // Clients listening for snooping status changes.
   base::ObserverList<Observer> observers_;
 
   // Must be last.

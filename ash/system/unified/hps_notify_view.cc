@@ -31,7 +31,7 @@ HpsNotifyView::HpsNotifyView(Shelf* shelf) : TrayItemView(shelf) {
   HpsNotifyController* controller = Shell::Get()->hps_notify_controller();
   controller_observer_.Observe(controller);
 
-  SetVisible(controller->IsIconVisible());
+  SetVisible(controller->SnooperPresent());
   UpdateIconColor(session_controller->GetSessionState());
 }
 
@@ -53,8 +53,8 @@ const char* HpsNotifyView::GetClassName() const {
   return "HpsNotifyView";
 }
 
-void HpsNotifyView::ShouldUpdateVisibility(bool visible) {
-  SetVisible(visible);
+void HpsNotifyView::OnSnoopingStatusChanged(bool snooper) {
+  SetVisible(snooper);
 }
 
 void HpsNotifyView::UpdateIconColor(

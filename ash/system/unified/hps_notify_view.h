@@ -35,8 +35,8 @@ class ASH_EXPORT HpsNotifyView : public TrayItemView,
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
-  // HpsNotifyController:
-  void ShouldUpdateVisibility(bool visible) override;
+  // HpsNotifyController::Observer:
+  void OnSnoopingStatusChanged(bool snooper) override;
 
  private:
   // Updates the system tray icon to use the color corresponding to the current
