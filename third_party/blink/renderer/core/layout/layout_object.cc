@@ -4107,6 +4107,12 @@ bool LayoutObject::NodeAtPoint(HitTestResult&,
 }
 
 void LayoutObject::ScheduleRelayout() {
+  std::unique_ptr<TracedValue> value = std::make_unique<TracedValue>();
+  value->SetDouble("nodeId", OwnerNodeId());
+  TRACE_EVENT_INSTANT2("loading", "LayoutObject::ScheduleRelayout",
+                       TRACE_EVENT_SCOPE_THREAD, "data", std::move(value),
+                       "frame", ToTraceValue(GetFrame()));
+
   NOT_DESTROYED();
   if (auto* layout_view = DynamicTo<LayoutView>(this)) {
     if (LocalFrameView* view = layout_view->GetFrameView())
