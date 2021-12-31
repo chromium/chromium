@@ -370,7 +370,6 @@ UsbDeviceHandleUsbfs::Transfer::Transfer(
     scoped_refptr<base::RefCountedBytes> buffer,
     TransferCallback callback)
     : buffer(buffer), callback(std::move(callback)) {
-  memset(&urb, 0, sizeof(urb));
   urb.usercontext = this;
   urb.buffer = buffer->front();
 }
@@ -379,9 +378,6 @@ UsbDeviceHandleUsbfs::Transfer::Transfer(
     scoped_refptr<base::RefCountedBytes> buffer,
     IsochronousTransferCallback callback)
     : buffer(buffer), isoc_callback(std::move(callback)) {
-  // This buffer size calculation is checked in operator new().
-  memset(&urb, 0,
-         sizeof(urb) + sizeof(urb.iso_frame_desc[0]) * urb.number_of_packets);
   urb.usercontext = this;
   urb.buffer = buffer->front();
 }
@@ -399,6 +395,8 @@ void* UsbDeviceHandleUsbfs::Transfer::operator new(
           .ValueOrDie();
   void* p = ::operator new(total_size);
   Transfer* transfer = static_cast<Transfer*>(p);
+  memset(&transfer->urb, 0,
+         sizeof(urb) + sizeof(urb.iso_frame_desc[0]) * number_of_iso_packets);
   transfer->urb.number_of_packets = number_of_iso_packets;
   return p;
 }
