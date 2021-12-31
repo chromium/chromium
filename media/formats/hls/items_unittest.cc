@@ -60,14 +60,15 @@ ParseStatus::Or<LineResult> ExpectTag(TagKind kind,
                                       size_t col,
                                       base::StringPiece content) {
   return LineResult(
-      TagItem(kind, SourceString::CreateForTesting(line, col, content)));
+      TagItem{.kind = kind,
+              .content = SourceString::CreateForTesting(line, col, content)});
 }
 
 ParseStatus::Or<LineResult> ExpectUri(size_t line,
                                       size_t col,
                                       base::StringPiece content) {
   return LineResult(
-      UriItem(SourceString::CreateForTesting(line, col, content)));
+      UriItem{.content = SourceString::CreateForTesting(line, col, content)});
 }
 
 }  // namespace

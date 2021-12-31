@@ -29,14 +29,6 @@ enum class TagKind {
 // An item which has been determined to of a known or unknown tag type, but not
 // a comment.
 struct MEDIA_EXPORT TagItem {
-  // TODO(crbug.com/1275317): These constructors should be removed
-  TagItem(TagKind, SourceString content);
-  ~TagItem();
-  TagItem(const TagItem&);
-  TagItem(TagItem&&);
-  TagItem& operator=(const TagItem&);
-  TagItem& operator=(TagItem&&);
-
   TagKind kind;
 
   // The content of the tag, not including the tag type prefix.
@@ -45,14 +37,6 @@ struct MEDIA_EXPORT TagItem {
 
 // A URI. This may be a URI line or a URI appearing within a tag.
 struct MEDIA_EXPORT UriItem {
-  // TODO(crbug.com/1275317): These constructors should be removed
-  explicit UriItem(SourceString content);
-  ~UriItem();
-  UriItem(const UriItem&);
-  UriItem(UriItem&&);
-  UriItem& operator=(const UriItem&);
-  UriItem& operator=(UriItem&&);
-
   SourceString content;
 };
 

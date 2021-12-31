@@ -37,31 +37,14 @@ absl::optional<TagItem> GetTagItem(SourceString line) {
   for (const auto& tag : kTagKindPrefixes) {
     if (base::StartsWith(content.Str(), tag.first)) {
       content = content.Substr(tag.first.size());
-      return TagItem(tag.second, content);
+      return TagItem{.kind = tag.second, .content = content};
     }
   }
 
-  return TagItem(TagKind::kUnknown, content);
+  return TagItem{.kind = TagKind::kUnknown, .content = content};
 }
 
 }  // namespace
-
-TagItem::TagItem(TagKind kind, SourceString content)
-    : kind(kind), content(content) {}
-
-TagItem::~TagItem() = default;
-TagItem::TagItem(const TagItem&) = default;
-TagItem::TagItem(TagItem&&) = default;
-TagItem& TagItem::operator=(const TagItem&) = default;
-TagItem& TagItem::operator=(TagItem&&) = default;
-
-UriItem::UriItem(SourceString content) : content(content) {}
-
-UriItem::~UriItem() = default;
-UriItem::UriItem(const UriItem&) = default;
-UriItem::UriItem(UriItem&&) = default;
-UriItem& UriItem::operator=(const UriItem&) = default;
-UriItem& UriItem::operator=(UriItem&&) = default;
 
 ParseStatus::Or<GetNextLineItemResult> GetNextLineItem(
     SourceLineIterator* src) {
@@ -92,7 +75,7 @@ ParseStatus::Or<GetNextLineItemResult> GetNextLineItem(
     // If not empty, tag, or comment, it must be a URI.
     // This line may contain leading, trailing, or interior whitespace,
     // but that's the URI parser's responsibility.
-    return GetNextLineItemResult{UriItem(line)};
+    return GetNextLineItemResult{UriItem{.content = line}};
   }
 }
 
