@@ -112,7 +112,7 @@ method with a function containing the test
 [assertions](#assert-functions):
 
 ```js
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function(e) {
   t.step(function() {
     assert_true(e.bubbles, "bubbles should be true");
   });
@@ -132,7 +132,7 @@ first argument. The above example can be rewritten as:
 
 ```js
 async_test(function(t) {
-  document.addEventListener("DOMContentLoaded", function() {
+  document.addEventListener("DOMContentLoaded", function(e) {
     t.step(function() {
       assert_true(e.bubbles, "bubbles should be true");
     });
@@ -146,7 +146,7 @@ callback. A convenient method of doing this is through the `step_func` method
 which returns a function that, when called runs a test step. For example:
 
 ```js
-document.addEventListener("DOMContentLoaded", t.step_func(function() {
+document.addEventListener("DOMContentLoaded", t.step_func(function(e) {
   assert_true(e.bubbles, "bubbles should be true");
   t.done();
 }));
@@ -157,7 +157,7 @@ As a further convenience, the `step_func` that calls
 [`step_func_done`](#Test.step_func_done), as follows:
 
 ```js
-document.addEventListener("DOMContentLoaded", t.step_func_done(function() {
+document.addEventListener("DOMContentLoaded", t.step_func_done(function(e) {
   assert_true(e.bubbles, "bubbles should be true");
 }));
 ```
