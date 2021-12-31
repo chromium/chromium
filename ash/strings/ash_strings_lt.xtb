@@ -361,7 +361,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" /> iš <ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB-C įrenginys</translation>
-<translation id="3454224730401036106">Ryšys perjungtas į saugesnį tinklą</translation>
 <translation id="3465223694362104965">Nuo paskutinio jūsų prisijungimo su įrenginiu susieta kita klaviatūra. Prieš ją naudodami įsitikinkite, kad galite pasitikėti šia klaviatūra.</translation>
 <translation id="3465356146291925647">Tvarko administratorius</translation>
 <translation id="3477079411857374384">„Control“ + „Shift“ + „Space“</translation>
@@ -767,7 +766,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="6059276912018042191">Pastarieji „Chrome“ skirtukai</translation>
 <translation id="6062360702481658777">Būsite automatiškai atjungti po <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Sustabdyti įrašymą</translation>
-<translation id="607652042414456612">Jūsų kompiuterį galima aptikti netoliese esančiais „Bluetooth“ įrenginiais ir jis rodomas kaip „<ph name="NAME" />“ su adresu <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> kalbos failai atsisiųsti</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">„<ph name="FILENAME" />“ atsisiuntimo patvirtinimas</translation>
@@ -945,7 +943,6 @@ Naujas įdiegimas</translation>
 <translation id="7378594059915113390">Medijos valdikliai</translation>
 <translation id="7378889811480108604">Akumuliatoriaus tausojimo priemonės režimas išjungtas</translation>
 <translation id="7392563512730092880">Bet kada vėliau galėsite nustatyti skiltyje „Nustatymai“.</translation>
-<translation id="7398254312354928459">Perjungtas tinklo ryšys</translation>
 <translation id="7405710164030118432">Jei norite atrakinti įrenginį, įveskite „Family Link“ tėvų prieigos kodą</translation>
 <translation id="7406608787870898861">Baigiama mobiliojo ryšio tinklo sąranka</translation>
 <translation id="740790383907119240">Programos šaukiniai</translation>

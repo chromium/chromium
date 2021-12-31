@@ -361,7 +361,6 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> นาที</translation>
 <translation id="3445925074670675829">อุปกรณ์ USB-C</translation>
-<translation id="3454224730401036106">ระบบเปลี่ยนไปเชื่อมต่อกับเครือข่ายที่ปลอดภัยกว่าเดิมแล้ว</translation>
 <translation id="3465223694362104965">แป้นพิมพ์อีกรายการหนึ่งเชื่อมต่อกับอุปกรณ์นี้นับจากที่คุณลงชื่อเข้าใช้ครั้งล่าสุด โปรดตรวจสอบว่าแป้นพิมพ์นี้เชื่อถือได้ก่อนใช้งาน</translation>
 <translation id="3465356146291925647">จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -767,7 +766,6 @@
 <translation id="6059276912018042191">แท็บ Chrome ล่าสุด</translation>
 <translation id="6062360702481658777">คุณจะออกจากระบบโดยอัตโนมัติใน <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="6073451960410192870">หยุดบันทึก</translation>
-<translation id="607652042414456612">ค้นพบคอมพิวเตอร์ของคุณอยู่ใกล้กับอุปกรณ์บลูทูธและจะปรากฏเป็น "<ph name="NAME" />" พร้อมด้วยที่อยู่ <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">ดาวน์โหลดไฟล์คำพูดภาษา<ph name="LANGUAGE" />แล้ว</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" /> <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">ยืนยันการดาวน์โหลด <ph name="FILENAME" /></translation>
@@ -945,7 +943,6 @@
 <translation id="7378594059915113390">การควบคุมสื่อ</translation>
 <translation id="7378889811480108604">โหมดประหยัดแบตเตอรี่ปิดอยู่</translation>
 <translation id="7392563512730092880">คุณตั้งค่าภายหลังได้เสมอจากการตั้งค่า</translation>
-<translation id="7398254312354928459">เปลี่ยนการเชื่อมต่อเครือข่ายแล้ว</translation>
 <translation id="7405710164030118432">ป้อนรหัสการเข้าถึง Family Link ของผู้ปกครองเพื่อปลดล็อกอุปกรณ์</translation>
 <translation id="7406608787870898861">ตั้งค่าเครือข่ายมือถือให้เสร็จ</translation>
 <translation id="740790383907119240">ทางลัดของแอป</translation>

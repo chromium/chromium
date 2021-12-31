@@ -361,7 +361,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" /> kati ya <ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833">Dakika <ph name="MINUTES" /></translation>
 <translation id="3445925074670675829">Kifaa cha USB-C</translation>
-<translation id="3454224730401036106">Muunganisho wako unatumia mtandao salama zaidi</translation>
 <translation id="3465223694362104965">Kibodi nyingine imeunganishwa kwenye kifaa hiki tangu ulipoingia kwenye akaunti maya ya mwisho. Hakikisha kibodi hii ni salama kabla ya kuitumia.</translation>
 <translation id="3465356146291925647">Unadhibitiwa na Msimamizi wako</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -767,7 +766,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="6059276912018042191">Vichupo vya Chrome vilivyofunguliwa hivi majuzi</translation>
 <translation id="6062360702481658777">Utaondolewa kwenye akaunti kiotomatiki baada ya <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Acha kurekodi</translation>
-<translation id="607652042414456612">Kompyuta yako inaweza kutambuliwa na vifaa vyenye Bluetooth vilivyo karibu na itaonekana kama  "<ph name="NAME" />" ikiwa na anwani ya <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Faili za matamshi za <ph name="LANGUAGE" /> zimepakuliwa</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Thibitisha upakuaji <ph name="FILENAME" /></translation>
@@ -945,7 +943,6 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7378594059915113390">Vidhibiti vya Maudhui</translation>
 <translation id="7378889811480108604">Hali ya kuokoa betri imezimwa</translation>
 <translation id="7392563512730092880">Unaweza kuweka baadaye kwenye Mipangilio.</translation>
-<translation id="7398254312354928459">Imebadilisha muunganisho wa mtandao</translation>
 <translation id="7405710164030118432">Ili ufungue kifaa, weka msimbo wa ufikiaji wa mzazi katika Family Link</translation>
 <translation id="7406608787870898861">Maliza kuweka mipangilio ya mtandao wako wa simu</translation>
 <translation id="740790383907119240">Njia za Mikato za Programu</translation>

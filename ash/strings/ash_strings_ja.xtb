@@ -361,7 +361,6 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
 <translation id="3445925074670675829">USB-C デバイス</translation>
-<translation id="3454224730401036106">より安全なネットワークに接続が切り替えられました</translation>
 <translation id="3465223694362104965">前回のログイン後に、別のキーボードがこのデバイスに接続されました。このキーボードを使用する前に信頼できるものかどうか確認してください。</translation>
 <translation id="3465356146291925647">管理者によって管理</translation>
 <translation id="3477079411857374384">Control+Shift+Space</translation>
@@ -767,7 +766,6 @@
 <translation id="6059276912018042191">最近使った Chrome タブ</translation>
 <translation id="6062360702481658777">あと <ph name="LOGOUT_TIME_LEFT" />で自動的にログアウトします。</translation>
 <translation id="6073451960410192870">撮影を停止</translation>
-<translation id="607652042414456612">お使いのパソコンは近くの Bluetooth デバイスで検出可能です。名前「<ph name="NAME" />」、アドレス「<ph name="ADDRESS" />」のデバイスとして表示されます</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />の音声ファイルをダウンロードしました</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> のダウンロードの確認</translation>
@@ -946,7 +944,6 @@
 <translation id="7378594059915113390">メディアの操作</translation>
 <translation id="7378889811480108604">バッテリー セーバー モードがオフです</translation>
 <translation id="7392563512730092880">[設定] でいつでも設定できます。</translation>
-<translation id="7398254312354928459">ネットワーク接続が切り替えられました</translation>
 <translation id="7405710164030118432">このデバイスのロックを解除するには、ファミリー リンクの保護者のアクセスコードを入力してください</translation>
 <translation id="7406608787870898861">モバイル ネットワークの設定を完了してください</translation>
 <translation id="740790383907119240">アプリのショートカット</translation>

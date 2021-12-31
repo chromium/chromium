@@ -361,7 +361,6 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="3445925074670675829">Устройство USB-C</translation>
-<translation id="3454224730401036106">Вы были подключены к более безопасной сети.</translation>
 <translation id="3465223694362104965">После того как вы вошли в систему, к устройству была подключена другая клавиатура. Убедитесь, что ее использование безопасно.</translation>
 <translation id="3465356146291925647">Под управлением администратора</translation>
 <translation id="3477079411857374384">Ctrl + Shift + Пробел</translation>
@@ -767,7 +766,6 @@
 <translation id="6059276912018042191">Недавние вкладки в Chrome</translation>
 <translation id="6062360702481658777">Выход из системы будет выполнен автоматически через <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Остановить запись</translation>
-<translation id="607652042414456612">Расположенные поблизости устройства Bluetooth видят ваш компьютер под именем <ph name="NAME" /> с адресом <ph name="ADDRESS" />.</translation>
 <translation id="6114505516289286752">Скачаны файлы распознавания речи для языка: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Подтвердите скачивание файла <ph name="FILENAME" /></translation>
@@ -945,7 +943,6 @@
 <translation id="7378594059915113390">Элементы управления медиафайлами</translation>
 <translation id="7378889811480108604">Режим энергосбережения отключен</translation>
 <translation id="7392563512730092880">Вы можете задать параметры функции позже в настройках.</translation>
-<translation id="7398254312354928459">Установлено соединение с другой сетью</translation>
 <translation id="7405710164030118432">Чтобы разблокировать устройство, введите родительский код доступа Family Link.</translation>
 <translation id="7406608787870898861">Завершите настройку мобильной сети</translation>
 <translation id="740790383907119240">Ярлыки приложений</translation>

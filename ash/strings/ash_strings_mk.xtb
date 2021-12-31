@@ -361,7 +361,6 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="3445925074670675829">USB-Ц уред</translation>
-<translation id="3454224730401036106">Врската се префрли на побезбедна мрежа</translation>
 <translation id="3465223694362104965">Друга тастатура се поврзала со уредов од вашето последно најавување. Проверете дали ѝ верувате на тастатурава пред да ја користите.</translation>
 <translation id="3465356146291925647">Управувана од администраторот</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -768,7 +767,6 @@
 <translation id="6059276912018042191">Неодамнешни картички на Chrome</translation>
 <translation id="6062360702481658777">Автоматски ќе бидете одјавени за <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Сопри со снимање</translation>
-<translation id="607652042414456612">Уреди со Bluetooth во близина можат да го откријат вашиот уред, а тој ќе се појави како „<ph name="NAME" />“ со адреса <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Датотеките за говор на <ph name="LANGUAGE" /> се преземени</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Потврдете го преземањето на <ph name="FILENAME" /></translation>
@@ -946,7 +944,6 @@
 <translation id="7378594059915113390">Контроли за аудиовизуелни медиуми</translation>
 <translation id="7378889811480108604">Режимот „Штедач на батерија“ е исклучен</translation>
 <translation id="7392563512730092880">Во секое време може да ја поставите подоцна од „Поставки“.</translation>
-<translation id="7398254312354928459">Мрежната врска е префрлена</translation>
 <translation id="7405710164030118432">За да го отклучите уредот, внесете го кодот за пристап на родителот за Family Link</translation>
 <translation id="7406608787870898861">Завршете го поставувањето на мобилната мрежа</translation>
 <translation id="740790383907119240">Кратенки за апликации</translation>

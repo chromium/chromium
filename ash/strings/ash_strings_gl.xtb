@@ -361,7 +361,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB‑C</translation>
-<translation id="3454224730401036106">A conexión cambiouse a unha rede máis segura</translation>
 <translation id="3465223694362104965">Conectouse outro teclado a este dispositivo desde a última vez que iniciaches sesión. Asegúrate de que confías neste teclado antes de utilizalo.</translation>
 <translation id="3465356146291925647">Xestionada polo teu administrador</translation>
 <translation id="3477079411857374384">Control-Maúsculas-Espazo</translation>
@@ -768,7 +767,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6059276912018042191">Pestanas recentes de Chrome</translation>
 <translation id="6062360702481658777">A túa sesión pecharase automaticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Deter gravación</translation>
-<translation id="607652042414456612">Os dispositivos Bluetooth situados nas proximidades poderán detectar o teu dispositivo, que aparecerá como "<ph name="NAME" />" co enderezo <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Descargáronse os ficheiros de voz en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmar descarga de <ph name="FILENAME" /></translation>
@@ -946,7 +944,6 @@ Nova instalación</translation>
 <translation id="7378594059915113390">Controis de contido multimedia</translation>
 <translation id="7378889811480108604">Está desactivado o modo de aforro de batería</translation>
 <translation id="7392563512730092880">Tamén podes configurar esta función máis tarde desde Configuración.</translation>
-<translation id="7398254312354928459">Cambiouse a conexión de rede</translation>
 <translation id="7405710164030118432">Para desbloquear o dispositivo, introduce o código de acceso parental de Family Link</translation>
 <translation id="7406608787870898861">Remata de configurar a túa rede de telefonía móbil</translation>
 <translation id="740790383907119240">Atallos da aplicación</translation>

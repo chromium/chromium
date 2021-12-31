@@ -361,7 +361,6 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقیقه</translation>
 <translation id="3445925074670675829">‏دستگاه USB-C</translation>
-<translation id="3454224730401036106">اتصال شما به شبکه‌ ایمن‌تری منتقل شده است</translation>
 <translation id="3465223694362104965">از آخرین باری که به سیستم وارد شدید، صفحه‌کلید دیگری به این دستگاه متصل شده است. قبل از استفاده از این صفحه‌کلید، مطمئن شوید به آن اعتماد دارید.</translation>
 <translation id="3465356146291925647">تحت‌مدیریت سرپرست</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -767,7 +766,6 @@
 <translation id="6059276912018042191">‏برگه‌های اخیر Chrome</translation>
 <translation id="6062360702481658777">به صورت خودکار در عرض <ph name="LOGOUT_TIME_LEFT" /> از سیستم خارج می‌شوید.</translation>
 <translation id="6073451960410192870">توقف ضبط</translation>
-<translation id="607652042414456612">رایانه شما توسط دستگاه‌های بلوتوث نزدیک قابل شناسایی است و با نام «<ph name="NAME" />» و آدرس <ph name="ADDRESS" /> نشان داده می‌شود</translation>
 <translation id="6114505516289286752">فایل‌های گفتار <ph name="LANGUAGE" /> بارگیری شد</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">تأیید بارگیری <ph name="FILENAME" /></translation>
@@ -945,7 +943,6 @@
 <translation id="7378594059915113390">کنترل‌های رسانه</translation>
 <translation id="7378889811480108604">حالت «بهینه‌سازی باتری» خاموش است</translation>
 <translation id="7392563512730092880">همیشه می‌توانید راه‌اندازی را در زمان دیگری ازطریق «تنظیمات» انجام دهید.</translation>
-<translation id="7398254312354928459">اتصال شبکه تغییریافته</translation>
 <translation id="7405710164030118432">‏برای باز کردن قفل دستگاه، کد دسترسی ولی را برای Family Link وارد کنید</translation>
 <translation id="7406608787870898861">تکمیل کردن راه‌اندازی شبکه تلفن همراه</translation>
 <translation id="740790383907119240">میان‌برهای برنامه</translation>

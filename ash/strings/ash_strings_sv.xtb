@@ -361,7 +361,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-enhet</translation>
-<translation id="3454224730401036106">Anslutningen har flyttats till ett säkrare nätverk</translation>
 <translation id="3465223694362104965">Ett annat tangentbord har anslutits till den här enheten sedan du loggade in senast. Försäkra dig om att det är ett tangentbord du litar på innan du använder det.</translation>
 <translation id="3465356146291925647">Hanteras av administratören</translation>
 <translation id="3477079411857374384">Ctrl-Skift-Mellanslag</translation>
@@ -767,7 +766,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6059276912018042191">Senaste flikarna i Chrome</translation>
 <translation id="6062360702481658777">Du loggas ut automatiskt om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Sluta spela in</translation>
-<translation id="607652042414456612">Din dator kan upptäckas av Bluetooth-enheter som finns i närheten och den visas som <ph name="NAME" /> med adressen <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Filerna för taligenkänning på <ph name="LANGUAGE" /> har laddats ned</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Bekräfta nedladdning <ph name="FILENAME" /></translation>
@@ -945,7 +943,6 @@ Nyligen installerad</translation>
 <translation id="7378594059915113390">Mediereglage</translation>
 <translation id="7378889811480108604">Batterisparläget är avstängt</translation>
 <translation id="7392563512730092880">Du kan alltid konfigurera detta senare i inställningarna.</translation>
-<translation id="7398254312354928459">Bytte nätverksanslutning</translation>
 <translation id="7405710164030118432">Lås upp enheten genom att ange föräldraåtkomstkoden för Family Link</translation>
 <translation id="7406608787870898861">Slutför konfigureringen av mobilnätverket</translation>
 <translation id="740790383907119240">Genvägar till appar</translation>

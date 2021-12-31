@@ -361,7 +361,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositiu USB-C</translation>
-<translation id="3454224730401036106">La connexió ha canviat a una xarxa més segura</translation>
 <translation id="3465223694362104965">Des del darrer inici de sessió, s'ha connectat un altre teclat a aquest dispositiu. Abans d'utilitzar-lo, assegura't que hi confiïs.</translation>
 <translation id="3465356146291925647">Gestionada per l'administrador</translation>
 <translation id="3477079411857374384">Control+Maj+espai</translation>
@@ -767,7 +766,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6059276912018042191">Pestanyes de Chrome recents</translation>
 <translation id="6062360702481658777">Es tancarà la sessió automàticament d'aquí a <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Atura la gravació</translation>
-<translation id="607652042414456612">El vostre ordinador està visible als dispositius Bluetooth propers i apareixerà com a "<ph name="NAME" />" amb l'adreça <ph name="ADDRESS" />.</translation>
 <translation id="6114505516289286752">S'han baixat fitxers de veu en <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Confirma la baixada del fitxer <ph name="FILENAME" /></translation>
@@ -945,7 +943,6 @@ Instal·lació nova</translation>
 <translation id="7378594059915113390">Controls multimèdia</translation>
 <translation id="7378889811480108604">El mode d'estalvi de bateria està desactivat</translation>
 <translation id="7392563512730092880">Pots ajustar aquesta funció més endavant des de Configuració.</translation>
-<translation id="7398254312354928459">S'ha canviat la connexió a la xarxa</translation>
 <translation id="7405710164030118432">Introdueix el codi d'accés parental de Family Link per desbloquejar el dispositiu</translation>
 <translation id="7406608787870898861">Acaba de configurar la xarxa mòbil</translation>
 <translation id="740790383907119240">Dreceres d'aplicacions</translation>

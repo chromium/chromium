@@ -361,7 +361,6 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> မိနစ်</translation>
 <translation id="3445925074670675829">USB-C ကိရိယာ</translation>
-<translation id="3454224730401036106">သင်၏ ချိတ်ဆက်မှုကို ပိုမိုလုံခြုံသည့် ကွန်ရက်သို့ ပြောင်းထားပါသည်</translation>
 <translation id="3465223694362104965">သင်နောက်ဆုံးအကြိမ် လက်မှတ်ထိုးဝင်သည့်အချိန်မှစ၍ အခြားကီးဘုတ်တစ်ခုကို ဤစက်ပစ္စည်းသို့ ချိတ်ဆက်ထားပါသည်။ ကီးဘုတ်ကို အသုံးမပြုမီ သင်ယုံကြည်မှုရှိမရှိ သေချာစစ်ဆေးပါ။</translation>
 <translation id="3465356146291925647">သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားသည်</translation>
 <translation id="3477079411857374384">Control−Shift−Space</translation>
@@ -767,7 +766,6 @@
 <translation id="6059276912018042191">လတ်တလော Chrome တဘ်များ</translation>
 <translation id="6062360702481658777">သင်သည် <ph name="LOGOUT_TIME_LEFT" /> အကြာတွင် အလိုအလျောက် ထွက်ခွာမည်။</translation>
 <translation id="6073451960410192870">ကူးယူမှု ရပ်ရန်</translation>
-<translation id="607652042414456612">သင်၏ ကွန်ပျူတာမှာ အနီးအနားရှိ ဘလူးတုသ် ကိရိယာများမှာ ရှာတွေ့နိုင်ကာ "<ph name="NAME" />"အဖြစ် လိပ်စာ <ph name="ADDRESS" />ဖြင့် မြင်ရမည်။</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> တိုက်ရိုက်စာတန်းဖိုင်များ ဒေါင်းလုဒ်လုပ်ပြီးပြီ</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />။ <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ဒေါင်းလုဒ်လုပ်ရန် အတည်ပြုခြင်း</translation>
@@ -945,7 +943,6 @@
 <translation id="7378594059915113390">မီဒီယာ ထိန်းချုပ်မှုများ</translation>
 <translation id="7378889811480108604">ဘက်ထရီအားထိန်းမုဒ် ပိတ်ထားသည်</translation>
 <translation id="7392563512730092880">နောက်ပိုင်းတွင် 'ဆက်တင်များ' မှ အချိန်မရွေး စနစ်ထည့်သွင်းနိုင်သည်။</translation>
-<translation id="7398254312354928459">ကွန်ရက်ချိတ်ဆက်မှုကို ပြောင်းထားခြင်း</translation>
 <translation id="7405710164030118432">စက်ပစ္စည်းကို လော့ခ်ဖွင့်ရန် သင်၏ Family Link မိဘသုံးခွင့်ကုဒ်ကို ထည့်ပါ</translation>
 <translation id="7406608787870898861">သင့်မိုဘိုင်းကွန်ရက် စနစ်ထည့်သွင်းခြင်းကို အပြီးသတ်ပါ</translation>
 <translation id="740790383907119240">အက်ပ်ဖြတ်လမ်းလင့်ခ်များ</translation>

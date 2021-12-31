@@ -361,7 +361,6 @@
 <translation id="3441920967307853524"><ph name="TOTAL_BYTES" />/<ph name="RECEIVED_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> perc</translation>
 <translation id="3445925074670675829">C típusú USB-vel kompatibilis eszköz</translation>
-<translation id="3454224730401036106">A rendszer biztonságosabb hálózati kapcsolatra váltott</translation>
 <translation id="3465223694362104965">Az utolsó bejelentkezése óta másik billentyűzetet csatlakoztattak ehhez az eszközhöz. Mielőtt elkezdené használni, győződjön meg róla, hogy biztonságos.</translation>
 <translation id="3465356146291925647">A rendszergazdája kezeli</translation>
 <translation id="3477079411857374384">Control+Shift+szóköz</translation>
@@ -768,7 +767,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6059276912018042191">Nemrég megnyitott Chrome-lapok</translation>
 <translation id="6062360702481658777">A rendszer automatikusan kijelentkezteti Önt <ph name="LOGOUT_TIME_LEFT" /> idő múlva.</translation>
 <translation id="6073451960410192870">Felvétel leállítása</translation>
-<translation id="607652042414456612">Számítógépét felfedezhetik a közeli Bluetooth-eszközök. Számítógépe „<ph name="NAME" />” néven, <ph name="ADDRESS" /> címmel lesz látható</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> nyelvű beszédfájlok letöltve</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">A(z) <ph name="FILENAME" /> fájl letöltésének megerősítése</translation>
@@ -946,7 +944,6 @@ Frissen telepítve</translation>
 <translation id="7378594059915113390">Médiatartalmak vezérlői</translation>
 <translation id="7378889811480108604">Az Akkumulátorkímélő mód ki van kapcsolva</translation>
 <translation id="7392563512730092880">Később bármikor beállíthatja a Beállítások között.</translation>
-<translation id="7398254312354928459">A rendszer hálózati kapcsolatot váltott</translation>
 <translation id="7405710164030118432">Az eszköz zárolásának feloldásához adja meg a Family Link szülői hozzáférési kódot</translation>
 <translation id="7406608787870898861">Fejezze be a mobilhálózat beállítását</translation>
 <translation id="740790383907119240">Alkalmazás-parancsikonok</translation>

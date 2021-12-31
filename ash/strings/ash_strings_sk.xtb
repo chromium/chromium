@@ -361,7 +361,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Zariadenie USB-C</translation>
-<translation id="3454224730401036106">Vaše pripojenie bolo prepnuté na bezpečnejšiu sieť</translation>
 <translation id="3465223694362104965">Od vášho posledného prihlásenia bola k tomuto zariadeniu pripojená ďalšia klávesnica. Skôr ako ju použijete, uistite sa, že je dôveryhodná.</translation>
 <translation id="3465356146291925647">Ovládané správcom</translation>
 <translation id="3477079411857374384">Ctrl-Shift-medzerník</translation>
@@ -767,7 +766,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="6059276912018042191">Nedávne karty Chromu</translation>
 <translation id="6062360702481658777">Odhlásenie prebehne automaticky o <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Zastaviť zaznamenávanie</translation>
-<translation id="607652042414456612">Váš počítač je viditeľný pre zariadenia Bluetooth v blízkosti a zobrazí sa ako <ph name="NAME" /> s adresou <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Súbory s balíkmi reči <ph name="LANGUAGE" /> boli stiahnuté</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Potvrďte stiahnutie súboru <ph name="FILENAME" /></translation>
@@ -945,7 +943,6 @@ Nová inštalácia</translation>
 <translation id="7378594059915113390">Ovládacie prvky médií</translation>
 <translation id="7378889811480108604">Režim šetriča batérie je vypnutý</translation>
 <translation id="7392563512730092880">Túto funkciu môžete kedykoľvek nastaviť neskôr v sekcii Nastavenia.</translation>
-<translation id="7398254312354928459">Prepnuté sieťové pripojenie</translation>
 <translation id="7405710164030118432">Ak chcete toto zariadenie odomknúť, zadajte prístupový kód rodiča Family Link</translation>
 <translation id="7406608787870898861">Dokončite nastavovanie mobilnej siete</translation>
 <translation id="740790383907119240">Odkazy do aplikácií</translation>

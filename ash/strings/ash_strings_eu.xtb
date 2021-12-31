@@ -361,7 +361,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C gailua</translation>
-<translation id="3454224730401036106">Sare seguruago batera konektatu zaude orain</translation>
 <translation id="3465223694362104965">Beste teklatu bat konektatu da gailu honetara saioa hasi zenuen azken alditik. Teklatua erabili aurretik, ziurtatu fidagarria dela.</translation>
 <translation id="3465356146291925647">Administratzaileak kudeatua</translation>
 <translation id="3477079411857374384">Kontrol + Maius + zuriunea</translation>
@@ -768,7 +767,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6059276912018042191">Azkenaldian erabilitako Chrome-ko fitxak</translation>
 <translation id="6062360702481658777">Saioa automatikoki amaituko da <ph name="LOGOUT_TIME_LEFT" /> igarotakoan.</translation>
 <translation id="6073451960410192870">Utzi grabatzeari</translation>
-<translation id="607652042414456612">Ordenagailua ikusgai dago inguruko Bluetooth bidezko gailuetarako, eta "<ph name="NAME" />" izenarekin eta <ph name="ADDRESS" /> helbidearekin agertuko da</translation>
 <translation id="6114505516289286752">Deskargatu dira hizketa-fitxategiak (<ph name="LANGUAGE" />)</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Berretsi <ph name="FILENAME" /> deskargatu nahi duzula</translation>
@@ -946,7 +944,6 @@ Berriki instalatu da</translation>
 <translation id="7378594059915113390">Multimedia-edukia kontrolatzeko aukerak</translation>
 <translation id="7378889811480108604">Desaktibatuta dago bateria-aurrezlea</translation>
 <translation id="7392563512730092880">Nahi duzunean konfigura dezakezu Ezarpenak atalean.</translation>
-<translation id="7398254312354928459">Aldatu egin da sareko konexioa</translation>
 <translation id="7405710164030118432">Gailua desblokeatzeko, idatzi Family Link-eko gurasoen sarbide-kodea.</translation>
 <translation id="7406608787870898861">Amaitu sare mugikorra konfiguratzen</translation>
 <translation id="740790383907119240">Aplikazioetarako lasterbideak</translation>

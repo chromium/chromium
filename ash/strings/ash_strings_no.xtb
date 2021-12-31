@@ -361,7 +361,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C-enhet</translation>
-<translation id="3454224730401036106">Tilkoblingen din er byttet til et sikrere nettverk</translation>
 <translation id="3465223694362104965">Et annet tastatur er koblet til denne enheten siden du sist logget på. Sørg for at du stoler på dette tastaturet før du bruker det.</translation>
 <translation id="3465356146291925647">Administreres av administratoren din</translation>
 <translation id="3477079411857374384">Ctrl+Shift+Mellomrom</translation>
@@ -766,7 +765,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6059276912018042191">Nylige Chrome-faner</translation>
 <translation id="6062360702481658777">Du logges automatisk av om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Stopp opptaket</translation>
-<translation id="607652042414456612">Datamaskinen din kan registreres av Bluetooth-enheter i nærheten, og vises med navnet «<ph name="NAME" />» og adressen <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Talefiler for <ph name="LANGUAGE" /> er lastet ned</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Bekreft nedlastingen <ph name="FILENAME" /></translation>
@@ -944,7 +942,6 @@ Nylig installert</translation>
 <translation id="7378594059915113390">Mediekontroller</translation>
 <translation id="7378889811480108604">Batterisparing er av</translation>
 <translation id="7392563512730092880">Du kan alltid konfigurere dette senere i Innstillinger.</translation>
-<translation id="7398254312354928459">Byttet nettverkstilkobling</translation>
 <translation id="7405710164030118432">For å låse opp enheten, skriv inn koden din for foreldretilgang til Family Link</translation>
 <translation id="7406608787870898861">Fullfør konfigureringen av mobilnettverket</translation>
 <translation id="740790383907119240">Snarveier for apper</translation>

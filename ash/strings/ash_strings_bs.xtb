@@ -361,7 +361,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C uređaj</translation>
-<translation id="3454224730401036106">Vaša veza je prebačena na sigurniju mrežu</translation>
 <translation id="3465223694362104965">Od vaše posljednje prijave na ovaj uređaj je povezana još jedna tastatura. Prije nego što upotrijebite tu tastaturu, provjerite je li pouzdana.</translation>
 <translation id="3465356146291925647">Upravlja vaš administrator</translation>
 <translation id="3477079411857374384">Ctrl + Shift + razmak</translation>
@@ -767,7 +766,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6059276912018042191">Nedavne kartice Chromea</translation>
 <translation id="6062360702481658777">Bit ćete automatski odjavljeni za <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Zaustavi snimanje</translation>
-<translation id="607652042414456612">Vaš računar je vidljiv Bluetooth uređajima u blizini i pojavit će se kao "<ph name="NAME" />" s adresom <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Fajlovi govora na jeziku <ph name="LANGUAGE" /> su preuzeti</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Potvrđivanje preuzimanja fajla <ph name="FILENAME" /></translation>
@@ -945,7 +943,6 @@ Nova instalacija</translation>
 <translation id="7378594059915113390">Upravljanje medijima</translation>
 <translation id="7378889811480108604">Način rada uštede baterije je isključen</translation>
 <translation id="7392563512730092880">Uvijek ga možete postaviti kasnije u Postavkama.</translation>
-<translation id="7398254312354928459">Mrežna veza je promijenjena</translation>
 <translation id="7405710164030118432">Da otključate uređaj, unesite kôd za pristup roditelja za Family Link</translation>
 <translation id="7406608787870898861">Završite postavljanje mobilne mreže</translation>
 <translation id="740790383907119240">Prečice aplikacije</translation>

@@ -361,7 +361,6 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> நி.</translation>
 <translation id="3445925074670675829">USB-C சாதனம்</translation>
-<translation id="3454224730401036106">உங்கள் இணைப்பு மிகவும் பாதுகாப்பான நெட்வொர்க்குக்கு மாற்றப்பட்டது</translation>
 <translation id="3465223694362104965">நீங்கள் கடந்த முறை உள்நுழைந்த பின்னர் இந்தச் சாதனத்துடன் மற்றொரு கீபோர்டு இணைக்கப்பட்டுள்ளது. இதைப் பயன்படுத்தும் முன்பு, நீங்கள் இந்தக் கீபோர்டை நம்புகிறீர்களா என்பதை உறுதிப்படுத்தவும்.</translation>
 <translation id="3465356146291925647">உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>
 <translation id="3477079411857374384">கன்ட்ரோல்-ஷிஃப்ட்-ஸ்பேஸ்</translation>
@@ -767,7 +766,6 @@
 <translation id="6059276912018042191">சமீபத்திய Chrome தாவல்கள்</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> இல் தானாகவே வெளியேற்றப்படுவீர்கள்.</translation>
 <translation id="6073451960410192870">பதிவுசெய்வதை நிறுத்து</translation>
-<translation id="607652042414456612">உங்கள் கம்ப்யூட்டர் அருகிலுள்ள Bluetooth சாதனங்களால் கண்டறியப்படும், மேலும் <ph name="ADDRESS" /> என்ற முகவரியுடன் "<ph name="NAME" />" என்ற பெயரில் தோன்றும்</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> மொழிக்கான பேச்சு அறிதல் ஃபைல்கள் பதிவிறக்கப்பட்டன</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ஃபைலைப் பதிவிறக்குவதை உறுதிப்படுத்து</translation>
@@ -945,7 +943,6 @@
 <translation id="7378594059915113390">மீடியா கட்டுப்பாடுகள்</translation>
 <translation id="7378889811480108604">பேட்டரி சேமிப்பான் பயன்முறை முடக்கத்தில் உள்ளது</translation>
 <translation id="7392563512730092880">அமைப்புகளுக்குச் சென்று பிறகு எப்போது வேண்டுமானாலும் அமைத்துக்கொள்ளலாம்.</translation>
-<translation id="7398254312354928459">நெட்வொர்க் இணைப்பு மாற்றப்பட்டது</translation>
 <translation id="7405710164030118432">இந்தச் சாதனத்தை அன்லாக் செய்ய உங்கள் Family Linkகின் முதல்நிலை அணுகல் குறியீட்டை உள்ளிடவும்</translation>
 <translation id="7406608787870898861">மொபைல் நெட்வொர்க் அமைவை நிறைவு செய்யுங்கள்</translation>
 <translation id="740790383907119240">ஆப்ஸ் ஷார்ட்கட்கள்</translation>

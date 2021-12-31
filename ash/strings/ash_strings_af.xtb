@@ -361,7 +361,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB C-toestel</translation>
-<translation id="3454224730401036106">Jou verbinding het na 'n veiliger netwerk gewissel</translation>
 <translation id="3465223694362104965">Nog 'n sleutelbord is aan hierdie toestel gekoppel vandat jy laas aangemeld het. Maak seker jy vertrou hierdie sleutelbord voordat jy dit gebruik.</translation>
 <translation id="3465356146291925647">Deur jou administrateur bestuur</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -768,7 +767,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6059276912018042191">Onlangse Chrome-oortjies</translation>
 <translation id="6062360702481658777">Jy sal oor <ph name="LOGOUT_TIME_LEFT" /> outomaties afgemeld word.</translation>
 <translation id="6073451960410192870">Stop opname</translation>
-<translation id="607652042414456612">Jou rekenaar is opspoorbaar vir Bluetooth-toestelle wat naby is en sal verskyn as "<ph name="NAME" />" met adres <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />-spraaklêers is afgelaai</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Bevestig aflaai <ph name="FILENAME" /></translation>
@@ -946,7 +944,6 @@ Nuwe installasie</translation>
 <translation id="7378594059915113390">Media-kontroles</translation>
 <translation id="7378889811480108604">Batterybespaardermodus is af</translation>
 <translation id="7392563512730092880">Jy kan altyd later in Instellings opstel.</translation>
-<translation id="7398254312354928459">Het netwerkverbinding gewissel</translation>
 <translation id="7405710164030118432">Voer jou Family Link-ouertoegangskode in om die toestel te ontsluit</translation>
 <translation id="7406608787870898861">Stel jou mobiele netwerk klaar op</translation>
 <translation id="740790383907119240">Programkortpaaie</translation>

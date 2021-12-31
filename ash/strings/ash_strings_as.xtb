@@ -361,7 +361,6 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="3445925074670675829">ইউএছবি চি ডিভাইচ</translation>
-<translation id="3454224730401036106">আপোনাৰ সংযোগ অন্য কোনো সুৰক্ষিত নেটৱর্কলৈ সলনি কৰা হৈছে</translation>
 <translation id="3465223694362104965">আপুনি অন্তিমবাৰ ছাইন ইন কৰাৰ পিছত আন এখন কীব’ৰ্ড সংযোগ কৰা হৈছে। ব্যৱহাৰ কৰাৰ আগেয়ে আপুনি সেইখনক যে বিশ্বাস কৰে তাক নিশ্চিত কৰক।</translation>
 <translation id="3465356146291925647">আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -767,7 +766,6 @@
 <translation id="6059276912018042191">Chromeৰ শেহতীয়া টেব</translation>
 <translation id="6062360702481658777">আপোনাক স্বয়ংক্ৰিয়ভাৱে <ph name="LOGOUT_TIME_LEFT" />ত ছাইন আউট কৰোৱা হ’ব।</translation>
 <translation id="6073451960410192870">ৰেকৰ্ডিং কৰা বন্ধ কৰক</translation>
-<translation id="607652042414456612">আপোনাৰ কম্পিউটাৰটো নিকটৱৰ্তী ডিভাইচসমূহে পাব পৰা অৱস্থাত আছে আৰু এইটো <ph name="ADDRESS" /> ঠিকনাৰ সৈতে "<ph name="NAME" />" হিচাপে প্ৰদর্শিত হ’ব</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> কথনৰ ফাইল ডাউনল’ড কৰা হৈছে</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ডাউনল’ড কৰিব বিচাৰে বুলি নিশ্চিত কৰক</translation>
@@ -945,7 +943,6 @@
 <translation id="7378594059915113390">মিডিয়াৰ নিয়ন্ত্ৰণসমূহ</translation>
 <translation id="7378889811480108604">বেটাৰী সঞ্চয়কাৰী ম’ড অফ আছে</translation>
 <translation id="7392563512730092880">আপুনি ছেটিঙৰ পৰা পাছত যিকোনো সময়তে ছেট আপ কৰিব পাৰে।</translation>
-<translation id="7398254312354928459">নেটৱৰ্ক সংযোগ সলনি কৰা হ’ল</translation>
 <translation id="7405710164030118432">ডিভাইচটো আনলক কৰিবলৈ আপোনাৰ Family Linkৰ অভিভাৱকৰ প্ৰৱেশ ক'ডটো দিয়ক</translation>
 <translation id="7406608787870898861">আপোনাৰ ম’বাইল নেটৱৰ্ক ছেট আপ কৰা সমাপ্ত কৰক</translation>
 <translation id="740790383907119240">এপ্‌ শ্বৰ্টকাট</translation>

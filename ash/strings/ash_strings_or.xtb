@@ -361,7 +361,6 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ମିନିଟ୍</translation>
 <translation id="3445925074670675829">USB-C ଡିଭାଇସ୍</translation>
-<translation id="3454224730401036106">ଆପଣଙ୍କର ସଂଯୋଗକୁ ଏକ ଅଧିକ ସୁରକ୍ଷିତ ନେଟ୍‌ୱର୍କକୁ ସ୍ୱିଚ୍ କରିଦିଆଯାଇଛି</translation>
 <translation id="3465223694362104965">ଆପଣ ଗତଥର ପାଇଁ ସାଇନ୍ ଇନ୍ କରିବା ପରେ ଅନ୍ୟ ଏକ କୀ'ବୋର୍ଡ ଏହି ଡିଭାଇସ୍‍‍ରେ ସଂଯୁକ୍ତ ହୋଇଛି। ଆପଣ ଏହି କୀ'ବୋର୍ଡକୁ ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ ଏହା ଭରସାଯୋଗ୍ୟ ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="3465356146291925647">ଆପଣଙ୍କ ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -767,7 +766,6 @@
 <translation id="6059276912018042191">ବର୍ତ୍ତମାନର Chrome ଟାବଗୁଡ଼ିକ</translation>
 <translation id="6062360702481658777">ଆପଣ ସ୍ଵଚାଳିତ ଭାବେ <ph name="LOGOUT_TIME_LEFT" />ରେ ସାଇନ୍ ଆଉଟ୍ କରିବେ।</translation>
 <translation id="6073451960410192870">ରେକର୍ଡିଂ ବନ୍ଦ କରନ୍ତୁ</translation>
-<translation id="607652042414456612">ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍ ନିକଟସ୍ଥ ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସ୍‌ଗୁଡ଼ିକରେ ଖୋଜିପାଇବାଯୋଗ୍ୟ ଅଟେ ଏବଂ ଠିକଣା <ph name="ADDRESS" /> ସହିତ " <ph name="NAME" />" ରୂପେ ଦେଖାଯିବ</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> ସ୍ପିଚ୍ ଫାଇଲଗୁଡ଼ିକ ଡାଉନଲୋଡ୍ କରାଯାଇଛି</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />। <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" />କୁ ଡାଉନଲୋଡ କରିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
@@ -944,7 +942,6 @@
 <translation id="7378594059915113390">ମିଡିଆକୁ ନିୟନ୍ତ୍ରଣ କରୁଛି</translation>
 <translation id="7378889811480108604">ବ୍ୟାଟେରୀ ସେଭର୍ ମୋଡ୍ ବନ୍ଦ ଅଛି</translation>
 <translation id="7392563512730092880">ଆପଣ ସର୍ବଦା ସେଟିଂସରୁ ପରେ ସେଟ୍ ଅପ୍ କରିପାରିବେ।</translation>
-<translation id="7398254312354928459">ନେଟ୍‍ୱର୍କ ସଂଯୋଗ ସ୍ୱିଚ୍‌ କରାଗଲା</translation>
 <translation id="7405710164030118432">ଡିଭାଇସ୍‍କୁ ଅନଲକ୍ କରିବା ପାଇଁ ଆପଣଙ୍କ Family Linkର ଅଭିଭାବକଙ୍କ ଆକ୍ସେସ୍ କୋଡ୍ ଲେଖନ୍ତୁ।</translation>
 <translation id="7406608787870898861">ଆପଣଙ୍କ ମୋବାଇଲ୍ ନେଟୱାର୍କ ସେଟ୍ ଅପ୍ କରିବା ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ</translation>
 <translation id="740790383907119240">ଆପ ସର୍ଟକଟଗୁଡ଼ିକ</translation>

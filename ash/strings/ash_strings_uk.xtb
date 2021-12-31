@@ -361,7 +361,6 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> хв</translation>
 <translation id="3445925074670675829">Пристрій із портом USB типу C</translation>
-<translation id="3454224730401036106">Вас під’єднано до більш захищеної мережі</translation>
 <translation id="3465223694362104965">Після вашого останнього входу до пристрою було підключено іншу клавіатуру. Переконайтеся, що вона безпечна, перш ніж користуватися нею.</translation>
 <translation id="3465356146291925647">Мережею керує адміністратор</translation>
 <translation id="3477079411857374384">Комбінація клавіш "Control-Shift-Space"</translation>
@@ -767,7 +766,6 @@
 <translation id="6059276912018042191">Останні вкладки Chrome</translation>
 <translation id="6062360702481658777">Ви автоматично вийдете за <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Припинити запис</translation>
-<translation id="607652042414456612">Ваш комп’ютер видимий для пристроїв Bluetooth поблизу та відображатиметься з назвою "<ph name="NAME" />" та адресою <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Файли живих субтитрів завантажено (<ph name="LANGUAGE" />)</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Підтвердити завантаження файлу <ph name="FILENAME" /></translation>
@@ -945,7 +943,6 @@
 <translation id="7378594059915113390">Елементи керування медіа</translation>
 <translation id="7378889811480108604">Режим енергозбереження вимкнено</translation>
 <translation id="7392563512730092880">Це завжди можна зробити пізніше в Налаштуваннях.</translation>
-<translation id="7398254312354928459">З’єднання з мережею змінено</translation>
 <translation id="7405710164030118432">Щоб розблокувати пристрій, введіть код доступу батьків із Family Link</translation>
 <translation id="7406608787870898861">Завершіть налаштування мобільної мережі</translation>
 <translation id="740790383907119240">Ярлики додатка</translation>

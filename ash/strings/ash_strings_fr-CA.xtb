@@ -361,7 +361,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Appareil USB-C</translation>
-<translation id="3454224730401036106">Votre connexion est passée à un réseau plus sécurisé</translation>
 <translation id="3465223694362104965">Un autre clavier a été connecté à cet appareil depuis votre dernière connexion. Assurez-vous qu'il s'agit d'un clavier de confiance avant de l'utiliser.</translation>
 <translation id="3465356146291925647">Géré par votre administrateur</translation>
 <translation id="3477079411857374384">Ctrl + Maj + Espace</translation>
@@ -767,7 +766,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6059276912018042191">Onglets Chrome récents</translation>
 <translation id="6062360702481658777">Vous serez automatiquement déconnecté dans <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Arrêter l'enregistrement</translation>
-<translation id="607652042414456612">Votre ordinateur est visible pour les appareils Bluetooth situés à proximité sous le nom « <ph name="NAME" /> » et a comme adresse <ph name="ADDRESS" />.</translation>
 <translation id="6114505516289286752">Fichiers vocaux en <ph name="LANGUAGE" /> téléchargés</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmer le téléchargement de <ph name="FILENAME" /></translation>
@@ -945,7 +943,6 @@ Nouvelle installation</translation>
 <translation id="7378594059915113390">Commandes multimédias</translation>
 <translation id="7378889811480108604">Le mode Économiseur de pile est désactivé</translation>
 <translation id="7392563512730092880">Vous pouvez toujours effectuer la configuration plus tard dans le menu Paramètres.</translation>
-<translation id="7398254312354928459">Changement de connexion réseau</translation>
 <translation id="7405710164030118432">Pour déverrouiller l'appareil, entrez votre code d'accès parental Family Link</translation>
 <translation id="7406608787870898861">Terminer la configuration de votre réseau cellulaire</translation>
 <translation id="740790383907119240">Raccourcis des applications</translation>

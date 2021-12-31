@@ -592,6 +592,7 @@
 <translation id="1600857548979126453">पेज डीबगर बैकएंड को एक्सेस करें</translation>
 <translation id="1601560923496285236">लागू करें</translation>
 <translation id="1602085790802918092">वर्चुअल मशीन शुरू हो रही है</translation>
+<translation id="1603411913360944381"><ph name="DEVICE_NAME" /> को भूल जाएं</translation>
 <translation id="1603914832182249871">(गुप्त)</translation>
 <translation id="1604432177629086300">प्रिंट नहीं किया जा सका. प्रिंटर की जांच करें और फिर से कोशिश करें</translation>
 <translation id="1605744057217831567">सभी साइटों का डेटा और अनुमतियां देखें</translation>
@@ -6069,6 +6070,7 @@
 <translation id="7307129035224081534">रोका हुआ है</translation>
 <translation id="7308643132139167865">वेबसाइट की भाषाएं</translation>
 <translation id="7310598146671372464">लॉगिन नहीं कर पाए. सर्वर पर बताए गए केर्बेरोस सुरक्षा प्रकार काम नहीं करते हैं. कृपया अपने एडमिन से संपर्क करें.</translation>
+<translation id="7312210124139670355">आपका एडमिन ई-सिम को रीसेट कर रहा है. इसमें कुछ मिनट लग सकते हैं.</translation>
 <translation id="7320213904474460808">नेटवर्क चुनें</translation>
 <translation id="7321545336522791733">सर्वर पहुंच योग्य नहीं है</translation>
 <translation id="7324297612904500502">बीटा फ़ोरम</translation>

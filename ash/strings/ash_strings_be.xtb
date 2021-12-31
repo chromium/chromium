@@ -361,7 +361,6 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> хв</translation>
 <translation id="3445925074670675829">Прылада USB-C</translation>
-<translation id="3454224730401036106">Вы пераключыліся на больш бяспечную сетку</translation>
 <translation id="3465223694362104965">З моманту вашага апошняга ўваходу ў сістэму да прылады была падключана іншая клавіятура. Выкарыстоўвайце гэту клавіятуру, толькі калі вы ёй давяраеце.</translation>
 <translation id="3465356146291925647">Знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="3477079411857374384">Ctrl-Shift-прабел</translation>
@@ -767,7 +766,6 @@
 <translation id="6059276912018042191">Нядаўна адкрытыя ўкладкі Chrome</translation>
 <translation id="6062360702481658777">Праз <ph name="LOGOUT_TIME_LEFT" /> будзе выкананы аўтаматычны выхад.</translation>
 <translation id="6073451960410192870">Спыніць запіс</translation>
-<translation id="607652042414456612">Ваш камп'ютар бачны для прылад Bluetooth паблізу, ён будзе адлюстроўвацца як "<ph name="NAME" />" з адрасам <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Спампаваны файлы для распазнавання маўлення на наступнай мове: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Пацвердзіце спампоўванне файла <ph name="FILENAME" /></translation>
@@ -945,7 +943,6 @@
 <translation id="7378594059915113390">Элементы кіравання мультымедыйным змесцівам</translation>
 <translation id="7378889811480108604">Рэжым эканоміі зараду выключаны</translation>
 <translation id="7392563512730092880">Гэта можна зрабіць пазней у Наладах.</translation>
-<translation id="7398254312354928459">Пераключана падключэнне да сеткі</translation>
 <translation id="7405710164030118432">Каб разблакіраваць прыладу, увядзіце бацькоўскі код доступу Family Link.</translation>
 <translation id="7406608787870898861">Завяршыце наладжванне мабільнай сеткі</translation>
 <translation id="740790383907119240">Ярлыкі праграм</translation>

@@ -361,7 +361,6 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833">මිනි <ph name="MINUTES" /></translation>
 <translation id="3445925074670675829">USB-C උපාංගය</translation>
-<translation id="3454224730401036106">ඔබේ සබැඳුම වඩාත් සුරක්ෂිත ජාලයකට මාරු වී ඇත</translation>
 <translation id="3465223694362104965">මෙම උපාංගයට වෙනත් යතුරු පුවරුවක් සම්බන්ධ කර ඇත. ඔබ මෙය භාවිත කිරීමට පෙර ඔබ මෙම යතුරු පුවරුව විශ්වාස කරන බව තහවුරු කර ගන්න.</translation>
 <translation id="3465356146291925647">ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි</translation>
 <translation id="3477079411857374384">පාලනය-Shift-ඉඩ</translation>
@@ -767,7 +766,6 @@
 <translation id="6059276912018042191">මෑත Chrome ටැබ</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> තුළ ඔබව ස්වයංක්‍රියව වරනු ඇත.</translation>
 <translation id="6073451960410192870">පටිගත කිරීම නැවැත්වීම</translation>
-<translation id="607652042414456612">අවට ඇති Bluetooth උපාංග සඳහා ඔබේ පරිගණකය "<ph name="NAME" />" ලෙස <ph name="ADDRESS" /> ලිපිනය භාවිතයෙන් දිස්වනු ඇත</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> කථන ගොනු බාගන්නා ලදී</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> බාගැනීම තහවුරු කරන්න</translation>
@@ -945,7 +943,6 @@
 <translation id="7378594059915113390">මාධ්‍ය පාලක</translation>
 <translation id="7378889811480108604">බැටරි සුරැකුම් ප්‍රකාරය ක්‍රියාවිරහිතයි</translation>
 <translation id="7392563512730092880">ඔබට සැම විට සැකසීම් වෙතින් පසුව පිහිටුවිය හැකිය.</translation>
-<translation id="7398254312354928459">ජාල සබැඳුම මාරු කෙරිණි</translation>
 <translation id="7405710164030118432">උපාංගය අඟුලු ඇරීමට, ඔබගේ Family Link මාපිය ප්‍රවේශ කේතය ඇතුළත් කරන්න</translation>
 <translation id="7406608787870898861">ඔබගේ ජංගම ජාලය පිහිටුවීම අවසන් කරන්න</translation>
 <translation id="740790383907119240">යෙදුම් කෙටිමං</translation>

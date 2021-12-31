@@ -361,7 +361,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Pajisja USB-C</translation>
-<translation id="3454224730401036106">Lidhja jote ka kaluar te një rrjet më i sigurt</translation>
 <translation id="3465223694362104965">Një tastierë tjetër është lidhur me këtë pajisje që nga identifikimi yt i fundit. Sigurohu që e beson këtë tastierë para se ta përdorësh atë.</translation>
 <translation id="3465356146291925647">Menaxhuar nga administratori yt</translation>
 <translation id="3477079411857374384">Control-Shift-Hapësirë</translation>
@@ -767,7 +766,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="6059276912018042191">Skedat e fundit të Chrome</translation>
 <translation id="6062360702481658777">Do të dalësh automatikisht për <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Ndalo regjistrimin</translation>
-<translation id="607652042414456612">Kompjuteri është i zbulueshëm për pajisjet me Bluetooth në afërsi dhe do të shfaqet si "<ph name="NAME" />" me adresën <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Skedarët e ligjërimit në <ph name="LANGUAGE" /> u shkarkuan</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Konfirmo shkarkimin e <ph name="FILENAME" /></translation>
@@ -945,7 +943,6 @@ Instalim i ri</translation>
 <translation id="7378594059915113390">Kontrollet e klipeve media</translation>
 <translation id="7378889811480108604">Modaliteti i "Kursyesit të baterisë" është joaktiv</translation>
 <translation id="7392563512730092880">Mund ta konfigurosh gjithmonë më vonë nga "Cilësimet".</translation>
-<translation id="7398254312354928459">Lidhja e rrjetit u ndërrua</translation>
 <translation id="7405710164030118432">Për të shkyçur pajisjen, fut kodin e qasjes së prindit për Family Link</translation>
 <translation id="7406608787870898861">Përfundo konfigurimin e rrjetit tënd celular</translation>
 <translation id="740790383907119240">Shkurtoret e aplikacionit</translation>

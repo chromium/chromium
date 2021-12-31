@@ -361,7 +361,6 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनिटे</translation>
 <translation id="3445925074670675829">USB-C डिव्‍हाइस</translation>
-<translation id="3454224730401036106">तुमचे कनेक्शन अधिक सुरक्षित नेटवर्कवर स्विच केले आहे</translation>
 <translation id="3465223694362104965">तुम्ही शेवटचे साइन इन केल्यापासून या डिव्हाइसवर दुसरा कीबोर्ड कनेक्ट करण्यात आला आहे. तो वापरण्यापूर्वी तुमचा या कीबोर्डवर विश्वास असल्याची खात्री करा.</translation>
 <translation id="3465356146291925647">तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -767,7 +766,6 @@
 <translation id="6059276912018042191">अलीकडील Chrome टॅब</translation>
 <translation id="6062360702481658777">तुम्हाला <ph name="LOGOUT_TIME_LEFT" /> मधून स्वयंचलितपणे साइन आउट केले जाईल.</translation>
 <translation id="6073451960410192870">रेकॉर्डिंग थांबवा</translation>
-<translation id="607652042414456612">तुमचा कॉंप्युटर जवळपासच्या ब्लूटूथ डिव्हाइसवर शोधता येऊ शकतो आणि <ph name="ADDRESS" /> पत्त्यासह "<ph name="NAME" />" म्हणून दिसेल</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> च्या स्पीच फाइल डाउनलोड केल्या आहेत</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> डाउनलोड करण्याची खात्री करा</translation>
@@ -945,7 +943,6 @@
 <translation id="7378594059915113390">मीडिया नियंत्रणे</translation>
 <translation id="7378889811480108604">बॅटरी सेव्हर मोड बंद आहे</translation>
 <translation id="7392563512730092880">तुम्ही नंतर कधीही सेटिंग्जमधून सेट करू शकता.</translation>
-<translation id="7398254312354928459">नेटवर्क कनेक्शन स्विच केले</translation>
 <translation id="7405710164030118432">डिव्हाइस अनलॉक करण्यासाठी, तुमचा Family Link पालक ॲक्सेस कोड एंटर करा</translation>
 <translation id="7406608787870898861">तुमचे मोबाइल नेटवर्क सेट करणे पूर्ण करा</translation>
 <translation id="740790383907119240">ॲप शॉर्टकट</translation>

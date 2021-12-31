@@ -361,7 +361,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> mín.</translation>
 <translation id="3445925074670675829">USB-C-tæki</translation>
-<translation id="3454224730401036106">Skipt var yfir á öruggara netkerfi</translation>
 <translation id="3465223694362104965">Annað lyklaborð hefur tengst þessu tæki frá því að þú skráðir þig síðast inn. Gakktu úr skugga um að þú treystir þessu lyklaborði áður en þú notar það.</translation>
 <translation id="3465356146291925647">Stjórnað af kerfisstjóra</translation>
 <translation id="3477079411857374384">Control-Shift-bilslá</translation>
@@ -767,7 +766,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="6059276912018042191">Nýlegir Chrome flipar</translation>
 <translation id="6062360702481658777">Þú verður skráð(ur) út sjálfkrafa eftir <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Stöðva upptöku</translation>
-<translation id="607652042414456612">Nálæg Bluetooth-tæki geta fundið tölvuna þína og hún birtist sem „<ph name="NAME" />“ með vistfangið <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Talskrár sóttar fyrir: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Staðfesta niðurhal <ph name="FILENAME" /></translation>
@@ -945,7 +943,6 @@ Ný uppsetning</translation>
 <translation id="7378594059915113390">Spilunarstýringar</translation>
 <translation id="7378889811480108604">Slökkt er á rafhlöðusparnaði</translation>
 <translation id="7392563512730092880">Þú getur sett þetta upp seinna í Stillingum.</translation>
-<translation id="7398254312354928459">Skipt var um nettengingu</translation>
 <translation id="7405710164030118432">Til að opna tækið skaltu slá inn aðgangskóða foreldris fyrir Family Link</translation>
 <translation id="7406608787870898861">Ljúktu við uppsetningu farsímakerfis</translation>
 <translation id="740790383907119240">Flýtileiðir forrita</translation>

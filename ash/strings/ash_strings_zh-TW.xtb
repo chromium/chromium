@@ -361,7 +361,6 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="3445925074670675829">USB-C 裝置</translation>
-<translation id="3454224730401036106">已切換至更安全的網路連線</translation>
 <translation id="3465223694362104965">這個裝置自你上次登入後接上了另外一組鍵盤。使用前請確認你信任該組鍵盤。</translation>
 <translation id="3465356146291925647">由系統管理員管理</translation>
 <translation id="3477079411857374384">Ctrl + Shift + 空格鍵</translation>
@@ -767,7 +766,6 @@
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>
 <translation id="6062360702481658777">你將於 <ph name="LOGOUT_TIME_LEFT" />後自動登出。</translation>
 <translation id="6073451960410192870">停止錄影</translation>
-<translation id="607652042414456612">你的電腦已開放附近的藍牙裝置搜尋，顯示名稱為「<ph name="NAME" />」，位址則是 <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">已下載<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">確認下載「<ph name="FILENAME" />」</translation>
@@ -944,7 +942,6 @@
 <translation id="7378594059915113390">媒體控制項</translation>
 <translation id="7378889811480108604">省電模式已關閉</translation>
 <translation id="7392563512730092880">你稍後可以隨時前往「設定」頁面進行設定。</translation>
-<translation id="7398254312354928459">已切換網路連線</translation>
 <translation id="7405710164030118432">如要將這部裝置解鎖，請輸入你的 Family Link 家長存取碼</translation>
 <translation id="7406608787870898861">完成行動網路設定</translation>
 <translation id="740790383907119240">應用程式捷徑</translation>

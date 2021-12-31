@@ -361,7 +361,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB-C-enhed</translation>
-<translation id="3454224730401036106">Din forbindelse er skiftet til et mere sikkert netværk</translation>
 <translation id="3465223694362104965">Et andet tastatur er blevet tilsluttet denne enhed, siden du sidst loggede ind. Tjek, at du har tillid til dette tastatur, før du bruger det.</translation>
 <translation id="3465356146291925647">Administreret af din administrator</translation>
 <translation id="3477079411857374384">Ctrl-Shift-mellemrumstast</translation>
@@ -767,7 +766,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6059276912018042191">Seneste Chrome-faner</translation>
 <translation id="6062360702481658777">Du bliver automatisk logget ud om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Stop optagelse</translation>
-<translation id="607652042414456612">Din computer kan registreres af Bluetooth-enheder i nærheden, og den vil blive vist som "<ph name="NAME" />" med adressen <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> talefiler blev downloadet</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Bekræft download af <ph name="FILENAME" /></translation>
@@ -945,7 +943,6 @@ Installeret for nylig</translation>
 <translation id="7378594059915113390">Mediestyring</translation>
 <translation id="7378889811480108604">Tilstanden Batterisparefunktion er deaktiveret</translation>
 <translation id="7392563512730092880">Du kan altid konfigurere senere under Indstillinger.</translation>
-<translation id="7398254312354928459">Der blev skiftet netværksforbindelse</translation>
 <translation id="7405710164030118432">Angiv forældreadgangskoden til Family Link for at låse enheden op</translation>
 <translation id="7406608787870898861">Afslut konfigurationen af dit mobilnetværk</translation>
 <translation id="740790383907119240">Appgenveje</translation>

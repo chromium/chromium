@@ -361,7 +361,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">Dispozitiv USB-C</translation>
-<translation id="3454224730401036106">Conexiunea a trecut la o rețea mai sigură</translation>
 <translation id="3465223694362104965">La acest dispozitiv s-a conectat o altă tastatură de când l-ai folosit ultima dată. Asigură-te că ai încredere în această tastatură înainte să o folosești.</translation>
 <translation id="3465356146291925647">Gestionată de administratorul tău</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -767,7 +766,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6059276912018042191">File Chrome recente</translation>
 <translation id="6062360702481658777">Veți fi deconectat(ă) automat peste <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Oprește înregistrarea</translation>
-<translation id="607652042414456612">Computerul poate fi detectat de dispozitivele Bluetooth din apropiere și va apărea ca „<ph name="NAME" />” cu adresa <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Fișierele de redare în scris a vorbirii în <ph name="LANGUAGE" /> s-au descărcat</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Confirmă descărcarea fișierului <ph name="FILENAME" /></translation>
@@ -945,7 +943,6 @@ Instalare nouă</translation>
 <translation id="7378594059915113390">Comenzi media</translation>
 <translation id="7378889811480108604">Modul Economisirea bateriei este dezactivat</translation>
 <translation id="7392563512730092880">Poți configura oricând funcția în Setări.</translation>
-<translation id="7398254312354928459">Conexiunea la rețea a fost comutată</translation>
 <translation id="7405710164030118432">Pentru a debloca dispozitivul, introdu codul de acces parental pentru Family Link</translation>
 <translation id="7406608787870898861">Finalizează configurarea rețelei mobile</translation>
 <translation id="740790383907119240">Comenzi rapide pentru aplicații</translation>

@@ -361,7 +361,6 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мүн.</translation>
 <translation id="3445925074670675829">USB-C түзмөгү</translation>
-<translation id="3454224730401036106">Туташууңуз коопсузураак тармакка которулду</translation>
 <translation id="3465223694362104965">Түзмөккө акыркы жолу киргениңизден кийин ага башка баскычтоп туташтырылды. Аны колдонуудан мурда ал ишенимдүү экенин текшериңиз.</translation>
 <translation id="3465356146291925647">Администраторуңуз башкарат</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -767,7 +766,6 @@
 <translation id="6059276912018042191">Chrome'догу акыркы өтмөктөр</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> ичинен автоматтык түрдө чыгарыласыз.</translation>
 <translation id="6073451960410192870">Жаздырууну токтотуу</translation>
-<translation id="607652042414456612">Компьютериңиз жакын арадагы Bluetooth түзмөктөрүнө көрүнүп, <ph name="ADDRESS" /> дарегиндеги "<ph name="NAME" />" катары күйүп турат.</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> тилиндеги кеп файлдары жүктөлүп алынды</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> жүктөп алууну ырастаңыз</translation>
@@ -945,7 +943,6 @@
 <translation id="7378594059915113390">Медианы башкаруу элементтери</translation>
 <translation id="7378889811480108604">Батареяны үнөмдөгүч режими өчүк</translation>
 <translation id="7392563512730092880">Кийинчерээк Жөндөөлөргө өтүп, бул функцияны жөндөсөңүз болот.</translation>
-<translation id="7398254312354928459">Башка тармакка которулду</translation>
 <translation id="7405710164030118432">Бул түзмөктүн кулпусун ачуу үчүн, Family Link'теги ата-эненин кирүү кодун териңиз</translation>
 <translation id="7406608787870898861">Мобилдик тармагыңызды жөндөп бүтүрүңүз</translation>
 <translation id="740790383907119240">Колдонмодогу кыска жолдор</translation>

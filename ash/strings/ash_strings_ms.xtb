@@ -361,7 +361,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Peranti USB-C</translation>
-<translation id="3454224730401036106">Sambungan anda telah beralih kepada rangkaian yang lebih selamat</translation>
 <translation id="3465223694362104965">Papan kekunci lain telah disambungkan ke peranti ini sejak kali terakhir anda log masuk. Pastikan anda mempercayai papan kekunci ini sebelum anda menggunakannya.</translation>
 <translation id="3465356146291925647">Diurus oleh Pentadbir anda</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
@@ -768,7 +767,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6059276912018042191">Tab Chrome baru-baru ini</translation>
 <translation id="6062360702481658777">Anda akan dilog keluar secara automatik dalam masa <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Hentikan rakaman</translation>
-<translation id="607652042414456612">Komputer anda boleh ditemui oleh peranti Bluetooth yang berdekatan sebagai "<ph name="NAME" />" dengan alamat <ph name="ADDRESS" /></translation>
 <translation id="6114505516289286752">Fail pertuturan <ph name="LANGUAGE" /> dimuat turun</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Sahkan muat turun <ph name="FILENAME" /></translation>
@@ -946,7 +944,6 @@ Pemasangan baharu</translation>
 <translation id="7378594059915113390">Kawalan Media</translation>
 <translation id="7378889811480108604">Mod penjimat bateri dimatikan</translation>
 <translation id="7392563512730092880">Anda boleh menyediakan Hab Telefon daripada Tetapan pada bila-bila masa selepas ini.</translation>
-<translation id="7398254312354928459">Beralih sambungan rangkaian</translation>
 <translation id="7405710164030118432">Untuk membuka kunci peranti, masukkan kod akses ibu bapa Family Link anda</translation>
 <translation id="7406608787870898861">Selesaikan persediaan rangkaian mudah alih anda</translation>
 <translation id="740790383907119240">Pintasan Apl</translation>
