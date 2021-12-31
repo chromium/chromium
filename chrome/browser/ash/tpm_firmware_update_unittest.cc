@@ -44,8 +44,7 @@ TEST(TPMFirmwareUpdateTest, DecodeSettingsProto) {
               Optional(true));
   EXPECT_THAT(dict->FindBoolKey("allow-user-initiated-preserve-device-state"),
               Optional(true));
-  int update_mode_value = 0;
-  EXPECT_TRUE(dict->GetInteger("auto-update-mode", &update_mode_value));
+  int update_mode_value = dict->FindIntKey("auto-update-mode").value_or(0);
   EXPECT_EQ(2, update_mode_value);
 }
 

@@ -80,9 +80,7 @@ phonehub::Notification::AppMetadata DictToAppMetadata(
   gfx::Image icon = gfx::Image::CreateFrom1xBitmap(
       ImageTypeToBitmap(icon_image_type, kIconSize));
 
-  int user_id;
-  if (!app_metadata_dict->GetInteger("userId", &user_id))
-    user_id = 0;
+  int user_id = app_metadata_dict->FindIntKey("userId").value_or(0);
 
   return phonehub::Notification::AppMetadata(visible_app_name, package_name,
                                              icon, user_id);

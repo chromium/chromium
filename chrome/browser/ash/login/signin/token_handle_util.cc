@@ -261,9 +261,9 @@ void TokenHandleUtil::TokenDelegate::OnGetTokenInfoResponse(
     std::unique_ptr<base::DictionaryValue> token_info) {
   TokenHandleStatus outcome = UNKNOWN;
   if (!token_info->FindKey("error")) {
-    int expires_in = 0;
-    if (token_info->GetInteger("expires_in", &expires_in))
-      outcome = (expires_in < 0) ? INVALID : VALID;
+    absl::optional<int> expires_in = token_info->FindIntKey("expires_in");
+    if (expires_in)
+      outcome = (*expires_in < 0) ? INVALID : VALID;
   }
 
   const base::TimeDelta duration =

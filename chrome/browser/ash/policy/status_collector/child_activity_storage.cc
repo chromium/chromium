@@ -41,9 +41,8 @@ void ChildActivityStorage::AddActivityPeriod(base::Time start,
     int64_t activity = (std::min(end, day_start) - start).InMilliseconds();
     const std::string key = MakeActivityPeriodPrefKey(
         LocalTimeToUtcDayStart(start), /*activity_id=*/"");
-    int previous_activity = 0;
-    activity_times->GetInteger(key, &previous_activity);
-    activity_times->SetInteger(key, previous_activity + activity);
+    int previous_activity = activity_times->FindIntKey(key).value_or(0);
+    activity_times->SetIntKey(key, previous_activity + activity);
 
     StoreChildScreenTime(day_start - base::Days(1),
                          base::Milliseconds(activity), now);

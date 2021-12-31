@@ -41,8 +41,11 @@ bool DeviceCommandSetVolumeJob::ParseCommandPayload(
   base::DictionaryValue* payload = nullptr;
   if (!root->GetAsDictionary(&payload))
     return false;
-  if (!payload->GetInteger(kVolumeFieldName, &volume_))
+  absl::optional<int> maybe_volume;
+  maybe_volume = payload->FindIntKey(kVolumeFieldName);
+  if (!maybe_volume)
     return false;
+  volume_ = *maybe_volume;
   if (volume_ < 0 || volume_ > 100)
     return false;
   return true;

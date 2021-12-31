@@ -2639,10 +2639,10 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
         display_service_->GetNotification(delegate_id);
     EXPECT_TRUE(notification);
 
-    int index;
-    ASSERT_TRUE(value.GetInteger("index", &index));
+    absl::optional<int> index = value.FindIntKey("index");
+    ASSERT_TRUE(index);
     display_service_->SimulateClick(NotificationHandler::Type::EXTENSION,
-                                    delegate_id, index, absl::nullopt);
+                                    delegate_id, *index, absl::nullopt);
     return;
   }
 
@@ -2675,11 +2675,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "simulateClick") {
-    int click_x;
-    int click_y;
+    absl::optional<int> click_x = value.FindIntKey("clickX");
+    absl::optional<int> click_y = value.FindIntKey("clickY");
     std::string app_id;
-    ASSERT_TRUE(value.GetInteger("clickX", &click_x));
-    ASSERT_TRUE(value.GetInteger("clickY", &click_y));
+    ASSERT_TRUE(click_x);
+    ASSERT_TRUE(click_y);
     ASSERT_TRUE(value.GetString("appId", &app_id));
 
     const Options& options = GetOptions();
@@ -2693,7 +2693,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     }
     SimulateMouseClickAt(web_contents, 0 /* modifiers */,
                          blink::WebMouseEvent::Button::kLeft,
-                         gfx::Point(click_x, click_y));
+                         gfx::Point(*click_x, *click_y));
     return;
   }
 
