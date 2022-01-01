@@ -2888,6 +2888,7 @@ Pretende pará-lo?</translation>
 <translation id="3916445069167113093">Este tipo de ficheiro pode danificar o seu computador. Pretende, mesmo assim, manter <ph name="FILE_NAME" />?</translation>
 <translation id="3918972485393593704">Comunicar detalhes à Google</translation>
 <translation id="3919145445993746351">Para obter todas as suas extensões em todos os seus computadores, ative a sincronização</translation>
+<translation id="3919229493046408863">Desative as notificações quando existirem dispositivos nas proximidades</translation>
 <translation id="3919798653937160644">As páginas visualizadas nesta janela não serão apresentadas no histórico do navegador e não deixarão outros vestígios, como cookies, no computador depois de fechar todas as janelas de convidado abertas. No entanto, todos os ficheiros transferidos serão preservados.</translation>
 <translation id="3920504717067627103">Políticas de certificados</translation>
 <translation id="392089482157167418">Ativar ChromeVox (comentários falados)</translation>
@@ -5922,6 +5923,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="7167486101654761064">&amp;Abrir sempre ficheiros deste tipo</translation>
 <translation id="716810439572026343">A transferir <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Tamanho mínimo do tipo de letra</translation>
+<translation id="7169122689956315694">Ative as notificações quando existirem dispositivos nas proximidades</translation>
 <translation id="7170236477717446850">Imagem do perfil</translation>
 <translation id="7171000599584840888">Adicionar perfil…</translation>
 <translation id="7171259390164035663">Não inscrever</translation>

@@ -2888,6 +2888,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="3916445069167113093">Bunday turdagi fayl kompyuteringizga zarar yetkazishi mumkin. <ph name="FILE_NAME" /> baribir saqlansinmi?</translation>
 <translation id="3918972485393593704">Tafsilotlarni Google’ga yuborish</translation>
 <translation id="3919145445993746351">Kengaytmalardan barcha qurilmalaringizda foydalanish uchun sinxronizatsiyani yoqing</translation>
+<translation id="3919229493046408863">Qurilmalar yaqinligida bildirishnoma kelmasin</translation>
 <translation id="3919798653937160644">Bu oynada ochiladigan sahifalar brauzer tarixida qolmaydi, barcha ochiq turgan Mehmon oynalarini yopganingizdan keyin ular kompyuterda cookie fayli singari iz ham qoldirmaydi. Ammo, yuklab olingan fayllar saqlanib qoladi.</translation>
 <translation id="3920504717067627103">Sertifikat siyosati</translation>
 <translation id="392089482157167418">ChromeVox (ovozli ta’rif) kengaytmasini yoqish</translation>
@@ -5923,6 +5924,7 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7167486101654761064">&amp;Bu turdagi fayllar har doim ochilsin</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" /> yuklab olinmoqda</translation>
 <translation id="7168109975831002660">Shriftning eng kichik hajmi</translation>
+<translation id="7169122689956315694">Qurilmalar yaqinligida bildirishnoma kelsin</translation>
 <translation id="7170236477717446850">Profil rasmi</translation>
 <translation id="7171000599584840888">Profil kiritish</translation>
 <translation id="7171259390164035663">Rad etish</translation>

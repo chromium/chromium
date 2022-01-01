@@ -2901,6 +2901,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3916445069167113093">This type of file can harm your computer. Do you want to keep <ph name="FILE_NAME" /> anyway?</translation>
 <translation id="3918972485393593704">Report details to Google</translation>
 <translation id="3919145445993746351">To get your extensions on all your computers, turn on sync</translation>
+<translation id="3919229493046408863">Turn off notification when devices are nearby</translation>
 <translation id="3919798653937160644">Pages that you view in this window won't appear in the browser history and they won't leave other traces, like cookies, on the computer after you close all open Guest windows. Any files that you download will be preserved, however.</translation>
 <translation id="3920504717067627103">Certificate Policies</translation>
 <translation id="392089482157167418">Enable ChromeVox (spoken feedback)</translation>
@@ -5935,6 +5936,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="7167486101654761064">&amp;Always open files of this type</translation>
 <translation id="716810439572026343">Downloading <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Minimum font size</translation>
+<translation id="7169122689956315694">Turn on notification when devices are nearby</translation>
 <translation id="7170236477717446850">Profile picture</translation>
 <translation id="7171000599584840888">Add profile…</translation>
 <translation id="7171259390164035663">Don't enrol</translation>

@@ -588,6 +588,7 @@
 <translation id="1600857548979126453">få tilgang til bakdata for sidefeilsøkingsprogrammet</translation>
 <translation id="1601560923496285236">Bruk</translation>
 <translation id="1602085790802918092">Starter den virtuelle maskinen</translation>
+<translation id="1603411913360944381">Glem <ph name="DEVICE_NAME" /></translation>
 <translation id="1603914832182249871">(Inkognito)</translation>
 <translation id="1604432177629086300">Kunne ikke skrive ut. Kontrollér skriveren og prøv på nytt.</translation>
 <translation id="1605744057217831567">Se alle nettstedsdata og -tillatelser</translation>
@@ -6056,6 +6057,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7307129035224081534">Satt på pause</translation>
 <translation id="7308643132139167865">Nettstedsspråk</translation>
 <translation id="7310598146671372464">Kan ikke logge på. Tjeneren støtter ikke de angitte Kerberos-krypteringstypene. Ta kontakt med administratoren din.</translation>
+<translation id="7312210124139670355">Administratoren holder på å tilbakestille e-SIM-kortet ditt. Dette kan ta noen minutter.</translation>
 <translation id="7320213904474460808">Bruk nettverk som standard</translation>
 <translation id="7321545336522791733">Tjeneren er ikke tilgjengelig</translation>
 <translation id="7324297612904500502">Forumet for betaversjoner</translation>

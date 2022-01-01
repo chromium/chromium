@@ -2594,6 +2594,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3964298692570794635">Permitir conteúdo não seguro nesses sites</translation>
 <translation id="3965339130942650562">Tempo limite até que a saída do usuário ocioso seja executada</translation>
 <translation id="396536755218079668">Usuários supervisionados</translation>
+<translation id="3968218878014278212">Permitir que o Eche seja ativado.</translation>
 <translation id="3971673686578912106">Se a política for definida como "Ativada", <ph name="PLUGIN_VM_NAME" /> será ativado para o dispositivo enquanto for permitido por outras configurações. É necessário definir <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> e <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> como "Verdadeiro", e <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> ou <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> precisam ser definidas para que <ph name="PLUGIN_VM_NAME" /> seja executado.
 
       Se a política for definida como "Desativada" ou não for definida, o <ph name="PLUGIN_VM_NAME" /> não será ativado para o dispositivo.</translation>
@@ -3430,6 +3431,7 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Se a política for definida como falsa ou não for definida, o <ph name="PRODUCT_NAME" /> usará configurações on-line existentes de verificação da revogação.</translation>
 <translation id="5078623750797048009">Ativar anotações no PDF</translation>
 <translation id="5081204761483900654">Sessões de visitante gerenciadas restritas</translation>
+<translation id="5082296146261894974">Permite que os usuários cliquem na notificação do recurso Seu smartphone para abrir o app Eche.</translation>
 <translation id="5082572440690475059">Permitir acesso de leitura com a API File System nestes sites</translation>
 <translation id="5085647276663819155">Desativar visualização da impressão</translation>
 <translation id="5090791951240382356">Permitir a mescla de políticas de dicionário de diferentes fontes</translation>
@@ -4180,6 +4182,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       O campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica se um app da Web pode ser executado durante o Login do SO. Se ele for definido como <ph name="BLOCKED" />, o app da Web não será executado durante o Login do SO e o usuário não poderá ativar essa opção mais tarde. Se ele for definido como <ph name="RUN_WINDOWED" />, o app da Web será executado durante o Login do SO e o usuário não poderá desativar essa opção mais tarde. Se ele for definido como <ph name="ALLOWED" />, o usuário poderá configurar o app da Web para ser executado no Login do SO. A configuração padrão permite apenas os valores <ph name="ALLOWED" /> e <ph name="BLOCKED" />.
       </translation>
+<translation id="5945312246863177268">Não permite que os usuários cliquem na notificação do recurso Seu smartphone para abrir o app Eche.</translation>
 <translation id="5946082169633555022">Canal Beta</translation>
 <translation id="5946329690214660966">Definir programação personalizada para verificar se há atualizações</translation>
 <translation id="5950069117106131681">Se a política for definida como "Ativada", os cabeçalhos e rodapés serão ativados na visualização de impressão. Se a política for definida como "Desativada", eles serão desativados na visualização de impressão.
@@ -4758,6 +4761,11 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="66265932317331474">Enviar informações da CPU</translation>
 <translation id="6628120204569232711">Informa o status de armazenamento</translation>
 <translation id="663685822663765995">Restringir o modo de cor de impressão</translation>
+<translation id="6640355849038068978">Se esta configuração estiver ativada, os usuários vão poder abrir o app Eche, por exemplo, clicando na notificação do recurso Seu smartphone.
+
+      Se ela estiver desativada, os usuários não vão poder abrir o app Eche.
+
+      Se a política for deixada sem definição, o padrão será permitido tanto para usuários gerenciados por empresas quanto para os não gerenciados.</translation>
 <translation id="6641981670621198190">Desativar o suporte a APIs para gráficos 3D</translation>
 <translation id="6642682198621199507">Se a política for definida, você poderá listar sites com permissão automática para acessar todas as portas seriais disponíveis.
 

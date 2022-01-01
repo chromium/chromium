@@ -122,6 +122,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">ავტოსუბტიტრები ჩართულია.</translation>
 <translation id="1720011244392820496">ჩართეთ Wi-Fi სინქრონიზაცია</translation>
+<translation id="1736898441010944794">„<ph name="NAME" />“ ხილულია Bluetooth მოწყობილობებისთვის.</translation>
 <translation id="1743570585616704562">არ არის ამოცნობილი</translation>
 <translation id="1746730358044914197">შეყვანის მეთოდები კონფიგურირებულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="1747827819627189109">ეკრანული კლავიატურა ჩართულია</translation>
@@ -831,6 +832,7 @@
 <translation id="6578407462441924264">უსახელო</translation>
 <translation id="6585808820553845416">სესიის დასრულებამდე დარჩა <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">თქვენი კავშირი გადართულია უფრო დაცულ ქსელზე</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />, მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="6612802754306526077">ეკრანის ჩაწერის რეჟიმი არჩეულია</translation>
 <translation id="6614169507485700968">კონფიდენციალურობის ეკრანი ჩართულია</translation>

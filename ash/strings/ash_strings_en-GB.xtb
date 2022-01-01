@@ -122,6 +122,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Live Caption is on.</translation>
 <translation id="1720011244392820496">Turn on Wi-Fi Sync</translation>
+<translation id="1736898441010944794">'<ph name="NAME" />' visible to Bluetooth devices.</translation>
 <translation id="1743570585616704562">Not recognised</translation>
 <translation id="1746730358044914197">Input methods are configured by your administrator.</translation>
 <translation id="1747827819627189109">On-screen keyboard enabled</translation>
@@ -831,6 +832,7 @@ New install</translation>
 <translation id="6578407462441924264">Unnamed</translation>
 <translation id="6585808820553845416">Session ends in <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Your connection switched to a more secure network</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="6612802754306526077">Screen recording mode selected</translation>
 <translation id="6614169507485700968">Privacy screen is on</translation>

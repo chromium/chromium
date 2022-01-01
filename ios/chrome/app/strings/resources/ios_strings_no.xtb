@@ -140,6 +140,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2268044343513325586">Finstem</translation>
 <translation id="2271351792809375263">Bruk passordene du har lagret i Chrome, i andre apper på enheten</translation>
 <translation id="2273327106802955778">Mer-menyen</translation>
+<translation id="2286505070150039482">Markert tekst</translation>
 <translation id="2302742851632557585">Bytt passord på nettstedet</translation>
 <translation id="2316709634732130529">Bruk foreslått passord</translation>
 <translation id="2320166752086256636">Skjul tastaturet</translation>
@@ -310,6 +311,7 @@ Følg fremgangsmåten under:</translation>
 <translation id="3803696231112616155">Tilby å oversette dette nettstedet</translation>
 <translation id="385051799172605136">Tilbake</translation>
 <translation id="3858860766373142691">Navn</translation>
+<translation id="3861486700625780712">Slutt å følge</translation>
 <translation id="3892144330757387737">Her finner du loggen din</translation>
 <translation id="3897092660631435901">Meny</translation>
 <translation id="3913386780052199712">Pålogget Chrome</translation>
@@ -407,6 +409,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="481968316161811770">Informasjonskapsler og nettstedsdata</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} og 1 til}other{{domain} og {count} til}}</translation>
 <translation id="4826218269716039351">Blokkér fra tredjeparter</translation>
+<translation id="4826726074642088322">Del markert tekst</translation>
 <translation id="48274138579728272">Merk som lest</translation>
 <translation id="4833686396768033263">Nylige faner er utilgjengelige</translation>
 <translation id="4833786495304741580">Sender automatisk bruksstatistikk og programstopprapporter til Google.</translation>
@@ -602,6 +605,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="6497772452874122664">Hvis du stoler på <ph name="TIME" />, kan du bruke lagrede passord for andre nettsteder.
 
 Prøv å bruke unike passord for hvert nettsted.</translation>
+<translation id="650279896687777322">Finn ut mer …</translation>
 <translation id="651505212789431520">Vil du avbryte synkroniseringen? Du kan når som helst slå på synkronisering i Innstillinger.</translation>
 <translation id="6524918542306337007">Inkognitomodus er ikke tilgjengelig</translation>
 <translation id="6537746030088321027">eteksempel.no</translation>

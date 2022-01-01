@@ -1012,6 +1012,7 @@ Nylig installert</translation>
 <translation id="7860671499921112077">Sveip opp med tre fingre for å åpne Oversikt</translation>
 <translation id="7866482334467279021">på</translation>
 <translation id="7868900307798234037">Låser opp med fingeravtrykk</translation>
+<translation id="7872195908557044066">Administratoren holder på å tilbakestille e-SIM-kortet ditt. Vent i noen minutter.</translation>
 <translation id="7872786842639831132">Av</translation>
 <translation id="7875575368831396199">Det ser ut til at Bluetooth er slått av på <ph name="DEVICE_TYPE" />. Slå på Bluetooth for å bruke Telefonstyring.</translation>
 <translation id="7877557217297072640">{0,plural, =0{Nedgrader enheten til en tidligere versjon nå}=1{Nedgrader enheten til en tidligere versjon innen 1 sekund}other{Nedgrader enheten til en tidligere versjon innen # sekunder}}</translation>
