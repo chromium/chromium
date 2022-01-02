@@ -81,6 +81,7 @@ PendingLayer::PendingLayer(const PaintChunkSubset& chunks,
     : bounds_(first_chunk.bounds),
       rect_known_to_be_opaque_(first_chunk.rect_known_to_be_opaque),
       has_text_(first_chunk.has_text),
+      draws_content_(first_chunk.DrawsContent()),
       text_known_to_be_on_opaque_background_(
           first_chunk.text_known_to_be_on_opaque_background),
       chunks_(&chunks.GetPaintArtifact(), first_chunk_index_in_paint_artifact),
@@ -198,10 +199,6 @@ const DisplayItem& PendingLayer::FirstDisplayItem() const {
   return *chunks_.begin().DisplayItems().begin();
 }
 
-bool PendingLayer::MayDrawContent() const {
-  return Chunks().size() > 1 || FirstPaintChunk().size() > 0;
-}
-
 // We will only allow merging if
 // merged_area - (home_area + guest_area) <= kMergeSparsityAreaTolerance
 static constexpr float kMergeSparsityAreaTolerance = 10000;
@@ -235,6 +232,7 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
       rect_known_to_be_opaque_.Contains(bounds_)) {
     if (!dry_run) {
       chunks_.Merge(guest.Chunks());
+      draws_content_ |= guest.draws_content_;
       text_known_to_be_on_opaque_background_ = true;
       has_text_ |= guest.has_text_;
       change_of_decomposited_transforms_ =
@@ -289,6 +287,7 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
     chunks_.Merge(guest.Chunks());
     bounds_ = merged_bounds;
     property_tree_state_ = *merged_state;
+    draws_content_ |= guest.draws_content_;
     rect_known_to_be_opaque_ = merged_rect_known_to_be_opaque;
     text_known_to_be_on_opaque_background_ =
         merged_text_known_to_be_on_opaque_background;

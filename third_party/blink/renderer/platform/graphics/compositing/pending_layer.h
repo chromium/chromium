@@ -93,7 +93,7 @@ class PLATFORM_EXPORT PendingLayer {
 
   std::unique_ptr<JSONObject> ToJSON() const;
 
-  bool MayDrawContent() const;
+  bool DrawsContent() const { return draws_content_; }
 
   bool RequiresOwnLayer() const {
     return compositing_type_ != kOverlap && compositing_type_ != kOther;
@@ -124,6 +124,7 @@ class PLATFORM_EXPORT PendingLayer {
   gfx::RectF bounds_;
   gfx::RectF rect_known_to_be_opaque_;
   bool has_text_ = false;
+  bool draws_content_ = false;
   bool text_known_to_be_on_opaque_background_ = false;
   PaintChunkSubset chunks_;
   PropertyTreeState property_tree_state_;
