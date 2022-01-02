@@ -122,6 +122,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Կենդանի ենթագրերը միացված են։</translation>
 <translation id="1720011244392820496">Միացրեք Wi-Fi համաժամացումը</translation>
+<translation id="1736898441010944794">«<ph name="NAME" />» ադապտերը տեսանելի է Bluetooth սարքերին։</translation>
 <translation id="1743570585616704562">Չճանաչվեց</translation>
 <translation id="1746730358044914197">Ներածման եղանակները կարգավորվում են ձեր ադմինիստրատորի կողմից:</translation>
 <translation id="1747827819627189109">Էկրանի ստեղնաշարը միացված է</translation>
@@ -831,6 +832,7 @@
 <translation id="6578407462441924264">Անանուն</translation>
 <translation id="6585808820553845416">Աշխատաշրջանն ավարտվում է <ph name="SESSION_TIME_REMAINING" />-ից:</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Դուք միացաք ավելի ապահով ցանցի</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="6612802754306526077">Ընտրված է էկրանի տեսագրման ռեժիմը</translation>
 <translation id="6614169507485700968">Գաղտնիության էկրանը միացված է</translation>

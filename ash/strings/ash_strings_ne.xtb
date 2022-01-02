@@ -122,6 +122,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">लाइभ क्याप्सन अन छ।</translation>
 <translation id="1720011244392820496">Wi-Fi सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
+<translation id="1736898441010944794">ब्लुटुथ डिभाइसहरूले "<ph name="NAME" />" देख्न सक्छन्।</translation>
 <translation id="1743570585616704562">पहिचान भएन</translation>
 <translation id="1746730358044914197">तपाईंको प्रशासकले इनपुट विधिहरूको कन्फिगर गर्नुभएको हो।</translation>
 <translation id="1747827819627189109">अन-स्क्रिन किबोर्ड सक्षम गरियो</translation>
@@ -831,6 +832,7 @@
 <translation id="6578407462441924264">नामविहीन</translation>
 <translation id="6585808820553845416">सत्र <ph name="SESSION_TIME_REMAINING" /> मा समाप्त हुन्छ।</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">तपाईंको कनेक्सन अझ सुरक्षित नेटवर्कमा लगिएको छ</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="6612802754306526077">स्क्रिन रेकर्डिङ मोड चयन गरियो</translation>
 <translation id="6614169507485700968">गोपनीयताको स्क्रिन सक्रिय छ</translation>
