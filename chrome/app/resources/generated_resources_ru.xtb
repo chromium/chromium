@@ -4616,7 +4616,7 @@
 <translation id="5876851302954717356">Новая вкладка справа</translation>
 <translation id="5877064549588274448">Канал изменен. Чтобы изменения вступили в силу, перезапустите устройство.</translation>
 <translation id="5877584842898320529">Этот принтер недоступен или настроен неправильно.<ph name="BR" />Проверьте его или выберите другой.</translation>
-<translation id="5882919346125742463">Сохраненные сети</translation>
+<translation id="5882919346125742463">Известные сети</translation>
 <translation id="5883356647197510494">Автоматически отключены разрешения "<ph name="PERMISSION_1" />" и "<ph name="PERMISSION_2" />"</translation>
 <translation id="5884474295213649357">Эта вкладка подключена к USB-устройству</translation>
 <translation id="5886009770935151472">1-й палец</translation>
@@ -7233,7 +7233,7 @@
 <translation id="8657393004602556571">Не отправлять отзыв?</translation>
 <translation id="8658645149275195032">Приложение "<ph name="APP_NAME" />" предоставило сайту <ph name="TAB_NAME" /> доступ к экрану и аудио.</translation>
 <translation id="8661290697478713397">Открыть ссылку в режиме инкогнито</translation>
-<translation id="8662671328352114214">Новая сеть <ph name="TYPE" /></translation>
+<translation id="8662671328352114214">Присоединиться к сети <ph name="TYPE" /></translation>
 <translation id="8662795692588422978">Пользователи</translation>
 <translation id="8662811608048051533">Вы автоматически выйдете из учетных записей на большинстве сайтов.</translation>
 <translation id="8662911384982557515">Смена главной страницы на <ph name="HOME_PAGE" /></translation>
