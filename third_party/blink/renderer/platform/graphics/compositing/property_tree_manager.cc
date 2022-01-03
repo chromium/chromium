@@ -900,6 +900,16 @@ bool PropertyTreeManager::SupportsShaderBasedRoundedCorner(
   return true;
 }
 
+// A reason is conditional if it can be omitted if it controls less than two
+// composited layers or render surfaces. We set the reason on an effect node
+// when updating the cc effect property tree, and remove unnecessary ones in
+// UpdateConditionalRenderSurfaceReasons() after layerirzation.
+static bool IsConditionalRenderSurfaceReason(cc::RenderSurfaceReason reason) {
+  return reason == cc::RenderSurfaceReason::kBlendModeDstIn ||
+         reason == cc::RenderSurfaceReason::kOpacity ||
+         reason == cc::RenderSurfaceReason::kOpacityAnimation;
+}
+
 int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
     const ClipPaintPropertyNode& target_clip,
     const EffectPaintPropertyNode* next_effect) {
@@ -1014,8 +1024,11 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
           for (auto effect_it = effect_stack_.rbegin();
                effect_it != effect_stack_.rend(); ++effect_it) {
             auto& effect_node = *GetEffectTree().Node(effect_it->effect_id);
-            if (effect_node.HasRenderSurface())
+            if (effect_node.HasRenderSurface() &&
+                !IsConditionalRenderSurfaceReason(
+                    effect_node.render_surface_reason)) {
               break;
+            }
             ForceRenderSurfaceIfSyntheticRoundedCornerClip(*effect_it);
           }
         }
@@ -1123,12 +1136,6 @@ void PropertyTreeManager::BuildEffectNodesRecursively(
     }
   } else {
     next_effect.SetCcNodeId(new_sequence_number_, real_effect_node_id);
-    if (cc_effect_id_to_blink_effect_node_.size() <=
-        static_cast<wtf_size_t>(real_effect_node_id)) {
-      cc_effect_id_to_blink_effect_node_.resize(real_effect_node_id + 1);
-    }
-    DCHECK(!cc_effect_id_to_blink_effect_node_[real_effect_node_id]);
-    cc_effect_id_to_blink_effect_node_[real_effect_node_id] = &next_effect;
   }
 
   CompositorElementId compositor_element_id =
@@ -1143,6 +1150,21 @@ void PropertyTreeManager::BuildEffectNodesRecursively(
   effect_stack_.emplace_back(current_);
   SetCurrentEffectState(effect_node, CcEffectType::kEffect, next_effect,
                         *output_clip, transform);
+}
+
+// See IsConditionalRenderSurfaceReason() for the definition of conditional
+// render surface.
+static cc::RenderSurfaceReason ConditionalRenderSurfaceReasonForEffect(
+    const EffectPaintPropertyNode& effect) {
+  if (effect.BlendMode() == SkBlendMode::kDstIn)
+    return cc::RenderSurfaceReason::kBlendModeDstIn;
+  if (effect.Opacity() != 1.f ||
+      effect.RequiresCompositingForWillChangeOpacity()) {
+    return cc::RenderSurfaceReason::kOpacity;
+  }
+  if (effect.HasActiveOpacityAnimation())
+    return cc::RenderSurfaceReason::kOpacityAnimation;
+  return cc::RenderSurfaceReason::kNone;
 }
 
 static cc::RenderSurfaceReason RenderSurfaceReasonForEffect(
@@ -1160,9 +1182,7 @@ static cc::RenderSurfaceReason RenderSurfaceReasonForEffect(
   if (effect.HasActiveBackdropFilterAnimation())
     return cc::RenderSurfaceReason::kBackdropFilterAnimation;
   if (effect.BlendMode() != SkBlendMode::kSrcOver &&
-      // For optimization, we will set render surface reason for DstIn later in
-      // PaintArtifactCompositor::UpdateRenderSurfaceForEffects() if it controls
-      // more than one layer.
+      // The render surface for kDstIn is conditional. See above functions.
       effect.BlendMode() != SkBlendMode::kDstIn) {
     return cc::RenderSurfaceReason::kBlendMode;
   }
@@ -1175,7 +1195,10 @@ static cc::RenderSurfaceReason RenderSurfaceReasonForEffect(
   if (effect.FlattensAtLeafOf3DScene())
     return cc::RenderSurfaceReason::k3dTransformFlattening;
 
-  return cc::RenderSurfaceReason::kNone;
+  auto conditional_reason = ConditionalRenderSurfaceReasonForEffect(effect);
+  DCHECK(conditional_reason == cc::RenderSurfaceReason::kNone ||
+         IsConditionalRenderSurfaceReason(conditional_reason));
+  return conditional_reason;
 }
 
 void PropertyTreeManager::PopulateCcEffectNode(
@@ -1207,44 +1230,7 @@ void PropertyTreeManager::PopulateCcEffectNode(
   effect_node.shared_element_resource_id = effect.SharedElementResourceId();
 }
 
-cc::RenderSurfaceReason
-PropertyTreeManager::ConditionalRenderSurfaceReasonForEffect(
-    const cc::EffectNode& effect) const {
-  if (effect.HasRenderSurface())
-    return cc::RenderSurfaceReason::kNone;
-  if (effect.blend_mode != SkBlendMode::kSrcOver)
-    return cc::RenderSurfaceReason::kBlendModeDstIn;
-  if (effect.opacity != 1.f)
-    return cc::RenderSurfaceReason::kOpacity;
-  if (static_cast<wtf_size_t>(effect.id) <
-      cc_effect_id_to_blink_effect_node_.size()) {
-    if (const auto* blink_effect_node =
-            cc_effect_id_to_blink_effect_node_[effect.id]) {
-      if (blink_effect_node->RequiresCompositingForWillChangeOpacity())
-        return cc::RenderSurfaceReason::kOpacity;
-      if (blink_effect_node->HasActiveOpacityAnimation())
-        return cc::RenderSurfaceReason::kOpacityAnimation;
-    }
-  }
-  // Applying a rounded corner clip to more than one layer descendant
-  // with highest quality requires a render surface, due to the possibility
-  // of antialiasing issues on the rounded corner edges.
-  // is_fast_rounded_corner means to intentionally prefer faster compositing
-  // and less memory over highest quality.
-  if (effect.mask_filter_info.HasRoundedCorners() &&
-      !effect.is_fast_rounded_corner)
-    return cc::RenderSurfaceReason::kRoundedCorner;
-  return cc::RenderSurfaceReason::kNone;
-}
-
-// Every effect is supposed to have render surface enabled for grouping, but we
-// can omit one if the effect is opacity or blend-mode only, render surface is
-// not forced, and the effect has only one layer or render surface. This is both
-// for optimization and not introducing sub-pixel differences in web tests.
-// TODO(crbug.com/504464): There is ongoing work in cc to delay render surface
-// decision until later phase of the pipeline. Remove premature optimization
-// here once the work is ready.
-void PropertyTreeManager::AddConditionalRenderSurfaceReasons(
+void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
     const cc::LayerList& layers) {
   auto& effect_tree = GetEffectTree();
   // This vector is indexed by effect node id. The value is the number of
@@ -1262,13 +1248,11 @@ void PropertyTreeManager::AddConditionalRenderSurfaceReasons(
   for (int id = static_cast<int>(effect_tree.size() - 1);
        id > cc::EffectTree::kSecondaryRootNodeId; id--) {
     auto* effect = effect_tree.Node(id);
-    if (effect_layer_counts[id] > 1) {
-      auto reason = ConditionalRenderSurfaceReasonForEffect(*effect);
-      if (reason != cc::RenderSurfaceReason::kNone) {
-        // The render surface candidate needs a render surface because it
-        // controls more than 1 layer.
-        effect->render_surface_reason = reason;
-      }
+    if (effect_layer_counts[id] < 2 &&
+        IsConditionalRenderSurfaceReason(effect->render_surface_reason)) {
+      // The conditional render surface can be omitted because it controls less
+      // than two layers or render surfaces.
+      effect->render_surface_reason = cc::RenderSurfaceReason::kNone;
     }
 
     // We should not have visited the parent.

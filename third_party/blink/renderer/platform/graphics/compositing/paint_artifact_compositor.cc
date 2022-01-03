@@ -871,12 +871,12 @@ void PaintArtifactCompositor::Update(
       static_cast<wtf_size_t>(new_end - synthesized_clip_cache_.begin()));
 
   // This should be done before
-  // property_tree_manager.AddConditionalRenderSurfaceReasons() for which to
+  // property_tree_manager.UpdateConditionalRenderSurfaceReasons() for which to
   // get property tree node ids from the layers.
   host->property_trees()->sequence_number = g_s_property_tree_sequence_number;
 
   auto layers = layer_list_builder.Finalize();
-  property_tree_manager.AddConditionalRenderSurfaceReasons(layers);
+  property_tree_manager.UpdateConditionalRenderSurfaceReasons(layers);
   root_layer_->SetChildLayerList(std::move(layers));
 
   // Update the host's active registered elements from the new property tree.

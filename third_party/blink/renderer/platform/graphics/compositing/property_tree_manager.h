@@ -161,10 +161,17 @@ class PropertyTreeManager {
   // |cc_node_id|.
   void SetCcScrollNodeIsComposited(int cc_node_id);
 
-  // Sets additional reasons on |cc::EffectNode::render_surface_reason| for
-  // all effect nodes in |GetEffectTree| based on
-  // |ConditionalRenderSurfaceReasonForEffect|.
-  void AddConditionalRenderSurfaceReasons(const cc::LayerList& layers);
+  // Updates conditional render surface reasons for all effect nodes in
+  // |GetEffectTree|. Every effect is supposed to have render surface enabled
+  // for grouping, but we can omit a conditional render surface if it controls
+  // less than two composited layers or render surfaces.
+  // See ConditionalRenderSurfaceReasonForEffect() in property_tree_manager.cc
+  // for which reasons are conditional. This is both for optimization and not
+  // introducing sub-pixel differences in web tests.
+  // TODO(crbug.com/504464): There is ongoing work in cc to delay render surface
+  // decision until later phase of the pipeline. Remove premature optimization
+  // here once the work is ready.
+  void UpdateConditionalRenderSurfaceReasons(const cc::LayerList& layers);
 
  private:
   void SetupRootTransformNode();
@@ -294,11 +301,6 @@ class PropertyTreeManager {
       const ScrollPaintPropertyNode&,
       const cc::TransformNode& scroll_offset_translation);
 
-  // Render surface reasons added by |UpdateConditionalRenderSurfaces| that are
-  // conditional on having more than one affected layer/surface.
-  cc::RenderSurfaceReason ConditionalRenderSurfaceReasonForEffect(
-      const cc::EffectNode&) const;
-
   PropertyTreeManagerClient& client_;
 
   // Property trees which should be updated by the manager.
@@ -327,8 +329,6 @@ class PropertyTreeManager {
   // A set of synthetic clips masks which will be applied if a layer under them
   // is encountered which draws content (and thus necessitates the mask).
   HashSet<int> pending_synthetic_mask_layers_;
-
-  Vector<const EffectPaintPropertyNode*> cc_effect_id_to_blink_effect_node_;
 };
 
 }  // namespace blink
