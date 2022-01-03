@@ -739,6 +739,18 @@ crbug.com/819617 [ Linux ] virtual/text-antialias/descent-clip-in-scaled-page.ht
 
 # ====== Paint team owned tests to here ======
 
+# WPT speculative-parsing tests failing
+crbug.com/1144176 [ Mac11 ] external/wpt/html/syntax/speculative-parsing/generated/document-write/svg-script-src.tentative.sub.html [ Failure ]
+crbug.com/1144176 external/wpt/html/syntax/speculative-parsing/generated/document-write/link-rel-alternate-stylesheet.tentative.sub.html [ Crash Failure ]
+crbug.com/1144176 external/wpt/html/syntax/speculative-parsing/generated/document-write/link-rel-stylesheet-nomatch-media.tentative.sub.html [ Failure ]
+crbug.com/1144176 external/wpt/html/syntax/speculative-parsing/generated/page-load/link-rel-alternate-stylesheet.tentative.html [ Failure ]
+crbug.com/1144176 external/wpt/html/syntax/speculative-parsing/generated/page-load/link-rel-stylesheet-disabled.tentative.html [ Failure ]
+crbug.com/1144176 external/wpt/html/syntax/speculative-parsing/generated/page-load/link-rel-stylesheet-nomatch-media.tentative.html [ Failure ]
+crbug.com/1144176 external/wpt/html/syntax/speculative-parsing/generated/page-load/math-font-script-src.tentative.html [ Failure ]
+crbug.com/1144176 external/wpt/html/syntax/speculative-parsing/generated/page-load/math-script-src.tentative.html [ Failure ]
+crbug.com/1144176 external/wpt/html/syntax/speculative-parsing/generated/page-load/meta-viewport-link-stylesheet-media.tentative.html [ Failure ]
+crbug.com/1144176 external/wpt/html/syntax/speculative-parsing/generated/page-load/svg-script-src.tentative.html [ Failure ]
+
 crbug.com/1142958 external/wpt/layout-instability/absolute-child-shift-with-parent-will-change.html [ Failure ]
 
 crbug.com/922249 virtual/android/fullscreen/compositor-touch-hit-rects-fullscreen-video-controls.html [ Failure Pass ]
@@ -1671,6 +1683,8 @@ crbug.com/1269580 external/wpt/css/css-conditional/at-supports-namespace-002.htm
 crbug.com/1158554 external/wpt/css/css-conditional/css-supports-040.xht [ Failure ]
 crbug.com/1158554 external/wpt/css/css-conditional/css-supports-041.xht [ Failure ]
 crbug.com/1158554 external/wpt/css/css-conditional/css-supports-042.xht [ Failure ]
+crbug.com/1158554 external/wpt/css/css-conditional/at-supports-046.html [ Failure ]
+
 
 # @container
 crbug.com/1273913 external/wpt/css/css-contain/container-queries/pseudo-elements-002.tentative.html [ Failure ]
@@ -2945,20 +2959,10 @@ crbug.com/626703 [ Mac ] external/wpt/css/css-ruby/ruby-autohide-004.html [ Fail
 crbug.com/626703 [ Mac ] external/wpt/css/css-text/line-breaking/segment-break-transformation-rules-009.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-text/line-breaking/segment-break-transformation-rules-015.html [ Failure ]
 crbug.com/626703 [ Fuchsia ] external/wpt/dom/historical.html [ Skip ]
-crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/document-write/link-rel-alternate-stylesheet.tentative.sub.html [ Crash Failure ]
-crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/document-write/link-rel-stylesheet-nomatch-media.tentative.sub.html [ Failure ]
-crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/page-load/link-rel-alternate-stylesheet.tentative.html [ Failure ]
-crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/page-load/link-rel-stylesheet-disabled.tentative.html [ Failure ]
-crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/page-load/link-rel-stylesheet-nomatch-media.tentative.html [ Failure ]
-crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/page-load/math-font-script-src.tentative.html [ Failure ]
-crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/page-load/math-script-src.tentative.html [ Failure ]
-crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/page-load/meta-viewport-link-stylesheet-media.tentative.html [ Failure ]
-crbug.com/626703 external/wpt/html/syntax/speculative-parsing/generated/page-load/svg-script-src.tentative.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/url/a-element-xhtml.xhtml [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/url/failure.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/url/url-constructor.any.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/css/css-flexbox/abspos/flex-abspos-staticpos-align-self-006.html [ Failure ]
-crbug.com/626703 [ Mac11 ] external/wpt/html/syntax/speculative-parsing/generated/document-write/svg-script-src.tentative.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/fetch.https.window.html?include=from-treat-as-public [ Timeout ]
@@ -2967,7 +2971,6 @@ crbug.com/626703 [ Mac11 ] virtual/without-coep-for-shared-worker/external/wpt/h
 crbug.com/626703 [ Mac11 ] external/wpt/css/css-color/color-resolving-hwb.html [ Failure Skip Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/css/css-color/color-resolving-hwb.html [ Failure Skip Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/system-color-compute/external/wpt/css/css-color/color-resolving-hwb.html [ Failure Skip Timeout ]
-crbug.com/626703 external/wpt/css/css-conditional/at-supports-046.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-025.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/hyphenate-character-001.html [ Failure ]
