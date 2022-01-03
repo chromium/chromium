@@ -185,10 +185,17 @@ TEST_F(TextInputTest, ShowVirtualKeyboardIfEnabled) {
   testing::Mock::VerifyAndClearExpectations(&observer);
   testing::Mock::VerifyAndClearExpectations(delegate());
 
+  // Currently, Virtual Keyboard Controller is not set up, and so
+  // the virtual keyboard events are gone. Here, we capture the callback
+  // from the observer and translate it to the ones of
+  // VirtualKeyboardControllerObserver event as if it is done via
+  // real VirtualKeyboardController implementation.
   EXPECT_CALL(observer, OnVirtualKeyboardVisibilityChangedIfEnabled)
       .WillOnce(testing::Invoke([this](bool should_show) {
         if (should_show)
-          text_input()->OnKeyboardVisibilityChanged(true);
+          text_input()->OnKeyboardVisible(gfx::Rect());
+        else
+          text_input()->OnKeyboardHidden();
       }));
   EXPECT_CALL(*delegate(), OnVirtualKeyboardVisibilityChanged(true)).Times(1);
   text_input()->ShowVirtualKeyboardIfEnabled();
@@ -209,10 +216,18 @@ TEST_F(TextInputTest, ShowVirtualKeyboardIfEnabledBeforeActivated) {
   text_input()->ShowVirtualKeyboardIfEnabled();
 
   EXPECT_CALL(observer, OnTextInputStateChanged(text_input())).Times(1);
+
+  // Currently, Virtual Keyboard Controller is not set up, and so
+  // the virtual keyboard events are gone. Here, we capture the callback
+  // from the observer and translate it to the ones of
+  // VirtualKeyboardControllerObserver event as if it is done via
+  // real VirtualKeyboardController implementation.
   EXPECT_CALL(observer, OnVirtualKeyboardVisibilityChangedIfEnabled)
       .WillOnce(testing::Invoke([this](bool should_show) {
         if (should_show)
-          text_input()->OnKeyboardVisibilityChanged(true);
+          text_input()->OnKeyboardVisible(gfx::Rect());
+        else
+          text_input()->OnKeyboardHidden();
       }));
   EXPECT_CALL(*delegate(), Activated).Times(1);
   EXPECT_CALL(*delegate(), OnVirtualKeyboardVisibilityChanged(true)).Times(1);
