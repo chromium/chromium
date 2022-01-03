@@ -12,6 +12,7 @@
 #include "base/json/values_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
+#include "chrome/browser/ash/login/test/policy_test_server_constants.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/device_cloud_policy_initializer.h"
 #include "chrome/browser/browser_process.h"
@@ -216,18 +217,13 @@ bool LocalPolicyTestServerMixin::SetDeviceInitialEnrollmentResponse(
     const std::string& device_serial_number,
     enterprise_management::DeviceInitialEnrollmentStateResponse::
         InitialEnrollmentMode initial_mode,
-    const absl::optional<std::string>& management_domain,
-    const absl::optional<bool> is_license_packaged_with_device) {
+    const absl::optional<std::string>& management_domain) {
   base::Value serial_entry(base::Value::Type::DICTIONARY);
   serial_entry.SetKey("initial_enrollment_mode", base::Value(initial_mode));
 
   if (management_domain.has_value())
     serial_entry.SetKey("management_domain",
                         base::Value(management_domain.value()));
-
-  if (is_license_packaged_with_device.has_value())
-    serial_entry.SetKey("is_license_packaged_with_device",
-                        base::Value(is_license_packaged_with_device.value()));
 
   const std::string brand_serial_id =
       device_brand_code + "_" + device_serial_number;
@@ -243,9 +239,9 @@ void LocalPolicyTestServerMixin::SetupZeroTouchForcedEnrollment() {
       enterprise_management::DeviceInitialEnrollmentStateResponse::
           INITIAL_ENROLLMENT_MODE_ZERO_TOUCH_ENFORCED;
   SetUpdateDeviceAttributesPermission(false);
-  SetDeviceInitialEnrollmentResponse(
-      test::kTestRlzBrandCodeKey, test::kTestSerialNumber, initial_enrollment,
-      test::kTestDomain, absl::nullopt /* is_license_packaged_with_device */);
+  SetDeviceInitialEnrollmentResponse(test::kTestRlzBrandCodeKey,
+                                     test::kTestSerialNumber,
+                                     initial_enrollment, test::kTestDomain);
 }
 
 void LocalPolicyTestServerMixin::ConfigureFakeStatisticsForZeroTouch(

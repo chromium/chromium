@@ -35,8 +35,15 @@ constexpr net::HttpStatusCode kStandardHttpStatusCodes[] = {
 void CustomHttpResponse::SendResponse(
     base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) {
   std::string reason = "Custom";
-  if (base::ranges::lower_bound(kStandardHttpStatusCodes, code()))
+  // The implementation of the BasicHttpResponse::reason() calls
+  // net::GetHttpReasonPhrase, which requires status code to be a standard HTTP
+  // status code and crashes otherwise. Hence we avoid calling it if a custom
+  // HTTP code is used.
+  // TODO(crbug/1280752): Make GetHttpReasonPhrase support custom codes instead.
+  if (base::ranges::lower_bound(kStandardHttpStatusCodes, code()) !=
+      base::ranges::end(kStandardHttpStatusCodes)) {
     reason = BasicHttpResponse::reason();
+  }
   delegate->SendHeadersContentAndFinish(code(), reason, BuildHeaders(),
                                         content());
 }

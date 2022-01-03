@@ -3217,7 +3217,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/login/device_family_link_allowed_policy_browsertest.cc",
         "../browser/ash/login/enable_debugging_browsertest.cc",
         "../browser/ash/login/encryption_migration_browsertest.cc",
-        "../browser/ash/login/enrollment/enrollment_local_policy_server_browsertest.cc",
+        "../browser/ash/login/enrollment/enrollment_embedded_policy_server_browsertest.cc",
         "../browser/ash/login/enrollment/enrollment_screen_browsertest.cc",
         "../browser/ash/login/enrollment/hands_off_enrollment_browsertest.cc",
         "../browser/ash/login/enrollment/mock_auto_enrollment_check_screen.cc",

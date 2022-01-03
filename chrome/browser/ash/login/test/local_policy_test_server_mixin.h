@@ -20,15 +20,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
-namespace test {
-
-// Test constants used during enrollment wherever appropriate.
-constexpr char kTestDomain[] = "test-domain.com";
-constexpr char kTestRlzBrandCodeKey[] = "TEST";
-constexpr char kTestSerialNumber[] = "111111";
-constexpr char kTestHardwareClass[] = "hw";
-
-}  // namespace test
 
 // This test mixin covers setting up LocalPolicyTestServer and adding a
 // command-line flag to use it. Please see SetUp function for default settings.
@@ -108,8 +99,7 @@ class LocalPolicyTestServerMixin : public InProcessBrowserTestMixin {
       const std::string& device_serial_number,
       enterprise_management::DeviceInitialEnrollmentStateResponse::
           InitialEnrollmentMode initial_mode,
-      const absl::optional<std::string>& management_domain,
-      const absl::optional<bool> is_license_packaged_with_device);
+      const absl::optional<std::string>& management_domain);
 
   // Utility function that configures server parameters for zero-touch
   // enrollment. Should be used in conjunction with enabling zero-touch
