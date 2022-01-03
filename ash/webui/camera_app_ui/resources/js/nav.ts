@@ -7,50 +7,37 @@ import * as dom from './dom.js';
 import {toggleExpertMode} from './expert.js';
 import * as state from './state.js';
 import * as toast from './toast.js';
-// eslint-disable-next-line no-unused-vars
 import {ViewName} from './type.js';
 import * as util from './util.js';
-// eslint-disable-next-line no-unused-vars
-import {View} from './views/view.js';
+import {EnterOptions, View} from './views/view.js';
 import {windowController} from './window_controller.js';
 
 /**
  * All views stacked in ascending z-order (DOM order) for navigation, and only
  * the topmost visible view is active (clickable/focusable).
- * @type {!Array<!View>}
  */
-let allViews = [];
+let allViews: View[] = [];
 
 /**
  * Index of the current topmost visible view in the stacked views.
- * @type {number}
  */
 let topmostIndex = -1;
 
-// Disable checking jsdoc generator annotation which is incompatible with
-// closure compiler: JSdoc use @generator and @yields while closure compiler use
-// @return {Generator}.
-/* eslint-disable valid-jsdoc */
-
 /**
  * Gets view and all recursive subviews.
- * @param {!View} view
- * @return {!Generator<!View>}
  */
-function* getRecursiveViews(view) {
+function* getRecursiveViews(view: View): Generator<View> {
   yield view;
   for (const subview of view.getSubViews()) {
     yield* getRecursiveViews(subview);
   }
 }
 
-/* eslint-enable valid-jsdoc */
-
 /**
  * Sets up navigation for all views, e.g. camera-view, dialog-view, etc.
- * @param {!Array<!View>} views All views in ascending z-order.
+ * @param views All views in ascending z-order.
  */
-export function setup(views) {
+export function setup(views: View[]): void {
   allViews = views.flatMap((v) => [...getRecursiveViews(v)]);
   // Manage all tabindex usages in for navigation.
   document.body.addEventListener('keydown', (event) => {
@@ -65,9 +52,9 @@ export function setup(views) {
 
 /**
  * Activates the view to be focusable.
- * @param {number} index Index of the view.
+ * @param index Index of the view.
  */
-function activate(index) {
+function activate(index: number) {
   // Restore the view's child elements' tabindex and then focus the view.
   const view = allViews[index];
   view.root.setAttribute('aria-hidden', 'false');
@@ -84,9 +71,9 @@ function activate(index) {
 
 /**
  * Deactivates the view to be unfocusable.
- * @param {number} index Index of the view.
+ * @param index Index of the view.
  */
-function deactivate(index) {
+function deactivate(index: number) {
   const view = allViews[index];
   view.root.setAttribute('aria-hidden', 'true');
   dom.getAllFrom(view.root, '[tabindex]', HTMLElement).forEach((element) => {
@@ -101,20 +88,20 @@ function deactivate(index) {
 
 /**
  * Checks if the view is already shown.
- * @param {number} index Index of the view.
- * @return {boolean} Whether the view is shown or not.
+ * @param index Index of the view.
+ * @return Whether the view is shown or not.
  */
-function isShown(index) {
+function isShown(index: number): boolean {
   return state.get(allViews[index].name);
 }
 
 /**
  * Shows the view indexed in the stacked views and activates the view only if
  * it becomes the topmost visible view.
- * @param {number} index Index of the view.
- * @return {!View} View shown.
+ * @param index Index of the view.
+ * @return View shown.
  */
-function show(index) {
+function show(index: number): View {
   const view = allViews[index];
   if (!isShown(index)) {
     state.set(view.name, true);
@@ -132,9 +119,9 @@ function show(index) {
 
 /**
  * Finds the next topmost visible view in the stacked views.
- * @return {number} Index of the view found; otherwise, -1.
+ * @return Index of the view found; otherwise, -1.
  */
-function findNextTopmostIndex() {
+function findNextTopmostIndex(): number {
   for (let i = topmostIndex - 1; i >= 0; i--) {
     if (isShown(i)) {
       return i;
@@ -146,9 +133,9 @@ function findNextTopmostIndex() {
 /**
  * Hides the view indexed in the stacked views and deactivate the view if it was
  * the topmost visible view.
- * @param {number} index Index of the view.
+ * @param index Index of the view.
  */
-function hide(index) {
+function hide(index: number) {
   if (index === topmostIndex) {
     deactivate(index);
     const next = findNextTopmostIndex();
@@ -162,43 +149,43 @@ function hide(index) {
 
 /**
  * Finds the view by its name in the stacked views.
- * @param {!ViewName} name View name.
- * @return {number} Index of the view found; otherwise, -1.
+ * @param name View name.
+ * @return Index of the view found; otherwise, -1.
  */
-function findIndex(name) {
+function findIndex(name: ViewName): number {
   return allViews.findIndex((view) => view.name === name);
 }
 
 /**
  * Opens a navigation session of the view; shows the view before entering it and
  * hides the view after leaving it for the ended session.
- * @param {!ViewName} name View name.
- * @param {...*} args Optional rest parameters for entering the view.
- * @return {!Promise<*>} Promise for the operation or result.
+ * @param name View name.
+ * @param args Optional rest parameters for entering the view.
+ * @return Promise for the operation or result.
  */
-export function open(name, ...args) {
+export function open(name: ViewName, options?: EnterOptions): Promise<unknown> {
   const index = findIndex(name);
-  return show(index).enter(...args).finally(() => {
+  return show(index).enter(options).finally(() => {
     hide(index);
   });
 }
 
 /**
  * Closes the current navigation session of the view by leaving it.
- * @param {!ViewName} name View name.
- * @param {*=} condition Optional condition for leaving the view.
- * @return {boolean} Whether successfully leaving the view or not.
+ * @param name View name.
+ * @param condition Optional condition for leaving the view.
+ * @return Whether successfully leaving the view or not.
  */
-export function close(name, condition) {
+export function close(name: ViewName, condition?: unknown): boolean {
   const index = findIndex(name);
   return allViews[index].leave(condition);
 }
 
 /**
  * Handles key pressed event.
- * @param {!KeyboardEvent} event Key press event.
+ * @param event Key press event.
  */
-export function onKeyPressed(event) {
+export function onKeyPressed(event: KeyboardEvent): void {
   const key = util.getShortcutIdentifier(event);
   switch (key) {
     case 'BrowserBack':
@@ -235,7 +222,7 @@ export function onKeyPressed(event) {
 /**
  * Handles when the window state or size changed.
  */
-export function onWindowStatusChanged() {
+export function onWindowStatusChanged(): void {
   // All visible views need being relayout after window is resized or state
   // changed.
   for (let i = allViews.length - 1; i >= 0; i--) {
@@ -247,9 +234,8 @@ export function onWindowStatusChanged() {
 
 /**
  * Returns whether the view is the top view above all shown view.
- * @param {!ViewName} name Name of the view
- * @return {boolean}
+ * @param name Name of the view
  */
-export function isTopMostView(name) {
+export function isTopMostView(name: ViewName): boolean {
   return topmostIndex === findIndex(name);
 }

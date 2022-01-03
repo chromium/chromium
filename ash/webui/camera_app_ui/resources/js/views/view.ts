@@ -40,7 +40,8 @@ export class PTZPanelOptions {
   }
 }
 
-type EnterOptions = DialogEnterOptions|WarningEnterOptions|PTZPanelOptions;
+export type EnterOptions =
+    DialogEnterOptions|WarningEnterOptions|PTZPanelOptions;
 
 interface ViewOptions {
   /** enables dismissible by Esc-key. */
