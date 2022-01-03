@@ -347,7 +347,8 @@ using chrome_test_util::SystemSelectionCalloutCopyButton;
 }
 
 // Tests typing in the omnibox.
-- (void)testToolbarOmniboxTyping {
+// TODO(crbug.com/1283854): Fix test.
+- (void)DISABLED_testToolbarOmniboxTyping {
   // TODO(crbug.com/642559): Enable this test for iPad when typing bug is fixed.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Disabled for iPad due to a simulator bug.");
