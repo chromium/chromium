@@ -25,7 +25,7 @@ compile_js_files = [
   "h264.js",
   "i18n_string.ts",
   "init.ts",
-  "intent.js",
+  "intent.ts",
   "lib/comlink.ts",
   "lib/comlink_protocol.ts",
   "lib/ffmpeg.js",
