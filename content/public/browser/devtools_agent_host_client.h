@@ -63,6 +63,10 @@ class CONTENT_EXPORT DevToolsAgentHostClient {
 
   // Determines protocol message format.
   virtual bool UsesBinaryProtocol();
+
+  // Returns "DevTools" | "Extension" | "RemoteDebugger" | "Other", which is
+  // used to emit to the correct UMA histogram.
+  virtual std::string GetTypeForMetrics();
 };
 
 }  // namespace content

@@ -44,4 +44,8 @@ DevToolsAgentHostClient::GetNavigationInitiatorOrigin() {
   return absl::nullopt;
 }
 
+std::string DevToolsAgentHostClient::GetTypeForMetrics() {
+  return "Other";
+}
+
 }  // namespace content

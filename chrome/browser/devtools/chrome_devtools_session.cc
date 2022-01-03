@@ -5,6 +5,8 @@
 #include "chrome/browser/devtools/chrome_devtools_session.h"
 
 #include <memory>
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
@@ -50,6 +52,12 @@ ChromeDevToolsSession::ChromeDevToolsSession(
 
 ChromeDevToolsSession::~ChromeDevToolsSession() = default;
 
+base::HistogramBase::Sample GetCommandUmaId(
+    const base::StringPiece command_name) {
+  return static_cast<base::HistogramBase::Sample>(
+      base::HashMetricName(command_name));
+}
+
 void ChromeDevToolsSession::HandleCommand(
     base::span<const uint8_t> message,
     content::DevToolsManagerDelegate::NotHandledCallback callback) {
@@ -57,6 +65,16 @@ void ChromeDevToolsSession::HandleCommand(
   DCHECK(dispatchable.ok());  // Checked by content::DevToolsSession.
   crdtp::UberDispatcher::DispatchResult dispatched =
       dispatcher_.Dispatch(dispatchable);
+
+  auto command_uma_id = GetCommandUmaId(base::StringPiece(
+      reinterpret_cast<const char*>(dispatchable.Method().begin()),
+      dispatchable.Method().size()));
+  std::string client_type = client_channel_->GetClient()->GetTypeForMetrics();
+  DCHECK(client_type == "DevTools" || client_type == "Extension" ||
+         client_type == "RemoteDebugger" || client_type == "Other");
+  base::UmaHistogramSparse("DevTools.CDPCommandFrom" + client_type,
+                           command_uma_id);
+
   if (!dispatched.MethodFound()) {
     std::move(callback).Run(message);
     return;

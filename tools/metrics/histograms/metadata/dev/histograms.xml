@@ -77,6 +77,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.CDPCommandFrom{ClientType}" enum="CDPCommands"
+    expires_after="2022-12-16">
+  <owner>wolfi@chromium.org</owner>
+  <owner>dsv@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>
+    Records CDP command usage originating from {ClientType}. This is recorded
+    whenever a CDP session receives and handles a command from a CDP client.
+  </summary>
+  <token key="ClientType">
+    <variant name="DevTools"/>
+    <variant name="Extension" summary="an extension"/>
+    <variant name="Other" summary="other sources"/>
+    <variant name="RemoteDebugger" summary="remote debugging"/>
+  </token>
+</histogram>
+
 <histogram name="DevTools.ColorPicker.FixedColor"
     enum="DevToolsColorPickerFixedColor" expires_after="2021-10-04">
   <obsolete>
