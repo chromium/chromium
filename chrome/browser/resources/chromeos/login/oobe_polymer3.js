@@ -6,6 +6,7 @@ import {Oobe} from './cr_ui.m.js';
 import {DebuggerUI} from './debug/debug.m.js';
 import {loadTimeData} from './i18n_setup.js';
 import 'chrome://oobe/components/test_util.m.js';
+import 'chrome://oobe/test_api/test_api.m.js';
 
 import 'chrome://oobe/screens/common/app_downloading.m.js';
 import 'chrome://oobe/screens/common/app_launch_splash.m.js';

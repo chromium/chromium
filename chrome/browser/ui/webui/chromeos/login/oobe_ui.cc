@@ -156,6 +156,7 @@ constexpr char kOobeJSPath[] = "oobe.js";
 constexpr char kProductLogoPath[] = "product-logo.png";
 constexpr char kRecommendAppListViewJSPath[] = "recommend_app_list_view.js";
 constexpr char kTestAPIJSPath[] = "test_api.js";
+constexpr char kTestAPIJsMPath[] = "test_api/test_api.m.js";
 constexpr char kWebviewSamlInjectedJSPath[] = "webview_saml_injected.js";
 
 // Components
@@ -277,8 +278,10 @@ void AddTestAPIResources(content::WebUIDataSource* source) {
       command_line->HasSwitch(::chromeos::switches::kEnableOobeTestAPI);
   if (enable_test_api) {
     source->AddResourcePath(kTestAPIJSPath, IDR_OOBE_TEST_API_JS);
+    source->AddResourcePath(kTestAPIJsMPath, IDR_OOBE_TEST_API_M_JS);
   } else {
     source->AddResourcePath(kTestAPIJSPath, IDR_OOBE_TEST_API_STUB_JS);
+    source->AddResourcePath(kTestAPIJsMPath, IDR_OOBE_TEST_API_STUB_M_JS);
   }
 }
 

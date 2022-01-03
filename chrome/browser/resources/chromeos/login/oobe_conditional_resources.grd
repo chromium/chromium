@@ -45,6 +45,11 @@
       <!-- OOBE Test API -->
       <include name="IDR_OOBE_TEST_API_JS" file="test_api\test_api.js" type="chrome_html" />
       <include name="IDR_OOBE_TEST_API_STUB_JS" file="test_api\no_test_api.js" type="chrome_html" />
+      <include name="IDR_OOBE_TEST_API_M_JS" use_base_dir="false" type="chrome_html"
+               file="${root_gen_dir}/chrome/browser/resources/chromeos/login/oobe_preprocessed/test_api/test_api.m.js" />
+      <include name="IDR_OOBE_TEST_API_STUB_M_JS" use_base_dir="false" type="chrome_html"
+               file="${root_gen_dir}/chrome/browser/resources/chromeos/login/oobe_preprocessed/test_api/no_test_api.m.js" />
+
     </includes>
   </release>
 </grit>
