@@ -94,7 +94,7 @@ compile_js_files = [
   "views/view.ts",
   "views/warning.js",
   "waitable_event.ts",
-  "window_controller.js",
+  "window_controller.ts",
 ]
 
 no_compile_js_files = [ "lib/analytics.js" ]
