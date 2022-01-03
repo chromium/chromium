@@ -58,7 +58,7 @@ compile_js_files = [
   "sound.ts",
   "state.ts",
   "test_bridge.ts",
-  "thumbnailer.js",
+  "thumbnailer.ts",
   "timer.ts",
   "toast.ts",
   "tooltip.ts",

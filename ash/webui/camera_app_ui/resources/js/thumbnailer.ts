@@ -14,20 +14,19 @@ import {WaitableEvent} from './waitable_event.js';
 
 /**
  * Converts the element to a jpeg blob by drawing it on a canvas.
- * @param {!CanvasImageSource} element Source element.
- * @param {number} width Canvas width.
- * @param {number} height Canvas height.
- * @return {!Promise<!Blob>} Converted jpeg blob.
- * @throws {!EmptyThumbnailError} Thrown when the data to generate thumbnail is
+ * @param element Source element.
+ * @param width Canvas width.
+ * @param height Canvas height.
+ * @return Converted jpeg blob.
+ * @throws {EmptyThumbnailError} Thrown when the data to generate thumbnail is
  *     empty.
  */
-async function elementToJpegBlob(element, width, height) {
+async function elementToJpegBlob(
+    element: CanvasImageSource, width: number, height: number): Promise<Blob> {
   const {canvas, ctx} = newDrawingCanvas({width, height});
   ctx.drawImage(element, 0, 0, width, height);
 
-  /**
-   * @type {!Uint8ClampedArray} A one-dimensional pixels array in RGBA order.
-   */
+  /** A one-dimensional pixels array in RGBA order. */
   const data = ctx.getImageData(0, 0, width, height).data;
   if (data.every((byte) => byte === 0)) {
     throw new EmptyThumbnailError();
@@ -40,15 +39,12 @@ async function elementToJpegBlob(element, width, height) {
 
 /**
  * Loads the blob into a <video> element.
- * @param {!Blob} blob
- * @return {!Promise<!HTMLVideoElement>}
- * @throws {!Error} Thrown when it fails to load video.
+ * @throws Thrown when it fails to load video.
  */
-async function loadVideoBlob(blob) {
+async function loadVideoBlob(blob: Blob): Promise<HTMLVideoElement> {
   const el = document.createElement('video');
   try {
-    /** @type {WaitableEvent<boolean>} */
-    const hasLoaded = new WaitableEvent();
+    const hasLoaded = new WaitableEvent<boolean>();
     el.addEventListener('error', () => {
       hasLoaded.signal(false);
     });
@@ -87,13 +83,11 @@ async function loadVideoBlob(blob) {
 
 /**
  * Loads the blob into an <img> element.
- * @param {!Blob} blob
- * @return {!Promise<!HTMLImageElement>}
  */
-async function loadImageBlob(blob) {
+async function loadImageBlob(blob: Blob): Promise<HTMLImageElement> {
   const el = new Image();
   try {
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       el.addEventListener('error', () => {
         reject(new Error('Failed to load image'));
       });
@@ -110,12 +104,13 @@ async function loadImageBlob(blob) {
 
 /**
  * Creates a thumbnail of video by scaling the first frame to the target size.
- * @param {!Blob} blob Blob of video to be scaled.
- * @param {number} width Target width.
- * @param {number=} height Target height. Preserve the aspect ratio if not set.
- * @return {!Promise<!Blob>} Promise of the thumbnail as a jpeg blob.
+ * @param blob Blob of video to be scaled.
+ * @param width Target width.
+ * @param height Target height. Preserve the aspect ratio if not set.
+ * @return Promise of the thumbnail as a jpeg blob.
  */
-async function scaleVideo(blob, width, height = undefined) {
+async function scaleVideo(
+    blob: Blob, width: number, height?: number): Promise<Blob> {
   const el = await loadVideoBlob(blob);
   if (height === undefined) {
     height = Math.round(width * el.videoHeight / el.videoWidth);
@@ -125,12 +120,13 @@ async function scaleVideo(blob, width, height = undefined) {
 
 /**
  * Creates a thumbnail of image by scaling it to the target size.
- * @param {!Blob} blob Blob of image to be scaled.
- * @param {number} width Target width.
- * @param {number=} height Target height. Preserve the aspect ratio if not set.
- * @return {!Promise<!Blob>} Promise of the thumbnail as a jpeg blob.
+ * @param blob Blob of image to be scaled.
+ * @param width Target width.
+ * @param height Target height. Preserve the aspect ratio if not set.
+ * @return Promise of the thumbnail as a jpeg blob.
  */
-export async function scaleImage(blob, width, height = undefined) {
+export async function scaleImage(
+    blob: Blob, width: number, height?: number): Promise<Blob> {
   const el = await loadImageBlob(blob);
   if (height === undefined) {
     height = Math.round(width * el.naturalHeight / el.naturalWidth);
@@ -142,10 +138,6 @@ export async function scaleImage(blob, width, height = undefined) {
  * Failed to find image in pdf error.
  */
 class NoImageInPdfError extends Error {
-  /**
-   * @param {string=} message
-   * @public
-   */
   constructor(message = 'Failed to find image in pdf') {
     super(message);
     this.name = this.constructor.name;
@@ -154,21 +146,20 @@ class NoImageInPdfError extends Error {
 
 /**
  * Gets image embedded in a PDF.
- * @param {!Blob} blob Blob of PDF.
- * @return {!Promise<!Blob>} Promise resolved to image blob inside PDF.
+ * @param blob Blob of PDF.
+ * @return Promise resolved to image blob inside PDF.
  */
-async function getImageFromPdf(blob) {
+async function getImageFromPdf(blob: Blob): Promise<Blob> {
   const buf = await blob.arrayBuffer();
   const view = new Uint8Array(buf);
   let i = 0;
   /**
    * Finds |patterns| in view starting from |i| and moves |i| to end of found
    * pattern index.
-   * @param {...number} patterns
-   * @return {number} Returns begin of found pattern index or -1 for no further
-   *     pattern is found.
+   * @return Returns begin of found pattern index or -1 for no further pattern
+   *     is found.
    */
-  const findPattern = (...patterns) => {
+  const findPattern = (...patterns: number[]): number => {
     for (; i + patterns.length < view.length; i++) {
       if (patterns.every((b, index) => b === view[i + index])) {
         const ret = i;
@@ -218,11 +209,7 @@ async function getImageFromPdf(blob) {
  * Throws when the input blob type is not supported by thumbnailer.
  */
 class InvalidBlobTypeError extends Error {
-  /**
-   * @param {string} type
-   * @public
-   */
-  constructor(type) {
+  constructor(type: string) {
     super(`Invalid thumbnailer blob input type: ${type}`);
     this.name = this.constructor.name;
   }
@@ -231,16 +218,14 @@ class InvalidBlobTypeError extends Error {
 /**
  * For non-video type cover, keeps the original size as possible to support drag
  * drop share. Scales video type which don't support drag drop share.
- * @type {number}
  */
 const VIDEO_COVER_WIDTH = 240;
 
 /**
  * Extracts image blob from an arbitrary type of blob.
- * @param {!Blob} blob
- * @return {!Promise<!Blob>} Resolved to the image blob.
+ * @return Resolved to the image blob.
  */
-export async function extractImageFromBlob(blob) {
+export async function extractImageFromBlob(blob: Blob): Promise<Blob> {
   switch (blob.type) {
     case MimeType.GIF:
     case MimeType.JPEG:
