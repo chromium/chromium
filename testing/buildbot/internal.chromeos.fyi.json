@@ -1096,7 +1096,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R99-14396.0.0",
+        "cros_img": "octopus-release/R99-14435.0.0",
         "name": "lacros_fyi_tast_tests_OCTOPUS_LKGM",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1107,7 +1107,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R98-14388.1.0",
+        "cros_img": "octopus-release/R98-14388.8.0",
         "name": "lacros_fyi_tast_tests_OCTOPUS_DEV",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1118,7 +1118,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R97-14324.33.0",
+        "cros_img": "octopus-release/R97-14324.49.0",
         "name": "lacros_fyi_tast_tests_OCTOPUS_BETA",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1140,7 +1140,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R99-14396.0.0",
+        "cros_img": "octopus-release/R99-14435.0.0",
         "name": "ozone_unittests_OCTOPUS_LKGM",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1150,7 +1150,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R98-14388.1.0",
+        "cros_img": "octopus-release/R98-14388.8.0",
         "name": "ozone_unittests_OCTOPUS_DEV",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1160,7 +1160,7 @@
       {
         "args": [],
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R97-14324.33.0",
+        "cros_img": "octopus-release/R97-14324.49.0",
         "name": "ozone_unittests_OCTOPUS_BETA",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1188,7 +1188,7 @@
       {
         "args": [],
         "cros_board": "kevin",
-        "cros_img": "kevin-release/R99-14396.0.0",
+        "cros_img": "kevin-release/R99-14435.0.0",
         "name": "lacros_all_tast_tests_KEVIN_LKGM",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && \"dep:lacros_unstable\")",
@@ -1199,7 +1199,7 @@
       {
         "args": [],
         "cros_board": "kevin",
-        "cros_img": "kevin-release/R99-14396.0.0",
+        "cros_img": "kevin-release/R99-14435.0.0",
         "name": "ozone_unittests_KEVIN_LKGM",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1209,7 +1209,7 @@
       {
         "args": [],
         "cros_board": "kevin",
-        "cros_img": "kevin-release/R99-14396.0.0",
+        "cros_img": "kevin-release/R99-14435.0.0",
         "name": "viz_unittests_KEVIN_LKGM",
         "swarming": {},
         "test": "viz_unittests",

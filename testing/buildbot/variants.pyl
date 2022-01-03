@@ -563,8 +563,8 @@
   'CROS_ATLAS_LKGM': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '99.0.4761.0',
-      'cros_img': 'atlas-release/R99-14396.0.0',
+      'cros_chrome_version': '99.0.4801.0',
+      'cros_img': 'atlas-release/R99-14435.0.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_LKGM',
@@ -572,8 +572,8 @@
   'CROS_ATLAS_DEV': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '98.0.4758.0',
-      'cros_img': 'atlas-release/R98-14388.1.0',
+      'cros_chrome_version': '98.0.4758.14',
+      'cros_img': 'atlas-release/R98-14388.8.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_DEV',
@@ -581,8 +581,8 @@
   'CROS_ATLAS_BETA': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '97.0.4692.27',
-      'cros_img': 'atlas-release/R97-14324.33.0',
+      'cros_chrome_version': '97.0.4692.63',
+      'cros_img': 'atlas-release/R97-14324.49.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_BETA',
@@ -599,8 +599,8 @@
   'CROS_EVE_LKGM': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '99.0.4761.0',
-      'cros_img': 'eve-release/R99-14396.0.0',
+      'cros_chrome_version': '99.0.4801.0',
+      'cros_img': 'eve-release/R99-14435.0.0',
     },
     'enabled': True,
     'identifier': 'EVE_LKGM',
@@ -608,8 +608,8 @@
   'CROS_EVE_DEV': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '98.0.4758.0',
-      'cros_img': 'eve-release/R98-14388.1.0',
+      'cros_chrome_version': '98.0.4758.14',
+      'cros_img': 'eve-release/R98-14388.8.0',
     },
     'enabled': True,
     'identifier': 'EVE_DEV',
@@ -617,8 +617,8 @@
   'CROS_EVE_BETA': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '97.0.4692.27',
-      'cros_img': 'eve-release/R97-14324.33.0',
+      'cros_chrome_version': '97.0.4692.63',
+      'cros_img': 'eve-release/R97-14324.49.0',
     },
     'enabled': True,
     'identifier': 'EVE_BETA',
@@ -635,8 +635,8 @@
   'CROS_KEVIN_LKGM': {
     'skylab': {
       'cros_board': 'kevin',
-      'cros_chrome_version': '99.0.4761.0',
-      'cros_img': 'kevin-release/R99-14396.0.0',
+      'cros_chrome_version': '99.0.4801.0',
+      'cros_img': 'kevin-release/R99-14435.0.0',
     },
     'enabled': True,
     'identifier': 'KEVIN_LKGM',
@@ -644,8 +644,8 @@
   'CROS_OCTOPUS_LKGM': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '99.0.4761.0',
-      'cros_img': 'octopus-release/R99-14396.0.0',
+      'cros_chrome_version': '99.0.4801.0',
+      'cros_img': 'octopus-release/R99-14435.0.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_LKGM',
@@ -653,8 +653,8 @@
   'CROS_OCTOPUS_DEV': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '98.0.4758.0',
-      'cros_img': 'octopus-release/R98-14388.1.0',
+      'cros_chrome_version': '98.0.4758.14',
+      'cros_img': 'octopus-release/R98-14388.8.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_DEV',
@@ -662,8 +662,8 @@
   'CROS_OCTOPUS_BETA': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '97.0.4692.27',
-      'cros_img': 'octopus-release/R97-14324.33.0',
+      'cros_chrome_version': '97.0.4692.63',
+      'cros_img': 'octopus-release/R97-14324.49.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_BETA',
