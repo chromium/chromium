@@ -769,10 +769,8 @@ std::pair<gfx::MaskFilterInfo, bool> GetMaskFilterInfoPair(
   auto result =
       std::make_pair(node->mask_filter_info, node->is_fast_rounded_corner);
 
-  if (!result.first.Transform(to_target)) {
-    DCHECK(result.first.IsEmpty());
+  if (!result.first.Transform(to_target))
     return kEmptyMaskFilterInfoPair;
-  }
 
   return result;
 }
