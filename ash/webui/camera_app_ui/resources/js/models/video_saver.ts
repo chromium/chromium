@@ -8,7 +8,9 @@ import {
   MimeType,
   Resolution,
 } from '../type.js';
-import {VideoProcessorHelperInterface} from '../untrusted_helper_interfaces.js';
+import {
+  VideoProcessorHelperInterface,
+} from '../untrusted_video_processor_helper.js';
 import * as util from '../util.js';
 
 import {AsyncWriter} from './async_writer.js';

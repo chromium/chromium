@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// eslint-disable-next-line no-unused-vars
-import {GAHelperInterface} from './untrusted_helper_interfaces.js';
-
 /**
  * The GA library URL in trusted type.
- * @type {!TrustedScriptURL}
  */
 const gaLibraryURL = (() => {
   const staticUrlPolicy = trustedTypes.createPolicy(
@@ -17,13 +13,13 @@ const gaLibraryURL = (() => {
 
 /**
  * Initializes GA for sending metrics.
- * @param {string} id The GA tracker ID to send metrics.
- * @param {string} clientId The GA client ID representing the current client.
- * @param {function(string): void} setClientIdCallback Callback to store
- *     client id.
- * @return {!Promise}
+ * @param id The GA tracker ID to send metrics.
+ * @param clientId The GA client ID representing the current client.
+ * @param setClientIdCallback Callback to store client id.
  */
-async function initGA(id, clientId, setClientIdCallback) {
+function initGA(
+    id: string, clientId: string,
+    setClientIdCallback: (clientId: string) => void): void {
   // GA initialization function which is mostly copied from
   // https://developers.google.com/analytics/devguides/collection/analyticsjs.
   (function(i, s, o, g, r) {
@@ -57,21 +53,24 @@ async function initGA(id, clientId, setClientIdCallback) {
 
 /**
  * Sends event to GA.
- * @param {!UniversalAnalytics.FieldsObject} event Event to send.
- * @return {!Promise}
+ * @param event Event to send.
  */
-async function sendGAEvent(event) {
+function sendGAEvent(event: UniversalAnalytics.FieldsObject): void {
   window.ga('send', 'event', event);
 }
 
 /**
  * Sets if GA can send metrics.
- * @param {string} id The GA tracker ID.
- * @param {boolean} enabled True if the metrics is enabled.
- * @return {!Promise}
+ * @param id The GA tracker ID.
+ * @param enabled True if the metrics is enabled.
  */
-async function setMetricsEnabled(id, enabled) {
+function setMetricsEnabled(id: string, enabled: boolean): void {
   window[`ga-disable-${id}`] = !enabled;
 }
 
-export /** !GAHelperInterface */ {initGA, sendGAEvent, setMetricsEnabled};
+export interface GAHelperInterface {
+  initGA: typeof initGA;
+  sendGAEvent: typeof sendGAEvent;
+  setMetricsEnabled: typeof setMetricsEnabled;
+}
+export {initGA, sendGAEvent, setMetricsEnabled};

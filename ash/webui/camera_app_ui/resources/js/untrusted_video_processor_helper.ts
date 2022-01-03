@@ -32,4 +32,7 @@ async function connectToWorker(port: MessagePort): Promise<void> {
   await worker.exposeVideoProcessor(Comlink.transfer(port, [port]));
 }
 
+export interface VideoProcessorHelperInterface {
+  connectToWorker: typeof connectToWorker;
+}
 export {connectToWorker};

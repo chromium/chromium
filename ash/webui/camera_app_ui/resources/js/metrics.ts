@@ -16,7 +16,7 @@ import {
   PerfInformation,
   Resolution,
 } from './type.js';
-import {GAHelperInterface} from './untrusted_helper_interfaces.js';
+import {GAHelperInterface} from './untrusted_ga_helper.js';
 import * as util from './util.js';
 import {WaitableEvent} from './waitable_event.js';
 
