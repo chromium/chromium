@@ -193,7 +193,8 @@ enum class VideoCaptureError {
   kDesktopCaptureDeviceMacFailedStreamStart = 125,
   kCrosHalV3BufferManagerFailedToReserveBuffers = 126,
   kWinMediaFoundationSystemPermissionDenied = 127,
-  kMaxValue = 127
+  kVideoCaptureImplTimedOutOnStart = 128,
+  kMaxValue = 128
 };
 
 // WARNING: Do not change the values assigned to the entries. They are used for

@@ -111,7 +111,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
       std::unique_ptr<gpu::GpuMemoryBufferSupport> gpu_memory_buffer_support);
 
   // media::mojom::VideoCaptureObserver implementation.
-  void OnStateChanged(media::mojom::VideoCaptureState state) override;
+  void OnStateChanged(
+      media::mojom::blink::VideoCaptureResultPtr result) override;
   void OnNewBuffer(
       int32_t buffer_id,
       media::mojom::blink::VideoBufferHandlePtr buffer_handle) override;

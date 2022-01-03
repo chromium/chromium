@@ -55,15 +55,20 @@ enum VideoCaptureState {
   PAUSED,
   RESUMED,
   STOPPED,
-  FAILED,
   ENDED,
+};
+
+union VideoCaptureResult {
+  VideoCaptureState state;
+  media.mojom.VideoCaptureError error_code;
 };
 
 // Interface for notifications from Browser/Host back to Renderer/Client. This
 // interface is used between VideoCaptureHost.Start() and Stop().
 interface VideoCaptureObserver {
-  // Gets notified about a VideoCaptureState update.
-  OnStateChanged(VideoCaptureState state);
+  // Gets notified about a VideoCaptureState update or a VideoCaptureError that
+  // might have occurred during the capture.
+  OnStateChanged(VideoCaptureResult result);
 
   // Registers a |buffer_handle| at the Renderer/Client using the given
   // |buffer_id|. The Browser/Host may subsequently use |buffer_id| to share
