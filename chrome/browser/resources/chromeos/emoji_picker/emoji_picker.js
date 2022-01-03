@@ -231,6 +231,7 @@ export class EmojiPicker extends PolymerElement {
   ready() {
     super.ready();
 
+    // TODO(b/211520561): Handle loading of emoticon data.
     const initializationPromise = Promise.all([
       this.apiProxy_.getFeatureList().then(
           (response) => this.setActiveFeatures(response.featureList)),
