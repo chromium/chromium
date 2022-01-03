@@ -29,10 +29,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
+#include "chrome/browser/lacros/account_manager/get_account_information_helper.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
-
+#include "ui/gfx/image/image_unittest_util.h"
 const char kTestCallbackId[] = "test-callback-id";
 #endif
 
@@ -613,7 +614,43 @@ TEST_F(ProfilePickerHandlerInUserProfileTest,
       data2.arg2()->GetList()[0].FindStringPath("gaiaId");
   EXPECT_NE(gaia_id, nullptr);
   EXPECT_EQ(*gaia_id, kGaiaId2);
-  // TODO(https://crbug/1226050): Test all other fields.
+}
+
+TEST_F(ProfilePickerHandlerInUserProfileTest,
+       HandleExtendedAccountInformation) {
+  std::string kGaiaId1 = "some_gaia_id1";
+  std::string kEmail1 = "example1@gmail.com";
+  std::string kFullName1 = "Example Name1";
+  GetAccountInformationHelper::GetAccountInformationResult account1;
+  account1.gaia = kGaiaId1;
+  account1.email = kEmail1;
+  account1.full_name = kFullName1;
+  account1.account_image = gfx::test::CreateImage(100, 100);
+
+  // Explicitly call the function so we can pass the resulting account info.
+  handler()->AllowJavascript();
+  handler()->SendAvailableAccounts({account1});
+
+  // Check that the handler replied.
+  ASSERT_TRUE(!web_ui()->call_data().empty());
+  const content::TestWebUI::CallData& data1 = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data1.function_name());
+  EXPECT_EQ("available-accounts-changed", data1.arg1()->GetString());
+  EXPECT_EQ(data1.arg2()->GetList().size(), 1u);
+  const std::string* gaia_id =
+      data1.arg2()->GetList()[0].FindStringPath("gaiaId");
+  EXPECT_NE(gaia_id, nullptr);
+  EXPECT_EQ(*gaia_id, kGaiaId1);
+  const std::string* email = data1.arg2()->GetList()[0].FindStringPath("email");
+  EXPECT_NE(email, nullptr);
+  EXPECT_EQ(*email, kEmail1);
+  const std::string* full_name =
+      data1.arg2()->GetList()[0].FindStringPath("name");
+  EXPECT_NE(full_name, nullptr);
+  EXPECT_EQ(*full_name, kFullName1);
+  const std::string* account_image_url =
+      data1.arg2()->GetList()[0].FindStringPath("accountImageUrl");
+  EXPECT_NE(account_image_url, nullptr);
 }
 
 TEST_F(ProfilePickerHandlerInUserProfileTest,
