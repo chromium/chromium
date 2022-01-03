@@ -532,7 +532,7 @@ Profile* StartupBrowserCreator::GetPrivateProfileIfRequested(
   return profile;
 }
 
-bool StartupBrowserCreator::LaunchBrowser(
+void StartupBrowserCreator::LaunchBrowser(
     const base::CommandLine& command_line,
     Profile* profile,
     const base::FilePath& cur_dir,
@@ -551,26 +551,17 @@ bool StartupBrowserCreator::LaunchBrowser(
 
   if (!IsSilentLaunchEnabled(command_line, profile)) {
     StartupBrowserCreatorImpl lwp(cur_dir, command_line, this, is_first_run);
-    const bool launched = lwp.Launch(
-        profile,
-        in_synchronous_profile_launch_ ? chrome::startup::IsProcessStartup::kYes
-                                       : chrome::startup::IsProcessStartup::kNo,
-        std::move(launch_mode_recorder));
-    in_synchronous_profile_launch_ = false;
-    if (!launched) {
-      LOG(ERROR) << "launch error";
-      return false;
-    }
-  } else {
-    in_synchronous_profile_launch_ = false;
+    lwp.Launch(profile,
+               in_synchronous_profile_launch_
+                   ? chrome::startup::IsProcessStartup::kYes
+                   : chrome::startup::IsProcessStartup::kNo,
+               std::move(launch_mode_recorder));
   }
-
+  in_synchronous_profile_launch_ = false;
   profile_launch_observer.Get().AddLaunched(profile);
-
-  return true;
 }
 
-bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
+void StartupBrowserCreator::LaunchBrowserForLastProfiles(
     const base::CommandLine& command_line,
     const base::FilePath& cur_dir,
     chrome::startup::IsProcessStartup process_startup,
@@ -599,7 +590,7 @@ bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
     // The guest session is used to indicate the the profile picker should be
     // displayed on start-up. See GetStartupProfilePath().
     ShowProfilePicker(process_startup);
-    return true;
+    return;
   }
 
   // |last_opened_profiles| will be empty in the following circumstances:
@@ -626,22 +617,22 @@ bool StartupBrowserCreator::LaunchBrowserForLastProfiles(
                 profile_to_open);
         if (full_restore_service) {
           full_restore_service->LaunchBrowserWhenReady();
-          return true;
+          return;
         }
       }
 #endif
-      return LaunchBrowser(command_line, profile_to_open, cur_dir,
-                           process_startup, is_first_run,
-                           std::make_unique<LaunchModeRecorder>());
+      LaunchBrowser(command_line, profile_to_open, cur_dir, process_startup,
+                    is_first_run, std::make_unique<LaunchModeRecorder>());
+      return;
     }
 
     // Show ProfilePicker if |last_used_profile| can't be auto opened.
     ShowProfilePicker(process_startup);
-    return true;
+    return;
   }
-  return ProcessLastOpenedProfiles(command_line, cur_dir, process_startup,
-                                   is_first_run, last_used_profile,
-                                   last_opened_profiles);
+  ProcessLastOpenedProfiles(command_line, cur_dir, process_startup,
+                            is_first_run, last_used_profile,
+                            last_opened_profiles);
 }
 
 // static
@@ -1079,9 +1070,10 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
 
   // Launch the browser if the profile is unable to open web apps.
   if (!CanOpenWebApp(privacy_safe_profile)) {
-    return LaunchBrowserForLastProfiles(command_line, cur_dir, process_startup,
-                                        is_first_run, last_used_profile,
-                                        last_opened_profiles);
+    LaunchBrowserForLastProfiles(command_line, cur_dir, process_startup,
+                                 is_first_run, last_used_profile,
+                                 last_opened_profiles);
+    return true;
   }
 
   bool handled_as_app =
@@ -1102,12 +1094,13 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   if (handled_as_app)
     return true;
 
-  return LaunchBrowserForLastProfiles(command_line, cur_dir, process_startup,
-                                      is_first_run, last_used_profile,
-                                      last_opened_profiles);
+  LaunchBrowserForLastProfiles(command_line, cur_dir, process_startup,
+                               is_first_run, last_used_profile,
+                               last_opened_profiles);
+  return true;
 }
 
-bool StartupBrowserCreator::ProcessLastOpenedProfiles(
+void StartupBrowserCreator::ProcessLastOpenedProfiles(
     const base::CommandLine& command_line,
     const base::FilePath& cur_dir,
     chrome::startup::IsProcessStartup process_startup,
@@ -1150,15 +1143,12 @@ bool StartupBrowserCreator::ProcessLastOpenedProfiles(
     }
     // Only record a launch mode histogram for |last_used_profile|. Pass a
     // null launch_mode_recorder for other profiles.
-    if (!LaunchBrowser((profile == last_used_profile)
-                           ? command_line
-                           : command_line_without_urls,
-                       profile, cur_dir, process_startup, is_first_run,
-                       profile == last_used_profile
-                           ? std::make_unique<LaunchModeRecorder>()
-                           : nullptr)) {
-      return false;
-    }
+    LaunchBrowser((profile == last_used_profile) ? command_line
+                                                 : command_line_without_urls,
+                  profile, cur_dir, process_startup, is_first_run,
+                  profile == last_used_profile
+                      ? std::make_unique<LaunchModeRecorder>()
+                      : nullptr);
     // We've launched at least one browser.
     process_startup = chrome::startup::IsProcessStartup::kNo;
   }
@@ -1174,7 +1164,6 @@ bool StartupBrowserCreator::ProcessLastOpenedProfiles(
   else
 #endif
     profile_launch_observer.Get().set_profile_to_activate(last_used_profile);
-  return true;
 }
 
 // static

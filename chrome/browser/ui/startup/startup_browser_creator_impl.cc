@@ -160,7 +160,7 @@ void StartupBrowserCreatorImpl::MaybeToggleFullscreen(Browser* browser) {
   }
 }
 
-bool StartupBrowserCreatorImpl::Launch(
+void StartupBrowserCreatorImpl::Launch(
     Profile* profile,
     chrome::startup::IsProcessStartup process_startup,
     std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
@@ -202,8 +202,6 @@ bool StartupBrowserCreatorImpl::Launch(
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
   if (browser)
     MaybeToggleFullscreen(browser);
-
-  return true;
 }
 
 Browser* StartupBrowserCreatorImpl::OpenURLsInBrowser(

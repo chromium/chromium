@@ -148,8 +148,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                    chrome::startup::IsFirstRun::kNo);
-  ASSERT_TRUE(
-      launch.Launch(profile, chrome::startup::IsProcessStartup::kNo, nullptr));
+  launch.Launch(profile, chrome::startup::IsProcessStartup::kNo, nullptr);
 
   // This should have created a new browser window.  |browser()| is still
   // around at this point, even though we've closed its window.
@@ -196,8 +195,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetFirstRunTest,
   base::CommandLine dummy(base::CommandLine::NO_PROGRAM);
   StartupBrowserCreatorImpl launch(base::FilePath(), dummy, &browser_creator,
                                    chrome::startup::IsFirstRun::kYes);
-  ASSERT_TRUE(launch.Launch(browser()->profile(),
-                            chrome::startup::IsProcessStartup::kYes, nullptr));
+  launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kYes,
+                nullptr);
 
   // This should have created a new browser window.
   Browser* new_browser = FindOneOtherBrowser(browser());
@@ -233,8 +232,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   {
     StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                      chrome::startup::IsFirstRun::kNo);
-    ASSERT_TRUE(launch.Launch(browser()->profile(),
-                              chrome::startup::IsProcessStartup::kNo, nullptr));
+    launch.Launch(browser()->profile(), chrome::startup::IsProcessStartup::kNo,
+                  nullptr);
   }
 
   // This should have created a new browser window.  |browser()| is still
@@ -273,8 +272,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   {
     StartupBrowserCreatorImpl launch(base::FilePath(), dummy,
                                      chrome::startup::IsFirstRun::kNo);
-    ASSERT_TRUE(launch.Launch(other_profile_ptr,
-                              chrome::startup::IsProcessStartup::kNo, nullptr));
+    launch.Launch(other_profile_ptr, chrome::startup::IsProcessStartup::kNo,
+                  nullptr);
   }
 
   Browser* other_profile_browser =

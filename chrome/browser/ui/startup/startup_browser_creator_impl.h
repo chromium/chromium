@@ -57,11 +57,10 @@ class StartupBrowserCreatorImpl {
   // to full screen.
   static void MaybeToggleFullscreen(Browser* browser);
 
-  // Creates the necessary windows for startup. Returns true on success,
-  // false on failure. |process_startup| indicates whether Chrome is just
-  // starting up or already running and the user wants to launch another
-  // instance.
-  bool Launch(Profile* profile,
+  // Creates the necessary windows for startup. |process_startup| indicates
+  // whether Chrome is just starting up or already running and the user wants to
+  // launch another instance.
+  void Launch(Profile* profile,
               chrome::startup::IsProcessStartup process_startup,
               std::unique_ptr<LaunchModeRecorder> launch_mode_recorder);
 

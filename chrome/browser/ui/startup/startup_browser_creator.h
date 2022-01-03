@@ -128,7 +128,7 @@ class StartupBrowserCreator {
   // |is_first_run| indicates that this is a new profile.
   // If |launch_mode_recorder| is non null, and a browser is launched, a launch
   // mode histogram will be recorded.
-  bool LaunchBrowser(const base::CommandLine& command_line,
+  void LaunchBrowser(const base::CommandLine& command_line,
                      Profile* profile,
                      const base::FilePath& cur_dir,
                      chrome::startup::IsProcessStartup process_startup,
@@ -136,9 +136,8 @@ class StartupBrowserCreator {
                      std::unique_ptr<LaunchModeRecorder> launch_mode_recorder);
 
   // Launch browser for `last_opened_profiles` if it's not empty. Otherwise,
-  // launch browser for `last_used_profile`. Return false if any browser is
-  // failed to be launched. Otherwise, return true.
-  bool LaunchBrowserForLastProfiles(
+  // launch browser for `last_used_profile`.
+  void LaunchBrowserForLastProfiles(
       const base::CommandLine& command_line,
       const base::FilePath& cur_dir,
       chrome::startup::IsProcessStartup process_startup,
@@ -227,10 +226,8 @@ class StartupBrowserCreator {
                           const Profiles& last_opened_profiles);
 
   // Launch the |last_used_profile| with the full command line, and the other
-  // |last_opened_profiles| without the URLs to launch. Return false if any
-  // browser is failed to be launched. Otherwise, return true.
-
-  bool ProcessLastOpenedProfiles(
+  // |last_opened_profiles| without the URLs to launch.
+  void ProcessLastOpenedProfiles(
       const base::CommandLine& command_line,
       const base::FilePath& cur_dir,
       chrome::startup::IsProcessStartup process_startup,
