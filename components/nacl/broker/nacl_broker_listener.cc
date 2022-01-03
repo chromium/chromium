@@ -23,7 +23,7 @@
 #include "components/nacl/common/nacl_service.h"
 #include "components/nacl/common/nacl_switches.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/sandbox_init.h"
+#include "content/public/common/sandbox_init_win.h"
 #include "ipc/ipc_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"

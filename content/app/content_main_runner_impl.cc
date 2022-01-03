@@ -83,7 +83,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/network_service_util.h"
-#include "content/public/common/sandbox_init.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "content/public/gpu/content_gpu_client.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -100,6 +99,7 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "ppapi/buildflags/buildflags.h"
+#include "sandbox/policy/sandbox.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "services/network/public/cpp/features.h"
@@ -920,7 +920,7 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
   delegate_->PreSandboxStartup();
 
 #if defined(OS_WIN)
-  if (!InitializeSandbox(
+  if (!sandbox::policy::Sandbox::Initialize(
           sandbox::policy::SandboxTypeFromCommandLine(command_line),
           content_main_params_->sandbox_info))
     return TerminateForFatalInitializationError();

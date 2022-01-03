@@ -34,7 +34,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/font_cache_dispatcher_win.h"
 #include "content/public/common/result_codes.h"
-#include "content/public/common/sandbox_init.h"
+#include "content/public/common/sandbox_init_win.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"

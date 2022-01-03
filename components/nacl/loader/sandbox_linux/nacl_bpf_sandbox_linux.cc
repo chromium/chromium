@@ -25,11 +25,11 @@
 #include "base/files/scoped_file.h"
 #include "base/notreached.h"
 #include "components/nacl/common/nacl_switches.h"
-#include "content/public/common/sandbox_init.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
+#include "sandbox/policy/linux/sandbox_seccomp_bpf_linux.h"
 
 #endif  // BUILDFLAG(USE_SECCOMP_BPF)
 
@@ -46,7 +46,8 @@ using sandbox::bpf_dsl::ResultExpr;
 class NaClBPFSandboxPolicy : public sandbox::bpf_dsl::Policy {
  public:
   NaClBPFSandboxPolicy()
-      : baseline_policy_(content::GetBPFSandboxBaselinePolicy()),
+      : baseline_policy_(
+            sandbox::policy::SandboxSeccompBPF::GetBaselinePolicy()),
         policy_pid_(syscall(__NR_getpid)) {
     const base::CommandLine* command_line =
         base::CommandLine::ForCurrentProcess();
@@ -175,10 +176,8 @@ void RunSandboxSanityChecks() {
 
 bool InitializeBPFSandbox(base::ScopedFD proc_fd) {
 #if BUILDFLAG(USE_SECCOMP_BPF)
-  bool sandbox_is_initialized = content::InitializeSandbox(
-      std::unique_ptr<sandbox::bpf_dsl::Policy>(new NaClBPFSandboxPolicy),
-      std::move(proc_fd));
-  if (sandbox_is_initialized) {
+  if (sandbox::policy::SandboxSeccompBPF::StartSandboxWithExternalPolicy(
+          std::make_unique<NaClBPFSandboxPolicy>(), std::move(proc_fd))) {
     RunSandboxSanityChecks();
     return true;
   }

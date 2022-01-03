@@ -12,7 +12,7 @@
 #include "content/browser/child_process_launcher_helper.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/common/result_codes.h"
-#include "content/public/common/sandbox_init.h"
+#include "content/public/common/sandbox_init_win.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"

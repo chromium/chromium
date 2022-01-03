@@ -41,7 +41,6 @@
 #include "content/public/app/content_main_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/sandbox_init.h"
 #include "gpu/config/gpu_switches.h"
 #include "net/base/escape.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"

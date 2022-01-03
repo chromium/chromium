@@ -45,7 +45,6 @@
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#include "content/public/common/sandbox_init.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "sandbox/policy/sandbox_type.h"
 #endif

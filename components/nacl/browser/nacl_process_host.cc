@@ -87,7 +87,6 @@
 #include "base/win/windows_version.h"
 #include "components/nacl/browser/nacl_broker_service_win.h"
 #include "components/nacl/common/nacl_debug_exception_handler_win.h"
-#include "content/public/common/sandbox_init.h"
 #endif
 
 using content::BrowserThread;

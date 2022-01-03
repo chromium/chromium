@@ -150,7 +150,6 @@ source_set("common_sources") {
     "resource_usage_reporter_type_converters.cc",
     "resource_usage_reporter_type_converters.h",
     "result_codes.h",
-    "sandbox_init.h",
     "sandboxed_process_launcher_delegate.cc",
     "sandboxed_process_launcher_delegate.h",
     "socket_permission_request.h",
@@ -172,7 +171,10 @@ source_set("common_sources") {
   ]
 
   if (is_win) {
-    sources += [ "font_cache_dispatcher_win.h" ]
+    sources += [
+      "font_cache_dispatcher_win.h",
+      "sandbox_init_win.h",
+    ]
   }
 
   if (is_android) {
@@ -251,6 +253,10 @@ source_set("common_sources") {
 
   if (is_android) {
     deps += [ "//content/public/android:jni" ]
+  }
+
+  if (is_win) {
+    deps += [ "//sandbox/win:common" ]
   }
 
   if (is_chromeos_ash) {
