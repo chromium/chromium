@@ -148,7 +148,7 @@ TEST_F(HpsNotifyNotificationBlockerTest, Snooping) {
   EXPECT_EQ(VisibleNotificationCount(), 3u);
 }
 
-TEST_F(HpsNotifyNotificationBlockerTest, Pref) {
+TEST_F(HpsNotifyNotificationBlockerTest, DISABLED_Pref) {
   SetBlockerPref(false);
 
   // Start with one notification that shouldn't be hidden.
