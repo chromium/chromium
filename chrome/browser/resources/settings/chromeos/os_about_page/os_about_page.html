@@ -57,6 +57,9 @@
     }
   }
 </style>
+<iron-media-query query="(prefers-color-scheme: dark)"
+    query-matches="{{isDarkModeActive_}}">
+</iron-media-query>
 <settings-section page-title="$i18n{aboutOsPageTitle}" section="about">
   <settings-animated-pages id="pages" section="about"
       focus-config="[[focusConfig_]]">
@@ -80,7 +83,9 @@
               icon$="[[getUpdateStatusIcon_(
                   hasEndOfLife_, currentUpdateStatusEvent_)]]"
               src="[[getThrobberSrcIfUpdating_(
-                  hasEndOfLife_, currentUpdateStatusEvent_)]]">
+                  isDarkModeActive_,
+                  hasEndOfLife_,
+                  currentUpdateStatusEvent_)]]">
           </iron-icon>
         </div>
         <div class="start padded">

@@ -24,6 +24,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import '//resources/cr_elements/icons.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
@@ -55,6 +56,15 @@ Polymer({
   ],
 
   properties: {
+    /**
+     * Whether the about page is being rendered in dark mode.
+     * @private
+     */
+    isDarkModeActive_: {
+      type: Boolean,
+      value: false,
+    },
+
     /** @private {?UpdateStatusChangedEvent} */
     currentUpdateStatusEvent_: {
       type: Object,
@@ -549,7 +559,9 @@ Polymer({
     switch (this.currentUpdateStatusEvent_.status) {
       case UpdateStatus.CHECKING:
       case UpdateStatus.UPDATING:
-        return 'chrome://resources/images/throbber_small.svg';
+        return this.isDarkModeActive_ ?
+            'chrome://resources/images/throbber_small_dark.svg' :
+            'chrome://resources/images/throbber_small.svg';
       default:
         return null;
     }

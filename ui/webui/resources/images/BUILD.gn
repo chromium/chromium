@@ -38,6 +38,7 @@ generate_grd("build_grdp") {
     "select.png",
     "throbber_medium.svg",
     "throbber_small.svg",
+    "throbber_small_dark.svg",
     "dark/icon_search.svg",
   ]
 
