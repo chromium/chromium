@@ -226,7 +226,12 @@ def _create_enums(properties):
                 property_['type_name'],
                 property_['keywords'],
                 is_set=(property_['field_template'] == 'multi_keyword'))
-            if property_['field_template'] == 'multi_keyword':
+            # The 'white-space' property uses multi_keyword not because
+            # multiple keywords can be assigned, but because we want to force
+            # code generator to use a bitfield for performance reasons.
+            # TODO: crbug/1283906
+            if (property_['field_template'] == 'multi_keyword'
+                    and property_['name'].original != 'white-space'):
                 assert property_['keywords'][0] == 'none', \
                     "First keyword in a 'multi_keyword' field must be " \
                     "'none' in '{}'.".format(property_['name'])
@@ -264,7 +269,13 @@ def _create_property_field(property_):
              "so it should not specify a field_size")
         size = int(math.ceil(math.log(len(property_['keywords']), 2)))
     elif property_['field_template'] == 'multi_keyword':
-        size = len(property_['keywords']) - 1  # Subtract 1 for 'none' keyword
+        # The 'white-space' property cannot actually be assigned to multiple
+        # keywords, but is marked as multi_keyword in order to force code
+        # generator to use a bitfield for performance reasons.
+        # TODO: crbug/1283906
+        size = len(property_['keywords'])
+        if property_['name'].original != 'white-space':
+            size = size - 1  # Subtract 1 for 'none' keyword
     elif property_['field_template'] == 'external':
         size = None
     elif property_['field_template'] == 'primitive':

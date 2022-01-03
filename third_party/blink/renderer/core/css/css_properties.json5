@@ -5121,9 +5121,9 @@
       property_methods: ["CSSValueFromComputedStyleInternal"],
       independent: true,
       inherited: true,
-      field_template: "multi_keyword", // We use a bitflag field due peformance issues
+      field_template: "multi_keyword", // We use a bitflag field due peformance issues. TODO: crbug/12839063
       keywords: [
-        "none", "normal", "pre", "pre-wrap", "pre-line", "nowrap", "-webkit-nowrap", "break-spaces"
+        "normal", "pre", "pre-wrap", "pre-line", "nowrap", "-webkit-nowrap", "break-spaces"
       ],
       typedom_types: ["Keyword"],
       default_value: "normal",
