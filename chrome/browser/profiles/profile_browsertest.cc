@@ -360,7 +360,13 @@ class ProfileBrowserTest : public InProcessBrowserTest {
 
 // Test OnProfileCreate is called with is_new_profile set to true when
 // creating a new profile synchronously.
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateNewProfileSynchronous) {
+// TODO(crbug.com/1218591): Flaky on ChromeOS-Ash.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_CreateNewProfileSynchronous DISABLED_CreateNewProfileSynchronous
+#else
+#define MAYBE_CreateNewProfileSynchronous CreateNewProfileSynchronous
+#endif
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateNewProfileSynchronous) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -442,9 +448,15 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateNewProfileAsynchronous) {
   FlushIoTaskRunnerAndSpinThreads();
 }
 
+// TODO(crbug.com/1282123): Flaky on ChromeOS-Ash.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_CreateOldProfileAsynchronous DISABLED_CreateOldProfileAsynchronous
+#else
+#define MAYBE_CreateOldProfileAsynchronous CreateOldProfileAsynchronous
+#endif
 // Test OnProfileCreate is called with is_new_profile set to false when
 // creating a profile asynchronously with an existing prefs file.
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, CreateOldProfileAsynchronous) {
+IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, MAYBE_CreateOldProfileAsynchronous) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
