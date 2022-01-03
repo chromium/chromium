@@ -20,10 +20,12 @@
 
 namespace base {
 
-#define EXPECT_PEQ(ptr1, ptr2) \
+// In the MTE world, the upper bits of a pointer can be decorated with a tag,
+// thus allowing many versions of the same pointer to exist. These macros take
+// that into account when comparing.
+#define PA_EXPECT_PTR_EQ(ptr1, ptr2) \
   { EXPECT_EQ(memory::UnmaskPtr(ptr1), memory::UnmaskPtr(ptr2)); }
-
-#define EXPECT_PNE(ptr1, ptr2) \
+#define PA_EXPECT_PTR_NE(ptr1, ptr2) \
   { EXPECT_NE(memory::UnmaskPtr(ptr1), memory::UnmaskPtr(ptr2)); }
 
 namespace internal {
@@ -149,8 +151,8 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
   EXPECT_EQ(SlotSpan::FromSlotStartPtr(first),
             SlotSpan::FromSlotStartPtr(last));
   if (bucket.num_system_pages_per_slot_span == NumSystemPagesPerPartitionPage())
-    EXPECT_PEQ(reinterpret_cast<size_t>(first) & PartitionPageBaseMask(),
-               reinterpret_cast<size_t>(last) & PartitionPageBaseMask());
+    PA_EXPECT_PTR_EQ(reinterpret_cast<size_t>(first) & PartitionPageBaseMask(),
+                     reinterpret_cast<size_t>(last) & PartitionPageBaseMask());
   EXPECT_EQ(num_slots, static_cast<size_t>(
                            bucket.active_slot_spans_head->num_allocated_slots));
   EXPECT_EQ(nullptr, bucket.active_slot_spans_head->get_freelist_head());
