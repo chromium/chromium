@@ -283,16 +283,16 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     return;
   }
 
-  [self.delegate didSelectSignoutDataRetentionStrategy];
+  [self.delegate signoutActionSheetCoordinatorPreventUserInteraction:self];
 
-  [self.baseViewController.view setUserInteractionEnabled:NO];
   __weak SignoutActionSheetCoordinator* weakSelf = self;
   self.authenticationService->SignOut(
       signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS, forceClearData, ^{
         if (!weakSelf) {
           return;
         }
-        [weakSelf.baseViewController.view setUserInteractionEnabled:YES];
+        [weakSelf.delegate
+            signoutActionSheetCoordinatorAllowUserInteraction:weakSelf];
         weakSelf.completion(YES);
       });
   // Get UMA metrics on the usage of different options for signout available

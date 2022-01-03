@@ -63,6 +63,20 @@ void DismissSignOut() {
   }
 }
 
+// Waits for the settings done button to be enabled.
+void WaitForSettingDoneButton() {
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForClearBrowsingDataTimeout, condition),
+             @"Settings done button not visible");
+}
+
 }  // namespace
 
 // Integration tests using the Google services settings screen.
@@ -322,6 +336,7 @@ void DismissSignOut() {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kSettingsSignInCellId)]
       assertWithMatcher:grey_notVisible()];
+  WaitForSettingDoneButton();
 
   // Verify signed out.
   [SigninEarlGrey verifySignedOut];
@@ -348,15 +363,7 @@ void DismissSignOut() {
 // Tests that disabling the "Allow Chrome sign-in" > "Clear Data" option blocks
 // the user from signing in to Chrome through the promo sign-in until it is
 // re-enabled.
-// TODO(crbug.com/1277841): Flaky on iOS simulator.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testToggleAllowChromeSigninWithPromoSigninClearData \
-  DISABLED_testToggleAllowChromeSigninWithPromoSigninClearData
-#else
-#define MAYBE_testToggleAllowChromeSigninWithPromoSigninClearData \
-  testToggleAllowChromeSigninWithPromoSigninClearData
-#endif
-- (void)MAYBE_testToggleAllowChromeSigninWithPromoSigninClearData {
+- (void)testToggleAllowChromeSigninWithPromoSigninClearData {
   // User is signed-in and syncing.
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
@@ -384,6 +391,7 @@ void DismissSignOut() {
       selectElementWithMatcher:ButtonWithAccessibilityLabelId(
                                    IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON)]
       performAction:grey_tap()];
+  WaitForSettingDoneButton();
 
   // Verify that sign-in is disabled.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -451,6 +459,7 @@ void DismissSignOut() {
       selectElementWithMatcher:ButtonWithAccessibilityLabelId(
                                    IDS_IOS_SIGNOUT_DIALOG_KEEP_DATA_BUTTON)]
       performAction:grey_tap()];
+  WaitForSettingDoneButton();
 
   // Verify that sign-in is disabled.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]

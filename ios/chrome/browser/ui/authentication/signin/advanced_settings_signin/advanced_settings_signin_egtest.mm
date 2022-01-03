@@ -46,6 +46,20 @@ NSString* const kPassphrase = @"hello";
 // Timeout in seconds to wait for asynchronous sync operations.
 const NSTimeInterval kSyncOperationTimeout = 5.0;
 
+// Waits for the settings done button to be enabled.
+void WaitForSettingDoneButton() {
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForClearBrowsingDataTimeout, condition),
+             @"Settings done button not visible");
+}
+
 }  // namespace
 
 // Interaction tests for advanced settings sign-in.
@@ -119,6 +133,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON)]
       performAction:grey_tap()];
+  WaitForSettingDoneButton();
 
   // Verify signed out.
   [SigninEarlGrey verifySignedOut];
@@ -165,6 +180,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
       selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
                                    IDS_IOS_SIGNOUT_DIALOG_KEEP_DATA_BUTTON)]
       performAction:grey_tap()];
+  WaitForSettingDoneButton();
 
   // Verify signed out.
   [SigninEarlGrey verifySignedOut];

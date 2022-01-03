@@ -49,8 +49,9 @@ using signin_metrics::PromoAction;
 
 @interface ManageSyncSettingsCoordinator () <
     ManageSyncSettingsCommandHandler,
-    SyncErrorSettingsCommandHandler,
     ManageSyncSettingsTableViewControllerPresentationDelegate,
+    SignoutActionSheetCoordinatorDelegate,
+    SyncErrorSettingsCommandHandler,
     SyncObserverModelBridge> {
   // Sync observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
@@ -69,7 +70,9 @@ using signin_metrics::PromoAction;
 @property(nonatomic, copy) ios::DismissASMViewControllerBlock
     dismissWebAndAppSettingDetailsControllerBlock;
 // Displays the sign-out options for a syncing user.
-@property(nonatomic, strong) SignoutActionSheetCoordinator* signOutCoordinator;
+@property(nonatomic, strong)
+    SignoutActionSheetCoordinator* signoutActionSheetCoordinator;
+@property(nonatomic, assign) BOOL signOutFlowInProgress;
 
 @end
 
@@ -192,18 +195,33 @@ using signin_metrics::PromoAction;
 }
 
 - (void)showTurnOffSyncOptionsFromTargetRect:(CGRect)targetRect {
-  self.signOutCoordinator = [[SignoutActionSheetCoordinator alloc]
+  self.signoutActionSheetCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
                             rect:targetRect
                             view:self.viewController.view];
+  self.signoutActionSheetCoordinator.delegate = self;
   __weak ManageSyncSettingsCoordinator* weakSelf = self;
-  self.signOutCoordinator.completion = ^(BOOL success) {
+  self.signoutActionSheetCoordinator.completion = ^(BOOL success) {
     if (success) {
       [weakSelf closeManageSyncSettings];
     }
   };
-  [self.signOutCoordinator start];
+  [self.signoutActionSheetCoordinator start];
+}
+
+#pragma mark - SignoutActionSheetCoordinatorDelegate
+
+- (void)signoutActionSheetCoordinatorPreventUserInteraction:
+    (SignoutActionSheetCoordinator*)coordinator {
+  self.signOutFlowInProgress = YES;
+  [self.viewController preventUserInteraction];
+}
+
+- (void)signoutActionSheetCoordinatorAllowUserInteraction:
+    (SignoutActionSheetCoordinator*)coordinator {
+  [self.viewController allowUserInteraction];
+  self.signOutFlowInProgress = NO;
 }
 
 #pragma mark - SyncErrorSettingsCommandHandler
@@ -273,6 +291,9 @@ using signin_metrics::PromoAction;
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
+  if (self.signOutFlowInProgress) {
+    return;
+  }
   syncer::SyncService::DisableReasonSet disableReasons =
       self.syncService->GetDisableReasons();
   syncer::SyncService::DisableReasonSet userChoiceDisableReason =
