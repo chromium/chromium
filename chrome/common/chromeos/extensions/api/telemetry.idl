@@ -28,11 +28,22 @@ namespace os.telemetry {
 
   callback OemDataCallback = void (OemData oemData);
 
+  dictionary MemoryInfo {
+    long? totalMemoryKiB;
+    long? freeMemoryKiB;
+    long? availableMemoryKiB;
+    double? pageFaultsSinceLastBoot;
+  };
+
+  callback MemoryInfoCallback = void (MemoryInfo cpuInfo);
+
   interface Functions {
     // Retrieves VPD info.
     [supportsPromises] static void getVpdInfo(VpdInfoCallback callback);
 
     // Retrieves OEM data.
     [supportsPromises] static void getOemData(OemDataCallback callback);
+
+    [supportsPromises] static void getMemoryInfo(MemoryInfoCallback callback);
   };
 };

@@ -122,6 +122,60 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetMemoryInfo_Error) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getMemoryInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getMemoryInfo(),
+            'Error: API internal error'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetMemoryInfo_Success) {
+  // Configure fake cros_healthd response.
+  {
+    auto telemetry_info = cros_healthd::mojom::TelemetryInfo::New();
+
+    {
+      auto memory_info = chromeos::cros_healthd::mojom::MemoryInfo::New();
+      memory_info->total_memory_kib = 2147483647;
+      memory_info->free_memory_kib = 2147483646;
+      memory_info->available_memory_kib = 2147483645;
+      memory_info->page_faults_since_last_boot = 4611686018427388000;
+
+      telemetry_info->memory_result =
+          chromeos::cros_healthd::mojom::MemoryResult::NewMemoryInfo(
+              std::move(memory_info));
+    }
+
+    ASSERT_TRUE(cros_healthd::FakeCrosHealthdClient::Get());
+
+    cros_healthd::FakeCrosHealthdClient::Get()
+        ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getMemoryInfo() {
+        const result = await chrome.os.telemetry.getMemoryInfo();
+        chrome.test.assertEq(2147483647, result.totalMemoryKiB);
+        chrome.test.assertEq(2147483646, result.freeMemoryKiB);
+        chrome.test.assertEq(2147483645, result.availableMemoryKiB);
+        chrome.test.assertEq(4611686018427388000,
+          result.pageFaultsSinceLastBoot);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
 class TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest
     : public TelemetryExtensionTelemetryApiBrowserTest {
  public:

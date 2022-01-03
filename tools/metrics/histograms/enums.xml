@@ -31151,6 +31151,7 @@ Called by update_extension_histograms.py.-->
   <int value="1606" label="OS_DIAGNOSTICS_RUNCPUPRIMESEARCHROUTINE"/>
   <int value="1607" label="ACCESSIBILITY_PRIVATE_UPDATEDICTATIONBUBBLE"/>
   <int value="1608" label="TERMINALPRIVATE_GETOSINFO"/>
+  <int value="1609" label="OS_TELEMETRY_GETMEMORYINFO"/>
 </enum>
 
 <enum name="ExtensionIconState">

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry_api.h"
 
+#include <inttypes.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -97,6 +99,49 @@ void OsTelemetryGetOemDataFunction::OnResult(
       std::make_unique<std::string>(std::move(ptr->oem_data.value()));
 
   Respond(ArgumentList(api::os_telemetry::GetOemData::Results::Create(result)));
+}
+
+// OsTelemetryGetMemoryInfoFunction --------------------------------------------
+
+OsTelemetryGetMemoryInfoFunction::OsTelemetryGetMemoryInfoFunction() = default;
+OsTelemetryGetMemoryInfoFunction::~OsTelemetryGetMemoryInfoFunction() = default;
+
+void OsTelemetryGetMemoryInfoFunction::RunIfAllowed() {
+  auto cb = base::BindOnce(&OsTelemetryGetMemoryInfoFunction::OnResult, this);
+
+  remote_probe_service_->ProbeTelemetryInfo(
+      {ash::health::mojom::ProbeCategoryEnum::kMemory}, std::move(cb));
+}
+
+void OsTelemetryGetMemoryInfoFunction::OnResult(
+    ash::health::mojom::TelemetryInfoPtr ptr) {
+  if (!ptr || !ptr->memory_result || !ptr->memory_result->is_memory_info()) {
+    Respond(Error("API internal error"));
+    return;
+  }
+
+  api::os_telemetry::MemoryInfo result;
+
+  const auto& memory_info = ptr->memory_result->get_memory_info();
+  if (memory_info->total_memory_kib) {
+    result.total_memory_ki_b =
+        std::make_unique<int32_t>(memory_info->total_memory_kib->value);
+  }
+  if (memory_info->free_memory_kib) {
+    result.free_memory_ki_b =
+        std::make_unique<int32_t>(memory_info->free_memory_kib->value);
+  }
+  if (memory_info->available_memory_kib) {
+    result.available_memory_ki_b =
+        std::make_unique<int32_t>(memory_info->available_memory_kib->value);
+  }
+  if (memory_info->page_faults_since_last_boot) {
+    result.page_faults_since_last_boot = std::make_unique<double_t>(
+        memory_info->page_faults_since_last_boot->value);
+  }
+
+  Respond(
+      ArgumentList(api::os_telemetry::GetMemoryInfo::Results::Create(result)));
 }
 
 }  // namespace chromeos
