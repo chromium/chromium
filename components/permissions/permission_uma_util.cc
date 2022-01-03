@@ -17,8 +17,8 @@
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/prediction_service/prediction_common.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
-#include "components/permissions/prediction_service/prediction_service.h"
 #include "components/permissions/request_type.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/permission_type.h"
@@ -243,68 +243,57 @@ void RecordPermissionActionUkm(
 
   builder
       .SetStats_LoudPromptsOfType_DenyRate(
-          PredictionService::GetRoundedRatioForUkm(
-              loud_ui_actions_counts_for_request_type.denies,
-              loud_ui_prompts_count_for_request_type))
-      .SetStats_LoudPromptsOfType_DismissRate(
-          PredictionService::GetRoundedRatioForUkm(
-              loud_ui_actions_counts_for_request_type.dismissals,
-              loud_ui_prompts_count_for_request_type))
+          GetRoundedRatioForUkm(loud_ui_actions_counts_for_request_type.denies,
+                                loud_ui_prompts_count_for_request_type))
+      .SetStats_LoudPromptsOfType_DismissRate(GetRoundedRatioForUkm(
+          loud_ui_actions_counts_for_request_type.dismissals,
+          loud_ui_prompts_count_for_request_type))
       .SetStats_LoudPromptsOfType_GrantRate(
-          PredictionService::GetRoundedRatioForUkm(
-              loud_ui_actions_counts_for_request_type.grants,
-              loud_ui_prompts_count_for_request_type))
+          GetRoundedRatioForUkm(loud_ui_actions_counts_for_request_type.grants,
+                                loud_ui_prompts_count_for_request_type))
       .SetStats_LoudPromptsOfType_IgnoreRate(
-          PredictionService::GetRoundedRatioForUkm(
-              loud_ui_actions_counts_for_request_type.ignores,
-              loud_ui_prompts_count_for_request_type))
-      .SetStats_LoudPromptsOfType_Count(PredictionService::BucketizeValue(
-          loud_ui_prompts_count_for_request_type));
+          GetRoundedRatioForUkm(loud_ui_actions_counts_for_request_type.ignores,
+                                loud_ui_prompts_count_for_request_type))
+      .SetStats_LoudPromptsOfType_Count(
+          BucketizeValue(loud_ui_prompts_count_for_request_type));
 
   builder
-      .SetStats_LoudPrompts_DenyRate(PredictionService::GetRoundedRatioForUkm(
+      .SetStats_LoudPrompts_DenyRate(GetRoundedRatioForUkm(
           loud_ui_actions_counts.denies, loud_ui_prompts_count))
-      .SetStats_LoudPrompts_DismissRate(
-          PredictionService::GetRoundedRatioForUkm(
-              loud_ui_actions_counts.dismissals, loud_ui_prompts_count))
-      .SetStats_LoudPrompts_GrantRate(PredictionService::GetRoundedRatioForUkm(
+      .SetStats_LoudPrompts_DismissRate(GetRoundedRatioForUkm(
+          loud_ui_actions_counts.dismissals, loud_ui_prompts_count))
+      .SetStats_LoudPrompts_GrantRate(GetRoundedRatioForUkm(
           loud_ui_actions_counts.grants, loud_ui_prompts_count))
-      .SetStats_LoudPrompts_IgnoreRate(PredictionService::GetRoundedRatioForUkm(
+      .SetStats_LoudPrompts_IgnoreRate(GetRoundedRatioForUkm(
           loud_ui_actions_counts.ignores, loud_ui_prompts_count))
-      .SetStats_LoudPrompts_Count(
-          PredictionService::BucketizeValue(loud_ui_prompts_count));
+      .SetStats_LoudPrompts_Count(BucketizeValue(loud_ui_prompts_count));
 
   builder
       .SetStats_AllPromptsOfType_DenyRate(
-          PredictionService::GetRoundedRatioForUkm(
-              actions_counts_for_request_type.denies,
-              prompts_count_for_request_type))
+          GetRoundedRatioForUkm(actions_counts_for_request_type.denies,
+                                prompts_count_for_request_type))
       .SetStats_AllPromptsOfType_DismissRate(
-          PredictionService::GetRoundedRatioForUkm(
-              actions_counts_for_request_type.dismissals,
-              prompts_count_for_request_type))
+          GetRoundedRatioForUkm(actions_counts_for_request_type.dismissals,
+                                prompts_count_for_request_type))
       .SetStats_AllPromptsOfType_GrantRate(
-          PredictionService::GetRoundedRatioForUkm(
-              actions_counts_for_request_type.grants,
-              prompts_count_for_request_type))
+          GetRoundedRatioForUkm(actions_counts_for_request_type.grants,
+                                prompts_count_for_request_type))
       .SetStats_AllPromptsOfType_IgnoreRate(
-          PredictionService::GetRoundedRatioForUkm(
-              actions_counts_for_request_type.ignores,
-              prompts_count_for_request_type))
+          GetRoundedRatioForUkm(actions_counts_for_request_type.ignores,
+                                prompts_count_for_request_type))
       .SetStats_AllPromptsOfType_Count(
-          PredictionService::BucketizeValue(prompts_count_for_request_type));
+          BucketizeValue(prompts_count_for_request_type));
 
   builder
-      .SetStats_AllPrompts_DenyRate(PredictionService::GetRoundedRatioForUkm(
-          actions_counts.denies, prompts_count))
-      .SetStats_AllPrompts_DismissRate(PredictionService::GetRoundedRatioForUkm(
-          actions_counts.dismissals, prompts_count))
-      .SetStats_AllPrompts_GrantRate(PredictionService::GetRoundedRatioForUkm(
-          actions_counts.grants, prompts_count))
-      .SetStats_AllPrompts_IgnoreRate(PredictionService::GetRoundedRatioForUkm(
-          actions_counts.ignores, prompts_count))
-      .SetStats_AllPrompts_Count(
-          PredictionService::BucketizeValue(prompts_count));
+      .SetStats_AllPrompts_DenyRate(
+          GetRoundedRatioForUkm(actions_counts.denies, prompts_count))
+      .SetStats_AllPrompts_DismissRate(
+          GetRoundedRatioForUkm(actions_counts.dismissals, prompts_count))
+      .SetStats_AllPrompts_GrantRate(
+          GetRoundedRatioForUkm(actions_counts.grants, prompts_count))
+      .SetStats_AllPrompts_IgnoreRate(
+          GetRoundedRatioForUkm(actions_counts.ignores, prompts_count))
+      .SetStats_AllPrompts_Count(BucketizeValue(prompts_count));
 
   if (ui_reason.has_value())
     builder.SetPromptDispositionReason(static_cast<int64_t>(ui_reason.value()));

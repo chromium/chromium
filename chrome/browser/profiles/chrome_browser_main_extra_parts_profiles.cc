@@ -63,6 +63,7 @@
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
 #include "chrome/browser/permissions/last_tab_standing_tracker_factory.h"
 #include "chrome/browser/permissions/permission_auditing_service_factory.h"
+#include "chrome/browser/permissions/prediction_model_handler_factory.h"
 #include "chrome/browser/persisted_state_db/persisted_state_db_content.pb.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
 #include "chrome/browser/plugins/plugin_prefs_factory.h"
@@ -432,6 +433,10 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::UserPolicySigninServiceFactory::GetInstance();
 #endif
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionOnDevicePredictions)) {
+    PredictionModelHandlerFactory::GetInstance();
+  }
   predictors::AutocompleteActionPredictorFactory::GetInstance();
   predictors::LoadingPredictorFactory::GetInstance();
   predictors::PredictorDatabaseFactory::GetInstance();

@@ -28,10 +28,10 @@ class PredictionServiceBase : public KeyedService {
       base::OnceCallback<void(std::unique_ptr<GeneratePredictionsRequest>,
                               std::string)>;  // Access token.
 
-  using LookupResponseCallback =
-      base::OnceCallback<void(bool,  // Lookup successful.
-                              bool,  // Response from cache.
-                              std::unique_ptr<GeneratePredictionsResponse>)>;
+  using LookupResponseCallback = base::OnceCallback<void(
+      bool,  // Lookup successful.
+      bool,  // Response from cache.
+      const absl::optional<GeneratePredictionsResponse>&)>;
 
   virtual void StartLookup(const PredictionRequestFeatures& entity,
                            LookupRequestCallback request_callback,

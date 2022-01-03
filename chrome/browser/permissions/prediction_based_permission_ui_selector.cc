@@ -11,6 +11,7 @@
 #include "base/rand_util.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
+#include "chrome/browser/permissions/prediction_model_handler_factory.h"
 #include "chrome/browser/permissions/prediction_service_factory.h"
 #include "chrome/browser/permissions/prediction_service_request.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,7 +20,10 @@
 #include "chrome/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/prediction_service/prediction_common.h"
+#include "components/permissions/prediction_service/prediction_model_handler.h"
 #include "components/permissions/prediction_service/prediction_service.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/prefs/pref_service.h"
@@ -82,6 +86,10 @@ PredictionBasedPermissionUiSelector::PredictionBasedPermissionUiSelector(
     if (mock_likelihood.has_value())
       set_likelihood_override(mock_likelihood.value());
   }
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionOnDevicePredictions)) {
+    PredictionModelHandlerFactory::GetForBrowserContext(profile);
+  }
 }
 
 PredictionBasedPermissionUiSelector::~PredictionBasedPermissionUiSelector() =
@@ -127,6 +135,24 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   }
 
   DCHECK(!request_);
+
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionOnDevicePredictions)) {
+    permissions::PredictionModelHandler* prediction_model_handler =
+        PredictionModelHandlerFactory::GetForBrowserContext(profile_);
+    if (prediction_model_handler->ModelAvailable()) {
+      VLOG(1) << "[CPSS] Using locally available model";
+      auto proto_request = GetPredictionRequestProto(features);
+      prediction_model_handler->ExecuteModelWithInput(
+          base::BindOnce(
+              &PredictionBasedPermissionUiSelector::LookupResponseReceived,
+              weak_ptr_factory_.GetWeakPtr(), /*is_on_device=*/true,
+              /*lookup_succesful=*/true, /*response_from_cache=*/false),
+          *proto_request);
+      return;
+    }
+  }
+
   permissions::PredictionService* service =
       PredictionServiceFactory::GetForProfile(profile_);
 
@@ -134,8 +160,8 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   request_ = std::make_unique<PredictionServiceRequest>(
       service, features,
       base::BindOnce(
-          &PredictionBasedPermissionUiSelector::LookupReponseReceived,
-          base::Unretained(this)));
+          &PredictionBasedPermissionUiSelector::LookupResponseReceived,
+          base::Unretained(this), /*is_on_device=*/false));
 }
 
 void PredictionBasedPermissionUiSelector::Cancel() {
@@ -181,10 +207,11 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
   return features;
 }
 
-void PredictionBasedPermissionUiSelector::LookupReponseReceived(
+void PredictionBasedPermissionUiSelector::LookupResponseReceived(
+    bool is_on_device,
     bool lookup_succesful,
     bool response_from_cache,
-    std::unique_ptr<permissions::GeneratePredictionsResponse> response) {
+    const absl::optional<permissions::GeneratePredictionsResponse>& response) {
   request_.reset();
   if (!lookup_succesful || !response || response->prediction_size() == 0) {
     VLOG(1) << "[CPSS] Prediction service request failed";

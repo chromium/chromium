@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/permission_request_enums.h"
-#include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/prediction_service/prediction_service_base.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -51,22 +50,10 @@ class PredictionService : public PredictionServiceBase {
     recalculate_service_url_every_time = true;
   }
 
-  // Returns the ratio rounded to the nearest 10%. It returns a value between 0
-  // and 1 in steps of 0.1
-  static float GetRoundedRatio(int numerator, int denominator);
-
-  // This method normalises the value returned by GetRoundedRatio(int, int) for
-  // sending it to ukm. It returns a value between 0 and 100 in steps of 10.
-  static int GetRoundedRatioForUkm(int numerator, int denominator);
-
-  // Returns the appropriate bucket for `count`.
-  static int BucketizeValue(int count);
-
  private:
   static const GURL GetPredictionServiceUrl(bool recalculate_for_testing);
   std::unique_ptr<network::ResourceRequest> GetResourceRequest();
-  std::unique_ptr<GeneratePredictionsRequest> GetPredictionRequestProto(
-      const PredictionRequestFeatures& entity);
+
   void SendRequestInternal(std::unique_ptr<network::ResourceRequest> request,
                            const std::string& request_data,
                            const PredictionRequestFeatures& entity,
