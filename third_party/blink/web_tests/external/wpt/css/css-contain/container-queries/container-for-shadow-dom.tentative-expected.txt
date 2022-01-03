@@ -5,7 +5,7 @@ PASS Match container in ::slotted selector's originating element tree
 PASS Match container in outer tree for :host
 FAIL Match container in ::part selector's originating element tree assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
 FAIL Match container for ::before in ::slotted selector's originating element tree assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
-FAIL Match container in outer tree for :host::before assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+PASS Match container in outer tree for :host::before
 FAIL Match container for ::before in ::part selector's originating element tree assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
 FAIL Match container for ::part selector's originating element tree for exportparts assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
 Harness: the test ran to completion.

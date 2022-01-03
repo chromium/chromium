@@ -128,7 +128,7 @@
     </template>
     <style>
       #t6 {
-        width: 200px;
+        width: 400px;
         container-type: inline-size;
       }
     </style>
@@ -156,6 +156,14 @@
 </div>
 
 <div id="inclusive-ancestor-part-before">
+  <style>
+    @container size(width = 400px) {
+      #inclusive-ancestor-part-before > div::part(part)::before {
+        content: "X";
+        color: green;
+      }
+    }
+  </style>
   <div>
     <template shadowroot="open">
       <style>
@@ -168,21 +176,13 @@
         <span id="t8" part="part"></span>
       </div>
     </template>
-    <style>
-      @container size(width = 400px) {
-        #inclusive-ancestor-part > div::part(part)::before {
-          content: "X";
-          color: green;
-        }
-      }
-    </style>
   </div>
 </div>
 
 <div id="inclusive-ancestor-inner-part">
   <style>
     @container size(width = 400px) {
-      #inclusive-ancestor-part > div::part(inner-part) { color: green; }
+      #inclusive-ancestor-inner-part > div::part(inner-part) { color: green; }
     }
   </style>
   <div>
@@ -242,17 +242,17 @@
 
   test(() => {
     const t6 = document.querySelector("#t6");
-    assert_equals(getComputedStyle(t6).color, green);
+    assert_equals(getComputedStyle(t6, "::before").color, green);
   }, "Match container for ::before in ::slotted selector's originating element tree");
 
   test(() => {
     const t7 = document.querySelector("#t7");
-    assert_equals(getComputedStyle(t7).color, green);
+    assert_equals(getComputedStyle(t7, "::before").color, green);
   }, "Match container in outer tree for :host::before");
 
   test(() => {
     const t8 = document.querySelector("#inclusive-ancestor-part-before > div").shadowRoot.querySelector("#t8");
-    assert_equals(getComputedStyle(t8).color, green);
+    assert_equals(getComputedStyle(t8, "::before").color, green);
   }, "Match container for ::before in ::part selector's originating element tree");
 
   test(() => {
