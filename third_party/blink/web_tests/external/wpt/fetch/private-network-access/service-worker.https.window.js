@@ -50,7 +50,19 @@ promise_test(t => serviceWorkerScriptTest(t, {
   },
   target: { server: Server.HTTPS_LOCAL },
   expected: TestResult.FAILURE,
-}), "treat-as-public to local: failure.");
+}), "treat-as-public to local: failed preflight.");
+
+promise_test(t => serviceWorkerScriptTest(t, {
+  source: {
+    server: Server.HTTPS_LOCAL,
+    treatAsPublic: true,
+  },
+  target: {
+    server: Server.HTTPS_LOCAL,
+    behavior: { preflight: PreflightBehavior.success(token()) },
+  },
+  expected: TestResult.SUCCESS,
+}), "treat-as-public to local: success.");
 
 promise_test(t => serviceWorkerScriptTest(t, {
   source: {
@@ -59,7 +71,19 @@ promise_test(t => serviceWorkerScriptTest(t, {
   },
   target: { server: Server.HTTPS_PRIVATE },
   expected: TestResult.FAILURE,
-}), "treat-as-public to private: failure.");
+}), "treat-as-public to private: failed preflight.");
+
+promise_test(t => serviceWorkerScriptTest(t, {
+  source: {
+    server: Server.HTTPS_PRIVATE,
+    treatAsPublic: true,
+  },
+  target: {
+    server: Server.HTTPS_PRIVATE,
+    behavior: { preflight: PreflightBehavior.success(token()) },
+  },
+  expected: TestResult.SUCCESS,
+}), "treat-as-public to private: success.");
 
 promise_test(t => serviceWorkerScriptTest(t, {
   source: { server: Server.HTTPS_PUBLIC },
