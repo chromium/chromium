@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 
@@ -38,30 +37,13 @@ FloatQuad GetQuadForTraceEvent(const LocalFrameView& frame_view,
 bool FramePainter::in_paint_contents_ = false;
 
 void FramePainter::Paint(GraphicsContext& context,
-                         const GlobalPaintFlags global_paint_flags,
-                         const CullRect& cull_rect) {
-  if (GetFrameView().ShouldThrottleRendering())
-    return;
-
-  GetFrameView().NotifyPageThatContentAreaWillPaint();
-
-  CullRect document_cull_rect(
-      gfx::IntersectRects(cull_rect.Rect(), GetFrameView().FrameRect()));
-  document_cull_rect.Move(-GetFrameView().Location().OffsetFromOrigin());
-
-  if (document_cull_rect.Rect().IsEmpty())
-    return;
-
-  PaintContents(context, global_paint_flags, document_cull_rect);
-}
-
-void FramePainter::PaintContents(GraphicsContext& context,
-                                 const GlobalPaintFlags global_paint_flags,
-                                 const CullRect& cull_rect) {
+                         const GlobalPaintFlags global_paint_flags) {
   Document* document = GetFrameView().GetFrame().GetDocument();
 
   if (GetFrameView().ShouldThrottleRendering() || !document->IsActive())
     return;
+
+  GetFrameView().NotifyPageThatContentAreaWillPaint();
 
   LayoutView* layout_view = GetFrameView().GetLayoutView();
   if (!layout_view) {
@@ -84,7 +66,9 @@ void FramePainter::PaintContents(GraphicsContext& context,
   DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
       "devtools.timeline,rail", "Paint", inspector_paint_event::Data,
       &GetFrameView().GetFrame(), layout_view,
-      GetQuadForTraceEvent(GetFrameView(), cull_rect), /*layer_id=*/0);
+      GetQuadForTraceEvent(GetFrameView(),
+                           layout_view->FirstFragment().GetCullRect()),
+      /*layer_id=*/0);
 
   bool is_top_level_painter = !in_paint_contents_;
   in_paint_contents_ = true;
@@ -110,8 +94,7 @@ void FramePainter::PaintContents(GraphicsContext& context,
       root_layer->GetLayoutObject().GetFrame());
   context.SetDeviceScaleFactor(device_scale_factor);
 
-  layer_painter.Paint(context, cull_rect, global_paint_flags,
-                      root_layer_paint_flags);
+  layer_painter.Paint(context, global_paint_flags, root_layer_paint_flags);
 
   // Regions may have changed as a result of the visibility/z-index of element
   // changing.

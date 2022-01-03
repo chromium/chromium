@@ -547,9 +547,8 @@ TEST_F(WebViewTest, SetBaseBackgroundColorAndBlendWithExistingContent) {
   // would.
   LocalFrameView* view = web_view_helper_.LocalMainFrame()->GetFrameView();
   PaintLayer* root_layer = view->GetLayoutView()->Layer();
-  CullRect paint_rect(gfx::Rect(0, 0, kWidth, kHeight));
-  PaintLayerPaintingInfo painting_info(
-      root_layer, paint_rect, kGlobalPaintNormalPhase, PhysicalOffset());
+  PaintLayerPaintingInfo painting_info(root_layer, kGlobalPaintNormalPhase,
+                                       PhysicalOffset());
 
   view->GetLayoutView()->GetDocument().Lifecycle().AdvanceTo(
       DocumentLifecycle::kInPaint);

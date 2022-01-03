@@ -55,47 +55,27 @@ void ScopedBoxContentsPaintState::AdjustForBoxContents(const LayoutBox& box) {
                             fragment_to_paint_->ContentsProperties(), box,
                             input_paint_info_.DisplayItemTypeForClipping());
 
-  const auto* properties = fragment_to_paint_->PaintProperties();
-  const auto* scroll_translation =
-      properties ? properties->ScrollTranslation() : nullptr;
-
-  // See comments for ScrollTranslation in object_paint_properties.h
-  // for the reason of adding ScrollOrigin(). The paint offset will
-  // be used only for the scrolling contents that are not painted through
-  // descendant objects' Paint() method, e.g. inline boxes.
-  if (scroll_translation)
-    paint_offset_ += PhysicalOffset(box.ScrollOrigin());
-
-  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-    // We calculated cull rects for PaintLayers only.
-    if (!box.HasLayer())
-      return;
-    adjusted_paint_info_.emplace(input_paint_info_);
-    adjusted_paint_info_->SetCullRect(
-        fragment_to_paint_->GetContentsCullRect());
-    if (box.Layer()->PreviousPaintResult() == kFullyPainted) {
-      PhysicalRect contents_visual_rect =
-          PaintLayerPainter::ContentsVisualRect(*fragment_to_paint_, box);
-      if (!PhysicalRect(fragment_to_paint_->GetContentsCullRect().Rect())
-               .Contains(contents_visual_rect)) {
-        box.Layer()->SetPreviousPaintResult(kMayBeClippedByCullRect);
-      }
-    }
-    return;
+  if (const auto* properties = fragment_to_paint_->PaintProperties()) {
+    // See comments for ScrollTranslation in object_paint_properties.h
+    // for the reason of adding ScrollOrigin(). The paint offset will
+    // be used only for the scrolling contents that are not painted through
+    // descendant objects' Paint() method, e.g. inline boxes.
+    if (properties->ScrollTranslation())
+      paint_offset_ += PhysicalOffset(box.ScrollOrigin());
   }
 
-  // If a LayoutView is using infinite cull rect, we are painting with viewport
-  // clip disabled, so don't cull the scrolling contents. This is just for
-  // completeness because we always paint the whole scrolling background even
-  // with a smaller cull rect, and the scrolling document contents are under the
-  // layer of document element which will use infinite cull rect calculated in
-  // PaintLayerPainter::AdjustForPaintProperties().
-  if (IsA<LayoutView>(box) && input_paint_info_.GetCullRect().IsInfinite())
+  // We calculated cull rects for PaintLayers only.
+  if (!box.HasLayer())
     return;
-
-  if (scroll_translation) {
-    adjusted_paint_info_.emplace(input_paint_info_);
-    adjusted_paint_info_->TransformCullRect(*scroll_translation);
+  adjusted_paint_info_.emplace(input_paint_info_);
+  adjusted_paint_info_->SetCullRect(fragment_to_paint_->GetContentsCullRect());
+  if (box.Layer()->PreviousPaintResult() == kFullyPainted) {
+    PhysicalRect contents_visual_rect =
+        PaintLayerPainter::ContentsVisualRect(*fragment_to_paint_, box);
+    if (!PhysicalRect(fragment_to_paint_->GetContentsCullRect().Rect())
+             .Contains(contents_visual_rect)) {
+      box.Layer()->SetPreviousPaintResult(kMayBeClippedByCullRect);
+    }
   }
 }
 

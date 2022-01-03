@@ -427,27 +427,20 @@ void NGBoxFragmentPainter::PaintInternal(const PaintInfo& paint_info) {
     info.phase = PaintPhase::kDescendantOutlinesOnly;
   } else if (ShouldPaintSelfBlockBackground(original_phase)) {
     info.phase = PaintPhase::kSelfBlockBackgroundOnly;
-    // With CompositeAfterPaint we need to call PaintObject twice: once for the
-    // background painting that does not scroll, and a second time for the
-    // background painting that scrolls.
-    // Without CompositeAfterPaint, this happens as the main graphics layer
-    // paints the background, and then the scrolling contents graphics layer
-    // paints the background.
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      auto paint_location = To<LayoutBox>(*box_fragment_.GetLayoutObject())
-                                .GetBackgroundPaintLocation();
-      if (!(paint_location & kBackgroundPaintInBorderBoxSpace))
-        info.SetSkipsBackground(true);
-      PaintObject(info, paint_offset);
-      info.SetSkipsBackground(false);
+    // We need to call PaintObject twice: one for painting background in the
+    // border box space, and the other for painting background in the scrolling
+    // contents space.
+    auto paint_location = To<LayoutBox>(*box_fragment_.GetLayoutObject())
+                              .GetBackgroundPaintLocation();
+    if (!(paint_location & kBackgroundPaintInBorderBoxSpace))
+      info.SetSkipsBackground(true);
+    PaintObject(info, paint_offset);
+    info.SetSkipsBackground(false);
 
-      if (paint_location & kBackgroundPaintInContentsSpace) {
-        info.SetIsPaintingBackgroundInContentsSpace(true);
-        PaintObject(info, paint_offset);
-        info.SetIsPaintingBackgroundInContentsSpace(false);
-      }
-    } else {
+    if (paint_location & kBackgroundPaintInContentsSpace) {
+      info.SetIsPaintingBackgroundInContentsSpace(true);
       PaintObject(info, paint_offset);
+      info.SetIsPaintingBackgroundInContentsSpace(false);
     }
     if (ShouldPaintDescendantBlockBackgrounds(original_phase))
       info.phase = PaintPhase::kDescendantBlockBackgroundsOnly;
@@ -520,7 +513,7 @@ void NGBoxFragmentPainter::RecordScrollHitTestData(
 
 bool NGBoxFragmentPainter::ShouldRecordHitTestData(
     const PaintInfo& paint_info) {
-  if (IsPaintingBackgroundInContentsSpace(paint_info) &&
+  if (paint_info.IsPaintingBackgroundInContentsSpace() &&
       PhysicalFragment().EffectiveAllowedTouchAction() == TouchAction::kAuto &&
       !PhysicalFragment().InsideBlockingWheelEventHandler()) {
     return false;
@@ -1006,10 +999,8 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
   PhysicalRect paint_rect;
   const DisplayItemClient* background_client = nullptr;
   absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
-  bool painting_background_in_contents_space =
-      IsPaintingBackgroundInContentsSpace(paint_info);
   gfx::Rect visual_rect;
-  if (painting_background_in_contents_space) {
+  if (paint_info.IsPaintingBackgroundInContentsSpace()) {
     // For the case where we are painting the background in the contents space,
     // we need to include the entire overflow rect.
     const LayoutBox& layout_box = To<LayoutBox>(layout_object);
@@ -1062,7 +1053,7 @@ void NGBoxFragmentPainter::PaintBoxDecorationBackground(
   // Record the scroll hit test after the non-scrolling background so
   // background squashing is not affected. Hit test order would be equivalent
   // if this were immediately before the non-scrolling background.
-  if (!painting_background_in_contents_space)
+  if (!paint_info.IsPaintingBackgroundInContentsSpace())
     RecordScrollHitTestData(paint_info, *background_client);
 }
 
@@ -1741,19 +1732,6 @@ void NGBoxFragmentPainter::PaintBoxItem(const NGFragmentItem& item,
   PaintInlineItems(paint_info, paint_offset, parent_offset, &children);
 }
 
-bool NGBoxFragmentPainter::IsPaintingBackgroundInContentsSpace(
-    const PaintInfo& paint_info) const {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return paint_info.IsPaintingBackgroundInContentsSpace();
-
-  // TODO(layout-dev): Change paint_info.PaintContainer to accept fragments
-  // once LayoutNG supports scrolling containers.
-  return paint_info.PaintFlags() & kPaintLayerPaintingOverflowContents &&
-         !(paint_info.PaintFlags() &
-           kPaintLayerPaintingCompositingBackgroundPhase) &&
-         box_fragment_.GetLayoutObject() == paint_info.PaintContainer();
-}
-
 bool NGBoxFragmentPainter::ShouldPaint(
     const ScopedPaintState& paint_state) const {
   // TODO(layout-dev): Add support for scrolling, see BlockPainter::ShouldPaint.
@@ -1816,7 +1794,7 @@ PhysicalRect NGBoxFragmentPainter::AdjustRectForScrolledContent(
 
   // Clip to the overflow area.
   if (info.is_clipped_with_local_scrolling &&
-      !IsPaintingBackgroundInContentsSpace(paint_info)) {
+      !paint_info.IsPaintingBackgroundInContentsSpace()) {
     context.Clip(gfx::RectF(physical.OverflowClipRect(rect.offset)));
 
     // Adjust the paint rect to reflect a scrolled content box with borders at

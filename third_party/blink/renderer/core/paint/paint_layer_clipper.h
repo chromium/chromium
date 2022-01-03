@@ -49,7 +49,6 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
-#include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -171,27 +170,20 @@ class CORE_EXPORT PaintLayerClipper {
   // space. Only looks for clips up to the given ancestor.
   PhysicalRect LocalClipRect(const PaintLayer& ancestor_layer) const;
 
-  // Computes the same thing as backgroundRect in calculateRects(), but skips
-  // applying CSS clip and the visualOverflowRect() of |m_layer|.
+  // Computes the same thing as |background_rect| in CalculateRects(), but
+  // skips applying CSS clip and the VisualOverflowRect() of |layer_|.
   void CalculateBackgroundClipRect(const ClipRectsContext&,
                                    ClipRect& output) const;
 
   // This method figures out our layerBounds in coordinates relative to
   // |root_layer|. It also computes our background and foreground clip rects
   // for painting/event handling. Pass offsetFromRoot if known.
-  // If provided, |offset_from_root| is not changed and assumed to already
-  // include subpixel accumualation. Otherwise it is set to the offset from
-  // |layer_| to |root_layer|, plus |context.sub_pixel_accumuation|.
   // |fragment_data| is only used in kUseGeometryMapper mode.
-  // If |cull_rect| is provided, intersects |background_rect| and
-  // |foreground_rect| with it.
   void CalculateRects(const ClipRectsContext&,
                       const FragmentData*,
-                      const CullRect* cull_rect,
                       PhysicalRect& layer_bounds,
                       ClipRect& background_rect,
-                      ClipRect& foreground_rect,
-                      const PhysicalOffset* offset_from_root = nullptr) const;
+                      ClipRect& foreground_rect) const;
 
  private:
   void CalculateClipRects(const ClipRectsContext&, ClipRects&) const;
@@ -210,11 +202,9 @@ class CORE_EXPORT PaintLayerClipper {
   ALWAYS_INLINE void CalculateRectsWithGeometryMapper(
       const ClipRectsContext&,
       const FragmentData&,
-      const CullRect* cull_rect,
       PhysicalRect& layer_bounds,
       ClipRect& background_rect,
-      ClipRect& foreground_rect,
-      const PhysicalOffset* offset_from_root = nullptr) const;
+      ClipRect& foreground_rect) const;
 
   // Returns the visual rect of |layer_| in local space. This includes
   // filter effects if needed.

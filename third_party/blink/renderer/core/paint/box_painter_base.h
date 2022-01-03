@@ -168,7 +168,6 @@ class BoxPainterBase {
       const FillLayer&,
       BackgroundBleedAvoidance,
       bool is_painting_background_in_contents_space) const = 0;
-  virtual bool IsPaintingBackgroundInContentsSpace(const PaintInfo&) const = 0;
   static void PaintInsetBoxShadow(
       const PaintInfo&,
       const FloatRoundedRect&,

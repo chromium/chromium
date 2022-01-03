@@ -87,11 +87,9 @@ struct PaintLayerPaintingInfo {
 
  public:
   PaintLayerPaintingInfo(PaintLayer* root_layer,
-                         const CullRect& cull_rect,
                          GlobalPaintFlags global_paint_flags,
                          const PhysicalOffset& sub_pixel_accumulation)
       : root_layer(root_layer),
-        cull_rect(cull_rect),
         sub_pixel_accumulation(sub_pixel_accumulation),
         global_paint_flags_(global_paint_flags) {}
 
@@ -99,7 +97,6 @@ struct PaintLayerPaintingInfo {
 
   // TODO(jchaffraix): We should encapsulate all these fields.
   const PaintLayer* root_layer;
-  CullRect cull_rect;  // relative to rootLayer;
   PhysicalOffset sub_pixel_accumulation;
 
  private:

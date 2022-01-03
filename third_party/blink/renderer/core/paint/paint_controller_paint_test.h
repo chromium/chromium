@@ -52,7 +52,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
   }
 
   void PaintContents(const gfx::Rect& interest_rect) {
-    GetDocument().View()->PaintContentsForTest(CullRect(interest_rect));
+    GetDocument().View()->PaintForTest(CullRect(interest_rect));
   }
 
   void InvalidateAll() {

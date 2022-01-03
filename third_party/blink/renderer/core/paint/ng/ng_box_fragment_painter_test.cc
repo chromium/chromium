@@ -120,7 +120,7 @@ TEST_P(NGBoxFragmentPainterTest, AddUrlRects) {
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   builder->Context().SetPaintPreviewTracker(&tracker);
 
-  GetDocument().View()->PaintContentsOutsideOfLifecycle(
+  GetDocument().View()->PaintOutsideOfLifecycle(
       builder->Context(),
       kGlobalPaintNormalPhase | kGlobalPaintAddUrlMetadata |
           kGlobalPaintFlattenCompositingLayers,
@@ -179,7 +179,7 @@ TEST_P(NGBoxFragmentPainterTest, SelectionTablePainting) {
   GetDocument().GetLayoutView()->CommitPendingSelection();
   UpdateAllLifecyclePhasesForTest();
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
-  GetDocument().View()->PaintContentsOutsideOfLifecycle(
+  GetDocument().View()->PaintOutsideOfLifecycle(
       builder->Context(),
       kGlobalPaintSelectionDragImageOnly | kGlobalPaintFlattenCompositingLayers,
       CullRect::Infinite());

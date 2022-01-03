@@ -14,11 +14,10 @@
 
 namespace blink {
 
-class CullRect;
 class ComputedStyle;
 class FragmentData;
 class GraphicsContext;
-struct PhysicalOffset;
+class NGPhysicalBoxFragment;
 
 // This class is responsible for painting self-painting PaintLayer.
 //
@@ -30,11 +29,9 @@ class CORE_EXPORT PaintLayerPainter {
  public:
   PaintLayerPainter(PaintLayer& paint_layer) : paint_layer_(paint_layer) {}
 
-  // The Paint() method paints the layers that intersect the cull rect from
-  // back to front.  paint() assumes that the caller will clip to the bounds of
-  // damageRect if necessary.
+  // Paints the layers from back to front. It assumes that the caller will
+  // clip to the bounds of damage rect if necessary.
   void Paint(GraphicsContext&,
-             const CullRect&,
              const GlobalPaintFlags = kGlobalPaintNormalPhase,
              PaintLayerFlags = kPaintLayerNoFlag);
   // Paint() assumes that the caller will clip to the bounds of the painting
@@ -47,10 +44,6 @@ class CORE_EXPORT PaintLayerPainter {
   PaintResult PaintLayerContents(GraphicsContext&,
                                  const PaintLayerPaintingInfo&,
                                  PaintLayerFlags);
-
-  void PaintOverlayOverflowControls(GraphicsContext&,
-                                    const CullRect&,
-                                    const GlobalPaintFlags);
 
   // Returns true if the painted output of this PaintLayer and its children is
   // invisible and therefore can't impact painted output.
@@ -70,35 +63,22 @@ class CORE_EXPORT PaintLayerPainter {
                             GraphicsContext&,
                             const PaintLayerPaintingInfo&,
                             PaintLayerFlags);
-  bool AtLeastOneFragmentIntersectsDamageRect(
-      PaintLayerFragments&,
-      const PaintLayerPaintingInfo&,
-      PaintLayerFlags,
-      const PhysicalOffset& offset_from_root);
   void PaintFragmentWithPhase(PaintPhase,
-                              const PaintLayerFragment&,
+                              const FragmentData&,
+                              const NGPhysicalBoxFragment*,
                               GraphicsContext&,
-                              const CullRect&,
                               const PaintLayerPaintingInfo&,
                               PaintLayerFlags);
-  void PaintBackgroundForFragmentsWithPhase(PaintPhase,
-                                            const PaintLayerFragments&,
-                                            GraphicsContext&,
-                                            const PaintLayerPaintingInfo&,
-                                            PaintLayerFlags);
-  void PaintForegroundForFragments(const PaintLayerFragments&,
-                                   GraphicsContext&,
-                                   const PaintLayerPaintingInfo&,
-                                   PaintLayerFlags);
-  void PaintForegroundForFragmentsWithPhase(PaintPhase,
-                                            const PaintLayerFragments&,
-                                            GraphicsContext&,
-                                            const PaintLayerPaintingInfo&,
-                                            PaintLayerFlags);
-  void PaintOverlayOverflowControlsForFragments(const PaintLayerFragments&,
-                                                GraphicsContext&,
-                                                const PaintLayerPaintingInfo&,
-                                                PaintLayerFlags);
+  void PaintWithPhase(PaintPhase,
+                      GraphicsContext&,
+                      const PaintLayerPaintingInfo&,
+                      PaintLayerFlags);
+  void PaintForegroundPhases(GraphicsContext&,
+                             const PaintLayerPaintingInfo&,
+                             PaintLayerFlags);
+  void PaintOverlayOverflowControls(GraphicsContext&,
+                                    const PaintLayerPaintingInfo&,
+                                    PaintLayerFlags);
 
   bool ShouldUseInfiniteCullRectInternal(GlobalPaintFlags,
                                          bool for_cull_rect_update);

@@ -429,7 +429,7 @@ class ChromePrintContext : public PrintContext {
         frame_view->GetLayoutView()->FirstFragment().LocalBorderBoxProperties();
 
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>(context);
-    frame_view->PaintContentsOutsideOfLifecycle(
+    frame_view->PaintOutsideOfLifecycle(
         builder->Context(),
         kGlobalPaintNormalPhase | kGlobalPaintFlattenCompositingLayers |
             kGlobalPaintAddUrlMetadata,
@@ -576,8 +576,8 @@ class PaintPreviewContext : public PrintContext {
     if (include_linked_destinations)
       flags |= kGlobalPaintAddUrlMetadata;
 
-    frame_view->PaintContentsOutsideOfLifecycle(builder->Context(), flags,
-                                                CullRect(bounds));
+    frame_view->PaintOutsideOfLifecycle(builder->Context(), flags,
+                                        CullRect(bounds));
     if (include_linked_destinations) {
       // Add anchors.
       ScopedPaintChunkProperties scoped_paint_chunk_properties(

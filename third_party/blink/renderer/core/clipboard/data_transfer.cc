@@ -125,17 +125,13 @@ class DraggedNodeImageBuilder {
         layer->GetLayoutObject()
             .AbsoluteToLocalQuad(FloatQuad(absolute_bounding_box))
             .BoundingBox();
-    absl::optional<OverriddenCullRectScope> cull_rect_scope;
-    if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-      gfx::RectF cull_rect = bounding_box;
-      cull_rect.Offset(gfx::Vector2dF(
-          layer->GetLayoutObject().FirstFragment().PaintOffset()));
-      cull_rect_scope.emplace(*layer,
-                              CullRect(gfx::ToEnclosingRect(cull_rect)));
-    }
+    gfx::RectF cull_rect = bounding_box;
+    cull_rect.Offset(
+        gfx::Vector2dF(layer->GetLayoutObject().FirstFragment().PaintOffset()));
+    OverriddenCullRectScope cull_rect_scope(
+        *layer, CullRect(gfx::ToEnclosingRect(cull_rect)));
     PaintLayerPaintingInfo painting_info(
-        layer, CullRect(gfx::ToEnclosingRect(bounding_box)),
-        kGlobalPaintFlattenCompositingLayers, PhysicalOffset());
+        layer, kGlobalPaintFlattenCompositingLayers, PhysicalOffset());
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
 
     dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(

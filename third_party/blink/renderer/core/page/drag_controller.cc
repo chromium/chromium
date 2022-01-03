@@ -1175,7 +1175,7 @@ std::unique_ptr<DragImage> DragController::DragImageForSelection(
       kGlobalPaintSelectionDragImageOnly | kGlobalPaintFlattenCompositingLayers;
 
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
-  frame.View()->PaintContentsOutsideOfLifecycle(
+  frame.View()->PaintOutsideOfLifecycle(
       builder->Context(), paint_flags,
       CullRect(gfx::ToEnclosingRect(painting_rect)));
 

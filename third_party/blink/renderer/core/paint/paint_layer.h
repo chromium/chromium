@@ -59,7 +59,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_stacking_node.h"
 #include "third_party/blink/renderer/core/paint/paint_result.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
-#include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -208,6 +207,9 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   LayoutBox* GetLayoutBox() const {
     return DynamicTo<LayoutBox>(layout_object_.Get());
   }
+  // Returns |GetLayoutBox()| if it exists and has fragments.
+  const LayoutBox* GetLayoutBoxWithBlockFragments() const;
+
   PaintLayer* Parent() const { return parent_; }
   PaintLayer* PreviousSibling() const { return previous_; }
   PaintLayer* NextSibling() const { return next_; }
@@ -583,16 +585,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   void DidUpdateScrollsOverflow();
 
-  void CollectFragments(
-      PaintLayerFragments&,
-      const PaintLayer* root_layer,
-      const CullRect* painting_cull_rect,
-      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
-      ShouldRespectOverflowClipType = kRespectOverflowClip,
-      const PhysicalOffset* offset_from_root = nullptr,
-      const PhysicalOffset& sub_pixel_accumulation = PhysicalOffset(),
-      const FragmentData* root_fragment = nullptr) const;
-
   bool SelfNeedsRepaint() const { return self_needs_repaint_; }
   bool DescendantNeedsRepaint() const { return descendant_needs_repaint_; }
   bool SelfOrDescendantNeedsRepaint() const {
@@ -624,17 +616,10 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     descendant_needs_cull_rect_update_ = false;
   }
 
-  // These previousXXX() functions are for subsequence caching. They save the
-  // painting status of the layer during the previous painting with subsequence.
-  // A painting without subsequence [1] doesn't change this status.  [1] See
-  // shouldCreateSubsequence() in PaintLayerPainter.cpp for the cases we use
-  // subsequence when painting a PaintLayer.
-
-  // TODO(wangxianzhu): Remove these functions when we use the cull rects
-  // in FragmentData updated during PrePaint.
-  const CullRect& PreviousCullRect() const { return previous_cull_rect_; }
-  void SetPreviousCullRect(const CullRect& rect) { previous_cull_rect_ = rect; }
-
+  // The paint result of this layer during the previous painting with
+  // subsequence. A painting without subsequence [1] doesn't change this flag.
+  // [1] See ShouldCreateSubsequence() in paint_layer_painter.cc for the cases
+  // we use subsequence when painting a PaintLayer.
   PaintResult PreviousPaintResult() const {
     return static_cast<PaintResult>(previous_paint_result_);
   }
@@ -715,6 +700,11 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   void AppendSingleFragmentIgnoringPaginationForHitTesting(
       PaintLayerFragments&,
       ShouldRespectOverflowClipType) const;
+
+  void CollectFragments(PaintLayerFragments&,
+                        const PaintLayer* root_layer,
+                        ShouldRespectOverflowClipType = kRespectOverflowClip,
+                        const FragmentData* root_fragment = nullptr) const;
 
   struct HitTestRecursionData {
     const PhysicalRect& rect;
@@ -943,8 +933,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // left/top values.
   LayoutUnit static_inline_position_;
   LayoutUnit static_block_position_;
-
-  CullRect previous_cull_rect_;
 
   // The first ancestor that is a scroll container. This is not a member of
   // AncestorDependentCompositingInputs as it is needed when

@@ -173,7 +173,7 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
     GraphicsContext& context = builder->Context();
     context.SetPrinting(true);
-    GetDocument().View()->PaintContentsOutsideOfLifecycle(
+    GetDocument().View()->PaintOutsideOfLifecycle(
         context, kGlobalPaintAddUrlMetadata, CullRect(page_rect));
     {
       DrawingRecorder recorder(

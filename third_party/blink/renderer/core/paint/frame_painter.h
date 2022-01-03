@@ -10,7 +10,6 @@
 
 namespace blink {
 
-class CullRect;
 class GraphicsContext;
 class LocalFrameView;
 
@@ -23,8 +22,7 @@ class FramePainter {
   FramePainter(const FramePainter&) = delete;
   FramePainter& operator=(const FramePainter&) = delete;
 
-  void Paint(GraphicsContext&, const GlobalPaintFlags, const CullRect&);
-  void PaintContents(GraphicsContext&, const GlobalPaintFlags, const CullRect&);
+  void Paint(GraphicsContext&, const GlobalPaintFlags);
 
  private:
   const LocalFrameView& GetFrameView();

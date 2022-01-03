@@ -23,9 +23,7 @@ class PaintLayerPainterTest : public PaintControllerPaintTest {
 
  public:
   CullRect GetCullRect(const PaintLayer& layer) {
-    if (RuntimeEnabledFeatures::CullRectUpdateEnabled())
-      return layer.GetLayoutObject().FirstFragment().GetCullRect();
-    return layer.PreviousCullRect();
+    return layer.GetLayoutObject().FirstFragment().GetCullRect();
   }
 };
 

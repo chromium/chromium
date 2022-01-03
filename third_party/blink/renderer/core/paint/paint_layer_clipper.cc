@@ -165,36 +165,28 @@ PhysicalRect PaintLayerClipper::LocalClipRect(
 void PaintLayerClipper::CalculateRectsWithGeometryMapper(
     const ClipRectsContext& context,
     const FragmentData& fragment_data,
-    const CullRect* cull_rect,
     PhysicalRect& layer_bounds,
     ClipRect& background_rect,
-    ClipRect& foreground_rect,
-    const PhysicalOffset* offset_from_root) const {
+    ClipRect& foreground_rect) const {
   layer_bounds.size = PhysicalSize(layer_->PixelSnappedSize());
-  if (offset_from_root) {
-    layer_bounds.offset = *offset_from_root;
+  layer_bounds.offset = context.sub_pixel_accumulation;
+  if (layer_ == context.root_layer) {
+    DCHECK_EQ(&fragment_data, context.root_fragment);
   } else {
-    layer_bounds.offset = context.sub_pixel_accumulation;
-    if (layer_ == context.root_layer) {
-      DCHECK_EQ(&fragment_data, context.root_fragment);
-    } else {
-      layer_bounds.Move(fragment_data.PaintOffset());
-      gfx::RectF float_bounds(layer_bounds);
-      GeometryMapper::SourceToDestinationRect(
-          fragment_data.PreTransform(),
-          context.root_fragment->LocalBorderBoxProperties().Transform(),
-          float_bounds);
-      layer_bounds = PhysicalRect::FastAndLossyFromRectF(float_bounds);
-      layer_bounds.offset -= context.root_fragment->PaintOffset();
-    }
+    layer_bounds.Move(fragment_data.PaintOffset());
+    gfx::RectF float_bounds(layer_bounds);
+    GeometryMapper::SourceToDestinationRect(
+        fragment_data.PreTransform(),
+        context.root_fragment->LocalBorderBoxProperties().Transform(),
+        float_bounds);
+    layer_bounds = PhysicalRect::FastAndLossyFromRectF(float_bounds);
+    layer_bounds.offset -= context.root_fragment->PaintOffset();
   }
 
   CalculateBackgroundClipRectWithGeometryMapper(
       context, fragment_data, kRespectOverflowClip, background_rect);
 
   foreground_rect.Reset();
-  if (cull_rect)
-    background_rect.Intersect(PhysicalRect(cull_rect->Rect()));
 
   if (ShouldClipOverflowAlongEitherAxis(context)) {
     LayoutBoxModelObject& layout_object = layer_->GetLayoutObject();
@@ -210,23 +202,19 @@ void PaintLayerClipper::CalculateRectsWithGeometryMapper(
   }
 }
 
-void PaintLayerClipper::CalculateRects(
-    const ClipRectsContext& context,
-    const FragmentData* fragment_data,
-    const CullRect* cull_rect,
-    PhysicalRect& layer_bounds,
-    ClipRect& background_rect,
-    ClipRect& foreground_rect,
-    const PhysicalOffset* offset_from_root) const {
+void PaintLayerClipper::CalculateRects(const ClipRectsContext& context,
+                                       const FragmentData* fragment_data,
+                                       PhysicalRect& layer_bounds,
+                                       ClipRect& background_rect,
+                                       ClipRect& foreground_rect) const {
   if (use_geometry_mapper_) {
     DCHECK(fragment_data);
     DCHECK(fragment_data->HasLocalBorderBoxProperties());
     // TODO(chrishtr): find the root cause of not having a fragment and fix it.
     if (!fragment_data->HasLocalBorderBoxProperties())
       return;
-    CalculateRectsWithGeometryMapper(context, *fragment_data, cull_rect,
-                                     layer_bounds, background_rect,
-                                     foreground_rect, offset_from_root);
+    CalculateRectsWithGeometryMapper(context, *fragment_data, layer_bounds,
+                                     background_rect, foreground_rect);
     return;
   }
   DCHECK(!fragment_data);
@@ -238,16 +226,11 @@ void PaintLayerClipper::CalculateRects(
     CalculateBackgroundClipRect(context, background_rect);
     background_rect.Move(context.sub_pixel_accumulation);
   }
-  if (cull_rect)
-    background_rect.Intersect(PhysicalRect(cull_rect->Rect()));
 
   foreground_rect = background_rect;
 
   PhysicalOffset offset(context.sub_pixel_accumulation);
-  if (offset_from_root)
-    offset = *offset_from_root;
-  else
-    layer_->ConvertToLayerCoords(context.root_layer, offset);
+  layer_->ConvertToLayerCoords(context.root_layer, offset);
   layer_bounds = PhysicalRect(offset, PhysicalSize(layer_->PixelSnappedSize()));
 
   // Update the clip rects that will be passed to child layers.

@@ -120,7 +120,6 @@ struct SameSizeAsPaintLayer : GarbageCollected<PaintLayer>, DisplayItemClient {
   Member<void*> members1[5];
   LayoutUnit layout_units[4];
   gfx::Size size;
-  CullRect previous_cull_rect;
   Member<void*> members2[5];
 };
 
@@ -1220,7 +1219,7 @@ void PaintLayer::AppendSingleFragmentIgnoringPaginationForHitTesting(
                                       kExcludeOverlayScrollbarSizeForHitTesting,
                                       respect_overflow_clip);
   Clipper(GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(clip_rects_context, fragment.fragment_data, nullptr,
+      .CalculateRects(clip_rects_context, fragment.fragment_data,
                       fragment.layer_bounds, fragment.background_rect,
                       fragment.foreground_rect);
   if (GetLayoutObject().CanTraversePhysicalFragments()) {
@@ -1243,14 +1242,28 @@ bool PaintLayer::ShouldFragmentCompositedBounds(
   return !EnclosingCompositedScrollingLayerUnderPagination(kIncludeSelf);
 }
 
+const LayoutBox* PaintLayer::GetLayoutBoxWithBlockFragments() const {
+  const LayoutBox* layout_box = GetLayoutBox();
+  if (!layout_box)
+    return nullptr;
+  if (!layout_box->CanTraversePhysicalFragments())
+    return nullptr;
+  if (!layout_box->PhysicalFragmentCount()) {
+    NOTREACHED();
+    // TODO(crbug.com/1273068): The box has no fragments. This is
+    // unexpected, and we must have failed a bunch of DCHECKs (if enabled)
+    // on our way here. If the LayoutBox has never been laid out, it will
+    // have no fragments. But then we shouldn't really be here. Fall back to
+    // legacy LayoutObject tree traversal for this layer.
+    return nullptr;
+  }
+  return layout_box;
+}
+
 void PaintLayer::CollectFragments(
     PaintLayerFragments& fragments,
     const PaintLayer* root_layer,
-    const CullRect* painting_cull_rect,
-    OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior,
     ShouldRespectOverflowClipType respect_overflow_clip,
-    const PhysicalOffset* offset_from_root,
-    const PhysicalOffset& sub_pixel_accumulation,
     const FragmentData* root_fragment) const {
   PaintLayerFragment fragment;
   const auto& first_fragment_data = GetLayoutObject().FirstFragment();
@@ -1272,27 +1285,10 @@ void PaintLayer::CollectFragments(
       is_fragmented &&
       root_layer->EnclosingPaginationLayer() == EnclosingPaginationLayer();
 
-  const LayoutBox* layout_box_with_fragments = nullptr;
-  if (GetLayoutObject().CanTraversePhysicalFragments()) {
-    layout_box_with_fragments = GetLayoutBox();
-    if (layout_box_with_fragments) {
-      if (!layout_box_with_fragments->PhysicalFragmentCount()) {
-        NOTREACHED();
-        // TODO(crbug.com/1273068): The box has no fragments. This is
-        // unexpected, and we must have failed a bunch of DCHECKs (if enabled)
-        // on our way here. If the LayoutBox has never been laid out, it will
-        // have no fragments. But then we shouldn't really be here. Fall back to
-        // legacy LayoutObject tree traversal for this layer. There's code that
-        // requires that there be at least one PaintLayerFragment, so leaving
-        // empty-handed isn't an option.
-        layout_box_with_fragments = nullptr;
-      }
-    }
-  }
+  const LayoutBox* layout_box_with_fragments = GetLayoutBoxWithBlockFragments();
 
   // The inherited offset_from_root does not include any pagination offsets.
   // In the presence of fragmentation, we cannot use it.
-  bool offset_from_root_can_be_used = offset_from_root && !is_fragmented;
   wtf_size_t physical_fragment_idx = 0u;
   for (auto* fragment_data = &first_fragment_data; fragment_data;
        fragment_data = fragment_data->NextFragment(), physical_fragment_idx++) {
@@ -1302,62 +1298,45 @@ void PaintLayer::CollectFragments(
       continue;
     }
 
-    // If CullRectUpdateEnabled, skip fragment geometry logic if we are
-    // collecting fragments for painting.
-    if (!RuntimeEnabledFeatures::CullRectUpdateEnabled() ||
-        !painting_cull_rect) {
-      const FragmentData* root_fragment_data;
-      if (root_layer == this) {
-        root_fragment_data = fragment_data;
-      } else if (should_match_fragments) {
-        for (root_fragment_data = &first_root_fragment_data; root_fragment_data;
-             root_fragment_data = root_fragment_data->NextFragment()) {
-          if (root_fragment_data->FragmentID() == fragment_data->FragmentID())
-            break;
-        }
-      } else {
-        root_fragment_data = &first_root_fragment_data;
+    const FragmentData* root_fragment_data;
+    if (root_layer == this) {
+      root_fragment_data = fragment_data;
+    } else if (should_match_fragments) {
+      for (root_fragment_data = &first_root_fragment_data; root_fragment_data;
+           root_fragment_data = root_fragment_data->NextFragment()) {
+        if (root_fragment_data->FragmentID() == fragment_data->FragmentID())
+          break;
       }
-
-      bool cant_find_fragment = !root_fragment_data;
-      if (cant_find_fragment) {
-        DCHECK(should_match_fragments);
-        // Fall back to the first fragment, in order to have
-        // PaintLayerClipper at least compute |fragment.layer_bounds|.
-        root_fragment_data = &first_root_fragment_data;
-      }
-
-      ClipRectsContext clip_rects_context(
-          root_layer, root_fragment_data, overlay_scrollbar_clip_behavior,
-          respect_overflow_clip, sub_pixel_accumulation);
-
-      absl::optional<CullRect> fragment_cull_rect;
-      if (painting_cull_rect) {
-        // |cull_rect| is in the coordinate space of |root_layer| (i.e. the
-        // space of |root_layer|'s first fragment). Map the rect to the space of
-        // the current root fragment.
-        auto rect = painting_cull_rect->Rect();
-        first_root_fragment_data.MapRectToFragment(*root_fragment_data, rect);
-        fragment_cull_rect.emplace(rect);
-      }
-
-      Clipper(GeometryMapperOption::kUseGeometryMapper)
-          .CalculateRects(
-              clip_rects_context, fragment_data,
-              fragment_cull_rect ? &*fragment_cull_rect : nullptr,
-              fragment.layer_bounds, fragment.background_rect,
-              fragment.foreground_rect,
-              offset_from_root_can_be_used ? offset_from_root : nullptr);
-
-      if (cant_find_fragment) {
-        // If we couldn't find a matching fragment when |should_match_fragments|
-        // was true, then fall back to no clip.
-        fragment.background_rect.Reset();
-        fragment.foreground_rect.Reset();
-      }
-
-      fragment.root_fragment_data = root_fragment_data;
+    } else {
+      root_fragment_data = &first_root_fragment_data;
     }
+
+    bool cant_find_fragment = !root_fragment_data;
+    if (cant_find_fragment) {
+      DCHECK(should_match_fragments);
+      // Fall back to the first fragment, in order to have
+      // PaintLayerClipper at least compute |fragment.layer_bounds|.
+      root_fragment_data = &first_root_fragment_data;
+    }
+
+    ClipRectsContext clip_rects_context(
+        root_layer, root_fragment_data,
+        kExcludeOverlayScrollbarSizeForHitTesting, respect_overflow_clip,
+        PhysicalOffset());
+
+    Clipper(GeometryMapperOption::kUseGeometryMapper)
+        .CalculateRects(clip_rects_context, fragment_data,
+                        fragment.layer_bounds, fragment.background_rect,
+                        fragment.foreground_rect);
+
+    if (cant_find_fragment) {
+      // If we couldn't find a matching fragment when |should_match_fragments|
+      // was true, then fall back to no clip.
+      fragment.background_rect.Reset();
+      fragment.foreground_rect.Reset();
+    }
+
+    fragment.root_fragment_data = root_fragment_data;
 
     fragment.fragment_data = fragment_data;
 
@@ -1759,9 +1738,8 @@ PaintLayer* PaintLayer::HitTestLayer(
       AppendSingleFragmentIgnoringPaginationForHitTesting(layer_fragments,
                                                           clip_behavior);
     } else {
-      CollectFragments(layer_fragments, &transform_container, nullptr,
-                       kExcludeOverlayScrollbarSizeForHitTesting, clip_behavior,
-                       nullptr, PhysicalOffset(), container_fragment);
+      CollectFragments(layer_fragments, &transform_container, clip_behavior,
+                       container_fragment);
     }
 
     // See if the hit test pos is inside the resizer of current layer. This
@@ -1947,9 +1925,8 @@ PaintLayer* PaintLayer::HitTestTransformedLayerInFragments(
   PaintLayerFragments fragments;
   ClearCollectionScope<PaintLayerFragments> scope(&fragments);
 
-  CollectFragments(fragments, &transform_container, nullptr,
-                   kExcludeOverlayScrollbarSizeForHitTesting, clip_behavior,
-                   nullptr, PhysicalOffset(), container_fragment);
+  CollectFragments(fragments, &transform_container, clip_behavior,
+                   container_fragment);
 
   for (const auto& fragment : fragments) {
     // Apply any clips established by layers in between us and the root layer.

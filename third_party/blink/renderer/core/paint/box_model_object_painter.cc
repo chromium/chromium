@@ -145,12 +145,4 @@ BoxPainterBase::FillLayerInfo BoxModelObjectPainter::GetFillLayerInfo(
       is_painting_background_in_contents_space);
 }
 
-bool BoxModelObjectPainter::IsPaintingBackgroundInContentsSpace(
-    const PaintInfo& paint_info) const {
-  if (!box_model_.IsBox())
-    return false;
-
-  return paint_info.IsPaintingBackgroundInContentsSpace();
-}
-
 }  // namespace blink

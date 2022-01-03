@@ -554,13 +554,9 @@ class CORE_EXPORT LocalFrameView final
       GraphicsContext&,
       const GlobalPaintFlags,
       const CullRect& cull_rect = CullRect::Infinite());
-  void PaintContentsOutsideOfLifecycle(GraphicsContext&,
-                                       const GlobalPaintFlags,
-                                       const CullRect&);
 
-  // For testing paint with an optional custom cull rect. In pre-CAP, this
-  // paints the contents of the main GraphicsLayer only.
-  void PaintContentsForTest(const CullRect&);
+  // For testing paint with a custom cull rect.
+  void PaintForTest(const CullRect&);
 
   // Get the PaintRecord based on the cached paint artifact generated during
   // the last paint in lifecycle update. For CompositeAfterPaint only.
@@ -851,9 +847,7 @@ class CORE_EXPORT LocalFrameView final
              const CullRect&,
              const gfx::Vector2d&) const final;
 
-  void PaintInternal(GraphicsContext&,
-                     const GlobalPaintFlags,
-                     const CullRect&) const;
+  void PaintFrame(GraphicsContext&, GlobalPaintFlags) const;
 
   LayoutSVGRoot* EmbeddedReplacedContent() const;
 
