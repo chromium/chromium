@@ -78,9 +78,18 @@ bool BrandcodedDefaultSettings::GetExtensions(
 
 bool BrandcodedDefaultSettings::GetRestoreOnStartup(
     int* restore_on_startup) const {
-  return master_dictionary_ &&
-         master_dictionary_->GetInteger(prefs::kRestoreOnStartup,
-                                        restore_on_startup);
+  if (!master_dictionary_)
+    return false;
+
+  absl::optional<int> maybe_restore_on_startup =
+      master_dictionary_->FindIntPath(prefs::kRestoreOnStartup);
+  if (!maybe_restore_on_startup)
+    return false;
+
+  if (restore_on_startup)
+    *restore_on_startup = *maybe_restore_on_startup;
+
+  return true;
 }
 
 std::unique_ptr<base::ListValue>
