@@ -122,6 +122,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">「即時字幕」功能已開啟。</translation>
 <translation id="1720011244392820496">開啟 Wi-Fi Sync</translation>
+<translation id="1736898441010944794">「<ph name="NAME" />」可供藍牙裝置搜尋。</translation>
 <translation id="1743570585616704562">無法識別</translation>
 <translation id="1746730358044914197">您的管理員已設定輸入方法。</translation>
 <translation id="1747827819627189109">屏幕鍵盤已啟用</translation>
@@ -829,6 +830,7 @@
 <translation id="6578407462441924264">未命名</translation>
 <translation id="6585808820553845416">這個工作階段將在 <ph name="SESSION_TIME_REMAINING" />後結束。</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">已切換至更安全的網路連線</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
 <translation id="6612802754306526077">揀咗螢幕錄影模式</translation>
 <translation id="6614169507485700968">已啟用私隱保護畫面</translation>

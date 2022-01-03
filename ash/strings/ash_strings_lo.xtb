@@ -122,6 +122,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">ຄຳບັນຍາຍສົດເປີດຢູ່.</translation>
 <translation id="1720011244392820496">ເປີດ Wi-Fi Sync</translation>
+<translation id="1736898441010944794">"<ph name="NAME" />" ຈະສະແດງໃຫ້ອຸປະກອນ Bluetooth ເຫັນ.</translation>
 <translation id="1743570585616704562">ບໍ່ຮັບຮູ້</translation>
 <translation id="1746730358044914197">ວິທີການປ້ອນຂໍ້ມູນຖືກກຳນົດຄ່າໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="1747827819627189109">ແປ້ນພິມ​ເທິງ​ໜ້າ​ຈໍ​ເປີດໃຊ້​ງານ​ແລ້ວ</translation>
@@ -831,6 +832,7 @@
 <translation id="6578407462441924264">ບໍ່ມີຊື່</translation>
 <translation id="6585808820553845416">ຊ່ວງເວລາເຂົ້າໃຊ້ສິ້ນສຸດໃນ <ph name="SESSION_TIME_REMAINING" /> .</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">ສະຫຼັບການເຊື່ອມຕໍ່ຂອງທ່ານເປັນເຄືອຂ່າຍທີ່ປອດໄພຍິ່ງຂຶ້ນແລ້ວ</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="6612802754306526077">ເລືອກໂໝດການບັນທຶກໜ້າຈໍແລ້ວ</translation>
 <translation id="6614169507485700968">ໜ້າຈໍຄວາມເປັນສ່ວນຕົວເປີດຢູ່</translation>

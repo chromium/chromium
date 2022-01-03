@@ -2902,6 +2902,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3916445069167113093">Maaaring makapinsala sa iyong computer ang uri ng file na ito. Gusto mo pa rin bang panatilihin ang <ph name="FILE_NAME" />?</translation>
 <translation id="3918972485393593704">Iulat ang mga detalye sa Google</translation>
 <translation id="3919145445993746351">Para makuha ang iyong mga extension sa lahat ng computer mo, i-on ang pag-sync</translation>
+<translation id="3919229493046408863">I-off ang notification kapag nasa malapit ang mga device</translation>
 <translation id="3919798653937160644">Hindi lalabas sa iyong history ng browser ang mga page na tiningnan mo sa window na ito at hindi mag-iiwan ang mga ito ng iba pang trace, tulad ng cookies, sa computer pagkatapos mong isara ang lahat ng nakabukas na window ng Bisita. Gayunpaman, papanatilihin ang anumang file na na-download mo.</translation>
 <translation id="3920504717067627103">Mga Patakaran ng Certificate</translation>
 <translation id="392089482157167418">I-enable ang ChromeVox (pasalitang feedback)</translation>
@@ -5936,6 +5937,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7167486101654761064">&amp;Laging buksan ang uri ng mga file na ito</translation>
 <translation id="716810439572026343">Dina-download ang <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Minimum na laki ng font</translation>
+<translation id="7169122689956315694">I-on ang notification kapag nasa malapit ang mga device</translation>
 <translation id="7170236477717446850">Larawan sa profile</translation>
 <translation id="7171000599584840888">Magdagdag ng Profile...</translation>
 <translation id="7171259390164035663">Huwag i-enroll</translation>

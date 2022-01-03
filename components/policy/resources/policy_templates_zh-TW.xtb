@@ -2556,6 +2556,7 @@
 <translation id="3964298692570794635">允許這些網站的不安全內容</translation>
 <translation id="3965339130942650562">逾時直到閒置使用者登出</translation>
 <translation id="396536755218079668">受監管的使用者</translation>
+<translation id="3968218878014278212">允許啟用 Eche。</translation>
 <translation id="3971673686578912106">如果將這項政策設為啟用，只要其他設定允許，裝置就會啟用 <ph name="PLUGIN_VM_NAME" />。<ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> 和 <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> 必須設為 True，且必須設定 <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> 或 <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />，<ph name="PLUGIN_VM_NAME" /> 才能順利執行。
 
       如果將這項政策設為停用或不設定，則裝置不會啟用 <ph name="PLUGIN_VM_NAME" />。</translation>
@@ -3388,6 +3389,7 @@
       如果將這項政策設為 False 或不設定，<ph name="PRODUCT_NAME" /> 會使用現有的線上撤銷檢查設定。</translation>
 <translation id="5078623750797048009">啟用 PDF 註解功能</translation>
 <translation id="5081204761483900654">有限制的受管理訪客工作階段</translation>
+<translation id="5082296146261894974">允許使用者透過點選 Phone Hub 通知的方式啟動 Eche 應用程式。</translation>
 <translation id="5082572440690475059">允許這些網站透過 File System API 進行讀取</translation>
 <translation id="5085647276663819155">停用列印預覽</translation>
 <translation id="5090791951240382356">允許合併不同來源的字典政策</translation>
@@ -4115,6 +4117,7 @@
 
       <ph name="RUN_ON_OS_LOGIN_FIELD" /> 欄位會指定網頁應用程式是否可在 OS 登入期間執行。如果將這個欄位設為 <ph name="BLOCKED" />，網頁應用程式不會在 OS 登入期間執行，使用者之後也無法啟用此欄位。如果將這個欄位設為 <ph name="RUN_WINDOWED" />，網頁應用程式就會在 OS 登入期間執行，而且使用者之後無法停用此欄位。如果將這個欄位設為 <ph name="ALLOWED" />，使用者則可將網頁應用程式設為在 OS 登入期間執行。請注意，預設設定可指定的值僅限 <ph name="ALLOWED" /> 和 <ph name="BLOCKED" />。
       </translation>
+<translation id="5945312246863177268">禁止使用者透過點選 Phone Hub 通知的方式啟動 Eche 應用程式。</translation>
 <translation id="5946082169633555022">Beta 版</translation>
 <translation id="5946329690214660966">自訂檢查更新的時間表</translation>
 <translation id="5950069117106131681">如果將這項政策設為啟用，系統會在列印預覽中顯示頁首和頁尾。如果將這項政策設為停用，則不會顯示這些內容。
@@ -4679,6 +4682,11 @@
 <translation id="66265932317331474">回報 CPU 資訊</translation>
 <translation id="6628120204569232711">回報儲存空間狀態</translation>
 <translation id="663685822663765995">限制列印色彩模式</translation>
+<translation id="6640355849038068978">如果啟用這項設定，使用者將可以透過像是點選 Phone Hub 通知的方式，啟動 Eche 應用程式。
+
+      如果停用這項設定，使用者就無法啟動 Eche 應用程式。
+
+      如果不設定這項政策，預設值是允許受企業管理以及未受管理的使用者執行這項功能。</translation>
 <translation id="6641981670621198190">停止支援 3D 圖形 API</translation>
 <translation id="6642682198621199507">你可以透過這項政策設定網站清單，指定哪些網站會自動取得權限，能夠存取所有可用的序列埠。
 

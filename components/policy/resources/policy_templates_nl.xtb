@@ -2566,6 +2566,7 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
 <translation id="3964298692570794635">Niet-beveiligde content op deze sites toestaan</translation>
 <translation id="3965339130942650562">Time-out tot de inactieve gebruiker is uitgelogd</translation>
 <translation id="396536755218079668">Gebruikers met beperkte rechten</translation>
+<translation id="3968218878014278212">Toestaan dat Eche wordt aangezet.</translation>
 <translation id="3971673686578912106">Als je het beleid toepast, wordt <ph name="PLUGIN_VM_NAME" /> voor het apparaat aangezet, zolang andere instellingen dit ook toestaan. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> en <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> moeten zijn ingesteld op Waar en <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> of <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> moet zijn ingesteld zodat <ph name="PLUGIN_VM_NAME" /> kan worden uitgevoerd.
 
       Als je het beleid niet toepast of niet instelt, is <ph name="PLUGIN_VM_NAME" /> niet aangezet voor het apparaat.</translation>
@@ -3399,6 +3400,7 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
       Als je het beleid instelt op 'False' of niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de bestaande instellingen voor online intrekkingscontrole.</translation>
 <translation id="5078623750797048009">Pdf-annotaties aanzetten</translation>
 <translation id="5081204761483900654">Beperkte beheerde gastsessies</translation>
+<translation id="5082296146261894974">Staat toe dat gebruikers op een Telefoonhub-melding klikken om de Eche-app te starten.</translation>
 <translation id="5082572440690475059">Alleen leestoegang via de File System API toestaan op deze sites</translation>
 <translation id="5085647276663819155">Afdrukvoorbeeld uitzetten</translation>
 <translation id="5090791951240382356">Toestaan dat woordenboekbeleid van verschillende bronnen wordt samengevoegd</translation>
@@ -4142,6 +4144,7 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 
       Het veld <ph name="RUN_ON_OS_LOGIN_FIELD" /> geeft aan of een web-app kan worden uitgevoerd tijdens de OS-login. Als dit veld is ingesteld op <ph name="BLOCKED" />, wordt de web-app niet uitgevoerd tijdens de OS-login en kan de gebruiker dit later niet aanzetten. Als dit veld is ingesteld op <ph name="RUN_WINDOWED" />, wordt de web-app uitgevoerd tijdens de OS-login en kan de gebruiker dit later niet uitzetten. Als dit veld is ingesteld op <ph name="ALLOWED" />, kan de gebruiker instellen dat de web-app wordt uitgevoerd tijdens de OS-login. De standaardconfiguratie staat alleen de waarden <ph name="ALLOWED" /> en <ph name="BLOCKED" /> toe
       </translation>
+<translation id="5945312246863177268">Staat niet toe dat gebruikers op een Telefoonhub-melding klikken om de Eche-app te starten.</translation>
 <translation id="5946082169633555022">Bètakanaal</translation>
 <translation id="5946329690214660966">Custom planning instellen om te controleren op updates</translation>
 <translation id="5950069117106131681">Als je dit beleid toepast, zijn kop- en voetteksten zichtbaar in het afdrukvoorbeeld. Als je het beleid niet toepast, zijn ze niet zichtbaar in het afdrukvoorbeeld.
@@ -4698,6 +4701,11 @@ Als je ervoor kiest het volgende te gebruiken:
 <translation id="66265932317331474">CPU-info melden</translation>
 <translation id="6628120204569232711">Opslagstatus rapporteren</translation>
 <translation id="663685822663765995">Afdrukken in kleurenmodus beperken</translation>
+<translation id="6640355849038068978">Als deze instelling aanstaat, kunnen gebruikers de Eche-app starten, bijvoorbeeld door op een Telefoonhub-melding te klikken.
+
+      Staat deze instelling uit, dan kunnen gebruikers de Eche-app niet starten.
+
+      Als je dit beleid niet instelt, is toegestaan de standaardoptie voor zowel zakelijk beheerde gebruikers als niet-beheerde gebruikers.</translation>
 <translation id="6641981670621198190">Ondersteuning voor API's voor 3D-beelden uitzetten</translation>
 <translation id="6642682198621199507">Als je dit beleid instelt, kun je een lijst met sites maken die automatisch toestemming krijgen voor toegang tot alle beschikbare seriële poorten.
 

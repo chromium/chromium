@@ -2900,6 +2900,7 @@
 <translation id="3916445069167113093">這種類型的檔案可能會損害您的電腦，您仍要保留 <ph name="FILE_NAME" /> 嗎？</translation>
 <translation id="3918972485393593704">向 Google 報告詳情</translation>
 <translation id="3919145445993746351">如要在所有電腦上取得您的擴充程式，請開啟同步功能</translation>
+<translation id="3919229493046408863">附近有其他裝置時關閉通知</translation>
 <translation id="3919798653937160644">您在這個視窗瀏覽的網頁不會顯示在瀏覽器記錄中，並且在您關閉所有開啟的訪客視窗後，電腦也不會留下 Cookie 等其他記錄。不過，系統將會保留您下載的所有檔案。</translation>
 <translation id="3920504717067627103">憑證政策</translation>
 <translation id="392089482157167418">啟用 ChromeVox (互動朗讀)</translation>
@@ -5935,6 +5936,7 @@
 <translation id="7167486101654761064">保持開啟這類檔案(&amp;A)</translation>
 <translation id="716810439572026343">正在下載 <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">最小字型大小</translation>
+<translation id="7169122689956315694">附近有其他裝置時開啟通知</translation>
 <translation id="7170236477717446850">個人檔案相片</translation>
 <translation id="7171000599584840888">新增設定檔…</translation>
 <translation id="7171259390164035663">不要註冊</translation>

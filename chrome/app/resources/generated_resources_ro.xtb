@@ -2887,6 +2887,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3916445069167113093">Acest tip de fișier poate dăuna computerului. Vrei să păstrezi <ph name="FILE_NAME" /> totuși?</translation>
 <translation id="3918972485393593704">Raportează detaliile la Google</translation>
 <translation id="3919145445993746351">Pentru a accesa extensiile pe toate computerele, activează sincronizarea</translation>
+<translation id="3919229493046408863">Dezactivează notificarea când există dispozitive în apropiere</translation>
 <translation id="3919798653937160644">Paginile pe care le accesezi în această fereastră nu vor apărea în istoricul browserului și nu vor lăsa alte urme pe computer (de exemplu, cookie-uri) după ce închizi toate ferestrele deschise în modul pentru invitați. Însă fișierele pe care le descarci vor fi păstrate.</translation>
 <translation id="3920504717067627103">Politici de certificat</translation>
 <translation id="392089482157167418">Activați ChromeVox (feedback rostit)</translation>
@@ -5920,6 +5921,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="7167486101654761064">&amp;Deschide întotdeauna fișierele de acest tip</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" /> se descarcă</translation>
 <translation id="7168109975831002660">Dimensiunea minimă a fontului</translation>
+<translation id="7169122689956315694">Activează notificarea când există dispozitive în apropiere</translation>
 <translation id="7170236477717446850">Fotografie de profil</translation>
 <translation id="7171000599584840888">Adaugă un profil...</translation>
 <translation id="7171259390164035663">Nu doresc să mă înregistrez</translation>

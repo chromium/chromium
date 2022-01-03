@@ -2522,6 +2522,7 @@
 <translation id="3964298692570794635">指定サイトで安全でないコンテンツを許可する</translation>
 <translation id="3965339130942650562">アイドル状態のユーザーがログアウトされるまでのタイムアウト</translation>
 <translation id="396536755218079668">監視対象ユーザー</translation>
+<translation id="3968218878014278212">Eche の有効化を許可します。</translation>
 <translation id="3971673686578912106">このポリシーを有効に設定した場合、<ph name="PLUGIN_VM_NAME" /> がデバイスでオンになります（ただし他の設定でも許可されている必要があります）。<ph name="PLUGIN_VM_NAME" /> を実行するには、<ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> と <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> を True に設定し、<ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> または <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> のいずれかを設定する必要があります。
 
       このポリシーを無効に設定するか未設定のままにした場合、<ph name="PLUGIN_VM_NAME" /> はデバイスでオンになりません。</translation>
@@ -3322,6 +3323,7 @@
 <translation id="5075190314377370852">このポリシーを True に設定した場合、ローカルにインストールされた CA 証明書によって正常に確認されたサーバー証明書に対し、<ph name="PRODUCT_NAME" /> は常に失効確認を行います。<ph name="PRODUCT_NAME" /> が失効のステータス情報を取得できない場合、<ph name="PRODUCT_NAME" /> ではその証明書は失効したものとして扱われます（強制エラー）。このポリシーを False に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> は既存のオンライン失効確認設定を使用します。</translation>
 <translation id="5078623750797048009">PDF の注釈を有効にする</translation>
 <translation id="5081204761483900654">制限付き管理対象ゲスト セッション</translation>
+<translation id="5082296146261894974">ユーザーがスマートフォン ハブの通知をクリックして Eche アプリを起動することを許可します。</translation>
 <translation id="5082572440690475059">File System API 経由での読み取りアクセスを許可するサイトを指定する</translation>
 <translation id="5085647276663819155">印刷プレビューを無効にする</translation>
 <translation id="5090791951240382356">ソースの異なる辞書ポリシーの統合を許可する</translation>
@@ -4045,6 +4047,7 @@
 
       <ph name="RUN_ON_OS_LOGIN_FIELD" /> フィールドでは、OS へのログイン中にウェブアプリを実行できるかどうかを指定します。このフィールドを <ph name="BLOCKED" /> に設定した場合、OS へのログイン中にウェブアプリは実行されず、ユーザーが後から有効にすることもできません。このフィールドを <ph name="RUN_WINDOWED" /> に設定した場合、OS へのログイン中にウェブアプリが実行され、ユーザーは後から無効にできません。このフィールドを <ph name="ALLOWED" /> に設定した場合、ユーザーは OS へのログイン時にウェブアプリを実行するよう設定できます。デフォルトの設定では、<ph name="ALLOWED" /> と <ph name="BLOCKED" /> の値のみが許可されています。
       </translation>
+<translation id="5945312246863177268">ユーザーがスマートフォン ハブの通知をクリックして Eche アプリを起動することを許可しません。</translation>
 <translation id="5946082169633555022">Beta チャンネル</translation>
 <translation id="5946329690214660966">アップデート確認のカスタム スケジュールを設定する</translation>
 <translation id="5950069117106131681">このポリシーを有効に設定した場合、印刷プレビューでヘッダーとフッターがオンになります。このポリシーを無効に設定した場合、印刷プレビューでヘッダーとフッターがオフになります。
@@ -4571,6 +4574,11 @@
 <translation id="66265932317331474">CPU 情報を報告する</translation>
 <translation id="6628120204569232711">ストレージの状態を報告する</translation>
 <translation id="663685822663765995">カラー印刷モードを制限</translation>
+<translation id="6640355849038068978">この設定が有効な場合、ユーザーはスマートフォン ハブの通知をクリックするなどして Eche アプリを起動できます。
+
+      この設定が無効な場合、ユーザーは Eche アプリを起動できません。
+
+      このポリシーが未設定の場合、デフォルトでは、企業で管理されているユーザーと管理されていないユーザーのいずれもアプリを起動できます。</translation>
 <translation id="6641981670621198190">3D グラフィックス API のサポートを無効にする</translation>
 <translation id="6642682198621199507">このポリシーでは、使用可能なすべてのシリアルポートへのアクセスを自動的に許可するサイトのリストを指定できます。必ず有効な URL を指定してください。無効な URL を指定した場合、このポリシーは無視されます。URL のオリジン（スキーム、ホストとポート）のみが考慮されます。Chrome OS では、このポリシーは関連付けられたユーザーにのみ適用されます。
 

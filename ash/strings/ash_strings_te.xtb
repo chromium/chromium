@@ -122,6 +122,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">లైవ్ క్యాప్షన్ ఆన్ చేయబడింది.</translation>
 <translation id="1720011244392820496">Wi-Fi సింక్‌ను ఆన్ చేయండి</translation>
+<translation id="1736898441010944794">"<ph name="NAME" />" బ్లూటూత్ పరికరాలకు కనిపిస్తుంది.</translation>
 <translation id="1743570585616704562">గుర్తించలేదు</translation>
 <translation id="1746730358044914197">ఇన్‌పుట్ పద్ధతులు మీ నిర్వాహకుల ద్వారా కాన్ఫిగర్ చేయబడ్డాయి.</translation>
 <translation id="1747827819627189109">స్క్రీన్‌పై కనిపించే కీబోర్డ్ ప్రారంభించబడింది</translation>
@@ -832,6 +833,7 @@
 <translation id="6578407462441924264">పేరు లేదు</translation>
 <translation id="6585808820553845416">సెషన్ <ph name="SESSION_TIME_REMAINING" />లో ముగుస్తుంది.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">మీ కనెక్షన్ మరింత సురక్షితమైన నెట్‌వర్క్‌కు మార్చబడింది</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />, మీ అడ్మినిస్ట్రేటర్ ద్వారా నిర్వహించబడుతోంది</translation>
 <translation id="6612802754306526077">స్క్రీన్ రికార్డింగ్ మోడ్ ఎంచుకోబడింది</translation>
 <translation id="6614169507485700968">గోప్యతా స్క్రీన్ ఆన్‌లో ఉంది</translation>

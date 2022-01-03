@@ -2883,6 +2883,7 @@
 <translation id="3916445069167113093">この種類のファイルはコンピュータに損害を与える可能性があります。<ph name="FILE_NAME" /> のダウンロードを続けますか？</translation>
 <translation id="3918972485393593704">Google に詳細なレポートを送信する</translation>
 <translation id="3919145445993746351">お使いのどのパソコンでも同じ拡張機能を使用するには、同期を有効にします</translation>
+<translation id="3919229493046408863">周辺にデバイスがあるときに通知をオフにする</translation>
 <translation id="3919798653937160644">このウィンドウで開いたページはブラウザの履歴に記録されません。また、開いているゲスト ウィンドウをすべて閉じると、Cookie などのデータはパソコンから消去されます。ただし、ダウンロードしたファイルは保持されます。</translation>
 <translation id="3920504717067627103">証明書ポリシー</translation>
 <translation id="392089482157167418">ChromeVox（音声フィードバック）を有効にする</translation>
@@ -5899,6 +5900,7 @@
 <translation id="7167486101654761064">この種類のファイルは常に開く(&amp;A)</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" /> をダウンロードしています</translation>
 <translation id="7168109975831002660">最小フォント サイズ</translation>
+<translation id="7169122689956315694">周辺にデバイスがあるときに通知をオンにする</translation>
 <translation id="7170236477717446850">プロフィール写真</translation>
 <translation id="7171000599584840888">プロファイルを追加...</translation>
 <translation id="7171259390164035663">登録しない</translation>

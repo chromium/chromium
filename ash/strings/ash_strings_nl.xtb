@@ -122,6 +122,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Live ondertiteling staat aan.</translation>
 <translation id="1720011244392820496">Wifi-synchronisatie aanzetten</translation>
+<translation id="1736898441010944794"><ph name="NAME" /> is zichtbaar voor bluetooth-apparaten.</translation>
 <translation id="1743570585616704562">Niet herkend</translation>
 <translation id="1746730358044914197">Invoermethoden worden ingesteld door je beheerder.</translation>
 <translation id="1747827819627189109">Schermtoetsenbord staat aan</translation>
@@ -831,6 +832,7 @@ Nieuwe installatie</translation>
 <translation id="6578407462441924264">Naamloos</translation>
 <translation id="6585808820553845416">Sessie loopt af over <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Je verbinding is overgeschakeld op een beter beveiligd netwerk</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, beheerd door je beheerder</translation>
 <translation id="6612802754306526077">Schermopnamemodus geselecteerd</translation>
 <translation id="6614169507485700968">Privacyscherm staat aan</translation>
