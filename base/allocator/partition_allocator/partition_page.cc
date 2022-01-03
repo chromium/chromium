@@ -260,9 +260,11 @@ void SlotSpanMetadata<thread_safe>::SortFreelist() {
       bucket->get_slots_per_span() - num_unprovisioned_slots;
   PA_CHECK(num_unprovisioned_slots <= kMaxSlotsPerSlotSpan);
 
+  size_t num_free_slots = 0;
   size_t slot_size = bucket->slot_size;
   for (PartitionFreelistEntry* head = freelist_head; head;
        head = head->GetNext(slot_size)) {
+    ++num_free_slots;
     size_t offset_in_slot_span =
         reinterpret_cast<char*>(memory::UnmaskPtr(head)) - slot_span_base;
     size_t slot_number = bucket->GetSlotNumber(offset_in_slot_span);
@@ -270,25 +272,29 @@ void SlotSpanMetadata<thread_safe>::SortFreelist() {
     free_slots[slot_number] = true;
   }
 
-  PartitionFreelistEntry* back = nullptr;
-  PartitionFreelistEntry* head = nullptr;
+  // Empty or single-element list is always sorted.
+  if (num_free_slots > 1) {
+    PartitionFreelistEntry* back = nullptr;
+    PartitionFreelistEntry* head = nullptr;
 
-  for (size_t slot_number = 0; slot_number < num_provisioned_slots;
-       slot_number++) {
-    if (free_slots[slot_number]) {
-      char* slot_address =
-          memory::RemaskPtr(slot_span_base + (slot_size * slot_number));
-      auto* entry = new (slot_address) PartitionFreelistEntry();
+    for (size_t slot_number = 0; slot_number < num_provisioned_slots;
+         slot_number++) {
+      if (free_slots[slot_number]) {
+        char* slot_address =
+            memory::RemaskPtr(slot_span_base + (slot_size * slot_number));
+        auto* entry = new (slot_address) PartitionFreelistEntry();
 
-      if (!head)
-        head = entry;
-      else
-        back->SetNext(entry);
+        if (!head)
+          head = entry;
+        else
+          back->SetNext(entry);
 
-      back = entry;
+        back = entry;
+      }
     }
+    SetFreelistHead(head);
   }
-  SetFreelistHead(head);
+
   freelist_is_sorted = true;
 }
 

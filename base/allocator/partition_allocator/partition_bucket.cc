@@ -872,7 +872,7 @@ void PartitionBucket<thread_safe>::SortSlotSpanFreelists() {
     // last call. This may be a good signal to shrink it if possible (if an
     // entire OS page is free, we can decommit it).
     //
-    // Besides saving CPU, this also avoid touching memory of fully idle slot
+    // Besides saving CPU, this also avoids touching memory of fully idle slot
     // spans, which may required paging.
     if (slot_span->num_allocated_slots > 0 && !slot_span->freelist_is_sorted)
       slot_span->SortFreelist();
