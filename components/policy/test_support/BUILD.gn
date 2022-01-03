@@ -75,6 +75,7 @@ source_set("unittests") {
   testonly = true
 
   sources = [
+    "client_storage_unittest.cc",
     "embedded_policy_test_server_test_base.cc",
     "embedded_policy_test_server_test_base.h",
     "embedded_policy_test_server_unittest.cc",

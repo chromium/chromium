@@ -77,12 +77,18 @@ std::vector<std::string> ClientStorage::GetMatchingStateKeyHashes(
     uint64_t remainder) const {
   std::vector<std::string> hashes;
   for (const auto& [device_id, client_info] : clients_) {
-    // This does not actually divide hashes by |modulus| and verify that
-    // |remainder| is correct as current tests do not rely on this behavior.
-    // This is difficult to implement since 32-byte hashes do not fit into
-    // regular integer types and thus long-arithmetic approach is needed.
-    for (const std::string& key : client_info.state_keys)
-      hashes.push_back(crypto::SHA256HashString(key));
+    for (const std::string& key : client_info.state_keys) {
+      std::string hash = crypto::SHA256HashString(key);
+      uint64_t hash_remainder = 0;
+      // Simulate long division in base 256, which allows us to interpret
+      // individual chars in our hash as digits. We only care about the
+      // remainder and hence do not compute the quotient in each iteration. This
+      // assumes big-endian byte order.
+      for (uint64_t digit : hash)
+        hash_remainder = (hash_remainder * 256 + digit) % modulus;
+      if (hash_remainder == remainder)
+        hashes.push_back(hash);
+    }
   }
   return hashes;
 }
