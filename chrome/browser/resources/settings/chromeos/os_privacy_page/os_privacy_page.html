@@ -81,9 +81,9 @@
         label="$i18n{enableContentProtectionAttestation}"
         deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
     </settings-toggle-button>
-    <div class="hr"></div>
     <template is="dom-if" if="[[isThunderboltSupported_]]">
       <template is="dom-if" if="[[isPciguardUiEnabled_]]">
+        <div class="hr"></div>
         <!-- This toggle is always disabled. The underlying pref state is
              handled by the JS impl. This is to prevent toggling the pref
              before the user confirms the action. -->
