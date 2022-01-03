@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_table_view_controller.h"
 
 #include "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "components/browsing_data/core/pref_names.h"
@@ -299,6 +300,23 @@
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)url {
+  NSString* baseURL =
+      [NSString stringWithCString:(url.gurl.host() + url.gurl.path()).c_str()
+                         encoding:[NSString defaultCStringEncoding]];
+  if ([[NSString stringWithCString:(kClearBrowsingDataDSESearchUrlInFooterURL)
+                          encoding:[NSString defaultCStringEncoding]]
+          rangeOfString:baseURL]
+          .length > 0) {
+    base::UmaHistogramEnumeration("Settings.ClearBrowsingData.OpenMyActivity",
+                                  MyActivityNavigation::kSearchHistory);
+  } else if ([[NSString stringWithCString:
+                            (kClearBrowsingDataDSEMyActivityUrlInFooterURL)
+                                 encoding:[NSString defaultCStringEncoding]]
+                 rangeOfString:baseURL]
+                 .length > 0) {
+    base::UmaHistogramEnumeration("Settings.ClearBrowsingData.OpenMyActivity",
+                                  MyActivityNavigation::kTopLevel);
+  }
   [self.delegate openURL:url.gurl];
 }
 
