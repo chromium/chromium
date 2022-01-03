@@ -29,8 +29,7 @@ class OneTimeRuleIterator : public content_settings::RuleIterator {
   content_settings::Rule Next() override {
     content_settings::Rule rule(
         begin_iterator_->first, ContentSettingsPattern::Wildcard(),
-        base::Value::FromUniquePtrValue(
-            content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
+        content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
         begin_iterator_->second + base::Days(1),
         content_settings::SessionModel::OneTime);
     begin_iterator_++;

@@ -340,8 +340,9 @@ void DefaultProvider::ChangeSetting(ContentSettingsType content_type,
   DCHECK(!info || !value ||
          info->IsDefaultSettingValid(ValueToContentSetting(value)));
   default_settings_[content_type] =
-      value ? base::Value::ToUniquePtrValue(value->Clone())
-            : ContentSettingToValue(GetDefaultValue(content_type));
+      value ? ToNullableUniquePtrValue(value->Clone())
+            : ToNullableUniquePtrValue(
+                  ContentSettingToValue(GetDefaultValue(content_type)));
 }
 
 void DefaultProvider::WriteToPref(ContentSettingsType content_type,
@@ -397,7 +398,8 @@ void DefaultProvider::OnPreferenceChanged(const std::string& name) {
 std::unique_ptr<base::Value> DefaultProvider::ReadFromPref(
     ContentSettingsType content_type) {
   int int_value = prefs_->GetInteger(GetPrefName(content_type));
-  return ContentSettingToValue(IntToContentSetting(int_value));
+  return ToNullableUniquePtrValue(
+      ContentSettingToValue(IntToContentSetting(int_value)));
 }
 
 void DefaultProvider::DiscardOrMigrateObsoletePreferences() {

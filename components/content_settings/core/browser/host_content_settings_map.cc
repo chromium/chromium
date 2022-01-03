@@ -142,7 +142,8 @@ std::unique_ptr<base::Value> ProcessIncognitoInheritanceBehavior(
         ContentSetting initial_setting =
             content_settings::ValueToContentSetting(initial_value);
         if (content_settings::IsMorePermissive(setting, initial_setting))
-          return content_settings::ContentSettingToValue(initial_setting);
+          return content_settings::ToNullableUniquePtrValue(
+              content_settings::ContentSettingToValue(initial_setting));
         return value;
     }
   }
@@ -346,7 +347,8 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingInternal(
       default_setting = content_settings::ValueToContentSetting(
           ProcessIncognitoInheritanceBehavior(
               content_type,
-              content_settings::ContentSettingToValue(default_setting))
+              content_settings::ToNullableUniquePtrValue(
+                  content_settings::ContentSettingToValue(default_setting)))
               .get());
     }
     if (default_setting != CONTENT_SETTING_DEFAULT) {

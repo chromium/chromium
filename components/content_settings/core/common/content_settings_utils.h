@@ -16,11 +16,17 @@ class Value;
 namespace content_settings {
 
 // Converts |value| to |ContentSetting|.
+ContentSetting ValueToContentSetting(const base::Value& value);
+// DEPRECATED: Use the method above if possible.
 ContentSetting ValueToContentSetting(const base::Value* value);
 
 // Returns a base::Value representation of |setting| if |setting| is
-// a valid content setting. Otherwise, returns a nullptr.
-std::unique_ptr<base::Value> ContentSettingToValue(ContentSetting setting);
+// a valid content setting. Otherwise, returns an empty value.
+base::Value ContentSettingToValue(ContentSetting setting);
+
+// Adaptor for converting from the new way of base::Value to the old one.
+// Like base::Value::ToUniquePtrValue but converts NONE-type values to nullptr.
+std::unique_ptr<base::Value> ToNullableUniquePtrValue(base::Value value);
 
 }  // namespace content_settings
 
