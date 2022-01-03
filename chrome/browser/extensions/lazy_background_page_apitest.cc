@@ -788,14 +788,8 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, EventListenerCleanup) {
 // Tests that an extension can fetch a file scheme URL from the lazy background
 // page, if it has file access.
 // TODO(crbug.com/1283851): Deflake test.
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_FetchFileSchemeURLWithFileAccess \
-  DISABLED_FetchFileSchemeURLWithFileAccess
-#else
-#define MAYBE_FetchFileSchemeURLWithFileAccess FetchFileSchemeURLWithFileAccess
-#endif
 IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest,
-                       MAYBE_FetchFileSchemeURLWithFileAccess) {
+                       DISABLED_FetchFileSchemeURLWithFileAccess) {
   ASSERT_TRUE(RunExtensionTest(
       "lazy_background_page/fetch_file_scheme_url_with_file_access", {},
       {.allow_file_access = true}))
