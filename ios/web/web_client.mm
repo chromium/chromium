@@ -111,7 +111,7 @@ bool WebClient::RestoreSessionFromCache(web::WebState* web_state) const {
 
 void WebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {}
 
-UserAgentType WebClient::GetDefaultUserAgent(id<UITraitEnvironment> web_view,
+UserAgentType WebClient::GetDefaultUserAgent(web::WebState* web_state,
                                              const GURL& url) {
   return UserAgentType::MOBILE;
 }

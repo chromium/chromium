@@ -1534,7 +1534,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
       item ? item->GetUserAgentType() : defaultUserAgent;
   if (userAgentType == web::UserAgentType::AUTOMATIC) {
     userAgentType =
-        web::GetWebClient()->GetDefaultUserAgent(_containerView, GURL());
+        web::GetWebClient()->GetDefaultUserAgent(self.webStateImpl, GURL());
   }
 
   return web::BuildWKWebView(CGRectZero, config,

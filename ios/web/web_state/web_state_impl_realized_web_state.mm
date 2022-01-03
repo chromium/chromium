@@ -378,11 +378,7 @@ UIView* WebStateImpl::RealizedWebState::GetWebViewContainer() {
 UserAgentType WebStateImpl::RealizedWebState::GetUserAgentForNextNavigation(
     const GURL& url) {
   if (user_agent_type_ == UserAgentType::AUTOMATIC) {
-    UIView* container = GetWebViewContainer();
-    if (!container) {
-      container = GetView();
-    }
-    return GetWebClient()->GetDefaultUserAgent(container, url);
+    return GetWebClient()->GetDefaultUserAgent(owner_, url);
   }
   return user_agent_type_;
 }

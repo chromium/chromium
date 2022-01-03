@@ -99,9 +99,8 @@ UIView* FakeWebClient::GetWindowedContainer() {
   return GetAnyKeyWindow().rootViewController.view;
 }
 
-UserAgentType FakeWebClient::GetDefaultUserAgent(
-    id<UITraitEnvironment> web_view,
-    const GURL& url) {
+UserAgentType FakeWebClient::GetDefaultUserAgent(web::WebState* web_state,
+                                                 const GURL& url) {
   return default_user_agent_;
 }
 

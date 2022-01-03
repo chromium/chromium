@@ -17,6 +17,7 @@
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -28,6 +29,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_switches.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "ios/chrome/browser/ios_chrome_main_parts.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
@@ -402,9 +404,16 @@ bool ChromeWebClient::EnableLongPressUIContextMenu() const {
 }
 
 web::UserAgentType ChromeWebClient::GetDefaultUserAgent(
-    id<UITraitEnvironment> web_view,
+    web::WebState* web_state,
     const GURL& url) {
-  return web::UserAgentType::MOBILE;
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  HostContentSettingsMap* settings_map =
+      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
+  ContentSetting setting = settings_map->GetContentSetting(
+      url, url, ContentSettingsType::REQUEST_DESKTOP_SITE);
+  return (setting == CONTENT_SETTING_ALLOW) ? web::UserAgentType::DESKTOP
+                                            : web::UserAgentType::MOBILE;
 }
 
 bool ChromeWebClient::RestoreSessionFromCache(web::WebState* web_state) const {

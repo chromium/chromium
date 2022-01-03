@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -24,6 +25,7 @@
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_error.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_unsafe_resource_container.h"
@@ -487,76 +489,22 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForLookalikeUrlErrorNoSuggestion) {
 // Tests the default user agent for different views.
 TEST_F(ChromeWebClientTest, DefaultUserAgent) {
   ChromeWebClient web_client;
-  const GURL google_url = GURL("https://www.google.com/search?q=test");
-  const GURL non_google_url = GURL("http://wikipedia.org");
+  web::FakeWebState web_state;
+  web_state.SetBrowserState(browser_state());
 
-  UITraitCollection* regular_vertical_size_class = [UITraitCollection
-      traitCollectionWithVerticalSizeClass:UIUserInterfaceSizeClassRegular];
-  UITraitCollection* regular_horizontal_size_class = [UITraitCollection
-      traitCollectionWithHorizontalSizeClass:UIUserInterfaceSizeClassRegular];
-  UITraitCollection* compact_vertical_size_class = [UITraitCollection
-      traitCollectionWithVerticalSizeClass:UIUserInterfaceSizeClassCompact];
-  UITraitCollection* compact_horizontal_size_class = [UITraitCollection
-      traitCollectionWithHorizontalSizeClass:UIUserInterfaceSizeClassCompact];
+  scoped_refptr<HostContentSettingsMap> settings_map(
+      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state()));
+  settings_map->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::REQUEST_DESKTOP_SITE, CONTENT_SETTING_BLOCK);
 
-  UIView* view = [[UIView alloc] init];
-  UITraitCollection* original_traits = view.traitCollection;
-
-  UITraitCollection* regular_regular =
-      [UITraitCollection traitCollectionWithTraitsFromCollections:@[
-        original_traits, regular_vertical_size_class,
-        regular_horizontal_size_class
-      ]];
-  UITraitCollection* regular_compact =
-      [UITraitCollection traitCollectionWithTraitsFromCollections:@[
-        original_traits, regular_vertical_size_class,
-        compact_horizontal_size_class
-      ]];
-  UITraitCollection* compact_regular =
-      [UITraitCollection traitCollectionWithTraitsFromCollections:@[
-        original_traits, compact_vertical_size_class,
-        regular_horizontal_size_class
-      ]];
-  UITraitCollection* compact_compact =
-      [UITraitCollection traitCollectionWithTraitsFromCollections:@[
-        original_traits, compact_vertical_size_class,
-        compact_horizontal_size_class
-      ]];
-
-  // Check that desktop is returned for Regular x Regular on non-Google URLs.
-  id mock_regular_regular_view = OCMClassMock([UIView class]);
-  OCMStub([mock_regular_regular_view traitCollection])
-      .andReturn(regular_regular);
   EXPECT_EQ(web::UserAgentType::MOBILE,
-            web_client.GetDefaultUserAgent(mock_regular_regular_view,
-                                           non_google_url));
+            web_client.GetDefaultUserAgent(&web_state, GURL()));
 
-  EXPECT_EQ(
-      web::UserAgentType::MOBILE,
-      web_client.GetDefaultUserAgent(mock_regular_regular_view, google_url));
+  settings_map->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      ContentSettingsType::REQUEST_DESKTOP_SITE, CONTENT_SETTING_ALLOW);
 
-  // Check that mobile is returned for all other combinations.
-  id mock_regular_compact_view = OCMClassMock([UIView class]);
-  OCMStub([mock_regular_compact_view traitCollection])
-      .andReturn(regular_compact);
-  EXPECT_EQ(web::UserAgentType::MOBILE,
-            web_client.GetDefaultUserAgent(mock_regular_compact_view,
-                                           non_google_url));
-  EXPECT_EQ(
-      web::UserAgentType::MOBILE,
-      web_client.GetDefaultUserAgent(mock_regular_regular_view, google_url));
-
-  id mock_compact_regular_view = OCMClassMock([UIView class]);
-  OCMStub([mock_compact_regular_view traitCollection])
-      .andReturn(compact_regular);
-  EXPECT_EQ(web::UserAgentType::MOBILE,
-            web_client.GetDefaultUserAgent(mock_compact_regular_view,
-                                           non_google_url));
-
-  id mock_compact_compact_view = OCMClassMock([UIView class]);
-  OCMStub([mock_compact_compact_view traitCollection])
-      .andReturn(compact_compact);
-  EXPECT_EQ(web::UserAgentType::MOBILE,
-            web_client.GetDefaultUserAgent(mock_compact_compact_view,
-                                           non_google_url));
+  EXPECT_EQ(web::UserAgentType::DESKTOP,
+            web_client.GetDefaultUserAgent(&web_state, GURL()));
 }

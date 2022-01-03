@@ -172,8 +172,8 @@ class WebClient {
   virtual bool EnableLongPressUIContextMenu() const;
 
   // Returns the UserAgentType that should be used by default for the web
-  // content, based on the size class of |web_view| and the |url|.
-  virtual UserAgentType GetDefaultUserAgent(id<UITraitEnvironment> web_view,
+  // content, based on the |web_state|.
+  virtual UserAgentType GetDefaultUserAgent(web::WebState* web_state,
                                             const GURL& url);
 
   // Returns true if URL was restored via session restoration cache.
