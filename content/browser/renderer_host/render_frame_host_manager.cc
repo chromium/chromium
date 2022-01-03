@@ -173,15 +173,17 @@ bool IsSiteInstanceCompatibleWithErrorIsolation(
   return is_site_instance_for_failures == is_failure;
 }
 
+// Simple wrapper around WebExposedIsolationInfo::AreCompatible for easier use
+// within the process model.
 bool IsSiteInstanceCompatibleWithWebExposedIsolation(
     SiteInstance* site_instance,
-    const UrlInfo& url_info) {
+    const absl::optional<WebExposedIsolationInfo>& web_exposed_isolation_info) {
   SiteInstanceImpl* site_instance_impl =
       static_cast<SiteInstanceImpl*>(site_instance);
 
   return WebExposedIsolationInfo::AreCompatible(
       site_instance_impl->GetWebExposedIsolationInfo(),
-      url_info.web_exposed_isolation_info);
+      web_exposed_isolation_info);
 }
 
 // Helper for appending more information to the optional |reason| parameter
@@ -1899,8 +1901,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
       ConvertToSiteInstance(new_instance_descriptor, candidate_instance);
   SiteInstanceImpl* new_instance_impl =
       static_cast<SiteInstanceImpl*>(new_instance.get());
-  DCHECK(IsSiteInstanceCompatibleWithWebExposedIsolation(new_instance_impl,
-                                                         dest_url_info));
+  DCHECK(IsSiteInstanceCompatibleWithWebExposedIsolation(
+      new_instance_impl, dest_url_info.web_exposed_isolation_info));
 
   // If |should_swap| is true, we must use a different SiteInstance than the
   // current one. If we didn't, we would have two RenderFrameHosts in the same
@@ -2082,8 +2084,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     // when error pages are involved.
     if (IsSiteInstanceCompatibleWithErrorIsolation(
             dest_instance, *frame_tree_node_, is_failure)) {
-      if (IsSiteInstanceCompatibleWithWebExposedIsolation(dest_instance,
-                                                          dest_url_info)) {
+      if (IsSiteInstanceCompatibleWithWebExposedIsolation(
+              dest_instance, dest_url_info.web_exposed_isolation_info)) {
         // TODO(nasko,creis): The check whether data: or about: URLs are allowed
         // to commit in the current process should be in IsSuitableForUrlInfo.
         // However, making this change has further implications and needs more
@@ -2254,9 +2256,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   }
 
   // Use the current SiteInstance for same site navigations.
-  if (render_frame_host_->IsNavigationSameSite(dest_url_info) &&
-      IsSiteInstanceCompatibleWithWebExposedIsolation(
-          render_frame_host_->GetSiteInstance(), dest_url_info)) {
+  if (render_frame_host_->IsNavigationSameSite(dest_url_info)) {
     AppendReason(reason, "DetermineSiteInstanceForURL / same-site-navigation");
     return SiteInstanceDescriptor(render_frame_host_->GetSiteInstance());
   }
@@ -2338,7 +2338,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // BrowsingInstance, unless the destination URL's web-exposed isolated state
   // cannot be hosted by it.
   if (IsSiteInstanceCompatibleWithWebExposedIsolation(
-          render_frame_host_->GetSiteInstance(), dest_url_info)) {
+          render_frame_host_->GetSiteInstance(),
+          dest_url_info.web_exposed_isolation_info)) {
     AppendReason(reason,
                  "DetermineSiteInstanceForURL / fallback / coop-compatible");
     return SiteInstanceDescriptor(dest_url_info, SiteInstanceRelation::RELATED);
@@ -2422,7 +2423,8 @@ scoped_refptr<SiteInstance> RenderFrameHostManager::ConvertToSiteInstance(
   // check if the candidate matches.
   if (candidate_instance &&
       IsSiteInstanceCompatibleWithWebExposedIsolation(
-          candidate_instance, descriptor.dest_url_info) &&
+          candidate_instance,
+          descriptor.dest_url_info.web_exposed_isolation_info) &&
       !current_instance->IsRelatedSiteInstance(candidate_instance) &&
       candidate_instance->DoesSiteInfoForURLMatch(descriptor.dest_url_info)) {
     return candidate_instance;
@@ -2469,8 +2471,8 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
     return false;
   }
 
-  if (!IsSiteInstanceCompatibleWithWebExposedIsolation(source_instance,
-                                                       dest_url_info)) {
+  if (!IsSiteInstanceCompatibleWithWebExposedIsolation(
+          source_instance, dest_url_info.web_exposed_isolation_info)) {
     return false;
   }
 
