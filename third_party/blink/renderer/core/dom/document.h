@@ -273,7 +273,7 @@ using ExplicitlySetAttrElementsMap =
     HeapHashMap<QualifiedName, Member<HeapLinkedHashSet<WeakMember<Element>>>>;
 
 // A document (https://dom.spec.whatwg.org/#concept-document) is the root node
-// of a tree of DOM nodes, generally resulting from the parsing of an markup
+// of a tree of DOM nodes, generally resulting from the parsing of a markup
 // (typically, HTML) resource.
 //
 // A document may or may not have a browsing context
