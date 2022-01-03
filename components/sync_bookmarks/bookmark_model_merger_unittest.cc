@@ -1820,7 +1820,7 @@ TEST(BookmarkModelMergerTest, ShouldLogMetricsForkDescendantOfRootNode) {
       /*url=*/"http://url1",
       /*is_folder=*/false,
       /*unique_position=*/MakeRandomPosition()));
-  updates.back().entity.parent_id = kRootNodeId;
+  updates.back().entity.legacy_parent_id = kRootNodeId;
   // To cover a slightly different case and guard against future bugs, let's
   // assume one of the updates uses a GUID in specifics that refers to the
   // root node.
@@ -1832,7 +1832,7 @@ TEST(BookmarkModelMergerTest, ShouldLogMetricsForkDescendantOfRootNode) {
       /*url=*/"http://url2",
       /*is_folder=*/false,
       /*unique_position=*/MakeRandomPosition()));
-  updates.back().entity.parent_id = kRootNodeId;
+  updates.back().entity.legacy_parent_id = kRootNodeId;
 
   base::HistogramTester histogram_tester;
   Merge(std::move(updates), bookmark_model.get());

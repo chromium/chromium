@@ -29,6 +29,14 @@ message SyncEntity {
   // ID if there was a new created item with that ID appearing earlier
   // in the message.  In all other situations, it is a server ID.
   // Present in both GetUpdatesResponse and CommitMessage.
+  //
+  // Starting with M99, this field is optional and used for legacy bookmarks
+  // only:
+  // 1. When processing GetUpdatesResponse, it is unused for modern data created
+  //    or reuploaded by M94 or above, which populates the parent's GUID in
+  //    BookmarkSpecifics (which is sufficient).
+  // 2. When issuing CommitMessage, the field is populated for compatibility
+  //    with clients before M99.
   optional string parent_id_string = 2;
 
   reserved 3;

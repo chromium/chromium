@@ -93,7 +93,7 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
       const SyncedBookmarkTracker::Entity* parent_entity =
           bookmark_tracker_->GetEntityForBookmarkNode(parent);
       DCHECK(parent_entity);
-      data->parent_id = parent_entity->metadata()->server_id();
+      data->legacy_parent_id = parent_entity->metadata()->server_id();
       // Assign specifics only for the non-deletion case. In case of deletion,
       // EntityData should contain empty specifics to indicate deletion.
       data->specifics = CreateSpecificsFromBookmarkNode(

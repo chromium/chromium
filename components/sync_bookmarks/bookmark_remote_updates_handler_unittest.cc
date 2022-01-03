@@ -218,7 +218,6 @@ syncer::UpdateResponseData CreatePermanentFolderUpdateData(
     const std::string& tag) {
   syncer::EntityData data;
   data.id = id;
-  data.parent_id = "root_id";
   data.server_defined_unique_tag = tag;
 
   data.specifics.mutable_bookmark();

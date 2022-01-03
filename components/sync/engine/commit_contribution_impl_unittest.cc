@@ -121,7 +121,7 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
   data->creation_time = creation_time;
   data->modification_time = modification_time;
   data->name = "Name:";
-  data->parent_id = "ParentOf:";
+  data->legacy_parent_id = "ParentOf:";
 
   CommitRequestData request_data;
   request_data.sequence_number = 2;
@@ -164,7 +164,7 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmarkFolder) {
   data->creation_time = creation_time;
   data->modification_time = modification_time;
   data->name = "Name:";
-  data->parent_id = "ParentOf:";
+  data->legacy_parent_id = "ParentOf:";
 
   CommitRequestData request_data;
   request_data.sequence_number = 2;

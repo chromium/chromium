@@ -51,7 +51,7 @@ std::unique_ptr<base::DictionaryValue> EntityData::ToDictionaryValue() {
   // title.
   dict->SetString("NON_UNIQUE_NAME", name);
   ADD_TO_DICT(dict, name);
-  ADD_TO_DICT(dict, parent_id);
+  ADD_TO_DICT(dict, legacy_parent_id);
   ADD_TO_DICT_WITH_TRANSFORM(dict, ctime, GetTimeDebugString);
   ADD_TO_DICT_WITH_TRANSFORM(dict, mtime, GetTimeDebugString);
   return dict;
@@ -70,7 +70,7 @@ size_t EntityData::EstimateMemoryUsage() const {
   memory_usage += EstimateMemoryUsage(server_defined_unique_tag);
   memory_usage += EstimateMemoryUsage(name);
   memory_usage += EstimateMemoryUsage(specifics);
-  memory_usage += EstimateMemoryUsage(parent_id);
+  memory_usage += EstimateMemoryUsage(legacy_parent_id);
   return memory_usage;
 }
 

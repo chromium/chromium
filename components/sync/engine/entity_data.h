@@ -76,9 +76,12 @@ struct EntityData {
   base::Time creation_time;
   base::Time modification_time;
 
-  // Sync ID of the parent entity. This is supposed to be set only for
-  // hierarchical datatypes (e.g. Bookmarks).
-  std::string parent_id;
+  // Server-provided sync ID of the parent entity, used for legacy bookmarks
+  // only. Unused for modern data created or reuploaded by M94 or above, which
+  // relies exclusively on the parent's GUID in BookmarkSpecifics.
+  // WARNING: Avoid references to this field outside
+  // components/sync_bookmarks/parent_guid_preprocessing.cc.
+  std::string legacy_parent_id;
 
   // Indicate whether bookmark's |unique_position| was missing in the original
   // specifics during GetUpdates. If the |unique_position| in specifics was

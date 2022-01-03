@@ -242,8 +242,9 @@ void CommitContributionImpl::PopulateCommitProto(
       DCHECK(unique_position.IsValid());
       commit_proto->set_position_in_parent(unique_position.ToInt64());
       *commit_proto->mutable_unique_position() = unique_position.ToProto();
-      if (!entity_data.parent_id.empty()) {
-        commit_proto->set_parent_id_string(entity_data.parent_id);
+      // parent_id field is set only for legacy clients only, before M99.
+      if (!entity_data.legacy_parent_id.empty()) {
+        commit_proto->set_parent_id_string(entity_data.legacy_parent_id);
       }
     }
     commit_proto->set_ctime(TimeToProtoTime(entity_data.creation_time));

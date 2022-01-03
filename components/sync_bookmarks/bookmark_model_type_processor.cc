@@ -533,13 +533,13 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
     // Set the parent to empty string to indicate it's parent of the root node
     // for bookmarks. The code in sync_node_browser.js links nodes with the
     // "modelType" when they are lacking a parent id.
-    data.parent_id = "";
+    data.legacy_parent_id = "";
   } else {
     const bookmarks::BookmarkNode* parent = node->parent();
     const SyncedBookmarkTracker::Entity* parent_entity =
         bookmark_tracker_->GetEntityForBookmarkNode(parent);
     DCHECK(parent_entity);
-    data.parent_id = parent_entity->metadata()->server_id();
+    data.legacy_parent_id = parent_entity->metadata()->server_id();
   }
 
   std::unique_ptr<base::DictionaryValue> data_dictionary =
@@ -555,7 +555,7 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
     data_dictionary->SetString("UNIQUE_SERVER_TAG",
                                data.server_defined_unique_tag);
   } else {
-    data_dictionary->SetString("PARENT_ID", "s" + data.parent_id);
+    data_dictionary->SetString("PARENT_ID", "s" + data.legacy_parent_id);
   }
   data_dictionary->SetInteger("LOCAL_EXTERNAL_ID", node->id());
   data_dictionary->SetInteger("positionIndex", index);

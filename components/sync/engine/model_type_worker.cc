@@ -78,7 +78,7 @@ void AdaptClientTagForFullUpdateData(ModelType model_type,
   // entities. This code manually asks the bridge to create the client tags for
   // each entity, so that we can use ClientTagBasedModelTypeProcessor for
   // AUTOFILL_WALLET_DATA or AUTOFILL_WALLET_OFFER.
-  if (data->parent_id == "0") {
+  if (data->legacy_parent_id == "0") {
     // Ignore the permanent root node as that one should have no client tag
     // hash.
     return;
@@ -434,7 +434,7 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
   data.creation_time = ProtoTimeToTime(update_entity.ctime());
   data.modification_time = ProtoTimeToTime(update_entity.mtime());
   data.name = update_entity.name();
-  data.parent_id = update_entity.parent_id_string();
+  data.legacy_parent_id = update_entity.parent_id_string();
   data.server_defined_unique_tag = update_entity.server_defined_unique_tag();
 
   // Populate |originator_cache_guid| and |originator_client_item_id|. This is

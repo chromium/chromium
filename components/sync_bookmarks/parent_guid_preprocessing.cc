@@ -36,7 +36,7 @@ const char kInvalidParentGuid[] = "220a410e-37b9-5bbc-8674-ea982459f940";
 
 bool NeedsParentGuidInSpecifics(const syncer::UpdateResponseData& update) {
   return !update.entity.is_deleted() &&
-         update.entity.parent_id != std::string("0") &&
+         update.entity.legacy_parent_id != std::string("0") &&
          update.entity.server_defined_unique_tag.empty() &&
          !update.entity.specifics.bookmark().has_parent_guid();
 }
@@ -49,12 +49,12 @@ base::GUID TryGetParentGuidFromTracker(
     const syncer::UpdateResponseData& update) {
   DCHECK(tracker);
   DCHECK(!update.entity.is_deleted());
-  DCHECK(!update.entity.parent_id.empty());
+  DCHECK(!update.entity.legacy_parent_id.empty());
   DCHECK(update.entity.server_defined_unique_tag.empty());
   DCHECK(!update.entity.specifics.bookmark().has_parent_guid());
 
   const SyncedBookmarkTracker::Entity* const tracked_parent =
-      tracker->GetEntityForSyncId(update.entity.parent_id);
+      tracker->GetEntityForSyncId(update.entity.legacy_parent_id);
   if (!tracked_parent) {
     // Parent not known by tracker.
     return base::GUID();
@@ -139,9 +139,9 @@ base::GUID GetParentGuidForUpdate(
   DCHECK(tracker);
   DCHECK(sync_id_to_guid_map_in_updates);
 
-  if (update.entity.parent_id.empty()) {
-    // Without the |parent_id| field set, there is no information available to
-    // determine the parent and/or its GUID.
+  if (update.entity.legacy_parent_id.empty()) {
+    // Without the |SyncEntity.parent_id| field set, there is no information
+    // available to determine the parent and/or its GUID.
     return base::GUID();
   }
 
@@ -159,14 +159,14 @@ base::GUID GetParentGuidForUpdate(
   // parent and child, none of which would be known by |tracker|.
   guid = base::GUID::ParseLowercase(
       sync_id_to_guid_map_in_updates->GetGuidForSyncId(
-          update.entity.parent_id));
+          update.entity.legacy_parent_id));
   if (guid.is_valid()) {
     return guid;
   }
 
   // At this point the parent's GUID couldn't be determined, but actually
-  // the |parent_id| was non-empty. The update will be ignored regardless, but
-  // to avoid behavioral differences in UMA metrics
+  // the |SyncEntity.parent_id| was non-empty. The update will be ignored
+  // regardless, but to avoid behavioral differences in UMA metrics
   // Sync.ProblematicServerSideBookmarks[DuringMerge], a fake parent GUID is
   // used here, which is known to never match an existing entity.
   guid = base::GUID::ParseLowercase(kInvalidParentGuid);

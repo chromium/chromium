@@ -1559,7 +1559,7 @@ TEST(ModelTypeWorkerPopulateUpdateResponseDataTest,
                 FakeCryptographer(), PREFERENCES, entity, &response_data));
   const EntityData& data = response_data.entity;
   EXPECT_FALSE(data.id.empty());
-  EXPECT_FALSE(data.parent_id.empty());
+  EXPECT_FALSE(data.legacy_parent_id.empty());
   EXPECT_EQ("CLIENT_TAG", data.client_tag_hash.value());
   EXPECT_EQ("SERVER_TAG", data.server_defined_unique_tag);
   EXPECT_FALSE(data.is_deleted());

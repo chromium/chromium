@@ -103,11 +103,11 @@ TEST(ParentGuidPreprocessingTest, ShouldPopulateParentGuidInInitialUpdates) {
   updates.back().entity.server_defined_unique_tag = "bookmark_bar";
   updates.emplace_back();
   updates.back().entity.id = kParentFolderId;
-  updates.back().entity.parent_id = kBookmarkBarId;
+  updates.back().entity.legacy_parent_id = kBookmarkBarId;
   updates.back().entity.specifics.mutable_bookmark()->set_guid(
       kParentFolderGuid);
   updates.emplace_back();
-  updates.back().entity.parent_id = kParentFolderId;
+  updates.back().entity.legacy_parent_id = kParentFolderId;
   updates.back().entity.specifics.mutable_bookmark()->set_guid("child_guid");
 
   PopulateParentGuidInSpecifics(/*tracker=*/nullptr, &updates);
@@ -139,7 +139,7 @@ TEST(ParentGuidPreprocessingTest,
   updates.back().entity.server_defined_unique_tag = "bookmark_bar";
   updates.emplace_back();
   updates.back().entity.id = kFolderId;
-  updates.back().entity.parent_id = kBookmarkBarId;
+  updates.back().entity.legacy_parent_id = kBookmarkBarId;
   updates.back().entity.specifics.mutable_bookmark()->set_guid(kFolderGuid);
   updates.back().entity.specifics.mutable_bookmark()->set_parent_guid(
       kParentGuidInSpecifics);
@@ -191,10 +191,10 @@ TEST(ParentGuidPreprocessingTest,
 
   syncer::UpdateResponseDataList updates;
   updates.emplace_back();
-  updates.back().entity.parent_id = kSyncId;
+  updates.back().entity.legacy_parent_id = kSyncId;
   updates.back().entity.specifics.mutable_bookmark()->set_guid("guid1");
   updates.emplace_back();
-  updates.back().entity.parent_id = kBookmarkBarId;
+  updates.back().entity.legacy_parent_id = kBookmarkBarId;
   updates.back().entity.specifics.mutable_bookmark()->set_guid("guid2");
   PopulateParentGuidInSpecifics(tracker.get(), &updates);
 
@@ -218,7 +218,7 @@ TEST(ParentGuidPreprocessingTest,
   syncer::UpdateResponseDataList updates;
   updates.emplace_back();
   updates.back().entity.id = kParentFolderId;
-  updates.back().entity.parent_id = "some_unknown_parent";
+  updates.back().entity.legacy_parent_id = "some_unknown_parent";
   updates.back().entity.specifics.mutable_bookmark()->set_guid(
       kParentFolderGuid);
 

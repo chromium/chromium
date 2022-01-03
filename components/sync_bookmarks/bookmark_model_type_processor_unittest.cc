@@ -85,7 +85,7 @@ syncer::UpdateResponseData CreateUpdateResponseData(
     const base::GUID& guid) {
   syncer::EntityData data;
   data.id = bookmark_info.server_id;
-  data.parent_id = bookmark_info.parent_id;
+  data.legacy_parent_id = bookmark_info.parent_id;
   data.server_defined_unique_tag = bookmark_info.server_tag;
   data.originator_client_item_id = guid.AsLowercaseString();
 
