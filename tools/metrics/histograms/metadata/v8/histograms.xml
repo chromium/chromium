@@ -1021,8 +1021,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCIncrementalMarking" units="ms" expires_after="M100">
+<histogram name="V8.GCIncrementalMarking" units="ms" expires_after="M103">
   <owner>hpayer@chromium.org</owner>
+  <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Time spent doing incremental marking steps during GC.</summary>
 </histogram>
@@ -1059,7 +1060,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GCMainThreadMarkingThroughput" units="MB/s"
-    expires_after="2022-02-06">
+    expires_after="M103">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1072,6 +1073,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GCMarkCompactor" units="ms" expires_after="2022-01-02">
+  <obsolete>
+    Unused as of 2022-01-02.
+  </obsolete>
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1087,7 +1091,7 @@ chromium-metrics-reviews@google.com.
   <summary>Reason a mark-compact garbage collection was started in V8.</summary>
 </histogram>
 
-<histogram name="V8.GCMarkingSum" units="ms" expires_after="2022-02-13">
+<histogram name="V8.GCMarkingSum" units="ms" expires_after="M103">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
