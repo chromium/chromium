@@ -27,20 +27,20 @@ namespace {
 
 std::string GetServiceWorkerForError(const std::string& error) {
   std::string service_worker = R"(
-    chrome.test.runTests([
+    const tests = [
       // Telemetry APIs.
-      async function getVpdInfo() {
-        await chrome.test.assertPromiseRejects(
-            chrome.os.telemetry.getVpdInfo(),
-            'Error: Unauthorized access to chrome.os.telemetry.getVpdInfo. ' +
-            '%s'
-        );
-        chrome.test.succeed();
-      },
       async function getOemData() {
         await chrome.test.assertPromiseRejects(
             chrome.os.telemetry.getOemData(),
             'Error: Unauthorized access to chrome.os.telemetry.getOemData. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function getVpdInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getVpdInfo(),
+            'Error: Unauthorized access to chrome.os.telemetry.getVpdInfo. ' +
             '%s'
         );
         chrome.test.succeed();
@@ -177,6 +177,25 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+    ];
+
+    chrome.test.runTests([
+      async function allAPIsTested() {
+        getTestNames = function(arr) {
+          return arr.map(item => item.name);
+        }
+        getMethods = function(obj) {
+          return Object.getOwnPropertyNames(obj).filter(
+            item => typeof obj[item] === 'function');
+        }
+        apiNames = [
+          ...getMethods(chrome.os.telemetry),
+          ...getMethods(chrome.os.diagnostics)
+        ];
+        chrome.test.assertEq(getTestNames(tests), apiNames);
+        chrome.test.succeed();
+      },
+      ...tests
     ]);
   )";
 
