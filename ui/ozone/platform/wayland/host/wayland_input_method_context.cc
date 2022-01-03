@@ -27,6 +27,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v1.h"
 #include "ui/ozone/public/ozone_switches.h"
 
@@ -531,8 +532,9 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
     return;
 
   // Keyboard might not exist.
-  int device_id =
-      connection_->keyboard() ? connection_->keyboard()->device_id() : 0;
+  int device_id = connection_->seat()->keyboard()
+                      ? connection_->seat()->keyboard()->device_id()
+                      : 0;
 
   EventType type =
       state == WL_KEYBOARD_KEY_STATE_PRESSED ? ET_KEY_PRESSED : ET_KEY_RELEASED;
@@ -623,7 +625,7 @@ void WaylandInputMethodContext::MaybeUpdateActivated() {
 
   WaylandWindow* window =
       connection_->wayland_window_manager()->GetCurrentKeyboardFocusedWindow();
-  if (!window && !connection_->keyboard())
+  if (!window && !connection_->seat()->keyboard())
     window = connection_->wayland_window_manager()->GetCurrentActiveWindow();
   // Activate Wayland IME only if 1) InputMethod in Chrome has some
   // TextInputClient connected, and 2) the actual keyboard focus of Wayland

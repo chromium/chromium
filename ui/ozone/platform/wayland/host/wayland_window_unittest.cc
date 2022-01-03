@@ -42,6 +42,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection_test_api.h"
 #include "ui/ozone/platform/wayland/host/wayland_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_overlay_config.mojom.h"
@@ -1192,7 +1193,7 @@ TEST_P(WaylandWindowTest, CanDispatchMouseEventFocus) {
   wl_seat_send_capabilities(server_.seat()->resource(),
                             WL_SEAT_CAPABILITY_POINTER);
   Sync();
-  ASSERT_TRUE(connection_->pointer());
+  ASSERT_TRUE(connection_->seat()->pointer());
   window_->SetPointerFocus(true);
   EXPECT_TRUE(window_->CanDispatchEvent(&test_mouse_event_));
 }
@@ -1347,7 +1348,7 @@ TEST_P(WaylandWindowTest, CanCreateMenuWindow) {
       server_.seat()->resource(),
       WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_TOUCH);
   Sync();
-  ASSERT_TRUE(connection_->pointer() && connection_->touch());
+  ASSERT_TRUE(connection_->seat()->pointer() && connection_->seat()->touch());
   window_->SetPointerFocus(true);
 
   std::unique_ptr<WaylandWindow> menu_window = CreateWaylandWindowWithParams(
@@ -1417,7 +1418,7 @@ TEST_P(WaylandWindowTest, DispatchesLocatedEventsToCapturedWindow) {
   wl_seat_send_capabilities(server_.seat()->resource(),
                             WL_SEAT_CAPABILITY_POINTER);
   Sync();
-  ASSERT_TRUE(connection_->pointer());
+  ASSERT_TRUE(connection_->seat()->pointer());
   window_->SetPointerFocus(true);
 
   // Make sure the events are handled by the window that has the pointer focus.
@@ -1541,7 +1542,7 @@ TEST_P(WaylandWindowTest,
   wl_seat_send_capabilities(server_.seat()->resource(),
                             WL_SEAT_CAPABILITY_POINTER);
   Sync();
-  ASSERT_TRUE(connection_->pointer());
+  ASSERT_TRUE(connection_->seat()->pointer());
   window_->SetPointerFocus(true);
 
   // Make sure the events are handled by the window that has the pointer focus.
@@ -1606,7 +1607,7 @@ TEST_P(WaylandWindowTest, DispatchesKeyboardEventToToplevelWindow) {
   wl_seat_send_capabilities(server_.seat()->resource(),
                             WL_SEAT_CAPABILITY_KEYBOARD);
   Sync();
-  ASSERT_TRUE(connection_->keyboard());
+  ASSERT_TRUE(connection_->seat()->keyboard());
   menu_window->set_keyboard_focus(true);
 
   // Even though the menu window has the keyboard focus, the keyboard events are
@@ -1674,9 +1675,9 @@ TEST_P(WaylandWindowTest, CanDispatchEvent) {
                                 WL_SEAT_CAPABILITY_KEYBOARD |
                                 WL_SEAT_CAPABILITY_TOUCH);
   Sync();
-  ASSERT_TRUE(connection_->pointer());
-  ASSERT_TRUE(connection_->touch());
-  ASSERT_TRUE(connection_->keyboard());
+  ASSERT_TRUE(connection_->seat()->pointer());
+  ASSERT_TRUE(connection_->seat()->touch());
+  ASSERT_TRUE(connection_->seat()->keyboard());
 
   uint32_t serial = 0;
 
@@ -1771,7 +1772,7 @@ TEST_P(WaylandWindowTest, DispatchWindowMove) {
   wl_seat_send_capabilities(server_.seat()->resource(),
                             WL_SEAT_CAPABILITY_POINTER);
   Sync();
-  ASSERT_TRUE(connection_->pointer());
+  ASSERT_TRUE(connection_->seat()->pointer());
 
   // Focus and press left mouse button, so that serial is sent to client.
   auto* pointer_resource = server_.seat()->pointer()->resource();
@@ -1794,7 +1795,7 @@ TEST_P(WaylandWindowTest, DispatchWindowResize) {
   wl_seat_send_capabilities(server_.seat()->resource(),
                             WL_SEAT_CAPABILITY_POINTER);
   Sync();
-  ASSERT_TRUE(connection_->pointer());
+  ASSERT_TRUE(connection_->seat()->pointer());
 
   auto* pointer_resource = server_.seat()->pointer()->resource();
   wl_pointer_send_enter(pointer_resource, 1, surface_->resource(), 0, 0);
@@ -2974,7 +2975,7 @@ TEST_P(WaylandWindowTest, DoesNotGrabPopupUnlessParentHasGrab) {
   wl_seat_send_capabilities(server_.seat()->resource(),
                             WL_SEAT_CAPABILITY_POINTER);
   Sync();
-  ASSERT_TRUE(connection_->pointer());
+  ASSERT_TRUE(connection_->seat()->pointer());
   window_->SetPointerFocus(true);
 
   // Emulate a root menu creation with no serial available and ensure

@@ -129,6 +129,8 @@ source_set("wayland") {
     "host/wayland_popup.h",
     "host/wayland_screen.cc",
     "host/wayland_screen.h",
+    "host/wayland_seat.cc",
+    "host/wayland_seat.h",
     "host/wayland_serial_tracker.cc",
     "host/wayland_serial_tracker.h",
     "host/wayland_shm.cc",

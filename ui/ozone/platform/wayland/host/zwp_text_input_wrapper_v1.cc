@@ -9,6 +9,7 @@
 
 #include "ui/gfx/range/range.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 namespace ui {
@@ -66,12 +67,16 @@ void ZWPTextInputWrapperV1::Reset() {
 }
 
 void ZWPTextInputWrapperV1::Activate(WaylandWindow* window) {
-  zwp_text_input_v1_activate(obj_.get(), connection_->seat(),
+  DCHECK(connection_->seat());
+
+  zwp_text_input_v1_activate(obj_.get(), connection_->seat()->wl_object(),
                              window->root_surface()->surface());
 }
 
 void ZWPTextInputWrapperV1::Deactivate() {
-  zwp_text_input_v1_deactivate(obj_.get(), connection_->seat());
+  DCHECK(connection_->seat());
+
+  zwp_text_input_v1_deactivate(obj_.get(), connection_->seat()->wl_object());
 }
 
 void ZWPTextInputWrapperV1::ShowInputPanel() {

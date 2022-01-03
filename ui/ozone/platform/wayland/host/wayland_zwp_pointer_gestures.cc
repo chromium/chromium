@@ -14,6 +14,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_manager.h"
 
 namespace ui {
@@ -63,10 +64,10 @@ WaylandZwpPointerGestures::WaylandZwpPointerGestures(
 WaylandZwpPointerGestures::~WaylandZwpPointerGestures() = default;
 
 void WaylandZwpPointerGestures::Init() {
-  DCHECK(connection_->pointer());
+  DCHECK(connection_->seat()->pointer());
 
   pinch_.reset(zwp_pointer_gestures_v1_get_pinch_gesture(
-      obj_.get(), connection_->pointer()->wl_object()));
+      obj_.get(), connection_->seat()->pointer()->wl_object()));
 
   static constexpr zwp_pointer_gesture_pinch_v1_listener
       zwp_pointer_gesture_pinch_v1_listener = {

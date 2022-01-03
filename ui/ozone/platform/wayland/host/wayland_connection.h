@@ -44,11 +44,9 @@ class WaylandCursor;
 class WaylandCursorBufferListener;
 class WaylandDrm;
 class WaylandEventSource;
-class WaylandKeyboard;
 class WaylandOutputManager;
-class WaylandPointer;
+class WaylandSeat;
 class WaylandShm;
-class WaylandTouch;
 class WaylandZAuraShell;
 class WaylandZcrCursorShapes;
 class WaylandZwpPointerConstraints;
@@ -93,9 +91,6 @@ class WaylandConnection {
 
   bool Initialize();
 
-  void RegisterGlobalObjectFactory(const char* interface_name,
-                                   wl::GlobalObjectFactory factory);
-
   // Schedules a flush of the Wayland connection.
   void ScheduleFlush();
 
@@ -129,7 +124,6 @@ class WaylandConnection {
   }
   xdg_wm_base* shell() const { return shell_.get(); }
   zxdg_shell_v6* shell_v6() const { return shell_v6_.get(); }
-  wl_seat* seat() const { return seat_.get(); }
   wp_presentation* presentation() const { return presentation_.get(); }
   zwp_text_input_manager_v1* text_input_manager_v1() const {
     return text_input_manager_v1_.get();
@@ -162,14 +156,7 @@ class WaylandConnection {
 
   WaylandEventSource* event_source() const { return event_source_.get(); }
 
-  // Returns the current touch, which may be null.
-  WaylandTouch* touch() const { return touch_.get(); }
-
-  // Returns the current pointer, which may be null.
-  WaylandPointer* pointer() const { return pointer_.get(); }
-
-  // Returns the current keyboard, which may be null.
-  WaylandKeyboard* keyboard() const { return keyboard_.get(); }
+  WaylandSeat* seat() const { return seat_.get(); }
 
   WaylandClipboard* clipboard() const { return clipboard_.get(); }
 
@@ -312,6 +299,7 @@ class WaylandConnection {
   friend class WaylandDataDeviceManager;
   friend class WaylandDrm;
   friend class WaylandOutput;
+  friend class WaylandSeat;
   friend class WaylandShm;
   friend class WaylandZAuraShell;
   friend class WaylandZwpLinuxDmabuf;
@@ -323,16 +311,15 @@ class WaylandConnection {
   friend class ZwpIdleInhibitManager;
   friend class ZwpPrimarySelectionDeviceManager;
 
+  void RegisterGlobalObjectFactory(const char* interface_name,
+                                   wl::GlobalObjectFactory factory);
+
   void Flush();
-  void UpdateInputDevices(wl_seat* seat, uint32_t capabilities);
+  void UpdateInputDevices();
 
   // Initialize data-related objects if required protocol objects are already
   // in place, i.e: wl_seat and wl_data_device_manager.
   void CreateDataObjectsIfReady();
-
-  // Creates WaylandKeyboard with the currently acquired protocol objects, if
-  // possible. Returns true iff WaylandKeyboard was created.
-  bool CreateKeyboard();
 
   DeviceHotplugEventObserver* GetHotplugEventObserver();
 
@@ -343,10 +330,6 @@ class WaylandConnection {
                      const char* interface,
                      uint32_t version);
   static void GlobalRemove(void* data, wl_registry* registry, uint32_t name);
-
-  // wl_seat_listener
-  static void Capabilities(void* data, wl_seat* seat, uint32_t capabilities);
-  static void Name(void* data, wl_seat* seat, const char* name);
 
   // zxdg_shell_v6_listener
   static void PingV6(void* data, zxdg_shell_v6* zxdg_shell_v6, uint32_t serial);
@@ -366,7 +349,6 @@ class WaylandConnection {
   wl::Object<wl_registry> registry_;
   wl::Object<wl_compositor> compositor_;
   wl::Object<wl_subcompositor> subcompositor_;
-  wl::Object<wl_seat> seat_;
   wl::Object<xdg_wm_base> shell_;
   wl::Object<zxdg_shell_v6> shell_v6_;
   wl::Object<wp_presentation> presentation_;
@@ -388,11 +370,6 @@ class WaylandConnection {
   // outlives them so thus being able to properly handle their destruction.
   std::unique_ptr<WaylandEventSource> event_source_;
 
-  // Input device objects.
-  std::unique_ptr<WaylandKeyboard> keyboard_;
-  std::unique_ptr<WaylandPointer> pointer_;
-  std::unique_ptr<WaylandTouch> touch_;
-
   std::unique_ptr<WaylandCursor> cursor_;
   std::unique_ptr<WaylandDataDeviceManager> data_device_manager_;
   std::unique_ptr<WaylandOutputManager> wayland_output_manager_;
@@ -406,6 +383,7 @@ class WaylandConnection {
   std::unique_ptr<WaylandZwpPointerGestures> wayland_zwp_pointer_gestures_;
   std::unique_ptr<WaylandZwpLinuxDmabuf> zwp_dmabuf_;
   std::unique_ptr<WaylandDrm> drm_;
+  std::unique_ptr<WaylandSeat> seat_;
   std::unique_ptr<WaylandShm> shm_;
   std::unique_ptr<WaylandBufferManagerHost> buffer_manager_host_;
   std::unique_ptr<XdgForeignWrapper> xdg_foreign_;

@@ -24,6 +24,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_popup.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
@@ -234,7 +235,7 @@ void XDGPopupWrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
 }
 
 void XDGPopupWrapperImpl::Grab(uint32_t serial) {
-  xdg_popup_grab(xdg_popup_.get(), connection_->seat(), serial);
+  xdg_popup_grab(xdg_popup_.get(), connection_->seat()->wl_object(), serial);
 }
 
 wl::Object<xdg_positioner> XDGPopupWrapperImpl::CreatePositioner(

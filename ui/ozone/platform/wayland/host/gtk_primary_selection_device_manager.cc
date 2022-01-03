@@ -12,6 +12,7 @@
 #include "ui/ozone/platform/wayland/host/gtk_primary_selection_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 
 namespace ui {
 
@@ -61,8 +62,9 @@ GtkPrimarySelectionDevice* GtkPrimarySelectionDeviceManager::GetDevice() {
   DCHECK(connection_->seat());
   if (!device_) {
     device_ = std::make_unique<GtkPrimarySelectionDevice>(
-        connection_, gtk_primary_selection_device_manager_get_device(
-                         device_manager_.get(), connection_->seat()));
+        connection_,
+        gtk_primary_selection_device_manager_get_device(
+            device_manager_.get(), connection_->seat()->wl_object()));
     connection_->ScheduleFlush();
   }
   DCHECK(device_);

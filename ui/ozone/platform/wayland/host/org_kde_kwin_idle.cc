@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 
 namespace ui {
 
@@ -85,7 +86,7 @@ absl::optional<base::TimeDelta> OrgKdeKwinIdle::GetIdleTime() const {
   if (!idle_timeout_) {
     idle_timeout_ =
         std::make_unique<Timeout>(org_kde_kwin_idle_get_idle_timeout(
-            idle_.get(), connection_->seat(), kIdleThresholdMs));
+            idle_.get(), connection_->seat()->wl_object(), kIdleThresholdMs));
   }
   return idle_timeout_->GetIdleTime();
 }

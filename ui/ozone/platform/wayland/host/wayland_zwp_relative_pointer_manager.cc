@@ -10,6 +10,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
 
 namespace ui {
 
@@ -61,7 +62,7 @@ WaylandZwpRelativePointerManager::~WaylandZwpRelativePointerManager() = default;
 
 void WaylandZwpRelativePointerManager::EnableRelativePointer() {
   relative_pointer_.reset(zwp_relative_pointer_manager_v1_get_relative_pointer(
-      obj_.get(), connection_->pointer()->wl_object()));
+      obj_.get(), connection_->seat()->pointer()->wl_object()));
 
   static constexpr zwp_relative_pointer_v1_listener relative_pointer_listener =
       {
