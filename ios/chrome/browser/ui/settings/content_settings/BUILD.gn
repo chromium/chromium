@@ -66,9 +66,12 @@ source_set("unit_tests") {
   sources = [
     "block_popups_table_view_controller_unittest.mm",
     "content_settings_table_view_controller_unittest.mm",
+    "default_page_mode_mediator_unittest.mm",
+    "default_page_mode_table_view_controller_unittest.mm",
   ]
   deps = [
     ":content_settings",
+    ":content_settings_ui",
     "//base/test:test_support",
     "//components/content_settings/core/browser",
     "//ios/chrome/app/strings",
@@ -79,6 +82,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/table_view/cells",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
   ]
 }
