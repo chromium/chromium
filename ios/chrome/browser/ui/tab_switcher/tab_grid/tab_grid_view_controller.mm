@@ -718,7 +718,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
           [self gridViewControllerForPage:TabGridPageIncognitoTabs];
       incognitoViewController.gridView.transform =
           CGAffineTransformMakeTranslation(0, kThumbStripSlideInHeight);
-      [self contentWillAppearAnimated:YES];
+      // Don't do any animation in the tab grid. All that animation will be
+      // controlled by the pan handler/-animateViewReveal:.
+      [self contentWillAppearAnimated:NO];
       break;
     }
     case ViewRevealState::Peeked:
@@ -1322,7 +1324,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.foregroundView = foregroundView;
   foregroundView.translatesAutoresizingMaskIntoConstraints = NO;
   foregroundView.userInteractionEnabled = NO;
-  foregroundView.backgroundColor = [UIColor blackColor];
+  foregroundView.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
   [self.view insertSubview:foregroundView aboveSubview:self.plusSignButton];
   AddSameConstraints(foregroundView, self.view);
 }

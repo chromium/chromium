@@ -320,7 +320,9 @@
     [self.thumbStripCoordinator.panHandler
         setNextState:ViewRevealState::Revealed
             animated:animated];
-    [self.baseViewController contentWillAppearAnimated:animated];
+    // Don't do any animation in the tab grid. All that animation will be
+    // controlled by the pan handler/-animateViewReveal:.
+    [self.baseViewController contentWillAppearAnimated:NO];
     return;
   }
 
