@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Worker Fetcher</title>
+<script>
+  window.addEventListener("message", function (evt) {
+    let { url } = evt.data;
+
+    const worker = new Worker(url);
+
+    worker.addEventListener("message", (evt) => {
+      const message = {
+        loaded: true,
+        message: evt.data,
+      };
+      parent.postMessage(message, "*");
+    });
+
+    worker.addEventListener("error", (evt) => {
+      parent.postMessage({ loaded: false }, "*");
+    });
+  });
+</script>

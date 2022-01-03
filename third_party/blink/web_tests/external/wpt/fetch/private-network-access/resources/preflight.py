@@ -23,6 +23,10 @@
 #   - unspecified: this endpoint responds with no CORS headers to non-preflight
 #     requests. This should fail CORS-enabled requests, but be sufficient for
 #     no-CORS requests.
+# - mime-type: Optional. If set, the final response's `Content-Type` header is
+#   set to this parameter's value.
+# - body: Optional. If set, the final response's body is set to this parameter's
+#   value.
 #
 
 _ACAO = ("Access-Control-Allow-Origin", "*")
@@ -58,12 +62,18 @@ def _handle_preflight_request(request, response):
 def _handle_final_request(request, response):
   uuid = _get_uuid(request)
   if uuid is not None and request.server.stash.take(uuid) is None:
-    raise Exception("no matching preflight request for {}".format(uuid))
+    return (405, [], "no preflight received for {}".format(uuid))
 
   mode = request.GET.get(b"final-headers")
   headers = _get_response_headers(request.method, mode)
 
-  return (headers, "success")
+  mime_type = request.GET.get(b"mime-type")
+  if mime_type is not None:
+    headers.append(("Content-Type", mime_type),)
+
+  body = request.GET.get(b"body") or "success"
+
+  return (headers, body)
 
 def main(request, response):
   try:

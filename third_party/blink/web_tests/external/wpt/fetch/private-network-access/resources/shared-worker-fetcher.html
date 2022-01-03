@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>SharedWorker Fetcher</title>
+<script>
+  window.addEventListener("message", function (evt) {
+    let { url } = evt.data;
+
+    const worker = new SharedWorker(url);
+
+    worker.onerror = (evt) => {
+      parent.postMessage({ loaded: false }, "*");
+    };
+
+    worker.port.addEventListener("message", (evt) => {
+      const message = {
+        loaded: true,
+        message: evt.data,
+      };
+      parent.postMessage(message, "*");
+    });
+    worker.port.start();
+  });
+</script>

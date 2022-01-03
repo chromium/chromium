@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL treat-as-public to local: failed preflight. assert_equals: response loaded expected false but got true
+FAIL treat-as-public to local: success. assert_equals: response loaded expected true but got false
+FAIL treat-as-public to private: failed preflight. assert_equals: response loaded expected false but got true
+FAIL treat-as-public to private: success. assert_equals: response loaded expected true but got false
+PASS public to public: success.
+Harness: the test ran to completion.
+
