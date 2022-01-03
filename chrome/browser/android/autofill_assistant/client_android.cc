@@ -23,7 +23,6 @@
 #include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -538,7 +537,7 @@ std::string ClientAndroid::GetLocale() const {
 
 std::string ClientAndroid::GetCountryCode() const {
   variations::VariationsService* variations_service =
-      g_browser_process->variations_service();
+      dependencies_->GetVariationsService();
   // Use fallback "ZZ" if no country is available.
   if (!variations_service || variations_service->GetLatestCountry().empty())
     return "ZZ";

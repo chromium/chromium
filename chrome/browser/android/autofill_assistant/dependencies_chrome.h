@@ -9,7 +9,9 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/strings/string_piece.h"
+#include "chrome/browser/android/autofill_assistant/assistant_field_trial_util.h"
 #include "components/metrics/metrics_service_accessor.h"
+#include "components/variations/service/variations_service.h"
 
 namespace autofill_assistant {
 
@@ -22,6 +24,8 @@ class DependenciesChrome : public Dependencies {
 
   std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil()
       const override;
+
+  variations::VariationsService* GetVariationsService() const override;
 };
 
 }  // namespace autofill_assistant

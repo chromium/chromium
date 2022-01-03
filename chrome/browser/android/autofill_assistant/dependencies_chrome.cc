@@ -8,11 +8,13 @@
 #include "base/strings/string_piece.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantStaticDependenciesChrome_jni.h"
 #include "chrome/browser/android/autofill_assistant/assistant_field_trial_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 
 using ::base::StringPiece;
 using ::base::android::JavaParamRef;
 using ::base::android::ScopedJavaGlobalRef;
+using ::variations::VariationsService;
 
 namespace autofill_assistant {
 
@@ -38,6 +40,11 @@ class AssistantFieldTrialUtilChrome : public AssistantFieldTrialUtil {
 std::unique_ptr<AssistantFieldTrialUtil>
 DependenciesChrome::CreateFieldTrialUtil() const {
   return std::make_unique<AssistantFieldTrialUtilChrome>();
+}
+
+variations::VariationsService* DependenciesChrome::GetVariationsService()
+    const {
+  return g_browser_process->variations_service();
 }
 
 }  // namespace autofill_assistant

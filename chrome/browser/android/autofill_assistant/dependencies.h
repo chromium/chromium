@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/android/autofill_assistant/assistant_field_trial_util.h"
+#include "components/variations/service/variations_service.h"
 
 namespace autofill_assistant {
 
@@ -28,6 +29,8 @@ class Dependencies {
 
   virtual std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil()
       const = 0;
+
+  virtual variations::VariationsService* GetVariationsService() const = 0;
 
  protected:
   Dependencies(JNIEnv* env,
