@@ -46,13 +46,16 @@ void PushVideoStreamSubscriptionImpl::OnDeviceStartSucceededWithSettings(
     // Creation callback has already been run from a previous device start.
     return;
   }
-  mojom::CreatePushSubscriptionResultCode result_code =
+  mojom::CreatePushSubscriptionSuccessCode success_code =
       settings == requested_settings_
-          ? mojom::CreatePushSubscriptionResultCode::
+          ? mojom::CreatePushSubscriptionSuccessCode::
                 kCreatedWithRequestedSettings
-          : mojom::CreatePushSubscriptionResultCode::
+          : mojom::CreatePushSubscriptionSuccessCode::
                 kCreatedWithDifferentSettings;
-  std::move(creation_callback_).Run(result_code, settings);
+  std::move(creation_callback_)
+      .Run(
+          mojom::CreatePushSubscriptionResultCode::NewSuccessCode(success_code),
+          settings);
   status_ = Status::kNotYetActivated;
 }
 
@@ -65,7 +68,7 @@ void PushVideoStreamSubscriptionImpl::OnDeviceStartFailed(
     return;
   }
   std::move(creation_callback_)
-      .Run(mojom::CreatePushSubscriptionResultCode::kFailed,
+      .Run(mojom::CreatePushSubscriptionResultCode::NewErrorCode(error),
            requested_settings_);
   status_ = Status::kClosed;
 }

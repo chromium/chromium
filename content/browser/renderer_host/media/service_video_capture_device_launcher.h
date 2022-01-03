@@ -53,7 +53,7 @@ class CONTENT_EXPORT ServiceVideoCaptureDeviceLauncher
       mojo::Remote<video_capture::mojom::PushVideoStreamSubscription>
           subscription,
       base::OnceClosure connection_lost_cb,
-      video_capture::mojom::CreatePushSubscriptionResultCode result_code,
+      video_capture::mojom::CreatePushSubscriptionResultCodePtr result_code,
       const media::VideoCaptureParams& params);
 
   void OnConnectionLostWhileWaitingForCallback();
