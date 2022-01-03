@@ -54,26 +54,15 @@ class StartupAppLauncher : public KioskAppLauncher,
   void OnLaunchSuccess();
   void OnLaunchFailure(KioskAppLaunchError::Error error);
 
-  void BeginInstall();
-  void OnInstallComplete(KioskAppLaunchError::Error error);
-
-  void OnReadyToLaunch();
-  void MaybeUpdateAppData();
+  void FinalizeAppInstall();
+  void BeginInstall(bool finalize_only = false);
+  void OnInstallComplete(ChromeAppKioskAppInstaller::InstallResult result);
 
   void MaybeInitializeNetwork();
-  void SetSecondaryAppsEnabledState(const extensions::Extension* primary_app);
-  void MaybeLaunchApp();
-
   void OnKioskAppDataLoadStatusChanged(const std::string& app_id);
 
   // AppWindowRegistry::Observer:
   void OnAppWindowAdded(extensions::AppWindow* app_window) override;
-
-  // Returns true if all secondary apps have been installed.
-  bool AreSecondaryAppsInstalled() const;
-
-  // Returns true if the primary app has a pending update.
-  bool PrimaryAppHasPendingUpdate() const;
 
   const extensions::Extension* GetPrimaryAppExtension() const;
 
@@ -87,8 +76,9 @@ class StartupAppLauncher : public KioskAppLauncher,
   int launch_attempt_ = 0;
   bool wait_for_crx_update_ = false;
   bool waiting_for_window_ = false;
+  bool ready_to_launch_ = false;
 
-  ChromeAppKioskAppInstaller installer_;
+  std::unique_ptr<ChromeAppKioskAppInstaller> installer_;
 
   extensions::AppWindowRegistry* window_registry_;
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -18,6 +19,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/app_mode/chrome_app_kiosk_app_installer.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher_update_checker.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
@@ -52,10 +54,7 @@ const int kMaxLaunchAttempt = 5;
 StartupAppLauncher::StartupAppLauncher(Profile* profile,
                                        const std::string& app_id,
                                        StartupAppLauncher::Delegate* delegate)
-    : KioskAppLauncher(delegate),
-      profile_(profile),
-      app_id_(app_id),
-      installer_(profile, app_id, delegate) {
+    : KioskAppLauncher(delegate), profile_(profile), app_id_(app_id) {
   DCHECK(profile_);
   DCHECK(crx_file::id_util::IdIsValid(app_id_));
   kiosk_app_manager_observation_.Observe(KioskAppManager::Get());
@@ -73,15 +72,15 @@ void StartupAppLauncher::Initialize() {
 void StartupAppLauncher::ContinueWithNetworkReady() {
   SYSLOG(INFO) << "ContinueWithNetworkReady"
                << ", network_ready_handled_=" << network_ready_handled_
-               << ", ready_to_launch_=" << installer_.install_complete();
+               << ", ready_to_launch_=" << ready_to_launch_;
 
-  if (installer_.install_complete() || network_ready_handled_)
+  if (ready_to_launch_ || network_ready_handled_)
     return;
 
   network_ready_handled_ = true;
 
   if (delegate_->ShouldSkipAppInstallation()) {
-    MaybeLaunchApp();
+    FinalizeAppInstall();
     return;
   }
 
@@ -96,7 +95,7 @@ void StartupAppLauncher::RestartLauncher() {
   // Do not allow restarts after the launcher finishes kiosk apps installation -
   // notify the delegate that kiosk app is ready to launch, in case the launch
   // was delayed, for example by network config dialog.
-  if (installer_.install_complete()) {
+  if (ready_to_launch_) {
     delegate_->OnAppPrepared();
     return;
   }
@@ -116,7 +115,7 @@ void StartupAppLauncher::RestartLauncher() {
 }
 
 void StartupAppLauncher::MaybeInitializeNetwork() {
-  DCHECK(!installer_.install_complete());
+  DCHECK(!ready_to_launch_);
 
   network_ready_handled_ = false;
 
@@ -137,7 +136,7 @@ void StartupAppLauncher::MaybeInitializeNetwork() {
   }
 
   if (delegate_->ShouldSkipAppInstallation()) {
-    MaybeLaunchApp();
+    FinalizeAppInstall();
     return;
   }
 
@@ -147,83 +146,6 @@ void StartupAppLauncher::MaybeInitializeNetwork() {
     ContinueWithNetworkReady();
   else
     BeginInstall();
-}
-
-void StartupAppLauncher::SetSecondaryAppsEnabledState(
-    const extensions::Extension* primary_app) {
-  extensions::KioskModeInfo* info = extensions::KioskModeInfo::Get(primary_app);
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-  extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile_);
-  for (const auto& app_info : info->secondary_apps) {
-    // If the enabled on launch is not specified in the manifest, the apps
-    // enabled state should be kept as is.
-    if (!app_info.enabled_on_launch.has_value())
-      continue;
-
-    // If the app is already enabled, and should not be disabled, there is
-    // nothing to do for the app.
-    if (app_info.enabled_on_launch.value() &&
-        service->IsExtensionEnabled(app_info.id)) {
-      continue;
-    }
-
-    if (!app_info.enabled_on_launch.value()) {
-      service->DisableExtension(
-          app_info.id, extensions::disable_reason::DISABLE_USER_ACTION);
-    } else {
-      // Remove USER_ACTION disable reason - if the app was disabled only due to
-      // user action, enable it.
-      if (prefs->GetDisableReasons(app_info.id) ==
-          extensions::disable_reason::DISABLE_USER_ACTION) {
-        service->EnableExtension(app_info.id);
-      } else {
-        prefs->RemoveDisableReason(
-            app_info.id, extensions::disable_reason::DISABLE_USER_ACTION);
-      }
-    }
-  }
-}
-
-void StartupAppLauncher::MaybeLaunchApp() {
-  DCHECK(!installer_.install_complete());
-
-  SYSLOG(INFO) << "MaybeLaunchApp";
-  const Extension* extension = GetPrimaryAppExtension();
-  // Verify that requred apps are installed. While the apps should be
-  // present at this point, crash recovery flow skips app installation steps -
-  // this means that the kiosk app might not yet be downloaded. If that is
-  // the case, bail out from the app launch.
-  if (!extension || !AreSecondaryAppsInstalled()) {
-    OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
-    return;
-  }
-
-  const bool offline_enabled =
-      extensions::OfflineEnabledInfo::IsOfflineEnabled(extension);
-  // If the app is not offline enabled, make sure the network is ready before
-  // launching.
-  if (offline_enabled || delegate_->IsNetworkReady()) {
-    installer_.SetInstallComplete();
-    // Updates to cached primary app crx will be ignored after this point, so
-    // there is no need to observe the kiosk app manager any longer.
-    kiosk_app_manager_observation_.Reset();
-
-    SetSecondaryAppsEnabledState(extension);
-
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&StartupAppLauncher::OnReadyToLaunch,
-                                  weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    ++launch_attempt_;
-    if (launch_attempt_ < kMaxLaunchAttempt) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(&StartupAppLauncher::MaybeInitializeNetwork,
-                                    weak_ptr_factory_.GetWeakPtr()));
-      return;
-    }
-    OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
-  }
 }
 
 void StartupAppLauncher::OnKioskExtensionLoadedInCache(
@@ -238,7 +160,8 @@ void StartupAppLauncher::OnKioskExtensionDownloadFailed(
 
 void StartupAppLauncher::OnKioskAppDataLoadStatusChanged(
     const std::string& app_id) {
-  DCHECK(!installer_.install_complete());
+  if (ready_to_launch_)
+    return;
 
   if (app_id != app_id_ || !wait_for_crx_update_)
     return;
@@ -250,25 +173,6 @@ void StartupAppLauncher::OnKioskAppDataLoadStatusChanged(
     OnLaunchFailure(KioskAppLaunchError::Error::kUnableToDownload);
 }
 
-bool StartupAppLauncher::AreSecondaryAppsInstalled() const {
-  const extensions::Extension* extension = GetPrimaryAppExtension();
-  DCHECK(extension);
-  extensions::KioskModeInfo* info = extensions::KioskModeInfo::Get(extension);
-  for (const auto& app : info->secondary_apps) {
-    if (!extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
-            app.id)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool StartupAppLauncher::PrimaryAppHasPendingUpdate() const {
-  return !!extensions::ExtensionSystem::Get(profile_)
-               ->extension_service()
-               ->GetPendingExtensionUpdate(app_id_);
-}
-
 const extensions::Extension* StartupAppLauncher::GetPrimaryAppExtension()
     const {
   return extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
@@ -276,7 +180,7 @@ const extensions::Extension* StartupAppLauncher::GetPrimaryAppExtension()
 }
 
 void StartupAppLauncher::LaunchApp() {
-  if (!installer_.install_complete()) {
+  if (!ready_to_launch_) {
     NOTREACHED();
     SYSLOG(ERROR) << "LaunchApp() called but launcher is not initialized.";
   }
@@ -333,34 +237,48 @@ void StartupAppLauncher::OnLaunchFailure(KioskAppLaunchError::Error error) {
   delegate_->OnLaunchFailed(error);
 }
 
-void StartupAppLauncher::BeginInstall() {
-  installer_.BeginInstall(base::BindOnce(&StartupAppLauncher::OnInstallComplete,
-                                         weak_ptr_factory_.GetWeakPtr()));
+void StartupAppLauncher::FinalizeAppInstall() {
+  BeginInstall(/*finalize_only=*/true);
 }
 
-void StartupAppLauncher::OnInstallComplete(KioskAppLaunchError::Error error) {
-  if (error == KioskAppLaunchError::Error::kNone) {
-    MaybeLaunchApp();
-  } else {
-    OnLaunchFailure(error);
+void StartupAppLauncher::BeginInstall(bool finalize_only) {
+  installer_ = std::make_unique<ChromeAppKioskAppInstaller>(
+      profile_, app_id_, delegate_, finalize_only);
+  installer_->BeginInstall(base::BindOnce(
+      &StartupAppLauncher::OnInstallComplete, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void StartupAppLauncher::OnInstallComplete(
+    ChromeAppKioskAppInstaller::InstallResult result) {
+  switch (result) {
+    case ChromeAppKioskAppInstaller::InstallResult::kSuccess:
+      ready_to_launch_ = true;
+      // Updates to cached primary app crx will be ignored after this point, so
+      // there is no need to observe the kiosk app manager any longer.
+      kiosk_app_manager_observation_.Reset();
+      delegate_->OnAppPrepared();
+      return;
+    case ChromeAppKioskAppInstaller::InstallResult::kUnableToInstall:
+      OnLaunchFailure(KioskAppLaunchError::Error::kUnableToInstall);
+      return;
+    case ChromeAppKioskAppInstaller::InstallResult::kNotKioskEnabled:
+      OnLaunchFailure(KioskAppLaunchError::Error::kNotKioskEnabled);
+      return;
+    case ChromeAppKioskAppInstaller::InstallResult::kUnableToLaunch:
+      OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
+      return;
+    case ChromeAppKioskAppInstaller::InstallResult::kNetworkMissing:
+      ++launch_attempt_;
+      if (launch_attempt_ < kMaxLaunchAttempt) {
+        base::ThreadTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE,
+            base::BindOnce(&StartupAppLauncher::MaybeInitializeNetwork,
+                           weak_ptr_factory_.GetWeakPtr()));
+      } else {
+        OnLaunchFailure(KioskAppLaunchError::Error::kUnableToLaunch);
+      }
+      return;
   }
-}
-
-void StartupAppLauncher::OnReadyToLaunch() {
-  DCHECK(installer_.install_complete());
-  SYSLOG(INFO) << "Kiosk app is ready to launch.";
-  MaybeUpdateAppData();
-  delegate_->OnAppPrepared();
-}
-
-void StartupAppLauncher::MaybeUpdateAppData() {
-  // Skip copying meta data from the current installed primary app when
-  // there is a pending update.
-  if (PrimaryAppHasPendingUpdate())
-    return;
-
-  KioskAppManager::Get()->ClearAppData(app_id_);
-  KioskAppManager::Get()->UpdateAppDataFromProfile(app_id_, profile_, NULL);
 }
 
 }  // namespace ash

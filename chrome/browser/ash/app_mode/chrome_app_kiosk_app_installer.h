@@ -16,14 +16,22 @@ class Profile;
 
 namespace ash {
 
-using InstallCallback =
-    base::OnceCallback<void(KioskAppLaunchError::Error error)>;
-
 class ChromeAppKioskAppInstaller : private extensions::InstallObserver {
  public:
+  enum class InstallResult {
+    kSuccess,
+    kUnableToInstall,
+    kUnableToLaunch,
+    kNotKioskEnabled,
+    kNetworkMissing,
+  };
+
+  using InstallCallback = base::OnceCallback<void(InstallResult result)>;
+
   ChromeAppKioskAppInstaller(Profile* profile,
                              const std::string& app_id,
-                             KioskAppLauncher::Delegate* delegate);
+                             KioskAppLauncher::Delegate* delegate,
+                             bool finalize_only);
   ChromeAppKioskAppInstaller(const ChromeAppKioskAppInstaller&) = delete;
   ChromeAppKioskAppInstaller& operator=(const ChromeAppKioskAppInstaller&) =
       delete;
@@ -31,20 +39,19 @@ class ChromeAppKioskAppInstaller : private extensions::InstallObserver {
 
   void BeginInstall(InstallCallback callback);
 
-  void SetInstallComplete() { install_complete_ = true; }
-  bool install_complete() const { return install_complete_; }
-
  private:
   void MaybeInstallSecondaryApps();
   void MaybeCheckExtensionUpdate();
   void OnExtensionUpdateCheckFinished(bool update_found);
   void FinalizeAppInstall();
+  void MaybeUpdateAppData();
 
   // extensions::InstallObserver overrides.
   void OnFinishCrxInstall(const std::string& extension_id,
                           bool success) override;
 
-  void ReportInstallFailure(KioskAppLaunchError::Error error);
+  void ReportInstallSuccess();
+  void ReportInstallFailure(InstallResult result);
   void RetryWhenNetworkIsAvailable(base::OnceClosure callback);
   void ObserveActiveInstallations();
 
@@ -59,14 +66,22 @@ class ChromeAppKioskAppInstaller : private extensions::InstallObserver {
   // Returns true if any secondary app is pending.
   bool IsAnySecondaryAppPending() const;
 
+  // Returns true if the primary app has a pending update.
+  bool PrimaryAppHasPendingUpdate() const;
+
   // Returns true if the app with |id| failed, and it is the primary or one of
   // the secondary apps.
   bool DidPrimaryOrSecondaryAppFailedToInstall(bool success,
                                                const std::string& id) const;
 
+  void SetSecondaryAppsEnabledState(const extensions::Extension* primary_app);
+  void SetAppEnabledState(const extensions::ExtensionId& id,
+                          bool should_be_enabled);
+
   Profile* const profile_;
   const std::string app_id_;
   KioskAppLauncher::Delegate* delegate_;
+  bool finalize_only_;
 
   InstallCallback on_ready_callback_;
 
