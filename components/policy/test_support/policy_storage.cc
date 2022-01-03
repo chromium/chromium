@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/policy/test_support/policy_storage.h"
+#include "base/big_endian.h"
 #include "crypto/sha2.h"
 
 namespace policy {
@@ -61,16 +62,14 @@ std::vector<std::string> PolicyStorage::GetMatchingSerialHashes(
     uint64_t remainder) const {
   std::vector<std::string> hashes;
   for (const auto& [serial, enrollment_state] : initial_enrollment_states_) {
-    uint64_t hash = 0;
-    char hstr[sizeof(hash)];
-    crypto::SHA256HashString(serial, &hstr, sizeof(hash));
-    // Convert hash string to uint64_t using big-endian byte-order.
-    for (size_t i = 0; i < sizeof(hash); i++) {
-      uint64_t byte = static_cast<unsigned char>(hstr[i]);
-      hash += byte << (sizeof(hash) - i - 1) * CHAR_BIT;
+    uint64_t hash = 0UL;
+    uint8_t hash_bytes[sizeof(hash)];
+    crypto::SHA256HashString(serial, hash_bytes, sizeof(hash));
+    base::ReadBigEndian(hash_bytes, &hash);
+    if (hash % modulus == remainder) {
+      hashes.emplace_back(reinterpret_cast<const char*>(hash_bytes),
+                          sizeof(hash));
     }
-    if (hash % modulus == remainder)
-      hashes.emplace_back(hstr, sizeof(uint64_t));
   }
   return hashes;
 }

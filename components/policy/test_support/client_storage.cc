@@ -77,7 +77,7 @@ std::vector<std::string> ClientStorage::GetMatchingStateKeyHashes(
     uint64_t remainder) const {
   std::vector<std::string> hashes;
   for (const auto& [device_id, client_info] : clients_) {
-    // This does not actually divide hashes by |modulus| and verifies that
+    // This does not actually divide hashes by |modulus| and verify that
     // |remainder| is correct as current tests do not rely on this behavior.
     // This is difficult to implement since 32-byte hashes do not fit into
     // regular integer types and thus long-arithmetic approach is needed.
