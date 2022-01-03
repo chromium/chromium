@@ -701,7 +701,7 @@ bool WebRequestAPI::MaybeProxyURLLoaderFactory(
     if (web_contents && WebViewGuest::IsGuest(web_contents)) {
       auto* guest_web_contents =
           WebViewGuest::GetTopLevelWebContents(web_contents);
-      auto& guest_url = guest_web_contents->GetURL();
+      auto& guest_url = guest_web_contents->GetLastCommittedURL();
       if (guest_url.SchemeIs(content::kChromeUIScheme)) {
         auto* feature = FeatureProvider::GetAPIFeature("webRequestInternal");
         if (feature
