@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/style_recalc.h"
+#include "third_party/blink/renderer/core/css/style_recalc_change.h"
 
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -15,20 +15,21 @@
 
 namespace blink {
 
-class StyleRecalcTest : public PageTestBase {};
+class StyleRecalcChangeTest : public PageTestBase {};
 
-class StyleRecalcTestCQ : public StyleRecalcTest,
-                          private ScopedCSSContainerQueriesForTest,
-                          private ScopedCSSContainerSkipStyleRecalcForTest,
-                          private ScopedLayoutNGForTest {
+class StyleRecalcChangeTestCQ
+    : public StyleRecalcChangeTest,
+      private ScopedCSSContainerQueriesForTest,
+      private ScopedCSSContainerSkipStyleRecalcForTest,
+      private ScopedLayoutNGForTest {
  public:
-  StyleRecalcTestCQ()
+  StyleRecalcChangeTestCQ()
       : ScopedCSSContainerQueriesForTest(true),
         ScopedCSSContainerSkipStyleRecalcForTest(true),
         ScopedLayoutNGForTest(true) {}
 };
 
-TEST_F(StyleRecalcTest, SuppressRecalc) {
+TEST_F(StyleRecalcChangeTest, SuppressRecalc) {
   SetBodyInnerHTML(R"HTML(
     <style>
       .foo { color: green; }
@@ -50,7 +51,7 @@ TEST_F(StyleRecalcTest, SuppressRecalc) {
                   .ShouldRecalcStyleFor(*element));
 }
 
-TEST_F(StyleRecalcTestCQ, SkipStyleRecalcForContainer) {
+TEST_F(StyleRecalcChangeTestCQ, SkipStyleRecalcForContainer) {
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_TRUE(GetDocument().body());
@@ -182,7 +183,7 @@ TEST_F(StyleRecalcTestCQ, SkipStyleRecalcForContainer) {
                 GetCSSPropertyColor()));
 }
 
-TEST_F(StyleRecalcTestCQ, SkipStyleRecalcForContainerCleanSubtree) {
+TEST_F(StyleRecalcChangeTestCQ, SkipStyleRecalcForContainerCleanSubtree) {
   UpdateAllLifecyclePhasesForTest();
 
   ASSERT_TRUE(GetDocument().body());
@@ -212,7 +213,7 @@ TEST_F(StyleRecalcTestCQ, SkipStyleRecalcForContainerCleanSubtree) {
   EXPECT_FALSE(container->GetContainerQueryData()->SkippedStyleRecalc());
 }
 
-TEST_F(StyleRecalcTestCQ, SkipAttachLayoutTreeForContainer) {
+TEST_F(StyleRecalcChangeTestCQ, SkipAttachLayoutTreeForContainer) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #container { container-type: inline-size; }

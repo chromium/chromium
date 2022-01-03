@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
 #include "third_party/blink/renderer/core/css/resolver/element_style_resources.h"
 #include "third_party/blink/renderer/core/css/resolver/font_builder.h"
+#include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -42,7 +43,6 @@ namespace blink {
 class ComputedStyle;
 class FontDescription;
 class PseudoElement;
-class StyleRecalcContext;
 
 // A per-element object which wraps an ElementResolveContext. It collects state
 // throughout the process of computing the style. It also gives convenient

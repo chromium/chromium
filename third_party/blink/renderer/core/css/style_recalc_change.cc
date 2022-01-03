@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/style_recalc.h"
+#include "third_party/blink/renderer/core/css/style_recalc_change.h"
 
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -131,25 +132,6 @@ StyleRecalcChange::Flags StyleRecalcChange::FlagsForChildren(
   result &= ~kSuppressRecalc;
 
   return result;
-}
-
-StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
-    Element& element) {
-  if (element.GetContainerQueryEvaluator())
-    return StyleRecalcContext{&element};
-  return FromAncestors(element);
-}
-
-StyleRecalcContext StyleRecalcContext::FromAncestors(Element& element) {
-  Element* ancestor = &element;
-  // TODO(crbug.com/1145970): Avoid this work if we're not inside a container.
-  while ((ancestor = DynamicTo<Element>(
-              LayoutTreeBuilderTraversal::Parent(*ancestor)))) {
-    if (ancestor->GetContainerQueryEvaluator())
-      return StyleRecalcContext{ancestor};
-  }
-
-  return StyleRecalcContext();
 }
 
 }  // namespace blink
