@@ -1839,6 +1839,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityCustomElementWithAriaOwnsInside) {
   RunHtmlTest(FILE_PATH_LITERAL("custom-element-with-aria-owns-inside.html"));
 }
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCustomElementWithAriaOwnsInsideSlot) {
+  RunHtmlTest(
+      FILE_PATH_LITERAL("custom-element-with-aria-owns-inside-slot.html"));
+}
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityEm) {
   RunHtmlTest(FILE_PATH_LITERAL("em.html"));

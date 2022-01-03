@@ -6287,6 +6287,8 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
       string_builder = string_builder + " isHiddenViaCSS";
     if (GetNode() && GetNode()->IsInert())
       string_builder = string_builder + " isInert";
+    if (IsMissingParent())
+      string_builder = string_builder + " isMissingParent";
     if (NeedsToUpdateChildren()) {
       string_builder = string_builder + " needsToUpdateChildren";
     } else if (!children_.IsEmpty()) {

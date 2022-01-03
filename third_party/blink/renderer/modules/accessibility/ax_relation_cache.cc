@@ -186,19 +186,27 @@ bool AXRelationCache::IsValidOwnedChild(AXObject* child) {
   if (!child)
     return false;
 
-  if (!child->GetNode()) {
+  Node* node = child->GetNode();
+  if (!node) {
     NOTREACHED() << "Cannot use aria-owns without a node on both ends";
     return false;
   }
+
+  // Require a layout object, in order to avoid strange situations where
+  // a node tries to parent an AXObject that cannot exist because its node
+  // cannot partake in layout tree building (e.g. unused fallback content of a
+  // media element). This is the simplest way to avoid many types of abnormal
+  // situations, and there's no known use case for pairing aria-owns with
+  // invisible content.
+  if (!node->GetLayoutObject())
+    return false;
 
   if (child->IsImageMapLink())
     return false;  // An area can't be owned, only parented by <img usemap>.
 
   // <select> options can only be children of AXMenuListPopup or AXListBox.
-  if (IsA<HTMLOptionElement>(child->GetNode()) ||
-      IsA<HTMLOptGroupElement>(child->GetNode())) {
+  if (IsA<HTMLOptionElement>(node) || IsA<HTMLOptGroupElement>(node))
     return false;
-  }
 
   // Problematic for cycles, and does not solve a known use case.
   // Easiest to omit the possibility.
