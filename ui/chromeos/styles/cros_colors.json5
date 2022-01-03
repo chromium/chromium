@@ -376,7 +376,7 @@
       light: "$google_grey_700",
       dark: "rgba($white_rgb, 0.6)",
     },
-    textfield_input_color: "$icon_color_primary",
+    textfield_input_color: "$color_primary",
     /* textfield:focus */
     textfield_cursor_color_focus: "$color_prominent",
     textfield_label_color_focus: "$color_prominent",
