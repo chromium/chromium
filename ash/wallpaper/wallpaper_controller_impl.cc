@@ -2429,14 +2429,16 @@ void WallpaperControllerImpl::CacheProminentColors(
 
 absl::optional<std::vector<SkColor>> WallpaperControllerImpl::GetCachedColors(
     const std::string& current_location) const {
+  if (!local_state_)
+    return absl::nullopt;
+
+  const base::Value* prominent_colors =
+      local_state_->GetDictionary(prefs::kWallpaperColors)
+          ->FindListKey(current_location);
+  if (!prominent_colors)
+    return absl::nullopt;
+
   absl::optional<std::vector<SkColor>> cached_colors_out;
-  const base::ListValue* prominent_colors = nullptr;
-  if (!local_state_ ||
-      !base::Value::AsDictionaryValue(
-           *local_state_->GetDictionary(prefs::kWallpaperColors))
-           .GetListWithoutPathExpansion(current_location, &prominent_colors)) {
-    return cached_colors_out;
-  }
   cached_colors_out = std::vector<SkColor>();
   cached_colors_out.value().reserve(prominent_colors->GetList().size());
   for (const auto& value : prominent_colors->GetList()) {
