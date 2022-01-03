@@ -83,7 +83,7 @@ bool LayoutHTMLCanvas::DrawsBackgroundOntoContentLayer() const {
     return true;
   // Simple background that is contained within the contents rect.
   return ReplacedContentRect().Contains(
-      PhysicalBackgroundRect(kBackgroundClipRect));
+      PhysicalBackgroundRect(kBackgroundPaintedExtent));
 }
 
 void LayoutHTMLCanvas::InvalidatePaint(

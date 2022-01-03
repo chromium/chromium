@@ -61,7 +61,11 @@ enum AvailableLogicalHeightType {
 // clipping behavior. During hit testing, overlay scrollbars behave like regular
 // scrollbars and should change how hit testing is clipped.
 enum MarginDirection { kBlockDirection, kInlineDirection };
-enum BackgroundRectType { kBackgroundClipRect, kBackgroundKnownOpaqueRect };
+
+enum BackgroundRectType {
+  kBackgroundPaintedExtent,
+  kBackgroundKnownOpaqueRect,
+};
 
 enum ShouldComputePreferred { kComputeActual, kComputePreferred };
 
@@ -2114,9 +2118,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return ItemPosition::kStretch;
   }
 
-  // Returns false if it could not cheaply compute the extent (e.g. fixed
-  // background), in which case the returned rect may be incorrect.
-  bool GetBackgroundPaintedExtent(PhysicalRect&) const;
+  PhysicalRect BackgroundPaintedExtent() const;
   virtual bool ForegroundIsKnownToBeOpaqueInRect(
       const PhysicalRect& local_rect,
       unsigned max_depth_to_test) const;
@@ -2338,6 +2340,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
         container_box->Size().Width() - Size().Width() - Location().X(),
         Location().Y());
   }
+
+  bool BackgroundClipBorderBoxIsEquivalentToPaddingBox() const;
 
   // The CSS border box rect for this box.
   //

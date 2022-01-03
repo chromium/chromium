@@ -97,7 +97,6 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
-#include "third_party/blink/renderer/core/paint/background_image_geometry.h"
 #include "third_party/blink/renderer/core/paint/box_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
@@ -1542,59 +1541,77 @@ PhysicalRect LayoutBox::PhysicalBackgroundRect(
   if (rect_type == kBackgroundKnownOpaqueRect && BackgroundTransfersToView())
     return PhysicalRect();
 
-  EFillBox background_box = EFillBox::kText;
+  absl::optional<EFillBox> background_box;
+  Color background_color = ResolveColor(GetCSSPropertyBackgroundColor());
   // Find the largest background rect of the given opaqueness.
-  if (const FillLayer* current = &(StyleRef().BackgroundLayers())) {
-    do {
-      const FillLayer* cur = current;
-      current = current->Next();
-      if (rect_type == kBackgroundKnownOpaqueRect) {
-        if (cur->GetBlendMode() != BlendMode::kNormal ||
-            cur->Composite() != kCompositeSourceOver)
-          continue;
+  for (const FillLayer* cur = &(StyleRef().BackgroundLayers()); cur;
+       cur = cur->Next()) {
+    EFillBox current_clip = cur->Clip();
+    if (rect_type == kBackgroundKnownOpaqueRect) {
+      if (current_clip == EFillBox::kText)
+        continue;
 
-        bool layer_known_opaque = false;
-        // Check if the image is opaque and fills the clip.
-        if (const StyleImage* image = cur->GetImage()) {
-          if ((cur->RepeatX() == EFillRepeat::kRepeatFill ||
-               cur->RepeatX() == EFillRepeat::kRoundFill) &&
-              (cur->RepeatY() == EFillRepeat::kRepeatFill ||
-               cur->RepeatY() == EFillRepeat::kRoundFill) &&
-              image->KnownToBeOpaque(GetDocument(), StyleRef())) {
-            layer_known_opaque = true;
-          }
+      if (cur->GetBlendMode() != BlendMode::kNormal ||
+          cur->Composite() != kCompositeSourceOver)
+        continue;
+
+      bool layer_known_opaque = false;
+      // Check if the image is opaque and fills the clip.
+      if (const StyleImage* image = cur->GetImage()) {
+        if ((cur->RepeatX() == EFillRepeat::kRepeatFill ||
+             cur->RepeatX() == EFillRepeat::kRoundFill) &&
+            (cur->RepeatY() == EFillRepeat::kRepeatFill ||
+             cur->RepeatY() == EFillRepeat::kRoundFill) &&
+            image->KnownToBeOpaque(GetDocument(), StyleRef())) {
+          layer_known_opaque = true;
         }
-
-        // The background color is painted into the last layer.
-        if (!cur->Next()) {
-          Color background_color =
-              ResolveColor(GetCSSPropertyBackgroundColor());
-          if (!background_color.HasAlpha())
-            layer_known_opaque = true;
-        }
-
-        // If neither the image nor the color are opaque then skip this layer.
-        if (!layer_known_opaque)
-          continue;
       }
-      EFillBox current_clip = cur->Clip();
-      // Restrict clip if attachment is local.
-      if (current_clip == EFillBox::kBorder &&
-          cur->Attachment() == EFillAttachment::kLocal)
-        current_clip = EFillBox::kPadding;
 
-      // If we're asking for the clip rect, a content-box clipped fill layer can
-      // be scrolled into the padding box of the overflow container.
-      if (rect_type == kBackgroundClipRect &&
-          current_clip == EFillBox::kContent &&
+      // The background color is painted into the last layer.
+      if (!cur->Next() && !background_color.HasAlpha())
+        layer_known_opaque = true;
+
+      // If neither the image nor the color are opaque then skip this layer.
+      if (!layer_known_opaque)
+        continue;
+    } else {
+      // Ignore invisible background layers for kBackgroundPaintedExtent.
+      DCHECK_EQ(rect_type, kBackgroundPaintedExtent);
+      if (!cur->GetImage() && (cur->Next() || background_color.Alpha() == 0))
+        continue;
+      // A content-box clipped fill layer can be scrolled into the padding box
+      // of the overflow container.
+      if (current_clip == EFillBox::kContent &&
           cur->Attachment() == EFillAttachment::kLocal) {
         current_clip = EFillBox::kPadding;
       }
+    }
 
-      background_box = EnclosingFillBox(background_box, current_clip);
-    } while (current);
+    // Restrict clip if attachment is local.
+    if (current_clip == EFillBox::kBorder &&
+        cur->Attachment() == EFillAttachment::kLocal)
+      current_clip = EFillBox::kPadding;
+
+    background_box = background_box
+                         ? EnclosingFillBox(*background_box, current_clip)
+                         : current_clip;
   }
-  switch (background_box) {
+
+  if (!background_box)
+    return PhysicalRect();
+
+  if (*background_box == EFillBox::kText) {
+    DCHECK_NE(rect_type, kBackgroundKnownOpaqueRect);
+    *background_box = EFillBox::kBorder;
+  }
+
+  if (rect_type == kBackgroundPaintedExtent &&
+      *background_box == EFillBox::kBorder &&
+      BackgroundClipBorderBoxIsEquivalentToPaddingBox()) {
+    *background_box = EFillBox::kPadding;
+  }
+
+  switch (*background_box) {
     case EFillBox::kBorder:
       return PhysicalBorderBoxRect();
     case EFillBox::kPadding:
@@ -1602,7 +1619,7 @@ PhysicalRect LayoutBox::PhysicalBackgroundRect(
     case EFillBox::kContent:
       return PhysicalContentBoxRect();
     default:
-      break;
+      NOTREACHED();
   }
   return PhysicalRect();
 }
@@ -2618,39 +2635,9 @@ void LayoutBox::PaintBoxDecorationBackground(
   BoxPainter(*this).PaintBoxDecorationBackground(paint_info, paint_offset);
 }
 
-bool LayoutBox::GetBackgroundPaintedExtent(PhysicalRect& painted_extent) const {
+PhysicalRect LayoutBox::BackgroundPaintedExtent() const {
   NOT_DESTROYED();
-  DCHECK(StyleRef().HasBackground());
-
-  // LayoutView is special in the sense that it expands to the whole canvas,
-  // thus can't be handled by this function.
-  DCHECK(!IsA<LayoutView>(this));
-
-  PhysicalRect background_rect(PhysicalBorderBoxRect());
-
-  Color background_color = ResolveColor(GetCSSPropertyBackgroundColor());
-  if (background_color.Alpha()) {
-    painted_extent = background_rect;
-    return true;
-  }
-
-  const FillLayer& fill_layer = StyleRef().BackgroundLayers();
-  if (!fill_layer.GetImage() || fill_layer.Next()) {
-    painted_extent = background_rect;
-    return true;
-  }
-
-  BackgroundImageGeometry geometry(*this);
-  // TODO(schenney): This function should be rethought as it's called during
-  // and outside of the paint phase. Potentially returning different results at
-  // different phases. crbug.com/732934
-  geometry.Calculate(nullptr, PaintPhase::kBlockBackground, fill_layer,
-                     background_rect);
-  if (!geometry.HasNonLocalGeometry()) {
-    painted_extent = geometry.SnappedDestRect();
-    return true;
-  }
-  return false;
+  return PhysicalBackgroundRect(kBackgroundPaintedExtent);
 }
 
 bool LayoutBox::BackgroundIsKnownToBeOpaqueInRect(
@@ -2758,10 +2745,7 @@ bool LayoutBox::ComputeBackgroundIsKnownToBeObscured() const {
     return false;
   if (StyleRef().BoxShadow())
     return false;
-  PhysicalRect background_rect;
-  if (!GetBackgroundPaintedExtent(background_rect))
-    return false;
-  return ForegroundIsKnownToBeOpaqueInRect(background_rect,
+  return ForegroundIsKnownToBeOpaqueInRect(BackgroundPaintedExtent(),
                                            kBackgroundObscurationTestMaxDepth);
 }
 
@@ -8379,6 +8363,41 @@ static bool HasInsetBoxShadow(const ComputedStyle& style) {
   return false;
 }
 
+// If all borders and scrollbars are opaque, then background-clip: border-box
+// is equivalent to background-clip: padding-box.
+bool LayoutBox::BackgroundClipBorderBoxIsEquivalentToPaddingBox() const {
+  // Custom scrollbars may be translucent.
+  // TODO(flackr): Detect opaque custom scrollbars which would cover up a
+  // border-box background.
+  const auto* scrollable_area = GetScrollableArea();
+  if (scrollable_area &&
+      ((scrollable_area->HorizontalScrollbar() &&
+        scrollable_area->HorizontalScrollbar()->IsCustomScrollbar()) ||
+       (scrollable_area->VerticalScrollbar() &&
+        scrollable_area->VerticalScrollbar()->IsCustomScrollbar()))) {
+    return false;
+  }
+
+  if (StyleRef().BorderTopWidth() &&
+      (ResolveColor(GetCSSPropertyBorderTopColor()).HasAlpha() ||
+       StyleRef().BorderTopStyle() != EBorderStyle::kSolid))
+    return false;
+  if (StyleRef().BorderRightWidth() &&
+      (ResolveColor(GetCSSPropertyBorderRightColor()).HasAlpha() ||
+       StyleRef().BorderRightStyle() != EBorderStyle::kSolid))
+    return false;
+  if (StyleRef().BorderBottomWidth() &&
+      (ResolveColor(GetCSSPropertyBorderBottomColor()).HasAlpha() ||
+       StyleRef().BorderBottomStyle() != EBorderStyle::kSolid))
+    return false;
+  if (StyleRef().BorderLeftWidth() &&
+      (ResolveColor(GetCSSPropertyBorderLeftColor()).HasAlpha() ||
+       StyleRef().BorderLeftStyle() != EBorderStyle::kSolid))
+    return false;
+
+  return true;
+}
+
 BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocationIfComposited()
     const {
   NOT_DESTROYED();
@@ -8400,15 +8419,6 @@ BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocationIfComposited()
   // it doesn't scroll, so the background can only be painted in the main layer.
   if (HasInsetBoxShadow(StyleRef()))
     return kBackgroundPaintInBorderBoxSpace;
-
-  // TODO(flackr): Detect opaque custom scrollbars which would cover up a
-  // border-box background.
-  bool has_custom_scrollbars =
-      scrollable_area &&
-      ((scrollable_area->HorizontalScrollbar() &&
-        scrollable_area->HorizontalScrollbar()->IsCustomScrollbar()) ||
-       (scrollable_area->VerticalScrollbar() &&
-        scrollable_area->VerticalScrollbar()->IsCustomScrollbar()));
 
   // Assume optimistically that the background can be painted in the scrolling
   // contents until we find otherwise.
@@ -8433,21 +8443,8 @@ BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocationIfComposited()
       // A border box can be treated as a padding box if the border is opaque or
       // there is no border and we don't have custom scrollbars.
       if (clip == EFillBox::kBorder) {
-        if (!has_custom_scrollbars &&
-            (StyleRef().BorderTopWidth() == 0 ||
-             (!ResolveColor(GetCSSPropertyBorderTopColor()).HasAlpha() &&
-              StyleRef().BorderTopStyle() == EBorderStyle::kSolid)) &&
-            (StyleRef().BorderLeftWidth() == 0 ||
-             (!ResolveColor(GetCSSPropertyBorderLeftColor()).HasAlpha() &&
-              StyleRef().BorderLeftStyle() == EBorderStyle::kSolid)) &&
-            (StyleRef().BorderRightWidth() == 0 ||
-             (!ResolveColor(GetCSSPropertyBorderRightColor()).HasAlpha() &&
-              StyleRef().BorderRightStyle() == EBorderStyle::kSolid)) &&
-            (StyleRef().BorderBottomWidth() == 0 ||
-             (!ResolveColor(GetCSSPropertyBorderBottomColor()).HasAlpha() &&
-              StyleRef().BorderBottomStyle() == EBorderStyle::kSolid))) {
+        if (BackgroundClipBorderBoxIsEquivalentToPaddingBox())
           continue;
-        }
         // If we have an opaque background color, we can safely paint it into
         // both the scrolling contents layer and the graphics layer to preserve
         // LCD text. The background color is either the only background or

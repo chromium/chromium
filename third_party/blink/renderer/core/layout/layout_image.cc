@@ -280,10 +280,7 @@ bool LayoutImage::ComputeBackgroundIsKnownToBeObscured() const {
   if (!StyleRef().HasBackground())
     return false;
 
-  PhysicalRect painted_extent;
-  if (!GetBackgroundPaintedExtent(painted_extent))
-    return false;
-  return ForegroundIsKnownToBeOpaqueInRect(painted_extent, 0);
+  return ForegroundIsKnownToBeOpaqueInRect(BackgroundPaintedExtent(), 0);
 }
 
 LayoutUnit LayoutImage::MinimumReplacedHeight() const {

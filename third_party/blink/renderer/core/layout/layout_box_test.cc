@@ -187,31 +187,62 @@ TEST_P(LayoutBoxTest, ForegroundIsKnownToBeOpaqueInRectVerticalRL) {
 
 TEST_P(LayoutBoxTest, BackgroundRect) {
   SetBodyInnerHTML(R"HTML(
-    <style>div { position: absolute; width: 100px; height: 100px; padding:
-    10px; border: 10px solid black; overflow: scroll; }
-    #target1 { background:
-    url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg) border-box, green
-    content-box;}
-    #target2 { background:
-    url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg) content-box, green
-    local border-box;}
-    #target3 { background:
-    url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg) content-box, rgba(0,
-    255, 0, 0.5) border-box;}
-    #target4 { background-image:
-    url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg), none;
-               background-clip: content-box, border-box;
-               background-blend-mode: normal, multiply;
-               background-color: green; }
-    #target5 { background: none border-box, green content-box;}
-    #target6 { background: green content-box local; }
+    <style>
+      div { position: absolute; width: 100px; height: 100px;
+            padding: 10px; border: 10px solid black; overflow: scroll; }
+      #target1a, #target7a { border: 10px dashed black; }
+      #target1, #target1a {
+        background:
+            url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg) border-box,
+            green content-box;
+      }
+      #target1b {
+        background:
+            url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg) border-box;
+      }
+      #target2 {
+        background:
+            url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg) content-box,
+            green local border-box;
+      }
+      #target2b {
+        background:
+            url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg) content-box;
+      }
+      #target3 {
+        background:
+            url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg) content-box,
+            rgba(0, 255, 0, 0.5) border-box;
+      }
+      #target4 {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg),
+                          none;
+        background-clip: content-box, border-box;
+        background-blend-mode: normal, multiply;
+        background-color: green;
+      }
+      #target5 { background: none border-box, green content-box;}
+      #target6 { background: green content-box local; }
+      #target7, #target7a {
+        background-color: green;
+        -webkit-background-clip: text;
+      }
+      #target8 { background: transparent; }
+      #target9 { background: none; }
     </style>
     <div id='target1'></div>
+    <div id='target1a'></div>
+    <div id='target1b'></div>
     <div id='target2'></div>
+    <div id='target2b'></div>
     <div id='target3'></div>
     <div id='target4'></div>
     <div id='target5'></div>
     <div id='target6'></div>
+    <div id='target7'></div>
+    <div id='target7a'></div>
+    <div id='target8'></div>
+    <div id='target9'></div>
   )HTML");
 
   // #target1's opaque background color only fills the content box but its
@@ -219,8 +250,23 @@ TEST_P(LayoutBoxTest, BackgroundRect) {
   LayoutBox* layout_box = GetLayoutBoxByElementId("target1");
   EXPECT_EQ(PhysicalRect(20, 20, 100, 100),
             layout_box->PhysicalBackgroundRect(kBackgroundKnownOpaqueRect));
+  // The opaque border covers the translucent image outside of the padding box.
+  EXPECT_EQ(PhysicalRect(10, 10, 120, 120),
+            layout_box->PhysicalBackgroundRect(kBackgroundPaintedExtent));
+
+  // #target1a is the same as #target1 except that the border is not opaque.
+  layout_box = GetLayoutBoxByElementId("target1a");
+  EXPECT_EQ(PhysicalRect(20, 20, 100, 100),
+            layout_box->PhysicalBackgroundRect(kBackgroundKnownOpaqueRect));
   EXPECT_EQ(PhysicalRect(0, 0, 140, 140),
-            layout_box->PhysicalBackgroundRect(kBackgroundClipRect));
+            layout_box->PhysicalBackgroundRect(kBackgroundPaintedExtent));
+
+  // #target1b is the same as #target1 except no background color.
+  layout_box = GetLayoutBoxByElementId("target1b");
+  EXPECT_TRUE(
+      layout_box->PhysicalBackgroundRect(kBackgroundKnownOpaqueRect).IsEmpty());
+  EXPECT_EQ(PhysicalRect(10, 10, 120, 120),
+            layout_box->PhysicalBackgroundRect(kBackgroundPaintedExtent));
 
   // #target2's background color is opaque but only fills the padding-box
   // because it has local attachment. This eclipses the content-box image.
@@ -228,29 +274,36 @@ TEST_P(LayoutBoxTest, BackgroundRect) {
   EXPECT_EQ(PhysicalRect(10, 10, 120, 120),
             layout_box->PhysicalBackgroundRect(kBackgroundKnownOpaqueRect));
   EXPECT_EQ(PhysicalRect(10, 10, 120, 120),
-            layout_box->PhysicalBackgroundRect(kBackgroundClipRect));
+            layout_box->PhysicalBackgroundRect(kBackgroundPaintedExtent));
 
-  // #target3's background color is not opaque so we only have a clip rect.
+  // #target2b is the same as #target2 except no background color.
+  layout_box = GetLayoutBoxByElementId("target2b");
+  EXPECT_TRUE(
+      layout_box->PhysicalBackgroundRect(kBackgroundKnownOpaqueRect).IsEmpty());
+  EXPECT_EQ(PhysicalRect(20, 20, 100, 100),
+            layout_box->PhysicalBackgroundRect(kBackgroundPaintedExtent));
+
+  // #target3's background color is not opaque.
   layout_box = GetLayoutBoxByElementId("target3");
   EXPECT_TRUE(
       layout_box->PhysicalBackgroundRect(kBackgroundKnownOpaqueRect).IsEmpty());
-  EXPECT_EQ(PhysicalRect(0, 0, 140, 140),
-            layout_box->PhysicalBackgroundRect(kBackgroundClipRect));
+  EXPECT_EQ(PhysicalRect(10, 10, 120, 120),
+            layout_box->PhysicalBackgroundRect(kBackgroundPaintedExtent));
 
   // #target4's background color has a blend mode so it isn't opaque.
   layout_box = GetLayoutBoxByElementId("target4");
   EXPECT_TRUE(
       layout_box->PhysicalBackgroundRect(kBackgroundKnownOpaqueRect).IsEmpty());
-  EXPECT_EQ(PhysicalRect(0, 0, 140, 140),
-            layout_box->PhysicalBackgroundRect(kBackgroundClipRect));
+  EXPECT_EQ(PhysicalRect(10, 10, 120, 120),
+            layout_box->PhysicalBackgroundRect(kBackgroundPaintedExtent));
 
   // #target5's solid background only covers the content-box but it has a "none"
   // background covering the border box.
   layout_box = GetLayoutBoxByElementId("target5");
   EXPECT_EQ(PhysicalRect(20, 20, 100, 100),
             layout_box->PhysicalBackgroundRect(kBackgroundKnownOpaqueRect));
-  EXPECT_EQ(PhysicalRect(0, 0, 140, 140),
-            layout_box->PhysicalBackgroundRect(kBackgroundClipRect));
+  EXPECT_EQ(PhysicalRect(20, 20, 100, 100),
+            layout_box->PhysicalBackgroundRect(kBackgroundPaintedExtent));
 
   // Because it can scroll due to local attachment, the opaque local background
   // in #target6 is treated as padding box for the clip rect, but remains the
@@ -259,7 +312,36 @@ TEST_P(LayoutBoxTest, BackgroundRect) {
   EXPECT_EQ(PhysicalRect(20, 20, 100, 100),
             layout_box->PhysicalBackgroundRect(kBackgroundKnownOpaqueRect));
   EXPECT_EQ(PhysicalRect(10, 10, 120, 120),
-            layout_box->PhysicalBackgroundRect(kBackgroundClipRect));
+            layout_box->PhysicalBackgroundRect(kBackgroundPaintedExtent));
+
+  // #target7 has background-clip:text. The background may extend to the border
+  // box.
+  layout_box = GetLayoutBoxByElementId("target7");
+  EXPECT_TRUE(
+      layout_box->PhysicalBackgroundRect(kBackgroundKnownOpaqueRect).IsEmpty());
+  EXPECT_EQ(PhysicalRect(10, 10, 120, 120),
+            layout_box->PhysicalBackgroundRect(kBackgroundPaintedExtent));
+
+  // #target7a is the same as #target1 except that the border is not opaque.
+  layout_box = GetLayoutBoxByElementId("target7a");
+  EXPECT_TRUE(
+      layout_box->PhysicalBackgroundRect(kBackgroundKnownOpaqueRect).IsEmpty());
+  EXPECT_EQ(PhysicalRect(0, 0, 140, 140),
+            layout_box->PhysicalBackgroundRect(kBackgroundPaintedExtent));
+
+  // background: none
+  layout_box = GetLayoutBoxByElementId("target8");
+  EXPECT_TRUE(
+      layout_box->PhysicalBackgroundRect(kBackgroundKnownOpaqueRect).IsEmpty());
+  EXPECT_TRUE(
+      layout_box->PhysicalBackgroundRect(kBackgroundPaintedExtent).IsEmpty());
+
+  // background: transparent
+  layout_box = GetLayoutBoxByElementId("target9");
+  EXPECT_TRUE(
+      layout_box->PhysicalBackgroundRect(kBackgroundKnownOpaqueRect).IsEmpty());
+  EXPECT_TRUE(
+      layout_box->PhysicalBackgroundRect(kBackgroundPaintedExtent).IsEmpty());
 }
 
 TEST_P(LayoutBoxTest, LocationContainer) {
