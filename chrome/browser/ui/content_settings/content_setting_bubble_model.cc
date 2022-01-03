@@ -441,7 +441,7 @@ ContentSettingRPHBubbleModel::ContentSettingRPHBubbleModel(
   std::u16string radio_ignore_label =
       l10n_util::GetStringUTF16(IDS_REGISTER_PROTOCOL_HANDLER_IGNORE);
 
-  const GURL& url = web_contents->GetURL();
+  const GURL& url = web_contents->GetLastCommittedURL();
   RadioGroup radio_group;
   radio_group.url = url;
 

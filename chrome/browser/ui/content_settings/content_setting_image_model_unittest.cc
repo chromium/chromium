@@ -555,8 +555,9 @@ TEST_F(ContentSettingImageModelTest, SensorAccessPermissionsChanged) {
     settings_map->SetDefaultContentSetting(ContentSettingsType::SENSORS,
                                            CONTENT_SETTING_BLOCK);
     settings_map->SetContentSettingDefaultScope(
-        web_contents()->GetURL(), web_contents()->GetURL(),
-        ContentSettingsType::SENSORS, CONTENT_SETTING_ALLOW);
+        web_contents()->GetLastCommittedURL(),
+        web_contents()->GetLastCommittedURL(), ContentSettingsType::SENSORS,
+        CONTENT_SETTING_ALLOW);
     content_settings->OnContentAllowed(ContentSettingsType::SENSORS);
 
     UpdateModelAndVerifyStates(
@@ -575,8 +576,9 @@ TEST_F(ContentSettingImageModelTest, SensorAccessPermissionsChanged) {
     settings_map->SetDefaultContentSetting(ContentSettingsType::SENSORS,
                                            CONTENT_SETTING_ALLOW);
     settings_map->SetContentSettingDefaultScope(
-        web_contents()->GetURL(), web_contents()->GetURL(),
-        ContentSettingsType::SENSORS, CONTENT_SETTING_BLOCK);
+        web_contents()->GetLastCommittedURL(),
+        web_contents()->GetLastCommittedURL(), ContentSettingsType::SENSORS,
+        CONTENT_SETTING_BLOCK);
     content_settings->OnContentBlocked(ContentSettingsType::SENSORS);
 
     UpdateModelAndVerifyStates(
