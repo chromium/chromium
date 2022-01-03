@@ -48,7 +48,7 @@ compile_js_files = [
   "models/video_saver.ts",
   "mojo/chrome_helper.ts",
   "mojo/device_operator.js",
-  "mojo/image_capture.js",
+  "mojo/image_capture.ts",
   "mojo/type.ts",
   "mojo/util.ts",
   "nav.ts",

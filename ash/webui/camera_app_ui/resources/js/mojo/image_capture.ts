@@ -6,7 +6,6 @@ import {bitmapToJpegBlob} from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
 import {DeviceOperator} from './device_operator.js';
-// eslint-disable-next-line no-unused-vars
 import {Effect} from './type.js';
 import {closeEndpoint} from './util.js';
 
@@ -15,32 +14,29 @@ import {closeEndpoint} from './util.js';
  */
 export class CrosImageCapture {
   /**
-   * @param {!MediaStreamTrack} videoTrack A video track whose still images will
-   *     be taken.
+   * The id of target media device.
    */
-  constructor(videoTrack) {
-    /**
-     * The id of target media device.
-     * @type {string}
-     * @private
-     */
-    this.deviceId_ = videoTrack.getSettings().deviceId;
+  private readonly deviceId: string;
 
-    /**
-     * The standard ImageCapture object.
-     * @type {!ImageCapture}
-     * @private
-     */
-    this.capture_ = new ImageCapture(videoTrack);
+  /**
+   * The standard ImageCapture object.
+   */
+  private readonly capture: ImageCapture;
+
+  /**
+   * @param videoTrack A video track whose still images will be taken.
+   */
+  constructor(videoTrack: MediaStreamTrack) {
+    this.deviceId = videoTrack.getSettings().deviceId;
+    this.capture = new ImageCapture(videoTrack);
   }
 
   /**
    * Gets the photo capabilities with the available options/effects.
-   * @return {!Promise<!PhotoCapabilities>} Promise
-   *     for the result.
+   * @return Promise for the result.
    */
-  async getPhotoCapabilities() {
-    return this.capture_.getPhotoCapabilities();
+  async getPhotoCapabilities(): Promise<PhotoCapabilities> {
+    return this.capture.getPhotoCapabilities();
   }
 
   /**
@@ -49,49 +45,44 @@ export class CrosImageCapture {
    * effects, and the first promise in the returned array will always resolve
    * with the unreprocessed photo. The returned array will be resolved once it
    * received the shutter event.
-   * @param {!PhotoSettings} photoSettings Photo settings for ImageCapture's
-   *     takePhoto().
-   * @param {!Array<!Effect>=} photoEffects Photo effects to be
-   *     applied.
-   * @return {!Promise<!Array<!Promise<!Blob>>>} A promise of the array
-   *     containing promise of each blob result.
+   * @param photoSettings Photo settings for ImageCapture's takePhoto().
+   * @param photoEffects Photo effects to be applied.
+   * @return A promise of the array containing promise of each blob result.
    */
-  async takePhoto(photoSettings, photoEffects = []) {
+  async takePhoto(photoSettings: PhotoSettings, photoEffects: Effect[] = []):
+      Promise<Array<Promise<Blob>>> {
     const deviceOperator = await DeviceOperator.getInstance();
     if (deviceOperator === null && photoEffects.length > 0) {
       throw new Error('Applying effects is not supported on this device');
     }
 
     const takes =
-        await deviceOperator.setReprocessOptions(this.deviceId_, photoEffects);
+        await deviceOperator.setReprocessOptions(this.deviceId, photoEffects);
     if (deviceOperator !== null) {
       const onShutterDone = new WaitableEvent();
       const shutterObserver =
-          await deviceOperator.addShutterObserver(this.deviceId_, () => {
+          await deviceOperator.addShutterObserver(this.deviceId, () => {
             onShutterDone.signal();
           });
-      takes.unshift(this.capture_.takePhoto(photoSettings));
+      takes.unshift(this.capture.takePhoto(photoSettings));
       await onShutterDone.wait();
       closeEndpoint(shutterObserver);
       return takes;
     } else {
-      takes.unshift(this.capture_.takePhoto(photoSettings));
+      takes.unshift(this.capture.takePhoto(photoSettings));
       return takes;
     }
   }
 
-  /**
-   * @return {!Promise<!ImageBitmap>}
-   */
-  grabFrame() {
-    return this.capture_.grabFrame();
+  grabFrame(): Promise<ImageBitmap> {
+    return this.capture.grabFrame();
   }
 
   /**
-   * @return {!Promise<!Blob>} Returns jpeg blob of the grabbed frame.
+   * @return Returns jpeg blob of the grabbed frame.
    */
-  async grabJpegFrame() {
-    const bitmap = await this.capture_.grabFrame();
+  async grabJpegFrame(): Promise<Blob> {
+    const bitmap = await this.capture.grabFrame();
     return bitmapToJpegBlob(bitmap);
   }
 }
