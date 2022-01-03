@@ -1365,7 +1365,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   content::SimulateMouseClickOrTapElementWithId(WebContents(),
                                                 "input_submit_button");
   submit_observer.Wait();
-  std::string query = WebContents()->GetURL().query();
+  std::string query = WebContents()->GetLastCommittedURL().query();
   EXPECT_THAT(query, testing::HasSubstr("random_secret"));
 }
 
