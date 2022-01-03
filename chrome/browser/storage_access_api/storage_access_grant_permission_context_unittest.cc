@@ -293,10 +293,7 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantDenial) {
                                      /*DENIED=*/1, 1);
 }
 
-TEST_F(StorageAccessGrantPermissionContextTest, ExplicitGrantAccept) {
-  base::test::ScopedFeatureList scoped_enable;
-  scoped_enable.InitAndEnableFeature(blink::features::kStorageAccessAPI);
-
+TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantAccept) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kGrantIsImplicitHistogram, 0);
   histogram_tester.ExpectTotalCount(kPromptResultHistogram, 0);

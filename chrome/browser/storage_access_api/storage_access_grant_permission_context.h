@@ -30,7 +30,7 @@ class StorageAccessGrantPermissionContext
                            ImplicitGrantLimitPerRequestingOrigin);
   FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextAPIEnabledTest,
                            ExplicitGrantDenial);
-  FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextTest,
+  FRIEND_TEST_ALL_PREFIXES(StorageAccessGrantPermissionContextAPIEnabledTest,
                            ExplicitGrantAccept);
   friend class StorageAccessGrantPermissionContextTest;
   friend class StorageAccessGrantPermissionContextAPIEnabledTest;
