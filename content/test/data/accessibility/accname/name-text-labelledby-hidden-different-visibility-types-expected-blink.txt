@@ -1,2 +1,1 @@
-#FIXME(crbug.com/1276936): expect 'b c d e'
-textField name='b cd e' nameFrom=relatedElement
+textField name='b c d e' nameFrom=relatedElement

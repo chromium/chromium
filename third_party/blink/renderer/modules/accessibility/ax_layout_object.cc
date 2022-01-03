@@ -1147,6 +1147,10 @@ String AXLayoutObject::TextAlternative(
         name_sources->back().type = name_from;
         name_sources->back().text = text_alternative.value();
       }
+      // Ensure that text nodes count toward
+      // kMaxDescendantsForTextAlternativeComputation when calculating the name
+      // for their direct parent (see AXNodeObject::TextFromDescendants).
+      visited.insert(this);
       return text_alternative.value();
     }
   }

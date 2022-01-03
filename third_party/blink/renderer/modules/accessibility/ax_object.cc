@@ -2893,6 +2893,9 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     // with included children.
     if (IsA<HTMLMapElement>(parent_node))
       return true;
+    // Necessary to calculate the accessible description of a ruby node.
+    if (IsA<HTMLRTElement>(parent_node))
+      return true;
   }
 
   if (const Element* owner = node->OwnerShadowHost()) {
@@ -2918,6 +2921,11 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
       return false;
     }
   }
+
+  // Portals don't directly expose their contents as the contents are not
+  // focusable, but they use them to compute a default accessible name.
+  if (GetDocument()->GetPage() && GetDocument()->GetPage()->InsidePortal())
+    return true;
 
   Element* element = GetElement();
   if (!element)
@@ -2984,7 +2992,7 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   // browsers that do not support ruby. Hence, their contents should not be
   // included in the accessible description, unless another condition in this
   // method decides to keep them in the tree for some reason.
-  if (element->HasTagName(html_names::kRtTag))
+  if (IsA<HTMLRTElement>(element))
     return true;
 
   // Preserve SVG grouping elements.
@@ -3559,6 +3567,13 @@ bool AXObject::IsHiddenForTextAlternativeCalculation(
   // Always contribute SVG <desc> despite it having a hidden style by default.
   if (IsA<SVGDescElement>(node))
     return false;
+
+  // Markers do not contribute to the accessible name.
+  // TODO(accessibility): Chrome has never included markers, but that's
+  // actually undefined behavior. We will have to revisit after this is
+  // settled, see: https://github.com/w3c/accname/issues/76
+  if (node->IsMarkerPseudoElement())
+    return true;
 
   // Step 2A from: http://www.w3.org/TR/accname-aam-1.1
   // When traversing an aria-labelledby relation where the targeted node is

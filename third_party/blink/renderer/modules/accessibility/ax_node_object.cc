@@ -3373,6 +3373,9 @@ String AXNodeObject::TextFromDescendants(
     AXObjectSet& visited,
     const AXObject* aria_label_or_description_root,
     bool recursive) const {
+#if defined(AX_FAIL_FAST_BUILD)
+  DCHECK(!is_adding_children_);
+#endif
   if (!CanHaveChildren())
     return recursive ? String() : GetElement()->GetInnerTextWithoutUpdate();
 
@@ -3381,56 +3384,10 @@ String AXNodeObject::TextFromDescendants(
   ax::mojom::blink::NameFrom last_used_name_from =
       ax::mojom::blink::NameFrom::kUninitialized;
 
-  AXObjectVector children;
-
-  HeapVector<Member<AXObject>> owned_children;
-  AXObjectCache().ValidatedAriaOwnedChildren(this, owned_children);
-
-  if (ShouldUseLayoutObjectTraversalForChildren()) {
-    // This is a pseudo element and its descendants don't have an associated
-    // node, so we cannot use a DOM traversal. In this case, we can traverse the
-    // children of the accessible object directly, because CSS ::before and
-    // ::after do generate accessibility nodes.
-    // We include only ::before and ::after pseudo elements, because these are
-    // the only ones explicitly specified in the accname spec.
-    // TODO(accessibility): Chrome has never included markers, but that's
-    // actually undefined behavior. We will have to revisit after this is
-    // settled, see: https://github.com/w3c/accname/issues/76
-    if (GetElement() && (GetElement()->GetPseudoId() == kPseudoIdBefore ||
-                         GetElement()->GetPseudoId() == kPseudoIdAfter)) {
-      for (const auto& child : ChildrenIncludingIgnored())
-        children.push_back(child);
-    }
-  } else {
-    // For regular elements, we traverse the flattened DOM tree exposed by
-    // LayoutTreeBuilderTraversal that includes pseudo elements such as
-    // ::before, but not their children. We don't traverse the accessibility
-    // tree because it doesn't contain all the nodes we need. In particular, it
-    // will fail when there's a hidden node that is the target of an
-    // aria-labelledby or -describedby relation. Check content_browsertests at:
-    // All/DumpAccessibilityAccNameTest.NameTextLabelledbyHiddenWithHiddenChild/blink
-    // TODO(accessibility): Revisit this code after an agreement for the case
-    // explained above is reached, see: https://github.com/w3c/accname/issues/57
-    for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
-         child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
-      auto* child_text_node = DynamicTo<Text>(child);
-      if (child_text_node &&
-          child_text_node->wholeText().ContainsOnlyWhitespaceOrEmpty()) {
-        // skip over empty text nodes
-        continue;
-      }
-      AXObject* child_obj = AXObjectCache().GetOrCreate(child);
-      if (child_obj && !AXObjectCache().IsAriaOwned(child_obj))
-        children.push_back(child_obj);
-    }
-  }
-  for (const auto& owned_child : owned_children)
-    children.push_back(owned_child);
-
-  for (AXObject* child : children) {
+  for (AXObject* child : ChildrenIncludingIgnored()) {
     constexpr size_t kMaxDescendantsForTextAlternativeComputation = 100;
-    if (visited.size() > kMaxDescendantsForTextAlternativeComputation + 1)
-      break;  // Need to add 1 because the root naming node is in the list.
+    if (visited.size() > kMaxDescendantsForTextAlternativeComputation)
+      break;
 
     // Don't recurse into children that are explicitly hidden.
     // Note that we don't call IsInert()/IsAriaHidden because they would return

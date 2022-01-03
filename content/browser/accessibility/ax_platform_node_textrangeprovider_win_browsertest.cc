@@ -461,8 +461,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   ComPtr<IRawElementProviderSimple> before_link_text_raw =
       QueryInterfaceFromNode<IRawElementProviderSimple>(before_link_text_node);
 
-  BrowserAccessibility* link_node = FindNode(
-      ax::mojom::Role::kLink, "Link text 1 Link text 2Link text 3 Link text 4");
+  BrowserAccessibility* link_node =
+      FindNode(ax::mojom::Role::kLink,
+               "Link text 1 Link text 2 Link text 3 Link text 4");
   ASSERT_NE(nullptr, link_node);
   ComPtr<IRawElementProviderSimple> link_raw =
       QueryInterfaceFromNode<IRawElementProviderSimple>(link_node);
