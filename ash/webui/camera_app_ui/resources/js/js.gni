@@ -22,7 +22,7 @@ compile_js_files = [
   "focus_ring.ts",
   "gallerybutton.ts",
   "geometry.ts",
-  "h264.js",
+  "h264.ts",
   "i18n_string.ts",
   "init.ts",
   "intent.ts",

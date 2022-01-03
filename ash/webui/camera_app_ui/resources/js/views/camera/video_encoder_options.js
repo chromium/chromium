@@ -198,7 +198,7 @@ export class VideoEncoderOptions {
    */
   initVideoProfile_() {
     // TODO(b/151047420): Remove options and use the largest supported profile.
-    for (const profile of Object.values(h264.Profile)) {
+    for (const profile of h264.profileValues) {
       const tpl = util.instantiateTemplate('#video-profile-option-template');
       const option = dom.getFrom(tpl, 'option', HTMLOptionElement);
       option.value = profile.toString();
