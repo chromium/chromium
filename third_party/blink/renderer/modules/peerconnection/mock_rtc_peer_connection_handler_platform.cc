@@ -24,6 +24,12 @@ namespace blink {
 
 namespace {
 
+webrtc::PeerConnectionInterface::RTCConfiguration DefaultConfiguration() {
+  webrtc::PeerConnectionInterface::RTCConfiguration config;
+  config.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
+  return config;
+}
+
 // Having a refcounted helper class allows multiple DummyRTCRtpSenderPlatform to
 // share the same internal states.
 class DummyRtpSenderInternal
@@ -302,7 +308,8 @@ void MockRTCPeerConnectionHandlerPlatform::SetRemoteDescription(
 
 const webrtc::PeerConnectionInterface::RTCConfiguration&
 MockRTCPeerConnectionHandlerPlatform::GetConfiguration() const {
-  static const webrtc::PeerConnectionInterface::RTCConfiguration configuration;
+  static const webrtc::PeerConnectionInterface::RTCConfiguration configuration =
+      DefaultConfiguration();
   return configuration;
 }
 
