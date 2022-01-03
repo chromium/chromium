@@ -1424,7 +1424,11 @@ chromium-metrics-reviews@google.com.
   <suffix name="LessThan1ms" label="Ratio when main frame shorter than 1ms."/>
   <suffix name="MoreThan5ms" label="Ratio when main frame longer than 5ms."/>
   <affected-histogram name="Blink.MainFrame.AnimateRatio"/>
-  <affected-histogram name="Blink.MainFrame.CompositingAssignmentsRatio"/>
+  <affected-histogram name="Blink.MainFrame.CompositingAssignmentsRatio">
+    <obsolete>
+      No longer recorded after M97 with the launch of CompositeAfterPaint.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="Blink.MainFrame.CompositingCommitRatio"/>
   <affected-histogram name="Blink.MainFrame.CompositingInputsRatio"/>
   <affected-histogram name="Blink.MainFrame.CompositingRatio"/>
@@ -1451,7 +1455,11 @@ chromium-metrics-reviews@google.com.
       name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Animate.UpdateTime"/>
   <affected-histogram name="Blink.Compositing.UpdateTime"/>
-  <affected-histogram name="Blink.CompositingAssignments.UpdateTime"/>
+  <affected-histogram name="Blink.CompositingAssignments.UpdateTime">
+    <obsolete>
+      No longer recorded after M97 with the launch of CompositeAfterPaint.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="Blink.CompositingCommit.UpdateTime"/>
   <affected-histogram name="Blink.CompositingInputs.UpdateTime"/>
   <affected-histogram name="Blink.ContentDocumentUpdate.UpdateTime"/>
@@ -1486,7 +1494,11 @@ chromium-metrics-reviews@google.com.
       name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Animate.UpdateTime"/>
   <affected-histogram name="Blink.Compositing.UpdateTime"/>
-  <affected-histogram name="Blink.CompositingAssignments.UpdateTime"/>
+  <affected-histogram name="Blink.CompositingAssignments.UpdateTime">
+    <obsolete>
+      No longer recorded after M97 with the launch of CompositeAfterPaint.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="Blink.CompositingCommit.UpdateTime"/>
   <affected-histogram name="Blink.CompositingInputs.UpdateTime"/>
   <affected-histogram name="Blink.ContentDocumentUpdate.UpdateTime"/>
@@ -1521,7 +1533,11 @@ chromium-metrics-reviews@google.com.
       name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Animate.UpdateTime"/>
   <affected-histogram name="Blink.Compositing.UpdateTime"/>
-  <affected-histogram name="Blink.CompositingAssignments.UpdateTime"/>
+  <affected-histogram name="Blink.CompositingAssignments.UpdateTime">
+    <obsolete>
+      No longer recorded after M97 with the launch of CompositeAfterPaint.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="Blink.CompositingCommit.UpdateTime"/>
   <affected-histogram name="Blink.CompositingInputs.UpdateTime"/>
   <affected-histogram name="Blink.ContentDocumentUpdate.UpdateTime"/>
@@ -2271,7 +2287,11 @@ chromium-metrics-reviews@google.com.
              composite commit."/>
   <suffix name="SendBeginMainFrameToCommit.CompositingAssignments"
       label="The time portion of SendBeginMainFrameToCommit spent on updating
-             compositing assignments."/>
+             compositing assignments.">
+    <obsolete>
+      No longer recorded after M97 with the launch of CompositeAfterPaint.
+    </obsolete>
+  </suffix>
   <suffix name="SendBeginMainFrameToCommit.CompositingInputs"
       label="The time portion of SendBeginMainFrameToCommit spent on updating
              compositing inputs."/>

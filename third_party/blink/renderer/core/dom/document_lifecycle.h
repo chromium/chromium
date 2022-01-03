@@ -74,9 +74,6 @@ class CORE_EXPORT DocumentLifecycle {
     kInPrePaint,
     kPrePaintClean,
 
-    kInCompositingAssignmentsUpdate,
-    kCompositingAssignmentsClean,
-
     // In InPaint step, paint artifacts are generated and raster invalidations
     // are issued.
     // In CAP, composited layers are generated/updated.
@@ -245,7 +242,6 @@ inline bool DocumentLifecycle::StateAllowsTreeMutations() const {
   // TODO: We should not allow mutations in AfterPerformLayout
   // either, but we need to fix MediaList listeners and plugins first.
   return state_ != kInStyleRecalc && state_ != kInPerformLayout &&
-         state_ != kInCompositingAssignmentsUpdate &&
          state_ != kInCompositingInputsUpdate && state_ != kInPrePaint &&
          state_ != kInPaint;
 }
@@ -257,8 +253,7 @@ inline bool DocumentLifecycle::StateAllowsLayoutTreeMutations() const {
 inline bool DocumentLifecycle::StateAllowsDetach() const {
   return state_ == kVisualUpdatePending || state_ == kInStyleRecalc ||
          state_ == kStyleClean || state_ == kLayoutClean ||
-         state_ == kCompositingInputsClean ||
-         state_ == kCompositingAssignmentsClean || state_ == kPrePaintClean ||
+         state_ == kCompositingInputsClean || state_ == kPrePaintClean ||
          state_ == kPaintClean || state_ == kStopping || state_ == kInactive;
 }
 

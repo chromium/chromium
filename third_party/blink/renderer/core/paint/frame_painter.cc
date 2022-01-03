@@ -56,10 +56,10 @@ void FramePainter::Paint(GraphicsContext& context,
   if (!GetFrameView().CheckDoesNotNeedLayout())
     return;
 
-  // TODO(wangxianzhu): The following check should be stricter, but currently
-  // this is blocked by the svg root issue (crbug.com/442939).
-  DCHECK(document->Lifecycle().GetState() >=
-         DocumentLifecycle::kCompositingAssignmentsClean);
+  // TODO(pdr): The following should check that the lifecycle is
+  // DocumentLifecycle::kInPaint but drag images currently violate this.
+  DCHECK_GE(document->Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
 
   FramePaintTiming frame_paint_timing(context, &GetFrameView().GetFrame());
 

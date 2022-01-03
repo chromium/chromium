@@ -2057,14 +2057,13 @@ bool LocalFrameView::UpdateLifecycleToCompositingInputsClean(
 bool LocalFrameView::UpdateAllLifecyclePhasesExceptPaint(
     DocumentUpdateReason reason) {
   return GetFrame().LocalFrameRoot().View()->UpdateLifecyclePhases(
-      DocumentLifecycle::kCompositingAssignmentsClean, reason);
+      DocumentLifecycle::kPrePaintClean, reason);
 }
 
 void LocalFrameView::UpdateLifecyclePhasesForPrinting() {
   auto* local_frame_view_root = GetFrame().LocalFrameRoot().View();
   local_frame_view_root->UpdateLifecyclePhases(
-      DocumentLifecycle::kCompositingAssignmentsClean,
-      DocumentUpdateReason::kPrinting);
+      DocumentLifecycle::kPrePaintClean, DocumentUpdateReason::kPrinting);
 
   auto* detached_frame_view = this;
   while (detached_frame_view->IsAttached() &&
@@ -2081,9 +2080,8 @@ void LocalFrameView::UpdateLifecyclePhasesForPrinting() {
   // was not reached in some phases during during |local_frame_view_root->
   // UpdateLifecyclePhases()|. We need the subtree to be ready for
   // painting.
-  detached_frame_view->UpdateLifecyclePhases(
-      DocumentLifecycle::kCompositingAssignmentsClean,
-      DocumentUpdateReason::kPrinting);
+  detached_frame_view->UpdateLifecyclePhases(DocumentLifecycle::kPrePaintClean,
+                                             DocumentUpdateReason::kPrinting);
 }
 
 bool LocalFrameView::UpdateLifecycleToLayoutClean(DocumentUpdateReason reason) {
@@ -2205,7 +2203,6 @@ bool LocalFrameView::UpdateLifecyclePhases(
   DCHECK(target_state == DocumentLifecycle::kLayoutClean ||
          target_state == DocumentLifecycle::kAccessibilityClean ||
          target_state == DocumentLifecycle::kCompositingInputsClean ||
-         target_state == DocumentLifecycle::kCompositingAssignmentsClean ||
          target_state == DocumentLifecycle::kPrePaintClean ||
          target_state == DocumentLifecycle::kPaintClean);
   lifecycle_update_count_for_testing_++;
@@ -2367,12 +2364,6 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
              Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean);
       if (ShouldThrottleRendering() || !run_more_lifecycle_phases)
         return;
-
-      run_more_lifecycle_phases =
-          RunCompositingAssignmentsLifecyclePhase(target_state);
-      if (!run_more_lifecycle_phases) {
-        return;
-      }
     }
 
     // Some features may require several passes over style and layout
@@ -2443,8 +2434,7 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
 }
 
 bool LocalFrameView::RunScrollTimelineSteps() {
-  DCHECK_GE(Lifecycle().GetState(),
-            DocumentLifecycle::kCompositingAssignmentsClean);
+  DCHECK_GE(Lifecycle().GetState(), DocumentLifecycle::kPrePaintClean);
   bool re_run_lifecycles = false;
   ForAllNonThrottledLocalFrameViews(
       [&re_run_lifecycles](LocalFrameView& frame_view) {
@@ -2453,7 +2443,7 @@ bool LocalFrameView::RunScrollTimelineSteps() {
             ->GetDocumentAnimations()
             .ValidateTimelines();
         re_run_lifecycles |= (frame_view.Lifecycle().GetState() <
-                              DocumentLifecycle::kCompositingAssignmentsClean);
+                              DocumentLifecycle::kPrePaintClean);
       });
   return re_run_lifecycles;
 }
@@ -2578,28 +2568,6 @@ bool LocalFrameView::RunCompositingInputsLifecyclePhase(
   return target_state > DocumentLifecycle::kCompositingInputsClean;
 }
 
-bool LocalFrameView::RunCompositingAssignmentsLifecyclePhase(
-    DocumentLifecycle::LifecycleState target_state) {
-  TRACE_EVENT0("blink,benchmark",
-               "LocalFrameView::RunCompositingAssignmentsLifecyclePhase");
-  auto* layout_view = GetLayoutView();
-  DCHECK(layout_view);
-
-  ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-    frame_view.Lifecycle().AdvanceTo(
-        DocumentLifecycle::kCompositingAssignmentsClean);
-  });
-
-  frame_->GetPage()->GetValidationMessageClient().UpdatePrePaint();
-  ForAllNonThrottledLocalFrameViews([](LocalFrameView& view) {
-    view.frame_->UpdateFrameColorOverlayPrePaint();
-  });
-  if (auto* web_local_frame_impl = WebLocalFrameImpl::FromFrame(frame_))
-    web_local_frame_impl->UpdateDevToolsOverlaysPrePaint();
-
-  return target_state > DocumentLifecycle::kCompositingAssignmentsClean;
-}
-
 bool LocalFrameView::RunPrePaintLifecyclePhase(
     DocumentLifecycle::LifecycleState target_state) {
   TRACE_EVENT0("blink,benchmark", "LocalFrameView::RunPrePaintLifecyclePhase");
@@ -2659,6 +2627,13 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
     GetPage()->GetLinkHighlight().UpdateBeforePrePaint();
     PrePaintTreeWalk().WalkTree(*this);
     GetPage()->GetLinkHighlight().UpdateAfterPrePaint();
+
+    frame_->GetPage()->GetValidationMessageClient().UpdatePrePaint();
+    ForAllNonThrottledLocalFrameViews([](LocalFrameView& view) {
+      view.frame_->UpdateFrameColorOverlayPrePaint();
+    });
+    if (auto* web_local_frame_impl = WebLocalFrameImpl::FromFrame(frame_))
+      web_local_frame_impl->UpdateDevToolsOverlaysPrePaint();
   }
 
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {

@@ -842,7 +842,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Blink.CompositingAssignments.UpdateTime"
-    units="microseconds" expires_after="2022-05-15">
+    units="microseconds" expires_after="M97">
+  <obsolete>
+    No longer recorded after M97 with the launch of CompositeAfterPaint.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->
 
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePostFCPSuffixes" -->
@@ -872,11 +875,7 @@ chromium-metrics-reviews@google.com.
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Time spent updating and pushing layers at the end of the paint step in the
-    Blink document lifecycle. This is the new compositing approach in
-    CompositeAfterPaint and is largely implemented by PaintArtifactCompositor.
-    BlinkGenPropertyTrees is an incremental launch of part of the new
-    compositing approach and will use both this and
-    Blink.{CompositingInputs+CompositingAssignments}.UpdateTime.
+    Blink document lifecycle. This is implemented by PaintArtifactCompositor.
 
     Note: As of M70, this histogram has stopped recording metrics on machines
     with low-resolution clocks.

@@ -1833,15 +1833,15 @@ TEST_P(FrameThrottlingTest, ForceUnthrottled) {
   // through the lifecycle loop, the style change will cause the ResizeObserver
   // callback to run. The ResizeObserver will dirty the iframe element by
   // setting its width to 100px. At this point, the lifecycle state of the
-  // iframe will be kCompositingAssignmentsClean, which will cause
-  // ShouldThrottleRendering() to return true.
+  // iframe will be kPrePaintClean, which will cause ShouldThrottleRendering()
+  // to return true.
   //
   // Because ResizeObserver dirtied layout, there will be a second pass through
-  // the main lifecycle loop. When the iframe element runs layout again, setting
-  // its width to 100px, it will cause the iframe's contents to overflow, so the
-  // iframe will add a horizontal scrollbar and mark its LayoutView as needing
-  // paint property update. If the iframe's lifecycle state is still
-  // kCompositingAssignmentsClean, then it will skip pre-paint on the second
+  // the main lifecycle loop. When the iframe element runs layout again,
+  // setting its width to 100px, it will cause the iframe's contents to
+  // overflow, so the iframe will add a horizontal scrollbar and mark its
+  // LayoutView as needing paint property update. If the iframe's lifecycle
+  // state is still kPrePaintClean, then it will skip pre-paint on the second
   // pass through the lifecycle loop, leaving its paint properties in a dirty
   // state (bad). If, however, the iframe's lifecycle state is reset to
   // kVisualUpdatePending prior to the second pass through the loop, then it

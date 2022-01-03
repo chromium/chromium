@@ -205,13 +205,12 @@ class CompositorFrameReportingControllerTest : public testing::Test {
     breakdown->layout_update = base::Microseconds(7);
     breakdown->compositing_inputs = base::Microseconds(6);
     breakdown->prepaint = base::Microseconds(5);
-    breakdown->compositing_assignments = base::Microseconds(4);
     breakdown->paint = base::Microseconds(3);
     breakdown->composite_commit = base::Microseconds(2);
     breakdown->update_layers = base::Microseconds(1);
 
     // Advance now by the sum of the breakdowns.
-    AdvanceNowByMs(10 + 9 + 8 + 7 + 6 + 5 + 4 + 3 + 2 + 1);
+    AdvanceNowByMs(10 + 9 + 8 + 7 + 6 + 5 + 3 + 2 + 1);
 
     return breakdown;
   }
@@ -1020,9 +1019,6 @@ TEST_F(CompositorFrameReportingControllerTest, BlinkBreakdown) {
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency.SendBeginMainFrameToCommit.Prepaint",
       base::Microseconds(5).InMilliseconds(), 1);
-  histogram_tester.ExpectUniqueSample(
-      "CompositorLatency.SendBeginMainFrameToCommit.CompositingAssignments",
-      base::Microseconds(4).InMilliseconds(), 1);
   histogram_tester.ExpectUniqueSample(
       "CompositorLatency.SendBeginMainFrameToCommit.Paint",
       base::Microseconds(3).InMilliseconds(), 1);

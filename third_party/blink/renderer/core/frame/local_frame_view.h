@@ -374,6 +374,7 @@ class CORE_EXPORT LocalFrameView final
   // detached frame and need special handling of the frame.
   void UpdateLifecyclePhasesForPrinting();
 
+  // TODO(pdr): Remove this in favor of |UpdateAllLifecyclePhasesExceptPaint|.
   bool UpdateLifecycleToPrePaintClean(DocumentUpdateReason reason);
 
   // Computes the style, layout, and compositing inputs lifecycle stages if
@@ -870,8 +871,6 @@ class CORE_EXPORT LocalFrameView final
   bool RunAccessibilityLifecyclePhase(
       DocumentLifecycle::LifecycleState target_state);
   bool RunCompositingInputsLifecyclePhase(
-      DocumentLifecycle::LifecycleState target_state);
-  bool RunCompositingAssignmentsLifecyclePhase(
       DocumentLifecycle::LifecycleState target_state);
   bool RunPrePaintLifecyclePhase(
       DocumentLifecycle::LifecycleState target_state);

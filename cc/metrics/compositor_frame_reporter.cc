@@ -261,9 +261,6 @@ constexpr const char* GetStageName(int stage_type_index,
     case static_cast<int>(BlinkBreakdown::kCompositingInputs) +
         kBlinkBreakdownInitialIndex:
       return "SendBeginMainFrameToCommit.CompositingInputs";
-    case static_cast<int>(BlinkBreakdown::kCompositingAssignments) +
-        kBlinkBreakdownInitialIndex:
-      return "SendBeginMainFrameToCommit.CompositingAssignments";
     case static_cast<int>(BlinkBreakdown::kPaint) + kBlinkBreakdownInitialIndex:
       return "SendBeginMainFrameToCommit.Paint";
     case static_cast<int>(BlinkBreakdown::kCompositeCommit) +
@@ -404,8 +401,6 @@ CompositorFrameReporter::ProcessedBlinkBreakdown::ProcessedBlinkBreakdown(
   list_[static_cast<int>(BlinkBreakdown::kPrepaint)] = blink_breakdown.prepaint;
   list_[static_cast<int>(BlinkBreakdown::kCompositingInputs)] =
       blink_breakdown.compositing_inputs;
-  list_[static_cast<int>(BlinkBreakdown::kCompositingAssignments)] =
-      blink_breakdown.compositing_assignments;
   list_[static_cast<int>(BlinkBreakdown::kPaint)] = blink_breakdown.paint;
   list_[static_cast<int>(BlinkBreakdown::kCompositeCommit)] =
       blink_breakdown.composite_commit;
@@ -1155,9 +1150,6 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
                   break;
                 case static_cast<int>(BlinkBreakdown::kCompositingInputs):
                   reporter->set_compositing_inputs_us(latency);
-                  break;
-                case static_cast<int>(BlinkBreakdown::kCompositingAssignments):
-                  reporter->set_compositing_assignments_us(latency);
                   break;
                 case static_cast<int>(BlinkBreakdown::kPaint):
                   reporter->set_paint_us(latency);

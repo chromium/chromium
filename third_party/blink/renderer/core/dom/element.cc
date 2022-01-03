@@ -2179,8 +2179,7 @@ const AtomicString& Element::computedRole() {
   if (!document.IsActive() || !document.View())
     return g_null_atom;
   if (document.NeedsLayoutTreeUpdate() || document.View()->NeedsLayout() ||
-      document.Lifecycle().GetState() <
-          DocumentLifecycle::kCompositingAssignmentsClean) {
+      document.Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {
     document.View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kJavaScript);
   }
@@ -2193,8 +2192,7 @@ String Element::computedName() {
   if (!document.IsActive() || !document.View())
     return String();
   if (document.NeedsLayoutTreeUpdate() || document.View()->NeedsLayout() ||
-      document.Lifecycle().GetState() <
-          DocumentLifecycle::kCompositingAssignmentsClean) {
+      document.Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {
     document.View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kJavaScript);
   }

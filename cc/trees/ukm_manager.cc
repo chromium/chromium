@@ -227,7 +227,6 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_BLINK_BREAKDOWN(LayoutUpdate);
       CASE_FOR_BLINK_BREAKDOWN(Prepaint);
       CASE_FOR_BLINK_BREAKDOWN(CompositingInputs);
-      CASE_FOR_BLINK_BREAKDOWN(CompositingAssignments);
       CASE_FOR_BLINK_BREAKDOWN(Paint);
       CASE_FOR_BLINK_BREAKDOWN(CompositeCommit);
       CASE_FOR_BLINK_BREAKDOWN(UpdateLayers);
@@ -504,7 +503,6 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_BLINK_BREAKDOWN(LayoutUpdate);
         CASE_FOR_BLINK_BREAKDOWN(Prepaint);
         CASE_FOR_BLINK_BREAKDOWN(CompositingInputs);
-        CASE_FOR_BLINK_BREAKDOWN(CompositingAssignments);
         CASE_FOR_BLINK_BREAKDOWN(Paint);
         CASE_FOR_BLINK_BREAKDOWN(CompositeCommit);
         CASE_FOR_BLINK_BREAKDOWN(UpdateLayers);

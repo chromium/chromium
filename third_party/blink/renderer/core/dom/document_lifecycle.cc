@@ -89,8 +89,7 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
         return true;
       if (next_state == kInPerformLayout)
         return true;
-      if (next_state == kInCompositingInputsUpdate ||
-          next_state == kInCompositingAssignmentsUpdate)
+      if (next_state == kInCompositingInputsUpdate)
         return true;
       break;
     case kInStyleRecalc:
@@ -139,9 +138,6 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
       if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
           next_state == kInCompositingInputsUpdate)
         return true;
-      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kInCompositingAssignmentsUpdate)
-        return true;
       if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
           next_state == kCompositingInputsClean)
         return true;
@@ -156,9 +152,6 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
       if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
           next_state == kInCompositingInputsUpdate)
         return true;
-      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kInCompositingAssignmentsUpdate)
-        return true;
       if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
           next_state == kCompositingInputsClean)
         return true;
@@ -169,45 +162,15 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
     case kInCompositingInputsUpdate:
       DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
       return next_state == kCompositingInputsClean;
-    case kInCompositingAssignmentsUpdate:
-      DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-      // Once we are in the compositing update, we can either just clean the
-      // inputs or do the whole of compositing.
-      return next_state == kCompositingAssignmentsClean;
     case kCompositingInputsClean:
       // We can return to style re-calc, layout, or the start of compositing.
       if (next_state == kInStyleRecalc)
         return true;
       if (next_state == kInCompositingInputsUpdate)
         return true;
-      if (next_state == kInCompositingAssignmentsUpdate)
-        return true;
-      if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kCompositingAssignmentsClean)
-        return true;
       if (next_state == kInPrePaint)
         return true;
       if (next_state == kInAccessibility)
-        return true;
-      // Otherwise, we can continue onwards.
-      if (next_state == kCompositingAssignmentsClean)
-        return true;
-      break;
-    case kCompositingAssignmentsClean:
-      if (next_state == kInStyleRecalc)
-        return true;
-      if (next_state == kInCompositingInputsUpdate)
-        return true;
-      if (next_state == kInCompositingAssignmentsUpdate)
-        return true;
-      if (next_state == kInAccessibility)
-        return true;
-      if (next_state == kInPrePaint)
-        return true;
-      if (next_state == kInPaint)
-        return true;
-      if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kCompositingInputsClean)
         return true;
       break;
     case kInPrePaint:
@@ -221,12 +184,6 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
         return true;
       if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
           next_state == kInCompositingInputsUpdate)
-        return true;
-      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kInCompositingAssignmentsUpdate)
-        return true;
-      if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kCompositingAssignmentsClean)
         return true;
       if (next_state == kInPrePaint)
         return true;
@@ -242,9 +199,6 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
         return true;
       if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
           next_state == kInCompositingInputsUpdate)
-        return true;
-      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kInCompositingAssignmentsUpdate)
         return true;
       if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
           next_state == kCompositingInputsClean)
@@ -275,8 +229,7 @@ bool DocumentLifecycle::CanRewindTo(LifecycleState next_state) const {
     return true;
   return state_ == kStyleClean || state_ == kAfterPerformLayout ||
          state_ == kLayoutClean || state_ == kAccessibilityClean ||
-         state_ == kCompositingInputsClean ||
-         state_ == kCompositingAssignmentsClean || state_ == kPrePaintClean ||
+         state_ == kCompositingInputsClean || state_ == kPrePaintClean ||
          state_ == kPaintClean;
 }
 
@@ -298,9 +251,7 @@ static WTF::String StateAsDebugString(
     DEBUG_STRING_CASE(kInAccessibility);
     DEBUG_STRING_CASE(kAccessibilityClean);
     DEBUG_STRING_CASE(kInCompositingInputsUpdate);
-    DEBUG_STRING_CASE(kInCompositingAssignmentsUpdate);
     DEBUG_STRING_CASE(kCompositingInputsClean);
-    DEBUG_STRING_CASE(kCompositingAssignmentsClean);
     DEBUG_STRING_CASE(kInPrePaint);
     DEBUG_STRING_CASE(kPrePaintClean);
     DEBUG_STRING_CASE(kInPaint);

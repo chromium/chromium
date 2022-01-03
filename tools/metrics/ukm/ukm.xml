@@ -2805,6 +2805,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="CompositingAssignments">
+    <obsolete>
+      No longer recorded after M97 with the launch of CompositeAfterPaint.
+    </obsolete>
     <summary>
       The time spent in main thread compositing assignments, between navigation
       and First Contentful Paint, in microseconds.
@@ -3206,6 +3209,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="CompositingAssignments">
+    <obsolete>
+      No longer recorded after M97 with the launch of CompositeAfterPaint.
+    </obsolete>
     <summary>
       The time taken by compositing assignments in microseconds during the
       sampled frame.
@@ -3220,6 +3226,9 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="CompositingAssignmentsBeginMainFrame">
+    <obsolete>
+      No longer recorded after M97 with the launch of CompositeAfterPaint.
+    </obsolete>
     <summary>
       The total main frame time used by the compositing assignments phase, in
       microseconds.
@@ -6508,6 +6517,9 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="SendBeginMainFrameToCommit.CompositingAssignments">
+    <obsolete>
+      No longer recorded after M97 with the launch of CompositeAfterPaint.
+    </obsolete>
     <summary>
       The time portion of SendBeginMainFrameToCommit spent on updating
       compositing assignments, in microseconds.
@@ -7008,6 +7020,9 @@ be describing additional metrics about the same event.
     </aggregation>
   </metric>
   <metric name="SendBeginMainFrameToCommit.CompositingAssignments">
+    <obsolete>
+      No longer recorded after M97 with the launch of CompositeAfterPaint.
+    </obsolete>
     <summary>
       The time portion of SendBeginMainFrameToCommit spent on updating
       compositing assignments, in microseconds.

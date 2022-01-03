@@ -988,7 +988,7 @@ bool CompositorAnimations::CheckUsesCompositedScrolling(Node* target) {
   if (!target)
     return false;
   DCHECK(target->GetDocument().Lifecycle().GetState() >=
-         DocumentLifecycle::kCompositingAssignmentsClean);
+         DocumentLifecycle::kPrePaintClean);
   auto* layout_box_model_object = target->GetLayoutBoxModelObject();
   if (!layout_box_model_object)
     return false;
