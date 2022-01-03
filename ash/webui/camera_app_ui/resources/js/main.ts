@@ -57,75 +57,49 @@ const appWindow = window.appWindow;
  * Creates the Camera App main object.
  */
 export class App {
-  /**
-   * @param {{
-   *     perfLogger: !PerfLogger,
-   *     intent: ?Intent,
-   *     facing: ?Facing,
-   *     mode: ?Mode,
-   * }} params
-   * @public
-   */
-  constructor({perfLogger, intent, facing, mode: defaultMode}) {
-    /**
-     * @type {!PerfLogger}
-     * @private
-     */
-    this.perfLogger_ = perfLogger;
+  private perfLogger: PerfLogger;
+  private intent: Intent|null;
+  private photoPreferrer: PhotoConstraintsPreferrer;
+  private videoPreferrer: VideoConstraintsPreferrer;
+  private infoUpdater: DeviceInfoUpdater;
+  private galleryButton = new GalleryButton();
+  private cameraView: Camera;
 
-    /**
-     * @type {?Intent}
-     * @private
-     */
-    this.intent_ = intent;
+  constructor({perfLogger, intent, facing, mode: defaultMode}: {
+    perfLogger: PerfLogger,
+    intent: Intent|null,
+    facing: Facing|null,
+    mode: Mode|null,
+  }) {
+    this.perfLogger = perfLogger;
 
-    /**
-     * @type {!PhotoConstraintsPreferrer}
-     * @private
-     */
-    this.photoPreferrer_ =
-        new PhotoConstraintsPreferrer(() => this.cameraView_.start());
+    this.intent = intent;
 
-    /**
-     * @type {!VideoConstraintsPreferrer}
-     * @private
-     */
-    this.videoPreferrer_ =
-        new VideoConstraintsPreferrer(() => this.cameraView_.start());
+    this.photoPreferrer =
+        new PhotoConstraintsPreferrer(() => this.cameraView.start());
 
-    /**
-     * @type {!DeviceInfoUpdater}
-     * @private
-     */
-    this.infoUpdater_ =
-        new DeviceInfoUpdater(this.photoPreferrer_, this.videoPreferrer_);
+    this.videoPreferrer =
+        new VideoConstraintsPreferrer(() => this.cameraView.start());
 
-    /**
-     * @type {!GalleryButton}
-     * @private
-     */
-    this.galleryButton_ = new GalleryButton();
+    this.infoUpdater =
+        new DeviceInfoUpdater(this.photoPreferrer, this.videoPreferrer);
 
-    /**
-     * @type {!Camera}
-     * @private
-     */
-    this.cameraView_ = (() => {
+    this.cameraView = (() => {
       const mode = defaultMode ?? Mode.PHOTO;
-      if (this.intent_ !== null && this.intent_.shouldHandleResult) {
+      if (this.intent !== null && this.intent.shouldHandleResult) {
         state.set(state.State.SHOULD_HANDLE_INTENT_RESULT, true);
         return new CameraIntent(
-            this.intent_, this.infoUpdater_, this.photoPreferrer_,
-            this.videoPreferrer_, mode, this.perfLogger_);
+            this.intent, this.infoUpdater, this.photoPreferrer,
+            this.videoPreferrer, mode, this.perfLogger);
       } else {
         return new Camera(
-            this.galleryButton_, this.infoUpdater_, this.photoPreferrer_,
-            this.videoPreferrer_, mode, this.perfLogger_, facing);
+            this.galleryButton, this.infoUpdater, this.photoPreferrer,
+            this.videoPreferrer, mode, this.perfLogger, facing);
       }
     })();
 
     document.body.addEventListener(
-        'keydown', (event) => this.onKeyPressed_(event));
+        'keydown', (event) => this.onKeyPressed(event));
 
     // Disable the zoom in-out gesture which is triggered by wheel and pinch on
     // trackpad.
@@ -136,14 +110,13 @@ export class App {
     }, {passive: false, capture: true});
 
     util.setupI18nElements(document.body);
-    this.setupToggles_();
-    this.setupEffect_();
+    this.setupToggles();
+    this.setupEffect();
     focusRing.initialize();
-
 
     // Set up views navigation by their DOM z-order.
     nav.setup([
-      this.cameraView_,
+      this.cameraView,
       new Warning(),
       new Dialog(ViewName.MESSAGE_DIALOG),
       new View(ViewName.SPLASH),
@@ -154,9 +127,8 @@ export class App {
 
   /**
    * Sets up toggles (checkbox and radio) by data attributes.
-   * @private
    */
-  setupToggles_() {
+  private setupToggles() {
     dom.getAll('input', HTMLInputElement).forEach((element) => {
       element.addEventListener('keypress', (event) => {
         const e = assertInstanceof(event, KeyboardEvent);
@@ -208,9 +180,8 @@ export class App {
 
   /**
    * Sets up visual effect for all applicable elements.
-   * @private
    */
-  setupEffect_() {
+  private setupEffect() {
     dom.getAll('.inkdrop', HTMLElement)
         .forEach((el) => util.setInkdropEffect(el));
 
@@ -238,10 +209,8 @@ export class App {
 
   /**
    * Starts the app by loading the model and opening the camera-view.
-   * @param {!metrics.LaunchType} launchType
-   * @return {!Promise}
    */
-  async start(launchType) {
+  async start(launchType: metrics.LaunchType): Promise<void> {
     document.documentElement.dir = loadTimeData.getTextDirection();
     try {
       await filesystem.initialize();
@@ -256,8 +225,8 @@ export class App {
       // 3. Other intents
       //      (intent !== null && shouldHandleResult === true)
       // Only (1) and (2) will show gallery button on the UI.
-      if (this.intent_ === null || !this.intent_.shouldHandleResult) {
-        this.galleryButton_.initialize(cameraDir);
+      if (this.intent === null || !this.intent.shouldHandleResult) {
+        this.galleryButton.initialize(cameraDir);
       }
     } catch (error) {
       reportError(ErrorType.FILE_SYSTEM_FAILURE, ErrorLevel.ERROR, error);
@@ -267,8 +236,8 @@ export class App {
     const showWindow = (async () => {
       // For intent only requiring open camera with specific mode without
       // returning the capture result, finish it directly.
-      if (this.intent_ !== null && !this.intent_.shouldHandleResult) {
-        this.intent_.finish();
+      if (this.intent !== null && !this.intent.shouldHandleResult) {
+        this.intent.finish();
       }
     })();
 
@@ -279,7 +248,7 @@ export class App {
       } else {
         // CCA must get camera usage for completing its initialization when
         // first launched.
-        await this.cameraView_.initialize();
+        await this.cameraView.initialize();
         notifyCameraResourceReady();
         cameraResourceInitialized.signal();
       }
@@ -293,10 +262,10 @@ export class App {
 
     const startCamera = (async () => {
       await cameraResourceInitialized.wait();
-      const isSuccess = await this.cameraView_.start();
+      const isSuccess = await this.cameraView.start();
 
       if (isSuccess) {
-        const aspectRatio = this.cameraView_.getPreviewAspectRatio();
+        const aspectRatio = this.cameraView.getPreviewAspectRatio();
         const {width, height} = getDefaultWindowSize(aspectRatio);
         window.resizeTo(width, height);
       }
@@ -305,9 +274,9 @@ export class App {
       nav.open(ViewName.CAMERA);
 
       const windowCreationTime = window['windowCreationTime'];
-      this.perfLogger_.start(
+      this.perfLogger.start(
           PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, windowCreationTime);
-      this.perfLogger_.stop(
+      this.perfLogger.stop(
           PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, {hasError: !isSuccess});
       if (appWindow !== null) {
         appWindow.onAppLaunched();
@@ -315,7 +284,7 @@ export class App {
     })();
 
     const preloadImages = (async () => {
-      const loadImage = (url) => new Promise((resolve, reject) => {
+      const loadImage = (url) => new Promise<void>((resolve, reject) => {
         const link = document.createElement('link');
         link.rel = 'preload';
         link.as = 'image';
@@ -338,60 +307,56 @@ export class App {
     })();
 
     metrics.sendLaunchEvent({launchType});
-    return Promise.all([showWindow, startCamera, preloadImages]);
+    await Promise.all([showWindow, startCamera, preloadImages]);
   }
 
   /**
    * Handles pressed keys.
-   * @param {!Event} event Key press event.
-   * @private
+   * @param event Key press event.
    */
-  onKeyPressed_(event) {
+  private onKeyPressed(event: Event) {
     tooltip.hide();  // Hide shown tooltip on any keypress.
     nav.onKeyPressed(assertInstanceof(event, KeyboardEvent));
   }
 
   /**
    * Suspends app and hides app window.
-   * @return {!Promise}
    */
-  async suspend() {
+  async suspend(): Promise<void> {
     state.set(state.State.SUSPEND, true);
-    await this.cameraView_.start();
+    await this.cameraView.start();
     nav.open(ViewName.WARNING, WarningType.CAMERA_PAUSED);
   }
 
   /**
    * Resumes app from suspension and shows app window.
    */
-  resume() {
+  resume(): void {
     state.set(state.State.SUSPEND, false);
     nav.close(ViewName.WARNING, WarningType.CAMERA_PAUSED);
   }
 
   /**
    * Begins to take photo or recording with the current options, e.g. timer.
-   * @param {!metrics.ShutterType} shutterType The shutter is triggered by which
-   *     shutter type.
-   * @return {?Promise<void>} Promise resolved when take action completes.
+   * @param shutterType The shutter is triggered by which shutter type.
+   * @return Promise resolved when take action completes.
    *     Returns null if CCA can't start take action.
    */
-  beginTake(shutterType) {
-    return this.cameraView_.beginTake(shutterType);
+  beginTake(shutterType: metrics.ShutterType): Promise<void>|null {
+    return this.cameraView.beginTake(shutterType);
   }
 }
 
 /**
  * Parse search params in URL.
- * @return {{
- *     intent: ?Intent,
- *     facing: ?Facing,
- *     mode: ?Mode,
- *     openFrom: ?string,
- *     autoTake: boolean,
- * }}
  */
-function parseSearchParams() {
+function parseSearchParams(): {
+  intent: Intent|null,
+  facing: Facing|null,
+  mode: Mode|null,
+  openFrom: string|null,
+  autoTake: boolean
+} {
   const url = new URL(window.location.href);
   const params = url.searchParams;
 
@@ -399,7 +364,6 @@ function parseSearchParams() {
 
   const mode = checkEnumVariant(Mode, params.get('mode'));
 
-  /** @type {?Intent} */
   const intent = (() => {
     if (params.get('intentId') === null) {
       return null;
@@ -416,9 +380,8 @@ function parseSearchParams() {
 
 /**
  * Singleton of the App object.
- * @type {?App}
  */
-let instance = null;
+let instance: App|null = null;
 
 /**
  * Creates the App object and starts camera stream.
