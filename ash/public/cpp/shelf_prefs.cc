@@ -55,22 +55,20 @@ std::string GetPerDisplayPref(PrefService* prefs,
   std::string pref_key = base::NumberToString(display_id);
   bool has_per_display_prefs = false;
   if (!pref_key.empty()) {
-    const base::DictionaryValue* shelf_prefs = &base::Value::AsDictionaryValue(
-        *prefs->GetDictionary(prefs::kShelfPreferences));
-    const base::DictionaryValue* display_pref = nullptr;
-    std::string per_display_value;
-    if (shelf_prefs->GetDictionary(pref_key, &display_pref) &&
-        display_pref->GetString(path, &per_display_value))
-      return per_display_value;
+    const base::Value* shelf_prefs =
+        prefs->GetDictionary(prefs::kShelfPreferences);
+    const base::Value* display_pref = shelf_prefs->FindDictKey(pref_key);
+    if (display_pref) {
+      const std::string* per_display_value = display_pref->FindStringPath(path);
+      if (per_display_value)
+        return *per_display_value;
+    }
 
     // If the pref for the specified display is not found, scan the whole prefs
     // and check if the prefs for other display is already specified.
     std::string unused_value;
-    for (base::DictionaryValue::Iterator iter(*shelf_prefs); !iter.IsAtEnd();
-         iter.Advance()) {
-      const base::DictionaryValue* display_pref = nullptr;
-      if (iter.value().GetAsDictionary(&display_pref) &&
-          display_pref->GetString(path, &unused_value)) {
+    for (const auto iter : shelf_prefs->DictItems()) {
+      if (iter.second.is_dict() && iter.second.FindStringPath(path)) {
         has_per_display_prefs = true;
         break;
       }
@@ -94,19 +92,20 @@ void SetPerDisplayPref(PrefService* prefs,
     return;
 
   // Avoid DictionaryPrefUpdate's notifications for read but unmodified prefs.
-  const base::DictionaryValue* current_shelf_prefs =
-      &base::Value::AsDictionaryValue(
-          *prefs->GetDictionary(prefs::kShelfPreferences));
+  const base::Value* current_shelf_prefs =
+      prefs->GetDictionary(prefs::kShelfPreferences);
   DCHECK(current_shelf_prefs);
   std::string display_key = base::NumberToString(display_id);
-  const base::DictionaryValue* current_display_prefs = nullptr;
-  std::string current_value;
-  if (current_shelf_prefs->GetDictionary(display_key, &current_display_prefs) &&
-      current_display_prefs->GetString(pref_key, &current_value) &&
-      current_value == value) {
-    return;
+  const base::Value* current_display_prefs =
+      current_shelf_prefs->FindDictKey(display_key);
+  if (current_display_prefs) {
+    const std::string* current_value =
+        current_display_prefs->FindStringPath(pref_key);
+    if (current_value && *current_value == value)
+      return;
   }
 
+  // TODO(crbug.com/1187061): Refactor this to remove base::DictionaryValue.
   DictionaryPrefUpdate update(prefs, prefs::kShelfPreferences);
   base::DictionaryValue* shelf_prefs = update.Get();
   base::DictionaryValue* display_prefs_weak = nullptr;
