@@ -148,7 +148,7 @@ cr.define('cr.login', function() {
    * @type {!Array<string>}
    * @const
    */
-  const SUPPORTED_PARAMS = [
+  /* #export */ const SUPPORTED_PARAMS = [
     'gaiaId',        // Obfuscated GAIA ID to skip the email prompt page
                      // during the re-auth flow.
     'gaiaUrl',       // Gaia url to use.
