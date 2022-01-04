@@ -36,6 +36,10 @@ import java.util.Date;
 public final class UiUtils {
     private UiUtils() {}
 
+    static {
+        CalendarFactory.warmUp();
+    }
+
     /**
      * Builds the accessibility text to be used for a given chip on the chips row.
      * @param resources The resources to use for lookup.
