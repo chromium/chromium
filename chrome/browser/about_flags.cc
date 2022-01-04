@@ -4672,6 +4672,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxPreserveLongerShortcutsTextName,
      flag_descriptions::kOmniboxPreserveLongerShortcutsTextDescription,
      kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kPreserveLongerShortcutsText)},
+    {"omnibox-aggregate-shortcuts",
+     flag_descriptions::kOmniboxAggregateShortcutsName,
+     flag_descriptions::kOmniboxAggregateShortcutsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kAggregateShortcuts)},
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) ||
         // defined(OS_WIN) || defined(OS_FUCHSIA)
 

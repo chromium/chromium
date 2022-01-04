@@ -66,6 +66,15 @@ class ShortcutsProvider : public AutocompleteProvider,
                      const ShortcutsDatabase::Shortcut& shortcut,
                      int max_relevance);
 
+  // Like `CalculateScore`, but aggregates the factors from a vector of
+  // `shortcuts`. I.e., considers the shortest shortcut when computing fraction
+  // typed, considers the most recent shortcut when considering last visit, and
+  // considers the sum of visit counts.
+  int CalculateAggregateScore(
+      const std::u16string& terms,
+      const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts,
+      int max_relevance);
+
   // The default max relevance unless overridden by a field trial.
   static const int kShortcutsProviderDefaultMaxRelevance;
 

@@ -212,6 +212,13 @@ const base::Feature kShortBookmarkSuggestionsByTotalInputLength{
 const base::Feature kPreserveLongerShortcutsText{
     "OmniboxPreserveLongerShortcutsText", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// If disabled, shortcuts to the same stripped destination URL are scored
+// independently, and only the highest scored shortcut is kept. If enabled,
+// duplicate shortcuts are given an aggregate score, as if they had been a
+// single shortcut.
+const base::Feature kAggregateShortcuts{"OmniboxAggregateShortcuts",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, inputs may match bookmark paths. These path matches won't
 // contribute to scoring. E.g. 'planets jupiter' can suggest a bookmark titled
 // 'Jupiter' with URL 'en.wikipedia.org/wiki/Jupiter' located in a path

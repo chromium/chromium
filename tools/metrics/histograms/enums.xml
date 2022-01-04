@@ -51886,6 +51886,7 @@ from previous Chrome versions.
   <int value="-1154343236" label="VrBrowsingTabsView:disabled"/>
   <int value="-1153892430"
       label="AlignFontDisplayAutoTimeoutWithLCPGoal:enabled"/>
+  <int value="-1153113849" label="OmniboxAggregateShortcuts:enabled"/>
   <int value="-1151766565" label="enable-fullscreen-tab-detaching"/>
   <int value="-1151615978" label="BorealisBigGl:disabled"/>
   <int value="-1151014496" label="NearbySharingDeviceContacts:disabled"/>
@@ -53425,6 +53426,7 @@ from previous Chrome versions.
   <int value="1558582" label="ResamplingInputEvents:enabled"/>
   <int value="1618593" label="AutofillUseConsistentPopupSettingsIcons:enabled"/>
   <int value="2070488" label="EnablePasswordsAccountStorageSavingUi:disabled"/>
+  <int value="3428212" label="OmniboxAggregateShortcuts:disabled"/>
   <int value="3826348" label="DarkenWebsitesCheckboxInThemesSetting:disabled"/>
   <int value="4277967" label="SideSearchStatePerTab:disabled"/>
   <int value="4588113" label="CacheOneGoogleBar:disabled"/>

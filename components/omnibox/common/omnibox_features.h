@@ -58,6 +58,7 @@ extern const base::Feature kDisableCGIParamMatching;
 extern const base::Feature kShortBookmarkSuggestions;
 extern const base::Feature kShortBookmarkSuggestionsByTotalInputLength;
 extern const base::Feature kPreserveLongerShortcutsText;
+extern const base::Feature kAggregateShortcuts;
 extern const base::Feature kBookmarkPaths;
 
 // Document provider
