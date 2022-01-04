@@ -522,6 +522,11 @@ bool IsTabletDevice(std::string* reason, HWND hwnd) {
 // input configuration of the device and can be manually triggered by the user
 // independently from the hardware state.
 bool IsDeviceUsedAsATablet(std::string* reason) {
+  // Once this is set, it shouldn't be overridden, and it should be the ultimate
+  // return value, so that this method returns the same result whether or not
+  // reason is NULL.
+  absl::optional<bool> ret;
+
   if (GetVersion() < Version::WIN8) {
     if (reason)
       *reason = "Tablet device detection not supported below Windows 8\n";
@@ -531,6 +536,7 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
   if (GetSystemMetrics(SM_MAXIMUMTOUCHES) == 0) {
     if (reason) {
       *reason += "Device does not support touch.\n";
+      ret = false;
     } else {
       return false;
     }
@@ -540,6 +546,8 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
   if (GetSystemMetrics(SM_SYSTEMDOCKED) != 0) {
     if (reason) {
       *reason += "SM_SYSTEMDOCKED\n";
+      if (!ret.has_value())
+        ret = false;
     } else {
       return false;
     }
@@ -557,7 +565,7 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
     AR_STATE rotation_state = AR_ENABLED;
     if (get_auto_rotation_state_func(&rotation_state) &&
         (rotation_state & (AR_NOT_SUPPORTED | AR_LAPTOP | AR_NOSENSOR)) != 0)
-      return false;
+      return ret.has_value() ? ret.value() : false;
   }
 
   // PlatformRoleSlate was added in Windows 8+.
@@ -568,20 +576,19 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
     if (!is_tablet) {
       if (reason) {
         *reason += "Not in slate mode.\n";
+        if (!ret.has_value())
+          ret = false;
       } else {
         return false;
       }
-    } else {
-      if (reason) {
-        *reason += (role == PlatformRoleMobile) ? "PlatformRoleMobile\n"
-                                                : "PlatformRoleSlate\n";
-      }
+    } else if (reason) {
+      *reason += (role == PlatformRoleMobile) ? "PlatformRoleMobile\n"
+                                              : "PlatformRoleSlate\n";
     }
-  } else {
-    if (reason)
-      *reason += "Device role is not mobile or slate.\n";
+  } else if (reason) {
+    *reason += "Device role is not mobile or slate.\n";
   }
-  return is_tablet;
+  return ret.has_value() ? ret.value() : is_tablet;
 }
 
 bool IsEnrolledToDomain() {
