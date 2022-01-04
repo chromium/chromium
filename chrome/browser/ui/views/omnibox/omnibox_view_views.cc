@@ -254,6 +254,14 @@ void OmniboxViewViews::SaveStateToTab(content::WebContents* tab) {
 }
 
 void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
+  // The context menu holds a references to send_tab_to_self_sub_menu_model_;
+  // invalidate it here so we can destroy that below.
+  InvalidateContextMenu();
+
+  // This has a reference to the WebContents, which might be being destroyed
+  // here:
+  send_tab_to_self_sub_menu_model_.reset();
+
   const OmniboxState* state = static_cast<OmniboxState*>(
       web_contents->GetUserData(&OmniboxState::kKey));
   model()->RestoreState(state ? &state->model_state : nullptr);
