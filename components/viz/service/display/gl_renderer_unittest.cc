@@ -4036,7 +4036,7 @@ class CALayerGLRendererTest : public GLRendererTest {
     // The Mac TestOverlayProcessor default to enable CALayer overlays, then all
     // damage is removed and we can skip the root RenderPass, swapping empty.
     overlay_processor_ = std::make_unique<OverlayProcessorMac>(
-        std::make_unique<CALayerOverlayProcessor>(true));
+        std::make_unique<CALayerOverlayProcessor>());
     renderer_ = std::make_unique<FakeRendererGL>(
         settings_.get(), &debug_settings_, output_surface_.get(),
         display_resource_provider_.get(), overlay_processor_.get(),

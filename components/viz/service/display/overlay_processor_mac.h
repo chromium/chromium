@@ -25,7 +25,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
  public:
   using CandidateList = CALayerOverlayList;
 
-  explicit OverlayProcessorMac(bool enable_ca_overlay);
+  OverlayProcessorMac();
   // For testing.
   explicit OverlayProcessorMac(
       std::unique_ptr<CALayerOverlayProcessor> ca_layer_overlay_processor);

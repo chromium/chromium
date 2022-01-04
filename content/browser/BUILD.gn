@@ -2422,7 +2422,6 @@ source_set("browser") {
       "sandbox_support_mac_impl.mm",
     ]
     deps += [
-      "//components/metal_util",
       "//components/remote_cocoa/app_shim",
       "//components/remote_cocoa/browser",
       "//components/remote_cocoa/common:mojo",

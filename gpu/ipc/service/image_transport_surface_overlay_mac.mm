@@ -30,6 +30,12 @@
 
 namespace gpu {
 
+namespace {
+// Control use of AVFoundation to draw video content.
+base::Feature kAVFoundationOverlays{"avfoundation-overlays",
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
+}  // namespace
+
 template <typename BaseClass>
 ImageTransportSurfaceOverlayMacBase<BaseClass>::
     ImageTransportSurfaceOverlayMacBase(
@@ -42,8 +48,7 @@ ImageTransportSurfaceOverlayMacBase<BaseClass>::
   ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
 
   static bool av_disabled_at_command_line =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableAVFoundationOverlays);
+      base::FeatureList::IsEnabled(kAVFoundationOverlays);
 
   bool allow_av_sample_buffer_display_layer =
       !av_disabled_at_command_line &&

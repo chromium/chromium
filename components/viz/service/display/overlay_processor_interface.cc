@@ -101,9 +101,7 @@ OverlayProcessorInterface::CreateOverlayProcessor(
     return std::make_unique<OverlayProcessorStub>();
 #if defined(OS_APPLE)
   DCHECK(capabilities.supports_surfaceless);
-
-  return std::make_unique<OverlayProcessorMac>(
-      renderer_settings.allow_overlays);
+  return std::make_unique<OverlayProcessorMac>();
 #elif defined(OS_WIN)
   if (!capabilities.supports_dc_layers)
     return std::make_unique<OverlayProcessorStub>();

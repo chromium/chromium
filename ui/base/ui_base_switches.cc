@@ -15,19 +15,8 @@ const char kDisablePullToRefreshEffect[] = "disable-pull-to-refresh-effect";
 #endif
 
 #if defined(OS_MAC)
-// Disable use of AVFoundation to draw video content.
-const char kDisableAVFoundationOverlays[] = "disable-avfoundation-overlays";
-
-// Fall back to using CAOpenGLLayers display content, instead of the IOSurface
-// based overlay display path.
-const char kDisableMacOverlays[] = "disable-mac-overlays";
-
 // Disable animations for showing and hiding modal dialogs.
 const char kDisableModalAnimations[] = "disable-modal-animations";
-
-// Disable use of cross-process CALayers to display content directly from the
-// GPU process on Mac.
-const char kDisableRemoteCoreAnimation[] = "disable-remote-core-animation";
 
 // Show borders around CALayers corresponding to overlays and partial damage.
 const char kShowMacOverlayBorders[] = "show-mac-overlay-borders";

@@ -18,10 +18,6 @@
 #include "components/viz/common/switches.h"
 #include "ui/base/ui_base_switches.h"
 
-#if defined(OS_APPLE)
-#include "ui/base/cocoa/remote_layer_api.h"
-#endif
-
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
@@ -71,12 +67,6 @@ RendererSettings CreateRendererSettings() {
   renderer_settings.allow_antialiasing =
       !command_line->HasSwitch(switches::kDisableCompositedAntialiasing);
   renderer_settings.use_skia_renderer = features::IsUsingSkiaRenderer();
-#if defined(OS_APPLE)
-  renderer_settings.allow_overlays =
-      ui::RemoteLayerAPISupported() &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableMacOverlays);
-#endif
 
   if (command_line->HasSwitch(switches::kSlowDownCompositingScaleFactor)) {
     const int kMinSlowDownScaleFactor = 1;

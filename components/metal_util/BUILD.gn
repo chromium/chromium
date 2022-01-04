@@ -19,8 +19,6 @@ component("metal_util") {
     "hdr_copier_layer.h",
     "hdr_copier_layer.mm",
     "metal_util_export.h",
-    "switches.cc",
-    "switches.h",
     "test_shader.h",
     "test_shader.mm",
     "types.h",

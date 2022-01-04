@@ -31,7 +31,6 @@ class VIZ_COMMON_EXPORT RendererSettings {
   bool should_clear_root_render_pass = true;
   bool release_overlay_resources_after_gpu_query = false;
   bool use_skia_renderer = false;
-  bool allow_overlays = true;
   bool dont_round_texture_sizes_for_pixel_tests = false;
   int highp_threshold_min = 0;
   bool auto_resize_output_surface = true;

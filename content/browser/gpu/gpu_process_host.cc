@@ -113,7 +113,6 @@
 #endif
 
 #if defined(OS_MAC)
-#include "components/metal_util/switches.h"
 #include "content/browser/gpu/ca_transaction_gpu_coordinator.h"
 #endif
 
@@ -281,10 +280,6 @@ static const char* const kSwitchNames[] = {
 #if defined(OS_MAC)
     sandbox::policy::switches::kEnableSandboxLogging,
     sandbox::policy::switches::kDisableMetalShaderCache,
-    switches::kDisableAVFoundationOverlays,
-    switches::kDisableMacOverlays,
-    switches::kDisableMetalTestShaders,
-    switches::kDisableRemoteCoreAnimation,
     switches::kShowMacOverlayBorders,
     switches::kUseHighGPUThreadPriorityForPerfTests,
 #endif
