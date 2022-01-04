@@ -42,7 +42,7 @@ var ENROLLMENT_STEP = {
 /**
  * The same steps as in offline-ad-login-element.
  */
-const adLoginStep = {
+const ADLoginStep = {
   UNLOCK: 'unlock',
   CREDS: 'creds',
 };
@@ -399,7 +399,7 @@ Polymer({
    * Sets Active Directory join screen params.
    * @param {string} machineName
    * @param {string} userName
-   * @param {ACTIVE_DIRECTORY_ERROR_STATE} errorState
+   * @param {ActiveDirectoryErrorState} errorState
    * @param {boolean} showUnlockConfig true if there is an encrypted
    * configuration (and not unlocked yet).
    */
@@ -409,9 +409,9 @@ Polymer({
     this.$["step-ad-join"].userName = userName;
     this.$["step-ad-join"].errorState = errorState;
     if (showUnlockConfig) {
-      this.$["step-ad-join"].setUIStep(adLoginStep.UNLOCK);
+      this.$["step-ad-join"].setUIStep(ADLoginStep.UNLOCK);
     } else {
-      this.$["step-ad-join"].setUIStep(adLoginStep.CREDS);
+      this.$["step-ad-join"].setUIStep(ADLoginStep.CREDS);
     }
   },
 
@@ -422,7 +422,7 @@ Polymer({
   setAdJoinConfiguration(options) {
     this.$["step-ad-join"].disabled = false;
     this.$["step-ad-join"].setJoinConfigurationOptions(options);
-    this.$["step-ad-join"].setUIStep(adLoginStep.CREDS);
+    this.$["step-ad-join"].setUIStep(ADLoginStep.CREDS);
     this.$["step-ad-join"].focus();
   },
 

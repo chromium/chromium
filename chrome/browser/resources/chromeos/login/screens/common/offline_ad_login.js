@@ -9,7 +9,7 @@
 
 /* #js_imports_placeholder */
 
-// The definitions below (JoinConfigType, ACTIVE_DIRECTORY_ERROR_STATE) are
+// The definitions below (JoinConfigType, ActiveDirectoryErrorState) are
 // used in enterprise_enrollment.js as well.
 
 /**
@@ -17,11 +17,14 @@
  *             computer_ou: ?string, encryption_types: ?string,
  *             computer_name_validation_regex: ?string}}
  */
-var JoinConfigType;
+/* #export */ var JoinConfigType;
 
 // Possible error states of the screen. Must be in the same order as
 // ActiveDirectoryErrorState enum values. Used in enterprise_enrollment
-/** @enum {number} */ var ACTIVE_DIRECTORY_ERROR_STATE = {
+/**
+ * @enum {number}
+ */
+/* #export */ const ActiveDirectoryErrorState = {
   NONE: 0,
   MACHINE_NAME_INVALID: 1,
   MACHINE_NAME_TOO_LONG: 2,
@@ -30,7 +33,8 @@ var JoinConfigType;
   BAD_UNLOCK_PASSWORD: 5,
 };
 
-const adLoginStep = {
+// Used by enterprise_enrollment.js
+/* #export */ const ADLoginStep = {
   UNLOCK: 'unlock',
   CREDS: 'creds',
 };
@@ -120,7 +124,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
        */
       errorState: {
         type: Number,
-        value: ACTIVE_DIRECTORY_ERROR_STATE.NONE,
+        value: ActiveDirectoryErrorState.NONE,
         observer: 'errorStateObserver_'
       },
       /**
@@ -241,11 +245,11 @@ class OfflineAdLogin extends OfflineAdLoginBase {
   }
 
   get UI_STEPS() {
-    return adLoginStep;
+    return ADLoginStep;
   }
 
   defaultUIStep() {
-    return adLoginStep.CREDS;
+    return ADLoginStep.CREDS;
   }
 
   /** @override */
@@ -273,7 +277,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
 
   /**
    * @param {string} username
-   * @param {ACTIVE_DIRECTORY_ERROR_STATE} errorState
+   * @param {ActiveDirectoryErrorState} errorState
    */
   setErrorState(username, errorState) {
     this.userName = username;
@@ -284,7 +288,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
   reset() {
     this.$.userInput.value = '';
     this.$.passwordInput.value = '';
-    this.errorState = ACTIVE_DIRECTORY_ERROR_STATE.NONE;
+    this.errorState = ActiveDirectoryErrorState.NONE;
   }
 
   setupEncList() {
@@ -304,7 +308,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
   }
 
   focus() {
-    if (this.uiStep === adLoginStep.UNLOCK) {
+    if (this.uiStep === ADLoginStep.UNLOCK) {
       this.$.unlockPasswordInput.focus();
     } else if (this.isDomainJoin && !this.$.machineNameInput.value) {
       this.$.machineNameInput.focus();
@@ -322,17 +326,17 @@ class OfflineAdLogin extends OfflineAdLoginBase {
     // errorState.
     this.errorStateLocked_ = true;
     this.machineNameInvalid =
-        this.errorState == ACTIVE_DIRECTORY_ERROR_STATE.MACHINE_NAME_INVALID ||
-        this.errorState == ACTIVE_DIRECTORY_ERROR_STATE.MACHINE_NAME_TOO_LONG;
+        this.errorState == ActiveDirectoryErrorState.MACHINE_NAME_INVALID ||
+        this.errorState == ActiveDirectoryErrorState.MACHINE_NAME_TOO_LONG;
     this.userInvalid =
-        this.errorState == ACTIVE_DIRECTORY_ERROR_STATE.BAD_USERNAME;
+        this.errorState == ActiveDirectoryErrorState.BAD_USERNAME;
     this.authPasswordInvalid =
-        this.errorState == ACTIVE_DIRECTORY_ERROR_STATE.BAD_AUTH_PASSWORD;
+        this.errorState == ActiveDirectoryErrorState.BAD_AUTH_PASSWORD;
     this.unlockPasswordInvalid =
-        this.errorState == ACTIVE_DIRECTORY_ERROR_STATE.BAD_UNLOCK_PASSWORD;
+        this.errorState == ActiveDirectoryErrorState.BAD_UNLOCK_PASSWORD;
 
     // Clear password.
-    if (this.errorState == ACTIVE_DIRECTORY_ERROR_STATE.NONE)
+    if (this.errorState == ActiveDirectoryErrorState.NONE)
       this.$.passwordInput.value = '';
     this.errorStateLocked_ = false;
   }
@@ -455,7 +459,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
   /** @private */
   onSkipClicked_() {
     this.backToUnlockButtonVisible_ = true;
-    this.setUIStep(adLoginStep.CREDS);
+    this.setUIStep(ADLoginStep.CREDS);
     this.focus();
   }
 
@@ -463,7 +467,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
   onBackToUnlock_() {
     if (this.disabled)
       return;
-    this.setUIStep(adLoginStep.UNLOCK);
+    this.setUIStep(ADLoginStep.UNLOCK);
     this.focus();
   }
 
@@ -479,7 +483,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
   onJoinConfigSelected_(value) {
     if (this.selectedConfigOption_ == this.joinConfigOptions_[value])
       return;
-    this.errorState = ACTIVE_DIRECTORY_ERROR_STATE.NONE;
+    this.errorState = ActiveDirectoryErrorState.NONE;
     this.previousSelectedConfigOption_ = this.selectedConfigOption_;
     this.selectedConfigOption_ = this.joinConfigOptions_[value];
     var option = this.selectedConfigOption_;
@@ -547,16 +551,16 @@ class OfflineAdLogin extends OfflineAdLoginBase {
 
   /**
    * Returns true if "Machine name is invalid" error should be displayed.
-   * @param {ACTIVE_DIRECTORY_ERROR_STATE} errorState
+   * @param {ActiveDirectoryErrorState} errorState
    */
   isMachineNameInvalid_(errorState) {
-    return errorState != ACTIVE_DIRECTORY_ERROR_STATE.MACHINE_NAME_TOO_LONG;
+    return errorState != ActiveDirectoryErrorState.MACHINE_NAME_TOO_LONG;
   }
 
   getMachineNameError_(locale, errorState) {
-    if (errorState == ACTIVE_DIRECTORY_ERROR_STATE.MACHINE_NAME_TOO_LONG)
+    if (errorState == ActiveDirectoryErrorState.MACHINE_NAME_TOO_LONG)
       return this.i18nDynamic(locale, 'adJoinErrorMachineNameTooLong');
-    if (errorState == ACTIVE_DIRECTORY_ERROR_STATE.MACHINE_NAME_INVALID) {
+    if (errorState == ActiveDirectoryErrorState.MACHINE_NAME_INVALID) {
       if (this.machineNameInputPattern_) {
         return this.i18nDynamic(locale, 'adJoinErrorMachineNameInvalidFormat');
       }
@@ -571,11 +575,11 @@ class OfflineAdLogin extends OfflineAdLoginBase {
       else
         this.onUnlockPasswordEntered_();
     }
-    this.errorState = ACTIVE_DIRECTORY_ERROR_STATE.NONE;
+    this.errorState = ActiveDirectoryErrorState.NONE;
   }
 
   onKeydownMachineNameInput_(e) {
-    this.errorState = ACTIVE_DIRECTORY_ERROR_STATE.NONE;
+    this.errorState = ActiveDirectoryErrorState.NONE;
     if (e.key == 'Enter') {
       this.switchTo_('userInput') || this.switchTo_('passwordInput') ||
           this.onSubmit_();
@@ -583,7 +587,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
   }
 
   onKeydownUserInput_(e) {
-    this.errorState = ACTIVE_DIRECTORY_ERROR_STATE.NONE;
+    this.errorState = ActiveDirectoryErrorState.NONE;
     if (e.key == 'Enter')
       this.switchTo_('passwordInput') || this.onSubmit_();
   }
@@ -600,7 +604,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
   }
 
   onKeydownAuthPasswordInput_(e) {
-    this.errorState = ACTIVE_DIRECTORY_ERROR_STATE.NONE;
+    this.errorState = ActiveDirectoryErrorState.NONE;
     if (e.key == 'Enter')
       this.onSubmit_();
   }
@@ -615,21 +619,21 @@ class OfflineAdLogin extends OfflineAdLoginBase {
 
   machineNameInvalidObserver_(isInvalid) {
     this.setErrorState_(
-        isInvalid, ACTIVE_DIRECTORY_ERROR_STATE.MACHINE_NAME_INVALID);
+        isInvalid, ActiveDirectoryErrorState.MACHINE_NAME_INVALID);
   }
 
   userInvalidObserver_(isInvalid) {
-    this.setErrorState_(isInvalid, ACTIVE_DIRECTORY_ERROR_STATE.BAD_USERNAME);
+    this.setErrorState_(isInvalid, ActiveDirectoryErrorState.BAD_USERNAME);
   }
 
   authPasswordInvalidObserver_(isInvalid) {
     this.setErrorState_(
-        isInvalid, ACTIVE_DIRECTORY_ERROR_STATE.BAD_AUTH_PASSWORD);
+        isInvalid, ActiveDirectoryErrorState.BAD_AUTH_PASSWORD);
   }
 
   unlockPasswordInvalidObserver_(isInvalid) {
     this.setErrorState_(
-        isInvalid, ACTIVE_DIRECTORY_ERROR_STATE.BAD_UNLOCK_PASSWORD);
+        isInvalid, ActiveDirectoryErrorState.BAD_UNLOCK_PASSWORD);
   }
 
   setErrorState_(isInvalid, error) {
@@ -639,7 +643,7 @@ class OfflineAdLogin extends OfflineAdLoginBase {
     if (isInvalid)
       this.errorState = error;
     else
-      this.errorState = ACTIVE_DIRECTORY_ERROR_STATE.NONE;
+      this.errorState = ActiveDirectoryErrorState.NONE;
     this.errorStateLocked_ = false;
   }
 

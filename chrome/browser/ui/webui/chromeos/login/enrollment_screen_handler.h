@@ -26,7 +26,7 @@ namespace chromeos {
 class CookieWaiter;
 
 // Possible error states of the Active Directory screen. Must be in the same
-// order as ACTIVE_DIRECTORY_ERROR_STATE enum values.
+// order as ActiveDirectoryErrorState ( in enterprise_enrollment.js ) values.
 enum class ActiveDirectoryErrorState {
   NONE = 0,
   MACHINE_NAME_INVALID = 1,

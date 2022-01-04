@@ -335,6 +335,7 @@ js_library("offline_ad_login.m") {
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":offline_ad_login_module" ]
