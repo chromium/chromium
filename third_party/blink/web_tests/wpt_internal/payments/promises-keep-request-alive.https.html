@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script type="module">
 import {PaymentRequestMock} from './resources/payment-request-mock.js';
 var details = {
@@ -19,6 +21,7 @@ var response_data = {
 const paymentRequestMock = new PaymentRequestMock();
 
 promise_test(async () => {
+  await test_driver.bless();
   let result = new PaymentRequest([
       {'supportedMethods': ['basic-card']}
   ], details).show();
