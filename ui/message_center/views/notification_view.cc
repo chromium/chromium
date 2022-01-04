@@ -412,7 +412,7 @@ void NotificationView::CreateOrUpdateInlineSettingsViews(
           IDS_MESSAGE_CENTER_BLOCK_ALL_NOTIFICATIONS;
       break;
     case NotifierType::CROSTINI_APPLICATION:
-      FALLTHROUGH;
+      [[fallthrough]];
     // PhoneHub notifications do not have inline settings.
     case NotifierType::PHONE_HUB:
       NOTREACHED();
