@@ -10,7 +10,6 @@ function loadCommonComponents() {
 // This inclusion is types-only. No actual code to execute.
 
 // <include src="../screen_gaia_signin.js">
-// <include src="../saml_confirm_password.js">
 // <include src="../recommend_apps.js">
 // <include src="../oobe_screen_assistant_optin_flow.js">
 // <include src="../multidevice_setup_first_run.js">

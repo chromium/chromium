@@ -2,52 +2,83 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
-
-(function() {
+/* #js_imports_placeholder */
 
 /**
  * UI mode for the dialog.
  * @enum {string}
  */
-const UIState = {
+const SamlConfirmPasswordState = {
   PASSWORD: 'password',
   PROGRESS: 'progress',
 };
 
-Polymer({
-  is: 'saml-confirm-password-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+ const SamlConfirmPasswordBase = Polymer.mixinBehaviors(
+  [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+  Polymer.Element);
 
-  behaviors: [
-    OobeI18nBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
+/**
+ * @typedef {{
+ *   passwordInput:  CrInputElement,
+ *   confirmPasswordInput: CrInputElement,
+ *   cancelConfirmDlg: OobeModalDialogElement
+ * }}
+ */
+SamlConfirmPasswordBase.$;
 
-  properties: {
-    email: String,
+/**
+ * @polymer
+ */
+class SamlConfirmPassword extends SamlConfirmPasswordBase {
 
-    isManualInput: {
-      type: Boolean,
-      value: false,
-    }
-  },
+  static get is() { return 'saml-confirm-password-element'; }
 
-  EXTERNAL_API: ['show'],
+  /* #html_template_placeholder */
+
+  static get properties() {
+    return {
+      email: {
+        type: String,
+        value: '',
+      },
+
+      isManualInput: {
+        type: Boolean,
+        value: false,
+      }
+    };
+  }
+
+  constructor() {
+    super();
+    /**
+     * Callback to run when the screen is dismissed.
+     * @type {?function(string)}
+     */
+    this.callback_ = null;
+  }
+
+  get EXTERNAL_API() {
+    return ['show'];
+  }
 
   defaultUIStep() {
-    return UIState.PASSWORD;
-  },
+    return SamlConfirmPasswordState.PASSWORD;
+  }
 
-  UI_STEPS: UIState,
-
-  /**
-   * Callback to run when the screen is dismissed.
-   * @type {?function(string)}
-   */
-  callback_: null,
+  get UI_STEPS() {
+    return SamlConfirmPasswordState;
+  }
 
   ready() {
+    super.ready();
     this.initializeLoginScreen('ConfirmSamlPasswordScreen', {
       resetAllowed: true,
     });
@@ -56,12 +87,12 @@ Polymer({
         this.$.passwordInput, this.submit_.bind(this));
     cr.ui.LoginUITools.addSubmitListener(
         this.$.confirmPasswordInput, this.submit_.bind(this));
-  },
+  }
 
   /** Initial UI State for screen */
   getOobeUIInitialState() {
     return OOBE_UI_STATE.SAML_PASSWORD_CONFIRM;
-  },
+  }
 
   /**
    * Shows the confirm password screen.
@@ -79,8 +110,8 @@ Polymer({
     this.isManualInput = manualPasswordInput;
     if (attemptCount > 0)
       this.$.passwordInput.invalid = true;
-    cr.ui.Oobe.showScreen({id: 'saml-confirm-password'});
-  },
+    Oobe.getInstance().showScreen({id: 'saml-confirm-password'});
+  }
 
   resetFields() {
     this.$.passwordInput.invalid = false;
@@ -89,30 +120,30 @@ Polymer({
       this.shadowRoot.querySelector('#confirmPasswordInput').invalid = false;
       this.shadowRoot.querySelector('#confirmPasswordInput').value = '';
     }
-  },
+  }
 
   reset() {
     if (this.$.cancelConfirmDlg.open)
       this.$.cancelConfirmDlg.hideDialog();
-    this.setUIStep(UIState.PASSWORD);
+    this.setUIStep(SamlConfirmPasswordState.PASSWORD);
     this.resetFields();
-  },
+  }
 
 
   onCancel_() {
     this.$.cancelConfirmDlg.showDialog();
-  },
+  }
 
   onCancelNo_() {
     this.$.cancelConfirmDlg.hideDialog();
-  },
+  }
 
   onCancelYes_() {
     this.$.cancelConfirmDlg.hideDialog();
 
-    cr.ui.Oobe.showScreen({id: 'gaia-signin'});
-    cr.ui.Oobe.resetSigninUI(true);
-  },
+    Oobe.getInstance().showScreen({id: 'gaia-signin'});
+    Oobe.getInstance().resetSigninUI(true);
+  }
 
   submit_() {
     if (!this.$.passwordInput.validate())
@@ -129,29 +160,26 @@ Polymer({
         return;
       }
     }
-    this.setUIStep(UIState.PROGRESS);
+    this.setUIStep(SamlConfirmPasswordState.PROGRESS);
     this.callback_(this.$.passwordInput.value);
     this.resetFields();
-  },
-
-  onDialogOverlayClosed_() {
-    this.disabled = false;
-  },
+  }
 
   subtitleText_(locale, manual) {
     const key = manual ? 'manualPasswordTitle' : 'confirmPasswordTitle';
     return this.i18n(key);
-  },
+  }
 
   passwordPlaceholder_(locale, manual) {
     const key = manual ? 'manualPasswordInputLabel' : 'confirmPasswordLabel';
     return this.i18n(key);
-  },
+  }
 
   passwordErrorText_(locale, manual) {
     const key =
         manual ? 'manualPasswordMismatch' : 'confirmPasswordIncorrectPassword';
     return this.i18n(key);
-  },
-});
-})();
+  }
+}
+
+customElements.define(SamlConfirmPassword.is, SamlConfirmPassword);
