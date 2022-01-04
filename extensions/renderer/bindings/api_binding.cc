@@ -633,7 +633,7 @@ void APIBinding::HandleCall(const std::string& name,
         return;  // Our work here is done.
       case APIBindingHooks::RequestResult::ARGUMENTS_UPDATED:
         updated_args = true;
-        FALLTHROUGH;
+        [[fallthrough]];
       case APIBindingHooks::RequestResult::NOT_HANDLED:
         break;  // Handle in the default manner.
     }
