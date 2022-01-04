@@ -761,7 +761,8 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
   // Unless it's HTML which should open in the browser (crbug.com/1121396).
   for (FullTaskDescriptor& task : *tasks) {
     if (IsFallbackFileHandler(task) &&
-        task.task_descriptor.action_id != "view-in-browser") {
+        parseFilesAppActionId(task.task_descriptor.action_id) !=
+            "view-in-browser") {
       const extensions::EntryInfo entry = entries[0];
       const base::FilePath& file_path = entry.path;
 
