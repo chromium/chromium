@@ -832,7 +832,8 @@ void WebViewGuest::DidFinishNavigation(
 
 void WebViewGuest::LoadProgressChanged(double progress) {
   auto args = std::make_unique<base::DictionaryValue>();
-  args->SetString(guest_view::kUrl, web_contents()->GetURL().spec());
+  args->SetString(guest_view::kUrl,
+                  web_contents()->GetLastCommittedURL().spec());
   args->SetDoubleKey(webview::kProgress, progress);
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventLoadProgress, std::move(args)));
