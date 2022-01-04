@@ -321,8 +321,6 @@ def GetSdkModules():
   sdk_arch_dir = os.path.join(SDK_ROOT, 'arch')
   # Leaf subdirectories containing shared object files.
   sdk_so_leaf_dirs = ['dist', 'lib']
-  # Match a shared object file name.
-  sdk_so_filename_re = r'\.so(\.\d+)?$'
 
   lib_names = set()
   for dirpath, _, file_names in os.walk(sdk_arch_dir):
@@ -551,30 +549,30 @@ def main():
     package_sizes, package_blobs = GetBinarySizesAndBlobs(args, sizes_config)
     sizes_histogram = CreateSizesHistogram(package_sizes)
     test_completed = True
-  except:
+  except:  # pylint: disable=bare-except
     _, value, trace = sys.exc_info()
     traceback.print_tb(trace)
     print(str(value))
-  finally:
-    all_tests_passed, test_status = GetTestStatus(package_sizes, sizes_config,
-                                                  test_completed)
 
-    if results_directory:
-      WriteTestResults(os.path.join(results_directory, 'test_results.json'),
-                       test_completed, test_status, timestamp)
-      with open(os.path.join(results_directory, 'perf_results.json'), 'w') as f:
-        json.dump(sizes_histogram, f)
-      WritePackageBlobsJson(os.path.join(results_directory, PACKAGES_SIZE_FILE),
-                            package_blobs)
+  all_tests_passed, test_status = GetTestStatus(package_sizes, sizes_config,
+                                                test_completed)
 
-    if args.isolated_script_test_output:
-      WriteTestResults(args.isolated_script_test_output, test_completed,
-                       test_status, timestamp)
+  if results_directory:
+    WriteTestResults(os.path.join(results_directory, 'test_results.json'),
+                     test_completed, test_status, timestamp)
+    with open(os.path.join(results_directory, 'perf_results.json'), 'w') as f:
+      json.dump(sizes_histogram, f)
+    WritePackageBlobsJson(os.path.join(results_directory, PACKAGES_SIZE_FILE),
+                          package_blobs)
 
-    if args.size_plugin_json_path:
-      WriteGerritPluginSizeData(args.size_plugin_json_path, package_sizes)
+  if args.isolated_script_test_output:
+    WriteTestResults(args.isolated_script_test_output, test_completed,
+                     test_status, timestamp)
 
-    return 0 if all_tests_passed else 1
+  if args.size_plugin_json_path:
+    WriteGerritPluginSizeData(args.size_plugin_json_path, package_sizes)
+
+  return 0 if all_tests_passed else 1
 
 
 if __name__ == '__main__':

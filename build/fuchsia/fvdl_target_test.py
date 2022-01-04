@@ -81,7 +81,6 @@ class TestBuildCommandFvdlTarget(unittest.TestCase):
     with FvdlTarget.CreateFromArgs(self.args) as target:
       self.assertIn('--device-proto', target._BuildCommand())
       self.assertTrue(os.path.exists(target._device_proto_file.name))
-      correct_ram_amount = False
       with open(target._device_proto_file.name, 'r') as f:
         self.assertTrue('  ram:  {}\n'.format(custom_ram_size) in f.readlines())
 

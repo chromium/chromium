@@ -26,11 +26,11 @@ SDK_TARBALL_PATH_TEMPLATE = (
     'gs://{bucket}/development/{sdk_hash}/sdk/{platform}-amd64/gn.tar.gz')
 
 
-def _GetSdkGeneration(bucket, hash):
-  if not hash:
+def _GetSdkGeneration(bucket, sdk_hash):
+  if not sdk_hash:
     return None
 
-  sdk_path = _GetSdkTarballPath(bucket, hash)
+  sdk_path = _GetSdkTarballPath(bucket, sdk_hash)
   cmd = [
       os.path.join(find_depot_tools.DEPOT_TOOLS_PATH, 'gsutil.py'), 'ls', '-L',
       sdk_path
@@ -92,12 +92,13 @@ def DownloadAndUnpackFromCloudStorage(url, output_dir):
   task = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
   try:
     tarfile.open(mode='r|gz', fileobj=task.stdout).extractall(path=output_dir)
-  except tarfile.ReadError:
+  except tarfile.ReadError as read_error:
     task.wait()
     stderr = task.stderr.read()
-    raise subprocess.CalledProcessError(task.returncode, cmd,
-      "Failed to read a tarfile from gsutil.py.{}".format(
-        stderr if stderr else ""))
+    raise subprocess.CalledProcessError(
+        task.returncode, cmd,
+        "Failed to read a tarfile from gsutil.py.{}".format(
+            stderr if stderr else "")) from read_error
   task.wait()
   if task.returncode:
     raise subprocess.CalledProcessError(task.returncode, cmd,
@@ -142,7 +143,7 @@ def main():
   # Quietly exit if there's no SDK support for this platform.
   try:
     GetHostOsFromPlatform()
-  except:
+  except:  # pylint: disable=bare-except
     return 0
 
   # Use the bucket in sdk-bucket.txt if an entry exists.

@@ -42,7 +42,7 @@ def _AttachKernelLogReader(target):
                                 stderr=subprocess.STDOUT)
 
 
-class MergedInputStream(object):
+class MergedInputStream():
   """Merges a number of input streams into a UTF-8 encoded UNIX pipe on a
   dedicated thread. Terminates when the file descriptor of the primary stream
   (the first in the sequence) is closed."""
@@ -167,12 +167,11 @@ def _SymbolizeStream(input_fd, ids_txt_files):
   return RunSymbolizer(input_fd, subprocess.PIPE, ids_txt_files)
 
 
-def RunTestPackage(output_dir, target, package_paths, package_name,
+def RunTestPackage(target, package_paths, package_name,
                    package_component_version, package_args, args):
   """Installs the Fuchsia package at |package_path| on the target,
   executes it with |package_args|, and symbolizes its output.
 
-  output_dir: The path containing the build output files.
   target: The deployment Target object that will run the package.
   package_paths: The paths to the .far packages to be installed.
   package_name: The name of the primary package to run.

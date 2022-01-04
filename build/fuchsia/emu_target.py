@@ -26,7 +26,7 @@ class EmuTarget(target.Target):
     target_cpu: The emulated target CPU architecture.
                 Can be 'x64' or 'arm64'."""
 
-    super(EmuTarget, self).__init__(out_dir, target_cpu, logs_dir)
+    super().__init__(out_dir, target_cpu, logs_dir)
     self._emu_process = None
     self._pkg_repo = None
     self._target_added = False
@@ -34,9 +34,13 @@ class EmuTarget(target.Target):
   def __enter__(self):
     return self
 
+  def _GetEmulatorName(self):
+    """Returns the name of this emulator."""
+    raise NotImplementedError()
+
   def _BuildCommand(self):
     """Build the command that will be run to start Fuchsia in the emulator."""
-    pass
+    raise NotImplementedError()
 
   def _SetEnv(self):
     return os.environ.copy()
@@ -80,13 +84,13 @@ class EmuTarget(target.Target):
       self._AddFfxTarget()
     except target.FuchsiaTargetException:
       if temporary_log_file:
-        logging.info('Kernel logs:\n' +
+        logging.info('Kernel logs:\n%s',
                      open(temporary_log_file.name, 'r').read())
       raise
 
   def Stop(self):
     try:
-      super(EmuTarget, self).Stop()
+      super().Stop()
     finally:
       self.Shutdown()
 
@@ -98,23 +102,24 @@ class EmuTarget(target.Target):
 
   def Shutdown(self):
     if not self._emu_process:
-      logging.error('%s did not start' % (self.EMULATOR_NAME))
+      logging.error('%s did not start', self._GetEmulatorName())
       return
     self._RemoveFfxTarget()
     if common.IsRunningUnattended():
       self._StopFfxDaemon()
     returncode = self._emu_process.poll()
     if returncode == None:
-      logging.info('Shutting down %s' % (self.EMULATOR_NAME))
+      logging.info('Shutting down %s', self._GetEmulatorName())
       self._emu_process.kill()
     elif returncode == 0:
-      logging.info('%s quit unexpectedly without errors' % self.EMULATOR_NAME)
+      logging.info('%s quit unexpectedly without errors',
+                   self._GetEmulatorName())
     elif returncode < 0:
-      logging.error('%s was terminated by signal %d' %
-                    (self.EMULATOR_NAME, -returncode))
+      logging.error('%s was terminated by signal %d', self._GetEmulatorName(),
+                    -returncode)
     else:
-      logging.error('%s quit unexpectedly with exit code %d' %
-                    (self.EMULATOR_NAME, returncode))
+      logging.error('%s quit unexpectedly with exit code %d',
+                    self._GetEmulatorName(), returncode)
 
     self.LogProcessStatistics('proc_stat_end_log')
     self.LogSystemStatistics('system_statistics_end_log')
@@ -124,11 +129,6 @@ class EmuTarget(target.Target):
     if not self._emu_process:
       return False
     return os.waitpid(self._emu_process.pid, os.WNOHANG)[0] == 0
-
-  def _GetEndpoint(self):
-    if not self._IsEmuStillRunning():
-      raise Exception('%s quit unexpectedly.' % (self.EMULATOR_NAME))
-    return (self.LOCAL_ADDRESS, self._host_ssh_port)
 
   def _GetSshConfigPath(self):
     return boot_data.GetSSHConfigPath()
@@ -159,18 +159,17 @@ class EmuTarget(target.Target):
                                          stderr=subprocess.STDOUT,
                                          encoding='utf-8')
       if completed_process.stdout:
-        logging.debug('ffx succeeded with output\n%s' %
-                      completed_process.stdout)
+        logging.debug('ffx succeeded with output\n%s', completed_process.stdout)
       return completed_process.stdout
     except subprocess.CalledProcessError as cpe:
-      logging.exception('ffx failed with output\n%s' % cpe.stdout)
+      logging.exception('ffx failed with output\n%s', cpe.stdout)
       raise
 
   def _StopFfxDaemon(self):
     try:
       self._RunFfxCommand(['daemon', 'stop'])
       return
-    except subprocess.CalledProcessError as cpe:
+    except subprocess.CalledProcessError:
       pass
     logging.error('Failed to stop the damon. Attempting to restart it via ffx' +
                   ' doctor')
@@ -187,11 +186,11 @@ class EmuTarget(target.Target):
       return
     try:
       targets = json.loads(json_targets)
-    except json.JSONDecodeError as e:
-      logging.debug('ffx target list returned non-json text: %s' % json_targets)
+    except json.JSONDecodeError:
+      logging.debug('ffx target list returned non-json text: %s', json_targets)
       return
-    for target in targets:
-      if target['rcs_state'] == 'N' and address in target['addresses']:
+    for a_target in targets:
+      if a_target['rcs_state'] == 'N' and address in a_target['addresses']:
         self._RunFfxCommand(['target', 'remove', address])
 
   def _SetDefaultFfxTarget(self, address):
@@ -201,11 +200,11 @@ class EmuTarget(target.Target):
       address: A string representation of the target's ip address.
     """
     targets = json.loads(self._RunFfxCommand(['target', 'list', '-f', 'j']))
-    for target in targets:
-      if (target['rcs_state'] == 'N' or target['nodename'] == '<unknown>'
-          or address not in target['addresses']):
+    for a_target in targets:
+      if (a_target['rcs_state'] == 'N' or a_target['nodename'] == '<unknown>'
+          or address not in a_target['addresses']):
         continue
-      self._RunFfxCommand(['target', 'default', 'set', target['nodename']])
+      self._RunFfxCommand(['target', 'default', 'set', a_target['nodename']])
       break
 
   def _AddFfxTarget(self):

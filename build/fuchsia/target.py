@@ -35,7 +35,7 @@ def _GetPackageInfo(package_path):
   # Query the metadata file which resides next to the package file.
   package_info = json.load(
       open(os.path.join(os.path.dirname(package_path), 'package')))
-  return package_info['name'], package_info['version'],
+  return package_info['name'], package_info['version']
 
 
 class _MapIsolatedPathsForPackage:
@@ -57,12 +57,11 @@ class _MapIsolatedPathsForPackage:
 
 
 class FuchsiaTargetException(Exception):
-  def __init__(self, message):
-    super(FuchsiaTargetException, self).__init__(message)
+  pass
 
 
 # TODO(crbug.com/1250803): Factor high level commands out of target.
-class Target(object):
+class Target():
   """Base class representing a Fuchsia deployment target."""
 
   def __init__(self, out_dir, target_cpu, logs_dir):
@@ -191,7 +190,7 @@ class Target(object):
     for_realms: If specified, identifies the sub-realm of 'sys' under which
                 isolated paths (see |for_package|) are stored.
     """
-    assert type(source) is str
+    assert isinstance(source, str)
     self.PutFiles([source], dest, recursive, for_package, for_realms)
 
   def PutFiles(self,
@@ -210,7 +209,7 @@ class Target(object):
     for_realms: If specified, identifies the sub-realm of 'sys' under which
                 isolated paths (see |for_package|) are stored.
     """
-    assert type(sources) is tuple or type(sources) is list
+    assert isinstance(sources, (tuple, list))
     if for_package:
       self.EnsureIsolatedPathsExist(for_package, for_realms)
       dest = _MapIsolatedPathsForPackage(for_package, 0, for_realms)(dest)
@@ -234,7 +233,7 @@ class Target(object):
                 isolated paths (see |for_package|) are stored.
     recursive: If true, performs a recursive copy.
     """
-    assert type(source) is str
+    assert isinstance(source, str)
     self.GetFiles([source], dest, for_package, for_realms, recursive)
 
   def GetFiles(self,
@@ -253,7 +252,7 @@ class Target(object):
                 isolated paths (see |for_package|) are stored.
     recursive: If true, performs a recursive copy.
     """
-    assert type(sources) is tuple or type(sources) is list
+    assert isinstance(sources, (tuple, list))
     self._AssertIsStarted()
     if for_package:
       sources = map(_MapIsolatedPathsForPackage(for_package, 0, for_realms),
@@ -273,7 +272,7 @@ class Target(object):
                                     stderr=subprocess.STDOUT)
     stdout, _ = cat_proc.communicate()
     if cat_proc.returncode != 0:
-      raise Exception('Could not read file %s on device.', source)
+      raise Exception('Could not read file %s on device.' % source)
     return stdout.decode('utf-8')
 
   def _GetEndpoint(self):
@@ -312,7 +311,7 @@ class Target(object):
 
     raise FuchsiaTargetException('Couldn\'t connect using SSH.')
 
-  def _GetSshConfigPath(self, path):
+  def _GetSshConfigPath(self):
     raise NotImplementedError()
 
   def GetPkgRepo(self):
@@ -336,7 +335,7 @@ class Target(object):
 
       # Resolve all packages, to have them pulled into the device/VM cache.
       for package_path in package_paths:
-        package_name, package_version = _GetPackageInfo(package_path)
+        package_name, _ = _GetPackageInfo(package_path)
         logging.info('Installing %s...', package_name)
         return_code = self.RunCommand(
             ['pkgctl', 'resolve',
@@ -349,13 +348,13 @@ class Target(object):
       # Verify that the newly resolved versions of packages are reported.
       for package_path in package_paths:
         # Use pkgctl get-hash to determine which version will be resolved.
-        package_name, package_version = _GetPackageInfo(package_path)
+        package_name, _ = _GetPackageInfo(package_path)
         pkgctl = self.RunCommandPiped(
             ['pkgctl', 'get-hash',
              _GetPackageUri(package_name)],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
-        pkgctl_out, pkgctl_err = pkgctl.communicate()
+        pkgctl_out, _ = pkgctl.communicate()
 
         # Read the expected version from the meta.far Merkel hash file alongside
         # the package's FAR.

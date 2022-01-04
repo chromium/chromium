@@ -22,7 +22,7 @@ _PM_SERVE_POLL_INTERVAL = 0.1
 _MANAGED_REPO_NAME = 'chromium-test-package-server'
 
 
-class PkgRepo(object):
+class PkgRepo():
   """Abstract interface for a repository used to serve packages to devices."""
 
   def __init__(self):
@@ -52,53 +52,60 @@ class ManagedPkgRepo(PkgRepo):
   """Creates and serves packages from an ephemeral repository."""
 
   def __init__(self, target):
-    super(ManagedPkgRepo, self).__init__()
+    super().__init__()
     self._with_count = 0
     self._target = target
 
     self._pkg_root = tempfile.mkdtemp()
     pm_tool = common.GetHostToolPathFromPlatform('pm')
     subprocess.check_call([pm_tool, 'newrepo', '-repo', self._pkg_root])
-    logging.debug('Creating and serving temporary package root: {}.'.format(
-        self._pkg_root))
+    logging.debug('Creating and serving temporary package root: %s.',
+                  self._pkg_root)
 
     with tempfile.NamedTemporaryFile() as pm_port_file:
-        # Flags for `pm serve`:
-        # https://fuchsia.googlesource.com/fuchsia/+/refs/heads/main/src/sys/pkg/bin/pm/cmd/pm/serve/serve.go
-        self._pm_serve_task = subprocess.Popen([
-            pm_tool, 'serve',
-            '-d', os.path.join(self._pkg_root, 'repository'),
-            '-c', '2',  # Use config.json format v2, the default for pkgctl.
-            '-q',  # Don't log transfer activity.
-            '-l', ':0',  # Bind to ephemeral port.
-            '-f', pm_port_file.name  # Publish port number to |pm_port_file|.
-        ])
+      # Flags for `pm serve`:
+      # https://fuchsia.googlesource.com/fuchsia/+/refs/heads/main/src/sys/pkg/bin/pm/cmd/pm/serve/serve.go
+      self._pm_serve_task = subprocess.Popen([
+          pm_tool,
+          'serve',
+          '-d',
+          os.path.join(self._pkg_root, 'repository'),
+          '-c',
+          '2',  # Use config.json format v2, the default for pkgctl.
+          '-q',  # Don't log transfer activity.
+          '-l',
+          ':0',  # Bind to ephemeral port.
+          '-f',
+          pm_port_file.name  # Publish port number to |pm_port_file|.
+      ])
 
-        # Busywait until 'pm serve' starts the server and publishes its port to
-        # a temporary file.
-        timeout = time.time() + _PM_SERVE_LISTEN_TIMEOUT_SECS
-        serve_port = None
-        while not serve_port:
-          if time.time() > timeout:
-            raise Exception('Timeout waiting for \'pm serve\' to publish its port.')
+      # Busywait until 'pm serve' starts the server and publishes its port to
+      # a temporary file.
+      timeout = time.time() + _PM_SERVE_LISTEN_TIMEOUT_SECS
+      serve_port = None
+      while not serve_port:
+        if time.time() > timeout:
+          raise Exception(
+              'Timeout waiting for \'pm serve\' to publish its port.')
 
-          with open(pm_port_file.name, 'r', encoding='utf8') as serve_port_file:
-            serve_port = serve_port_file.read()
+        with open(pm_port_file.name, 'r', encoding='utf8') as serve_port_file:
+          serve_port = serve_port_file.read()
 
-          time.sleep(_PM_SERVE_POLL_INTERVAL)
+        time.sleep(_PM_SERVE_POLL_INTERVAL)
 
-        serve_port = int(serve_port)
-        logging.debug('pm serve is active on port {}.'.format(serve_port))
+      serve_port = int(serve_port)
+      logging.debug('pm serve is active on port %s.', serve_port)
 
-    remote_port = common.ConnectPortForwardingTask(target, serve_port, 0)
+    remote_port = common.ConnectPortForwardingTask(target, serve_port)
     self._RegisterPkgRepository(self._pkg_root, remote_port)
 
   def __enter__(self):
     self._with_count += 1
     return self
 
-  def __exit__(self, type, value, tb):
-    # Allows the repository to delete itself when it leaves the scope of a 'with' block.
+  def __exit__(self, exc_type, exc_value, traceback):
+    # Allows the repository to delete itself when it leaves the scope of a
+    # 'with' block.
     self._with_count -= 1
     if self._with_count > 0:
       return
@@ -107,7 +114,7 @@ class ManagedPkgRepo(PkgRepo):
     self._pm_serve_task.kill()
     self._pm_serve_task = None
 
-    logging.info('Cleaning up package root: ' + self._pkg_root)
+    logging.info('Cleaning up package root: %s', self._pkg_root)
     shutil.rmtree(self._pkg_root)
     self._pkg_root = None
 
@@ -167,7 +174,10 @@ class ManagedPkgRepo(PkgRepo):
       raise Exception('Error code %d when running pkgctl repo add.' %
                       return_code)
 
-    rule_template = """'{"version":"1","content":[{"host_match":"fuchsia.com","host_replacement":"%s","path_prefix_match":"/","path_prefix_replacement":"/"}]}'"""
+    rule_template = \
+      """'{"version":"1","content":[{"host_match":"fuchsia.com",""" \
+      """"host_replacement":"%s","path_prefix_match":"/",""" \
+      """"path_prefix_replacement":"/"}]}'"""
     return_code = self._target.RunCommand([
         ('pkgctl rule replace json %s') % (rule_template % (_MANAGED_REPO_NAME))
     ])
@@ -187,7 +197,9 @@ class ManagedPkgRepo(PkgRepo):
     # were booted with 'fx serve'.
     self._target.RunCommand([
         'pkgctl', 'rule', 'replace', 'json',
-        """'{"version":"1","content":[{"host_match":"fuchsia.com","host_replacement":"devhost","path_prefix_match":"/","path_prefix_replacement":"/"}]}'"""
+        """'{"version":"1","content":[{"host_match":"fuchsia.com",""" \
+        """"host_replacement":"devhost","path_prefix_match":"/",""" \
+        """"path_prefix_replacement":"/"}]}'"""
     ],
                             silent=True)
 
@@ -197,28 +209,27 @@ class ExternalPkgRepo(PkgRepo):
   (ie. located under a Fuchsia build directory and served by "fx serve"."""
 
   def __init__(self, pkg_root, symbol_root):
-    super(PkgRepo, self).__init__()
+    super().__init__()
 
     self._pkg_root = pkg_root
     self._symbol_root = symbol_root
 
-    logging.info('Using existing package root: {}'.format(pkg_root))
-    logging.info(
-        'ATTENTION: This will not start a package server. Please run "fx serve" manually.'
-    )
+    logging.info('Using existing package root: %s', pkg_root)
+    logging.info('ATTENTION: This will not start a package server. Please run '
+                 '"fx serve" manually.')
 
   def GetPath(self):
     return self._pkg_root
 
   def PublishPackage(self, package_path):
-    super(ExternalPkgRepo, self).PublishPackage(package_path)
+    super().PublishPackage(package_path)
 
     self._InstallSymbols(os.path.join(os.path.dirname(package_path), 'ids.txt'))
 
   def __enter__(self):
     return self
 
-  def __exit__(self, type, value, tb):
+  def __exit__(self, exc_type, exc_value, traceback):
     pass
 
   def _InstallSymbols(self, package_path):

@@ -103,7 +103,7 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
     self.args.system_image_dir = 'mockdir'
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(DeviceTarget, '_Discover') as mock_discover, \
-         mock.patch.object(DeviceTarget, '_WaitUntilReady') as mock_ready, \
+         mock.patch.object(DeviceTarget, '_WaitUntilReady'), \
          mock.patch.object(DeviceTarget, '_GetSdkHash') as mock_hash, \
          mock.patch.object(
             DeviceTarget, '_GetInstalledSdkVersion') as mock_version, \
@@ -119,12 +119,12 @@ class TestDiscoverDeviceTarget(unittest.TestCase):
     self.args.system_image_dir = 'mockdir'
     with DeviceTarget.CreateFromArgs(self.args) as device_target_instance, \
          mock.patch.object(DeviceTarget, '_Discover') as mock_discover, \
-         mock.patch.object(DeviceTarget, '_WaitUntilReady') as mock_ready, \
+         mock.patch.object(DeviceTarget, '_WaitUntilReady'), \
          mock.patch.object(DeviceTarget, '_GetSdkHash') as mock_hash, \
          mock.patch.object(
             DeviceTarget, '_GetInstalledSdkVersion') as mock_version, \
          mock.patch.object(
-            DeviceTarget, '_ProvisionDevice') as mock_provision, \
+            DeviceTarget, '_ProvisionDevice'), \
          self.assertRaisesRegex(Exception, 'Image and Fuchsia version'):
       mock_discover.return_value = True
       mock_hash.return_value = '2.0'

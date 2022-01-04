@@ -124,7 +124,7 @@ def AddCommonArgs(arg_parser):
   emu_args.add_argument('--ram-size-mb',
                         type=int,
                         default=8192,
-                        help='Sets the emulated RAM size (MB).'),
+                        help='Sets the emulated RAM size (MB).')
   emu_args.add_argument('--allow-no-kvm',
                         action='store_false',
                         dest='require_kvm',

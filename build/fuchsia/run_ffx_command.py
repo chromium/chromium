@@ -48,23 +48,24 @@ def main():
     target.Start()
     target.StartSystemLog(args.package)
 
-    # Extend the lifetime of |pkg_repo| beyond InstallPackage so that the
-    # package can be instantiated after resolution.
-    with target.GetPkgRepo() as pkg_repo:
+    # Extend the lifetime of the package repository beyond InstallPackage so
+    # that the package can be instantiated after resolution.
+    with target.GetPkgRepo():
       target.InstallPackage(args.package)
       process = target.RunFFXCommand(ffx_args)
 
       # It's possible that components installed by this script may be
-      # instantiated at arbitrary points in the future.
-      # This script (specifically |pkg_repo|) must be kept alive until it
-      # is explicitly terminated by the user, otherwise pkgsvr will
-      # throw an error when launching components.
+      # instantiated at arbitrary points in the future. This script
+      # (specifically, the package repository) must be kept alive until it is
+      # explicitly terminated by the user, otherwise pkgsvr will throw an error
+      # when launching components.
       logging.info('Command is now running. Press CTRL-C to exit.')
       try:
         while True:
           time.sleep(1)
       except KeyboardInterrupt:
         pass
+      del process
 
   return 0
 
