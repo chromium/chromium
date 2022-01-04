@@ -140,7 +140,7 @@ base::test::TaskEnvironment::ThreadPoolExecutionMode GetExecutionMode(
     CommitPendingWriteMode commit_mode) {
   switch (commit_mode) {
     case CommitPendingWriteMode::WITHOUT_CALLBACK:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CommitPendingWriteMode::WITH_CALLBACK:
       return base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED;
     case CommitPendingWriteMode::WITH_SYNCHRONOUS_CALLBACK:
