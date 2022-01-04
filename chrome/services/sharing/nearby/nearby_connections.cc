@@ -437,7 +437,7 @@ void NearbyConnections::AcceptConnection(
 
             switch (info.status) {
               case PayloadProgressInfo::Status::kFailure:
-                FALLTHROUGH;
+                [[fallthrough]];
               case PayloadProgressInfo::Status::kCanceled:
                 buffer_manager_.StopTrackingFailedPayload(info.payload_id);
                 break;
