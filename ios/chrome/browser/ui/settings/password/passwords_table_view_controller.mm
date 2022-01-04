@@ -23,12 +23,17 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_service_utils.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/ui/elements/home_waiting_view.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
@@ -47,6 +52,7 @@
 #import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
@@ -85,20 +91,52 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierBlocked,
   SectionIdentifierExportPasswordsButton,
   SectionIdentifierPasswordCheck,
+  SectionIdentifierOnDeviceEncryption,
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeLinkHeader = kItemTypeEnumZero,
   ItemTypeHeader,
+  // Section: SectionIdentifierSavePasswordsSwitch
+  ItemTypeLinkHeader = kItemTypeEnumZero,
   ItemTypeSavePasswordsSwitch,
-  ItemTypePasswordsInOtherApps,
   ItemTypeManagedSavePasswords,
+  // Section: SectionIdentifierPasswordsInOtherApps
+  ItemTypePasswordsInOtherApps,
+  // Section: SectionIdentifierPasswordCheck
   ItemTypePasswordCheckStatus,
   ItemTypeCheckForProblemsButton,
   ItemTypeLastCheckTimestampFooter,
+  // Section: SectionIdentifierSavedPasswords
   ItemTypeSavedPassword,  // This is a repeated item type.
-  ItemTypeBlocked,        // This is a repeated item type.
+  // Section: SectionIdentifierBlocked
+  ItemTypeBlocked,  // This is a repeated item type.
+  // Section: SectionIdentifierExportPasswordsButton
   ItemTypeExportPasswordsButton,
+  // Section: SectionIdentifierOnDeviceEncryption
+  ItemTypeOnDeviceEncryptionOptInDescription,
+  ItemTypeOnDeviceEncryptionSetUp,
+  ItemTypeOnDeviceEncryptionOptedInDescription,
+};
+
+// State of on-device encryption used for
+// ItemTypeOnDeviceEncryptionOptInDescription, ItemTypeOnDeviceEncryptionSetUp
+// and ItemTypeOnDeviceEncryptionSetUp.
+typedef NS_ENUM(NSInteger, OnDeviceEncryptionState) {
+  // On device encryption is on.
+  // ItemTypeOnDeviceEncryptionOptInDescription is shown.
+  OnDeviceEncryptionStateOptedIn,
+  // User can opt-in on device encryption.
+  // ItemTypeOnDeviceEncryptionOptInDescription and
+  // ItemTypeOnDeviceEncryptionSetUp are shown.
+  OnDeviceEncryptionStateOfferOptIn,
+  // User can not opt-in in their current state.
+  // Currently it is either because:
+  // * User is not signed-in,
+  // * User hasn’t opted in to or disabled Sync for passwords (or equivalent
+  // enterprise policies),
+  // * User has a custom passphrase.
+  // SectionIdentifierOnDeviceEncryption is hidden.
+  OnDeviceEncryptionStateNotShown,
 };
 
 std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
@@ -212,6 +250,13 @@ void RemoveFormsToBeDeleted(
   TableViewTextItem* _checkForProblemsItem;
   // The item related to the button for exporting passwords.
   TableViewTextItem* _exportPasswordsItem;
+  // The text explaining on-device encryption was opted-in and offering to know
+  // more.
+  TableViewImageItem* _onDeviceEncryptionOptInDescriptionItem;
+  // The text explaining why the user should opt-in on device encryption.
+  TableViewImageItem* _onDeviceEncryptionOptedInDescription;
+  // The link to set up on device encryption.
+  TableViewTextItem* _setUpOnDeviceEncryptionItem;
   // The list of the user's saved passwords.
   std::vector<password_manager::PasswordForm> _savedForms;
   // The list of the user's blocked sites.
@@ -490,7 +535,7 @@ void RemoveFormsToBeDeleted(
         forSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
   }
 
-  // Passwords in other apps
+  // Passwords in other apps.
   if (base::FeatureList::IsEnabled(kCredentialProviderExtensionPromo)) {
     [model addSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
     if (!_passwordsInOtherAppsItem) {
@@ -521,6 +566,36 @@ void RemoveFormsToBeDeleted(
   [self updateLastCheckTimestampWithState:_passwordCheckState
                                 fromState:_passwordCheckState
                                    update:NO];
+
+  // On-device encryption.
+  // TODO(crbug.com/1202088): Listen to state change to update the settings.
+  switch ([self onDeviceEncryptionState]) {
+    case OnDeviceEncryptionStateOfferOptIn:
+      [model addSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+      if (!_onDeviceEncryptionOptInDescriptionItem) {
+        _onDeviceEncryptionOptInDescriptionItem =
+            [self onDeviceEncryptionOptInDescriptionItem];
+      }
+      [model addItem:_onDeviceEncryptionOptInDescriptionItem
+          toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+      if (!_setUpOnDeviceEncryptionItem) {
+        _setUpOnDeviceEncryptionItem = [self setUpOnDeviceEncryptionItem];
+      }
+      [model addItem:_setUpOnDeviceEncryptionItem
+          toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+      break;
+    case OnDeviceEncryptionStateOptedIn:
+      [model addSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+      if (!_onDeviceEncryptionOptedInDescription) {
+        _onDeviceEncryptionOptedInDescription =
+            [self onDeviceEncryptionOptedInDescription];
+      }
+      [model addItem:_onDeviceEncryptionOptedInDescription
+          toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+      break;
+    case OnDeviceEncryptionStateNotShown:
+      break;
+  }
 
   // Saved passwords.
   if (!_savedForms.empty()) {
@@ -740,6 +815,39 @@ void RemoveFormsToBeDeleted(
           initWithType:ItemTypeLastCheckTimestampFooter];
   footerItem.text = [self.delegate formatElapsedTimeSinceLastCheck];
   return footerItem;
+}
+
+- (TableViewImageItem*)onDeviceEncryptionOptInDescriptionItem {
+  TableViewImageItem* item = [[TableViewImageItem alloc]
+      initWithType:ItemTypeOnDeviceEncryptionOptInDescription];
+  item.title =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION);
+  item.detailText = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_OPT_IN);
+  item.enabled = NO;
+  return item;
+}
+
+- (TableViewImageItem*)onDeviceEncryptionOptedInDescription {
+  TableViewImageItem* item = [[TableViewImageItem alloc]
+      initWithType:ItemTypeOnDeviceEncryptionOptedInDescription];
+  item.title =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION);
+  item.detailText = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_LEARN_MORE);
+  // TODO(crbug.com/1202088): Remove translateable="false" once the
+  // final string is decided. Then upload the screenshot.
+  return item;
+}
+
+- (TableViewTextItem*)setUpOnDeviceEncryptionItem {
+  TableViewTextItem* item =
+      [[TableViewTextItem alloc] initWithType:ItemTypeOnDeviceEncryptionSetUp];
+  item.text = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_SET_UP);
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits = UIAccessibilityTraitButton;
+  return item;
 }
 
 - (TableViewTextItem*)exportPasswordsItem {
@@ -1566,7 +1674,22 @@ void RemoveFormsToBeDeleted(
   }
 }
 
-#pragma mark UITableViewDelegate
+// Returns the on-device encryption state according to the sync service.
+- (OnDeviceEncryptionState)onDeviceEncryptionState {
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(_browserState);
+  if (ShouldOfferTrustedVaultOptIn(syncService)) {
+    return OnDeviceEncryptionStateOfferOptIn;
+  }
+  syncer::SyncUserSettings* syncUserSettings = syncService->GetUserSettings();
+  if (syncUserSettings->GetPassphraseType() ==
+      syncer::PassphraseType::kTrustedVaultPassphrase) {
+    return OnDeviceEncryptionStateOptedIn;
+  }
+  return OnDeviceEncryptionStateNotShown;
+}
+
+#pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
@@ -1579,7 +1702,8 @@ void RemoveFormsToBeDeleted(
   }
 
   TableViewModel* model = self.tableViewModel;
-  NSInteger itemType = [model itemTypeForIndexPath:indexPath];
+  ItemType itemType =
+      static_cast<ItemType>([model itemTypeForIndexPath:indexPath]);
   switch (itemType) {
     case ItemTypeLinkHeader:
     case ItemTypeHeader:
@@ -1624,7 +1748,23 @@ void RemoveFormsToBeDeleted(
                                 PasswordCheckInteraction::kManualPasswordCheck);
       }
       break;
-    default:
+    case ItemTypeOnDeviceEncryptionSetUp: {
+      GURL url = google_util::AppendGoogleLocaleParam(
+          GURL(kOnDeviceEncryptionOptInURL),
+          GetApplicationContext()->GetApplicationLocale());
+      BlockToOpenURL(self, self.dispatcher)(url);
+      break;
+    }
+    case ItemTypeOnDeviceEncryptionOptedInDescription: {
+      GURL url = google_util::AppendGoogleLocaleParam(
+          GURL(kOnDeviceEncryptionLearnMoreURL),
+          GetApplicationContext()->GetApplicationLocale());
+      // TODO(crbug.com/1202088): Check whether local is necessary.
+      BlockToOpenURL(self, self.dispatcher)(url);
+      break;
+    }
+    case ItemTypeOnDeviceEncryptionOptInDescription:
+    case ItemTypeLastCheckTimestampFooter:
       NOTREACHED();
   }
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
