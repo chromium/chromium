@@ -68,20 +68,22 @@ std::vector<FirefoxDetail> GetFirefoxDetailsFromDictionary(
 
   for (int i = 0; ; ++i) {
     std::string current_profile = base::StringPrintf("Profile%d", i);
-    if (!root.HasKey(current_profile)) {
+    if (!root.FindKey(current_profile)) {
       // Profiles are contiguously numbered. So we exit when we can't
       // find the i-th one.
       break;
     }
 
-    std::u16string path;
-    if (!root.GetString(current_profile + ".Path", &path))
+    if (!root.FindPath(current_profile + ".Path"))
       continue;
 
     FirefoxDetail details;
     details.path = GetProfilePath(root, current_profile);
     std::u16string name;
-    root.GetString(current_profile + ".Name", &name);
+    if (const std::string* name_utf8 =
+            root.FindStringPath(current_profile + ".Name")) {
+      name = base::UTF8ToUTF16(*name_utf8);
+    }
     // Make the profile name more presentable by replacing dashes with spaces.
     base::ReplaceChars(name, u"-", u" ", &name);
     details.name = name;
