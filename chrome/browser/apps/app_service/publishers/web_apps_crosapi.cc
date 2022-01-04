@@ -47,7 +47,9 @@ WebAppsCrosapi::~WebAppsCrosapi() = default;
 
 void WebAppsCrosapi::RegisterWebAppsCrosapiHost(
     mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver) {
-  RegisterPublisher(AppType::kWeb);
+  if (web_app::IsWebAppsCrosapiEnabled()) {
+    RegisterPublisher(AppType::kWeb);
+  }
 
   // At the moment the app service publisher will only accept one client
   // publishing apps to ash chrome. Any extra clients will be ignored.
