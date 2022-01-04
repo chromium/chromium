@@ -19,6 +19,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/table_layout.h"
 
@@ -125,7 +126,7 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
   // date] is currently selected.
   if (is_selected_) {
     base::Time unexploded;
-    bool result = base::Time::FromUTCExploded(date_, &unexploded);
+    bool result = base::Time::FromLocalExploded(date_, &unexploded);
     DCHECK(result);
     unexploded -= base::Days(date_.day_of_week);
 
@@ -199,6 +200,15 @@ void CalendarDateCellView::DisableFocus() {
   SetFocusBehavior(FocusBehavior::NEVER);
 }
 
+void CalendarDateCellView::MaybeSchedulePaint() {
+  // No need to re-paint the grayed out cells, since here should be no change
+  // for them.
+  if (grayed_out_)
+    return;
+
+  SchedulePaint();
+}
+
 gfx::Point CalendarDateCellView::GetEventsPresentIndicatorCenterPosition() {
   const gfx::Rect content = GetContentsBounds();
   return gfx::Point(
@@ -212,7 +222,7 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
     return;
 
   base::Time unexploded;
-  bool result = base::Time::FromUTCExploded(date_, &unexploded);
+  bool result = base::Time::FromLocalExploded(date_, &unexploded);
   DCHECK(result);
 
   const int event_number =
@@ -350,6 +360,11 @@ void CalendarMonthView::EnableFocus() {
 void CalendarMonthView::DisableFocus() {
   for (auto* cell : children())
     static_cast<CalendarDateCellView*>(cell)->DisableFocus();
+}
+
+void CalendarMonthView::SchedulePaintChildren() {
+  for (auto* cell : children())
+    static_cast<CalendarDateCellView*>(cell)->MaybeSchedulePaint();
 }
 
 BEGIN_METADATA(CalendarDateCellView, views::View)

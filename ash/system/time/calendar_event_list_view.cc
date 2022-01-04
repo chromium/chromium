@@ -97,8 +97,16 @@ void CalendarEventListView::OnSelectedDateUpdated() {
 void CalendarEventListView::UpdateListItems() {
   content_view_->RemoveAllChildViews();
 
-  for (google_apis::calendar::CalendarEvent event :
-       calendar_view_controller_->SelectedDateEvents()) {
+  std::list<google_apis::calendar::CalendarEvent> events =
+      calendar_view_controller_->SelectedDateEvents();
+
+  // Sorts the event by start time.
+  events.sort([](google_apis::calendar::CalendarEvent& a,
+                 google_apis::calendar::CalendarEvent& b) {
+    return a.start_time().date_time() < b.start_time().date_time();
+  });
+
+  for (const google_apis::calendar::CalendarEvent& event : events) {
     auto* event_entry = content_view_->AddChildView(
         std::make_unique<CalendarEventListItemView>(event));
 

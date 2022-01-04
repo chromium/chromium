@@ -22,7 +22,7 @@ std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList() {
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
       "id_0", "summary_0", "18 Nov 2021 8:30 GMT", "18 Nov 2021 9:30 GMT"));
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
-      "id_1", "summary_1", "18 Nov 2021 10:30 GMT", "18 Nov 2021 11:30 GMT"));
+      "id_1", "summary_1", "18 Nov 2021 7:30 GMT", "18 Nov 2021 11:30 GMT"));
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
       "id_2", "summary_2", "18 Nov 2021 11:30 GMT", "18 Nov 2021 12:30 GMT"));
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
@@ -97,10 +97,10 @@ TEST_F(CalendarViewEventListViewTest, ShowEvents) {
   date.LocalExplode(&selected_date);
   SetSelectedDate(selected_date);
 
-  // 3 events on 18 Nov 2021.
+  // 3 events on 18 Nov 2021. And they should be sorted by the start time.
   EXPECT_EQ(3u, content_view()->children().size());
-  EXPECT_EQ(u"summary_0", GetSummary(0)->GetText());
-  EXPECT_EQ(u"summary_1", GetSummary(1)->GetText());
+  EXPECT_EQ(u"summary_1", GetSummary(0)->GetText());
+  EXPECT_EQ(u"summary_0", GetSummary(1)->GetText());
   EXPECT_EQ(u"summary_2", GetSummary(2)->GetText());
 
   (date + base::Days(1)).LocalExplode(&selected_date);

@@ -45,6 +45,9 @@ class CalendarDateCellView : public CalendarViewController::Observer,
   // Disables focus behavior of this cell.
   void DisableFocus();
 
+  // Schedule paint the cell to show the event dot.
+  void MaybeSchedulePaint();
+
   // The row index in the date's month view.
   int row_index() const { return row_index_; }
 
@@ -53,6 +56,9 @@ class CalendarDateCellView : public CalendarViewController::Observer,
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
  private:
+  // For unit tests.
+  friend class CalendarMonthViewTest;
+
   // Computes the position of the indicator that our day has events.
   gfx::Point GetEventsPresentIndicatorCenterPosition();
 
@@ -92,6 +98,9 @@ class ASH_EXPORT CalendarMonthView : public views::View {
 
   // Disable each cell's focus behavior.
   void DisableFocus();
+
+  // Re-paints the child cells.
+  void SchedulePaintChildren();
 
   // Gets the cells of each row that should be first focused on.
   std::vector<CalendarDateCellView*> focused_cells() { return focused_cells_; }

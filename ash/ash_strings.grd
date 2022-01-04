@@ -3423,6 +3423,18 @@ This file contains the strings for ash.
         Calendar, week of <ph name="date">$1<ex>July 16th 2021,</ex></ph>, <ph name="selected_date">$2<ex>18</ex></ph> is currently selected.
       </message>
 
+      <message name="IDS_ASH_CALENDAR_EVENT_ENTRY_ACCESSIBLE_DESCRIPTION" desc="The accessible label of a calendar event entry.">
+        <ph name="start_time">$1<ex>12 PM</ex></ph> to 
+        <ph name="end_time">$2<ex>1 PM</ex></ph>, 
+        <ph name="time_zone">$3<ex>Pacific time</ex></ph>, 
+        <ph name="event_summary">$4<ex>Lunch break</ex></ph>. Select for more details in Google Calendar.
+      </message>
+
+      <message name="IDS_ASH_CALENDAR_EVENT_ENTRY_TOOL_TIP" desc="The tool tip label of a calendar event entry.">
+        <ph name="event_summary">$1<ex>Lunch break</ex></ph>, 
+        <ph name="time_range">$2<ex> 1:00 - 1:30 PM</ex></ph>
+      </message>
+
       <message name="IDS_ASH_CALENDAR_MON" desc="The single character designator for Monday, which is used in the calendar weekday label.">
         M
       </message>

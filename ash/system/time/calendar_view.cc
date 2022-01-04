@@ -680,7 +680,9 @@ void CalendarView::OnEventsFetched(
     const google_apis::calendar::EventList* events) {
   // No need to store the events, but we need to notify the month views that
   // something may have changed and they need to refresh.
-  SchedulePaint();
+  previous_month_->SchedulePaintChildren();
+  current_month_->SchedulePaintChildren();
+  next_month_->SchedulePaintChildren();
 }
 
 void CalendarView::OpenEventList() {
@@ -692,8 +694,8 @@ void CalendarView::OpenEventList() {
       calendar_view_controller_->selected_date();
   DCHECK(selected_date.has_value());
   base::Time unexploded_selected_date;
-  bool result = base::Time::FromUTCExploded(selected_date.value(),
-                                            &unexploded_selected_date);
+  bool result = base::Time::FromLocalExploded(selected_date.value(),
+                                              &unexploded_selected_date);
   DCHECK(result);
   scroll_view_->GetViewAccessibility().OverrideName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_CONTENT_ACCESSIBLE_DESCRIPTION,
@@ -729,6 +731,7 @@ void CalendarView::OpenEventList() {
   event_list_ = event_list_container_->AddChildView(
       std::make_unique<CalendarEventListView>(calendar_view_controller_.get()));
   event_list_->GetViewAccessibility().OverrideName(GetClassName());
+  event_list_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
   event_list_->SetFocusBehavior(FocusBehavior::ALWAYS);
   calendar_view_controller_->OnEventListOpened();
 }

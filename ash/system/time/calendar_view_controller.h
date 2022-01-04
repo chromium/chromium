@@ -174,6 +174,7 @@ class ASH_EXPORT CalendarViewController {
  private:
   // For unit tests.
   friend class MockCalendarViewController;
+  friend class CalendarMonthViewTest;
   friend class CalendarViewControllerEventsTest;
   friend class CalendarViewEventListViewTest;
 

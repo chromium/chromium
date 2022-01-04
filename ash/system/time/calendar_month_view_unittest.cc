@@ -6,13 +6,40 @@
 
 #include <memory>
 
+#include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
+#include "google_apis/calendar/calendar_api_response_types.h"
+#include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/label_button.h"
 
 namespace ash {
+
+namespace {
+
+std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList() {
+  auto event_list = std::make_unique<google_apis::calendar::EventList>();
+  event_list->set_time_zone("America/Los_Angeles");
+
+  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_0", "summary_0", "18 Aug 2021 8:30 GMT", "18 Nov 2021 9:30 GMT"));
+  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_1", "summary_1", "18 Aug 2021 7:30 GMT", "18 Nov 2021 11:30 GMT"));
+  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_2", "summary_2", "18 Aug 2021 11:30 GMT", "18 Nov 2021 12:30 GMT"));
+  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_3", "summary_3", "18 Aug 2021 8:30 GMT", "19 Nov 2021 10:30 GMT"));
+  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_4", "summary_4", "2 Sep 2021 8:30 GMT", "21 Nov 2021 9:30 GMT"));
+  event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
+      "id_5", "summary_5", "2 Sep 2021 10:30 GMT", "21 Nov 2021 11:30 GMT"));
+
+  return event_list;
+}
+
+}  // namespace
 
 class CalendarMonthViewTest : public AshTestBase {
  public:
@@ -40,6 +67,13 @@ class CalendarMonthViewTest : public AshTestBase {
     calendar_month_view_ =
         std::make_unique<CalendarMonthView>(date, controller_.get());
     calendar_month_view_->Layout();
+  }
+
+  void UploadEvents() { controller_->InsertEvents(CreateMockEventList()); }
+  void TriggerPaint() {
+    gfx::Canvas canvas;
+    for (auto* cell : calendar_month_view_->children())
+      static_cast<CalendarDateCellView*>(cell)->PaintButtonContents(&canvas);
   }
 
   CalendarMonthView* month_view() { return calendar_month_view_.get(); }
@@ -151,6 +185,73 @@ TEST_F(CalendarMonthViewTest, TodayInMonth) {
 
   // The date 17th is on the 3rd row.
   EXPECT_EQ(3, bottom / (bottom - top));
+}
+
+TEST_F(CalendarMonthViewTest, UpdateEvents) {
+  // Create a monthview based on Aug,1st 2021. Today is set to 18th.
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
+
+  // Set "Now" to a date that is in this month.
+  base::Time today;
+  ASSERT_TRUE(base::Time::FromString("18 Aug 2021 10:00 GMT", &today));
+  SetFakeNow(today);
+  base::subtle::ScopedTimeClockOverrides in_month_time_override(
+      &CalendarMonthViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateMonthView(date);
+
+  TriggerPaint();
+  // Grayed out cell. Sep 2nd is the 33 one in this calendar, which is with
+  // index 32.
+  EXPECT_EQ(u"2",
+            static_cast<CalendarDateCellView*>(month_view()->children()[32])
+                ->GetText());
+  EXPECT_EQ(u"",
+            static_cast<CalendarDateCellView*>(month_view()->children()[32])
+                ->GetTooltipText());
+  // Regular cell. The 18th child is the cell 18 which is with index 17.
+  EXPECT_EQ(u"18",
+            static_cast<CalendarDateCellView*>(month_view()->children()[17])
+                ->GetText());
+  EXPECT_EQ(u"August 18, 2021, 0 event",
+            static_cast<CalendarDateCellView*>(month_view()->children()[17])
+                ->GetTooltipText());
+
+  // After events are fetched before re-painting the event number is not
+  // updated.
+  UploadEvents();
+  EXPECT_EQ(u"2",
+            static_cast<CalendarDateCellView*>(month_view()->children()[32])
+                ->GetText());
+  EXPECT_EQ(u"",
+            static_cast<CalendarDateCellView*>(month_view()->children()[32])
+                ->GetTooltipText());
+  EXPECT_EQ(u"18",
+            static_cast<CalendarDateCellView*>(month_view()->children()[17])
+                ->GetText());
+  EXPECT_EQ(u"August 18, 2021, 0 event",
+            static_cast<CalendarDateCellView*>(month_view()->children()[17])
+                ->GetTooltipText());
+
+  // After re-painting, the event numbers are updated for regular cells, not for
+  // grayed out cells.
+  month_view()->SchedulePaintChildren();
+  TriggerPaint();
+  EXPECT_EQ(u"2",
+            static_cast<CalendarDateCellView*>(month_view()->children()[32])
+                ->GetText());
+  EXPECT_EQ(u"",
+            static_cast<CalendarDateCellView*>(month_view()->children()[32])
+                ->GetTooltipText());
+
+  EXPECT_EQ(u"18",
+            static_cast<CalendarDateCellView*>(month_view()->children()[17])
+                ->GetText());
+  EXPECT_EQ(u"August 18, 2021, 4 events",
+            static_cast<CalendarDateCellView*>(month_view()->children()[17])
+                ->GetTooltipText());
 }
 
 }  // namespace ash
