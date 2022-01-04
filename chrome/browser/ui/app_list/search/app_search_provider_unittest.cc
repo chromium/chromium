@@ -863,6 +863,13 @@ TEST_F(AppSearchProviderTest, AppServiceIconCache) {
   // The number of LoadIconFromIconKey calls should not change, when hiding the
   // UI (i.e. calling ViewClosing).
   CallViewClosing();
+
+  // Verify the search results are cleared async.
+  EXPECT_FALSE(results().empty());
+  // Allow async callbacks to run.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(results().empty());
+
   EXPECT_EQ(2, stub_icon_loader.NumLoadIconFromIconKeyCalls());
 
   // The icon has been added to the map, so issuing the same "pa" query should

@@ -49,6 +49,8 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync_sessions/session_sync_service.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "ui/chromeos/devicetype_utils.h"
 
 namespace {
@@ -448,7 +450,12 @@ void AppSearchProvider::StartZeroState() {
 }
 
 void AppSearchProvider::ViewClosing() {
-  ClearResultsSilently();
+  // Clear search results asynchronously to keep the search results and prevent
+  // the search results, e.g. AppServiceContextMenu, from being deleted when
+  // executing their functions.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&AppSearchProvider::ClearResultsSilently,
+                                weak_ptr_factory_.GetWeakPtr()));
   for (auto& data_source : data_sources_)
     data_source->ViewClosing();
 }

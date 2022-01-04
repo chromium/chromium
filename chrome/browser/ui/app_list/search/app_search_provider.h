@@ -101,6 +101,8 @@ class AppSearchProvider : public SearchProvider {
       nullptr;
   base::WeakPtrFactory<AppSearchProvider> refresh_apps_factory_{this};
   base::WeakPtrFactory<AppSearchProvider> update_results_factory_{this};
+
+  base::WeakPtrFactory<AppSearchProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace app_list
