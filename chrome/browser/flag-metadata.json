@@ -1789,7 +1789,7 @@
   {
     "name": "enable-debug-for-secure-payment-confirmation",
     "owners": [ "rouslan", "web-payments-team@google.com" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 112
   },
   {
     "name": "enable-debug-for-store-billing",
