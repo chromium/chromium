@@ -80,7 +80,7 @@ int GetHistogramValueForFilteringBehavior(
           // Should never happen, only used for requests from Webview
           NOTREACHED();
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case SupervisedUserURLFilter::INVALID:
       NOTREACHED();
   }
