@@ -19,6 +19,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewStub;
 import android.widget.ImageButton;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
@@ -459,9 +460,10 @@ public class ToolbarTablet extends ToolbarLayout
     void updateBookmarkButton(boolean isBookmarked, boolean editingAllowed) {
         if (isBookmarked) {
             mBookmarkButton.setImageResource(R.drawable.btn_star_filled);
-            ApiCompatibilityUtils.setImageTintList(mBookmarkButton,
-                    AppCompatResources.getColorStateList(
-                            getContext(), R.color.default_icon_color_accent1_tint_list));
+            final @ColorRes int tint = isIncognito() ? R.color.default_icon_color_blue_light
+                                                     : R.color.default_icon_color_accent1_tint_list;
+            ApiCompatibilityUtils.setImageTintList(
+                    mBookmarkButton, AppCompatResources.getColorStateList(getContext(), tint));
             mBookmarkButton.setContentDescription(getContext().getString(R.string.edit_bookmark));
         } else {
             mBookmarkButton.setImageResource(R.drawable.btn_star);
