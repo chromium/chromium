@@ -17,7 +17,6 @@
 #include "ui/ozone/common/egl_util.h"
 #include "ui/ozone/common/gl_ozone_egl.h"
 #include "ui/ozone/platform/x11/gl_ozone_glx.h"
-#include "ui/ozone/platform/x11/gl_surface_egl_readback_x11.h"
 #include "ui/ozone/platform/x11/x11_canvas_surface.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -39,29 +38,26 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
   // GLOzone:
   bool InitializeStaticGLBindings(
       const gl::GLImplementationParts& implementation) override {
-    is_swiftshader_ = gl::IsSoftwareGLImplementation(implementation);
     return GLOzoneEGL::InitializeStaticGLBindings(implementation);
   }
 
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
       gfx::AcceleratedWidget window) override {
-    if (is_swiftshader_) {
-      return gl::InitializeGLSurface(
-          base::MakeRefCounted<GLSurfaceEglReadbackX11>(window));
-    } else {
-      switch (gl::GetGLImplementation()) {
-        case gl::kGLImplementationEGLGLES2:
-          DCHECK(window != gfx::kNullAcceleratedWidget);
-          return gl::InitializeGLSurface(new gl::NativeViewGLSurfaceEGLX11GLES2(
-              static_cast<x11::Window>(window)));
-        case gl::kGLImplementationEGLANGLE:
-          DCHECK(window != gfx::kNullAcceleratedWidget);
-          return gl::InitializeGLSurface(new gl::NativeViewGLSurfaceEGLX11(
-              static_cast<x11::Window>(window)));
-        default:
-          NOTREACHED();
-          return nullptr;
-      }
+    switch (gl::GetGLImplementation()) {
+      // TODO(penghuang): remove NativeViewGLSurfaceEGLX11GLES2, since ANGLE
+      // is enabled by default.
+      case gl::kGLImplementationEGLGLES2:
+        DCHECK(window != gfx::kNullAcceleratedWidget);
+        return gl::InitializeGLSurface(new gl::NativeViewGLSurfaceEGLX11GLES2(
+            static_cast<x11::Window>(window)));
+      case gl::kGLImplementationEGLANGLE:
+      case gl::kGLImplementationSwiftShaderGL:
+        DCHECK(window != gfx::kNullAcceleratedWidget);
+        return gl::InitializeGLSurface(new gl::NativeViewGLSurfaceEGLX11(
+            static_cast<x11::Window>(window)));
+      default:
+        NOTREACHED();
+        return nullptr;
     }
   }
 
@@ -86,9 +82,6 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
       const gl::GLImplementationParts& implementation) override {
     return LoadDefaultEGLGLES2Bindings(implementation);
   }
-
- private:
-  bool is_swiftshader_ = false;
 };
 
 }  // namespace

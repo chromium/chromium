@@ -18,8 +18,6 @@ source_set("x11") {
     "gl_egl_utility_x11.h",
     "gl_ozone_glx.cc",
     "gl_ozone_glx.h",
-    "gl_surface_egl_readback_x11.cc",
-    "gl_surface_egl_readback_x11.h",
     "linux_ui_delegate_x11.cc",
     "linux_ui_delegate_x11.h",
     "ozone_platform_x11.cc",
