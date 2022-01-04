@@ -143,7 +143,7 @@ class PLATFORM_EXPORT CompositingReason {
         kVideoOverlay | kXrOverlay | kRoot | kRootScroller |
         kComboScrollDependentPosition | kAffectedByOuterViewportBoundsDelta |
         kBackfaceInvisibility3DAncestor | kTransform3DSceneLeaf |
-        kDocumentTransitionSharedElement,
+        kDocumentTransitionSharedElement | kDocumentTransitionContentElement,
 
     kComboAllDirectReasons = kComboAllDirectStyleDeterminedReasons |
                              kComboAllDirectNonStyleDeterminedReasons,
