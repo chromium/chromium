@@ -396,20 +396,6 @@ size_t DlpRulesManagerImpl::GetClipboardCheckSizeLimitInBytes() const {
       policy_prefs::kDlpClipboardCheckSizeLimit);
 }
 
-std::vector<uint64_t> DlpRulesManagerImpl::GetDisallowedFileTransfers(
-    const std::vector<FileMetadata>& transferred_files,
-    const GURL& destination) const {
-  // TODO(crbug.com/1273793): Change to handle VMs, external drive, ...etc.
-  std::vector<uint64_t> restricted_files;
-  for (const auto& file : transferred_files) {
-    Level level = IsRestrictedDestination(
-        file.source, destination, Restriction::kFiles, nullptr, nullptr);
-    if (level == Level::kBlock)
-      restricted_files.push_back(file.inode);
-  }
-  return restricted_files;
-}
-
 void DlpRulesManagerImpl::OnPolicyUpdate() {
   components_rules_.clear();
   restrictions_map_.clear();

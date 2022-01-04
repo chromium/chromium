@@ -847,41 +847,4 @@ TEST_F(DlpRulesManagerImplTest, ReportPriority) {
                 DlpRulesManager::Restriction::kScreenShare));
 }
 
-TEST_F(DlpRulesManagerImplTest, GetDisallowedFileTransfers) {
-  base::Value rules(base::Value::Type::LIST);
-
-  base::Value src_urls_1(base::Value::Type::LIST);
-  src_urls_1.Append(kDrivePattern);
-  src_urls_1.Append(kCompanyPattern);
-
-  base::Value dst_urls_1(base::Value::Type::LIST);
-  dst_urls_1.Append(kWildCardMatching);
-
-  base::Value restrictions_1(base::Value::Type::LIST);
-  restrictions_1.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kFilesRestriction, dlp::kBlockLevel));
-
-  rules.Append(dlp_test_util::CreateRule(
-      "Block files", "Block files of work urls", std::move(src_urls_1),
-      std::move(dst_urls_1),
-      /*dst_components=*/base::Value(base::Value::Type::LIST),
-      std::move(restrictions_1)));
-
-  UpdatePolicyPref(std::move(rules));
-
-  uint64_t inode_1 = 12345;
-  uint64_t inode_2 = 67890;
-  uint64_t inode_3 = 13679;
-  std::vector<DlpRulesManager::FileMetadata> transferred_files;
-  transferred_files.push_back({inode_1, kCompanyUrl});
-  transferred_files.push_back(
-      {inode_2, base::StrCat({kHttpsPrefix, kDrivePattern})});
-  transferred_files.push_back({inode_3, kGoogleUrl});
-
-  std::vector<uint64_t> expected_output = {inode_1, inode_2};
-
-  EXPECT_EQ(expected_output, dlp_rules_manager_.GetDisallowedFileTransfers(
-                                 transferred_files, GURL(kExampleUrl)));
-}
-
 }  // namespace policy

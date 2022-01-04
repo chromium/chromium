@@ -137,12 +137,6 @@ class DlpRulesManager : public KeyedService {
   // Returns the admin-configured limit for the minimal size of data in the
   // clipboard to be checked against DLP rules.
   virtual size_t GetClipboardCheckSizeLimitInBytes() const = 0;
-
-  // Returns a list of files inodes disallowed to be transferred to
-  // |destination|.
-  virtual std::vector<uint64_t> GetDisallowedFileTransfers(
-      const std::vector<FileMetadata>& transferred_files,
-      const GURL& destination) const = 0;
 };
 
 }  // namespace policy

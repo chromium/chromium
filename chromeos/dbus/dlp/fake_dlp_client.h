@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_DBUS_DLP_FAKE_DLP_CLIENT_H_
 #define CHROMEOS_DBUS_DLP_FAKE_DLP_CLIENT_H_
 
+#include <string>
+
+#include "base/containers/flat_map.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "dbus/object_proxy.h"
@@ -35,6 +38,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeDlpClient
 
  private:
   int set_dlp_files_policy_count_ = 0;
+  base::flat_map<ino_t, std::string> files_database_;
 };
 
 }  // namespace chromeos
