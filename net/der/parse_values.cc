@@ -466,21 +466,23 @@ bool ParseBmpString(Input in, std::string* out) {
   if (in.Length() % 2 != 0)
     return false;
 
-  std::u16string in_16bit;
-  if (in.Length()) {
-    memcpy(base::WriteInto(&in_16bit, in.Length() / 2 + 1), in.UnsafeData(),
-           in.Length());
-  }
-  for (char16_t& c : in_16bit) {
+  out->clear();
+  std::vector<uint16_t> in_16bit(in.Length() / 2);
+  if (in.Length())
+    memcpy(in_16bit.data(), in.UnsafeData(), in.Length());
+  for (const uint16_t c : in_16bit) {
     // BMPString is UCS-2 in big-endian order.
-    c = base::NetToHost16(c);
+    uint32_t codepoint = base::NetToHost16(c);
 
     // BMPString only supports codepoints in the Basic Multilingual Plane;
-    // surrogates are not allowed.
-    if (CBU_IS_SURROGATE(c))
+    // surrogates are not allowed. CBU_IS_UNICODE_CHAR excludes the surrogate
+    // code points, among other invalid values.
+    if (!CBU_IS_UNICODE_CHAR(codepoint))
       return false;
+
+    base::WriteUnicodeCharacter(codepoint, out);
   }
-  return base::UTF16ToUTF8(in_16bit.data(), in_16bit.size(), out);
+  return true;
 }
 
 }  // namespace der
