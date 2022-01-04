@@ -311,6 +311,12 @@ void StabilityMetricsHelper::LogRendererLaunched(bool was_extension_process) {
                    : prefs::kStabilityRendererLaunchCount;
   RecordStabilityEvent(metric);
   IncrementPrefValue(pref);
+
+  // TODO(crbug/1283745): Remove the scheduled write if it does not improve the
+  // renderer launch ratio on Android WebView.
+#if defined(OS_ANDROID)
+  local_state_->CommitPendingWrite();
+#endif
 }
 
 void StabilityMetricsHelper::LogRendererLaunchFailed(
