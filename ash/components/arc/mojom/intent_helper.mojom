@@ -345,11 +345,6 @@ interface IntentHelperHost {
   // Checks if given chrome app is enabled.
   [MinVersion=33] IsChromeAppEnabled@15(ChromeApp app) => (bool is_enabled);
 
-  // DEPRECATED. Use OnSupportedLinksChanged() instead.
-  // TODO(crbug.com/1265318): Remove this method.
-  [MinVersion=34] OnPreferredAppsChangedDeprecated@16(
-      array<IntentFilter> added, array<IntentFilter> deleted);
-
   // Called when the link capturing preference for one or more apps has changed.
   // Set the apps in |added_packages| as handling their supported link
   // IntentFilters, and removes the apps in |removed_packages| from handling

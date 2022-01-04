@@ -173,7 +173,6 @@ class ArcApps : public KeyedService,
   // arc::ArcIntentHelperObserver overrides.
   void OnIntentFiltersUpdated(
       const absl::optional<std::string>& package_name) override;
-  void OnPreferredAppsChanged() override;
   void OnArcSupportedLinksChanged(
       const std::vector<arc::mojom::SupportedLinksPtr>& added,
       const std::vector<arc::mojom::SupportedLinksPtr>& removed,

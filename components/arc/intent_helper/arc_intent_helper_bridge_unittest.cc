@@ -209,7 +209,6 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
                 OnIntentFiltersUpdated,
                 (const absl::optional<std::string>& package_name),
                 (override));
-    MOCK_METHOD(void, OnPreferredAppsChanged, (), (override));
     MOCK_METHOD(
         void,
         OnArcSupportedLinksChanged,
@@ -251,13 +250,6 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
   }
 
   {
-    // Observer should be called when preferred apps change.
-    EXPECT_CALL(observer, OnPreferredAppsChanged);
-    instance_->OnPreferredAppsChangedDeprecated(/*added=*/{}, /*deleted=*/{});
-    testing::Mock::VerifyAndClearExpectations(&observer);
-  }
-
-  {
     // Observer should be called when supported links change.
     EXPECT_CALL(observer, OnArcSupportedLinksChanged);
     instance_->OnSupportedLinksChanged(
@@ -272,7 +264,6 @@ TEST_F(ArcIntentHelperTest, TestObserver) {
   instance_->OnDownloadAdded(/*relative_path=*/"Download/foo/bar.pdf",
                              /*owner_package_name=*/"owner_package_name");
   instance_->OnIntentFiltersUpdated(/*filters=*/{});
-  instance_->OnPreferredAppsChangedDeprecated(/*added=*/{}, /*deleted=*/{});
   instance_->OnSupportedLinksChanged(
       /*added_packages=*/{},
       /*removed_packages=*/{},

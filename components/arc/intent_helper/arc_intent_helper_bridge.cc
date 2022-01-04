@@ -324,15 +324,6 @@ void ArcIntentHelperBridge::IsChromeAppEnabled(
   std::move(callback).Run(false);
 }
 
-void ArcIntentHelperBridge::OnPreferredAppsChangedDeprecated(
-    std::vector<IntentFilter> added,
-    std::vector<IntentFilter> deleted) {
-  added_preferred_apps_ = std::move(added);
-  deleted_preferred_apps_ = std::move(deleted);
-  for (auto& observer : observer_list_)
-    observer.OnPreferredAppsChanged();
-}
-
 void ArcIntentHelperBridge::OnSupportedLinksChanged(
     std::vector<arc::mojom::SupportedLinksPtr> added_packages,
     std::vector<arc::mojom::SupportedLinksPtr> removed_packages,
@@ -540,16 +531,6 @@ const std::vector<IntentFilter>&
 ArcIntentHelperBridge::GetIntentFilterForPackage(
     const std::string& package_name) {
   return intent_filters_[package_name];
-}
-
-const std::vector<IntentFilter>&
-ArcIntentHelperBridge::GetAddedPreferredApps() {
-  return added_preferred_apps_;
-}
-
-const std::vector<IntentFilter>&
-ArcIntentHelperBridge::GetDeletedPreferredApps() {
-  return deleted_preferred_apps_;
 }
 
 }  // namespace arc
