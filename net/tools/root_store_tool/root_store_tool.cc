@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <iostream>
+#include <set>
 #include <string>
 
 #include "base/at_exit.h"
@@ -15,6 +16,8 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "crypto/openssl_util.h"
 #include "net/tools/root_store_tool/root_store.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -55,14 +58,17 @@ absl::optional<std::string> DecodePEM(base::StringPiece pem) {
 }
 
 absl::optional<RootStore> ReadTextRootStore(
-    const base::FilePath& root_store_dir) {
+    const base::FilePath& root_store_dir,
+    std::set<base::FilePath>* deps) {
   base::FilePath root_store_path =
       root_store_dir.AppendASCII("root_store.textproto");
   std::string root_store_text;
-  if (!base::ReadFileToString(root_store_path, &root_store_text)) {
+  if (!base::ReadFileToString(base::MakeAbsoluteFilePath(root_store_path),
+                              &root_store_text)) {
     LOG(ERROR) << "Could not read " << root_store_path;
     return absl::nullopt;
   }
+  deps->insert(root_store_path);
 
   RootStore root_store;
   if (!google::protobuf::TextFormat::ParseFromString(root_store_text,
@@ -92,7 +98,7 @@ absl::optional<RootStore> ReadTextRootStore(
     }
 
     std::string pem;
-    if (!base::ReadFileToString(pem_path, &pem)) {
+    if (!base::ReadFileToString(base::MakeAbsoluteFilePath(pem_path), &pem)) {
       LOG(ERROR) << "Error reading " << pem_path;
       return absl::nullopt;
     }
@@ -103,8 +109,23 @@ absl::optional<RootStore> ReadTextRootStore(
     }
     anchor.clear_filename();
     anchor.set_der(*der);
+    deps->insert(pem_path);
   }
   return std::move(root_store);
+}
+
+void AppendMakefilePath(std::string* out, const base::FilePath& path) {
+#if defined(OS_WIN)
+  std::string path_str = base::WideToUTF8(path.value());
+#else
+  std::string path_str = path.value();
+#endif
+  // Escaping for Makefiles is complex. See `DepfileParser::Parse` in Ninja,
+  // which ultimately consumes this output. We output relative paths and thus
+  // can assume no escaping is needed, even if the build directory would need to
+  // be escaped. This matches, e.g., `GenerateDepfile` in //tools/grit, which
+  // similarly does not escape output.
+  out->append(path_str);
 }
 
 }  // namespace
@@ -121,6 +142,7 @@ int main(int argc, char** argv) {
   crypto::EnsureOpenSSLInit();
 
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+  base::FilePath deps_path = command_line.GetSwitchValuePath("write-deps");
   base::FilePath proto_path = command_line.GetSwitchValuePath("write-proto");
   base::FilePath cpp_path = command_line.GetSwitchValuePath("write-cpp");
   // Get root store directory. Assumptions:
@@ -137,13 +159,15 @@ int main(int argc, char** argv) {
       command_line.HasSwitch("help")) {
     std::cerr << "Usage: root_store_tool "
               << "--root-store-dir=<path> "
+              << "[--write-deps=DEP_FILE] "
               << "[--write-proto=PROTO_FILE] "
               << "[--write-cpp=CPP_FILE]" << std::endl;
     return 1;
   }
 
-  root_store_dir = base::MakeAbsoluteFilePath(root_store_dir);
-  absl::optional<RootStore> root_store = ReadTextRootStore(root_store_dir);
+  std::set<base::FilePath> deps;
+  absl::optional<RootStore> root_store =
+      ReadTextRootStore(root_store_dir, &deps);
   if (!root_store) {
     return 1;
   }
@@ -197,6 +221,33 @@ int main(int argc, char** argv) {
     string_to_write += "};";
     if (!base::WriteFile(cpp_path, string_to_write)) {
       PLOG(ERROR) << "Error writing cpp include file";
+      return 1;
+    }
+  }
+
+  if (!deps_path.empty()) {
+    // The output depends directly on the input proto and indirectly on all the
+    // files it references. Emit a depfile for Ninja to consume. This ensures
+    // dependencies are correct without needing to list every file separately
+    // in the textproto and build files.
+    //
+    // See https://gn.googlesource.com/gn/+/main/docs/reference.md#var_depfile
+    // and `DepfileParser::Parse` in Ninja, which ultimately consumes this file.
+    std::string string_to_write;
+    for (const auto& output : {cpp_path, proto_path}) {
+      if (!output.empty()) {
+        AppendMakefilePath(&string_to_write, output);
+        string_to_write.push_back(':');
+        for (const base::FilePath& dep : deps) {
+          string_to_write.push_back(' ');
+          AppendMakefilePath(&string_to_write, dep);
+        }
+        string_to_write.push_back('\n');
+      }
+    }
+    if (!base::WriteFile(deps_path, string_to_write)) {
+      PLOG(ERROR) << "Error writing deps include file";
+      return 1;
     }
   }
 
