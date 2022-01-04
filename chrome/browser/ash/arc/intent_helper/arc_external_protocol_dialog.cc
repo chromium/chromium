@@ -553,13 +553,13 @@ void OnIntentPickerClosed(
     case apps::IntentPickerCloseReason::ERROR_BEFORE_PICKER:
       // This can happen since an error could occur right before invoking
       // Show() on the bubble's UI code.
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::IntentPickerCloseReason::ERROR_AFTER_PICKER:
       LOG(ERROR) << "IntentPickerBubbleView returned CloseReason::ERROR: "
                  << "instance=" << instance
                  << ", selected_app_index=" << selected_app_index
                  << ", handlers.size=" << handlers.size();
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::IntentPickerCloseReason::DIALOG_DEACTIVATED:
       // The user didn't select any ARC activity.
       OnIntentPickerDialogDeactivated(render_process_host_id, routing_id,
