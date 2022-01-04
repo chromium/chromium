@@ -57,6 +57,11 @@ suite('TabList', () => {
     return tabList.shadowRoot!.querySelectorAll('#unpinnedTabs tabstrip-tab');
   }
 
+  function getUnpinnedActiveTabs(): NodeListOf<TabElement> {
+    return tabList.shadowRoot!.querySelectorAll(
+        '#unpinnedTabs tabstrip-tab[active]');
+  }
+
   function getPinnedTabs(): NodeListOf<TabElement> {
     return tabList.shadowRoot!.querySelectorAll('#pinnedTabs tabstrip-tab');
   }
@@ -615,6 +620,24 @@ suite('TabList', () => {
     assertFalse(tabElements[0]!.tab.active);
     assertTrue(tabElements[1]!.tab.active);
     assertFalse(tabElements[2]!.tab.active);
+  });
+
+  test('SingleActiveTabOnActiveTabCreated', async () => {
+    let activeTabElements = getUnpinnedActiveTabs();
+    assertEquals(activeTabElements.length, 1);
+
+    const newActiveTab = createTab({
+      active: true,
+      id: tabs.length,
+      index: tabs.length - 1,
+      title: 'Tab 4',
+    });
+    callbackRouter.tabCreated(newActiveTab);
+    await flushTasks();
+
+    activeTabElements = getUnpinnedActiveTabs();
+    assertEquals(activeTabElements.length, 1);
+    assertEquals(activeTabElements[0]!.tab.id, newActiveTab.id);
   });
 
   test('adds a pinned tab to its designated container', async () => {
