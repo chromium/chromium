@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/personal_info_suggester.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
@@ -27,6 +28,10 @@ namespace {
 using ::chromeos::ime::TextSuggestion;
 using ::chromeos::ime::TextSuggestionMode;
 using ::chromeos::ime::TextSuggestionType;
+
+const char kEmojiData[] = "happy,😀;😃;😄";
+const char kUsEnglishEngineId[] = "xkb:us::eng";
+const char kSpainSpanishEngineId[] = "xkb:es::spa";
 
 ui::KeyEvent GenerateKeyEvent(const ui::DomCode& code,
                               const ui::EventType& event_type,
@@ -55,11 +60,16 @@ ui::KeyEvent PressKeyWithShift(const ui::DomCode& code) {
                           ui::EventFlags::EF_SHIFT_DOWN);
 }
 
-}  // namespace
+void SetInputMethodOptions(Profile& profile, bool predictive_writing_enabled) {
+  base::Value input_method_setting(base::Value::Type::DICTIONARY);
+  input_method_setting.SetPath(std::string(kUsEnglishEngineId) +
+                                   ".physicalKeyboardEnablePredictiveWriting",
+                               base::Value(predictive_writing_enabled));
+  profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
+                          input_method_setting);
+}
 
-const char kEmojiData[] = "happy,😀;😃;😄";
-const char kUsEnglishEngineId[] = "xkb:us::eng";
-const char kSpainSpanishEngineId[] = "xkb:es::spa";
+}  // namespace
 
 class FakeSuggesterSwitch : public AssistiveSuggesterSwitch {
  public:
@@ -97,14 +107,11 @@ class AssistiveSuggesterTest : public testing::Test {
     assistive_suggester_ = std::make_unique<AssistiveSuggester>(
         engine_.get(), profile_.get(),
         std::make_unique<AssistiveSuggesterClientFilter>());
-    assistive_suggester_->OnActivate(kUsEnglishEngineId);
 
     histogram_tester_.ExpectUniqueSample(
         "InputMethod.Assistive.UserPref.PersonalInfo", true, 1);
     histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.UserPref.Emoji",
                                          true, 1);
-    histogram_tester_.ExpectUniqueSample(
-        "InputMethod.Assistive.UserPref.MultiWord", true, 1);
     // Emoji is default to true now, so need to set emoji pref false to test
     // IsAssistiveFeatureEnabled correctly.
     profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
@@ -227,8 +234,9 @@ TEST_F(AssistiveSuggesterTest,
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAssistMultiWord},
       /*disabled_features=*/{features::kAssistPersonalInfo});
-  profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
-                                   true);
+
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
 
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
@@ -239,8 +247,9 @@ TEST_F(AssistiveSuggesterTest,
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kAssistMultiWord},
       /*disabled_features=*/{features::kAssistPersonalInfo});
-  profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
-                                   false);
+
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
 
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
@@ -252,19 +261,11 @@ TEST_F(AssistiveSuggesterTest,
       /*enabled_features=*/{},
       /*disabled_features=*/{features::kAssistPersonalInfo,
                              features::kAssistMultiWord});
-  profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
-                                   false);
+
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
 
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
-}
-
-TEST_F(AssistiveSuggesterTest, MultiWordEnabledWhenFeatureFlagAndDepsEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistMultiWord},
-      /*disabled_features=*/{features::kAssistPersonalInfo});
-
-  EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
 TEST_F(AssistiveSuggesterTest,
@@ -287,6 +288,23 @@ TEST_F(AssistiveSuggesterTest,
       AssistiveSuggester::AssistiveFeature::kPersonalInfoSuggestion));
 }
 
+TEST_F(AssistiveSuggesterTest, RecordPredictiveWritingPrefOnActivate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAssistMultiWord},
+      /*disabled_features=*/{});
+  assistive_suggester_ = std::make_unique<AssistiveSuggester>(
+      engine_.get(), profile_.get(),
+      std::make_unique<FakeSuggesterSwitch>(
+          FakeSuggesterSwitch::EnabledSuggestions{}));
+
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+
+  histogram_tester_.ExpectUniqueSample(
+      "InputMethod.Assistive.UserPref.MultiWord", true, 1);
+}
+
 TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsNotAllowed) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -297,6 +315,7 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsNotAllowed) {
       std::make_unique<FakeSuggesterSwitch>(
           FakeSuggesterSwitch::EnabledSuggestions{}));
 
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
 
@@ -317,9 +336,8 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByUser) {
       std::make_unique<FakeSuggesterSwitch>(
           FakeSuggesterSwitch::EnabledSuggestions{.multi_word_suggestions =
                                                       true}));
-  profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
-                                   false);
 
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
 
@@ -341,9 +359,8 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByLacros) {
       std::make_unique<FakeSuggesterSwitch>(
           FakeSuggesterSwitch::EnabledSuggestions{.multi_word_suggestions =
                                                       true}));
-  profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
-                                   true);
 
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
 
@@ -365,9 +382,8 @@ TEST_F(AssistiveSuggesterTest,
       std::make_unique<FakeSuggesterSwitch>(
           FakeSuggesterSwitch::EnabledSuggestions{.multi_word_suggestions =
                                                       true}));
-  profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
-                                   true);
 
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
   assistive_suggester_->OnActivate(kSpainSpanishEngineId);
   assistive_suggester_->OnFocus(5);
 
@@ -388,9 +404,8 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsEnabled) {
       std::make_unique<FakeSuggesterSwitch>(
           FakeSuggesterSwitch::EnabledSuggestions{.multi_word_suggestions =
                                                       true}));
-  profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
-                                   true);
 
+  SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
 
@@ -419,8 +434,8 @@ class AssistiveSuggesterMultiWordTest : public testing::Test {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAssistMultiWord},
         /*disabled_features=*/{});
-    profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
-                                     true);
+
+    SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/true);
   }
 
   content::BrowserTaskEnvironment task_environment_;

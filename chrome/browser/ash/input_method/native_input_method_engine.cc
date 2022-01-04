@@ -83,7 +83,12 @@ bool IsJapaneseEngine(const std::string& engine_id) {
 }
 
 bool IsUsEnglishEngine(const std::string& engine_id) {
-  return engine_id == "xkb:us::eng";
+  return (engine_id == "xkb:us::eng" || engine_id == "xkb:us:altgr-intl:eng" ||
+          engine_id == "xkb:us:colemak:eng" ||
+          engine_id == "xkb:us:dvorak:eng" || engine_id == "xkb:us:dvp:eng" ||
+          engine_id == "xkb:us:intl:eng" || engine_id == "xkb:us:intl_pc:eng" ||
+          engine_id == "xkb:us:workman-intl:eng" ||
+          engine_id == "xkb:us:workman:eng");
 }
 
 bool CanRouteToNativeMojoEngine(const std::string& engine_id) {
@@ -122,10 +127,20 @@ bool IsLacrosEnabled() {
   return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
 }
 
+bool IsPredictiveWritingPrefEnabled(PrefService* pref_service,
+                                    const std::string& engine_id) {
+  const base::Value* input_method_settings = pref_service->GetDictionary(
+      ::prefs::kLanguageInputMethodSpecificSettings);
+  absl::optional<bool> predictive_writing_setting =
+      input_method_settings->FindBoolPath(
+          engine_id + ".physicalKeyboardEnablePredictiveWriting");
+  return predictive_writing_setting && *predictive_writing_setting;
+}
+
 bool IsPredictiveWritingEnabled(PrefService* pref_service,
                                 const std::string& engine_id) {
   return (!IsLacrosEnabled() && features::IsAssistiveMultiWordEnabled() &&
-          pref_service->GetBoolean(prefs::kAssistPredictiveWritingEnabled) &&
+          IsPredictiveWritingPrefEnabled(pref_service, engine_id) &&
           IsUsEnglishEngine(engine_id));
 }
 
