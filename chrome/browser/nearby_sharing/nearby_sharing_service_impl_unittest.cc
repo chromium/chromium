@@ -1116,6 +1116,128 @@ class NearbySharingServiceImplTest : public testing::Test {
     fake_nearby_connections_manager_->OnEndpointLost(endpoint_id);
   }
 
+  // This method sets up an incoming connection and performs the steps required
+  // to simulate a successful incoming transfter.
+  void SuccessfullyReceiveTransfer() {
+    for (int64_t payload_id : kValidIntroductionFramePayloadIds) {
+      fake_nearby_connections_manager_->SetPayloadPathStatus(
+          payload_id, location::nearby::connections::mojom::Status::kSuccess);
+    }
+
+    NiceMock<MockTransferUpdateCallback> callback;
+    ShareTarget share_target = SetUpIncomingConnection(callback);
+
+    base::RunLoop run_loop_accept;
+    EXPECT_CALL(callback, OnTransferUpdate(testing::_, testing::_))
+        .WillOnce(testing::Invoke(
+            [](const ShareTarget& share_target, TransferMetadata metadata) {
+              EXPECT_FALSE(metadata.is_final_status());
+              EXPECT_EQ(TransferMetadata::Status::kAwaitingRemoteAcceptance,
+                        metadata.status());
+            }));
+
+    service_->Accept(
+        share_target,
+        base::BindLambdaForTesting(
+            [&](NearbySharingServiceImpl::StatusCodes status_code) {
+              EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kOk,
+                        status_code);
+              run_loop_accept.Quit();
+            }));
+
+    run_loop_accept.Run();
+
+    fake_nearby_connections_manager_->SetIncomingPayload(
+        kFilePayloadId, GetFilePayloadPtr(kFilePayloadId));
+
+    for (int64_t id : kValidIntroductionFramePayloadIds) {
+      // Update file payload at the end.
+      if (id == kFilePayloadId)
+        continue;
+
+      fake_nearby_connections_manager_->SetIncomingPayload(
+          id, GetTextPayloadPtr(id, kTextPayload));
+
+      base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener> listener =
+          fake_nearby_connections_manager_->GetRegisteredPayloadStatusListener(
+              id);
+      ASSERT_TRUE(listener);
+
+      base::RunLoop run_loop_progress;
+      EXPECT_CALL(callback, OnTransferUpdate(testing::_, testing::_))
+          .WillOnce(testing::Invoke([&](const ShareTarget& share_target,
+                                        TransferMetadata metadata) {
+            EXPECT_FALSE(metadata.is_final_status());
+            EXPECT_EQ(TransferMetadata::Status::kInProgress, metadata.status());
+            run_loop_progress.Quit();
+          }));
+
+      location::nearby::connections::mojom::PayloadTransferUpdatePtr payload =
+          location::nearby::connections::mojom::PayloadTransferUpdate::New(
+              id, location::nearby::connections::mojom::PayloadStatus::kSuccess,
+              /*total_bytes=*/kPayloadSize,
+              /*bytes_transferred=*/kPayloadSize);
+      listener->OnStatusUpdate(std::move(payload),
+                               /*upgraded_medium=*/absl::nullopt);
+      run_loop_progress.Run();
+
+      task_environment_.FastForwardBy(kMinProgressUpdateFrequency);
+    }
+
+    base::FilePath file_path;
+    base::RunLoop run_loop_success;
+    EXPECT_CALL(callback, OnTransferUpdate(testing::_, testing::_))
+        .WillOnce(testing::Invoke(
+            [&](const ShareTarget& share_target, TransferMetadata metadata) {
+              EXPECT_TRUE(metadata.is_final_status());
+              EXPECT_EQ(TransferMetadata::Status::kComplete, metadata.status());
+
+              ASSERT_TRUE(share_target.has_attachments());
+              EXPECT_EQ(1u, share_target.file_attachments.size());
+              for (const FileAttachment& file : share_target.file_attachments) {
+                EXPECT_TRUE(file.file_path());
+                file_path = *file.file_path();
+              }
+
+              EXPECT_EQ(3u, share_target.text_attachments.size());
+              for (const TextAttachment& text : share_target.text_attachments) {
+                EXPECT_EQ(kTextPayload, text.text_body());
+              }
+              run_loop_success.Quit();
+            }));
+
+    base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener> listener =
+        fake_nearby_connections_manager_->GetRegisteredPayloadStatusListener(
+            kFilePayloadId);
+    ASSERT_TRUE(listener);
+
+    location::nearby::connections::mojom::PayloadTransferUpdatePtr payload =
+        location::nearby::connections::mojom::PayloadTransferUpdate::New(
+            kFilePayloadId,
+            location::nearby::connections::mojom::PayloadStatus::kSuccess,
+            /*total_bytes=*/kPayloadSize,
+            /*bytes_transferred=*/kPayloadSize);
+    listener->OnStatusUpdate(std::move(payload),
+                             /*upgraded_medium=*/absl::nullopt);
+    run_loop_success.Run();
+
+    EXPECT_FALSE(fake_nearby_connections_manager_->connection_endpoint_info(
+        kEndpointId));
+    EXPECT_FALSE(fake_nearby_connections_manager_->has_incoming_payloads());
+
+    // TODO(crbug.com/1123022): This check is flaky, should be investigated.
+    // EXPECT_TRUE(FileExists(file_path));
+
+    // To avoid UAF in OnIncomingTransferUpdate().
+    service_->UnregisterReceiveSurface(&callback);
+
+    // Remove test file.
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      base::DeleteFile(file_path);
+    }
+  }
+
  protected:
   FakeNearbyShareLocalDeviceDataManager* local_device_data_manager() {
     EXPECT_EQ(1u, local_device_data_manager_factory_.instances().size());
@@ -2828,122 +2950,7 @@ TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget) {
 }
 
 TEST_F(NearbySharingServiceImplTest, AcceptValidShareTarget_PayloadSuccessful) {
-  for (int64_t payload_id : kValidIntroductionFramePayloadIds) {
-    fake_nearby_connections_manager_->SetPayloadPathStatus(
-        payload_id, location::nearby::connections::mojom::Status::kSuccess);
-  }
-
-  NiceMock<MockTransferUpdateCallback> callback;
-  ShareTarget share_target = SetUpIncomingConnection(callback);
-
-  base::RunLoop run_loop_accept;
-  EXPECT_CALL(callback, OnTransferUpdate(testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [](const ShareTarget& share_target, TransferMetadata metadata) {
-            EXPECT_FALSE(metadata.is_final_status());
-            EXPECT_EQ(TransferMetadata::Status::kAwaitingRemoteAcceptance,
-                      metadata.status());
-          }));
-
-  service_->Accept(share_target,
-                   base::BindLambdaForTesting(
-                       [&](NearbySharingServiceImpl::StatusCodes status_code) {
-                         EXPECT_EQ(NearbySharingServiceImpl::StatusCodes::kOk,
-                                   status_code);
-                         run_loop_accept.Quit();
-                       }));
-
-  run_loop_accept.Run();
-
-  fake_nearby_connections_manager_->SetIncomingPayload(
-      kFilePayloadId, GetFilePayloadPtr(kFilePayloadId));
-
-  for (int64_t id : kValidIntroductionFramePayloadIds) {
-    // Update file payload at the end.
-    if (id == kFilePayloadId)
-      continue;
-
-    fake_nearby_connections_manager_->SetIncomingPayload(
-        id, GetTextPayloadPtr(id, kTextPayload));
-
-    base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener> listener =
-        fake_nearby_connections_manager_->GetRegisteredPayloadStatusListener(
-            id);
-    ASSERT_TRUE(listener);
-
-    base::RunLoop run_loop_progress;
-    EXPECT_CALL(callback, OnTransferUpdate(testing::_, testing::_))
-        .WillOnce(testing::Invoke([&](const ShareTarget& share_target,
-                                      TransferMetadata metadata) {
-          EXPECT_FALSE(metadata.is_final_status());
-          EXPECT_EQ(TransferMetadata::Status::kInProgress, metadata.status());
-          run_loop_progress.Quit();
-        }));
-
-    location::nearby::connections::mojom::PayloadTransferUpdatePtr payload =
-        location::nearby::connections::mojom::PayloadTransferUpdate::New(
-            id, location::nearby::connections::mojom::PayloadStatus::kSuccess,
-            /*total_bytes=*/kPayloadSize,
-            /*bytes_transferred=*/kPayloadSize);
-    listener->OnStatusUpdate(std::move(payload),
-                             /*upgraded_medium=*/absl::nullopt);
-    run_loop_progress.Run();
-
-    task_environment_.FastForwardBy(kMinProgressUpdateFrequency);
-  }
-
-  base::FilePath file_path;
-  base::RunLoop run_loop_success;
-  EXPECT_CALL(callback, OnTransferUpdate(testing::_, testing::_))
-      .WillOnce(testing::Invoke(
-          [&](const ShareTarget& share_target, TransferMetadata metadata) {
-            EXPECT_TRUE(metadata.is_final_status());
-            EXPECT_EQ(TransferMetadata::Status::kComplete, metadata.status());
-
-            ASSERT_TRUE(share_target.has_attachments());
-            EXPECT_EQ(1u, share_target.file_attachments.size());
-            for (const FileAttachment& file : share_target.file_attachments) {
-              EXPECT_TRUE(file.file_path());
-              file_path = *file.file_path();
-            }
-
-            EXPECT_EQ(3u, share_target.text_attachments.size());
-            for (const TextAttachment& text : share_target.text_attachments) {
-              EXPECT_EQ(kTextPayload, text.text_body());
-            }
-            run_loop_success.Quit();
-          }));
-
-  base::WeakPtr<NearbyConnectionsManager::PayloadStatusListener> listener =
-      fake_nearby_connections_manager_->GetRegisteredPayloadStatusListener(
-          kFilePayloadId);
-  ASSERT_TRUE(listener);
-
-  location::nearby::connections::mojom::PayloadTransferUpdatePtr payload =
-      location::nearby::connections::mojom::PayloadTransferUpdate::New(
-          kFilePayloadId,
-          location::nearby::connections::mojom::PayloadStatus::kSuccess,
-          /*total_bytes=*/kPayloadSize,
-          /*bytes_transferred=*/kPayloadSize);
-  listener->OnStatusUpdate(std::move(payload),
-                           /*upgraded_medium=*/absl::nullopt);
-  run_loop_success.Run();
-
-  EXPECT_FALSE(
-      fake_nearby_connections_manager_->connection_endpoint_info(kEndpointId));
-  EXPECT_FALSE(fake_nearby_connections_manager_->has_incoming_payloads());
-
-  // TODO(crbug.com/1123022): This check is flaky, should be investigated.
-  // EXPECT_TRUE(FileExists(file_path));
-
-  // To avoid UAF in OnIncomingTransferUpdate().
-  service_->UnregisterReceiveSurface(&callback);
-
-  // Remove test file.
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::DeleteFile(file_path);
-  }
+  SuccessfullyReceiveTransfer();
 }
 
 TEST_F(NearbySharingServiceImplTest,
@@ -4742,6 +4749,27 @@ TEST_F(NearbySharingServiceImplTest, FastInitiationScanning_NoHardwareSupport) {
 
   // Make sure we stopped scanning and didn't restart.
   EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_destroyed_count());
+}
+
+TEST_F(NearbySharingServiceImplTest,
+       FastInitiationScanning_PostTransferCooldown) {
+  // Make sure we started scanning once
+  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_BLUETOOTH);
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());
+  EXPECT_EQ(0u, fast_initiation_scanner_factory_->scanner_destroyed_count());
+
+  SuccessfullyReceiveTransfer();
+
+  // Make sure we stopped scanning and didn't restart... yet.
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_created_count());
+  EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_destroyed_count());
+
+  // Fast forward 10s to pass through the cooldown period.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  // Make sure we restarted Fast Initiation scanning.
+  EXPECT_EQ(2u, fast_initiation_scanner_factory_->scanner_created_count());
   EXPECT_EQ(1u, fast_initiation_scanner_factory_->scanner_destroyed_count());
 }
 

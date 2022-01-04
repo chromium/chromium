@@ -81,6 +81,10 @@ constexpr base::TimeDelta kInvalidateSurfaceStateDelayAfterTransferDone =
 constexpr base::TimeDelta kProcessShutdownPendingTimerDelay = base::Seconds(15);
 constexpr base::TimeDelta kProcessNetworkChangeTimerDelay = base::Seconds(1);
 
+// Cooldown period after a successful incoming share before we allow the "Device
+// nearby is sharing" notification to appear again.
+constexpr base::TimeDelta kFastInitiationScannerCooldown = base::Seconds(8);
+
 // The maximum number of certificate downloads that can be performed during a
 // discovery session.
 constexpr size_t kMaxCertificateDownloadsDuringDiscovery = 3u;
@@ -406,6 +410,7 @@ void NearbySharingServiceImpl::Shutdown() {
 
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
   on_network_changed_delay_timer_.Stop();
+  fast_initiation_scanner_cooldown_timer_.Stop();
 }
 
 void NearbySharingServiceImpl::AddObserver(
@@ -2131,6 +2136,14 @@ void NearbySharingServiceImpl::InvalidateFastInitiationScanning() {
   if (!profile_)
     return;
 
+  if (fast_initiation_scanner_cooldown_timer_.IsRunning()) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping background scanning due to post-transfer "
+                       "cooldown period";
+    StopFastInitiationScanning();
+    return;
+  }
+
   if (settings_.GetFastInitiationNotificationState() !=
       FastInitiationNotificationState::kEnabled) {
     NS_LOG(VERBOSE) << __func__
@@ -3748,18 +3761,26 @@ void NearbySharingServiceImpl::OnPayloadTransferUpdate(
   }
 
   if (metadata.status() == TransferMetadata::Status::kComplete &&
-      share_target.is_incoming && !OnIncomingPayloadsComplete(share_target)) {
-    metadata = TransferMetadataBuilder()
-                   .set_status(TransferMetadata::Status::kIncompletePayloads)
-                   .build();
+      share_target.is_incoming) {
+    if (!OnIncomingPayloadsComplete(share_target)) {
+      metadata = TransferMetadataBuilder()
+                     .set_status(TransferMetadata::Status::kIncompletePayloads)
+                     .build();
 
-    // Reset file paths for file attachments.
-    for (auto& file : share_target.file_attachments)
-      file.set_file_path(absl::nullopt);
+      // Reset file paths for file attachments.
+      for (auto& file : share_target.file_attachments)
+        file.set_file_path(absl::nullopt);
 
-    // Reset body of text attachments.
-    for (auto& text : share_target.text_attachments)
-      text.set_text_body(std::string());
+      // Reset body of text attachments.
+      for (auto& text : share_target.text_attachments)
+        text.set_text_body(std::string());
+    }
+
+    fast_initiation_scanner_cooldown_timer_.Start(
+        FROM_HERE, kFastInitiationScannerCooldown,
+        base::BindRepeating(
+            &NearbySharingServiceImpl::InvalidateFastInitiationScanning,
+            base::Unretained(this)));
   }
 
   // Make sure to call this before calling Disconnect or we risk loosing some

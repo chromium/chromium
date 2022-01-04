@@ -542,6 +542,10 @@ class NearbySharingServiceImpl
   // Used to debounce OnNetworkChanged processing.
   base::RetainingOneShotTimer on_network_changed_delay_timer_;
 
+  // Used to prevent the "Device nearby is sharing" notification from appearing
+  // immediately after a completed share.
+  base::OneShotTimer fast_initiation_scanner_cooldown_timer_;
+
   // Available free disk space for testing. Using real disk space can introduce
   // flakiness in tests.
   absl::optional<int64_t> free_disk_space_for_testing_;
