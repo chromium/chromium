@@ -19,9 +19,6 @@ class CORE_EXPORT CompositingReasonFinder {
   DISALLOW_NEW();
 
  public:
-  static CompositingReasons PotentialCompositingReasonsFromStyle(
-      const LayoutObject&);
-
   CompositingReasonFinder(const CompositingReasonFinder&) = delete;
   CompositingReasonFinder& operator=(const CompositingReasonFinder&) = delete;
 
@@ -35,35 +32,23 @@ class CORE_EXPORT CompositingReasonFinder {
       const LayoutObject&,
       CompositingReasons reasons_except_scrolling);
 
-  // In CompositeAfterPaint, this must be called after
-  // DirectReasonsForPaintPropertiesExceptForScrolling() and
-  // PaintLayerScrollableArea::UpdateNeedsCompositedScrolling().
+  // This must be called after
+  // |DirectReasonsForPaintPropertiesExceptForScrolling()| and
+  // |PaintLayerScrollableArea::UpdateNeedsCompositedScrolling()|.
   static CompositingReasons DirectReasonsForPaintProperties(
       const LayoutObject&,
       CompositingReasons reasons_except_scrolling);
 
-  static CompositingReasons DirectReasonsForSVGChildPaintProperties(
-      const LayoutObject&);
-
   static CompositingReasons CompositingReasonsForAnimation(const LayoutObject&);
-  static CompositingReasons CompositingReasonsForWillChange(
-      const ComputedStyle&);
   // Some LayoutObject types do not support transforms (see:
   // |LayoutObject::HasTransformRelatedProperty|) so this can return reasons
   // that the LayoutObject does not end up using.
   static CompositingReasons PotentialCompositingReasonsFor3DTransform(
       const ComputedStyle&);
-  static CompositingReasons CompositingReasonsFor3DTransform(
-      const LayoutObject&);
-  static CompositingReasons CompositingReasonsFor3DSceneLeaf(
-      const LayoutObject&);
   static bool RequiresCompositingForRootScroller(const PaintLayer&);
 
   static CompositingReasons CompositingReasonsForScrollDependentPosition(
       const PaintLayer&);
-
-  static bool RequiresCompositingForAffectedByOuterViewportBoundsDelta(
-      const LayoutObject&);
 };
 
 }  // namespace blink
