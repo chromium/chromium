@@ -525,6 +525,11 @@ class VIEWS_EXPORT Textfield : public View,
   // Update the cursor position in the text field.
   void UpdateCursorViewPosition();
 
+  // If there's an existing context menu, invalidate it, maybe closing it if
+  // it's showing. This is required if part of the context menu's model is about
+  // to be destroyed.
+  void InvalidateContextMenu();
+
  private:
   friend class TextfieldTestApi;
 
