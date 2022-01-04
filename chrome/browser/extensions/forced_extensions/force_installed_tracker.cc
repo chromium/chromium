@@ -54,7 +54,7 @@ void ForceInstalledTracker::UpdateCounters(ExtensionStatus status, int delta) {
   switch (status) {
     case ExtensionStatus::kPending:
       load_pending_count_ += delta;
-      FALLTHROUGH;
+      [[fallthrough]];
     case ExtensionStatus::kLoaded:
       ready_pending_count_ += delta;
       break;
