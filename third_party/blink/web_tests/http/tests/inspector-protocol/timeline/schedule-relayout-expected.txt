@@ -1,8 +1,0 @@
-Tests that a trace event is dispatched at LayoutObject::ScheduleRelayout
-Recording started
-Tracing complete
-Trace event received
-Event name: LayoutObject::ScheduleRelayout
-Type of event frame: string
-Type of event nodeId: number
-
