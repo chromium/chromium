@@ -4,6 +4,8 @@
 
 #include "media/base/decoder.h"
 
+#include "base/notreached.h"
+
 namespace media {
 
 Decoder::Decoder() = default;

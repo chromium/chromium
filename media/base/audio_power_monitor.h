@@ -8,7 +8,6 @@
 #include <limits>
 #include <utility>
 
-#include "base/callback.h"
 #include "base/synchronization/lock.h"
 #include "media/base/media_export.h"
 

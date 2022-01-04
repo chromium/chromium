@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/callback.h"
 #include "base/check_op.h"
 
 namespace media {
