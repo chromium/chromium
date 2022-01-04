@@ -57,7 +57,7 @@ class BitwiseOr {
     return (bits_ & other.bits_) == other.bits_;
   }
   bool operator==(const BitwiseOr& other) const { return bits_ == other.bits_; }
-  bool operator!=(const BitwiseOr& other) const { return *this != other; }
+  bool operator!=(const BitwiseOr& other) const { return !(*this == other); }
 
  private:
   explicit constexpr BitwiseOr(T bits) : bits_(bits) {}
