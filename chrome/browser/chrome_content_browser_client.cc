@@ -6370,6 +6370,15 @@ void ChromeContentBrowserClient::FlushBackgroundAttributions(
 
 bool ChromeContentBrowserClient::ShouldPreconnectNavigation(
     content::BrowserContext* browser_context) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // An extension could be blocking connections for privacy reasons, so skip
+  // optimization if there are any extensions with WebRequest permissions.
+  const auto* web_request_api =
+      extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
+          browser_context);
+  if (web_request_api->MayHaveProxies())
+    return false;
+#endif
   return prefetch::IsSomePreloadingEnabled(
       *Profile::FromBrowserContext(browser_context)->GetPrefs());
 }
