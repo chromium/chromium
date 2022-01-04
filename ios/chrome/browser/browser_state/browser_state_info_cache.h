@@ -14,7 +14,6 @@
 #include "base/observer_list.h"
 
 namespace base {
-class DictionaryValue;
 class Value;
 }
 
@@ -65,8 +64,7 @@ class BrowserStateInfoCache {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
-  const base::DictionaryValue* GetInfoForBrowserStateAtIndex(
-      size_t index) const;
+  const base::Value* GetInfoForBrowserStateAtIndex(size_t index) const;
   // Saves the browser state info to a cache.
   void SetInfoForBrowserStateAtIndex(size_t index, base::Value info);
 
