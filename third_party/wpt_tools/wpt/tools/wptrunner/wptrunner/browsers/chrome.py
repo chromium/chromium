@@ -76,7 +76,6 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     # Allow audio autoplay without a user gesture.
     chrome_options["args"].append("--autoplay-policy=no-user-gesture-required")
     # Allow WebRTC tests to call getUserMedia.
-    chrome_options["args"].append("--use-fake-ui-for-media-stream")
     chrome_options["args"].append("--use-fake-device-for-media-stream")
     # Shorten delay for Reporting <https://w3c.github.io/reporting/>.
     chrome_options["args"].append("--short-reporting-delay")
