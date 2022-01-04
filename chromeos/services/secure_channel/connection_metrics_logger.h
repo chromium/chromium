@@ -19,9 +19,7 @@ namespace secure_channel {
 // Entries should not be renumbered and numeric values should never be reused.
 enum class NearbyInitiatorConnectionResult {
   kConnectionSuccess = 0,
-  kTimeoutDiscoveringDevice = 1,
-  kNearbyApiError = 2,
-  kConnectionRejected = 3,
+  // Numbers 1-3 are deprecated and should not be reused.
   kConnectivityError = 4,
   kAuthenticationError = 5,
   kMaxValue = kAuthenticationError,

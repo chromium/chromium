@@ -113,9 +113,6 @@ TEST_F(SecureChannelNearbyInitiatorOperationTest, Succeed) {
 
 TEST_F(SecureChannelNearbyInitiatorOperationTest, Fail) {
   static const NearbyInitiatorFailureType all_types[] = {
-      NearbyInitiatorFailureType::kTimeoutDiscoveringDevice,
-      NearbyInitiatorFailureType::kNearbyApiError,
-      NearbyInitiatorFailureType::kConnectionRejected,
       NearbyInitiatorFailureType::kConnectivityError,
       NearbyInitiatorFailureType::kAuthenticationError};
 

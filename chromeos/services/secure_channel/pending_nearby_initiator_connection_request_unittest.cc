@@ -140,37 +140,6 @@ TEST_F(SecureChannelPendingNearbyInitiatorConnectionRequestTest,
 }
 
 TEST_F(SecureChannelPendingNearbyInitiatorConnectionRequestTest,
-       HandleCouldNotGenerateAdvertisement) {
-  HandleConnectionFailure(
-      NearbyInitiatorFailureType::kTimeoutDiscoveringDevice);
-  EXPECT_EQ(
-      PendingConnectionRequestDelegate::FailedConnectionReason::kRequestFailed,
-      *GetFailedConnectionReason());
-  EXPECT_EQ(mojom::ConnectionAttemptFailureReason::TIMEOUT_FINDING_DEVICE,
-            *GetConnectionAttemptFailureReason());
-}
-
-TEST_F(SecureChannelPendingNearbyInitiatorConnectionRequestTest,
-       HandleNearbyApiError) {
-  HandleConnectionFailure(NearbyInitiatorFailureType::kNearbyApiError);
-  EXPECT_EQ(
-      PendingConnectionRequestDelegate::FailedConnectionReason::kRequestFailed,
-      *GetFailedConnectionReason());
-  EXPECT_EQ(mojom::ConnectionAttemptFailureReason::NEARBY_CONNECTION_ERROR,
-            *GetConnectionAttemptFailureReason());
-}
-
-TEST_F(SecureChannelPendingNearbyInitiatorConnectionRequestTest,
-       HandleConnectionRejected) {
-  HandleConnectionFailure(NearbyInitiatorFailureType::kConnectionRejected);
-  EXPECT_EQ(
-      PendingConnectionRequestDelegate::FailedConnectionReason::kRequestFailed,
-      *GetFailedConnectionReason());
-  EXPECT_EQ(mojom::ConnectionAttemptFailureReason::NEARBY_CONNECTION_ERROR,
-            *GetConnectionAttemptFailureReason());
-}
-
-TEST_F(SecureChannelPendingNearbyInitiatorConnectionRequestTest,
        HandleConnectivityError) {
   HandleConnectionFailure(NearbyInitiatorFailureType::kConnectivityError);
   EXPECT_EQ(

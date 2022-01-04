@@ -12,16 +12,6 @@ namespace chromeos {
 namespace secure_channel {
 
 enum class NearbyInitiatorFailureType {
-  // Could not detect a device nearby to initiate a connection within the
-  // timeout period.
-  kTimeoutDiscoveringDevice,
-
-  // An API call to Nearby Connections failed.
-  kNearbyApiError,
-
-  // The remote device rejected the connection attempt.
-  kConnectionRejected,
-
   // Bluetooth or WebRTC connection failed.
   kConnectivityError,
 

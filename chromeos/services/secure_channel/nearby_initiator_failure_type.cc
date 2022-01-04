@@ -11,15 +11,6 @@ namespace secure_channel {
 std::ostream& operator<<(std::ostream& stream,
                          const NearbyInitiatorFailureType& failure_type) {
   switch (failure_type) {
-    case NearbyInitiatorFailureType::kTimeoutDiscoveringDevice:
-      stream << "[Timeout discovering device]";
-      break;
-    case NearbyInitiatorFailureType::kNearbyApiError:
-      stream << "[Nearby API error]";
-      break;
-    case NearbyInitiatorFailureType::kConnectionRejected:
-      stream << "[Connection rejected]";
-      break;
     case NearbyInitiatorFailureType::kConnectivityError:
       stream << "[Connectivity error]";
       break;

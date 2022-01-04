@@ -60319,9 +60319,9 @@ Called by update_use_counter_css.py.-->
 
 <enum name="MultiDeviceNearbyConnectionsInitiatorResult">
   <int value="0" label="Connection Success"/>
-  <int value="1" label="Timeout Discovering Device"/>
-  <int value="2" label="Nearby Api Error"/>
-  <int value="3" label="Connection Rejected"/>
+  <int value="1" label="(Obsolete) Timeout Discovering Device"/>
+  <int value="2" label="(Obsolete) Nearby Api Error"/>
+  <int value="3" label="(Obsolete) Connection Rejected"/>
   <int value="4" label="Connectivity Error"/>
   <int value="5" label="Authentication Error"/>
 </enum>

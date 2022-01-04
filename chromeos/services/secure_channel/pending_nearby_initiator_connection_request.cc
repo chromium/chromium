@@ -72,17 +72,9 @@ void PendingNearbyInitiatorConnectionRequest::HandleConnectionFailure(
   PA_LOG(INFO) << "Pending Nearby Connection failed : " << failure_detail;
 
   switch (failure_detail) {
-    case NearbyInitiatorFailureType::kNearbyApiError:
-      [[fallthrough]];
-    case NearbyInitiatorFailureType::kConnectionRejected:
-      [[fallthrough]];
     case NearbyInitiatorFailureType::kConnectivityError:
       StopRequestDueToConnectionFailures(
           mojom::ConnectionAttemptFailureReason::NEARBY_CONNECTION_ERROR);
-      break;
-    case NearbyInitiatorFailureType::kTimeoutDiscoveringDevice:
-      StopRequestDueToConnectionFailures(
-          mojom::ConnectionAttemptFailureReason::TIMEOUT_FINDING_DEVICE);
       break;
     case NearbyInitiatorFailureType::kAuthenticationError:
       StopRequestDueToConnectionFailures(

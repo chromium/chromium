@@ -21,12 +21,6 @@ namespace {
 NearbyInitiatorConnectionResult GetMetricsConnectionResult(
     NearbyInitiatorFailureType failure_type) {
   switch (failure_type) {
-    case NearbyInitiatorFailureType::kTimeoutDiscoveringDevice:
-      return NearbyInitiatorConnectionResult::kTimeoutDiscoveringDevice;
-    case NearbyInitiatorFailureType::kNearbyApiError:
-      return NearbyInitiatorConnectionResult::kNearbyApiError;
-    case NearbyInitiatorFailureType::kConnectionRejected:
-      return NearbyInitiatorConnectionResult::kConnectionRejected;
     case NearbyInitiatorFailureType::kConnectivityError:
       return NearbyInitiatorConnectionResult::kConnectivityError;
     case NearbyInitiatorFailureType::kAuthenticationError:

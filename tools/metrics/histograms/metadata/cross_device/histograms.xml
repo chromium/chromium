@@ -1842,9 +1842,11 @@ chromium-metrics-reviews@google.com.
   <owner>hansenmichael@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
-    Emitted the result of attempting to establish a connection when the Nearby
+    Emits the result of attempting to establish a connection when the Nearby
     Connections library finishes trying to connect. This measures the success
     rate of establishing a connection via the Nearby Connections library.
+    Because a Nearby Connection is only attempted upon receiving the phone's
+    advertisement, this metric is only emitted if the phone was discovered.
   </summary>
 </histogram>
 
