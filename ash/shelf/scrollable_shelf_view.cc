@@ -793,6 +793,7 @@ void ScrollableShelfView::Layout() {
 void ScrollableShelfView::ChildPreferredSizeChanged(views::View* child) {
   // Add/remove a shelf icon may change the layout strategy.
   UpdateAvailableSpaceAndScroll();
+  shelf_container_view_->TranslateShelfView(scroll_offset_);
   Layout();
 }
 

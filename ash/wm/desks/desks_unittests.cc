@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <vector>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
@@ -27,9 +28,13 @@
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/scroll_arrow_view.h"
+#include "ash/shelf/scrollable_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_view.h"
+#include "ash/shelf/shelf_view_test_api.h"
+#include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/close_button.h"
@@ -79,6 +84,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
@@ -107,6 +113,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget.h"
@@ -4157,6 +4164,39 @@ TEST_P(PerDeskShelfTest, RemoveActiveDesk) {
   RemoveDesk(desk_2);
   VerifyViewVisibility(app1, true);
   VerifyViewVisibility(app2, true);
+}
+
+TEST_P(PerDeskShelfTest, ShelfViewTransformUpdatedForScrollWhenSwitchingDesks) {
+  ScrollableShelfView* scrollable_shelf_view = GetPrimaryShelf()
+                                                   ->shelf_widget()
+                                                   ->hotseat_widget()
+                                                   ->scrollable_shelf_view();
+  ShelfView* shelf_view = scrollable_shelf_view->shelf_view();
+  ShelfViewTestAPI shelf_view_test_api(shelf_view);
+  shelf_view_test_api.SetAnimationDuration(base::Milliseconds(1));
+
+  // Create apps running on the active desk, and not pinned to the shelf, until
+  // the right or bottom scroll arrow appears.
+  ScrollArrowView* right_arrow = scrollable_shelf_view->right_arrow();
+  std::vector<std::unique_ptr<aura::Window>> windows;
+  while (!right_arrow->GetVisible()) {
+    windows.push_back(CreateAppWithShelfItem(ShelfItemType::TYPE_APP));
+    shelf_view_test_api.RunMessageLoopUntilAnimationsDone();
+  }
+
+  // Scroll the shelf.
+  ClickOnView(right_arrow, GetEventGenerator());
+  shelf_view_test_api.RunMessageLoopUntilAnimationsDone();
+  const gfx::Transform scrolled_transform = shelf_view->GetTransform();
+  EXPECT_FALSE(scrolled_transform.IsIdentity());
+
+  // Switch desks.
+  NewDesk();
+  ActivateDesk(DesksController::Get()->desks()[1].get());
+  if (IsPerDeskShelfEnabled())
+    EXPECT_TRUE(shelf_view->GetTransform().IsIdentity());
+  else
+    EXPECT_EQ(scrolled_transform, shelf_view->GetTransform());
 }
 
 // Tests desks name nudges, i.e. when a user creates a new desk, focus + clear
