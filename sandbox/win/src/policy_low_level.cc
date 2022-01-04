@@ -267,7 +267,7 @@ bool PolicyRule::AddStringMatch(RuleType rule_type,
         if (L'?' == current_char[1]) {
           ++current_char;
         }
-        FALLTHROUGH;
+        [[fallthrough]];
       default:
         fragment += *current_char;
         last_char = kLastCharIsAlpha;
