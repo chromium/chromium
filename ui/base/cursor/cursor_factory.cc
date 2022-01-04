@@ -192,7 +192,7 @@ std::vector<std::string> CursorNamesFromType(mojom::CursorType type) {
       // kCustom is for custom image cursors. The platform cursor will be set
       // at WebCursor::GetNativeCursor().
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case mojom::CursorType::kNull:
     case mojom::CursorType::kPointer:
       return {"left_ptr"};
