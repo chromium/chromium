@@ -138,26 +138,26 @@ bool ProximityAuthProfilePrefManager::IsEasyUnlockEnabled() const {
 bool ProximityAuthProfilePrefManager::IsSmartLockEligible() const {
   switch (multidevice_setup_client_->GetFeatureState(Feature::kSmartLock)) {
     case FeatureState::kUnavailableNoVerifiedHost:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureState::kUnavailableNoVerifiedHost_ClientNotReady:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureState::kNotSupportedByChromebook:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureState::kNotSupportedByPhone:
       return false;
 
     case FeatureState::kProhibitedByPolicy:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureState::kDisabledByUser:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureState::kEnabledByUser:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureState::kUnavailableInsufficientSecurity:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureState::kUnavailableSuiteDisabled:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureState::kFurtherSetupRequired:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureState::kUnavailableTopLevelFeatureDisabled:
       return true;
   }
