@@ -69,7 +69,6 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void ShowScreenCaptureItemInFolder(const base::FilePath& file_path) override;
   void OpenScreenshotInImageEditor(const base::FilePath& file_path) override;
   bool Uses24HourFormat() const override;
-  bool IsCaptureModeInitRestrictedByDlp() const override;
   void CheckCaptureModeInitRestrictionByDlp(
       OnCaptureModeDlpRestrictionChecked callback) override;
   void CheckCaptureOperationRestrictionByDlp(

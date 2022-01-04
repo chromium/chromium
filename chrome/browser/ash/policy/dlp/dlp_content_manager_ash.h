@@ -105,11 +105,6 @@ class DlpContentManagerAsh : public DlpContentManager,
   void CheckStoppedVideoCapture(
       ash::OnCaptureModeDlpRestrictionChecked callback);
 
-  // Returns whether initiation of capture mode should be restricted because
-  // any restricted content is currently visible.
-  // TODO(crbug.com/1257493): Remove when it won't be used anymore.
-  bool IsCaptureModeInitRestricted();
-
   // Checks whether initiation of capture mode is restricted or not advised
   // based on the currently visible content. Depending on the result, calls
   // |callback| and passes an indicator whether to proceed or not.

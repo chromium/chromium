@@ -133,10 +133,6 @@ bool ChromeCaptureModeDelegate::Uses24HourFormat() const {
   return base::GetHourClockType() == base::k24HourClock;
 }
 
-bool ChromeCaptureModeDelegate::IsCaptureModeInitRestrictedByDlp() const {
-  return policy::DlpContentManagerAsh::Get()->IsCaptureModeInitRestricted();
-}
-
 void ChromeCaptureModeDelegate::CheckCaptureModeInitRestrictionByDlp(
     ash::OnCaptureModeDlpRestrictionChecked callback) {
   policy::DlpContentManagerAsh::Get()->CheckCaptureModeInitRestriction(

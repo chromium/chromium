@@ -36,7 +36,6 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   void ShowScreenCaptureItemInFolder(const base::FilePath& file_path) override;
   void OpenScreenshotInImageEditor(const base::FilePath& file_path) override;
   bool Uses24HourFormat() const override;
-  bool IsCaptureModeInitRestrictedByDlp() const override;
   void CheckCaptureModeInitRestrictionByDlp(
       ash::OnCaptureModeDlpRestrictionChecked callback) override;
   void CheckCaptureOperationRestrictionByDlp(

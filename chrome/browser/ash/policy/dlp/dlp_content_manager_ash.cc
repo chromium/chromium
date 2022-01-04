@@ -193,16 +193,6 @@ void DlpContentManagerAsh::CheckStoppedVideoCapture(
   running_video_capture_info_.reset();
 }
 
-bool DlpContentManagerAsh::IsCaptureModeInitRestricted() {
-  const RestrictionLevelAndUrl restriction_info =
-      GetOnScreenPresentRestrictions().GetRestrictionLevelAndUrl(
-          DlpContentRestriction::kScreenshot);
-  MaybeReportEvent(restriction_info, DlpRulesManager::Restriction::kScreenshot);
-  DlpBooleanHistogram(dlp::kCaptureModeInitBlockedUMA,
-                      IsBlocked(restriction_info));
-  return IsBlocked(restriction_info);
-}
-
 void DlpContentManagerAsh::CheckCaptureModeInitRestriction(
     ash::OnCaptureModeDlpRestrictionChecked callback) {
   const ConfidentialContentsInfo info =
