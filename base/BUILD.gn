@@ -3089,7 +3089,6 @@ test("base_unittests") {
     "i18n/string_search_unittest.cc",
     "i18n/time_formatting_unittest.cc",
     "i18n/timezone_unittest.cc",
-    "i18n/transliterator_unittest.cc",
     "immediate_crash_unittest.cc",
     "json/json_parser_unittest.cc",
     "json/json_reader_unittest.cc",
