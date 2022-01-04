@@ -1,5 +1,11 @@
 # The JSON Test Results Format
 
+*** note
+Warning: The JSON test result format no longer affects the pass-fail decisions
+made by Chrome's bots. All results are now fetched from ResultDB. For more
+info, see [resultdb.md](resultdb.md).
+***
+
 The JSON Test Results Format is a generic file format we use to record the
 results of each individual test in test run (whether the test is run on a bot,
 or run locally).
