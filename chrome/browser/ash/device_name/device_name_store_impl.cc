@@ -93,14 +93,14 @@ bool DeviceNameStoreImpl::IsConfiguringDeviceNameProhibitedByPolicy() const {
   switch (handler_->GetDeviceNamePolicy()) {
     case policy::DeviceNamePolicyHandler::DeviceNamePolicy::
         kPolicyHostnameNotConfigurable:
-      FALLTHROUGH;
+      [[fallthrough]];
     case policy::DeviceNamePolicyHandler::DeviceNamePolicy::
         kPolicyHostnameChosenByAdmin:
       return true;
 
     case policy::DeviceNamePolicyHandler::DeviceNamePolicy::
         kPolicyHostnameConfigurableByManagedUser:
-      FALLTHROUGH;
+      [[fallthrough]];
     case policy::DeviceNamePolicyHandler::DeviceNamePolicy::kNoPolicy:
       return false;
   }
