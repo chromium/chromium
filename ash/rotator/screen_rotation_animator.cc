@@ -492,7 +492,7 @@ void ScreenRotationAnimator::Rotate(
   switch (screen_rotation_state_) {
     case IDLE:
       DCHECK(!current_async_rotation_request_);
-      FALLTHROUGH;
+      [[fallthrough]];
     case COPY_REQUESTED:
       if (current_async_rotation_request_ &&
           !RootWindowChangedForDisplayId(

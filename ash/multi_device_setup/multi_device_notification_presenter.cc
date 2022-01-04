@@ -234,7 +234,7 @@ void MultiDeviceNotificationPresenter::OnNotificationClicked(
     case Status::kExistingUserHostSwitchedNotificationVisible:
       // Clicks on the 'host switched' and 'Chromebook added' notifications have
       // the same effect, i.e. opening the Settings subpage.
-      FALLTHROUGH;
+      [[fallthrough]];
     case Status::kExistingUserNewChromebookNotificationVisible:
       Shell::Get()
           ->system_tray_model()
