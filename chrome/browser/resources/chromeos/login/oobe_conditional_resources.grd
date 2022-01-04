@@ -24,6 +24,8 @@
 
       <structure name="IDR_OOBE_DEBUGGER_JS" file="debug\debug.js" flattenhtml="true" type="chrome_html" />
       <structure name="IDR_OOBE_DEBUGGER_STUB_JS" file="debug\no_debug.js" flattenhtml="true" type="chrome_html" />
+
+      <structure name="IDR_KEYBOARD_UTILS_FOR_INJECTION_JS" file="components/keyboard_utils_for_injection.js" flattenhtml="true" type="chrome_html" />
     </structures>
     <includes>
       <!-- Resources that are served under fixed paths -->

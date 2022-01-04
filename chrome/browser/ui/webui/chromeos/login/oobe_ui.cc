@@ -151,6 +151,9 @@ constexpr char kCustomElementsHTMLPath[] = "custom_elements.html";
 constexpr char kCustomElementsJSPath[] = "custom_elements.js";
 constexpr char kDebuggerJSPath[] = "debug.js";
 constexpr char kKeyboardUtilsJSPath[] = "keyboard_utils.js";
+constexpr char kKeyboardUtilsForInjectionPath[] =
+    "components/keyboard_utils_for_injection.js";
+
 constexpr char kLoginJSPath[] = "login.js";
 constexpr char kOobeJSPath[] = "oobe.js";
 constexpr char kProductLogoPath[] = "product-logo.png";
@@ -370,6 +373,8 @@ content::WebUIDataSource* CreateOobeUIDataSource(
   source->AddResourcePath(kWebviewSamlInjectedJSPath,
                           IDR_GAIA_AUTH_WEBVIEW_SAML_INJECTED_JS);
   source->AddResourcePath(kKeyboardUtilsJSPath, IDR_KEYBOARD_UTILS_JS);
+  source->AddResourcePath(kKeyboardUtilsForInjectionPath,
+                          IDR_KEYBOARD_UTILS_FOR_INJECTION_JS);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc, "object-src chrome:;");
   source->DisableTrustedTypesCSP();

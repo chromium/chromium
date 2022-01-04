@@ -25,6 +25,7 @@ js_type_check("closure_compile_local") {
     ":fake_oobe",
     ":hd_iron_icon",
     ":html_echo",
+    ":keyboard_utils_for_injection",
     ":long_touch_detector",
     ":oobe_select",
     ":oobe_types",
@@ -132,6 +133,9 @@ js_library("hd_iron_icon") {
 }
 
 js_library("html_echo") {
+}
+
+js_library("keyboard_utils_for_injection") {
 }
 
 js_library("long_touch_detector") {
