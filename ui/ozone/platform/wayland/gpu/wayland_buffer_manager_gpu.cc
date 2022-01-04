@@ -193,14 +193,22 @@ void WaylandBufferManagerGpu::CreateDmabufBasedBuffer(
     uint32_t planes_count,
     uint32_t buffer_id) {
   DCHECK(gpu_thread_runner_);
-  // Do the mojo call on the GpuMainThread.
-  gpu_thread_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WaylandBufferManagerGpu::CreateDmabufBasedBufferInternal,
-                     base::Unretained(this), std::move(dmabuf_fd),
-                     std::move(size), std::move(strides), std::move(offsets),
-                     std::move(modifiers), current_format, planes_count,
-                     buffer_id));
+  if (!gpu_thread_runner_->BelongsToCurrentThread()) {
+    // Do the mojo call on the GpuMainThread.
+    gpu_thread_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WaylandBufferManagerGpu::CreateDmabufBasedBuffer,
+                       base::Unretained(this), std::move(dmabuf_fd),
+                       std::move(size), std::move(strides), std::move(offsets),
+                       std::move(modifiers), current_format, planes_count,
+                       buffer_id));
+    return;
+  }
+
+  DCHECK(remote_host_);
+  remote_host_->CreateDmabufBasedBuffer(
+      mojo::PlatformHandle(std::move(dmabuf_fd)), size, strides, offsets,
+      modifiers, current_format, planes_count, buffer_id);
 }
 
 void WaylandBufferManagerGpu::CreateShmBasedBuffer(base::ScopedFD shm_fd,
@@ -209,22 +217,35 @@ void WaylandBufferManagerGpu::CreateShmBasedBuffer(base::ScopedFD shm_fd,
                                                    uint32_t buffer_id) {
   DCHECK(gpu_thread_runner_);
   // Do the mojo call on the GpuMainThread.
-  gpu_thread_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WaylandBufferManagerGpu::CreateShmBasedBufferInternal,
-                     base::Unretained(this), std::move(shm_fd), length,
-                     std::move(size), buffer_id));
+  if (!gpu_thread_runner_->BelongsToCurrentThread()) {
+    gpu_thread_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WaylandBufferManagerGpu::CreateShmBasedBuffer,
+                       base::Unretained(this), std::move(shm_fd), length,
+                       std::move(size), buffer_id));
+    return;
+  }
+
+  DCHECK(remote_host_);
+  remote_host_->CreateShmBasedBuffer(mojo::PlatformHandle(std::move(shm_fd)),
+                                     length, size, buffer_id);
 }
 
 void WaylandBufferManagerGpu::CreateSolidColorBuffer(SkColor color,
                                                      const gfx::Size& size,
                                                      uint32_t buf_id) {
   DCHECK(gpu_thread_runner_);
-  // Do the mojo call on the GpuMainThread.
-  gpu_thread_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WaylandBufferManagerGpu::CreateSolidColorBufferInternal,
-                     base::Unretained(this), color, size, buf_id));
+  if (!gpu_thread_runner_->BelongsToCurrentThread()) {
+    // Do the mojo call on the GpuMainThread.
+    gpu_thread_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WaylandBufferManagerGpu::CreateSolidColorBuffer,
+                       base::Unretained(this), color, size, buf_id));
+    return;
+  }
+
+  DCHECK(remote_host_);
+  remote_host_->CreateSolidColorBuffer(size, color, buf_id);
 }
 
 void WaylandBufferManagerGpu::CommitBuffer(gfx::AcceleratedWidget widget,
@@ -248,20 +269,32 @@ void WaylandBufferManagerGpu::CommitOverlays(
     gfx::AcceleratedWidget widget,
     std::vector<ozone::mojom::WaylandOverlayConfigPtr> overlays) {
   DCHECK(gpu_thread_runner_);
-  // Do the mojo call on the GpuMainThread.
-  gpu_thread_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WaylandBufferManagerGpu::CommitOverlaysInternal,
-                     base::Unretained(this), widget, std::move(overlays)));
+  if (!gpu_thread_runner_->BelongsToCurrentThread()) {
+    // Do the mojo call on the GpuMainThread.
+    gpu_thread_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&WaylandBufferManagerGpu::CommitOverlays,
+                       base::Unretained(this), widget, std::move(overlays)));
+    return;
+  }
+
+  DCHECK(remote_host_);
+  remote_host_->CommitOverlays(widget, std::move(overlays));
 }
 
 void WaylandBufferManagerGpu::DestroyBuffer(gfx::AcceleratedWidget widget,
                                             uint32_t buffer_id) {
   DCHECK(gpu_thread_runner_);
-  // Do the mojo call on the GpuMainThread.
-  gpu_thread_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&WaylandBufferManagerGpu::DestroyBufferInternal,
-                                base::Unretained(this), widget, buffer_id));
+  if (!gpu_thread_runner_->BelongsToCurrentThread()) {
+    // Do the mojo call on the GpuMainThread.
+    gpu_thread_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&WaylandBufferManagerGpu::DestroyBuffer,
+                                  base::Unretained(this), widget, buffer_id));
+    return;
+  }
+
+  DCHECK(remote_host_);
+  remote_host_->DestroyBuffer(widget, buffer_id);
 }
 
 #if defined(WAYLAND_GBM)
@@ -305,63 +338,6 @@ WaylandBufferManagerGpu::GetModifiersForBufferFormat(
 
 uint32_t WaylandBufferManagerGpu::AllocateBufferID() {
   return ++next_buffer_id_;
-}
-
-void WaylandBufferManagerGpu::CreateDmabufBasedBufferInternal(
-    base::ScopedFD dmabuf_fd,
-    gfx::Size size,
-    const std::vector<uint32_t>& strides,
-    const std::vector<uint32_t>& offsets,
-    const std::vector<uint64_t>& modifiers,
-    uint32_t current_format,
-    uint32_t planes_count,
-    uint32_t buffer_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-
-  DCHECK(remote_host_);
-  remote_host_->CreateDmabufBasedBuffer(
-      mojo::PlatformHandle(std::move(dmabuf_fd)), size, strides, offsets,
-      modifiers, current_format, planes_count, buffer_id);
-}
-
-void WaylandBufferManagerGpu::CreateShmBasedBufferInternal(
-    base::ScopedFD shm_fd,
-    size_t length,
-    gfx::Size size,
-    uint32_t buffer_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-
-  DCHECK(remote_host_);
-  remote_host_->CreateShmBasedBuffer(mojo::PlatformHandle(std::move(shm_fd)),
-                                     length, size, buffer_id);
-}
-
-void WaylandBufferManagerGpu::CreateSolidColorBufferInternal(
-    SkColor color,
-    const gfx::Size& size,
-    uint32_t buf_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-
-  DCHECK(remote_host_);
-  remote_host_->CreateSolidColorBuffer(size, color, buf_id);
-}
-
-void WaylandBufferManagerGpu::CommitOverlaysInternal(
-    gfx::AcceleratedWidget widget,
-    std::vector<ozone::mojom::WaylandOverlayConfigPtr> overlays) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-
-  DCHECK(remote_host_);
-  remote_host_->CommitOverlays(widget, std::move(overlays));
-}
-
-void WaylandBufferManagerGpu::DestroyBufferInternal(
-    gfx::AcceleratedWidget widget,
-    uint32_t buffer_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
-
-  DCHECK(remote_host_);
-  remote_host_->DestroyBuffer(widget, buffer_id);
 }
 
 void WaylandBufferManagerGpu::BindHostInterface(
