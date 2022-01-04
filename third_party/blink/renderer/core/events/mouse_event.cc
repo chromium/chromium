@@ -31,6 +31,8 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/html/html_frame_element_base.h"
+#include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -489,9 +491,31 @@ void MouseEvent::ComputeRelativePosition() {
   has_cached_relative_position_ = true;
 }
 
+void MouseEvent::RecordLayerXYMetrics() {
+  Node* node = target() ? target()->ToNode() : nullptr;
+  if (!node)
+    return;
+  // Using the target for these metrics is a heuristic for measuring the impact
+  // of https://crrev.com/370604#c57. The heuristic will be accurate for canvas
+  // elements which do not have children, but will undercount the impact on
+  // child elements (e.g., descendants of frames).
+  if (IsA<HTMLMediaElement>(node)) {
+    UseCounter::Count(node->GetDocument(), WebFeature::kLayerXYWithMediaTarget);
+  } else if (IsA<HTMLCanvasElement>(node)) {
+    UseCounter::Count(node->GetDocument(),
+                      WebFeature::kLayerXYWithCanvasTarget);
+  } else if (IsA<HTMLFrameElementBase>(node)) {
+    UseCounter::Count(node->GetDocument(), WebFeature::kLayerXYWithFrameTarget);
+  } else if (IsA<SVGElement>(node)) {
+    UseCounter::Count(node->GetDocument(), WebFeature::kLayerXYWithSVGTarget);
+  }
+}
+
 int MouseEvent::layerX() {
   if (!has_cached_relative_position_)
     ComputeRelativePosition();
+
+  RecordLayerXYMetrics();
 
   return ClampTo<int, double>(std::floor(layer_location_.X()));
 }
@@ -499,6 +523,8 @@ int MouseEvent::layerX() {
 int MouseEvent::layerY() {
   if (!has_cached_relative_position_)
     ComputeRelativePosition();
+
+  RecordLayerXYMetrics();
 
   return ClampTo<int, double>(std::floor(layer_location_.Y()));
 }

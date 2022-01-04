@@ -206,6 +206,9 @@ class CORE_EXPORT MouseEvent : public UIEventWithKeyState {
 
   void ComputePageLocation();
 
+  // Record metrics for layerX and layerY.
+  void RecordLayerXYMetrics();
+
   DoublePoint movement_delta_;
 
   DoublePoint layer_location_;     // zoomed CSS pixels

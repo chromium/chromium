@@ -3404,6 +3404,10 @@ enum WebFeature {
   kV8PaymentResponse_Retry_Method = 4095,
   kWebAppManifestUserPreferences = 4096,
   kV8HTMLInputElement_ShowPicker_Method = 4097,
+  kLayerXYWithMediaTarget = 4098,
+  kLayerXYWithCanvasTarget = 4099,
+  kLayerXYWithFrameTarget = 4100,
+  kLayerXYWithSVGTarget = 4101,
 
 
   // Add new features immediately above this line. Don't change assigned
