@@ -283,14 +283,17 @@ void AppServiceProxyAsh::UninstallImpl(
                                          &callback](
                                             const apps::AppUpdate& update) {
     apps::mojom::IconKeyPtr icon_key = update.IconKey();
-    auto uninstall_dialog = std::make_unique<UninstallDialog>(
+    auto uninstall_dialog_ptr = std::make_unique<UninstallDialog>(
         profile_, update.AppType(), update.AppId(), update.Name(),
-        std::move(icon_key), this, parent_window,
+        parent_window,
         base::BindOnce(&AppServiceProxyAsh::OnUninstallDialogClosed,
                        weak_ptr_factory_.GetWeakPtr(), update.AppType(),
                        update.AppId(), uninstall_source));
-    uninstall_dialog->SetDialogCreatedCallbackForTesting(std::move(callback));
-    uninstall_dialogs_.emplace(std::move(uninstall_dialog));
+    UninstallDialog* uninstall_dialog = uninstall_dialog_ptr.get();
+    uninstall_dialog_ptr->SetDialogCreatedCallbackForTesting(
+        std::move(callback));
+    uninstall_dialogs_.emplace(std::move(uninstall_dialog_ptr));
+    uninstall_dialog->PrepareToShow(std::move(icon_key), this);
   });
 }
 

@@ -85,13 +85,16 @@ class UninstallDialog {
                   apps::mojom::AppType app_type,
                   const std::string& app_id,
                   const std::string& app_name,
-                  apps::mojom::IconKeyPtr mojom_icon_key,
-                  IconLoader* icon_loader,
                   gfx::NativeWindow parent_window,
                   UninstallCallback uninstall_callback);
   UninstallDialog(const UninstallDialog&) = delete;
   UninstallDialog& operator=(const UninstallDialog&) = delete;
   ~UninstallDialog();
+
+  // Loads the app icon to show the icon in the uninstall dialog before creating
+  // the dialog view.
+  void PrepareToShow(apps::mojom::IconKeyPtr mojom_icon_key,
+                     apps::IconLoader* icon_loader);
 
   // Called when the uninstall dialog is closing to process uninstall or cancel
   // the uninstall.
