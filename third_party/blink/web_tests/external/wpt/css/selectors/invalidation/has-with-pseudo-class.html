@@ -15,11 +15,18 @@ main:has(#optgroup:disabled) > #subject { color: blue }
 main:not(:has(#checkbox:enabled)) > #subject3 { color: green }
 main:not(:has(#option:enabled)) :is(#subject3, #subject4) { color: green }
 main:not(:has(#optgroup:enabled)) > #subject3 { color: blue }
+main:has(#text_input:valid) > #subject { color: yellow }
+main:not(:has(#text_input:invalid)) > #subject2 { color: yellow }
+main:has(#form:valid) > #subject3 { color: yellow }
+main:not(:has(#form:invalid)) > #subject4 { color: yellow }
 </style>
 
 <main id=main>
-    <input type=checkbox id=checkbox></input>
-    <select id=select><optgroup id=optgroup><option>a</option><option id=option>b</option></optgroup></select>
+    <form id=form>
+        <input type=checkbox id=checkbox></input>
+        <select id=select><optgroup id=optgroup><option>a</option><option id=option>b</option></optgroup></select>
+        <input id=text_input type=text required></input>
+    </form>
     <div id=subject></div>
     <div id=subject2></div>
     <div id=subject3></div>
@@ -61,6 +68,17 @@ function testSelectedChange(option, subject_element, expectedColor)
     testColor(`Reset select`, subject, grey);
 }
 
+function testValueChange(input, subject_element, expectedColor)
+{
+    testColor(`Before setting value of ${input.id}, testing ${subject_element.id}`, subject_element, grey);
+
+    input.value = "value";
+    testColor(`Set value of ${input.id}, testing ${subject_element.id}`, subject_element, expectedColor);
+
+    input.value = "";
+    testColor(`Clear value of ${input.id}, testing ${subject_element.id}`, subject_element, grey);
+}
+
 testPseudoClassChange(checkbox, "checked", subject, red);
 testSelectedChange(option, subject, red);
 
@@ -74,4 +92,8 @@ testPseudoClassChange(optgroup, "disabled", subject2, green);
 testPseudoClassChange(optgroup, "disabled", subject3, blue);
 testPseudoClassChange(optgroup, "disabled", subject4, green);
 
+testValueChange(text_input, subject, yellow);
+testValueChange(text_input, subject2, yellow);
+testValueChange(text_input, subject3, yellow);
+testValueChange(text_input, subject4, yellow);
 </script>

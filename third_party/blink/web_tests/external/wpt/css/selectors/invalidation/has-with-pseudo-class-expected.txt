@@ -1,0 +1,44 @@
+This is a testharness.js-based test.
+PASS Before set checked on checkbox, testing subject
+FAIL Set checked on checkbox, testing subject assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+PASS Unset checked on checkbox, testing subject
+FAIL Set select on option assert_equals: expected "rgb(255, 0, 0)" but got "rgb(128, 128, 128)"
+PASS Reset select
+PASS Before set disabled on checkbox, testing subject
+FAIL Set disabled on checkbox, testing subject assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+PASS Unset disabled on checkbox, testing subject
+PASS Before set disabled on checkbox, testing subject3
+FAIL Set disabled on checkbox, testing subject3 assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+PASS Unset disabled on checkbox, testing subject3
+PASS Before set disabled on option, testing subject
+FAIL Set disabled on option, testing subject assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+PASS Unset disabled on option, testing subject
+PASS Before set disabled on option, testing subject3
+FAIL Set disabled on option, testing subject3 assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+PASS Unset disabled on option, testing subject3
+PASS Before set disabled on optgroup, testing subject
+FAIL Set disabled on optgroup, testing subject assert_equals: expected "rgb(0, 0, 255)" but got "rgb(128, 128, 128)"
+PASS Unset disabled on optgroup, testing subject
+PASS Before set disabled on optgroup, testing subject2
+FAIL Set disabled on optgroup, testing subject2 assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+PASS Unset disabled on optgroup, testing subject2
+PASS Before set disabled on optgroup, testing subject3
+FAIL Set disabled on optgroup, testing subject3 assert_equals: expected "rgb(0, 0, 255)" but got "rgb(128, 128, 128)"
+PASS Unset disabled on optgroup, testing subject3
+PASS Before set disabled on optgroup, testing subject4
+FAIL Set disabled on optgroup, testing subject4 assert_equals: expected "rgb(0, 128, 0)" but got "rgb(128, 128, 128)"
+PASS Unset disabled on optgroup, testing subject4
+PASS Before setting value of text_input, testing subject
+FAIL Set value of text_input, testing subject assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
+PASS Clear value of text_input, testing subject
+PASS Before setting value of text_input, testing subject2
+FAIL Set value of text_input, testing subject2 assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
+PASS Clear value of text_input, testing subject2
+PASS Before setting value of text_input, testing subject3
+FAIL Set value of text_input, testing subject3 assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
+PASS Clear value of text_input, testing subject3
+PASS Before setting value of text_input, testing subject4
+FAIL Set value of text_input, testing subject4 assert_equals: expected "rgb(255, 255, 0)" but got "rgb(128, 128, 128)"
+PASS Clear value of text_input, testing subject4
+Harness: the test ran to completion.
+
