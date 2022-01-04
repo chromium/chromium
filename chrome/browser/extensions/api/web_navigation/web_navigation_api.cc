@@ -87,8 +87,10 @@ void WebNavigationEventRouter::OnTabStripModelChanged(
              mojom::ViewType::kTabContents);
       return;
     }
-    if (!FrameNavigationState::IsValidUrl(replace->old_contents->GetURL()) ||
-        !FrameNavigationState::IsValidUrl(replace->new_contents->GetURL()))
+    if (!FrameNavigationState::IsValidUrl(
+            replace->old_contents->GetLastCommittedURL()) ||
+        !FrameNavigationState::IsValidUrl(
+            replace->new_contents->GetLastCommittedURL()))
       return;
 
     web_navigation_api_helpers::DispatchOnTabReplaced(
