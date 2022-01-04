@@ -34,7 +34,7 @@ proximity_auth::ScreenlockBridge::UserPodCustomIcon GetIconForState(
         return proximity_auth::ScreenlockBridge::
             USER_POD_CUSTOM_ICON_LOCKED_TO_BE_ACTIVATED;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case SmartLockState::kBluetoothDisabled:
     case SmartLockState::kPhoneNotFound:
     case SmartLockState::kPhoneNotAuthenticated:
