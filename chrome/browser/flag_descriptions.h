@@ -3145,6 +3145,9 @@ extern const char kOzonePlatformHintChoiceWayland[];
 
 extern const char kOzonePlatformHintName[];
 extern const char kOzonePlatformHintDescription[];
+
+extern const char kCleanUndecryptablePasswordsLinuxName[];
+extern const char kCleanUndecryptablePasswordsLinuxDescription[];
 #endif  // defined(OS_LINUX)
 
 // Feature flags --------------------------------------------------------------

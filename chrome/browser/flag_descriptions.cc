@@ -5417,6 +5417,14 @@ const char kOzonePlatformHintDescription[] =
     "\"X11\". \"Auto\" selects Wayland if possible, X11 otherwise. ";
 #endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
 
+#if defined(OS_LINUX)
+const char kCleanUndecryptablePasswordsLinuxName[] =
+    "Cleanup local undecryptable passwords during initial sync flow";
+const char kCleanUndecryptablePasswordsLinuxDescription[] =
+    "Deletes the undecryptable passwords from the local database to enable "
+    "syncing all passwords during the initial sync.";
+#endif  // defined(OS_LINUX)
+
 // Feature flags --------------------------------------------------------------
 
 #if defined(DCHECK_IS_CONFIGURABLE)

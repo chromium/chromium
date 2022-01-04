@@ -3880,6 +3880,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"ozone-platform-hint", flag_descriptions::kOzonePlatformHintName,
      flag_descriptions::kOzonePlatformHintDescription, kOsLinux,
      MULTI_VALUE_TYPE(kOzonePlatformHintRuntimeChoices)},
+
+    {"clean-undecryptable-passwords",
+     flag_descriptions::kCleanUndecryptablePasswordsLinuxName,
+     flag_descriptions::kCleanUndecryptablePasswordsLinuxDescription, kOsLinux,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kSyncUndecryptablePasswordsLinux)},
 #endif
 
 #if BUILDFLAG(ENABLE_VR)
