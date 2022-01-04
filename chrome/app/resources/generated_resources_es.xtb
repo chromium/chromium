@@ -2886,6 +2886,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3916445069167113093">Este tipo de archivo puede dañar tu ordenador. ¿Quieres descargar <ph name="FILE_NAME" /> de todos modos?</translation>
 <translation id="3918972485393593704">Enviar informe detallado a Google</translation>
 <translation id="3919145445993746351">Para obtener las extensiones en todos tus ordenadores, activa la sincronización</translation>
+<translation id="3919229493046408863">Desactivar notificación cuando haya dispositivos cerca</translation>
 <translation id="3919798653937160644">Las páginas que aparezcan en esta ventana no se mostrarán en el historial del navegador y no dejarán otros rastros, como cookies, en el ordenador después de cerrar todas las ventanas abiertas de la sesión de invitado. No obstante, se conservará cualquier archivo que descargues.</translation>
 <translation id="3920504717067627103">Políticas de certificados</translation>
 <translation id="392089482157167418">Habilitar ChromeVox (mensajes de voz)</translation>
@@ -5918,6 +5919,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="7167486101654761064">&amp;Abrir siempre archivos de este tipo</translation>
 <translation id="716810439572026343">Descargando <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Tamaño mínimo de fuente</translation>
+<translation id="7169122689956315694">Activar notificación cuando haya dispositivos cerca</translation>
 <translation id="7170236477717446850">Imagen de perfil</translation>
 <translation id="7171000599584840888">Añadir perfil...</translation>
 <translation id="7171259390164035663">No registrar</translation>

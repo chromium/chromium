@@ -122,6 +122,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Az Élő feliratozás be van kapcsolva.</translation>
 <translation id="1720011244392820496">Wi-Fi szinkronizálásának bekapcsolása</translation>
+<translation id="1736898441010944794">A(z) „<ph name="NAME" />” látható a Bluetooth-eszközök számára.</translation>
 <translation id="1743570585616704562">Nem sikerült felismerni</translation>
 <translation id="1746730358044914197">A rendszergazda állította be a beviteli módszereket.</translation>
 <translation id="1747827819627189109">Képernyő-billentyűzet bekapcsolva</translation>
@@ -832,6 +833,7 @@ Frissen telepítve</translation>
 <translation id="6578407462441924264">Név nélküli</translation>
 <translation id="6585808820553845416">A munkamenet <ph name="SESSION_TIME_REMAINING" /> múlva véget ér.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">A rendszer biztonságosabb hálózati kapcsolatra váltott</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
 <translation id="6612802754306526077">Képernyőrögzítés mód kiválasztva</translation>
 <translation id="6614169507485700968">Az adatvédelmi képernyő be van kapcsolva</translation>

@@ -2899,6 +2899,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3916445069167113093">Az ilyen fájlok kárt okozhatnak számítógépében. Ennek ellenére is szeretné megtartani a(z) <ph name="FILE_NAME" /> fájlt?</translation>
 <translation id="3918972485393593704">Részletek jelentése a Google-nak</translation>
 <translation id="3919145445993746351">Ha az összes számítógépén szeretné elérni bővítményeit, kapcsolja be a szinkronizálást.</translation>
+<translation id="3919229493046408863">Közeli eszközökre vonatkozó értesítések kikapcsolása</translation>
 <translation id="3919798653937160644">Az ebben az ablakban megtekintett oldalak a vendég módban megnyitott ablakok bezárását követően nem fognak megjelenni a böngészési előzmények között, és nem hagynak egyéb nyomokat, például cookie-kat a számítógépen. Az Ön által letöltött fájlokat azonban megőrzi a rendszer.</translation>
 <translation id="3920504717067627103">Tanúsítvány-irányelvek</translation>
 <translation id="392089482157167418">A ChromeVox (beszélt visszajelzés) engedélyezése</translation>
@@ -5934,6 +5935,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7167486101654761064">&amp;Az ilyen típusú fájlokat mindig nyissa meg</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" /> letöltése</translation>
 <translation id="7168109975831002660">Minimális betűméret</translation>
+<translation id="7169122689956315694">Közeli eszközökre vonatkozó értesítések bekapcsolása</translation>
 <translation id="7170236477717446850">Profilkép</translation>
 <translation id="7171000599584840888">Profil hozzáadása…</translation>
 <translation id="7171259390164035663">Nem regisztrálok</translation>

@@ -2901,6 +2901,7 @@
 <translation id="3916445069167113093">סוג קובץ זה עלול לגרום נזק למחשב שלך. האם ברצונך לשמור את <ph name="FILE_NAME" /> בכל מקרה?</translation>
 <translation id="3918972485393593704">‏שליחת הפרטים אל Google</translation>
 <translation id="3919145445993746351">כדי לקבל גישה אל התוספים שלך בכל המחשבים שברשותך, יש להפעיל את הסנכרון</translation>
+<translation id="3919229493046408863">השבתת ההתראה כשמזוהים מכשירים בקרבת מקום</translation>
 <translation id="3919798653937160644">‏הדפים המוצגים בחלון זה לא יופיעו בהיסטוריית הדפדפן, ולאחר סגירת כל חלונות האורח הפתוחים, לא יותירו במחשב עקבות, כמו קובצי Cookie. עם זאת, כל הקבצים שיורדו יישמרו.</translation>
 <translation id="3920504717067627103">מדיניות אישורים </translation>
 <translation id="392089482157167418">‏הפעלת ChromeVox (משוב קולי)</translation>
@@ -5935,6 +5936,7 @@
 <translation id="7167486101654761064">&amp;פתיחה תמיד של קבצים מסוג זה</translation>
 <translation id="716810439572026343">הורדת <ph name="FILE_NAME" /> מתבצעת</translation>
 <translation id="7168109975831002660">גודל גופן מינימלי</translation>
+<translation id="7169122689956315694">הפעלת ההתראה כשמזוהים מכשירים בקרבת מקום</translation>
 <translation id="7170236477717446850">תמונת פרופיל</translation>
 <translation id="7171000599584840888">הוספת פרופיל...</translation>
 <translation id="7171259390164035663">אני לא רוצה להירשם</translation>

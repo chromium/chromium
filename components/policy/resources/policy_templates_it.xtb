@@ -2583,6 +2583,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3964298692570794635">Consenti contenuti non sicuri su questi siti</translation>
 <translation id="3965339130942650562">Timeout fino a esecuzione uscita utente non attivo</translation>
 <translation id="396536755218079668">Utenti supervisionati</translation>
+<translation id="3968218878014278212">Consenti l'attivazione di Eche.</translation>
 <translation id="3971673686578912106">Se il criterio viene impostato su Attivato, il plug-in <ph name="PLUGIN_VM_NAME" /> viene abilitato per il dispositivo, a condizione che anche le altre impostazioni lo permettano. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> e <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> devono essere impostati su True e <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> devono essere configurati per consentire l'esecuzione di <ph name="PLUGIN_VM_NAME" />.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, il plug-in <ph name="PLUGIN_VM_NAME" /> non viene attivato per il dispositivo.</translation>
@@ -3422,6 +3423,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se il criterio è impostato su False o se non viene configurato, <ph name="PRODUCT_NAME" /> utilizza le impostazioni di controllo delle revoche online esistenti.</translation>
 <translation id="5078623750797048009">Attiva annotazioni PDF</translation>
 <translation id="5081204761483900654">Sessioni Ospite gestite limitate</translation>
+<translation id="5082296146261894974">Consente agli utenti di fare clic sulla notifica di Phone Hub per avviare l'applicazione Eche.</translation>
 <translation id="5082572440690475059">Consenti l'accesso di lettura tramite l'API file system su questi siti</translation>
 <translation id="5085647276663819155">Disattiva anteprima di stampa</translation>
 <translation id="5090791951240382356">Consenti l'unione dei criteri del dizionario provenienti da origini diverse</translation>
@@ -4167,6 +4169,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 
       Il campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> consente di specificare se è possibile o meno eseguire un'app web durante l'accesso al sistema operativo. Se questo campo viene impostato su <ph name="BLOCKED" />, l'app web non verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà attivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="RUN_WINDOWED" />, l'app web verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà disattivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="ALLOWED" />, l'utente potrà configurare l'esecuzione dell'app web al momento dell'accesso al sistema operativo. Per la configurazione predefinita sono consentiti soltanto i valori <ph name="ALLOWED" /> e <ph name="BLOCKED" />.
       </translation>
+<translation id="5945312246863177268">Non consente agli utenti di fare clic sulla notifica di Phone Hub per avviare l'applicazione Eche.</translation>
 <translation id="5946082169633555022">Canale Beta</translation>
 <translation id="5946329690214660966">Imposta una pianificazione personalizzata per verificare la presenza di aggiornamenti</translation>
 <translation id="5950069117106131681">Se il criterio viene impostato su Attivato, vengono attivati intestazioni e piè di pagina nell'anteprima di stampa. Se il criterio viene impostato su Disattivato, questi elementi vengono disattivati nell'anteprima di stampa.
@@ -4747,6 +4750,11 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="66265932317331474">Segnala informazioni sulla CPU</translation>
 <translation id="6628120204569232711">Segnala lo stato di archiviazione</translation>
 <translation id="663685822663765995">Limita la modalità di stampa a colori</translation>
+<translation id="6640355849038068978">Se questa impostazione viene attivata, gli utenti potranno avviare l'applicazione Eche, ad esempio facendo clic su una notifica di Phone Hub.
+
+      Se questa impostazione viene disattivata, gli utenti non potranno avviare l'applicazione Eche.
+
+      Se questo criterio non viene configurato, per impostazione predefinita la funzionalità è consentita sia per gli utenti gestiti a livello aziendale sia per quelli non gestiti.</translation>
 <translation id="6641981670621198190">Disattiva supporto per le API grafiche 3D</translation>
 <translation id="6642682198621199507">La configurazione del criterio consente di elencare i siti a cui viene concessa automaticamente l'autorizzazione ad accedere a tutte le porte seriali disponibili.
 

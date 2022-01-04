@@ -122,6 +122,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">"লাইভ ক্যাপশন" চালু আছে।</translation>
 <translation id="1720011244392820496">ওয়াই-ফাই সিঙ্ক করার সুবিধা চালু করুন</translation>
+<translation id="1736898441010944794">ব্লুটুথ ডিভাইসে "<ph name="NAME" />" দেখা যায়।</translation>
 <translation id="1743570585616704562">শনাক্ত করা যায়নি</translation>
 <translation id="1746730358044914197">আপনার প্রশাসক ইনপুটের পদ্ধতিগুলি কনফিগার করে।</translation>
 <translation id="1747827819627189109">অন-স্ক্রিন কীবোর্ড সক্ষম করা রয়েছে</translation>
@@ -831,6 +832,7 @@
 <translation id="6578407462441924264">নামবিহীন</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> এর মধ্যে সেশন শেষ হয়ে যাবে৷</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">আপনার নেটওয়ার্ক কানেকশনটি আরও সুরক্ষিত নেটওয়ার্কে পরিবর্তিত হয়েছে</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="6612802754306526077">স্ক্রিন রেকর্ডিং মোড বেছে নেওয়া হয়েছে</translation>
 <translation id="6614169507485700968">গোপনীয়তা স্ক্রিন চালু করা আছে</translation>

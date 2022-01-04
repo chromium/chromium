@@ -122,6 +122,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Титл уживо је укључен.</translation>
 <translation id="1720011244392820496">Укључите WiFi синхронизацију</translation>
+<translation id="1736898441010944794">Ставка „<ph name="NAME" />“ је видљива за Bluetooth уређаје.</translation>
 <translation id="1743570585616704562">Није препознат</translation>
 <translation id="1746730358044914197">Методе уноса конфигурише администратор.</translation>
 <translation id="1747827819627189109">Тастатура на екрану је омогућена</translation>
@@ -831,6 +832,7 @@
 <translation id="6578407462441924264">Без имена</translation>
 <translation id="6585808820553845416">Сесија се завршава за <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Сада сте повезани на безбеднију мрежу</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />, управља администратор</translation>
 <translation id="6612802754306526077">Режим снимања екрана је изабран</translation>
 <translation id="6614169507485700968">Екран за приватност је укључен</translation>

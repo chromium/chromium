@@ -2887,6 +2887,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3916445069167113093">Tento typ souboru může poškodit počítač. Chcete soubor <ph name="FILE_NAME" /> i přesto uložit?</translation>
 <translation id="3918972485393593704">Nahlásit podrobnosti do Googlu</translation>
 <translation id="3919145445993746351">Chcete-li svá rozšíření mít na všech svých počítačích, zapněte synchronizaci</translation>
+<translation id="3919229493046408863">Vypnout oznámení o zařízeních v okolí</translation>
 <translation id="3919798653937160644">Stránky, které otevřete v tomto okně, nebudou uvedeny v historii prohlížeče a nezanechají v počítači po zavření všech oken hosta žádné stopy, např. soubory cookie. Všechny stažené soubory však budou zachovány.</translation>
 <translation id="3920504717067627103">Zásady certifikátů</translation>
 <translation id="392089482157167418">Zapnout funkci ChromeVox (hlasovou odezvu)</translation>
@@ -5919,6 +5920,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7167486101654761064">Vždy otevírat soubory tohoto typu</translation>
 <translation id="716810439572026343">Stahování souboru <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Minimální velikost písma</translation>
+<translation id="7169122689956315694">Zapnout oznámení o zařízeních v okolí</translation>
 <translation id="7170236477717446850">Profilová fotka</translation>
 <translation id="7171000599584840888">Přidat profil…</translation>
 <translation id="7171259390164035663">Neregistrovat</translation>

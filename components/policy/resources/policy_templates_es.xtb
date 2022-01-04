@@ -2605,6 +2605,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="3964298692570794635">Permite el contenido no seguro en estos sitios web</translation>
 <translation id="3965339130942650562">Tiempo de espera para cerrar sesión cuando el usuario se encuentre inactivo</translation>
 <translation id="396536755218079668">Usuarios supervisados</translation>
+<translation id="3968218878014278212">Permitir que se habilite Eche.</translation>
 <translation id="3971673686578912106">Si se habilita esta política, se activará <ph name="PLUGIN_VM_NAME" /> en el dispositivo siempre y cuando los demás ajustes también lo permitan. A <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> y <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> se les debe haber asignado el valor "True", y <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> deben haberse configurado para que se puede ejecutar <ph name="PLUGIN_VM_NAME" />.
 
       Si se inhabilita esta política o no se le asigna ningún valor, no se activará <ph name="PLUGIN_VM_NAME" /> en el dispositivo.</translation>
@@ -3441,6 +3442,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
       Si se le asigna el valor "Falso" o no se le asigna ninguno, <ph name="PRODUCT_NAME" /> usará la configuración que se esté aplicando en ese momento para comprobar la revocación online.</translation>
 <translation id="5078623750797048009">Habilitar anotaciones en PDF</translation>
 <translation id="5081204761483900654">Sesiones de invitado administradas y restringidas</translation>
+<translation id="5082296146261894974">Permitir que los usuarios hagan clic en una notificación de la función Mi teléfono para abrir la aplicación Eche.</translation>
 <translation id="5082572440690475059">Permitir el acceso de lectura a través de la API File System en estos sitios web</translation>
 <translation id="5085647276663819155">Inhabilitar vista previa de impresión</translation>
 <translation id="5090791951240382356">Permite combinar políticas de diccionario de fuentes distintas</translation>
@@ -4196,6 +4198,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       El campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica si una aplicación web se podrá ejecutar durante el inicio de sesión en el sistema operativo. Si a este campo se le asigna el valor <ph name="BLOCKED" />, la aplicación web no se ejecutará durante el inicio de sesión en el sistema operativo y el usuario no podrá habilitar esta opción después. Si a este campo se le asigna el valor <ph name="RUN_WINDOWED" />, la aplicación web se ejecutará durante el inicio de sesión en el sistema operativo y el usuario no podrá inhabilitar esta opción después. Si a este campo se le asigna el valor <ph name="ALLOWED" />, el usuario podrá configurar la aplicación web para que se ejecute durante el inicio de sesión en el sistema operativo. La configuración predeterminada solo permite los valores <ph name="ALLOWED" /> y <ph name="BLOCKED" />.
       </translation>
+<translation id="5945312246863177268">No permitir que los usuarios hagan clic en una notificación de la función Mi teléfono para abrir la aplicación Eche.</translation>
 <translation id="5946082169633555022">Canal beta</translation>
 <translation id="5946329690214660966">Define la programación personalizada para buscar actualizaciones</translation>
 <translation id="5950069117106131681">Si se habilita la política, activa los encabezados y pies de página en la vista previa de impresión. Si se inhabilita la política, los desactiva en la vista previa de impresión.
@@ -4777,6 +4780,11 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="66265932317331474">Proporcionar información sobre la CPU</translation>
 <translation id="6628120204569232711">Informar sobre el estado del almacenamiento</translation>
 <translation id="663685822663765995">Restringir el modo de impresión en color</translation>
+<translation id="6640355849038068978">Si se habilita esta opción, los usuarios podrán abrir la aplicación Eche (por ejemplo, haciendo clic en una notificación de la función Mi teléfono).
+
+      Si se inhabilita esta opción, los usuarios no podrán abrir la aplicación Eche.
+
+      Si no se establece esta política, el valor predeterminado para los usuarios gestionados por una empresa y para los no gestionados es permitir abrir la aplicación Eche.</translation>
 <translation id="6641981670621198190">Inhabilitar compatibilidad con API de gráficos 3D</translation>
 <translation id="6642682198621199507">Establecer esta política permite definir una lista de sitios a los que se les concederá permiso automáticamente para acceder a todos los puertos serie disponibles.
 

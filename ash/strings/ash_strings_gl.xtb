@@ -122,6 +122,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">A función Subtítulos instantáneos está activada.</translation>
 <translation id="1720011244392820496">Activar Sincronización wifi</translation>
+<translation id="1736898441010944794">"<ph name="NAME" />" detectable por dispositivos Bluetooth.</translation>
 <translation id="1743570585616704562">Non se recoñece</translation>
 <translation id="1746730358044914197">O teu administrador configura os métodos de entrada.</translation>
 <translation id="1747827819627189109">Teclado en pantalla activado</translation>
@@ -832,6 +833,7 @@ Nova instalación</translation>
 <translation id="6578407462441924264">Sen nome</translation>
 <translation id="6585808820553845416">A sesión finaliza dentro de <ph name="SESSION_TIME_REMAINING" /> .</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">A conexión cambiouse a unha rede máis segura</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" />, xestionada polo teu administrador</translation>
 <translation id="6612802754306526077">Seleccionouse o modo de gravación da pantalla</translation>
 <translation id="6614169507485700968">A pantalla de privacidade está activada</translation>

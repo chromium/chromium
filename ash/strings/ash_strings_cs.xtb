@@ -122,6 +122,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Živý přepis je zapnutý</translation>
 <translation id="1720011244392820496">Zapnutí Synchronizace Wi-Fi</translation>
+<translation id="1736898441010944794">Adaptér <ph name="NAME" /> je viditelný pro zařízení Bluetooth.</translation>
 <translation id="1743570585616704562">Nerozpoznáno</translation>
 <translation id="1746730358044914197">Metody zadávání nastavuje váš administrátor.</translation>
 <translation id="1747827819627189109">Softwarová klávesnice je aktivována</translation>
@@ -831,6 +832,7 @@ Nová instalace</translation>
 <translation id="6578407462441924264">Bez názvu</translation>
 <translation id="6585808820553845416">Relace skončí za <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Vaše připojení se přepnulo na bezpečnější síť</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno administrátorem</translation>
 <translation id="6612802754306526077">Je vybrán režim nahrávání obrazovky</translation>
 <translation id="6614169507485700968">Obrazovka ochrany soukromí je zapnutá</translation>

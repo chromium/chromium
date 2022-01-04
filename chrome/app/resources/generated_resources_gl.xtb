@@ -2884,6 +2884,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3916445069167113093">Este tipo de ficheiro pode danar o teu ordenador. Queres descargar <ph name="FILE_NAME" /> igualmente?</translation>
 <translation id="3918972485393593704">Informar dos detalles a Google</translation>
 <translation id="3919145445993746351">Para dispoñer das túas extensións en todos os ordenadores, activa a sincronización</translation>
+<translation id="3919229493046408863">Desactivar notificacións cando haxa dispositivos nas proximidades</translation>
 <translation id="3919798653937160644">As páxinas que visites nesta ventá non aparecerán no historial do navegador nin deixarán outros rastros (por exemplo, cookies) no ordenador unha vez peches todas as ventás abertas da sesión de convidado. Non obstante, conservaranse todos os ficheiros que descargues.</translation>
 <translation id="3920504717067627103">Políticas de certificados</translation>
 <translation id="392089482157167418">Activar ChromeVox (mensaxes de voz)</translation>
@@ -5917,6 +5918,7 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="7167486101654761064">&amp;Abrir sempre ficheiros deste tipo</translation>
 <translation id="716810439572026343">Descargando <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Tamaño mínimo do tipo de letra</translation>
+<translation id="7169122689956315694">Activar notificacións cando haxa dispositivos nas proximidades</translation>
 <translation id="7170236477717446850">Imaxe do perfil</translation>
 <translation id="7171000599584840888">Engadir perfil…</translation>
 <translation id="7171259390164035663">Non inscribirse</translation>

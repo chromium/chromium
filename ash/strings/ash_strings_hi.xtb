@@ -122,6 +122,7 @@
 <translation id="1715874602234207">एफ़</translation>
 <translation id="1719094688023114093">लाइव कैप्शन की सुविधा चालू है.</translation>
 <translation id="1720011244392820496">'वाई-फ़ाई सिंक' चालू करें</translation>
+<translation id="1736898441010944794">"<ph name="NAME" />" ब्लूटूथ डिवाइसों को दिख रहा है.</translation>
 <translation id="1743570585616704562">उंगली की पहचान नहीं हो सकी</translation>
 <translation id="1746730358044914197">इनपुट विधियों को आपका व्यवस्थापक कॉन्फ़िगर करता है.</translation>
 <translation id="1747827819627189109">ऑन-स्‍क्रीन कीबोर्ड सक्षम है</translation>
@@ -832,6 +833,7 @@
 <translation id="6578407462441924264">कोई नाम नहीं</translation>
 <translation id="6585808820553845416">सत्र <ph name="SESSION_TIME_REMAINING" /> में खत्म होने वाला है.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">आपका कनेक्शन ज़्यादा सुरक्षित नेटवर्क पर स्विच कर दिया गया है</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />, आपका एडमिन प्रबंधित करता है</translation>
 <translation id="6612802754306526077">स्क्रीन रिकॉर्डिंग मोड चुना गया</translation>
 <translation id="6614169507485700968">निजता स्क्रीन चालू है</translation>

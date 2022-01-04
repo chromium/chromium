@@ -2883,6 +2883,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3916445069167113093">Dateien dieses Typs können Schäden an Ihrem Computer verursachen. Möchten Sie <ph name="FILE_NAME" /> trotzdem behalten?</translation>
 <translation id="3918972485393593704">Details an Google senden</translation>
 <translation id="3919145445993746351">Wenn Ihre Erweiterungen auf allen Computern verfügbar sein sollen, aktivieren Sie die Synchronisierung</translation>
+<translation id="3919229493046408863">Benachrichtigungen deaktivieren, wenn sich Geräte in der Nähe befinden</translation>
 <translation id="3919798653937160644">In diesem Fenster aufgerufene Seiten erscheinen nicht im Browserverlauf und hinterlassen auch keine anderweitigen Spuren wie Cookies auf dem Computer, nachdem Sie alle geöffneten Gastmodus-Fenster geschlossen haben. Heruntergeladene Dateien bleiben jedoch erhalten.</translation>
 <translation id="3920504717067627103">Zertifikatrichtlinien</translation>
 <translation id="392089482157167418">ChromeVox aktivieren (gesprochenes Feedback)</translation>
@@ -5914,6 +5915,7 @@ Sie können dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="7167486101654761064">Dateien dieses Typs &amp;immer öffnen</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" /> wird heruntergeladen.</translation>
 <translation id="7168109975831002660">Mindestgröße</translation>
+<translation id="7169122689956315694">Benachrichtigungen aktivieren, wenn sich Geräte in der Nähe befinden</translation>
 <translation id="7170236477717446850">Profilbild</translation>
 <translation id="7171000599584840888">Profil hinzufügen…</translation>
 <translation id="7171259390164035663">Nicht anmelden</translation>

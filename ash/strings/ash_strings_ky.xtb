@@ -122,6 +122,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Ыкчам коштомо жазуулар күйүк.</translation>
 <translation id="1720011244392820496">Wi-Fi Sync'ти күйгүзүү</translation>
+<translation id="1736898441010944794">"<ph name="NAME" />" Bluetooth түзмөктөрүнө көрүнөт.</translation>
 <translation id="1743570585616704562">Таанылган жок</translation>
 <translation id="1746730358044914197">Киргизүү ыкмасы администратор тарабынан конфигурацияланат.</translation>
 <translation id="1747827819627189109">Экрандагы баскычтоп күйгүзүлдү</translation>
@@ -831,6 +832,7 @@
 <translation id="6578407462441924264">Аталышы жок</translation>
 <translation id="6585808820553845416">Сессия <ph name="SESSION_TIME_REMAINING" /> кийиничинде бүтөт.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Туташууңуз коопсузураак тармакка которулду</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />, Администраторуңуз башкарат</translation>
 <translation id="6612802754306526077">Экрандан видео жаздырып алуу режими тандалды</translation>
 <translation id="6614169507485700968">Купуялык экраны күйүк</translation>

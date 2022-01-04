@@ -2885,6 +2885,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3916445069167113093">Fitxategi mota honek ordenagailuari kalte egin diezaioke. <ph name="FILE_NAME" /> mantendu nahi duzu halere?</translation>
 <translation id="3918972485393593704">Eman xehetasunen berri Google-ri</translation>
 <translation id="3919145445993746351">Luzapenak ordenagailu guztietan izateko, aktibatu sinkronizazioa</translation>
+<translation id="3919229493046408863">Gailuak inguruan daudenean, desaktibatu jakinarazpenak</translation>
 <translation id="3919798653937160644">Leiho honetan ikusten dituzun orriak ez dira arakatze-historian agertuko eta ez dute ordenagailuan beste inolako aztarnarik utziko (adibidez, cookieak) gonbidatu moduko leiho guztiak itxi ondoren. Hala ere, deskargatutako fitxategiak mantendu egingo dira.</translation>
 <translation id="3920504717067627103">Ziurtagiri-gidalerroak</translation>
 <translation id="392089482157167418">Gaitu ChromeVox (ahozko argibideak)</translation>
@@ -5918,6 +5919,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7167486101654761064">Ireki &amp;beti mota honetako fitxategiak</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" /> deskargatzen</translation>
 <translation id="7168109975831002660">Letra-tamaina minimoa</translation>
+<translation id="7169122689956315694">Gailuak inguruan daudenean, aktibatu jakinarazpenak</translation>
 <translation id="7170236477717446850">Profileko argazkia</translation>
 <translation id="7171000599584840888">Gehitu profil bat…</translation>
 <translation id="7171259390164035663">Ez erregistratu</translation>

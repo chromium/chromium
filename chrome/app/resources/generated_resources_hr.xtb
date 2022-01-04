@@ -2889,6 +2889,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3916445069167113093">Ova vrsta datoteke može oštetiti vaše računalo. Želite li ipak zadržati datoteku <ph name="FILE_NAME" />?</translation>
 <translation id="3918972485393593704">Prijavi pojedinosti Googleu</translation>
 <translation id="3919145445993746351">Da biste imali svoja proširenja na svim svojim računalima, uključite sinkronizaciju</translation>
+<translation id="3919229493046408863">Isključite obavijest kad je uređaj u blizini</translation>
 <translation id="3919798653937160644">Stranice koje gledate u ovom prozoru neće se pojaviti u povijesti preglednika niti će ostaviti druge tragove, na primjer kolačiće, na računalu nakon što zatvorite sve otvorene gostujuće prozore. Međutim, ako preuzmete datoteke, one će se sačuvati.</translation>
 <translation id="3920504717067627103">Pravila certifikata</translation>
 <translation id="392089482157167418">Omogući ChromeVox (govorne povratne informacije)</translation>
@@ -5922,6 +5923,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="7167486101654761064">&amp;Uvijek otvori ovu vrstu datoteka</translation>
 <translation id="716810439572026343">Preuzimanje datoteke <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Najmanja veličina fonta</translation>
+<translation id="7169122689956315694">Uključite obavijest kad je uređaj u blizini</translation>
 <translation id="7170236477717446850">Profilna slika</translation>
 <translation id="7171000599584840888">Dodaj profil...</translation>
 <translation id="7171259390164035663">Bez registracije</translation>

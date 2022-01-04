@@ -2582,6 +2582,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 <translation id="3964298692570794635">Unsichere Inhalte auf diesen Websites zulassen</translation>
 <translation id="3965339130942650562">Zeitlimit bis zur Abmeldung eines inaktiven Nutzers</translation>
 <translation id="396536755218079668">Betreute Nutzer</translation>
+<translation id="3968218878014278212">Aktivieren von „Eche“ zulassen.</translation>
 <translation id="3971673686578912106">Wenn die Richtlinie aktiviert ist, ist <ph name="PLUGIN_VM_NAME" /> für das Gerät aktiviert, solange andere Einstellungen dies ebenfalls zulassen. „<ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" />“ und „<ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" />“ müssen „True“ sein und entweder „<ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" />“ oder „<ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />“ muss für <ph name="PLUGIN_VM_NAME" /> aktiviert sein.
 
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, ist <ph name="PLUGIN_VM_NAME" /> für das Gerät nicht aktiviert.</translation>
@@ -3416,6 +3417,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
       Wenn diese Richtlinie nicht konfiguriert oder auf "False" gesetzt ist, verwendet <ph name="PRODUCT_NAME" /> die vorhandenen Online-Einstellungen zur Widerrufsprüfung.</translation>
 <translation id="5078623750797048009">PDF-Anmerkungen aktivieren</translation>
 <translation id="5081204761483900654">Eingeschränkte verwaltete Gastsitzungen</translation>
+<translation id="5082296146261894974">Ermöglicht Nutzern, auf die Phone Hub-Benachrichtigung zu klicken, um die App „Eche“ zu starten.</translation>
 <translation id="5082572440690475059">Lesezugriff über die File System API auf diesen Websites erlauben</translation>
 <translation id="5085647276663819155">Druckvorschau deaktivieren</translation>
 <translation id="5090791951240382356">Zusammenführen von Wörterbuchrichtlinien aus unterschiedlichen Quellen erlauben</translation>
@@ -4160,6 +4162,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 
       Das Feld <ph name="RUN_ON_OS_LOGIN_FIELD" /> gibt an, ob eine Web-App während OS Login verwendet werden kann. Wenn dieses Feld auf <ph name="BLOCKED" /> gesetzt ist, funktioniert die Web-App während OS Login nicht. Nutzer können dies später nicht aktivieren. Ist es auf <ph name="RUN_WINDOWED" /> gesetzt, funktioniert die Web-App während OS Login. Nutzer können dies später nicht deaktivieren. Wenn das Feld auf <ph name="ALLOWED" /> gesetzt ist, können Nutzer die Web-App so konfigurieren, dass sie während OS Login funktioniert. Die Standardkonfiguration lässt nur die Werte <ph name="ALLOWED" /> und <ph name="BLOCKED" /> zu.
       </translation>
+<translation id="5945312246863177268">Verhindert, dass Nutzer auf eine Phone Hub-Benachrichtigung klicken, um die App „Eche“ zu starten.</translation>
 <translation id="5946082169633555022">Beta-Kanal</translation>
 <translation id="5946329690214660966">Benutzerdefinierten Zeitplan zum Prüfen auf Updates festlegen</translation>
 <translation id="5950069117106131681">Wenn die Richtlinie aktiviert ist, werden Kopf- und Fußzeilen in der Druckvorschau angezeigt. Ist die Richtlinie deaktiviert, werden sie in der Druckvorschau ausgeblendet.
@@ -4741,6 +4744,11 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="66265932317331474">CPU-Informationen ausgeben</translation>
 <translation id="6628120204569232711">Speicherstatus melden</translation>
 <translation id="663685822663765995">Farbdruck einschränken</translation>
+<translation id="6640355849038068978">Wenn diese Einstellung aktiviert ist, können Nutzer die App „Eche“ starten, z. B. mit einem Klick auf eine Phone Hub-Benachrichtigung.
+
+      Ist diese Einstellung deaktiviert, können Nutzer die App „Eche“ nicht starten.
+
+      Wenn diese Richtlinie nicht konfiguriert ist, ist die Einstellung für vom Unternehmen verwaltete Nutzer und für nicht verwaltete Nutzer standardmäßig aktiviert.</translation>
 <translation id="6641981670621198190">Unterstützung für 3D-Grafik-APIs deaktivieren</translation>
 <translation id="6642682198621199507">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit Websites erstellen, die automatisch die Berechtigung für den Zugriff auf alle verfügbaren seriellen Ports erhalten.
 

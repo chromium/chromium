@@ -2887,6 +2887,7 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="3916445069167113093">Questo tipo di file può danneggiare il computer. Conservare comunque <ph name="FILE_NAME" />?</translation>
 <translation id="3918972485393593704">Segnala i dettagli a Google</translation>
 <translation id="3919145445993746351">Attiva la sincronizzazione per avere a disposizione le estensioni su tutti i tuoi computer</translation>
+<translation id="3919229493046408863">Disattiva la notifica quando ci sono dispositivi nelle vicinanze</translation>
 <translation id="3919798653937160644">Le pagine visualizzate in questa finestra non verranno memorizzate nella cronologia del browser e non lasceranno altre tracce, ad esempio cookie, sul computer dopo la chiusura di tutte le finestre Ospite aperte. Tutti i file scaricati verranno comunque conservati.</translation>
 <translation id="3920504717067627103">Criteri dei certificati</translation>
 <translation id="392089482157167418">Attiva ChromeVox (lettura vocale)</translation>
@@ -5920,6 +5921,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="7167486101654761064">&amp;Apri sempre file di questo tipo</translation>
 <translation id="716810439572026343">Download di <ph name="FILE_NAME" /> in corso</translation>
 <translation id="7168109975831002660">Dimensioni minime dei caratteri</translation>
+<translation id="7169122689956315694">Attiva la notifica quando ci sono dispositivi nelle vicinanze</translation>
 <translation id="7170236477717446850">Immagine del profilo</translation>
 <translation id="7171000599584840888">Aggiungi profilo…</translation>
 <translation id="7171259390164035663">Non registrare</translation>

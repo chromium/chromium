@@ -122,6 +122,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">'உடனடி வசனம்' இயக்கப்பட்டது.</translation>
 <translation id="1720011244392820496">வைஃபை ஒத்திசைவை இயக்குங்கள்</translation>
+<translation id="1736898441010944794">புளூடூத் சாதனங்களுக்கு "<ph name="NAME" />" காட்டப்படும்.</translation>
 <translation id="1743570585616704562">அடையாளங்காண முடியவில்லை</translation>
 <translation id="1746730358044914197">உள்ளீட்டு முறைகளை உங்கள் நிர்வாகி உள்ளமைத்துள்ளார்.</translation>
 <translation id="1747827819627189109">ஆன்ஸ்க்ரீன் கீபோர்டு இயக்கப்பட்டது</translation>
@@ -831,6 +832,7 @@
 <translation id="6578407462441924264">பெயரிடப்படாதது</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> இல் அமர்வு முடிந்துவிடும்.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">உங்கள் இணைப்பு மிகவும் பாதுகாப்பான நெட்வொர்க்கிற்கு மாற்றப்பட்டது</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>
 <translation id="6612802754306526077">ஸ்கிரீன் ரெக்கார்டிங் பயன்முறை தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="6614169507485700968">தனிப்பட்ட திரை இயக்கப்பட்டுள்ளது</translation>

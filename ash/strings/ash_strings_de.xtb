@@ -122,6 +122,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Automatische Untertitel sind an.</translation>
 <translation id="1720011244392820496">WLAN-Synchronisation aktivieren</translation>
+<translation id="1736898441010944794">„<ph name="NAME" />“ ist für Bluetooth-Geräte sichtbar.</translation>
 <translation id="1743570585616704562">Nicht erkannt</translation>
 <translation id="1746730358044914197">Die Eingabemethoden werden von Ihrem Administrator konfiguriert.</translation>
 <translation id="1747827819627189109">Bildschirmtastatur aktiviert</translation>
@@ -831,6 +832,7 @@ Neuinstallation</translation>
 <translation id="6578407462441924264">Unbenannt</translation>
 <translation id="6585808820553845416">Sitzung endet in <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Deine Verbindung wurde auf ein sichereres Netzwerk umgestellt</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" />, von Ihrem Administrator verwaltet</translation>
 <translation id="6612802754306526077">Modus für Aufzeichnung des Bildschirms ausgewählt</translation>
 <translation id="6614169507485700968">Der Datenschutzbildschirm ist momentan aktiviert</translation>

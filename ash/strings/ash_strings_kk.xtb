@@ -122,6 +122,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Live Caption қосулы.</translation>
 <translation id="1720011244392820496">Wi-Fi деректерін синхрондауды қосу</translation>
+<translation id="1736898441010944794">"<ph name="NAME" />" Bluetooth құрылғыларына көрінеді.</translation>
 <translation id="1743570585616704562">Анықталмады</translation>
 <translation id="1746730358044914197">Енгізу әдістерін әкімші конфигурациялайды.</translation>
 <translation id="1747827819627189109">Экрандық пернетақта қосылды</translation>
@@ -831,6 +832,7 @@
 <translation id="6578407462441924264">Атауы жоқ</translation>
 <translation id="6585808820553845416">Сеанс <ph name="SESSION_TIME_REMAINING" /> уақыттан кейін аяқталады.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Байланысыңыз әлдеқайда қауіпсіз желіге ауысты.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />, әкімші басқарады</translation>
 <translation id="6612802754306526077">Экранды жазу режимі таңдалды.</translation>
 <translation id="6614169507485700968">Құпиялылық экраны қосулы.</translation>
