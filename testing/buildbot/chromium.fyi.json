@@ -6,6 +6,11 @@
       "all"
     ]
   },
+  "Comparison Windows": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "Linux Builder (j-500) (reclient)": {
     "additional_compile_targets": [
       "all"
