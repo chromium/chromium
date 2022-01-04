@@ -694,11 +694,11 @@ bool ContentBrowserClientImpl::CanCreateWindow(
   // the only ones that should be hit for this code path.
   switch (disposition) {
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-      FALLTHROUGH;
+      [[fallthrough]];
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:
-      FALLTHROUGH;
+      [[fallthrough]];
     case WindowOpenDisposition::NEW_POPUP:
-      FALLTHROUGH;
+      [[fallthrough]];
     case WindowOpenDisposition::NEW_WINDOW:
       break;
     default:
