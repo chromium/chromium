@@ -84,6 +84,11 @@ export function shimlessRMAAppTest() {
    * @return {Promise}
    */
   function clickNext() {
+    // Make sure the Next button is enabled.
+    component.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: false},
+        ));
     const nextButton = component.shadowRoot.querySelector('#next');
     nextButton.click();
     return flushTasks();
@@ -126,6 +131,7 @@ export function shimlessRMAAppTest() {
         component.shadowRoot.querySelector('onboarding-landing-page');
     assertTrue(!!initialPage);
     assertFalse(initialPage.hidden);
+    assertFalse(initialPage.allButtonsDisabled);
     assertTrue(prevButton.hidden);
     assertFalse(cancelButton.hidden);
 
@@ -165,10 +171,12 @@ export function shimlessRMAAppTest() {
         component.shadowRoot.querySelector('onboarding-landing-page');
     const cancelButton = component.shadowRoot.querySelector('#cancel');
 
+    assertFalse(initialPage.allButtonsDisabled);
     cancelButton.click();
     await flushTasks();
 
     assertEquals(1, abortRmaCount);
+    assertFalse(initialPage.allButtonsDisabled);
   });
 
   test('NextButtonClickedOnReady', async () => {
@@ -180,9 +188,11 @@ export function shimlessRMAAppTest() {
 
     const resolver = new PromiseResolver();
     initialPage.onNextButtonClick = () => resolver.promise;
+    assertFalse(initialPage.allButtonsDisabled);
 
     await clickNext();
     assertFalse(initialPage.hidden);
+    assertTrue(initialPage.allButtonsDisabled);
 
     resolver.resolve({state: State.kUpdateOs, error: RmadErrorCode.kOk});
     await flushTasks();
@@ -191,6 +201,7 @@ export function shimlessRMAAppTest() {
         component.shadowRoot.querySelector('onboarding-update-page');
     assertTrue(!!updatePage);
     assertFalse(updatePage.hidden);
+    assertFalse(updatePage.allButtonsDisabled);
     assertTrue(initialPage.hidden);
   });
 

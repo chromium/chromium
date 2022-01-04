@@ -327,7 +327,7 @@ export class ShimlessRma extends ShimlessRmaBase {
         return;
       }
 
-      this.allButtonsDisabled_ = true;
+      this.setAllButtonsDisabled_(/*disabled=*/ true);
       e.detail().then((stateResult) => this.processStateResult_(stateResult));
     };
 
@@ -434,7 +434,6 @@ export class ShimlessRma extends ShimlessRmaBase {
     this.nextButtonClicked_ = false;
     this.backButtonClicked_ = false;
     this.cancelButtonClicked_ = false;
-    this.allButtonsDisabled_ = false;
     pageInfo.buttonCancel =
         canCancel ? ButtonState.VISIBLE : ButtonState.HIDDEN;
     pageInfo.buttonBack = canGoBack ? ButtonState.VISIBLE : ButtonState.HIDDEN;
@@ -448,6 +447,7 @@ export class ShimlessRma extends ShimlessRmaBase {
         component = null;
       }
     } else if (pageInfo == this.currentPage_) {
+      this.setAllButtonsDisabled_(/*disabled=*/ false);
       // Make sure all button states are correct.
       this.notifyPath('currentPage_.buttonNext');
       this.notifyPath('currentPage_.buttonBack');
@@ -463,6 +463,7 @@ export class ShimlessRma extends ShimlessRmaBase {
 
     this.hideAllComponents_();
     component.hidden = false;
+    this.setAllButtonsDisabled_(/*disabled=*/ false);
   }
 
   /**
@@ -505,6 +506,21 @@ export class ShimlessRma extends ShimlessRmaBase {
   }
 
   /**
+   * @protected
+   * @param {boolean} disabled
+   */
+  setAllButtonsDisabled_(disabled) {
+    this.allButtonsDisabled_ = disabled;
+    const component =
+        this.shadowRoot.querySelector(`#${this.currentPage_.componentIs}`);
+    if (!component) {
+      return;
+    }
+
+    component.allButtonsDisabled = this.allButtonsDisabled_;
+  }
+
+  /**
    * @param {string} buttonName
    * @param {!ButtonState} buttonState
    */
@@ -516,7 +532,7 @@ export class ShimlessRma extends ShimlessRmaBase {
   /** @protected */
   onBackButtonClicked_() {
     this.backButtonClicked_ = true;
-    this.allButtonsDisabled_ = true;
+    this.setAllButtonsDisabled_(/*disabled=*/ true);
     this.shimlessRmaService_.transitionPreviousState().then(
         (stateResult) => this.processStateResult_(stateResult));
   }
@@ -533,7 +549,7 @@ export class ShimlessRma extends ShimlessRmaBase {
         'onNextButtonClick not a function for ' +
             this.currentPage_.componentIs);
     this.nextButtonClicked_ = true;
-    this.allButtonsDisabled_ = true;
+    this.setAllButtonsDisabled_(/*disabled=*/ true);
     page.onNextButtonClick()
         .then((stateResult) => {
           this.processStateResult_(stateResult);
@@ -541,14 +557,14 @@ export class ShimlessRma extends ShimlessRmaBase {
         // TODO(gavindodd): Better error handling.
         .catch((err) => {
           this.nextButtonClicked_ = false;
-          this.allButtonsDisabled_ = false;
+          this.setAllButtonsDisabled_(/*disabled=*/ false);
         });
   }
 
   /** @protected */
   onCancelButtonClicked_() {
     this.cancelButtonClicked_ = true;
-    this.allButtonsDisabled_ = true;
+    this.setAllButtonsDisabled_(/*disabled=*/ false);
     this.shimlessRmaService_.abortRma().then((result) => {
       this.cancelButtonClicked_ = false;
       this.handleStandardAndCriticalError_(result.error);
