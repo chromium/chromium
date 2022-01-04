@@ -50,7 +50,7 @@ DragOperation DndActionToDragOperation(uint32_t action) {
       return DragOperation::kMove;
     case WL_DATA_DEVICE_MANAGER_DND_ACTION_ASK:
       // Unsupported in the browser.
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       return DragOperation::kNone;
   }
