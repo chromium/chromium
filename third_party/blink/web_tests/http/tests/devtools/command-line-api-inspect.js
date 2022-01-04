@@ -10,7 +10,7 @@
       </p>
     `);
 
-  TestRunner.addSniffer(SDK.RuntimeModel.prototype, '_inspectRequested', sniffInspect, true);
+  TestRunner.addSniffer(SDK.RuntimeModel.prototype, 'inspectRequested', sniffInspect, true);
 
   function sniffInspect(objectId, hints) {
     TestRunner.addResult('WebInspector.inspect called with: ' + objectId.description);

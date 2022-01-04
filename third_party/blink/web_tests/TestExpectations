@@ -5968,10 +5968,6 @@ crbug.com/1043675 [ Win ] external/wpt/css/filter-effects/backdrop-filter-basic-
 crbug.com/1043675 [ Win ] external/wpt/css/filter-effects/css-filters-animation-opacity.html [ Failure ]
 crbug.com/1043675 [ Win ] svg/custom/svg-root-with-opacity.html [ Failure ]
 
-# Required to land DevTools change
-crbug.com/106759 http/tests/devtools/command-line-api-inspect.js [ Failure Pass ]
-crbug.com/106759 http/tests/devtools/sources/debugger-console/debugger-command-line-api.js [ Failure Pass ]
-
 crbug.com/989665 [ Mac ] external/wpt/resource-timing/resource_timing_buffer_full_eventually.html [ Crash Pass ]
 crbug.com/989665 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/resource_timing_buffer_full_eventually.html [ Crash Pass ]
 
