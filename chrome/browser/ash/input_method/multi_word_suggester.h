@@ -70,6 +70,8 @@ class MultiWordSuggester : public Suggester {
 
     struct SurroundingText {
       std::u16string text;
+      size_t cursor_pos;
+      size_t prev_cursor_pos;
       bool cursor_at_end_of_text;
     };
 
@@ -121,7 +123,7 @@ class MultiWordSuggester : public Suggester {
     State state_ = State::kNoSuggestionShown;
 
     // Last known surrounding text context captured by the suggester.
-    SurroundingText surrounding_text_;
+    absl::optional<SurroundingText> surrounding_text_;
 
     // The current suggestion shown to the user by the suggester.
     absl::optional<Suggestion> suggestion_;

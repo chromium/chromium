@@ -377,6 +377,50 @@ TEST(MultiWordSuggesterTest, HandlesNewlinesWhenCalculatingConfirmedLength) {
   EXPECT_EQ(suggestion_handler.GetConfirmedLength(), 1);  // h
 }
 
+TEST(MultiWordSuggesterTest, HandlesMultipleRepeatingCharsWhenTracking) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "how are you"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"h", /*cursor_pos=*/1, /*anchor_pos=*/1);
+  suggester.Suggest(u"h", /*cursor_pos=*/1, /*anchor_pos=*/1);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  suggester.OnSurroundingTextChanged(u"hh", /*cursor_pos=*/2, /*anchor_pos=*/2);
+
+  EXPECT_FALSE(suggester.Suggest(u"hh", /*cursor_pos=*/2, /*anchor_pos=*/2));
+}
+
+TEST(MultiWordSuggesterTest, DoesNotDismissOnMultipleCursorMoveToEndOfText) {
+  FakeSuggestionHandler suggestion_handler;
+  MultiWordSuggester suggester(&suggestion_handler);
+
+  std::vector<TextSuggestion> suggestions = {
+      TextSuggestion{.mode = TextSuggestionMode::kCompletion,
+                     .type = TextSuggestionType::kMultiWord,
+                     .text = "how are you"},
+  };
+
+  suggester.OnFocus(kFocusedContextId);
+  suggester.OnSurroundingTextChanged(u"hello h", /*cursor_pos=*/7,
+                                     /*anchor_pos=*/7);
+  suggester.Suggest(u"hello h", /*cursor_pos=*/7, /*anchor_pos=*/7);
+  suggester.OnExternalSuggestionsUpdated(suggestions);
+  suggester.OnSurroundingTextChanged(u"hello h", /*cursor_pos=*/7,
+                                     /*anchor_pos=*/7);
+  suggester.Suggest(u"hello h", /*cursor_pos=*/7, /*anchor_pos=*/7);
+  suggester.OnSurroundingTextChanged(u"hello h", /*cursor_pos=*/7,
+                                     /*anchor_pos=*/7);
+
+  EXPECT_TRUE(suggester.Suggest(u"hello h", /*cursor_pos=*/7,
+                                /*anchor_pos=*/7));
+}
+
 TEST(MultiWordSuggesterTest, TracksLastSuggestionOnSurroundingTextChange) {
   FakeSuggestionHandler suggestion_handler;
   MultiWordSuggester suggester(&suggestion_handler);

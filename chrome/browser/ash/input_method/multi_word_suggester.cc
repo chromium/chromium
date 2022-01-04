@@ -94,6 +94,7 @@ void MultiWordSuggester::OnSurroundingTextChanged(const std::u16string& text,
                                                   size_t anchor_pos) {
   auto surrounding_text = SuggestionState::SurroundingText{
       .text = text,
+      .cursor_pos = cursor_pos,
       .cursor_at_end_of_text =
           (cursor_pos == anchor_pos && cursor_pos == text.length())};
   state_.UpdateSurroundingText(surrounding_text);
@@ -283,7 +284,15 @@ void MultiWordSuggester::SuggestionState::UpdateState(const State& state) {
 void MultiWordSuggester::SuggestionState::UpdateSurroundingText(
     const MultiWordSuggester::SuggestionState::SurroundingText&
         surrounding_text) {
-  surrounding_text_ = surrounding_text;
+  size_t prev_cursor_pos =
+      surrounding_text_.has_value() ? surrounding_text_->cursor_pos : 0;
+
+  surrounding_text_ = SurroundingText{
+      .text = surrounding_text.text,
+      .cursor_pos = surrounding_text.cursor_pos,
+      .prev_cursor_pos = prev_cursor_pos,
+      .cursor_at_end_of_text = surrounding_text.cursor_at_end_of_text};
+
   ReconcileSuggestionWithText();
 }
 
@@ -298,11 +307,11 @@ void MultiWordSuggester::SuggestionState::UpdateSuggestion(
 }
 
 void MultiWordSuggester::SuggestionState::ReconcileSuggestionWithText() {
-  if (!suggestion_)
+  if (!(suggestion_ && surrounding_text_))
     return;
 
   size_t new_confirmed_length =
-      CalculateConfirmedLength(surrounding_text_.text, suggestion_->text);
+      CalculateConfirmedLength(surrounding_text_->text, suggestion_->text);
 
   // Save the calculated confirmed length on first showing of a completion
   // suggestion. This will be used later when determining if a suggestion
@@ -314,10 +323,12 @@ void MultiWordSuggester::SuggestionState::ReconcileSuggestionWithText() {
   // Are we still tracking the last suggestion shown to the user?
   bool no_longer_tracking =
       state_ == State::kTrackingLastSuggestionShown &&
-      (new_confirmed_length == 0 ||
-       new_confirmed_length < suggestion_->initial_confirmed_length);
+      ((new_confirmed_length == 0 ||
+        new_confirmed_length < suggestion_->initial_confirmed_length) ||
+       (new_confirmed_length == suggestion_->confirmed_length &&
+        surrounding_text_->cursor_pos != surrounding_text_->prev_cursor_pos));
 
-  if (no_longer_tracking || !surrounding_text_.cursor_at_end_of_text) {
+  if (no_longer_tracking || !surrounding_text_->cursor_at_end_of_text) {
     UpdateState(State::kSuggestionDismissed);
     ResetSuggestion();
     return;
@@ -353,7 +364,9 @@ bool MultiWordSuggester::SuggestionState::IsSuggestionShowing() {
 }
 
 bool MultiWordSuggester::SuggestionState::IsCursorAtEndOfText() {
-  return surrounding_text_.cursor_at_end_of_text;
+  if (!surrounding_text_)
+    return false;
+  return surrounding_text_->cursor_at_end_of_text;
 }
 
 absl::optional<MultiWordSuggester::SuggestionState::Suggestion>
