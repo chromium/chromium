@@ -227,6 +227,7 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
                             base::Unretained(controller)),
         IconButton::Type::kSmall, &vector_icons::kSettingsOutlineIcon,
         IDS_ASH_STATUS_TRAY_SETTINGS);
+    settings_button_->SetID(VIEW_ID_SETTINGS_BUTTON_VIEW);
     container_->AddChildView(settings_button_);
     local_state_pref_change_registrar_.Init(Shell::Get()->local_state());
     local_state_pref_change_registrar_.Add(
