@@ -126,6 +126,17 @@ class DenseSet {
 
   constexpr DenseSet() = default;
 
+  // The `constexpr` constructor allows for compile-time initialization of
+  // DenseSets. This only works if the set fits into 64 bits. Otherwise, we
+  // fall back to a non-`constexpr` constructor.
+
+  template <size_t kMaxBit = base::checked_cast<Index>(kMaxValue),
+            std::enable_if_t<(kMaxBit < 64), bool> = true>
+  constexpr DenseSet(std::initializer_list<T> init)
+      : bitset_(initializer_list_to_bitmask(init)) {}
+
+  template <size_t kMaxBit = base::checked_cast<Index>(kMaxValue),
+            std::enable_if_t<(kMaxBit >= 64), bool> = true>
   DenseSet(std::initializer_list<T> init) {
     for (const auto& x : init) {
       insert(x);
@@ -178,7 +189,7 @@ class DenseSet {
   size_t size() const { return bitset_.count(); }
 
   // Returns the maximum number of elements the set can have.
-  size_t max_size() const { return bitset_.size(); }
+  constexpr size_t max_size() const { return bitset_.size(); }
 
   // Modifiers.
 
@@ -286,6 +297,20 @@ class DenseSet {
         typename std::conditional_t<std::is_enum<T>::value,
                                     std::underlying_type<T>, Wrapper>::type;
     return static_cast<T>(base::checked_cast<UnderlyingType>(i));
+  }
+
+  // Helper for `constexpr DenseSet(std::initializer_list<T>)`.
+  //
+  // While std::bitset's constructor takes an `unsigned long long`, we use
+  // `uint64_t` because Chromium bans `unsigned long long`. Both are 64 bit
+  // integers, so they're interchangeable.
+  static constexpr uint64_t initializer_list_to_bitmask(
+      const std::initializer_list<T>& init) {
+    uint64_t bitmask = 0;
+    for (const auto& x : init) {
+      bitmask |= 1ULL << value_to_index(x);
+    }
+    return bitmask;
   }
 
   static_assert(std::is_integral<T>::value || std::is_enum<T>::value, "");

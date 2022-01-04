@@ -12,7 +12,7 @@
 
 namespace autofill {
 
-TEST(DenseSet, initialization) {
+TEST(DenseSetTest, initialization) {
   enum class T : size_t {
     One = 1,
     Two = 2,
@@ -38,7 +38,50 @@ TEST(DenseSet, initialization) {
   EXPECT_EQ(DS({T::Four, T::Two, T::One}), s);
 }
 
-TEST(DenseSet, iterators_begin_end) {
+TEST(DenseSetTest, initializer_list) {
+  // The largest value so that DenseSet offers a constexpr constructor.
+  constexpr size_t kMaxValueForConstexpr = 63;
+
+  // Each of the below blocks is a copy that only varies in `kMax` and whether
+  // or not the `set` is `constexpr`.
+
+  {
+    constexpr size_t kMax = 10;
+    constexpr DenseSet<size_t, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
+    EXPECT_THAT(std::vector<size_t>(set.begin(), set.end()),
+                ::testing::ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
+  }
+
+  {
+    constexpr size_t kMax = kMaxValueForConstexpr;
+    constexpr DenseSet<size_t, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
+    EXPECT_THAT(std::vector<size_t>(set.begin(), set.end()),
+                ::testing::ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
+  }
+
+  {
+    constexpr size_t kMax = kMaxValueForConstexpr + 1;
+    DenseSet<size_t, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
+    EXPECT_THAT(std::vector<size_t>(set.begin(), set.end()),
+                ::testing::ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
+  }
+
+  {
+    constexpr size_t kMax = kMaxValueForConstexpr + 2;
+    DenseSet<size_t, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
+    EXPECT_THAT(std::vector<size_t>(set.begin(), set.end()),
+                ::testing::ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
+  }
+
+  {
+    constexpr size_t kMax = kMaxValueForConstexpr + 100;
+    DenseSet<size_t, kMax> set{0, 1, kMax - 2, kMax - 1, kMax};
+    EXPECT_THAT(std::vector<size_t>(set.begin(), set.end()),
+                ::testing::ElementsAre(0, 1, kMax - 2, kMax - 1, kMax));
+  }
+}
+
+TEST(DenseSetTest, iterators_begin_end) {
   enum class T : int {
     One = 1,
     Two = 2,
@@ -81,7 +124,7 @@ TEST(DenseSet, iterators_begin_end) {
   EXPECT_THAT(s, ::testing::ElementsAre(T::One, T::Two, T::Four));
 }
 
-TEST(DenseSet, iterators_begin_end_reverse) {
+TEST(DenseSetTest, iterators_begin_end_reverse) {
   enum class T : char {
     One = 1,
     Two = 2,
@@ -122,7 +165,7 @@ TEST(DenseSet, iterators_begin_end_reverse) {
   }
 }
 
-TEST(DenseSet, iterators_rbegin_rend) {
+TEST(DenseSetTest, iterators_rbegin_rend) {
   enum class T {
     One = 1,
     Two = 2,
@@ -166,7 +209,7 @@ TEST(DenseSet, iterators_rbegin_rend) {
               ::testing::ElementsAre(T::Four, T::Two, T::One));
 }
 
-TEST(DenseSet, lookup) {
+TEST(DenseSetTest, lookup) {
   enum class T {
     One = 1,
     Two = 2,
@@ -241,7 +284,7 @@ TEST(DenseSet, lookup) {
   EXPECT_TRUE(s.contains_all({}));
 }
 
-TEST(DenseSet, iterators_lower_upper_bound) {
+TEST(DenseSetTest, iterators_lower_upper_bound) {
   enum class T { One = 1, Two = 2, Three = 3, Four = 4, Five = 5 };
   using DS = DenseSet<T, T::Five>;
 
@@ -310,7 +353,7 @@ TEST(DenseSet, iterators_lower_upper_bound) {
   EXPECT_EQ(std::next(std::next(std::next(s.begin()))), s.end());
 }
 
-TEST(DenseSet, max_size) {
+TEST(DenseSetTest, max_size) {
   const int One = 1;
   const int Two = 2;
   // const int Three = 3;
@@ -335,7 +378,7 @@ TEST(DenseSet, max_size) {
   EXPECT_EQ(s.max_size(), 6u);
 }
 
-TEST(DenseSet, modifiers) {
+TEST(DenseSetTest, modifiers) {
   const size_t One = 1;
   const size_t Two = 2;
   const size_t Three = 3;
@@ -456,7 +499,7 @@ TEST(DenseSet, modifiers) {
   EXPECT_EQ(t.size(), 3u);
 }
 
-TEST(DenseSet, std_set) {
+TEST(DenseSetTest, std_set) {
   constexpr size_t kMaxValue = 50;
   DenseSet<size_t, kMaxValue> dense_set;
   std::set<size_t> std_set;
