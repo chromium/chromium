@@ -529,22 +529,30 @@ public class ExternalNavigationHandlerTest {
     public void testIntentScheme() {
         String url = "intent:wtai://wp/#Intent;action=android.settings.SETTINGS;"
                 + "component=package/class;end";
-        String urlWithSel = "intent:wtai://wp/#Intent;SEL;action=android.settings.SETTINGS;"
-                + "component=package/class;end";
+
         String urlWithNullData = "intent:#Intent;package=com.google.zxing.client.android;"
                 + "action=android.settings.SETTINGS;end";
 
         checkUrl(url).expecting(
                 OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT, START_OTHER_ACTIVITY);
 
-        // http://crbug.com/370399
+        checkUrl(urlWithNullData)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
+    }
+
+    // http://crbug.com/1254422
+    @Test
+    @SmallTest
+    public void testIntentSelectorRemoved() {
+        String urlWithSel = "intent:wtai://wp/#Intent;SEL;action=android.settings.SETTINGS;"
+                + "component=package/class;end";
+
         checkUrl(urlWithSel)
                 .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
                         START_OTHER_ACTIVITY);
 
-        checkUrl(urlWithNullData)
-                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
-                        START_OTHER_ACTIVITY);
+        Assert.assertNull(mDelegate.startActivityIntent.getSelector());
     }
 
     @Test

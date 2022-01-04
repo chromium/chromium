@@ -1272,10 +1272,19 @@ public class ExternalNavigationHandler {
                 || blockExternalNavFromBackgroundTab(params) || ignoreBackForwardNav(params);
     }
 
+    private void recordIntentSelectorMetrics(GURL targetUrl, Intent targetIntent) {
+        if (UrlUtilities.hasIntentScheme(targetUrl)) {
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.Intent.IntentUriWithSelector", targetIntent.getSelector() != null);
+        }
+    }
+
     private OverrideUrlLoadingResult shouldOverrideUrlLoadingInternal(
             ExternalNavigationParams params, Intent targetIntent, GURL browserFallbackUrl,
             MutableBoolean canLaunchExternalFallbackResult) {
+        recordIntentSelectorMetrics(params.getUrl(), targetIntent);
         sanitizeQueryIntentActivitiesIntent(targetIntent);
+
         // Don't allow external fallback URLs by default.
         canLaunchExternalFallbackResult.set(false);
 
@@ -1499,11 +1508,10 @@ public class ExternalNavigationHandler {
         intent.setFlags(intent.getFlags() & ALLOWED_INTENT_FLAGS);
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
         intent.setComponent(null);
-        Intent selector = intent.getSelector();
-        if (selector != null) {
-            selector.addCategory(Intent.CATEGORY_BROWSABLE);
-            selector.setComponent(null);
-        }
+
+        // Intent Selectors allow intents to bypass the intent filter and potentially send apps URIs
+        // they were not expecting to handle. https://crbug.com/1254422
+        intent.setSelector(null);
     }
 
     /**
