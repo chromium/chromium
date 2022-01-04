@@ -423,7 +423,7 @@ class MHTMLGenerationTest : public ContentBrowserTest,
       EXPECT_EQ(1, actual_number_of_matches)
           << "Verifying that \"" << expected_substring << "\" appears "
           << "exactly once in the text of web contents of "
-          << shell()->web_contents()->GetURL().spec();
+          << shell()->web_contents()->GetLastCommittedURL().spec();
     }
 
     for (const auto& forbidden_substring : forbidden_substrings) {
@@ -432,7 +432,7 @@ class MHTMLGenerationTest : public ContentBrowserTest,
       EXPECT_EQ(0, actual_number_of_matches)
           << "Verifying that \"" << forbidden_substring << "\" doesn't "
           << "appear in the text of web contents of "
-          << shell()->web_contents()->GetURL().spec();
+          << shell()->web_contents()->GetLastCommittedURL().spec();
     }
   }
 

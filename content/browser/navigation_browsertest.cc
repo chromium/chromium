@@ -571,7 +571,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_EQ(true, EvalJs(web_contents(), "clickViewSourceLink();"));
   console_observer.Wait();
   // Original page shouldn't navigate away.
-  EXPECT_EQ(kUrl, web_contents()->GetURL());
+  EXPECT_EQ(kUrl, web_contents()->GetLastCommittedURL());
   EXPECT_FALSE(shell()
                    ->web_contents()
                    ->GetController()
@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   EXPECT_EQ(true, EvalJs(web_contents(), "clickGoogleChromeLink();"));
   console_observer.Wait();
   // Original page shouldn't navigate away.
-  EXPECT_EQ(kUrl, web_contents()->GetURL());
+  EXPECT_EQ(kUrl, web_contents()->GetLastCommittedURL());
 }
 
 // Ensure that closing a page by running its beforeunload handler doesn't hang
@@ -4508,7 +4508,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   manager_1.WaitForNavigationFinished();
   manager_2.WaitForNavigationFinished();
 
-  EXPECT_EQ(popup_contents->GetURL(), "about:blank");
+  EXPECT_EQ(popup_contents->GetLastCommittedURL(), "about:blank");
 }
 
 class NetworkIsolationSplitCacheAppendIframeOrigin

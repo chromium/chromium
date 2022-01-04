@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest,
         NavigateToURL(shell(), urls[0], urls[2] /* expected_commit_url */));
 
     // We reached the end of the redirect chain.
-    EXPECT_EQ(urls[2], shell()->web_contents()->GetURL());
+    EXPECT_EQ(urls[2], shell()->web_contents()->GetLastCommittedURL());
 
     delegate()->VerifyAndClearExpectations();
   }

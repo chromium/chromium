@@ -83,7 +83,7 @@ class WorkerNetworkIsolationKeyBrowserTest : public ContentBrowserTest {
   }
 
   RenderFrameHost* CreateSubframe(const GURL& subframe_url) {
-    DCHECK_EQ(shell()->web_contents()->GetURL().path(),
+    DCHECK_EQ(shell()->web_contents()->GetLastCommittedURL().path(),
               "/workers/frame_factory.html");
 
     content::TestNavigationObserver navigation_observer(

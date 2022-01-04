@@ -3444,7 +3444,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                 DidFinishLoad(prerender_frame_host, kPrerenderingUrl));
   }
   NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 }
 
 // Test that WebContentsObserver::DidFinishLoad is not invoked when the page
@@ -3488,7 +3488,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                 DidFinishLoad(child_frame, child_frame->GetLastCommittedURL()));
   }
   NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 }
 
 // Test that WebContentsObserver::DOMContentLoaded is not invoked while
@@ -3532,7 +3532,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
     EXPECT_CALL(observer, DOMContentLoaded(child_frame)).Times(1);
   }
   NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 }
 
 // Test that WebContentsObserver::DocumentOnLoadCompletedInMainFrame is not
@@ -3577,7 +3577,7 @@ IN_PROC_BROWSER_TEST_F(
         .Times(1);
   }
   NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 }
 
 // Test that WebContentsObserver::DocumentAvailableInMainFrame is not
@@ -3619,7 +3619,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_CALL(observer, DocumentAvailableInMainFrame(prerender_frame_host))
       .Times(1);
   NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 }
 
 // Test that WebContentsObserver::LoadProgressChanged is not invoked when the
@@ -3676,7 +3676,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // only once on activation during call to DidStopLoading.
   prerender_frame_host->GetPage().set_load_progress(blink::kFinalLoadProgress);
   NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 }
 
 // Test the dispatch order of various load events on prerender activation.
@@ -3719,7 +3719,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OrderingOfDifferentLoadEvents) {
     EXPECT_CALL(observer, DidStopLoading()).Times(1);
   }
   NavigatePrimaryPage(kPrerenderingUrl);
-  EXPECT_EQ(web_contents()->GetURL(), kPrerenderingUrl);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 }
 
 // Tests that cross-origin subframe navigations in a prerendered page are

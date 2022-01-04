@@ -2085,7 +2085,7 @@ IN_PROC_BROWSER_TEST_F(
   // to A2 is in flight. Ensure that we do not try to restart it as it should
   // be superseded by a navigation to A1.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  EXPECT_EQ(url_a1, web_contents()->GetURL());
+  EXPECT_EQ(url_a1, web_contents()->GetLastCommittedURL());
 }
 
 namespace {
