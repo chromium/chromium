@@ -13,7 +13,7 @@ compile_js_files = [
   "device/constraints_preferrer.js",
   "device/device_info_updater.ts",
   "device/stream_constraints.ts",
-  "device/stream_manager.js",
+  "device/stream_manager.ts",
   "dom.ts",
   "error.ts",
   "expert.ts",
