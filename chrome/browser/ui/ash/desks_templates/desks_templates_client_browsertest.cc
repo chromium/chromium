@@ -1182,9 +1182,16 @@ class DesksTemplatesClientArcTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Flaky on Chrome OS: https://crbug.com/1143762:
+#if defined(OS_CHROMEOS)
+#define MAYBE_NativeUILaunchTemplateWithArcApp \
+  DISABLED_NativeUILaunchTemplateWithArcApp
+#else
+#define MAYBE_NativeUILaunchTemplateWithArcApp NativeUILaunchTemplateWithArcApp
+#endif
 // Tests that launching a template that contains an ARC app works as expected.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientArcTest,
-                       NativeUILaunchTemplateWithArcApp) {
+                       MAYBE_NativeUILaunchTemplateWithArcApp) {
   auto* desk_model = DesksTemplatesClient::Get()->GetDeskModel();
   ASSERT_EQ(0, desk_model->GetEntryCount());
 
