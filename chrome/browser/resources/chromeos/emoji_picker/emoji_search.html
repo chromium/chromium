@@ -2,7 +2,7 @@
   :host {
     --emoji-picker-search-margins: 14px;
     --emoji-picker-search-height: 40px;
-    --emoji-picker-top-bar-bottom-margin: 8px;
+    --emoji-picker-top-bar-bottom-padding: 8px;
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
@@ -84,9 +84,9 @@
   }
   #search-shadow {
     background-color: var(--cros-bg-color);
-    margin-bottom: var(--emoji-picker-top-bar-bottom-margin);
     margin-inline-end: calc(0px - var(--emoji-picker-side-padding));
     margin-inline-start: calc(0px - var(--emoji-picker-side-padding));
+    padding-bottom: var(--emoji-picker-top-bar-bottom-padding);
     padding-inline-end: var(--emoji-picker-side-padding);
     padding-inline-start: var(--emoji-picker-side-padding);
     position: sticky;
