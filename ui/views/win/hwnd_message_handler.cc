@@ -2041,7 +2041,7 @@ LRESULT HWNDMessageHandler::OnPointerEvent(UINT message,
         return HandlePointerEventTypeTouchOrNonClient(
             message, w_param, l_param);
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       break;
   }

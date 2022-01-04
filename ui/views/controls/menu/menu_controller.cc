@@ -1587,7 +1587,7 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
       if (!IsCombobox())
         break;
       // Fallthrough to accept or dismiss combobox menus on F4, like windows.
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::VKEY_RETURN:
 #if defined(OS_MAC)
     case ui::VKEY_SPACE:

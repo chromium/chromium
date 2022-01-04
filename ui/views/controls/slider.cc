@@ -417,7 +417,7 @@ void Slider::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_GESTURE_TAP_DOWN:
       OnSliderDragStarted();
       PrepareForMove(event->location().x());
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::ET_GESTURE_SCROLL_BEGIN:
     case ui::ET_GESTURE_SCROLL_UPDATE:
       MoveButtonTo(event->location());
