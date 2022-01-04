@@ -66,9 +66,6 @@ const base::FeatureParam<BackupRefPtrMode> kBackupRefPtrModeParam{
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-const Feature kPartitionAllocLazyCommit{"PartitionAllocLazyCommit",
-                                        FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, switches PCScan scheduling to a mutator-aware scheduler. Does not
 // affect whether PCScan is enabled itself.
 const Feature kPartitionAllocPCScanMUAwareScheduler{

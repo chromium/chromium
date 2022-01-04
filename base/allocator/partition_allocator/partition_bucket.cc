@@ -977,7 +977,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       if (!root->use_lazy_commit) {
         uintptr_t address = reinterpret_cast<uintptr_t>(
             SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(new_slot_span));
-        // If lazy commit was never used, we have a guarantee that all slot span
+        // If lazy commit isn't used, we have a guarantee that all slot span
         // pages have been previously committed, and then decommitted using
         // PageKeepPermissionsIfPossible, so use the same option as an
         // optimization. Otherwise fall back to PageUpdatePermissions (slower).
@@ -986,8 +986,8 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
         // TODO(lizeb): Handle commit failure.
         root->RecommitSystemPagesForData(
             address, new_slot_span->bucket->get_bytes_per_span(),
-            root->never_used_lazy_commit ? PageKeepPermissionsIfPossible
-                                         : PageUpdatePermissions);
+            root->use_lazy_commit ? PageUpdatePermissions
+                                  : PageKeepPermissionsIfPossible);
       }
 
       new_slot_span->Reset();

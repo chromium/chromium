@@ -692,55 +692,6 @@ void PartitionRoot<thread_safe>::EnableThreadCacheIfSupported() {
 }
 
 template <bool thread_safe>
-void PartitionRoot<thread_safe>::ConfigureLazyCommit(bool enabled) {
-#if defined(OS_WIN)
-  internal::ScopedGuard<thread_safe> guard{lock_};
-  if (use_lazy_commit != enabled) {
-    // Lazy commit can be turned off, but turning on isn't supported.
-    PA_DCHECK(use_lazy_commit);
-    use_lazy_commit = enabled;
-
-    for (auto* super_page_extent = first_extent; super_page_extent;
-         super_page_extent = super_page_extent->next) {
-      for (char *super_page = SuperPagesBeginFromExtent(super_page_extent),
-                *super_page_end = SuperPagesEndFromExtent(super_page_extent);
-           super_page != super_page_end; super_page += kSuperPageSize) {
-        internal::IterateSlotSpans<thread_safe>(
-            super_page, IsQuarantineAllowed(),
-            [this](SlotSpan* slot_span) -> bool {
-              lock_.AssertAcquired();
-              size_t provisioned_size = slot_span->GetProvisionedSize();
-              size_t size_to_commit = slot_span->bucket->get_bytes_per_span();
-              if (slot_span->is_decommitted()) {
-                return false;
-              }
-              if (slot_span->is_full()) {
-                PA_DCHECK(provisioned_size == size_to_commit);
-                return false;
-              }
-              PA_DCHECK(size_to_commit % SystemPageSize() == 0);
-              size_t already_committed_size =
-                  bits::AlignUp(provisioned_size, SystemPageSize());
-              // Free & decommitted slot spans are skipped.
-              PA_DCHECK(already_committed_size > 0);
-              if (size_to_commit > already_committed_size) {
-                char* slot_span_start = reinterpret_cast<char*>(
-                    SlotSpan::ToSlotSpanStartPtr(slot_span));
-                RecommitSystemPagesForData(
-                    reinterpret_cast<uintptr_t>(slot_span_start +
-                                                already_committed_size),
-                    size_to_commit - already_committed_size,
-                    PageUpdatePermissions);
-              }
-              return false;
-            });
-      }
-    }
-  }
-#endif  // defined(OS_WIN)
-}
-
-template <bool thread_safe>
 bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
     internal::SlotSpanMetadata<thread_safe>* slot_span,
     size_t requested_size) {

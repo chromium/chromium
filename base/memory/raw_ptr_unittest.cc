@@ -994,7 +994,7 @@ static constexpr PartitionOptions kOpts = {
     PartitionOptions::Cookie::kAllowed,
     PartitionOptions::BackupRefPtr::kEnabled,
     PartitionOptions::UseConfigurablePool::kNo,
-    PartitionOptions::LazyCommit::kEnabled};
+};
 
 TEST(BackupRefPtrImpl, Basic) {
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to

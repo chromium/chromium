@@ -91,13 +91,14 @@ class PartitionAllocator : public Allocator {
   void Free(void* data) override { ThreadSafePartitionRoot::FreeNoHooks(data); }
 
  private:
-  ThreadSafePartitionRoot alloc_{{PartitionOptions::AlignedAlloc::kDisallowed,
-                                  PartitionOptions::ThreadCache::kDisabled,
-                                  PartitionOptions::Quarantine::kDisallowed,
-                                  PartitionOptions::Cookie::kAllowed,
-                                  PartitionOptions::BackupRefPtr::kDisabled,
-                                  PartitionOptions::UseConfigurablePool::kNo,
-                                  PartitionOptions::LazyCommit::kEnabled}};
+  ThreadSafePartitionRoot alloc_{{
+      PartitionOptions::AlignedAlloc::kDisallowed,
+      PartitionOptions::ThreadCache::kDisabled,
+      PartitionOptions::Quarantine::kDisallowed,
+      PartitionOptions::Cookie::kAllowed,
+      PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::UseConfigurablePool::kNo,
+  }};
 };
 
 // Only one partition with a thread cache.
@@ -106,14 +107,14 @@ class PartitionAllocatorWithThreadCache : public Allocator {
  public:
   PartitionAllocatorWithThreadCache() {
     if (!g_partition_root) {
-      g_partition_root = new ThreadSafePartitionRoot(
-          {PartitionOptions::AlignedAlloc::kDisallowed,
-           PartitionOptions::ThreadCache::kEnabled,
-           PartitionOptions::Quarantine::kDisallowed,
-           PartitionOptions::Cookie::kAllowed,
-           PartitionOptions::BackupRefPtr::kDisabled,
-           PartitionOptions::UseConfigurablePool::kNo,
-           PartitionOptions::LazyCommit::kEnabled});
+      g_partition_root = new ThreadSafePartitionRoot({
+          PartitionOptions::AlignedAlloc::kDisallowed,
+          PartitionOptions::ThreadCache::kEnabled,
+          PartitionOptions::Quarantine::kDisallowed,
+          PartitionOptions::Cookie::kAllowed,
+          PartitionOptions::BackupRefPtr::kDisabled,
+          PartitionOptions::UseConfigurablePool::kNo,
+      });
     }
     internal::ThreadCacheRegistry::Instance().PurgeAll();
   }

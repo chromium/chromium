@@ -278,9 +278,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
     }
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
-
-  base::allocator::ReconfigurePartitionAllocLazyCommit(
-      base::FeatureList::IsEnabled(base::features::kPartitionAllocLazyCommit));
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

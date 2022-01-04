@@ -68,7 +68,7 @@ class DeltaCounter {
 
 // Forbid extras, since they make finding out which bucket is used harder.
 ThreadSafePartitionRoot* CreatePartitionRoot() {
-  ThreadSafePartitionRoot* root = new ThreadSafePartitionRoot(PartitionOptions {
+  ThreadSafePartitionRoot* root = new ThreadSafePartitionRoot({
     PartitionOptions::AlignedAlloc::kAllowed,
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
         PartitionOptions::ThreadCache::kEnabled,
@@ -79,7 +79,6 @@ ThreadSafePartitionRoot* CreatePartitionRoot() {
         PartitionOptions::Cookie::kDisallowed,
         PartitionOptions::BackupRefPtr::kDisabled,
         PartitionOptions::UseConfigurablePool::kNo,
-        PartitionOptions::LazyCommit::kEnabled
   });
 
   root->UncapEmptySlotSpanMemoryForTesting();
@@ -259,13 +258,14 @@ TEST_F(PartitionAllocThreadCacheTest, Purge) {
 }
 
 TEST_F(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
-  ThreadSafePartitionRoot root{{PartitionOptions::AlignedAlloc::kAllowed,
-                                PartitionOptions::ThreadCache::kDisabled,
-                                PartitionOptions::Quarantine::kAllowed,
-                                PartitionOptions::Cookie::kDisallowed,
-                                PartitionOptions::BackupRefPtr::kDisabled,
-                                PartitionOptions::UseConfigurablePool::kNo,
-                                PartitionOptions::LazyCommit::kEnabled}};
+  ThreadSafePartitionRoot root({
+      PartitionOptions::AlignedAlloc::kAllowed,
+      PartitionOptions::ThreadCache::kDisabled,
+      PartitionOptions::Quarantine::kAllowed,
+      PartitionOptions::Cookie::kDisallowed,
+      PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::UseConfigurablePool::kNo,
+  });
 
   size_t bucket_index = FillThreadCacheAndReturnIndex(kSmallSize);
   void* ptr = root.Alloc(kSmallSize, "");

@@ -154,7 +154,6 @@ class MainPartitionConstructor {
         base::PartitionOptions::Cookie::kAllowed,
         base::PartitionOptions::BackupRefPtr::kDisabled,
         base::PartitionOptions::UseConfigurablePool::kNo,
-        base::PartitionOptions::LazyCommit::kEnabled,
     });
 
     return new_root;
@@ -479,19 +478,6 @@ void EnablePartitionAllocMemoryReclaimer() {
   }
 }
 
-void ReconfigurePartitionAllocLazyCommit(bool enabled) {
-  // Unlike other partitions, Allocator() and AlignedAllocator() do not
-  // configure lazy commit upfront, because it uses base::Feature, which in turn
-  // allocates memory. Thus, lazy commit configuration has to be done after
-  // base::FeatureList is initialized.
-  // TODO(bartekn): Aligned allocator can use the regular initialization path.
-  Allocator()->ConfigureLazyCommit(enabled);
-  auto* original_root = OriginalAllocator();
-  if (original_root)
-    original_root->ConfigureLazyCommit(enabled);
-  AlignedAllocator()->ConfigureLazyCommit(enabled);
-}
-
 alignas(base::ThreadSafePartitionRoot) uint8_t
     g_allocator_buffer_for_new_main_partition[sizeof(
         base::ThreadSafePartitionRoot)];
@@ -531,8 +517,8 @@ void ConfigurePartitions(
     return;
   }
 
-  auto* new_root = new (g_allocator_buffer_for_new_main_partition)
-      base::ThreadSafePartitionRoot({
+  auto* new_root =
+      new (g_allocator_buffer_for_new_main_partition) ThreadSafePartitionRoot({
           !use_dedicated_aligned_partition
               ? base::PartitionOptions::AlignedAlloc::kAllowed
               : base::PartitionOptions::AlignedAlloc::kDisallowed,
@@ -542,7 +528,6 @@ void ConfigurePartitions(
           enable_brp ? base::PartitionOptions::BackupRefPtr::kEnabled
                      : base::PartitionOptions::BackupRefPtr::kDisabled,
           base::PartitionOptions::UseConfigurablePool::kNo,
-          base::PartitionOptions::LazyCommit::kEnabled,
       });
 
   base::ThreadSafePartitionRoot* new_aligned_root;
@@ -550,14 +535,13 @@ void ConfigurePartitions(
     // TODO(bartekn): Use the original root instead of creating a new one. It'd
     // result in one less partition, but come at a cost of commingling types.
     new_aligned_root = new (g_allocator_buffer_for_aligned_alloc_partition)
-        base::ThreadSafePartitionRoot({
+        ThreadSafePartitionRoot({
             base::PartitionOptions::AlignedAlloc::kAllowed,
             base::PartitionOptions::ThreadCache::kDisabled,
             base::PartitionOptions::Quarantine::kAllowed,
             base::PartitionOptions::Cookie::kAllowed,
             base::PartitionOptions::BackupRefPtr::kDisabled,
             base::PartitionOptions::UseConfigurablePool::kNo,
-            base::PartitionOptions::LazyCommit::kEnabled,
         });
   } else {
     // The new main root can also support AlignedAlloc.

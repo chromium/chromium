@@ -93,8 +93,6 @@ void PartitionAllocator<thread_safe>::init(PartitionOptions opts) {
       << "Cannot use a thread cache when PartitionAlloc is malloc().";
 #endif
   partition_root_.Init(opts);
-  partition_root_.ConfigureLazyCommit(opts.lazy_commit ==
-                                      PartitionOptions::LazyCommit::kEnabled);
   PartitionAllocMemoryReclaimer::Instance()->RegisterPartition(
       &partition_root_);
 }

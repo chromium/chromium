@@ -231,15 +231,15 @@ class PartitionAllocTest : public testing::Test {
           PartitionOptions::BackupRefPtr::kDisabled,
 #endif
           PartitionOptions::UseConfigurablePool::kNo,
-          PartitionOptions::LazyCommit::kEnabled
     });
-    aligned_allocator.init({PartitionOptions::AlignedAlloc::kAllowed,
-                            PartitionOptions::ThreadCache::kDisabled,
-                            PartitionOptions::Quarantine::kDisallowed,
-                            PartitionOptions::Cookie::kDisallowed,
-                            PartitionOptions::BackupRefPtr::kDisabled,
-                            PartitionOptions::UseConfigurablePool::kNo,
-                            PartitionOptions::LazyCommit::kEnabled});
+    aligned_allocator.init({
+        PartitionOptions::AlignedAlloc::kAllowed,
+        PartitionOptions::ThreadCache::kDisabled,
+        PartitionOptions::Quarantine::kDisallowed,
+        PartitionOptions::Cookie::kDisallowed,
+        PartitionOptions::BackupRefPtr::kDisabled,
+        PartitionOptions::UseConfigurablePool::kNo,
+    });
     test_bucket_index_ = SizeToIndex(kRealAllocSize);
 
     allocator.root()->UncapEmptySlotSpanMemoryForTesting();
@@ -3564,14 +3564,14 @@ TEST_F(PartitionAllocTest, CrossPartitionRootRealloc) {
   // Create new root and call PurgeMemory to simulate ConfigurePartitions().
   allocator.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
                                 PartitionPurgeDiscardUnusedSystemPages);
-  auto* new_root = new base::PartitionRoot<base::internal::ThreadSafe>(
-      {base::PartitionOptions::AlignedAlloc::kDisallowed,
-       base::PartitionOptions::ThreadCache::kDisabled,
-       base::PartitionOptions::Quarantine::kDisallowed,
-       base::PartitionOptions::Cookie::kAllowed,
-       base::PartitionOptions::BackupRefPtr::kDisabled,
-       base::PartitionOptions::UseConfigurablePool::kNo,
-       base::PartitionOptions::LazyCommit::kEnabled});
+  auto* new_root = new PartitionRoot<ThreadSafe>({
+      PartitionOptions::AlignedAlloc::kDisallowed,
+      PartitionOptions::ThreadCache::kDisabled,
+      PartitionOptions::Quarantine::kDisallowed,
+      PartitionOptions::Cookie::kAllowed,
+      PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::UseConfigurablePool::kNo,
+  });
 
   // Realloc from |allocator.root()| into |new_root|.
   void* ptr2 = new_root->ReallocFlags(PartitionAllocReturnNull, ptr,
@@ -3772,14 +3772,13 @@ TEST_F(PartitionAllocTest, ConfigurablePool) {
 
     EXPECT_TRUE(IsConfigurablePoolAvailable());
 
-    auto* root = new base::PartitionRoot<ThreadSafe>({
-        base::PartitionOptions::AlignedAlloc::kDisallowed,
-        base::PartitionOptions::ThreadCache::kDisabled,
-        base::PartitionOptions::Quarantine::kDisallowed,
-        base::PartitionOptions::Cookie::kAllowed,
-        base::PartitionOptions::BackupRefPtr::kDisabled,
-        base::PartitionOptions::UseConfigurablePool::kIfAvailable,
-        base::PartitionOptions::LazyCommit::kEnabled,
+    auto* root = new PartitionRoot<ThreadSafe>({
+        PartitionOptions::AlignedAlloc::kDisallowed,
+        PartitionOptions::ThreadCache::kDisabled,
+        PartitionOptions::Quarantine::kDisallowed,
+        PartitionOptions::Cookie::kAllowed,
+        PartitionOptions::BackupRefPtr::kDisabled,
+        PartitionOptions::UseConfigurablePool::kIfAvailable,
     });
     root->UncapEmptySlotSpanMemoryForTesting();
 
@@ -3807,13 +3806,14 @@ TEST_F(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
   // Use another root, since the ones from the test harness disable the empty
   // slot span size cap.
   PartitionRoot<ThreadSafe> root;
-  root.Init({PartitionOptions::AlignedAlloc::kDisallowed,
-             PartitionOptions::ThreadCache::kDisabled,
-             PartitionOptions::Quarantine::kDisallowed,
-             PartitionOptions::Cookie::kAllowed,
-             PartitionOptions::BackupRefPtr::kDisabled,
-             PartitionOptions::UseConfigurablePool::kNo,
-             PartitionOptions::LazyCommit::kEnabled});
+  root.Init({
+      PartitionOptions::AlignedAlloc::kDisallowed,
+      PartitionOptions::ThreadCache::kDisabled,
+      PartitionOptions::Quarantine::kDisallowed,
+      PartitionOptions::Cookie::kAllowed,
+      PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::UseConfigurablePool::kNo,
+  });
 
   // Allocate some memory, don't free it to keep committed memory.
   std::vector<void*> allocated_memory;
