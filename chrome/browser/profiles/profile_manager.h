@@ -102,10 +102,20 @@ class ProfileManager : public Profile::Delegate {
   // the last one).
   static std::vector<Profile*> GetLastOpenedProfiles();
 
+  // WARNING: do not use this function on Desktop platforms (Windows, Mac,
+  // Linux). See https://crbug.com/1264436 for more info.
+  // TODO(https://crbug.com/1264436): restrict this function to Android and
+  // ChromeOS.
+  //
   // Get the profile for the user which created the current session.
   // Note that in case of a guest account this will return a 'suitable' profile.
   static Profile* GetPrimaryUserProfile();
 
+  // WARNING: do not use this function on Desktop platforms (Windows, Mac,
+  // Linux). See https://crbug.com/1264436 for more info.
+  // TODO(https://crbug.com/1264436): restrict this function to Android and
+  // ChromeOS.
+  //
   // Get the profile for the currently active user.
   // Note that in case of a guest account this will return a 'suitable' profile.
   static Profile* GetActiveUserProfile();
