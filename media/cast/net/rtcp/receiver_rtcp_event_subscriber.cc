@@ -38,7 +38,7 @@ void ReceiverRtcpEventSubscriber::OnReceiveFrameEvent(
     switch (frame_event.type) {
       case FRAME_PLAYOUT:
         rtcp_event.delay_delta = frame_event.delay_delta;
-        FALLTHROUGH;
+        [[fallthrough]];
       case FRAME_ACK_SENT:
       case FRAME_DECODED:
         rtcp_event.type = frame_event.type;
