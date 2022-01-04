@@ -64,10 +64,18 @@ int EventMatcher::GetURLFilterCount() const {
   return 0;
 }
 
-bool EventMatcher::GetURLFilter(int i, base::DictionaryValue** url_filter_out) {
+bool EventMatcher::GetURLFilter(int i,
+                                const base::DictionaryValue** url_filter_out) {
   base::ListValue* url_filters = nullptr;
   if (filter_->GetList(kUrlFiltersKey, &url_filters)) {
-    return url_filters->GetDictionary(i, url_filter_out);
+    base::Value& dict = url_filters->GetList()[i];
+    if (!dict.is_dict()) {
+      return false;
+    }
+    if (url_filter_out) {
+      *url_filter_out = &base::Value::AsDictionaryValue(dict);
+    }
+    return true;
   }
   return false;
 }

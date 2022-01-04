@@ -114,19 +114,19 @@ const int kUndefinedId = INT_MIN;
 const ExtensionTabUtil::ScrubTabBehavior kDontScrubBehavior = {
     ExtensionTabUtil::kDontScrubTab, ExtensionTabUtil::kDontScrubTab};
 
-int GetTabId(base::DictionaryValue* tab) {
+int GetTabId(const base::Value* tab) {
   if (!tab)
     return kUndefinedId;
   return tab->FindIntKey(keys::kIdKey).value_or(kUndefinedId);
 }
 
-int GetTabWindowId(base::DictionaryValue* tab) {
+int GetTabWindowId(const base::Value* tab) {
   if (!tab)
     return kUndefinedId;
   return tab->FindIntKey(keys::kWindowIdKey).value_or(kUndefinedId);
 }
 
-int GetWindowId(base::DictionaryValue* window) {
+int GetWindowId(const base::Value* window) {
   if (!window)
     return kUndefinedId;
   return window->FindIntKey(keys::kIdKey).value_or(kUndefinedId);
@@ -299,14 +299,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindows) {
 
   base::ListValue* windows = result.get();
   EXPECT_EQ(window_ids.size(), windows->GetList().size());
-  for (size_t i = 0; i < windows->GetList().size(); ++i) {
-    base::DictionaryValue* result_window = nullptr;
-    EXPECT_TRUE(windows->GetDictionary(i, &result_window));
-    result_ids.insert(GetWindowId(result_window));
+  for (const base::Value& result_window : windows->GetList()) {
+    EXPECT_TRUE(result_window.is_dict());
+    result_ids.insert(GetWindowId(&result_window));
 
     // "populate" was not passed in so tabs are not populated.
-    base::ListValue* tabs = nullptr;
-    EXPECT_FALSE(result_window->GetList(keys::kTabsKey, &tabs));
+    const base::Value* tabs = result_window.FindListKey(keys::kTabsKey);
+    EXPECT_FALSE(tabs);
   }
   // The returned ids should contain all the current browser instance ids.
   EXPECT_EQ(window_ids, result_ids);
@@ -319,14 +318,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindows) {
 
   windows = result.get();
   EXPECT_EQ(window_ids.size(), windows->GetList().size());
-  for (size_t i = 0; i < windows->GetList().size(); ++i) {
-    base::DictionaryValue* result_window = nullptr;
-    EXPECT_TRUE(windows->GetDictionary(i, &result_window));
-    result_ids.insert(GetWindowId(result_window));
+  for (const base::Value& result_window : windows->GetList()) {
+    EXPECT_TRUE(result_window.is_dict());
+    result_ids.insert(GetWindowId(&result_window));
 
     // "populate" was enabled so tabs should be populated.
-    base::ListValue* tabs = nullptr;
-    EXPECT_TRUE(result_window->GetList(keys::kTabsKey, &tabs));
+    const base::Value* tabs = result_window.FindListKey(keys::kTabsKey);
+    EXPECT_TRUE(tabs);
   }
   // The returned ids should contain all the current app, browser and
   // devtools instance ids.
@@ -371,14 +369,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindowsAllTypes) {
 
   base::ListValue* windows = result.get();
   EXPECT_EQ(window_ids.size(), windows->GetList().size());
-  for (size_t i = 0; i < windows->GetList().size(); ++i) {
-    base::DictionaryValue* result_window = nullptr;
-    EXPECT_TRUE(windows->GetDictionary(i, &result_window));
-    result_ids.insert(GetWindowId(result_window));
+  for (const base::Value& result_window : windows->GetList()) {
+    EXPECT_TRUE(result_window.is_dict());
+    result_ids.insert(GetWindowId(&result_window));
 
     // "populate" was not passed in so tabs are not populated.
-    base::ListValue* tabs = nullptr;
-    EXPECT_FALSE(result_window->GetList(keys::kTabsKey, &tabs));
+    const base::Value* tabs = result_window.FindListKey(keys::kTabsKey);
+    EXPECT_FALSE(tabs);
   }
   // The returned ids should contain all the browser and devtools instance ids.
   EXPECT_EQ(window_ids, result_ids);
@@ -394,14 +391,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindowsAllTypes) {
 
   windows = result.get();
   EXPECT_EQ(window_ids.size(), windows->GetList().size());
-  for (size_t i = 0; i < windows->GetList().size(); ++i) {
-    base::DictionaryValue* result_window = nullptr;
-    EXPECT_TRUE(windows->GetDictionary(i, &result_window));
-    result_ids.insert(GetWindowId(result_window));
+  for (const base::Value& result_window : windows->GetList()) {
+    EXPECT_TRUE(result_window.is_dict());
+    result_ids.insert(GetWindowId(&result_window));
 
     // "populate" was enabled so tabs should be populated.
-    base::ListValue* tabs = nullptr;
-    EXPECT_TRUE(result_window->GetList(keys::kTabsKey, &tabs));
+    const base::Value* tabs = result_window.FindListKey(keys::kTabsKey);
+    EXPECT_TRUE(tabs);
   }
   // The returned ids should contain all the browser and devtools instance ids.
   EXPECT_EQ(window_ids, result_ids);
@@ -612,10 +608,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryCurrentWindowTabs) {
   base::ListValue* result_tabs = result.get();
   // We should have one initial tab and one added tab.
   EXPECT_EQ(2u, result_tabs->GetList().size());
-  for (size_t i = 0; i < result_tabs->GetList().size(); ++i) {
-    base::DictionaryValue* result_tab = nullptr;
-    EXPECT_TRUE(result_tabs->GetDictionary(i, &result_tab));
-    EXPECT_EQ(window_id, GetTabWindowId(result_tab));
+  for (const base::Value& result_tab : result_tabs->GetList()) {
+    EXPECT_TRUE(result_tab.is_dict());
+    EXPECT_EQ(window_id, GetTabWindowId(&result_tab));
   }
 
   // Get tabs NOT in the 'current' window called from non-focused browser.
@@ -627,10 +622,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryCurrentWindowTabs) {
   result_tabs = result.get();
   // We should have one tab for each extra window.
   EXPECT_EQ(kExtraWindows, result_tabs->GetList().size());
-  for (size_t i = 0; i < kExtraWindows; ++i) {
-    base::DictionaryValue* result_tab = nullptr;
-    EXPECT_TRUE(result_tabs->GetDictionary(i, &result_tab));
-    EXPECT_NE(window_id, GetTabWindowId(result_tab));
+  for (const base::Value& result_tab : result_tabs->GetList()) {
+    EXPECT_TRUE(result_tab.is_dict());
+    EXPECT_NE(window_id, GetTabWindowId(&result_tab));
   }
 }
 
@@ -658,10 +652,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryAllTabsWithDevTools) {
   base::ListValue* result_tabs = result.get();
   // We should have one tab per browser except for DevTools.
   EXPECT_EQ(kNumWindows, result_tabs->GetList().size());
-  for (size_t i = 0; i < result_tabs->GetList().size(); ++i) {
-    base::DictionaryValue* result_tab = nullptr;
-    EXPECT_TRUE(result_tabs->GetDictionary(i, &result_tab));
-    result_ids.insert(GetTabWindowId(result_tab));
+  for (const base::Value& result_tab : result_tabs->GetList()) {
+    EXPECT_TRUE(result_tab.is_dict());
+    result_ids.insert(GetTabWindowId(&result_tab));
   }
   EXPECT_EQ(window_ids, result_ids);
 

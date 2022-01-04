@@ -105,7 +105,7 @@ class EventFilter {
       url_matcher::URLMatcherConditionSet::Vector* condition_sets);
 
   bool AddDictionaryAsConditionSet(
-      base::DictionaryValue* url_filter,
+      const base::DictionaryValue* url_filter,
       url_matcher::URLMatcherConditionSet::Vector* condition_sets);
 
   url_matcher::URLMatcher url_matcher_;

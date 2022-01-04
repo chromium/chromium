@@ -109,11 +109,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_QueryLastFocusedWindowTabs) {
   base::ListValue* result_tabs = result.get();
   // We should have one initial tab and one added tab.
   EXPECT_EQ(2u, result_tabs->GetList().size());
-  for (size_t i = 0; i < result_tabs->GetList().size(); ++i) {
-    base::DictionaryValue* result_tab = NULL;
-    EXPECT_TRUE(result_tabs->GetDictionary(i, &result_tab));
-    EXPECT_EQ(focused_window_id,
-              api_test_utils::GetInteger(result_tab, keys::kWindowIdKey));
+  for (const base::Value& result_tab : result_tabs->GetList()) {
+    EXPECT_TRUE(result_tab.is_dict());
+    EXPECT_EQ(
+        focused_window_id,
+        api_test_utils::GetInteger(&base::Value::AsDictionaryValue(result_tab),
+                                   keys::kWindowIdKey));
   }
 
   // Get tabs NOT in the 'last focused' window called from the focused browser.
@@ -125,11 +126,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_QueryLastFocusedWindowTabs) {
   result_tabs = result.get();
   // We should get one tab for each extra window and one for the initial window.
   EXPECT_EQ(kExtraWindows + 1, result_tabs->GetList().size());
-  for (size_t i = 0; i < result_tabs->GetList().size(); ++i) {
-    base::DictionaryValue* result_tab = NULL;
-    EXPECT_TRUE(result_tabs->GetDictionary(i, &result_tab));
-    EXPECT_NE(focused_window_id,
-              api_test_utils::GetInteger(result_tab, keys::kWindowIdKey));
+  for (const base::Value& result_tab : result_tabs->GetList()) {
+    EXPECT_TRUE(result_tab.is_dict());
+    EXPECT_NE(
+        focused_window_id,
+        api_test_utils::GetInteger(&base::Value::AsDictionaryValue(result_tab),
+                                   keys::kWindowIdKey));
   }
 }
 
