@@ -85,8 +85,8 @@ CertNodeBuilder::CertNodeBuilder(int label_id)
     : CertNodeBuilder(l10n_util::GetStringUTF8(label_id)) {}
 
 CertNodeBuilder& CertNodeBuilder::Payload(base::StringPiece payload) {
-  DCHECK(!node_.HasKey("payload.val"));
-  node_.SetString("payload.val", payload);
+  DCHECK(!node_.FindPath("payload.val"));
+  node_.SetStringPath("payload.val", payload);
   return *this;
 }
 
