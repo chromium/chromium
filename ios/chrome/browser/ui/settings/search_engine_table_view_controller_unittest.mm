@@ -471,15 +471,14 @@ TEST_F(SearchEngineTableViewControllerTest, TestChangeProvider) {
   histogram_tester_.ExpectTotalCount(kUmaSelectDefaultSearchEngine, 3);
 
   // Check that the selection was written back to the prefs.
-  const base::DictionaryValue* searchProviderDict =
-      &base::Value::AsDictionaryValue(
-          *chrome_browser_state_->GetTestingPrefService()->GetDictionary(
-              DefaultSearchManager::kDefaultSearchProviderDataPrefName));
+  const base::Value* searchProviderDict =
+      chrome_browser_state_->GetTestingPrefService()->GetDictionary(
+          DefaultSearchManager::kDefaultSearchProviderDataPrefName);
   ASSERT_TRUE(searchProviderDict);
-  std::u16string short_name;
-  EXPECT_TRUE(searchProviderDict->GetString(DefaultSearchManager::kShortName,
-                                            &short_name));
-  EXPECT_EQ(url_c1->short_name(), short_name);
+  const std::string* short_name =
+      searchProviderDict->FindStringKey(DefaultSearchManager::kShortName);
+  ASSERT_TRUE(short_name);
+  EXPECT_EQ(url_c1->short_name(), base::ASCIIToUTF16(*short_name));
 }
 
 // Tests that prepopulated engines are disabled with checkmark removed in
