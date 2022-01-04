@@ -149,6 +149,12 @@ bool FakeWebFrameImpl::ExecuteJavaScript(const std::string& script) {
   return false;
 }
 
+bool FakeWebFrameImpl::ExecuteJavaScript(
+    const std::string& script,
+    base::OnceCallback<void(const base::Value*)> callback) {
+  return false;
+}
+
 void FakeWebFrameImpl::AddJsResultForFunctionCall(
     base::Value* js_result,
     const std::string& function_name) {

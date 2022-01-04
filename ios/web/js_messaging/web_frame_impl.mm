@@ -287,6 +287,43 @@ bool WebFrameImpl::ExecuteJavaScript(const std::string& script) {
   return false;
 }
 
+bool WebFrameImpl::ExecuteJavaScript(
+    const std::string& script,
+    base::OnceCallback<void(const base::Value*)> callback) {
+  DCHECK(base::ios::IsRunningOnIOS14OrLater());
+  DCHECK(frame_info_);
+
+  if (!IsMainFrame()) {
+    return false;
+  }
+
+  NSString* ns_script = base::SysUTF8ToNSString(script);
+  // Because Objective-C blocks treat scoped-variables
+  // as const, we have to redefine the callback with the
+  // __block keyword to be able to run the callback inside
+  // the completion handler.
+  __block auto internal_callback = std::move(callback);
+  void (^completion_handler)(id, NSError*) = ^void(id value, NSError* error) {
+    if (error) {
+      DLOG(WARNING) << "Script execution of:"
+                    << base::SysNSStringToUTF16(ns_script)
+                    << "\nfailed with error: "
+                    << base::SysNSStringToUTF16(
+                           error.userInfo[NSLocalizedDescriptionKey]);
+    } else {
+      std::move(internal_callback).Run(ValueResultFromWKResult(value).get());
+    }
+  };
+
+  if (@available(iOS 14.0, *)) {
+    web::ExecuteJavaScript(frame_info_.webView, WKContentWorld.pageWorld,
+                           frame_info_, ns_script, completion_handler);
+    return true;
+  }
+
+  return false;
+}
+
 bool WebFrameImpl::ExecuteJavaScriptFunction(
     JavaScriptContentWorld* content_world,
     const std::string& name,

@@ -73,6 +73,13 @@ class WebFrame : public base::SupportsUserData {
   // Executes the given |script| and returns whether the script was run.
   virtual bool ExecuteJavaScript(const std::string& script) = 0;
 
+  // Executes the given |script| and returns whether the script was run.
+  // If the script is successfully executed, |callback| is called with
+  // the result.
+  virtual bool ExecuteJavaScript(
+      const std::string& script,
+      base::OnceCallback<void(const base::Value*)> callback) = 0;
+
   // Returns the WebFrameInternal instance for this object.
   virtual WebFrameInternal* GetWebFrameInternal() = 0;
 
