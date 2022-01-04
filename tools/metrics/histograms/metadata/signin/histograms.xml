@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Signin.AccountCapabilities.GetFromSystemLibraryResult"
     enum="AccountCapabilitiesGetFromSystemLibraryResult"
-    expires_after="2021-12-31">
+    expires_after="2022-06-30">
   <owner>aliceywang@chromium.org</owner>
   <owner>fernandex@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
