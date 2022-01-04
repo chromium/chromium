@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_tab_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_list.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
@@ -154,7 +156,15 @@ TEST_F(DesktopMediaTabListTest, UpdatedPreview) {
   EXPECT_TRUE(preview_->GetImage().BackedBySameObjectAs(new_preview));
 }
 
-TEST_F(DesktopMediaTabListTest, IgnorePreviewUpdatesForUnselectedSource) {
+// crbug.com/1284150: flaky on Lacros
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_IgnorePreviewUpdatesForUnselectedSource \
+  DISABLED_IgnorePreviewUpdatesForUnselectedSource
+#else
+#define MAYBE_IgnorePreviewUpdatesForUnselectedSource \
+  IgnorePreviewUpdatesForUnselectedSource
+#endif
+TEST_F(DesktopMediaTabListTest, MAYBE_IgnorePreviewUpdatesForUnselectedSource) {
   test_api_.PressMouseOnSourceAtIndex(0);
 
   // Let the tab list know that the non-selected source #1 has a new preview.
