@@ -47,7 +47,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
-#include "extensions/test/background_page_watcher.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #endif
 
@@ -59,7 +59,6 @@ using memory_instrumentation::GlobalMemoryDump;
 using memory_instrumentation::mojom::ProcessType;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-using extensions::BackgroundPageWatcher;
 using extensions::Extension;
 using extensions::ProcessManager;
 using extensions::TestExtensionDir;
@@ -679,8 +678,10 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   ProcessManager* pm = ProcessManager::Get(profile());
 
   // Verify that the extensions has loaded.
-  BackgroundPageWatcher(pm, extension1).WaitForOpen();
-  BackgroundPageWatcher(pm, extension2).WaitForOpen();
+  extensions::ExtensionBackgroundPageWaiter(profile(), *extension1)
+      .WaitForBackgroundOpen();
+  extensions::ExtensionBackgroundPageWaiter(profile(), *extension2)
+      .WaitForBackgroundOpen();
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension1->id()).size());
   EXPECT_EQ(1u, pm->GetRenderFrameHostsForExtension(extension2->id()).size());
 

@@ -42,7 +42,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/process_manager.h"
-#include "extensions/test/background_page_watcher.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/aura/window.h"
@@ -231,9 +231,8 @@ class BaseSelectFileDialogExtensionBrowserTest
           extensions::ExtensionRegistryFactory::GetForBrowserContext(profile())
               ->GetExtensionById(extension_misc::kFilesManagerAppId,
                                  extensions::ExtensionRegistry::ENABLED);
-      extensions::BackgroundPageWatcher background_page_watcher(
-          extensions::ProcessManager::Get(profile()), extension);
-      background_page_watcher.WaitForClose();
+      extensions::ExtensionBackgroundPageWaiter(profile(), *extension)
+          .WaitForBackgroundClosed();
     }
   }
 

@@ -111,8 +111,6 @@ static_library("test_support") {
     "common/scoped_testing_manifest_handler_registry.h",
     "renderer/test_extensions_renderer_client.cc",
     "renderer/test_extensions_renderer_client.h",
-    "test/background_page_watcher.cc",
-    "test/background_page_watcher.h",
     "test/extension_background_page_waiter.cc",
     "test/extension_background_page_waiter.h",
     "test/extension_state_tester.cc",

@@ -24,7 +24,6 @@ namespace extensions {
 // See also
 // https://chromium.googlesource.com/chromium/src/+/main/docs/patterns/synchronous-runloop.md#events-vs-states
 // Note: This does not (yet) accommodate ServiceWorker-based extensions.
-// TODO(devlin): Combine this and BackgroundPageWatcher.
 class ExtensionBackgroundPageWaiter {
  public:
   ExtensionBackgroundPageWaiter(content::BrowserContext* browser_context,
