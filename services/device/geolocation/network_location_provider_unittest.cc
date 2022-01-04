@@ -320,7 +320,7 @@ class GeolocationNetworkProviderTest : public testing::Test {
             JsonFieldEquals("signalToNoiseRatio", expected_json, actual_json));
       }
     } else {
-      ASSERT_FALSE(request_json->HasKey("wifiAccessPoints"));
+      ASSERT_FALSE(request_json->FindKey("wifiAccessPoints"));
     }
   }
 
