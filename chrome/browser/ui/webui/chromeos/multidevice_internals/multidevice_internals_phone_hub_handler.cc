@@ -219,8 +219,8 @@ void MultidevicePhoneHubHandler::RegisterMessages() {
                           base::Unretained(this)));
 
   web_ui()->RegisterDeprecatedMessageCallback(
-      "setCameraRoll",
-      base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetCameraRoll,
+      "setFakeCameraRoll",
+      base::BindRepeating(&MultidevicePhoneHubHandler::HandleSetFakeCameraRoll,
                           base::Unretained(this)));
 }
 
@@ -239,6 +239,8 @@ void MultidevicePhoneHubHandler::AddObservers() {
       fake_phone_hub_manager_->fake_tether_controller());
   onboarding_ui_tracker_observation_.Observe(
       fake_phone_hub_manager_->fake_onboarding_ui_tracker());
+  camera_roll_manager_observation_.Observe(
+      fake_phone_hub_manager_->fake_camera_roll_manager());
 }
 
 void MultidevicePhoneHubHandler::RemoveObservers() {
@@ -247,6 +249,7 @@ void MultidevicePhoneHubHandler::RemoveObservers() {
   find_my_device_controller_observation_.Reset();
   tether_controller_observation_.Reset();
   onboarding_ui_tracker_observation_.Reset();
+  camera_roll_manager_observation_.Reset();
 }
 
 void MultidevicePhoneHubHandler::OnNotificationsRemoved(
@@ -286,6 +289,21 @@ void MultidevicePhoneHubHandler::OnShouldShowOnboardingUiChanged() {
           ->ShouldShowOnboardingUi();
   FireWebUIListener("should-show-onboarding-ui-changed",
                     base::Value(should_show_onboarding_ui));
+}
+
+void MultidevicePhoneHubHandler::OnCameraRollViewUiStateUpdated() {
+  base::Value camera_roll_dict(base::Value::Type::DICTIONARY);
+  camera_roll_dict.SetBoolKey(
+      "isCameraRollEnabled", fake_phone_hub_manager_->fake_camera_roll_manager()
+                                 ->is_camera_roll_enabled());
+  camera_roll_dict.SetBoolKey(
+      "isOnboardingDismissed",
+      fake_phone_hub_manager_->fake_camera_roll_manager()
+          ->is_onboarding_dismissed());
+  camera_roll_dict.SetBoolKey(
+      "isLoadingViewShown", fake_phone_hub_manager_->fake_camera_roll_manager()
+                                ->is_loading_view_shown());
+  FireWebUIListener("camera-roll-ui-view-state-updated", camera_roll_dict);
 }
 
 void MultidevicePhoneHubHandler::HandleEnableDnd(const base::ListValue* args) {
@@ -593,10 +611,38 @@ void MultidevicePhoneHubHandler::HandleResetCameraRollOnboardingUiDismissed(
   PA_LOG(VERBOSE) << "Reset kHasDismissedCameraRollOnboardingUi pref";
 }
 
-void MultidevicePhoneHubHandler::HandleSetCameraRoll(
+void MultidevicePhoneHubHandler::HandleSetFakeCameraRoll(
     const base::ListValue* args) {
   const base::Value& camera_roll_dict = args->GetList()[0];
   CHECK(camera_roll_dict.is_dict());
+
+  absl::optional<bool> is_camera_roll_enabled =
+      camera_roll_dict.FindBoolKey("isCameraRollEnabled");
+  CHECK(is_camera_roll_enabled);
+
+  fake_phone_hub_manager_->fake_camera_roll_manager()
+      ->SetIsCameraRollAvailableToBeEnabled(!*is_camera_roll_enabled);
+
+  absl::optional<bool> is_onboarding_dismissed =
+      camera_roll_dict.FindBoolKey("isOnboardingDismissed");
+  CHECK(is_onboarding_dismissed);
+
+  fake_phone_hub_manager_->fake_camera_roll_manager()
+      ->SetIsCameraRollOnboardingDismissed(*is_onboarding_dismissed);
+
+  absl::optional<bool> is_file_access_granted =
+      camera_roll_dict.FindBoolKey("isFileAccessGranted");
+  CHECK(is_file_access_granted);
+
+  fake_phone_hub_manager_->fake_camera_roll_manager()
+      ->SetIsAndroidStorageGranted(*is_file_access_granted);
+
+  absl::optional<bool> is_loading_view_shown =
+      camera_roll_dict.FindBoolKey("isLoadingViewShown");
+  CHECK(is_loading_view_shown);
+
+  fake_phone_hub_manager_->fake_camera_roll_manager()
+      ->SetIsCameraRollLoadingViewShown(*is_loading_view_shown);
 
   absl::optional<int> number_of_thumbnails =
       camera_roll_dict.FindIntKey("numberOfThumbnails");
@@ -606,10 +652,13 @@ void MultidevicePhoneHubHandler::HandleSetCameraRoll(
       camera_roll_dict.FindIntKey("fileType");
   CHECK(file_type_as_int);
   const char* file_type;
+  const char* file_ext;
   if (*file_type_as_int == 0) {
     file_type = "image/jpeg";
+    file_ext = ".jpg";
   } else {
     file_type = "video/mp4";
+    file_ext = ".mp4";
   }
 
   if (*number_of_thumbnails == 0) {
@@ -623,7 +672,7 @@ void MultidevicePhoneHubHandler::HandleSetCameraRoll(
       metadata.set_mime_type(file_type);
       metadata.set_last_modified_millis(1577865600 + i);
       metadata.set_file_size_bytes(123456);
-      metadata.set_file_name("fake_file_" + base::NumberToString(i) + ".jpg");
+      metadata.set_file_name("fake_file_" + base::NumberToString(i) + file_ext);
 
       gfx::Image thumbnail = gfx::Image::CreateFrom1xBitmap(RGB_Bitmap(
           255 - i * 192 / *number_of_thumbnails,
@@ -634,8 +683,46 @@ void MultidevicePhoneHubHandler::HandleSetCameraRoll(
     fake_phone_hub_manager_->fake_camera_roll_manager()->SetCurrentItems(items);
   }
 
-  PA_LOG(VERBOSE) << "Setting Camera Roll to " << *number_of_thumbnails
-                  << " thumbnails\nFile Type: " << file_type;
+  absl::optional<int> download_result_as_int =
+      camera_roll_dict.FindIntKey("downloadResult");
+  CHECK(download_result_as_int);
+  const char* download_result;
+  if (*download_result_as_int == 0) {
+    download_result = "Download Success";
+    fake_phone_hub_manager_->fake_camera_roll_manager()
+        ->SetSimulatedDownloadError(false);
+  } else {
+    ash::phonehub::CameraRollManager::Observer::DownloadErrorType error_type;
+    switch (*download_result_as_int) {
+      case 1:
+        download_result = "Generic Error";
+        error_type = ash::phonehub::CameraRollManager::Observer::
+            DownloadErrorType::kGenericError;
+        break;
+      case 2:
+        download_result = "Storage Error";
+        error_type = ash::phonehub::CameraRollManager::Observer::
+            DownloadErrorType::kInsufficientStorage;
+        break;
+      case 3:
+      default:
+        download_result = "Network Error";
+        error_type = ash::phonehub::CameraRollManager::Observer::
+            DownloadErrorType::kNetworkConnection;
+        break;
+    }
+    fake_phone_hub_manager_->fake_camera_roll_manager()
+        ->SetSimulatedDownloadError(true);
+    fake_phone_hub_manager_->fake_camera_roll_manager()->SetSimulatedErrorType(
+        error_type);
+  }
+
+  PA_LOG(VERBOSE) << "Setting fake Camera Roll to:\n  Feature enabled: "
+                  << *is_camera_roll_enabled
+                  << "\n  Access granted: " << *is_file_access_granted
+                  << "\n  Number of thumbnails: " << *number_of_thumbnails
+                  << "\n  File type: " << file_type
+                  << "\n  Download result: " << download_result;
 }
 
 }  // namespace multidevice

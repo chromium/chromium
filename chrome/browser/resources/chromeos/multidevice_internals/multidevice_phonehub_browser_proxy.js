@@ -124,12 +124,12 @@ export class MultidevicePhoneHubBrowserProxy {
   }
 
   /**
-   * Sets the camera roll manager.
+   * Sets the fake Camera Roll manager.
    * @param {!CameraRollManager} cameraRollManager The camera roll with fake
    *     values.
    */
-  setCameraRoll(cameraRollManager) {
-    chrome.send('setCameraRoll', [cameraRollManager]);
+  setFakeCameraRoll(cameraRollManager) {
+    chrome.send('setFakeCameraRoll', [cameraRollManager]);
   }
 }
 

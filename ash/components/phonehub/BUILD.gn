@@ -180,6 +180,7 @@ static_library("debug") {
     "//ash/components/phonehub/proto",
     "//ash/constants",
     "//base",
+    "//chromeos/components/multidevice/logging",
   ]
 }
 
