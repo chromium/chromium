@@ -39,6 +39,8 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
+import java.util.LinkedHashSet;
+
 /**
  * A subclass of {@link AppCompatActivity} that maintains states and objects applied to all
  * activities in {@link ChromeApplication} (e.g. night mode).
@@ -48,7 +50,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     private final ObservableSupplierImpl<ModalDialogManager> mModalDialogManagerSupplier =
             new ObservableSupplierImpl<>();
     private NightModeStateProvider mNightModeStateProvider;
-    private @StyleRes int mThemeResId;
+    private LinkedHashSet<Integer> mThemeResIds = new LinkedHashSet<>();
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -127,14 +129,14 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     @Override
     public void setTheme(@StyleRes int resid) {
         super.setTheme(resid);
-        mThemeResId = resid;
+        mThemeResIds.add(resid);
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         NightModeUtils.updateConfigurationForNightMode(
-                this, mNightModeStateProvider.isInNightMode(), newConfig, mThemeResId);
+                this, mNightModeStateProvider.isInNightMode(), newConfig, mThemeResIds);
         // newConfig will have the default system locale so reapply the app locale override if
         // needed: https://crbug.com/1248944
         GlobalAppLocaleController.getInstance().maybeOverrideContextConfig(this);
