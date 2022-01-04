@@ -28,12 +28,12 @@ mojom::DeviceType ComputeDeviceType(const device::BluetoothDevice* device) {
       return mojom::DeviceType::kComputer;
 
     case device::BluetoothDeviceType::PHONE:
-      FALLTHROUGH;
+      [[fallthrough]];
     case device::BluetoothDeviceType::MODEM:
       return mojom::DeviceType::kPhone;
 
     case device::BluetoothDeviceType::AUDIO:
-      FALLTHROUGH;
+      [[fallthrough]];
     case device::BluetoothDeviceType::CAR_AUDIO:
       return mojom::DeviceType::kHeadset;
 
@@ -41,14 +41,14 @@ mojom::DeviceType ComputeDeviceType(const device::BluetoothDevice* device) {
       return mojom::DeviceType::kVideoCamera;
 
     case device::BluetoothDeviceType::PERIPHERAL:
-      FALLTHROUGH;
+      [[fallthrough]];
     case device::BluetoothDeviceType::JOYSTICK:
-      FALLTHROUGH;
+      [[fallthrough]];
     case device::BluetoothDeviceType::GAMEPAD:
       return mojom::DeviceType::kGameController;
 
     case device::BluetoothDeviceType::KEYBOARD:
-      FALLTHROUGH;
+      [[fallthrough]];
     case device::BluetoothDeviceType::KEYBOARD_MOUSE_COMBO:
       return mojom::DeviceType::kKeyboard;
 

@@ -54,20 +54,20 @@ mojom::PairingResult GetPairingResult(
 
   switch (failure_reason.value()) {
     case device::ConnectionFailureReason::kAuthTimeout:
-      FALLTHROUGH;
+      [[fallthrough]];
     case device::ConnectionFailureReason::kAuthFailed:
       return mojom::PairingResult::kAuthFailed;
 
     case device::ConnectionFailureReason::kUnknownError:
-      FALLTHROUGH;
+      [[fallthrough]];
     case device::ConnectionFailureReason::kSystemError:
-      FALLTHROUGH;
+      [[fallthrough]];
     case device::ConnectionFailureReason::kFailed:
-      FALLTHROUGH;
+      [[fallthrough]];
     case device::ConnectionFailureReason::kUnknownConnectionError:
-      FALLTHROUGH;
+      [[fallthrough]];
     case device::ConnectionFailureReason::kUnsupportedDevice:
-      FALLTHROUGH;
+      [[fallthrough]];
     case device::ConnectionFailureReason::kNotConnectable:
       return mojom::PairingResult::kNonAuthFailure;
   }
@@ -223,9 +223,9 @@ void DevicePairingHandler::OnDeviceConnect(
   using ErrorCode = device::BluetoothDevice::ConnectErrorCode;
   switch (error_code.value()) {
     case ErrorCode::ERROR_AUTH_CANCELED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ErrorCode::ERROR_AUTH_FAILED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ErrorCode::ERROR_AUTH_REJECTED:
       FinishCurrentPairingRequest(device::ConnectionFailureReason::kAuthFailed);
       return;
@@ -235,7 +235,7 @@ void DevicePairingHandler::OnDeviceConnect(
       return;
 
     case ErrorCode::ERROR_FAILED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ErrorCode::ERROR_INPROGRESS:
       FinishCurrentPairingRequest(device::ConnectionFailureReason::kFailed);
       return;
