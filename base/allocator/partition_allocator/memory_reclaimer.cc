@@ -16,26 +16,6 @@
 
 namespace base {
 
-namespace {
-
-template <bool thread_safe>
-void Insert(std::set<PartitionRoot<thread_safe>*>* partitions,
-            PartitionRoot<thread_safe>* partition) {
-  PA_DCHECK(partition);
-  auto it_and_whether_inserted = partitions->insert(partition);
-  PA_DCHECK(it_and_whether_inserted.second);
-}
-
-template <bool thread_safe>
-void Remove(std::set<PartitionRoot<thread_safe>*>* partitions,
-            PartitionRoot<thread_safe>* partition) {
-  PA_DCHECK(partition);
-  size_t erased_count = partitions->erase(partition);
-  PA_DCHECK(erased_count == 1u);
-}
-
-}  // namespace
-
 // static
 PartitionAllocMemoryReclaimer* PartitionAllocMemoryReclaimer::Instance() {
   static NoDestructor<PartitionAllocMemoryReclaimer> instance;
@@ -45,25 +25,17 @@ PartitionAllocMemoryReclaimer* PartitionAllocMemoryReclaimer::Instance() {
 void PartitionAllocMemoryReclaimer::RegisterPartition(
     PartitionRoot<internal::ThreadSafe>* partition) {
   internal::PartitionAutoLock lock(lock_);
-  Insert(&thread_safe_partitions_, partition);
-}
-
-void PartitionAllocMemoryReclaimer::RegisterPartition(
-    PartitionRoot<internal::NotThreadSafe>* partition) {
-  internal::PartitionAutoLock lock(lock_);
-  Insert(&thread_unsafe_partitions_, partition);
+  PA_DCHECK(partition);
+  auto it_and_whether_inserted = partitions_.insert(partition);
+  PA_DCHECK(it_and_whether_inserted.second);
 }
 
 void PartitionAllocMemoryReclaimer::UnregisterPartition(
     PartitionRoot<internal::ThreadSafe>* partition) {
   internal::PartitionAutoLock lock(lock_);
-  Remove(&thread_safe_partitions_, partition);
-}
-
-void PartitionAllocMemoryReclaimer::UnregisterPartition(
-    PartitionRoot<internal::NotThreadSafe>* partition) {
-  internal::PartitionAutoLock lock(lock_);
-  Remove(&thread_unsafe_partitions_, partition);
+  PA_DCHECK(partition);
+  size_t erased_count = partitions_.erase(partition);
+  PA_DCHECK(erased_count == 1u);
 }
 
 PartitionAllocMemoryReclaimer::PartitionAllocMemoryReclaimer() = default;
@@ -113,17 +85,13 @@ void PartitionAllocMemoryReclaimer::Reclaim(int flags) {
     internal::ThreadCacheRegistry::Instance().PurgeAll();
 #endif
 
-  for (auto* partition : thread_safe_partitions_)
-    partition->PurgeMemory(flags);
-  for (auto* partition : thread_unsafe_partitions_)
+  for (auto* partition : partitions_)
     partition->PurgeMemory(flags);
 }
 
 void PartitionAllocMemoryReclaimer::ResetForTesting() {
   internal::PartitionAutoLock lock(lock_);
-
-  thread_safe_partitions_.clear();
-  thread_unsafe_partitions_.clear();
+  partitions_.clear();
 }
 
 }  // namespace base

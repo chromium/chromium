@@ -99,9 +99,6 @@ void PartitionAllocator<thread_safe>::init(PartitionOptions opts) {
 
 template PartitionAllocator<internal::ThreadSafe>::~PartitionAllocator();
 template void PartitionAllocator<internal::ThreadSafe>::init(PartitionOptions);
-template PartitionAllocator<internal::NotThreadSafe>::~PartitionAllocator();
-template void PartitionAllocator<internal::NotThreadSafe>::init(
-    PartitionOptions);
 
 #if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
     BUILDFLAG(USE_BACKUP_REF_PTR)

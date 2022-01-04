@@ -1042,7 +1042,6 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
 }
 
 template struct PartitionBucket<ThreadSafe>;
-template struct PartitionBucket<NotThreadSafe>;
 
 }  // namespace internal
 }  // namespace base

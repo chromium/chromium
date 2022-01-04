@@ -1159,7 +1159,6 @@ void* PartitionRoot<internal::ThreadSafe>::MaybeInitThreadCacheAndAlloc(
 }
 
 template struct BASE_EXPORT PartitionRoot<internal::ThreadSafe>;
-template struct BASE_EXPORT PartitionRoot<internal::NotThreadSafe>;
 
 static_assert(sizeof(PartitionRoot<internal::ThreadSafe>) ==
                   sizeof(PartitionRoot<internal::NotThreadSafe>),

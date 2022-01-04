@@ -357,7 +357,6 @@ void UnmapNow(uintptr_t reservation_start,
 }  // namespace
 
 template struct SlotSpanMetadata<ThreadSafe>;
-template struct SlotSpanMetadata<NotThreadSafe>;
 
 }  // namespace internal
 }  // namespace base
