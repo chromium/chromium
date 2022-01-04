@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BasicTextOperations) {
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   std::u16string old_text = omnibox_view->GetText();
-  EXPECT_EQ(base::UTF8ToUTF16(url::kAboutBlankURL), old_text);
+  EXPECT_EQ(url::kAboutBlankURL16, old_text);
   EXPECT_TRUE(omnibox_view->IsSelectAll());
 
   size_t start, end;
@@ -1146,7 +1146,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, UndoRedo) {
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   std::u16string old_text = omnibox_view->GetText();
-  EXPECT_EQ(base::UTF8ToUTF16(url::kAboutBlankURL), old_text);
+  EXPECT_EQ(url::kAboutBlankURL16, old_text);
   EXPECT_TRUE(omnibox_view->IsSelectAll());
 
   // Delete the text, then undo.
