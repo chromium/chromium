@@ -1165,12 +1165,19 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     auto nonce = installer::DecodeNonceSwitchValue(
         cmd_line.GetSwitchValueASCII(installer::switches::kNonce));
 
-    // RotateDeviceTrustKey() expects a single threaded task runner so
-    // creating one here.
+    // In a stable build the rotate command should only permit a prod hostname.
+    const char* dm_server_host_name =
+        install_static::GetDeviceManagementServerHostName();
+    const bool is_valid_command =
+        !*dm_server_host_name ||
+        (dm_server_url.host_piece() == dm_server_host_name);
+
+    // RotateDeviceTrustKey() expects a single
+    // threaded task runner so creating one here.
     base::SingleThreadTaskExecutor executor;
 
     *exit_code =
-        token && nonce && dm_server_url.is_valid() &&
+        token && nonce && dm_server_url.is_valid() && is_valid_command &&
                 dm_server_url.SchemeIsHTTPOrHTTPS() &&
                 installer::RotateDeviceTrustKey(
                     enterprise_connectors::KeyRotationManager::Create(),

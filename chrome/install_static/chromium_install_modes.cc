@@ -22,6 +22,8 @@ const size_t kProductPathNameLength = _countof(kProductPathName) - 1;
 
 const char kSafeBrowsingName[] = "chromium";
 
+const char kDeviceManagementServerHostName[] = "";
+
 const InstallConstants kInstallModes[] = {
     // The primary (and only) install mode for Chromium.
     {
