@@ -117,7 +117,7 @@ absl::optional<base::Value> ConvertRegistryValue(const base::Value& value,
         return result;
       }
       // Fall through in order to accept lists encoded as JSON strings.
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case base::Value::Type::DICTIONARY: {
       // Dictionaries may be encoded as JSON strings.
@@ -258,7 +258,7 @@ void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
           SetValue(name, base::Value(static_cast<int>(dword_value)));
           continue;
         }
-        FALLTHROUGH;
+        [[fallthrough]];
       case REG_NONE:
       case REG_LINK:
       case REG_MULTI_SZ:
