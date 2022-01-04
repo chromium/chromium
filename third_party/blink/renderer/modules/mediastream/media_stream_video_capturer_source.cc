@@ -146,7 +146,7 @@ void MediaStreamVideoCapturerSource::StopSourceForRestartImpl() {
   // Force state update for nondevice sources, since they do not
   // automatically update state after StopCapture().
   if (device().type == mojom::blink::MediaStreamType::NO_SERVICE)
-    OnRunStateChanged(capture_params_, false);
+    OnRunStateChanged(capture_params_, RunState::kStopped);
 }
 
 void MediaStreamVideoCapturerSource::RestartSourceImpl(
@@ -215,8 +215,9 @@ MediaStreamVideoCapturerSource::GetWeakPtr() const {
 
 void MediaStreamVideoCapturerSource::OnRunStateChanged(
     const media::VideoCaptureParams& new_capture_params,
-    bool is_running) {
+    RunState run_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  bool is_running = (run_state == RunState::kRunning);
   switch (state_) {
     case kStarting:
       source_->OnLog("MediaStreamVideoCapturerSource sending OnStartDone");
@@ -226,8 +227,12 @@ void MediaStreamVideoCapturerSource::OnRunStateChanged(
         OnStartDone(mojom::blink::MediaStreamRequestResult::OK);
       } else {
         state_ = kStopped;
-        OnStartDone(
-            mojom::blink::MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO);
+        auto result = (run_state == RunState::kSystemPermissionsError)
+                          ? mojom::blink::MediaStreamRequestResult::
+                                SYSTEM_PERMISSION_DENIED
+                          : mojom::blink::MediaStreamRequestResult::
+                                TRACK_START_FAILURE_VIDEO;
+        OnStartDone(result);
       }
       break;
     case kStarted:

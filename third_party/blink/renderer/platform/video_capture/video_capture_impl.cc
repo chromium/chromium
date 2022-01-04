@@ -687,6 +687,11 @@ void VideoCaptureImpl::StartCapture(
       OnLog("VideoCaptureImpl is in error state.");
       state_update_cb.Run(blink::VIDEO_CAPTURE_STATE_ERROR);
       return;
+    case VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED:
+      OnLog("VideoCaptureImpl is in system permissions error state.");
+      state_update_cb.Run(
+          blink::VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED);
+      return;
     case VIDEO_CAPTURE_STATE_PAUSED:
     case VIDEO_CAPTURE_STATE_RESUMED:
       // The internal |state_| is never set to PAUSED/RESUMED since
@@ -760,12 +765,19 @@ void VideoCaptureImpl::OnStateChanged(
   if (result->which() ==
       media::mojom::blink::VideoCaptureResult::Tag::ERROR_CODE) {
     DVLOG(1) << __func__ << " Failed with an error.";
-    OnLog("VideoCaptureImpl changing state to VIDEO_CAPTURE_STATE_ERROR");
+    if (result->get_error_code() ==
+        media::VideoCaptureError::kWinMediaFoundationSystemPermissionDenied) {
+      state_ = VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED;
+      OnLog(
+          "VideoCaptureImpl changing state to "
+          "VIDEO_CAPTURE_STATE_ERROR_SYSTEM_PERMISSIONS_DENIED");
+    } else {
+      state_ = VIDEO_CAPTURE_STATE_ERROR;
+      OnLog("VideoCaptureImpl changing state to VIDEO_CAPTURE_STATE_ERROR");
+    }
     for (const auto& client : clients_)
-      client.second.state_update_cb.Run(blink::VIDEO_CAPTURE_STATE_ERROR);
+      client.second.state_update_cb.Run(state_);
     clients_.clear();
-    state_ = VIDEO_CAPTURE_STATE_ERROR;
-
     RecordStartOutcomeUMA(start_timedout_ ? VideoCaptureStartOutcome::kTimedout
                                           : VideoCaptureStartOutcome::kFailed);
     return;

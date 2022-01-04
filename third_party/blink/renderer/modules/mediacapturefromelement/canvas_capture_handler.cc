@@ -215,7 +215,7 @@ void CanvasCaptureHandler::StartVideoCapture(
       std::make_unique<CanvasCaptureHandlerDelegate>(new_frame_callback);
   DCHECK(delegate_);
   ask_for_new_frame_ = true;
-  running_callback.Run(true);
+  running_callback.Run(RunState::kRunning);
 }
 
 void CanvasCaptureHandler::RequestRefreshFrame() {

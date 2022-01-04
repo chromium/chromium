@@ -140,7 +140,10 @@ class HTMLVideoElementCapturerSourceTest : public testing::TestWithParam<bool> {
   }
 
   MOCK_METHOD1(DoOnRunning, void(bool));
-  void OnRunning(bool state) { DoOnRunning(state); }
+  void OnRunning(blink::RunState run_state) {
+    bool state = (run_state == blink::RunState::kRunning) ? true : false;
+    DoOnRunning(state);
+  }
 
   void SetVideoPlayerOpacity(bool opacity) {
     web_media_player_->is_video_opaque_ = opacity;
@@ -158,6 +161,18 @@ class HTMLVideoElementCapturerSourceTest : public testing::TestWithParam<bool> {
 // Constructs and destructs all objects, in particular |html_video_capturer_|
 // and its inner object(s). This is a non trivial sequence.
 TEST_F(HTMLVideoElementCapturerSourceTest, ConstructAndDestruct) {}
+
+TEST_F(HTMLVideoElementCapturerSourceTest, EmptyWebMediaPlayerFailsCapture) {
+  web_media_player_.reset();
+  EXPECT_CALL(*this, DoOnRunning(false)).Times(1);
+
+  html_video_capturer_->StartCapture(
+      media::VideoCaptureParams(),
+      WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnDeliverFrame,
+                         base::Unretained(this)),
+      WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
+                         base::Unretained(this)));
+}
 
 // Checks that the usual sequence of GetPreferredFormats() ->
 // StartCapture() -> StopCapture() works as expected and let it capture two

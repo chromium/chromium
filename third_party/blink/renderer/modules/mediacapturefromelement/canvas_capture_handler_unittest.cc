@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/size.h"
@@ -85,7 +86,10 @@ class CanvasCaptureHandlerTest
   }
 
   MOCK_METHOD1(DoOnRunning, void(bool));
-  void OnRunning(bool state) { DoOnRunning(state); }
+  void OnRunning(blink::RunState run_state) {
+    bool state = (run_state == blink::RunState::kRunning) ? true : false;
+    DoOnRunning(state);
+  }
 
   // Verify returned frames.
   static scoped_refptr<StaticBitmapImage> GenerateTestImage(bool opaque,

@@ -56,9 +56,9 @@ class MockVideoCapturerSource : public VideoCapturerSource {
   }
   void StopCapture() override { MockStopCapture(); }
   void SetRunning(bool is_running) {
+    RunState run_state = is_running ? RunState::kRunning : RunState::kStopped;
     PostCrossThreadTask(*scheduler::GetSingleThreadTaskRunnerForTesting(),
-                        FROM_HERE,
-                        CrossThreadBindOnce(running_cb_, is_running));
+                        FROM_HERE, CrossThreadBindOnce(running_cb_, run_state));
   }
   const media::VideoCaptureParams& capture_params() const {
     return capture_params_;
@@ -163,8 +163,9 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
     EXPECT_EQ(String(source.Id()), stream_source_id_);
   }
   void OnStarted(bool result) {
+    RunState run_state = result ? RunState::kRunning : RunState::kStopped;
     video_capturer_source_->OnRunStateChanged(delegate_->capture_params(),
-                                              result);
+                                              run_state);
   }
 
   void SetStopCaptureFlag() { stop_capture_flag_ = true; }
@@ -189,8 +190,8 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
   Persistent<MediaStreamSource> stream_source_;
   MockMojoMediaStreamDispatcherHost mock_dispatcher_host_;
   MediaStreamVideoCapturerSource*
-      video_capturer_source_;               // owned by |stream_source_|.
-  MockVideoCapturerSource* delegate_;       // owned by |source_|.
+      video_capturer_source_;          // owned by |stream_source_|.
+  MockVideoCapturerSource* delegate_;  // owned by |source_|.
   String stream_source_id_;
   bool source_stopped_;
   bool stop_capture_flag_ = false;
@@ -238,7 +239,7 @@ TEST_F(MediaStreamVideoCapturerSourceTest, CaptureTimeAndMetadataPlumbing) {
   EXPECT_CALL(mock_delegate(), MockStopCapture());
   WebMediaStreamTrack track =
       StartSource(VideoTrackAdapterSettings(), absl::nullopt, false, 0.0);
-  running_cb.Run(true);
+  running_cb.Run(RunState::kRunning);
 
   base::RunLoop run_loop;
   base::TimeTicks reference_capture_time =

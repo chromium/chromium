@@ -21,6 +21,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
 
 namespace blink {
 
@@ -96,7 +97,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
 
   // Method to bind as RunningCallback in VideoCapturerSource::StartCapture().
   void OnRunStateChanged(const media::VideoCaptureParams& new_capture_params,
-                         bool is_running);
+                         RunState run_state);
 
   mojom::blink::MediaStreamDispatcherHost* GetMediaStreamDispatcherHost();
 
