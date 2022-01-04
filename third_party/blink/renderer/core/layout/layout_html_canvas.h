@@ -40,7 +40,6 @@ class CORE_EXPORT LayoutHTMLCanvas final : public LayoutReplaced {
     NOT_DESTROYED();
     return type == kLayoutObjectCanvas || LayoutReplaced::IsOfType(type);
   }
-  PaintLayerType LayerTypeRequired() const override;
 
   void InvalidatePaint(const PaintInvalidatorContext&) const final;
 

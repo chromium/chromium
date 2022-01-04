@@ -189,6 +189,9 @@ CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
 
   auto reasons = CompositingReasonsFor3DSceneLeaf(object);
 
+  if (object.CanHaveAdditionalCompositingReasons())
+    reasons |= object.AdditionalCompositingReasons();
+
   // TODO(wangxianzhu): Don't depend on PaintLayer for CompositeAfterPaint.
   if (!object.HasLayer()) {
     if (object.IsSVGChild())
@@ -232,9 +235,6 @@ CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
     if (element->ShouldCompositeForDocumentTransition())
       reasons |= CompositingReason::kDocumentTransitionSharedElement;
   }
-
-  if (object.CanHaveAdditionalCompositingReasons())
-    reasons |= object.AdditionalCompositingReasons();
 
   return reasons;
 }

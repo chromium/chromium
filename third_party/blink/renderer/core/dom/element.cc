@@ -3794,26 +3794,24 @@ void Element::SetNeedsCompositingUpdate() {
   LayoutBoxModelObject* layout_object = GetLayoutBoxModelObject();
   if (!layout_object)
     return;
-  // TODO(pdr): Do not depend on PaintLayer for compositing decisions.
-  if (!layout_object->HasLayer())
-    return;
 
-  layout_object->Layer()->SetNeedsCompositingInputsUpdate();
-
-  // Changes to RequiresAcceleratedCompositing change if the PaintLayer is
-  // self-painting (see: LayoutEmbeddedContent::LayerTypeRequired).
-  if (layout_object->IsLayoutEmbeddedContent())
-    layout_object->Layer()->UpdateSelfPaintingLayer();
+  auto* painting_layer = layout_object->PaintingLayer();
+  // Repaint because the foreign layer may have changed.
+  painting_layer->SetNeedsRepaint();
 
   // Changes to AdditionalCompositingReasons can change direct compositing
   // reasons which affect paint properties.
   if (layout_object->CanHaveAdditionalCompositingReasons())
     layout_object->SetNeedsPaintPropertyUpdate();
 
-  // With CompositeAfterPaint, we need to repaint the layer because the foreign
-  // layer may have changed.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    layout_object->Layer()->SetNeedsRepaint();
+  // TODO(pdr): Do not depend on PaintLayer for compositing decisions.
+  if (layout_object->HasLayer()) {
+    layout_object->Layer()->SetNeedsCompositingInputsUpdate();
+    // Changes to RequiresAcceleratedCompositing change if the PaintLayer is
+    // self-painting (see: LayoutEmbeddedContent::LayerTypeRequired).
+    if (layout_object->IsLayoutEmbeddedContent())
+      layout_object->Layer()->UpdateSelfPaintingLayer();
+  }
 }
 
 void Element::SetRegionCaptureCropId(

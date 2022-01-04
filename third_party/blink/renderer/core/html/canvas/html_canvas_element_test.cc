@@ -34,23 +34,23 @@ TEST_P(HTMLCanvasElementTest, CreateLayerUpdatesCompositing) {
 
   SetBodyInnerHTML("<canvas id='canvas'></canvas>");
   auto* canvas = To<HTMLCanvasElement>(GetDocument().getElementById("canvas"));
-  auto* layer = GetPaintLayerByElementId("canvas");
-  ASSERT_TRUE(layer);
-  EXPECT_FALSE(layer->GetLayoutObject()
-                   .FirstFragment()
+  EXPECT_FALSE(canvas->GetLayoutObject()
+                   ->FirstFragment()
                    .PaintProperties()
                    ->PaintOffsetTranslation());
 
-  EXPECT_FALSE(layer->GetLayoutObject().NeedsPaintPropertyUpdate());
-  EXPECT_FALSE(layer->SelfNeedsRepaint());
+  EXPECT_FALSE(canvas->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  auto* painting_layer = GetLayoutObjectByElementId("canvas")->PaintingLayer();
+  EXPECT_FALSE(painting_layer->SelfNeedsRepaint());
   canvas->CreateLayer();
-  EXPECT_TRUE(layer->GetLayoutObject().NeedsPaintPropertyUpdate());
-  EXPECT_TRUE(layer->SelfNeedsRepaint());
+  EXPECT_TRUE(canvas->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  EXPECT_TRUE(painting_layer->SelfNeedsRepaint());
   UpdateAllLifecyclePhasesForTest();
-  ASSERT_EQ(layer,
-            To<LayoutBoxModelObject>(canvas->GetLayoutObject())->Layer());
-  EXPECT_TRUE(layer->GetLayoutObject()
-                  .FirstFragment()
+  ASSERT_EQ(
+      painting_layer,
+      To<LayoutBoxModelObject>(canvas->GetLayoutObject())->PaintingLayer());
+  EXPECT_TRUE(canvas->GetLayoutObject()
+                  ->FirstFragment()
                   .PaintProperties()
                   ->PaintOffsetTranslation()
                   ->HasDirectCompositingReasons());

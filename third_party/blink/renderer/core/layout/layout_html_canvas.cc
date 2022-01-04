@@ -40,11 +40,6 @@ LayoutHTMLCanvas::LayoutHTMLCanvas(HTMLCanvasElement* element)
   View()->GetFrameView()->SetIsVisuallyNonEmpty();
 }
 
-PaintLayerType LayoutHTMLCanvas::LayerTypeRequired() const {
-  NOT_DESTROYED();
-  return kNormalPaintLayer;
-}
-
 void LayoutHTMLCanvas::PaintReplaced(const PaintInfo& paint_info,
                                      const PhysicalOffset& paint_offset) const {
   NOT_DESTROYED();

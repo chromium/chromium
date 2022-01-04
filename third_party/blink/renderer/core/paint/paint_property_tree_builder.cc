@@ -476,28 +476,25 @@ static bool NeedsPaintOffsetTranslation(
        object.HasReflection()))
     return true;
 
-  // Don't let paint offset cross composited layer boundaries when possible, to
-  // avoid unnecessary full layer paint/raster invalidation when paint offset in
-  // ancestor transform node changes which should not affect the descendants
-  // of the composited layer. For now because of crbug.com/780242, this is
-  // limited to LayoutBlocks and LayoutReplaceds that won't be escaped by
-  // floating objects and column spans when finding their containing blocks.
-  // TODO(crbug.com/780242): This can be avoided if we have fully correct
-  // paint property tree states for floating objects and column spans.
-  if ((box_model.IsLayoutBlock() || object.IsLayoutReplaced()) &&
-      // TODO(wangxianzhu): Don't depend on PaintLayer for CompositeAfterPaint.
-      object.HasLayer()) {
-    PaintLayer* layer = To<LayoutBoxModelObject>(object).Layer();
-    if (!layer->EnclosingPaginationLayer()) {
-      if (direct_compositing_reasons != CompositingReason::kNone)
+  // Though we don't treat hidden backface as a direct compositing reason, it's
+  // very likely that the object will be composited, so a paint offset
+  // translation will be beneficial.
+  bool has_paint_offset_compositing_reason =
+      direct_compositing_reasons != CompositingReason::kNone ||
+      box_model.StyleRef().BackfaceVisibility() == EBackfaceVisibility::kHidden;
+  if (has_paint_offset_compositing_reason) {
+    // Don't let paint offset cross composited layer boundaries when possible,
+    // to avoid unnecessary full layer paint/raster invalidation when paint
+    // offset in ancestor transform node changes which should not affect the
+    // descendants of the composited layer. For now because of
+    // crbug.com/780242, this is limited to LayoutBlocks and LayoutReplaceds
+    // that won't be escaped by floating objects and column spans when finding
+    // their containing blocks. TODO(crbug.com/780242): This can be avoided if
+    // we have fully correct paint property tree states for floating objects
+    // and column spans.
+    if (box_model.IsLayoutBlock() || object.IsLayoutReplaced()) {
+      if (!object.PaintingLayer()->EnclosingPaginationLayer())
         return true;
-      // Though we don't treat hidden backface as a direct compositing reason,
-      // it's very likely that the object will be composited, so a paint offset
-      // translation will be beneficial.
-      if (box_model.StyleRef().BackfaceVisibility() ==
-          EBackfaceVisibility::kHidden) {
-        return true;
-      }
     }
   }
 

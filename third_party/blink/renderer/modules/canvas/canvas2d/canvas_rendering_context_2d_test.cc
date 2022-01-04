@@ -1437,9 +1437,10 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CanvasElement().GetCanvas2DLayerBridge()->NewImageSnapshot();
   EXPECT_TRUE(!!CanvasElement().ResourceProvider());
   EXPECT_TRUE(CanvasElement().ResourceProvider()->IsAccelerated());
-  EXPECT_TRUE(CanvasElement().GetLayoutBoxModelObject());
-  PaintLayer* layer = CanvasElement().GetLayoutBoxModelObject()->Layer();
-  EXPECT_TRUE(layer);
+  auto* box = CanvasElement().GetLayoutBoxModelObject();
+  EXPECT_TRUE(box);
+  PaintLayer* painting_layer = box->PaintingLayer();
+  EXPECT_TRUE(painting_layer);
   UpdateAllLifecyclePhasesForTest();
 
   // Hide element to trigger hibernation (if enabled).
@@ -1448,9 +1449,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       /*is_initial_state=*/false);
   blink::test::RunPendingTasks();  // Run hibernation task.
   // If enabled, hibernation should cause compositing update.
-  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
-            layer->GetLayoutObject().NeedsPaintPropertyUpdate());
-  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, layer->SelfNeedsRepaint());
+  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, box->NeedsPaintPropertyUpdate());
+  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, painting_layer->SelfNeedsRepaint());
   EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
             !CanvasElement().ResourceProvider());
 
@@ -1463,9 +1463,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   GetDocument().GetPage()->SetVisibilityState(
       mojom::blink::PageVisibilityState::kVisible,
       /*is_initial_state=*/false);
-  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED,
-            layer->GetLayoutObject().NeedsPaintPropertyUpdate());
-  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, layer->SelfNeedsRepaint());
+  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, box->NeedsPaintPropertyUpdate());
+  EXPECT_EQ(!!CANVAS2D_HIBERNATION_ENABLED, painting_layer->SelfNeedsRepaint());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
@@ -1483,8 +1482,10 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_TRUE(CanvasElement().GetCanvas2DLayerBridge()->IsAccelerated());
 
   EXPECT_TRUE(CanvasElement().GetLayoutBoxModelObject());
-  PaintLayer* layer = CanvasElement().GetLayoutBoxModelObject()->Layer();
-  EXPECT_TRUE(layer);
+  auto* box = CanvasElement().GetLayoutBoxModelObject();
+  EXPECT_TRUE(box);
+  PaintLayer* painting_layer = box->PaintingLayer();
+  EXPECT_TRUE(painting_layer);
   UpdateAllLifecyclePhasesForTest();
 
   // The resource provider gets lazily created. Force it to be dropped.
@@ -1497,8 +1498,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   blink::test::RunPendingTasks();  // Run hibernation task.
 
   // Never hibernate a canvas with no resource provider.
-  EXPECT_FALSE(layer->GetLayoutObject().NeedsPaintPropertyUpdate());
-  EXPECT_FALSE(layer->SelfNeedsRepaint());
+  EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
+  EXPECT_FALSE(painting_layer->SelfNeedsRepaint());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated, LowLatencyIsNotSingleBuffered) {
