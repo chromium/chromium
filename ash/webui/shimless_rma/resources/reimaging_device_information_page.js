@@ -61,6 +61,13 @@ export class ReimagingDeviceInformationPage extends
       },
 
       /** @protected */
+      disableResetWhiteLabel_: {
+        type: Boolean,
+        computed: 'getDisableResetWhiteLabel_(' +
+            'originalWhiteLabelIndex_, whiteLabelIndex_)',
+      },
+
+      /** @protected */
       originalSerialNumber_: {
         type: String,
         value: '',
@@ -108,6 +115,23 @@ export class ReimagingDeviceInformationPage extends
         value: 0,
       },
 
+      /** @protected {!Array<string>} */
+      whiteLabels_: {
+        type: Array,
+        value: () => [],
+      },
+
+      /** @protected */
+      originalWhiteLabelIndex_: {
+        type: Number,
+        value: 0,
+      },
+
+      /** @protected */
+      whiteLabelIndex_: {
+        type: Number,
+        value: 0,
+      },
     };
   }
 
@@ -123,6 +147,7 @@ export class ReimagingDeviceInformationPage extends
     this.getOriginalSerialNumber_();
     this.getOriginalRegionAndRegionList_();
     this.getOriginalSkuAndSkuList_();
+    this.getOriginalWhiteLabelAndWhiteLabelList_();
     this.dispatchEvent(new CustomEvent(
         'disable-next-button',
         {bubbles: true, composed: true, detail: false},
@@ -177,6 +202,34 @@ export class ReimagingDeviceInformationPage extends
         });
   }
 
+  /** @private */
+  getOriginalWhiteLabelAndWhiteLabelList_() {
+    this.shimlessRmaService_.getOriginalWhiteLabel()
+        .then((result) => {
+          this.originalWhiteLabelIndex_ = result.whiteLabelIndex;
+          return this.shimlessRmaService_.getWhiteLabelList();
+        })
+        .then((result) => {
+          this.whiteLabels_ = result.whiteLabels;
+          const blankIndex = this.whiteLabels_.indexOf('');
+          if (blankIndex >= 0) {
+            this.whiteLabels_[blankIndex] =
+                this.i18n('confirmDeviceInfoEmptyWhiteLabelLabel');
+            if (this.originalWhiteLabelIndex_ < 0) {
+              this.originalWhiteLabelIndex_ = blankIndex;
+            }
+          }
+          this.whiteLabelIndex_ = this.originalWhiteLabelIndex_;
+
+          // Need to wait for the select options to render before setting the
+          // selected index.
+          afterNextRender(this, () => {
+            this.shadowRoot.querySelector('#whiteLabelSelect').selectedIndex =
+                this.whiteLabelIndex_;
+          });
+        });
+  }
+
   /** @protected */
   getDisableResetSerialNumber_() {
     return this.originalSerialNumber_ === this.serialNumber_;
@@ -193,6 +246,11 @@ export class ReimagingDeviceInformationPage extends
   }
 
   /** @protected */
+  getDisableResetWhiteLabel_() {
+    return this.originalWhiteLabelIndex_ === this.whiteLabelIndex_;
+  }
+
+  /** @protected */
   onSelectedRegionChange_(event) {
     this.regionIndex_ =
         this.shadowRoot.querySelector('#regionSelect').selectedIndex;
@@ -201,6 +259,12 @@ export class ReimagingDeviceInformationPage extends
   /** @protected */
   onSelectedSkuChange_(event) {
     this.skuIndex_ = this.shadowRoot.querySelector('#skuSelect').selectedIndex;
+  }
+
+  /** @protected */
+  onSelectedWhiteLabelChange_(event) {
+    this.whiteLabelIndex_ =
+        this.shadowRoot.querySelector('#whiteLabelSelect').selectedIndex;
   }
 
   /** @protected */
@@ -221,13 +285,21 @@ export class ReimagingDeviceInformationPage extends
     this.shadowRoot.querySelector('#skuSelect').selectedIndex = this.skuIndex_;
   }
 
+  /** @protected */
+  onResetWhiteLabelButtonClicked_(event) {
+    this.whiteLabelIndex_ = this.originalWhiteLabelIndex_;
+    this.shadowRoot.querySelector('#whiteLabelSelect').selectedIndex =
+        this.whiteLabelIndex_;
+  }
+
   /** @return {!Promise<!StateResult>} */
   onNextButtonClick() {
     if (this.serialNumber_ === '') {
       return Promise.reject(new Error('Serial number not set'));
     } else {
       return this.shimlessRmaService_.setDeviceInformation(
-          this.serialNumber_, this.regionIndex_, this.skuIndex_);
+          this.serialNumber_, this.regionIndex_, this.skuIndex_,
+          this.whiteLabelIndex_);
     }
   }
 }

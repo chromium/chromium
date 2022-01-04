@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {fakeDeviceRegions, fakeDeviceSkus} from 'chrome://shimless-rma/fake_data.js';
+import {fakeDeviceRegions, fakeDeviceSkus, fakeDeviceWhiteLabels} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {ReimagingDeviceInformationPage} from 'chrome://shimless-rma/reimaging_device_information_page.js';
@@ -22,6 +22,7 @@ let fakeSerialNumber = 'serial# 0001';
  */
 function suppressedComponentOnSelectedChange_(component) {
   component.onSelectedRegionChange_('ignored');
+  component.onSelectedWhiteLabelChange_('ignored');
   component.onSelectedSkuChange_('ignored');
 }
 
@@ -51,11 +52,13 @@ export function reimagingDeviceInformationPageTest() {
    * @param {string} serialNumber
    * @return {!Promise}
    */
-  function initializeReimagingDeviceInformationPage(serialNumber) {
+  async function initializeReimagingDeviceInformationPage(serialNumber) {
     assertFalse(!!component);
     service.setGetOriginalSerialNumberResult(serialNumber);
     service.setGetRegionListResult(fakeDeviceRegions);
     service.setGetOriginalRegionResult(2);
+    service.setGetWhiteLabelListResult(fakeDeviceWhiteLabels);
+    service.setGetOriginalWhiteLabelResult(3);
     service.setGetSkuListResult(fakeDeviceSkus);
     service.setGetOriginalSkuResult(1);
 
@@ -64,46 +67,59 @@ export function reimagingDeviceInformationPageTest() {
     assertTrue(!!component);
     document.body.appendChild(component);
 
+    // A flush tasks is required to wait for the drop lists to render and set
+    // the initial selected index.
+    await flushTasks();
+
     return flushTasks();
   }
 
   test('ReimagingDeviceInformationPageInitializes', async () => {
     await initializeReimagingDeviceInformationPage(fakeSerialNumber);
-    // A flush tasks is required to wait for the drop lists to render and set
-    // the initial selected index.
-    await flushTasks();
+
     const serialNumberComponent =
         component.shadowRoot.querySelector('#serialNumber');
     const regionSelectComponent =
         component.shadowRoot.querySelector('#regionSelect');
+    const whiteLabelSelectComponent =
+        component.shadowRoot.querySelector('#whiteLabelSelect');
     const skuSelectComponent = component.shadowRoot.querySelector('#skuSelect');
     const resetSerialNumberComponent =
         component.shadowRoot.querySelector('#resetSerialNumber');
     const resetRegionComponent =
         component.shadowRoot.querySelector('#resetRegion');
+    const resetWhiteLabelComponent =
+        component.shadowRoot.querySelector('#resetWhiteLabel');
     const resetSkuComponent = component.shadowRoot.querySelector('#resetSku');
 
     assertEquals(fakeSerialNumber, serialNumberComponent.value);
     assertEquals(2, regionSelectComponent.selectedIndex);
+    assertEquals(3, whiteLabelSelectComponent.selectedIndex);
     assertEquals(1, skuSelectComponent.selectedIndex);
     assertTrue(resetSerialNumberComponent.disabled);
     assertTrue(resetRegionComponent.disabled);
+    assertTrue(resetWhiteLabelComponent.disabled);
     assertTrue(resetSkuComponent.disabled);
   });
 
-  test('ReimagingDeviceInformationPageInitializes', async () => {
+  test('ReimagingDeviceInformationPageNextReturnsInformation', async () => {
     const resolver = new PromiseResolver();
     await initializeReimagingDeviceInformationPage(fakeSerialNumber);
+
     const serialNumberComponent =
         component.shadowRoot.querySelector('#serialNumber');
     const regionSelectComponent =
         component.shadowRoot.querySelector('#regionSelect');
+    const whiteLabelSelectComponent =
+        component.shadowRoot.querySelector('#whiteLabelSelect');
     const skuSelectComponent = component.shadowRoot.querySelector('#skuSelect');
     let expectedSerialNumber = 'expected serial number';
     let expectedRegionIndex = 0;
+    let expectedWhiteLabelIndex = 1;
     let expectedSkuIndex = 2;
     serialNumberComponent.value = expectedSerialNumber;
     regionSelectComponent.selectedIndex = expectedRegionIndex;
+    whiteLabelSelectComponent.selectedIndex = expectedWhiteLabelIndex;
     skuSelectComponent.selectedIndex = expectedSkuIndex;
     // TODO(gavindodd) how to update selectedIndex and trigger on-change
     // automatically.
@@ -111,13 +127,16 @@ export function reimagingDeviceInformationPageTest() {
     await flushTasks();
     let serialNumber;
     let regionIndex;
+    let whiteLabelIndex;
     let skuIndex;
     let callCounter = 0;
     service.setDeviceInformation =
-        (resultSerialNumber, resultRegionIndex, resultSkuIndex) => {
+        (resultSerialNumber, resultRegionIndex, resultSkuIndex,
+         resultWhiteLabelIndex) => {
           callCounter++;
           serialNumber = resultSerialNumber;
           regionIndex = resultRegionIndex;
+          whiteLabelIndex = resultWhiteLabelIndex;
           skuIndex = resultSkuIndex;
           return resolver.promise;
         };
@@ -129,15 +148,17 @@ export function reimagingDeviceInformationPageTest() {
     resolver.resolve(expectedResult);
     await flushTasks();
 
-    assertEquals(callCounter, 1);
-    assertEquals(serialNumber, expectedSerialNumber);
-    assertEquals(regionIndex, expectedRegionIndex);
-    assertEquals(skuIndex, expectedSkuIndex);
-    assertDeepEquals(savedResult, expectedResult);
+    assertEquals(1, callCounter);
+    assertEquals(expectedSerialNumber, serialNumber);
+    assertEquals(expectedRegionIndex, regionIndex);
+    assertEquals(expectedWhiteLabelIndex, whiteLabelIndex);
+    assertEquals(expectedSkuIndex, skuIndex);
+    assertDeepEquals(expectedResult, savedResult);
   });
 
   test('ReimagingDeviceInformationPageModifySerialNumberAndReset', async () => {
     await initializeReimagingDeviceInformationPage(fakeSerialNumber);
+
     let serialNumber = fakeSerialNumber + 'new serial number';
     const serialNumberComponent =
         component.shadowRoot.querySelector('#serialNumber');

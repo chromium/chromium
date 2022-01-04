@@ -1867,6 +1867,7 @@ TEST_F(ShimlessRmaServiceTest, SetDeviceInformation) {
         EXPECT_EQ(state.update_device_info().serial_number(), "serial number");
         EXPECT_EQ(state.update_device_info().region_index(), 1UL);
         EXPECT_EQ(state.update_device_info().sku_index(), 2UL);
+        EXPECT_EQ(state.update_device_info().whitelabel_index(), 3UL);
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
@@ -1878,7 +1879,7 @@ TEST_F(ShimlessRmaServiceTest, SetDeviceInformation) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->SetDeviceInformation(
-      "serial number", 1, 2,
+      "serial number", 1, 2, 3,
       base::BindLambdaForTesting([&](mojom::State state, bool can_cancel,
                                      bool can_go_back,
                                      rmad::RmadErrorCode error) {
@@ -1903,7 +1904,7 @@ TEST_F(ShimlessRmaServiceTest, SetDeviceInformationFromWrongStateFails) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->SetDeviceInformation(
-      "serial number", 1, 2,
+      "serial number", 1, 2, 3,
       base::BindLambdaForTesting([&](mojom::State state, bool can_cancel,
                                      bool can_go_back,
                                      rmad::RmadErrorCode error) {

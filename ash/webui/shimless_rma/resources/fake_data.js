@@ -206,7 +206,7 @@ export const fakeDeviceSkus = [1, 2, 3];
 
 /** @type {!Array<string>} */
 export const fakeDeviceWhiteLabels =
-    ['White-label 1', 'White-label 2', 'White-label 3'];
+    ['White-label 1', 'White-label 2', 'White-label 3', ''];
 
 /** @type {string} */
 export const fakeLog =

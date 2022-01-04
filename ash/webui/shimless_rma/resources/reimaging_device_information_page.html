@@ -73,6 +73,25 @@
         </cr-button>
       </div>
     </div>
+    <div class="input-row">
+      <label id="whiteLabelLabel" class="cr-form-field-label">
+        [[i18n('confirmDeviceInfoWhiteLabelLabel')]]
+      </label>
+      <div class="input-holder">
+        <select id="whiteLabelSelect" class="md-select"
+            on-change="onSelectedWhiteLabelChange_" aria-labelledby="whiteLabelLabel">
+          <template is="dom-repeat" items="[[whiteLabels_]]" as="whiteLabel">
+            <option value="[[whiteLabel]]">
+              [[whiteLabel]]
+            </option>
+          </template>
+        </select>
+        <cr-button id="resetWhiteLabel" on-click="onResetWhiteLabelButtonClicked_"
+            disabled="[[disableResetWhiteLabel_]]">
+          [[i18n('confirmDeviceInfoResetButtonLabel')]]
+        </cr-button>
+      </div>
+    </div>
     <div>
       <label id="skuLabel" class="cr-form-field-label">
         [[i18n('confirmDeviceInfoSkuLabel')]]
@@ -95,6 +114,6 @@
     <div class="sku-warning">
       <iron-icon icon="shimless-icon:warning"></iron-icon>
       [[i18n('confirmDeviceInfoSkuWarning')]]
-    </p>
+    </div>
   </div>
 </base-page>

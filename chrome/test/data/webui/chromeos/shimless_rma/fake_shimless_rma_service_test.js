@@ -549,10 +549,11 @@ export function fakeShimlessRmaServiceTestSuite() {
     ];
     service.setStates(states);
 
-    return service.setDeviceInformation('serial number', 1, 2).then((state) => {
-      assertEquals(state.state, State.kChooseDestination);
-      assertEquals(state.error, RmadErrorCode.kOk);
-    });
+    return service.setDeviceInformation('serial number', 1, 2, 3)
+        .then((state) => {
+          assertEquals(state.state, State.kChooseDestination);
+          assertEquals(state.error, RmadErrorCode.kOk);
+        });
   });
 
   test('GetCalibrationComponentList', () => {
