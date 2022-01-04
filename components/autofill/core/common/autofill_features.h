@@ -108,13 +108,14 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<int>
     kAutofillMaxiumWidthPercentageToMoveSuggestionPopupToCenter;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillParsingPatternsFromRemote;
+extern const base::Feature kAutofillParsingPatternProvider;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillParsingPatternsLanguageDetection;
+extern const base::FeatureParam<bool>
+    kAutofillParsingWithLanguageSpecificPatternsParam;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillParsingPatternsNegativeMatching;
+extern const base::FeatureParam<bool> kAutofillParsingWithRemotePatternsParam;
 COMPONENT_EXPORT(AUTOFILL)
-extern const base::Feature kAutofillParsingPatternsLanguageDependent;
+extern const base::Feature kAutofillPageLanguageDetection;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillPreventOverridingPrefilledValues;
 COMPONENT_EXPORT(AUTOFILL)

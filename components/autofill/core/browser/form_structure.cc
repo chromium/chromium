@@ -730,8 +730,7 @@ void FormStructure::DetermineHeuristicTypes(
         1 << AutofillMetrics::FORM_CONTAINS_UPI_VPA_HINT;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillParsingPatternsLanguageDetection)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)) {
     RationalizeRepeatedFields(form_interactions_ukm_logger, log_manager);
   }
   RationalizeFieldTypePredictions(log_manager);

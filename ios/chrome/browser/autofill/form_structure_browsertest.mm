@@ -157,7 +157,8 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug/1165780): Remove once shared labels are launched.
        autofill::features::kAutofillEnableSupportForParsingWithSharedLabels,
        // TODO(crbug.com/1150895) Remove once launched.
-       autofill::features::kAutofillParsingPatternsLanguageDetection,
+       autofill::features::kAutofillParsingPatternProvider,
+       autofill::features::kAutofillPageLanguageDetection,
        // TODO(crbug.com/1277480): Remove once launched.
        autofill::features::kAutofillEnableNameSurenameParsing,
        // TODO(crbug.com/1190334): Remove once launched.

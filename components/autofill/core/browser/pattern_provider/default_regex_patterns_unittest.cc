@@ -86,10 +86,11 @@ void DefaultRegExPatternsTest::Validate(const std::string& pattern_name,
 
 TEST_P(DefaultRegExPatternsTest, TestPositiveAndNegativeCases) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillParsingPatternsLanguageDependent,
-                            features::kAutofillParsingPatternsNegativeMatching},
-      /*disabled_features=*/{});
+  base::FieldTrialParams feature_parameters{
+      {features::kAutofillParsingWithLanguageSpecificPatternsParam.name,
+       "true"}};
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillParsingPatternProvider, feature_parameters);
 
   PatternTestCase test_case = GetParam();
 

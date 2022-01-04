@@ -84,10 +84,10 @@ class FormField {
 
   // Attempts to parse a form field with the given pattern.  Returns true on
   // success and fills |match| with a pointer to the field.
-  static bool ParseField(AutofillScanner* scanner,
-                         base::StringPiece16 pattern,
-                         AutofillField** match,
-                         const RegExLogging& logging = {});
+  static bool ParseFieldWithLegacyPattern(AutofillScanner* scanner,
+                                          base::StringPiece16 pattern,
+                                          AutofillField** match,
+                                          const RegExLogging& logging = {});
 
   static bool ParseField(AutofillScanner* scanner,
                          const std::vector<MatchingPattern>& patterns,
@@ -105,11 +105,12 @@ class FormField {
   // is non-NULL and the pattern matches, |match| will be set to the matched
   // field, and the scanner would advance by one step. A |true| result is
   // returned in the case of a successful match, false otherwise.
-  static bool ParseFieldSpecifics(AutofillScanner* scanner,
-                                  base::StringPiece16 pattern,
-                                  int match_type,
-                                  AutofillField** match,
-                                  const RegExLogging& logging = {});
+  static bool ParseFieldSpecificsWithLegacyPattern(
+      AutofillScanner* scanner,
+      base::StringPiece16 pattern,
+      int match_type,
+      AutofillField** match,
+      const RegExLogging& logging = {});
 
   static bool ParseFieldSpecifics(AutofillScanner* scanner,
                                   const std::vector<MatchingPattern>& patterns,
@@ -118,12 +119,13 @@ class FormField {
 
   // The same as ParseFieldSpecifics but with splitted match_types into
   // MatchAttributes and MatchFieldTypes.
-  static bool ParseFieldSpecifics(AutofillScanner* scanner,
-                                  base::StringPiece16 pattern,
-                                  int match_field_attributes,
-                                  int match_field_input_types,
-                                  AutofillField** match,
-                                  const RegExLogging& logging = {});
+  static bool ParseFieldSpecificsWithLegacyPattern(
+      AutofillScanner* scanner,
+      base::StringPiece16 pattern,
+      int match_field_attributes,
+      int match_field_input_types,
+      AutofillField** match,
+      const RegExLogging& logging = {});
 
   struct MatchFieldBitmasks {
     int restrict_attributes = ~0;

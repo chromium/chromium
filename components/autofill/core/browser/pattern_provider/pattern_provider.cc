@@ -99,8 +99,7 @@ const std::vector<MatchingPattern> PatternProvider::GetMatchPatterns(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/1134496): Remove feature check once launched.
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillParsingPatternsLanguageDependent)) {
+  if (features::kAutofillParsingWithLanguageSpecificPatternsParam.Get()) {
     auto outer_it = patterns_.find(pattern_name);
     if (outer_it != patterns_.end()) {
       const std::map<LanguageCode, std::vector<MatchingPattern>>&
@@ -113,13 +112,8 @@ const std::vector<MatchingPattern> PatternProvider::GetMatchPatterns(
         }
       }
     }
-    return GetAllPatternsByType(pattern_name);
-  } else if (base::FeatureList::IsEnabled(
-                 features::kAutofillParsingPatternsNegativeMatching)) {
-    return GetAllPatternsByType(pattern_name);
-  } else {
-    return {};
   }
+  return GetAllPatternsByType(pattern_name);
 }
 
 const std::vector<MatchingPattern> PatternProvider::GetMatchPatterns(

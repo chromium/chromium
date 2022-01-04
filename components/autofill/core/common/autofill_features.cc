@@ -286,28 +286,31 @@ extern const base::Feature kAutofillPreventOverridingPrefilledValues{
     "AutofillPreventOverridingPrefilledValues",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, Autofill will load remote patterns via the component updater.
+// Uses the pattern provider to retrieve parsing patterns for the heuristic
+// field type detection.
 // TODO(crbug/1121990): Remove once launched.
-extern const base::Feature kAutofillParsingPatternsFromRemote{
-    "AutofillParsingPatternsFromRemote", base::FEATURE_DISABLED_BY_DEFAULT};
+extern const base::Feature kAutofillParsingPatternProvider{
+    "AutofillParsingPatternProvider", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls if language-specific patterns are used for the heuristic field type
+// detection.
+// For this to work, the feature kAutofillPageLanguageDetection must be enabled.
+// Otherwise the pattern provider will revert back to language unspecific
+// patterns.
+const base::FeatureParam<bool>
+    kAutofillParsingWithLanguageSpecificPatternsParam{
+        &kAutofillParsingPatternProvider, "use_language_specific_patterns",
+        true};
+
+// Controls if patterns retrieved with the component updater are used.
+const base::FeatureParam<bool> kAutofillParsingWithRemotePatternsParam{
+    &kAutofillParsingPatternProvider,
+    "use_patterns_retrieved_with_the_component_udpater", false};
 
 // Enables detection of language from Translate.
 // TODO(crbug/1150895): Cleanup when launched.
-const base::Feature kAutofillParsingPatternsLanguageDetection{
-    "AutofillParsingPatternsLanguageDetection",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Controls whether negative patterns are used to parse the field type.
-// TODO(crbug.com/1132831): Remove once launched.
-const base::Feature kAutofillParsingPatternsNegativeMatching{
-    "AutofillParsingPatternsNegativeMatching",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Controls whether page language is used to match patterns.
-// TODO(crbug.com/1134496): Remove once launched.
-const base::Feature kAutofillParsingPatternsLanguageDependent{
-    "AutofillParsingPatternsLanguageDependent",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kAutofillPageLanguageDetection{
+    "AutofillPageLanguageDetection", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If the feature is enabled, FormTracker's probable-form-submission detection
 // is disabled and replaced with browser-side detection.

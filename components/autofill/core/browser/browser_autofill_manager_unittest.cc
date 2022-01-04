@@ -9319,7 +9319,7 @@ TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {
 TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlyDetected) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillParsingPatternsLanguageDetection);
+      features::kAutofillPageLanguageDetection);
 
   FormData form;
   test::CreateTestAddressFormData(&form);

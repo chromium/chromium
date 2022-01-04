@@ -165,11 +165,12 @@ FieldCandidatesMap FormField::ParseFormFieldsForPromoCodes(
 }
 
 // static
-bool FormField::ParseField(AutofillScanner* scanner,
-                           base::StringPiece16 pattern,
-                           AutofillField** match,
-                           const RegExLogging& logging) {
-  return ParseFieldSpecifics(scanner, pattern, MATCH_DEFAULT, match, logging);
+bool FormField::ParseFieldWithLegacyPattern(AutofillScanner* scanner,
+                                            base::StringPiece16 pattern,
+                                            AutofillField** match,
+                                            const RegExLogging& logging) {
+  return ParseFieldSpecificsWithLegacyPattern(scanner, pattern, MATCH_DEFAULT,
+                                              match, logging);
 }
 
 bool FormField::ParseField(AutofillScanner* scanner,
@@ -184,22 +185,18 @@ bool FormField::ParseField(AutofillScanner* scanner,
                            const std::vector<MatchingPattern>& patterns,
                            AutofillField** match,
                            const RegExLogging& logging) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillParsingPatternsLanguageDependent) ||
-      base::FeatureList::IsEnabled(
-          features::kAutofillParsingPatternsNegativeMatching)) {
-    return ParseField(scanner, patterns, match, logging);
-  } else {
-    return ParseField(scanner, pattern, match, logging);
-  }
+  return base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider)
+             ? ParseField(scanner, patterns, match, logging)
+             : ParseFieldWithLegacyPattern(scanner, pattern, match, logging);
 }
 
-bool FormField::ParseFieldSpecifics(AutofillScanner* scanner,
-                                    base::StringPiece16 pattern,
-                                    int match_field_attributes,
-                                    int match_field_input_types,
-                                    AutofillField** match,
-                                    const RegExLogging& logging) {
+bool FormField::ParseFieldSpecificsWithLegacyPattern(
+    AutofillScanner* scanner,
+    base::StringPiece16 pattern,
+    int match_field_attributes,
+    int match_field_input_types,
+    AutofillField** match,
+    const RegExLogging& logging) {
   if (scanner->IsEnd())
     return false;
 
@@ -229,21 +226,30 @@ bool FormField::ParseFieldSpecifics(
       continue;
     }
 
-    // TODO(crbug.com/1132831): Remove feature check once launched.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillParsingPatternsNegativeMatching)) {
-      if (!pattern.negative_pattern.empty() &&
-          FormField::Match(field, pattern.negative_pattern,
-                           pattern.match_field_attributes,
-                           pattern.match_field_input_types, logging)) {
-        continue;
+    // For each of the two match field attributes, MATCH_NAME and MATCH_LABEL,
+    // that are active for the current pattern, test if it matches the negative
+    // pattern. If yes, remove it from the attributes that are considered for
+    // positive matching.
+    uint8_t match_field_attributes = pattern.match_field_attributes;
+
+    if (!pattern.negative_pattern.empty()) {
+      for (auto attribute : {MATCH_LABEL, MATCH_NAME}) {
+        if ((match_field_attributes & attribute) &&
+            FormField::Match(field, pattern.negative_pattern, attribute,
+                             pattern.match_field_input_types, logging)) {
+          match_field_attributes &= ~attribute;
+        }
       }
     }
 
+    if (match_field_attributes == 0)
+      continue;
+
+    // Apply the positive matching against all remaining match field attributes.
     if (!pattern.positive_pattern.empty() &&
         MatchAndAdvance(scanner, pattern.positive_pattern,
-                        pattern.match_field_attributes,
-                        pattern.match_field_input_types, match, logging)) {
+                        match_field_attributes, pattern.match_field_input_types,
+                        match, logging)) {
       return true;
     }
   }
@@ -251,16 +257,18 @@ bool FormField::ParseFieldSpecifics(
 }
 
 // static
-bool FormField::ParseFieldSpecifics(AutofillScanner* scanner,
-                                    base::StringPiece16 pattern,
-                                    int match_type,
-                                    AutofillField** match,
-                                    const RegExLogging& logging) {
+bool FormField::ParseFieldSpecificsWithLegacyPattern(
+    AutofillScanner* scanner,
+    base::StringPiece16 pattern,
+    int match_type,
+    AutofillField** match,
+    const RegExLogging& logging) {
   int match_field_attributes = match_type & 0b11;
   int match_field_types = match_type & ~0b11;
 
-  return ParseFieldSpecifics(scanner, pattern, match_field_attributes,
-                             match_field_types, match, logging);
+  return ParseFieldSpecificsWithLegacyPattern(
+      scanner, pattern, match_field_attributes, match_field_types, match,
+      logging);
 }
 
 bool FormField::ParseFieldSpecifics(
@@ -271,10 +279,7 @@ bool FormField::ParseFieldSpecifics(
     AutofillField** match,
     const RegExLogging& logging,
     MatchFieldBitmasks match_field_bitmasks) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillParsingPatternsLanguageDependent) ||
-      base::FeatureList::IsEnabled(
-          features::kAutofillParsingPatternsNegativeMatching)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider)) {
     // TODO(crbug/1142936): This hack is to allow
     // AddressField::ParseNameAndLabelSeparately().
     if (match_field_bitmasks.restrict_attributes != ~0 ||
@@ -288,15 +293,16 @@ bool FormField::ParseFieldSpecifics(
     }
     return ParseFieldSpecifics(scanner, patterns, match, logging);
   } else {
-    return ParseFieldSpecifics(scanner, pattern, match_type, match, logging);
+    return ParseFieldSpecificsWithLegacyPattern(scanner, pattern, match_type,
+                                                match, logging);
   }
 }
 
 // static
 bool FormField::ParseEmptyLabel(AutofillScanner* scanner,
                                 AutofillField** match) {
-  return ParseFieldSpecifics(scanner, u"^$", MATCH_LABEL | MATCH_ALL_INPUTS,
-                             match);
+  return ParseFieldSpecificsWithLegacyPattern(
+      scanner, u"^$", MATCH_LABEL | MATCH_ALL_INPUTS, match);
 }
 
 // static

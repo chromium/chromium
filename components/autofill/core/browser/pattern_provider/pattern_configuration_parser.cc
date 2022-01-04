@@ -83,8 +83,7 @@ bool ParseMatchingPattern(PatternProvider::Map& patterns,
 // are equal or both unspecified (i.e. set to 0) this prioritizes the remote
 // configuration over the local one.
 void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillParsingPatternsFromRemote)) {
+  if (features::kAutofillParsingWithRemotePatternsParam.Get()) {
     DVLOG(1) << "Remote patterns are disabled.";
     return;
   }

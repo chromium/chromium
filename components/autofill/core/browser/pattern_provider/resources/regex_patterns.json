@@ -857,8 +857,17 @@
         "pattern_identifier": "en_zip_code_preserving",
         "positive_pattern": "zip|postal|post.*code|pcode|pin.?code",
         "positive_score": 1.1,
-        "negative_pattern": "\\.zip",
-        "negative_patterns_explainer": ".zip refers to a file extension",
+        "negative_pattern": "\\.zip\\b",
+        "negative_patterns_explainer": ".zip refers to a file extension. However, there are field billingAddress.zip",
+        "match_field_attributes": 3,
+        "match_field_input_types": 69
+      },
+      {
+        "pattern_identifier": "en_zip_code_preserving",
+        "positive_pattern": "address\\.zip",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "negative_patterns_explainer": "",
         "match_field_attributes": 3,
         "match_field_input_types": 69
       }
@@ -1867,8 +1876,18 @@
         "match_field_attributes": 3,
         "match_field_input_types": 205
       }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_card_exp_date_preserving",
+        "positive_pattern": "masa berlaku|berlaku hingga",
+        "positive_score": 1.0,
+        "negative_pattern": null,
+        "match_field_attributes": 3,
+        "match_field_input_types": 205
+      }
     ]
-  },
+   },
   "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR": {
     "en": [
       {
@@ -1968,16 +1987,6 @@
       {
         "pattern_identifier": "ru_card_exp_date_preserving",
         "positive_pattern": "Срок действия карты",
-        "positive_score": 1.0,
-        "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
-      }
-    ],
-    "id": [
-      {
-        "pattern_identifier": "id_card_exp_date_preserving",
-        "positive_pattern": "masa berlaku|berlaku hingga",
         "positive_score": 1.0,
         "negative_pattern": null,
         "match_field_attributes": 3,
