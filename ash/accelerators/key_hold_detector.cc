@@ -69,7 +69,7 @@ void KeyHoldDetector::OnKeyEvent(ui::KeyEvent* event) {
         break;
       case PRESSED:
         state_ = HOLD;
-        FALLTHROUGH;
+        [[fallthrough]];
       case HOLD:
         delegate_->OnKeyHold(event);
         if (delegate_->ShouldStopEventPropagation())
