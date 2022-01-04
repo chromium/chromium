@@ -14,6 +14,9 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/features.h"
+#include "components/app_restore/full_restore_utils.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
@@ -86,6 +89,15 @@ void StandaloneBrowserExtensionApps::LaunchAppWithParams(
       apps::ConvertLaunchParamsToCrosapi(
           params, ProfileManager::GetPrimaryUserProfile()),
       apps::LaunchResultToMojomLaunchResultCallback(std::move(callback)));
+
+  if (!::full_restore::features::IsFullRestoreForLacrosEnabled())
+    return;
+
+  auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
+      params.app_id, params.container, params.disposition, params.display_id,
+      std::move(params.launch_files), std::move(params.intent));
+  full_restore::SaveAppLaunchInfo(proxy()->profile()->GetPath(),
+                                  std::move(launch_info));
 }
 
 void StandaloneBrowserExtensionApps::Connect(
@@ -141,6 +153,16 @@ void StandaloneBrowserExtensionApps::Launch(
   params->app_id = app_id;
   params->launch_source = launch_source;
   controller_->Launch(std::move(params), /*callback=*/base::DoNothing());
+
+  if (!::full_restore::features::IsFullRestoreForLacrosEnabled())
+    return;
+
+  auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
+      app_id, apps::mojom::LaunchContainer::kLaunchContainerNone,
+      WindowOpenDisposition::UNKNOWN, display::kInvalidDisplayId,
+      std::vector<base::FilePath>{}, nullptr);
+  full_restore::SaveAppLaunchInfo(proxy()->profile()->GetPath(),
+                                  std::move(launch_info));
 }
 
 void StandaloneBrowserExtensionApps::LaunchAppWithIntent(
@@ -165,6 +187,16 @@ void StandaloneBrowserExtensionApps::LaunchAppWithIntent(
   controller_->Launch(std::move(launch_params),
                       /*callback=*/base::DoNothing());
   std::move(callback).Run(/*success=*/true);
+
+  if (!::full_restore::features::IsFullRestoreForLacrosEnabled())
+    return;
+
+  auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
+      app_id, apps::mojom::LaunchContainer::kLaunchContainerNone,
+      WindowOpenDisposition::UNKNOWN, display::kInvalidDisplayId,
+      std::vector<base::FilePath>{}, std::move(intent));
+  full_restore::SaveAppLaunchInfo(proxy()->profile()->GetPath(),
+                                  std::move(launch_info));
 }
 
 void StandaloneBrowserExtensionApps::LaunchAppWithFiles(
@@ -183,6 +215,16 @@ void StandaloneBrowserExtensionApps::LaunchAppWithFiles(
   launch_params->intent =
       apps_util::CreateCrosapiIntentForViewFiles(file_paths);
   controller_->Launch(std::move(launch_params), /*callback=*/base::DoNothing());
+
+  if (!::full_restore::features::IsFullRestoreForLacrosEnabled())
+    return;
+
+  auto launch_info = std::make_unique<app_restore::AppLaunchInfo>(
+      app_id, apps::mojom::LaunchContainer::kLaunchContainerNone,
+      WindowOpenDisposition::UNKNOWN, display::kInvalidDisplayId,
+      std::move(file_paths->file_paths), nullptr);
+  full_restore::SaveAppLaunchInfo(proxy()->profile()->GetPath(),
+                                  std::move(launch_info));
 }
 
 void StandaloneBrowserExtensionApps::GetMenuModel(

@@ -165,6 +165,7 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
     case apps::mojom::AppType::kChromeApp:
     case apps::mojom::AppType::kWeb:
     case apps::mojom::AppType::kSystemWeb:
+    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
       if (ShouldLaunchSystemWebAppOrChromeApp(app_id, it->second))
         LaunchSystemWebAppOrChromeApp(app_type, app_id, it->second);
       break;
@@ -174,7 +175,6 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
     case apps::mojom::AppType::kUnknown:
     case apps::mojom::AppType::kMacOs:
     case apps::mojom::AppType::kStandaloneBrowser:
-    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
     case apps::mojom::AppType::kRemote:
     case apps::mojom::AppType::kBorealis:
     case apps::mojom::AppType::kExtension:
@@ -188,10 +188,8 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
     apps::mojom::AppType app_type,
     const std::string& app_id,
     const app_restore::RestoreData::LaunchList& launch_list) {
-  auto* launcher = apps::AppServiceProxyFactory::GetForProfile(profile_)
-                       ->BrowserAppLauncher();
-  if (!launcher)
-    return;
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+  DCHECK(proxy);
 
   if (app_type == apps::mojom::AppType::kChromeApp)
     OnExtensionLaunching(app_id);
@@ -229,7 +227,7 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
                                           : std::vector<base::FilePath>{},
         it.second->intent.has_value() ? it.second->intent.value() : intent);
     params.restore_id = it.first;
-    launcher->LaunchAppWithParams(std::move(params));
+    proxy->LaunchAppWithParams(std::move(params));
   }
 }
 
