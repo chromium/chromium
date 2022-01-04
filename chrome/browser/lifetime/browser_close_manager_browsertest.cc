@@ -408,10 +408,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
                        MAYBE_TestSessionRestore) {
   // The testing framework launches Chrome with about:blank as args.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(GURL(chrome::kChromeUIVersionURL),
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetURL());
-  EXPECT_EQ(GURL("about:blank"),
-            browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+  EXPECT_EQ(
+      GURL(chrome::kChromeUIVersionURL),
+      browser()->tab_strip_model()->GetWebContentsAt(0)->GetLastCommittedURL());
+  EXPECT_EQ(
+      GURL("about:blank"),
+      browser()->tab_strip_model()->GetWebContentsAt(1)->GetLastCommittedURL());
 }
 
 // Test that browser windows are only closed if all browsers are ready to close
@@ -819,10 +821,12 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
 
   // Check the restored browser contents.
   EXPECT_EQ(2, browser2->tab_strip_model()->count());
-  EXPECT_EQ(embedded_test_server()->GetURL("/beforeunload.html"),
-            browser2->tab_strip_model()->GetWebContentsAt(0)->GetURL());
-  EXPECT_EQ(embedded_test_server()->GetURL("/title2.html"),
-            browser2->tab_strip_model()->GetWebContentsAt(1)->GetURL());
+  EXPECT_EQ(
+      embedded_test_server()->GetURL("/beforeunload.html"),
+      browser2->tab_strip_model()->GetWebContentsAt(0)->GetLastCommittedURL());
+  EXPECT_EQ(
+      embedded_test_server()->GetURL("/title2.html"),
+      browser2->tab_strip_model()->GetWebContentsAt(1)->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
@@ -983,8 +987,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest, TestWithDownloads) {
       TestBrowserCloseManager::USER_CHOICE_USER_CANCELS_CLOSE);
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
   navigation_observer.Wait();
-  EXPECT_EQ(GURL(chrome::kChromeUIDownloadsURL),
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  EXPECT_EQ(GURL(chrome::kChromeUIDownloadsURL), browser()
+                                                     ->tab_strip_model()
+                                                     ->GetActiveWebContents()
+                                                     ->GetLastCommittedURL());
 
   TestBrowserCloseManager::AttemptClose(
       TestBrowserCloseManager::USER_CHOICE_USER_ALLOWS_CLOSE);
@@ -1014,8 +1020,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
       TestBrowserCloseManager::USER_CHOICE_USER_CANCELS_CLOSE);
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
   navigation_observer.Wait();
-  EXPECT_EQ(GURL(chrome::kChromeUIDownloadsURL),
-            otr_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+  EXPECT_EQ(GURL(chrome::kChromeUIDownloadsURL), otr_browser->tab_strip_model()
+                                                     ->GetActiveWebContents()
+                                                     ->GetLastCommittedURL());
 
   TestBrowserCloseManager::AttemptClose(
       TestBrowserCloseManager::USER_CHOICE_USER_ALLOWS_CLOSE);
@@ -1107,12 +1114,13 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerBrowserTest,
   Browser* opened_browser = BrowserList::GetInstance()->GetLastActive();
   ASSERT_TRUE(opened_browser);
   EXPECT_NE(other_profile_ptr, opened_browser->profile());
-  EXPECT_EQ(
-      GURL(chrome::kChromeUIDownloadsURL),
-      opened_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
-  EXPECT_EQ(GURL("about:blank"),
-            other_profile_browser->tab_strip_model()->GetActiveWebContents()
-                ->GetURL());
+  EXPECT_EQ(GURL(chrome::kChromeUIDownloadsURL),
+            opened_browser->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetVisibleURL());
+  EXPECT_EQ(GURL("about:blank"), other_profile_browser->tab_strip_model()
+                                     ->GetActiveWebContents()
+                                     ->GetLastCommittedURL());
 
   TestBrowserCloseManager::AttemptClose(
       TestBrowserCloseManager::USER_CHOICE_USER_ALLOWS_CLOSE);
