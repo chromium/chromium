@@ -82,8 +82,16 @@ void SearchControllerImplNew::StartSearch(const std::u16string& query) {
     observer.OnResultsCleared();
 
   ranker_->Start(query, results_, categories_);
-  for (const auto& provider : providers_)
-    provider->Start(query);
+
+  // Search all providers. The query can be empty if the user has entered and
+  // then deleted a query.
+  for (const auto& provider : providers_) {
+    if (query.empty()) {
+      provider->StartZeroState();
+    } else {
+      provider->Start(query);
+    }
+  }
 }
 
 void SearchControllerImplNew::StartZeroState(base::OnceClosure on_done,

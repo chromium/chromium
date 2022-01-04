@@ -55,7 +55,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   // SearchProvider:
   void AppListShown() override;
   ash::AppListSearchResultType ResultType() override;
-  void Start(const std::u16string& query) override;
+  void StartZeroState() override;
 
   void set_session_manager_for_testing(
       session_manager::SessionManager* session_manager) {

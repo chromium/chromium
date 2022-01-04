@@ -217,57 +217,58 @@ HelpAppProvider::~HelpAppProvider() = default;
 
 void HelpAppProvider::Start(const std::u16string& query) {
   ClearResultsSilently();
-  if (query.empty()) {
-    // Zero state suggestion chip.
-    SearchProvider::Results search_results;
 
-    if (ShouldShowDiscoverTabSuggestionChip(profile_)) {
-      search_results.emplace_back(std::make_unique<HelpAppResult>(
-          profile_, kHelpAppDiscoverResult,
-          l10n_util::GetStringUTF16(IDS_HELP_APP_DISCOVER_TAB_SUGGESTION_CHIP),
-          icon_));
-    } else if (ash::ReleaseNotesStorage(profile_).ShouldShowSuggestionChip()) {
-      search_results.emplace_back(std::make_unique<HelpAppResult>(
-          profile_, kHelpAppUpdatesResult,
-          l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP),
-          icon_));
-    }
-    SwapResults(&search_results);
-  } else {
-    if (query.size() < kMinQueryLength) {
-      // Do not do a list search for queries that are too short because the
-      // results generally aren't meaningful. This isn't worth logging as a list
-      // search result case because it happens frequently when entering a new
-      // search query.
-      return;
-    }
-
-    // Start a search for list results.
-    const base::TimeTicks start_time = base::TimeTicks::Now();
-    last_query_ = query;
-
-    // Stop the search if:
-    //  - the search backend isn't available (or the feature is disabled)
-    //  - we don't have an icon to display with results.
-    if (!search_handler_) {
-      LogListSearchResultState(
-          ListSearchResultState::kSearchHandlerUnavailable);
-      return;
-    } else if (icon_.isNull()) {
-      LogListSearchResultState(ListSearchResultState::kNoHelpAppIcon);
-      // This prevents a timeout in the test, but it does not change the user
-      // experience because the results were already cleared at the start.
-      ClearResults();
-      return;
-    }
-
-    // Invalidate weak pointers to cancel existing searches.
-    weak_factory_.InvalidateWeakPtrs();
-    search_handler_->Search(
-        query, kNumRequestedResults,
-        base::BindOnce(&HelpAppProvider::OnSearchReturned,
-                       weak_factory_.GetWeakPtr(), query, start_time));
+  if (query.size() < kMinQueryLength) {
+    // Do not do a list search for queries that are too short because the
+    // results generally aren't meaningful. This isn't worth logging as a list
+    // search result case because it happens frequently when entering a new
+    // search query.
+    return;
   }
+
+  // Start a search for list results.
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  last_query_ = query;
+
+  // Stop the search if:
+  //  - the search backend isn't available (or the feature is disabled)
+  //  - we don't have an icon to display with results.
+  if (!search_handler_) {
+    LogListSearchResultState(ListSearchResultState::kSearchHandlerUnavailable);
+    return;
+  } else if (icon_.isNull()) {
+    LogListSearchResultState(ListSearchResultState::kNoHelpAppIcon);
+    // This prevents a timeout in the test, but it does not change the user
+    // experience because the results were already cleared at the start.
+    ClearResults();
+    return;
+  }
+
+  // Invalidate weak pointers to cancel existing searches.
+  weak_factory_.InvalidateWeakPtrs();
+  search_handler_->Search(
+      query, kNumRequestedResults,
+      base::BindOnce(&HelpAppProvider::OnSearchReturned,
+                     weak_factory_.GetWeakPtr(), query, start_time));
+}
+
+void HelpAppProvider::StartZeroState() {
+  SearchProvider::Results search_results;
+  ClearResultsSilently();
+  last_query_.clear();
+
+  if (ShouldShowDiscoverTabSuggestionChip(profile_)) {
+    search_results.emplace_back(std::make_unique<HelpAppResult>(
+        profile_, kHelpAppDiscoverResult,
+        l10n_util::GetStringUTF16(IDS_HELP_APP_DISCOVER_TAB_SUGGESTION_CHIP),
+        icon_));
+  } else if (ash::ReleaseNotesStorage(profile_).ShouldShowSuggestionChip()) {
+    search_results.emplace_back(std::make_unique<HelpAppResult>(
+        profile_, kHelpAppUpdatesResult,
+        l10n_util::GetStringUTF16(IDS_HELP_APP_WHATS_NEW_SUGGESTION_CHIP),
+        icon_));
+  }
+  SwapResults(&search_results);
 }
 
 void HelpAppProvider::ViewClosing() {

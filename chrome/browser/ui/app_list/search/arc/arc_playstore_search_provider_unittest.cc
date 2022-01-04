@@ -236,10 +236,6 @@ TEST_F(ArcPlayStoreSearchProviderTest, FailedQuery) {
   provider->Start(kQuery);
   EXPECT_GT(provider->results().size(), 0u);
 
-  // Create an empty query and it should clear the result list.
-  provider->Start(std::u16string());
-  EXPECT_EQ(0u, provider->results().size());
-
   // Test for queries with a failure state code.
   constexpr char16_t kFailedQueryPrefix[] = u"FailedQueryWithCode-";
   using RequestState = arc::ArcPlayStoreSearchRequestState;

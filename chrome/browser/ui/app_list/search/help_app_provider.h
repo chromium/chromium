@@ -77,6 +77,7 @@ class HelpAppProvider : public SearchProvider,
 
   // SearchProvider:
   void Start(const std::u16string& query) override;
+  void StartZeroState() override;
   void ViewClosing() override;
   void AppListShown() override;
   ash::AppListSearchResultType ResultType() override;

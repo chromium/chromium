@@ -425,20 +425,26 @@ AppSearchProvider::AppSearchProvider(Profile* profile,
 AppSearchProvider::~AppSearchProvider() = default;
 
 void AppSearchProvider::Start(const std::u16string& query) {
-  // When the AppSearchProvider initializes, UpdateRecommendedResults is called
-  // three times. We only want to start updating user prefs for release notes
-  // after these first three calls are done.
+  ClearResultsSilently();
   query_ = query;
   query_start_time_ = base::TimeTicks::Now();
   // We only need to record app search latency for queries started by user.
+  // TODO(crbug.com/1258415): Is this needed?
   record_query_uma_ = true;
-  const bool show_recommendations = query.empty();
   // Refresh list of apps to ensure we have the latest launch time information.
-  // This will also cause the results to update.
-  if (show_recommendations || apps_.empty())
+  if (apps_.empty()) {
     RefreshAppsAndUpdateResults();
-  else
+  } else {
     UpdateResults();
+  }
+}
+
+void AppSearchProvider::StartZeroState() {
+  ClearResultsSilently();
+  query_.clear();
+  query_start_time_ = base::TimeTicks::Now();
+  record_query_uma_ = true;
+  RefreshAppsAndUpdateResults();
 }
 
 void AppSearchProvider::ViewClosing() {

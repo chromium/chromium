@@ -23,8 +23,8 @@ using chromeos::string_matching::TokenizedString;
 constexpr char kDriveSearchSchema[] = "drive_search://";
 constexpr int kMaxResults = 10;
 
-// Outcome of a call to DriveSearchProvider::Start. These values persist to
-// logs. Entries should not be renumbered and numeric values should never be
+// Outcome of a call to DriveSearchProvider::Start. These values persist
+// to logs. Entries should not be renumbered and numeric values should never be
 // reused.
 enum class Status {
   kOk = 0,
@@ -61,10 +61,6 @@ void DriveSearchProvider::Start(const std::u16string& query) {
   // Clear results and cancel any outgoing requests.
   ClearResultsSilently();
   weak_factory_.InvalidateWeakPtrs();
-
-  // This provider does not handle zero-state.
-  if (query.empty())
-    return;
 
   if (!drive_service_ || !drive_service_->is_enabled()) {
     LogStatus(Status::kDriveUnavailable);

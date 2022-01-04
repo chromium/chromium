@@ -103,9 +103,9 @@ void ArcPlayStoreSearchProvider::Start(const std::u16string& query) {
                 GetRecentAndSuggestedAppsFromPlayStore)
           : nullptr;
 
-  if (app_instance == nullptr || query.empty()) {
+  DCHECK(!query.empty());
+  if (app_instance == nullptr)
     return;
-  }
 
   app_instance->GetRecentAndSuggestedAppsFromPlayStore(
       base::UTF16ToUTF8(query), max_results_,

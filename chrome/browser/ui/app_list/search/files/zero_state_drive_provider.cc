@@ -43,9 +43,9 @@ using ThrottleInterval = ZeroStateDriveProvider::ThrottleInterval;
 constexpr char kListSchema[] = "zero_state_drive://";
 constexpr char kChipSchema[] = "drive_chip://";
 
-// Outcome of a call to DriverZeroStateProvider::Start. These values persist to
-// logs. Entries should not be renumbered and numeric values should never be
-// reused.
+// Outcome of a call to DriverZeroStateProvider::StartZeroState. These values
+// persist to logs. Entries should not be renumbered and numeric values should
+// never be reused.
 enum class Status {
   kOk = 0,
   kDriveFSNotMounted = 1,
@@ -196,19 +196,14 @@ ash::AppListSearchResultType ZeroStateDriveProvider::ResultType() {
   return ash::AppListSearchResultType::kZeroStateDrive;
 }
 
-void ZeroStateDriveProvider::Start(const std::u16string& query) {
+void ZeroStateDriveProvider::StartZeroState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ClearResultsSilently();
 
   // TODO(crbug.com/1034842): Add query latency metrics.
 
-  // Exit in three cases:
-  //  - this search has a non-empty query, we only handle zero-state.
-  //  - drive fs isn't mounted, as we launch results via drive fs.
-  const bool drive_fs_mounted = drive_service_ && drive_service_->IsMounted();
-  if (!query.empty()) {
-    return;
-  } else if (!drive_fs_mounted) {
+  // Exit if drive fs isn't mounted, as we launch results via drive fs.
+  if (!drive_service_ || !drive_service_->IsMounted()) {
     LogStatus(Status::kDriveFSNotMounted);
     return;
   }

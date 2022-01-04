@@ -112,10 +112,6 @@ void FileSearchProvider::Start(const std::u16string& query) {
   ClearResultsSilently();
   weak_factory_.InvalidateWeakPtrs();
 
-  // This provider does not handle zero-state.
-  if (query.empty())
-    return;
-
   last_query_ = query;
   last_tokenized_query_.emplace(query, TokenizedString::Mode::kWords);
 

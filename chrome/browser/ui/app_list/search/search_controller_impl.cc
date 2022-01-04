@@ -63,8 +63,12 @@ void SearchControllerImpl::StartSearch(const std::u16string& query) {
   for (Observer& observer : observer_list_) {
     observer.OnResultsCleared();
   }
+
   for (const auto& provider : providers_) {
-    provider->Start(query);
+    if (query.empty())
+      provider->StartZeroState();
+    else
+      provider->Start(query);
   }
 
   dispatching_query_ = false;

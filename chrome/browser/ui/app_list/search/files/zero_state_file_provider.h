@@ -48,7 +48,7 @@ class ZeroStateFileProvider : public SearchProvider,
   ~ZeroStateFileProvider() override;
 
   // SearchProvider:
-  void Start(const std::u16string& query) override;
+  void StartZeroState() override;
   ash::AppListSearchResultType ResultType() override;
 
   // file_manager::file_tasks::FileTaskObserver:

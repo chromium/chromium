@@ -101,7 +101,7 @@ class SearchControllerImpl : public SearchController {
   // The query associated with the most recent search.
   std::u16string last_query_;
 
-  // The time when Start was most recently called.
+  // The time when StartSearch was most recently called.
   base::Time session_start_;
 
   // The ID of the most recently launched app. This is used for app list launch

@@ -68,6 +68,8 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
 OmniboxProvider::~OmniboxProvider() {}
 
 void OmniboxProvider::Start(const std::u16string& query) {
+  ClearResultsSilently();
+
   controller_->Stop(false);
   // The new page classification value(CHROMEOS_APP_LIST) is introduced
   // to differentiate the suggest requests initiated by ChromeOS app_list from
@@ -87,6 +89,12 @@ void OmniboxProvider::Start(const std::u16string& query) {
 
   query_start_time_ = base::TimeTicks::Now();
   controller_->Start(input);
+}
+
+void OmniboxProvider::StartZeroState() {
+  // TODO(crbug.com/1258415): Remove zero-state once productivity launcher
+  // launched.
+  Start(std::u16string());
 }
 
 ash::AppListSearchResultType OmniboxProvider::ResultType() {

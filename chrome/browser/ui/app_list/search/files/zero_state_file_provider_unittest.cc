@@ -93,7 +93,7 @@ TEST_F(ZeroStateFileProviderTest, ResultsProvided) {
       {OpenEvent("exists_1.txt"), OpenEvent("exists_2.png")});
   provider_->OnFilesOpened({OpenEvent("nonexistant.txt")});
 
-  provider_->Start(std::u16string());
+  provider_->StartZeroState();
   Wait();
 
   EXPECT_THAT(
@@ -115,7 +115,7 @@ TEST_F(ZeroStateFileProviderTest, ResultsProvidedWithChips) {
       {OpenEvent("exists_1.txt"), OpenEvent("exists_2.png")});
   provider_->OnFilesOpened({OpenEvent("nonexistant.txt")});
 
-  provider_->Start(std::u16string());
+  provider_->StartZeroState();
   Wait();
 
   EXPECT_THAT(

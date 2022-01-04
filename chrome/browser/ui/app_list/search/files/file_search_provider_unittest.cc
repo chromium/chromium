@@ -71,15 +71,6 @@ class FileSearchProviderTest : public testing::Test {
   base::ScopedTempDir scoped_temp_dir_;
 };
 
-TEST_F(FileSearchProviderTest, NoResultsInZeroState) {
-  WriteFile("file.txt");
-
-  provider_->Start(u"");
-  Wait();
-
-  EXPECT_TRUE(provider_->results().empty());
-}
-
 TEST_F(FileSearchProviderTest, SearchResultsMatchQuery) {
   WriteFile("file_1.txt");
   WriteFile("no_match.png");

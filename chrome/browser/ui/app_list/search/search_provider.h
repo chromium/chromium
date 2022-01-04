@@ -31,8 +31,10 @@ class SearchProvider {
 
   virtual ~SearchProvider();
 
-  // Invoked to start a query.
-  virtual void Start(const std::u16string& query) = 0;
+  // Invoked to start a query search. |query| is guaranteed to be non-empty.
+  virtual void Start(const std::u16string& query) {}
+  // Invoked to start a zero-state search.
+  virtual void StartZeroState() {}
   // Invoked when the UI view closes. In response, the |SearchProvider| may
   // clear its caches.
   virtual void ViewClosing() {}

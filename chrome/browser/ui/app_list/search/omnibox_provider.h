@@ -33,6 +33,7 @@ class OmniboxProvider : public SearchProvider,
 
   // SearchProvider overrides:
   void Start(const std::u16string& query) override;
+  void StartZeroState() override;
   ash::AppListSearchResultType ResultType() override;
 
  private:
