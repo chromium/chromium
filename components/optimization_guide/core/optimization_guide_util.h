@@ -18,13 +18,6 @@ namespace optimization_guide {
 
 enum class OptimizationGuideDecision;
 
-// Returns the string than can be used to record histograms for the optimization
-// target. If adding a histogram to use the string or adding an optimization
-// target, update the OptimizationGuide.OptimizationTargets histogram suffixes
-// in histograms.xml.
-std::string GetStringNameForOptimizationTarget(
-    proto::OptimizationTarget optimization_target);
-
 // Returns false if the host is an IP address, localhosts, or an invalid
 // host that is not supported by the remote optimization guide.
 bool IsHostValidToFetchFromRemoteOptimizationGuide(const std::string& host);
@@ -34,17 +27,9 @@ bool IsHostValidToFetchFromRemoteOptimizationGuide(const std::string& host);
 google::protobuf::RepeatedPtrField<proto::FieldTrial>
 GetActiveFieldTrialsAllowedForFetch();
 
-// Returns the file path represented by the given string, handling platform
-// differences in the conversion. nullopt is only returned iff the passed string
-// is empty.
-absl::optional<base::FilePath> StringToFilePath(const std::string& str_path);
-
 // Returns a string representation of the given |file_path|, handling platform
 // differences in the conversion.
 std::string FilePathToString(const base::FilePath& file_path);
-
-// Returns the base file name to use for storing all prediction models.
-base::FilePath GetBaseFileNameForModels();
 
 // Validates that the metadata stored in |any_metadata_| is of the same type
 // and is parseable as |T|. Will return metadata if all checks pass.

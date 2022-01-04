@@ -7,7 +7,7 @@
 #include <inttypes.h>
 
 #include "base/strings/stringprintf.h"
-#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 

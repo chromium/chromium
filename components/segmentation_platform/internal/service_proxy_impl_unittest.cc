@@ -7,7 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/testing/fake_db.h"
-#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {

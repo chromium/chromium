@@ -49,29 +49,6 @@ enum class OptimizationTypeDecision {
   kMaxValue = kHintFetchStartedButNotAvailableInTime,
 };
 
-// The types of decisions that can be made for an optimization target.
-//
-// Keep in sync with OptimizationGuideOptimizationTargetDecision in enums.xml.
-enum class OptimizationTargetDecision {
-  kUnknown,
-  // The page load does not match the optimization target.
-  kPageLoadDoesNotMatch,
-  // The page load matches the optimization target.
-  kPageLoadMatches,
-  // The model needed to make the target decision was not available on the
-  // client.
-  kModelNotAvailableOnClient,
-  // The page load is part of a model prediction holdback where all decisions
-  // will return |OptimizationGuideDecision::kFalse| in an attempt to not taint
-  // the data for understanding the production recall of the model.
-  kModelPredictionHoldback,
-  // The OptimizationGuideDecider was not initialized yet.
-  kDeciderNotInitialized,
-
-  // Add new values above this line.
-  kMaxValue = kDeciderNotInitialized,
-};
-
 // The statuses for racing a hints fetch with the current navigation based
 // on the availability of hints for both the current host and URL.
 //
@@ -99,28 +76,6 @@ enum class RaceNavigationFetchAttemptStatus {
   // Add new values above this line.
   kMaxValue =
       kDeprecatedRaceNavigationFetchNotAttemptedTooManyConcurrentFetches,
-};
-
-// The statuses for a prediction model in the prediction manager when requested
-// to be evaluated.
-//
-// Keep in sync with OptimizationGuidePredictionManagerModelStatus in enums.xml.
-enum class PredictionManagerModelStatus {
-  kUnknown,
-  // The model is loaded and available for use.
-  kModelAvailable,
-  // The store is initialized but does not contain a model for the optimization
-  // target.
-  kStoreAvailableNoModelForTarget,
-  // The store is initialized and contains a model for the optimization target
-  // but it is not loaded in memory.
-  kStoreAvailableModelNotLoaded,
-  // The store is not initialized and it is unknown if it contains a model for
-  // the optimization target.
-  kStoreUnavailableModelUnknown,
-
-  // Add new values above this line.
-  kMaxValue = kStoreUnavailableModelUnknown,
 };
 
 // The statuses for a download file containing a prediction model when verified
