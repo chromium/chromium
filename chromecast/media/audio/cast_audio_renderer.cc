@@ -208,7 +208,8 @@ void CastAudioRenderer::SetPreservesPitch(bool preverves_pitch) {
   NOTIMPLEMENTED();
 }
 
-void CastAudioRenderer::SetAutoplayInitiated(bool auto_play_initiated) {
+void CastAudioRenderer::SetWasPlayedWithUserActivation(
+    bool was_played_with_user_activation) {
   NOTIMPLEMENTED();
 }
 

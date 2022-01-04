@@ -115,8 +115,9 @@ void DecryptingRenderer::SetPreservesPitch(bool preserves_pitch) {
   renderer_->SetPreservesPitch(preserves_pitch);
 }
 
-void DecryptingRenderer::SetAutoplayInitiated(bool autoplay_initiated) {
-  renderer_->SetAutoplayInitiated(autoplay_initiated);
+void DecryptingRenderer::SetWasPlayedWithUserActivation(
+    bool was_played_with_user_activation) {
+  renderer_->SetWasPlayedWithUserActivation(was_played_with_user_activation);
 }
 
 void DecryptingRenderer::Flush(base::OnceClosure flush_cb) {

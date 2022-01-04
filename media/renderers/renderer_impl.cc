@@ -200,12 +200,14 @@ void RendererImpl::SetPreservesPitch(bool preserves_pitch) {
     audio_renderer_->SetPreservesPitch(preserves_pitch);
 }
 
-void RendererImpl::SetAutoplayInitiated(bool autoplay_initiated) {
+void RendererImpl::SetWasPlayedWithUserActivation(
+    bool was_played_with_user_activation) {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   if (audio_renderer_)
-    audio_renderer_->SetAutoplayInitiated(autoplay_initiated);
+    audio_renderer_->SetWasPlayedWithUserActivation(
+        was_played_with_user_activation);
 }
 
 void RendererImpl::Flush(base::OnceClosure flush_cb) {

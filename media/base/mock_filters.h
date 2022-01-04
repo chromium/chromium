@@ -122,7 +122,7 @@ class MockPipeline : public Pipeline {
   MOCK_METHOD1(SetVolume, void(float));
   MOCK_METHOD1(SetLatencyHint, void(absl::optional<base::TimeDelta>));
   MOCK_METHOD1(SetPreservesPitch, void(bool));
-  MOCK_METHOD1(SetAutoplayInitiated, void(bool));
+  MOCK_METHOD1(SetWasPlayedWithUserActivation, void(bool));
 
   // TODO(sandersd): These should probably have setters too.
   MOCK_CONST_METHOD0(GetMediaTime, base::TimeDelta());
@@ -477,7 +477,7 @@ class MockAudioRenderer : public AudioRenderer {
   MOCK_METHOD1(SetLatencyHint,
                void(absl::optional<base::TimeDelta> latency_hint));
   MOCK_METHOD1(SetPreservesPitch, void(bool));
-  MOCK_METHOD1(SetAutoplayInitiated, void(bool));
+  MOCK_METHOD1(SetWasPlayedWithUserActivation, void(bool));
 };
 
 class MockRenderer : public Renderer {
@@ -501,7 +501,7 @@ class MockRenderer : public Renderer {
                     PipelineStatusCallback& init_cb));
   MOCK_METHOD1(SetLatencyHint, void(absl::optional<base::TimeDelta>));
   MOCK_METHOD1(SetPreservesPitch, void(bool));
-  MOCK_METHOD1(SetAutoplayInitiated, void(bool));
+  MOCK_METHOD1(SetWasPlayedWithUserActivation, void(bool));
   void Flush(base::OnceClosure flush_cb) override { OnFlush(flush_cb); }
   MOCK_METHOD1(OnFlush, void(base::OnceClosure& flush_cb));
   MOCK_METHOD1(StartPlayingFrom, void(base::TimeDelta timestamp));

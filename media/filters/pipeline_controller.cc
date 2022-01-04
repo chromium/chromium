@@ -393,8 +393,9 @@ void PipelineController::SetPreservesPitch(bool preserves_pitch) {
   pipeline_->SetPreservesPitch(preserves_pitch);
 }
 
-void PipelineController::SetAutoplayInitiated(bool autoplay_initiated) {
-  pipeline_->SetAutoplayInitiated(autoplay_initiated);
+void PipelineController::SetWasPlayedWithUserActivation(
+    bool was_played_with_user_activation) {
+  pipeline_->SetWasPlayedWithUserActivation(was_played_with_user_activation);
 }
 
 base::TimeDelta PipelineController::GetMediaTime() const {

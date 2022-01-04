@@ -139,7 +139,8 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerImpl
   void SetVolume(double volume) override;
   void SetLatencyHint(double seconds) override;
   void SetPreservesPitch(bool preserves_pitch) override;
-  void SetAutoplayInitiated(bool autoplay_initiated) override;
+  void SetWasPlayedWithUserActivation(
+      bool was_played_with_user_activation) override;
   void OnRequestPictureInPicture() override;
   void OnTimeUpdate() override;
   bool SetSinkId(const WebString& sink_id,

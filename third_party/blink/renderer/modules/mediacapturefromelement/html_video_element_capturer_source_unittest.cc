@@ -53,7 +53,7 @@ class MockWebMediaPlayer : public WebMediaPlayer {
   void SetVolume(double) override {}
   void SetLatencyHint(double) override {}
   void SetPreservesPitch(bool) override {}
-  void SetAutoplayInitiated(bool) override {}
+  void SetWasPlayedWithUserActivation(bool) override {}
   void OnRequestPictureInPicture() override {}
   WebTimeRanges Buffered() const override { return WebTimeRanges(); }
   WebTimeRanges Seekable() const override { return WebTimeRanges(); }

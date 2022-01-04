@@ -809,10 +809,10 @@ void AudioRendererImpl::SetPreservesPitch(bool preserves_pitch) {
     algorithm_->SetPreservesPitch(preserves_pitch);
 }
 
-void AudioRendererImpl::SetAutoplayInitiated(bool autoplay_initiated) {
+void AudioRendererImpl::SetWasPlayedWithUserActivation(
+    bool was_played_with_user_activation) {
   base::AutoLock auto_lock(lock_);
-
-  autoplay_initiated_ = autoplay_initiated;
+  was_played_with_user_activation_ = was_played_with_user_activation;
 }
 
 void AudioRendererImpl::OnSuspend() {
@@ -977,7 +977,8 @@ bool AudioRendererImpl::HandleDecodedBuffer_Locked(
 #if !defined(OS_ANDROID)
     // Do not transcribe muted streams initiated by autoplay if the stream was
     // never unmuted.
-    if (transcribe_audio_callback_ && !(autoplay_initiated_ && !was_unmuted_)) {
+    if (transcribe_audio_callback_ &&
+        (was_played_with_user_activation_ || was_unmuted_)) {
       transcribe_audio_callback_.Run(buffer);
     }
 #endif

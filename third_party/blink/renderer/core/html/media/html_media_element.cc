@@ -2117,8 +2117,6 @@ void HTMLMediaElement::SetReadyState(ReadyState state) {
     ScheduleEvent(event_type_names::kCanplaythrough);
   }
 
-  web_media_player_->SetAutoplayInitiated(
-      autoplay_policy_->WasAutoplayInitiated());
   UpdatePlayState();
 }
 
@@ -2720,6 +2718,11 @@ absl::optional<DOMExceptionCode> HTMLMediaElement::Play() {
 
 void HTMLMediaElement::PlayInternal() {
   DVLOG(3) << "playInternal(" << *this << ")";
+
+  if (web_media_player_) {
+    web_media_player_->SetWasPlayedWithUserActivation(
+        LocalFrame::HasTransientUserActivation(GetDocument().GetFrame()));
+  }
 
   // Playback aborts any lazy loading.
   if (lazy_load_intersection_observer_) {

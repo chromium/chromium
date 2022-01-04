@@ -1132,9 +1132,11 @@ void WebMediaPlayerImpl::SetPreservesPitch(bool preserves_pitch) {
   pipeline_controller_->SetPreservesPitch(preserves_pitch);
 }
 
-void WebMediaPlayerImpl::SetAutoplayInitiated(bool autoplay_initiated) {
+void WebMediaPlayerImpl::SetWasPlayedWithUserActivation(
+    bool was_played_with_user_activation) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  pipeline_controller_->SetAutoplayInitiated(autoplay_initiated);
+  pipeline_controller_->SetWasPlayedWithUserActivation(
+      was_played_with_user_activation);
 }
 
 void WebMediaPlayerImpl::OnRequestPictureInPicture() {

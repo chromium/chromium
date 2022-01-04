@@ -52,7 +52,8 @@ class MEDIA_EXPORT DecryptingRenderer : public Renderer {
   void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) override;
   void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
   void SetPreservesPitch(bool preserves_pitch) override;
-  void SetAutoplayInitiated(bool autoplay_initiated) override;
+  void SetWasPlayedWithUserActivation(
+      bool was_played_with_user_activation) override;
 
   void Flush(base::OnceClosure flush_cb) override;
   void StartPlayingFrom(base::TimeDelta time) override;
