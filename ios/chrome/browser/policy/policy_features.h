@@ -5,11 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_POLICY_FEATURES_H_
 #define IOS_CHROME_BROWSER_POLICY_POLICY_FEATURES_H_
 
-#include "base/feature_list.h"
-
-// Feature flag for supporting the URLBlocklist enterprise policy on iOS.
-extern const base::Feature kURLBlocklistIOS;
-
 // Returns true if the core enterprise policy infrastructure is enabled. Does
 // not control whether policy data is parsed and made user visible; that is
 // controlled by |ShouldInstallEnterprisePolicyHandlers()| below.

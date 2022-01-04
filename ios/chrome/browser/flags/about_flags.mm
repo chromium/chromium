@@ -448,9 +448,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSaveCardDismissOnNavigation)},
-    {"url-blocklist-ios", flag_descriptions::kURLBlocklistIOSName,
-     flag_descriptions::kURLBlocklistIOSDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kURLBlocklistIOS)},
     {"new-content-suggestions-feed", flag_descriptions::kDiscoverFeedInNtpName,
      flag_descriptions::kDiscoverFeedInNtpDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kDiscoverFeedInNtp,

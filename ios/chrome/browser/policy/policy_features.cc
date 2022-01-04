@@ -10,10 +10,6 @@
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/chrome_switches.h"
 #include "ios/chrome/common/channel_info.h"
-#include "ios/web/common/features.h"
-
-const base::Feature kURLBlocklistIOS{"URLBlocklistIOS",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
 namespace {
 
@@ -47,6 +43,5 @@ bool ShouldInstallURLBlocklistPolicyHandlers() {
 }
 
 bool IsURLBlocklistEnabled() {
-  return ShouldInstallURLBlocklistPolicyHandlers() &&
-         base::FeatureList::IsEnabled(kURLBlocklistIOS);
+  return ShouldInstallURLBlocklistPolicyHandlers();
 }

@@ -596,11 +596,6 @@ class BlockedUrlPolicyAppLauncherTabHelperTest
 
 // Tests that URLs to blocked domains do not open native apps.
 TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, BlockedUrl) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{kURLBlocklistIOS},
-      /*disabled_features=*/{});
-
   NSString* url_string = @"itms-apps://itunes.apple.com/us/app/appname/id123";
   EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
@@ -617,11 +612,6 @@ TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, BlockedUrl) {
 #define MAYBE_AllowedUrl DISABLED_AllowedUrl
 #endif
 TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, MAYBE_AllowedUrl) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{kURLBlocklistIOS},
-      /*disabled_features=*/{});
-
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,

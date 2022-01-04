@@ -4436,21 +4436,6 @@
             ]
         }
     ],
-    "IOSURLBlocklistPolicy": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "URLBlocklistIOS"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSUseUserDefaultsForExitedCleanlyBeacon": [
         {
             "platforms": [

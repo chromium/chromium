@@ -523,11 +523,6 @@ const char kUpdateHistoryEntryPointsInIncognitoDescription[] =
     "When enabled, the entry points to history UI from Incognito mode will be "
     "removed.";
 
-const char kURLBlocklistIOSName[] = "URL Blocklist Policy";
-const char kURLBlocklistIOSDescription[] =
-    "When enabled, URLs can be blocked/allowed by the URLBlocklist/URLAllowlist"
-    "enterprise policies.";
-
 const char kUseLensToSearchForImageName[] =
     "Use Google Lens to Search for images";
 const char kUseLensToSearchForImageDescription[] =

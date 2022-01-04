@@ -470,11 +470,6 @@ extern const char kToolbarContainerDescription[];
 extern const char kUpdateHistoryEntryPointsInIncognitoName[];
 extern const char kUpdateHistoryEntryPointsInIncognitoDescription[];
 
-// Title and description for the flag to enable URLBlocklist/URLAllowlist
-// enterprise policy.
-extern const char kURLBlocklistIOSName[];
-extern const char kURLBlocklistIOSDescription[];
-
 // Title and description for the flag to enable using Lens to search for an
 // image from the long press context menu.
 extern const char kUseLensToSearchForImageName[];
