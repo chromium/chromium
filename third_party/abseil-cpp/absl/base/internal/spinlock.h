@@ -120,6 +120,14 @@ class ABSL_LOCKABLE SpinLock {
     return (lockword_.load(std::memory_order_relaxed) & kSpinLockHeld) != 0;
   }
 
+  // Return immediately if this thread holds the SpinLock exclusively.
+  // Otherwise, report an error by crashing with a diagnostic.
+  inline void AssertHeld() const ABSL_ASSERT_EXCLUSIVE_LOCK() {
+    if (!IsHeld()) {
+      ABSL_RAW_LOG(FATAL, "thread should hold the lock on SpinLock");
+    }
+  }
+
  protected:
   // These should not be exported except for testing.
 

@@ -679,7 +679,7 @@ absl::StatusOr<std::vector<T>> DistributedPointFunction::EvaluateUntil(
     int block_index = DomainToBlockIndex(prefixes[i], previous_hierarchy_level);
 
     // Check if `tree_index` already exists in `tree_indices`.
-    int64_t previous_size = tree_indices_inverse.size();
+    auto previous_size = tree_indices_inverse.size();
     auto it = tree_indices_inverse.try_emplace(tree_indices_inverse.end(),
                                                tree_index, tree_indices.size());
     if (tree_indices_inverse.size() > previous_size) {

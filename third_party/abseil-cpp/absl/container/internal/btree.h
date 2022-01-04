@@ -238,7 +238,7 @@ struct common_params {
 
   using allocator_type = Alloc;
   using key_type = Key;
-  using size_type = std::make_signed<size_t>::type;
+  using size_type = size_t;
   using difference_type = ptrdiff_t;
 
   using slot_policy = SlotPolicy;
@@ -1497,7 +1497,7 @@ inline void btree_node<P>::emplace_value(const size_type i,
   set_finish(finish() + 1);
 
   if (!leaf() && finish() > i + 1) {
-    for (int j = finish(); j > i + 1; --j) {
+    for (field_type j = finish(); j > i + 1; --j) {
       set_child(j, child(j - 1));
     }
     clear_child(i + 1);
@@ -2124,7 +2124,7 @@ auto btree<P>::erase_range(iterator begin, iterator end)
     return {0, begin};
   }
 
-  if (count == size_) {
+  if (static_cast<size_type>(count) == size_) {
     clear();
     return {count, this->end()};
   }
