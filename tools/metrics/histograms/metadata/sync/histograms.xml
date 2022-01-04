@@ -786,7 +786,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.Local.FileSizeKB" units="KB" expires_after="2022-04-30">
+<histogram name="Sync.Local.FileSizeKB" units="KB" expires_after="2022-07-03">
   <owner>pastarmovj@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
