@@ -490,7 +490,9 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffers(OutputSurfaceFrame frame,
 
 void SkiaOutputSurfaceImplOnGpu::AllocateFrameBuffers(size_t n) {
   MakeCurrent(/*need_framebuffer=*/false);
-  output_device_->AllocateFrameBuffers(n);
+  if (!output_device_->AllocateFrameBuffers(n)) {
+    MarkContextLost(CONTEXT_LOST_ALLOCATE_FRAME_BUFFERS_FAILED);
+  }
 }
 
 void SkiaOutputSurfaceImplOnGpu::ReleaseFrameBuffers(size_t n) {

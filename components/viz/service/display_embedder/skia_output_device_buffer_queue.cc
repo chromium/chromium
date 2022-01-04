@@ -726,7 +726,8 @@ SkSurface* SkiaOutputDeviceBufferQueue::BeginPaint(
 
   if (allocate_frame_buffer) {
     DCHECK(!current_image_);
-    AllocateFrameBuffers(1u);
+    if (!AllocateFrameBuffers(1u))
+      return nullptr;
   }
   if (!current_image_) {
     current_image_ = GetNextImage();
@@ -743,18 +744,20 @@ void SkiaOutputDeviceBufferQueue::EndPaint() {
   current_image_->EndWriteSkia();
 }
 
-void SkiaOutputDeviceBufferQueue::AllocateFrameBuffers(size_t n) {
+bool SkiaOutputDeviceBufferQueue::AllocateFrameBuffers(size_t n) {
   std::vector<std::unique_ptr<OutputPresenter::Image>> new_images =
       presenter_->AllocateImages(color_space_, image_size_, n);
   if (new_images.size() != n) {
-    LOG(FATAL) << "AllocateImages failed " << new_images.size() << " " << n;
-    return;
+    LOG(ERROR) << "AllocateImages failed " << new_images.size() << " " << n;
+    CheckForLoopFailuresBufferQueue();
+    return false;
   }
   for (auto& image : new_images) {
     available_images_.push_front(image.get());
   }
   images_.insert(images_.end(), std::make_move_iterator(new_images.begin()),
                  std::make_move_iterator(new_images.end()));
+  return true;
 }
 
 void SkiaOutputDeviceBufferQueue::ReleaseOneFrameBuffer() {

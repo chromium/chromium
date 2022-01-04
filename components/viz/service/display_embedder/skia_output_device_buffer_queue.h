@@ -59,7 +59,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
       bool allocate_frame_buffer,
       std::vector<GrBackendSemaphore>* end_semaphores) override;
   void EndPaint() override;
-  void AllocateFrameBuffers(size_t n) override;
+  bool AllocateFrameBuffers(size_t n) override;
   void ReleaseOneFrameBuffer() override;
 
   bool IsPrimaryPlaneOverlay() const override;
