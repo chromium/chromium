@@ -458,7 +458,7 @@ void NativeThemeWin::PaintDirect(SkCanvas* destination_canvas,
           PaintLeftMenuArrowThemed(hdc, handle, part_id, state_id, rect);
           return;
         }
-        FALLTHROUGH;
+        [[fallthrough]];
       case kCheckbox:
       case kInnerSpinButton:
       case kMenuCheck:
@@ -1425,7 +1425,7 @@ int NativeThemeWin::GetWindowsState(Part part,
     case kScrollbarVerticalThumb:
       if ((state == kHovered) && !extra.scrollbar_thumb.is_hovering)
         return SCRBS_HOT;
-      FALLTHROUGH;
+      [[fallthrough]];
     case kScrollbarHorizontalTrack:
     case kScrollbarVerticalTrack:
       switch (state) {
