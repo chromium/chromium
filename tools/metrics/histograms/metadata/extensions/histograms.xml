@@ -3180,14 +3180,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.NetworkDelay" units="ms" expires_after="2022-01-23">
+<histogram name="Extensions.NetworkDelay" units="ms" expires_after="2023-01-23">
   <owner>battre@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>Time that network requests were blocked due to extensions.</summary>
 </histogram>
 
 <histogram name="Extensions.NetworkDelayPercentage" units="%"
-    expires_after="2022-01-23">
+    expires_after="2023-01-23">
   <owner>battre@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
