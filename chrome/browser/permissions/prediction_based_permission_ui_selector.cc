@@ -11,23 +11,27 @@
 #include "base/rand_util.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/permissions/permission_actions_history_factory.h"
-#include "chrome/browser/permissions/prediction_model_handler_factory.h"
 #include "chrome/browser/permissions/prediction_service_factory.h"
 #include "chrome/browser/permissions/prediction_service_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/prediction_service/prediction_common.h"
-#include "components/permissions/prediction_service/prediction_model_handler.h"
 #include "components/permissions/prediction_service/prediction_service.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "chrome/browser/permissions/prediction_model_handler_factory.h"
+#include "components/permissions/prediction_service/prediction_model_handler.h"
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 namespace {
 
@@ -86,10 +90,13 @@ PredictionBasedPermissionUiSelector::PredictionBasedPermissionUiSelector(
     if (mock_likelihood.has_value())
       set_likelihood_override(mock_likelihood.value());
   }
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (base::FeatureList::IsEnabled(
           permissions::features::kPermissionOnDevicePredictions)) {
     PredictionModelHandlerFactory::GetForBrowserContext(profile);
   }
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 PredictionBasedPermissionUiSelector::~PredictionBasedPermissionUiSelector() =
@@ -136,6 +143,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
 
   DCHECK(!request_);
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (base::FeatureList::IsEnabled(
           permissions::features::kPermissionOnDevicePredictions)) {
     permissions::PredictionModelHandler* prediction_model_handler =
@@ -152,6 +160,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
       return;
     }
   }
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   permissions::PredictionService* service =
       PredictionServiceFactory::GetForProfile(profile_);

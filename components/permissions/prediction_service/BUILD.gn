@@ -13,10 +13,6 @@ source_set("prediction_service") {
   sources = [
     "prediction_common.cc",
     "prediction_common.h",
-    "prediction_model_executor.cc",
-    "prediction_model_executor.h",
-    "prediction_model_handler.cc",
-    "prediction_model_handler.h",
     "prediction_request_features.h",
     "prediction_service.cc",
     "prediction_service.h",
@@ -29,15 +25,27 @@ source_set("prediction_service") {
     "//content/public/browser",
     "//services/network/public/cpp:cpp",
     "//third_party/protobuf:protobuf_lite",
-    "//third_party/tflite:tflite_public_headers",
-    "//third_party/tflite_support",
-    "//third_party/tflite_support:tflite_support_proto",
   ]
   public_deps = [
     ":prediction_service_messages_proto",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "prediction_model_executor.cc",
+      "prediction_model_executor.h",
+      "prediction_model_handler.cc",
+      "prediction_model_handler.h",
+    ]
+
+    deps += [
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite_support",
+      "//third_party/tflite_support:tflite_support_proto",
+    ]
+  }
 }
 
 source_set("unit_tests") {

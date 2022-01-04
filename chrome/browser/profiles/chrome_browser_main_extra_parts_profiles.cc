@@ -63,7 +63,6 @@
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
 #include "chrome/browser/permissions/last_tab_standing_tracker_factory.h"
 #include "chrome/browser/permissions/permission_auditing_service_factory.h"
-#include "chrome/browser/permissions/prediction_model_handler_factory.h"
 #include "chrome/browser/persisted_state_db/persisted_state_db_content.pb.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
 #include "chrome/browser/plugins/plugin_prefs_factory.h"
@@ -116,6 +115,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/permissions/features.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/buildflags.h"
@@ -221,6 +221,10 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/profile_account_manager_factory.h"
 #include "chrome/browser/lacros/cert_db_initializer_factory.h"
+#endif
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "chrome/browser/permissions/prediction_model_handler_factory.h"
 #endif
 
 #if defined(OS_MAC)
@@ -433,10 +437,12 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::UserPolicySigninServiceFactory::GetInstance();
 #endif
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (base::FeatureList::IsEnabled(
           permissions::features::kPermissionOnDevicePredictions)) {
     PredictionModelHandlerFactory::GetInstance();
   }
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   predictors::AutocompleteActionPredictorFactory::GetInstance();
   predictors::LoadingPredictorFactory::GetInstance();
   predictors::PredictorDatabaseFactory::GetInstance();

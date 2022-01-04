@@ -1127,8 +1127,6 @@ static_library("browser") {
     "permissions/permission_manager_factory.h",
     "permissions/prediction_based_permission_ui_selector.cc",
     "permissions/prediction_based_permission_ui_selector.h",
-    "permissions/prediction_model_handler_factory.cc",
-    "permissions/prediction_model_handler_factory.h",
     "permissions/prediction_service_factory.cc",
     "permissions/prediction_service_factory.h",
     "permissions/prediction_service_request.cc",
@@ -7254,6 +7252,13 @@ static_library("browser") {
     sources += [
       "component_updater/file_type_policies_component_installer.cc",
       "component_updater/file_type_policies_component_installer.h",
+    ]
+  }
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "permissions/prediction_model_handler_factory.cc",
+      "permissions/prediction_model_handler_factory.h",
     ]
   }
 }
