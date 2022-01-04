@@ -142,6 +142,32 @@ TEST_F(FindInPageJsTest, FindTextNoResults) {
   }));
 }
 
+// Tests that FindInPage doesn't search in noscript elements.
+TEST_F(FindInPageJsTest, FindTextIgnoresNoscript) {
+  ASSERT_TRUE(LoadHtml("<body><noscript>foo</noscript></body>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
+  const base::TimeDelta kCallJavascriptFunctionTimeout =
+      base::Seconds(kWaitForJSCompletionTimeout);
+  __block bool message_received = false;
+  std::vector<base::Value> params;
+  params.push_back(base::Value(kFindStringFoo));
+  params.push_back(base::Value(kPumpSearchTimeout));
+  main_web_frame()->CallJavaScriptFunctionInContentWorld(
+      kFindInPageSearch, params, content_world_,
+      base::BindOnce(^(const base::Value* result) {
+        ASSERT_TRUE(result);
+        ASSERT_TRUE(result->is_double());
+        double count = result->GetDouble();
+        ASSERT_EQ(0.0, count);
+        message_received = true;
+      }),
+      kCallJavascriptFunctionTimeout);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    return message_received;
+  }));
+}
+
 // Tests that FindInPage searches in child iframe and asserts that a result was
 // found.
 TEST_F(FindInPageJsTest, FindIFrameText) {
