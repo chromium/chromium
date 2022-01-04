@@ -456,7 +456,7 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       event->StopPropagation();
       return;
     case ui::ET_SCROLL_FLING_START:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::ET_GESTURE_SWIPE:
       HandleFlingOrSwipe(event);
       return;
