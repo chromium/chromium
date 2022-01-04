@@ -251,4 +251,45 @@ TEST_F(StyleRecalcChangeTestCQ, SkipAttachLayoutTreeForContainer) {
   EXPECT_FALSE(affected->GetLayoutObject());
 }
 
+TEST_F(StyleRecalcChangeTestCQ, DontSkipLayoutRoot) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #outer, #inner { container-type: size; }
+    </style>
+    <div id="outer">
+      <div id="inner">
+        <span id="inner_child"></span>
+      </div>
+      <span id="outer_child"></span>
+    </div>
+  )HTML",
+                                     ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* outer = GetDocument().getElementById("outer");
+  Element* inner = GetDocument().getElementById("inner");
+  Element* outer_child = GetDocument().getElementById("outer_child");
+  Element* inner_child = GetDocument().getElementById("inner_child");
+
+  inner_child->GetLayoutObject()->SetNeedsLayout("test");
+  outer_child->GetLayoutObject()->SetNeedsLayout("test");
+  inner->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+  outer->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+
+  EXPECT_TRUE(outer->GetLayoutObject()->NeedsLayout());
+  EXPECT_TRUE(inner->GetLayoutObject()->NeedsLayout());
+
+  GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
+
+  ASSERT_TRUE(outer->GetContainerQueryData());
+  EXPECT_FALSE(outer->GetContainerQueryData()->SkippedStyleRecalc());
+
+  ASSERT_TRUE(inner->GetContainerQueryData());
+  EXPECT_FALSE(inner->GetContainerQueryData()->SkippedStyleRecalc());
+
+  // Should not fail DCHECKs.
+  UpdateAllLifecyclePhasesForTest();
+}
+
 }  // namespace blink

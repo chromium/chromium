@@ -2986,7 +2986,7 @@ bool Element::SkipStyleRecalcForContainer(
     }
   } else {
     LayoutObject* layout_object = GetLayoutObject();
-    if (!layout_object || !layout_object->NeedsLayout() ||
+    if (!layout_object || !layout_object->SelfNeedsLayout() ||
         !layout_object->IsEligibleForSizeContainment()) {
       return false;
     }
