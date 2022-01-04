@@ -40,7 +40,7 @@ need to be translated for each locale. Note that some accessibility strings rema
       <output filename="blink_accessibility_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="blink_accessibility_strings_zu.pak" type="data_package" lang="zu" />
     </if>
-    <if expr="chromeos or lacros">
+    <if expr="chromeos_ash or chromeos_lacros">
       <output filename="blink_accessibility_strings_is.pak" type="data_package" lang="is" />
     </if>
     <output filename="blink_accessibility_strings_am.pak" type="data_package" lang="am" />
