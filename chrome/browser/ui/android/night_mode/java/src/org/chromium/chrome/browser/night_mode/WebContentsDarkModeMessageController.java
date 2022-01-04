@@ -12,6 +12,7 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -29,6 +30,7 @@ import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -95,19 +97,29 @@ public class WebContentsDarkModeMessageController {
      *
      * @param activity Activity for resources and to launch SettingsActivity from.
      * @param profile Profile associated with current tab.
+     * @param webContents WebContents associated with current tab.
      * @param settingsLauncher Launcher into theme settings.
      * @param messageDispatcher Dispatcher for the message we are creating.
      */
     public static void attemptToSendMessage(Activity activity, Profile profile,
-            SettingsLauncher settingsLauncher, MessageDispatcher messageDispatcher) {
+            @Nullable WebContents webContents, SettingsLauncher settingsLauncher,
+            MessageDispatcher messageDispatcher) {
         if (!shouldSendMessage(profile, activity)) return;
 
-        // Set the properties (icon, text, etc.) for the message.
+        // Create and send message based on arm.
+        if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING, OPT_OUT_PARAM,
+                    true)) {
+            sendOptOutMessage(activity, profile, settingsLauncher, messageDispatcher, null);
+        } else {
+            sendOptInMessage(activity, profile, webContents, settingsLauncher, messageDispatcher);
+        }
+    }
+
+    private static void sendOptOutMessage(Activity activity, Profile profile,
+            SettingsLauncher settingsLauncher, MessageDispatcher messageDispatcher,
+            @Nullable String description) {
         Resources resources = activity.getResources();
-        boolean optOut = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING, OPT_OUT_PARAM, true);
-        String messageTitle = optOut ? resources.getString(R.string.auto_dark_message_title)
-                                     : resources.getString(R.string.auto_dark_message_opt_in_title);
         PropertyModel message =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
@@ -116,31 +128,56 @@ public class WebContentsDarkModeMessageController {
                                 R.drawable.ic_brightness_medium_24dp)
                         .with(MessageBannerProperties.ICON_TINT_COLOR,
                                 MessageBannerProperties.TINT_NONE)
-                        .with(MessageBannerProperties.TITLE, messageTitle)
+                        .with(MessageBannerProperties.TITLE,
+                                resources.getString(R.string.auto_dark_message_title))
+                        .with(MessageBannerProperties.DESCRIPTION, description)
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                                 resources.getString(R.string.auto_dark_message_button))
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION,
-                                () -> { onPrimaryAction(activity, settingsLauncher); })
+                                () -> { onOptOutPrimaryAction(activity, settingsLauncher); })
                         .with(MessageBannerProperties.ON_DISMISSED,
-                                (dismissReason) -> { onMessageDismissed(profile, dismissReason); })
+                                (dismissReason) -> {
+                                    onOptOutMessageDismissed(profile, dismissReason);
+                                })
                         .build();
+        messageDispatcher.enqueueWindowScopedMessage(message, false);
+    }
 
-        if (!optOut) {
-            message.set(MessageBannerProperties.DESCRIPTION,
-                    resources.getString(R.string.auto_dark_message_opt_in_body));
-        }
-
-        // Enqueue the message so that it will appear on-screen.
+    private static void sendOptInMessage(Activity activity, Profile profile,
+            WebContents webContents, SettingsLauncher settingsLauncher,
+            MessageDispatcher messageDispatcher) {
+        Resources resources = activity.getResources();
+        PropertyModel message =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.AUTO_DARK_WEB_CONTENTS)
+                        .with(MessageBannerProperties.ICON_RESOURCE_ID,
+                                R.drawable.ic_brightness_medium_24dp)
+                        .with(MessageBannerProperties.ICON_TINT_COLOR,
+                                MessageBannerProperties.TINT_NONE)
+                        .with(MessageBannerProperties.TITLE,
+                                resources.getString(R.string.auto_dark_message_opt_in_title))
+                        .with(MessageBannerProperties.DESCRIPTION,
+                                resources.getString(R.string.auto_dark_message_opt_in_body))
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
+                                resources.getString(R.string.auto_dark_message_opt_in_button))
+                        .with(MessageBannerProperties.ON_PRIMARY_ACTION,
+                                () -> { onOptInPrimaryAction(profile, webContents); })
+                        .with(MessageBannerProperties.ON_DISMISSED,
+                                (dismissReason) -> {
+                                    onOptInMessageDismissed(activity, profile, webContents,
+                                            settingsLauncher, messageDispatcher, dismissReason);
+                                })
+                        .build();
         messageDispatcher.enqueueWindowScopedMessage(message, false);
     }
 
     /**
-     * The primary action associated with the created message. In this case, the settings page is
-     * opened to show users where to change the auto-dark settings.
+     * The primary action associated with the created message for the opt-out arm. In this case, the
+     * settings page is opened to show users where to change the auto-dark settings.
      */
-    @VisibleForTesting
-    static void onPrimaryAction(Activity activity, SettingsLauncher settingsLauncher) {
-        // TODO(crbug.com/1277216): Update CTA for opt-in arm.
+    private static void onOptOutPrimaryAction(
+            Activity activity, SettingsLauncher settingsLauncher) {
         Bundle args = new Bundle();
         args.putInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
                 ThemeSettingsEntry.AUTO_DARK_MODE_MESSAGE);
@@ -148,12 +185,39 @@ public class WebContentsDarkModeMessageController {
     }
 
     /**
-     * Record that the message was dismissed.
+     * The primary action associated with the created message for the opt-in arm. In this case, the
+     * global setting is enabled.
      */
-    @VisibleForTesting
-    static void onMessageDismissed(Profile profile, @DismissReason int dismissReason) {
+    private static void onOptInPrimaryAction(Profile profile, WebContents webContents) {
+        WebContentsDarkModeController.setGlobalUserSettings(profile, true);
+        if (webContents != null) {
+            webContents.notifyRendererPreferenceUpdate();
+        }
+    }
+
+    /**
+     * Record that the opt-out message was dismissed.
+     */
+    private static void onOptOutMessageDismissed(
+            Profile profile, @DismissReason int dismissReason) {
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.dismissed(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE);
+    }
+
+    /**
+     * Record that the opt-in message was dismissed. If the CTA was pressed, show the opt-out
+     * message.
+     */
+    private static void onOptInMessageDismissed(Activity activity, Profile profile,
+            WebContents webContents, SettingsLauncher settingsLauncher,
+            MessageDispatcher messageDispatcher, @DismissReason int dismissReason) {
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        tracker.dismissed(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE);
+
+        if (dismissReason == DismissReason.PRIMARY_ACTION) {
+            sendOptOutMessage(activity, profile, settingsLauncher, messageDispatcher,
+                    activity.getResources().getString(R.string.auto_dark_message_opt_in_body));
+        }
     }
 
     // User feedback dialog implementation.

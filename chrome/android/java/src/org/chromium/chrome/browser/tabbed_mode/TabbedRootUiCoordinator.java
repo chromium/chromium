@@ -658,10 +658,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 profile = Profile.fromWebContents(webContents);
             } else {
                 profile = Profile.getLastUsedRegularProfile();
+                webContents = null;
             }
 
-            WebContentsDarkModeMessageController.attemptToSendMessage(
-                    mActivity, profile, new SettingsLauncherImpl(), mMessageDispatcher);
+            WebContentsDarkModeMessageController.attemptToSendMessage(mActivity, profile,
+                    webContents, new SettingsLauncherImpl(), mMessageDispatcher);
         }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
