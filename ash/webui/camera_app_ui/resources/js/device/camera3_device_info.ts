@@ -4,90 +4,60 @@
 
 import {DeviceOperator} from '../mojo/device_operator.js';
 import {
-  Facing,        // eslint-disable-line no-unused-vars
-  FpsRangeList,  // eslint-disable-line no-unused-vars
-  MaxFpsInfo,    // eslint-disable-line no-unused-vars
+  Facing,
+  FpsRangeList,
+  MaxFpsInfo,
   Resolution,
-  ResolutionList,  // eslint-disable-line no-unused-vars
-  VideoConfig,     // eslint-disable-line no-unused-vars
+  ResolutionList,
+  VideoConfig,
 } from '../type.js';
 
 /**
  * Video device information queried from HALv3 mojo private API.
  */
 export class Camera3DeviceInfo {
+  readonly deviceId: string;
+  readonly videoResols: ResolutionList = [];
+  readonly videoMaxFps: MaxFpsInfo = {};
+
   /**
-   * @param {!MediaDeviceInfo} deviceInfo Information of the video device.
-   * @param {!Facing} facing Camera facing of the video device.
-   * @param {!ResolutionList} photoResols Supported available photo resolutions
+   * @param deviceInfo Information of the video device.
+   * @param facing Camera facing of the video device.
+   * @param photoResols Supported available photo resolutions
    *     of the video device.
-   * @param {!Array<!VideoConfig>} videoResolFpses Supported available video
+   * @param videoResolFpses Supported available video
    *     resolutions and maximal capture fps of the video device.
-   * @param {!FpsRangeList} fpsRanges Supported fps ranges of the video device.
-   * @param {boolean} supportPTZ Is supported PTZ controls.
+   * @param fpsRanges Supported fps ranges of the video device.
+   * @param supportPTZ Is supported PTZ controls.
    */
   constructor(
-      deviceInfo, facing, photoResols, videoResolFpses, fpsRanges, supportPTZ) {
-    /**
-     * @const {string}
-     * @public
-     */
+      deviceInfo: MediaDeviceInfo,
+      readonly facing: Facing,
+      readonly photoResols: ResolutionList,
+      videoResolFpses: VideoConfig[],
+      readonly fpsRanges: FpsRangeList,
+      readonly supportPTZ: boolean,
+  ) {
     this.deviceId = deviceInfo.deviceId;
-
-    /**
-     * @const {!Facing}
-     * @public
-     */
-    this.facing = facing;
-
-    /**
-     * @const {!ResolutionList}
-     * @public
-     */
-    this.photoResols = photoResols;
-
-    /**
-     * @const {!ResolutionList}
-     * @public
-     */
-    this.videoResols = [];
-
-    /**
-     * @const {!MaxFpsInfo}
-     * @public
-     */
-    this.videoMaxFps = {};
-
-    /**
-     * @const {!FpsRangeList}
-     * @public
-     */
-    this.fpsRanges = fpsRanges;
-
-    /**
-     * @const {boolean}
-     * @public
-     */
-    this.supportPTZ = supportPTZ;
-
     videoResolFpses.filter(({maxFps}) => maxFps >= 24)
         .forEach(({width, height, maxFps}) => {
           const r = new Resolution(width, height);
           this.videoResols.push(r);
-          this.videoMaxFps[r] = maxFps;
+          this.videoMaxFps[r.toString()] = maxFps;
         });
   }
 
   /**
    * Creates a Camera3DeviceInfo by given device info and the mojo device
    *     operator.
-   * @param {!MediaDeviceInfo} deviceInfo
-   * @param {function(!VideoConfig): boolean} videoConfigFilter Filters the
-   *     available video capability exposed by device.
-   * @return {!Promise<!Camera3DeviceInfo>}
-   * @throws {!Error} Thrown when the device operation is not supported.
+   * @param videoConfigFilter Filters the available video capability exposed by
+   *     device.
+   * @throws Thrown when the device operation is not supported.
    */
-  static async create(deviceInfo, videoConfigFilter) {
+  static async create(
+      deviceInfo: MediaDeviceInfo,
+      videoConfigFilter: (videoConfig: VideoConfig) => boolean):
+      Promise<Camera3DeviceInfo> {
     const deviceId = deviceInfo.deviceId;
 
     const deviceOperator = await DeviceOperator.getInstance();
