@@ -93,6 +93,10 @@ static_library("arc_base_enums") {
 
 source_set("unit_tests") {
   testonly = true
+
+  # For ArcSessionImplDalvikMemoryProfileTest.
+  data = [ "//components/test/data" ]
+
   sources = [
     "arc_bridge_host_impl_unittest.cc",
     "arc_bridge_service_unittest.cc",

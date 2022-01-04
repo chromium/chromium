@@ -404,6 +404,9 @@ source_set("unit_tests") {
     "wake_lock/arc_wake_lock_bridge_unittest.cc",
   ]
 
+  # TODO(b/210694808 ): Move ARC++ test data to //ash/components/arc/test/data.
+  data = [ "//components/test/data" ]
+
   # TODO(b/129295708): Clean up unused deps. Update users of this target.
   deps = [
     ":arc",
