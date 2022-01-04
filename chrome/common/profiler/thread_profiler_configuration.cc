@@ -202,7 +202,7 @@ ThreadProfilerConfiguration::GenerateBrowserProcessConfiguration(
   switch (platform_configuration.GetRuntimeModuleState(release_channel)) {
     case RuntimeModuleState::kModuleAbsentButAvailable:
       platform_configuration.RequestRuntimeModuleInstall();
-      FALLTHROUGH;
+      [[fallthrough]];
     case RuntimeModuleState::kModuleNotAvailable:
       return kProfileDisabledModuleNotInstalled;
 
