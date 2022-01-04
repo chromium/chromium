@@ -272,7 +272,7 @@ void WebContentsDelegateAndroid::UpdateTargetURL(WebContents* source,
   if (obj.is_null())
     return;
   Java_WebContentsDelegateAndroid_onUpdateUrl(
-      env, obj, url::GURLAndroid::FromNativeGURL(env, source->GetURL()));
+      env, obj, url::GURLAndroid::FromNativeGURL(env, source->GetVisibleURL()));
 }
 
 bool WebContentsDelegateAndroid::HandleKeyboardEvent(
