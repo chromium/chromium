@@ -846,4 +846,10 @@ export class MostVisitedElement extends MostVisitedElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'cr-most-visited': MostVisitedElement;
+  }
+}
+
 customElements.define(MostVisitedElement.is, MostVisitedElement);

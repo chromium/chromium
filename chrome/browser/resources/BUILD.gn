@@ -137,7 +137,6 @@ if (enable_js_type_check) {
         "nearby_internals:closure_compile",
         "new_tab_page:closure_compile",
         "new_tab_page_instant:closure_compile",
-        "new_tab_page_third_party:closure_compile",
         "ntp4:closure_compile",
         "omnibox:closure_compile",
         "quota_internals:closure_compile",

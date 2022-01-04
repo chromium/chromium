@@ -7,10 +7,11 @@ import 'chrome://resources/cr_components/most_visited/most_visited.js';
 import {skColorToRgba} from 'chrome://resources/js/color_utils.js';
 
 import {BrowserProxy} from './browser_proxy.js';
+import {Theme} from './new_tab_page_third_party.mojom-webui.js';
 
 const {callbackRouter, handler} = BrowserProxy.getInstance();
 
-callbackRouter.setTheme.addListener(theme => {
+callbackRouter.setTheme.addListener((theme: Theme) => {
   const html = document.documentElement;
   html.toggleAttribute('has-custom-background', theme.hasCustomBackground);
   const style = html.style;
@@ -23,7 +24,7 @@ callbackRouter.setTheme.addListener(theme => {
   style.backgroundPosition = theme.backgroundPosition;
   style.setProperty('--ntp-theme-text-color', skColorToRgba(theme.textColor));
 
-  const mostVisitedElement = document.querySelector('cr-most-visited');
+  const mostVisitedElement = document.querySelector('cr-most-visited')!;
   mostVisitedElement.set('theme', theme.mostVisited);
 });
 handler.updateTheme();

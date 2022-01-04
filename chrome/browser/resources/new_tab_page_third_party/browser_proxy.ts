@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './new_tab_page_third_party.mojom-webui.js';
 
 export class BrowserProxy {
+  callbackRouter: PageCallbackRouter;
+  handler: PageHandlerRemote;
+
   constructor() {
-    /** @type {!PageCallbackRouter} */
     this.callbackRouter = new PageCallbackRouter();
 
-    /** @type {!PageHandlerRemote} */
     this.handler = new PageHandlerRemote();
 
     const factory = PageHandlerFactory.getRemote();
@@ -19,6 +18,14 @@ export class BrowserProxy {
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
         this.handler.$.bindNewPipeAndPassReceiver());
   }
+
+  static getInstance(): BrowserProxy {
+    return instance || (instance = new BrowserProxy());
+  }
+
+  static setInstance(obj: BrowserProxy) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(BrowserProxy);
+let instance: BrowserProxy|null = null;
