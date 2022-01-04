@@ -269,7 +269,8 @@ Polymer({
    */
   hasOptionsPageInSettings_(id) {
     return loadTimeData.getBoolean('imeOptionsInSettings') &&
-        hasOptionsPageInSettings(id);
+        hasOptionsPageInSettings(
+               id, loadTimeData.getBoolean('allowPredictiveWriting'));
   },
 
   /**

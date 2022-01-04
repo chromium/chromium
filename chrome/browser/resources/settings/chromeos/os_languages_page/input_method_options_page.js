@@ -14,6 +14,7 @@ import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../../i18n_setup.js';
 import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.m.js';
 import {PrefsBehavior} from '../prefs_behavior.js';
@@ -117,8 +118,8 @@ Polymer({
    * @private
    */
   populateOptionSections_() {
-    const options = generateOptions(this.engineId_);
-
+    const options = generateOptions(
+        this.engineId_, loadTimeData.getBoolean('allowPredictiveWriting'));
     const prefValue = this.getPref(this.PREFS_PATH).value;
     const prefix = this.getPrefsPrefix_();
     const currentSettings = prefix in prefValue ? prefValue[prefix] : {};
@@ -265,6 +266,8 @@ Polymer({
         return this.i18n('inputMethodOptionsPhysicalKeyboardSectionTitle');
       case 'virtualKeyboard':
         return this.i18n('inputMethodOptionsVirtualKeyboardSectionTitle');
+      case 'suggestions':
+        return this.i18n('inputMethodOptionsSuggestionsSectionTitle');
       default:
         assertNotReached();
     }

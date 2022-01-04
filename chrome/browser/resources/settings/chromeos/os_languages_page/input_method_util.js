@@ -7,8 +7,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {Route} from '../../router.js';
 import {routes} from '../os_route.m.js';
 
-import {inputMethodSettings, SettingsType} from './input_method_settings.js';
-
+import {getInputMethodSettings, SettingsType} from './input_method_settings.js';
 
 /**
  * @fileoverview constants related to input method options.
@@ -59,6 +58,8 @@ export const OptionType = {
       'physicalKeyboardAutoCorrectionLevel',
   PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION:
       'physicalKeyboardEnableCapitalization',
+  PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING:
+      'physicalKeyboardEnablePredictiveWriting',
   VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL: 'virtualKeyboardAutoCorrectionLevel',
   VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION: 'virtualKeyboardEnableCapitalization',
   XKB_LAYOUT: 'xkbLayout',
@@ -107,6 +108,7 @@ export const OPTION_DEFAULT = {
   [OptionType.ENABLE_SOUND_ON_KEYPRESS]: false,
   [OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: 0,
   [OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
+  [OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING]: true,
   [OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: 1,
   [OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
   [OptionType.XKB_LAYOUT]: 'US',
@@ -169,6 +171,7 @@ const Settings = {
     ],
     basic: [],
     advanced: [],
+    suggestions: [],
   },
   [SettingsType.ZHUYIN_SETTINGS]: {
     physicalKeyboard: [
@@ -179,6 +182,7 @@ const Settings = {
     virtualKeyboard: [],
     basic: [],
     advanced: [],
+    suggestions: [],
   },
   [SettingsType.KOREAN_SETTINGS]: {
     basic: [
@@ -188,6 +192,7 @@ const Settings = {
     virtualKeyboard: [],
     advanced: [],
     physicalKeyboard: [],
+    suggestions: [],
   },
   [SettingsType.PINYIN_FUZZY_SETTINGS]: {
     advanced: [{
@@ -210,6 +215,7 @@ const Settings = {
     virtualKeyboard: [],
     basic: [],
     physicalKeyboard: [],
+    suggestions: [],
   },
   [SettingsType.PINYIN_SETTINGS]: {
     physicalKeyboard: [
@@ -223,6 +229,7 @@ const Settings = {
     advanced: [{name: OptionType.EDIT_USER_DICT}],
     basic: [],
     virtualKeyboard: [],
+    suggestions: [],
   },
   [SettingsType.BASIC_SETTINGS]: {
     physicalKeyboard: [],
@@ -231,6 +238,7 @@ const Settings = {
     ],
     basic: [],
     advanced: [],
+    suggestions: [],
   },
   [SettingsType.ENGLISH_SOUTH_AFRICA_SETTINGS]: {
     physicalKeyboard: [],
@@ -240,7 +248,16 @@ const Settings = {
     ],
     basic: [],
     advanced: [],
-  }
+    suggestions: [],
+  },
+  [SettingsType.SUGGESTION_SETTINGS]: {
+    physicalKeyboard: [],
+    virtualKeyboard: [],
+    basic: [],
+    advanced: [],
+    suggestions:
+        [{name: OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING}],
+  },
 };
 /**
  * @param {string} id Input method ID.
@@ -251,29 +268,38 @@ export function getFirstPartyInputMethodEngineId(id) {
   return id.substring(FIRST_PARTY_INPUT_METHOD_ID_PREFIX.length);
 }
 
-  /**
-   * @param {string} id Input method ID.
-   * @return {boolean} true if the input method's options page is implemented.
-   */
-export function hasOptionsPageInSettings(id) {
+/**
+ * @param {string} id Input method ID.
+ * @param {boolean} predictiveWritingEnabled .
+ * @return {boolean} true if the input method's options page is implemented.
+ */
+export function hasOptionsPageInSettings(id, predictiveWritingEnabled) {
   if (!isFirstPartyInputMethodId_(id)) {
     return false;
   }
   const engineId = getFirstPartyInputMethodEngineId(id);
 
+  const inputMethodSettings = getInputMethodSettings(predictiveWritingEnabled);
   return !!inputMethodSettings[engineId];
 }
 
 /**
  * Generates options to be displayed in the options page, grouped by sections.
  * @param {string} engineId Input method engine ID.
+ * @param {boolean} predictiveWritingEnabled .
  * @return {!Array<!{title: string, optionNames:
  *     !Array<OptionType>}>} the options to be
  *     displayed.
  */
-export function generateOptions(engineId) {
-  const options =
-      {basic: [], advanced: [], physicalKeyboard: [], virtualKeyboard: []};
+export function generateOptions(engineId, predictiveWritingEnabled) {
+  const options = {
+    basic: [],
+    advanced: [],
+    physicalKeyboard: [],
+    virtualKeyboard: [],
+    suggestions: []
+  };
+  const inputMethodSettings = getInputMethodSettings(predictiveWritingEnabled);
   const engineSettings = inputMethodSettings[engineId];
   if (engineSettings) {
     engineSettings.forEach((settingType) => {
@@ -282,6 +308,7 @@ export function generateOptions(engineId) {
       options.advanced.push(...settings.advanced);
       options.physicalKeyboard.push(...settings.physicalKeyboard);
       options.virtualKeyboard.push(...settings.virtualKeyboard);
+      options.suggestions.push(...settings.suggestions);
     });
   }
 
@@ -302,6 +329,10 @@ export function generateOptions(engineId) {
       title: 'virtualKeyboard',
       optionNames: options.virtualKeyboard,
     },
+    {
+      title: 'suggestions',
+      optionNames: options.suggestions,
+    },
   ];
 }
 
@@ -318,6 +349,7 @@ export function getOptionUiType(option) {
     case OptionType.ENABLE_PREDICTION:
     case OptionType.ENABLE_SOUND_ON_KEYPRESS:
     case OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION:
+    case OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING:
     case OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION:
     case OptionType.KOREAN_ENABLE_SYLLABLE_INPUT:
     case OptionType.PINYIN_CHINESE_PUNCTUATION:
@@ -391,6 +423,8 @@ export function getOptionLabelName(option) {
     case OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION:
     case OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION:
       return 'inputMethodOptionsEnableCapitalization';
+    case OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING:
+      return 'inputMethodOptionsPredictiveWriting';
     case OptionType.PINYIN_CHINESE_PUNCTUATION:
       return 'inputMethodOptionsPinyinChinesePunctuation';
     case OptionType.PINYIN_DEFAULT_CHINESE:

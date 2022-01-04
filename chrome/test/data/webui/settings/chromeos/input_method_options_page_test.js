@@ -68,12 +68,24 @@ suite('InputMethodOptionsPage', function() {
   }
 
   test('US English page', () => {
+    loadTimeData.overrideValues({allowPredictiveWriting: false});
     createOptionsPage(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'xkb:us::eng');
     const titles = optionsPage.shadowRoot.querySelectorAll('h2');
     assertTrue(!!titles);
     assertEquals(titles.length, 2);
     assertEquals(titles[0].textContent, 'Physical keyboard');
     assertEquals(titles[1].textContent, 'On-screen keyboard');
+  });
+
+  test('US English page with predictive writing', () => {
+    loadTimeData.overrideValues({allowPredictiveWriting: true});
+    createOptionsPage(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'xkb:us::eng');
+    const titles = optionsPage.shadowRoot.querySelectorAll('h2');
+    assertTrue(!!titles);
+    assertEquals(titles.length, 3);
+    assertEquals(titles[0].textContent, 'Physical keyboard');
+    assertEquals(titles[1].textContent, 'On-screen keyboard');
+    assertEquals(titles[2].textContent, 'Suggestions');
   });
 
   test('Pinyin page', () => {
@@ -89,7 +101,7 @@ suite('InputMethodOptionsPage', function() {
     createOptionsPage(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'xkb:us::eng');
     const options = optionsPage.shadowRoot.querySelectorAll('.list-item');
     assertTrue(!!options);
-    assertEquals(options.length, 7);
+    assertEquals(options.length, 8);
     assertEquals(
         options[0].querySelector('.start').textContent.trim(),
         'Auto-correction');
