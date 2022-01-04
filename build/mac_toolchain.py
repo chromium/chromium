@@ -38,11 +38,11 @@ def LoadPList(path):
     return plistlib.load(f)
 
 
-# This contains binaries from Xcode 13.2 13C90, along with the macOS 12 SDK
+# This contains binaries from Xcode 13.2.1 13C100, along with the macOS 12 SDK
 # (12.1 21C46). To build these packages, see comments in
 # build/xcode_binaries.yaml
 MAC_BINARIES_LABEL = 'infra_internal/ios/xcode/xcode_binaries/mac-amd64'
-MAC_BINARIES_TAG = 'HV0ZgMxs6nUxPoo1zC-92cHNju1WZmfORRw1JBfqY8oC'
+MAC_BINARIES_TAG = 'RjxjMYUafAY9zS1WiVcmo5UxdBefEPD3nseTvX--oRoC'
 
 # The toolchain will not be downloaded if the minimum OS version is not met. 19
 # is the major version number for macOS 10.15. Xcode 13.2 13C90 only runs on
