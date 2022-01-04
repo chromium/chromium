@@ -106,7 +106,7 @@ class ChromeHintsManagerFetchingTest
     tab_url_provider_ = std::make_unique<FakeTabUrlProvider>();
 
     hints_manager_ = std::make_unique<ChromeHintsManager>(
-        &testing_profile_, pref_service(), hint_store_.get(),
+        &testing_profile_, pref_service(), hint_store_->AsWeakPtr(),
         /*top_host_provider=*/nullptr, tab_url_provider_.get(),
         url_loader_factory_,
         network::TestNetworkConnectionTracker::GetInstance(),

@@ -275,6 +275,11 @@ class OptimizationGuideStore {
   // Returns true if the current status is Status::kAvailable.
   bool IsAvailable() const;
 
+  // Returns the weak ptr of |this|.
+  base::WeakPtr<OptimizationGuideStore> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   friend class OptimizationGuideStoreTest;
   friend class StoreUpdateData;

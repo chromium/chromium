@@ -54,7 +54,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
       bool is_off_the_record,
       const std::string& application_locale,
       PrefService* pref_service,
-      OptimizationGuideStore* hint_store,
+      base::WeakPtr<OptimizationGuideStore> hint_store,
       TopHostProvider* top_host_provider,
       TabUrlProvider* tab_url_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -177,7 +177,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
   HintCache* hint_cache();
 
   // Returns the persistent store for |this|.
-  OptimizationGuideStore* hint_store();
+  base::WeakPtr<OptimizationGuideStore> hint_store();
 
   // Returns the push notification manager for |this|. May be nullptr;
   PushNotificationManager* push_notification_manager();

@@ -139,8 +139,8 @@ void OptimizationGuideKeyedService::Initialize() {
   // For incognito profiles, we act in "read-only" mode of the original
   // profile's store and do not fetch any new hints or models.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
-  optimization_guide::OptimizationGuideStore* hint_store;
-  optimization_guide::OptimizationGuideStore*
+  base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store;
+  base::WeakPtr<optimization_guide::OptimizationGuideStore>
       prediction_model_and_features_store;
   if (profile->IsOffTheRecord()) {
     OptimizationGuideKeyedService* original_ogks =
@@ -185,7 +185,7 @@ void OptimizationGuideKeyedService::Initialize() {
                   base::ThreadPool::CreateSequencedTaskRunner(
                       {base::MayBlock(), base::TaskPriority::BEST_EFFORT}))
             : nullptr;
-    hint_store = hint_store_.get();
+    hint_store = hint_store_ ? hint_store_->AsWeakPtr() : nullptr;
 
     prediction_model_and_features_store_ =
         std::make_unique<optimization_guide::OptimizationGuideStore>(
@@ -196,7 +196,7 @@ void OptimizationGuideKeyedService::Initialize() {
             base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
     prediction_model_and_features_store =
-        prediction_model_and_features_store_.get();
+        prediction_model_and_features_store_->AsWeakPtr();
   }
 
   hints_manager_ = std::make_unique<optimization_guide::ChromeHintsManager>(
