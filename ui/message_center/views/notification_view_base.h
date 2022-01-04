@@ -239,6 +239,8 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   views::Label* message_view() { return message_view_; }
   const views::Label* message_view() const { return message_view_; }
 
+  ProportionalImageView* icon_view() const { return icon_view_; }
+
   views::View* inline_settings_row() { return settings_row_; }
   const views::View* inline_settings_row() const { return settings_row_; }
 
@@ -261,6 +263,8 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   void set_inline_settings_enabled(bool inline_settings_enabled) {
     inline_settings_enabled_ = inline_settings_enabled;
   }
+
+  bool hide_icon_on_expanded() const { return hide_icon_on_expanded_; }
 
   virtual bool IsExpandable() const = 0;
 

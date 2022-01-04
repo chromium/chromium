@@ -68,6 +68,12 @@ constexpr int kActionsRowFadeInAnimationDurationMs = 100;
 constexpr int kActionButtonsFadeOutAnimationDurationMs = 100;
 constexpr int kInlineReplyFadeInAnimationDurationMs = 100;
 constexpr int kInlineReplyFadeOutAnimationDurationMs = 50;
+constexpr int kLargeImageFadeInAnimationDelayMs = 50;
+constexpr int kLargeImageFadeInAnimationDurationMs = 50;
+constexpr int kLargeImageFadeOutAnimationDelayMs = 50;
+constexpr int kLargeImageFadeOutAnimationDurationMs = 100;
+constexpr int kLargeImageScaleAndTranslateDurationMs = 250;
+constexpr int kLargeImageScaleDownDurationMs = 150;
 
 constexpr int kCollapsedSummaryViewAnimationDurationMs = 50;
 constexpr int kChildMainViewFadeInAnimationDurationMs = 100;

@@ -164,6 +164,9 @@ class ASH_EXPORT AshNotificationView
   // ChildPreferredSizeChange(). Child views are animated here.
   void PerformExpandCollapseAnimation();
 
+  // Expand/collapse animation for large image within `image_container_view()`.
+  void PerformLargeImageAnimation();
+
   // Owned by views hierarchy.
   RoundedImageView* app_icon_view_ = nullptr;
   AshNotificationExpandButton* expand_button_ = nullptr;
