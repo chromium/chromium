@@ -380,82 +380,82 @@ multidevice::SoftwareFeature CryptAuthFeatureTypeToSoftwareFeature(
     CryptAuthFeatureType feature_type) {
   switch (feature_type) {
     case CryptAuthFeatureType::kBetterTogetherHostSupported:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthFeatureType::kBetterTogetherHostEnabled:
       return multidevice::SoftwareFeature::kBetterTogetherHost;
 
     case CryptAuthFeatureType::kBetterTogetherClientSupported:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthFeatureType::kBetterTogetherClientEnabled:
       return multidevice::SoftwareFeature::kBetterTogetherClient;
 
     case CryptAuthFeatureType::kEasyUnlockHostSupported:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthFeatureType::kEasyUnlockHostEnabled:
       return multidevice::SoftwareFeature::kSmartLockHost;
 
     case CryptAuthFeatureType::kEasyUnlockClientSupported:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthFeatureType::kEasyUnlockClientEnabled:
       return multidevice::SoftwareFeature::kSmartLockClient;
 
     case CryptAuthFeatureType::kMagicTetherHostSupported:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthFeatureType::kMagicTetherHostEnabled:
       return multidevice::SoftwareFeature::kInstantTetheringHost;
 
     case CryptAuthFeatureType::kMagicTetherClientSupported:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthFeatureType::kMagicTetherClientEnabled:
       return multidevice::SoftwareFeature::kInstantTetheringClient;
 
     case CryptAuthFeatureType::kSmsConnectHostSupported:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthFeatureType::kSmsConnectHostEnabled:
       return multidevice::SoftwareFeature::kMessagesForWebHost;
 
     case CryptAuthFeatureType::kSmsConnectClientSupported:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthFeatureType::kSmsConnectClientEnabled:
       return multidevice::SoftwareFeature::kMessagesForWebClient;
 
     case CryptAuthFeatureType::kPhoneHubHostSupported:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthFeatureType::kPhoneHubHostEnabled:
       return multidevice::SoftwareFeature::kPhoneHubHost;
 
     case CryptAuthFeatureType::kPhoneHubClientSupported:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthFeatureType::kPhoneHubClientEnabled:
       return multidevice::SoftwareFeature::kPhoneHubClient;
 
     case CryptAuthFeatureType::kWifiSyncHostSupported:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthFeatureType::kWifiSyncHostEnabled:
       return multidevice::SoftwareFeature::kWifiSyncHost;
 
     case CryptAuthFeatureType::kWifiSyncClientSupported:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthFeatureType::kWifiSyncClientEnabled:
       return multidevice::SoftwareFeature::kWifiSyncClient;
 
     case CryptAuthFeatureType::kEcheHostSupported:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthFeatureType::kEcheHostEnabled:
       return multidevice::SoftwareFeature::kEcheHost;
 
     case CryptAuthFeatureType::kEcheClientSupported:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthFeatureType::kEcheClientEnabled:
       return multidevice::SoftwareFeature::kEcheClient;
 
     case CryptAuthFeatureType::kPhoneHubCameraRollHostSupported:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthFeatureType::kPhoneHubCameraRollHostEnabled:
       return multidevice::SoftwareFeature::kPhoneHubCameraRollHost;
 
     case CryptAuthFeatureType::kPhoneHubCameraRollClientSupported:
-      FALLTHROUGH;
+      [[fallthrough]];
     case CryptAuthFeatureType::kPhoneHubCameraRollClientEnabled:
       return multidevice::SoftwareFeature::kPhoneHubCameraRollClient;
   }

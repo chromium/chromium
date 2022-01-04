@@ -372,7 +372,7 @@ void AddSoftwareFeaturesToExternalDevice(
         static_cast<multidevice::SoftwareFeatureState>(it.second.GetInt())) {
       case multidevice::SoftwareFeatureState::kEnabled:
         external_device->add_enabled_software_features(software_feature);
-        FALLTHROUGH;
+        [[fallthrough]];
       case multidevice::SoftwareFeatureState::kSupported:
         external_device->add_supported_software_features(software_feature);
         break;

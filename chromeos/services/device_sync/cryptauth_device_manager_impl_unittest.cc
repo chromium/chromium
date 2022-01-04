@@ -365,7 +365,7 @@ void ExpectSyncedDevicesAndPrefAreEqual(
             it.second.GetInt())) {
           case multidevice::SoftwareFeatureState::kEnabled:
             enabled_software_features.push_back(software_feature);
-            FALLTHROUGH;
+            [[fallthrough]];
           case multidevice::SoftwareFeatureState::kSupported:
             supported_software_features.push_back(software_feature);
             break;
