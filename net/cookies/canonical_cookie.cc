@@ -978,7 +978,7 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
       DCHECK(IsSameParty());
       status.AddExclusionReason(
           CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT);
-      FALLTHROUGH;
+      [[fallthrough]];
     case CookieSamePartyStatus::kEnforceSamePartyInclude: {
       status.AddWarningReason(CookieInclusionStatus::WARN_TREATED_AS_SAMEPARTY);
       // Remove any SameSite exclusion reasons, since SameParty overrides
@@ -1200,7 +1200,7 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
       DCHECK(IsSameParty());
       access_result.status.AddExclusionReason(
           CookieInclusionStatus::EXCLUDE_SAMEPARTY_CROSS_PARTY_CONTEXT);
-      FALLTHROUGH;
+      [[fallthrough]];
     case CookieSamePartyStatus::kEnforceSamePartyInclude: {
       DCHECK(IsSameParty());
       access_result.status.AddWarningReason(
