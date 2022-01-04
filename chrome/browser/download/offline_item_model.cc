@@ -136,13 +136,13 @@ download::DownloadItem::DownloadState OfflineItemModel::GetState() const {
     return download::DownloadItem::CANCELLED;
   switch (offline_item_->state) {
     case OfflineItemState::IN_PROGRESS:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::PAUSED:
       return download::DownloadItem::IN_PROGRESS;
     case OfflineItemState::PENDING:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::INTERRUPTED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::FAILED:
       return download::DownloadItem::INTERRUPTED;
     case OfflineItemState::COMPLETE:
@@ -172,17 +172,17 @@ bool OfflineItemModel::IsDone() const {
     return true;
   switch (offline_item_->state) {
     case OfflineItemState::IN_PROGRESS:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::PAUSED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::PENDING:
       return false;
     case OfflineItemState::INTERRUPTED:
       return !offline_item_->is_resumable;
     case OfflineItemState::FAILED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::COMPLETE:
-      FALLTHROUGH;
+      [[fallthrough]];
     case OfflineItemState::CANCELLED:
       return true;
     case OfflineItemState::NUM_ENTRIES:

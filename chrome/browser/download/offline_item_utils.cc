@@ -265,9 +265,9 @@ std::u16string OfflineItemUtils::GetFailStateMessage(FailState fail_state) {
       string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS_FILE_SAME_AS_SOURCE;
       break;
     case FailState::NETWORK_INVALID_REQUEST:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FailState::NETWORK_FAILED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FailState::NETWORK_INSTABILITY:
       string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS_NETWORK_ERROR;
       break;
@@ -313,15 +313,15 @@ std::u16string OfflineItemUtils::GetFailStateMessage(FailState fail_state) {
 
     case FailState::NO_FAILURE:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case FailState::CANNOT_DOWNLOAD:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FailState::SERVER_NO_RANGE:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FailState::SERVER_CROSS_ORIGIN_REDIRECT:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FailState::FILE_FAILED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FailState::FILE_HASH_MISMATCH:
       string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS;
   }

@@ -640,7 +640,7 @@ TEST_P(DownloadItemNotificationFileReroutedParametrizedTest,
       break;
     case (download::DownloadItem::COMPLETE):
       EXPECT_CALL(*download_item_, IsDone()).WillRepeatedly(Return(true));
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       EXPECT_CALL(*download_item_, GetLastReason()).Times(0);
   }

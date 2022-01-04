@@ -1103,7 +1103,7 @@ std::u16string DownloadItemNotification::GetSubStatusString() const {
         DCHECK(!interrupt_text.empty());
         return interrupt_text;
       }
-      FALLTHROUGH;  // Same as download::DownloadItem::CANCELLED.
+      [[fallthrough]];  // Same as download::DownloadItem::CANCELLED.
     }
     case download::DownloadItem::CANCELLED:
       // "Cancelled"

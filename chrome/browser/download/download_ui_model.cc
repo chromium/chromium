@@ -121,7 +121,7 @@ std::u16string FailStateDescription(FailState fail_state) {
       break;
     case FailState::NO_FAILURE:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     // fallthrough
     case FailState::CANNOT_DOWNLOAD:
     case FailState::NETWORK_INSTABILITY:
@@ -209,7 +209,7 @@ std::u16string DownloadUIModel::GetStatusText() const {
         return GetInterruptedStatusText(fail_state);
       }
     }
-      FALLTHROUGH;
+      [[fallthrough]];
     case DownloadItem::CANCELLED:
       return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED);
     case DownloadItem::MAX_DOWNLOAD_STATE:
