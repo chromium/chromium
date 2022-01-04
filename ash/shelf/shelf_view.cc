@@ -658,7 +658,7 @@ void ShelfView::OnMouseEvent(ui::MouseEvent* event) {
         return;
       }
 
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::ET_MOUSE_DRAGGED:
     case ui::ET_MOUSE_RELEASED:
       // Convert the event location from current view to screen, since dragging

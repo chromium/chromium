@@ -1416,7 +1416,7 @@ HotseatState ShelfLayoutManager::CalculateHotseatState(
                    ? HotseatState::kExtended
                    : HotseatState::kHidden;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case kDragCancelInProgress: {
       // If the drag being completed is not a Hotseat drag, don't change the
       // state.
