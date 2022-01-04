@@ -4335,6 +4335,8 @@ static_library("ui") {
       "views/overlay/constants.h",
       "views/overlay/hang_up_button.cc",
       "views/overlay/hang_up_button.h",
+      "views/overlay/overlay_window_image_button.cc",
+      "views/overlay/overlay_window_image_button.h",
       "views/overlay/overlay_window_views.cc",
       "views/overlay/overlay_window_views.h",
       "views/overlay/playback_image_button.cc",

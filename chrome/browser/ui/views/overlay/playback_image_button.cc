@@ -16,16 +16,12 @@
 namespace views {
 
 PlaybackImageButton::PlaybackImageButton(PressedCallback callback)
-    : ImageButton(std::move(callback)) {
-  SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-
+    : OverlayWindowImageButton(std::move(callback)) {
   // Accessibility.
   const std::u16string playback_accessible_button_label(
       l10n_util::GetStringUTF16(
           IDS_PICTURE_IN_PICTURE_PLAY_PAUSE_CONTROL_ACCESSIBLE_TEXT));
   SetAccessibleName(playback_accessible_button_label);
-  SetInstallFocusRingOnFocus(true);
 }
 
 void PlaybackImageButton::OnBoundsChanged(const gfx::Rect& rect) {
@@ -69,7 +65,7 @@ void PlaybackImageButton::UpdateImageAndTooltipText() {
   SchedulePaint();
 }
 
-BEGIN_METADATA(PlaybackImageButton, views::ImageButton)
+BEGIN_METADATA(PlaybackImageButton, OverlayWindowImageButton)
 END_METADATA
 
 }  // namespace views

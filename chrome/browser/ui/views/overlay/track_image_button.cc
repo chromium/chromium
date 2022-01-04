@@ -24,17 +24,14 @@ namespace views {
 TrackImageButton::TrackImageButton(PressedCallback callback,
                                    const gfx::VectorIcon& icon,
                                    std::u16string label)
-    : ImageButton(std::move(callback)),
+    : OverlayWindowImageButton(std::move(callback)),
       image_(
           gfx::CreateVectorIcon(icon, kTrackImageSize, kPipWindowIconColor)) {
-  SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   SetImage(views::Button::STATE_NORMAL, image_);
 
   // Accessibility.
   SetAccessibleName(label);
   SetTooltipText(label);
-  SetInstallFocusRingOnFocus(true);
 }
 
 void TrackImageButton::SetVisible(bool visible) {
@@ -49,7 +46,7 @@ void TrackImageButton::OnBoundsChanged(const gfx::Rect&) {
     last_visible_size_ = size();
 }
 
-BEGIN_METADATA(TrackImageButton, views::ImageButton)
+BEGIN_METADATA(TrackImageButton, OverlayWindowImageButton)
 END_METADATA
 
 }  // namespace views

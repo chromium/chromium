@@ -5,14 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OVERLAY_PLAYBACK_IMAGE_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_PLAYBACK_IMAGE_BUTTON_H_
 
+#include "chrome/browser/ui/views/overlay/overlay_window_image_button.h"
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/button/image_button.h"
 
 namespace views {
 
 // A resizable playback button with 3 states: play/pause/replay.
-class PlaybackImageButton : public views::ImageButton {
+class PlaybackImageButton : public OverlayWindowImageButton {
  public:
   METADATA_HEADER(PlaybackImageButton);
 

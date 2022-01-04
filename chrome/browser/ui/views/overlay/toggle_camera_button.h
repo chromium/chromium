@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OVERLAY_TOGGLE_CAMERA_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_TOGGLE_CAMERA_BUTTON_H_
 
-#include "ui/views/controls/button/image_button.h"
+#include "chrome/browser/ui/views/overlay/overlay_window_image_button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
-class ToggleCameraButton : public views::ImageButton {
+class ToggleCameraButton : public OverlayWindowImageButton {
  public:
+  METADATA_HEADER(ToggleCameraButton);
+
   explicit ToggleCameraButton(PressedCallback callback);
   ToggleCameraButton(const ToggleCameraButton&) = delete;
   ToggleCameraButton& operator=(const ToggleCameraButton&) = delete;
