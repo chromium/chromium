@@ -10,7 +10,6 @@
 #include "base/test/mock_callback.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
-#include "chrome/browser/media/router/discovery/dial/dial_registry.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -22,18 +21,6 @@ using ::testing::IsEmpty;
 using ::testing::Return;
 
 namespace media_router {
-
-class TestDialRegistry : public DialRegistry {
- public:
-  TestDialRegistry() {}
-  ~TestDialRegistry() override {}
-
-  MOCK_METHOD1(RegisterObserver, void(DialRegistry::Observer* observer));
-  MOCK_METHOD1(UnregisterObserver, void(DialRegistry::Observer* observer));
-
-  MOCK_METHOD0(OnListenerAdded, void());
-  MOCK_METHOD0(OnListenerRemoved, void());
-};
 
 class MockDeviceDescriptionService : public DeviceDescriptionService {
  public:
@@ -54,13 +41,7 @@ class DialMediaSinkServiceImplTest : public ::testing::Test {
             mock_sink_discovered_cb_.Get(),
             base::SequencedTaskRunnerHandle::Get())) {}
 
-  DialMediaSinkServiceImplTest(const DialMediaSinkServiceImplTest&) = delete;
-  DialMediaSinkServiceImplTest& operator=(const DialMediaSinkServiceImplTest&) =
-      delete;
-
   void SetUp() override {
-    media_sink_service_->SetDialRegistryForTest(&test_dial_registry_);
-
     auto mock_description_service =
         std::make_unique<MockDeviceDescriptionService>(mock_success_cb_.Get(),
                                                        mock_error_cb_.Get());
@@ -114,7 +95,6 @@ class DialMediaSinkServiceImplTest : public ::testing::Test {
       MockDeviceDescriptionService::DeviceDescriptionParseErrorCallback>
       mock_error_cb_;
 
-  TestDialRegistry test_dial_registry_;
   raw_ptr<MockDeviceDescriptionService> mock_description_service_;
   raw_ptr<MockDialAppDiscoveryService> mock_app_discovery_service_;
   raw_ptr<base::MockOneShotTimer> mock_timer_;
@@ -141,7 +121,7 @@ TEST_F(DialMediaSinkServiceImplTest, OnDeviceDescriptionAvailable) {
   std::vector<DialDeviceData> device_list = {device_data};
   EXPECT_CALL(*mock_description_service_, GetDeviceDescriptions(device_list));
 
-  media_sink_service_->OnDialDeviceEvent(device_list);
+  media_sink_service_->OnDialDeviceList(device_list);
   media_sink_service_->OnDeviceDescriptionAvailable(device_data,
                                                     device_description);
   EXPECT_TRUE(mock_timer_->IsRunning());
@@ -162,7 +142,7 @@ TEST_F(DialMediaSinkServiceImplTest,
 
   std::vector<DialDeviceData> device_list = {device_data};
   EXPECT_CALL(*mock_description_service_, GetDeviceDescriptions(device_list));
-  media_sink_service_->OnDialDeviceEvent(device_list);
+  media_sink_service_->OnDialDeviceList(device_list);
 
   media_sink_service_->OnDeviceDescriptionAvailable(device_data,
                                                     device_description);
@@ -200,7 +180,7 @@ TEST_F(DialMediaSinkServiceImplTest, OnDeviceDescriptionRestartsTimer) {
   EXPECT_CALL(*mock_description_service_, GetDeviceDescriptions(device_list));
 
   EXPECT_FALSE(mock_timer_->IsRunning());
-  media_sink_service_->OnDialDeviceEvent(device_list);
+  media_sink_service_->OnDialDeviceList(device_list);
   media_sink_service_->OnDeviceDescriptionAvailable(device_data,
                                                     device_description);
   EXPECT_TRUE(mock_timer_->IsRunning());
@@ -215,16 +195,16 @@ TEST_F(DialMediaSinkServiceImplTest, OnDeviceDescriptionRestartsTimer) {
   EXPECT_TRUE(mock_timer_->IsRunning());
 }
 
-TEST_F(DialMediaSinkServiceImplTest, OnDialDeviceEventRestartsTimer) {
+TEST_F(DialMediaSinkServiceImplTest, OnDialDeviceListRestartsTimer) {
   EXPECT_CALL(*mock_description_service_, GetDeviceDescriptions(IsEmpty()));
-  media_sink_service_->OnDialDeviceEvent(std::vector<DialDeviceData>());
+  media_sink_service_->OnDialDeviceList(std::vector<DialDeviceData>());
   EXPECT_TRUE(mock_timer_->IsRunning());
 
   EXPECT_CALL(mock_sink_discovered_cb_, Run(_)).Times(0);
   mock_timer_->Fire();
 
   EXPECT_CALL(*mock_description_service_, GetDeviceDescriptions(IsEmpty()));
-  media_sink_service_->OnDialDeviceEvent(std::vector<DialDeviceData>());
+  media_sink_service_->OnDialDeviceList(std::vector<DialDeviceData>());
   EXPECT_TRUE(mock_timer_->IsRunning());
 
   EXPECT_CALL(mock_sink_discovered_cb_, Run(_)).Times(0);

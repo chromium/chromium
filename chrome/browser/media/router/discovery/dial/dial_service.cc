@@ -324,7 +324,7 @@ void DialServiceImpl::DialSocket::HandleResponse(int bytes_read) {
   std::string response(recv_buffer_->data(), bytes_read);
   Time response_time = Time::Now();
 
-  // Attempt to parse response, notify observers if successful.
+  // Attempt to parse response, notify client if successful.
   DialDeviceData parsed_device;
   if (ParseResponse(response, response_time, &parsed_device))
     dial_service_->NotifyOnDeviceDiscovered(parsed_device);
@@ -392,8 +392,10 @@ bool DialServiceImpl::DialSocket::ParseResponse(const std::string& response,
   return true;
 }
 
-DialServiceImpl::DialServiceImpl(net::NetLog* net_log)
-    : net_log_(net_log),
+DialServiceImpl::DialServiceImpl(DialService::Client& client,
+                                 net::NetLog* net_log)
+    : client_(client),
+      net_log_(net_log),
       discovery_active_(false),
       num_requests_sent_(0),
       max_requests_(kDialMaxRequests),
@@ -411,21 +413,6 @@ DialServiceImpl::DialServiceImpl(net::NetLog* net_log)
 
 DialServiceImpl::~DialServiceImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-}
-
-void DialServiceImpl::AddObserver(Observer* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  observer_list_.AddObserver(observer);
-}
-
-void DialServiceImpl::RemoveObserver(Observer* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  observer_list_.RemoveObserver(observer);
-}
-
-bool DialServiceImpl::HasObserver(const Observer* observer) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  return observer_list_.HasObserver(observer);
 }
 
 bool DialServiceImpl::Discover() {
@@ -541,13 +528,12 @@ void DialServiceImpl::SendOneRequest() {
 
 void DialServiceImpl::NotifyOnDiscoveryRequest() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // If discovery is inactive, no reason to notify observers.
+  // If discovery is inactive, no reason to notify client.
   if (!discovery_active_) {
     return;
   }
 
-  for (auto& observer : observer_list_)
-    observer.OnDiscoveryRequest(this);
+  client_.OnDiscoveryRequest();
   // If we need to send additional requests, schedule a timer to do so.
   if (num_requests_sent_ < max_requests_ && num_requests_sent_ == 1) {
     // TODO(imcheng): Move this to SendOneRequest() once the implications are
@@ -563,18 +549,13 @@ void DialServiceImpl::NotifyOnDeviceDiscovered(
   if (!discovery_active_) {
     return;
   }
-  for (auto& observer : observer_list_)
-    observer.OnDeviceDiscovered(this, device_data);
+  client_.OnDeviceDiscovered(device_data);
 }
 
 void DialServiceImpl::NotifyOnError() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  // TODO(imcheng): Modify upstream so that the device list is not cleared
-  // when it could still potentially discover devices on other sockets.
-  for (auto& observer : observer_list_) {
-    observer.OnError(this, HasOpenSockets() ? DIAL_SERVICE_SOCKET_ERROR
-                                            : DIAL_SERVICE_NO_INTERFACES);
-  }
+  client_.OnError(HasOpenSockets() ? DIAL_SERVICE_SOCKET_ERROR
+                                   : DIAL_SERVICE_NO_INTERFACES);
 }
 
 void DialServiceImpl::FinishDiscovery() {
@@ -586,8 +567,7 @@ void DialServiceImpl::FinishDiscovery() {
   request_timer_.Stop();
   discovery_active_ = false;
   num_requests_sent_ = 0;
-  for (auto& observer : observer_list_)
-    observer.OnDiscoveryFinished(this);
+  client_.OnDiscoveryFinished();
 }
 
 bool DialServiceImpl::HasOpenSockets() {

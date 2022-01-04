@@ -11,7 +11,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "net/base/ip_address.h"
 #include "net/socket/udp_socket.h"
@@ -59,24 +58,22 @@ class DialService {
     DIAL_SERVICE_SOCKET_ERROR
   };
 
-  class Observer {
+  class Client {
    public:
     // Called when a single discovery request was sent.
-    virtual void OnDiscoveryRequest(DialService* service) = 0;
+    virtual void OnDiscoveryRequest() = 0;
 
     // Called when a device responds to a request.
-    virtual void OnDeviceDiscovered(DialService* service,
-                                    const DialDeviceData& device) = 0;
+    virtual void OnDeviceDiscovered(const DialDeviceData& device) = 0;
 
     // Called when we have all responses from the last discovery request.
-    virtual void OnDiscoveryFinished(DialService* service) = 0;
+    virtual void OnDiscoveryFinished() = 0;
 
     // Called when an error occurs.
-    virtual void OnError(DialService* service,
-                         const DialServiceErrorCode& code) = 0;
+    virtual void OnError(DialServiceErrorCode code) = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Client() = default;
   };
 
   virtual ~DialService() {}
@@ -84,11 +81,6 @@ class DialService {
   // Starts a new round of discovery.  Returns |true| if discovery was started
   // successfully or there is already one active. Returns |false| on error.
   virtual bool Discover() = 0;
-
-  // Called by listeners to this service to add/remove themselves as observers.
-  virtual void AddObserver(Observer* observer) = 0;
-  virtual void RemoveObserver(Observer* observer) = 0;
-  virtual bool HasObserver(const Observer* observer) const = 0;
 };
 
 // Implements DialService.
@@ -100,18 +92,17 @@ class DialService {
 // DialServiceImpl lives on the IO thread.
 class DialServiceImpl : public DialService {
  public:
-  explicit DialServiceImpl(net::NetLog* net_log);
+  DialServiceImpl(DialService::Client& client, net::NetLog* net_log);
 
   DialServiceImpl(const DialServiceImpl&) = delete;
+  DialServiceImpl(DialServiceImpl&&) = delete;
   DialServiceImpl& operator=(const DialServiceImpl&) = delete;
+  DialServiceImpl& operator=(DialServiceImpl&&) = delete;
 
   ~DialServiceImpl() override;
 
   // DialService implementation
   bool Discover() override;
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
-  bool HasObserver(const Observer* observer) const override;
 
  private:
   friend void PostSendNetworkList(
@@ -235,6 +226,9 @@ class DialServiceImpl : public DialService {
   // Returns |true| if there are open sockets.
   bool HasOpenSockets();
 
+  // Unowned reference to the DialService::Client.
+  DialService::Client& client_;
+
   // DialSockets for each network interface whose ip address was
   // successfully bound.
   std::vector<std::unique_ptr<DialSocket>> dial_sockets_;
@@ -270,9 +264,6 @@ class DialServiceImpl : public DialService {
   // The delay for |request_timer_|; how long to wait between successive
   // requests.
   base::TimeDelta request_interval_;
-
-  // List of observers.
-  base::ObserverList<Observer>::Unchecked observer_list_;
 
   // WeakPtrFactory for WeakPtrs that are invalidated on IO thread.
   base::WeakPtrFactory<DialServiceImpl> weak_ptr_factory_{this};

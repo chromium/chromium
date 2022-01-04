@@ -38,15 +38,14 @@ const char kValidResponse[] =
 
 namespace media_router {
 
-class MockObserver : public DialService::Observer {
+class MockDialServiceClient : public DialService::Client {
  public:
-  ~MockObserver() override {}
+  ~MockDialServiceClient() override = default;
 
-  MOCK_METHOD1(OnDiscoveryRequest, void(DialService*));
-  MOCK_METHOD2(OnDeviceDiscovered, void(DialService*, const DialDeviceData&));
-  MOCK_METHOD1(OnDiscoveryFinished, void(DialService*));
-  MOCK_METHOD2(OnError,
-               void(DialService*, const DialService::DialServiceErrorCode&));
+  MOCK_METHOD(void, OnDiscoveryRequest, ());
+  MOCK_METHOD(void, OnDeviceDiscovered, (const DialDeviceData&));
+  MOCK_METHOD(void, OnDiscoveryFinished, ());
+  MOCK_METHOD(void, OnError, (DialService::DialServiceErrorCode));
 };
 
 class DialServiceTest : public testing::Test {
@@ -54,8 +53,7 @@ class DialServiceTest : public testing::Test {
   DialServiceTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         mock_ip_(net::IPAddress::IPv4AllZeros()),
-        dial_service_(net::NetLog::Get()) {
-    dial_service_.AddObserver(&mock_observer_);
+        dial_service_(mock_client_, net::NetLog::Get()) {
     dial_socket_ = dial_service_.CreateDialSocket();
   }
 
@@ -64,7 +62,7 @@ class DialServiceTest : public testing::Test {
   net::IPAddress mock_ip_;
   DialServiceImpl dial_service_;
   std::unique_ptr<DialServiceImpl::DialSocket> dial_socket_;
-  MockObserver mock_observer_;
+  MockDialServiceClient mock_client_;
 };
 
 TEST_F(DialServiceTest, TestSendMultipleRequests) {
@@ -74,8 +72,8 @@ TEST_F(DialServiceTest, TestSendMultipleRequests) {
   dial_service_.request_interval_ = base::Seconds(0);
   dial_service_.max_requests_ = 4;
   dial_service_.discovery_active_ = true;
-  EXPECT_CALL(mock_observer_, OnDiscoveryRequest(A<DialService*>())).Times(4);
-  EXPECT_CALL(mock_observer_, OnDiscoveryFinished(A<DialService*>())).Times(1);
+  EXPECT_CALL(mock_client_, OnDiscoveryRequest()).Times(4);
+  EXPECT_CALL(mock_client_, OnDiscoveryFinished()).Times(1);
   dial_service_.BindAndAddSocket(mock_ip_);
   EXPECT_EQ(1u, dial_service_.dial_sockets_.size());
   EXPECT_TRUE(dial_service_.dial_sockets_[0]);
@@ -110,8 +108,8 @@ TEST_F(DialServiceTest, TestMultipleNetworkInterfaces) {
       mock_ip_, 0, net::IP_ADDRESS_ATTRIBUTE_NONE));
 
   // 3 sockets * 4 requests per socket = 12 requests
-  EXPECT_CALL(mock_observer_, OnDiscoveryRequest(A<DialService*>())).Times(12);
-  EXPECT_CALL(mock_observer_, OnDiscoveryFinished(A<DialService*>())).Times(1);
+  EXPECT_CALL(mock_client_, OnDiscoveryRequest()).Times(12);
+  EXPECT_CALL(mock_client_, OnDiscoveryFinished()).Times(1);
 
   dial_service_.SendNetworkList(interface_list);
   EXPECT_EQ(3u, dial_service_.dial_sockets_.size());
@@ -125,13 +123,12 @@ TEST_F(DialServiceTest, TestOnDiscoveryRequest) {
   dial_service_.num_requests_sent_ = 1;
   dial_service_.max_requests_ = 1;
   size_t num_bytes = dial_service_.send_buffer_->size();
-  EXPECT_CALL(mock_observer_, OnDiscoveryRequest(A<DialService*>())).Times(1);
+  EXPECT_CALL(mock_client_, OnDiscoveryRequest()).Times(1);
   dial_socket_->OnSocketWrite(num_bytes, num_bytes);
 }
 
 TEST_F(DialServiceTest, TestNotifyOnError) {
-  EXPECT_CALL(mock_observer_, OnError(A<DialService*>(),
-                                      DialService::DIAL_SERVICE_NO_INTERFACES));
+  EXPECT_CALL(mock_client_, OnError(DialService::DIAL_SERVICE_NO_INTERFACES));
   dial_socket_->OnSocketWrite(0, net::ERR_CONNECTION_REFUSED);
 }
 
@@ -147,16 +144,14 @@ TEST_F(DialServiceTest, TestOnDeviceDiscovered) {
   DialDeviceData expected_device;
   expected_device.set_device_id("some_id");
 
-  EXPECT_CALL(mock_observer_,
-              OnDeviceDiscovered(A<DialService*>(), expected_device))
-      .Times(1);
+  EXPECT_CALL(mock_client_, OnDeviceDiscovered(expected_device)).Times(1);
   dial_socket_->OnSocketRead(response_size);
 }
 
 TEST_F(DialServiceTest, TestOnDiscoveryFinished) {
   dial_service_.discovery_active_ = true;
 
-  EXPECT_CALL(mock_observer_, OnDiscoveryFinished(A<DialService*>())).Times(1);
+  EXPECT_CALL(mock_client_, OnDiscoveryFinished()).Times(1);
   dial_service_.FinishDiscovery();
   EXPECT_FALSE(dial_service_.discovery_active_);
 }
