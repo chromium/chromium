@@ -216,7 +216,7 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
               MALICIOUS_CONTENT_STATUS_SIGNED_IN_SYNC_PASSWORD_REUSE;
         }
 #endif
-        FALLTHROUGH;
+        [[fallthrough]];
       case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
 #if BUILDFLAG(FULL_SAFE_BROWSING)
         if (safe_browsing::ChromePasswordProtectionService::
@@ -226,7 +226,7 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
               MALICIOUS_CONTENT_STATUS_SIGNED_IN_NON_SYNC_PASSWORD_REUSE;
         }
 #endif
-        FALLTHROUGH;
+        [[fallthrough]];
       case safe_browsing::SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
 #if BUILDFLAG(FULL_SAFE_BROWSING)
         if (safe_browsing::ChromePasswordProtectionService::
