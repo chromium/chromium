@@ -233,7 +233,7 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
     case kTriggerNone:
     case kTriggerExtensionRequestRealTime:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kTriggerTimer:
       VLOG(1) << "Generating enterprise report.";
       break;
@@ -299,7 +299,7 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
 
       delegate_->GetLocalState()->SetTime(kLastUploadSucceededTimestamp,
                                           base::Time::Now());
-      FALLTHROUGH;
+      [[fallthrough]];
     case ReportUploader::kTransientError:
       // Stop retrying and schedule the next report to avoid stale report.
       // Failure count is not reset so retry delay remains.
