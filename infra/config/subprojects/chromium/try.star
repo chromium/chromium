@@ -174,6 +174,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "fuchsia-fyi-astro",
+)
+
+chrome_internal_verifier(
     builder = "ipad-device",
 )
 
