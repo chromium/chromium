@@ -93,7 +93,7 @@ bool AppendPosition(StringBuilder& result,
   return true;
 }
 
-}  // anonymous ns
+}  // namespace
 
 bool CSSGradientColorStop::IsCacheable() const {
   if (!IsHint()) {
@@ -510,7 +510,7 @@ void AdjustGradientRadiiForOffsetRange(CSSGradientValue::GradientDesc& desc,
   desc.r1 = adjusted_r1;
 }
 
-}  // anonymous ns
+}  // namespace
 
 void CSSGradientValue::AddStops(
     CSSGradientValue::GradientDesc& desc,
@@ -1079,6 +1079,22 @@ CSSLinearGradientValue* CSSLinearGradientValue::ComputedCSSValue(
   return result;
 }
 
+static bool IsUsingCurrentColor(
+    const HeapVector<CSSGradientColorStop, 2>& stops) {
+  for (const CSSGradientColorStop& stop : stops) {
+    auto* identifier_value = DynamicTo<CSSIdentifierValue>(stop.color_.Get());
+    if (identifier_value &&
+        identifier_value->GetValueID() == CSSValueID::kCurrentcolor) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool CSSLinearGradientValue::IsUsingCurrentColor() const {
+  return blink::cssvalue::IsUsingCurrentColor(stops_);
+}
+
 void CSSLinearGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(first_x_);
   visitor->Trace(first_y_);
@@ -1479,6 +1495,10 @@ CSSRadialGradientValue* CSSRadialGradientValue::ComputedCSSValue(
   return result;
 }
 
+bool CSSRadialGradientValue::IsUsingCurrentColor() const {
+  return blink::cssvalue::IsUsingCurrentColor(stops_);
+}
+
 void CSSRadialGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(first_x_);
   visitor->Trace(first_y_);
@@ -1557,6 +1577,10 @@ CSSConicGradientValue* CSSConicGradientValue::ComputedCSSValue(
       x_, y_, from_angle_, repeating_ ? kRepeating : kNonRepeating);
   result->AddComputedStops(style, allow_visited_style, stops_);
   return result;
+}
+
+bool CSSConicGradientValue::IsUsingCurrentColor() const {
+  return blink::cssvalue::IsUsingCurrentColor(stops_);
 }
 
 void CSSConicGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {

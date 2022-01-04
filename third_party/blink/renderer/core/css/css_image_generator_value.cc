@@ -170,6 +170,19 @@ bool CSSImageGeneratorValue::IsUsingCustomProperty(
   return false;
 }
 
+bool CSSImageGeneratorValue::IsUsingCurrentColor() const {
+  switch (GetClassType()) {
+    case kLinearGradientClass:
+      return To<CSSLinearGradientValue>(this)->IsUsingCurrentColor();
+    case kRadialGradientClass:
+      return To<CSSRadialGradientValue>(this)->IsUsingCurrentColor();
+    case kConicGradientClass:
+      return To<CSSConicGradientValue>(this)->IsUsingCurrentColor();
+    default:
+      return false;
+  }
+}
+
 bool CSSImageGeneratorValue::KnownToBeOpaque(const Document& document,
                                              const ComputedStyle& style) const {
   switch (GetClassType()) {

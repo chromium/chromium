@@ -82,6 +82,10 @@ bool StyleGeneratedImage::IsUsingCustomProperty(
                                                        document);
 }
 
+bool StyleGeneratedImage::IsUsingCurrentColor() const {
+  return image_generator_value_->IsUsingCurrentColor();
+}
+
 scoped_refptr<Image> StyleGeneratedImage::GetImage(
     const ImageResourceObserver& observer,
     const Document& document,

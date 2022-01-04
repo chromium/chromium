@@ -64,6 +64,7 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
 
   bool IsUsingCustomProperty(const AtomicString& custom_property_name,
                              const Document&) const;
+  bool IsUsingCurrentColor() const;
 
   void Trace(Visitor*) const override;
 

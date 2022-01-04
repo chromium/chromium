@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/longhand.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -911,6 +912,19 @@ void ComputedStyle::AdjustDiffForBackgroundVisuallyEqual(
     // Changes of background fill layers, such as images, may have
     // changed alpha.
     diff.SetHasAlphaChanged();
+    return;
+  }
+
+  // If the background image depends on currentColor
+  // (e.g., background-image: linear-gradient(currentColor, #fff)), and the
+  // color has changed, we need to recompute it even though VisuallyEqual()
+  // thinks the old and new background styles are identical.
+  if (BackgroundInternal().AnyLayerUsesCurrentColor() &&
+      (GetCurrentColor() != other.GetCurrentColor() ||
+       GetInternalVisitedCurrentColor() !=
+           other.GetInternalVisitedCurrentColor())) {
+    diff.SetNeedsPaintInvalidation();
+    diff.SetHasAlphaChanged();
   }
 }
 
@@ -1029,8 +1043,7 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
 
   bool has_clip = HasOutOfFlowPosition() && !HasAutoClip();
   bool other_has_clip = other.HasOutOfFlowPosition() && !other.HasAutoClip();
-  if (has_clip != other_has_clip ||
-      (has_clip && Clip() != other.Clip()))
+  if (has_clip != other_has_clip || (has_clip && Clip() != other.Clip()))
     diff.SetCSSClipChanged();
 
   if (GetBlendMode() != other.GetBlendMode())
