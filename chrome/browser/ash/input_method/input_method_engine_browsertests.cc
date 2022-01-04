@@ -75,7 +75,7 @@ class InputMethodEngineBrowserTest
 
   virtual ~InputMethodEngineBrowserTest() = default;
 
-  void TearDownInProcessBrowserTestFixture() override { extension_ = NULL; }
+  void TearDownInProcessBrowserTestFixture() override { extension_ = nullptr; }
 
   ui::IMEEngineHandlerInterface::InputContext CreateInputContextWithInputType(
       ui::TextInputType type) {

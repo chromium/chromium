@@ -55,7 +55,7 @@ static void SetUserLastInputMethodPreference(
 void PersistUserInputMethod(const std::string& input_method_id,
                             InputMethodManager* const manager,
                             Profile* profile) {
-  PrefService* user_prefs = NULL;
+  PrefService* user_prefs = nullptr;
   // Persist the method on a per user basis. Note that the keyboard settings are
   // stored per user desktop and a visiting window will use the same input
   // method as the desktop it is on (and not of the owner of the window).

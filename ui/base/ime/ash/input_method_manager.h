@@ -205,7 +205,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
 
     // Returns the input method descriptor from the given input method id
     // string.
-    // If the given input method id is invalid, returns NULL.
+    // If the given input method id is invalid, returns nullptr.
     virtual const InputMethodDescriptor* GetInputMethodFromId(
         const std::string& input_method_id) const = 0;
 

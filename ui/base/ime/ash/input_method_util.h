@@ -43,7 +43,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodUtil {
   std::u16string GetInputMethodLongName(
       const InputMethodDescriptor& input_method) const;
 
-  // Converts an input method ID to an input method descriptor. Returns NULL
+  // Converts an input method ID to an input method descriptor. Returns nullptr
   // when |input_method_id| is unknown.
   // Example: "pinyin" => { id: "pinyin", display_name: "Pinyin",
   //                        keyboard_layout: "us", language_code: "zh" }
