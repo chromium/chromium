@@ -2471,6 +2471,10 @@ const FeatureEntry::FeatureParam kQuerySearchBurnInPeriod_100ms[] = {
     {"burnin_period", "100"}};
 const FeatureEntry::FeatureParam kQuerySearchBurnInPeriod_150ms[] = {
     {"burnin_period", "150"}};
+const FeatureEntry::FeatureParam kQuerySearchBurnInPeriod_500ms[] = {
+    {"burnin_period", "500"}};
+const FeatureEntry::FeatureParam kQuerySearchBurnInPeriod_2000ms[] = {
+    {"burnin_period", "2000"}};
 
 const FeatureEntry::FeatureVariation kQuerySearchBurnInPeriodVariations[] = {
     {"50ms", kQuerySearchBurnInPeriod_50ms,
@@ -2478,7 +2482,11 @@ const FeatureEntry::FeatureVariation kQuerySearchBurnInPeriodVariations[] = {
     {"100ms", kQuerySearchBurnInPeriod_100ms,
      base::size(kQuerySearchBurnInPeriod_100ms), nullptr},
     {"150ms", kQuerySearchBurnInPeriod_150ms,
-     base::size(kQuerySearchBurnInPeriod_150ms), nullptr}};
+     base::size(kQuerySearchBurnInPeriod_150ms), nullptr},
+    {"500ms", kQuerySearchBurnInPeriod_500ms,
+     base::size(kQuerySearchBurnInPeriod_500ms), nullptr},
+    {"2000ms", kQuerySearchBurnInPeriod_2000ms,
+     base::size(kQuerySearchBurnInPeriod_2000ms), nullptr}};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 constexpr FeatureEntry::FeatureParam kPlatformProvidedTrustTokenIssuance[] = {
