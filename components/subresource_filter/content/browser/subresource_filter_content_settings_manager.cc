@@ -161,7 +161,7 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadata(
   // intervention metadata and should not override the expiry time that
   // was previously set.
   base::Time expiry_time = base::Time::Now() + kMaxPersistMetadataDuration;
-  if (dict && dict->HasKey(kNonRenewingExpiryTime)) {
+  if (dict && dict->FindKey(kNonRenewingExpiryTime)) {
     absl::optional<double> metadata_expiry_time =
         dict->FindDoubleKey(kNonRenewingExpiryTime);
     DCHECK(metadata_expiry_time);
