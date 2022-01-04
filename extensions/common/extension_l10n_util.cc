@@ -207,11 +207,14 @@ bool ShouldRelocalizeManifest(const base::DictionaryValue* manifest) {
   if (!manifest)
     return false;
 
-  if (!manifest->HasKey(keys::kDefaultLocale))
+  if (!manifest->FindKey(keys::kDefaultLocale))
     return false;
 
   std::string manifest_current_locale;
-  manifest->GetString(keys::kCurrentLocale, &manifest_current_locale);
+  const std::string* manifest_current_locale_in =
+      manifest->FindStringKey(keys::kCurrentLocale);
+  if (manifest_current_locale_in)
+    manifest_current_locale = *manifest_current_locale_in;
   return manifest_current_locale != LocaleForLocalization();
 }
 
@@ -219,8 +222,8 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
                       base::DictionaryValue* manifest,
                       std::string* error) {
   // Initialize name.
-  std::string result;
-  if (!manifest->GetString(keys::kName, &result)) {
+  const std::string* result = manifest->FindStringKey(keys::kName);
+  if (!result) {
     *error = errors::kInvalidName;
     return false;
   }

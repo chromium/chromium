@@ -204,11 +204,11 @@ Manifest::Type Manifest::GetTypeFromManifestValue(
     const base::DictionaryValue& value,
     bool for_login_screen) {
   Type type = TYPE_UNKNOWN;
-  if (value.HasKey(keys::kTheme)) {
+  if (value.FindKey(keys::kTheme)) {
     type = TYPE_THEME;
-  } else if (value.HasKey(api::shared_module::ManifestKeys::kExport)) {
+  } else if (value.FindKey(api::shared_module::ManifestKeys::kExport)) {
     type = TYPE_SHARED_MODULE;
-  } else if (value.HasKey(keys::kApp)) {
+  } else if (value.FindKey(keys::kApp)) {
     if (value.Get(keys::kWebURLs, nullptr) ||
         value.Get(keys::kLaunchWebURL, nullptr)) {
       type = TYPE_HOSTED_APP;
@@ -217,7 +217,7 @@ Manifest::Type Manifest::GetTypeFromManifestValue(
     } else {
       type = TYPE_LEGACY_PACKAGED_APP;
     }
-  } else if (value.HasKey(keys::kChromeOSSystemExtension)) {
+  } else if (value.FindKey(keys::kChromeOSSystemExtension)) {
     type = TYPE_CHROMEOS_SYSTEM_EXTENSION;
   } else if (for_login_screen) {
     type = TYPE_LOGIN_SCREEN_EXTENSION;

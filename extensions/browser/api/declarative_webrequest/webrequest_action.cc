@@ -246,20 +246,20 @@ scoped_refptr<const WebRequestAction> CreateIgnoreRulesAction(
     const base::Value* value,
     std::string* error,
     bool* bad_message) {
-  const base::DictionaryValue* dict = NULL;
-  CHECK(value->GetAsDictionary(&dict));
+  CHECK(value->is_dict());
   bool has_parameter = false;
   int minimum_priority = std::numeric_limits<int>::min();
   std::string ignore_tag;
-  if (dict->HasKey(keys::kLowerPriorityThanKey)) {
+  if (value->FindKey(keys::kLowerPriorityThanKey)) {
     absl::optional<int> minimum_priority_value =
-        dict->FindIntKey(keys::kLowerPriorityThanKey);
+        value->FindIntKey(keys::kLowerPriorityThanKey);
     INPUT_FORMAT_VALIDATE(minimum_priority_value);
     minimum_priority = *minimum_priority_value;
     has_parameter = true;
   }
-  if (dict->HasKey(keys::kHasTagKey)) {
-    INPUT_FORMAT_VALIDATE(dict->GetString(keys::kHasTagKey, &ignore_tag));
+  if (const base::Value* tag = value->FindKey(keys::kHasTagKey)) {
+    INPUT_FORMAT_VALIDATE(tag->is_string());
+    ignore_tag = tag->GetString();
     has_parameter = true;
   }
   if (!has_parameter) {

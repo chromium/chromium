@@ -67,22 +67,25 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(const Extension* extension,
   // Read the page action |default_icon| (optional).
   // The |default_icon| value can be either dictionary {icon size -> icon path}
   // or non empty string value.
-  if (dict->HasKey(keys::kActionDefaultIcon)) {
-    const base::DictionaryValue* icons_value = NULL;
-    std::string default_icon;
-    if (dict->GetDictionary(keys::kActionDefaultIcon, &icons_value)) {
+  if (const base::Value* default_icon =
+          dict->FindKey(keys::kActionDefaultIcon)) {
+    std::string default_icon_str;
+    if (default_icon->is_string())
+      default_icon_str = default_icon->GetString();
+
+    if (default_icon->is_dict()) {
       if (!manifest_handler_helpers::LoadIconsFromDictionary(
-              icons_value, &result->default_icon, error)) {
+              default_icon, &result->default_icon, error)) {
         return nullptr;
       }
-    } else if (dict->GetString(keys::kActionDefaultIcon, &default_icon) &&
+    } else if (default_icon->is_string() &&
                manifest_handler_helpers::NormalizeAndValidatePath(
-                   &default_icon)) {
+                   &default_icon_str)) {
       // Choose the most optimistic (highest) icon density regardless of the
       // actual icon resolution, whatever that happens to be. Code elsewhere
       // knows how to scale down to 19.
       result->default_icon.Add(extension_misc::EXTENSION_ICON_GIGANTOR,
-                               default_icon);
+                               default_icon_str);
     } else {
       *error = errors::kInvalidActionDefaultIcon;
       return nullptr;
@@ -91,25 +94,28 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(const Extension* extension,
 
   // Read the page action title from |default_title| if present, |name| if not
   // (both optional).
-  if (dict->HasKey(keys::kActionDefaultTitle)) {
-    if (!dict->GetString(keys::kActionDefaultTitle, &result->default_title)) {
+  if (const base::Value* default_title =
+          dict->FindKey(keys::kActionDefaultTitle)) {
+    if (!default_title->is_string()) {
       *error = errors::kInvalidActionDefaultTitle;
       return nullptr;
     }
+    result->default_title = default_title->GetString();
   }
 
   // Read the action's default popup (optional).
-  if (dict->HasKey(keys::kActionDefaultPopup)) {
-    std::string url_str;
-    if (!dict->GetString(keys::kActionDefaultPopup, &url_str)) {
+  if (const base::Value* default_popup =
+          dict->FindKey(keys::kActionDefaultPopup)) {
+    const std::string* url_str = default_popup->GetIfString();
+    if (!url_str) {
       *error = errors::kInvalidActionDefaultPopup;
       return nullptr;
     }
 
-    if (!url_str.empty()) {
+    if (!url_str->empty()) {
       // An empty string is treated as having no popup.
       result->default_popup_url =
-          Extension::GetResourceURL(extension->url(), url_str);
+          Extension::GetResourceURL(extension->url(), *url_str);
       if (!result->default_popup_url.is_valid()) {
         *error = errors::kInvalidActionDefaultPopup;
         return nullptr;
@@ -120,7 +126,8 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(const Extension* extension,
     }
   }
 
-  if (dict->HasKey(keys::kActionDefaultState)) {
+  if (const base::Value* default_state =
+          dict->FindKey(keys::kActionDefaultState)) {
     // The default_state key is only valid for TYPE_ACTION; throw an error for
     // others.
     if (type != TYPE_ACTION) {
@@ -128,13 +135,13 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(const Extension* extension,
       return nullptr;
     }
 
-    std::string default_state;
-    if (!dict->GetString(keys::kActionDefaultState, &default_state) ||
-        !(default_state == kEnabled || default_state == kDisabled)) {
+    if (!default_state->is_string() ||
+        !(default_state->GetString() == kEnabled ||
+          default_state->GetString() == kDisabled)) {
       *error = errors::kInvalidActionDefaultState;
       return nullptr;
     }
-    result->default_state = default_state == kEnabled
+    result->default_state = default_state->GetString() == kEnabled
                                 ? ActionInfo::STATE_ENABLED
                                 : ActionInfo::STATE_DISABLED;
   }

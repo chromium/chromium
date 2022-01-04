@@ -276,11 +276,24 @@ void WebstoreStandaloneInstaller::OnWebstoreResponseParseSuccess(
   }
 
   // Localized name and description are optional.
-  if ((webstore_data->HasKey(kLocalizedNameKey) &&
-      !webstore_data->GetString(kLocalizedNameKey, &localized_name_)) ||
-      (webstore_data->HasKey(kLocalizedDescriptionKey) &&
-      !webstore_data->GetString(
-          kLocalizedDescriptionKey, &localized_description_))) {
+  bool ok = true;
+  if (const base::Value* localized_name_in =
+          webstore_data->FindKey(kLocalizedNameKey)) {
+    if (localized_name_in->is_string())
+      localized_name_ = localized_name_in->GetString();
+    else
+      ok = false;
+  }
+
+  if (const base::Value* localized_description_in =
+          webstore_data->FindKey(kLocalizedDescriptionKey)) {
+    if (localized_description_in->is_string())
+      localized_description_ = localized_description_in->GetString();
+    else
+      ok = false;
+  }
+
+  if (!ok) {
     CompleteInstall(webstore_install::INVALID_WEBSTORE_RESPONSE,
                     webstore_install::kInvalidWebstoreResponseError);
     return;
@@ -288,14 +301,14 @@ void WebstoreStandaloneInstaller::OnWebstoreResponseParseSuccess(
 
   // Icon URL is optional.
   GURL icon_url;
-  if (webstore_data->HasKey(kIconUrlKey)) {
-    std::string icon_url_string;
-    if (!webstore_data->GetString(kIconUrlKey, &icon_url_string)) {
+  if (const base::Value* icon_url_val = webstore_data->FindKey(kIconUrlKey)) {
+    const std::string* icon_url_string = icon_url_val->GetIfString();
+    if (!icon_url_string) {
       CompleteInstall(webstore_install::INVALID_WEBSTORE_RESPONSE,
                       webstore_install::kInvalidWebstoreResponseError);
       return;
     }
-    icon_url = extension_urls::GetWebstoreLaunchURL().Resolve(icon_url_string);
+    icon_url = extension_urls::GetWebstoreLaunchURL().Resolve(*icon_url_string);
     if (!icon_url.is_valid()) {
       CompleteInstall(webstore_install::INVALID_WEBSTORE_RESPONSE,
                       webstore_install::kInvalidWebstoreResponseError);

@@ -1859,17 +1859,14 @@ void ExtensionDownloadsEventRouter::OnDownloadUpdated(
     // the bytesReceived field, if the field has changed from the previous old
     // json, set the differences in the |delta| object and remember that
     // something significant changed.
-    for (base::DictionaryValue::Iterator iter(*new_json); !iter.IsAtEnd();
-         iter.Advance()) {
-      new_fields.insert(iter.key());
-      if (IsDownloadDeltaField(iter.key())) {
-        const base::Value* old_value = NULL;
-        if (!data->json().HasKey(iter.key()) ||
-            (data->json().Get(iter.key(), &old_value) &&
-             iter.value() != *old_value)) {
-          delta->SetPath(iter.key() + ".current", iter.value().Clone());
+    for (auto kv : new_json->DictItems()) {
+      new_fields.insert(kv.first);
+      if (IsDownloadDeltaField(kv.first)) {
+        const base::Value* old_value = data->json().FindKey(kv.first);
+        if (!old_value || kv.second != *old_value) {
+          delta->SetPath(kv.first + ".current", kv.second.Clone());
           if (old_value) {
-            delta->SetPath(iter.key() + ".previous", old_value->Clone());
+            delta->SetPath(kv.first + ".previous", old_value->Clone());
           }
           changed = true;
         }

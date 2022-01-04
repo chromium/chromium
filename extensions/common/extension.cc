@@ -147,11 +147,11 @@ bool ComputeExtensionID(const base::DictionaryValue& manifest,
                         int creation_flags,
                         std::u16string* error,
                         ExtensionId* extension_id) {
-  if (manifest.HasKey(keys::kPublicKey)) {
-    std::string public_key;
+  if (const base::Value* public_key = manifest.FindKey(keys::kPublicKey)) {
     std::string public_key_bytes;
-    if (!manifest.GetString(keys::kPublicKey, &public_key) ||
-        !Extension::ParsePEMKeyBytes(public_key, &public_key_bytes)) {
+    if (!public_key->is_string() ||
+        !Extension::ParsePEMKeyBytes(public_key->GetString(),
+                                     &public_key_bytes)) {
       *error = errors::kInvalidKey;
       return false;
     }

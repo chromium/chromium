@@ -146,24 +146,23 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
   std::unique_ptr<FileBrowserHandler> result(new FileBrowserHandler());
   result->set_extension_id(extension_id);
 
-  std::string handler_id;
+  const std::string* handler_id =
+      file_browser_handler->FindStringKey(keys::kFileBrowserHandlerId);
   // Read the file action |id| (mandatory).
-  if (!file_browser_handler->HasKey(keys::kFileBrowserHandlerId) ||
-      !file_browser_handler->GetString(keys::kFileBrowserHandlerId,
-                                       &handler_id)) {
+  if (!handler_id) {
     *error = errors::kInvalidFileBrowserHandlerId;
     return nullptr;
   }
-  result->set_id(handler_id);
+  result->set_id(*handler_id);
 
   // Read the page action title from |default_title| (mandatory).
-  std::string title;
-  if (!file_browser_handler->HasKey(keys::kActionDefaultTitle) ||
-      !file_browser_handler->GetString(keys::kActionDefaultTitle, &title)) {
+  const std::string* title =
+      file_browser_handler->FindStringKey(keys::kActionDefaultTitle);
+  if (!title) {
     *error = errors::kInvalidActionDefaultTitle;
     return nullptr;
   }
-  result->set_title(title);
+  result->set_title(*title);
 
   // Initialize access permissions (optional).
   const base::Value* access_list_value =
@@ -234,16 +233,15 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
     }
   }
 
-  std::string default_icon;
   // Read the file browser action |default_icon| (optional).
-  if (file_browser_handler->HasKey(keys::kActionDefaultIcon)) {
-    if (!file_browser_handler->GetString(keys::kActionDefaultIcon,
-                                         &default_icon) ||
-        default_icon.empty()) {
+  if (const base::Value* default_icon_val =
+          file_browser_handler->FindKey(keys::kActionDefaultIcon)) {
+    const std::string* default_icon = default_icon_val->GetIfString();
+    if (!default_icon || default_icon->empty()) {
       *error = errors::kInvalidActionDefaultIcon;
       return nullptr;
     }
-    result->set_icon_path(default_icon);
+    result->set_icon_path(*default_icon);
   }
 
   return result;

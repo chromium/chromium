@@ -29,7 +29,7 @@ Feature::Availability ManifestFeature::IsAvailableToContext(
 
   // We know we can skip manifest()->GetKey() here because we just did the same
   // validation it would do above.
-  if (extension && !extension->manifest()->value()->HasKey(name()))
+  if (extension && !extension->manifest()->value()->FindKey(name()))
     return CreateAvailability(NOT_PRESENT, extension->GetType());
 
   return CreateAvailability(IS_AVAILABLE);

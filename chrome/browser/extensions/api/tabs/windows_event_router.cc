@@ -67,7 +67,7 @@ bool WillDispatchWindowEvent(WindowController* window_controller,
                              const base::DictionaryValue* listener_filter) {
   bool has_filter =
       listener_filter &&
-      listener_filter->HasKey(extensions::tabs_constants::kWindowTypesKey);
+      listener_filter->FindKey(extensions::tabs_constants::kWindowTypesKey);
   // TODO(https://crbug.com/807313): Remove this.
   bool allow_dev_tools_windows = has_filter;
   if (!window_controller->IsVisibleToTabsAPIForExtension(
@@ -99,7 +99,7 @@ bool WillDispatchWindowFocusedEvent(
   Profile* new_active_context = nullptr;
   bool has_filter =
       listener_filter &&
-      listener_filter->HasKey(extensions::tabs_constants::kWindowTypesKey);
+      listener_filter->FindKey(extensions::tabs_constants::kWindowTypesKey);
 
   // We might not have a window controller if the focus moves away
   // from chromium's windows.

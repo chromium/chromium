@@ -483,7 +483,7 @@ void APIBinding::DecorateTemplateWithProperties(
 
     std::string type;
     CHECK(dict->GetString("type", &type));
-    if (type != "object" && !dict->HasKey(kValueKey)) {
+    if (type != "object" && !dict->FindKey(kValueKey)) {
       // TODO(devlin): What does a fundamental property not having a value mean?
       // It doesn't seem useful, and looks like it's only used by runtime.id,
       // which is set by custom bindings. Investigate, and remove.

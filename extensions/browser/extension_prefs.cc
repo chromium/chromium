@@ -1227,7 +1227,7 @@ bool ExtensionPrefs::GetWithholdingPermissions(
 bool ExtensionPrefs::HasWithholdingPermissionsSetting(
     const ExtensionId& extension_id) const {
   const base::DictionaryValue* ext = GetExtensionPref(extension_id);
-  return ext && ext->HasKey(kPrefWithholdingPermissions);
+  return ext && ext->FindKey(kPrefWithholdingPermissions);
 }
 
 std::unique_ptr<const PermissionSet>
@@ -1305,7 +1305,7 @@ void ExtensionPrefs::SetAllowFileAccess(const std::string& extension_id,
 bool ExtensionPrefs::HasAllowFileAccessSetting(
     const std::string& extension_id) const {
   const base::DictionaryValue* ext = GetExtensionPref(extension_id);
-  return ext && ext->HasKey(kPrefAllowFileAccess);
+  return ext && ext->FindKey(kPrefAllowFileAccess);
 }
 
 bool ExtensionPrefs::DoesExtensionHaveState(
