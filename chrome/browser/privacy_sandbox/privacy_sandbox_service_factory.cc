@@ -42,9 +42,6 @@ PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
 KeyedService* PrivacySandboxServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile->IsRegularProfile())
-    return nullptr;
-
   return new PrivacySandboxService(
       PrivacySandboxSettingsFactory::GetForProfile(profile),
       CookieSettingsFactory::GetForProfile(profile).get(), profile->GetPrefs(),
@@ -52,4 +49,11 @@ KeyedService* PrivacySandboxServiceFactory::BuildServiceInstanceFor(
       SyncServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
       federated_learning::FlocIdProviderFactory::GetForProfile(profile));
+}
+
+content::BrowserContext* PrivacySandboxServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  // TODO(crbug.com/1284295): Determine whether this actually needs to be
+  // created, or whether all usage in OTR contexts can be removed.
+  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

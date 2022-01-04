@@ -123,7 +123,6 @@ PrivacySandboxService::PrivacySandboxService(
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
   DCHECK(policy_service_);
-  DCHECK(identity_manager_);
 
   // Register observers for the Privacy Sandbox & FLoC preferences.
   user_prefs_registrar_.Init(pref_service_);
@@ -345,6 +344,7 @@ void PrivacySandboxService::MaybeReconcilePrivacySandboxPref() {
   // If there is a persistent auth error associated with the primary account's
   // refresh token, then sync will not be able to run and then outcome B has
   // been reached.
+  DCHECK(identity_manager_);
   GoogleServiceAuthError auth_error =
       identity_manager_->GetErrorStateOfRefreshTokenForAccount(
           identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync));
