@@ -19,7 +19,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
@@ -275,13 +274,11 @@ bool AttributionStorageSql::g_run_in_memory_ = false;
 
 AttributionStorageSql::AttributionStorageSql(
     const base::FilePath& path_to_database,
-    std::unique_ptr<Delegate> delegate,
-    const base::Clock* clock)
+    std::unique_ptr<Delegate> delegate)
     : path_to_database_(g_run_in_memory_
                             ? base::FilePath(kInMemoryPath)
                             : path_to_database.Append(kDatabasePath)),
-      rate_limit_table_(delegate.get(), clock),
-      clock_(clock),
+      rate_limit_table_(delegate.get()),
       delegate_(std::move(delegate)),
       weak_factory_(this) {
   DCHECK(delegate_);
@@ -376,7 +373,7 @@ std::vector<DeactivatedSource> AttributionStorageSql::StoreSource(
   const base::TimeDelta delete_frequency =
       delegate_->GetDeleteExpiredSourcesFrequency();
   DCHECK_GE(delete_frequency, base::TimeDelta());
-  const base::Time now = clock_->Now();
+  const base::Time now = base::Time::Now();
   if (now - last_deleted_expired_sources_ >= delete_frequency) {
     if (!DeleteExpiredSources())
       return {};
@@ -585,7 +582,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   DCHECK(!conversion_destination.opaque());
   DCHECK(!reporting_origin.opaque());
 
-  base::Time current_time = clock_->Now();
+  base::Time current_time = base::Time::Now();
 
   // Get all sources that match this <reporting_origin,
   // conversion_destination> pair. Only get sources that are active and not
@@ -981,7 +978,7 @@ bool AttributionStorageSql::DeleteExpiredSources() {
       ")LIMIT ?";
   sql::Statement select_expired_statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectExpiredSourcesSql));
-  select_expired_statement.BindTime(0, clock_->Now());
+  select_expired_statement.BindTime(0, base::Time::Now());
   select_expired_statement.BindInt(1, kMaxDeletesPerBatch);
   if (!delete_sources_from_paged_select(select_expired_statement))
     return false;
@@ -1050,7 +1047,7 @@ absl::optional<base::Time> AttributionStorageSql::AdjustOfflineReportTimes(
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return absl::nullopt;
 
-  base::Time now = clock_->Now();
+  base::Time now = base::Time::Now();
 
   // Set the report time for all reports that should have been sent before now
   // to now + a random number of microseconds between `min_delay` and
@@ -1376,7 +1373,7 @@ std::vector<StorableSource> AttributionStorageSql::GetActiveSources(int limit) {
 
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kGetActiveSourcesSql));
-  statement.BindTime(0, clock_->Now());
+  statement.BindTime(0, base::Time::Now());
   statement.BindInt(1, limit);
 
   std::vector<StorableSource> sources;

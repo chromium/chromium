@@ -15,7 +15,7 @@
 #include "base/rand_util.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/threading/sequence_bound.h"
-#include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_network_sender_impl.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -138,7 +138,6 @@ AttributionManagerImpl::AttributionManagerImpl(
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy)
     : AttributionManagerImpl(
-          base::DefaultClock::GetInstance(),
           storage_partition,
           content::GetNetworkConnectionTracker(),
           user_data_directory,
@@ -148,32 +147,27 @@ AttributionManagerImpl::AttributionManagerImpl(
           std::move(special_storage_policy)) {}
 
 AttributionManagerImpl::AttributionManagerImpl(
-    const base::Clock* clock,
     StoragePartitionImpl* storage_partition,
     network::NetworkConnectionTracker* network_connection_tracker,
     const base::FilePath& user_data_directory,
     std::unique_ptr<AttributionPolicy> policy,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<NetworkSender> network_sender)
-    : clock_(clock),
-      storage_partition_(storage_partition),
+    : storage_partition_(storage_partition),
       network_connection_tracker_(network_connection_tracker),
       attribution_storage_(base::SequenceBound<AttributionStorageSql>(
           g_storage_task_runner.Get(),
           user_data_directory,
           std::make_unique<AttributionStorageDelegateImpl>(
               base::CommandLine::ForCurrentProcess()->HasSwitch(
-                  switches::kConversionsDebugMode)),
-          clock_)),
+                  switches::kConversionsDebugMode)))),
       attribution_policy_(std::move(policy)),
       special_storage_policy_(std::move(special_storage_policy)),
       network_sender_(network_sender
                           ? std::move(network_sender)
                           : std::make_unique<AttributionNetworkSenderImpl>(
                                 storage_partition)),
-      get_reports_to_send_timer_(clock, /*tick_clock=*/nullptr),
       weak_factory_(this) {
-  DCHECK(clock_);
   DCHECK(storage_partition_);
   DCHECK(network_connection_tracker_);
   DCHECK(attribution_policy_);
@@ -373,7 +367,7 @@ void AttributionManagerImpl::StartGetReportsToSendTimer() {
     return;
 
   attribution_storage_.AsyncCall(&AttributionStorage::GetNextReportTime)
-      .WithArgs(clock_->Now())
+      .WithArgs(base::Time::Now())
       .Then(base::BindOnce(&AttributionManagerImpl::UpdateGetReportsToSendTimer,
                            weak_factory_.GetWeakPtr()));
 }
@@ -392,7 +386,7 @@ void AttributionManagerImpl::GetReportsToSend() {
   GetAndHandleReports(
       base::BindOnce(&AttributionManagerImpl::OnGetReportsToSend,
                      weak_factory_.GetWeakPtr()),
-      /*max_report_time=*/clock_->Now(), /*limit=*/-1);
+      /*max_report_time=*/base::Time::Now(), /*limit=*/-1);
 }
 
 void AttributionManagerImpl::OnGetReportsToSend(
@@ -419,7 +413,7 @@ void AttributionManagerImpl::OnGetReportsToSendFromWebUI(
     return;
   }
 
-  base::Time now = clock_->Now();
+  base::Time now = base::Time::Now();
   for (AttributionReport& report : reports) {
     report.set_report_time(now);
   }
@@ -431,7 +425,7 @@ void AttributionManagerImpl::OnGetReportsToSendFromWebUI(
 void AttributionManagerImpl::SendReports(std::vector<AttributionReport> reports,
                                          bool log_metrics,
                                          base::RepeatingClosure done) {
-  const base::Time now = clock_->Now();
+  const base::Time now = base::Time::Now();
   for (AttributionReport& report : reports) {
     DCHECK(report.report_id().has_value());
     DCHECK_LE(report.report_time(), now);

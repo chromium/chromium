@@ -5,7 +5,7 @@
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 
 #include "base/check.h"
-#include "base/time/clock.h"
+#include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "net/base/schemeful_site.h"
@@ -45,9 +45,8 @@ WARN_UNUSED_RESULT int SerializeAttributionType(
 
 }  // namespace
 
-RateLimitTable::RateLimitTable(const AttributionStorage::Delegate* delegate,
-                               const base::Clock* clock)
-    : delegate_(delegate), clock_(clock) {
+RateLimitTable::RateLimitTable(const AttributionStorage::Delegate* delegate)
+    : delegate_(delegate) {
   DCHECK(delegate_);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -150,7 +149,7 @@ bool RateLimitTable::AddRow(
   const base::TimeDelta delete_frequency =
       delegate_->GetDeleteExpiredRateLimitsFrequency();
   DCHECK_GE(delete_frequency, base::TimeDelta());
-  const base::Time now = clock_->Now();
+  const base::Time now = base::Time::Now();
   if (now - last_cleared_ >= delete_frequency) {
     if (!DeleteExpiredRateLimits(db, attribution_type))
       return false;
@@ -338,8 +337,8 @@ bool RateLimitTable::ClearDataForOriginsInRange(
 
 bool RateLimitTable::DeleteExpiredRateLimits(sql::Database* db,
                                              AttributionType attribution_type) {
-  base::Time timestamp =
-      clock_->Now() - delegate_->GetRateLimits(attribution_type).time_window;
+  base::Time timestamp = base::Time::Now() -
+                         delegate_->GetRateLimits(attribution_type).time_window;
 
   static constexpr char kDeleteExpiredRateLimits[] =
       // clang-format off
@@ -385,7 +384,7 @@ RateLimitTable::AddAggregateHistogramContributionsForTesting(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(source.impression_id().has_value());
 
-  base::Time now = clock_->Now();
+  base::Time now = base::Time::Now();
 
   const std::string serialized_impression_site =
       source.ImpressionSite().Serialize();

@@ -28,7 +28,6 @@
 class GURL;
 
 namespace base {
-class Clock;
 class FilePath;
 }  // namespace base
 
@@ -124,7 +123,6 @@ class CONTENT_EXPORT AttributionManagerImpl
   friend class AttributionManagerImplTest;
 
   AttributionManagerImpl(
-      const base::Clock* clock,
       StoragePartitionImpl* storage_partition,
       network::NetworkConnectionTracker* network_connection_tracker,
       const base::FilePath& user_data_directory,
@@ -175,8 +173,6 @@ class CONTENT_EXPORT AttributionManagerImpl
   friend std::vector<AttributionReport> GetAttributionsToReportForTesting(
       AttributionManagerImpl* manager,
       base::Time max_report_time);
-
-  raw_ptr<const base::Clock> clock_;
 
   raw_ptr<StoragePartitionImpl> storage_partition_;
 

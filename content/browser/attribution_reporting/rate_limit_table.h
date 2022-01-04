@@ -18,10 +18,6 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/content_export.h"
 
-namespace base {
-class Clock;
-}  // namespace base
-
 namespace sql {
 class Database;
 }  // namespace sql
@@ -50,8 +46,7 @@ class CONTENT_EXPORT RateLimitTable {
     kError,
   };
 
-  RateLimitTable(const AttributionStorage::Delegate* delegate,
-                 const base::Clock* clock);
+  explicit RateLimitTable(const AttributionStorage::Delegate* delegate);
   RateLimitTable(const RateLimitTable& other) = delete;
   RateLimitTable& operator=(const RateLimitTable& other) = delete;
   RateLimitTable(RateLimitTable&& other) = delete;
@@ -126,7 +121,7 @@ class CONTENT_EXPORT RateLimitTable {
               uint32_t value)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
-  // Deletes data in the table older than the window determined by |clock_| and
+  // Deletes data in the table older than the window determined by
   // |delegate_->GetRateLimits()|.
   // Returns false on failure.
   bool DeleteExpiredRateLimits(
@@ -137,9 +132,6 @@ class CONTENT_EXPORT RateLimitTable {
   // Must outlive |this|.
   raw_ptr<const AttributionStorage::Delegate> delegate_
       GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Must outlive |this|.
-  raw_ptr<const base::Clock> clock_;
 
   // Time at which `DeleteExpiredRateLimits()` was last called. Initialized to
   // the NULL time.

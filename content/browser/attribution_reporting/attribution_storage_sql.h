@@ -20,10 +20,6 @@
 #include "content/common/content_export.h"
 #include "sql/meta_table.h"
 
-namespace base {
-class Clock;
-}  // namespace base
-
 namespace sql {
 class Database;
 class Statement;
@@ -39,8 +35,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   static void RunInMemoryForTesting();
 
   AttributionStorageSql(const base::FilePath& path_to_database,
-                        std::unique_ptr<Delegate> delegate,
-                        const base::Clock* clock);
+                        std::unique_ptr<Delegate> delegate);
   AttributionStorageSql(const AttributionStorageSql& other) = delete;
   AttributionStorageSql& operator=(const AttributionStorageSql& other) = delete;
   AttributionStorageSql(AttributionStorageSql&& other) = delete;
@@ -228,9 +223,6 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   RateLimitTable rate_limit_table_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   sql::MetaTable meta_table_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Must outlive |this|.
-  raw_ptr<const base::Clock> clock_;
 
   std::unique_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
 
