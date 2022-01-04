@@ -272,7 +272,7 @@ void ModelTypeController::OnDelegateStarted(
       DCHECK(!model_stop_callbacks_.empty());
       DCHECK(!model_load_callback_);
       state_ = NOT_RUNNING;
-      FALLTHROUGH;
+      [[fallthrough]];
     case FAILED:
       DVLOG(1) << "Successful sync start completion received late for "
                << ModelTypeToString(type())

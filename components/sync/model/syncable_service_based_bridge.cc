@@ -550,7 +550,7 @@ SyncChangeList SyncableServiceBasedBridge::StoreAndConvertRemoteChanges(
             change->data(),
             /*storage_key=*/change->data().client_tag_hash.value(),
             batch->GetMetadataChangeList());
-        FALLTHROUGH;
+        [[fallthrough]];
 
       case EntityChange::ACTION_UPDATE: {
         const std::string& storage_key = change->data().client_tag_hash.value();

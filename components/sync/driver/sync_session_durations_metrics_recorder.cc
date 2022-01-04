@@ -224,7 +224,7 @@ void SyncSessionDurationsMetricsRecorder::LogSigninDuration(
     case FeatureState::UNKNOWN:
       // Since the feature wasn't working for the user if we didn't know its
       // state, log the status as off.
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureState::OFF:
       LogDuration("Session.TotalDuration.WithoutAccount", session_length);
       break;
@@ -246,7 +246,7 @@ void SyncSessionDurationsMetricsRecorder::LogSyncAndAccountDuration(
       break;
     case GetFeatureStates(FeatureState::ON, FeatureState::UNKNOWN):
       // Sync engine not initialized yet, default to it being off.
-      FALLTHROUGH;
+      [[fallthrough]];
     case GetFeatureStates(FeatureState::ON, FeatureState::OFF):
       LogDuration("Session.TotalDuration.NotOptedInToSyncWithAccount",
                   session_length);
@@ -257,7 +257,7 @@ void SyncSessionDurationsMetricsRecorder::LogSyncAndAccountDuration(
       break;
     case GetFeatureStates(FeatureState::OFF, FeatureState::UNKNOWN):
       // Sync engine not initialized yet, default to it being off.
-      FALLTHROUGH;
+      [[fallthrough]];
     case GetFeatureStates(FeatureState::OFF, FeatureState::OFF):
       LogDuration("Session.TotalDuration.NotOptedInToSyncWithoutAccount",
                   session_length);

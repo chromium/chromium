@@ -154,7 +154,7 @@ bool IsValidNigoriSpecifics(const NigoriSpecifics& specifics) {
       if (!SpecificsHasValidKeyDerivationParams(specifics)) {
         return false;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case NigoriSpecifics::FROZEN_IMPLICIT_PASSPHRASE:
       if (!specifics.encrypt_everything()) {
         DLOG(ERROR) << "Nigori with explicit passphrase type should have "
