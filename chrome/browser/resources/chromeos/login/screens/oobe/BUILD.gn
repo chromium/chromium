@@ -15,21 +15,13 @@ group("polymer3_elements") {
     ":enable_debugging_module",
     ":hid_detection_module",
     ":oobe_eula_module",
+    ":oobe_network_module",
     ":packaged_license_module",
     ":quick_start_module",
     ":update_module",
     ":welcome_dialog_module",
     ":welcome_module",
   ]
-}
-
-group("closure_compile") {
-  deps = [ ":closure_compile_local" ]
-}
-
-js_type_check("closure_compile_local") {
-  uses_legacy_modules = true
-  deps = [ ":oobe_network" ]
 }
 
 js_type_check("closure_compile_module") {
@@ -42,6 +34,7 @@ js_type_check("closure_compile_module") {
     ":enable_debugging.m",
     ":hid_detection.m",
     ":oobe_eula.m",
+    ":oobe_network.m",
     ":packaged_license.m",
     ":quick_start.m",
     ":update.m",
@@ -52,18 +45,6 @@ js_type_check("closure_compile_module") {
 
 ###############################
 # Closure compiler libraries below
-
-js_library("oobe_network") {
-  deps = [
-    # TODO(crbug.com/251576): Restore when migrate to Polymer 3.
-    # "../../components:network_select_login",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "//ui/webui/resources/cr_components/chromeos/network:network_select",
-  ]
-}
 
 js_library("auto_enrollment_check.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/auto_enrollment_check.m.js" ]
@@ -161,6 +142,20 @@ js_library("oobe_eula.m") {
     "$externs_path/webview_tag.js",
   ]
   extra_deps = [ ":oobe_eula_module" ]
+}
+
+js_library("oobe_network.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/oobe_network.m.js" ]
+  deps = [
+    "../../components:network_select_login.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  extra_deps = [ ":oobe_network_module" ]
 }
 
 js_library("packaged_license.m") {
@@ -276,6 +271,14 @@ polymer_modulizer("quick_start") {
 polymer_modulizer("oobe_eula") {
   js_file = "oobe_eula.js"
   html_file = "oobe_eula.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("oobe_network") {
+  js_file = "oobe_network.js"
+  html_file = "oobe_network.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

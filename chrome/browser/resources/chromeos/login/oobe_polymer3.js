@@ -48,6 +48,7 @@ import 'chrome://oobe/screens/oobe/demo_setup.m.js';
 import 'chrome://oobe/screens/oobe/enable_debugging.m.js';
 import 'chrome://oobe/screens/oobe/hid_detection.m.js';
 import 'chrome://oobe/screens/oobe/oobe_eula.m.js';
+import 'chrome://oobe/screens/oobe/oobe_network.m.js';
 import 'chrome://oobe/screens/oobe/welcome.m.js';
 import 'chrome://oobe/screens/oobe/packaged_license.m.js';
 import 'chrome://oobe/screens/oobe/update.m.js';

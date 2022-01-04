@@ -14,7 +14,7 @@
  */
 let networkCustomItemCustomData;
 
-class NetworkSelectLogin extends Polymer.Element {
+/* #export */ class NetworkSelectLogin extends Polymer.Element {
   static get is() {
     return 'network-select-login';
   }
