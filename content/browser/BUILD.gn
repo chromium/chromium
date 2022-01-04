@@ -76,8 +76,6 @@ source_set("browser") {
     "//components/offline_pages/core/request_header",
     "//components/os_crypt",
     "//components/payments/content/icon",
-    "//components/payments/core",
-    "//components/payments/core:error_strings",
     "//components/payments/mojom",
 
     # TODO(698985): Remove `permissions_common`.
@@ -261,6 +259,7 @@ source_set("browser") {
     "//ui/gl:buildflags",
     "//ui/latency",
     "//ui/native_theme",
+    "//ui/native_theme:native_theme_browser",
     "//ui/resources",
     "//ui/shell_dialogs",
     "//ui/snapshot",
