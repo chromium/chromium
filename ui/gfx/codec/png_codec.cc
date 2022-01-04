@@ -219,7 +219,11 @@ void DecodeInfoCallback(png_struct* png_ptr, png_info* info_ptr) {
   png_read_update_info(png_ptr, info_ptr);
 
   if (state->bitmap) {
-    state->bitmap->allocN32Pixels(state->width, state->height);
+    if (!state->bitmap->tryAllocN32Pixels(state->width, state->height)) {
+      png_error(png_ptr, "Could not allocate bitmap.");
+      NOTREACHED() << "png_error should not return.";
+      return;
+    }
   } else if (state->output) {
     state->output->resize(
         state->width * state->output_channels * state->height);
