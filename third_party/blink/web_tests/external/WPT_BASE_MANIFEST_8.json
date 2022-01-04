@@ -169763,6 +169763,32 @@
        {}
       ]
      ],
+     "text-decoration-dotted-001.html": [
+      "acdba5de328c679ea91a0fe6c4fe254e32b133e8",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-dotted-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "text-decoration-dotted-002.html": [
+      "69f5af919ddecfd19d914ec4d9d6f804443d833b",
+      [
+       null,
+       [
+        [
+         "/css/css-text-decor/reference/text-decoration-dotted-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "text-decoration-line-010.xht": [
       "f4b16e32aa185d204c1793f9ca1b0eda502c60fd",
       [
@@ -242599,7 +242625,7 @@
        []
       ],
       "container-for-shadow-dom.tentative-expected.txt": [
-       "5d5c990f1ea97e6939452cccfcd8aae5223d0674",
+       "c68cca2e9841c1417971e347182def49812084cb",
        []
       ],
       "container-name-parsing-expected.txt": [
@@ -266984,6 +267010,14 @@
        "516b0f83db27177fbc603fabccafbdc7e3211240",
        []
       ],
+      "text-decoration-dotted-001-ref.html": [
+       "646c25a662c956ee65c28d63a2fdc04502f7ac13",
+       []
+      ],
+      "text-decoration-dotted-002-ref.html": [
+       "3c0be01d4d74b237baa9db17f86382c62138ad5a",
+       []
+      ],
       "text-decoration-line-010-ref.xht": [
        "6bcba28f191d03b2106131f27c7a2f88667cc9ca",
        []
@@ -281835,7 +281869,15 @@
        []
       ],
       "preflight.py": [
-       "4181210b263b9e3ce377464bab63278330d97be4",
+       "8accc689f3bffe38dca735361ea8f7f582ccf682",
+       []
+      ],
+      "service-worker-fetcher.html": [
+       "d9c0df30fd4bfcc2eb780a839037d0c2ab88af4b",
+       []
+      ],
+      "shared-worker-fetcher.html": [
+       "8bea2497f9fd2ce3ac850b4a293ff6432ae41a8d",
        []
       ],
       "socket-opener.html": [
@@ -281843,7 +281885,11 @@
        []
       ],
       "support.sub.js": [
-       "63c5d87d206f1161e8ecb68e5910ce893064f10b",
+       "1dba6d535277a14b13cc9c4beed36b8e9e8db850",
+       []
+      ],
+      "worker-fetcher.html": [
+       "9031e6a54c35ac4805c2d2c35dd8032802f43618",
        []
       ],
       "xhr-sender.html": [
@@ -281851,6 +281897,18 @@
        []
       ]
      },
+     "service-worker.https.window-expected.txt": [
+      "862f41ae97d255c84fe160a70cb5d2eb14e72f39",
+      []
+     ],
+     "shared-worker.https.window-expected.txt": [
+      "6181be5586d612fbc003b371088d38a847d2bd9e",
+      []
+     ],
+     "shared-worker.window-expected.txt": [
+      "5afa07e7133d3497b9b725695c7e6e8e6e2764df",
+      []
+     ],
      "websocket.window-expected.txt": [
       "11e2dcac903cb8fb7f68563036c4b8a4a9c1a9e7",
       []
@@ -358417,7 +358475,7 @@
        ]
       ],
       "container-for-shadow-dom.tentative.html": [
-       "aee25f86d70d13b2fe6898cb9ea21ab5f8b98c6f",
+       "24d52da256a8802e47b4e33f3c3c98f6216537b6",
        [
         null,
         {}
@@ -414964,6 +415022,60 @@
        }
       ]
      ],
+     "service-worker.https.window.js": [
+      "969f359700e4c1c145743eb4c826973e7400a3af",
+      [
+       "fetch/private-network-access/service-worker.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "shared-worker.https.window.js": [
+      "91d9186860e9966a44880fc35b92e95b440af1fd",
+      [
+       "fetch/private-network-access/shared-worker.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "shared-worker.window.js": [
+      "ffa8a360c7032138b89d48507b0d1dcb9a23d5a2",
+      [
+       "fetch/private-network-access/shared-worker.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "websocket.https.window.js": [
       "0731896098bcefa614ebdf28765a04766b5e6cda",
       [
@@ -414984,6 +415096,42 @@
        "fetch/private-network-access/websocket.window.html",
        {
         "script_metadata": [
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "worker.https.window.js": [
+      "fd38f7cf70eb3909fe95fe68a43e74283be163e4",
+      [
+       "fetch/private-network-access/worker.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "worker.window.js": [
+      "118c0992544265603671862af5511f6e7220af28",
+      [
+       "fetch/private-network-access/worker.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
          [
           "script",
           "resources/support.sub.js"
