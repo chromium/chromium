@@ -10,13 +10,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/policy/core/browser/policy_error_map.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_matcher/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -230,7 +230,7 @@ TEST_F(URLBlocklistPolicyHandlerTest, ApplyPolicySettings_MergeSuccessful) {
 
 TEST_F(URLBlocklistPolicyHandlerTest,
        ApplyPolicySettings_CheckPolicySettingsMaxFiltersLimitOK) {
-  size_t max_filters_per_policy = url_util::GetMaxFiltersPerPolicy();
+  size_t max_filters_per_policy = policy::kMaxUrlFiltersPerPolicy;
   base::Value urls =
       GetURLBlocklistPolicyValueWithEntries(max_filters_per_policy);
 
@@ -250,7 +250,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
 // |errors_| when URLBlocklist entries exceed the max filters per policy limit.
 TEST_F(URLBlocklistPolicyHandlerTest,
        ApplyPolicySettings_CheckPolicySettingsMaxFiltersLimitExceeded_1) {
-  size_t max_filters_per_policy = url_util::GetMaxFiltersPerPolicy();
+  size_t max_filters_per_policy = policy::kMaxUrlFiltersPerPolicy;
   base::Value urls =
       GetURLBlocklistPolicyValueWithEntries(max_filters_per_policy + 1);
 
@@ -281,7 +281,7 @@ TEST_F(URLBlocklistPolicyHandlerTest,
   in_disabled_schemes.Append(kTestDisabledScheme);
   SetPolicy(key::kDisabledSchemes, std::move(in_disabled_schemes));
 
-  size_t max_filters_per_policy = url_util::GetMaxFiltersPerPolicy();
+  size_t max_filters_per_policy = policy::kMaxUrlFiltersPerPolicy;
   base::Value urls =
       GetURLBlocklistPolicyValueWithEntries(max_filters_per_policy);
 

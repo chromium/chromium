@@ -9,7 +9,7 @@
 #include "base/logging.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
-#include "components/policy/core/browser/url_util.h"
+#include "components/url_matcher/url_util.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -50,12 +50,12 @@ void WebApprovalsManager::RequestLocalApproval(
 void WebApprovalsManager::RequestRemoteApproval(
     const GURL& url,
     ApprovalRequestInitiatedCallback callback) {
-  GURL effective_url = policy::url_util::GetEmbeddedURL(url);
+  GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
   if (!effective_url.is_valid())
     effective_url = url;
   AddRemoteApprovalRequestInternal(
       base::BindRepeating(CreateURLAccessRequest,
-                          policy::url_util::Normalize(effective_url)),
+                          url_matcher::util::Normalize(effective_url)),
       std::move(callback), 0);
 }
 

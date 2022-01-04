@@ -33,7 +33,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"

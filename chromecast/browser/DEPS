@@ -41,6 +41,7 @@ include_rules = [
   "+components/services/heap_profiling/public/cpp/settings.h",
   "+components/storage_monitor",
   "+components/ui_devtools",
+  "+components/url_matcher",
   "+components/user_prefs",
   "+components/value_store",
   "+components/variations/net",

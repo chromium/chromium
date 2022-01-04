@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/core/browser/url_util.h"
+#include "components/url_matcher/url_util.h"
 
 #include <memory>
 #include <string>
@@ -29,8 +29,8 @@ using url_matcher::URLMatcherPortFilter;
 using url_matcher::URLMatcherSchemeFilter;
 using url_matcher::URLQueryElementMatcherCondition;
 
-namespace policy {
-namespace url_util {
+namespace url_matcher {
+namespace util {
 
 namespace {
 
@@ -52,8 +52,8 @@ const char kGoogleWebCacheQueryPattern[] =
 const char kGoogleTranslateSubdomain[] = "translate.";
 const char kAlternateGoogleTranslateHost[] = "translate.googleusercontent.com";
 
-// Maximum filters per policy. Filters over this index are ignored.
-const size_t kMaxFiltersPerPolicy = 1000;
+// Maximum filters allowed. Filters over this index are ignored.
+const size_t kMaxFiltersAllowed = 1000;
 
 // Returns a full URL using either "http" or "https" as the scheme.
 GURL BuildURL(bool is_https, const std::string& host_and_path) {
@@ -213,6 +213,22 @@ class EmbeddedURLExtractor {
 
 }  // namespace
 
+// Converts a ValueList |value| of strings into a vector. Returns true if
+// successful.
+bool GetAsStringVector(const base::Value* value,
+                       std::vector<std::string>* out) {
+  if (!value->is_list())
+    return false;
+
+  for (const base::Value& item : value->GetList()) {
+    if (!item.is_string())
+      return false;
+
+    out->push_back(item.GetString());
+  }
+  return true;
+}
+
 GURL Normalize(const GURL& url) {
   GURL normalized_url = url;
   GURL::Replacements replacements;
@@ -228,18 +244,17 @@ GURL GetEmbeddedURL(const GURL& url) {
   return EmbeddedURLExtractor::GetInstance()->GetEmbeddedURL(url);
 }
 
-size_t GetMaxFiltersPerPolicy() {
-  return kMaxFiltersPerPolicy;
+size_t GetMaxFiltersAllowed() {
+  return kMaxFiltersAllowed;
 }
 
-FilterComponents::FilterComponents()
-    : port(0), match_subdomains(true), allow(true) {}
+FilterComponents::FilterComponents() = default;
 FilterComponents::~FilterComponents() = default;
 FilterComponents::FilterComponents(FilterComponents&&) = default;
 
-bool FilterComponents::IsBlocklistWildcard() const {
-  return !allow && host.empty() && scheme.empty() && path.empty() &&
-         query.empty() && port == 0 && number_of_key_value_pairs == 0 &&
+bool FilterComponents::IsWildcard() const {
+  return host.empty() && scheme.empty() && path.empty() && query.empty() &&
+         port == 0 && number_of_url_matching_conditions == 0 &&
          match_subdomains;
 }
 
@@ -393,15 +408,15 @@ bool FilterToComponents(const std::string& filter,
   return true;
 }
 
-POLICY_EXPORT void AddFilters(URLMatcher* matcher,
-                              bool allow,
-                              URLMatcherConditionSet::ID* id,
-                              const base::ListValue* patterns,
-                              std::map<url_matcher::URLMatcherConditionSet::ID,
-                                       url_util::FilterComponents>* filters) {
+void AddFilters(URLMatcher* matcher,
+                bool allow,
+                URLMatcherConditionSet::ID* id,
+                const base::ListValue* patterns,
+                std::map<url_matcher::URLMatcherConditionSet::ID,
+                         url_matcher::util::FilterComponents>* filters) {
   URLMatcherConditionSet::Vector all_conditions;
   base::Value::ConstListView patterns_list = patterns->GetList();
-  size_t size = std::min(kMaxFiltersPerPolicy, patterns_list.size());
+  size_t size = std::min(kMaxFiltersAllowed, patterns_list.size());
   scoped_refptr<URLMatcherConditionSet> condition_set;
   for (size_t i = 0; i < size; ++i) {
     std::string pattern;
@@ -423,7 +438,7 @@ POLICY_EXPORT void AddFilters(URLMatcher* matcher,
                            components.match_subdomains, components.port,
                            components.path, components.query, allow);
     if (filters) {
-      components.number_of_key_value_pairs =
+      components.number_of_url_matching_conditions =
           condition_set->query_conditions().size();
       (*filters)[*id] = std::move(components);
     }
@@ -432,11 +447,49 @@ POLICY_EXPORT void AddFilters(URLMatcher* matcher,
   matcher->AddConditionSets(all_conditions);
 }
 
-POLICY_EXPORT void AddAllowFilters(url_matcher::URLMatcher* matcher,
-                                   const base::ListValue* patterns) {
+void AddFilters(URLMatcher* matcher,
+                bool allow,
+                URLMatcherConditionSet::ID* id,
+                const std::vector<std::string>& patterns,
+                std::map<url_matcher::URLMatcherConditionSet::ID,
+                         url_matcher::util::FilterComponents>* filters) {
+  URLMatcherConditionSet::Vector all_conditions;
+  size_t size = std::min(kMaxFiltersAllowed, patterns.size());
+  scoped_refptr<URLMatcherConditionSet> condition_set;
+  for (size_t i = 0; i < size; ++i) {
+    FilterComponents components;
+    components.allow = allow;
+    if (!FilterToComponents(patterns[i], &components.scheme, &components.host,
+                            &components.match_subdomains, &components.port,
+                            &components.path, &components.query)) {
+      LOG(ERROR) << "Invalid pattern " << patterns[i];
+      continue;
+    }
+    condition_set =
+        CreateConditionSet(matcher, ++(*id), components.scheme, components.host,
+                           components.match_subdomains, components.port,
+                           components.path, components.query, allow);
+    if (filters) {
+      components.number_of_url_matching_conditions =
+          condition_set->query_conditions().size();
+      (*filters)[*id] = std::move(components);
+    }
+    all_conditions.push_back(std::move(condition_set));
+  }
+  matcher->AddConditionSets(all_conditions);
+}
+
+void AddAllowFilters(url_matcher::URLMatcher* matcher,
+                     const base::ListValue* patterns) {
   url_matcher::URLMatcherConditionSet::ID id(0);
   AddFilters(matcher, true, &id, patterns);
 }
 
-}  // namespace url_util
-}  // namespace policy
+void AddAllowFilters(url_matcher::URLMatcher* matcher,
+                     const std::vector<std::string>& patterns) {
+  url_matcher::URLMatcherConditionSet::ID id(0);
+  AddFilters(matcher, true, &id, patterns);
+}
+
+}  // namespace util
+}  // namespace url_matcher

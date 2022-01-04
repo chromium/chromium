@@ -21,7 +21,7 @@
 #include "chrome/browser/supervised_user/supervised_user_denylist.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/policy/core/browser/url_util.h"
+#include "components/url_matcher/url_util.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
@@ -288,7 +288,7 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(
     supervised_user_error_page::FilteringBehaviorReason* reason) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  GURL effective_url = policy::url_util::GetEmbeddedURL(url);
+  GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
   if (!effective_url.is_valid())
     effective_url = url;
 
@@ -302,7 +302,7 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(
   // Allow webstore crx downloads. This applies to both extension installation
   // and updates.
   if (extension_urls::GetWebstoreUpdateUrl() ==
-      policy::url_util::Normalize(effective_url)) {
+      url_matcher::util::Normalize(effective_url)) {
     return ALLOW;
   }
 
@@ -356,7 +356,7 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // The user requested the Chrome Webstore, and it
   // hasn't specifically been blocked above, so allow.
-  if (policy::url_util::Normalize(effective_url).host() ==
+  if (url_matcher::util::Normalize(effective_url).host() ==
       extension_urls::GetWebstoreLaunchURL().host()) {
     return ALLOW;
   }
@@ -379,7 +379,7 @@ SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
   bool conflict = false;
 
   // Check manual overrides for the exact URL.
-  auto url_it = url_map_.find(policy::url_util::Normalize(url));
+  auto url_it = url_map_.find(url_matcher::util::Normalize(url));
   if (url_it != url_map_.end()) {
     conflict =
         SetFilteringBehaviorResult(url_it->second ? ALLOW : BLOCK, &result);
@@ -632,7 +632,7 @@ bool SupervisedUserURLFilter::RunAsyncChecker(
   }
 
   return async_url_checker_->CheckURL(
-      policy::url_util::Normalize(url),
+      url_matcher::util::Normalize(url),
       base::BindOnce(&SupervisedUserURLFilter::CheckCallback,
                      base::Unretained(this), std::move(callback)));
 }

@@ -7,9 +7,9 @@
 #include "base/check.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_matcher/url_matcher.h"
+#include "components/url_matcher/url_util.h"
 #include "url/gurl.h"
 
 namespace enterprise_connectors {
@@ -89,7 +89,7 @@ void DeviceTrustConnectorService::OnPolicyUpdated() {
 
   if (url_patterns && !url_patterns->GetList().empty()) {
     // Add the new endpoints to the conditions.
-    policy::url_util::AddAllowFilters(matcher_.get(), url_patterns);
+    url_matcher::util::AddAllowFilters(matcher_.get(), url_patterns);
 
     // Call the hook which signals that the connector has been enabled.
     OnConnectorEnabled();

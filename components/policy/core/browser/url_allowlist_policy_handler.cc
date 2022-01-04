@@ -13,12 +13,12 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/policy/core/browser/policy_error_map.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_matcher/url_util.h"
 
 namespace policy {
 
@@ -40,12 +40,12 @@ bool URLAllowlistPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
     return true;
   }
 
-  // Filters more than |url_util::kMaxFiltersPerPolicy| are ignored, add a
+  // Filters more than |policy::kMaxUrlFiltersPerPolicy| are ignored, add a
   // warning message.
-  if (url_allowlist->GetList().size() > url_util::GetMaxFiltersPerPolicy()) {
+  if (url_allowlist->GetList().size() > kMaxUrlFiltersPerPolicy) {
     errors->AddError(policy_name(),
                      IDS_POLICY_URL_ALLOW_BLOCK_LIST_MAX_FILTERS_LIMIT_WARNING,
-                     base::NumberToString(url_util::GetMaxFiltersPerPolicy()));
+                     base::NumberToString(kMaxUrlFiltersPerPolicy));
   }
 
   bool type_error = false;
@@ -93,8 +93,8 @@ void URLAllowlistPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 }
 
 bool URLAllowlistPolicyHandler::ValidatePolicy(const std::string& policy) {
-  url_util::FilterComponents components;
-  return url_util::FilterToComponents(
+  url_matcher::util::FilterComponents components;
+  return url_matcher::util::FilterToComponents(
       policy, &components.scheme, &components.host,
       &components.match_subdomains, &components.port, &components.path,
       &components.query);

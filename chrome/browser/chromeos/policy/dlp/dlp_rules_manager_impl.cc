@@ -24,10 +24,10 @@
 #include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/url_matcher/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
@@ -103,12 +103,12 @@ void AddUrlConditions(url_matcher::URLMatcher* matcher,
   bool match_subdomains = true;
   for (const auto& list_entry : urls->GetList()) {
     std::string url = list_entry.GetString();
-    if (!url_util::FilterToComponents(url, &scheme, &host, &match_subdomains,
-                                      &port, &path, &query)) {
+    if (!url_matcher::util::FilterToComponents(
+            url, &scheme, &host, &match_subdomains, &port, &path, &query)) {
       LOG(ERROR) << "Invalid pattern " << url;
       continue;
     }
-    auto condition_set = url_util::CreateConditionSet(
+    auto condition_set = url_matcher::util::CreateConditionSet(
         matcher, ++condition_id, scheme, host, match_subdomains, port, path,
         query, /*allow=*/true);
 

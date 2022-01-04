@@ -19,11 +19,11 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/url_matcher/url_matcher.h"
+#include "components/url_matcher/url_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "net/base/escape.h"
@@ -276,8 +276,8 @@ bool IsSchemeOriginPairAllowedByPolicy(const std::string& scheme,
 
   url_matcher::URLMatcher matcher;
   url_matcher::URLMatcherConditionSet::ID id(0);
-  policy::url_util::AddFilters(&matcher, true /* allowed */, &id,
-                               &base::Value::AsListValue(*origin_patterns));
+  url_matcher::util::AddFilters(&matcher, true /* allowed */, &id,
+                                &base::Value::AsListValue(*origin_patterns));
 
   auto matching_set = matcher.MatchURL(initiating_origin->GetURL());
   return !matching_set.empty();

@@ -8,9 +8,9 @@
 
 #include "base/bind.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/safe_search_api/safe_search/safe_search_url_checker_client.h"
 #include "components/safe_search_api/url_checker.h"
+#include "components/url_matcher/url_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/net_errors.h"
@@ -70,7 +70,7 @@ bool SafeSearchService::CheckSafeSearchURL(const GURL& url,
   }
 
   return safe_search_url_checker_->CheckURL(
-      policy::url_util::Normalize(url),
+      url_matcher::util::Normalize(url),
       base::BindOnce(&OnCheckURLDone, std::move(callback)));
 }
 

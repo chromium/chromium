@@ -14,12 +14,11 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "components/url_matcher/url_matcher_constants.h"
-#include "components/url_matcher/url_matcher_helpers.h"
+#include "components/url_matcher/url_util.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace url_matcher {
 
-namespace helpers = url_matcher_helpers;
 namespace keys = url_matcher_constants;
 
 namespace {
@@ -225,7 +224,7 @@ std::unique_ptr<URLMatcherSchemeFilter>
 URLMatcherFactory::CreateURLMatcherScheme(const base::Value* value,
                                           std::string* error) {
   std::vector<std::string> schemas;
-  if (!helpers::GetAsStringVector(value, &schemas)) {
+  if (!util::GetAsStringVector(value, &schemas)) {
     *error = base::StringPrintf(kVectorOfStringsExpected, keys::kSchemesKey);
     return nullptr;
   }

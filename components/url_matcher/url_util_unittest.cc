@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/policy/core/browser/url_util.h"
+#include "components/url_matcher/url_util.h"
 #include <memory>
 
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace policy {
-namespace url_util {
+namespace url_matcher {
+namespace util {
 
 namespace {
 
 GURL GetEmbeddedURL(const std::string& url) {
-  return policy::url_util::GetEmbeddedURL(GURL(url));
+  return url_matcher::util::GetEmbeddedURL(GURL(url));
 }
 
 // Parameters for the FilterToComponents test.
@@ -78,7 +78,7 @@ void PrintTo(const FilterTestParams& params, std::ostream* os) {
 bool MatchFilters(const std::vector<std::string>& patterns,
                   const std::string& url) {
   // Add the pattern to the matcher.
-  url_matcher::URLMatcher matcher;
+  URLMatcher matcher;
   base::Value list(base::Value::Type::LIST);
   for (const auto& pattern : patterns)
     list.Append(pattern);
@@ -663,8 +663,8 @@ TEST_P(FilterToComponentsTest, FilterToComponents) {
   std::string path;
   std::string query;
 
-  url_util::FilterToComponents(GetParam().filter(), &scheme, &host,
-                               &match_subdomains, &port, &path, &query);
+  FilterToComponents(GetParam().filter(), &scheme, &host, &match_subdomains,
+                     &port, &path, &query);
   EXPECT_EQ(GetParam().scheme(), scheme);
   EXPECT_EQ(GetParam().host(), host);
   EXPECT_EQ(GetParam().match_subdomains(), match_subdomains);
@@ -672,5 +672,5 @@ TEST_P(FilterToComponentsTest, FilterToComponents) {
   EXPECT_EQ(GetParam().path(), path);
 }
 
-}  // namespace url_util
-}  // namespace policy
+}  // namespace util
+}  // namespace url_matcher

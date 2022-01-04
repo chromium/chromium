@@ -5,7 +5,7 @@
 #include "chrome/browser/enterprise/connectors/file_system/service_settings.h"
 
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
-#include "components/policy/core/browser/url_util.h"
+#include "components/url_matcher/url_util.h"
 
 namespace enterprise_connectors {
 
@@ -211,8 +211,8 @@ bool FileSystemServiceSettings::AddUrlPatternSettings(
 
   // This pre-increments the id by size of url_list_value.
   URLMatchingID pre_id = *id;
-  policy::url_util::AddFilters(url_matcher_.get(), enabled, id,
-                               &base::Value::AsListValue(*url_list));
+  url_matcher::util::AddFilters(url_matcher_.get(), enabled, id,
+                                &base::Value::AsListValue(*url_list));
 
   const base::Value* mime_types = url_settings_value.FindListKey(kKeyMimeTypes);
   if (!mime_types)

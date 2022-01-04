@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chromecast/browser/general_audience_browsing_service.h"
-#include "components/policy/core/browser/url_util.h"
+#include "components/url_matcher/url_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "url/gurl.h"
 
@@ -36,10 +36,10 @@ GeneralAudienceBrowsingNavigationThrottle::CheckURL() {
   if (!url.SchemeIsHTTPOrHTTPS())
     return PROCEED;
 
-  GURL effective_url = policy::url_util::GetEmbeddedURL(url);
+  GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
   if (!effective_url.is_valid())
     effective_url = url;
-  GURL normalized_url = policy::url_util::Normalize(effective_url);
+  GURL normalized_url = url_matcher::util::Normalize(effective_url);
 
   bool synchronous = general_audience_browsing_service_->CheckURL(
       effective_url,

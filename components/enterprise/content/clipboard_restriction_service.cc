@@ -9,6 +9,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_matcher/url_util.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -96,10 +97,10 @@ void ClipboardRestrictionService::UpdateSettings() {
   // and the copy will be blocked. While confusing, this is mostly to map to the
   // same policy format as the content analysis connector, which also has
   // "enable" and "disable" lists used in this way.
-  policy::url_util::AddFilters(enable_url_matcher_.get(), true, &next_id_,
-                               enable_list);
-  policy::url_util::AddFilters(disable_url_matcher_.get(), false, &next_id_,
-                               disable_list);
+  url_matcher::util::AddFilters(enable_url_matcher_.get(), true, &next_id_,
+                                enable_list);
+  url_matcher::util::AddFilters(disable_url_matcher_.get(), false, &next_id_,
+                                disable_list);
 
   absl::optional<int> min_data_size = settings->FindIntKey(
       enterprise::content::kCopyPreventionSettingsMinDataSizeFieldName);

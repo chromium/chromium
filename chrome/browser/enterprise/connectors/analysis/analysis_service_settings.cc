@@ -6,7 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
-#include "components/policy/core/browser/url_util.h"
+#include "components/url_matcher/url_util.h"
 
 namespace enterprise_connectors {
 
@@ -205,8 +205,8 @@ void AnalysisServiceSettings::AddUrlPatternSettings(
   if (!url_list)
     return;
 
-  policy::url_util::AddFilters(matcher_.get(), enabled, id,
-                               &base::Value::AsListValue(*url_list));
+  url_matcher::util::AddFilters(matcher_.get(), enabled, id,
+                                &base::Value::AsListValue(*url_list));
 
   if (enabled)
     enabled_patterns_settings_[*id] = std::move(setting);

@@ -9,7 +9,6 @@
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "components/policy/core/browser/url_util.h"
 
 namespace enterprise_connectors {
 

@@ -15,10 +15,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/policy/policy_export.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/url_matcher/url_matcher.h"
+#include "components/url_matcher/url_util.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -71,11 +71,13 @@ class POLICY_EXPORT URLBlocklist {
 
  private:
   // Returns true if |lhs| takes precedence over |rhs|.
-  static bool FilterTakesPrecedence(const url_util::FilterComponents& lhs,
-                                    const url_util::FilterComponents& rhs);
+  static bool FilterTakesPrecedence(
+      const url_matcher::util::FilterComponents& lhs,
+      const url_matcher::util::FilterComponents& rhs);
 
-  url_matcher::URLMatcherConditionSet::ID id_;
-  std::map<url_matcher::URLMatcherConditionSet::ID, url_util::FilterComponents>
+  url_matcher::URLMatcherConditionSet::ID id_ = 0;
+  std::map<url_matcher::URLMatcherConditionSet::ID,
+           url_matcher::util::FilterComponents>
       filters_;
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
 };
