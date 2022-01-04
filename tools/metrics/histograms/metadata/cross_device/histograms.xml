@@ -1214,6 +1214,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="EasyUnlock.StartupTimeFromSuspend" units="ms"
     expires_after="2022-02-02">
+  <obsolete>
+    Deprecated as of 12/29/2021.
+  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2163,7 +2166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.AuthResult.SignIn.Failure.UserControllerAuth"
-    enum="LoginFailureReason" expires_after="2022-02-01">
+    enum="LoginFailureReason" expires_after="2022-06-05">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2194,6 +2197,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SmartLock.EligibleDevicesCount" units="devices"
     expires_after="2022-02-02">
+  <obsolete>
+    Deprecated as of 12/29/2021.
+  </obsolete>
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2229,7 +2235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SmartLock.FindAndConnectToHostResult.SignIn"
-    enum="SmartLockFindAndConnectToHostResult" expires_after="2022-02-02">
+    enum="SmartLockFindAndConnectToHostResult" expires_after="2022-06-05">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2379,7 +2385,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SmartLock.ToggleFeature" enum="BooleanEnabled"
     expires_after="2022-02-02">
-  <owner>jhawkins@chromium.org</owner>
+  <obsolete>
+    Deprecated as of 12/29/2021.
+  </obsolete>
+  <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
     The number of times the user actively enabled or disabled the SmartLock
@@ -2389,7 +2398,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SmartLock.ToggleFeature.Disable.Result" enum="BooleanSuccess"
     expires_after="2022-02-02">
-  <owner>jhawkins@chromium.org</owner>
+  <obsolete>
+    Deprecated as of 12/29/2021.
+  </obsolete>
+  <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>The result of the operation to disable SmartLock.</summary>
 </histogram>
