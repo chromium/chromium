@@ -366,6 +366,7 @@ void CPU::Initialize(bool require_branding) {
 #endif
 }
 
+#if defined(ARCH_CPU_X86_FAMILY)
 CPU::IntelMicroArchitecture CPU::GetIntelMicroArchitecture() const {
   if (has_avx2()) return AVX2;
   if (has_fma3()) return FMA3;
@@ -378,6 +379,7 @@ CPU::IntelMicroArchitecture CPU::GetIntelMicroArchitecture() const {
   if (has_sse()) return SSE;
   return PENTIUM;
 }
+#endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
   defined(OS_AIX)

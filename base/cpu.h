@@ -84,12 +84,14 @@ class BASE_EXPORT CPU final {
   }
   bool is_running_in_vm() const { return is_running_in_vm_; }
 
+#if defined(ARCH_CPU_ARM_FAMILY)
   // The cpuinfo values for ARM cores are from the MIDR_EL1 register, a
   // bitfield whose format is described in the core-specific manuals. E.g.,
   // ARM Cortex-A57:
   // https://developer.arm.com/documentation/ddi0488/h/system-control/aarch64-register-descriptions/main-id-register--el1.
   uint8_t implementer() const { return implementer_; }
   uint32_t part_number() const { return part_number_; }
+#endif
 
   // Armv8.5-A extensions for control flow and memory safety.
 #if defined(ARCH_CPU_ARM_FAMILY)
@@ -100,7 +102,9 @@ class BASE_EXPORT CPU final {
   constexpr bool has_bti() const { return false; }
 #endif
 
+#if defined(ARCH_CPU_X86_FAMILY)
   IntelMicroArchitecture GetIntelMicroArchitecture() const;
+#endif
   const std::string& cpu_brand() const { return cpu_brand_; }
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
@@ -169,8 +173,10 @@ class BASE_EXPORT CPU final {
   int stepping_ = 0;   // processor revision number
   int ext_model_ = 0;
   int ext_family_ = 0;
+#if defined(ARCH_CPU_ARM_FAMILY)
   uint32_t part_number_ = 0;  // ARM MIDR part number
   uint8_t implementer_ = 0;   // ARM MIDR implementer identifier
+#endif
   bool has_mmx_ = false;
   bool has_sse_ = false;
   bool has_sse2_ = false;
