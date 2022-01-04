@@ -278,6 +278,8 @@ def main():
     if sys.platform != 'darwin':
       # The Fuchsia asan runtime is only built on non-Mac platforms.
       want.append('lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.asan.so')
+      want.append(
+          'lib/clang/$V/lib/x86_64-unknown-fuchsia/libclang_rt.asan-preinit.a')
   if sys.platform == 'darwin':
     want.extend([
       # AddressSanitizer runtime.

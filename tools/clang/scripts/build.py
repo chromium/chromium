@@ -1267,10 +1267,12 @@ def main():
                    fuchsia_args +
                    [COMPILER_RT_DIR])
         profile_a = 'libclang_rt.profile.a'
+        asan_preinit_a = 'libclang_rt.asan-preinit.a'
         asan_so = 'libclang_rt.asan.so'
         ninja_command = ['ninja', profile_a]
         if sys.platform != 'darwin':
           ninja_command.append(asan_so)
+          ninja_command.append(asan_preinit_a)
         RunCommand(ninja_command)
         CopyFile(os.path.join(build_phase2_dir, 'lib', target_spec, profile_a),
                               fuchsia_lib_dst_dir)
