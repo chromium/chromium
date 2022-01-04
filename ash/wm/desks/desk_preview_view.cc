@@ -466,7 +466,7 @@ void DeskPreviewView::OnGestureEvent(ui::GestureEvent* event) {
       event->SetHandled();
       break;
     case ui::ET_GESTURE_SCROLL_BEGIN:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::ET_GESTURE_SCROLL_UPDATE:
       owner_bar->HandleDragEvent(mini_view_, *event);
       event->SetHandled();
