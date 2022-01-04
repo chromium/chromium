@@ -88,7 +88,7 @@ bool GetPlatformHighContrastColor(int id, SkColor* color) {
       if (!base::FeatureList::IsEnabled(
               views::features::kEnablePlatformHighContrastInkDrop))
         return false;
-      FALLTHROUGH;
+      [[fallthrough]];
     case ThemeProperties::COLOR_OMNIBOX_RESULTS_BG_SELECTED:
     case ThemeProperties::COLOR_OMNIBOX_RESULTS_BG_HOVERED:
       system_theme_color = ui::NativeTheme::SystemThemeColor::kHighlight;
@@ -102,7 +102,7 @@ bool GetPlatformHighContrastColor(int id, SkColor* color) {
         return GetPlatformHighContrastColor(
             ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON, color);
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE:
     case ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE:
     case ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED:

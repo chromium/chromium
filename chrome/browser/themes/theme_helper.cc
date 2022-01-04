@@ -741,7 +741,7 @@ absl::optional<ThemeHelper::OmniboxColor> ThemeHelper::GetOmniboxColorImpl(
     case TP::COLOR_OMNIBOX_SELECTED_KEYWORD:
       if (dark)
         return {{gfx::kGoogleGrey100, false}};
-      FALLTHROUGH;
+      [[fallthrough]];
     case TP::COLOR_OMNIBOX_RESULTS_URL:
       return url_color(results_bg_hovered_color());
     case TP::COLOR_OMNIBOX_RESULTS_URL_SELECTED:
