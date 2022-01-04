@@ -257,7 +257,8 @@ void InsecureCredentialsManager::SaveInsecureCredential(
   for (const PasswordForm& saved_password : presenter_->GetSavedPasswords()) {
     if (saved_password.password_value == credential.password() &&
         CanonicalizeUsername(saved_password.username_value) ==
-            canonicalized_username) {
+            canonicalized_username &&
+        !saved_password.password_issues.contains(InsecureType::kLeaked)) {
       PasswordForm form_to_update = saved_password;
       form_to_update.password_issues.insert_or_assign(
           InsecureType::kLeaked,

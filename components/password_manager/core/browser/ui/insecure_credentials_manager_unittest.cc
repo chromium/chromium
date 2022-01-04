@@ -666,6 +666,32 @@ TEST_F(InsecureCredentialsManagerTest, SaveCompromisedPassword) {
   EXPECT_THAT(provider().GetInsecureCredentials(), ElementsAre(expected));
 }
 
+// Test verifies that saving LeakCheckCredential doesn't occur for already
+// leaked passwords.
+TEST_F(InsecureCredentialsManagerTest, SaveCompromisedPasswordForExistingLeak) {
+  PasswordForm password_form =
+      MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
+  LeakCheckCredential credential = MakeLeakCredential(kUsername1, kPassword1);
+
+  InsecurityMetadata insecurity_metadata(base::Time::Now() - base::Days(3),
+                                         IsMuted(true));
+  password_form.password_issues.insert(
+      {InsecureType::kLeaked, insecurity_metadata});
+
+  store().AddLogin(password_form);
+  RunUntilIdle();
+
+  provider().SaveInsecureCredential(credential);
+  RunUntilIdle();
+
+  EXPECT_EQ(insecurity_metadata,
+            store()
+                .stored_passwords()
+                .at(kExampleCom)
+                .back()
+                .password_issues.at(InsecureType::kLeaked));
+}
+
 // Test verifies that editing Compromised Credential via provider change the
 // original password form.
 TEST_F(InsecureCredentialsManagerTest, UpdateCompromisedPassword) {
