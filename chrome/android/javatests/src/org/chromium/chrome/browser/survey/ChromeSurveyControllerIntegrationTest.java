@@ -39,10 +39,19 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarAnimationListener;
 import org.chromium.components.infobars.InfoBarUiItem;
+import org.chromium.components.messages.DismissReason;
+import org.chromium.components.messages.MessageBannerProperties;
+import org.chromium.components.messages.MessageDispatcher;
+import org.chromium.components.messages.MessageDispatcherProvider;
+import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessageStateHandler;
+import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Integration test for {@link ChromeSurveyController} and {@link SurveyInfoBar}. */
@@ -57,6 +66,7 @@ import java.util.concurrent.TimeoutException;
 public class ChromeSurveyControllerIntegrationTest {
     // clang-format on
     static final String TEST_TRIGGER_ID = "test_trigger_id";
+    static final long MESSAGE_AUTO_DISMISS_DURATION_MS = 10000L;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -67,9 +77,10 @@ public class ChromeSurveyControllerIntegrationTest {
     private InfoBarAnimationListener mInfoBarAnimationListener;
     private CallbackHelper mAllAnimationsFinishedCallback;
     private String mPrefKey;
+    private MessageDispatcher mMessageDispatcher;
 
     @Before
-    public void setUp() throws InterruptedException, TimeoutException {
+    public void setUp() throws InterruptedException, TimeoutException, ExecutionException {
         mAllAnimationsFinishedCallback = new CallbackHelper();
         mInfoBarAnimationListener = new InfoBarAnimationListener() {
             @Override
@@ -93,7 +104,14 @@ public class ChromeSurveyControllerIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mActivityTestRule.getInfoBarContainer().addAnimationListener(mInfoBarAnimationListener);
         });
-        waitUntilInfoBarPresented();
+
+        mMessageDispatcher = TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> MessageDispatcherProvider.from(
+                                mActivityTestRule.getActivity().getWindowAndroid()));
+
+        waitUntilSurveyPromptPresented(
+                !ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY));
     }
 
     @After
@@ -126,6 +144,25 @@ public class ChromeSurveyControllerIntegrationTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)
+    public void testMessagePrimaryButtonClicked() throws TimeoutException, ExecutionException {
+        PropertyModel message = getSurveyMessage();
+        Assert.assertNotNull("Message should not be null.", message);
+
+        // Simulate the message primary button click.
+        Runnable primaryActionCallback = message.get(MessageBannerProperties.ON_PRIMARY_ACTION);
+        TestThreadUtils.runOnUiThreadBlocking(primaryActionCallback);
+        // Simulate message dismissal on primary button click.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mMessageDispatcher.dismissMessage(message, DismissReason.PRIMARY_ACTION));
+
+        Assert.assertEquals("#showSurveyIfAvailable should be attempted.", 1,
+                mTestSurveyController.showSurveyCallbackHelper.getCallCount());
+        assertInfoBarClosingStateRecorded(InfoBarClosingState.ACCEPTED_SURVEY);
+    }
+
+    @Test
+    @MediumTest
     @Features.DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)
     public void testInfoBarClose() throws TimeoutException {
         InfoBar surveyInfoBar = getSurveyInfoBar();
@@ -140,30 +177,61 @@ public class ChromeSurveyControllerIntegrationTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)
+    public void testMessageDismissed() throws TimeoutException, ExecutionException {
+        PropertyModel message = getSurveyMessage();
+        Assert.assertNotNull("Message should not be null.", message);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mMessageDispatcher.dismissMessage(message, DismissReason.GESTURE));
+        assertInfoBarClosingStateRecorded(InfoBarClosingState.CLOSE_BUTTON);
+    }
+
+    @Test
+    @MediumTest
     @Features.DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)
     public void testNoInfoBarInNewTab() throws InterruptedException {
-        waitUntilInfoBarStateRecorded();
+        waitUntilSurveyPromptStateRecorded(
+                ChromeSurveyController.getRequiredVisibilityDurationMs());
 
         // Info bar should not displayed in another tab.
-        mActivityTestRule.loadUrlInNewTab("about:blank", false);
+        Tab tabTwo = mActivityTestRule.loadUrlInNewTab("about:blank", false);
         assertInfoBarClosingStateRecorded(InfoBarClosingState.VISIBLE_INDIRECT);
 
-        Tab tabTwo = mActivityTestRule.getActivity().getActivityTab();
         waitUntilTabIsReady(tabTwo);
         Assert.assertNull("Tab two should not have the infobar", getSurveyInfoBar());
     }
 
-    private void waitUntilInfoBarPresented() throws TimeoutException {
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)
+    public void testNoMessageInNewTab() throws InterruptedException, ExecutionException {
+        // Simulate message visibility for the auto-dismiss duration length of time.
+        waitUntilSurveyPromptStateRecorded(MESSAGE_AUTO_DISMISS_DURATION_MS);
+
+        // Survey prompt should not be displayed in another tab.
+        Tab tabTwo = mActivityTestRule.loadUrlInNewTab("about:blank", false);
+        assertInfoBarClosingStateRecorded(InfoBarClosingState.VISIBLE_INDIRECT);
+
+        waitUntilTabIsReady(tabTwo);
+        Assert.assertNull("Tab two should not have the message.", getSurveyMessage());
+    }
+
+    private void waitUntilSurveyPromptPresented(boolean infobar) throws TimeoutException {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         waitUntilTabIsReady(tab);
         mTestSurveyController.downloadCallbackHelper.waitForFirst();
-        Assert.assertNotNull("Tab should have an info bar", getSurveyInfoBar());
-        Assert.assertEquals("Info Bars are not visible.", View.VISIBLE,
-                mActivityTestRule.getInfoBarContainer().getVisibility());
+        if (infobar) {
+            Assert.assertNotNull("Tab should have an info bar.", getSurveyInfoBar());
+            Assert.assertEquals("Info Bars are not visible.", View.VISIBLE,
+                    mActivityTestRule.getInfoBarContainer().getVisibility());
+        } else {
+            Assert.assertNotNull("Tab should have a message.", getSurveyMessage());
+        }
     }
 
-    private void waitUntilInfoBarStateRecorded() throws InterruptedException {
-        Thread.sleep(ChromeSurveyController.getRequiredVisibilityDurationMs());
+    private void waitUntilSurveyPromptStateRecorded(long visibilityDuration)
+            throws InterruptedException {
+        Thread.sleep(visibilityDuration);
         CriteriaHelper.pollUiThread(
                 () -> SharedPreferencesManager.getInstance().contains(mPrefKey));
     }
@@ -181,6 +249,12 @@ public class ChromeSurveyControllerIntegrationTest {
             }
         }
         return null;
+    }
+
+    private PropertyModel getSurveyMessage() {
+        List<MessageStateHandler> messages = MessagesTestHelper.getEnqueuedMessages(
+                mMessageDispatcher, MessageIdentifier.CHROME_SURVEY);
+        return messages.size() == 0 ? null : MessagesTestHelper.getCurrentMessage(messages.get(0));
     }
 
     private void assertInfoBarClosingStateRecorded(@InfoBarClosingState int state) {
