@@ -358,7 +358,7 @@ void FinalizeWebAppLaunch(absl::optional<LaunchMode> app_launch_mode,
       break;
     case apps::mojom::LaunchContainer::kLaunchContainerPanelDeprecated:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::LaunchContainer::kLaunchContainerNone:
       DCHECK(!browser->is_type_app());
       mode = LaunchMode::kUnknownWebApp;
