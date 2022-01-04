@@ -274,7 +274,8 @@ std::string FindUniqueName(const std::string& orig_name,
 }  // namespace
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(kWebAuthnCablePairingsPrefName);
+  registry->RegisterListPref(kWebAuthnCablePairingsPrefName,
+                             user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 
 KnownDevices::KnownDevices() = default;
