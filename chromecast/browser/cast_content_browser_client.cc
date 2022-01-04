@@ -961,6 +961,14 @@ bool CastContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
 #endif  // BUILDFLAG(ENABLE_CHROMECAST_WEBUI)
 }
 
+bool CastContentBrowserClient::ShouldAllowInsecurePrivateNetworkRequests(
+    content::BrowserContext* browser_context,
+    const url::Origin& origin) {
+  // Some Cast apps hosted over HTTP needs to access the private network so that
+  // media can be streamed from a local media server.
+  return true;
+}
+
 std::string CastContentBrowserClient::GetUserAgent() {
   return chromecast::GetUserAgent();
 }
