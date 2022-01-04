@@ -686,7 +686,7 @@ void AppBannerManager::DidUpdateWebManifestURL(
     case State::SENDING_EVENT_GOT_EARLY_PROMPT:
     case State::PENDING_PROMPT:
       Terminate();
-      FALLTHROUGH;
+      [[fallthrough]];
     case State::COMPLETE:
       if (!manifest_url.is_empty()) {
         // This call resets has_sufficient_engagement_data_. In order to
