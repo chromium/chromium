@@ -102,7 +102,7 @@ GZipHeader::Status GZipHeader::ReadMore(const char* inbuf, int inbuf_len,
         // We intentionally fall through, because if we have a
         // zero-length FEXTRA, we want to check to notice that we're
         // done reading the FEXTRA before we exit this loop...
-        FALLTHROUGH;
+        [[fallthrough]];
 
       case IN_FEXTRA: {
         // Grab the rest of the bytes in the extra field, or as many
