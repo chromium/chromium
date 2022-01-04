@@ -17,7 +17,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/sequence_checker.h"
 #include "base/task/post_task.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -126,7 +128,13 @@ class MockUpdateClient : public UpdateClient {
 
 class MockInstallerPolicy : public ComponentInstallerPolicy {
  public:
-  MockInstallerPolicy() = default;
+  using ComponentReadyCallback =
+      base::OnceCallback<void(const base::Version& version,
+                              const base::FilePath& install_dir,
+                              base::Value manifest)>;
+  explicit MockInstallerPolicy(
+      ComponentReadyCallback component_ready_cb = ComponentReadyCallback())
+      : component_ready_cb_(std::move(component_ready_cb)) {}
   ~MockInstallerPolicy() override = default;
 
   bool VerifyInstallation(const base::Value& manifest,
@@ -150,7 +158,12 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
 
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      base::Value manifest) override {}
+                      base::Value manifest) override {
+    if (component_ready_cb_) {
+      std::move(component_ready_cb_)
+          .Run(version, install_dir, std::move(manifest));
+    }
+  }
 
   base::FilePath GetRelativeInstallDir() const override {
     return base::FilePath(relative_install_dir);
@@ -171,6 +184,8 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
   static void GetPkHash(std::vector<uint8_t>* hash) {
     hash->assign(std::begin(kSha256Hash), std::end(kSha256Hash));
   }
+
+  ComponentReadyCallback component_ready_cb_;
 };
 
 class MockUpdateScheduler : public UpdateScheduler {
@@ -335,6 +350,96 @@ TEST_F(ComponentInstallerTest, RegisterComponent) {
   EXPECT_STREQ("fake name", component.name.c_str());
   EXPECT_EQ(expected_attrs, component.installer_attributes);
   EXPECT_TRUE(component.requires_network_encryption);
+}
+
+// Tests that `ComponentInstallerPolicy::ComponentReady` and the completion
+// callback of `ComponentInstaller::Register` are called in sequence.
+TEST_F(ComponentInstallerTest, InstallerRegister_CheckSequence) {
+  class RegisterHandler {
+   public:
+    virtual ~RegisterHandler() = default;
+
+    virtual void ComponentReady() = 0;
+    virtual void RegisterComplete() = 0;
+  };
+
+  // Allows defining call expectations on its functions when the functions
+  // are invoked by callbacks posted from `ComponentInstaller::Register`.
+  class MockRegisterHandler : public RegisterHandler {
+   public:
+    MockRegisterHandler() {
+      ON_CALL(*this, ComponentReady)
+          .WillByDefault(Invoke(this, &MockRegisterHandler::CheckSequence));
+      ON_CALL(*this, RegisterComplete)
+          .WillByDefault(Invoke(this, &MockRegisterHandler::CheckSequence));
+    }
+
+    MOCK_METHOD(void, ComponentReady, (), (override));
+    MOCK_METHOD(void, RegisterComplete, (), (override));
+
+   private:
+    void CheckSequence() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker); }
+    SEQUENCE_CHECKER(sequence_checker);
+  };
+
+  base::ScopedPathOverride scoped_path_override(DIR_COMPONENT_USER);
+
+  // Install a CRX component so that `ComponentInstallerPolicy::ComponentReady`
+  // can be invoked later on.
+  {
+    base::RunLoop run_loop;
+    auto installer = base::MakeRefCounted<ComponentInstaller>(
+        std::make_unique<MockInstallerPolicy>());
+    Unpack(test_file("jebgalgnebhfojomionfpkfelancnnkf.crx"));
+    ASSERT_EQ(result().error, update_client::UnpackerError::kNone);
+    base::FilePath base_dir;
+    ASSERT_TRUE(base::PathService::Get(DIR_COMPONENT_USER, &base_dir));
+    base_dir = base_dir.Append(relative_install_dir);
+    ASSERT_TRUE(base::CreateDirectory(base_dir));
+    installer->Install(
+        result().unpack_path, update_client::jebg_public_key, nullptr,
+        base::DoNothing(),
+        base::BindLambdaForTesting(
+            [&run_loop](const update_client::CrxInstaller::Result& result) {
+              ASSERT_EQ(result.error, 0);
+              run_loop.QuitClosure().Run();
+            }));
+    run_loop.Run();
+  }
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(update_client(), DoUpdate(_, _)).WillOnce(Invoke([&run_loop]() {
+    run_loop.QuitClosure().Run();
+  }));
+
+  // Set up expectations for uninteresting calls on the mocks due to component
+  // updater waking up after the component is registered.
+  EXPECT_CALL(scheduler(), Schedule(_, _, _, _)).Times(1);
+  EXPECT_CALL(scheduler(), Stop()).Times(1);
+  EXPECT_CALL(update_client(), Stop()).Times(1);
+
+  MockRegisterHandler mock_register_handler;
+  {
+    ::testing::InSequence seq;
+    EXPECT_CALL(mock_register_handler, ComponentReady()).Times(1);
+    EXPECT_CALL(mock_register_handler, RegisterComplete()).Times(1);
+  }
+
+  auto installer_policy =
+      std::make_unique<MockInstallerPolicy>(base::BindLambdaForTesting(
+          [&mock_register_handler](const base::Version& version,
+                                   const base::FilePath& install_dir,
+                                   base::Value manifest) {
+            EXPECT_EQ(version.GetString(), "1.0");
+            mock_register_handler.ComponentReady();
+          }));
+  auto installer =
+      base::MakeRefCounted<ComponentInstaller>(std::move(installer_policy));
+  installer->Register(component_updater(),
+                      base::BindLambdaForTesting([&mock_register_handler]() {
+                        mock_register_handler.RegisterComplete();
+                      }));
+  run_loop.Run();
 }
 
 // Tests that the unpack path is removed when the install succeeded.
