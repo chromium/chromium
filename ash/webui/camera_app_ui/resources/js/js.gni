@@ -11,7 +11,7 @@ compile_js_files = [
   "css.ts",
   "device/camera3_device_info.ts",
   "device/constraints_preferrer.js",
-  "device/device_info_updater.js",
+  "device/device_info_updater.ts",
   "device/stream_constraints.js",
   "device/stream_manager.js",
   "dom.ts",
