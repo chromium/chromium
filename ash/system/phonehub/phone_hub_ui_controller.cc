@@ -183,7 +183,7 @@ PhoneHubUiController::GetUiStateFromPhoneHubManager() {
 
   switch (feature_status) {
     case FeatureStatus::kPhoneSelectedAndPendingSetup:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureStatus::kNotEligibleForFeature:
       return UiState::kHidden;
 

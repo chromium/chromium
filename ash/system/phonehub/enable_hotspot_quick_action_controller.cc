@@ -50,7 +50,7 @@ void EnableHotspotQuickActionController::OnTetherStatusChanged() {
       item_->SetVisible(false);
       return;
     case Status::kConnectionUnavailable:
-      FALLTHROUGH;
+      [[fallthrough]];
     case Status::kConnectionAvailable:
       SetState(ActionState::kOff);
       break;
