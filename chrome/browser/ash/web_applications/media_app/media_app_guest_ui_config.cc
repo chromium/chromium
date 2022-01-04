@@ -31,6 +31,8 @@ void ChromeMediaAppGuestUIDelegate::PopulateLoadTimeData(
       "pdfTextAnnotation",
       base::FeatureList::IsEnabled(chromeos::features::kMediaAppHandlesPdf));
   version_info::Channel channel = chrome::GetChannel();
+  source->AddBoolean("colorThemes",
+                     chromeos::features::IsDarkLightModeEnabled());
   source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
                                       channel != version_info::Channel::STABLE);
   source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
