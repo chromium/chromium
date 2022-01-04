@@ -294,7 +294,7 @@ std::string ToString(const url_pattern_index::proto::UrlRule& rule) {
       break;
     case url_pattern_index::proto::SOURCE_TYPE_FIRST_PARTY:
       source_type_string = "~";
-      FALLTHROUGH;
+      [[fallthrough]];
     case url_pattern_index::proto::SOURCE_TYPE_THIRD_PARTY:
       source_type_string += "third-party";
       options.push_back(std::move(source_type_string));

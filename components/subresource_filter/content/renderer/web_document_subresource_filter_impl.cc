@@ -81,7 +81,7 @@ proto::ElementType ToElementType(
 WebLoadPolicy ToWebLoadPolicy(LoadPolicy load_policy) {
   switch (load_policy) {
     case LoadPolicy::EXPLICITLY_ALLOW:
-      FALLTHROUGH;
+      [[fallthrough]];
     case LoadPolicy::ALLOW:
       return WebLoadPolicy::kAllow;
     case LoadPolicy::DISALLOW:
