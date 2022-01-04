@@ -4282,7 +4282,7 @@ void PDFiumEngine::SetLinkUnderCursorForAnnotation(FPDF_ANNOTATION annot,
 void PDFiumEngine::RequestThumbnail(int page_index,
                                     float device_pixel_ratio,
                                     SendThumbnailCallback send_callback) {
-  DCHECK(PageIndexInBounds(page_index));
+  CHECK(PageIndexInBounds(page_index));
 
   // Thumbnails cannot be generated in the middle of a progressive paint of a
   // page. Generate the thumbnail immediately only if the page is not currently
