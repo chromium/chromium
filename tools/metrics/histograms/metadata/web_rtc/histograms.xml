@@ -1464,7 +1464,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.CandidatePoolUsage.{BundlePolicy}"
-    units="components" expires_after="2022-01-01">
+    units="components" expires_after="2022-07-01">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
