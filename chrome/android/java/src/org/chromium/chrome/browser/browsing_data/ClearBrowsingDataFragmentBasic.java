@@ -12,6 +12,7 @@ import android.provider.Browser;
 import android.text.SpannableString;
 import android.view.View;
 
+import androidx.annotation.IntDef;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 
@@ -38,6 +39,8 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
 
@@ -56,6 +59,18 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
          * @see org.chromium.chrome.browser.LaunchIntentDispatcher#createCustomTabActivityIntent
          */
         Intent createCustomTabActivityIntent(Context context, Intent intent);
+    }
+
+    /**
+     * UMA histogram values for MyActivity navigations.
+     * Note: this should stay in sync with ClearBrowsingDataMyActivityNavigation in enums.xml.
+     */
+    @IntDef({MyActivityNavigation.TOP_LEVEL, MyActivityNavigation.SEARCH_HISTORY})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface MyActivityNavigation {
+        int TOP_LEVEL = 0;
+        int SEARCH_HISTORY = 1;
+        int NUM_ENTRIES = 2;
     }
 
     private CustomTabIntentHelper mCustomTabHelper;
@@ -174,11 +189,10 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
         return SpanApplier.applySpans(getContext().getString(R.string.clear_search_history_link),
                 new SpanInfo("<link1>", "</link1>",
                         new NoUnderlineClickableSpan(getContext().getResources(),
-                                createOpenCCTCallback(
-                                        UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_CBD))),
+                                createOpenMyActivityCallback(/* openSearchHistory = */ true))),
                 new SpanInfo("<link2>", "</link2>",
                         new NoUnderlineClickableSpan(getContext().getResources(),
-                                createOpenCCTCallback(UrlConstants.MY_ACTIVITY_URL_IN_CBD))));
+                                createOpenMyActivityCallback(/* openSearchHistory = */ false))));
     }
 
     private SpannableString buildGoogleMyActivityText() {
@@ -186,16 +200,30 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
                 getContext().getString(R.string.clear_search_history_link_other_forms),
                 new SpanInfo("<link1>", "</link1>",
                         new NoUnderlineClickableSpan(getContext().getResources(),
-                                createOpenCCTCallback(UrlConstants.MY_ACTIVITY_URL_IN_CBD))));
+                                createOpenMyActivityCallback(/* openSearchHistory = */ false))));
     }
 
-    private Callback<View> createOpenCCTCallback(String url) {
+    /** If openSearchHistory is true, opens the search history page; otherwise: top level. */
+    private Callback<View> createOpenMyActivityCallback(boolean openSearchHistory) {
         return (widget) -> {
             assert mCustomTabHelper
                     != null
                 : "CCT helper must be set on ClearBrowsingFragmentBasic before opening a link.";
             CustomTabsIntent customTabIntent =
                     new CustomTabsIntent.Builder().setShowTitle(true).build();
+
+            String url;
+            if (openSearchHistory) {
+                url = UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_CBD;
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Settings.ClearBrowsingData.OpenMyActivity",
+                        MyActivityNavigation.SEARCH_HISTORY, MyActivityNavigation.NUM_ENTRIES);
+            } else {
+                url = UrlConstants.MY_ACTIVITY_URL_IN_CBD;
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Settings.ClearBrowsingData.OpenMyActivity", MyActivityNavigation.TOP_LEVEL,
+                        MyActivityNavigation.NUM_ENTRIES);
+            }
             customTabIntent.intent.setData(Uri.parse(url));
             Intent intent = mCustomTabHelper.createCustomTabActivityIntent(
                     getContext(), customTabIntent.intent);
