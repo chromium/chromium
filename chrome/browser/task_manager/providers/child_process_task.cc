@@ -105,7 +105,7 @@ std::u16string GetLocalizedTitle(const std::u16string& title,
         default:
           break;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     // These types don't need display names or get them from elsewhere.
     case content::PROCESS_TYPE_BROWSER:
