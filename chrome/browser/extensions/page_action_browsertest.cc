@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -116,7 +117,13 @@ IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, SameDocumentNavigation) {
 }
 
 // Tests that the location bar forgets about unloaded page actions.
-IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, UnloadPageAction) {
+// Flaky on Linux: https://crbug.com/1283900
+#if defined(OS_LINUX)
+#define MAYBE_UnloadPageAction DISABLED_UnloadPageAction
+#else
+#define MAYBE_UnloadPageAction UnloadPageAction
+#endif
+IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, MAYBE_UnloadPageAction) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   base::FilePath extension_path(
