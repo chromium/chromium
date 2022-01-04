@@ -1238,9 +1238,9 @@ void ExtensionDownloader::StartExtensionLoader() {
             "This feature cannot be disabled. It is only enabled when the user "
             "has installed extensions and it needs updating."
           chrome_policy {
-            ExtensionInstallBlacklist {
+            ExtensionInstallBlocklist {
               policy_options {mode: MANDATORY}
-              ExtensionInstallBlacklist: {
+              ExtensionInstallBlocklist: {
                 entries: '*'
               }
             }
