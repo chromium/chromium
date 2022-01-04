@@ -63,15 +63,15 @@ void ConnectionSchedulerImpl::OnFeatureStatusChanged() {
     // from initiating a connection. Disconnect the existing connection, reset
     // backoffs, and return early.
     case FeatureStatus::kNotEligibleForFeature:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureStatus::kEligiblePhoneButNotSetUp:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureStatus::kPhoneSelectedAndPendingSetup:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureStatus::kDisabled:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureStatus::kUnavailableBluetoothOff:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureStatus::kLockOrSuspended:
       DisconnectAndClearBackoffAttempts();
       return;

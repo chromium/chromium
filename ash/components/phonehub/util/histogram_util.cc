@@ -18,42 +18,42 @@ namespace {
 std::string GetMessageResultHistogramName(proto::MessageType message_type) {
   switch (message_type) {
     case proto::MessageType::DISMISS_NOTIFICATION_REQUEST:
-      FALLTHROUGH;
+      [[fallthrough]];
     case proto::MessageType::DISMISS_NOTIFICATION_RESPONSE:
       return "PhoneHub.TaskCompletion.NotificationDismissal.Result";
 
     case proto::MessageType::NOTIFICATION_INLINE_REPLY_REQUEST:
-      FALLTHROUGH;
+      [[fallthrough]];
     case proto::MessageType::NOTIFICATION_INLINE_REPLY_RESPONSE:
       return "PhoneHub.TaskCompletion.NotificationInlineReply.Result";
 
     case proto::MessageType::UPDATE_NOTIFICATION_MODE_REQUEST:
-      FALLTHROUGH;
+      [[fallthrough]];
     case proto::MessageType::UPDATE_NOTIFICATION_MODE_RESPONSE:
       return "PhoneHub.TaskCompletion.SilencePhone.Result";
 
     case proto::MessageType::RING_DEVICE_REQUEST:
-      FALLTHROUGH;
+      [[fallthrough]];
     case proto::MessageType::RING_DEVICE_RESPONSE:
       return "PhoneHub.TaskCompletion.LocatePhone.Result";
 
     case proto::MessageType::SHOW_NOTIFICATION_ACCESS_SETUP_REQUEST:
-      FALLTHROUGH;
+      [[fallthrough]];
     case proto::MessageType::SHOW_NOTIFICATION_ACCESS_SETUP_RESPONSE:
       return "PhoneHub.TaskCompletion.ShowNotificationAccessSetup.Result";
 
     case proto::MessageType::UPDATE_BATTERY_MODE_REQUEST:
-      FALLTHROUGH;
+      [[fallthrough]];
     case proto::MessageType::UPDATE_BATTERY_MODE_RESPONSE:
       return "PhoneHub.TaskCompletion.UpdateBatteryMode.Result";
 
     case proto::MessageType::FETCH_CAMERA_ROLL_ITEMS_REQUEST:
-      FALLTHROUGH;
+      [[fallthrough]];
     case proto::MessageType::FETCH_CAMERA_ROLL_ITEMS_RESPONSE:
       return "PhoneHub.TaskCompletion.FetchCameraRollItems.Result";
 
     case proto::MessageType::FETCH_CAMERA_ROLL_ITEM_DATA_REQUEST:
-      FALLTHROUGH;
+      [[fallthrough]];
     case proto::MessageType::FETCH_CAMERA_ROLL_ITEM_DATA_RESPONSE:
       return "PhoneHub.TaskCompletion.FetchCameraRollItemData.Result";
 

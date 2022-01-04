@@ -448,9 +448,9 @@ TetherController::Status TetherControllerImpl::ComputeStatus() const {
 
   switch (connection_state) {
     case ConnectionStateType::kOnline:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ConnectionStateType::kConnected:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ConnectionStateType::kPortal:
       return Status::kConnected;
 

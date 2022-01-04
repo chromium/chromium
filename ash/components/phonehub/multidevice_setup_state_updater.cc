@@ -57,7 +57,7 @@ void MultideviceSetupStateUpdater::OnNotificationAccessChanged() {
       break;
 
     case NotificationAccessManager::AccessStatus::kAvailableButNotGranted:
-      FALLTHROUGH;
+      [[fallthrough]];
     case NotificationAccessManager::AccessStatus::kProhibited:
       // Disable kPhoneHubNotifications if notification access has been revoked
       // by the phone.
