@@ -88,8 +88,7 @@ int IntentPickerAutoDisplayPref::QueryDismissedCounter() {
   if (!pref_dict_)
     return 0;
 
-  int counter = 0;
-  pref_dict_->GetInteger(kAutoDisplayKey, &counter);
+  int counter = pref_dict_->FindIntKey(kAutoDisplayKey).value_or(0);
   DCHECK_GE(counter, static_cast<int>(Platform::kNone));
   DCHECK_LE(counter, static_cast<int>(Platform::kMaxValue));
 
@@ -111,8 +110,7 @@ IntentPickerAutoDisplayPref::QueryPlatform() {
   if (!pref_dict_)
     return Platform::kNone;
 
-  int platform = 0;
-  pref_dict_->GetInteger(kPlatformKey, &platform);
+  int platform = pref_dict_->FindIntKey(kPlatformKey).value_or(0);
   DCHECK_GE(platform, static_cast<int>(Platform::kNone));
   DCHECK_LE(platform, static_cast<int>(Platform::kMaxValue));
 
