@@ -2958,7 +2958,6 @@ crbug.com/626703 [ Mac ] external/wpt/css/css-ruby/ruby-autohide-002.html [ Fail
 crbug.com/626703 [ Mac ] external/wpt/css/css-ruby/ruby-autohide-004.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-text/line-breaking/segment-break-transformation-rules-009.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-text/line-breaking/segment-break-transformation-rules-015.html [ Failure ]
-crbug.com/626703 [ Fuchsia ] external/wpt/dom/historical.html [ Skip ]
 crbug.com/626703 [ Linux ] external/wpt/url/a-element-xhtml.xhtml [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/url/failure.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/url/url-constructor.any.html [ Failure ]
