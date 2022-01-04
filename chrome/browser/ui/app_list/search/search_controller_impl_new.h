@@ -114,6 +114,10 @@ class SearchControllerImplNew : public SearchController {
   // Storage for category scores for the current query.
   CategoriesList categories_;
 
+  // The period of time ("burn-in") to wait before publishing a first collection
+  // of search results to the model updater.
+  const base::TimeDelta burnin_period_;
+
   // A timer for the burn-in period. During the burn-in period, results are
   // collected from search providers. Publication of results to the model
   // updater is delayed until the burn-in period has elapsed.

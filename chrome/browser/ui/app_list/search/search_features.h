@@ -20,6 +20,8 @@ extern const base::Feature kQuerySearchBurnInPeriod;
 
 bool IsQuerySearchBurnInPeriodEnabled();
 
+// Returns the duration of the burn-in period, in milliseconds. If parameter
+// cannot be retrieved, the default value is 100ms.
 base::TimeDelta QuerySearchBurnInPeriodDuration();
 
 }  // namespace search_features

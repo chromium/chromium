@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/app_list/search/common/string_util.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
+#include "chrome/browser/ui/app_list/search/search_features.h"
 #include "chrome/browser/ui/app_list/search/search_metrics_observer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "components/metrics/structured/structured_mojo_events.h"
@@ -35,16 +36,6 @@
 
 namespace app_list {
 
-namespace {
-
-// The period of time ("burn-in") to wait before publishing a first collection
-// of search results to the model updater.
-// TODO(crbug.com/1279686): Make this modifiable via a flag, for UX
-// experimentation.
-constexpr base::TimeDelta kBurnInPeriod = base::Milliseconds(100);
-
-}  // namespace
-
 SearchControllerImplNew::SearchControllerImplNew(
     AppListModelUpdater* model_updater,
     AppListControllerDelegate* list_controller,
@@ -52,6 +43,7 @@ SearchControllerImplNew::SearchControllerImplNew(
     Profile* profile)
     : profile_(profile),
       ranker_(std::make_unique<RankerDelegate>(profile, this)),
+      burnin_period_(::search_features::QuerySearchBurnInPeriodDuration()),
       metrics_observer_(std::make_unique<SearchMetricsObserver>(notifier)),
       model_updater_(model_updater),
       list_controller_(list_controller) {
@@ -66,7 +58,7 @@ void SearchControllerImplNew::StartSearch(const std::u16string& query) {
   // For query searches, begin the burn-in timer.
   if (!query.empty()) {
     burn_in_timer_.Start(
-        FROM_HERE, kBurnInPeriod,
+        FROM_HERE, burnin_period_,
         base::BindOnce(&SearchControllerImplNew::RankAndPublish,
                        base::Unretained(this), absl::nullopt));
   }
@@ -188,7 +180,7 @@ void SearchControllerImplNew::SetResults(
   // from within Start().
   // TODO(crbug.com/1199206): Refactor SetResults to split into query search /
   // zero state pathways, and remove burn-in period from zero state.
-  if (base::Time::Now() - session_start_ > kBurnInPeriod) {
+  if (base::Time::Now() - session_start_ > burnin_period_) {
     RankAndPublish(provider_type);
   }
 }
