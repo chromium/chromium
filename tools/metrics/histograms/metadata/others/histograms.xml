@@ -13991,7 +13991,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Skia.SubmitRenderPasses" units="renderpasses"
-    expires_after="2022-01-09">
+    expires_after="2022-07-09">
   <owner>egdaniel@google.com</owner>
   <owner>bsalomon@google.com</owner>
   <summary>
@@ -14004,7 +14004,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Skia.VulkanMemoryAllocator.AmountAllocated" units="KB"
-    expires_after="2022-01-09">
+    expires_after="2022-07-09">
   <owner>egdaniel@google.com</owner>
   <owner>bsalomon@google.com</owner>
   <summary>
