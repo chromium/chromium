@@ -784,7 +784,7 @@ TEST_F(ShimlessRmaServiceTest, GetRsuDisableWriteProtectChallenge) {
 
   shimless_rma_provider_->GetRsuDisableWriteProtectChallenge(
       base::BindLambdaForTesting([&](const std::string& challenge) {
-        EXPECT_EQ("rsu write protect challenge code", challenge);
+        EXPECT_EQ(challenge, "rsu write protect challenge code");
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -810,7 +810,7 @@ TEST_F(ShimlessRmaServiceTest, GetRsuDisableWriteProtectHwid) {
 
   shimless_rma_provider_->GetRsuDisableWriteProtectHwid(
       base::BindLambdaForTesting([&](const std::string& hwid) {
-        EXPECT_EQ("rsu write protect hwid", hwid);
+        EXPECT_EQ(hwid, "rsu write protect hwid");
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -1098,7 +1098,7 @@ TEST_F(ShimlessRmaServiceTest, GetComponentList) {
   shimless_rma_provider_->GetComponentList(base::BindLambdaForTesting(
       [&](const std::vector<rmad::ComponentsRepairState::ComponentRepairStatus>&
               components) {
-        EXPECT_EQ(2UL, components.size());
+        EXPECT_EQ(components.size(), 2UL);
         EXPECT_EQ(components[0].component(),
                   rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
         EXPECT_EQ(components[0].repair_status(),
@@ -1130,7 +1130,7 @@ TEST_F(ShimlessRmaServiceTest, GetComponentListFromWrongStateEmpty) {
   shimless_rma_provider_->GetComponentList(base::BindLambdaForTesting(
       [&](const std::vector<rmad::ComponentsRepairState::ComponentRepairStatus>&
               components) {
-        EXPECT_EQ(0UL, components.size());
+        EXPECT_EQ(components.size(), 0UL);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -1169,7 +1169,7 @@ TEST_F(ShimlessRmaServiceTest, SetComponentList) {
   fake_rmad_client_()->check_state_callback =
       base::BindRepeating([](const rmad::RmadState& state) {
         EXPECT_EQ(state.state_case(), rmad::RmadState::kComponentsRepair);
-        EXPECT_EQ(2, state.components_repair().components_size());
+        EXPECT_EQ(state.components_repair().components_size(), 2);
         EXPECT_EQ(state.components_repair().components(0).component(),
                   rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
         EXPECT_EQ(state.components_repair().components(0).repair_status(),
@@ -1506,7 +1506,7 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalSerialNumber) {
 
   shimless_rma_provider_->GetOriginalSerialNumber(
       base::BindLambdaForTesting([&](const std::string& serial_number) {
-        EXPECT_EQ("original serial number", serial_number);
+        EXPECT_EQ(serial_number, "original serial number");
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -1527,7 +1527,7 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalSerialNumberFromWrongStateEmpty) {
 
   shimless_rma_provider_->GetOriginalSerialNumber(
       base::BindLambdaForTesting([&](const std::string& serial_number) {
-        EXPECT_EQ("", serial_number);
+        EXPECT_EQ(serial_number, "");
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -1724,7 +1724,7 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalRegion) {
 
   shimless_rma_provider_->GetOriginalRegion(
       base::BindLambdaForTesting([&](uint8_t region) {
-        EXPECT_EQ(3, region);
+        EXPECT_EQ(region, 3);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -1745,7 +1745,7 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalRegionFromWrongStateEmpty) {
 
   shimless_rma_provider_->GetOriginalRegion(
       base::BindLambdaForTesting([&](uint8_t region) {
-        EXPECT_EQ(0, region);
+        EXPECT_EQ(region, 0);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -1776,7 +1776,28 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalSku) {
 
   shimless_rma_provider_->GetOriginalSku(
       base::BindLambdaForTesting([&](uint8_t sku) {
-        EXPECT_EQ(4, sku);
+        EXPECT_EQ(sku, 4);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, GetOriginalSkuFromWrongStateEmpty) {
+  const std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
+      rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->GetOriginalSku(
+      base::BindLambdaForTesting([&](uint8_t sku) {
+        EXPECT_EQ(sku, 0);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -1806,8 +1827,8 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalWhiteLabel) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->GetOriginalWhiteLabel(
-      base::BindLambdaForTesting([&](uint8_t whiteLabel) {
-        EXPECT_EQ(3, whiteLabel);
+      base::BindLambdaForTesting([&](uint8_t white_label) {
+        EXPECT_EQ(white_label, 3);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -1827,29 +1848,8 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalWhiteLabelFromWrongStateEmpty) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->GetOriginalWhiteLabel(
-      base::BindLambdaForTesting([&](uint8_t whiteLabel) {
-        EXPECT_EQ(0, whiteLabel);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-}
-
-TEST_F(ShimlessRmaServiceTest, GetOriginalSkuFromWrongStateEmpty) {
-  const std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
-      rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
-  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
-  base::RunLoop run_loop;
-  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
-      [&](mojom::State state, bool can_cancel, bool can_go_back,
-          rmad::RmadErrorCode error) {
-        EXPECT_EQ(state, mojom::State::kChooseDestination);
-        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
-      }));
-  run_loop.RunUntilIdle();
-
-  shimless_rma_provider_->GetOriginalSku(
-      base::BindLambdaForTesting([&](uint8_t sku) {
-        EXPECT_EQ(0, sku);
+      base::BindLambdaForTesting([&](uint8_t white_label) {
+        EXPECT_EQ(white_label, 0);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -2042,7 +2042,7 @@ TEST_F(ShimlessRmaServiceTest, StartCalibration) {
   fake_rmad_client_()->check_state_callback =
       base::BindRepeating([](const rmad::RmadState& state) {
         EXPECT_EQ(state.state_case(), rmad::RmadState::kCheckCalibration);
-        EXPECT_EQ(2, state.check_calibration().components_size());
+        EXPECT_EQ(state.check_calibration().components_size(), 2);
         EXPECT_EQ(state.check_calibration().components(0).component(),
                   rmad::RmadComponent::RMAD_COMPONENT_KEYBOARD);
         EXPECT_EQ(state.check_calibration().components(0).status(),
@@ -3031,7 +3031,7 @@ TEST_F(ShimlessRmaServiceTest, GetWriteProtectManuallyDisabledInstructions) {
   shimless_rma_provider_->GetWriteProtectManuallyDisabledInstructions(
       base::BindLambdaForTesting(
           [&](const std::string& url, mojom::QrCodePtr qrcode) {
-            EXPECT_EQ("g.co/chromebook/", url);
+            EXPECT_EQ(url, "g.co/chromebook/");
             EXPECT_EQ(qrcode->size, 25);
             EXPECT_FALSE(qrcode.is_null());
             EXPECT_EQ(qrcode->data.size(), 25UL * 25UL);
