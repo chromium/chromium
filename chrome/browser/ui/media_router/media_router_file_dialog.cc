@@ -258,7 +258,7 @@ IssueInfo MediaRouterFileDialog::CreateIssue(
       // Create issue shouldn't be called with FILE_OK, but to ensure things
       // compile, fall through sets |issue_title| to the generic error.
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case MediaRouterFileDialog::UNKNOWN_FAILURE:
       issue_title = l10n_util::GetStringUTF8(
           IDS_MEDIA_ROUTER_ISSUE_FILE_CAST_GENERIC_ERROR);
