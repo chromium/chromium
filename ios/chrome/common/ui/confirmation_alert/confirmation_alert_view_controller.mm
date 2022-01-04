@@ -69,8 +69,7 @@ constexpr CGFloat kContentMaxWidth = 500;
     _customSpacingAfterImage = kStackViewSpacingAfterIllustration;
     _showDismissBarButton = YES;
     _dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
-    _specificContentView = [[UIView alloc] init];
-    _specificContentView.translatesAutoresizingMaskIntoConstraints = NO;
+    _specificContentLayoutGuide = [[UILayoutGuide alloc] init];
   }
   return self;
 }
@@ -104,8 +103,12 @@ constexpr CGFloat kContentMaxWidth = 500;
   UIScrollView* scrollView = [self createScrollView];
   [scrollView addSubview:scrollContentView];
   [scrollView addSubview:stackView];
-  [scrollView addSubview:self.specificContentView];
+  [scrollView addLayoutGuide:self.specificContentLayoutGuide];
   [self.view addSubview:scrollView];
+
+  // Needed to have VoiceOver working to elements added in derived view
+  // controller.
+  self.specificContentSuperview = scrollView;
 
   self.view.preservesSuperviewLayoutMargins = YES;
   UILayoutGuide* margins = self.view.layoutMarginsGuide;
@@ -132,14 +135,15 @@ constexpr CGFloat kContentMaxWidth = 500;
     [stackView.topAnchor
         constraintGreaterThanOrEqualToAnchor:scrollContentView.topAnchor],
     [stackView.bottomAnchor
-        constraintLessThanOrEqualToAnchor:self.specificContentView.topAnchor
+        constraintLessThanOrEqualToAnchor:self.specificContentLayoutGuide
+                                              .topAnchor
                                  constant:-kScrollViewBottomInsets],
 
-    [self.specificContentView.bottomAnchor
+    [self.specificContentLayoutGuide.bottomAnchor
         constraintEqualToAnchor:scrollContentView.bottomAnchor],
-    [self.specificContentView.centerXAnchor
+    [self.specificContentLayoutGuide.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
-    [self.specificContentView.widthAnchor
+    [self.specificContentLayoutGuide.widthAnchor
         constraintLessThanOrEqualToAnchor:scrollView.widthAnchor],
 
     // Constrain its height to at least the scroll view height, so that derived

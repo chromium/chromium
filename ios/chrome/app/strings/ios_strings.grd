@@ -1577,6 +1577,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_MANAGER_BLOCK_BUTTON" desc="Button text for the 'Save Password' infobar's 'Never remember for this site' option [Length: 10em]">
         Never
       </message>
+      <message name="IDS_IOS_PASSWORD_MANAGER_LOGO_ACCESSIBILITY_LABEL" desc="Accessibility label for the password manager logo." meaning="Text read by Text-to-Speech when the picture is selected.">
+        Google Password Manager
+      </message>
       <message name="IDS_IOS_PASSWORD_MANAGER_MODAL_BLOCK_BUTTON" desc="Button text for the 'Save Password' Infobar's Modal 'Never remember this site' option [Length: 70em]">
         Never For This Site
       </message>
