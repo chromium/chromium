@@ -632,6 +632,8 @@ class BASE_EXPORT Value {
 // DictionaryValue provides a key-value dictionary with (optional) "path"
 // parsing for recursive access; see the comment at the top of the file. Keys
 // are std::string's and should be UTF-8 encoded.
+// DEPRECATED: Use DictStorage or base::Value(base::Value::Type::DICTIONARY)
+// instead.
 class BASE_EXPORT DictionaryValue : public Value {
  public:
   // Returns `value` if it is a dictionary, nullptr otherwise.
