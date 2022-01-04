@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.Ablation.FillDurationSinceInteraction.{FormType}.{Group}"
-    units="ms" expires_after="M100">
+    units="ms" expires_after="M108">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.Ablation.FormSubmissionAfterInteraction.{FormType}.{Group}"
-    enum="Boolean" expires_after="M100">
+    enum="Boolean" expires_after="M108">
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-team@google.com</owner>
   <summary>
