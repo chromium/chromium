@@ -393,9 +393,7 @@ void DirectSocketsServiceImpl::OpenTcpSocket(
     return;
   }
 
-  const net::Error result = ValidateOptions(*options);
-
-  if (result != net::OK) {
+  if (const net::Error result = ValidateOptions(*options); result != net::OK) {
     std::move(callback).Run(result, absl::nullopt, absl::nullopt,
                             mojo::ScopedDataPipeConsumerHandle(),
                             mojo::ScopedDataPipeProducerHandle());
@@ -426,9 +424,7 @@ void DirectSocketsServiceImpl::OpenUdpSocket(
     return;
   }
 
-  const net::Error result = ValidateOptions(*options);
-
-  if (result != net::OK) {
+  if (const net::Error result = ValidateOptions(*options); result != net::OK) {
     std::move(callback).Run(result, absl::nullopt, absl::nullopt);
     return;
   }
