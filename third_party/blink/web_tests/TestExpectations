@@ -5976,8 +5976,6 @@ crbug.com/989665 [ Mac ] external/wpt/resource-timing/resource_timing_buffer_ful
 crbug.com/989665 [ Linux ] virtual/plz-dedicated-worker/external/wpt/resource-timing/resource_timing_buffer_full_eventually.html [ Crash Pass ]
 
 # Sheriff 2020-01-23
-crbug.com/1044505 http/tests/devtools/tracing-session-id.js [ Failure Pass Skip Timeout ]
-
 crbug.com/1046784 http/tests/devtools/oopif/oopif-storage.js [ Failure Pass ]
 crbug.com/1046784 http/tests/inspector-protocol/service-worker/target-reloaded-after-crash.js [ Failure Pass Timeout ]
 
