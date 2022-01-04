@@ -679,13 +679,13 @@ void CellularMetricsLogger::CheckForESimProfileStatusMetric() {
   for (const auto& profile : esim_profiles) {
     switch (profile.state()) {
       case CellularESimProfile::State::kPending:
-        FALLTHROUGH;
+        [[fallthrough]];
       case CellularESimProfile::State::kInstalling:
         pending_profiles_exist = true;
         break;
 
       case CellularESimProfile::State::kInactive:
-        FALLTHROUGH;
+        [[fallthrough]];
       case CellularESimProfile::State::kActive:
         active_profiles_exist = true;
         break;

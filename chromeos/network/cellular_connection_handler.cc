@@ -89,11 +89,11 @@ absl::optional<std::string> CellularConnectionHandler::ResultToErrorString(
       return NetworkConnectionHandler::kErrorCellularInhibitFailure;
 
     case PrepareCellularConnectionResult::kCouldNotFindRelevantEuicc:
-      FALLTHROUGH;
+      [[fallthrough]];
     case PrepareCellularConnectionResult::kRefreshProfilesFailed:
-      FALLTHROUGH;
+      [[fallthrough]];
     case PrepareCellularConnectionResult::kCouldNotFindRelevantESimProfile:
-      FALLTHROUGH;
+      [[fallthrough]];
     case PrepareCellularConnectionResult::kEnableProfileFailed:
       return NetworkConnectionHandler::kErrorESimProfileIssue;
 

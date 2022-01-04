@@ -127,9 +127,9 @@ const std::vector<std::string> GetNetworkTypeHistogramNames(
     // There should not be connections requests for kEthernetEap type service.
     // kEthernetEap exists only to store auth details for ethernet.
     case NetworkState::NetworkTechnologyType::kEthernetEap:
-      FALLTHROUGH;
+      [[fallthrough]];
     case NetworkState::NetworkTechnologyType::kUnknown:
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       return {};
   }
