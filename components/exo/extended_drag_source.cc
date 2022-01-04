@@ -86,6 +86,12 @@ class ExtendedDragSource::DraggedWindowHolder : public aura::WindowObserver {
     surface_->window()->RemoveObserver(this);
   }
 
+  void OnWindowVisibilityChanging(aura::Window* window, bool visible) override {
+    DCHECK(window);
+    if (window == toplevel_window_)
+      source_->OnDraggedWindowVisibilityChanging(visible);
+  }
+
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
     DCHECK(window);
     if (window == toplevel_window_)
@@ -279,9 +285,9 @@ void ExtendedDragSource::StartDrag(aura::Window* toplevel,
                                        /*grab_capture=*/false);
 }
 
-void ExtendedDragSource::OnDraggedWindowVisibilityChanged(bool visible) {
+void ExtendedDragSource::OnDraggedWindowVisibilityChanging(bool visible) {
   DCHECK(dragged_window_holder_);
-  DVLOG(1) << "Dragged window visibility changed. visible=" << visible;
+  DVLOG(1) << "Dragged window visibility changing. visible=" << visible;
 
   if (!visible) {
     dragged_window_holder_.reset();
@@ -297,6 +303,20 @@ void ExtendedDragSource::OnDraggedWindowVisibilityChanged(bool visible) {
     toplevel->SetProperty(ash::kTabDraggingSourceWindowKey,
                           drag_source_window_);
   }
+}
+
+void ExtendedDragSource::OnDraggedWindowVisibilityChanged(bool visible) {
+  DCHECK(dragged_window_holder_);
+  DVLOG(1) << "Dragged window visibility changed. visible=" << visible;
+
+  if (!visible) {
+    dragged_window_holder_.reset();
+    return;
+  }
+
+  aura::Window* toplevel = dragged_window_holder_->toplevel_window();
+  DCHECK(toplevel);
+  DCHECK(drag_source_window_);
 
   // The |toplevel| window for the dragged surface has just been created and
   // it's about to be mapped. Calculate and set its position based on

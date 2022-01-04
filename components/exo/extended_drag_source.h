@@ -94,6 +94,7 @@ class ExtendedDragSource : public DataSourceObserver,
   void UnlockCursor();
   void StartDrag(aura::Window* toplevel,
                  const gfx::PointF& pointer_location_in_screen);
+  void OnDraggedWindowVisibilityChanging(bool visible);
   void OnDraggedWindowVisibilityChanged(bool visible);
   gfx::Point CalculateOrigin(aura::Window* target) const;
   void Cleanup();

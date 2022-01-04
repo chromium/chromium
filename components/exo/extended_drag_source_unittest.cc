@@ -9,6 +9,7 @@
 
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/drag_drop/toplevel_window_drag_delegate.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,7 +41,9 @@
 #include "ui/gfx/geometry/vector2d.h"
 
 using ::testing::_;
+using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;
+using ::testing::SaveArg;
 
 namespace exo {
 namespace {
@@ -308,14 +311,17 @@ TEST_F(ExtendedDragSourceTest, DragSurfaceNotMappedYet) {
 
   // Ensure drag 'n drop starts after
   // ExtendedDragSource::OnDraggedWindowVisibilityChanged()
+  aura::Window* toplevel_window;
   WindowObserverHookChecker checker(detached_surface->window());
   EXPECT_CALL(checker, OnWindowVisibilityChanging(_, _))
       .Times(1)
-      .WillOnce(InvokeWithoutArgs([]() {
-        auto* toplevel_handler =
-            ash::Shell::Get()->toplevel_window_event_handler();
-        EXPECT_FALSE(toplevel_handler->is_drag_in_progress());
-      }));
+      .WillOnce(DoAll(
+          SaveArg<0>(&toplevel_window), InvokeWithoutArgs([&]() {
+            auto* toplevel_handler =
+                ash::Shell::Get()->toplevel_window_event_handler();
+            EXPECT_FALSE(toplevel_handler->is_drag_in_progress());
+            EXPECT_TRUE(toplevel_window->GetProperty(ash::kIsDraggingTabsKey));
+          })));
   EXPECT_CALL(checker, OnWindowVisibilityChanged(_, _))
       .Times(1)
       .WillOnce(InvokeWithoutArgs([]() {
