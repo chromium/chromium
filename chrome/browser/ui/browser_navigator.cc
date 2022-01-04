@@ -188,7 +188,7 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
         return index;
     }
 #endif
-      FALLTHROUGH;
+      [[fallthrough]];
     case WindowOpenDisposition::CURRENT_TAB:
       if (params.browser)
         return {params.browser, -1};
@@ -212,7 +212,7 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
           return index;
       }
     }
-      FALLTHROUGH;
+      [[fallthrough]];
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:
       // See if we can open the tab in the window this navigator is bound to.
@@ -305,7 +305,7 @@ void NormalizeDisposition(NavigateParams* params) {
       // automatically.
       if (params->window_action == NavigateParams::NO_ACTION)
         params->window_action = NavigateParams::SHOW_WINDOW;
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
     case WindowOpenDisposition::SINGLETON_TAB:
