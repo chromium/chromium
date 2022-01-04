@@ -66,6 +66,8 @@ message TopicTaxonomy {
 }
 
 message PageTopicsModelMetadata {
+  reserved 4;
+
   // The version of the model sent by the server, and thus, will only be
   // populated by the server.
   optional int64 version = 1;
@@ -80,5 +82,5 @@ message PageTopicsModelMetadata {
   optional PageTopicsOutputPostprocessingParams output_postprocessing_params =
       3;
   // The taxonomy used by this model.
-  optional TopicTaxonomy taxonomy = 4;
+  optional TopicTaxonomy topic_taxonomy = 5;
 }
