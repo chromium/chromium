@@ -865,7 +865,7 @@ ChromeFileSystemAccessPermissionContext::GetReadPermissionGrant(
           // Open and Save dialog only grant read access for individual files.
           if (handle_type == HandleType::kDirectory)
             break;
-          FALLTHROUGH;
+          [[fallthrough]];
         case UserAction::kDragAndDrop:
           // Drag&drop grants read access for all handles.
           existing_grant->SetStatus(
