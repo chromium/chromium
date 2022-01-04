@@ -9,7 +9,7 @@ for more details about the presubmit API built into depot_tools.
 """
 
 USE_PYTHON3 = True
-_PLATFORMS = ['android', 'chromeos', 'linux', 'mac', 'win']
+_PLATFORMS = ['chromeos']
 
 def _CheckChange(input_api, output_api):
   results = []
