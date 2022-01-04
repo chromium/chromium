@@ -80,8 +80,10 @@ void UrlHandlerAsh::BindReceiver(
 
 void UrlHandlerAsh::OpenUrl(const GURL& url) {
   GURL target_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
+  GURL short_target_url = crosapi::gurl_os_handler_utils::SanitizeAshURL(
+      url, /*include_path=*/false);
   // Settings will be handled.
-  if (target_url == GURL(chrome::kChromeUIOSSettingsURL)) {
+  if (short_target_url == GURL(chrome::kChromeUIOSSettingsURL)) {
     chrome::SettingsWindowManager* settings_window_manager =
         chrome::SettingsWindowManager::GetInstance();
     settings_window_manager->ShowChromePageForProfile(

@@ -32,8 +32,13 @@ namespace crosapi {
 namespace gurl_os_handler_utils {
 
 // Sanitize the URL according to security requests (only scheme, host and
-// sub-host).
-COMPONENT_EXPORT(CROSAPI) GURL SanitizeAshURL(const GURL& url);
+// path). The path can also be removed if |include_path| is false.
+// Example:
+// chrome://settings/network?query would return
+//       |include_path| false: chrome://settings/
+//       |include_path| true:  chrome://settings/network
+COMPONENT_EXPORT(CROSAPI)
+GURL SanitizeAshURL(const GURL& url, bool include_path = true);
 
 // Determines if a given URL matches any of the given URLs in the list.
 // Note that the provided |url| needs to be sanitized.

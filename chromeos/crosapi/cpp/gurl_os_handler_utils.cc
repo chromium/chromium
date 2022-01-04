@@ -25,7 +25,7 @@ const char kTerminatingCharacters[] = "/\\? #.%$&*<>+";
 
 // Note that GURL can't operate on the "os://" scheme as it is intentionally
 // not a registered scheme.
-std::string GetValidHostAndSubhostFromOsUrl(GURL url) {
+std::string GetValidHostAndSubhostFromOsUrl(GURL url, bool include_path) {
   // Only keep the scheme, host and sub-host. Everything else gets cut off.
   const std::string& url_spec = base::ToLowerASCII(url.spec());
 
@@ -36,7 +36,7 @@ std::string GetValidHostAndSubhostFromOsUrl(GURL url) {
   if (valid_spec_end == std::string::npos)
     return url_spec.substr(kHostStart);
 
-  if (url_spec[valid_spec_end] == '/') {
+  if (url_spec[valid_spec_end] == '/' && include_path) {
     // A sub URL is allowed (e.g. chrome://settings/network) - so we skip the
     // "/" with +1 and parse till we find the next terminating character.
     const std::size_t sub_host_end =
@@ -53,15 +53,19 @@ std::string GetValidHostAndSubhostFromOsUrl(GURL url) {
   return url_spec.substr(kHostStart, valid_spec_end - kHostStart);
 }
 
-GURL GetValidHostAndSubhostFromGURL(GURL gurl) {
+GURL GetValidHostAndSubhostFromGURL(GURL gurl, bool include_path) {
   if (!gurl.is_valid() || !gurl.has_host())
     return GURL();
 
   if (!gurl.has_ref() && !gurl.has_username() && !gurl.has_password() &&
-      !gurl.has_query() && !gurl.has_port())
+      !gurl.has_query() && !gurl.has_port() &&
+      (include_path || !gurl.has_path())) {
     return GURL(gurl);
+  }
 
   url::Replacements<char> replacements;
+  if (!include_path)
+    replacements.ClearPath();
   replacements.ClearRef();
   replacements.ClearUsername();
   replacements.ClearPassword();
@@ -76,11 +80,12 @@ namespace crosapi {
 
 namespace gurl_os_handler_utils {
 
-GURL SanitizeAshURL(const GURL& url) {
+GURL SanitizeAshURL(const GURL& url, bool include_path) {
   if (!IsAshOsUrl(url))
-    return GetValidHostAndSubhostFromGURL(url);
+    return GetValidHostAndSubhostFromGURL(url, include_path);
 
-  return GURL(kOsUrlPrefix + GetValidHostAndSubhostFromOsUrl(url));
+  return GURL(kOsUrlPrefix +
+              GetValidHostAndSubhostFromOsUrl(url, include_path));
 }
 
 bool IsUrlInList(const GURL& test_url, std::vector<GURL> list) {
@@ -88,14 +93,14 @@ bool IsUrlInList(const GURL& test_url, std::vector<GURL> list) {
   // security at this point.
   DCHECK(SanitizeAshURL(test_url) == test_url);
 
-  const GURL& target_url = test_url;
+  const GURL short_url = SanitizeAshURL(test_url, /*include_path=*/false);
   for (const GURL& url : list) {
     // It is expected that all os:// scheme items in the list are lower case
     // no "/" at the end and properly sanitized as the GURL comparison will
     // treat everything past the unknown scheme as an unknown string and hence
     // do no processing.
     DCHECK(!IsAshOsUrl(url) || SanitizeAshURL(url) == url);
-    if (target_url == url)
+    if (test_url == url || short_url == url)
       return true;
   }
   return false;
@@ -126,7 +131,7 @@ std::string AshOsUrlHost(const GURL& url) {
     return url.host() + (url.path().length() > 1 ? url.path() : "");
   }
 
-  return GetValidHostAndSubhostFromOsUrl(url);
+  return GetValidHostAndSubhostFromOsUrl(url, /*include_path=*/true);
 }
 
 // Convert a passed GURL from os:// to chrome://.
