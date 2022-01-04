@@ -89,7 +89,7 @@ bool MemoryMappedFile::Initialize(File file,
           return false;
         }
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case READ_ONLY:
     case READ_WRITE:
       // Ensure that the region values are valid.
