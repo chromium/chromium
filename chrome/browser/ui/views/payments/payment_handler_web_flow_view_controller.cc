@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,6 +54,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace payments {
 namespace {
@@ -64,8 +66,7 @@ std::u16string GetPaymentHandlerDialogTitle(
 
   const std::u16string title = web_contents->GetTitle();
   const std::u16string https_prefix =
-      base::ASCIIToUTF16(url::kHttpsScheme) +
-      base::ASCIIToUTF16(url::kStandardSchemeSeparator);
+      base::StrCat({url::kHttpsScheme16, url::kStandardSchemeSeparator16});
   return base::StartsWith(title, https_prefix, base::CompareCase::SENSITIVE)
              ? std::u16string()
              : title;
