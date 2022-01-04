@@ -4374,7 +4374,8 @@
       {
         "args": [
           "--num-retries=3",
-          "--platform=fuchsia"
+          "--platform=fuchsia",
+          "--jobs=1"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {

@@ -227,6 +227,7 @@
       'Fuchsia x64': {
         'args': [
           '--platform=fuchsia',
+          '--jobs=1',
         ],
         'swarming': {
           'shards': 1,
