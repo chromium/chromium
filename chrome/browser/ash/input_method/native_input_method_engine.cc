@@ -654,6 +654,9 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
         engine_id, input_method_.BindNewPipeAndPassReceiver(),
         host_receiver_.BindNewPipeAndPassRemote(),
         base::BindOnce(&OnConnected));
+
+    // Inform the assistive suggester of the new engine activation.
+    assistive_suggester_->OnActivate(engine_id);
   } else {
     // Release the IME service.
     // TODO(b/147709499): A better way to cleanup all.
@@ -676,7 +679,6 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
     const IMEEngineHandlerInterface::InputContext& context) {
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
     assistive_suggester_->OnFocus(context_id);
-    assistive_suggester_->RecordTextInputStateMetrics(engine_id);
   }
   autocorrect_manager_->OnFocus(context_id);
   if (grammar_manager_->IsOnDeviceGrammarEnabled()) {

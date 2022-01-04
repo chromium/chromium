@@ -49,15 +49,14 @@ class AssistiveSuggester : public SuggestionsSource {
   // SuggestionsSource overrides
   std::vector<ime::TextSuggestion> GetSuggestions() override;
 
+  // Called when a new input engine is activated by the system.
+  void OnActivate(const std::string& engine_id);
+
   // Called when a text field gains focus, and suggester starts working.
   void OnFocus(int context_id);
 
   // Called when a text field loses focus, and suggester stops working.
   void OnBlur();
-
-  // This records any text input state metrics for each relevant assistive
-  // feature. It is called once when a text field gains focus.
-  void RecordTextInputStateMetrics(const std::string& engine_id);
 
   // Checks the text before cursor, emits metric if any assistive prefix is
   // matched.
@@ -127,11 +126,18 @@ class AssistiveSuggester : public SuggestionsSource {
       const std::vector<ime::TextSuggestion>& suggestions,
       const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions);
 
+  // This records any text input state metrics for each relevant assistive
+  // feature. It is called once when a text field gains focus.
+  void RecordTextInputStateMetrics();
+
   Profile* profile_;
   PersonalInfoSuggester personal_info_suggester_;
   EmojiSuggester emoji_suggester_;
   MultiWordSuggester multi_word_suggester_;
   std::unique_ptr<AssistiveSuggesterSwitch> suggester_switch_;
+
+  // The id of the currently active input engine.
+  std::string active_engine_id_;
 
   // ID of the focused text field, 0 if none is focused.
   int context_id_ = -1;

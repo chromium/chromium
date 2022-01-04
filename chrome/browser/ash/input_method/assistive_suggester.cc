@@ -298,6 +298,7 @@ void AssistiveSuggester::OnFocus(int context_id) {
   personal_info_suggester_.OnFocus(context_id_);
   emoji_suggester_.OnFocus(context_id_);
   multi_word_suggester_.OnFocus(context_id_);
+  RecordTextInputStateMetrics();
 }
 
 void AssistiveSuggester::OnBlur() {
@@ -371,11 +372,10 @@ void AssistiveSuggester::ProcessExternalSuggestions(
   }
 }
 
-void AssistiveSuggester::RecordTextInputStateMetrics(
-    const std::string& engine_id) {
+void AssistiveSuggester::RecordTextInputStateMetrics() {
   if (features::IsAssistiveMultiWordEnabled()) {
     RecordMultiWordTextInputState(profile_->GetPrefs(), suggester_switch_.get(),
-                                  engine_id);
+                                  active_engine_id_);
   }
 }
 
@@ -500,6 +500,12 @@ std::vector<ime::TextSuggestion> AssistiveSuggester::GetSuggestions() {
   if (IsSuggestionShown())
     return current_suggester_->GetSuggestions();
   return {};
+}
+
+void AssistiveSuggester::OnActivate(const std::string& engine_id) {
+  if (features::IsAssistiveMultiWordEnabled()) {
+    active_engine_id_ = engine_id;
+  }
 }
 
 }  // namespace input_method

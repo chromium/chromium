@@ -97,6 +97,8 @@ class AssistiveSuggesterTest : public testing::Test {
     assistive_suggester_ = std::make_unique<AssistiveSuggester>(
         engine_.get(), profile_.get(),
         std::make_unique<AssistiveSuggesterClientFilter>());
+    assistive_suggester_->OnActivate(kUsEnglishEngineId);
+
     histogram_tester_.ExpectUniqueSample(
         "InputMethod.Assistive.UserPref.PersonalInfo", true, 1);
     histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.UserPref.Emoji",
@@ -275,6 +277,8 @@ TEST_F(AssistiveSuggesterTest,
               .multi_word_suggestions = true,
               .personal_info_suggestions = true}));
 
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureAllowed(
       AssistiveSuggester::AssistiveFeature::kEmojiSuggestion));
   EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureAllowed(
@@ -293,7 +297,8 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsNotAllowed) {
       std::make_unique<FakeSuggesterSwitch>(
           FakeSuggesterSwitch::EnabledSuggestions{}));
 
-  assistive_suggester_->RecordTextInputStateMetrics(kUsEnglishEngineId);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
 
   histogram_tester_.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.InputState", 1);
@@ -315,7 +320,8 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByUser) {
   profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
                                    false);
 
-  assistive_suggester_->RecordTextInputStateMetrics(kUsEnglishEngineId);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
 
   histogram_tester_.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.InputState", 1);
@@ -338,7 +344,8 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsDisabledByLacros) {
   profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
                                    true);
 
-  assistive_suggester_->RecordTextInputStateMetrics(kUsEnglishEngineId);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
 
   histogram_tester_.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.InputState", 1);
@@ -361,7 +368,8 @@ TEST_F(AssistiveSuggesterTest,
   profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
                                    true);
 
-  assistive_suggester_->RecordTextInputStateMetrics(kSpainSpanishEngineId);
+  assistive_suggester_->OnActivate(kSpainSpanishEngineId);
+  assistive_suggester_->OnFocus(5);
 
   histogram_tester_.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.InputState", 1);
@@ -383,7 +391,8 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsEnabled) {
   profile_->GetPrefs()->SetBoolean(prefs::kAssistPredictiveWritingEnabled,
                                    true);
 
-  assistive_suggester_->RecordTextInputStateMetrics(kUsEnglishEngineId);
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
 
   histogram_tester_.ExpectTotalCount(
       "InputMethod.Assistive.MultiWord.InputState", 1);
@@ -436,6 +445,7 @@ TEST_F(AssistiveSuggesterMultiWordTest,
                      .type = TextSuggestionType::kMultiWord,
                      .text = "hello there"}};
 
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
   assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
@@ -456,6 +466,7 @@ TEST_F(AssistiveSuggesterMultiWordTest,
                      .type = TextSuggestionType::kMultiWord,
                      .text = "hello there"}};
 
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
   assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
@@ -470,6 +481,7 @@ TEST_F(AssistiveSuggesterMultiWordTest,
       std::make_unique<FakeSuggesterSwitch>(
           FakeSuggesterSwitch::EnabledSuggestions{}));
 
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
   assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
   assistive_suggester_->OnExternalSuggestionsUpdated({});
@@ -489,6 +501,7 @@ TEST_F(AssistiveSuggesterMultiWordTest,
                      .type = TextSuggestionType::kMultiWord,
                      .text = "hello there"}};
 
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
   assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
@@ -502,6 +515,7 @@ TEST_F(AssistiveSuggesterMultiWordTest,
 
 TEST_F(AssistiveSuggesterMultiWordTest,
        CoverageMetricNotRecordedWhenNoSuggestionGiven) {
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
   assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
   assistive_suggester_->OnExternalSuggestionsUpdated({});
@@ -516,6 +530,7 @@ TEST_F(AssistiveSuggesterMultiWordTest,
                      .type = TextSuggestionType::kMultiWord,
                      .text = "hello there"}};
 
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
   assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
@@ -532,6 +547,7 @@ TEST_F(AssistiveSuggesterMultiWordTest,
                      .type = TextSuggestionType::kMultiWord,
                      .text = "hello there"}};
 
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
   assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
@@ -558,6 +574,7 @@ TEST_F(AssistiveSuggesterMultiWordTest,
                      .type = TextSuggestionType::kMultiWord,
                      .text = "was"}};
 
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
   assistive_suggester_->OnSurroundingTextChanged(u"", 0, 0);
   assistive_suggester_->OnExternalSuggestionsUpdated(first_suggestions);
@@ -579,6 +596,7 @@ TEST_F(AssistiveSuggesterMultiWordTest, PressingTabShouldAcceptSuggestion) {
                      .type = TextSuggestionType::kMultiWord,
                      .text = "aren\'t you"}};
 
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
   assistive_suggester_->OnSurroundingTextChanged(u"why ar", 6, 6);
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
@@ -592,6 +610,7 @@ TEST_F(AssistiveSuggesterMultiWordTest, AltPlusTabShouldNotAcceptSuggestion) {
                      .type = TextSuggestionType::kMultiWord,
                      .text = "aren\'t you"}};
 
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
   assistive_suggester_->OnSurroundingTextChanged(u"why ar", 6, 6);
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
@@ -606,6 +625,7 @@ TEST_F(AssistiveSuggesterMultiWordTest, CtrlPlusTabShouldNotAcceptSuggestion) {
                      .type = TextSuggestionType::kMultiWord,
                      .text = "aren\'t you"}};
 
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
   assistive_suggester_->OnSurroundingTextChanged(u"why ar", 6, 6);
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
@@ -620,6 +640,7 @@ TEST_F(AssistiveSuggesterMultiWordTest, ShiftPlusTabShouldNotAcceptSuggestion) {
                      .type = TextSuggestionType::kMultiWord,
                      .text = "aren\'t you"}};
 
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
   assistive_suggester_->OnSurroundingTextChanged(u"why ar", 6, 6);
   assistive_suggester_->OnExternalSuggestionsUpdated(suggestions);
@@ -668,6 +689,7 @@ class AssistiveSuggesterEmojiTest : public testing::Test {
 };
 
 TEST_F(AssistiveSuggesterEmojiTest, ShouldReturnPrefixBasedEmojiSuggestions) {
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5);
 
   EXPECT_TRUE(assistive_suggester_->OnSurroundingTextChanged(u"happy ", 6, 6));
