@@ -91,8 +91,7 @@ class PerProjectDictionaryPrefUpdate {
       : update_(prefs, kTypeSubscribedForInvalidations) {
     per_sender_pref_ = update_->FindDictKey(project_id);
     if (!per_sender_pref_) {
-      update_->SetDictionary(project_id,
-                             std::make_unique<base::DictionaryValue>());
+      update_->SetKey(project_id, base::Value(base::Value::Type::DICTIONARY));
       per_sender_pref_ = update_->FindDictKey(project_id);
     }
     DCHECK(per_sender_pref_);
