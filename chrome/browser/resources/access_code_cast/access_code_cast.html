@@ -18,32 +18,40 @@
     background-color: transparent;
   }
 
-  #button-container {
-    display: flex;
-    justify-content: flex-end;
-    margin: 32px 0;
+  cr-dialog::part(dialog) {
+    border-radius: 0;
+    height: 100%;
+    width: 100%;
+  }
+
+  cr-dialog [slot=body] {
+    height: 480px;
   }
 </style>
-<h1>$i18n{dialogTitle}</h1>
-<div id="codeInputView">
-  <c2c-code-input length="6" value="" id="codeInput"></c2c-code-input>
-  <cr-button on-click="switchToQrInput" class="center text-button">
-    <iron-icon class="button-image" icon="cr:videocam"></iron-icon>
-    $i18n{useCamera}
-  </cr-button>
-</div>
-<div id="qrInputView">
-  <p>Camera input view</p>
-</div>
-<c2c-error-message id="errorMessage"></c2c-error-message>
-<div id="button-container">
-  <cr-button on-click="close">$i18n{close}</cr-button>
-  <cr-button id="castButton" on-click="addSinkAndCast" class="action-button"
-    disabled="[[castButtonDisabled(accessCode)]]">
-    $i18n{cast}
-  </cr-button>
-  <cr-button id="backButton" on-click="switchToCodeInput"
-    class="action-button">
-    $i18n{back}
-  </cr-button>
-</div>
+<cr-dialog id="dialog">
+  <div slot="title">$i18n{dialogTitle}</div>
+  <div slot="body">
+    <div id="codeInputView">
+      <c2c-code-input length="6" value="" id="codeInput"></c2c-code-input>
+      <cr-button on-click="switchToQrInput" class="center text-button">
+        <iron-icon class="button-image" icon="cr:videocam"></iron-icon>
+        $i18n{useCamera}
+      </cr-button>
+    </div>
+    <div id="qrInputView">
+      <div>Camera input view</div>
+    </div>
+    <c2c-error-message id="errorMessage"></c2c-error-message>
+  </div>
+  <div slot="button-container">
+    <cr-button on-click="close" class="cancel-button">$i18n{close}</cr-button>
+    <cr-button id="castButton" on-click="addSinkAndCast" class="action-button"
+      disabled="[[castButtonDisabled(accessCode)]]">
+      $i18n{cast}
+    </cr-button>
+    <cr-button id="backButton" on-click="switchToCodeInput"
+      class="action-button">
+      $i18n{back}
+    </cr-button>
+  </div>
+</cr-dialog>

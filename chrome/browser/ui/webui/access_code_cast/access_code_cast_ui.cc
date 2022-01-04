@@ -28,13 +28,13 @@
 AccessCodeCastDialog::AccessCodeCastDialog(
     media_router::MediaCastMode cast_mode)
     : cast_mode_(cast_mode) {
-  DVLOG(0) << "AccessCodeCastDialog constructor";
   set_can_resize(false);
 }
 
 void AccessCodeCastDialog::Show(media_router::MediaCastMode mode) {
-  chrome::ShowWebDialog(nullptr, ProfileManager::GetActiveUserProfile(),
-                        new AccessCodeCastDialog(mode));
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  AccessCodeCastDialog* dialog = new AccessCodeCastDialog(mode);
+  chrome::ShowWebDialog(nullptr, profile, dialog);
 }
 
 ui::ModalType AccessCodeCastDialog::GetDialogModalType() const {
@@ -54,8 +54,8 @@ void AccessCodeCastDialog::GetWebUIMessageHandlers(
 
 void AccessCodeCastDialog::GetDialogSize(gfx::Size* size) const {
   // TODO(b/202529859): Replace these with final values
-  const int kDefaultWidth = 600;
-  const int kDefaultHeight = 400;
+  const int kDefaultWidth = 512;
+  const int kDefaultHeight = 480;
   size->SetSize(kDefaultWidth, kDefaultHeight);
 }
 
@@ -80,6 +80,15 @@ void AccessCodeCastDialog::OnCloseContents(content::WebContents* source,
 
 bool AccessCodeCastDialog::ShouldShowDialogTitle() const {
   return false;
+}
+
+bool AccessCodeCastDialog::ShouldShowCloseButton() const {
+  return false;
+}
+
+AccessCodeCastDialog::FrameKind
+AccessCodeCastDialog::GetWebDialogFrameKind() const {
+  return FrameKind::kDialog;
 }
 
 // Ensure the WebUI dialog has camera access
